@@ -6,10 +6,11 @@ import thredds.wcs.v1_1_0.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -42,7 +43,7 @@ public class WCS_1_1_0 implements VersionHandler
   }
 
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res )
-          throws ServletException, IOException
+          throws IOException //, ServletException
   {
     try
     {
@@ -77,17 +78,29 @@ public class WCS_1_1_0 implements VersionHandler
       }
       else if ( request.getOperation().equals( Request.Operation.GetCoverage ) )
       {
+        // ToDo Handle multi-part MIME response
         GetCoverage getCoverage =
                 new GetCoverage( serverURI, request.getIdentifier(),
                                  request.getDatasetPath(),
                                  request.getDataset() );
-        res.setContentType( "text/xml" );
-        res.setStatus( HttpServletResponse.SC_OK );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
+        File covFile = getCoverage.writeCoverageDataToFile();
+        if ( covFile != null && covFile.exists())
+        {
+          res.setContentType( "application/netcdf" );
+          res.setStatus( HttpServletResponse.SC_OK );
 
-        PrintWriter pw = res.getWriter();
-        getCoverage.writeGetCoverageDoc( pw );
-        pw.flush();
+          //ServletUtil.returnFile( servlet, req, res, covFile, "application/netcdf");
+          ServletOutputStream out = res.getOutputStream();
+          thredds.util.IO.copyFileB( covFile, out, 60000 );
+          res.flushBuffer();
+          out.close();
+          ServletUtil.logServerAccess( HttpServletResponse.SC_OK, covFile.length() );
+        }
+        else
+        {
+          log.error( "handleKVP(): Failed to create coverage file" + (covFile == null ? "" : (": " )) );
+          throw new WcsException( "Problem creating requested coverage.");
+        }
       }
     }
     catch ( WcsException e)

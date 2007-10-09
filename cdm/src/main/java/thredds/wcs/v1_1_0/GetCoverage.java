@@ -83,16 +83,29 @@ public class GetCoverage
 
 
   public File writeCoverageDataToFile()
-          throws IOException, InvalidRangeException
+          throws WcsException
   {
     File ncFile = getDiskCache().getCacheFile( datasetPath + "-" + identifier + ".nc" );
 
     NetcdfCFWriter writer = new NetcdfCFWriter();
-    writer.makeFile( ncFile.getPath(), dataset,
-                     null, null, null,
-//                     Collections.singletonList( req.getCoverage() ),
-//                     req.getBoundingBox(), dateRange,
-                     true, 1, 1, 1 );
+    try
+    {
+      writer.makeFile( ncFile.getPath(), dataset,
+                       Collections.singletonList( identifier ), null, null,
+  //                     Collections.singletonList( req.getCoverage() ),
+  //                     req.getBoundingBox(), dateRange,
+                       true, 1, 1, 1 );
+    }
+    catch ( InvalidRangeException e )
+    {
+      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + identifier + ">: " + e.getMessage());
+      throw new WcsException( WcsException.Code.UnsupportedCombination, "", "Failed to subset coverage <" + identifier + ">.");
+    }
+    catch ( IOException e )
+    {
+      log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + identifier + ">: " + e.getMessage());
+      throw new WcsException( WcsException.Code.NoApplicableCode, "", "Problem creating coverage <" + identifier + ">." );
+    }
     return ncFile;
 
   }
