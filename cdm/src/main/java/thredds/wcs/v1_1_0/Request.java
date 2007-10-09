@@ -2,6 +2,7 @@ package thredds.wcs.v1_1_0;
 
 import java.util.List;
 import java.util.Collections;
+import java.util.ArrayList;
 
 import ucar.nc2.dt.GridDataset;
 
@@ -10,6 +11,7 @@ import ucar.nc2.dt.GridDataset;
  *
  * @author edavis
  * @since 4.0
+ * ToDo Make this an AbstractFactory class for GetCapabilities, DescribeCoverge, and GetCoverage classes.
  */
 public class Request
 {
@@ -34,6 +36,7 @@ public class Request
   // Dataset
   private String datasetPath;
   private GridDataset dataset;
+  private List<String> availableCoverageNames;
 
 
   public enum Operation
@@ -73,10 +76,13 @@ public class Request
                                                     List<String> identifiers,
                                                     String datasetPath,
                                                     GridDataset dataset)
+          throws WcsException
   {
     Request req = new Request( operation, negotiatedVersion, datasetPath, dataset );
-    if ( !operation.equals( Operation.DescribeCoverage ) )
+    if ( ! operation.equals( Operation.DescribeCoverage ) )
       throw new IllegalArgumentException( "The \"" + operation.toString() + "\" operation not supported by this method." );
+    if ( ! req.availableCoverageNames.containsAll( identifiers))
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "identifiers", "The \"identifiers\" parameter contains unrecognized values: " + identifiers);
     req.identifierList = identifiers;
 
     return req;
@@ -87,10 +93,13 @@ public class Request
                                                String identifier,
                                                String datasetPath,
                                                GridDataset dataset)
+          throws WcsException
   {
     Request req = new Request( operation, negotiatedVersion, datasetPath, dataset );
     if ( !operation.equals( Operation.GetCoverage ) )
       throw new IllegalArgumentException( "The \"" + operation.toString() + "\" operation not supported by this method." );
+    if ( !req.availableCoverageNames.contains( identifier ) )
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "identifier", "Unrecognized value in \"identifier\" parameter: " + identifier );
     req.identifier = identifier;
 
     return req;
@@ -102,6 +111,12 @@ public class Request
     this.negotiatedVersion = negotiatedVersion;
     this.datasetPath = datasetPath;
     this.dataset = dataset;
+    this.availableCoverageNames = new ArrayList<String>();
+    for ( GridDataset.Gridset gs : this.dataset.getGridsets() )
+    {
+      this.availableCoverageNames.add( gs.getGeoCoordSystem().getName() );
+    }
+
 
     if ( operation == null )
       throw new IllegalArgumentException( "Non-null operation required." );
@@ -120,6 +135,7 @@ public class Request
 
   public String getDatasetPath() { return datasetPath; }
   public GridDataset getDataset() { return dataset; }
+  public List<String> getAvailableCoverageNames() { return availableCoverageNames; }
 
 
   // ---------- GetCapabilities getters
