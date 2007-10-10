@@ -62,6 +62,21 @@ public class Section {
   }
 
   /**
+   * Create Section from a shape and origin arrays.
+   *
+   * @param origin array of start for each Range
+   * @param shape  array of lengths for each Range
+   * @throws InvalidRangeException if origin < 0, shape < 1.
+   * @param stride	stride between consecutive elements (positive or negative)
+   */
+  public Section(int[] origin, int[] shape, int[] stride) throws InvalidRangeException {
+    list = new ArrayList<Range>();
+    for (int i = 0; i < shape.length; i++) {
+      list.add(shape[i] > 0 ? new Range(origin[i], origin[i] + shape[i] - 1, stride[i]) : Range.EMPTY);
+    }
+  }
+
+  /**
    * Create Section from a List<Range>.
    *
    * @param from the list of Range
