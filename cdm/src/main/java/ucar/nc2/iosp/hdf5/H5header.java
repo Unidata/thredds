@@ -21,7 +21,6 @@ package ucar.nc2.iosp.hdf5;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.SpecialMathFunction;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
 import ucar.nc2.iosp.netcdf3.N3iosp;
@@ -30,7 +29,6 @@ import ucar.ma2.*;
 import java.util.*;
 import java.text.*;
 import java.io.IOException;
-import java.io.EOFException;
 import java.nio.*;
 
 /**
@@ -48,14 +46,15 @@ class H5header {
 
   // debugging
   static private boolean debugEnum = false;
-  static private boolean debug1 = true, debugDetail = false, debugPos = true, debugHeap = false, debugV = false;
-  static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = true, debugFractalHeap = true;
+  static private boolean debug1 = true, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
+  static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false, debugFractalHeap = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSymbolTable = false;
   static private boolean warnings = true, debugReference = false, debugCreationOrder = false;
   static java.io.PrintStream debugOut = System.out;
 
   static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debug1 = debugFlag.isSet("H5header/header");
+    debugBtree2 = debugFlag.isSet("H5header/btree2");
     debugContinueMessage = debugFlag.isSet("H5header/continueMessage");
     debugDetail = debugFlag.isSet("H5header/headerDetails");
     debugDataBtree = debugFlag.isSet("H5header/dataBtree");
@@ -95,24 +94,25 @@ class H5header {
 
   private RandomAccessFile raf;
   private ucar.nc2.NetcdfFile ncfile;
+  private H5iosp h5iosp;
+
   private long actualSize, baseAddress;
   private byte sizeOffsets, sizeLengths;
   private boolean isOffsetLong, isLengthLong;
-  private Map<String, DataObject> hashDataObjects = new HashMap<String, DataObject>(100);
-  private Map<Long, Group> hashGroups = new HashMap<Long, Group>(100);
-
-  /* netcdf 4 stuff
-  private boolean isNetCDF4;
-  private Map<Integer, Dimension> dimTable = new HashMap<Integer, Dimension>();
-  private Map<String, Vatt> varTable = new HashMap<String, Vatt>(); */
-  //private boolean v3mode = false;
 
   private DataObject rootObject;
+  private Map<String, DataObject> hashDataObjects = new HashMap<String, DataObject>(100);
+  private List<DataObject> obsList = new ArrayList<DataObject>();
+
+  private Map<Long, Group> hashGroups = new HashMap<Long, Group>(100);
+
   private MemTracker memTracker;
 
-  void read(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile) throws IOException {
+  H5header(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile, H5iosp h5iosp) throws IOException {
     this.ncfile = ncfile;
     this.raf = myRaf;
+    this.h5iosp = h5iosp;
+
     actualSize = raf.length();
     memTracker = new MemTracker(actualSize);
 
@@ -433,6 +433,7 @@ class H5header {
         dataType = DataType.STRUCTURE;
 
       } else if (hdfType == 7) { // reference
+        byteOrder = RandomAccessFile.LITTLE_ENDIAN;
         dataType = DataType.LONG;
 
       } else if (hdfType == 8) { // enums
@@ -459,8 +460,8 @@ class H5header {
       }
     }
 
-    private DataType getNCtype(int type, int size) {
-      if ((type == 0) || (type == 4)) { // integer, bit field
+    private DataType getNCtype(int hdfType, int size) {
+      if ((hdfType == 0) || (hdfType == 4)) { // integer, bit field
         if (size == 1)
           return DataType.BYTE;
         else if (size == 2)
@@ -470,12 +471,12 @@ class H5header {
         else if (size == 8)
           return DataType.LONG;
         else {
-          debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + type + ") with size= " + size);
-          log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + type + ") with size= " + size);
+          debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
+          log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
           return null;
         }
 
-      } else if (type == 1) {
+      } else if (hdfType == 1) {
         if (size == 4)
           return DataType.FLOAT;
         else if (size == 8)
@@ -486,12 +487,15 @@ class H5header {
           return null;
         }
 
-      } else if (type == 3) {  // fixed length strings. String is used for Vlen type = 1
+      } else if (hdfType == 3) {  // fixed length strings. String is used for Vlen type = 1
         return DataType.CHAR;
 
+      } else if (hdfType == 7) { // reference
+        return DataType.LONG;
+        
       } else {
-        debugOut.println("WARNING not handling hdf type = " + type + " size= " + size);
-        log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf type = " + type + " size= " + size);
+        debugOut.println("WARNING not handling hdf type = " + hdfType + " size= " + size);
+        log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf type = " + hdfType + " size= " + size);
         return null;
       }
     }
@@ -529,26 +533,29 @@ class H5header {
 
 
     /**
-     * Get the Fill Value, if there is one.
-     *
+     * Get the Fill Value, return default if one was not set.
      * @return wrapped primitive (Byte, Short, Integer, Double, Float, Long), or null if none
      */
     Object getFillValue() {
+      return (fillValue == null) ? getFillValueDefault() : getFillValueNonDefault();
+    }
 
-      if (fillValue == null) {
-        if (dataType == DataType.BYTE) return N3iosp.NC_FILL_BYTE;
-        if (dataType == DataType.CHAR) return (byte) 0;
-        if (dataType == DataType.SHORT) return N3iosp.NC_FILL_SHORT;
-        if (dataType == DataType.INT) return N3iosp.NC_FILL_INT;
-        if (dataType == DataType.LONG) return N3iosp.NC_FILL_LONG;
-        if (dataType == DataType.FLOAT) return N3iosp.NC_FILL_FLOAT;
-        if (dataType == DataType.DOUBLE) return N3iosp.NC_FILL_DOUBLE;
-        return null;
-      }
+    Object getFillValueDefault() {
+      if (dataType == DataType.BYTE) return N3iosp.NC_FILL_BYTE;
+      if (dataType == DataType.CHAR) return (byte) 0;
+      if (dataType == DataType.SHORT) return N3iosp.NC_FILL_SHORT;
+      if (dataType == DataType.INT) return N3iosp.NC_FILL_INT;
+      if (dataType == DataType.LONG) return N3iosp.NC_FILL_LONG;
+      if (dataType == DataType.FLOAT) return N3iosp.NC_FILL_FLOAT;
+      if (dataType == DataType.DOUBLE) return N3iosp.NC_FILL_DOUBLE;
+      return null;
+    }
 
-      if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+    Object getFillValueNonDefault() {
+      if (fillValue == null) return null;
+
+      if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR))
         return fillValue[0];
-      }
 
       ByteBuffer bbuff = ByteBuffer.wrap(fillValue);
       if (byteOrder >= 0)
@@ -575,7 +582,7 @@ class H5header {
         return tbuff.get();
       }
 
-      throw new IllegalStateException();
+      return null;
     }
 
 
@@ -714,8 +721,6 @@ There is _no_ datatype information stored for these sort of selections currently
   // 2A "data object header" section IV.A (p 19)
   // A Group, a link or a Variable
 
-  private List<DataObject> obsList = new ArrayList<DataObject>();
-
   private class DataObject {
     Group parent;
     String name;
@@ -723,6 +728,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
     String displayName;
     List<Message> messages = new ArrayList<Message>();
+    List<Message> dimMessages = new ArrayList<Message>();
 
     byte version; // 1 or 2
     //short nmess;
@@ -737,10 +743,12 @@ There is _no_ datatype information stored for these sort of selections currently
 
     // or
     boolean isVariable;
+    boolean isCoordinateVariable;
     MessageDatatype mdt = null;
     MessageDataspace msd = null;
     MessageLayout msl = null;
     MessageFilter mfp = null;
+    String dimList;
 
     DataObject(Group parent, String name, long address) {
       this.parent = parent;
@@ -825,7 +833,6 @@ There is _no_ datatype information stored for these sort of selections currently
         }
 
         long sizeOfChunk = readVariableSizeFactor(flags & 3);
-
         if (debugDetail) debugOut.println(" sizeOfChunk=" + sizeOfChunk);
 
         long posMess = raf.getFilePointer();
@@ -837,7 +844,6 @@ There is _no_ datatype information stored for these sort of selections currently
       // look for group or a datatype/dataspace/layout message
       MessageGroup groupMessage = null;
       MessageGroupNew groupNewMessage = null;
-      MessageGroupInfo groupInfoMessage = null;
 
       for (Message mess : messages) {
         if (debugTracker) memTracker.addByLen("Message (" + displayName + ") " + mess.mtype, mess.start, mess.size + 8);
@@ -850,8 +856,6 @@ There is _no_ datatype information stored for these sort of selections currently
           msl = (MessageLayout) mess.messData;
         else if (mess.mtype == MessageType.Group)
           groupMessage = (MessageGroup) mess.messData;
-        else if (mess.mtype == MessageType.GroupInfo)
-          groupInfoMessage = (MessageGroupInfo) mess.messData;
         else if (mess.mtype == MessageType.GroupNew)
           groupNewMessage = (MessageGroupNew) mess.messData;
         else if (mess.mtype == MessageType.FilterPipeline)
@@ -874,16 +878,17 @@ There is _no_ datatype information stored for these sort of selections currently
         // read the group, and its contained data objects.
         group = new GroupOld(parent, name, groupMessage.btreeAddress, groupMessage.nameHeapAddress); // LOOK munge later
 
-      }  // if has a "groupNewmessage", then its a groupNew
+      }  // if has a "groupNewMessage", then its a groupNew
       else if (groupNewMessage != null) {
         // read the group, and its contained data objects.
-        group = new GroupNew(parent, name, groupNewMessage, groupInfoMessage);
+        group = new GroupNew(parent, name, groupNewMessage, messages);
       }
 
       // if it has a Datatype and a StorageLayout, then its a Variable
       else if ((mdt != null) && (msl != null)) {
         isVariable = true;
-      } else {
+
+      } else { // we dont know what it is
         debugOut.println("WARNING Unknown DataObject = " + displayName + " mdt = " + mdt + " msl  = " + msl);
         return;
       }
@@ -928,14 +933,15 @@ There is _no_ datatype information stored for these sort of selections currently
 
     private int readMessagesVersion2(long filePos, long maxBytes, boolean creationOrderPresent) throws IOException {
       if (debugContinueMessage)
-        debugOut.println(" readMessages start at =" + filePos + " maxBytes= " + maxBytes);
+        debugOut.println(" readMessages2 starts at =" + filePos + " maxBytes= " + maxBytes);
+
+      // maxBytes is number of bytes of messages to be read. however, a message is at least 4 bytes long, so
+      // we are done if we have read > maxBytes - 4. There appears to be an "off by one" possibility
+      maxBytes -= 3;
 
       int count = 0;
       int bytesRead = 0;
       while (bytesRead < maxBytes) {
-        /* LOOK: MessageContinue not correct ??
-        if (posMess >= actualSize)
-          break; */
 
         Message mess = new Message();
         //messages.add( mess);
@@ -943,21 +949,23 @@ There is _no_ datatype information stored for these sort of selections currently
         filePos += n;
         bytesRead += n;
         count++;
-        if (debugContinueMessage) debugOut.println("   mess size=" + n + " bytesRead=" + bytesRead);
+        if (debugContinueMessage) debugOut.println("   mess size=" + n + " bytesRead=" + bytesRead+ " maxBytes="+maxBytes);
 
         // if we hit a continuation, then we go into nested reading
         if (mess.mtype == MessageType.ObjectHeaderContinuation) {
           MessageContinue c = (MessageContinue) mess.messData;
-          if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation--- ");
           long continuationBlockFilePos = getFileOffset(c.offset);
+          if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation filePos= "+continuationBlockFilePos);
+
           raf.seek(continuationBlockFilePos);
           String sig = readStringFixedLength(4);
-          if (!sig.equals("OCHK")) {
+          if (!sig.equals("OCHK"))
             throw new IllegalStateException(" ObjectHeaderContinuation Missing signature");
-          }
 
           count += readMessagesVersion2(continuationBlockFilePos + 4, (int) c.length - 8, creationOrderPresent);
           if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation return --- ");
+          if (debugContinueMessage) debugOut.println("   continuationMessages =" + count + " bytesRead=" + bytesRead+ " maxBytes="+maxBytes);
+
         } else if (mess.mtype != MessageType.NIL) {
           messages.add(mess);
         }
@@ -1016,6 +1024,7 @@ There is _no_ datatype information stored for these sort of selections currently
     public final static MessageType Group = new MessageType("Group", 17);
     public final static MessageType LastModified = new MessageType("LastModified", 18);
     public final static MessageType AttributeInfo = new MessageType("AttributeInfo", 21);
+    public final static MessageType ObjectReferenceCount = new MessageType("ObjectReferenceCount", 22);
 
     private String name;
     private int num;
@@ -1065,7 +1074,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
   }
 
-  // Header Message: Level 2A (p 22)
+  // Header Message: Level 2A1 and 2A2
   private class Message implements Comparable {
     long start;
     byte flags;
@@ -1075,6 +1084,15 @@ There is _no_ datatype information stored for these sort of selections currently
 
     short creationOrder = -1;
 
+    /**
+     * Read a message
+     *
+     * @param filePos at this filePos
+     * @param version header version
+     * @param creationOrderPresent true if bit2 of data object header flags is set
+     * @return number of bytes read
+     * @throws IOException of read error
+     */
     int read(long filePos, int version, boolean creationOrderPresent) throws IOException {
       this.start = filePos;
       raf.seek(filePos);
@@ -1104,11 +1122,12 @@ There is _no_ datatype information stored for these sort of selections currently
       }
       if (debugPos) debugOut.println("  --> Message Data starts at=" + raf.getFilePointer());
 
-      if ((flags & 2) != 0) { // shared
+      /* if ((flags & 2) != 0) { // shared
         debugOut.println("****SHARED MESSAGE type = " + mtype + " raw = " + type);
         throw new UnsupportedOperationException("****SHARED MESSAGE type = " + mtype + " raw = " + type);
 
-      } else if (mtype == MessageType.NIL) { // 0
+      } else  // */
+      if (mtype == MessageType.NIL) { // 0
         // dont do nuttin
 
       } else if (mtype == MessageType.SimpleDataspace) { // 1
@@ -1188,6 +1207,11 @@ There is _no_ datatype information stored for these sort of selections currently
 
       } else if (mtype == MessageType.AttributeInfo) { // 21
         MessageAttributeInfo data = new MessageAttributeInfo();
+        data.read();
+        messData = data;
+
+      } else if (mtype == MessageType.ObjectReferenceCount) { // 21
+        MessageObjectReferenceCount data = new MessageObjectReferenceCount();
         data.read();
         messData = data;
 
@@ -1369,17 +1393,24 @@ There is _no_ datatype information stored for these sort of selections currently
 
   // Message Type 6 "Link" (version 2)
   private class MessageLink {
-    byte version, flags, linkType, encoding;
+    byte version, flags, encoding;
+    byte linkType; // 0=hard, 1=soft, 64 = external
     long creationOrder;
     String linkName, link;
+    long linkAddress;
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
       sbuff.append("   MessageLink ");
-      sbuff.append(" name=" + linkName + " link=" + link);
-      if ((flags & 2) != 0)
-        sbuff.append(" creationOrder=" + creationOrder);
+      sbuff.append(" name=" + linkName + " type=" + linkType);
+      if (linkType == 0)
+        sbuff.append(" linkAddress=" + linkAddress);
+      else
+        sbuff.append(" link=" + link);
+
       if ((flags & 4) != 0)
+        sbuff.append(" creationOrder=" + creationOrder);
+      if ((flags & 0x10) != 0)
         sbuff.append(" encoding=" + encoding);
       return sbuff.toString();
     }
@@ -1388,33 +1419,41 @@ There is _no_ datatype information stored for these sort of selections currently
       if (debugPos) debugOut.println("   *MessageLink start pos= " + raf.getFilePointer());
       version = raf.readByte();
       flags = raf.readByte();
-      linkType = raf.readByte();
 
-      if ((flags & 2) != 0) {
+      if ((flags & 8) != 0)
+        linkType = raf.readByte();
+
+      if ((flags & 4) != 0)
         creationOrder = raf.readLong();
-      }
 
-      if ((flags & 4) != 0) {
+      if ((flags & 0x10) != 0)
         encoding = raf.readByte();
-      }
 
       int linkNameLength = (int) readVariableSizeFactor(flags & 3);
       byte[] b = new byte[linkNameLength];
       raf.read(b);
       linkName = new String(b);
 
-      if (linkType == 1) {
+      if (linkType == 0) {
+        linkAddress = readOffset();
+
+      } else if (linkType == 1) {
         short len = raf.readShort();
         b = new byte[len];
         raf.read(b);
         link = new String(b);
+
+      } else if (linkType == 64) {
+        short len = raf.readShort();
+        b = new byte[len];
+        raf.read(b);
+        link = new String(b); // actually 2 strings - see docs
       }
 
       if (debug1)
         debugOut.println("   MessageLink version= " + version + " flags = " + Integer.toBinaryString(flags) + this);
     }
   }
-
 
   // Message Type 3 (p 26) : "Datatype"
   private class MessageDatatype {
@@ -1603,23 +1642,40 @@ There is _no_ datatype information stored for these sort of selections currently
     }
   }
 
-  // Message Type 5 ( p 39) "Fill Value New" : fill value is stored in the message, with extra metadata
+  // Message Type 5 "Fill Value New" : fill value is stored in the message, with extra metadata
   private class MessageFillValue {
-    byte version, spaceAllocateTime, fillWriteTime, fillDefined;
+    byte version; // 1,2,3
+    byte spaceAllocateTime; // 1= early, 2=late, 3=incremental
+    byte fillWriteTime;
     int size;
     byte[] value;
+    boolean hasFillValue = false;
+
+    byte flags;
 
     void read() throws IOException {
       version = raf.readByte();
-      spaceAllocateTime = raf.readByte();
-      fillWriteTime = raf.readByte();
-      fillDefined = raf.readByte();
 
-      if ((version <= 1) || (fillDefined != 0)) {
+      if (version < 3) {
+        spaceAllocateTime = raf.readByte();
+        fillWriteTime = raf.readByte();
+        hasFillValue = (version <= 1) || raf.readByte() != 0;
+
+      } else {
+        flags = raf.readByte();
+        spaceAllocateTime = (byte) (flags & 3);
+        fillWriteTime = (byte) ((flags >> 2) & 3);
+        hasFillValue = (flags & 32) != 0;
+      }
+
+      if (hasFillValue) {
         size = raf.readInt();
         if (size > 0) {
           value = new byte[size];
           raf.read(value);
+          hasFillValue = true;
+        } else {
+          hasFillValue = false;
         }
       }
 
@@ -1628,7 +1684,8 @@ There is _no_ datatype information stored for these sort of selections currently
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append("   FillValue version= ").append(version).append(" spaceAllocateTime = ").append(spaceAllocateTime).append(" fillWriteTime=").append(fillWriteTime).append(" fillDefined= ").append(fillDefined).append(" size = ").append(size).append(" value=");
+      sbuff.append("   FillValue version= ").append(version).append(" spaceAllocateTime = ").append(spaceAllocateTime).append(" fillWriteTime=").append(fillWriteTime).append(" hasFillValue= ").append(hasFillValue);
+      sbuff.append("\n size = ").append(size).append(" value=");
       for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
       return sbuff.toString();
     }
@@ -1657,12 +1714,17 @@ There is _no_ datatype information stored for these sort of selections currently
         default:
           sbuff.append("unkown type= ").append(type);
       }
-      sbuff.append(" storageSize = (");
-      for (int i = 0; i < chunkSize.length; i++) {
-        if (i > 0) sbuff.append(",");
-        sbuff.append(chunkSize[i]);
+
+      if (chunkSize != null) {
+        sbuff.append(" storageSize = (");
+        for (int i = 0; i < chunkSize.length; i++) {
+          if (i > 0) sbuff.append(",");
+          sbuff.append(chunkSize[i]);
+        }
+        sbuff.append(")");
       }
-      sbuff.append(") dataAddress=").append(dataAddress);
+
+      sbuff.append(" dataAddress=").append(dataAddress);
       return sbuff.toString();
     }
 
@@ -1935,6 +1997,17 @@ There is _no_ datatype information stored for these sort of selections currently
     }
   }
 
+  // Message Type 22/0x11 Object Reference COunt
+  private class MessageObjectReferenceCount {
+    int refCount;
+
+    void read() throws IOException {
+      int version = raf.readByte();
+      refCount = raf.readInt();
+      if (debug1) debugOut.println("   ObjectReferenceCount=" + refCount);
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////
   // Groups
 
@@ -1964,41 +2037,65 @@ There is _no_ datatype information stored for these sort of selections currently
   private class GroupNew extends Group {
     private FractalHeap fractalHeap;
     private BTree2 btree;
-    private MessageGroupNew groupNewMessage;
 
-    public GroupNew(Group parent, String name, MessageGroupNew groupNewMessage, MessageGroupInfo groupInfoMessage) throws IOException {
+    public GroupNew(Group parent, String name, MessageGroupNew groupNewMessage, List<Message> messages) throws IOException {
       super(parent, name);
-      this.groupNewMessage = groupNewMessage;
-
       if (debug1) debugOut.println("\n--> GroupNew read <" + dname + ">");
-      if (groupNewMessage.fractalHeapAddress > 0)
-        this.fractalHeap = new FractalHeap(this, groupNewMessage.fractalHeapAddress);
-      if (groupNewMessage.v2BtreeAddress > 0)
-        this.btree = new BTree2(dname, groupNewMessage.v2BtreeAddress);
 
-      for (BTree2.Entry2 e : this.btree.entryList) {
-        BTree2.Record5 r5 = (BTree2.Record5) e.record;
-        this.fractalHeap.get(r5.heapId);
+      if (groupNewMessage.fractalHeapAddress >= 0) {
+        this.fractalHeap = new FractalHeap(this, groupNewMessage.fractalHeapAddress);
+
+        long btreeAddress = (groupNewMessage.v2BtreeAddressCreationOrder >= 0) ?
+                groupNewMessage.v2BtreeAddressCreationOrder : groupNewMessage.v2BtreeAddress;
+        if (btreeAddress < 0) throw new IllegalStateException("no valid btree for GroupNew with Fractal Heap");
+
+        // read in btree and all entries (!)
+        this.btree = new BTree2(dname, btreeAddress);
+        for (BTree2.Entry2 e : this.btree.entryList) {
+          byte[] heapId = null;
+          switch (btree.btreeType) {
+            case 5: heapId = ((BTree2.Record5) e.record).heapId; break;
+            case 6: heapId = ((BTree2.Record6) e.record).heapId; break;
+            default: continue;
+          }
+          MessageLink linkMessage = fractalHeap.getLink(heapId);
+          DataObject dobj = new DataObject(this, linkMessage.linkName, linkMessage.linkAddress);
+          dobj.read();
+          nestedObjects.add(dobj);
+        }
+
+      } else {
+        // look for link messages
+        for (Message mess : messages) {
+          if (mess.mtype == MessageType.Link) {
+            MessageLink linkMessage = (MessageLink) mess.messData;
+            if (linkMessage.linkType == 0) {
+              DataObject dobj = new DataObject(this, linkMessage.linkName, linkMessage.linkAddress);
+              dobj.read();
+              nestedObjects.add(dobj);
+            }
+          }
+        }
       }
 
       /* now read all the entries in the btree
-      for (SymbolTableEntry s : btree.getSymbolTableEntries()) {
-        String sname = nameHeap.getString((int) s.getNameOffset());
-        if (debugSymbolTable) debugOut.println("\n   Symbol name=" + sname);
+     for (SymbolTableEntry s : btree.getSymbolTableEntries()) {
+       String sname = nameHeap.getString((int) s.getNameOffset());
+       if (debugSymbolTable) debugOut.println("\n   Symbol name=" + sname);
 
-        DataObject o;
-        if (s.cacheType == 2) {
-          String linkName = nameHeap.getString(s.linkOffset);
-          if (debugSymbolTable) debugOut.println("   Symbolic link name=" + linkName);
-          o = new DataObject(this, sname, linkName);
+       DataObject o;
+       if (s.cacheType == 2) {
+         String linkName = nameHeap.getString(s.linkOffset);
+         if (debugSymbolTable) debugOut.println("   Symbolic link name=" + linkName);
+         o = new DataObject(this, sname, linkName);
 
-        } else {
-          o = new DataObject(this, sname, s.getObjectAddress());
-          o.read();
-        }
-        nestedObjects.add(o);
-        hashDataObjects.put(o.getName(), o); // to look up symbolic links
-      } */
+       } else {
+         o = new DataObject(this, sname, s.getObjectAddress());
+         o.read();
+       }
+       nestedObjects.add(o);
+       hashDataObjects.put(o.getName(), o); // to look up symbolic links
+     } */
       if (debug1) debugOut.println("<-- end Group read <" + dname + ">");
     }
 
@@ -2310,7 +2407,7 @@ There is _no_ datatype information stored for these sort of selections currently
           throw new IllegalStateException();
 
         if (debugBtree2)
-          debugOut.println("InternalNode version=" + version + " type=" + nodeType + " nrecords=" + nrecords);
+          debugOut.println("   InternalNode version=" + version + " type=" + nodeType + " nrecords=" + nrecords);
 
         entries = new Entry2[nrecords];
         for (int i = 0; i < nrecords; i++) {
@@ -2319,12 +2416,13 @@ There is _no_ datatype information stored for these sort of selections currently
         }
 
         int maxNumRecords = nodeSize / recordSize; // LOOK ?? guessing
+        int maxNumRecordsPlusDesc = nodeSize / recordSize; // LOOK ?? guessing
         for (int i = 0; i < nrecords; i++) {
           Entry2 e = entries[i];
           e.childAddress = readOffset();
-          e.nrecords = readVariableSizeMax(maxNumRecords);
+          e.nrecords = readVariableSize(1); // readVariableSizeMax(maxNumRecords);
           if (depth > 1)
-            e.totNrecords = readVariableSizeMax(maxNumRecords);
+            e.totNrecords = readVariableSize(2); // readVariableSizeMax(maxNumRecordsPlusDesc);
 
           if (debugBtree2)
             debugOut.println(" entry childAddress=" + e.childAddress + " nrecords=" + e.nrecords + " totNrecords=" + e.totNrecords);
@@ -2470,11 +2568,11 @@ There is _no_ datatype information stored for these sort of selections currently
 
     class Record6 {
       long creationOrder;
-      byte[] id = new byte[7];
+      byte[] heapId = new byte[7];
 
       Record6() throws IOException {
         creationOrder = raf.readLong();
-        raf.read(id);
+        raf.read(heapId);
       }
     }
 
@@ -3059,13 +3157,13 @@ There is _no_ datatype information stored for these sort of selections currently
       int hsize = 8 + 2 * sizeLengths + sizeOffsets;
       if (debugTracker) memTracker.add("Group FractalHeap (" + group.dname + ")", address, pos);
 
-      doublingTable = new DoublingTable(tableWidth, startingBlockSize, managedSpace, maxDirectBlockSize);
+      doublingTable = new DoublingTable(tableWidth, startingBlockSize, allocatedManagedSpace, maxDirectBlockSize);
 
       // data
       if (currentNumRows == 0) {
         DataBlock dblock = new DataBlock();
         doublingTable.blockList.add(dblock);
-        readDirectBlock( getFileOffset(rootBlockAddress), address, dblock);
+        readDirectBlock(getFileOffset(rootBlockAddress), address, dblock);
 
       } else {
         //int nrows = SpecialMathFunction.log2(iblock_size - SpecialMathFunction.log2(startingBlockSize*tableWidth))+1;
@@ -3083,20 +3181,26 @@ There is _no_ datatype information stored for these sort of selections currently
     }
 
 
-    void get(byte[] heapId) throws IOException {
+    MessageLink getLink(byte[] heapId) throws IOException {
       int type = (heapId[0] & 0x30) >> 4;
       int n = maxHeapSize / 8;
       int m = getNumBytesFromMax(maxDirectBlockSize - 1);
 
       int offset = makeIntFromBytes(heapId, 1, n);
       int size = makeIntFromBytes(heapId, 1 + n, m);
-      System.out.println("Heap id =" + showBytes(heapId) + " type = " + type + " n= " + n + " m= " + m + " offset= " + offset + " size= " + size);
+      //System.out.println("Heap id =" + showBytes(heapId) + " type = " + type + " n= " + n + " m= " + m + " offset= " + offset + " size= " + size);
 
       long pos = doublingTable.getPos(offset);
-      byte[] data = new byte[size];
+      /* byte[] data = new byte[size];
       raf.seek(pos);
       raf.read(data);
-      System.out.println(" heap ID vals = " + new String(data) + " == " + showBytes(data));
+      System.out.println(" heap ID pos="+pos+" vals = " + new String(data) + " == " + showBytes(data));  */
+
+      raf.seek(pos);
+      MessageLink lm = new MessageLink();
+      lm.read();
+      if (debugBtree2) System.out.println("    linkMessage="+lm);
+      return lm;
     }
 
     private class DoublingTable {
@@ -3147,11 +3251,14 @@ There is _no_ datatype information stored for these sort of selections currently
       }
 
       long getPos(long offset) {
+        int block = 0;
         for (DataBlock db : blockList) {
           if ((offset >= db.offset) && (offset < db.offset + db.size)) {
             long localOffset = offset - db.offset;
+            //System.out.println("   heap ID find block= "+block+" db.dataPos " + db.dataPos+" localOffset= "+localOffset);
             return db.dataPos + localOffset;
           }
+          block++;
         }
         throw new IllegalStateException("offset=" + offset);
       }
@@ -3204,16 +3311,20 @@ There is _no_ datatype information stored for these sort of selections currently
           directChild.filterMask = raf.readInt();
         }
         if (debugDetail || debugFractalHeap)
-          debugOut.println("  DirectChild address= " + directChild.address);
+          debugOut.println("  DirectChild "+i+" address= " + directChild.address);
 
-        doublingTable.blockList.add(directChild);
+        if (directChild.address >= 0)
+          doublingTable.blockList.add(directChild);
       }
 
       // child indirect blocks LOOK not sure if order is correct, this is depth first...
       int nIndirectChildren = doublingTable.tableWidth * doublingTable.nIndirectRows;
       for (int i = 0; i < nIndirectChildren; i++) {
         long childIndirectAddress = readOffset();
-        readIndirectBlock(childIndirectAddress, heapAddress, hasFilter);
+        if (debugDetail || debugFractalHeap)
+          debugOut.println("  InDirectChild "+i+" address= " + childIndirectAddress);
+        if (childIndirectAddress >= 0)
+          readIndirectBlock(childIndirectAddress, heapAddress, hasFilter);
       }
 
     }
@@ -3236,7 +3347,7 @@ There is _no_ datatype information stored for these sort of selections currently
       int nbytes = maxHeapSize / 8;
       if (maxHeapSize % 8 != 0) nbytes++;
       dblock.offset = readVariableSize(nbytes);
-      dblock.dataPos = raf.getFilePointer();
+      dblock.dataPos = pos; // raf.getFilePointer();
 
       if (debugDetail || debugFractalHeap)
         debugOut.println("  DirectBlock offset= " + dblock.offset + " dataPos = " + dblock.dataPos);
@@ -3252,7 +3363,6 @@ There is _no_ datatype information stored for these sort of selections currently
     if (h5group == null) return;
 
     // create group attributes
-    List<Message> messages = dataObject.messages;
     for (Message mess : dataObject.messages) {
       if (mess.mtype == MessageType.Attribute) {
         MessageAttribute matt = (MessageAttribute) mess.messData;
@@ -3260,42 +3370,83 @@ There is _no_ datatype information stored for these sort of selections currently
       }
     }
 
-    addSystemAttributes(messages, ncGroup.getAttributes());
+    // add system attributes
+    processSystemAttributes(dataObject.messages, ncGroup.getAttributes());
 
-    // nested objects
+    // look for dimension scales
     List<DataObject> nestedObjects = h5group.nestedObjects;
     for (DataObject ndo : nestedObjects) {
+      if (ndo.isVariable)
+        makeDimensionScales( ncGroup, ndo);
+    }
+
+    // nested objects - groups and variables
+    for (DataObject ndo : nestedObjects) {
+
       if (ndo.group != null) {
         ucar.nc2.Group nestedGroup = new ucar.nc2.Group(ncfile, ncGroup, NetcdfFile.createValidNetcdfObjectName(ndo.group.name));
         ncGroup.addGroup(nestedGroup);
         if (debug1) debugOut.println("--made Group " + nestedGroup.getName() + " add to " + ncGroup.getName());
-
         makeNetcdfGroup(nestedGroup, ndo);
 
       } else {
 
         if (ndo.isVariable) {
-
-          if (debugReference && ndo.mdt.type == 7)
-            debugOut.println(ndo);
+          if (debugReference && ndo.mdt.type == 7) debugOut.println(ndo);
 
           Variable v = makeVariable(ndo);
-
           if ((v != null) && (v.getDataType() != null)) {
             v.setParentGroup(ncGroup);
             ncGroup.addVariable(v);
 
             Vinfo vinfo = (Vinfo) v.getSPobject();
-
             if (debugV) debugOut.println("  made Variable " + v.getName() + "  vinfo= " + vinfo + "\n" + v);
           }
         } else if (warnings) {
-          debugOut.println("WARN:  DataObject ndo " + ndo + " not a Group of variable");
+          debugOut.println("WARN:  DataObject ndo " + ndo + " not a Group or a Variable");
         }
 
       }
     } // loop over nested objects
 
+  }
+
+  private void makeDimensionScales(ucar.nc2.Group g, DataObject ndo) throws IOException {
+    Iterator<Message> iter = ndo.messages.iterator();
+    while (iter.hasNext()) {
+      Message mess = iter.next();
+      if (mess.mtype == MessageType.Attribute) {
+        MessageAttribute matt = (MessageAttribute) mess.messData;
+
+        if (matt.name.equals("CLASS")) {
+          int[] dims = ndo.msd.dimLength;
+          if (dims.length != 1)
+            throw new IllegalStateException();
+          boolean isUnlimited = ndo.msd.maxLength[0] == -1;
+          if (debug1) debugOut.println("makeDimension " + ndo.name + " len= " + dims[0]);
+          g.addDimension( new Dimension(ndo.name, dims[0], true, isUnlimited, false));
+          ndo.isCoordinateVariable = true;
+          iter.remove();
+        }
+        if (matt.name.equals("NAME")) iter.remove();
+        if (matt.name.equals("REFERENCE_LIST")) iter.remove();
+        if (matt.name.equals("DIMENSION_LIST")) {
+          StringBuffer sbuff = new StringBuffer();
+          Attribute att = makeAttribute(ndo.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
+          Array attData = att.getValues();
+          IndexIterator ii = attData.getIndexIterator();
+          while (ii.hasNext()) {
+            long id = ii.getLongNext();
+            DataObject dataObject = findDataObject(id);
+            if (dataObject == null)
+              throw new IllegalStateException();
+            sbuff.append(dataObject.name+" ");
+          }
+          ndo.dimList = sbuff.toString();
+          iter.remove();
+        }
+      }
+    }
   }
 
   /**
@@ -3309,28 +3460,23 @@ There is _no_ datatype information stored for these sort of selections currently
   private void makeAttributes(String forWho, MessageAttribute matt, List<Attribute> attList) throws IOException {
     MessageDatatype mdt = matt.mdt;
 
-    /* if (isNetCDF4 && matt.name.startsWith("_ncdim_"))
-      makeNC4Dimension(forWho, matt, mdt);
-
-    else if (isNetCDF4 && matt.name.startsWith("_ncvar_"))
-      makeNC4Variable(forWho, matt, mdt);
-
-    else */
-
-    if (mdt.type == 6) { // structure : make seperate attribute for each member
+    /* if (mdt.type == 6) { // structure : make seperate attribute for each member
       for (StructureMember m : mdt.members) {
-        //String attName = matt.name + "." + m.name;
+        String attName = matt.name + "." + m.name;
         //if ((prefix != null) && (prefix.length() > 0)) attName = prefix + "." + attName;
-        String attName = matt.name;
-        if (mdt.type != 6) // LOOK nested compound attributes
-          //makeAttributes( forWho, MessageAttribute matt, attList);
-          //else
-          attList.add(makeAttribute(forWho, attName, m.mdt, matt.mds, matt.dataPos + m.offset));
+        //String attName = matt.name;
+
+        /* if (m.mdt.type == 6) // LOOK nested compound attributes
+            makeAttributes( forWho, m.matt, attList);
+          else
+            attList.add(makeAttribute(forWho, attName, m.mdt, matt.mds, matt.dataPos + m.offset));
       }
-    } else {
+    } else { */
+
+    if (mdt.type != 6) {
       // String attName = (prefix == null) || prefix.equals("") ? matt.name : prefix + "." + matt.name;
-      String attName = matt.name;
-      Attribute att = makeAttribute(forWho, attName, matt.mdt, matt.mds, matt.dataPos);
+      //String attName = matt.name;
+      Attribute att = makeAttribute(forWho, matt.name, matt.mdt, matt.mds, matt.dataPos);
       if (att != null)
         attList.add(att);
     }
@@ -3383,9 +3529,10 @@ There is _no_ datatype information stored for these sort of selections currently
 
   private Attribute makeAttribute(String forWho, String attName, MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
     attName = NetcdfFile.createValidNetcdfObjectName(attName); // look cannot search by name
+
     Variable v = new Variable(ncfile, null, null, attName); // LOOK null group
     Vinfo vinfo = new Vinfo(mdt, dataPos);
-    if (!makeVariableShapeAndType(v, mdt, mds, vinfo)) {
+    if (!makeVariableShapeAndType(v, mdt, mds, vinfo, null)) {
       debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + vinfo.hdfType);
       return null;
     }
@@ -3395,10 +3542,15 @@ There is _no_ datatype information stored for these sort of selections currently
     v.setCaching(false);
     if (debug1) debugOut.println("makeAttribute " + attName + " for " + forWho + "; vinfo= " + vinfo);
 
-    //Object data = H5iosp.readData( Variable v2, Indexer index, DataType dataType, int[] shape);
+    try {
+      ucar.ma2.Array data = h5iosp.readData( v, v.getShapeAsSection());
+      //ucar.ma2.Array data = v.read();
+      return new Attribute(attName, data);
 
-    ucar.ma2.Array data = v.read();
-    return new Attribute(attName, data);
+    } catch (InvalidRangeException e) {
+      log.error("H5header.makeAttribute", e);
+      return null;
+    }
   }
 
   /*
@@ -3433,7 +3585,7 @@ There is _no_ datatype information stored for these sort of selections currently
     for (Message mess : ndo.messages) {
       if (mess.mtype == MessageType.FillValue) {
         MessageFillValue fvm = (MessageFillValue) mess.messData;
-        if (fvm.size > 0)
+        if (fvm.hasFillValue)
           vinfo.fillValue = fvm.value;
 
       } else if (mess.mtype == MessageType.FillValueOld) {
@@ -3442,9 +3594,10 @@ There is _no_ datatype information stored for these sort of selections currently
           vinfo.fillValue = fvm.value;
       }
 
-      if (vinfo.fillValue != null) {
-        Object fillValue = vinfo.getFillValue();
-        if (fillValue instanceof Number)
+      Object fillValue = vinfo.getFillValueNonDefault();
+      if (fillValue != null) {
+        Object defFillValue = vinfo.getFillValueDefault();
+        if (!fillValue.equals(defFillValue))
           fillAttribute = new Attribute("_FillValue", (Number) fillValue);
       }
     }
@@ -3464,14 +3617,14 @@ There is _no_ datatype information stored for these sort of selections currently
     if (ndo.mdt.type == 6) { // Compound
       String vname = NetcdfFile.createValidNetcdfObjectName(ndo.name); // look cannot search by name
       v = new Structure(ncfile, null, null, vname); // LOOK null group
-      makeVariableShapeAndType(v, ndo.mdt, ndo.msd, vinfo);
+      if (!makeVariableShapeAndType(v, ndo.mdt, ndo.msd, vinfo, ndo.dimList)) return null;
       addMembersToStructure((Structure) v, ndo.mdt);
       v.setElementSize(ndo.mdt.byteSize);
 
     } else {
       String vname = NetcdfFile.createValidNetcdfObjectName(ndo.name); // look cannot search by name
       v = new Variable(ncfile, null, null, vname);  // LOOK null group
-      makeVariableShapeAndType(v, ndo.mdt, ndo.msd, vinfo);
+      if (!makeVariableShapeAndType(v, ndo.mdt, ndo.msd, vinfo, ndo.dimList)) return null;
     }
 
     // special case of variable length strings
@@ -3487,7 +3640,7 @@ There is _no_ datatype information stored for these sort of selections currently
         makeAttributes(ndo.name, matt, v.getAttributes());
       }
     }
-    addSystemAttributes(ndo.messages, v.getAttributes());
+    processSystemAttributes(ndo.messages, v.getAttributes());
     if (fillAttribute != null)
       v.addAttribute(fillAttribute);
 
@@ -3553,14 +3706,14 @@ There is _no_ datatype information stored for these sort of selections currently
     if (mdt.type == 6) {
       String vname = NetcdfFile.createValidNetcdfObjectName(name); // look cannot search by name
       v = new Structure(ncfile, null, null, vname); // LOOK null group
-      makeVariableShapeAndType(v, mdt, null, vinfo);
+      makeVariableShapeAndType(v, mdt, null, vinfo, null);
       addMembersToStructure((Structure) v, mdt);
       v.setElementSize(mdt.byteSize);
 
     } else {
       String vname = NetcdfFile.createValidNetcdfObjectName(name); // look cannot search by name
       v = new Variable(ncfile, null, null, vname);  // LOOK null group
-      makeVariableShapeAndType(v, mdt, null, vinfo);
+      makeVariableShapeAndType(v, mdt, null, vinfo, null);
     }
 
     // special case of variable length strings
@@ -3587,12 +3740,13 @@ There is _no_ datatype information stored for these sort of selections currently
     return hdfDateParser;
   }
 
-  private void addSystemAttributes(List<Message> messages, List<Attribute> attributes) {
+  private void processSystemAttributes(List<Message> messages, List<Attribute> attributes) {
     for (Message mess : messages) {
       if (mess.mtype == MessageType.LastModified) {
         MessageLastModified m = (MessageLastModified) mess.messData;
         Date d = new Date((long) m.secs * 1000);
         attributes.add(new Attribute("_LastModified", formatter.toDateTimeStringISO(d)));
+
       } else if (mess.mtype == MessageType.LastModifiedOld) {
         MessageLastModifiedOld m = (MessageLastModifiedOld) mess.messData;
         try {
@@ -3603,6 +3757,7 @@ There is _no_ datatype information stored for these sort of selections currently
         catch (ParseException ex) {
           debugOut.println("ERROR parsing date from MessageLastModifiedOld = " + m.datemod);
         }
+
       } else if (mess.mtype == MessageType.Comment) {
         MessageComment m = (MessageComment) mess.messData;
         attributes.add(new Attribute("_Description", NetcdfFile.createValidNetcdfObjectName(m.name)));
@@ -3621,7 +3776,7 @@ There is _no_ datatype information stored for these sort of selections currently
     }
   }
 
-  private boolean makeVariableShapeAndType(Variable v, MessageDatatype mdt, MessageDataspace msd, Vinfo vinfo) {
+  private boolean makeVariableShapeAndType(Variable v, MessageDatatype mdt, MessageDataspace msd, Vinfo vinfo, String dims) {
 
     int[] dim = (msd != null) ? msd.dimLength : new int[0];
     if (mdt.type == 10) {
@@ -3635,8 +3790,10 @@ There is _no_ datatype information stored for these sort of selections currently
     }
 
     try {
-      // LOOK only for attributes ??
-      if (mdt.type == 3) { // fixed length string - DataType.CHAR, add string length
+      if (dims != null) {
+        v.setDimensions( dims);
+
+      } else if (mdt.type == 3) { // fixed length string - DataType.CHAR, add string length
 
         if (dim == null) // scalar string member variable
           v.setDimensionsAnonymous(new int[]{mdt.byteSize});
@@ -3660,7 +3817,9 @@ There is _no_ datatype information stored for these sort of selections currently
         v.setDimensionsAnonymous(dim);
       }
     } catch (InvalidRangeException ee) {
-      log.error("Cant happen " + ee);
+      log.error(ee.getMessage());
+      debugOut.println("ERROR: makeVariableShapeAndType " + ee.getMessage());
+      return false;
     }
 
     DataType dt = vinfo.getNCDataType();

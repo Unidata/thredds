@@ -273,6 +273,59 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
     return ((UnidataStationImpl) s).getObservations();
   }
 
+  public void checkLinks(StringBuffer sbuff) throws IOException {
+    int countErrs = 0;
+
+    if (isBackwardLinkedList) {
+      Array lastArray = lastVar.read();
+      Array prevArray = prevVar.read();
+      Array stnArray = stationIndexVar.read();
+
+      Index prevIndex = prevArray.getIndex();
+      Index stnIndex = stnArray.getIndex();
+
+      int stnIdx = 0;
+      IndexIterator stnIter = lastArray.getIndexIterator();
+      while (stnIter.hasNext()) {
+        Set<Integer> records = new HashSet<Integer>(500);
+        // for each station, follow the links
+        int recNo = stnIter.getIntNext();
+        System.out.print("Station "+stnIdx);
+        while (recNo >= 0) {
+          System.out.print(" "+recNo);
+          records.add(recNo);
+          int stnFromRecord = stnArray.getInt( stnIndex.set(recNo));
+          if (stnFromRecord != stnIdx) {
+            sbuff.append("recno "+recNo+" has bad station index\n");
+            countErrs++;
+            if (countErrs > 10) return;
+          }
+          // get next one
+          recNo = prevArray.getInt( prevIndex.set(recNo));
+          if (records.contains(recNo)) {
+            sbuff.append("stn "+stnIdx+" has circular links\n");
+            countErrs++;
+            if (countErrs > 10) return;
+            break;
+          }
+        }
+        System.out.println();
+        stnIdx++;
+      }
+    }
+    sbuff.append("done");
+  }
+
+  public static void main(String args[]) throws IOException {
+    String filename = "C:/data/199707010200.CHRTOUT_DOMAIN2";
+    UnidataStationObsDataset ods = new UnidataStationObsDataset( NetcdfDataset.openDataset(filename));
+    StringBuffer sbuff = new StringBuffer(50 * 1000);
+    ods.checkLinks(sbuff);
+    System.out.println("\n\n"+sbuff.toString());
+  }
+
+  ////////////////////////////////////////////////////////
+
   private class UnidataStationImpl extends StationImpl {
     private int firstRecord;
     private Variable next;
@@ -306,7 +359,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
             nextRecord = sdata.getScalarInt(next.getName());
           }
           double obsTime = getTime(timeVar, sdata);
-          double nomTime = getTime(timeNominalVar, sdata);
+          double nomTime = (timeNominalVar == null) ? obsTime : getTime(timeNominalVar, sdata);
 
           obs.add(recordHelper.new RecordStationObs(this, obsTime, nomTime, recno));
           recno = nextRecord;
@@ -413,7 +466,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       }
 
       double obsTime = getTime(timeVar, sdata);
-      double nomTime = getTime(timeNominalVar, sdata);
+      double nomTime = (timeNominalVar == null) ? obsTime : getTime(timeNominalVar, sdata);
 
       if (storeData)
         return recordHelper.new RecordStationObs(station, obsTime, nomTime, sdata);

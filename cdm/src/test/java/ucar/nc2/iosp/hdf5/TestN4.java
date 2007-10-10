@@ -18,15 +18,9 @@ public class TestN4 extends TestCase {
     super(name);
   }
 
-  public void testReadHdf5() throws IOException {
-    NetcdfFile ncfile = TestNC2.open( TestAll.upcShareTestDataDir + "hdf5/support/bool.h5");
-    System.out.println( "**** testReadNetcdf4 done "+ncfile);
-    ncfile.close();
-  }
-
   public void testReadNetcdf4() throws IOException {
-    //String filename = TestAll.upcShareTestDataDir + "netcdf4/nc4_pres_temp_4D.nc";
-    String filename = "C:/data/netcdf4/groups.nc";
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/btree2 H5header/filePos H5header/symbolTable"));
+    String filename = "C:/data/netcdf4/tst_pres_temp_4D_netcdf4.nc";
     NetcdfFile ncfile = TestNC2.open( filename);
     System.out.println( "\n**** testReadNetcdf4 done\n "+ncfile);
     ncfile.close();

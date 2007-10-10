@@ -38,7 +38,6 @@ public class Attribute {
   protected DataType dataType;
   protected int nelems;
   protected Array values;
-  protected Index ima;
 
   /**
    * Get the name of this Attribute.
@@ -115,7 +114,7 @@ public class Attribute {
   public String getStringValue(int index) {
     if (!isString() || (index < 0) || (index >= nelems))
       return null;
-    return (String) values.getObject(ima.set0(index));
+    return (String) values.getObject(ima().set0(index));
   }
 
   /**
@@ -151,15 +150,17 @@ public class Attribute {
     }
 
     if (dataType == DataType.BYTE)
-      return values.getByte(ima.set0(index));
+      return values.getByte(ima().set0(index));
     else if (dataType == DataType.SHORT)
-      return values.getShort(ima.set0(index));
+      return values.getShort(ima().set0(index));
     else if (dataType == DataType.INT)
-      return values.getInt(ima.set0(index));
+      return values.getInt(ima().set0(index));
     else if (dataType == DataType.FLOAT)
-      return values.getFloat(ima.set0(index));
+      return values.getFloat(ima().set0(index));
     else if (dataType == DataType.DOUBLE)
-      return values.getDouble(ima.set0(index));
+      return values.getDouble(ima().set0(index));
+    else if (dataType == DataType.LONG)
+      return values.getLong(ima().set0(index));
 
     return null;
   }
@@ -253,7 +254,7 @@ public class Attribute {
     this.dataType = from.dataType;
     this.nelems = from.nelems;
     this.values = from.values;
-    this.ima = from.ima;
+    //this.ima = from.ima;
   }
 
   /**
@@ -416,8 +417,14 @@ public class Attribute {
     this.values = arr;
     this.nelems = (int) arr.getSize();
     this.dataType = DataType.getType(arr.getElementType());
-    ima = values.getIndex();
+    //ima = values.getIndex();
     hashCode = 0;
+  }
+
+  protected Index ima;
+  private Index ima() {
+    if (ima == null) ima = values.getIndex();
+    return ima;
   }
 
 }

@@ -65,7 +65,7 @@ public class TestH5read extends TestCase {
   }
 
   static public void readAllData( String filename) {
-    System.out.println("------Reading filename "+filename);
+    System.out.println("\n------Reading filename "+filename);
     try {
       NetcdfFile ncfile = TestH5.open(filename);
       for (Variable v : ncfile.getVariables()) {

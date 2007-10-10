@@ -5,7 +5,7 @@
 </head>
 <body>
 <h1><img src="../images/unidataLogo.png" width="75" height="75" align="middle">
-  Web Coverage Server</h1>
+  Configuring the Web Coverage Service</h1>
 <div class="head">
       <address>
       </address>
@@ -24,7 +24,7 @@
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
   xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; version=&quot;1.0.1&quot;&gt;</pre>
 <pre>  &lt;<strong>datasetRoot</strong> path=&quot;testwcs&quot; dirLocation=&quot;/data/grids/&quot; /&gt;
-  &lt;service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot; suffix=&quot;?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS&quot;/&gt;</pre>
+  &lt;service name=&quot;wcs&quot; serviceType=&quot;<strong>WCS</strong>&quot; base=&quot;<strong>/thredds/wcs/</strong>&quot; suffix=&quot;<strong>?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS</strong>&quot;/&gt;</pre>
 <pre>  &lt;dataset name=&quot;GALEON Test Data&quot;&gt;</pre>
 <pre>    &lt;metadata inherited=&quot;true&quot;&gt;
       &lt;serviceName&gt;wcs&lt;/serviceName&gt;
@@ -38,8 +38,13 @@
     &lt;dataset name=&quot;RUC.nc&quot; urlPath=&quot;RUC.nc&quot; /&gt;</pre>
 <pre>  &lt;/dataset&gt;
 &lt;/catalog&gt;</pre>
-<p>The files named here all reside in the <strong>/data/grids/ </strong>directory, named by the <strong>datasetRoot</strong> element in the service. You can also use a DatasetScan element to serve all the files in a directory tree. See <a href="../tutorial/TDSConfiguration.html">TDS Configuration</a> for details. The only thing you need for WCS is to make the <strong>serviceType</strong> <em>WCS</em> and the <strong>base</strong> <em> /thredds/wcs/</em> . The optional <strong>suffix</strong> is added at the end of the URL, and forms the WCS <em>GetCapabilities</em> request URL. You may find it more convenient to not include the suffix. <br>
-</p>
+<p>The files named here all reside in the <strong>/data/grids/ </strong>directory, named by the <strong>datasetRoot</strong> element in the service. You can also use a DatasetScan element to serve all the files in a directory tree. See <a href="../tutorial/TDSConfiguration.html">TDS Configuration</a> for details. The only thing you need for WCS is to make the <strong>serviceType</strong> <em>WCS</em> and the <strong>base</strong> <em> /thredds/wcs/</em> . The optional <strong>suffix</strong> is added at the end of the URL, and forms the WCS <em>GetCapabilities</em> request URL. You may find it more convenient to not include the suffix. </p>
+<p>In summary, to enable WCS:</p>
+<ol>
+  <li>In your configuration catalogs, you must define a WCS service element as above, and indicate whicg datasets should use it. </li>
+  <li>In the <a href="ThreddsConfigXMLFile.html#WCS">threddsConfig.xml file</a>, set allow to true in the &lt;<strong>WCS</strong>&gt; element. <br>
+  </li>
+</ol>
 <h3>WCS Dataset URLs</h3>
 <p>All THREDDS WCS requests start with </p>
 <pre>  http://servername:8080/<strong>thredds/wcs/</strong>
@@ -86,7 +91,7 @@
 <div class="head"></div>
 <hr width="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 24, 2007
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 08, 2007
 </address>
 <p align="center">&nbsp;</p>
 </body></html>

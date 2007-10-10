@@ -652,14 +652,16 @@ public class IO {
 
   // read URL to File
   static public void main(String[] args) {
+    String url_point = "http:/thredds/ncss/metars?variables=all&north=82.5199&west=88.4499&east=90.4000&south=-90.0000&spatial=point&latitude=40&longitude=-100&stn=&temporal=all&time_start=2007-09-26T23%3A45%3A04Z&time_end=present&time=2007-09-26T23%3A45%3A04Z&accept=netcdf";
     String url = "http://motherlode.ucar.edu:9080/thredds/ncss/metars?variables=all&spatial=all&time_start=2007-09-29T00%3A00%3A00Z&time_end=2007-09-29T23%3A59%3A59Z&accept=netcdf";
+    String url_box = "http:/thredds/ncss/metars?variables=all&spatial=bb&north=41&west=-103&east=-100&south=39&latitude=40&longitude=-100&stn=&temporal=all&time_start=2007-09-26T23%3A45%3A04Z&time_end=present&time=2007-09-26T23%3A45%3A04Z&accept=netcdf";
 
-    String filenameOut = "C:/temp/metars-0929.nc";
+    String filenameOut = "C:/temp/metars-timeseries-box.nc";
     File f = new File(filenameOut);
     System.out.println("Read = " + url + " to " + filenameOut);
 
     long start = System.currentTimeMillis();
-    String result = readURLtoFile(url, f);
+    String result = readURLtoFile(url_box, f);
     double took = .001 * (System.currentTimeMillis() - start);
     System.out.println(result);
     System.out.println(" that took = " + took + "sec");
