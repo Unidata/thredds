@@ -62,7 +62,7 @@ public class Section {
   }
 
   /**
-   * Create Section from a shape and origin arrays.
+   * Create Section from a shape, origin, and stride arrays.
    *
    * @param origin array of start for each Range
    * @param shape  array of lengths for each Range

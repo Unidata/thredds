@@ -29,6 +29,7 @@ import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
+import ucar.units.ConversionException;
 
 import java.io.IOException;
 import java.util.*;
@@ -85,11 +86,21 @@ public class ADASConvention extends CoordSysBuilder {
     }
 
     Variable coord_var = ds.findVariable("x_stag");
-    String units = ds.findAttValueIgnoreCase(coord_var, "units", null);
+    if (!Double.isNaN(false_easting) || !Double.isNaN(false_northing)) {
+      String units = ds.findAttValueIgnoreCase(coord_var, "units", null);
+      double scalef = 1.0;
+      try {
+        scalef = SimpleUnit.getConversionFactor(units, "km");
+      } catch (ConversionException e) {
+        log.error(units + " not convertible to km");
+      }
+      false_easting *= scalef;
+      false_northing *= scalef;
+    }
 
     ProjectionImpl proj = null;
     if ((projName != null) && projName.equalsIgnoreCase("lambert_conformal_conic")) {
-      proj = new LambertConformal(lat_origin, lon_origin, lat1, lat2, false_easting, false_northing, units);
+      proj = new LambertConformal(lat_origin, lon_origin, lat1, lat2, false_easting, false_northing);
       projCT = new ProjectionCT("Projection", "FGDC", proj);
       if (false_easting == 0.0) calcCenterPoints(ds, proj); // old way
     } else {

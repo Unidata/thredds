@@ -46,11 +46,15 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
     double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin");
     double false_easting = readAttributeDouble( ctv, "false_easting");
     double false_northing = readAttributeDouble( ctv, "false_northing");
-    String units = ds.findAttValueIgnoreCase( ctv, "units", null);
-    if (units == null)
-      units = getUnits( ds);
 
-    ucar.unidata.geoloc.projection.LambertConformal lc = new ucar.unidata.geoloc.projection.LambertConformal(lat0, lon0, pars[0], pars[1], false_easting, false_northing, units);
+    if (!Double.isNaN(false_easting) || !Double.isNaN(false_northing)) {
+      double scalef = getFalseEastingScaleFactor(ds, ctv);
+      false_easting *= scalef;
+      false_northing *= scalef;
+    }
+
+    ucar.unidata.geoloc.projection.LambertConformal lc =
+            new ucar.unidata.geoloc.projection.LambertConformal(lat0, lon0, pars[0], pars[1], false_easting, false_northing);
     return new ProjectionCT(ctv.getShortName(), "FGDC", lc);
   }
 }

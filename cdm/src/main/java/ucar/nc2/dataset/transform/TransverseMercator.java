@@ -46,10 +46,17 @@ public class TransverseMercator extends AbstractCoordTransBuilder {
     double scale = readAttributeDouble( ctv, "scale_factor_at_central_meridian");
     double lon0 = readAttributeDouble( ctv, "longitude_of_central_meridian");
     double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin");
-    double east = readAttributeDouble( ctv, "false_easting");  // LOOK deal with false_easting, could modify coordinates ??
-    double north = readAttributeDouble( ctv, "lase_northing");
+    double east = readAttributeDouble( ctv, "false_easting");
+    double north = readAttributeDouble( ctv, "false_northing");
 
-    ucar.unidata.geoloc.projection.TransverseMercator proj = new ucar.unidata.geoloc.projection.TransverseMercator(lat0, lon0, scale);
+    if (!Double.isNaN(east) || !Double.isNaN(north)) {
+      double scalef = getFalseEastingScaleFactor(ds, ctv);
+      east *= scalef;
+      north *= scalef;
+    }
+
+    ucar.unidata.geoloc.projection.TransverseMercator proj =
+            new ucar.unidata.geoloc.projection.TransverseMercator(lat0, lon0, scale, east, north);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }

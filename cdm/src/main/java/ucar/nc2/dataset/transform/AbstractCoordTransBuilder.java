@@ -26,6 +26,9 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.Parameter;
+import ucar.units.UnitFormat;
+import ucar.units.UnitFormatManager;
+import ucar.units.Unit;
 
 import java.util.StringTokenizer;
 import java.util.List;
@@ -36,6 +39,7 @@ import java.util.List;
  * @author caron
  */
 public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.CoordTransBuilderIF {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractCoordTransBuilder.class);
   protected StringBuffer errBuffer = null;
 
   public void setErrorBuffer(StringBuffer errBuffer) {
@@ -45,7 +49,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     throw new UnsupportedOperationException();
   }
-  
+
   /**
    * Read a variable attribute as a double.
    *
@@ -115,14 +119,31 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     return formula;
   }
 
-  protected String getUnits(NetcdfDataset ds) {
-        // kind o' kludge
-    List<CoordinateAxis> axes = ds.getCoordinateAxes();
-    for (CoordinateAxis axis : axes) {
-      if (axis.getAxisType() == AxisType.GeoX) {
-        return axis.getUnitsString();
+
+  //////////////////////////////////////////
+  private UnitFormat format;
+  protected double getFalseEastingScaleFactor(NetcdfDataset ds, Variable ctv) {
+    String units = ds.findAttValueIgnoreCase(ctv, "units", null);
+    if (units == null) {
+      List<CoordinateAxis> axes = ds.getCoordinateAxes();
+      for (CoordinateAxis axis : axes) {
+        if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
+          units = axis.getUnitsString();
+          break;
+        }
       }
     }
-    return null;
+    if (units != null) {
+      try {
+        if (format == null) format = UnitFormatManager.instance();
+        Unit uuInput = format.parse(units);
+        Unit uuOutput = format.parse("km");
+        return uuInput.convertTo(1.0, uuOutput);
+      } catch (Exception e) {
+        log.error(units + " not convertible to km");
+      }
+    }
+    return 1.0;
   }
+
 }

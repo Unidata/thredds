@@ -440,14 +440,12 @@ class H5header {
         dataType = DataType.ENUM;
 
       } else if (hdfType == 9) { // variable length array
-        int kind = (flags[0] & 0xf);
-        vpad = ((flags[0] << 4) & 0xf);
-
-        if (kind == 1)
+        if (mdt.isVString) {
+          vpad = ((flags[0] >> 4) & 0xf);
           dataType = DataType.STRING;
-        else
+        } else {
           dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
-
+        }
       } else if (hdfType == 10) { // array
         byteOrder = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
         if ((mdt.parent.type == 9) && mdt.parent.isVString) {
@@ -1455,14 +1453,14 @@ There is _no_ datatype information stored for these sort of selections currently
     }
   }
 
-  // Message Type 3 (p 26) : "Datatype"
+  // Message Type 3 : "Datatype"
   private class MessageDatatype {
     int type, version;
     byte[] flags = new byte[3];
     int byteSize, byteOrder;
 
     // reference
-    int referenceType;
+    int referenceType; // 0 = object, 1 = region
 
     // array
     int[] dim;
@@ -1847,13 +1845,14 @@ There is _no_ datatype information stored for these sort of selections currently
     long dataPos; // pointer to the attribute data section, must be absolute file position
 
     public String toString() {
-      return "name= " + name;
+      return "name= " + name+ "dataPos= "+dataPos;
     }
 
     void read() throws IOException {
       if (debugPos) debugOut.println("   *MessageAttribute start pos= " + raf.getFilePointer());
       short nameSize, typeSize, spaceSize;
-      byte flags = 0, encoding = 0;
+      byte flags = 0;
+      byte encoding = 0; // 0 = ascii, 1 = UTF-8
 
       version = raf.readByte();
       if (version == 1) {
@@ -1867,7 +1866,7 @@ There is _no_ datatype information stored for these sort of selections currently
         nameSize = raf.readShort();
         typeSize = raf.readShort();
         spaceSize = raf.readShort();
-        encoding = raf.readByte();
+        if (version == 3) encoding = raf.readByte();
       } else {
         throw new IllegalStateException("MessageAttribute unknown version " + version);
       }
@@ -1899,27 +1898,6 @@ There is _no_ datatype information stored for these sort of selections currently
       // heres where the data starts
       dataPos = raf.getFilePointer();
       if (debugPos) debugOut.println("   *MessageAttribute dataPos= " + dataPos);
-
-      // deal with reference type
-      /* Dataset region references are stored as a heap-ID which points to the following information within the file-heap:
-           an offset of the object pointed to,
-           number-type information (same format as header message),
-           dimensionality information (same format as header message),
-           sub-set start and end information (i.e. a coordinate location for each),
-           and field start and end names (i.e. a [pointer to the] string indicating the first field included and a [pointer to the] string name for the last field). */
-      if (mdt.type == 7) { // reference
-        // datapos points to a position of the refrenced object, i think
-        raf.seek(dataPos);
-        long referencedObjectPos = readOffset();
-        //debugOut.println("WARNING   Reference at "+dataPos+" referencedObjectPos = "+referencedObjectPos);
-
-        // LOOK, should only read this once
-        DataObject referencedObject = new DataObject(null, "att", referencedObjectPos);
-        referencedObject.read();
-        mdt = referencedObject.mdt;
-        mds = referencedObject.msd;
-        dataPos = referencedObject.msl.dataAddress; // LOOK - should this be converted to filePos?
-      }
     }
   }
 
@@ -3431,18 +3409,8 @@ There is _no_ datatype information stored for these sort of selections currently
         if (matt.name.equals("NAME")) iter.remove();
         if (matt.name.equals("REFERENCE_LIST")) iter.remove();
         if (matt.name.equals("DIMENSION_LIST")) {
-          StringBuffer sbuff = new StringBuffer();
           Attribute att = makeAttribute(ndo.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
-          Array attData = att.getValues();
-          IndexIterator ii = attData.getIndexIterator();
-          while (ii.hasNext()) {
-            long id = ii.getLongNext();
-            DataObject dataObject = findDataObject(id);
-            if (dataObject == null)
-              throw new IllegalStateException();
-            sbuff.append(dataObject.name+" ");
-          }
-          ndo.dimList = sbuff.toString();
+          ndo.dimList = att.getStringValue(); // converted to name of dimensions
           iter.remove();
         }
       }
@@ -3528,7 +3496,8 @@ There is _no_ datatype information stored for these sort of selections currently
   } */
 
   private Attribute makeAttribute(String forWho, String attName, MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
-    attName = NetcdfFile.createValidNetcdfObjectName(attName); // look cannot search by name
+    ucar.ma2.Array data;
+    attName = NetcdfFile.createValidNetcdfObjectName(attName); // this means that cannot search by name
 
     Variable v = new Variable(ncfile, null, null, attName); // LOOK null group
     Vinfo vinfo = new Vinfo(mdt, dataPos);
@@ -3537,10 +3506,61 @@ There is _no_ datatype information stored for these sort of selections currently
       return null;
     }
 
-    v.setSPobject(vinfo);
-    vinfo.setOwner(v);
-    v.setCaching(false);
-    if (debug1) debugOut.println("makeAttribute " + attName + " for " + forWho + "; vinfo= " + vinfo);
+    if (mdt.type == 9) {
+      debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + mdt.type);
+      return null;
+
+    } else if (mdt.type == 7) {
+      if (mdt.referenceType == 0)
+        data = readReferenceObjectNames(v);
+      else {
+        debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with referenceType= " + mdt.referenceType);
+        return null;
+      }
+
+    } else {
+
+      v.setSPobject(vinfo);
+      vinfo.setOwner(v);
+      v.setCaching(false);
+      if (debug1) debugOut.println("makeAttribute " + attName + " for " + forWho + "; vinfo= " + vinfo);
+
+      try {
+        data = h5iosp.readData( v, v.getShapeAsSection());
+        //ucar.ma2.Array data = v.read();
+
+      } catch (InvalidRangeException e) {
+        log.error("H5header.makeAttribute", e);
+        return null;
+      }
+    }
+
+    return new Attribute(attName, data);
+
+  }
+
+  /* private Array readAttributeData() {
+
+      // deal with reference type
+      /* Dataset region references are stored as a heap-ID which points to the following information within the file-heap:
+           an offset of the object pointed to,
+           number-type information (same format as header message),
+           dimensionality information (same format as header message),
+           sub-set start and end information (i.e. a coordinate location for each),
+           and field start and end names (i.e. a [pointer to the] string indicating the first field included and a [pointer to the] string name for the last field).
+      if (mdt.type == 7) { // reference
+        // datapos points to a position of the refrenced object, i think
+        raf.seek(dataPos);
+        long referencedObjectPos = readOffset();
+        //debugOut.println("WARNING   Reference at "+dataPos+" referencedObjectPos = "+referencedObjectPos);
+
+        // LOOK, should only read this once
+        DataObject referencedObject = new DataObject(null, "att", referencedObjectPos);
+        referencedObject.read();
+        mdt = referencedObject.mdt;
+        mds = referencedObject.msd;
+        dataPos = referencedObject.msl.dataAddress; // LOOK - should this be converted to filePos?
+      }
 
     try {
       ucar.ma2.Array data = h5iosp.readData( v, v.getShapeAsSection());
@@ -3551,7 +3571,8 @@ There is _no_ datatype information stored for these sort of selections currently
       log.error("H5header.makeAttribute", e);
       return null;
     }
-  }
+
+  }   */
 
   /*
      A dataset has Datatype, Dataspace, StorageLayout.
@@ -3651,28 +3672,13 @@ There is _no_ datatype information stored for these sort of selections currently
       vinfo.btree = new DataBTree(dataPos, v.getShape(), vinfo.storageSize);
 
     if (transformReference && (ndo.mdt.type == 7) && (ndo.mdt.referenceType == 0)) { // object reference
-      Array data = v.read();
-      IndexIterator ii = data.getIndexIterator();
-
-      Array newData = Array.factory(DataType.STRING, v.getShape());
-      IndexIterator ii2 = newData.getIndexIterator();
-      while (ii.hasNext()) {
-        long objId = ii.getLongNext();
-        DataObject dobj = findDataObject(objId);
-        if (dobj == null)
-          System.out.println("Cant find dobj= " + dobj);
-        else {
-          System.out.println(" Referenced object= " + dobj.getName());
-          ii2.setObjectNext(dobj.getName());
-        }
-      }
+      Array newData = readReferenceObjectNames(v);
       v.setDataType(DataType.STRING);
       v.setCachedData(newData, true); // so H5iosp.read() is never called
       v.addAttribute(new Attribute("_HDF5ReferenceType", "values are names of referenced Variables"));
     }
 
     if (transformReference && (ndo.mdt.type == 7) && (ndo.mdt.referenceType == 1)) { // region reference
-
       int nelems = (int) v.getSize();
       int heapIdSize = 12;
       for (int i = 0; i < nelems; i++) {
@@ -3689,6 +3695,25 @@ There is _no_ datatype information stored for these sort of selections currently
 
     return v;
   }
+
+  private Array readReferenceObjectNames(Variable v) throws IOException {
+    Array data = v.read();
+    IndexIterator ii = data.getIndexIterator();
+
+    Array newData = Array.factory(DataType.STRING, v.getShape());
+    IndexIterator ii2 = newData.getIndexIterator();
+    while (ii.hasNext()) {
+      long objId = ii.getLongNext();
+      DataObject dobj = findDataObject(objId);
+      if (dobj == null)
+        System.out.println("Cant find dobj= " + dobj);
+      else {
+        System.out.println(" Referenced object= " + dobj.getName());
+        ii2.setObjectNext(dobj.getName());
+      }
+    }
+    return newData;
+  }  
 
   /*
      Used for Structure Members
