@@ -46,7 +46,7 @@ class H5header {
 
   // debugging
   static private boolean debugEnum = false;
-  static private boolean debug1 = true, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
+  static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false, debugFractalHeap = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSymbolTable = false;
   static private boolean warnings = true, debugReference = false, debugCreationOrder = false;
@@ -108,15 +108,17 @@ class H5header {
 
   private MemTracker memTracker;
 
-  H5header(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile, H5iosp h5iosp) throws IOException {
+  H5header(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile, H5iosp h5iosp)  {
     this.ncfile = ncfile;
     this.raf = myRaf;
     this.h5iosp = h5iosp;
+  }
 
+  void read() throws IOException {
     actualSize = raf.length();
     memTracker = new MemTracker(actualSize);
 
-    if (!isValidFile(myRaf))
+    if (!isValidFile( raf))
       throw new IOException("Not a netCDF4/HDF5 file ");
     if (debug1) debugOut.println("H5header 0pened file to read:'" + ncfile.getLocation() + "', size=" + actualSize);
     // now we are positioned right after the header
@@ -152,7 +154,7 @@ class H5header {
     if (debugTracker) memTracker.report();
   }
 
-  private DataObject findDataObject(long id) {
+  DataObject findDataObject(long id) {
     for (DataObject dobj : obsList)
       if (dobj.address == id) return dobj;
     return null;
@@ -349,6 +351,8 @@ class H5header {
     boolean isChunked = false;
     DataBTree btree = null; // only if isChunked
 
+    MessageDatatype mdt;
+    MessageDataspace mds;
     MessageFilter mfp;
 
     boolean useFillValue = false;
@@ -362,10 +366,11 @@ class H5header {
      */
     Vinfo(DataObject ndo) throws IOException {
       this.ndo = ndo;
-      //this.address = ndo.address;
       this.hdfType = ndo.mdt.type;
       this.byteSize = ndo.mdt.byteSize;
       this.dataPos = getFileOffset(ndo.msl.dataAddress);
+      this.mdt = ndo.mdt;
+      this.mds = ndo.mds;
       this.mfp = ndo.mfp;
 
       if (!ndo.mdt.isOK) {
@@ -374,7 +379,7 @@ class H5header {
       }
 
       this.isChunked = (ndo.msl.type == 2); // chunked vs. continuous storage
-      this.storageSize = (isChunked) ? ndo.msl.chunkSize : ndo.msd.dimLength;
+      this.storageSize = (isChunked) ? ndo.msl.chunkSize : ndo.mds.dimLength;
 
       // figure out the data type
       calcNCtype(ndo.mdt);
@@ -387,7 +392,9 @@ class H5header {
      * @param dataPos start of data in file
      * @throws java.io.IOException on read error
      */
-    Vinfo(MessageDatatype mdt, long dataPos) throws IOException {
+    Vinfo(MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
+      this.mdt = mdt;
+      this.mds = mds;
       this.byteSize = mdt.byteSize;
       this.dataPos = dataPos;
 
@@ -397,7 +404,7 @@ class H5header {
       }
 
       // figure out the data type
-      hdfType = mdt.type;
+      this.hdfType = mdt.type;
       calcNCtype(mdt);
     }
 
@@ -434,7 +441,7 @@ class H5header {
 
       } else if (hdfType == 7) { // reference
         byteOrder = RandomAccessFile.LITTLE_ENDIAN;
-        dataType = DataType.LONG;
+        dataType = DataType.STRING;
 
       } else if (hdfType == 8) { // enums
         dataType = DataType.ENUM;
@@ -489,7 +496,7 @@ class H5header {
         return DataType.CHAR;
 
       } else if (hdfType == 7) { // reference
-        return DataType.LONG;
+        return DataType.STRING;
         
       } else {
         debugOut.println("WARNING not handling hdf type = " + hdfType + " size= " + size);
@@ -616,8 +623,12 @@ class H5header {
       heapAddress = readOffset();
       index = raf.readInt();
       if (debugDetail)
-        debugOut.println("   read HeapIdentifier address=" + address + " nelems=" + nelems + " heapAddress=" + heapAddress + " index=" + index);
+        debugOut.println("   read HeapIdentifier address=" + address + this);
       if (debugHeap) dump("heapIdentifier", getFileOffset(address), 16, true);
+    }
+
+    public String toString() {
+      return " nelems=" + nelems + " heapAddress=" + heapAddress + " index=" + index;
     }
 
     GlobalHeap.HeapObject getHeapObject() throws IOException {
@@ -719,7 +730,7 @@ There is _no_ datatype information stored for these sort of selections currently
   // 2A "data object header" section IV.A (p 19)
   // A Group, a link or a Variable
 
-  private class DataObject {
+  class DataObject {
     Group parent;
     String name;
     long address; // aka object id
@@ -741,9 +752,9 @@ There is _no_ datatype information stored for these sort of selections currently
 
     // or
     boolean isVariable;
-    boolean isCoordinateVariable;
+    boolean isDimensionNotVariable;
     MessageDatatype mdt = null;
-    MessageDataspace msd = null;
+    MessageDataspace mds = null;
     MessageLayout msl = null;
     MessageFilter mfp = null;
     String dimList;
@@ -764,7 +775,7 @@ There is _no_ datatype information stored for these sort of selections currently
       displayName = name;
     }
 
-    private String getName() {
+    String getName() {
       return parent.getName() + "/" + name;
     }
 
@@ -847,7 +858,7 @@ There is _no_ datatype information stored for these sort of selections currently
         if (debugTracker) memTracker.addByLen("Message (" + displayName + ") " + mess.mtype, mess.start, mess.size + 8);
 
         if (mess.mtype == MessageType.SimpleDataspace)
-          msd = (MessageDataspace) mess.messData;
+          mds = (MessageDataspace) mess.messData;
         else if (mess.mtype == MessageType.Datatype)
           mdt = (MessageDatatype) mess.messData;
         else if (mess.mtype == MessageType.Layout)
@@ -1231,7 +1242,7 @@ There is _no_ datatype information stored for these sort of selections currently
   }
 
   // Message Type 1 (p 23) : "Simple Dataspace" = dimension list / shape
-  private class MessageDataspace {
+  class MessageDataspace {
     byte ndims, flags, type;
     int[] dimLength, maxLength, permute;
     boolean isPermuted;
@@ -1454,7 +1465,7 @@ There is _no_ datatype information stored for these sort of selections currently
   }
 
   // Message Type 3 : "Datatype"
-  private class MessageDatatype {
+  class MessageDatatype {
     int type, version;
     byte[] flags = new byte[3];
     int byteSize, byteOrder;
@@ -1579,7 +1590,7 @@ There is _no_ datatype information stored for these sort of selections currently
       } else if (type == 9) { // variable-length
         isVString = (flags[0] & 0xf) == 1;
         if (debug1)
-          debugOut.println("   type 9(variable length): type= " + (type == 0 ? "sequence of type:" : "string"));
+          debugOut.println("   type 9(variable length): type= " + (isVString ? "string" : "sequence of type:"));
         parent = new MessageDatatype(); // base type
         parent.read();
 
@@ -3355,8 +3366,9 @@ There is _no_ datatype information stored for these sort of selections currently
     List<DataObject> nestedObjects = h5group.nestedObjects;
     for (DataObject ndo : nestedObjects) {
       if (ndo.isVariable)
-        makeDimensionScales( ncGroup, ndo);
+        findDimensionScales( ncGroup, ndo);
     }
+    createDimensions( ncGroup);
 
     // nested objects - groups and variables
     for (DataObject ndo : nestedObjects) {
@@ -3380,7 +3392,7 @@ There is _no_ datatype information stored for these sort of selections currently
             Vinfo vinfo = (Vinfo) v.getSPobject();
             if (debugV) debugOut.println("  made Variable " + v.getName() + "  vinfo= " + vinfo + "\n" + v);
           }
-        } else if (warnings) {
+        } else if (!ndo.isDimensionNotVariable && warnings) {
           debugOut.println("WARN:  DataObject ndo " + ndo + " not a Group or a Variable");
         }
 
@@ -3389,31 +3401,63 @@ There is _no_ datatype information stored for these sort of selections currently
 
   }
 
-  private void makeDimensionScales(ucar.nc2.Group g, DataObject ndo) throws IOException {
+  private Map<String, Dimension> dimMap = new HashMap<String, Dimension>();
+  private void findDimensionScales(ucar.nc2.Group g, DataObject ndo) throws IOException {
     Iterator<Message> iter = ndo.messages.iterator();
     while (iter.hasNext()) {
       Message mess = iter.next();
-      if (mess.mtype == MessageType.Attribute) {
-        MessageAttribute matt = (MessageAttribute) mess.messData;
+      if (mess.mtype != MessageType.Attribute) continue;
+      MessageAttribute matt = (MessageAttribute) mess.messData;
 
-        if (matt.name.equals("CLASS")) {
-          int[] dims = ndo.msd.dimLength;
-          if (dims.length != 1)
-            throw new IllegalStateException();
-          boolean isUnlimited = ndo.msd.maxLength[0] == -1;
-          if (debug1) debugOut.println("makeDimension " + ndo.name + " len= " + dims[0]);
-          g.addDimension( new Dimension(ndo.name, dims[0], true, isUnlimited, false));
-          ndo.isCoordinateVariable = true;
-          iter.remove();
+      // find the dimensions - set length to maximum
+      if (matt.name.equals("DIMENSION_LIST")) {
+        Attribute att = makeAttribute(ndo.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
+        StringBuffer sbuff = new StringBuffer();
+        for (int i = 0; i < att.getLength(); i++) {
+          String name = att.getStringValue(i);
+          if (name.startsWith("/")) name = name.substring(1);
+          sbuff.append(name).append(" ");
+          addDimension(name, ndo.mds.dimLength[i], ndo.mds.maxLength[i] == -1);
         }
-        if (matt.name.equals("NAME")) iter.remove();
-        if (matt.name.equals("REFERENCE_LIST")) iter.remove();
-        if (matt.name.equals("DIMENSION_LIST")) {
-          Attribute att = makeAttribute(ndo.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
-          ndo.dimList = att.getStringValue(); // converted to name of dimensions
+        ndo.dimList = sbuff.toString();
+        iter.remove();
+
+      } else if (matt.name.equals("NAME")) {
+        Attribute att = makeAttribute(ndo.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
+        String val = att.getStringValue();
+        if (val.startsWith("This is a netCDF dimension but not a netCDF variable")) {
+          ndo.isVariable = false;
+          ndo.isDimensionNotVariable = true;
+        } 
+        iter.remove();
+      }
+      else if (matt.name.equals("CLASS")) {
+        Attribute att = makeAttribute(ndo.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
+        String val = att.getStringValue();
+        if (val.equals("DIMENSION_SCALE")) {
+          addDimension(ndo.name, ndo.mds.dimLength[0], ndo.mds.maxLength[0] == -1);
+          ndo.dimList = ndo.name;
           iter.remove();
         }
       }
+      else if (matt.name.equals("REFERENCE_LIST")) iter.remove();
+    }
+  }
+
+  private void addDimension(String name, int length, boolean isUnlimited) {
+    Dimension d = dimMap.get(name);
+    if (d == null) {
+      d = new Dimension(name, length, true, isUnlimited, false);
+      dimMap.put(name, d);
+    } else {
+      if (length > d.getLength())
+        d.setLength(length);
+    }
+  }
+
+  private void createDimensions(ucar.nc2.Group g) throws IOException {
+    for (Dimension d : dimMap.values()) {
+      g.addDimension(d);
     }
   }
 
@@ -3500,17 +3544,28 @@ There is _no_ datatype information stored for these sort of selections currently
     attName = NetcdfFile.createValidNetcdfObjectName(attName); // this means that cannot search by name
 
     Variable v = new Variable(ncfile, null, null, attName); // LOOK null group
-    Vinfo vinfo = new Vinfo(mdt, dataPos);
+    Vinfo vinfo = new Vinfo(mdt, mds, dataPos);
     if (!makeVariableShapeAndType(v, mdt, mds, vinfo, null)) {
       debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + vinfo.hdfType);
       return null;
     }
 
-    if (mdt.type == 9) {
+    /* if (mdt.type == 9) {
+      int nelems = mds.dimLength[0];
+      for (int i = 0; i < nelems; i++) {
+        long address = dataPos + mdt.byteSize * i;
+        H5header.HeapIdentifier heapId = getHeapIdentifier(address);
+        debugOut.println("HeapIdentifier address=" + address + heapId);
+        GlobalHeap.HeapObject ho = heapId.getHeapObject();
+        debugOut.println(" readString at HeapObject " + ho);      
+      }
+
       debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + mdt.type);
       return null;
 
-    } else if (mdt.type == 7) {
+    } else */
+
+    if (mdt.type == 7) {
       if (mdt.referenceType == 0)
         data = readReferenceObjectNames(v);
       else {
@@ -3638,14 +3693,14 @@ There is _no_ datatype information stored for these sort of selections currently
     if (ndo.mdt.type == 6) { // Compound
       String vname = NetcdfFile.createValidNetcdfObjectName(ndo.name); // look cannot search by name
       v = new Structure(ncfile, null, null, vname); // LOOK null group
-      if (!makeVariableShapeAndType(v, ndo.mdt, ndo.msd, vinfo, ndo.dimList)) return null;
+      if (!makeVariableShapeAndType(v, ndo.mdt, ndo.mds, vinfo, ndo.dimList)) return null;
       addMembersToStructure((Structure) v, ndo.mdt);
       v.setElementSize(ndo.mdt.byteSize);
 
     } else {
       String vname = NetcdfFile.createValidNetcdfObjectName(ndo.name); // look cannot search by name
       v = new Variable(ncfile, null, null, vname);  // LOOK null group
-      if (!makeVariableShapeAndType(v, ndo.mdt, ndo.msd, vinfo, ndo.dimList)) return null;
+      if (!makeVariableShapeAndType(v, ndo.mdt, ndo.mds, vinfo, ndo.dimList)) return null;
     }
 
     // special case of variable length strings
@@ -3722,7 +3777,7 @@ There is _no_ datatype information stored for these sort of selections currently
           throws IOException {
 
     Variable v;
-    Vinfo vinfo = new Vinfo(mdt, dataPos);
+    Vinfo vinfo = new Vinfo(mdt, null, dataPos); // LOOK need mds
     if (vinfo.getNCDataType() == null) {
       debugOut.println("SKIPPING DataType= " + vinfo.hdfType + " for variable " + name);
       return null;

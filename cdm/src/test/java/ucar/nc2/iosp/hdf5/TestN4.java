@@ -19,8 +19,8 @@ public class TestN4 extends TestCase {
   }
 
   public void testReadNetcdf4() throws IOException {
-    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/btree2 H5header/filePos H5header/symbolTable"));
-    String filename = "C:/data/netcdf4/tst_pres_temp_4D_netcdf4.nc";
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5iosp/vlen"));
+    String filename = "C:/data/netcdf4/tst_vl.nc";
     NetcdfFile ncfile = TestNC2.open( filename);
     System.out.println( "\n**** testReadNetcdf4 done\n "+ncfile);
     ncfile.close();
