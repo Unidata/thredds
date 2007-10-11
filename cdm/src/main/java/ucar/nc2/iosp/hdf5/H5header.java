@@ -798,7 +798,7 @@ There is _no_ datatype information stored for these sort of selections currently
       raf.seek(getFileOffset(address));
 
       version = raf.readByte();
-      if (version == 1) {
+      if (version == 1) { // Level 2A1 (first part, before the messages)
         raf.readByte(); // skip byte
         short nmess = raf.readShort();
         if (debugDetail) debugOut.println(" version=" + version + " nmess=" + nmess);
@@ -817,8 +817,8 @@ There is _no_ datatype information stored for these sort of selections currently
         if (debugPos) debugOut.println("<--done reading messages for <" + name + ">; position=" + raf.getFilePointer());
         if (debugTracker) memTracker.addByLen("Object " + displayName, getFileOffset(address), headerSize + 16);
 
-      } else {
-
+      } else { // level 2A2 (first part, before the messages)
+        // first byte was already read
         byte[] name = new byte[3];
         raf.read(name);
         String nameS = new String(name);
@@ -826,7 +826,7 @@ There is _no_ datatype information stored for these sort of selections currently
           throw new IllegalStateException("DataObject doesnt start with OHDR");
 
         version = raf.readByte();
-        byte flags = raf.readByte();
+        byte flags = raf.readByte(); // data object header flags (version 2)
         if (debugDetail) debugOut.println(" version=" + version + " flags=" + Integer.toBinaryString(flags));
 
         //raf.skipBytes(2);
@@ -1086,9 +1086,9 @@ There is _no_ datatype information stored for these sort of selections currently
   // Header Message: Level 2A1 and 2A2
   private class Message implements Comparable {
     long start;
-    byte flags;
+    byte headerMessageFlags;
     short type, size, header_length;
-    Object messData;
+    Object messData; // header message data
     MessageType mtype;
 
     short creationOrder = -1;
@@ -1110,14 +1110,14 @@ There is _no_ datatype information stored for these sort of selections currently
       if (version == 1) {
         type = raf.readShort();
         size = raf.readShort();
-        flags = raf.readByte();
+        headerMessageFlags = raf.readByte();
         raf.skipBytes(3);
         header_length = 8;
 
       } else {
         type = raf.readByte();
         size = raf.readShort();
-        flags = raf.readByte();
+        headerMessageFlags = raf.readByte();
         header_length = 4;
         if (creationOrderPresent) {
           creationOrder = raf.readShort();
@@ -1126,7 +1126,7 @@ There is _no_ datatype information stored for these sort of selections currently
       }
       mtype = MessageType.getType(type);
       if (debug1) {
-        debugOut.println("  -->" + mtype + " messageSize=" + size + " flags = " + Integer.toBinaryString(flags));
+        debugOut.println("  -->" + mtype + " messageSize=" + size + " flags = " + Integer.toBinaryString(headerMessageFlags));
         if (creationOrderPresent && debugCreationOrder) debugOut.println("     creationOrder = " + creationOrder);
       }
       if (debugPos) debugOut.println("  --> Message Data starts at=" + raf.getFilePointer());
@@ -1539,8 +1539,9 @@ There is _no_ datatype information stored for these sort of selections currently
         isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);
 
       } else if (type == 5) { // opaque
-        String desc = readString(raf);
-        if (debug1) debugOut.println("   type 5 (opaque): desc= " + desc);
+        byte len = flags[0];
+        String desc = (len > 0) ? readString(raf) : null;
+        if (debug1) debugOut.println("   type 5 (opaque): len= "+len+" desc= " + desc);
 
       } else if (type == 6) { // compound
         int nmembers = flags[1] * 256 + flags[0];
@@ -1777,7 +1778,7 @@ There is _no_ datatype information stored for these sort of selections currently
         }
       }
 
-      if (debug1) debugOut.print("   StorageLayout version= " + version + this);
+      if (debug1) debugOut.println("   StorageLayout version= " + version + this);
     }
   }
 
@@ -3415,7 +3416,9 @@ There is _no_ datatype information stored for these sort of selections currently
         StringBuffer sbuff = new StringBuffer();
         for (int i = 0; i < att.getLength(); i++) {
           String name = att.getStringValue(i);
-          if (name.startsWith("/")) name = name.substring(1);
+          int pos = name.lastIndexOf("/");
+          if (pos >= 0)
+            name = name.substring(pos+1);
           sbuff.append(name).append(" ");
           addDimension(name, ndo.mds.dimLength[i], ndo.mds.maxLength[i] == -1);
         }
