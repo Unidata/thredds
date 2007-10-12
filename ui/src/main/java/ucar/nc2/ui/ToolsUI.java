@@ -2582,7 +2582,7 @@ public class ToolsUI extends JPanel {
       super(parentFrame);
 
       JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>" +
-              "<h1>Netcdf 2.2 Toolset</h1>" +
+              "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
               "<b>" + getVersion() + "</b>" +
               "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
               "<br><b><i>Developers:</b>John Caron, Ethan Davis, Robb Kambic, Yuan Ho</i></b>" +
@@ -2590,13 +2590,14 @@ public class ToolsUI extends JPanel {
               "<br><br>With thanks to these <b>Open Source</b> contributers:" +
               "<ul>" +
               "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
-              "<li><b>Apache Jakarta Commons</b> library: (http://http://jakarta.apache.org/commons/)</li>" +
+              "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
               "<li><b>Apache Log4J</b> library: (http://logging.apache.org/log4j/) </li>" +
               "<li><b>IDV:</b> Don Murray, Jeff McWhirter (http://www.unidata.ucar.edu/software/IDV/)</li>" +
               "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
+              "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
+              "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
               "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
-              "<li><b>OpenDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
-              "<li><b>Xerces XML Parser</b> library: http://xerces.apache.org/xerces2-j/</li>" +
+              "<li><b>OPeNDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
               " </ul><center>Special thanks to <b>Sun Microsystems</b> (java.sun.com) for the platform on which we stand." +
               " </center></body></html> ");
 

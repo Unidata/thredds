@@ -5,6 +5,7 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
  Features
   geoloc
+   * Transverse Mercator accepts false_easting, false_northing
    * Add RotatedPole projection
   NcML
    * Tiled

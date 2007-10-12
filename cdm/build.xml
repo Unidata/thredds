@@ -39,7 +39,7 @@
   <property name="release.schema.dir" value="${uni.www.dir}/content/schema"/>
   <property name="release.javadoc.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
   <property name="release.javadocAll.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadocAll/"/>
-  <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v2.2/webstart-dev"/>
+  <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/webstart"/>
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
@@ -229,11 +229,11 @@
 
   </target>
 
-  <property name="idv.jar" value="nc2.2.jar"/>
+  <property name="idv.jar" value="nc-idv.jar"/>
   <property name="zip.dir" location="${build.dir}/zip"/>
   <property name="uiZip.dir" location="${build.dir}/uiZip"/>
   <property name="idv.dir" location="${build.dir}/idv"/>
-  <target name="makeIDVjar" depends="makeJar" description="create nc2.2.jar for idv">
+  <target name="makeIDVjar" depends="makeJar" description="create jar for idv">
     <!--unzip so we can make idv jar -->
     <mkdir dir="${idv.dir}"/>
     <unzip dest="${idv.dir}">
@@ -359,7 +359,7 @@
   <!-- make javadoc -->
   <target name="javadoc" description="make the javadocs">
     <mkdir dir="${javadoc.dir}"/>
-    <javadoc Doctitle="NetCDF-Java 2.2 API" Use="true" Windowtitle="NetCDF-Java 2.2 API"
+    <javadoc Doctitle="NetCDF-Java ${release.version} API" Use="true" Windowtitle="NetCDF-Java ${release.version} API"
              maxmemory="256m" sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.5">
       <classpath refid="compile.classpath"/>
 
@@ -391,7 +391,7 @@
 
   <target name="javadocAll" description="make all javadocs">
     <mkdir dir="${javadocAll.dir}"/>
-    <javadoc Doctitle="NetCDF-Java 2.2 API" Use="true" Windowtitle="NetCDF-Java 2.2 API"
+    <javadoc Doctitle="NetCDF-Java ${release.version} API" Use="true" Windowtitle="NetCDF-Java ${release.version} API"
              maxmemory="256m" sourcepathref="sourcepath" destdir="${javadocAll.dir}" protected="true" source="1.5">
       <classpath refid="compile.classpath"/>
       <classpath refid="compileUI.classpath"/>
@@ -405,11 +405,11 @@
   <!-- release user manual -->
   <target name="releaseDoc" description="Release user manual">
     <copy todir="${release.doc.dir}" overwrite="true">
-      <fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-2.2.doc"/>
-      <fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-2.2.pdf"/>
+      <fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-${release.version}.doc"/>
+      <fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-${release.version}.pdf"/>
     </copy>
     <copy todir="${release.html.dir}" overwrite="true">
-      <fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-2.2.htm"/>
+      <fileset dir="${doc.dir}" includes="NetcdfJavaUserManual-${release.version}.htm"/>
     </copy>
   </target>
 
@@ -651,14 +651,6 @@
     <signjar alias="idv" jar="${lib.dir}/external/${xercesImpl.jar}" keystore="${keystore}" signedjar="${webstart_dir}/xercesImpl.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${xml-apis.jar}" keystore="${keystore}" signedjar="${webstart_dir}/xml-apis.jar" storepass="${keystore.password}"/>
 	</target>
-
-  <target name="temp">
-    <checksum>
-      <fileset dir="O:/pub/netcdf-java/v2.1/">
-        <include name="*.jar"/>
-      </fileset>
-    </checksum>
-  </target>
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <property name="test.src.dir" location="${root.dir}/src/test/java"/>

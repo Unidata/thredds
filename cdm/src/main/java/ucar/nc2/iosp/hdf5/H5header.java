@@ -45,7 +45,7 @@ class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
 
   // debugging
-  static private boolean debugEnum = false;
+  static private boolean debugEnum = true;
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false, debugFractalHeap = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSymbolTable = false;
@@ -1115,7 +1115,7 @@ There is _no_ datatype information stored for these sort of selections currently
         header_length = 8;
 
       } else {
-        type = raf.readByte();
+        type = (short) raf.readByte();
         size = raf.readShort();
         headerMessageFlags = raf.readByte();
         header_length = 4;
@@ -1131,11 +1131,31 @@ There is _no_ datatype information stored for these sort of selections currently
       }
       if (debugPos) debugOut.println("  --> Message Data starts at=" + raf.getFilePointer());
 
-      /* if ((flags & 2) != 0) { // shared
-        debugOut.println("****SHARED MESSAGE type = " + mtype + " raw = " + type);
-        throw new UnsupportedOperationException("****SHARED MESSAGE type = " + mtype + " raw = " + type);
+      if ((headerMessageFlags & 2) != 0) { // shared
+        byte sharedVersion = raf.readByte();
+        byte sharedType = raf.readByte();
+        if (sharedVersion == 1) raf.skipBytes(6);
+        if ((sharedVersion == 3) && (sharedType == 1)) {
+          long heapId = raf.readLong();
+          if (debug1) debugOut.println("     Shared Message " + sharedVersion + " type=" + sharedType + " heapId = " + heapId);
+          if (debugPos) debugOut.println("  --> Shared Message reposition to =" + raf.getFilePointer());
+          // dunno where is the file's shared object header heap ??
+          throw new UnsupportedOperationException("****SHARED MESSAGE type = " + mtype + " heapId = " + heapId);
 
-      } else  // */
+        } else {
+          long address = readOffset();
+          if (debug1) debugOut.println("     Shared Message " + sharedVersion + " type=" + sharedType + " address = " + address);
+          DataObject dobj = findDataObject(address);
+          if (null == dobj)
+            throw new IllegalStateException("cant find data object at"+address);
+          if (mtype == MessageType.Datatype) {
+            messData = dobj.mdt;
+            return header_length + size;
+          }
+
+        }
+      }
+
       if (mtype == MessageType.NIL) { // 0
         // dont do nuttin
 

@@ -1164,9 +1164,12 @@ public class NetcdfFile {
   }
 
   /**
-   * Add a Variable to the given group.
+   * Create a new Variable, and add to the given group.
    * @param g add to this group. If group is null, use root group
-   * @param v add this Variable
+   * @param shortName short name of the Variable
+   * @param dtype data type of the Variable
+   * @param dims list of dimension names
+   * @return the new Variable
    */
   public Variable addVariable(Group g, String shortName, DataType dtype, String dims) {
     if (immutable) throw new IllegalStateException("Cant modify");
@@ -1179,9 +1182,12 @@ public class NetcdfFile {
   }
 
   /**
-   * Add a Variable to the given group.
+   * Create a new Variable of type Datatype.CHAR, and add to the given group.
    * @param g add to this group. If group is null, use root group
-   * @param v add this Variable
+   * @param shortName short name of the Variable
+   * @param dims list of dimension names
+   * @param strlen dimension length of the inner (fastest changing) dimension
+   * @return the new Variable
    */
   public Variable addStringVariable(Group g, String shortName, String dims, int strlen) {
     if (immutable) throw new IllegalStateException("Cant modify");
@@ -1211,6 +1217,7 @@ public class NetcdfFile {
    * Add a variable attribute.
    * @param v add to this Variable.
    * @param att add this attribute
+   * @return the added Attribute
    */
   public Attribute addVariableAttribute(Variable v, Attribute att) {
     return v.addAttribute(att);

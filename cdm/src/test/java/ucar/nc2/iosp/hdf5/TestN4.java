@@ -19,8 +19,8 @@ public class TestN4 extends TestCase {
   }
 
   public void testReadNetcdf4() throws IOException {
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/filePos"));
-    String filename = "C:/data/netcdf4/tst_opaques.nc";
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = "C:/data/netcdf4/tst_enums.nc";
     NetcdfFile ncfile = TestNC2.open( filename);
     System.out.println( "\n**** testReadNetcdf4 done\n "+ncfile);
     ncfile.close();

@@ -1,0 +1,561 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fswiss\fcharset0 Arial;}}
+{\*\generator Msftedit 5.41.21.2500;}\viewkind4\uc1\pard\f0\fs20  date\par
+Wed Oct 10 18:08:29 MDT 2007\par
+\par
+bash-2.05$ ps -elf | grep java\par
+ 8 S    caron  3970  3496  0  50 20        ?    128        ? 18:08:06 pts/6    0:00 grep java\par
+ 8 S   tomcat 28030     1  0  40 20        ? 217436        ?   Oct 05 ?       11:13 /opt/jdk1.6.0_03/bin/java -Xmx2090m\par
+ 8 O   tomcat    92     1 22  99 20        ? 280801            Oct 05 ?       568:35 /opt/jdk1.6.0_03/bin/java -Xmx2080m\par
+\par
+http://motherlode.ucar.edu:8080/ wont respond\par
+\par
+last acccessLog:\par
+\par
+28.104.109.98 - - [10/Oct/2007:\b 13:06:06\b0  -0600] "GET /thredds/ncServer/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1?grid=Temperature_surfa\par
+ce&grid=u_wind&grid=v_wind HTTP/1.1" 500 2408 "null" "Java/1.5.0_12" 99288\par
+....\par
+\par
+128.104.109.98 - - [10/Oct/2007:\b 13:24:28\b0  -0600] "GET /thredds/ncServer/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1?grid=Temperature_surfa\par
+ce&grid=u_wind&grid=v_wind HTTP/1.1" 500 1298 "null" "Java/1.5.0_12" 96756\par
+...\par
+\par
+128.104.110.176 - - [10/Oct/2007:14:05:45 -0600] "GET /thredds/idd/radarLevel2?returns=dqc HTTP/1.1" 200 22975 "null" "Java/1.5.0_10" 6\par
+128.104.109.98 - - [10/Oct/2007:\b 14:07:15 \b0 -0600] "GET /thredds/ncServer/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1?grid=Temperature_surfa\par
+ce&grid=u_wind&grid=v_wind HTTP/1.1" 500 1298 "null" "Java/1.5.0_12" 101905\par
+\par
+128.104.110.176 - - [10/Oct/2007:14:07:41 -0600] "GET /thredds/idd/radarLevel2?returns=dqc HTTP/1.1" 200 22975 "null" "Java/1.5.0_10" 6\par
+128.104.108.81 - - [10/Oct/2007:14:08:08 -0600] "GET /thredds/idd/radarLevel2?returns=dqc HTTP/1.1" 200 22975 "null" "Java/1.5.0_12" 5\par
+128.104.109.98 - - [10/Oct/2007:14:08:14 -0600] "GET /thredds/dodsC/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?u_wind%5B0:1:0%5D%5B\par
+8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1" 200 2871841 "null" "IDV/NetcdfJava/HttpClient" 2000\par
+128.104.109.98 - - [10/Oct/2007:14:08:16 -0600] "GET /thredds/dodsC/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?u_wind%5B2:1:2%5D%5B\par
+8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1" 200 2871841 "null" "IDV/NetcdfJava/HttpClient" 1794\par
+128.104.109.98 - - [10/Oct/2007:14:08:18 -0600] "GET /thredds/dodsC/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?u_wind%5B4:1:4%5D%5B\par
+8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1" 200 2871841 "null" "IDV/NetcdfJava/HttpClient" 1708\par
+128.104.109.98 - - [10/Oct/2007:14:08:20 -0600] "GET /thredds/dodsC/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?v_wind%5B0:1:0%5D%5B\par
+8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1" 200 2871841 "null" "IDV/NetcdfJava/HttpClient" 1707\par
+128.104.109.98 - - [10/Oct/2007:14:08:22 -0600] "GET /thredds/dodsC/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?v_wind%5B2:1:2%5D%5B\par
+8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1" 200 2871841 "null" "IDV/NetcdfJava/HttpClient" 1579\par
+128.104.109.98 - - [10/Oct/2007:14:08:24 -0600] "GET /thredds/dodsC/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?v_wind%5B4:1:4%5D%5B\par
+8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1" 200 2871841 "null" "IDV/NetcdfJava/HttpClient" 1693\par
+128.117.149.64 - - [10/Oct/2007:14:10:35 -0600] "HEAD / HTTP/1.0" 200 - "null" "BigBrother/1.9c" 1\par
+128.117.149.64 - - [10/Oct/2007:14:19:04 -0600] "HEAD / HTTP/1.0" 200 - "null" "BigBrother/1.9c" 0\par
+65.55.210.86 - - [10/Oct/2007:14:19:04 -0600] "GET /robots.txt HTTP/1.0" 200 47 "null" "msnbot/1.0 (+http://search.msn.com/msnbot.htm)" 0\par
+cat localhost.2007-10-10.log\par
+\b Oct 10, 2007 1:06:06 PM\b0  org.apache.catalina.core.StandardWrapperValve invoke\par
+SEVERE: Servlet.service() for servlet NetcdfServer threw exception\par
+java.lang.OutOfMemoryError: Java heap space\par
+        at ucar.ma2.ArrayFloat.<init>(ArrayFloat.java:86)\par
+        at ucar.ma2.ArrayFloat$D4.<init>(ArrayFloat.java:313)\par
+        at ucar.ma2.ArrayFloat$D4.<init>(ArrayFloat.java:305)\par
+        at ucar.ma2.ArrayFloat.factory(ArrayFloat.java:51)\par
+        at ucar.ma2.ArrayFloat.factory(ArrayFloat.java:36)\par
+        at ucar.ma2.Array.factory(Array.java:130)\par
+        at ucar.ma2.Array.factory(Array.java:90)\par
+        at ucar.nc2.iosp.grib.GribServiceProvider.readData(GribServiceProvider.java:237)\par
+        at ucar.nc2.NetcdfFile.readData(NetcdfFile.java:1368)\par
+        at ucar.nc2.Variable._read(Variable.java:923)\par
+        at ucar.nc2.Variable.read(Variable.java:618)\par
+        at ucar.nc2.dataset.VariableDS._read(VariableDS.java:279)\par
+        at ucar.nc2.Variable.read(Variable.java:618)\par
+        at ucar.nc2.Variable.read(Variable.java:556)\par
+        at ucar.nc2.FileWriter.copySome(FileWriter.java:287)\par
+        at ucar.nc2.FileWriter.copyVarData(FileWriter.java:225)\par
+        at ucar.nc2.FileWriter.finish(FileWriter.java:459)\par
+        at thredds.servlet.NetcdfServlet.sendFile(NetcdfServlet.java:489)\par
+        at thredds.servlet.NetcdfServlet.doGet(NetcdfServlet.java:369)\par
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:690)\par
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:803)\par
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:290)\par
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:206)\par
+        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:228)\par
+        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:175)\par
+        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:433)\par
+        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:128)\par
+        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:104)\par
+        at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:517)\par
+        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:109)\par
+        at org.apache.catalina.valves.RequestFilterValve.process(RequestFilterValve.java:276)\par
+        at org.apache.catalina.valves.RemoteAddrValve.invoke(RemoteAddrValve.java:81)\par
+Oct 10, 2007 \b 1:24:28 \b0 PM org.apache.catalina.core.StandardWrapperValve invoke\par
+SEVERE: Servlet.service() for servlet NetcdfServer threw exception\par
+java.lang.OutOfMemoryError: Java heap space\par
+Oct 10, 2007 \b 2:07:15 \b0 PM org.apache.catalina.core.StandardWrapperValve invoke\par
+SEVERE: Servlet.service() for servlet NetcdfServer threw exception\par
+java.lang.OutOfMemoryError: Java heap space\par
+\par
+thredds log:\par
+\par
+2007-10-10T14:04:58.367 -0600 [ 419055544][   23942] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - -1 - 3601\par
+\b 2007-10-10T14:05:33.665 -0600 [ 419090842][   23943] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.109.98 - Request: "GET /thredds/ncServer/model/N\par
+CEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1?grid=Temperature_surface&grid=u_wind&grid=v_wind HTTP/1.1"\b0\par
+2007-10-10T14:05:45.723 -0600 [ 419102900][   23944] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.110.176 - Request: "GET /thredds/idd/radarLevel2\par
+?returns=dqc HTTP/1.1"\par
+2007-10-10T14:07:41.943 -0600 [ 419219120][   23945] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.110.176 - Request: "GET /thredds/idd/radarLevel2\par
+?returns=dqc HTTP/1.1"\par
+2007-10-10T14:08:08.647 -0600 [ 419245824][   23946] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.108.81 - Request: "GET /thredds/idd/radarLevel2?\par
+returns=dqc HTTP/1.1"\par
+2007-10-10T14:08:12.861 -0600 [ 419250038][   23947] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.109.98 - Request: "GET /thredds/dodsC/model/NCEP\par
+/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?u_wind%5B0:1:0%5D%5B8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1"\par
+2007-10-10T14:08:14.860 -0600 [ 419252037][   23947] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - -1 - 1999\par
+2007-10-10T14:08:15.083 -0600 [ 419252260][   23948] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.109.98 - Request: "GET /thredds/dodsC/model/NCEP\par
+/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?u_wind%5B2:1:2%5D%5B8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1"\par
+2007-10-10T14:08:16.876 -0600 [ 419254053][   23948] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - -1 - 1793\par
+2007-10-10T14:08:16.992 -0600 [ 419254169][   23949] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.109.98 - Request: "GET /thredds/dodsC/model/NCEP\par
+/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?u_wind%5B4:1:4%5D%5B8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1"\par
+2007-10-10T14:08:18.699 -0600 [ 419255876][   23949] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - -1 - 1706\par
+2007-10-10T14:08:18.853 -0600 [ 419256030][   23950] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.109.98 - Request: "GET /thredds/dodsC/model/NCEP\par
+/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?v_wind%5B0:1:0%5D%5B8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1"\par
+2007-10-10T14:08:20.559 -0600 [ 419257736][   23950] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - -1 - 1706\par
+2007-10-10T14:08:20.683 -0600 [ 419257860][   23951] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.109.98 - Request: "GET /thredds/dodsC/model/NCEP\par
+/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?v_wind%5B2:1:2%5D%5B8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1"\par
+2007-10-10T14:08:22.261 -0600 [ 419259438][   23951] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - -1 - 1578\par
+2007-10-10T14:08:22.468 -0600 [ 419259645][   23952] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.109.98 - Request: "GET /thredds/dodsC/model/NCEP\par
+/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1.dods?v_wind%5B4:1:4%5D%5B8:1:18%5D%5B0:1:180%5D%5B0:1:359%5D HTTP/1.1"\par
+2007-10-10T14:08:24.160 -0600 [ 419261337][   23952] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - -1 - 1691\par
+2007-10-10T14:08:52.883 -0600 [ 419290060][   23953] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.109.98 - Request: "GET /thredds/ncServer/model/N\par
+CEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1?grid=Temperature_surface&grid=u_wind&grid=v_wind HTTP/1.1"\par
+2007-10-10T14:15:44.122 -0600 [ 419701299][   23954] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.108.107 - Request: "GET /thredds/idd/radarLevel2\par
+?returns=dqc HTTP/1.1"\par
+2007-10-10T14:19:04.062 -0600 [ 419901239][   23955] INFO  - thredds.servlet.ServletUtil - Remote host: 129.79.246.237 - Request: "GET /thredds/ncss/metars?vari\par
+ables=all&north=47&west=-105&east=-100&south=45&latitude=&longitude=&stn=&temporal=range&time_start=2007-09-28T23%3A45%3A100%3A00Z&time_end=present&time=2007-09\par
+-28T23%3A45%3A04Z&accept=csv HTTP/1.1"\par
+2007-10-10T14:26:42.790 -0600 [ 420359967][   23956] INFO  - thredds.servlet.ServletUtil - Remote host: 129.79.246.237 - Request: "GET /thredds/ncss/metars?vari\par
+ables=all&spatial=all&north=47&west=-105&east=-100&south=45&latitude=&longitude=&stn=&temporal=range&time_start=2007-09-28T23%3A45%3A100%3A00Z&time_end=present&\par
+time=2007-09-28T23%3A45%3A04Z&accept=csv HTTP/1.1"\par
+2007-10-10T14:26:42.791 -0600 [ 420359968][   23957] INFO  - thredds.servlet.ServletUtil - Remote host: 192.150.34.11 - Request: "GET /thredds/dqc/latestModel-I\par
+nvCat1.0?nam_211 HTTP/1.1"\par
+2007-10-10T14:33:44.613 -0600 [ 420781790][   23959] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.110.176 - Request: "GET /thredds/idd/radarLevel2\par
+?returns=dqc HTTP/1.1"\par
+2007-10-10T14:41:14.874 -0600 [ 421232051][   23958] INFO  - thredds.servlet.ServletUtil - Remote host: 128.104.108.107 - Request: "GET /thredds/idd/radarLevel2\par
+?returns=dqc HTTP/1.1"\par
+2007-10-10T14:57:40.400 -0600 [ 422217577][   23960] INFO  - thredds.servlet.ServletUtil - Remote host: 129.79.246.237 - Request: "GET /thredds/ncss/metars?vari\par
+ables=all&north=47&west=-105&east=-100&south=45&spatial=point&latitude=47&longitude=-100&stn=&temporal=range&time_start=2007-09-28T23%3A45%3A100%3A00Z&time_end=\par
+present&time=2007-09-28T23%3A45%3A04Z&accept=csv HTTP/1.1"\par
+2007-10-10T14:57:40.400 -0600 [ 422217577][   23961] INFO  - thredds.servlet.ServletUtil - Remote host: 129.79.246.237 - Request: "GET /thredds/ncss/metars?vari\par
+ables=all&spatial=bb&north=47&west=-105&east=-100&south=46&latitude=47&longitude=-100&stn=&temporal=all&time_start=2007-09-28T23%3A45%3A100%3A00Z&time_end=prese\par
+nt&time=2007-09-28T23%3A45%3A04Z&accept=csv HTTP/1.1"\par
+2007-10-10T15:02:03.548 -0600 [ 422480725][   23965] INFO  - thredds.servlet.ServletUtil - Remote host: 66.45.3.169 - Request: "GET /thredds/fileServer/nexrad/c\par
+omposite/1km/files/N0R/20071010/Level3_Composite_N0R_20071010_2020.grib2 HTTP/1.0"\par
+----------------------\par
+\par
+scouring continues:\par
+\par
+\par
+[10/Oct/2007:14:15:44] CacheScourTask on/data/tmp/thredds/ncSubsetCache/\par
+----------------------\par
+\par
+[10/Oct/2007:14:26:42] CacheScourTask on/data/tmp/thredds/wcsCache/\par
+----------------------\par
+\par
+[10/Oct/2007:14:32:22] CacheScourTask on/data/tmp/thredds/ncSubsetCache/\par
+----------------------\par
+\par
+[10/Oct/2007:14:35:08] CacheScourTask on/data/tmp/thredds/ncSubsetCache/\par
+----------------------\par
+\par
+[10/Oct/2007:14:43:57] CacheScourTask on/data/tmp/thredds/wcsCache/\par
+----------------------\par
+\par
+[10/Oct/2007:14:53:24] CacheScourTask on/data/tmp/thredds/ncSubsetCache/\par
+ deleted /data/tmp/thredds/ncSubsetCache/-1632703782-GFS_Global_onedeg_20071010_1200.grib1.nc last= Wed Dec 31 17:00:00 MST 1969\par
+ deleted /data/tmp/thredds/ncSubsetCache/1813567092-GFS_Global_onedeg_20071010_1200.grib1.nc last= Wed Dec 31 17:00:00 MST 1969\par
+----------------------\par
+\par
+[10/Oct/2007:15:10:28] CacheScourTask on/data/tmp/thredds/wcsCache/\par
+----------------------\par
+\par
+[10/Oct/2007:15:11:47] CacheScourTask on/data/tmp/thredds/wcsCache/\par
+----------------------\par
+\par
+[10/Oct/2007:15:17:53] CacheScourTask on/data/tmp/thredds/ncSubsetCache/\par
+ deleted /data/tmp/thredds/ncSubsetCache/-1632703782-GFS_Global_onedeg_20071010_1200.grib1.nc last= Wed Dec 31 17:00:00 MST 1969\par
+ deleted /data/tmp/thredds/ncSubsetCache/1813567092-GFS_Global_onedeg_20071010_1200.grib1.nc last= Wed Dec 31 17:00:00 MST 1969\par
+----------------------\par
+\par
+[10/Oct/2007:15:19:38] CacheScourTask on/data/tmp/thredds/ncSubsetCache/\par
+----------------------\par
+\par
+[10/Oct/2007:15:19:38] CacheScourTask on/data/tmp/thredds/ncSubsetCache/\par
+----------------------\par
+\par
+[10/Oct/2007:15:28:20] CacheScourTask on/data/tmp/thredds/wcsCache/\par
+----------------------\par
+\par
+[10/Oct/2007:15:32:52] CacheScourTask on/data/tmp/thredds/ncSubsetCache/\par
+----------------------\par
+\par
+[10/Oct/2007:15:42:17] CacheScourTask on/data/tmp/thredds/wcsCache/\par
+----------------------\par
+\par
+[10/Oct/2007:16:01:31] CacheScourTask on/data/tmp/thredds/ncSubsetCache/\par
+----------------------\par
+\par
+\par
+==============\par
+\par
+try to recreate. loaad new 3.16 onto modev. status:\par
+\par
+Thread Group = main activeCount= 19\par
+   1 main RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   19 ContainerBackgroundProcessor[StandardEngine[Catalina]] TIMED_WAITING org.apache.catalina.loader.StandardClassLoader\par
+   20 http-9080-Acceptor-0 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   21 http-9443-Acceptor-0 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+\par
+   23 http-9080-1 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   25 http-9080-2 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   26 http-9080-3 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+\par
+   27 Timer-10 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   28 Timer-11 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   29 Timer-12 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   30 Timer-13 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   31 Timer-14 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   32 Timer-15 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   33 Timer-16 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   34 Timer-17 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   35 StationObsCollection.Rescan RUNNABLE org.apache.catalina.loader.WebappClassLoader\par
+   36 Timer-18 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   37 http-9443-1 RUNNABLE org.apache.catalina.loader.WebappClassLoader **** CURRENT ***\par
+   38 http-9443-2 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+\par
+\par
+now hit the server with the troublesome URL:\par
+\par
+ /thredds/ncServer/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1?grid=Temperature_surface&grid=u_wind&grid=v_wind \par
+\par
+\par
+2007-10-11T17:38:15.771 -0600 [    337055][      19] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/ncServer/model/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20071010_1200.grib1?grid=Temperature_surface&grid=u_wind&grid=v_wind HTTP/1.1"\par
+\par
+2007-10-11T17:46:29.727 -0600 [    831011][      19] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 842,657,088 - 493956 (842M took 439 secs)\par
+\par
+\par
+Cmd= General/showRuntime\par
+ freeMemory= 673.37456 Mb\par
+ totalMemory= 1885.5362559999999 Mb\par
+ maxMemory= 1953.169408 Mb\par
+ availableProcessors= 4\par
+\par
+   20 http-9080-Acceptor-0 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   21 http-9443-Acceptor-0 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+\par
+   23 http-9080-1 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   25 http-9080-2 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   26 http-9080-3 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+\par
+\par
+hit the ncss service on a very large file:\par
+\par
+http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd?var=Temperature\par
+\par
+java.lang.OutOfMemoryError: Java heap space\par
+\tab java.util.Arrays.copyOfRange(Arrays.java:3209)\par
+\tab java.lang.String.<init>(String.java:216)\par
+\tab java.io.BufferedReader.readLine(BufferedReader.java:331)\par
+\tab java.io.BufferedReader.readLine(BufferedReader.java:362)\par
+\tab ucar.grib.Index.open(Index.java:142)\par
+\tab ucar.grib.Index.open(Index.java:96)\par
+\tab ucar.nc2.iosp.grib.GribServiceProvider.getIndex(GribServiceProvider.java:121)\par
+\tab ucar.nc2.iosp.grib.GribServiceProvider.open(GribServiceProvider.java:75)\par
+\tab ucar.nc2.NetcdfFile.<init>(NetcdfFile.java:1071)\par
+\tab ucar.nc2.NetcdfFile.open(NetcdfFile.java:468)\par
+\tab ucar.nc2.NetcdfFile.open(NetcdfFile.java:261)\par
+\tab ucar.nc2.dataset.NetcdfDataset.openFile(NetcdfDataset.java:341)\par
+\tab ucar.nc2.dataset.NetcdfDataset.openDataset(NetcdfDataset.java:175)\par
+\tab ucar.nc2.ncml.Aggregation$Dataset$PolymorphicReader.openDataset(Aggregation.java:1282)\par
+\tab ucar.nc2.dataset.NetcdfDatasetCache.acquire(NetcdfDatasetCache.java:201)\par
+\tab ucar.nc2.ncml.Aggregation$Dataset._acquireFile(Aggregation.java:1184)\par
+\tab ucar.nc2.ncml.Aggregation$Dataset.acquireFile(Aggregation.java:1172)\par
+\tab ucar.nc2.ncml.Aggregation$Dataset.read(Aggregation.java:1226)\par
+\tab ucar.nc2.ncml.AggregationFmrc.read(AggregationFmrc.java:339)\par
+\tab ucar.nc2.dataset.VariableDS._read(VariableDS.java:277)\par
+\tab ucar.nc2.Variable.read(Variable.java:618)\par
+\tab ucar.nc2.dt.fmrc.FmrcImpl$Subsetter.read(FmrcImpl.java:775)\par
+\tab ucar.nc2.dataset.VariableDS._read(VariableDS.java:277)\par
+\tab ucar.nc2.Variable.read(Variable.java:618)\par
+\tab ucar.nc2.Variable.read(Variable.java:556)\par
+\tab ucar.nc2.FileWriter.copySome(FileWriter.java:287)\par
+\tab ucar.nc2.FileWriter.copyVarData(FileWriter.java:225)\par
+\tab ucar.nc2.FileWriter.finish(FileWriter.java:459)\par
+\tab ucar.nc2.dt.grid.NetcdfCFWriter.makeFile(NetcdfCFWriter.java:198)\par
+\tab thredds.server.ncSubset.GridServlet.sendFile(GridServlet.java:395)\par
+\tab thredds.server.ncSubset.GridServlet.processGrid(GridServlet.java:354)\par
+\tab thredds.server.ncSubset.GridServlet.doGet(GridServlet.java:148)\par
+\par
+\par
+no sign that the memory or threads didnt recover:\par
+\par
+Cmd= General/showRuntime\par
+ freeMemory= 1058.912824 Mb\par
+ totalMemory= 1956.1840639999998 Mb\par
+ maxMemory= 1956.1840639999998 Mb\par
+ availableProcessors= 4\par
+\par
+\par
+Thread Group = system activeCount= 22\par
+   2 Reference Handler WAITING Default\par
+   3 Finalizer WAITING Default\par
+   4 Signal Dispatcher RUNNABLE sun.misc.Launcher$AppClassLoader\par
+\par
+Thread Group = main activeCount= 19\par
+   1 main RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   19 ContainerBackgroundProcessor[StandardEngine[Catalina]] TIMED_WAITING org.apache.catalina.loader.StandardClassLoader\par
+   20 http-9080-Acceptor-0 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   21 http-9443-Acceptor-0 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   23 http-9080-1 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   25 http-9080-2 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   26 http-9080-3 WAITING org.apache.catalina.loader.StandardClassLoader\par
+\par
+   27 Timer-10 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   28 Timer-11 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   29 Timer-12 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   30 Timer-13 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   31 Timer-14 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   32 Timer-15 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   33 Timer-16 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   34 Timer-17 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   35 StationObsCollection.Rescan TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   36 Timer-18 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   37 http-9443-1 RUNNABLE org.apache.catalina.loader.WebappClassLoader **** CURRENT ***\par
+   38 http-9443-2 WAITING org.apache.catalina.loader.StandardClassLoader\par
+\par
+again:\par
+\par
+http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd?var=Temperature&spatial=all&temporal=all\par
+\par
+got out of memory\par
+\par
+Cmd= General/showRuntime\par
+ freeMemory= 1289.3928799999999 Mb\par
+ totalMemory= 2092.171264 Mb\par
+ maxMemory= 2092.171264 Mb\par
+ availableProcessors= 4\par
+\par
+\par
+Thread Group = system activeCount= 22\par
+   2 Reference Handler WAITING Default\par
+   3 Finalizer WAITING Default\par
+   4 Signal Dispatcher RUNNABLE sun.misc.Launcher$AppClassLoader\par
+\par
+Thread Group = main activeCount= 19\par
+   1 main RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   19 ContainerBackgroundProcessor[StandardEngine[Catalina]] TIMED_WAITING org.apache.catalina.loader.StandardClassLoader\par
+   20 http-9080-Acceptor-0 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   21 http-9443-Acceptor-0 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   23 http-9080-1 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   25 http-9080-2 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   26 http-9080-3 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   27 Timer-10 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   28 Timer-11 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   29 Timer-12 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   30 Timer-13 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   31 Timer-14 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   32 Timer-15 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   33 Timer-16 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   34 Timer-17 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   35 StationObsCollection.Rescan TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   36 Timer-18 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   37 http-9443-1 RUNNABLE org.apache.catalina.loader.WebappClassLoader **** CURRENT ***\par
+   38 http-9443-2 WAITING org.apache.catalina.loader.StandardClassLoader\par
+\par
+run again (3 times)\par
+\par
+when out of memory, no second message in the logs:\par
+\par
+59:29.752 -0600 [   1611036][      35] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/catalog/fmrc/NCEP/GFS/Global_onedeg/catalog.html HTTP/1.1"\par
+2007-10-11T17:59:33.397 -0600 [   1614681][      36] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/catalog/fmrc/NCEP/GFS/Global_onedeg/catalog.html HTTP/1.1"\par
+2007-10-11T17:59:53.493 -0600 [   1634777][      36] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 4014 - 20096\par
+2007-10-11T17:59:53.494 -0600 [   1634778][      35] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 4014 - 23742\par
+2007-10-11T17:59:56.772 -0600 [   1638056][      37] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/catalog/fmrc/NCEP/GFS/Global_onedeg/catalog.html?dataset=fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd HTTP/1.1"\par
+2007-10-11T17:59:56.786 -0600 [   1638070][      37] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 19042 - 14\par
+2007-10-11T17:59:56.831 -0600 [   1638115][      38] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/upc.css HTTP/1.1"\par
+2007-10-11T17:59:56.841 -0600 [   1638125][      38] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 3418 - 10\par
+2007-10-11T17:59:56.862 -0600 [   1638146][      39] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/unidataLogo.gif HTTP/1.1"\par
+2007-10-11T17:59:56.873 -0600 [   1638157][      39] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 5294 - 12\par
+2007-10-11T18:00:00.544 -0600 [   1641828][      40] INFO  - thredds.servlet.ServletUtil - thredds.server.ncSubset.GridServlet.init()\par
+2007-10-11T18:00:00.545 -0600 [   1641829][      40] INFO  - thredds.server.ncSubset.GridServlet - --- initialized thredds.server.ncSubset.GridServlet\par
+2007-10-11T18:00:00.547 -0600 [   1641831][      41] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/ncss/grid/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd/dataset.html HTTP/1.1"\par
+2007-10-11T18:00:02.967 -0600 [   1644251][      41] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 24953 - 2420\par
+\b 2007-10-11T18:00:36.241 -0600 [   1677525][      42] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/ncss/grid/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd?var=Temperature&spatial=all&north=90.0000&west=0.0000&east=-1.0000&south=-90.0000&temporal=all&time_start=2007-09-27T00%3A00%3A00Z&time_end=2007-10-19T06%3A00%3A00Z&horizStride= HTTP/1.1"\b0\par
+2007-10-11T18:55:06.124 -0600 [   4947408][      43] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/debug?General/showRuntime HTTP/1.1"\par
+2007-10-11T18:55:06.127 -0600 [   4947411][      43] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 2460 - 3\par
+2007-10-11T18:55:59.657 -0600 [   5000941][      44] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/debug HTTP/1.1"\par
+2007-10-11T18:55:59.660 -0600 [   5000944][      44] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 2311 - 3\par
+\b 2007-10-11T18:58:30.191 -0600 [   5151475][      45] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/ncss/grid/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd?var=Temperature&spatial=all&temporal=all HTTP/1.1"\b0\par
+2007-10-11T19:08:26.068 -0600 [   5747352][      46] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/debug?General/showRuntime HTTP/1.1"\par
+2007-10-11T19:08:26.072 -0600 [   5747356][      46] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 2446 - 4\par
+2007-10-11T19:08:38.430 -0600 [   5759714][      47] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/debug?General/showRuntime HTTP/1.1"\par
+2007-10-11T19:08:38.434 -0600 [   5759718][      47] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 2448 - 4\par
+2007-10-11T19:09:34.333 -0600 [   5815617][      48] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/debug?General/showRuntime HTTP/1.1"\par
+2007-10-11T19:09:34.337 -0600 [   5815621][      48] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 2453 - 4\par
+\b 2007-10-11T19:10:04.304 -0600 [   5845588][      49] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/ncss/grid/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd?var=Temperature&spatial=all&temporal=all HTTP/1.1"\b0\par
+2007-10-11T19:17:12.353 -0600 [   6273637][      50] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/debug HTTP/1.1"\par
+2007-10-11T19:17:12.356 -0600 [   6273640][      50] INFO  - thredds.servlet.ServletUtil - Request Completed - 200 - 2311 - 3\par
+2007-10-11T19:17:18.933 -0600 [   6280217][      51] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.71 - Request: "GET /thredds/content/logs/threddsServlet.log HTTP/1.1"\par
+\par
+the exceptions are logged in \b localhost.2007-10-11.log\b0\par
+\par
+Oct 11, 2007 6:35:11 PM org.apache.catalina.core.StandardWrapperValve invoke\par
+SEVERE: Servlet.service() for servlet GridSubsetService threw exception\par
+java.lang.OutOfMemoryError: Java heap space\par
+        at java.util.Arrays.copyOfRange(Arrays.java:3209)\par
+        at java.lang.String.<init>(String.java:216)\par
+        at java.io.BufferedReader.readLine(BufferedReader.java:331)\par
+        at java.io.BufferedReader.readLine(BufferedReader.java:362)\par
+        at ucar.grib.Index.open(Index.java:142)\par
+        at ucar.grib.Index.open(Index.java:96)\par
+        at ucar.nc2.iosp.grib.GribServiceProvider.getIndex(GribServiceProvider.java:121)\par
+        at ucar.nc2.iosp.grib.GribServiceProvider.open(GribServiceProvider.java:75)\par
+        at ucar.nc2.NetcdfFile.<init>(NetcdfFile.java:1071)\par
+        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:468)\par
+        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:261)\par
+        at ucar.nc2.dataset.NetcdfDataset.openFile(NetcdfDataset.java:341)\par
+        at ucar.nc2.dataset.NetcdfDataset.openDataset(NetcdfDataset.java:175)\par
+        at ucar.nc2.ncml.Aggregation$Dataset$PolymorphicReader.openDataset(Aggregation.java:1282)\par
+        at ucar.nc2.dataset.NetcdfDatasetCache.acquire(NetcdfDatasetCache.java:201)\par
+        at ucar.nc2.ncml.Aggregation$Dataset._acquireFile(Aggregation.java:1184)\par
+        at ucar.nc2.ncml.Aggregation$Dataset.acquireFile(Aggregation.java:1172)\par
+        at ucar.nc2.ncml.Aggregation$Dataset.read(Aggregation.java:1226)\par
+        at ucar.nc2.ncml.AggregationFmrc.read(AggregationFmrc.java:339)\par
+        at ucar.nc2.dataset.VariableDS._read(VariableDS.java:277)\par
+        at ucar.nc2.Variable.read(Variable.java:618)\par
+        at ucar.nc2.dt.fmrc.FmrcImpl$Subsetter.read(FmrcImpl.java:775)\par
+        at ucar.nc2.dataset.VariableDS._read(VariableDS.java:277)\par
+        at ucar.nc2.Variable.read(Variable.java:618)\par
+        at ucar.nc2.Variable.read(Variable.java:556)\par
+        at ucar.nc2.FileWriter.copySome(FileWriter.java:287)\par
+        at ucar.nc2.FileWriter.copyVarData(FileWriter.java:225)\par
+        at ucar.nc2.FileWriter.finish(FileWriter.java:459)\par
+        at ucar.nc2.dt.grid.NetcdfCFWriter.makeFile(NetcdfCFWriter.java:198)\par
+        at thredds.server.ncSubset.GridServlet.sendFile(GridServlet.java:395)\par
+        at thredds.server.ncSubset.GridServlet.processGrid(GridServlet.java:354)\par
+        at thredds.server.ncSubset.GridServlet.doGet(GridServlet.java:148)\par
+Oct 11, 2007 6:58:58 PM org.apache.catalina.core.StandardWrapperValve invoke\par
+SEVERE: Servlet.service() for servlet GridSubsetService threw exception\par
+java.lang.OutOfMemoryError: Java heap space\par
+        at ucar.ma2.ArrayFloat.<init>(ArrayFloat.java:86)\par
+        at ucar.ma2.ArrayFloat$D4.<init>(ArrayFloat.java:313)\par
+        at ucar.ma2.ArrayFloat$D4.<init>(ArrayFloat.java:305)\par
+        at ucar.ma2.ArrayFloat.factory(ArrayFloat.java:51)\par
+        at ucar.ma2.ArrayFloat.factory(ArrayFloat.java:36)\par
+        at ucar.ma2.Array.factory(Array.java:130)\par
+        at ucar.ma2.Array.factory(Array.java:79)\par
+        at ucar.nc2.dt.fmrc.FmrcImpl$Subsetter.read(FmrcImpl.java:758)\par
+        at ucar.nc2.dataset.VariableDS._read(VariableDS.java:277)\par
+        at ucar.nc2.Variable.read(Variable.java:618)\par
+        at ucar.nc2.Variable.read(Variable.java:556)\par
+        at ucar.nc2.FileWriter.copySome(FileWriter.java:287)\par
+        at ucar.nc2.FileWriter.copyVarData(FileWriter.java:225)\par
+        at ucar.nc2.FileWriter.finish(FileWriter.java:459)\par
+        at ucar.nc2.dt.grid.NetcdfCFWriter.makeFile(NetcdfCFWriter.java:198)\par
+        at thredds.server.ncSubset.GridServlet.sendFile(GridServlet.java:395)\par
+        at thredds.server.ncSubset.GridServlet.processGrid(GridServlet.java:354)\par
+        at thredds.server.ncSubset.GridServlet.doGet(GridServlet.java:148)\par
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:690)\par
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:803)\par
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:290)\par
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:206)\par
+        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:228)\par
+        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:175)\par
+        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:433)\par
+        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:128)\par
+        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:104)\par
+        at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:517)\par
+        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:109)\par
+        at org.apache.catalina.valves.RequestFilterValve.process(RequestFilterValve.java:276)\par
+        at org.apache.catalina.valves.RemoteAddrValve.invoke(RemoteAddrValve.java:81)\par
+        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:216)\par
+Oct 11, 2007 7:10:31 PM org.apache.catalina.core.StandardWrapperValve invoke\par
+SEVERE: Servlet.service() for servlet GridSubsetService threw exception\par
+java.lang.OutOfMemoryError: Java heap space\par
+        at ucar.ma2.ArrayFloat.<init>(ArrayFloat.java:86)\par
+        at ucar.ma2.ArrayFloat$D4.<init>(ArrayFloat.java:313)\par
+        at ucar.ma2.ArrayFloat$D4.<init>(ArrayFloat.java:305)\par
+        at ucar.ma2.ArrayFloat.factory(ArrayFloat.java:51)\par
+        at ucar.ma2.ArrayFloat.factory(ArrayFloat.java:36)\par
+        at ucar.ma2.Array.factory(Array.java:130)\par
+        at ucar.ma2.Array.factory(Array.java:79)\par
+        at ucar.nc2.dt.fmrc.FmrcImpl$Subsetter.read(FmrcImpl.java:758)\par
+        at ucar.nc2.dataset.VariableDS._read(VariableDS.java:277)\par
+        at ucar.nc2.Variable.read(Variable.java:618)\par
+        at ucar.nc2.Variable.read(Variable.java:556)\par
+        at ucar.nc2.FileWriter.copySome(FileWriter.java:287)\par
+        at ucar.nc2.FileWriter.copyVarData(FileWriter.java:225)\par
+        at ucar.nc2.FileWriter.finish(FileWriter.java:459)\par
+        at ucar.nc2.dt.grid.NetcdfCFWriter.makeFile(NetcdfCFWriter.java:198)\par
+        at thredds.server.ncSubset.GridServlet.sendFile(GridServlet.java:395)\par
+        at thredds.server.ncSubset.GridServlet.processGrid(GridServlet.java:354)\par
+        at thredds.server.ncSubset.GridServlet.doGet(GridServlet.java:148)\par
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:690)\par
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:803)\par
+        at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:290)\par
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:206)\par
+        at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:228)\par
+        at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:175)\par
+        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:433)\par
+        at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:128)\par
+        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:104)\par
+        at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:517)\par
+        at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:109)\par
+        at org.apache.catalina.valves.RequestFilterValve.process(RequestFilterValve.java:276)\par
+        at org.apache.catalina.valves.RemoteAddrValve.invoke(RemoteAddrValve.java:81)\par
+        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:216)\par
+Oct 11, 2007 7:21:25 PM org.apache.catalina.core.StandardWrapperValve invoke\par
+SEVERE: Servlet.service() for servlet GridSubsetService threw exception\par
+java.lang.OutOfMemoryError: Java heap space\par
+\par
+the 4th one doesnt seem to show the stack trace. \par
+\par
+the runtime still seems fine:\par
+\par
+Cmd= General/showRuntime\par
+ freeMemory= 1368.419528 Mb\par
+ totalMemory= 2170.4867839999997 Mb\par
+ maxMemory= 2170.4867839999997 Mb\par
+ availableProcessors= 4\par
+\par
+\par
+Thread Group = system activeCount= 22\par
+   2 Reference Handler WAITING Default\par
+   3 Finalizer WAITING Default\par
+   4 Signal Dispatcher RUNNABLE sun.misc.Launcher$AppClassLoader\par
+\par
+Thread Group = main activeCount= 19\par
+   1 main RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   19 ContainerBackgroundProcessor[StandardEngine[Catalina]] TIMED_WAITING org.apache.catalina.loader.StandardClassLoader\par
+   20 http-9080-Acceptor-0 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   21 http-9443-Acceptor-0 RUNNABLE org.apache.catalina.loader.StandardClassLoader\par
+   23 http-9080-1 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   25 http-9080-2 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   26 http-9080-3 WAITING org.apache.catalina.loader.StandardClassLoader\par
+   27 Timer-10 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   28 Timer-11 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   29 Timer-12 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   30 Timer-13 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   31 Timer-14 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   32 Timer-15 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   33 Timer-16 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   34 Timer-17 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   35 StationObsCollection.Rescan TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   36 Timer-18 TIMED_WAITING org.apache.catalina.loader.WebappClassLoader\par
+   37 http-9443-1 RUNNABLE org.apache.catalina.loader.WebappClassLoader **** CURRENT ***\par
+   38 http-9443-2 WAITING org.apache.catalina.loader.StandardClassLoader\par
+\par
+4th and 5th return\par
+\par
+javax.servlet.ServletException: Servlet execution threw an exception\par
+\par
+root cause\par
+\par
+java.lang.OutOfMemoryError: Java heap space\par
+\par
+4x simultaneous, no obvious effect\par
+\par
+switch to ncServer:\par
+\par
+http://motherlode.ucar.edu:9080/thredds/ncServer/fmrc/NCEP/GFS/Global_onedeg/NCEP-GFS-Global_onedeg_best.ncd?grid=Temperature&west=0.000&east=-1.000&north=90.000&south=-90.000&time_start=0&time_end=534\par
+\par
+its funny that the manager never shows multiple threads. could it be multiplexing somehow ???\par
+\par
+\par
+}
+ 

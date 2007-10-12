@@ -665,7 +665,7 @@ public class Variable implements VariableIF {
    *
    * @param sectionSpec specification string, eg "1:2,10,:,1:100:10". May optionally have ().
    * @return the requested data in a memory-resident Array
-   * @see ucar.ma2.Section(String) for sectionSpec syntax
+   * @see ucar.ma2.Section for sectionSpec syntax
    */
   public Array read(String sectionSpec) throws IOException, InvalidRangeException {
     return read(new Section(sectionSpec));

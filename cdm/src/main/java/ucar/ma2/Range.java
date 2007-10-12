@@ -629,7 +629,7 @@ public final class Range {
    * Check ranges are valid
    * @param section
    * @param shape
-   * @return
+   * @return error message, or null if all ok
    * @deprecated use Section.checkInRange(int shape[])
    */
   public static String checkInRange( List section, int shape[]) {
