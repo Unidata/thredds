@@ -32,6 +32,7 @@ import ucar.nc2.Group;
 
 import java.io.IOException;
 import java.nio.*;
+import java.util.Date;
 
 /**
  * HDF5 I/O
@@ -127,6 +128,23 @@ public class H5iosp extends AbstractIOServiceProvider {
       H5chunkFilterLayout index = new H5chunkFilterLayout(v2, wantSection, myRaf, vinfo.mfp.getFilters());
       data = readFilteredData(v2, index, vinfo.getFillValue());
 
+    } else if (vinfo.hdfType == 2) { // time
+      if (debug) H5header.debugOut.println("read time " + v2.getName() + " vinfo = " + vinfo);
+
+      Indexer index = RegularSectionLayout.factory(dataPos, vinfo.mdt.timeType.getSize(), new Section(v2.getShape()), wantSection);
+      data = readData(v2, index, vinfo.mdt.timeType, wantSection.getShape(), vinfo.getFillValueDefault(vinfo.mdt.timeType));
+      Array timeArray = Array.factory(vinfo.mdt.timeType.getPrimitiveClassType(), wantSection.getShape(), data);
+
+      // now transform into a String array
+      String[] stringData = new String[(int) timeArray.getSize()];
+      int count = 0;
+      IndexIterator ii = timeArray.getIndexIterator();
+      while(ii.hasNext()) {
+        long time = ii.getLongNext();
+        stringData[count++] = headerParser.formatter.toDateTimeStringISO( new Date(time));
+      }
+      return Array.factory(String.class, wantSection.getShape(), stringData);
+
     } else if (vinfo.hdfType == 8) { // enum
       if (debug) H5header.debugOut.println("read enum " + v2.getName() + " vinfo = " + vinfo);
 
@@ -191,20 +209,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       String[] result = new String[nelems];
       for (int i = 0; i < nelems; i++) {
         long address = vinfo.dataPos + vinfo.mdt.byteSize * i;
-        H5header.HeapIdentifier heapId = headerParser.getHeapIdentifier(address);
-        if (debugVlen) H5header.debugOut.println("HeapIdentifier address=" + address + heapId);
-        H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
-        myRaf.seek(ho.dataPos);
-        long objId = myRaf.readLong();
-        if (debugVlen) H5header.debugOut.println(" read Object Reference " + objId + " at HeapObject " + ho);
-        H5header.DataObject dobj = headerParser.getDataObject(null, objId);
-        if (dobj == null) {
-          log.error("H5iosp.readVlenData cant find dataObject id= " + objId);
-          result[i] = null;
-        } else {
-          if (debugVlen) System.out.println(" Referenced object= " + dobj);
-          result[i] = dobj.who;
-        }
+        result[i] =  headerParser.readHeapReferenceObject( address);
       }
       return result;
     }
@@ -293,16 +298,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         Indexer.Chunk chunk = index.next();
         if (chunk == null) continue;
         for (int i = 0; i < chunk.getNelems(); i++) {
-          H5header.HeapIdentifier heapId = headerParser.getHeapIdentifier(chunk.getFilePos() + index.getElemSize() * i);
-          if (debugString)
-            H5header.debugOut.println("getHeapIdentifier= " + (chunk.getFilePos() + index.getElemSize() * i) + " chunk= " + chunk);
-          H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
-          if (debugString) H5header.debugOut.println(" readString at HeapObject " + ho);
-
-          byte[] ba = new byte[(int) ho.dataSize];
-          myRaf.seek(ho.dataPos);
-          myRaf.read(ba);
-          sa[count++] = new String(ba);
+          sa[count++] = headerParser.readHeapString(chunk.getFilePos() + index.getElemSize() * i);
         }
       }
       return sa;

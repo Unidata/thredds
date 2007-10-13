@@ -68,6 +68,8 @@ public class TestH5read extends TestCase {
     System.out.println("\n------Reading filename "+filename);
     try {
       NetcdfFile ncfile = TestH5.open(filename);
+      System.out.println("\n"+ncfile);
+
       for (Variable v : ncfile.getVariables()) {
         if (v.getSize() > max_size) {
           Section s = makeSubset(v);

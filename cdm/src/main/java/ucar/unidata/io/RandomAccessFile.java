@@ -362,7 +362,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * use this. Does not currently affect writes.
    * Default values is BIG_ENDIAN.
    *
-   * @param endian BIG_ENDIAN or LITTLE_ENDIAN
+   * @param endian RandomAccessFile.BIG_ENDIAN or RandomAccessFile.LITTLE_ENDIAN
    */
   public void order(int endian) {
     this.bigEndian = (endian == BIG_ENDIAN);
