@@ -48,7 +48,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugString = false;
   static boolean debugFilterIndexer = false;
   static boolean debugChunkIndexer = false;
-  static boolean debugVlen  = false;
+  static boolean debugVlen = false;
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
 
@@ -127,6 +127,32 @@ public class H5iosp extends AbstractIOServiceProvider {
       H5chunkFilterLayout index = new H5chunkFilterLayout(v2, wantSection, myRaf, vinfo.mfp.getFilters());
       data = readFilteredData(v2, index, vinfo.getFillValue());
 
+    } else if (vinfo.hdfType == 8) { // enum
+      if (debug) H5header.debugOut.println("read enum " + v2.getName() + " vinfo = " + vinfo);
+
+      // gotta read the actual dataType
+      H5header.TypeInfo baseInfo = vinfo.getBaseType();
+      if (baseInfo.byteOrder >= 0) {
+        myRaf.order(baseInfo.byteOrder);
+        if (debug)
+          H5header.debugOut.println("$$set byteOrder to  " + (baseInfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? " LittleEndian" : " BigEndian"));
+      }
+
+      Indexer index = RegularSectionLayout.factory(dataPos, baseInfo.dataType.getSize(), new Section(v2.getShape()), wantSection);
+      data = readData(v2, index, baseInfo.dataType, wantSection.getShape(), vinfo.getFillValueDefault(baseInfo.dataType));
+      Array codesArray = Array.factory(baseInfo.dataType.getPrimitiveClassType(), wantSection.getShape(), data);
+
+      // now transform into a String array
+      String[] stringData = new String[(int) codesArray.getSize()];
+      int count = 0;
+      IndexIterator ii = codesArray.getIndexIterator();
+      while(ii.hasNext()) {
+        int code = ii.getIntNext();
+        stringData[count++] = vinfo.mdt.map.get(code);
+      }
+      return Array.factory(String.class, wantSection.getShape(), stringData);
+
+
     } else if (vinfo.hdfType == 9) { // vlen
       if (debug) H5header.debugOut.println("read variable length" + v2.getName() + " vinfo = " + vinfo);
       data = readVlenData(v2, vinfo, vinfo.getFillValue());
@@ -141,10 +167,10 @@ public class H5iosp extends AbstractIOServiceProvider {
         index = RegularSectionLayout.factory(dataPos, v2.getElementSize(), new Section(v2.getShape()), wantSection);
       }
 
-      if (vinfo.byteOrder >= 0) {
-        myRaf.order(vinfo.byteOrder);
+      if (vinfo.typeInfo.byteOrder >= 0) {
+        myRaf.order(vinfo.typeInfo.byteOrder);
         if (debug)
-          H5header.debugOut.println("$$set byteOrder to  " + (vinfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? " LittleEndian" : " BigEndian"));
+          H5header.debugOut.println("$$set byteOrder to  " + (vinfo.typeInfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? " LittleEndian" : " BigEndian"));
       }
 
       data = readData(v2, index, dataType, wantSection.getShape(), vinfo.getFillValue());
@@ -170,14 +196,14 @@ public class H5iosp extends AbstractIOServiceProvider {
         H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
         myRaf.seek(ho.dataPos);
         long objId = myRaf.readLong();
-        if (debugVlen) H5header.debugOut.println(" read Object Reference "+objId+" at HeapObject " + ho);
-        H5header.DataObject dobj = headerParser.findDataObject(objId);
+        if (debugVlen) H5header.debugOut.println(" read Object Reference " + objId + " at HeapObject " + ho);
+        H5header.DataObject dobj = headerParser.getDataObject(null, objId);
         if (dobj == null) {
           log.error("H5iosp.readVlenData cant find dataObject id= " + objId);
           result[i] = null;
         } else {
-          if (debugVlen) System.out.println(" Referenced object= " + dobj.getName());
-          result[i] = dobj.getName();
+          if (debugVlen) System.out.println(" Referenced object= " + dobj);
+          result[i] = dobj.who;
         }
       }
       return result;
@@ -194,8 +220,10 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @param shape     the shape of the output
    * @param fillValue fill value as a wrapped primitive
    * @return primitive array with data read in
+   * @throws java.io.IOException            if read error
+   * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  private Object readData (Variable v, Indexer index, DataType dataType, int[] shape, Object fillValue) throws java.io.IOException, InvalidRangeException {
+  private Object readData(Variable v, Indexer index, DataType dataType, int[] shape, Object fillValue) throws java.io.IOException, InvalidRangeException {
     int size = (int) index.getTotalNelems();
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
@@ -297,21 +325,12 @@ public class H5iosp extends AbstractIOServiceProvider {
       }
       return asw;
 
-    } else if (dataType == DataType.ENUM) {  // LOOK - must be based on the parent type
-      int[] pa = new int[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        if (chunk == null) continue;
-        myRaf.seek(chunk.getFilePos());
-        myRaf.readInt(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
     }
 
     throw new IllegalStateException();
   }
 
-  protected Object fillArray( int size, DataType dataType, Object fillValue) throws java.io.IOException, InvalidRangeException {
+  protected Object fillArray(int size, DataType dataType, Object fillValue) throws java.io.IOException, InvalidRangeException {
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
       byte[] pa = new byte[size];
@@ -358,23 +377,17 @@ public class H5iosp extends AbstractIOServiceProvider {
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
 
+    } else if ((dataType == DataType.STRING) || (dataType == DataType.ENUM)) {
+      String[] pa = new String[size];
+      for (int i = 0; i < size; i++) pa[i] = (String) fillValue;
+      return pa;
     }
 
     throw new IllegalStateException();
   }
 
-  /**
-   * Read data subset from file for a variable, create primitive array.
-   *
-   * @param v     the variable to read.
-   * @param index handles skipping around in the file.
-   * @return primitive array with data read in
-   */
-  private Object readFilteredData
-          (Variable
-                  v, H5chunkFilterLayout
-                  index, Object
-                  fillValue) throws java.io.IOException, InvalidRangeException {
+  private Object readFilteredData(Variable v, H5chunkFilterLayout index, Object fillValue)
+          throws java.io.IOException, InvalidRangeException {
     DataType dataType = v.getDataType();
     int size = (int) index.getTotalNelems();
 
@@ -505,10 +518,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     throw new IllegalStateException();
   }
 
-  private StructureData readStructure
-          (Structure
-                  s, ArrayStructureW
-                  asw, long dataPos) throws IOException, InvalidRangeException {
+  private StructureData readStructure(Structure s, ArrayStructureW asw, long dataPos) throws IOException, InvalidRangeException {
     StructureDataW sdata = new StructureDataW(asw.getStructureMembers());
     if (debug) H5header.debugOut.println(" readStructure " + s.getName() + " dataPos = " + dataPos);
 
@@ -668,9 +678,7 @@ static Object convert( byte[] barray, DataType dataType, int byteOrder) {
 
   // convert byte array to char array
 
-  protected char[] convertByteToChar
-          (
-                  byte[] byteArray) {
+  protected char[] convertByteToChar(byte[] byteArray) {
     int size = byteArray.length;
     char[] cbuff = new char[size];
     for (int i = 0; i < size; i++)
@@ -679,9 +687,7 @@ static Object convert( byte[] barray, DataType dataType, int byteOrder) {
   }
 
   // convert char array to byte array
-  protected byte[] convertCharToByte
-          (
-                  char[] from) {
+  protected byte[] convertCharToByte(char[] from) {
     int size = from.length;
     byte[] to = new byte[size];
     for (int i = 0; i < size; i++)
@@ -819,13 +825,11 @@ static Object convert( byte[] barray, DataType dataType, int byteOrder) {
 
   //////////////////////////////////////////////////////////////////////////
   // utilities
-  public boolean syncExtend
-          () {
+  public boolean syncExtend() {
     return false;
   }
 
-  public boolean sync
-          () {
+  public boolean sync() {
     return false;
   }
 
@@ -834,8 +838,7 @@ static Object convert( byte[] barray, DataType dataType, int byteOrder) {
    *
    * @throws IOException on io error
    */
-  public void flush
-          () throws IOException {
+  public void flush() throws IOException {
     myRaf.flush();
   }
 
@@ -844,8 +847,7 @@ static Object convert( byte[] barray, DataType dataType, int byteOrder) {
    *
    * @throws IOException on io error
    */
-  public void close
-          () throws IOException {
+  public void close() throws IOException {
     if (myRaf != null)
       myRaf.close();
     headerParser.close();
@@ -854,9 +856,7 @@ static Object convert( byte[] barray, DataType dataType, int byteOrder) {
   /**
    * Debug info for this object.
    */
-  public String toStringDebug
-          (Object
-                  o) {
+  public String toStringDebug (Object o) {
     if (o instanceof Variable) {
       Variable v = (Variable) o;
       H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();
@@ -865,8 +865,7 @@ static Object convert( byte[] barray, DataType dataType, int byteOrder) {
     return null;
   }
 
-  public String getDetailInfo
-          () {
+  public String getDetailInfo() {
     return "";
   }
 }

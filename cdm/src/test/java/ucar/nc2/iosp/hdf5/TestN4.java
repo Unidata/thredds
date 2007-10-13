@@ -1,11 +1,9 @@
 package ucar.nc2.iosp.hdf5;
 
 import junit.framework.*;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.TestNC2;
-import ucar.nc2.TestAll;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.ma2.Section;
+import ucar.ma2.Array;
 
 import java.io.IOException;
 import java.io.File;
@@ -20,14 +18,25 @@ public class TestN4 extends TestCase {
 
   public void testReadNetcdf4() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/tst_enums.nc";
+    String filename = "C:/data/netcdf4/groups.nc";
     NetcdfFile ncfile = TestNC2.open( filename);
-    System.out.println( "\n**** testReadNetcdf4 done\n "+ncfile);
+    System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
+    ncfile.close();
+  }
+
+  public void testEnum() throws IOException {
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = "C:/data/netcdf4/tst_enum_data.nc";
+    NetcdfFile ncfile = TestNC2.open( filename);
+    Variable v = ncfile.findVariable("primary_cloud");
+    Array data = v.read();
+    NCdump.printArray(data, "primary_cloud", System.out, null);
+    System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
     ncfile.close();
   }
 
   public void testAll() {
-    readAllDir("C:/data/netcdf4/");  
+    readAllDir("C:/data/netcdf4/");
   }
 
   public void readAllDir(String dirName) {

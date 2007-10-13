@@ -44,6 +44,7 @@ public class Group {
   protected List<Dimension> dimensions = new ArrayList<Dimension>();
   protected List<Group> groups = new ArrayList<Group>();
   protected List<Attribute> attributes = new ArrayList<Attribute>();
+  protected List<Enumeration> enums = new ArrayList<Enumeration>();
   private boolean immutable = false;
 
    /** Get the full name, starting from the root Group.
@@ -210,10 +211,18 @@ public class Group {
   }
 
   protected void writeCDL(PrintStream out, String indent, boolean strict) {
+    boolean hasE = (enums.size() > 0);
     boolean hasD = (dimensions.size() > 0);
     boolean hasV = (variables.size() > 0);
     boolean hasG = (groups.size() > 0);
     boolean hasA = (attributes.size() > 0);
+
+    if (hasE)
+      out.print(indent+" enums:\n");
+    for (Enumeration e : enums) {
+      out.print(indent + e.writeCDL(strict));
+      out.print(indent + "\n");
+    }
 
     if (hasD)
       out.print(indent+" dimensions:\n");
@@ -234,8 +243,8 @@ public class Group {
       out.print(indent + " }\n");
     }
 
-    if (hasA && (hasD || hasV || hasG))
-      out.print("\n");
+    //if (hasA && (hasE || hasD || hasV || hasG))
+    //  out.print("\n");
     for (Attribute att : attributes) {
       out.print(indent + " " + getShortName() + ":");
       out.print(att.toString());
@@ -307,6 +316,16 @@ public class Group {
 
     groups.add( g);
     g.parent = this; // groups are a tree - only one parent
+  }
+
+  /** Add an Enumeration
+   * @param e add this Enumeration.
+   */
+  public void addEnumeration( Enumeration e) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    if (e == null) return;
+
+    enums.add( e);
   }
 
   /** Add a Variable

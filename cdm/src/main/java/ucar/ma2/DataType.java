@@ -125,7 +125,7 @@ public class DataType {
       return double.class;
     if (this == DataType.SHORT)
       return short.class;
-    if ((this == DataType.INT)  || (this == DataType.ENUM)) // LOOK wrong
+    if (this == DataType.INT) 
       return int.class;
     if ((this == DataType.BYTE) || (this == DataType.OPAQUE))
       return byte.class;
@@ -135,7 +135,7 @@ public class DataType {
       return boolean.class;
     if (this == DataType.LONG)
       return long.class;
-    if (this == DataType.STRING)
+    if ((this == DataType.STRING) || (this == DataType.ENUM))
       return String.class;
     if (this == DataType.STRUCTURE)
       return StructureData.class;

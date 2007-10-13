@@ -41,7 +41,7 @@ public class TestH5read extends TestCase {
     readAllDir( "C:/data/npoess/ExampleFiles/");
   }
 
-  void readAllDir(String dirName) {
+  public static void readAllDir(String dirName) {
     System.out.println("---------------Reading directory "+dirName);
     File allDir = new File( dirName);
     File[] allFiles = allDir.listFiles();

@@ -353,7 +353,7 @@ public class ToolsUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         viewerPanel.detailTA.setText("System Properties\n");
         Properties sysp = System.getProperties();
-        Enumeration eprops = sysp.propertyNames();
+        java.util.Enumeration eprops = sysp.propertyNames();
         ArrayList list = Collections.list(eprops);
         Collections.sort(list);
 

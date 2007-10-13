@@ -22,7 +22,7 @@ package ucar.ma2;
 import java.util.*;
 
 /**
- * A Collection of members that comprise a StructureData.
+ * A Collection of members contained in a StructureData.
  * *
  *
  * @author caron
@@ -138,7 +138,7 @@ public class StructureMembers {
   /**
    * A member of a StructureData.
    */
-  static public class Member {
+  static public class Member { // implements ucar.nc2.VariableSimpleIF {
     private String name, desc, units;
     private DataType dtype;
     private int size = 1;
