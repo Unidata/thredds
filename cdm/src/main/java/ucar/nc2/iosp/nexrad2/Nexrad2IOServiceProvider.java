@@ -79,7 +79,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
             makeVariable2( ncfile, Level2Record.VELOCITY_HIGH, "RadialVelocity", "Radial Velocity", "V", volScan);
 
         if( volScan.getHighResSpectrumGroups() != null) {
-            makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth_HR", "Radial Spectrum_HR", v1);
+            makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth_HI", "Radial Spectrum_HI", v1);
             makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Radial Spectrum", v0);
         }
     }
