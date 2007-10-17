@@ -61,7 +61,10 @@ class H5chunkLayout extends Indexer {
 
     wantSection = Section.fill(wantSection, v2.getShape());
     this.totalNelems = wantSection.computeSize();
-    this.want = wantSection;
+    if (v2.getDataType() == DataType.CHAR)
+      this.want = new Section(wantSection).appendRange(1); // LOOK tryin to match dimensionality
+    else
+      this.want = wantSection;
 
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     assert vinfo.isChunked;
@@ -76,7 +79,7 @@ class H5chunkLayout extends Indexer {
     if (debug) H5header.debugOut.println(" H5chunkIndexer: " + this);
 
     // create the data chunk iterator
-    chunkIterator = vinfo.btree.getDataChunkIterator(wantSection);
+    chunkIterator = vinfo.btree.getDataChunkIterator(this.want);
   }
 
   public long getTotalNelems() {
@@ -125,7 +128,6 @@ class H5chunkLayout extends Indexer {
         index = indexFactory(dataChunk, dataChunk.address, elemSize, dataSection, want);
 
       } catch (InvalidRangeException e) {
-        assert false;
         throw new IllegalStateException(e);
       }
     }

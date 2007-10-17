@@ -16,27 +16,68 @@ public class TestN4 extends TestCase {
     super(name);
   }
 
-  public void testReadNetcdf4() throws IOException {
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header")); // H5header/filePos"));
-    String filename = "C:/data/netcdf4/tst_vl.nc";
+  public void testOpen() throws IOException {
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = "C:/data/netcdf4/files/tst_solar_2.nc";
     NetcdfFile ncfile = TestNC2.open( filename);
     System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
     ncfile.close();
+  }
+
+  public void testReadAll() throws IOException {
+    //H5iosp.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5iosp/read"));
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/Heap H5iosp/read"));
+    String filename = "C:/data/netcdf4/files/cdm_sea_soundings.nc";
+    TestH5read.readAllData(filename);
   }
 
   public void testEnum() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/tst_enum_data.nc";
+    String filename = "C:/data/netcdf4/files/tst_enum_data.nc";
     NetcdfFile ncfile = TestNC2.open( filename);
     Variable v = ncfile.findVariable("primary_cloud");
     Array data = v.read();
-    NCdump.printArray(data, "primary_cloud", System.out, null);
     System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
+    NCdump.printArray(data, "primary_cloud", System.out, null);
+    ncfile.close();
+  }
+
+  public void testVlenStrings() throws IOException {
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = "C:/data/netcdf4/files/tst_strings.nc";
+    NetcdfFile ncfile = TestNC2.open( filename);
+    System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
+    Variable v = ncfile.findVariable("measure_for_measure_var");
+    Array data = v.read();
+    NCdump.printArray(data, "measure_for_measure_var", System.out, null);
+    ncfile.close();
+  }
+
+  public void testCompoundVlens() throws IOException {
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = "C:/data/netcdf4/files/cdm_sea_soundings.nc";
+    NetcdfFile ncfile = TestNC2.open( filename);
+    System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
+    Variable v = ncfile.findVariable("fun_soundings");
+    Array data = v.read();
+    NCdump.printArray(data, "fun_soundings", System.out, null);
+    ncfile.close();
+  }
+
+  public void testStrings() throws IOException {
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = "C:/data/netcdf4/files/c0.nc";
+    NetcdfFile ncfile = TestNC2.open( filename);
+    System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
+    Variable v = ncfile.findVariable("cr");
+    Array data = v.read();
+    NCdump.printArray(data, "cr", System.out, null);
     ncfile.close();
   }
 
   public void testAll() {
-    readAllDir("C:/data/netcdf4/");
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
+    readAllDir("C:/data/netcdf4/files/");
   }
 
   public void readAllDir(String dirName) {

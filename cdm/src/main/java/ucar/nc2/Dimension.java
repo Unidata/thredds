@@ -38,7 +38,7 @@ import java.util.ArrayList;
  */
 
 public class Dimension implements Comparable {
-  static public Dimension VLEN = new Dimension( "*", -1, true, false, true).setImmutable(); // for Sequences
+  static public Dimension VLEN = new Dimension( "*", -1, true, false, true).setImmutable(); // for Sequences, HDF5 VarLength
 
   private boolean isUnlimited = false;
   private boolean isVariableLength = false;

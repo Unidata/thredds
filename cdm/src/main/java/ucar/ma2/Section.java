@@ -397,7 +397,7 @@ public class Section {
    */
   public Section appendRange(int size) throws InvalidRangeException {
     if (immutable) throw new IllegalStateException("Cant modify");
-    list.add(size > 1 ? new Range(0, size - 1) : Range.EMPTY);
+    list.add(size > 0 ? new Range(0, size - 1) : Range.EMPTY);
     return this;
   }
 

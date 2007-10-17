@@ -76,7 +76,7 @@ public class NUWGConvention extends CoordSysBuilder {
     // is this pathetic or what ?
     // problem is NUWG doesnt identify the x, y coords.
     // so we get to hack it in here
-    int mode = 1; // default is projection coords
+    int mode = 3; // default is LambertConformal
     try {
       mode = navInfo.getInt( "grid_type_code");
       if (mode == 0) {

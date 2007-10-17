@@ -171,9 +171,9 @@ public class H5iosp extends AbstractIOServiceProvider {
       return Array.factory(String.class, wantSection.getShape(), stringData);
 
 
-    } else if (vinfo.hdfType == 9) { // vlen
+    } else if ((vinfo.hdfType == 9) && (!vinfo.typeInfo.isVString)) { // non String vlen
       if (debug) H5header.debugOut.println("read variable length" + v2.getName() + " vinfo = " + vinfo);
-      data = readVlenData(v2, vinfo, vinfo.getFillValue());
+      return (vinfo.mds != null) ? readVlenData(v2, vinfo, vinfo.getFillValue()) : readVlenData2(vinfo, dataPos);
 
     } else { // normal case
       if (debug) H5header.debugOut.println("read variable " + v2.getName() + " vinfo = " + vinfo);
@@ -200,20 +200,34 @@ public class H5iosp extends AbstractIOServiceProvider {
       return Array.factory(dataType.getPrimitiveClassType(), wantSection.getShape(), data);
   }
 
-  private Object readVlenData(Variable v, H5header.Vinfo vinfo, Object fillValue) throws java.io.IOException, InvalidRangeException {
-    int nelems = vinfo.mds.dimLength[0];
+  private Array readVlenData(Variable v, H5header.Vinfo vinfo, Object fillValue) throws java.io.IOException, InvalidRangeException {
+    int nelems = (int) new Section( vinfo.mds.dimLength).computeSize();
 
-    int baseType = vinfo.mdt.getBaseType();
+    H5header.TypeInfo baseType = vinfo.getBaseType();
 
-    if (baseType == 7) { // reference
+    if (baseType.hdfType == 7) { // reference
       String[] result = new String[nelems];
       for (int i = 0; i < nelems; i++) {
         long address = vinfo.dataPos + vinfo.mdt.byteSize * i;
         result[i] =  headerParser.readHeapReferenceObject( address);
       }
-      return result;
+      return Array.factory(String.class, new int[] {nelems}, result);
+
+    } else {
+      /* for (int i = 0; i < nelems; i++) {
+        long address = vinfo.dataPos + vinfo.mdt.byteSize * i;
+        Array r = headerParser.getHeapDataAsArray(address, baseType.dataType);
+      } */ // LOOK fake
+      return readVlenData2(vinfo, vinfo.dataPos);
     }
-    return null;
+
+    //throw new UnsupportedOperationException("readVlenData baseType="+baseType);
+  }
+
+  private Array readVlenData2(H5header.Vinfo vinfo, long filePos) throws java.io.IOException, InvalidRangeException {
+    H5header.TypeInfo baseType = vinfo.getBaseType();
+    long globalHeapIdAddress = filePos; // + vinfo.dataPos;
+    return headerParser.getHeapDataAsArray(globalHeapIdAddress, baseType.dataType);
   }
 
   /**

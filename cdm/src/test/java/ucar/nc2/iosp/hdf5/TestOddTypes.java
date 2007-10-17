@@ -78,6 +78,7 @@ public class TestOddTypes extends TestCase {
 
   // not supporting bitfield, poor documentation
   public void testBitfield() throws InvalidRangeException, IOException {
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.openH5("samples/bitfield.h5");
   }
 
@@ -85,6 +86,7 @@ public class TestOddTypes extends TestCase {
   public void testVlenStrings() throws InvalidRangeException, IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.openH5("support/vlstra.h5");
+    System.out.println( "\n**** testReadNetcdf4 done\n\n"+ncfile);
   }
 
    public void testAttString() throws InvalidRangeException, IOException {

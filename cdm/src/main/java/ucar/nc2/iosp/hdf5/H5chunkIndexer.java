@@ -46,7 +46,7 @@ import java.io.IOException;
       return pa;
     }
  * </pre>
- *
+ * @deprecated use H5chunkLayout
  * @author caron
  */
 class H5chunkIndexer extends Indexer {

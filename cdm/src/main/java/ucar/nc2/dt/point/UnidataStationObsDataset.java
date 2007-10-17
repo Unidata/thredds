@@ -317,7 +317,8 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
   }
 
   public static void main(String args[]) throws IOException {
-    String filename = "C:/data/199707010200.CHRTOUT_DOMAIN2";
+    //String filename = "C:/data/199707010200.CHRTOUT_DOMAIN2";
+    String filename = "C:/data/199707010000.LAKEOUT_DOMAIN2";
     UnidataStationObsDataset ods = new UnidataStationObsDataset( NetcdfDataset.openDataset(filename));
     StringBuffer sbuff = new StringBuffer(50 * 1000);
     ods.checkLinks(sbuff);

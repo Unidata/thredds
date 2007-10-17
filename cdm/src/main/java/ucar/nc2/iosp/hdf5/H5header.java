@@ -363,7 +363,7 @@ class H5header {
       } else if (facadeNested.isVariable) {
         if (debugReference && facadeNested.dobj.mdt.type == 7) debugOut.println(facadeNested);
 
-        Variable v = makeVariable(facadeNested);
+        Variable v = makeVariable(ncGroup, facadeNested);
         if ((v != null) && (v.getDataType() != null)) {
           v.setParentGroup(ncGroup);
           ncGroup.addVariable(v);
@@ -489,7 +489,7 @@ class H5header {
     ucar.ma2.Array data;
     attName = NetcdfFile.createValidNetcdfObjectName(attName); // this means that cannot search by name
 
-    Variable v = new Variable(ncfile, null, null, attName); // LOOK null group
+    Variable v = new Variable(ncfile, null, null, attName);
     Vinfo vinfo = new Vinfo(mdt, mds, dataPos);
     if (!makeVariableShapeAndType(v, mdt, mds, vinfo, null)) {
       debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + vinfo.hdfType);
@@ -584,7 +584,7 @@ class H5header {
                Variable v = makeVariable(ndo.name, ndo.messages, getFileOffset(ndo.msl.dataAddress), ndo.mdt,
               ndo.msl, ndo.mds, ndo.mfp)
   */
-  private Variable makeVariable(DataObjectFacade facade) throws IOException {
+  private Variable makeVariable(ucar.nc2.Group ncGroup, DataObjectFacade facade) throws IOException {
 
     Vinfo vinfo = new Vinfo(facade);
     if (vinfo.getNCDataType() == null) {
@@ -638,14 +638,14 @@ class H5header {
     Variable v;
     if (facade.dobj.mdt.type == 6) { // Compound
       String vname = NetcdfFile.createValidNetcdfObjectName(facade.name); // look cannot search by name
-      v = new Structure(ncfile, null, null, vname); // LOOK null group
+      v = new Structure(ncfile, ncGroup, null, vname);
       if (!makeVariableShapeAndType(v, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList)) return null;
-      addMembersToStructure((Structure) v, facade.dobj.mdt);
+      addMembersToStructure(ncGroup, (Structure) v, vinfo, facade.dobj.mdt);
       v.setElementSize(facade.dobj.mdt.byteSize);
 
     } else {
       String vname = NetcdfFile.createValidNetcdfObjectName(facade.name); // look cannot search by name
-      v = new Variable(ncfile, null, null, vname);  // LOOK null group
+      v = new Variable(ncfile, ncGroup, null, vname);
       if (!makeVariableShapeAndType(v, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList)) return null;
     }
 
@@ -697,6 +697,7 @@ class H5header {
     vinfo.setOwner(v);
     if (vinfo.hdfType == 7) debugOut.println("WARN:  Variable " + facade.name + " is a Reference type");
     if (vinfo.mfp != null) debugOut.println("WARN:  Variable " + facade.name + " has a Filter");
+    if (debug1) debugOut.println("makeVariable " + v.getName() + "; vinfo= " + vinfo);
 
     return v;
   }
@@ -720,8 +721,18 @@ class H5header {
     return newData;
   }
 
+  private void addMembersToStructure(Group g, Structure s, Vinfo parentVinfo, MessageDatatype mdt) throws IOException {
+    for (StructureMember m : mdt.members) {
+      Variable v = makeVariableMember( g, s, m.name, m.offset, m.mdt);
+      if (v != null) {
+        s.addMemberVariable(v);
+        if (debug1) debugOut.println("  made Member Variable " + v.getName() + "\n" + v);
+      }
+    }
+  }
+
   // Used for Structure Members
-  private Variable makeMemberVariable(String name, long dataPos, MessageDatatype mdt)
+  private Variable makeVariableMember(Group g, Structure s, String name, long dataPos, MessageDatatype mdt)
           throws IOException {
 
     Variable v;
@@ -733,14 +744,14 @@ class H5header {
 
     if (mdt.type == 6) {
       String vname = NetcdfFile.createValidNetcdfObjectName(name); // look cannot search by name
-      v = new Structure(ncfile, null, null, vname); // LOOK null group
+      v = new Structure(ncfile, g, s, vname);
       makeVariableShapeAndType(v, mdt, null, vinfo, null);
-      addMembersToStructure((Structure) v, mdt);
+      addMembersToStructure( g, (Structure) v, vinfo, mdt);
       v.setElementSize(mdt.byteSize);
 
     } else {
       String vname = NetcdfFile.createValidNetcdfObjectName(name); // look cannot search by name
-      v = new Variable(ncfile, null, null, vname);  // LOOK null group
+      v = new Variable(ncfile, g, s, vname);
       makeVariableShapeAndType(v, mdt, null, vinfo, null);
     }
 
@@ -789,19 +800,10 @@ class H5header {
     return hdfDateParser;
   }
 
-  private void addMembersToStructure(Structure s, MessageDatatype mdt) throws IOException {
-    for (StructureMember m : mdt.members) {
-      Variable v = makeMemberVariable(m.name, m.offset, m.mdt);
-      if (v != null) {
-        s.addMemberVariable(v);
-        if (debug1) debugOut.println("  made Member Variable " + v.getName() + "\n" + v);
-      }
-    }
-  }
-
   private boolean makeVariableShapeAndType(Variable v, MessageDatatype mdt, MessageDataspace msd, Vinfo vinfo, String dims) {
 
     int[] dim = (msd != null) ? msd.dimLength : new int[0];
+
     if (mdt.type == 10) {
       int len = dim.length + mdt.dim.length;
       int[] combinedDim = new int[len];
@@ -827,12 +829,12 @@ class H5header {
           v.setDimensionsAnonymous(shape);
         }
 
-        /* }  else if (mdt.type == 9) { // variable length string
-       int[] shape = new int[1];
-       shape[0] = vinfo.byteSize;
-       v.setShapeWithAnonDimensions(shape);
+     } else if ((mdt.type == 9) && !mdt.isVString) { // variable length (not a string)
+       List<Dimension> dimList = new ArrayList<Dimension>(1);
+       dimList.add(Dimension.VLEN);
+       v.setDimensions(dimList);
 
-     } else if (mdt.type == 10) { // array
+     /* } else if (mdt.type == 10) { // array
        v.setShapeWithAnonDimensions(mdt.dim); */
 
       } else {
@@ -857,14 +859,14 @@ class H5header {
     DataObjectFacade facade; // debugging
 
     long dataPos; // for regular variables, needs to be absolute, with baseAddress added if needed
-    // for member variables, is the offset from start of structure
+                  // for member variables, is the offset from start of structure
 
     int hdfType;
     TypeInfo typeInfo;
     int byteSize;
     int[] storageSize;  // for type 1 (continuous) : (varDims, elemSize)
-    // for type 2 (chunked)    : (chunkDim, elemSize)
-    // null for attributs
+                        // for type 2 (chunked)    : (chunkDim, elemSize)
+                        // null for attributes
 
     // chunked stuff
     boolean isChunked = false;
@@ -943,7 +945,7 @@ class H5header {
       int byteSize = mdt.byteSize;
       byte[] flags = mdt.flags;
 
-      TypeInfo tinfo = new TypeInfo();
+      TypeInfo tinfo = new TypeInfo(hdfType);
 
       if (hdfType == 0) { // int, long, short, byte
         tinfo.dataType = getNCtype(hdfType, byteSize);
@@ -958,8 +960,11 @@ class H5header {
         tinfo.dataType = DataType.STRING;
         tinfo.byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
-      } else if (hdfType == 3) { // fixed length strings. String is used for Vlen type = 1
+      } else if (hdfType == 3) { // fixed length strings map to CHAR. String is used for Vlen type = 1.
         tinfo.dataType = DataType.CHAR;
+        tinfo.vpad = (flags[0] & 0xf);
+        // when elem length = 1, there is a problem with dimensionality.
+        // eg char cr(2); has a storage_size of [1,1].
 
       } else if (hdfType == 4) { // bit field
         tinfo.dataType = getNCtype(hdfType, byteSize);
@@ -978,6 +983,7 @@ class H5header {
         tinfo.dataType = DataType.ENUM;
 
       } else if (hdfType == 9) { // variable length array
+        tinfo.isVString = mdt.isVString;
         if (mdt.isVString) {
           tinfo.vpad = ((flags[0] >> 4) & 0xf);
           tinfo.dataType = DataType.STRING;
@@ -1125,10 +1131,16 @@ class H5header {
   }
 
   class TypeInfo {
+    int hdfType;
     DataType dataType;
     int byteOrder = -1; // RandomAccessFile.LITTLE_ENDIAN || RandomAccessFile.BIG_ENDIAN
     boolean unsigned;
+    boolean isVString; // vlen string
     int vpad; // string padding
+
+    TypeInfo(int hdfType) {
+      this.hdfType = hdfType;
+    }
   }
 
   //////////////////////////////////////////////////////////////
@@ -1159,7 +1171,7 @@ class H5header {
 
   /**
    * A DataObjectFacade can be:
-   *   1) a DataObject with a fixed group/name.
+   *   1) a DataObject with a specific group/name.
    *   2) a SymbolicLink to a DataObject.
    * DataObjects can be pointed to from multiple places.
    * A DataObjectFacade is in a specific group and has a name specific to that group.
@@ -1993,7 +2005,21 @@ class H5header {
     int[] dim;
 
     public String toString() {
-      return " datatype = " + type + " reference type = " + referenceType;
+      StringBuffer sbuff = new StringBuffer();
+      sbuff.append(" datatype= ").append(type);
+      if ((type == 0) || (type == 1))
+        sbuff.append(" byteSize= ").append(byteSize);
+      else if (type == 2)
+        sbuff.append(" timeType= ").append(timeType);
+      else if (type == 6)
+        sbuff.append(" nmembers= ").append(nmembers);
+      else if (type == 7)
+        sbuff.append(" referenceType= ").append(referenceType);
+      else if (type == 9)
+        sbuff.append(" isVString= ").append(isVString);
+      else if ((type == 9) || (type == 10))
+        sbuff.append(" parent= ").append(parent);
+       return sbuff.toString();
     }
 
     void read() throws IOException {
@@ -2043,12 +2069,17 @@ class H5header {
         if (debug1)
           debugOut.println("   type 2 (time): bitPrecision= " + bitPrecision + " timeType = "+timeType);
         
+      } else if (type == 3) { // string
+        int ptype = flags[0] & 0xf;
+        if (debug1)
+          debugOut.println("   type 3 (String): pad type= " + ptype);
+
       } else if (type == 4) { // bit field
         short bitOffset = raf.readShort();
         short bitPrecision = raf.readShort();
         if (debug1)
           debugOut.println("   type 4 (bit field): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision);
-        isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);
+        //isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);  LOOK
 
       } else if (type == 5) { // opaque
         byte len = flags[0];
@@ -2132,6 +2163,9 @@ class H5header {
 
         parent = new MessageDatatype(); // base type
         parent.read();
+
+      } else {
+        debugOut.println(" WARNING not dealing with type= " + type);
       }
     }
 
@@ -3459,6 +3493,34 @@ class H5header {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Heaps
+
+  /**
+   * Fetch a Vlen data array.
+   * @param globalHeapIdAddress address of the heapId, used to get the String out of the heap
+   * @return String the String read from the heap
+   * @throws IOException on read error
+   */
+  Array getHeapDataAsArray(long globalHeapIdAddress, DataType dataType) throws IOException {
+    HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
+    if (debugHeap) H5header.debugOut.println(" heapId= "+heapId);
+    GlobalHeap.HeapObject ho = heapId.getHeapObject();
+    if (debugHeap) H5header.debugOut.println(" HeapObject= "+ho);
+
+    if (DataType.FLOAT == dataType) {
+      float[] pa = new float[heapId.nelems];
+      raf.seek(ho.dataPos);
+      raf.readFloat(pa, 0, pa.length);
+      return Array.factory(dataType.getPrimitiveClassType(), new int[] {pa.length}, pa);
+
+    } else if (DataType.INT == dataType) {
+      int[] pa = new int[heapId.nelems];
+      raf.seek(ho.dataPos);
+      raf.readInt(pa, 0, pa.length);
+      return Array.factory(dataType.getPrimitiveClassType(), new int[] {pa.length}, pa);
+    }
+
+    throw new UnsupportedOperationException("getHeapDataAsArray dataType="+dataType);    
+  }
 
   /**
    * Fetch a String from the heap.

@@ -52,7 +52,7 @@ public class Variable implements VariableIF {
   protected List<Dimension> dimensions = new ArrayList<Dimension>();
   protected List<Attribute> attributes = new ArrayList<Attribute>();
 
-  protected boolean isVlen = false;
+  protected boolean isVariableLength = false;
   protected boolean isMetadata = false;
   private boolean immutable = false; // cache can change
   // private boolean isUnsigned = false;
@@ -162,12 +162,12 @@ public class Variable implements VariableIF {
   }
 
   /**
-   * Does this variable have an variable length dimension.
+   * Does this variable have a variable length dimension?
    * If so, it is a one-dimensional array with
    * dimension = Dimension.UNKNOWN.
    */
   public boolean isVariableLength() {
-    return isVlen;
+    return isVariableLength;
   }
 
   /**
@@ -1039,7 +1039,7 @@ public class Variable implements VariableIF {
       if (parent != null)
         result = 37 * result + parent.hashCode();
 
-      if (isVlen) result++;
+      if (isVariableLength) result++;
       hashCode = result;
     }
     return hashCode;
@@ -1090,7 +1090,7 @@ public class Variable implements VariableIF {
     this.elementSize = from.getElementSize();
     this.group = from.group;
     this.isMetadata = from.isMetadata;
-    this.isVlen = from.isVlen;
+    this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
     this.parent = from.parent;
     this.preReader = from.preReader;
@@ -1241,7 +1241,7 @@ public class Variable implements VariableIF {
         if (dimensions.size() != 1)
           throw new IllegalArgumentException("Unknown dimension can only be used in 1 dim array");
         else
-          isVlen = true;
+          isVariableLength = true;
       }
     }
     this.shapeAsSection = null; // recalc next time its asked for
@@ -1404,7 +1404,7 @@ public class Variable implements VariableIF {
    */
   public boolean isCaching() {
     if (!this.cache.cachingSet) {
-      if (isVlen) cache.isCaching = false;
+      if (isVariableLength) cache.isCaching = false;
       else cache.isCaching = getSize() * getElementSize() < sizeToCache;
 
       this.cache.cachingSet = true;
@@ -1662,6 +1662,6 @@ public class Variable implements VariableIF {
    * @deprecated use isVariableLength()
    */
   public boolean isUnknownLength() {
-    return isVlen;
+    return isVariableLength;
   }
 }

@@ -57,7 +57,7 @@ public class DODSStructure extends ucar.nc2.Structure {
     }
 
     if (ds instanceof DSequence)
-      isVlen = true;
+      isVariableLength = true;
 
     setSPobject(dodsV);
   }
