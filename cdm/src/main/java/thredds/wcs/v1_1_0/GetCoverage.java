@@ -77,7 +77,11 @@ public class GetCoverage
   static private DiskCache2 getDiskCache()
   {
     if ( diskCache == null )
-      diskCache = new DiskCache2( "/wcsCache/", true, -1, -1 );
+    {
+      log.error( "getDiskCache(): Disk cache has not been set.");
+      throw new IllegalStateException( "Disk cache must be set before calling GetCoverage.getDiskCache().");
+      //diskCache = new DiskCache2( "/wcsCache/", true, -1, -1 );
+    }
     return diskCache;
   }
 

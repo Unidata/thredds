@@ -98,7 +98,7 @@ public class WCS_1_1_0 implements VersionHandler
         }
         else
         {
-          log.error( "handleKVP(): Failed to create coverage file" + (covFile == null ? "" : (": " )) );
+          log.error( "handleKVP(): Failed to create coverage file" + (covFile == null ? "" : (": " + covFile.getAbsolutePath() )) );
           throw new WcsException( "Problem creating requested coverage.");
         }
       }
@@ -110,6 +110,11 @@ public class WCS_1_1_0 implements VersionHandler
     catch ( URISyntaxException e )
     {
       handleExceptionReport( res, new WcsException( "Bad URI: " + e.getMessage()));
+    }
+    catch ( Throwable t)
+    {
+      log.error( "Unknown problem.", t);
+      handleExceptionReport( res, new WcsException( "Unknown problem", t));
     }
   }
 

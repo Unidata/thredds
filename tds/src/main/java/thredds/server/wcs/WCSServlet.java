@@ -2,6 +2,7 @@ package thredds.server.wcs;
 
 import thredds.wcs.WcsDataset;
 import thredds.wcs.v1_1_0.Request;
+import thredds.wcs.v1_1_0.GetCoverage;
 import thredds.servlet.*;
 
 import java.io.*;
@@ -47,6 +48,7 @@ public class WCSServlet extends AbstractServlet {
     // LOOK: what happens if we are still downloading when the disk scour starts?
     diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
     WcsDataset.setDiskCache(diskCache);
+    GetCoverage.setDiskCache(diskCache);
 
     // Make sure to add these in increasing order!
     versionHandlers = new ArrayList<VersionHandler>();
