@@ -4,9 +4,7 @@
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../docs/target/classes" />
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../cdm/doc">
-      <sourceFolder url="file://$MODULE_DIR$/../cdm/doc" isTestSource="false" packagePrefix="ucar.nc2" />
-    </content>
+    <content url="file://$MODULE_DIR$/../cdm/doc" />
     <content url="file://$MODULE_DIR$/../docs" />
     <content url="file://$MODULE_DIR$/../tds/doc" />
     <orderEntry type="inheritedJdk" />

@@ -47,7 +47,7 @@ import java.nio.ByteBuffer;
  * <p>
  * The stride index calculations allow <b>logical views</b> to be efficiently implemented, eg subset, transpose, slice, etc.
  *  These views use the same data storage as the original Array they are derived from. The index stride calculations are
- *  equally efficient for any chain of logical views.
+ *  equally efficient for any composition of logical views.
  * <p>
  * The type, shape and backing storage of an Array are immutable.
  *  The data itself is read or written using an Index or an IndexIterator, which stores any needed state information

@@ -196,7 +196,7 @@ public class Variable implements VariableIF {
    * The most slowly varying (leftmost for Java and C programmers) dimension is first.
    * For scalar variables, the list is empty.
    *
-   * @return List<Dimension>, not a copy, may be immutable
+   * @return List<Dimension>, immutable
    */
   public java.util.List<Dimension> getDimensions() {
     return dimensions;
@@ -1238,9 +1238,9 @@ public class Variable implements VariableIF {
       // if (dim.isUnlimited() && (i != 0)) // LOOK only true for Netcdf-3
       //   throw new IllegalArgumentException("Unlimited dimension must be outermost");
       if (dim.isVariableLength()) {
-        if (dimensions.size() != 1)
-          throw new IllegalArgumentException("Unknown dimension can only be used in 1 dim array");
-        else
+        //if (dimensions.size() != 1)
+        //  throw new IllegalArgumentException("Unknown dimension can only be used in 1 dim array");
+        //else
           isVariableLength = true;
       }
     }

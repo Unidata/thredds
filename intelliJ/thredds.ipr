@@ -15,8 +15,8 @@
       <customJdkName value="" />
       <maximumHeapSize value="128" />
       <properties />
-      <executeOn event="beforeRun" target="makeWar" runConfigurationType="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" runConfigurationName="tds" />
       <executeOn event="beforeRun" target="makeWar" runConfigurationType="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" runConfigurationName="TDS" />
+      <executeOn event="beforeRun" target="makeWar" runConfigurationType="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" runConfigurationName="tds" />
     </buildFile>
   </component>
   <component name="BuildJarProjectSettings">
@@ -33,6 +33,9 @@
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
     <option name="DEPLOY_AFTER_MAKE" value="2" />
+    <excludeFromCompile>
+      <file url="file://$PROJECT_DIR$/../cdm/src/main/java/ucar/nc2/dt/point/WriterCFStationObsDataset.java" />
+    </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
       <entry name=".+\.(gif|png|jpeg|jpg)" />
@@ -867,7 +870,6 @@
           <option name="REPORT_POSTFIX_EXPRESSIONS" value="true" />
           <option name="REPORT_REDUNDANT_INITIALIZER" value="true" />
         </inspection_tool>
-        <inspection_tool class="ForCanBeForeach" level="WARNING" enabled="false" />
         <inspection_tool class="FinalizeCallsSuperFinalize" level="WARNING" enabled="false">
           <option name="m_ignoreForObjectSubclasses" value="false" />
         </inspection_tool>
@@ -879,7 +881,6 @@
         <inspection_tool class="UnusedLabel" level="WARNING" enabled="false" />
         <inspection_tool class="BooleanConstructor" level="WARNING" enabled="false" />
         <inspection_tool class="ExtendsObject" level="WARNING" enabled="false" />
-        <inspection_tool class="UnnecessaryBoxing" level="WARNING" enabled="false" />
         <inspection_tool class="CloneCallsSuperClone" level="WARNING" enabled="false" />
         <inspection_tool class="ReturnFromFinallyBlock" level="WARNING" enabled="false" />
         <inspection_tool class="EmptyTryBlock" level="WARNING" enabled="false" />
@@ -892,7 +893,6 @@
         </inspection_tool>
         <inspection_tool class="UnnecessaryReturn" level="WARNING" enabled="false" />
         <inspection_tool class="FinalStaticMethod" level="WARNING" enabled="false" />
-        <inspection_tool class="UnnecessaryUnboxing" level="WARNING" enabled="false" />
         <inspection_tool class="NoExplicitFinalizeCalls" level="WARNING" enabled="false" />
         <inspection_tool class="FinalPrivateMethod" level="WARNING" enabled="false" />
         <inspection_tool class="ContinueOrBreakFromFinallyBlock" level="WARNING" enabled="false" />

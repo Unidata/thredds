@@ -817,6 +817,11 @@ class H5header {
     try {
       if (dims != null) {
         v.setDimensions( dims);
+        if ((mdt.type == 9) && !mdt.isVString) { // variable length (not a string)
+         List<Dimension> dimList = new ArrayList<Dimension>(v.getDimensions());
+         dimList.add(Dimension.VLEN);
+         v.setDimensions(dimList);
+        }
 
       } else if (mdt.type == 3) { // fixed length string - DataType.CHAR, add string length
 
