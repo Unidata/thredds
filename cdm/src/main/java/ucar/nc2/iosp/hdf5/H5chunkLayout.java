@@ -52,17 +52,18 @@ class H5chunkLayout extends Indexer {
    * This is for HDF5 chunked data storage. The data is read by chunk, for efficency.
    *
    * @param v2          Variable to index over; assumes that vinfo is the data object
+   * @param dtype       type of data. may be different from v2.
    * @param wantSection the wanted section of data, contains a List of Range objects.
    * @throws InvalidRangeException if section invalid for this variable
    * @throws java.io.IOException on io error
    */
-  H5chunkLayout(Variable v2, Section wantSection) throws InvalidRangeException, IOException {
+  H5chunkLayout(Variable v2, DataType dtype, Section wantSection) throws InvalidRangeException, IOException {
     //debug = H5iosp.debugChunkIndexer;
 
     wantSection = Section.fill(wantSection, v2.getShape());
     this.totalNelems = wantSection.computeSize();
-    if (v2.getDataType() == DataType.CHAR)
-      this.want = new Section(wantSection).appendRange(1); // LOOK tryin to match dimensionality
+    if (dtype == DataType.CHAR)
+      this.want = new Section(wantSection).appendRange(1); // LOOK trying to match dimensionality
     else
       this.want = wantSection;
 
@@ -72,7 +73,7 @@ class H5chunkLayout extends Indexer {
 
     // heres the chunking info
     // one less chunk dimension, except in the case of char
-    nChunkDims = (v2.getDataType() == DataType.CHAR) ? vinfo.storageSize.length : vinfo.storageSize.length - 1;
+    nChunkDims = (dtype == DataType.CHAR) ? vinfo.storageSize.length : vinfo.storageSize.length - 1;
     this.chunkSize = new int[nChunkDims];
     System.arraycopy(vinfo.storageSize, 0, chunkSize, 0, nChunkDims);
     this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size

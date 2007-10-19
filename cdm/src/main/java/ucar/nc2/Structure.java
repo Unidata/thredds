@@ -117,7 +117,7 @@ public class Structure extends Variable {
   /** Set the list of member variables.
    * @param vars this is the list of member variables
    */
-  public void setMemberVariables( ArrayList<Variable> vars) {
+  public void setMemberVariables( List<Variable> vars) {
     if (isImmutable()) throw new IllegalStateException("Cant modify");
     members = new ArrayList<Variable>();
     memberNames = new ArrayList<String>();

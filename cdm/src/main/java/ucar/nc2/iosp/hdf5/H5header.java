@@ -336,7 +336,7 @@ class H5header {
     for (Message mess : h5group.facade.dobj.messages) {
       if (mess.mtype == MessageType.Attribute) {
         MessageAttribute matt = (MessageAttribute) mess.messData;
-        makeAttributes(h5group.name, matt, ncGroup.getAttributes());
+        makeAttributes(h5group.name, null, matt, ncGroup.getAttributes());
       }
     }
 
@@ -452,32 +452,36 @@ class H5header {
    * Create Attribute objects from the MessageAttribute and add to list
    *
    * @param forWho  whose attribue?
+   * @param s       if being addded to a Structure, else null
    * @param matt    attribute message
    * @param attList add Attribute to this list
    * @throws IOException on io error
    */
-  private void makeAttributes(String forWho, MessageAttribute matt, List<Attribute> attList) throws IOException {
+  private void makeAttributes(String forWho, Structure s, MessageAttribute matt, List<Attribute> attList) throws IOException {
     MessageDatatype mdt = matt.mdt;
 
-    /* if (mdt.type == 6) { // structure : make seperate attribute for each member
-      for (StructureMember m : mdt.members) {
-        String attName = matt.name + "." + m.name;
-        //if ((prefix != null) && (prefix.length() > 0)) attName = prefix + "." + attName;
-        //String attName = matt.name;
-
-        /* if (m.mdt.type == 6) // LOOK nested compound attributes
-            makeAttributes( forWho, m.matt, attList);
-          else
-            attList.add(makeAttribute(forWho, attName, m.mdt, matt.mds, matt.dataPos + m.offset));
+    if (mdt.type == 6) { // structure : make seperate attribute for each member
+      if (null == s) {
+        debugOut.println("SKIPPING structure values attribute for " + forWho);
+        return;
       }
-    } else { */
 
-    if (mdt.type != 6) {
-      // String attName = (prefix == null) || prefix.equals("") ? matt.name : prefix + "." + matt.name;
-      //String attName = matt.name;
+      ArrayStructure attData = (ArrayStructure) getAttributeData(forWho, s, matt.name, matt.mdt, matt.mds, matt.dataPos);
+      if (attData == null) return;
+
+      StructureData sdata = attData.getStructureData(0);
+      for (Variable v : s.getVariables()) {
+        Array mdata = sdata.getArray( v.getShortName());
+        if (null != mdata)
+          v.addAttribute( new Attribute(matt.name, mdata));
+        else
+          debugOut.println("didnt find attribute for " + v.getName());
+      } 
+
+    } else {
       Attribute att = makeAttribute(forWho, matt.name, matt.mdt, matt.mds, matt.dataPos);
       if (att != null)
-        attList.add(att);
+        attList.add( att);
     }
 
     // reading attribute values might change byte order during a read
@@ -486,10 +490,25 @@ class H5header {
   }
 
   private Attribute makeAttribute(String forWho, String attName, MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
-    ucar.ma2.Array data;
-    attName = NetcdfFile.createValidNetcdfObjectName(attName); // this means that cannot search by name
+    attName = NetcdfFile.createValidNetcdfObjectName(attName);
+    ucar.ma2.Array data = getAttributeData(forWho, null, attName, mdt, mds, dataPos);
+    return (data == null) ? null :new Attribute(attName, data);
+  }
 
-    Variable v = new Variable(ncfile, null, null, attName);
+  private Array getAttributeData(String forWho, Structure s, String attName, MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
+    ucar.ma2.Array data;
+
+    Variable v;
+    if (mdt.type == 6) { 
+      Structure satt = new Structure(ncfile, null, null, attName);
+      satt.setMemberVariables(s.getVariables());
+      v = satt;
+      v.setElementSize(mdt.byteSize);
+
+    } else {
+      v = new Variable(ncfile, null, null, attName);
+    }
+
     Vinfo vinfo = new Vinfo(mdt, mds, dataPos);
     if (!makeVariableShapeAndType(v, mdt, mds, vinfo, null)) {
       debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + vinfo.hdfType);
@@ -520,7 +539,6 @@ class H5header {
       }
 
     } else {
-
       v.setSPobject(vinfo);
       vinfo.setOwner(v);
       v.setCaching(false);
@@ -532,13 +550,14 @@ class H5header {
 
       } catch (InvalidRangeException e) {
         log.error("H5header.makeAttribute", e);
+        if (debug1) debugOut.println("ERROR attribute "+e.getMessage());
         return null;
       }
     }
 
-    return new Attribute(attName, data);
-
+    return data;
   }
+
 
   /* private Array readAttributeData() {
 
@@ -624,8 +643,9 @@ class H5header {
       }
     }
 
-    // deal with unallocated data
     long dataPos = getFileOffset(facade.dobj.msl.dataAddress);
+
+    // deal with unallocated data
     if (dataPos == -1) {
       vinfo.useFillValue = true;
 
@@ -636,11 +656,13 @@ class H5header {
     }
 
     Variable v;
+    Structure s = null;
     if (facade.dobj.mdt.type == 6) { // Compound
       String vname = NetcdfFile.createValidNetcdfObjectName(facade.name); // look cannot search by name
-      v = new Structure(ncfile, ncGroup, null, vname);
+      s = new Structure(ncfile, ncGroup, null, vname);
+      v = s;
       if (!makeVariableShapeAndType(v, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList)) return null;
-      addMembersToStructure(ncGroup, (Structure) v, vinfo, facade.dobj.mdt);
+      addMembersToStructure(ncGroup, s, vinfo, facade.dobj.mdt);
       v.setElementSize(facade.dobj.mdt.byteSize);
 
     } else {
@@ -659,7 +681,7 @@ class H5header {
     for (Message mess : facade.dobj.messages) {
       if (mess.mtype == MessageType.Attribute) {
         MessageAttribute matt = (MessageAttribute) mess.messData;
-        makeAttributes(facade.name, matt, v.getAttributes());
+        makeAttributes(facade.name, s, matt, v.getAttributes());
       }
     }
     processSystemAttributes(facade.dobj.messages, v.getAttributes());
@@ -2455,7 +2477,7 @@ class H5header {
     long dataPos; // pointer to the attribute data section, must be absolute file position
 
     public String toString() {
-      return "name= " + name+ "dataPos= "+dataPos;
+      return "name= " + name+ " dataPos= "+dataPos;
     }
 
     void read() throws IOException {
@@ -2497,6 +2519,7 @@ class H5header {
       boolean isShared = (flags & 1) != 0;
       if (isShared) {
         mdt = (MessageDatatype) getSharedMessageData(MessageType.Datatype);
+        if (debug1) debugOut.println("    MessageDatatype: "+mdt);
       } else {
         mdt.read();
         if (version == 1) typeSize += padding(typeSize, 8);
