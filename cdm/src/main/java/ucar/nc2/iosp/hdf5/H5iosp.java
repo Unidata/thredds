@@ -129,9 +129,6 @@ public class H5iosp extends AbstractIOServiceProvider {
       H5chunkFilterLayout index = new H5chunkFilterLayout(v2, wantSection, myRaf, vinfo.mfp.getFilters());
       data = readFilteredData(v2, index, vinfo.getFillValue());
 
-    } else if ((vinfo.hdfType == 9) && (!vinfo.typeInfo.isVString)) { // non String vlen
-      return (vinfo.mds != null) ? readVlenData(vinfo, dataPos) : readVlenData2(vinfo, dataPos);
-
     } else { // normal case
       if (debug) H5header.debugOut.println("read variable " + v2.getName() + " vinfo = " + vinfo);
 
@@ -140,17 +137,21 @@ public class H5iosp extends AbstractIOServiceProvider {
       Object fillValue = vinfo.getFillValue();
       int byteOrder = vinfo.typeInfo.byteOrder;
 
-      if (vinfo.hdfType == 2) { // time
+      if (vinfo.typeInfo.hdfType == 2) { // time
         readDtype = vinfo.mdt.timeType;
         elemSize = readDtype.getSize();
         fillValue = vinfo.getFillValueDefault(readDtype);
 
-      } else if (vinfo.hdfType == 8) { // enum
-        H5header.TypeInfo baseInfo = vinfo.getBaseType();
+      } else if (vinfo.typeInfo.hdfType == 8) { // enum
+        H5header.TypeInfo baseInfo = vinfo.typeInfo.base;
         readDtype = baseInfo.dataType;
         elemSize = readDtype.getSize();
         fillValue = vinfo.getFillValueDefault(readDtype);
         byteOrder = baseInfo.byteOrder;
+
+      } else if (vinfo.typeInfo.hdfType == 9) { // vlen
+        elemSize = vinfo.typeInfo.byteSize;
+        byteOrder = vinfo.typeInfo.byteOrder;
       }
 
       Indexer index;
@@ -163,7 +164,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (byteOrder >= 0)
         myRaf.order(byteOrder);
 
-      data = readData(vinfo.hdfType, v2, index, dataType, wantSection.getShape(), fillValue);
+      data = readData(vinfo.typeInfo, v2, index, readDtype, wantSection.getShape(), fillValue);
     }
 
     if (data instanceof Array)
@@ -172,52 +173,22 @@ public class H5iosp extends AbstractIOServiceProvider {
       return Array.factory(dataType.getPrimitiveClassType(), wantSection.getShape(), data);
   }
 
-  private Array readVlenData(H5header.Vinfo vinfo, long filePos) throws java.io.IOException, InvalidRangeException {
-    int nelems = (int) new Section( vinfo.mds.dimLength).computeSize();
-
-    H5header.TypeInfo baseType = vinfo.getBaseType();
-
-    if (baseType.hdfType == 7) { // reference
-      String[] result = new String[nelems];
-      for (int i = 0; i < nelems; i++) {
-        long address = vinfo.dataPos + vinfo.mdt.byteSize * i;
-        result[i] =  headerParser.readHeapReferenceObject( address);
-      }
-      return Array.factory(String.class, new int[] {nelems}, result);
-
-    } else {
-      /* for (int i = 0; i < nelems; i++) {
-        long address = vinfo.dataPos + vinfo.mdt.byteSize * i;
-        Array r = headerParser.getHeapDataAsArray(address, baseType.dataType);
-      } */ // LOOK fake
-      return readVlenData2(vinfo, filePos);
-    }
-
-    //throw new UnsupportedOperationException("readVlenData baseType="+baseType);
-  }
-
-  private Array readVlenData2(H5header.Vinfo vinfo, long filePos) throws java.io.IOException, InvalidRangeException {
-    H5header.TypeInfo baseType = vinfo.getBaseType();
-    long globalHeapIdAddress = filePos; // + vinfo.dataPos;
-    return headerParser.getHeapDataAsArray(globalHeapIdAddress, baseType.dataType);
-  }
-
   /**
    * Read data subset from file for a variable, create primitive array.
    *
    * @param v         the variable to read.
    * @param index     handles skipping around in the file.
-   * @param dataType  dataType of the variable
+   * @param dataType  dataType of the data to read
    * @param shape     the shape of the output
    * @param fillValue fill value as a wrapped primitive
-   * @return primitive array with data read in
+   * @return primitive array or Array with data read in
    * @throws java.io.IOException            if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  private Object readData(int hdfType, Variable v, Indexer index, DataType dataType, int[] shape, Object fillValue) throws java.io.IOException, InvalidRangeException {
+  private Object readData(H5header.TypeInfo typeInfo, Variable v, Indexer index, DataType dataType, int[] shape, Object fillValue) throws java.io.IOException, InvalidRangeException {
 
     // special processing
-    if (hdfType == 2) { // time
+    if (typeInfo.hdfType == 2) { // time
       Object data = readDataPrimitive(index, dataType, fillValue);
       Array timeArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
 
@@ -232,7 +203,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       return Array.factory(String.class, shape, stringData);
     }
 
-    if (hdfType == 8) { // enum
+    if (typeInfo.hdfType == 8) { // enum
       Object data = readDataPrimitive(index, dataType, fillValue);
       Array codesArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
 
@@ -242,9 +213,31 @@ public class H5iosp extends AbstractIOServiceProvider {
       IndexIterator ii = codesArray.getIndexIterator();
       while(ii.hasNext()) {
         int code = ii.getIntNext();
-        stringData[count++] = vinfo.mdt.map.get(code);
+        stringData[count++] = "N?A"; // vinfo.mdt.map.get(code);
       }
       return Array.factory(String.class, shape, stringData);
+    }
+
+    if (typeInfo.hdfType == 9) { // vlen
+      DataType readType = dataType;
+      if (typeInfo.base.hdfType == 7) // reference
+        readType = DataType.LONG;
+
+      // general case is to read an array of vlen objects
+      // each vlen generates an Array - so return ArrayObject of Array
+      boolean scalar = index.getTotalNelems() == 1; // if scalar, return just the len Array
+      Array[] data = new Array[(int) index.getTotalNelems()];
+      int count = 0;
+      while (index.hasNext()) {
+        Indexer.Chunk chunk = index.next();
+        if (chunk == null) continue;
+        for (int i = 0; i < chunk.getNelems(); i++) {
+          long address = chunk.getFilePos() + index.getElemSize() * i;
+          Array vlenArray = headerParser.getHeapDataArray(address, readType);
+          data[count++] = (typeInfo.base.hdfType == 7) ? convertReference(vlenArray) : vlenArray;
+        }
+      }
+      return (scalar) ? data[0] : Array.factory(Array.class, shape, data);
     }
 
     if (dataType == DataType.STRUCTURE) {
@@ -268,6 +261,17 @@ public class H5iosp extends AbstractIOServiceProvider {
     } else {
       return readDataPrimitive(index, dataType, fillValue);
     }
+  }
+
+  private Array convertReference(Array refArray) throws java.io.IOException, InvalidRangeException {
+    int nelems = (int) refArray.getSize();
+    Index ima = refArray.getIndex();
+    String[] result = new String[nelems];
+    for (int i = 0; i < nelems; i++) {
+      long reference = refArray.getLong(ima.set(i));
+      result[i] = headerParser.getDataObjectName( reference);
+    }
+    return Array.factory(String.class, new int[] {nelems}, result);
   }
 
   /**

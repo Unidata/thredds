@@ -51,7 +51,7 @@ public class TestChunkIndexer extends TestCase {
     Array data = v2.read(section); // force btree to be filled
     assert data.getSize() == section.computeSize();
 
-    H5chunkLayout index = new H5chunkLayout(v2, section);
+    H5chunkLayout index = new H5chunkLayout(v2, v2.getDataType(), section);
     assert index.getTotalNelems() == section.computeSize();
     int count = 0;
     while (index.hasNext()) {

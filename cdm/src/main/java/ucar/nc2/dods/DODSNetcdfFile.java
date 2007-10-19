@@ -31,6 +31,7 @@ import opendap.dap.parser.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.Enumeration;
 
 /**
  * Access to DODS datasets through the Netcdf API.

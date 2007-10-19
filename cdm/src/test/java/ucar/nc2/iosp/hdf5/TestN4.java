@@ -27,7 +27,7 @@ public class TestN4 extends TestCase {
   public void testReadAll() throws IOException {
     //H5iosp.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5iosp/read"));
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/Heap"));
-    String filename = "C:/data/netcdf4/files/tst_vl.nc";
+    String filename = "C:/data/netcdf4/files/C0.nc";
     TestH5read.readAllData(filename);
   }
 

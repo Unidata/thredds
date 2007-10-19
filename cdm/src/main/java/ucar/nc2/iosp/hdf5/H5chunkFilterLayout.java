@@ -48,7 +48,7 @@ class H5chunkFilterLayout extends H5chunkLayout {
   private boolean debug = false;
 
   H5chunkFilterLayout(Variable v2, Section wantSection, RandomAccessFile raf, H5header.Filter[] filters) throws InvalidRangeException, IOException {
-    super(v2, wantSection);
+    super(v2, v2.getDataType(), wantSection);
     this.raf = raf;
     this.filters = filters;
   }

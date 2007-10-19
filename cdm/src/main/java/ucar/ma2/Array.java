@@ -785,5 +785,15 @@ public abstract class Array {
     return sb.toString();
   }
 
+  private IndexIterator ii;
+  public boolean hasNext() {
+    if (null == ii) ii = getIndexIterator();
+    return ii.hasNext();
+  }
+
+  public Object next() {
+    return ii.getObjectNext();
+  }
+
 }
 

@@ -24,6 +24,10 @@ import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 
+import java.util.List;
+import java.util.Collections;
+import java.util.Arrays;
+
 /**
  * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
  * The value can be a one dimensional array of Strings or numeric values.
@@ -288,7 +292,7 @@ public class Attribute {
   }
 
   /**
-   * Construct attribute with list of values.
+   * Construct attribute with Array of values.
    *
    * @param name   name of attribute
    * @param values array of values.
@@ -297,6 +301,21 @@ public class Attribute {
     this.name = name;
     //validate(name);
     setValues(values);
+  }
+
+  /**
+   * Construct attribute with list of String values.
+   *
+   * @param name   name of attribute
+   * @param values list of values.
+   */
+  public Attribute(String name, List<String> values) {
+    this.name = name;
+    int n = values.size();
+    String[] va = new String[n];
+    int count = 0;
+    for (String v : values) va[count++] = v;
+    setValues( Array.factory(String.class, new int[] {n}, va));
   }
 
 

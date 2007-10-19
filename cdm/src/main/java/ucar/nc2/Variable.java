@@ -170,6 +170,10 @@ public class Variable implements VariableIF {
     return isVariableLength;
   }
 
+  public void setVariableLength(boolean b) {
+    isVariableLength = b;
+  }
+
   /**
    * Is this Variable unsigned?. Only meaningful for byte, short, int, long types.
    * Looks for attribute "_unsigned"
@@ -982,6 +986,7 @@ public class Variable implements VariableIF {
     buf.setLength(0);
     buf.append(indent);
     buf.append(dataType.toString());
+    if (isVariableLength) buf.append("(*)");
     buf.append(" ");
     getNameAndDimensions(buf, useFullName, !strict);
     buf.append(";");
