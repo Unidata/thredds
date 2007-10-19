@@ -1,11 +1,11 @@
-package thredds.wcs.v1_1_0;
+package thredds.wcs.v1_0_0_Plus;
 
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
 
 /**
- * Represents a WCS 1.1.0 Exception and includes the code, locator, and
+ * Represents a WCS 1.0.0+ Exception and includes the code, locator, and
  * textMessages used in an OWS Exception Report.
  *
  * @author edavis
@@ -15,24 +15,23 @@ public class WcsException extends Exception
 {
   public enum Code
   {
-    OperationNotSupported,
-    MissingParameterValue,
-    InvalidParameterValue,
-    VersionNegotiationFailed, // GetCapabilities only
+    UNKNOWN,
+    InvalidFormat,
+    CoverageNotDefined,
+    CurrentUpdateSequence,
     InvalidUpdateSequence,
-    NoApplicableCode,
-    UnsupportedCombination,   // GetCoverage only
-    NotEnoughStorage          // GetCoverage only
+    MissingParameterValue,
+    InvalidParameterValue
   }
 
-  private Code code;
+  private WcsException.Code code;
   private String locator;
   private List<String> textMessages;
 
   public WcsException()
   {
     super();
-    this.code = Code.NoApplicableCode;
+    this.code = Code.UNKNOWN;
     this.locator = null;
     this.textMessages = Collections.emptyList();
   }
@@ -40,7 +39,7 @@ public class WcsException extends Exception
   public WcsException( String message )
   {
     super( message );
-    this.code = Code.NoApplicableCode;
+    this.code = Code.UNKNOWN;
     this.locator = null;
     this.textMessages = Collections.singletonList( message);
   }
@@ -48,7 +47,7 @@ public class WcsException extends Exception
   public WcsException( String message, Throwable cause )
   {
     super( message, cause );
-    this.code = Code.NoApplicableCode;
+    this.code = Code.UNKNOWN;
     this.locator = null;
     this.textMessages = Collections.singletonList( message );
   }
@@ -56,12 +55,12 @@ public class WcsException extends Exception
   public WcsException( Throwable cause )
   {
     super( cause );
-    this.code = Code.NoApplicableCode;
+    this.code = Code.UNKNOWN;
     this.locator = null;
     this.textMessages = Collections.singletonList( cause.getMessage() );
   }
 
-  public WcsException( Code code, String locator, List<String> messages )
+  public WcsException( WcsException.Code code, String locator, List<String> messages )
   {
     super( messages.get(0));
     this.code = code;
@@ -69,7 +68,7 @@ public class WcsException extends Exception
     this.textMessages = new ArrayList<String>( messages);
   }
 
-  public WcsException( Code code, String locator, String message )
+  public WcsException( WcsException.Code code, String locator, String message )
   {
     super( message);
     this.code = code;
@@ -77,7 +76,7 @@ public class WcsException extends Exception
     this.textMessages = Collections.singletonList( message);
   }
 
-  public Code getCode() { return code; }
+  public WcsException.Code getCode() { return code; }
   public String getLocator() { return locator; }
   public List<String> getTextMessages() { return Collections.unmodifiableList( textMessages ); }
 }

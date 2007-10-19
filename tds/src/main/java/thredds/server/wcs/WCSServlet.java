@@ -4,6 +4,7 @@ import thredds.wcs.WcsDataset;
 import thredds.wcs.v1_1_0.Request;
 import thredds.wcs.v1_1_0.GetCoverage;
 import thredds.servlet.*;
+import thredds.server.wcs.v1_0_0_Plus.WcsHandler;
 
 import java.io.*;
 import java.util.List;
@@ -53,6 +54,7 @@ public class WCSServlet extends AbstractServlet {
     // Make sure to add these in increasing order!
     versionHandlers = new ArrayList<VersionHandler>();
     versionHandlers.add( new WCS_1_0_0());
+    versionHandlers.add( new WcsHandler());
     versionHandlers.add( new WCS_1_1_0());
     for ( VersionHandler vh: versionHandlers)
     {
