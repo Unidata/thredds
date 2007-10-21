@@ -40,7 +40,8 @@ import java.util.ArrayList;
  */
 public class RegularSectionLayout extends Indexer {
   private List<Dim> dimList = new ArrayList<Dim>();
-  private Index dataIndex, wantIndex;
+  private Index dataIndex; // Index into the data source section - used to calculate chunk.filePos
+  private Index resultIndex; // Index into the data result section - used to calculate chunk.startElem
 
   private int elemSize; // size of each element
   private long startPos; // starting address
@@ -67,8 +68,8 @@ public class RegularSectionLayout extends Indexer {
    * @param elemSize     size of an element in bytes.
    * @param dataSection  the section of data we actually have. must have all ranges with stride = 1.
    * @param wantSection  the wanted section of data, it will be intersected with dataSection.
-   *   dataSection.intersects(wantSection) should be true
-   * @throws InvalidRangeException if ranges are misformed
+   *   dataSection.intersects(wantSection) must be true
+   * @throws InvalidRangeException if ranges are malformed
    */
   public RegularSectionLayout(long startFilePos, int elemSize, Section dataSection, Section wantSection) throws InvalidRangeException {
     assert startFilePos >= 0;
@@ -80,8 +81,9 @@ public class RegularSectionLayout extends Indexer {
     // The actual wanted data we can get from this section
     Section intersect = dataSection.intersect(wantSection);
     this.total = intersect.computeSize();
-    if (total <= 0)
+    if (total <= 0) {
       System.out.println("hey");
+    }
     assert total > 0;
     int varRank = intersect.getRank();
 
@@ -106,11 +108,13 @@ public class RegularSectionLayout extends Indexer {
      }
      this.startPos = startFilePos + fileOffset;
 
-     startElem = 0; // offset in want
-     for (Dim dim : dimList) {
+     // thhe offset in the result Array of this piece of it
+     startElem = wantSection.offset( intersect);
+
+     /* for (Dim dim : dimList) {
        int d = dim.intersect.first() - dim.want.first();
        if (d > 0)  startElem += dim.wantStride * d;
-     }
+     } */
 
 
     /* merge contiguous inner dimensions for efficiency
@@ -154,25 +158,30 @@ public class RegularSectionLayout extends Indexer {
       }
     }
 
-     // we will use an Index object to keep track of the chunks
+     // we will use Index objects to keep track of the chunks
     int rank = dimList.size();
     int[] dataStrides = new int[rank];
-    int[] wantStrides = new int[rank];
+    int[] resultStrides = new int[rank];
     int[] shape = new int[rank];
     for (int i = 0; i < dimList.size(); i++) {  // reverse to slowest first
       Dim dim = dimList.get(i);
       dataStrides[rank - i - 1] = dim.dataStride * dim.want.stride();
-      wantStrides[rank - i - 1] = dim.wantStride * dim.want.stride();
+      resultStrides[rank - i - 1] = dim.wantStride; // * dim.want.stride();
       shape[rank - i - 1] = dim.wantNelems;
     }
     if (debugDetail) {
       printa(" indexShape=", shape);
       printa(" dataStrides=", dataStrides);
-      printa(" wantStride=", wantStrides);
+      printa(" wantStride=", resultStrides);
       System.out.println(" indexChunks=" + Index.computeSize(shape));
     }
     dataIndex = new Index(shape, dataStrides);
-    wantIndex = new Index(shape, wantStrides);
+    resultIndex = new Index(shape, resultStrides);
+
+    if (debugDetail) {
+      System.out.println(" dataIndex="+ dataIndex.toStringDebug());
+      System.out.println(" resultIndex="+ resultIndex.toStringDebug());
+    }
 
     // sanity checks
     long nchunks = Index.computeSize(shape);
@@ -204,11 +213,16 @@ public class RegularSectionLayout extends Indexer {
       this.wantStride = wantStride;
       this.ncontigElements = intersect.stride() == 1 ? intersect.length() : 1;
       this.wantNelems = intersect.length();
+
+      if (debugMerge) System.out.println("Dim="+this);
     }
 
-    public String toString() { return "  data = "+data+ " want = "+want+ " intersect = "+intersect+ " ncontigElements = "+ncontigElements; }
-  }
+    public String toString() {
+      return "  data = "+data+ " want = "+want+ " intersect = "+intersect+ " ncontigElements = "+ncontigElements;
+    }
+  } // Dim
 
+  // Indexer methods
   public long getTotalNelems() {
     return total;
   }
@@ -226,19 +240,19 @@ public class RegularSectionLayout extends Indexer {
       chunk = new Chunk(startPos, nelems, startElem);
     } else {
       dataIndex.incr();
-      wantIndex.incr();
+      resultIndex.incr();
     }
 
     // Get the current element's byte index from the start of the file
     chunk.setFilePos(startPos + elemSize * dataIndex.currentElement());
 
-    chunk.setStartElem(startElem + wantIndex.currentElement());
+    chunk.setStartElem(startElem + resultIndex.currentElement());
 
     if (debugNext)
       System.out.println(" chunk: " + chunk);
     if (debugDetail) {
       System.out.println(" dataIndex: " + dataIndex);
-      System.out.println(" wantIndex: " + wantIndex);
+      System.out.println(" wantIndex: " + resultIndex);
     }
 
     done += nelems;

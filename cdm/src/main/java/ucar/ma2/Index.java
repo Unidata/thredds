@@ -83,7 +83,8 @@ public class Index implements Cloneable {
   }
 
   /**
-   * constructor for subclasses only.
+   * Constructor for subclasses only.
+   * @param _shape describes an index section: slowest varying comes first (row major)
    */
   protected Index(int[] _shape) {
 
@@ -98,7 +99,8 @@ public class Index implements Cloneable {
   }
 
   /**
-   * constructor that lets you set the strides yourself.
+   * Constructor that lets you set the strides yourself.
+   * This is used as a counter, not a desccription of an index section.
    */
   public Index(int[] _shape, int[] _stride) {
     this.shape = new int[_shape.length];  // optimization over clone

@@ -26,26 +26,26 @@ import java.util.StringTokenizer;
 
 
 /**
-   Represents a set of integers, used as an index for arrays.
-   It should be considered as a subset of the interval of integers [0, length-1] inclusive.
-   For example Range(1:11:3) represents the set of integers {1,4,7,10}
-   Immutable.
-   <p>
-   Ranges are monotonically increasing.
-   Elements must be nonnegative.
-   EMPTY is the empty Range.
-   <p> Note last is inclusive, so standard iteration is
-   <pre>
-       for (int i=range.first(); i<=range.last(); i+= range.stride()) {
-         ...
-       }
-   or use:
-      Range.Iterator iter = timeRange.getIterator();
-      while (iter.hasNext()) {
-        int index = iter.next();
-        ...
-   </pre>
-
+ * Represents a set of integers, used as an index for arrays.
+ * It should be considered as a subset of the interval of integers [0, length-1] inclusive.
+ * For example Range(1:11:3) represents the set of integers {1,4,7,10}
+ * Immutable.
+ * <p/>
+ * Ranges are monotonically increasing.
+ * Elements must be nonnegative.
+ * EMPTY is the empty Range.
+ * <p> Note last is inclusive, so standard iteration is
+ * <pre>
+ * for (int i=range.first(); i<=range.last(); i+= range.stride()) {
+ *   ...
+ * }
+ * or use:
+ * Range.Iterator iter = timeRange.getIterator();
+ * while (iter.hasNext()) {
+ *   int index = iter.next();
+ *   ...
+ * }
+ * </pre>
  *
  * @author caron
  */
@@ -65,31 +65,50 @@ public final class Range {
   }
 
   /**
-     Create a range with unit stride.
-     @param first	first value in range
-     @param last	last value in range, inclusive
-     @exception InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   * Create a range with unit stride.
+   *
+   * @param first first value in range
+   * @param last  last value in range, inclusive
+   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range(int first, int last) throws InvalidRangeException {
-    this( null, first, last, 1);
+    this(null, first, last, 1);
   }
 
+  /**
+   * Create a named range with unit stride.
+   *
+   * @param name  name of Range
+   * @param first first value in range
+   * @param last  last value in range, inclusive
+   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   */
   public Range(String name, int first, int last) throws InvalidRangeException {
-    this( name, first, last, 1);
+    this(name, first, last, 1);
   }
 
 
   /**
-     Create a range with a specified stride.
-     @param first	first value in range
-     @param last	last value in range, inclusive
-     @param stride	stride between consecutive elements (positive or negative)
-     @exception InvalidRangeException elements must be nonnegative: 0 <= first <= last, stride >= 1
+   * Create a range with a specified stride.
+   *
+   * @param first  first value in range
+   * @param last   last value in range, inclusive
+   * @param stride stride between consecutive elements, must be > 0
+   * @throws InvalidRangeException elements must be nonnegative: 0 <= first <= last, stride > 0
    */
   public Range(int first, int last, int stride) throws InvalidRangeException {
     this(null, first, last, stride);
   }
 
+  /**
+   * Create a named range with a specified stride.
+   *
+   * @param name   name of Range
+   * @param first  first value in range
+   * @param last   last value in range, inclusive
+   * @param stride stride between consecutive elements, must be > 0
+   * @throws InvalidRangeException elements must be nonnegative: 0 <= first <= last, stride > 0
+   */
   public Range(String name, int first, int last, int stride) throws InvalidRangeException {
     if (first < 0)
       throw new InvalidRangeException("first must be >= 0");
@@ -101,11 +120,12 @@ public final class Range {
     this.name = name;
     this.first = first;
     this.stride = stride;
-    this.n = Math.max( 1 + (last - first) / stride, 1);
+    this.n = Math.max(1 + (last - first) / stride, 1);
   }
 
   /**
    * Copy Constructor
+   *
    * @param r copy from here
    */
   public Range(Range r) {
@@ -117,8 +137,9 @@ public final class Range {
 
   /**
    * Copy Constructor with name
+   *
    * @param name result name
-   * @param r copy from here
+   * @param r    copy from here
    */
   public Range(String name, Range r) {
     this.name = name;
@@ -129,26 +150,28 @@ public final class Range {
 
 
   /**
-     Create a new Range by composing a Range that is reletive to this Range.
-     @param r	range reletive to base
-     @return combined Range, may be EMPTY
-     @exception InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   * Create a new Range by composing a Range that is reletive to this Range.
+   *
+   * @param r range reletive to base
+   * @return combined Range, may be EMPTY
+   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range compose(Range r) throws InvalidRangeException {
     if ((length() == 0) || (r.length() == 0))
       return EMPTY;
 
-    int first = element( r.first());
+    int first = element(r.first());
     int stride = stride() * r.stride();
     int last = element(r.last());
     return new Range(name, first, last, stride);
   }
 
   /**
-     Create a new Range by compacting this Range by removing the stride.
-     first = first/stride, last=last/stride, stride=1.
-     @return compacted Range
-     @exception InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   * Create a new Range by compacting this Range by removing the stride.
+   * first = first/stride, last=last/stride, stride=1.
+   *
+   * @return compacted Range
+   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range compact() throws InvalidRangeException {
     if (stride() == 1) return this;
@@ -158,10 +181,11 @@ public final class Range {
   }
 
   /**
-     Create a new Range shifting this range by a constant factor.
-     @param origin subtract this from first, last
-     @return shiften range
-     @exception InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   * Create a new Range shifting this range by a constant factor.
+   *
+   * @param origin subtract this from first, last
+   * @return shiften range
+   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range shiftOrigin(int origin) throws InvalidRangeException {
     int first = first() - origin;
@@ -171,11 +195,12 @@ public final class Range {
   }
 
   /**
-     Create a new Range by intersecting with a Range using same interval as this Range.
-     NOTE: we dont yet support intersection when both Ranges have strides
-     @param r	range to intersect
-     @return intersected Range, may be EMPTY
-     @exception InvalidRangeException elements must be nonnegative
+   * Create a new Range by intersecting with a Range using same interval as this Range.
+   * NOTE: we dont yet support intersection when both Ranges have strides
+   *
+   * @param r range to intersect
+   * @return intersected Range, may be EMPTY
+   * @throws InvalidRangeException elements must be nonnegative
    */
   public Range intersect(Range r) throws InvalidRangeException {
     if ((length() == 0) || (r.length() == 0))
@@ -190,7 +215,7 @@ public final class Range {
 
     } else if (stride() == 1) { // then r has a stride
 
-      if (r.first() >= first() )
+      if (r.first() >= first())
         useFirst = r.first();
       else {
         int incr = (first() - r.first()) / stride;
@@ -199,8 +224,8 @@ public final class Range {
       }
 
     } else if (r.stride() == 1) { // then this has a stride
-      
-      if (first() >= r.first() )
+
+      if (first() >= r.first())
         useFirst = first();
       else {
         int incr = (r.first() - first()) / stride;
@@ -217,12 +242,61 @@ public final class Range {
     return new Range(name, useFirst, last, stride);
   }
 
-    /**
-     Create a new Range by making the union with a Range using same interval as this Range.
-     NOTE: no strides
-     @param r	range to add
-     @return intersected Range, may be EMPTY
-     @exception InvalidRangeException elements must be nonnegative
+  /**
+   * Determine if a given Range intersects this one.
+   * NOTE: we dont yet support intersection when both Ranges have strides
+   *
+   * @param r range to intersect
+   * @return true if they intersect
+   * @throws UnsupportedOperationException if both Ranges have strides
+   */
+  public boolean intersects(Range r) {
+    if ((length() == 0) || (r.length() == 0))
+      return false;
+
+    int last = Math.min(this.last(), r.last());
+    int stride = stride() * r.stride();
+
+    int useFirst;
+    if (stride == 1) {
+      useFirst = Math.max(this.first(), r.first());
+
+    } else if (stride() == 1) { // then r has a stride
+
+      if (r.first() >= first())
+        useFirst = r.first();
+      else {
+        int incr = (first() - r.first()) / stride;
+        useFirst = r.first() + incr * stride;
+        if (useFirst < first()) useFirst += stride;
+      }
+
+    } else if (r.stride() == 1) { // then this has a stride
+
+      if (first() >= r.first())
+        useFirst = first();
+      else {
+        int incr = (r.first() - first()) / stride;
+        useFirst = first() + incr * stride;
+        if (useFirst < r.first()) useFirst += stride;
+      }
+
+    } else {
+      throw new UnsupportedOperationException("Intersection when both ranges have a stride");
+    }
+
+    return (useFirst <= last);
+  }
+
+
+
+  /**
+   * Create a new Range by making the union with a Range using same interval as this Range.
+   * NOTE: no strides
+   *
+   * @param r range to add
+   * @return intersected Range, may be EMPTY
+   * @throws InvalidRangeException elements must be nonnegative
    */
   public Range union(Range r) throws InvalidRangeException {
     if (length() == 0)
@@ -239,13 +313,16 @@ public final class Range {
   /**
    * @return the number of elements in the range.
    */
-  public int length() { return n; }
- 
+  public int length() {
+    return n;
+  }
+
   /**
    * Get ith element
-     @return the i-th element of a range.
-     @param i	index of the element
-     @exception InvalidRangeException i must be: 0 <= i < length
+   *
+   * @param i index of the element
+   * @return the i-th element of a range.
+   * @throws InvalidRangeException i must be: 0 <= i < length
    */
   public int element(int i) throws InvalidRangeException {
     if (i < 0)
@@ -255,10 +332,27 @@ public final class Range {
     return first + i * stride;
   }
 
-   /**
-     Is the ith element contained in this Range?
-     @param i	index in the original Range
-     @return true if the ith element would be returned by the Range iterator
+  // inverse of element
+  /**
+   * Get the index for this element: inverse of element
+   * @param elem the element of the range
+   * @return index
+   * @throws InvalidRangeException
+   */
+  public int index(int elem) throws InvalidRangeException {
+    if (elem < first)
+      throw new InvalidRangeException("elem must be >= first");
+    int result = (elem - first) / stride;
+    if (result > n)
+      throw new InvalidRangeException("elem must be <= first = n * stride");
+    return result;
+  }
+
+  /**
+   * Is the ith element contained in this Range?
+   *
+   * @param i index in the original Range
+   * @return true if the ith element would be returned by the Range iterator
    */
   public boolean contains(int i) {
     if (i < first())
@@ -266,36 +360,49 @@ public final class Range {
     if (i > last())
       return false;
     if (stride == 1) return true;
-    return (i-first) % stride == 0;
+    return (i - first) % stride == 0;
   }
 
   /**
    * Get ith element; skip checking, for speed.
-   * @param i	index of the element
+   *
+   * @param i index of the element
    * @return the i-th element of a range, no check
    */
   protected int elementNC(int i) {
     return first + i * stride;
   }
 
-  /** @return first in range */
+  /**
+   * @return first in range
+   */
   public int first() {
     return first;
   }
 
-  /** @return last in range, inclusive */
+  /**
+   * @return last in range, inclusive
+   */
   public int last() {
     return first + (n - 1) * stride;
   }
 
-  /** @return stride, must be >= 1*/
-  public int stride() { return stride;  }
+  /**
+   * @return stride, must be >= 1
+   */
+  public int stride() {
+    return stride;
+  }
 
 
-  /** Get name
+  /**
+   * Get name
+   *
    * @return name, or null if none
    */
-  public String getName() { return name; }
+  public String getName() {
+    return name;
+  }
 
   /**
    * Iterate over Range index
@@ -306,12 +413,20 @@ public final class Range {
    *   doSomething(index);
    * }
    * </pre>
+   *
    * @return Iterator over element indices
    */
-  public Iterator getIterator() { return new Iterator(); }
+  public Iterator getIterator() {
+    return new Iterator();
+  }
+
   public class Iterator {
     private int current = 0;
-    public boolean hasNext() { return current < n; }
+
+    public boolean hasNext() {
+      return current < n;
+    }
+
     public int next() {
       return elementNC(current++);
     }
@@ -324,6 +439,7 @@ public final class Range {
    * <li>k <= last
    * <li>k = first + i * stride for some integer i.
    * </ul>
+   *
    * @param start starting index
    * @return first in interval, else -1 if there is no such element.
    */
@@ -338,14 +454,16 @@ public final class Range {
   }
 
   public String toString() {
-    return first+":"+last()+":"+stride;
+    return first + ":" + last() + ":" + stride;
   }
 
-  /** Range elements with same first, last, stride are equal. */
+  /**
+   * Range elements with same first, last, stride are equal.
+   */
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof Range)) return false;   // this catches nulls
-    Range or =(Range) o;
+    Range or = (Range) o;
 
     if ((n == 0) && (or.n == 0)) // empty ranges are equal
       return true;
@@ -353,22 +471,25 @@ public final class Range {
     return (or.first == first) && (or.n == n) && (or.stride == stride);
   }
 
-  /** Override Object.hashCode() to implement equals. */
+  /**
+   * Override Object.hashCode() to implement equals.
+   */
   public int hashCode() {
     if (hashCode == 0) {
       int result = first();
-      result = 3700*result + last();
-      result = 370*result + stride();
+      result = 3700 * result + last();
+      result = 370 * result + stride();
       hashCode = result;
     }
     return hashCode;
   }
+
   private volatile int hashCode = 0;
 
 
   //////////////////////////////////////////////////////////////////////////
   // deprecated
-   /**
+  /**
    * @return Minimum index, inclusive.
    * @deprecated use first()
    */
@@ -378,8 +499,7 @@ public final class Range {
         return first;
       else
         return first + (n - 1) * stride;
-    }
-    else {
+    } else {
       return first;
     }
   }
@@ -394,8 +514,7 @@ public final class Range {
         return first + (n - 1) * stride;
       else
         return first;
-    }
-    else {
+    } else {
       if (stride > 0)
         return first - 1;
       else
@@ -406,14 +525,16 @@ public final class Range {
   ///////////////////////////////////////////////////////////////////////////
   // deprecated - use Section
 
-  /** Convert shape array to List of Ranges. Assume 0 origin for all.
+  /**
+   * Convert shape array to List of Ranges. Assume 0 origin for all.
+   *
    * @deprecated use Section(int[] shape)
    */
-  public static List factory( int[] shape) {
+  public static List factory(int[] shape) {
     ArrayList result = new ArrayList();
-    for (int i=0; i<shape.length; i++ ) {
+    for (int i = 0; i < shape.length; i++) {
       try {
-        result.add( new Range( 0, Math.max(shape[i]-1, -1)));
+        result.add(new Range(0, Math.max(shape[i] - 1, -1)));
       } catch (InvalidRangeException e) {
         return null;
       }
@@ -421,10 +542,12 @@ public final class Range {
     return result;
   }
 
-  /** Check rangeList has no nulls, set from shape array.
+  /**
+   * Check rangeList has no nulls, set from shape array.
+   *
    * @deprecated use Section.setDefaults(int[] shape)
    */
-  public static List setDefaults( List rangeList, int[] shape) {
+  public static List setDefaults(List rangeList, int[] shape) {
     try {
       // entire rangeList is null
       if (rangeList == null) {
@@ -439,7 +562,7 @@ public final class Range {
       for (int i = 0; i < shape.length; i++) {
         Range r = (Range) rangeList.get(i);
         if (r == null) {
-          rangeList.set(i, new Range(0, shape[i]-1));
+          rangeList.set(i, new Range(0, shape[i] - 1));
         }
       }
       return rangeList;
@@ -449,29 +572,33 @@ public final class Range {
     }
   }
 
-  /** Convert shape, origin array to List of Ranges.
+  /**
+   * Convert shape, origin array to List of Ranges.
+   *
    * @deprecated use Section(int[] origin, int[] shape)
    */
-  public static List factory( int[] origin, int[] shape) throws InvalidRangeException {
+  public static List factory(int[] origin, int[] shape) throws InvalidRangeException {
     ArrayList result = new ArrayList();
-    for (int i=0; i<shape.length; i++ ) {
+    for (int i = 0; i < shape.length; i++) {
       try {
         result.add(new Range(origin[i], origin[i] + shape[i] - 1));
       } catch (Exception e) {
-        throw new InvalidRangeException( e.getMessage());
+        throw new InvalidRangeException(e.getMessage());
       }
     }
     return result;
   }
 
-  /** Convert List of Ranges to shape array using the range.length.
+  /**
+   * Convert List of Ranges to shape array using the range.length.
+   *
    * @deprecated use Section.getShape()
    */
-  public static int[] getShape( List ranges) {
+  public static int[] getShape(List ranges) {
     if (ranges == null) return null;
     int[] result = new int[ranges.size()];
-    for (int i=0; i<ranges.size(); i++ ) {
-      result[i] = ((Range)ranges.get(i)).length();
+    for (int i = 0; i < ranges.size(); i++) {
+      result[i] = ((Range) ranges.get(i)).length();
     }
     return result;
   }
@@ -482,74 +609,84 @@ public final class Range {
   public static String toString(List ranges) {
     if (ranges == null) return "";
     StringBuffer sbuff = new StringBuffer();
-    for (int i=0; i<ranges.size(); i++ ) {
-      if (i>0) sbuff.append(",");
-      sbuff.append(((Range)ranges.get(i)).length());
+    for (int i = 0; i < ranges.size(); i++) {
+      if (i > 0) sbuff.append(",");
+      sbuff.append(((Range) ranges.get(i)).length());
     }
     return sbuff.toString();
   }
 
   /**
-   /** Compute total number of elements represented by the section.
+   * /** Compute total number of elements represented by the section.
+   *
    * @param section List of Range objects
    * @return total number of elements
    * @deprecated use Section.computeSize()
    */
   static public long computeSize(List section) {
-    int[] shape = getShape( section);
-    return Index.computeSize( shape);
+    int[] shape = getShape(section);
+    return Index.computeSize(shape);
   }
 
   /**
    * Append a new Range(0,size-1) to the list
+   *
    * @param ranges list of Range
-   * @param size add this Range
+   * @param size   add this Range
    * @return same list
    * @throws InvalidRangeException if size < 1
    * @deprecated use Section.appendRange(int size)
    */
-  public static List appendShape( List ranges, int size) throws InvalidRangeException {
-    ranges.add( new Range(0, size-1));
+  public static List appendShape(List ranges, int size) throws InvalidRangeException {
+    ranges.add(new Range(0, size - 1));
     return ranges;
   }
 
-  /** Convert List of Ranges to origin array using the range.first.
-   *  @deprecated use Section.getOrigin()
+  /**
+   * Convert List of Ranges to origin array using the range.first.
+   *
+   * @deprecated use Section.getOrigin()
    */
-  public static int[] getOrigin( List ranges) {
+  public static int[] getOrigin(List ranges) {
     if (ranges == null) return null;
     int[] result = new int[ranges.size()];
-    for (int i=0; i<ranges.size(); i++ ) {
-      result[i] = ((Range)ranges.get(i)).first();
+    for (int i = 0; i < ranges.size(); i++) {
+      result[i] = ((Range) ranges.get(i)).first();
     }
     return result;
   }
 
-  /** Convert List of Ranges to array of Ranges.  *
-   *  @deprecated use Section.getRanges()
+  /**
+   * Convert List of Ranges to array of Ranges.  *
+   *
+   * @deprecated use Section.getRanges()
    */
-  public static Range[] toArray( List ranges) {
+  public static Range[] toArray(List ranges) {
     if (ranges == null) return null;
-    return (Range[]) ranges.toArray( new Range[ ranges.size()] );
+    return (Range[]) ranges.toArray(new Range[ranges.size()]);
   }
 
-  /** Convert array of Ranges to List of Ranges.
-   *  @deprecated use Section.getRanges()
+  /**
+   * Convert array of Ranges to List of Ranges.
+   *
+   * @deprecated use Section.getRanges()
    */
-  public static List toList( Range[] ranges) {
+  public static List toList(Range[] ranges) {
     if (ranges == null) return null;
-    return java.util.Arrays.asList( ranges);
+    return java.util.Arrays.asList(ranges);
   }
 
-  /** Convert List of Ranges to String Spec.
-   *  Inverse of parseSpec
-   *  @deprecated use Section.toString()
+  /**
+   * Convert List of Ranges to String Spec.
+   * Inverse of parseSpec
+   *
+   * @deprecated use Section.toString()
    */
-  public static String makeSectionSpec( List ranges) {
+  public static String makeSectionSpec(List ranges) {
     StringBuffer sbuff = new StringBuffer();
     for (int i = 0; i < ranges.size(); i++) {
       Range r = (Range) ranges.get(i);
-      if (i>0) sbuff.append(",");
+      if (i > 0) sbuff.append(",");
       sbuff.append(r.toString());
     }
     return sbuff.toString();
@@ -567,21 +704,20 @@ public final class Range {
    *   start := INTEGER
    *   stride := INTEGER
    *   end := INTEGER
-   *
+   * <p/>
    * where nonterminals are in lower case, terminals are in upper case, literals are in single quotes.
-   *
+   * <p/>
    * Meaning of index selector :
    *  ':' = all
    *  slice = hold index to that value
    *  start:end = all indices from start to end inclusive
    *  start:end:stride = all indices from start to end inclusive with given stride
-   *
+   * <p/>
    * </pre>
    *
    * @param sectionSpec the token to parse, eg "(1:20,:,3,10:20:2)", parenthesis optional
    * @return return List of ucar.ma2.Range objects corresponding to the index selection. A null
-   *   Range means "all" (i.e.":") indices in that dimension.
-   *
+   *         Range means "all" (i.e.":") indices in that dimension.
    * @throws IllegalArgumentException when sectionSpec is misformed
    * @deprecated use new Section(String sectionSpec)
    */
@@ -590,7 +726,7 @@ public final class Range {
     ArrayList result = new ArrayList();
     Range section;
 
-    StringTokenizer stoke = new StringTokenizer(sectionSpec,"(),");
+    StringTokenizer stoke = new StringTokenizer(sectionSpec, "(),");
     while (stoke.hasMoreTokens()) {
       String s = stoke.nextToken().trim();
       if (s.equals(":"))
@@ -599,13 +735,13 @@ public final class Range {
       else if (s.indexOf(':') < 0) { // just a number : slice
         try {
           int index = Integer.parseInt(s);
-          section = new Range( index, index);
+          section = new Range(index, index);
         } catch (NumberFormatException e) {
-          throw new IllegalArgumentException(" illegal selector: "+s+" part of <"+sectionSpec+">");
+          throw new IllegalArgumentException(" illegal selector: " + s + " part of <" + sectionSpec + ">");
         }
 
       } else {  // gotta be "start : end" or "start : end : stride"
-        StringTokenizer stoke2 = new StringTokenizer(s,":");
+        StringTokenizer stoke2 = new StringTokenizer(s, ":");
         String s1 = stoke2.nextToken();
         String s2 = stoke2.nextToken();
         String s3 = stoke2.hasMoreTokens() ? stoke2.nextToken() : null;
@@ -613,9 +749,9 @@ public final class Range {
           int index1 = Integer.parseInt(s1);
           int index2 = Integer.parseInt(s2);
           int stride = (s3 != null) ? Integer.parseInt(s3) : 1;
-          section = new Range( index1, index2, stride);
+          section = new Range(index1, index2, stride);
         } catch (NumberFormatException e) {
-          throw new IllegalArgumentException(" illegal selector: "+s+" part of <"+sectionSpec+">");
+          throw new IllegalArgumentException(" illegal selector: " + s + " part of <" + sectionSpec + ">");
         }
       }
 
@@ -627,19 +763,20 @@ public final class Range {
 
   /**
    * Check ranges are valid
+   *
    * @param section
    * @param shape
    * @return error message, or null if all ok
    * @deprecated use Section.checkInRange(int shape[])
    */
-  public static String checkInRange( List section, int shape[]) {
+  public static String checkInRange(List section, int shape[]) {
     if (section.size() != shape.length)
-      return "Number of ranges in section must be ="+shape.length;
-    for (int i=0; i<section.size(); i++) {
+      return "Number of ranges in section must be =" + shape.length;
+    for (int i = 0; i < section.size(); i++) {
       Range r = (Range) section.get(i);
       if (r == null) continue;
       if (r.last() >= shape[i])
-        return "Illegal range for dimension "+i+": requested "+r.last()+" >= max "+shape[i];
+        return "Illegal range for dimension " + i + ": requested " + r.last() + " >= max " + shape[i];
     }
 
     return null;

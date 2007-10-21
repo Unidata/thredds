@@ -62,14 +62,18 @@ class H5chunkLayout extends Indexer {
 
     wantSection = Section.fill(wantSection, v2.getShape());
     this.totalNelems = wantSection.computeSize();
-    if (dtype == DataType.CHAR)
-      this.want = new Section(wantSection).appendRange(1); // LOOK trying to match dimensionality
-    else
-      this.want = wantSection;
 
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     assert vinfo.isChunked;
     assert vinfo.btree != null;
+
+    // we have to translate the want section into the same rank as the storageSize, in order to be able to call
+    // Section.intersect(). It appears that storageSize (actually msl.chunkSize) may have an extra dimension, reletive
+    // to the Variable.
+    if ((dtype == DataType.CHAR) && (wantSection.getRank() < vinfo.storageSize.length))
+      this.want = new Section(wantSection).appendRange(1);
+    else
+      this.want = wantSection;
 
     // heres the chunking info
     // one less chunk dimension, except in the case of char
@@ -125,7 +129,7 @@ class H5chunkLayout extends Indexer {
             break;
         }
 
-        if (debug) System.out.println(" found intersection: " + dataSection+" for address "+ dataChunk.address);
+        if (debug) System.out.println(" found intersecting section: " + dataSection+" for address "+ dataChunk.address);
         index = indexFactory(dataChunk, dataChunk.address, elemSize, dataSection, want);
 
       } catch (InvalidRangeException e) {

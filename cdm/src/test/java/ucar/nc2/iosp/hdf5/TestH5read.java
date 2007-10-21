@@ -41,6 +41,11 @@ public class TestH5read extends TestCase {
     readAllDir( "C:/data/npoess/ExampleFiles/");
   }
 
+  public void problem() {
+    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    readAllData( TestAll.upcShareTestDataDir + "hdf5/wrf/wrf_bdy_seq.h5");
+  }
+
   public static void readAllDir(String dirName) {
     System.out.println("---------------Reading directory "+dirName);
     File allDir = new File( dirName);

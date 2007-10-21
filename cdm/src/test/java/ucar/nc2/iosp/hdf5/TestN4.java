@@ -24,10 +24,10 @@ public class TestN4 extends TestCase {
     ncfile.close();
   }
 
-  public void testReadAll() throws IOException {
+  public void testReadOne() throws IOException {
     //H5iosp.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5iosp/read"));
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/Heap"));
-    String filename = "C:/data/netcdf4/files/C0.nc";
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = "C:/data/netcdf4/files/c0.nc";
     TestH5read.readAllData(filename);
   }
 
@@ -75,8 +75,8 @@ public class TestN4 extends TestCase {
     ncfile.close();
   }
 
-  public void testAll() {
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
+  public void testReadAll() {
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
     readAllDir("C:/data/netcdf4/files/");
   }
 

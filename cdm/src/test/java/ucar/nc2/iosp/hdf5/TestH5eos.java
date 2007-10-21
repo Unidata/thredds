@@ -39,6 +39,9 @@ import junit.framework.TestCase;
  */
 public class TestH5eos extends TestCase {
 
+   public TestH5eos(String name) {
+    super(name);
+  }
 
   public void testStructMetadata() {
     //NetcdfFile ncfile = TestH5.open("c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");

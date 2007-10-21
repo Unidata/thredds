@@ -1,6 +1,5 @@
-// $Id:Cinrad2IOServiceProvider.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -41,7 +40,6 @@ import java.util.Date;
  *
  *
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Cinrad2IOServiceProvider.class);

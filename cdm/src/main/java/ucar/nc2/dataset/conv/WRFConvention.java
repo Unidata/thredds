@@ -402,7 +402,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
 
     String fromWhere = axisName.endsWith("stag") ? "ZNW" : "ZNU";
 
-    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.SHORT, dim.getName(), "", "eta values from variable " + fromWhere);
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "", "eta values from variable " + fromWhere);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
     if (!axisName.equals(dim.getName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));

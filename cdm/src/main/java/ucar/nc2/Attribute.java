@@ -299,23 +299,50 @@ public class Attribute {
    */
   public Attribute(String name, Array values) {
     this.name = name;
-    //validate(name);
     setValues(values);
   }
 
   /**
-   * Construct attribute with list of String values.
+   * Construct attribute with list of String or Number values.
    *
    * @param name   name of attribute
-   * @param values list of values.
+   * @param values list of values. must be String or Number, and have at least 1 member
    */
-  public Attribute(String name, List<String> values) {
+  public Attribute(String name, List values) {
     this.name = name;
     int n = values.size();
-    String[] va = new String[n];
-    int count = 0;
-    for (String v : values) va[count++] = v;
-    setValues( Array.factory(String.class, new int[] {n}, va));
+    Object pa = null;
+
+    Class c = values.get(0).getClass();
+    if (c == String.class) {
+      String[] va = new String[n]; pa = va;
+      for (int i=0; i<n; i++) va[i] = (String) values.get(i);
+
+    } else if (c == Integer.class) {
+      int[] va = new int[n]; pa = va;
+      for (int i=0; i<n; i++) va[i] = (Integer) values.get(i);
+
+    } else if (c == Double.class) {
+      double[] va = new double[n]; pa = va;
+      for (int i=0; i<n; i++) va[i] = (Double) values.get(i);
+
+    } else if (c == Float.class) {
+      float[] va = new float[n]; pa = va;
+      for (int i=0; i<n; i++) va[i] = (Float) values.get(i);
+
+    } else if (c == Short.class) {
+      short[] va = new short[n]; pa = va;
+      for (int i=0; i<n; i++) va[i] = (Short) values.get(i);
+
+    } else if (c == Byte.class) {
+      byte[] va = new byte[n]; pa = va;
+      for (int i=0; i<n; i++) va[i] = (Byte) values.get(i);
+
+    } else if (c == Long.class) {
+      long[] va = new long[n]; pa = va;
+      for (int i=0; i<n; i++) va[i] = (Long) values.get(i);
+    }
+    setValues( Array.factory(c, new int[] {n}, pa));
   }
 
 

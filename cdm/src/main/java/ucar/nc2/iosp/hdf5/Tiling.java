@@ -88,7 +88,7 @@ public class Tiling {
    * Create an ordering of index points based on which tile the point is in.
    * @param p1 index point 1
    * @param p2 index point 2
-   * @return order(p1) - order(p2)
+   * @return order(p1) - order(p2) : negetive if p1 < p2, positive if p1 > p2 , 0 if equal
    */
   public int compare(int[] p1, int[] p2) {
     return order(p1) - order(p2);

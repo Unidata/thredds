@@ -388,9 +388,6 @@ class H5header {
   }
 
   private void findDimensionScales(ucar.nc2.Group g, DataObjectFacade facade) throws IOException {
-    if (facade.name.equals("cr1"))
-      System.out.println("hey");
-
     Iterator<Message> iter = facade.dobj.messages.iterator();
     while (iter.hasNext()) {
       Message mess = iter.next();
@@ -496,12 +493,12 @@ class H5header {
     attName = NetcdfFile.createValidNetcdfObjectName(attName);
     ucar.ma2.Array data = getAttributeData(forWho, null, attName, mdt, mds, dataPos);
 
-    if (data.getElementType() == Array.class) { // vlen strings
-      List<String> dataList = new ArrayList<String>();
+    if (data.getElementType() == Array.class) { // vlen
+      List dataList = new ArrayList();
       while (data.hasNext()) {
         Array nested = (Array) data.next();
         while (nested.hasNext())
-          dataList.add((String) nested.next());
+          dataList.add(nested.next());
       }
       return new Attribute(attName, dataList);
     }
@@ -511,6 +508,7 @@ class H5header {
   private Array getAttributeData(String forWho, Structure s, String attName, MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
     ucar.ma2.Array data;
 
+    // make a temporary variable, so we can use H5iosp to read the data
     Variable v;
     if (mdt.type == 6) { 
       Structure satt = new Structure(ncfile, null, null, attName);
@@ -522,45 +520,29 @@ class H5header {
       v = new Variable(ncfile, null, null, attName);
     }
 
+    // make its Vinfo object
     Vinfo vinfo = new Vinfo(mdt, mds, dataPos);
     if (!makeVariableShapeAndType(v, mdt, mds, vinfo, null)) {
       debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + vinfo.typeInfo.hdfType);
       return null;
     }
+    v.setSPobject(vinfo);
+    vinfo.setOwner(v);
+    v.setCaching(false);
+    if (debug1) debugOut.println("makeAttribute " + attName + " for " + forWho + "; vinfo= " + vinfo);
 
-    /* if (mdt.type == 9) {
-      int nelems = mds.dimLength[0];
-      for (int i = 0; i < nelems; i++) {
-        long address = dataPos + mdt.byteSize * i;
-        H5header.HeapIdentifier heapId = getHeapIdentifier(address);
-        debugOut.println("HeapIdentifier address=" + address + heapId);
-        GlobalHeap.HeapObject ho = heapId.getHeapObject();
-        debugOut.println(" readString at HeapObject " + ho);
-      }
-
-      debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + mdt.type);
-      return null;
-
-    } else */
-
-    if (mdt.type == 7) {
+    // read the data
+    if ((mdt.type == 7) && attName.equals("DIMENSION_LIST")) { // convert to dimension names (LOOK is this netcdf4 specific?)
       if (mdt.referenceType == 0)
         data = readReferenceObjectNames(v);
-      else {
+      else {  // not doing reference regions here
         debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with referenceType= " + mdt.referenceType);
         return null;
       }
 
     } else {
-      v.setSPobject(vinfo);
-      vinfo.setOwner(v);
-      v.setCaching(false);
-      if (debug1) debugOut.println("makeAttribute " + attName + " for " + forWho + "; vinfo= " + vinfo);
-
       try {
         data = h5iosp.readData( v, v.getShapeAsSection());
-        //ucar.ma2.Array data = v.read();
-
       } catch (InvalidRangeException e) {
         log.error("H5header.makeAttribute", e);
         if (debug1) debugOut.println("ERROR attribute "+e.getMessage());
@@ -656,10 +638,10 @@ class H5header {
       }
     }
 
-    long dataPos = getFileOffset(facade.dobj.msl.dataAddress);
+    long dataAddress = facade.dobj.msl.dataAddress;
 
     // deal with unallocated data
-    if (dataPos == -1) {
+    if (dataAddress == -1) {
       vinfo.useFillValue = true;
 
       // if didnt find, use zeroes !!
@@ -671,7 +653,7 @@ class H5header {
     Variable v;
     Structure s = null;
     if (facade.dobj.mdt.type == 6) { // Compound
-      String vname = NetcdfFile.createValidNetcdfObjectName(facade.name); // look cannot search by name
+      String vname = NetcdfFile.createValidNetcdfObjectName(facade.name);
       s = new Structure(ncfile, ncGroup, null, vname);
       v = s;
       if (!makeVariableShapeAndType(v, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList)) return null;
@@ -679,7 +661,7 @@ class H5header {
       v.setElementSize(facade.dobj.mdt.byteSize);
 
     } else {
-      String vname = NetcdfFile.createValidNetcdfObjectName(facade.name); // look cannot search by name
+      String vname = NetcdfFile.createValidNetcdfObjectName(facade.name);
       v = new Variable(ncfile, ncGroup, null, vname);
       if (!makeVariableShapeAndType(v, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList)) return null;
     }
@@ -709,7 +691,7 @@ class H5header {
     }
 
     if (vinfo.isChunked) // make the data btree, but entries are not read in
-      vinfo.btree = new DataBTree(dataPos, v.getShape(), vinfo.storageSize);
+      vinfo.btree = new DataBTree(dataAddress, v.getShape(), vinfo.storageSize);
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
       Array newData = readReferenceObjectNames(v);
@@ -904,9 +886,7 @@ class H5header {
     long dataPos; // for regular variables, needs to be absolute, with baseAddress added if needed
                   // for member variables, is the offset from start of structure
 
-    //int hdfType;
     TypeInfo typeInfo;
-    //int byteSize;
     int[] storageSize;  // for type 1 (continuous) : (varDims, elemSize)
                         // for type 2 (chunked)    : (chunkDim, elemSize)
                         // null for attributes
@@ -930,8 +910,6 @@ class H5header {
      */
     Vinfo(DataObjectFacade facade) throws IOException {
       this.facade = facade;
-      //this.hdfType = facade.dobj.mdt.type;
-      //this.byteSize = facade.dobj.mdt.byteSize;
       this.dataPos = getFileOffset(facade.dobj.msl.dataAddress);
       this.mdt = facade.dobj.mdt;
       this.mds = facade.dobj.mds;
@@ -942,8 +920,12 @@ class H5header {
         return; // not a supported datatype
       }
 
-      this.isChunked = (facade.dobj.msl.type == 2); // chunked vs. continuous storage
-      this.storageSize = (isChunked) ? facade.dobj.msl.chunkSize : facade.dobj.mds.dimLength;
+      this.isChunked = (facade.dobj.msl.type == 2);
+      if (isChunked) {
+        this.storageSize = facade.dobj.msl.chunkSize;
+      } else {
+        this.storageSize = facade.dobj.mds.dimLength;
+      }
 
       // figure out the data type
       this.typeInfo = calcNCtype(facade.dobj.mdt);
@@ -959,7 +941,6 @@ class H5header {
     Vinfo(MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
       this.mdt = mdt;
       this.mds = mds;
-      //this.byteSize = mdt.byteSize;
       this.dataPos = dataPos;
 
       if (!mdt.isOK) {
@@ -1020,7 +1001,8 @@ class H5header {
 
       } else if (hdfType == 7) { // reference
         tinfo.byteOrder = RandomAccessFile.LITTLE_ENDIAN;
-        tinfo.dataType = DataType.STRING;
+        tinfo.dataType = DataType.LONG;  // file offset of the referenced object
+                                         // LOOK - should get the object, and change type to whatever it is (?)
 
       } else if (hdfType == 8) { // enums
         tinfo.dataType = DataType.ENUM;
@@ -1033,7 +1015,7 @@ class H5header {
         } else {
           tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
         }
-      } else if (hdfType == 10) { // array
+      } else if (hdfType == 10) { // array : used for structure members
         tinfo.byteOrder = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
         if ((mdt.base.type == 9) && mdt.base.isVString) {
           tinfo.dataType = DataType.STRING;
@@ -1080,7 +1062,7 @@ class H5header {
         return DataType.CHAR;
 
       } else if (hdfType == 7) { // reference
-        return DataType.STRING;
+        return DataType.LONG;
         
       } else {
         debugOut.println("WARNING not handling hdf type = " + hdfType + " size= " + size);
@@ -2143,7 +2125,7 @@ class H5header {
         if (debug1) debugOut.println("   type 5 (opaque): len= "+len+" desc= " + opaque_desc);
 
       } else if (type == 6) { // compound
-        int nmembers = flags[1] * 256 + flags[0];
+        int nmembers = makeUnsignedIntFromBytes(flags[1], flags[0]);
         if (debug1) debugOut.println("   --type 6(compound): nmembers=" + nmembers);
         members = new ArrayList<StructureMember>();
         for (int i = 0; i < nmembers; i++) {
@@ -2156,7 +2138,7 @@ class H5header {
         if (debug1 || debugReference) debugOut.println("   --type 7(reference): type= " + referenceType);
 
       } else if (type == 8) { // enums
-        int nmembers = flags[1] * 256 + flags[0];
+        int nmembers = makeUnsignedIntFromBytes(flags[1], flags[0]);
         boolean saveDebugDetail = debugDetail;
         if (debug1 || debugEnum) {
           debugOut.println("   --type 8(enums): nmembers=" + nmembers);
@@ -2177,7 +2159,7 @@ class H5header {
         }
 
         // read the values; must switch to parent byte order (!)
-        raf.order(base.byteOrder);
+        if (base.byteOrder >= 0) raf.order(base.byteOrder);
         int[] enumValue = new int[nmembers];
         for (int i = 0; i < nmembers; i++)
           enumValue[i] = (int) readVariableSize(base.byteSize); // assume unsigned integer type, fits into int
@@ -2314,7 +2296,7 @@ class H5header {
       if (version < 3) {
         spaceAllocateTime = raf.readByte();
         fillWriteTime = raf.readByte();
-        hasFillValue = (version <= 1) || raf.readByte() != 0;
+        hasFillValue = raf.readByte() != 0;
 
       } else {
         flags = raf.readByte();
@@ -3376,7 +3358,7 @@ class H5header {
 
       Node(long address, long parent) throws IOException {
         if (debugDataBtree) debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent +
-                " owner= " + owner.getNameAndDimensions() + " vinfo= " + owner.getSPobject());
+                " owner= " + owner.getNameAndDimensions());
 
         raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
         raf.seek(getFileOffset(address));
@@ -3557,11 +3539,12 @@ class H5header {
    * @return String the String read from the heap
    * @throws IOException on read error
    */
-  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType) throws IOException {
+  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int byteOrder) throws IOException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
     if (debugHeap) H5header.debugOut.println(" heapId= "+heapId);
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (debugHeap) H5header.debugOut.println(" HeapObject= "+ho);
+    if (byteOrder >= 0) raf.order(byteOrder);
 
     if (DataType.FLOAT == dataType) {
       float[] pa = new float[heapId.nelems];
@@ -4241,6 +4224,10 @@ There is _no_ datatype information stored for these sort of selections currently
 
   private long getFileOffset(long address) throws IOException {
     return baseAddress + address;
+  }
+
+  private int makeUnsignedIntFromBytes(byte upper, byte lower) {
+    return ucar.ma2.DataType.unsignedByteToShort(upper) * 256 + ucar.ma2.DataType.unsignedByteToShort(lower);
   }
 
   // find number of bytes needed to pad to multipleOf byte boundary

@@ -771,6 +771,10 @@ public abstract class Array {
     return sbuff.toString();
   }
 
+  /**
+   * Create a string representation of the shape of this Array.
+   * @return string representation of the shape
+   */
   public String shapeToString() {
     int[] shape = getShape();
     if (shape.length == 0) return "";
@@ -785,15 +789,32 @@ public abstract class Array {
     return sb.toString();
   }
 
-  private IndexIterator ii;
+  /**
+   * Check if more elements in the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * @return true if there are more elements in the iteration
+   */
   public boolean hasNext() {
     if (null == ii) ii = getIndexIterator();
     return ii.hasNext();
   }
 
+  /**
+   * Return the next element in the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * @return next element as an Object, same as IndexIterator.getObjectNext().
+   */
   public Object next() {
     return ii.getObjectNext();
   }
 
+  /**
+   * Reset the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   */
+  public void resetLocalIterator() {
+    ii = null;
+  }
+  private IndexIterator ii; // local iterator
 }
 

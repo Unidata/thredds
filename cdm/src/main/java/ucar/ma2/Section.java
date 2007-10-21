@@ -65,14 +65,14 @@ public class Section {
    * Create Section from a shape, origin, and stride arrays.
    *
    * @param origin array of start for each Range
-   * @param shape  array of lengths for each Range
+   * @param size array of lengths for each Range (last = origin + size -1)
+   * @param stride	stride between consecutive elements, must be > 0
    * @throws InvalidRangeException if origin < 0, shape < 1.
-   * @param stride	stride between consecutive elements (positive or negative)
    */
-  public Section(int[] origin, int[] shape, int[] stride) throws InvalidRangeException {
+  public Section(int[] origin, int[] size, int[] stride) throws InvalidRangeException {
     list = new ArrayList<Range>();
-    for (int i = 0; i < shape.length; i++) {
-      list.add(shape[i] > 0 ? new Range(origin[i], origin[i] + shape[i] - 1, stride[i]) : Range.EMPTY);
+    for (int i = 0; i < size.length; i++) {
+      list.add(size[i] > 0 ? new Range(origin[i], origin[i] + size[i] - 1, stride[i]) : Range.EMPTY);
     }
   }
 
@@ -269,6 +269,23 @@ public class Section {
     return new Section(results);
   }
 
+  public int offset(Section intersect) throws InvalidRangeException {
+    if (intersect.getRank() != getRank())
+      throw new InvalidRangeException("Invalid Section rank");
+
+    int result = 0;
+    int stride = 1;
+    for (int j = list.size()-1; j >= 0; j--) {
+      Range base = list.get(j);
+      Range r = intersect.getRange(j);
+      int offset = base.index( r.first());
+      result += offset * stride;
+      stride *= base.length();
+    }
+
+    return result;
+  }
+
   /**
    * Create a new Section by union with another Section
    *
@@ -326,13 +343,8 @@ public class Section {
     for (int j = 0; j < list.size(); j++) {
       Range base = list.get(j);
       Range r = other.getRange(j);
-      if ((base.length() == 0) || (r.length() == 0))
+      if (!base.intersects(r))
         return false;
-
-      // LOOK ignores strides
-      int first = Math.max(base.first(), r.first());
-      int last = Math.min(base.last(), r.last());
-      if (first > last) return false;
     }
 
     return true;

@@ -26,6 +26,7 @@ import ucar.nc2.iosp.Indexer;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
+import ucar.nc2.TestCompare;
 
 import java.io.IOException;
 
@@ -44,6 +45,8 @@ public class TestChunkIndexer extends TestCase {
     Group g4 = g3.findGroup("DATA");
     Variable v2 = g4.findVariable("IMAGE_DATA");  // chunked short
 
+    Array alData = v2.read();
+
     int[] origin = new int[]{46000, 122};
     int[] shape = new int[]{80, 12};
     Section section = new Section(origin, shape);
@@ -59,6 +62,49 @@ public class TestChunkIndexer extends TestCase {
       count++;
     }
   }
+
+  public void testSection() throws InvalidRangeException, IOException {
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    NetcdfFile ncfile = TestH5.openH5("IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5");
+    Group root = ncfile.getRootGroup();
+    Group g1 = root.findGroup("U-MARF");
+    Group g2 = g1.findGroup("EPS");
+    Group g3 = g2.findGroup("IASI_xxx_1C");
+    Group g4 = g3.findGroup("DATA");
+    Variable v2 = g4.findVariable("IMAGE_DATA");  // chunked short
+
+    Array allData = v2.read();
+    System.out.println("allData.section ="+allData.shapeToString());
+
+    int[] origin = new int[]{100, 100};
+    int[] shape = new int[]{10, 300};
+    Section section = new Section(origin, shape);
+    Array dataSection = v2.read(section);
+    System.out.println("dataSection.section ="+dataSection.shapeToString());
+    TestCompare.compareData(dataSection, allData.section( section.getRanges()));
+
+    int[] origin2 = new int[]{100, 100};
+    int[] shape2 = new int[]{130, 97};
+    int[] stride2 = new int[]{3, 7};
+    Section sectionStrided = new Section(origin2, shape2, stride2);
+    Array dataSection2 = v2.read(sectionStrided);
+    System.out.println("dataSection.sectionStrided ="+dataSection2.shapeToString());
+    TestCompare.compareData(dataSection2, allData.section( sectionStrided.getRanges()));
+  }
+
+  public void readSectionStrided() throws InvalidRangeException, IOException {
+    NetcdfFile ncfile = TestH5.openH5("IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5");
+    Variable v2 = ncfile.findVariable("/U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_DATA");  // chunked short
+    assert v2 != null;
+
+    int[] origin2 = new int[]{100, 100};
+    int[] shape2 = new int[]{130, 97};
+    int[] stride2 = new int[]{3, 7};
+    Section sectionStrided = new Section(origin2, shape2, stride2);
+    Array dataSection2 = v2.read(sectionStrided);
+    System.out.println("dataSection.sectionStrided ="+dataSection2.shapeToString());
+  }
+
 
   public void testa() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = TestH5.openH5("IASI/IASI.h5");

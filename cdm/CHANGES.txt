@@ -4,20 +4,27 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.0
  Features
+  iosp
+   * complete HDF5 access
+   * parsing of HFD5-EOS metadata to identify dimensions.
+   * netcdf-4
   geoloc
    * Transverse Mercator accepts false_easting, false_northing
    * Add RotatedPole projection
   NcML
-   * Tiled
+   * Tiled aggregation
    * Existing accepts timeUnitsChange
    * Union accepts scan
  API
+  * Extensive API changes. Most, but not completely backwards-compatible.
+  * Array local iterator: hasNext() next() methods.
  Libraries
 
  Changes in version 2.2.22
  API
   * make Indexer, RegularIndexer public so can be used by IOSP
  Bugs
+  * WRFConventions: makeZCoordAxis: SHORT should be DOUBLE
   * UnidataStationObsDataset : use timeObs if no timeNominal
   * UnidataStationObsDataset : check that obs links point to station
   * AWIPS, WRF Stereographic projection needs abs() in scale calculation (thanks to R. Schmunk)

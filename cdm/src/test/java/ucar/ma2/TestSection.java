@@ -357,4 +357,23 @@ public class TestSection extends TestCase {
     System.out.println("test sectionCopy");
   }
 
+  public void testIntersect() throws InvalidRangeException {
+    Section have = new Section("101:101,0:1919");
+    Section want = new Section("100:229:3,100:191:7");
+
+    boolean b = have.intersects( want);
+    assert !b;
+  }
+
+  public void testIntersectWithStrides() throws InvalidRangeException {
+    Section have = new Section("121:121:1,0:1919:1");
+    Section want = new Section("100:229:3,100:191:7");
+    Section intersectCorrect = new Section("121:121:3,100:191:7");
+    Section intersect = have.intersect( want);
+    assert intersect.equals(intersectCorrect);
+
+    int offset = want.offset( intersect);
+    assert offset == 98 : offset;
+  }
+
 }

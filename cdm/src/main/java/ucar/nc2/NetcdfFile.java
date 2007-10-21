@@ -723,15 +723,28 @@ public class NetcdfFile {
    * If the name actually has a ".", you must escape it (replace with "%2e")
    * If the name actually has a "/", you must escape it (replace with "%??")
    *
-   * @param fullName eg "group/subgroup/name1.name2.name".
+   * @param fullName eg "/group/subgroup/name1.name2.name".
    * @return Variable or null if not found.
    */
   public Variable findVariable(String fullName) {
-    StringTokenizer stoke = new StringTokenizer(fullName, ".");
-    String selector = stoke.nextToken();
-    if (selector == null) return null;
+    Group g = rootGroup;
+    String vars = fullName;
 
-    Variable v = findTopVariable( NetcdfFile.unescapeName( selector));
+    // break into group/group and var.var
+    int pos = fullName.lastIndexOf("/");
+    if (pos >= 0) {
+      String groups = fullName.substring(0,pos);
+      vars = fullName.substring(pos+1);
+      StringTokenizer stoke = new StringTokenizer(groups, "/");
+      while (stoke.hasMoreTokens()) {
+        String token = stoke.nextToken();
+        g = g.findGroup(token);
+        if (g == null) return null;
+      }
+    }
+
+    StringTokenizer stoke = new StringTokenizer(vars, ".");
+    Variable v = g.findVariable( NetcdfFile.unescapeName( stoke.nextToken()));
     if (v == null) return null;
 
     while (stoke.hasMoreTokens()) {

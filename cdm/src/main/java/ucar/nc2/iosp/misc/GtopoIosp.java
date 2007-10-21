@@ -37,7 +37,8 @@ import java.io.File;
 import java.util.StringTokenizer;
 
 /**
- * Class Description.
+ * GTOPO 30 sec elevation data from USGS
+ * http://edc.usgs.gov/products/elevation/gtopo30/gtopo30.html
  *
  * @author caron
  */
