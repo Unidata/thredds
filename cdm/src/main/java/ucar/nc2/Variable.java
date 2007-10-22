@@ -997,7 +997,7 @@ public class Variable implements VariableIF {
       buf.append(indent).append("  ");
       if (strict) buf.append(getName());
       buf.append(":");
-      buf.append(att.toString());
+      buf.append( NCdump.encodeString(att.toString()));
       buf.append(";");
       if (!strict && (att.getDataType() != DataType.STRING))
         buf.append(" // ").append(att.getDataType());

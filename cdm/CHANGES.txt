@@ -17,6 +17,7 @@ Changes in version 4.0
    * Union accepts scan
  API
   * Extensive API changes. Most, but not completely backwards-compatible.
+  * ucar.ma2.Range, ucar.ma2.Section 
   * Array local iterator: hasNext() next() methods.
  Libraries
 

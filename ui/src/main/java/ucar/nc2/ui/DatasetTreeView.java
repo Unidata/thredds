@@ -29,6 +29,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
+import java.util.Enumeration;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;

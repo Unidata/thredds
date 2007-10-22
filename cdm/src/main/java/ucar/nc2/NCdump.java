@@ -902,6 +902,18 @@ public class NCdump {
     return width;
   }
 
+  private static char[] org = { '\t', '\n', '\f', '\r' };
+  private static String[] replace = {"\\t", "\\n", "\\f", "\\r"};
+
+  /**
+   * Replace special characters '\t', '\n', '\f', '\r'.
+   * @param s string to quote
+   * @return equivilent string replacing special chars
+   */
+  static public String encodeString(String s) {
+    return StringUtil.replace(s, org, replace);
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////
   /**
      Main program.

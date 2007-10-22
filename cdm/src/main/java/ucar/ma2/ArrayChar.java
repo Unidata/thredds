@@ -861,7 +861,7 @@ public class ArrayChar extends Array {
    * @return 1D ArrayObject of Strings
    */
   public ArrayObject make1DStringArray() {
-    int nelems = (int) getSize() / getShape()[getRank() - 1];
+    int nelems = (getRank() == 0) ? 1 : (int) getSize() / getShape()[getRank() - 1];
     Array sarr = Array.factory(String.class, new int[]{nelems});
     IndexIterator newsiter = sarr.getIndexIterator();
 

@@ -373,12 +373,19 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   protected Object fillArray(int size, DataType dataType, Object fillValue) throws java.io.IOException, InvalidRangeException {
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+    if (dataType == DataType.BYTE) {
       byte[] pa = new byte[size];
       byte val = (Byte) fillValue;
       if (val != 0)
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
+
+    /*} else if (dataType == DataType.CHAR) {
+        char[] pa = new char[size];
+        byte val = (Byte) fillValue;
+        if (val != 0)
+          for (int i = 0; i < size; i++) pa[i] = val;
+        return pa; */
 
     } else if (dataType == DataType.OPAQUE) {
       return new byte[size];

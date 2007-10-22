@@ -107,6 +107,7 @@ class H5header {
   private Map<Long, DataObject> addressMap = new HashMap<Long, DataObject>(200);
 
   private Map<String, Dimension> dimMap = new HashMap<String, Dimension>();
+  private List<Dimension> dimList = new ArrayList<Dimension>(); // need to track dimension order
   private Map<Long, GlobalHeap> heapMap = new HashMap<Long, GlobalHeap>();
   private Map<Long, H5Group> hashGroups = new HashMap<Long, H5Group>(100);
 
@@ -151,6 +152,8 @@ class H5header {
 
     // recursively run through all the dataObjects and add them to the ncfile
     makeNetcdfGroup(ncfile.getRootGroup(), rootGroup);
+
+
 
     /*if (debugReference) {
       System.out.println("DataObjects");
@@ -436,6 +439,7 @@ class H5header {
     if (d == null) {
       d = new Dimension(name, length, true, isUnlimited, false);
       dimMap.put(name, d);
+      dimList.add(d);
     } else {
       if (length > d.getLength())
         d.setLength(length);
@@ -443,7 +447,10 @@ class H5header {
   }
 
   private void createDimensions(ucar.nc2.Group g) throws IOException {
-    for (Dimension d : dimMap.values()) {
+    // to follow the C library, the Dimensions should be sorted
+    //List<Dimension> dims = new ArrayList<Dimension>(dimMap.values());
+    //Collections.sort( dims);
+    for (Dimension d : dimList) {
       g.addDimension(d);
     }
   }
@@ -820,6 +827,7 @@ class H5header {
   private boolean makeVariableShapeAndType(Variable v, MessageDatatype mdt, MessageDataspace msd, Vinfo vinfo, String dims) {
 
     int[] dim = (msd != null) ? msd.dimLength : new int[0];
+    if (dim == null) dim = new int[0]; // scaler
 
     if (mdt.type == 10) {
       int len = dim.length + mdt.dim.length;
@@ -845,8 +853,8 @@ class H5header {
 
       } else if (mdt.type == 3) { // fixed length string - DataType.CHAR, add string length
 
-        if (dim == null) // scalar string member variable
-          v.setDimensionsAnonymous(new int[]{mdt.byteSize});
+        if (mdt.byteSize == 1) // scalar string member variable
+          v.setDimensionsAnonymous(dim);
         else {
           int[] shape = new int[dim.length + 1];
           System.arraycopy(dim, 0, shape, 0, dim.length);
@@ -863,7 +871,7 @@ class H5header {
        v.setShapeWithAnonDimensions(mdt.dim); */
 
       } else {
-        if (dim == null) dim = new int[0]; // scaler
+        
         v.setDimensionsAnonymous(dim);
       }
     } catch (InvalidRangeException ee) {
@@ -1373,7 +1381,6 @@ class H5header {
       if (debug1) debugOut.println("\n--> DataObject.read parsing <" + who + "> object ID/address=" + address);
       if (debugPos)
         debugOut.println("      DataObject.read now at position=" + raf.getFilePointer() + " for <" + who + "> reposition to " + getFileOffset(address));
-
       //if (offset < 0) return null;
       raf.seek(getFileOffset(address));
 
@@ -2983,64 +2990,11 @@ class H5header {
                 + numRecordsRootNode + " totalRecords=" + totalRecords + " rootNodeAddress=" + rootNodeAddress);
       }
 
-      readAllEntries();
-    }
-
-    protected void readAllEntries() throws IOException {
       InternalNode node = new InternalNode(rootNodeAddress, numRecordsRootNode, recordSize, treeDepth);
       node.recurse();
     }
 
-    /* recursively read all entries, place them in order in list
-    protected void readAllEntries(long address, short nrecs, short recSize, short depth) throws IOException {
-      InternalNode node = new InternalNode(address, nrecs, recSize, depth);
-
-      /* raf.seek(getFileOffset(address));
-      if (debugGroupBtree) debugOut.println("\n--> GroupBTree read tree at position=" + raf.getFilePointer());
-
-      byte[] name = new byte[4];
-      raf.read(name);
-      String nameS = new String(name);
-      if (!nameS.equals("TREE"))
-        throw new IllegalStateException("BtreeGroup doesnt start with TREE");
-
-      int type = raf.readByte();
-      int level = raf.readByte();
-      int nentries = raf.readShort();
-      if (debugGroupBtree)
-        debugOut.println("    type=" + type + " level=" + level + " nentries=" + nentries);
-      if (type != wantType)
-        throw new IllegalStateException("BtreeGroup must be type " + wantType);
-
-      long size = 8 + 2 * sizeOffsets + nentries * (sizeOffsets + sizeLengths);
-      if (debugTracker) memTracker.addByLen("Group BTree (" + owner + ")", address, size);
-
-      long leftAddress = readOffset();
-      long rightAddress = readOffset();
-      long entryPos = raf.getFilePointer();
-      if (debugGroupBtree)
-        debugOut.println("    leftAddress=" + leftAddress + " " + Long.toHexString(leftAddress) +
-            " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
-
-      // read all entries in this Btree "Node"
-      List<Entry> myEntries = new ArrayList<Entry>();
-      for (int i = 0; i < nentries; i++) {
-        myEntries.add(new Entry());
-      }
-
-      if (level == 0)
-        entries.addAll(myEntries);
-      else {
-        for (Entry entry : myEntries) {
-          if (debugDataBtree) debugOut.println("  nonzero node entry at =" + entry.address);
-          readAllEntries(entry.address);
-        }
-      }
-
-    }  */
-
     // these are part of the level 1A data structure, type = 0
-
     class Entry2 {
       long childAddress, nrecords, totNrecords;
       Object record;
@@ -3069,17 +3023,18 @@ class H5header {
           throw new IllegalStateException();
 
         if (debugBtree2)
-          debugOut.println("   InternalNode version=" + version + " type=" + nodeType + " nrecords=" + nrecords);
+          debugOut.println("   BTree2 InternalNode version=" + version + " type=" + nodeType + " nrecords=" + nrecords);
 
-        entries = new Entry2[nrecords];
+        entries = new Entry2[nrecords+1]; // did i mention theres actually n+1 children?
         for (int i = 0; i < nrecords; i++) {
           entries[i] = new Entry2();
           entries[i].record = readRecord(btreeType);
         }
+        entries[nrecords] = new Entry2();
 
         int maxNumRecords = nodeSize / recordSize; // LOOK ?? guessing
         int maxNumRecordsPlusDesc = nodeSize / recordSize; // LOOK ?? guessing
-        for (int i = 0; i < nrecords; i++) {
+        for (int i = 0; i < nrecords+1; i++) {
           Entry2 e = entries[i];
           e.childAddress = readOffset();
           e.nrecords = readVariableSize(1); // readVariableSizeMax(maxNumRecords);
@@ -3087,23 +3042,24 @@ class H5header {
             e.totNrecords = readVariableSize(2); // readVariableSizeMax(maxNumRecordsPlusDesc);
 
           if (debugBtree2)
-            debugOut.println(" entry childAddress=" + e.childAddress + " nrecords=" + e.nrecords + " totNrecords=" + e.totNrecords);
+            debugOut.println(" BTree2 entry childAddress=" + e.childAddress + " nrecords=" + e.nrecords + " totNrecords=" + e.totNrecords);
         }
 
         int checksum = raf.readInt();
       }
 
       void recurse() throws IOException {
-        for (int i = 0; i < entries.length; i++) {
-          Entry2 e = entries[i];
+        for (Entry2 e : entries) {
           if (depth > 1) {
             InternalNode node = new InternalNode(e.childAddress, (short) e.nrecords, recordSize, depth - 1);
             node.recurse();
           } else {
-            LeafNode leaf = new LeafNode(e.childAddress, (short) e.nrecords);
+            long nrecs =  e.nrecords; 
+            LeafNode leaf = new LeafNode(e.childAddress, (short) nrecs);
             leaf.addEntries(entryList);
           }
-
+          if (e.record != null) // last one is null
+            entryList.add(e);
         }
       }
     }
@@ -3127,6 +3083,9 @@ class H5header {
         byte nodeType = raf.readByte();
         if (nodeType != btreeType)
           throw new IllegalStateException();
+
+        if (debugBtree2)
+          debugOut.println("   BTree2 LeafNode version=" + version + " type=" + nodeType + " nrecords=" + nrecords);
 
         entries = new Entry2[nrecords];
         for (int i = 0; i < nrecords; i++) {
@@ -3223,8 +3182,8 @@ class H5header {
         nameHash = raf.readInt();
         raf.read(heapId);
 
-        //if (debugBtree2)
-        //  debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + showBytes(heapId));
+        if (debugBtree2)
+          debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + showBytes(heapId));
       }
     }
 
@@ -3235,6 +3194,8 @@ class H5header {
       Record6() throws IOException {
         creationOrder = raf.readLong();
         raf.read(heapId);
+        if (debugBtree2)
+          debugOut.println("  record6 creationOrder=" + creationOrder + " heapId="+showBytes(heapId));
       }
     }
 

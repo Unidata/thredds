@@ -247,7 +247,7 @@ public class Group {
     //  out.print("\n");
     for (Attribute att : attributes) {
       out.print(indent + " " + getShortName() + ":");
-      out.print(att.toString());
+      out.print( NCdump.encodeString(att.toString()));
       out.print(";");
       if (!strict && (att.getDataType() != DataType.STRING)) out.print(" // " + att.getDataType());
       out.print("\n");
@@ -335,7 +335,7 @@ public class Group {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (v == null) return;
 
-    if (findVariable(v.getShortName()) != null)
+    if (findVariable(v.getShortName()) != null) 
       throw new IllegalArgumentException("Variable name (" + v.getShortName() + ") must be unique within Group " + getName());
 
     variables.add( v);
