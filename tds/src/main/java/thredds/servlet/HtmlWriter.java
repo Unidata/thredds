@@ -567,10 +567,9 @@ public class HtmlWriter {
         else if (ds.getID() != null) {
           // Write link to HTML dataset page.
           sb.append("<a href=\"");
-          // sb.append("catalog.html?cmd=subset&catalog=");
           sb.append(StringUtil.quoteHtmlContent(catHtml));
           sb.append("dataset=");
-          sb.append(StringUtil.quoteHtmlContent(ds.getID()));
+          sb.append( StringUtil.replace( ds.getID(), '+', "%2B" ) );
           sb.append("\"><tt>");
           sb.append(name);
           sb.append("</tt></a></td>\r\n");
