@@ -902,8 +902,8 @@ public class NCdump {
     return width;
   }
 
-  private static char[] org = { '\t', '\n', '\f', '\r' };
-  private static String[] replace = {"\\t", "\\n", "\\f", "\\r"};
+  private static char[] org = { '\b', '\f', '\n', '\r', '\t', '\\', '\'', '\"' };
+  private static String[] replace = {"\\b", "\\f", "\\n", "\\r", "\\t", "\\\\", "\\\'", "\\\""};
 
   /**
    * Replace special characters '\t', '\n', '\f', '\r'.

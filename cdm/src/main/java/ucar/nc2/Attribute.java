@@ -225,7 +225,7 @@ public class Attribute {
       buff.append(" = ");
       for (int i = 0; i < getLength(); i++) {
         if (i != 0) buff.append(", ");
-        buff.append("\"").append(getStringValue(i)).append("\"");
+        buff.append("\"").append( NCdump.encodeString(getStringValue(i)) ).append("\"");
       }
     } else {
       buff.append(" = ");
@@ -253,7 +253,7 @@ public class Attribute {
    * @param from copy value from here.
    */
   public Attribute(String name, Attribute from) {
-    this.name = name;
+    this.name = NetcdfFile.createValidNetcdfObjectName(name);
     //validate(name);
     this.dataType = from.dataType;
     this.nelems = from.nelems;
@@ -268,7 +268,7 @@ public class Attribute {
    * @param val  value of Attribute
    */
   public Attribute(String name, String val) {
-    this.name = name;
+    this.name = NetcdfFile.createValidNetcdfObjectName(name);
     //validate(name);
     setStringValue(val);
   }
@@ -280,8 +280,8 @@ public class Attribute {
    * @param val  value of Attribute
    */
   public Attribute(String name, Number val) {
-    this.name = name;
-    validate(name);
+    this.name = NetcdfFile.createValidNetcdfObjectName(name);
+    //validate(name);
     int[] shape = new int[1];
     shape[0] = 1;
     DataType dt = DataType.getType(val.getClass());
@@ -298,7 +298,7 @@ public class Attribute {
    * @param values array of values.
    */
   public Attribute(String name, Array values) {
-    this.name = name;
+    this.name = NetcdfFile.createValidNetcdfObjectName(name);
     setValues(values);
   }
 
@@ -309,7 +309,7 @@ public class Attribute {
    * @param values list of values. must be String or Number, and have at least 1 member
    */
   public Attribute(String name, List values) {
-    this.name = name;
+    this.name = NetcdfFile.createValidNetcdfObjectName(name);
     int n = values.size();
     Object pa = null;
 
@@ -353,8 +353,9 @@ public class Attribute {
    * @param param copy info from here.
    */
   public Attribute(ucar.unidata.util.Parameter param) {
-    this.name = param.getName();
-    validate(name);
+    this.name = NetcdfFile.createValidNetcdfObjectName(param.getName());
+    //this.name = param.getName();
+    //validate(name);
 
     if (param.isString()) {
       setStringValue(param.getStringValue());
@@ -387,8 +388,8 @@ public class Attribute {
    * @param validate whether to validate the name.
    */
   protected Attribute(String name, boolean validate) {
-    this.name = name;
-    if (validate) validate(name);
+    this.name = NetcdfFile.createValidNetcdfObjectName(name);
+    //if (validate) validate(name);
   }
 
   private void validate(String name) {

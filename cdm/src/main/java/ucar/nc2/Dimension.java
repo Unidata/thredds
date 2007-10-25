@@ -52,7 +52,7 @@ public class Dimension implements Comparable {
    * Returns the name of this Dimension; may be null.
    * A Dimension with a null name is called "anonymous" and must be private.
    * Dimension names are unique within a Group.
-   * @return name of Dimension
+   * @return name of Dimension, may be null for anonymous dimension
    */
   public String getName() { return name; }
 
@@ -163,8 +163,7 @@ public class Dimension implements Comparable {
    * @param length length of Dimension
    */
   public Dimension(String name, int length) {
-    this.name = name;
-    setLength(length);
+    this(name, length, true, false, false);
   }
 
   /**
@@ -174,9 +173,7 @@ public class Dimension implements Comparable {
    * @param isShared whether its shared or local to Variable.
    */
   public Dimension(String name, int length, boolean isShared) {
-    this.name = name;
-    this.isShared = isShared;
-    setLength(length);
+    this(name, length, isShared, false, false);
   }
 
   /**
@@ -188,7 +185,7 @@ public class Dimension implements Comparable {
    * @param isVariableLength whether the length is unknown until the data is read.
    */
   public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
-    this.name = name;
+    this.name = (name == null) ? null : NetcdfFile.createValidNetcdfObjectName(name);
     this.isShared = isShared;
     this.isUnlimited = isUnlimited;
     this.isVariableLength = isVariableLength;
@@ -201,7 +198,7 @@ public class Dimension implements Comparable {
    * @param from copy all other fields from here.
    */
   public Dimension(String name, Dimension from) {
-    this.name = name;
+    this.name = (name == null) ? null : NetcdfFile.createValidNetcdfObjectName(name);
     this.length = from.length;
     this.isUnlimited = from.isUnlimited;
     this.isVariableLength = from.isVariableLength;
@@ -257,7 +254,7 @@ public class Dimension implements Comparable {
    */
   public void setName( String name) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.name = name;
+    this.name = (name == null) ? null : NetcdfFile.createValidNetcdfObjectName(name);
     hashCode = 0;
   }
 

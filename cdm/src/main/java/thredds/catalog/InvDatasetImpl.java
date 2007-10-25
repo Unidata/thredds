@@ -1013,6 +1013,8 @@ public class InvDatasetImpl extends InvDataset {
             urlString = urlString + "?request=GetCapabilities&version=1.0.0&service=WCS";
           else if (stype == ServiceType.NetcdfServer)
             urlString = urlString + "?showForm";
+          else if (stype == ServiceType.NetcdfSubset)
+            urlString = urlString + "/dataset.html";
         }
         buff.append(" <li> <b>").append(StringUtil.quoteHtmlContent(s.getServiceType().toString()));
         buff.append(":</b> ").append(makeHref(urlString, a.getStandardUrlName())).append("</li>\n");

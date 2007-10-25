@@ -8,8 +8,10 @@ import java.util.*;
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.NCdump;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Array;
 
 /** Test nc2 read JUnit framework. */
 
@@ -41,9 +43,20 @@ public class TestH5read extends TestCase {
     readAllDir( "C:/data/npoess/ExampleFiles/");
   }
 
+  public void problemV() throws IOException {
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = TestAll.upcShareTestDataDir + "hdf5/IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5";
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+    Variable v = ncfile.findVariable("/U-MARF/EPS/IASI_xxx_1C/DATA/SPECT_LAT_ARRAY");
+    Array data = v.read();
+    System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+    NCdump.printArray(data, "primary_cloud", System.out, null);
+    ncfile.close();
+  }
+
   public void problem() {
     // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    readAllData( TestAll.upcShareTestDataDir + "hdf5/wrf/wrf_bdy_seq.h5");
+    readAllData( TestAll.upcShareTestDataDir + "hdf5/IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5");
   }
 
   public static void readAllDir(String dirName) {

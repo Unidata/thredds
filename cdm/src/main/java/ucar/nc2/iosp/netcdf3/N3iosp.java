@@ -333,7 +333,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     int size = byteArray.length;
     char[] cbuff = new char[size];
     for (int i = 0; i < size; i++)
-      cbuff[i] = (char) byteArray[i];
+      cbuff[i] = (char) DataType.unsignedByteToShort( byteArray[i]);
     return cbuff;
   }
 

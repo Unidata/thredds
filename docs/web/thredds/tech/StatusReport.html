@@ -9,7 +9,7 @@
 <body>
 <h1 align="left"><img src="images/unidataLogo.png" width="75" height="75" align="middle"><strong>THREDDS Technical Status </strong></h1>
 <hr>
-<h3>Status update 09/24/2007</h3>
+<h3>Status update 10/22/2007</h3>
 <ol>
   <li> <strong>THREDDS Data Server (TDS)</strong>: Current release is 3.16.
       <ol>
@@ -18,33 +18,36 @@
             <li>Clean up / fix NcML aggregation.</li>
             <li> Uses netCDF-Java 4.0 </li>
             <li>Upgrade WCS to version 1.1. Experiment with WCS-REST. </li>
-            <li>NetCDF file writing consistently encoded in CF Conventions. </li>
+            <li>NetCDF file writing consistently encoded in CF Conventions.</li>
           </ol>
         </li>
         <li>Taught 2-day Unidata  workshop on <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tutorial/schedule.html">THREDDS Data Server Administration.</a></li>
-        <li>Latest version of Live Access Server (LAS) from PMEL is now built on TDS </li>
+        <li>Latest version of Live Access Server (LAS) from PMEL is now built on TDS.</li>
       </ol>
   </li>
   <br>
   <li><strong>Common Data Model</strong>: Current release is 2.2.22.
     <ol>
         <li>Current work is on a 4.0 release.
+A pre-alpha early access version is available.    
           <ol>
-            <li>This will read netCDF-4 file formats, and most  of HDF5, all versions.</li>
-            <li>Library is refactored, trying to stabilize API based on netCDF-4 file format.</li>
-            <li>NcML is extensively refactored, to add new features (like Tiling) and clean up the code.</li>
+            <li>This will read netCDF-4 file formats, and hopefully allow complete access to HDF5, including HDF5-EOS. Writing netCDF-4 format may not be feasible, however. </li>
+            <li>The entire library is extensively refactored, and the APIs are being stabilized  based on the new features of the netCDF-4 file format.</li>
+            <li>NcML is extensively refactored, in order to add new features (like tiled aggreagtion).</li>
           </ol>
       </li>
+        <li>Preparing to work with OPeNDAP to continue data model reconciliation, as part of the SDCI proposal. </li>
         <li>Taught 1-day Unidata workshop on          <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">Writing an I/O Service Provider</a></li>
         <li>CF working group for encoding Point Observation datasets in netCDF. </li>
     </ol>
   </li>
   <br>
   <li><strong>International Standards</strong>:
-      <ul>
+      <ol>
         <li><strong>Open Geospatial Consortium (OGC) </strong>fall meeing hosted by UCAR.          One of the days was <b>OGC Interoperability Day</b> <strong>at Unidata</strong>: <em>Standards-based Web Services Interfaces to
-  Existing Atmospheric/Oceanographic Data Systems, </em>where 50+ participants explored connections bewteen ISO/OGC standards and Unidata and related technologies. </li>
-      </ul>
+      Existing Atmospheric/Oceanographic Data Systems, </em>where 50+ participants explored connections bewteen ISO/OGC standards and Unidata and related technologies. </li>
+        <li>Working with an international group (British Atmospheric Data Center, British Met, and others) to define WCS 1.0 extentions, and help drive further version of WCS.</li>
+      </ol>
   </li>
 </ol>
 <h3><a name="20070702" id="20070702"></a>Status update 07/02/2007</h3>

@@ -9,7 +9,6 @@ Changes in version 4.0
    * parsing of HFD5-EOS metadata to identify dimensions.
    * netcdf-4
   geoloc
-   * Transverse Mercator accepts false_easting, false_northing
    * Add RotatedPole projection
   NcML
    * Tiled aggregation
@@ -25,6 +24,7 @@ Changes in version 4.0
  API
   * make Indexer, RegularIndexer public so can be used by IOSP
  Bugs
+  * Transverse Mercator accepts false_easting, false_northing
   * WRFConventions: makeZCoordAxis: SHORT should be DOUBLE
   * UnidataStationObsDataset : use timeObs if no timeNominal
   * UnidataStationObsDataset : check that obs links point to station

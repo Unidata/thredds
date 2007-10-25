@@ -122,6 +122,8 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     if (vinfo.useFillValue) { // fill value only
       Object pa = fillArray((int) wantSection.computeSize(), dataType, vinfo.getFillValue());
+      if (dataType == DataType.CHAR)
+        pa = convertByteToChar((byte []) pa);      
       return Array.factory(dataType.getPrimitiveClassType(), wantSection.getShape(), pa);
     }
 
@@ -373,7 +375,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   protected Object fillArray(int size, DataType dataType, Object fillValue) throws java.io.IOException, InvalidRangeException {
 
-    if (dataType == DataType.BYTE) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR))  {
       byte[] pa = new byte[size];
       byte val = (Byte) fillValue;
       if (val != 0)
@@ -730,7 +732,7 @@ static Object convert( byte[] barray, DataType dataType, int byteOrder) {
     int size = byteArray.length;
     char[] cbuff = new char[size];
     for (int i = 0; i < size; i++)
-      cbuff[i] = (char) byteArray[i];
+      cbuff[i] = (char) DataType.unsignedByteToShort(byteArray[i]);
     return cbuff;
   }
 

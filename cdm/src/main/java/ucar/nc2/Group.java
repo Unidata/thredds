@@ -243,11 +243,14 @@ public class Group {
       out.print(indent + " }\n");
     }
 
-    //if (hasA && (hasE || hasD || hasV || hasG))
-    //  out.print("\n");
+    if (hasA && (hasE || hasD || hasV || hasG))
+      out.print("\n");
+
+    if (hasA && strict)
+      out.print(indent + " // global attributes:\n");
     for (Attribute att : attributes) {
       out.print(indent + " " + getShortName() + ":");
-      out.print( NCdump.encodeString(att.toString()));
+      out.print( att.toString());
       out.print(";");
       if (!strict && (att.getDataType() != DataType.STRING)) out.print(" // " + att.getDataType());
       out.print("\n");
@@ -264,7 +267,7 @@ public class Group {
   public Group(NetcdfFile ncfile, Group parent, String shortName) {
     this.ncfile = ncfile;
     this.parent = parent == null ? ncfile.getRootGroup() : parent ;
-    this.shortName = shortName;
+    this.shortName = NetcdfFile.createValidNetcdfObjectName(shortName);
     this.name = (parent == null) ? shortName : parent.getName() + "/" + shortName;
   }
 

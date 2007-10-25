@@ -48,9 +48,9 @@ class H5header {
   // debugging
   static private boolean debugEnum = false, debugVlen = false;
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
-  static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false, debugFractalHeap = false;
+  static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;
-  static private boolean warnings = true, debugReference = false, debugCreationOrder = false;
+  static private boolean warnings = true, debugReference = false, debugCreationOrder = false, debugFractalHeap = false;
   static java.io.PrintStream debugOut = System.out;
 
   static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -60,6 +60,7 @@ class H5header {
     debugDetail = debugFlag.isSet("H5header/headerDetails");
     debugDataBtree = debugFlag.isSet("H5header/dataBtree");
     debugGroupBtree = debugFlag.isSet("H5header/groupBtree");
+    debugFractalHeap = debugFlag.isSet("H5header/fractalHeap");
     debugHeap = debugFlag.isSet("H5header/Heap");
     debugPos = debugFlag.isSet("H5header/filePos");
     debugReference = debugFlag.isSet("H5header/reference");
@@ -106,8 +107,6 @@ class H5header {
   private Map<String, DataObjectFacade> symlinkMap = new HashMap<String, DataObjectFacade>(200);
   private Map<Long, DataObject> addressMap = new HashMap<Long, DataObject>(200);
 
-  private Map<String, Dimension> dimMap = new HashMap<String, Dimension>();
-  private List<Dimension> dimList = new ArrayList<Dimension>(); // need to track dimension order
   private Map<Long, GlobalHeap> heapMap = new HashMap<Long, GlobalHeap>();
   private Map<Long, H5Group> hashGroups = new HashMap<Long, H5Group>(100);
 
@@ -336,11 +335,9 @@ class H5header {
     if (h5group == null) return;
 
     // create group attributes
-    for (Message mess : h5group.facade.dobj.messages) {
-      if (mess.mtype == MessageType.Attribute) {
-        MessageAttribute matt = (MessageAttribute) mess.messData;
-        makeAttributes(h5group.name, null, matt, ncGroup.getAttributes());
-      }
+    filterAttributes( h5group.facade.dobj.attributes);
+    for (MessageAttribute matt : h5group.facade.dobj.attributes) {
+      makeAttributes(h5group.name, null, matt, ncGroup.getAttributes());
     }
 
     // add system attributes
@@ -349,9 +346,9 @@ class H5header {
     // look for dimension scales
     for (DataObjectFacade facade : h5group.nestedObjects) {
       if (facade.isVariable)
-        findDimensionScales( ncGroup, facade);
+        findDimensionScales( ncGroup, h5group, facade);
     }
-    createDimensions( ncGroup);
+    createDimensions( ncGroup, h5group);
 
     // nested objects - groups and variables
     for (DataObjectFacade facadeNested : h5group.nestedObjects) {
@@ -390,24 +387,34 @@ class H5header {
 
   }
 
-  private void findDimensionScales(ucar.nc2.Group g, DataObjectFacade facade) throws IOException {
-    Iterator<Message> iter = facade.dobj.messages.iterator();
-    while (iter.hasNext()) {
-      Message mess = iter.next();
-      if (mess.mtype != MessageType.Attribute) continue;
-      MessageAttribute matt = (MessageAttribute) mess.messData;
+  private void findDimensionScales(ucar.nc2.Group g, H5Group h5group, DataObjectFacade facade) throws IOException {
+    // first must look for coordinate variables (dimension scales)
+    Iterator<MessageAttribute> iter = facade.dobj.attributes.iterator();
+    while(iter.hasNext()) {
+      MessageAttribute matt = iter.next();
+      if (matt.name.equals("CLASS")) {
+        Attribute att = makeAttribute(facade.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
+        String val = att.getStringValue();
+        if (val.equals("DIMENSION_SCALE")) {
+          String dimName = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
+          facade.dimList = dimName;
+          iter.remove();
+        }
+      }
+    }
 
+    // now look for dimension lists and clean up the attributes
+    iter = facade.dobj.attributes.iterator();
+    while(iter.hasNext()) {
+      MessageAttribute matt = iter.next();
       // find the dimensions - set length to maximum
       if (matt.name.equals("DIMENSION_LIST")) {
         Attribute att = makeAttribute(facade.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
         StringBuffer sbuff = new StringBuffer();
         for (int i = 0; i < att.getLength(); i++) {
           String name = att.getStringValue(i);
-          int pos = name.lastIndexOf("/");
-          if (pos >= 0)
-            name = name.substring(pos+1);
-          sbuff.append(name).append(" ");
-          addDimension(name, facade.dobj.mds.dimLength[i], facade.dobj.mds.maxLength[i] == -1);
+          String dimName = addDimension(g, h5group, name, facade.dobj.mds.dimLength[i], facade.dobj.mds.maxLength[i] == -1);
+          sbuff.append(dimName).append(" ");
         }
         facade.dimList = sbuff.toString();
         iter.remove();
@@ -420,38 +427,46 @@ class H5header {
           facade.isDimensionNotVariable = true;
         }
         iter.remove();
-      }
-      else if (matt.name.equals("CLASS")) {
-        Attribute att = makeAttribute(facade.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
-        String val = att.getStringValue();
-        if (val.equals("DIMENSION_SCALE")) {
-          addDimension(facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
-          facade.dimList = facade.name;
-          iter.remove();
-        }
-      }
-      else if (matt.name.equals("REFERENCE_LIST")) iter.remove();
+      } else if (matt.name.equals("REFERENCE_LIST"))
+        iter.remove();
     }
+
   }
 
-  private void addDimension(String name, int length, boolean isUnlimited) {
-    Dimension d = dimMap.get(name);
-    if (d == null) {
-      d = new Dimension(name, length, true, isUnlimited, false);
-      dimMap.put(name, d);
-      dimList.add(d);
-    } else {
+  private String addDimension(ucar.nc2.Group g, H5Group h5group, String name, int length, boolean isUnlimited) {
+    int pos = name.lastIndexOf("/");
+    String dimName = (pos > 0) ? name.substring(pos+1) : name;
+
+    Dimension d = h5group.dimMap.get(dimName); // first look in current group
+    if (d == null)
+      d = g.findDimension(dimName); // then look in parent groups
+
+    if (d == null) { // create if not found
+      d = new Dimension(dimName, length, true, isUnlimited, false);
+      d.setGroup(g);
+      h5group.dimMap.put(dimName, d);
+      h5group.dimList.add(d);
+      if (debug1) debugOut.println("addDimension name=" + name +" dim= "+d+" to group "+g);
+
+    } else { // extend length if needed
       if (length > d.getLength())
         d.setLength(length);
     }
+
+    return d.getName();
   }
 
-  private void createDimensions(ucar.nc2.Group g) throws IOException {
-    // to follow the C library, the Dimensions should be sorted
-    //List<Dimension> dims = new ArrayList<Dimension>(dimMap.values());
-    //Collections.sort( dims);
-    for (Dimension d : dimList) {
+  private void createDimensions(ucar.nc2.Group g, H5Group h5group) throws IOException {
+    for (Dimension d : h5group.dimList) {
       g.addDimension(d);
+    }
+  }
+
+  private void filterAttributes( List<MessageAttribute> attList) {
+    Iterator<MessageAttribute> iter = attList.iterator();
+    while(iter.hasNext()) {
+      MessageAttribute matt = iter.next();
+      if (matt.name.equals("_nc3_strict")) iter.remove();
     }
   }
 
@@ -680,11 +695,8 @@ class H5header {
     v.setSPobject(vinfo);
 
     // look for attributes
-    for (Message mess : facade.dobj.messages) {
-      if (mess.mtype == MessageType.Attribute) {
-        MessageAttribute matt = (MessageAttribute) mess.messData;
-        makeAttributes(facade.name, s, matt, v.getAttributes());
-      }
+    for (MessageAttribute matt : facade.dobj.attributes) {
+      makeAttributes(facade.name, s, matt, v.getAttributes());
     }
     processSystemAttributes(facade.dobj.messages, v.getAttributes());
     if (fillAttribute != null)
@@ -1298,6 +1310,8 @@ class H5header {
     String name, displayName;
     DataObjectFacade facade;
     List<DataObjectFacade> nestedObjects = new ArrayList<DataObjectFacade>(); // nested data objects
+    Map<String, Dimension> dimMap = new HashMap<String, Dimension>();
+    List<Dimension> dimList = new ArrayList<Dimension>(); // need to track dimension order
 
     // "Data Object Header" Level 2A
     // read a Data Object Header
@@ -1357,6 +1371,7 @@ class H5header {
     long address; // aka object id : obviously unique
     String who;   // may be null, may not be unique
     List<Message> messages = new ArrayList<Message>();
+    List<MessageAttribute> attributes = new ArrayList<MessageAttribute>();
 
     // need to look for these
     MessageGroup groupMessage = null;
@@ -1455,9 +1470,39 @@ class H5header {
           groupMessage = (MessageGroup) mess.messData;
         else if (mess.mtype == MessageType.FilterPipeline)
           mfp = (MessageFilter) mess.messData;
+        else if (mess.mtype == MessageType.Attribute)
+          attributes.add((MessageAttribute) mess.messData);
+        else if (mess.mtype == MessageType.AttributeInfo)
+          processAttributeInfoMessage((MessageAttributeInfo) mess.messData, attributes);
       }
 
       if (debug1) debugOut.println("<-- end DataObject " + who);
+    }
+
+    private void processAttributeInfoMessage(MessageAttributeInfo attInfo, List<MessageAttribute> list) throws IOException {
+      long btreeAddress = (attInfo.v2BtreeAddressCreationOrder > 0) ? attInfo.v2BtreeAddressCreationOrder : attInfo.v2BtreeAddress;
+      if ((btreeAddress < 0) || (attInfo.fractalHeapAddress < 0))
+        return;
+
+      BTree2 btree = new BTree2(who, btreeAddress);
+      FractalHeap fractalHeap = new FractalHeap(who, attInfo.fractalHeapAddress);
+
+      for (BTree2.Entry2 e : btree.entryList) {
+        byte[] heapId = null;
+        switch (btree.btreeType) {
+          case 8: heapId = ((BTree2.Record8) e.record).heapId; break;
+          case 9: heapId = ((BTree2.Record9) e.record).heapId; break;
+          default: continue;
+        }
+
+        // the heapId points to a Attribute Message in the fractal Heap
+        long pos = fractalHeap.getPos(heapId);
+        raf.seek(pos);
+        MessageAttribute attMessage = new MessageAttribute();
+        attMessage.read();
+        list.add( attMessage);
+        if (debugBtree2) System.out.println("    attMessage=" + attMessage);
+      }
     }
 
     // read messages, starting at pos, until you hit maxMess read, or maxBytes read
@@ -2576,16 +2621,14 @@ class H5header {
       if (debugPos) debugOut.println("   *MessageAttributeInfo start pos= " + raf.getFilePointer());
       byte version = raf.readByte();
       byte flags = raf.readByte();
-      if ((flags & 1) != 0) {
+      if ((flags & 1) != 0)
         maxCreationIndex = raf.readShort();
-      }
 
       fractalHeapAddress = readOffset();
       v2BtreeAddress = readOffset();
 
-      if ((flags & 2) != 0) {
+      if ((flags & 2) != 0)
         v2BtreeAddressCreationOrder = readOffset();
-      }
 
       if (debug1) debugOut.println("   MessageAttributeInfo version= " + version + " flags = " + flags + this);
     }
@@ -2665,7 +2708,7 @@ class H5header {
       if (debug1) debugOut.println("\n--> GroupNew read <" + group.displayName + ">");
 
       if (groupNewMessage.fractalHeapAddress >= 0) {
-        FractalHeap fractalHeap = new FractalHeap(group, groupNewMessage.fractalHeapAddress);
+        FractalHeap fractalHeap = new FractalHeap( group.displayName, groupNewMessage.fractalHeapAddress);
 
         long btreeAddress = (groupNewMessage.v2BtreeAddressCreationOrder >= 0) ?
                 groupNewMessage.v2BtreeAddressCreationOrder : groupNewMessage.v2BtreeAddress;
@@ -2680,7 +2723,14 @@ class H5header {
             case 6: heapId = ((BTree2.Record6) e.record).heapId; break;
             default: continue;
           }
-          MessageLink linkMessage = fractalHeap.getLink(heapId);
+
+          // the heapId points to a Linkmessage in the Fractal Heap
+          long pos = fractalHeap.getPos(heapId);
+          raf.seek(pos);
+          MessageLink linkMessage = new MessageLink();
+          linkMessage.read();
+          if (debugBtree2) System.out.println("    linkMessage="+linkMessage);
+
           group.nestedObjects.add( new DataObjectFacade(group, linkMessage.linkName, linkMessage.linkAddress));
         }
 
@@ -2990,8 +3040,13 @@ class H5header {
                 + numRecordsRootNode + " totalRecords=" + totalRecords + " rootNodeAddress=" + rootNodeAddress);
       }
 
-      InternalNode node = new InternalNode(rootNodeAddress, numRecordsRootNode, recordSize, treeDepth);
-      node.recurse();
+      if (treeDepth > 0) {
+        InternalNode node = new InternalNode(rootNodeAddress, numRecordsRootNode, recordSize, treeDepth);
+        node.recurse();
+      } else {
+        LeafNode leaf = new LeafNode(rootNodeAddress, numRecordsRootNode);
+        leaf.addEntries(entryList);
+      }
     }
 
     // these are part of the level 1A data structure, type = 0
@@ -3228,23 +3283,25 @@ class H5header {
     class Record8 {
       byte flags;
       int creationOrder, nameHash;
-      byte[] id = new byte[8];
+      byte[] heapId = new byte[8];
 
       Record8() throws IOException {
-        raf.read(id);
+        raf.read(heapId);
         flags = raf.readByte();
         creationOrder = raf.readInt();
         nameHash = raf.readInt();
+        if (debugBtree2)
+          debugOut.println("  record8 creationOrder=" + creationOrder + " heapId="+showBytes(heapId));
       }
     }
 
     class Record9 {
       byte flags;
       int creationOrder;
-      byte[] id = new byte[8];
+      byte[] heapId = new byte[8];
 
       Record9() throws IOException {
-        raf.read(id);
+        raf.read(heapId);
         flags = raf.readByte();
         creationOrder = raf.readInt();
       }
@@ -3777,7 +3834,6 @@ There is _no_ datatype information stored for these sort of selections currently
 
   // level 1E "Fractal Heap" used for both Global and Local heaps in 1.8.0+
   private class FractalHeap {
-    H5Group group;
     short heapIdLen;
     byte flags;
     int maxSizeOfObjects;
@@ -3798,8 +3854,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
     DoublingTable doublingTable;
 
-    FractalHeap(H5Group group, long address) throws IOException {
-      this.group = group;
+    FractalHeap( String forWho, long address) throws IOException {
 
       // header information is in le byte order
       raf.order(RandomAccessFile.LITTLE_ENDIAN);
@@ -3864,7 +3919,7 @@ There is _no_ datatype information stored for these sort of selections currently
       long pos = raf.getFilePointer();
       if (debugDetail) debugOut.println("-- end FractalHeap position=" + raf.getFilePointer());
       int hsize = 8 + 2 * sizeLengths + sizeOffsets;
-      if (debugTracker) memTracker.add("Group FractalHeap (" + group.displayName + ")", address, pos);
+      if (debugTracker) memTracker.add("Group FractalHeap (" + forWho + ")", address, pos);
 
       doublingTable = new DoublingTable(tableWidth, startingBlockSize, allocatedManagedSpace, maxDirectBlockSize);
 
@@ -3879,18 +3934,18 @@ There is _no_ datatype information stored for these sort of selections currently
         //int maxrows_directBlocks = (int) (SpecialMathFunction.log2(maxDirectBlockSize) - SpecialMathFunction.log2(startingBlockSize)) + 2;
 
         readIndirectBlock(getFileOffset(rootBlockAddress), address, hasFilters);
-      }
 
-      // read in the direct blocks
-      for (DataBlock dblock : doublingTable.blockList) {
-        readDirectBlock(getFileOffset(dblock.address), address, dblock);
+         // read in the direct blocks
+        for (DataBlock dblock : doublingTable.blockList) {
+          readDirectBlock(getFileOffset(dblock.address), address, dblock);
+        }
       }
 
       doublingTable.assignSizes();
     }
 
 
-    MessageLink getLink(byte[] heapId) throws IOException {
+    long getPos(byte[] heapId) throws IOException {
       int type = (heapId[0] & 0x30) >> 4;
       int n = maxHeapSize / 8;
       int m = getNumBytesFromMax(maxDirectBlockSize - 1);
@@ -3899,17 +3954,7 @@ There is _no_ datatype information stored for these sort of selections currently
       int size = makeIntFromBytes(heapId, 1 + n, m);
       //System.out.println("Heap id =" + showBytes(heapId) + " type = " + type + " n= " + n + " m= " + m + " offset= " + offset + " size= " + size);
 
-      long pos = doublingTable.getPos(offset);
-      /* byte[] data = new byte[size];
-      raf.seek(pos);
-      raf.read(data);
-      System.out.println(" heap ID pos="+pos+" vals = " + new String(data) + " == " + showBytes(data));  */
-
-      raf.seek(pos);
-      MessageLink lm = new MessageLink();
-      lm.read();
-      if (debugBtree2) System.out.println("    linkMessage="+lm);
-      return lm;
+      return doublingTable.getPos(offset);
     }
 
     private class DoublingTable {
@@ -4056,7 +4101,7 @@ There is _no_ datatype information stored for these sort of selections currently
       int nbytes = maxHeapSize / 8;
       if (maxHeapSize % 8 != 0) nbytes++;
       dblock.offset = readVariableSize(nbytes);
-      dblock.dataPos = pos; // raf.getFilePointer();
+      dblock.dataPos = pos; // raf.getFilePointer();  // offsets are from the start of the block
 
       if (debugDetail || debugFractalHeap)
         debugOut.println("  DirectBlock offset= " + dblock.offset + " dataPos = " + dblock.dataPos);
@@ -4178,9 +4223,24 @@ There is _no_ datatype information stored for these sort of selections currently
     } else if (size == 8) {
       vv = raf.readLong();
     } else {
-      throw new IllegalStateException("bad sizeOfChunk=" + size);
+      vv = readVariableSizeN( size);
     }
     return vv;
+  }
+
+  // Little endian
+  private long readVariableSizeN(int nbytes) throws IOException {
+    int[] ch = new int[nbytes];
+    for (int i=0; i<nbytes; i++)
+      ch[i] = raf.read();
+
+    long result = ch[nbytes-1];
+    for (int i=nbytes-2; i>=0; i--) {
+      result = result << 8;
+      result += ch[i];
+    }
+
+    return result;
   }
 
   private long getFileOffset(long address) throws IOException {
@@ -4207,7 +4267,7 @@ There is _no_ datatype information stored for these sort of selections currently
     raf.seek(savePos);
   }
 
-  static String showBytes(byte[] buff) {
+  static public String showBytes(byte[] buff) {
     StringBuffer sbuff = new StringBuffer();
     for (int i = 0; i < buff.length; i++) {
       byte b = buff[i];

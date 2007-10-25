@@ -997,7 +997,7 @@ public class Variable implements VariableIF {
       buf.append(indent).append("  ");
       if (strict) buf.append(getName());
       buf.append(":");
-      buf.append( NCdump.encodeString(att.toString()));
+      buf.append( att.toString());
       buf.append(";");
       if (!strict && (att.getDataType() != DataType.STRING))
         buf.append(" // ").append(att.getDataType());
@@ -1077,7 +1077,7 @@ public class Variable implements VariableIF {
     this.ncfile = ncfile;
     this.group = (group == null) ? ncfile.getRootGroup() : group;
     this.parent = parent;
-    this.shortName = shortName;
+    this.shortName = NetcdfFile.createValidNetcdfObjectName(shortName);
   }
 
   /**
@@ -1154,7 +1154,7 @@ public class Variable implements VariableIF {
    */
   public void setName(String shortName) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.shortName = shortName;
+    this.shortName = NetcdfFile.createValidNetcdfObjectName(shortName);
   }
 
   /**

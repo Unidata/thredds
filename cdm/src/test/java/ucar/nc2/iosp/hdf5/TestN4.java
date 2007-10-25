@@ -2,6 +2,7 @@ package ucar.nc2.iosp.hdf5;
 
 import junit.framework.*;
 import ucar.nc2.*;
+import ucar.nc2.util.Misc;
 import ucar.ma2.Section;
 import ucar.ma2.Array;
 
@@ -22,7 +23,7 @@ public class TestN4 extends TestCase {
 
   public void testOpen() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/files/c0.nc";
+    String filename = "C:/data/netcdf4/files/tst_enums.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     List<Variable> vars = ncfile.getVariables();
@@ -83,12 +84,15 @@ public class TestN4 extends TestCase {
 
   public void testStrings() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/files/c0.nc";
+    String filename = "C:/data/netcdf4/files/nc_test_netcdf4.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    Variable v = ncfile.findVariable("cr");
-    Array data = v.read();
-    NCdump.printArray(data, "cr", System.out, null);
+    Variable v = ncfile.findVariable("d");
+    String attValue = ncfile.findAttValueIgnoreCase(v, "c", null);
+    String s = H5header.showBytes(attValue.getBytes());
+    System.out.println(" d:c= ("+attValue+") = "+s);
+    //Array data = v.read();
+    //NCdump.printArray(data, "cr", System.out, null);
     ncfile.close();
   }
 
@@ -123,26 +127,26 @@ public class TestN4 extends TestCase {
   //////////////////////
 
   public void testCDL() throws IOException, InterruptedException {
-    File dir = new File("C:/data/netcdf4/files/");
+    File dir = new File("C://data/netcdf4/files/");
     File[] files = dir.listFiles();
 
     for (File f : files) {
       String name = f.getAbsolutePath();
-      if (name.endsWith(".cdl")) {
-        int pos = name.lastIndexOf(".");
-        String prefix = name.substring(0,pos);
-        testCDL(prefix, false);
+      if (name.endsWith(".nc")) {
+        //int pos = name.lastIndexOf(".");
+        //String prefix = name.substring(0,pos);
+        testCDL(name, false);
       }
     }
   }
 
   public void testOneCDL() throws IOException, InterruptedException {
-    testCDL("C:/data/netcdf4/files/c0", true);
+    testCDL("C:\\data\\netcdf4\\files\\tst_ncml.nc", true);
   }
 
-  private void testCDL(String prefix, boolean show) throws IOException {
-    NetcdfFile ncfile = TestNC2.open(prefix+".nc");
-    System.out.println("File "+prefix);
+  private void testCDL(String filename, boolean show) throws IOException, InterruptedException {
+    NetcdfFile ncfile = TestNC2.open(filename);
+    System.out.println("File "+filename);
 
     ByteArrayOutputStream bout = new ByteArrayOutputStream(30 * 1000);
     NCdump.print(ncfile, bout, false, false, false, true, null, null);
@@ -151,32 +155,88 @@ public class TestN4 extends TestCase {
     if (show) System.out.println("njCDL " + njCDL);
     if (show) System.out.println("---------------------");
 
-    String cdl = thredds.util.IO.readFile(prefix+".cdl");
+    String cdl = getCDL(filename);
     if (show) System.out.println("CDL " + cdl);
     if (show) System.out.println("---------------------");
 
-    String[] ncTokens = njCDL.split("[\\s;]");
-    String[] cdlTokens = cdl.split("[\\s;]");
+    String[] ncTokens = njCDL.split("[\\s,;]+");
+    String[] cdlTokens = cdl.split("[\\s,;]+");
     int countNC = 0;
     int countCDL = 0;
     while (countNC < ncTokens.length && countCDL < cdlTokens.length) {
-      while (ncTokens[countNC].length() == 0) countNC++;
-      while (cdlTokens[countCDL].length() == 0) countCDL++;
 
-      if (!ncTokens[countNC].equals(cdlTokens[countCDL])) {
-        System.out.println("mismatch "+ncTokens[countNC]+" != "+cdlTokens[countCDL]);
-        //break;
+      if (!ncTokens[countNC].equals(cdlTokens[countCDL])) { // tokens match
+        if (matchDoubleToken(ncTokens[countNC], cdlTokens[countCDL])) { // numeric match
+          if (show) System.out.println("ok double "+ncTokens[countNC]+" == "+cdlTokens[countCDL]);
+        } else {
+          System.out.println("mismatch "+ncTokens[countNC]+" != "+cdlTokens[countCDL]);
+        }
+      } else {
+        if (show) System.out.println("ok "+ncTokens[countNC]+" == "+cdlTokens[countCDL]);
       }
-      else if (show) System.out.println("ok "+ncTokens[countNC]+" == "+cdlTokens[countCDL]);
+
       countNC++;
       countCDL++;
     }
   }
 
-  private void ncdump(String filename) throws IOException, InterruptedException {
+  private boolean matchDoubleToken(String toke1, String toke2) {
+    try {
+      double val1 = Double.parseDouble(toke1);
+      double val2 = Double.parseDouble(toke2);
+      return Misc.closeEnough(val1, val2);
+    } catch (NumberFormatException e) {
+      //System.out.println(e.getMessage());
+      return false;
+    }
+  }
+
+  private String getCDL(String filename) throws IOException, InterruptedException {
+
+     Runtime run = Runtime.getRuntime();
+     Process p = run.exec(new String[] {"ncdump", "-h", filename});
+     StreamGobbler err = new StreamGobbler(p.getErrorStream(), "ERR");
+     StreamCapture out = new StreamCapture(p.getInputStream());
+     err.start();
+     out.start();
+
+     // any error???
+     int exitVal = p.waitFor();
+     if (exitVal != 0)
+       throw new IOException("run.exec failed "+filename);
+
+     return out.result.toString();
+  }
+
+  class StreamCapture extends Thread {
+    InputStream is;
+    StringBuffer result = new StringBuffer(10000);
+
+    StreamCapture(InputStream is) {
+      this.is = is;
+    }
+
+    public void run() {
+      try {
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        String line = null;
+        while ((line = br.readLine()) != null)
+          result.append(line).append("\n");
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+      }
+    }
+  }
+
+  ///////////////////////////////////////////////////////
+
+
+  public void testExec() throws IOException, InterruptedException {
 
     Runtime run = Runtime.getRuntime();
-    Process p = run.exec(new String[] {"C:\\cdev\\install\\bin\\ncdump.exe", "-h", "C:/data/netcdf4/files/tst_v2.nc"});
+    //Process p = run.exec(new String[] {"C:\\cdev\\install\\bin\\ncdump.exe", "-h", "C:/data/netcdf4/files/tst_v2.nc"});
+    Process p = run.exec(new String[] {"ncdump", "-h", "C:/data/netcdf4/files/tst_v2.nc"});
     //Process p = run.exec(new String[]{"cmd.exe", "/C", "dir"}, null, new File("C:/data/netcdf4/files/"));
     //Process p = run.exec(new String[]{"cmd.exe", "/C", "set"}, null, new File("C:/data/netcdf4/files/"));
 
@@ -222,6 +282,20 @@ public class TestN4 extends TestCase {
         ioe.printStackTrace();
       }
     }
+  }
+
+  public static void main2(String args[]) {
+    String test = "abc  hello;;; ;iou";
+    String[] tokes = test.split("[\\s;]+");
+    for (String t : tokes)
+      System.out.println(" "+t);
+    System.out.println("dobe");
+  }
+
+  public static void main(String args[]) {
+    double d1 = Double.parseDouble("-1.e+36f");
+    double d2 = Double.parseDouble("-1.0E36f");
+    System.out.println("d="+d1+" "+d2+" "+Misc.closeEnough(d1, d2));
   }
 
 }
