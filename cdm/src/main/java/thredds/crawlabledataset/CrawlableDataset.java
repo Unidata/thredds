@@ -111,6 +111,7 @@ public interface CrawlableDataset {
    *
    * @param relativePath the path relative to this dataset of the requested dataset.
    * @return the requested descendant of this dataset.
+   * @throws IllegalArgumentException if the relative path is not relative (e.g., starts with a slash ("/")).
    */
   public CrawlableDataset getDescendant(String relativePath);
 

@@ -159,7 +159,9 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 
 	public CrawlableDataset getDescendant( String relativePath )
 	{
-		return new CrawlableDatasetDods(this, relativePath);
+    if ( relativePath.startsWith( "/"))
+      throw new IllegalArgumentException( "Path must be relative <" + relativePath + ">.");
+    return new CrawlableDatasetDods(this, relativePath);
 	}
 
 	// how do we determine if a url is a collection?

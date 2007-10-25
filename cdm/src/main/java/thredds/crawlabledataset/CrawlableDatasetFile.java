@@ -156,6 +156,8 @@ public class CrawlableDatasetFile implements CrawlableDataset
 
   public CrawlableDataset getDescendant( String relativePath)
   {
+    if ( relativePath.startsWith( "/" ) )
+      throw new IllegalArgumentException( "Path must be relative <" + relativePath + ">." );
     return new CrawlableDatasetFile( this, relativePath );
   }
 
