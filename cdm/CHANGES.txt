@@ -24,6 +24,7 @@ Changes in version 4.0
  API
   * make Indexer, RegularIndexer public so can be used by IOSP
  Bugs
+  * CF: look for axis=Z attrinute, make first in CoordSysBuilder list
   * Transverse Mercator accepts false_easting, false_northing
   * WRFConventions: makeZCoordAxis: SHORT should be DOUBLE
   * UnidataStationObsDataset : use timeObs if no timeNominal

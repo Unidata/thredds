@@ -333,7 +333,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     int size = byteArray.length;
     char[] cbuff = new char[size];
     for (int i = 0; i < size; i++)
-      cbuff[i] = (char) DataType.unsignedByteToShort( byteArray[i]);
+      cbuff[i] = (char) DataType.unsignedByteToShort( byteArray[i]); // NOTE: not Unicode !
     return cbuff;
   }
 
@@ -342,7 +342,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     int size = from.length;
     byte[] to = new byte[size];
     for (int i = 0; i < size; i++)
-      to[i] = (byte) from[i];
+      to[i] = (byte) from[i];    // LOOK wrong, convert back to unsigned byte
     return to;
   }
 

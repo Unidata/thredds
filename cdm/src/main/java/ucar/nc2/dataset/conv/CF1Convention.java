@@ -20,6 +20,7 @@
 package ucar.nc2.dataset.conv;
 
 import ucar.nc2.*;
+import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.ma2.Array;
@@ -205,9 +206,27 @@ public class CF1Convention extends CSMConvention {
           return AxisType.GeoZ;
     }
 
-    // dont use axis attribute - not clear enough
+    AxisType at = super.getAxisType(ncDataset, v);
 
-    return super.getAxisType(ncDataset, v);
+    // last choice is using axis attribute - only for Z
+    if (at == null) {
+      String axis = ncDataset.findAttValueIgnoreCase((Variable) v, "axis", null);
+       if (axis != null) {
+         axis = axis.trim();
+         if (axis.equalsIgnoreCase("Z")) {
+           String unit = ncDataset.findAttValueIgnoreCase((Variable) v, "unit", null);
+           if (unit == null ) return AxisType.GeoZ;
+           if (SimpleUnit.isCompatible("m", unit))
+             return AxisType.Height;
+           else if (SimpleUnit.isCompatible("mbar", unit))
+             return AxisType.Pressure;
+           else
+             return AxisType.GeoZ;
+          }
+       }
+    }
+
+    return at;
   }
 
   /**
