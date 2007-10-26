@@ -29,6 +29,8 @@ public class GetCoverage extends WcsRequest
     this.coverageId = coverageId;
     if ( this.coverageId == null )
       throw new IllegalArgumentException( "Non-null coverage identifier required." );
+    if ( !this.isAvailableCoverageName( this.coverageId ) )
+      throw new IllegalArgumentException( "Unknown coverage ID <" + this.coverageId + ">." );
   }
 
   //public NetcdfFile getCoverageData() {}

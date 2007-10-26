@@ -74,7 +74,6 @@ public class WcsRequestParser
     // Handle "DescribeCoverage" request.
     else if ( operation.equals( WcsRequest.Operation.DescribeCoverage ) )
     {
-      // The "Identifier" parameter is KVP encoded as "Identifiers", handle both.
       String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
       List<String> coverageIdList = splitCommaSeperatedList( coverageIdListParam );
 

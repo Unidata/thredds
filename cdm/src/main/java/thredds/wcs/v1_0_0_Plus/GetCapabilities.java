@@ -1,6 +1,5 @@
 package thredds.wcs.v1_0_0_Plus;
 
-import org.jdom.Namespace;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
@@ -14,9 +13,6 @@ import java.io.IOException;
 
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPoint;
 
 /**
  * _more_
@@ -28,10 +24,6 @@ public class GetCapabilities extends WcsRequest
 {
     private static org.slf4j.Logger log =
             org.slf4j.LoggerFactory.getLogger( GetCapabilities.class );
-
-  protected static final Namespace wcsNS = Namespace.getNamespace( "http://www.opengis.net/wcs" );
-  protected static final Namespace gmlNS = Namespace.getNamespace( "gml", "http://www.opengis.net/gml" );
-  protected static final Namespace xlinkNS = Namespace.getNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
   public enum Section
   {
@@ -344,51 +336,14 @@ public class GetCapabilities extends WcsRequest
     Element contMdElem = new Element( "ContentMetadata", wcsNS );
 
     for ( GridDatatype curGridDatatype : this.getDataset().getGrids())
-      contMdElem.addContent( genContentOfferingBrief( curGridDatatype));
+      // WCS_Capabilities/ContentMetadata/ContentOfferingBrief
+      contMdElem.addContent(
+              genCoverageOfferingBriefElem( "ContentOfferingBrief",
+                                        curGridDatatype.getName(),
+                                        curGridDatatype.getDescription(),
+                                        curGridDatatype.getCoordinateSystem() ) );
 
     return contMdElem;
-  }
-
-  public Element genContentOfferingBrief( GridDatatype gridDt)
-  {
-    // WCS_Capabilities/ContentMetadata/ContentOfferingBrief
-    Element briefElem = new Element( "ContentOfferingBrief", wcsNS );
-
-    // WCS_Capabilities/ContentMetadata/ContentOfferingBrief/name
-    // WCS_Capabilities/ContentMetadata/ContentOfferingBrief/label
-    briefElem.addContent( new Element( "name", wcsNS).addContent( gridDt.getName()));
-    briefElem.addContent( new Element( "label", wcsNS).addContent( gridDt.getDescription()));
-
-    GridCoordSystem gcs = gridDt.getCoordinateSystem();
-    if ( !gcs.isRegularSpatial() )
-    {
-      log.warn( "genContentOfferingBrief(): Coordinate system not regular for " + gridDt.getName());
-      return null;
-    }
-
-    briefElem.addContent( genLonLatEnvelope( gcs));
-
-    return briefElem;
-  }
-
-  private Element genLonLatEnvelope( GridCoordSystem gcs )
-  {
-    // WCS_Capabilities/ContentMetadata/ContentOfferingBrief/lonLatEnvelope
-    Element latLonEnvelopeElem = new Element( "lonLatEnvelope", wcsNS );
-    latLonEnvelopeElem.setAttribute( "srsName", "WGS84(DD)" );
-
-    LatLonRect llbb = gcs.getLatLonBoundingBox();
-    LatLonPoint llpt = llbb.getLowerLeftPoint();
-    LatLonPoint urpt = llbb.getUpperRightPoint();
-
-    // WCS_Capabilities/ContentMetadata/ContentOfferingBrief/pos
-    latLonEnvelopeElem.addContent(
-            new Element( "pos", gmlNS ).addContent( llpt.getLongitude() + " " + llpt.getLatitude()) );
-    double lon = llpt.getLongitude() + llbb.getWidth();
-    latLonEnvelopeElem.addContent(
-            new Element( "pos", gmlNS).addContent( lon + " " + urpt.getLatitude()) );
-
-    return latLonEnvelopeElem;
   }
 
   /**

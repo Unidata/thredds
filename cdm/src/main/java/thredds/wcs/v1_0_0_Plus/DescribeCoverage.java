@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 import java.io.IOException;
 
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
+import thredds.datatype.DateRange;
 
 /**
  * _more_
@@ -22,9 +24,6 @@ public class DescribeCoverage extends WcsRequest
 {
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( DescribeCoverage.class );
-  protected static final Namespace wcsNS = Namespace.getNamespace( "http://www.opengis.net/wcs" );
-  protected static final Namespace gmlNS = Namespace.getNamespace( "gml", "http://www.opengis.net/gml" );
-  protected static final Namespace xlinkNS = Namespace.getNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
   private URI serverURI;
   private List<String> coverages;
@@ -44,6 +43,14 @@ public class DescribeCoverage extends WcsRequest
       throw new IllegalArgumentException( "Non-null coverage list required." );
     if ( this.coverages.size() < 1 )
       throw new IllegalArgumentException( "Coverage list must contain at least one ID <" + this.coverages.size() + ">." );
+    String badCovIds = "";
+    for ( String curCov : coverages )
+    {
+      if ( ! this.isAvailableCoverageName( curCov))
+        badCovIds += (badCovIds.length() > 0 ? ", " : "") + curCov;
+    }
+    if ( badCovIds.length() > 0 )
+      throw new IllegalArgumentException("Coverage ID list contains one or more unknown IDs <" + badCovIds + ">." );
   }
 
   public Document getDescribeCoverageDoc()
@@ -62,21 +69,46 @@ public class DescribeCoverage extends WcsRequest
 
   public Document generateDescribeCoverageDoc()
   {
-    // CoverageDescriptions (wcs) [1]
-    Element coverageDescriptionsElem = new Element( "CoverageDescriptions", wcsNS );
+    // CoverageDescription (wcs) [1]
+    Element coverageDescriptionsElem = new Element( "CoverageDescription", wcsNS );
     coverageDescriptionsElem.addNamespaceDeclaration( gmlNS );
     coverageDescriptionsElem.addNamespaceDeclaration( xlinkNS );
+    coverageDescriptionsElem.setAttribute( "version", this.getVersion() );
+    // ToDo Consider dealing with "updateSequence"
+    // coverageDescriptionsElem.setAttribute( "updateSequence", this.getCurrentUpdateSequence() );
 
     for ( String curCoverageId : this.coverages )
-      coverageDescriptionsElem.addContent( genCovDescrip( curCoverageId ) );
+      coverageDescriptionsElem.addContent( genCoverageOfferingElem( curCoverageId ) );
 
     return new Document( coverageDescriptionsElem );
   }
 
-  public Element genCovDescrip( String covId )
+  public Element genCoverageOfferingElem( String covId )
   {
-    // CoverageDescriptions/CoverageDescription (wcs) [1..*]
-    Element covDescripElem = new Element( "CoverageDescription", wcsNS );
+    GridDataset.Gridset coverage = this.getAvailableCoverage( covId );
+    GridCoordSystem gcs = coverage.getGeoCoordSystem();
+
+    // CoverageDescription/CoverageOffering (wcs) [1..*]
+    Element covDescripElem = genCoverageOfferingBriefElem( "CoverageOffering", covId,
+                                                       gcs.getName(), // ToDo This is covId, build more descriptive text.
+                                                       gcs );
+
+    Element spatialDomainElem = new Element( "spatialDomain", wcsNS);
+    // TODO if ( gcs.)
+    if ( gcs.hasTimeAxis())
+    {
+      covDescripElem.addContent( genTemporalDomainElem( gcs.getDateRange()));
+    }
+    // CoverageDescription/CoverageOffering/domainSet [1]
+    covDescripElem.addContent( genDomainSetElem());
+
+    // CoverageDescription/CoverageOffering/rangeSet [1]
+
+    // CoverageDescription/CoverageOffering/supportedCRSs [1]
+    // CoverageDescription/CoverageOffering/supportedFormats [1]
+    // CoverageDescription/CoverageOffering/supportedInterpolations [0..1]
+
+    //************************
 
     // CoverageDescriptions/CoverageDescription/Title (ows) [0..1]
     // CoverageDescriptions/CoverageDescription/Abstract (ows) [0..1]
@@ -91,6 +123,43 @@ public class DescribeCoverage extends WcsRequest
     // CoverageDescriptions/CoverageDescription/SupportedFormat (wcs) [1..*] - MIME Type (e.g., "application/x-netcdf")
 
     return covDescripElem;
+  }
+
+  private Element genTemporalDomainElem( DateRange dateRange )
+  {
+    Element temporalDomainElem = new Element( "temporalDomain", wcsNS);
+
+    return temporalDomainElem;
+  }
+
+  public Element genDomainSetElem()
+  {
+    Element domainSetElem = new Element( "domainSet", wcsNS);
+
+    // ../domainSet/spatialDomain [0..1] AND/OR temporalDomain [0..1]
+
+    // ../domainSet/spatialDomain/gml:Envelope [1..*]
+    // ../domainSet/spatialDomain/gml:Envelope@srsName [0..1] (URI)
+    // ../domainSet/spatialDomain/gml:Envelope/gml:pos [2] (space seperated list of double values)
+    // ../domainSet/spatialDomain/gml:Envelope/gml:pos@dimension [0..1]  (number of entries in list)
+    
+    // ../domainSet/spatialDomain/gml:RectifiedGrid [0..*]  OR gml:RectifiedGrid
+    // ../domainSet/spatialDomain/gml:RectifiedGrid@srsName [0..1] (URI)
+    // ../domainSet/spatialDomain/gml:RectifiedGrid@attribute [1] (positive integer)
+    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:limits [1]
+    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope [1]
+    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:low [1] (integer list)
+    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:high [1] (integer list)
+    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:axisName [1..*] (string)
+    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:origin [1]
+    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:origin/gml:pos [1] (space seperated list of double values)
+    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:origin/gml:pos@dimension [0..1]  (number of entries in list)
+    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:offsetVector [1..*] (space seperated list of double values)
+    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:offsetVector@dimension [0..1]  (number of entries in list)
+
+    // ../domainSet/spatialDomain/gml:Polygon [0..*]
+
+    return domainSetElem;
   }
 
 }
