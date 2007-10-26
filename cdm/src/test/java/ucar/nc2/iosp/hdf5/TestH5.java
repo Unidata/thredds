@@ -45,7 +45,7 @@ public class TestH5 {
     TestSuite suite= new TestSuite();
 
     // hdf5 reading
-    suite.addTest(new TestSuite(TestN4.class)); //
+    //suite.addTest(new TestSuite(TestN4.class)); //
     suite.addTest(new TestSuite(TestH5read.class)); //
     suite.addTest(new TestSuite(TestH5ReadBasic.class)); //
     suite.addTest(new TestSuite(TestH5ReadStructure.class)); //
