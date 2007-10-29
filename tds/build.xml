@@ -672,7 +672,8 @@
   <property name="tdsIddCat-satellite" value="catalog/satellite/WV/AK-REGIONAL_16km/catalog.xml" />
 
   <property name="tdsIddCat-full" value="${tdsCat},${tdsIddCat-models}" />
-  <property name="tdsIddCat-fullSample" value="${tdsIddCat-models},${tdsIddCat-metar},${tdsIddCat-radCompNws},${tdsIddCat-radCompUniGini},${tdsIddCat-radCompUniGrib1km},${tdsIddCat-radLevel2},${tdsIddCat-radLevel3},${tdsIddCat-profWind1hr},${tdsIddCat-profRASS1hr},${tdsIddCat-soundings},${tdsIddCat-satellite}" />
+  <!-- Removed ${tdsIddCat-soundings} from below till John/Robb fix BUFR profile problem. -->
+  <property name="tdsIddCat-fullSample" value="${tdsIddCat-models},${tdsIddCat-metar},${tdsIddCat-radCompNws},${tdsIddCat-radCompUniGini},${tdsIddCat-radCompUniGrib1km},${tdsIddCat-radLevel2},${tdsIddCat-radLevel3},${tdsIddCat-profWind1hr},${tdsIddCat-profRASS1hr},${tdsIddCat-satellite}" />
 
   <!-- Used by TeamCity to test motherlode:8080 every hour -->
   <target name="test-TDS-ping-motherlode-8080" description="ping TDS on motherlode:8080">
