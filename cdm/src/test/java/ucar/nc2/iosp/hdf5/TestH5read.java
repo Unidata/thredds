@@ -61,6 +61,7 @@ public class TestH5read extends TestCase {
 
   public static void readAllDir(String dirName) {
     System.out.println("---------------Reading directory "+dirName);
+    System.out.flush();
     File allDir = new File( dirName);
     File[] allFiles = allDir.listFiles();
     if (null == allFiles) {
@@ -84,6 +85,7 @@ public class TestH5read extends TestCase {
 
   static public void readAllData( String filename) {
     System.out.println("\n------Reading filename "+filename);
+    System.out.flush();
     try {
       NetcdfFile ncfile = TestH5.open(filename);
       System.out.println("\n"+ncfile);
