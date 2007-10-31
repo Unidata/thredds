@@ -12,6 +12,9 @@ import java.io.IOException;
 
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.LatLonPoint;
 import thredds.datatype.DateRange;
 
 /**
@@ -85,22 +88,16 @@ public class DescribeCoverage extends WcsRequest
 
   public Element genCoverageOfferingElem( String covId )
   {
-    GridDataset.Gridset coverage = this.getAvailableCoverage( covId );
-    GridCoordSystem gcs = coverage.getGeoCoordSystem();
+    // ToDo WCS 1.0Plus - Change GridDatatype to GridDataset.Gridset
+    GridDatatype coverage = this.getAvailableCoverage( covId );
+    GridCoordSystem gcs = coverage.getCoordinateSystem();
 
     // CoverageDescription/CoverageOffering (wcs) [1..*]
     Element covDescripElem = genCoverageOfferingBriefElem( "CoverageOffering", covId,
-                                                       gcs.getName(), // ToDo This is covId, build more descriptive text.
-                                                       gcs );
+                                                           coverage.getDescription(), gcs );
 
-    Element spatialDomainElem = new Element( "spatialDomain", wcsNS);
-    // TODO if ( gcs.)
-    if ( gcs.hasTimeAxis())
-    {
-      covDescripElem.addContent( genTemporalDomainElem( gcs.getDateRange()));
-    }
     // CoverageDescription/CoverageOffering/domainSet [1]
-    covDescripElem.addContent( genDomainSetElem());
+    covDescripElem.addContent( genDomainSetElem( gcs));
 
     // CoverageDescription/CoverageOffering/rangeSet [1]
 
@@ -125,24 +122,32 @@ public class DescribeCoverage extends WcsRequest
     return covDescripElem;
   }
 
-  private Element genTemporalDomainElem( DateRange dateRange )
+  public Element genDomainSetElem( GridCoordSystem gridCoordSys)
   {
-    Element temporalDomainElem = new Element( "temporalDomain", wcsNS);
-
-    return temporalDomainElem;
-  }
-
-  public Element genDomainSetElem()
-  {
+    // ../domainSet
     Element domainSetElem = new Element( "domainSet", wcsNS);
 
     // ../domainSet/spatialDomain [0..1] AND/OR temporalDomain [0..1]
+    domainSetElem.addContent( genSpatialDomainElem( gridCoordSys) );
+    if ( gridCoordSys.hasTimeAxis() )
+    {
+      domainSetElem.addContent( genTemporalDomainElem( gridCoordSys.getDateRange() ) );
+    }
 
+    return domainSetElem;
+  }
+
+  private Element genSpatialDomainElem( GridCoordSystem gridCoordSys )
+  {
+    // ../domainSet/spatialDomain
+    Element spatialDomainElem = new Element( "spatialDomain", wcsNS );
+    // TODO if ( gcs.)
     // ../domainSet/spatialDomain/gml:Envelope [1..*]
     // ../domainSet/spatialDomain/gml:Envelope@srsName [0..1] (URI)
     // ../domainSet/spatialDomain/gml:Envelope/gml:pos [2] (space seperated list of double values)
     // ../domainSet/spatialDomain/gml:Envelope/gml:pos@dimension [0..1]  (number of entries in list)
-    
+    //this.
+
     // ../domainSet/spatialDomain/gml:RectifiedGrid [0..*]  OR gml:RectifiedGrid
     // ../domainSet/spatialDomain/gml:RectifiedGrid@srsName [0..1] (URI)
     // ../domainSet/spatialDomain/gml:RectifiedGrid@attribute [1] (positive integer)
@@ -159,7 +164,56 @@ public class DescribeCoverage extends WcsRequest
 
     // ../domainSet/spatialDomain/gml:Polygon [0..*]
 
-    return domainSetElem;
+    return spatialDomainElem;
   }
 
+  protected Element genEnvelopeElem( GridCoordSystem gcs )
+  {
+    // spatialDomain/Envelope
+    Element lonLatEnvelopeElem = new Element( "Envelope", wcsNS );
+    lonLatEnvelopeElem.setAttribute( "srsName", "urn:ogc:def:crs:EPSG:6.3:???"); // "urn:ogc:def:crs:OGC:1.3:CRS84" );
+
+    LatLonRect llbb = gcs.getLatLonBoundingBox();
+    LatLonPoint llpt = llbb.getLowerLeftPoint();
+    LatLonPoint urpt = llbb.getUpperRightPoint();
+
+    // <CoverageOfferingBrief>/lonLatEnvelope/gml:pos
+    lonLatEnvelopeElem.addContent(
+            new Element( "pos", gmlNS ).addContent( llpt.getLongitude() + " " + llpt.getLatitude() ) );
+    double lon = llpt.getLongitude() + llbb.getWidth();
+    lonLatEnvelopeElem.addContent(
+            new Element( "pos", gmlNS ).addContent( lon + " " + urpt.getLatitude() ) );
+// ToDo Add vertical
+//    CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
+//    if ( vertAxis != null )
+//    {
+//      // ToDo Deal with conversion to meters. Yikes!!
+//      // See verAxis.getUnitsString()
+//      lonLatEnvelopeElem.addContent(
+//              new Element( "pos", gmlNS).addContent(
+//                      vertAxis.getCoordValue( 0) + " " +
+//                      vertAxis.getCoordValue( ((int)vertAxis.getSize()) - 1)));
+//    }
+// ToDo Add vertical
+
+    // <CoverageOfferingBrief>/lonLatEnvelope/gml:timePostion [2]
+    if ( gcs.hasTimeAxis() )
+    {
+      lonLatEnvelopeElem.addContent(
+              new Element( "timePosition", gmlNS ).addContent(
+                      gcs.getDateRange().getStart().toDateTimeStringISO() ) );
+      lonLatEnvelopeElem.addContent(
+              new Element( "timePosition", gmlNS ).addContent(
+                      gcs.getDateRange().getEnd().toDateTimeStringISO() ) );
+    }
+
+    return lonLatEnvelopeElem;
+  }
+
+  private Element genTemporalDomainElem( DateRange dateRange )
+  {
+    Element temporalDomainElem = new Element( "temporalDomain", wcsNS );
+
+    return temporalDomainElem;
+  }
 }

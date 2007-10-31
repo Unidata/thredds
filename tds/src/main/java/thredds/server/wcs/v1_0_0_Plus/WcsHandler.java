@@ -73,7 +73,6 @@ public class WcsHandler implements VersionHandler
       }
       else if ( request.getOperation().equals( WcsRequest.Operation.GetCoverage ) )
       {
-        // ToDo Handle multi-part MIME response
         File covFile = ((GetCoverage) request).writeCoverageDataToFile();
         if ( covFile != null && covFile.exists())
         {

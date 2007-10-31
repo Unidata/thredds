@@ -335,7 +335,9 @@ public class GetCapabilities extends WcsRequest
     // WCS_Capabilities/ContentMetadata
     Element contMdElem = new Element( "ContentMetadata", wcsNS );
 
-    for ( GridDatatype curGridDatatype : this.getDataset().getGrids())
+    // ToDo WCS 1.0Plus - change GridDatatype to GridDataset.Gridset
+    for ( GridDatatype curGridDatatype : this.getAvailableCoverageCollection())
+      // WCS_Capabilities/ContentMetadata/ContentOfferingBrief
       // WCS_Capabilities/ContentMetadata/ContentOfferingBrief
       contMdElem.addContent(
               genCoverageOfferingBriefElem( "ContentOfferingBrief",

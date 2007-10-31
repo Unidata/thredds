@@ -4,6 +4,7 @@ import java.util.*;
 
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import org.jdom.Element;
@@ -28,7 +29,8 @@ public abstract class WcsRequest
   // Dataset
   private String datasetPath;
   private GridDataset dataset;
-  private HashMap<String,GridDataset.Gridset> availableCoverages;
+  // ToDo WCS 1.0Plus - change GridDatatype to GridDataset.Gridset
+  private HashMap<String,GridDatatype> availableCoverages;
 
   public enum Operation
   {
@@ -51,19 +53,28 @@ public abstract class WcsRequest
     this.version = version;
     this.datasetPath = datasetPath;
     this.dataset = dataset;
-    this.availableCoverages = new HashMap<String,GridDataset.Gridset>();
+    // ToDo WCS 1.0Plus - change GridDatatype to GridDataset.Gridset
+    this.availableCoverages = new HashMap<String,GridDatatype>();
 
-    // The following coverage list drops the WCS 1.0 restriction on the
-    // rangeSet in favor of WCS 1.1 rangeSet.
-    // NOTE: For WCS 1.0 replace the for loop with:
-    //     for ( GridDatatype curGridDatatype : this.dataset.getGrids() ) {...}
-    for ( GridDataset.Gridset curGridSet : this.dataset.getGridsets())
+    // ToDo WCS 1.0PlusPlus - compartmentalize coverage to hide GridDatatype vs GridDataset.Gridset ???
+    // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
+    // This is WCS 1.0 coverage for each parameter
+    for ( GridDatatype curGridDatatype : this.dataset.getGrids() )
     {
-      GridCoordSystem gcs = curGridSet.getGeoCoordSystem();
-      if ( !gcs.isRegularSpatial() )
+      GridCoordSystem gcs = curGridDatatype.getCoordinateSystem();
+      if ( ! gcs.isRegularSpatial())
         continue;
-      this.availableCoverages.put( gcs.getName(), curGridSet );
+      this.availableCoverages.put( curGridDatatype.getName(), curGridDatatype );
     }
+    // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
+    // This is WCS 1.1 style coverage for each coordinate system
+    // for ( GridDataset.Gridset curGridSet : this.dataset.getGridsets())
+    // {
+    //   GridCoordSystem gcs = curGridSet.getGeoCoordSystem();
+    //   if ( !gcs.isRegularSpatial() )
+    //     continue;
+    //   this.availableCoverages.put( gcs.getName(), curGridSet );
+    // }
 
     if ( operation == null )
       throw new IllegalArgumentException( "Non-null operation required." );
@@ -83,17 +94,20 @@ public abstract class WcsRequest
     return availableCoverages.containsKey( name);
   }
 
-  public GridDataset.Gridset getAvailableCoverage( String name )
+  // ToDo WCS 1.0Plus - change response type to GridDataset.Gridset
+  public GridDatatype getAvailableCoverage( String name )
   {
     return availableCoverages.get( name);
   }
-  public Collection<GridDataset.Gridset> getAvailableCoverageCollection()
+
+  // ToDo WCS 1.0Plus - change response type to GridDataset.Gridset
+  public Collection<GridDatatype> getAvailableCoverageCollection()
   {
     return Collections.unmodifiableCollection( availableCoverages.values());
   }
 
   protected Element genCoverageOfferingBriefElem( String elemName, String covName, String covLabel,
-                                              GridCoordSystem gridCoordSys )
+                                                  GridCoordSystem gridCoordSys )
   {
 
     // <CoverageOfferingBrief>
@@ -119,7 +133,7 @@ public abstract class WcsRequest
     return briefElem;
   }
 
-  private Element genLonLatEnvelope( GridCoordSystem gcs )
+  protected Element genLonLatEnvelope( GridCoordSystem gcs )
   {
     // <CoverageOfferingBrief>/lonLatEnvelope
     Element lonLatEnvelopeElem = new Element( "lonLatEnvelope", wcsNS );
