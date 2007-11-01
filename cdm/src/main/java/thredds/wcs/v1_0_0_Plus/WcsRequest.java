@@ -144,23 +144,23 @@ public abstract class WcsRequest
     LatLonPoint urpt = llbb.getUpperRightPoint();
 
     // <CoverageOfferingBrief>/lonLatEnvelope/gml:pos
-    lonLatEnvelopeElem.addContent(
-            new Element( "pos", gmlNS ).addContent( llpt.getLongitude() + " " + llpt.getLatitude() ) );
+    String firstPosition = llpt.getLongitude() + " " + llpt.getLatitude();
     double lon = llpt.getLongitude() + llbb.getWidth();
-    lonLatEnvelopeElem.addContent(
-            new Element( "pos", gmlNS ).addContent( lon + " " + urpt.getLatitude() ) );
+    String secondPosition = lon + " " + urpt.getLatitude();
 // ToDo Add vertical
 //    CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
 //    if ( vertAxis != null )
 //    {
 //      // ToDo Deal with conversion to meters. Yikes!!
 //      // See verAxis.getUnitsString()
-//      lonLatEnvelopeElem.addContent(
-//              new Element( "pos", gmlNS).addContent(
-//                      vertAxis.getCoordValue( 0) + " " +
-//                      vertAxis.getCoordValue( ((int)vertAxis.getSize()) - 1)));
+//      firstPosition += " " + vertAxis.getCoordValue( 0);
+//      secondPostion += " " + vertAxis.getCoordValue( ((int)vertAxis.getSize()) - 1);
 //    }
 // ToDo Add vertical
+    lonLatEnvelopeElem.addContent(
+            new Element( "pos", gmlNS ).addContent( firstPosition ) );
+    lonLatEnvelopeElem.addContent(
+            new Element( "pos", gmlNS ).addContent( secondPosition ) );
 
     // <CoverageOfferingBrief>/lonLatEnvelope/gml:timePostion [2]
     if ( gcs.hasTimeAxis() )

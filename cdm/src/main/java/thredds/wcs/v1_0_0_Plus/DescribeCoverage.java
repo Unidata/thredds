@@ -1,6 +1,5 @@
 package thredds.wcs.v1_0_0_Plus;
 
-import org.jdom.Namespace;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
@@ -100,6 +99,7 @@ public class DescribeCoverage extends WcsRequest
     covDescripElem.addContent( genDomainSetElem( gcs));
 
     // CoverageDescription/CoverageOffering/rangeSet [1]
+    covDescripElem.addContent( genRangeSetElem( coverage));
 
     // CoverageDescription/CoverageOffering/supportedCRSs [1]
     // CoverageDescription/CoverageOffering/supportedFormats [1]
@@ -170,44 +170,50 @@ public class DescribeCoverage extends WcsRequest
   protected Element genEnvelopeElem( GridCoordSystem gcs )
   {
     // spatialDomain/Envelope
-    Element lonLatEnvelopeElem = new Element( "Envelope", wcsNS );
-    lonLatEnvelopeElem.setAttribute( "srsName", "urn:ogc:def:crs:EPSG:6.3:???"); // "urn:ogc:def:crs:OGC:1.3:CRS84" );
+    Element envelopeElem = new Element( "EnvelopeWithTimePeriod", wcsNS );
+    if ( gcs.hasTimeAxis())
+      envelopeElem = new Element( "EnvelopeWithTimePeriod", wcsNS );
+    else
+      envelopeElem = new Element( "Envelope", wcsNS );
+
+    envelopeElem.setAttribute( "srsName", "urn:ogc:def:crs:OGC:1.3:CRS84" );
 
     LatLonRect llbb = gcs.getLatLonBoundingBox();
     LatLonPoint llpt = llbb.getLowerLeftPoint();
     LatLonPoint urpt = llbb.getUpperRightPoint();
 
-    // <CoverageOfferingBrief>/lonLatEnvelope/gml:pos
-    lonLatEnvelopeElem.addContent(
-            new Element( "pos", gmlNS ).addContent( llpt.getLongitude() + " " + llpt.getLatitude() ) );
+    // spatialDomain/Envelope/gml:pos
+
     double lon = llpt.getLongitude() + llbb.getWidth();
-    lonLatEnvelopeElem.addContent(
-            new Element( "pos", gmlNS ).addContent( lon + " " + urpt.getLatitude() ) );
+    String firstPosition = llpt.getLongitude() + " " + llpt.getLatitude();
+    String secondPosition = lon + " " + urpt.getLatitude();
 // ToDo Add vertical
 //    CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
 //    if ( vertAxis != null )
 //    {
 //      // ToDo Deal with conversion to meters. Yikes!!
 //      // See verAxis.getUnitsString()
-//      lonLatEnvelopeElem.addContent(
-//              new Element( "pos", gmlNS).addContent(
-//                      vertAxis.getCoordValue( 0) + " " +
-//                      vertAxis.getCoordValue( ((int)vertAxis.getSize()) - 1)));
+//      firstPosition += " " + vertAxis.getCoordValue( 0);
+//      secondPosition += " " + vertAxis.getCoordValue( ((int)vertAxis.getSize()) - 1);
 //    }
 // ToDo Add vertical
+    envelopeElem.addContent(
+            new Element( "pos", gmlNS ).addContent( firstPosition ) );
+    envelopeElem.addContent(
+            new Element( "pos", gmlNS ).addContent( secondPosition ) );
 
-    // <CoverageOfferingBrief>/lonLatEnvelope/gml:timePostion [2]
+    // spatialDomain/Envelope/gml:timePostion [2]
     if ( gcs.hasTimeAxis() )
     {
-      lonLatEnvelopeElem.addContent(
-              new Element( "timePosition", gmlNS ).addContent(
-                      gcs.getDateRange().getStart().toDateTimeStringISO() ) );
-      lonLatEnvelopeElem.addContent(
-              new Element( "timePosition", gmlNS ).addContent(
-                      gcs.getDateRange().getEnd().toDateTimeStringISO() ) );
+      envelopeElem.addContent(
+              new Element( "timePosition", gmlNS).addContent(
+                      gcs.getDateRange().getStart().toDateTimeStringISO()));
+      envelopeElem.addContent(
+              new Element( "timePosition", gmlNS).addContent(
+                      gcs.getDateRange().getEnd().toDateTimeStringISO()));
     }
 
-    return lonLatEnvelopeElem;
+    return envelopeElem;
   }
 
   private Element genTemporalDomainElem( DateRange dateRange )
@@ -215,5 +221,12 @@ public class DescribeCoverage extends WcsRequest
     Element temporalDomainElem = new Element( "temporalDomain", wcsNS );
 
     return temporalDomainElem;
+  }
+
+  public Element genRangeSetElem( GridDatatype coverage )
+  {
+    Element rangeSetElem = new Element( "rangeSet", wcsNS);
+
+    return rangeSetElem;
   }
 }
