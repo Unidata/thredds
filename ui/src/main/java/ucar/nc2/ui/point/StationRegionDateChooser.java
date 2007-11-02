@@ -1,6 +1,5 @@
-// $Id: StationRegionDateChooser.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -111,8 +110,9 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
 
   /**
    * Constructor
-   * @param regionSelect
-   * @param stationSelect
+   * @param regionSelect allow selecting a region
+   * @param stationSelect allow selecting a station
+   * @param dateSelect allow selecting a date range
    */
   public StationRegionDateChooser(boolean stationSelect, boolean regionSelect, boolean dateSelect) {
     super();
@@ -154,7 +154,7 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
             sbuff.append(" ");
             sbuff.append("\n");
             if (null != s.getDescription())
-              sbuff.append(s.getDescription()+"\n");
+              sbuff.append(s.getDescription()).append("\n");
             sbuff.append( LatLonPointImpl.latToString(s.getLatitude(), 4));
             sbuff.append(" ");
             sbuff.append( LatLonPointImpl.lonToString(s.getLongitude(), 4));
@@ -220,13 +220,13 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
       try {
         range = new DateRange(); // phony
       } catch (Exception e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        e.printStackTrace();
       }
       dateSelector = new RangeDateSelector(null, range, true, false, null, false, true);
       dateWindow = new IndependentDialog(null, false, "Date Selection", dateSelector);
       dateAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          dateWindow.show();
+          dateWindow.setVisible(true);
         }
       };
       BAMutil.setActionProperties( dateAction, "selectDate", "select date range", false, 'D', -1);
@@ -343,6 +343,7 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
 
   /**
    * Add an action to the toolbar.
+   * @param act add this action
    */
   public void addToolbarAction(AbstractAction act) {
     BAMutil.addActionToContainer( toolPanel, act);
@@ -367,12 +368,10 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
     }
   }
 
-      /** add ActionValueListener listener */
   public void addActionValueListener( ActionValueListener l) { actionSource.addActionValueListener(l); }
-    /** remove ActionValueListener listener */
   public void removeActionValueListener( ActionValueListener l) { actionSource.removeActionValueListener(l); }
 
-    /** better way to do event management */
+    // better way to do event management
   public ActionSourceListener getActionSourceListener() { return actionSource; }
 
   public void setMapArea(ProjectionRect ma) {
@@ -415,6 +414,7 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
 
   /**
    *  Change the state of decluttering
+   * @param declut if true, declutter
    */
   public void setDeclutter(boolean declut) {
     stnRender.setDeclutter(declut);
@@ -423,6 +423,7 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
 
   /**
    * Get the state of the declutter flag.
+   * @return the state of the declutter flag.
    */
   public boolean getDeclutter() { return stnRender.getDeclutter(); }
 
@@ -527,6 +528,7 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
    * @param parent      JFrame (application) or JApplet (applet) or null
    * @param title       dialog window title
    * @param modal     is modal
+   * @return the JDialog widget
    */
   public JDialog makeDialog( RootPaneContainer parent, String title, boolean modal) {
     return new Dialog( parent, title, modal);
@@ -576,6 +578,6 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
     });
     frame.getContentPane().add(slm);
     frame.pack();
-    frame.show();
+    frame.setVisible(true);
   }
 }

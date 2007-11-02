@@ -1,6 +1,5 @@
-// $Id: PointObsViewer.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -30,7 +29,6 @@ import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.StructureData;
-import ucar.ma2.InvalidRangeException;
 import thredds.ui.*;
 import thredds.datatype.DateRange;
 
@@ -51,14 +49,12 @@ import javax.swing.event.*;
  * The obs are shown in a StructureTabel.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class PointObsViewer extends JPanel {
   private PreferencesExt prefs;
 
   private PointObsDataset pds;
-  private ArrayList pointBeans;
 
   private StationRegionDateChooser chooser;
   private BeanTableSorted stnTable;
@@ -196,7 +192,7 @@ public class PointObsViewer extends JPanel {
    */
   public void setObservations(List obsList) {
 
-    pointBeans = new ArrayList();
+    List<Station> pointBeans = new ArrayList<Station>();
     for (int i = 0; i < obsList.size(); i++) {
       PointObsDatatype pob = (PointObsDatatype) obsList.get(i);
       pointBeans.add(new PointObsBean(i, pob));
@@ -259,11 +255,11 @@ public class PointObsViewer extends JPanel {
     }
 
     public String getDescription() {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
+      return null;
     }
 
     public String getWmoId() {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
+      return null;
     }
 
     public double getLatitude() {

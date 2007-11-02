@@ -1,6 +1,5 @@
-// $Id: CoordSysTable.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -49,7 +48,6 @@ import javax.swing.event.ListSelectionEvent;
  * A Swing widget to examine Coordinate Systems.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class CoordSysTable extends JPanel {
@@ -191,9 +189,9 @@ public class CoordSysTable extends JPanel {
 
   private void printArray(String title, double vals[]) {
     StringBuffer sbuff = new StringBuffer();
-    sbuff.append(" " + title);
+    sbuff.append(" ").append(title);
     for (int i = 0; i < vals.length; i++) {
-      sbuff.append(" " + vals[i]);
+      sbuff.append(" ").append(vals[i]);
     }
     sbuff.append("\n");
     infoTA.appendLine(sbuff.toString());
@@ -220,8 +218,8 @@ public class CoordSysTable extends JPanel {
     this.ds = ds;
     parseInfo.setLength(0);
 
-    ArrayList beanList = new ArrayList();
-    ArrayList axisList = new ArrayList();
+    List<VariableBean> beanList = new ArrayList<VariableBean>();
+    List<AxisBean> axisList = new ArrayList<AxisBean>();
     setVariables(ds.getVariables(), axisList, beanList);
 
     varTable.setBeans(beanList);
@@ -229,7 +227,7 @@ public class CoordSysTable extends JPanel {
     csTable.setBeans(getCoordinateSystemBeans(ds));
   }
 
-  private void setVariables(List varList, List axisList, List beanList) {
+  private void setVariables(List<Variable> varList, List<AxisBean> axisList, List<VariableBean> beanList) {
     for (int i = 0; i < varList.size(); i++) {
       VariableEnhanced v = (VariableEnhanced) varList.get(i);
       if (v instanceof CoordinateAxis)
@@ -238,17 +236,17 @@ public class CoordSysTable extends JPanel {
         beanList.add(new VariableBean(v));
 
       if (v instanceof Structure) {
-        java.util.List nested = ((Structure) v).getVariables();
+        java.util.List<Variable> nested = ((Structure) v).getVariables();
         setVariables(nested, axisList, beanList);
       }
     }
   }
 
-  public ArrayList getCoordinateSystemBeans(NetcdfDataset ds) {
-    ArrayList vlist = new ArrayList();
-    java.util.List list = ds.getCoordinateSystems();
+  public List<CoordinateSystemBean> getCoordinateSystemBeans(NetcdfDataset ds) {
+    List<CoordinateSystemBean> vlist = new ArrayList<CoordinateSystemBean>();
+    java.util.List<CoordinateSystem> list = ds.getCoordinateSystems();
     for (int i = 0; i < list.size(); i++) {
-      CoordinateSystem elem = (CoordinateSystem) list.get(i);
+      CoordinateSystem elem = list.get(i);
       vlist.add(new CoordinateSystemBean(elem));
     }
     return vlist;
@@ -322,7 +320,7 @@ public class CoordSysTable extends JPanel {
       List csList = v.getCoordinateSystems();
       for (int i = 0; i < csList.size(); i++) {
         CoordinateSystem cs = (CoordinateSystem) csList.get(i);
-        buff.append(cs.getName() + " ");
+        buff.append(cs.getName()).append(" ");
         if (firstCoordSys == null)
           firstCoordSys = cs;
 
@@ -433,11 +431,12 @@ public class CoordSysTable extends JPanel {
         if (i > 0) buff.append(" ");
         buff.append(ct.getTransformType());
         if (ct instanceof VerticalCT)
-          buff.append("(" + ((VerticalCT) ct).getVerticalTransformType() + ")");
+          buff.append("(").append(((VerticalCT) ct).getVerticalTransformType()).append(")");
         if (ct instanceof ProjectionCT) {
           ProjectionCT pct = (ProjectionCT) ct;
-          if (pct.getProjection() != null)
-            buff.append("(" + pct.getProjection().getClassName() + ")");
+          if (pct.getProjection() != null) {
+            buff.append("(").append(pct.getProjection().getClassName()).append(")");
+          }
         }
       }
       setCoordTransforms(buff.toString());
@@ -571,10 +570,7 @@ public class CoordSysTable extends JPanel {
         if (v1.isRegular())
           setRegular(Double.toString(v1.getIncrement()));
         isLayer = (null != axis.findAttribute(_Coordinate.ZisLayer));
-
       }
-
-      boolean isLayer = null != axis.findAttribute(_Coordinate.ZisLayer);
     }
 
     public String getName() {

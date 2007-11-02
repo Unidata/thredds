@@ -68,7 +68,7 @@ public class BeanTable extends JPanel {
   protected JScrollPane scrollPane;
   protected EventListenerList listenerList = new EventListenerList();
 
-  protected ArrayList beans;
+  protected List beans;
   protected TableBeanModel model;
 
   protected boolean debug = false, debugStore = false, debugBean = false, debugSelected = false;
@@ -288,7 +288,7 @@ public class BeanTable extends JPanel {
     int row = beans.size()-1;
     model.fireTableRowsInserted(row - newBeans.size(), row);  }
 
-  public void setBeans( ArrayList beans) {
+  public void setBeans( List beans) {
     if (beans == null)
       beans = new ArrayList(); // empty list
     this.beans = beans;
@@ -296,7 +296,7 @@ public class BeanTable extends JPanel {
     revalidate();  // LOOK soemtimes it doesnt, ttry this
   }
 
-  public ArrayList getBeans( ) { return beans; }
+  public List getBeans( ) { return beans; }
   public JTable getJTable( ) { return jtable; }
 
   public void setFontSize( int size) {

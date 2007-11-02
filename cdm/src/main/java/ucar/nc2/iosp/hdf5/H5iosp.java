@@ -25,10 +25,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.Indexer;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.RegularSectionLayout;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.Structure;
-import ucar.nc2.Group;
+import ucar.nc2.*;
 
 import java.io.IOException;
 import java.nio.*;
@@ -166,7 +163,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         index = RegularSectionLayout.factory(dataPos, elemSize, new Section(v2.getShape()), wantSection);
       }
 
-      data = readData(vinfo.typeInfo, v2, index, readDtype, wantSection.getShape(), fillValue, byteOrder);
+      data = readData(vinfo, v2, index, readDtype, wantSection.getShape(), fillValue, byteOrder);
     }
 
     if (data instanceof Array)
@@ -187,10 +184,11 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @throws java.io.IOException            if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  private Object readData(H5header.TypeInfo typeInfo, Variable v, Indexer index, DataType dataType, int[] shape,
+  private Object readData(H5header.Vinfo vinfo, Variable v, Indexer index, DataType dataType, int[] shape,
           Object fillValue, int byteOrder) throws java.io.IOException, InvalidRangeException {
 
     // special processing
+    H5header.TypeInfo typeInfo = vinfo.typeInfo;
     if (typeInfo.hdfType == 2) { // time
       Object data = readDataPrimitive(index, dataType, fillValue, byteOrder);
       Array timeArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
@@ -216,7 +214,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       IndexIterator ii = codesArray.getIndexIterator();
       while(ii.hasNext()) {
         int code = ii.getIntNext();
-        stringData[count++] = "N?A"; // vinfo.mdt.map.get(code);  LOOK
+        stringData[count++] = vinfo.enumMap.get( code);
       }
       return Array.factory(String.class, shape, stringData);
     }

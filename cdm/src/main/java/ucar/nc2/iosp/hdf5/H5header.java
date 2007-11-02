@@ -50,7 +50,7 @@ class H5header {
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;
-  static private boolean warnings = true, debugReference = false, debugCreationOrder = false, debugFractalHeap = false;
+  static private boolean warnings = true, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
   static java.io.PrintStream debugOut = System.out;
 
   static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -732,7 +732,8 @@ class H5header {
     // debugging
     vinfo.setOwner(v);
     if (vinfo.typeInfo.hdfType == 7) debugOut.println("WARN:  Variable " + facade.name + " is a Reference type");
-    if (vinfo.mfp != null) debugOut.println("WARN:  Variable " + facade.name + " has a Filter");
+    if ((vinfo.mfp != null) && (vinfo.mfp.filters[0].id != 1) )
+        debugOut.println("WARN:  Variable " + facade.name + " has a Filter = "+vinfo.mfp);
     if (debug1) debugOut.println("makeVariable " + v.getName() + "; vinfo= " + vinfo);
 
     return v;
@@ -922,6 +923,8 @@ class H5header {
     boolean useFillValue = false;
     byte[] fillValue;
 
+    Map<Integer,String> enumMap;
+
     /**
      * Constructor
      *
@@ -1026,6 +1029,7 @@ class H5header {
 
       } else if (hdfType == 8) { // enums
         tinfo.dataType = DataType.ENUM;
+        enumMap = mdt.map;
 
       } else if (hdfType == 9) { // variable length array
         tinfo.isVString = mdt.isVString;
@@ -3695,7 +3699,7 @@ class H5header {
       for (GlobalHeap.HeapObject ho : gheap.hos) {
         if (ho.id == index) {
           want = ho;
-          System.out.println(" found ho=" + ho);
+          if (debugRegionReference) System.out.println(" found ho=" + ho);
           /* - The offset of the object header of the object (ie. dataset) pointed to (yes, an object ID)
 - A serialized form of a dataspace _selection_ of elements (in the dataset pointed to).
 I don't have a formal description of this information now, but it's encoded in the H5S_<foo>_serialize() routines in
@@ -3705,7 +3709,7 @@ There is _no_ datatype information stored for these sort of selections currently
           long objId = raf.readLong();
           DataObject ndo = getDataObject( objId, null);
           // String what = (ndo == null) ? "none" : ndo.getName();
-          System.out.println(" objId=" + objId + " DataObject= " + ndo);
+          if (debugRegionReference) System.out.println(" objId=" + objId + " DataObject= " + ndo);
           if (null == ndo)
             throw new IllegalStateException("cant find data object at"+objId);
           return;

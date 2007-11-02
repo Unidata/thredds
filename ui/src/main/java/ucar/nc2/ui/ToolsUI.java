@@ -1,6 +1,5 @@
-// $Id: ToolsUI.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -52,6 +51,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -62,7 +62,6 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
  * Netcdf Tools user interface.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class ToolsUI extends JPanel {
@@ -649,7 +648,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-  // jump to the appropriate tab based on datatype of InvDataset
+  /* jump to the appropriate tab based on datatype of InvDataset
   private void setThreddsDatatype(String dataset) {
 
     try {
@@ -660,7 +659,7 @@ public class ToolsUI extends JPanel {
       JOptionPane.showMessageDialog(null, "Error on setThreddsDataset = " + ioe.getMessage());
     }
 
-  }
+  }  */
 
   // jump to the appropriate tab based on datatype of threddsData
   private void setThreddsDatatype(ThreddsDataFactory.Result threddsData) {
@@ -1190,9 +1189,10 @@ public class ToolsUI extends JPanel {
           VariableEnhanced vs = (VariableEnhanced) iter.next();
           String units = vs.getUnitsString();
           StringBuffer sb = new StringBuffer();
-          sb.append("   " + vs.getName() + " has unit= <" + units + ">");
+          sb.append("   ").append(vs.getName()).append(" has unit= <").append(units).append(">");
           if (units != null)
 
+          {
             try {
               SimpleUnit su = SimpleUnit.factoryWithExceptions(units);
               sb.append(" unit convert = " + su.toString());
@@ -1203,6 +1203,7 @@ public class ToolsUI extends JPanel {
               sb.append(" unit convert failed ");
               sb.insert(0, "**** Fail ");
             }
+          }
 
           ta.appendLine(sb.toString());
         }
@@ -1274,8 +1275,9 @@ public class ToolsUI extends JPanel {
     void compare(Object o) {
       String command = (String) o;
       StringTokenizer stoke = new StringTokenizer(command);
-      ArrayList list = new ArrayList();
-      while (stoke.hasMoreTokens()) list.add(stoke.nextToken());
+      List<String> list = new ArrayList<String>();
+      while (stoke.hasMoreTokens())
+        list.add(stoke.nextToken());
 
       try {
         String unitS1 = (String) list.get(0);
@@ -2083,7 +2085,7 @@ public class ToolsUI extends JPanel {
               ds.syncExtend();
               dsViewer.setDataset(ds);
             } catch (IOException e1) {
-              e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+              e1.printStackTrace();
             }
         }
       };
@@ -2633,10 +2635,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  private String version = null;
-
   private String getVersion() {
 
+    String version;
     try {
       InputStream is = thredds.util.Resource.getFileResource("/README");
       if (is == null) return "N/A";

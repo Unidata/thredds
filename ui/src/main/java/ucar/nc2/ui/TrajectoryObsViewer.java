@@ -1,6 +1,5 @@
-// $Id: TrajectoryObsViewer.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,7 +26,6 @@ import ucar.nc2.ui.point.TrajectoryRegionDateChooser;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import thredds.ui.*;
-import thredds.datatype.DateRange;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
@@ -44,22 +42,15 @@ import javax.swing.event.*;
  * The obs are shown in a StructureTabel.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class TrajectoryObsViewer extends JPanel {
   private PreferencesExt prefs;
 
-  private TrajectoryObsDataset tds;
-  private TrajectoryObsDatatype tdt;
-
-  private ArrayList trajBeans;
-
   private TrajectoryRegionDateChooser chooser;
   private BeanTableSorted trajTable;
   private StructureTable obsTable;
   private JSplitPane splitV, splitH;
-  private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
 
   private boolean debugStationRegionSelect = false, debugStationDatsets = false;
@@ -97,7 +88,7 @@ public class TrajectoryObsViewer extends JPanel {
       }
     });
     // the info window
-    infoTA = new TextHistoryPane();
+    TextHistoryPane infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Station Information", BAMutil.getImage( "netcdfUI"), infoTA);
     infoWindow.setBounds( (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle( 300, 300, 500, 300)));
 
@@ -110,7 +101,6 @@ public class TrajectoryObsViewer extends JPanel {
   }
 
   public void setDataset(TrajectoryObsDataset trajDataset) {
-    this.tds = trajDataset;
     if (debugStationDatsets)
       System.out.println("StationObsViewer open type "+trajDataset.getClass().getName());
     /* Date startDate = tds.getStartDate();
@@ -118,21 +108,21 @@ public class TrajectoryObsViewer extends JPanel {
     if ((startDate != null) && (endDate != null))
       chooser.setDateRange( new DateRange( startDate, endDate)); */
 
-    List trajList = tds.getTrajectories();
-    trajBeans = new ArrayList();
+    List trajList = trajDataset.getTrajectories();
+    List<TrajBean> trajBeans = new ArrayList<TrajBean>();
     for (int i = 0; i < trajList.size(); i++) {
       TrajectoryObsDatatype traj = (TrajectoryObsDatatype) trajList.get(i);
       trajBeans.add( new TrajBean( traj));
     }
     
-    trajTable.setBeans( trajBeans);
+    trajTable.setBeans(trajBeans);
   }
 
   public void setTrajectory(TrajBean sb) {
-    this.tdt = sb.traj;
+    TrajectoryObsDatatype tdt = sb.traj;
     try {
-      obsTable.setTrajectory( tdt);
-      chooser.setTrajectory( tdt);
+      obsTable.setTrajectory(tdt);
+      chooser.setTrajectory(tdt);
     } catch (IOException e) {
       e.printStackTrace();
       return;

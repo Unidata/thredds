@@ -1,6 +1,5 @@
-// $Id: DatasetTreeView.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -40,7 +39,6 @@ import javax.swing.tree.*;
  *
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class DatasetTreeView extends JPanel {
@@ -146,7 +144,7 @@ public class DatasetTreeView extends JPanel {
     if (v == null) return;
 
     // construct chain of variables
-    ArrayList vchain = new ArrayList();
+    List<VariableIF> vchain = new ArrayList<VariableIF>();
     vchain.add( v);
 
     VariableIF vp = v;
@@ -156,7 +154,7 @@ public class DatasetTreeView extends JPanel {
     }
 
     // construct chain of groups
-    ArrayList gchain = new ArrayList();
+    List<Group> gchain = new ArrayList<Group>();
     Group gp = vp.getParentGroup();
     if (gp == null)
       System.out.println("set an alarm");
@@ -166,7 +164,7 @@ public class DatasetTreeView extends JPanel {
       gchain.add( 0, gp); // reverse
     }
 
-    ArrayList pathList = new ArrayList();
+    List<Object> pathList = new ArrayList<Object>();
 
     // start at root, work down through the nested groups, if any
     GroupNode gnode = (GroupNode) model.getRoot();
@@ -316,7 +314,7 @@ public class DatasetTreeView extends JPanel {
   private class GroupNode implements javax.swing.tree.TreeNode {
     private Group group;
     private GroupNode parent;
-    private ArrayList children = null;
+    private List<Object> children = null;
 
     GroupNode( GroupNode parent, Group group) {
       this.parent = parent;
@@ -339,7 +337,7 @@ public class DatasetTreeView extends JPanel {
     }
 
     void makeChildren() {
-      children = new ArrayList();
+      children = new ArrayList<Object>();
       List groups = group.getGroups();
       for (int i=0; i<groups.size(); i++)
         children.add( new GroupNode( this, (Group) groups.get(i)));
@@ -399,7 +397,7 @@ public class DatasetTreeView extends JPanel {
   private class VariableNode implements javax.swing.tree.TreeNode {
     private VariableIF var;
     private TreeNode parent;
-    private ArrayList children = null;
+    private List<Object> children = null;
 
     VariableNode( TreeNode parent, VariableIF var) {
       this.parent = parent;
@@ -422,7 +420,7 @@ public class DatasetTreeView extends JPanel {
     }
 
     void makeChildren() {
-      children = new ArrayList();
+      children = new ArrayList<Object>();
 
       if (var instanceof Structure) {
         Structure s = (Structure) var;
@@ -460,7 +458,6 @@ public class DatasetTreeView extends JPanel {
   private class DimensionNode implements javax.swing.tree.TreeNode {
     private Dimension d;
     private TreeNode parent;
-    private ArrayList children = null;
 
     DimensionNode( TreeNode parent, Dimension d) {
       this.parent = parent;

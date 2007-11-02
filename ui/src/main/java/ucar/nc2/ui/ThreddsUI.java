@@ -1,6 +1,5 @@
-// $Id: ThreddsUI.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -39,19 +38,14 @@ import javax.swing.filechooser.FileFilter;
  * Throws PropertyChangeEvent when a dataset is selected, see addPropertyChangeListener.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 public class ThreddsUI extends JPanel {
     // store keys
-  static private final String DATASET_LIST = "DatasetList";
   static private final String VIEWER_SIZE = "ViewerSize";
   static private final String SOURCE_WINDOW_SIZE = "SourceWindowSize";
   static private final String XML_WINDOW_SIZE = "XmlWindowSize";
 
   // tabs
-  static private final String TAB_CHOOSER = "ChooserTab";
-  static private final String TAB_GRID = "GridTab";
-  static private final String TAB_IMAGE = "ImageTab";
 
   private PreferencesExt store;
   private Component parent;
@@ -65,7 +59,7 @@ public class ThreddsUI extends JPanel {
   // UI components that need global scope
   private TextGetPutPane sourcePane;
   private JTabbedPane tabbedPane;
-  private JMenu debugMenu;
+  //private JMenu debugMenu;
 
   private TextHistoryPane xmlPane;
   private IndependentDialog xmlWindow = null;
@@ -75,23 +69,19 @@ public class ThreddsUI extends JPanel {
   FileManager fileChooser = null; // shared with component viewers
 
   //private JDialog datasetChooserDialog;
-  private IndependentDialog datasetURLDialog = null;
-
-  // actions
-  private AbstractAction aboutAction, printAction, sysConfigAction, debugAction, exitAction;
-  private AbstractAction /* chooseLocalDatasetAction, chooseThreddsDatasetAction, */ datasetURLAction, saveDatasetAction;
-  private AbstractAction clearDebugFlagsAction, setDebugFlagsAction; // clearRecentAction;
+  //private IndependentDialog datasetURLDialog = null;
 
   // misc other stuff;
   private int defaultWidth = 700;
   private int defaultHeight = 350;
 
   // debugging
-  private boolean debugBeans = false, debugChooser = false, debugPrint = false, debugHelp = false;
+  //private boolean debugBeans = false, debugChooser = false, debugPrint = false, debugHelp = false;
   private boolean debugSelection = false;
 
   public ThreddsUI(JFrame parent, PreferencesExt store) {
     this.store = store;
+    this.parent = parent;
     //parent = topLevel.getRootPaneContainer().getRootPane();
 
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
@@ -181,7 +171,7 @@ public class ThreddsUI extends JPanel {
               thredds.util.IO.readURLcontents(urlString);
               xmlPane.setText( thredds.util.IO.readURLcontents(urlString));
               xmlPane.gotoTop();
-              xmlWindow.show();
+              xmlWindow.setVisible(true);
               return;
             }
           }
@@ -447,27 +437,27 @@ public class ThreddsUI extends JPanel {
     BAMutil.setActionProperties( clearRecentAction, null, "Clear Recent Datasets", false, 'R', -1);
     */
 
-    clearDebugFlagsAction = new AbstractAction() {
+    AbstractAction clearDebugFlagsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) { /* Debug.clear(); */ }
     };
-    BAMutil.setActionProperties( clearDebugFlagsAction, null, "Clear Debug Flags", false, 'D', -1);
+    BAMutil.setActionProperties(clearDebugFlagsAction, null, "Clear Debug Flags", false, 'D', -1);
 
-    setDebugFlagsAction = new AbstractAction() {
+    AbstractAction setDebugFlagsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         // LOOK set netcdf debug flags
-        
-        thredds.catalog.InvCatalogFactory.debugURL =  Debug.isSet("InvCatalogFactory/debugURL");
-        thredds.catalog.InvCatalogFactory.debugOpen =  Debug.isSet("InvCatalogFactory/debugOpen");
-        thredds.catalog.InvCatalogFactory.debugVersion =  Debug.isSet("InvCatalogFactory/debugVersion");
-        thredds.catalog.InvCatalogFactory.showParsedXML =  Debug.isSet("InvCatalogFactory/showParsedXML");
-        thredds.catalog.InvCatalogFactory.showStackTrace =  Debug.isSet("InvCatalogFactory/showStackTrace");
-        thredds.catalog.InvCatalogFactory.debugXML =  Debug.isSet("InvCatalogFactory/debugXML");
-        thredds.catalog.InvCatalogFactory.debugDBurl =  Debug.isSet("InvCatalogFactory/debugDBurl");
-        thredds.catalog.InvCatalogFactory.debugXMLopen =  Debug.isSet("InvCatalogFactory/debugXMLopen");
-        thredds.catalog.InvCatalogFactory.showCatalogXML =  Debug.isSet("InvCatalogFactory/showCatalogXML");
+
+        InvCatalogFactory.debugURL = Debug.isSet("InvCatalogFactory/debugURL");
+        InvCatalogFactory.debugOpen = Debug.isSet("InvCatalogFactory/debugOpen");
+        InvCatalogFactory.debugVersion = Debug.isSet("InvCatalogFactory/debugVersion");
+        InvCatalogFactory.showParsedXML = Debug.isSet("InvCatalogFactory/showParsedXML");
+        InvCatalogFactory.showStackTrace = Debug.isSet("InvCatalogFactory/showStackTrace");
+        InvCatalogFactory.debugXML = Debug.isSet("InvCatalogFactory/debugXML");
+        InvCatalogFactory.debugDBurl = Debug.isSet("InvCatalogFactory/debugDBurl");
+        InvCatalogFactory.debugXMLopen = Debug.isSet("InvCatalogFactory/debugXMLopen");
+        InvCatalogFactory.showCatalogXML = Debug.isSet("InvCatalogFactory/showCatalogXML");
       }
     };
-    BAMutil.setActionProperties( setDebugFlagsAction, null, "Set Debug Flags", false, 'S', -1);
+    BAMutil.setActionProperties(setDebugFlagsAction, null, "Set Debug Flags", false, 'S', -1);
 
     /* exitAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {

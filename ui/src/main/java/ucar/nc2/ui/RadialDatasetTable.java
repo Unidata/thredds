@@ -1,6 +1,5 @@
-// $Id: RadialDatasetTable.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -32,6 +31,7 @@ import thredds.ui.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -41,7 +41,6 @@ import javax.swing.event.ListSelectionEvent;
  * A Swing widget to examine a RadialDataset.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class RadialDatasetTable extends JPanel {
@@ -113,8 +112,8 @@ public class RadialDatasetTable extends JPanel {
 
   public RadialDatasetSweep getRadialDataset() { return radialDataset; }
 
-  public ArrayList getVariableBeans(RadialDatasetSweep rds) {
-    ArrayList vlist = new ArrayList();
+  public List<VariableBean> getVariableBeans(RadialDatasetSweep rds) {
+    List<VariableBean> vlist = new ArrayList<VariableBean>();
     java.util.List list = rds.getDataVariables();
     for (int i=0; i<list.size(); i++) {
       RadialDatasetSweep.RadialVariable v = (RadialDatasetSweep.RadialVariable) list.get(i);
@@ -124,7 +123,7 @@ public class RadialDatasetTable extends JPanel {
   }
 
   public void setVariable(VariableBean vb) {
-    ArrayList sweeps = new ArrayList();
+    List<SweepBean> sweeps = new ArrayList<SweepBean>();
     int n = vb.v.getNumSweeps();
     for (int i=0; i<n; i++) {
       RadialDatasetSweep.Sweep sweep = vb.v.getSweep(i);
@@ -140,7 +139,7 @@ public class RadialDatasetTable extends JPanel {
 
     private String name, desc, units, dataType;
     String dims, r, elev, azi, t;
-    private boolean isCoordVar, isRadial, axis;
+    //private boolean isCoordVar, isRadial, axis;
 
     // no-arg constructor
     public VariableBean() {}

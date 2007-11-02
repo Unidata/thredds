@@ -1,6 +1,5 @@
-// $Id:DapperDataset.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -40,13 +39,10 @@ import ucar.ma2.StructureData;
 import java.util.*;
 import java.io.IOException;
 
-import thredds.catalog.DataType;
-
 /**
  * Handles datasets using Dapper doubley nested sequences.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFactoryIF {
   static private final String ID = "_id";
@@ -229,7 +225,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(outerSequence, CE);
     extractMembers(as);
     int n = (int) as.getSize();
-    ArrayList dataList = new ArrayList(n);
+    List<SeqPointObs> dataList = new ArrayList<SeqPointObs>(n);
     for (int i=0; i<n; i++)
       dataList.add( new SeqPointObs( i, as.getStructureData(i)));
     return dataList;

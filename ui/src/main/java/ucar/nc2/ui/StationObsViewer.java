@@ -1,6 +1,5 @@
-// $Id: PointObsViewer.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -47,7 +46,6 @@ import javax.swing.event.*;
  * The obs are shown in a StructureTabel.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class StationObsViewer extends JPanel {
@@ -59,7 +57,6 @@ public class StationObsViewer extends JPanel {
   private BeanTableSorted stnTable;
   private StructureTable obsTable;
   private JSplitPane splitH = null, splitV = null;
-  private TextHistoryPane infoTA;
   private IndependentDialog infoWindow;
 
   private boolean eventsOK = true;
@@ -162,7 +159,7 @@ public class StationObsViewer extends JPanel {
     obsTable = new StructureTable( (PreferencesExt) prefs.node("ObsBean"));
 
     // the info window
-    infoTA = new TextHistoryPane();
+    TextHistoryPane infoTA = new TextHistoryPane();
     infoWindow = new IndependentDialog(null, true, "Station Information", infoTA);
     infoWindow.setBounds( (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle( 300, 300, 500, 300)));
 
@@ -187,14 +184,13 @@ public class StationObsViewer extends JPanel {
     if ((startDate != null) && (endDate != null))
       chooser.setDateRange( new DateRange( startDate, endDate));
 
-    ArrayList stationBeans = new ArrayList();
+    List<StationBean> stationBeans = new ArrayList<StationBean>();
       try {
         List stations = sds.getStations();
         if (stations == null) return;
 
-        for (int i = 0; i < stations.size(); i++) {
+        for (int i = 0; i < stations.size(); i++)
           stationBeans.add( new StationBean( (StationImpl) stations.get(i)));
-        }
 
       } catch (IOException ioe) {
         ioe.printStackTrace();

@@ -21,6 +21,10 @@ public class TestH5read extends TestCase {
     super(name);
   }
 
+ public void testH5data() {
+     readAllDir ("C:/data/testdata");
+ }
+
   public void testSamples() {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/support");
@@ -55,8 +59,8 @@ public class TestH5read extends TestCase {
   }
 
   public void problem() {
-    // H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    readAllData( TestAll.upcShareTestDataDir + "hdf5/IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5");
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    readAllData( "C:/data/testdata/compound/enumcmpnd.h5");
   }
 
   public static void readAllDir(String dirName) {
@@ -86,15 +90,15 @@ public class TestH5read extends TestCase {
     System.out.println("\n------Reading filename "+filename);
     try {
       NetcdfFile ncfile = TestH5.open(filename);
-      System.out.println("\n"+ncfile);
+      //System.out.println("\n"+ncfile);
 
       for (Variable v : ncfile.getVariables()) {
         if (v.getSize() > max_size) {
           Section s = makeSubset(v);
-          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
+          //System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
           v.read(s);
         } else {
-          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
+          //System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
           v.read();
         }
       }

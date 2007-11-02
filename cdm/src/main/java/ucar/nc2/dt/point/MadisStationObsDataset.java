@@ -1,6 +1,5 @@
-// $Id: MadisStationObsDataset.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,7 +21,6 @@
 package ucar.nc2.dt.point;
 
 import ucar.ma2.*;
-import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
@@ -30,8 +28,6 @@ import ucar.nc2.dt.*;
 
 import java.io.*;
 import java.util.*;
-
-import thredds.catalog.*;
 
 /**
  * This reads MADIS station data formatted files. It might actually be ok for any AWIPS station file ??
@@ -46,7 +42,6 @@ import thredds.catalog.*;
  * </ol>
  *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 
 public class MadisStationObsDataset extends StationObsDatasetImpl  implements TypedDatasetFactoryIF {
@@ -176,7 +171,7 @@ public class MadisStationObsDataset extends StationObsDatasetImpl  implements Ty
         }
         stn.addLinkedList( lastValue, inventory);
         continue;
-      }
+      } 
 
       MadisStationImpl station = new MadisStationImpl(stationId, stationDesc, lat, lon, alt, lastValue, inventory);
       recordHelper.stnHash.put(stationId, station);

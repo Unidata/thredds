@@ -1,6 +1,5 @@
-// $Id: DateField.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,7 +32,6 @@ import javax.swing.text.*;
  * Input field for thredds.datatype.DateType, part of ucar.util.prefs.ui.
  *
  * @author John Caron
- * @version $Id: DateField.java 50 2006-07-12 16:30:06Z caron $
  * @see ucar.util.prefs.ui.Field
  */
 
@@ -76,10 +74,10 @@ public class DateField extends ucar.util.prefs.ui.Field {
    */
   protected boolean _validate(StringBuffer buff) {
     try {
-      DateType tryit = new DateType(tf.getText(), null, null);
+      new DateType(tf.getText(), null, null);
       return true;
     } catch (java.text.ParseException e) {
-      if (null != buff) buff.append(name + ": " + e.getMessage());
+      if (null != buff) buff.append(name).append(": ").append(e.getMessage());
       return false;
     }
   }
@@ -87,8 +85,7 @@ public class DateField extends ucar.util.prefs.ui.Field {
   // get current value from editComponent
   protected Object getEditValue() {
     try {
-      DateType tryit = new DateType(tf.getText(), null, null);
-      return tryit;
+      return new DateType(tf.getText(), null, null);
     } catch (java.text.ParseException e) {
       return null;
     }

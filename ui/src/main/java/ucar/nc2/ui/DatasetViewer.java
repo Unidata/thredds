@@ -1,6 +1,5 @@
-// $Id: DatasetViewer.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,9 +22,6 @@ package ucar.nc2.ui;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.VariableEnhanced;
-// import ucar.nc2.dataset.*;
-import ucar.unidata.util.Format;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
@@ -36,13 +32,11 @@ import java.awt.Rectangle;
 import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
-import java.io.*;
 import java.util.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
-import java.beans.*;
 
 /**
  * A Swing widget to view the content of a netcdf dataset.
@@ -52,14 +46,13 @@ import java.beans.*;
  *
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class DatasetViewer extends JPanel {
   private PreferencesExt prefs;
   private NetcdfFile ds;
 
-  private ArrayList nestedTableList = new ArrayList();
+  private List<NestedTable> nestedTableList = new ArrayList<NestedTable>();
 
   private JPanel tablePanel;
   private JSplitPane mainSplit;
@@ -128,7 +121,7 @@ public class DatasetViewer extends JPanel {
   private void setSelected( Variable v ) {
     eventsOK = false;
 
-    ArrayList vchain = new ArrayList();
+    List<Variable> vchain = new ArrayList<Variable>();
     vchain.add( v);
 
     Variable vp = v;
@@ -461,8 +454,8 @@ public class DatasetViewer extends JPanel {
     prefs.putInt("mainSplit", mainSplit.getDividerLocation());
   }
 
-  public ArrayList getVariableBeans(NetcdfFile ds) {
-    ArrayList vlist = new ArrayList();
+  public List<VariableBean> getVariableBeans(NetcdfFile ds) {
+    List<VariableBean> vlist = new ArrayList<VariableBean>();
     java.util.List list = ds.getVariables();
     for (int i=0; i<list.size(); i++) {
       Variable elem = (Variable) list.get(i);
@@ -471,8 +464,8 @@ public class DatasetViewer extends JPanel {
     return vlist;
   }
 
-  public ArrayList getStructureVariables(Structure s) {
-    ArrayList vlist = new ArrayList();
+  public List<VariableBean> getStructureVariables(Structure s) {
+    List<VariableBean> vlist = new ArrayList<VariableBean>();
     java.util.List list = s.getVariables();
     for (int i=0; i<list.size(); i++) {
       Variable elem = (Variable) list.get(i);
@@ -556,14 +549,10 @@ public class DatasetViewer extends JPanel {
     public String getUnits() { return units; }
     public void setUnits(String units) { this.units = units; }
 
-    /** Get dataType */
     public String getDataType() { return dataType; }
-    /** Set dataType */
     public void setDataType( String dataType) { this.dataType = dataType; }
 
-    /** Get shape */
     public String getShape() { return shape; }
-    /** Set shape */
     public void setShape( String shape) { this.shape = shape; }
 
     /** Get hasMissing */

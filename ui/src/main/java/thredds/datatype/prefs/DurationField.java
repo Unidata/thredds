@@ -1,6 +1,5 @@
-// $Id: DurationField.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,7 +32,6 @@ import javax.swing.text.*;
  * Input field for thredds.datatype.TimeDuration, part of ucar.util.prefs.ui.
  *
  * @author John Caron
- * @version $Id: DurationField.java 50 2006-07-12 16:30:06Z caron $
  * @see ucar.util.prefs.ui.Field
  */
 
@@ -74,10 +72,10 @@ public class DurationField extends ucar.util.prefs.ui.Field {
     if (editValue.length() == 0) return true; // empty ok
 
     try {
-      TimeDuration tryit = new TimeDuration( tf.getText());
+      new TimeDuration( tf.getText());
       return true;
     } catch (java.text.ParseException e) {
-      buff.append( label+": "+e.getMessage());
+      buff.append(label).append(": ").append(e.getMessage());
       return false;
     }
   }
@@ -88,8 +86,7 @@ public class DurationField extends ucar.util.prefs.ui.Field {
     if (editValue.length() == 0) return null; // empty ok
 
     try {
-      TimeDuration tryit = new TimeDuration( editValue);
-      return tryit;
+      return new TimeDuration( editValue);
     } catch (java.text.ParseException e) {
       return null;
     }

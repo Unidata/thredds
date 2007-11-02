@@ -1,6 +1,5 @@
-// $Id: StationRenderer.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,7 +23,6 @@ package ucar.nc2.ui.point;
  * Renders collections of stations. package private.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 import thredds.ui.FontUtil;
@@ -36,10 +34,11 @@ import ucar.nc2.dt.Station;
 import java.awt.*;
 import java.awt.geom.*;
 import java.util.*;
+import java.util.List;
 
 class StationRenderer implements thredds.viewer.ui.Renderer {
-  private ArrayList stations = new ArrayList(); // StationUI objects
-  private HashMap stationHash = new HashMap();
+  private List<StationUI> stations = new ArrayList<StationUI>(); // StationUI objects
+  private HashMap<String, StationUI> stationHash = new HashMap<String, StationUI>();
   private SpatialGrid stationGrid;              // for "decluttering" and closest point
   private ProjectionImpl project = null;        // display projection
   private AffineTransform world2Normal;
@@ -83,8 +82,8 @@ class StationRenderer implements thredds.viewer.ui.Renderer {
    * Set the list of stations.
    * @param stns: list of DDStation objects
    */
-  public void setStations(java.util.List stns) {
-    stations = new ArrayList( stns.size());
+  public void setStations(java.util.List<Station> stns) {
+    stations = new ArrayList<StationUI>( stns.size());
     stationHash.clear();
     for (int i = 0; i < stns.size(); i++) {
       Station s = (Station) stns.get(i);
@@ -169,7 +168,8 @@ class StationRenderer implements thredds.viewer.ui.Renderer {
   }
 
   /**
-   * Get the selected station, or null.
+   * Get the selected station.
+   * @return the selected station, or null if none selected
    */
   public Station getSelectedStation() {
     return (selected != null) ? selected.ddStation : null;
@@ -287,7 +287,7 @@ class StationRenderer implements thredds.viewer.ui.Renderer {
     }
 
     void draw(Graphics2D g) {
-      g.setColor( selected == true ? Color.red : Color.black);
+      g.setColor( selected ? Color.red : Color.black);
       drawCircle(g, screenPos);
       drawText(g, screenPos, id);
     }

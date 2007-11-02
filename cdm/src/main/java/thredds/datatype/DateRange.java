@@ -1,6 +1,5 @@
-// $Id:DateRange.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -30,7 +29,6 @@ import java.text.ParseException;
  *   "last 3 days" uses endDate = "present" and duration = "3 days".
  *
  * @author john caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 
 public class DateRange {
@@ -268,7 +266,12 @@ public class DateRange {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof DateRange)) return false;
-    return o.hashCode() == this.hashCode();
+    DateRange oo = (DateRange) o;
+    if (useStart && !start.equals(oo.start)) return false;
+    if (useEnd && !end.equals(oo.end)) return false;
+    if (useDuration && !duration.equals(oo.duration)) return false;
+    if (useResolution && !resolution.equals(oo.resolution)) return false;
+    return true;
   }
 
  /** Override Object.hashCode() to implement equals. */

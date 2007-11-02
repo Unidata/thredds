@@ -187,7 +187,26 @@ public class Group {
     return null;
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////
+  /**
+   * Find an Enumeration Typedef using its (short) name. If it doesnt exist in this group,
+   * recursively look in parent groups.
+   *
+   * @param name Enumeration name.
+   * @return the Enumeration, or null if not found
+   */
+  public Enumeration findEnumeration(String name) {
+    for (Enumeration d : enums) {
+      if (name.equals(d.getName()))
+        return d;
+    }
+
+    if (parent != null)
+      return parent.findEnumeration(name);
+
+    return null;
+  }
+
+    //////////////////////////////////////////////////////////////////////////////////////
 
   /** Get String with name and attributes. Used in short descriptions like tooltips.
    * @return name and attributes String.

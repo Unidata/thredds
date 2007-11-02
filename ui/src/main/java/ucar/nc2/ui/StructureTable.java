@@ -45,32 +45,32 @@ public class StructureTable extends JPanel {
     this.mainPrefs = prefs;
 
     jtable = new JTable();
-    setLayout( new BorderLayout());
+    setLayout(new BorderLayout());
     jtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-    ToolTipManager.sharedInstance().registerComponent( jtable);
+    ToolTipManager.sharedInstance().registerComponent(jtable);
 
     // reset popup
     popup = null;
     addActionToPopupMenu("Show", new AbstractAction() {
-      public void actionPerformed( java.awt.event.ActionEvent e) {
+      public void actionPerformed(java.awt.event.ActionEvent e) {
         showData();
       }
     });
 
     addActionToPopupMenu("Export", new AbstractAction() {
-      public void actionPerformed( java.awt.event.ActionEvent e) {
+      public void actionPerformed(java.awt.event.ActionEvent e) {
         export();
       }
     });
 
     //JScrollPane sp =  new JScrollPane(jtable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-    add( new JScrollPane(jtable), BorderLayout.CENTER);
+    add(new JScrollPane(jtable), BorderLayout.CENTER);
 
     // other widgets
-    dumpTA = new TextHistoryPane( false);
+    dumpTA = new TextHistoryPane(false);
     dumpWindow = new IndependentDialog(null, true, "Show Data", dumpTA);
-    dumpWindow.setBounds( (Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle( 300, 300, 300, 200)));
+    dumpWindow.setBounds((Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle(300, 300, 300, 200)));
 
     PreferencesExt fcPrefs = (PreferencesExt) prefs.node("FileManager");
     fileChooser = new FileManager(null, null, "csv", "comma seperated values", fcPrefs);
@@ -78,11 +78,18 @@ public class StructureTable extends JPanel {
 
   private EventListenerList listeners = new EventListenerList();
 
-    /** Add listener: ListSelectionEvent sent when a new row is selected */
+  /**
+   * Add listener: ListSelectionEvent sent when a new row is selected
+   * @param l the listener
+   */
   public void addListSelectionListener(ListSelectionListener l) {
     listeners.add(javax.swing.event.ListSelectionListener.class, l);
   }
-  /** Remove listener */
+
+  /**
+   * Remove listener
+   * @param l the listener
+   */
   public void removeListSelectionListener(ListSelectionListener l) {
     listeners.remove(javax.swing.event.ListSelectionListener.class, l);
   }
@@ -90,13 +97,13 @@ public class StructureTable extends JPanel {
   private void fireEvent(javax.swing.event.ListSelectionEvent event) {
     Object[] llist = listeners.getListenerList();
     // Process the listeners last to first
-    for (int i = llist.length-2; i>=0; i-=2)
-      ((javax.swing.event.ListSelectionListener)llist[i+1]).valueChanged(event);
+    for (int i = llist.length - 2; i >= 0; i -= 2)
+      ((javax.swing.event.ListSelectionListener) llist[i + 1]).valueChanged(event);
   }
 
-  public void addActionToPopupMenu( String title, AbstractAction act) {
+  public void addActionToPopupMenu(String title, AbstractAction act) {
     if (popup == null) popup = new PopupMenu(jtable, "Options");
-    popup.addAction( title, act);
+    popup.addAction(title, act);
   }
 
   // clear the table
@@ -108,61 +115,63 @@ public class StructureTable extends JPanel {
   // save state
   public void saveState() {
     fileChooser.save();
-    mainPrefs.getBean("DumpWindowBounds",  dumpWindow.getBounds());
+    mainPrefs.getBean("DumpWindowBounds", dumpWindow.getBounds());
   }
 
-  /** This is used when we have a Structure */
-  public void setStructure( Structure s) throws IOException {
+  public void setStructure(Structure s) throws IOException {
     //cache = new HashMap();
     dataModel = new StructureModel(s);
-    initTable( dataModel);
+    initTable(dataModel);
   }
 
   /**
    * Set the data as a collection of StructureData.
+   *
    * @param structureData List of type StructureData
-   * @throws IOException
+   * @throws IOException on io error
    */
-  public void setStructureData( List structureData) throws IOException {
-    dataModel = new StructureDataModel( structureData);
-    initTable( dataModel);
+  public void setStructureData(List structureData) throws IOException {
+    dataModel = new StructureDataModel(structureData);
+    initTable(dataModel);
   }
 
-   /**
+  /**
    * This is used for a trajectory.
+   *
    * @param traj treajectory
-   * @throws IOException
+   * @throws IOException on io error
    */
-  public void setTrajectory( TrajectoryObsDatatype traj) throws IOException {
-    dataModel = new TrajectoryModel( traj);
-    initTable( dataModel);
+  public void setTrajectory(TrajectoryObsDatatype traj) throws IOException {
+    dataModel = new TrajectoryModel(traj);
+    initTable(dataModel);
   }
 
   /**
    * Set the data as a collection of PointObsDatatype.
+   *
    * @param obsData List of type PointObsDatatype
-   * @throws IOException
+   * @throws IOException  on io error
    */
-  public void setPointObsData( List obsData) throws IOException {
-    dataModel = new PointObsDataModel( obsData);
-    initTable( dataModel);
+  public void setPointObsData(List<PointObsDatatype> obsData) throws IOException {
+    dataModel = new PointObsDataModel(obsData);
+    initTable(dataModel);
     jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
   }
 
-  private void initTable2( StructureTableModel m) {
+  /* private void initTable2(StructureTableModel m) {
     jtable.setModel(m);
-  }
+  } */
 
-  private void initTable( StructureTableModel m) {
+  private void initTable(StructureTableModel m) {
     jtable = new MyJTable(m);
 
     ListSelectionModel rowSM = jtable.getSelectionModel();
     rowSM.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting()) return;  //Ignore extra messages.
-        ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
         if (!lsm.isSelectionEmpty())
-          fireEvent( e);
+          fireEvent(e);
       }
     });
 
@@ -174,20 +183,20 @@ public class StructureTable extends JPanel {
     // reset popup
     popup = null;
     addActionToPopupMenu("Show", new AbstractAction() {
-      public void actionPerformed( java.awt.event.ActionEvent e) {
+      public void actionPerformed(java.awt.event.ActionEvent e) {
         showData();
       }
     });
 
     addActionToPopupMenu("Export", new AbstractAction() {
-      public void actionPerformed( java.awt.event.ActionEvent e) {
+      public void actionPerformed(java.awt.event.ActionEvent e) {
         export();
       }
     });
 
     //JScrollPane sp =  new JScrollPane(jtable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     removeAll();
-    add( new JScrollPane(jtable), BorderLayout.CENTER);
+    add(new JScrollPane(jtable), BorderLayout.CENTER);
 
     revalidate();
 
@@ -201,26 +210,32 @@ public class StructureTable extends JPanel {
     String filename = fileChooser.chooseFilename();
     if (filename == null) return;
     try {
-      PrintStream ps = new PrintStream( new FileOutputStream( new File(filename)));
+      PrintStream ps = new PrintStream(new FileOutputStream(new File(filename)));
 
       TableModel model = jtable.getModel();
-      for (int col=0; col<model.getColumnCount(); col++) {
+      for (int col = 0; col < model.getColumnCount(); col++) {
         if (col > 0) ps.print(",");
         ps.print(model.getColumnName(col));
       }
       ps.println();
 
-      for (int row=0; row<model.getRowCount(); row++) {
-        for (int col=0; col<model.getColumnCount(); col++) {
+      for (int row = 0; row < model.getRowCount(); row++) {
+        for (int col = 0; col < model.getColumnCount(); col++) {
           if (col > 0) ps.print(",");
           ps.print(model.getValueAt(row, col).toString());
         }
         ps.println();
       }
       ps.close();
-      try { JOptionPane.showMessageDialog(this, "File successfully written"); } catch (HeadlessException e) { }
+      try {
+        JOptionPane.showMessageDialog(this, "File successfully written");
+      } catch (HeadlessException e) {
+      }
     } catch (IOException ioe) {
-      try { JOptionPane.showMessageDialog(this, "ERROR: "+ioe.getMessage()); } catch (HeadlessException e) { }
+      try {
+        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+      } catch (HeadlessException e) {
+      }
       ioe.printStackTrace();
     }
 
@@ -231,9 +246,9 @@ public class StructureTable extends JPanel {
     if (sd == null) return;
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-    NCdump.printStructureData(new PrintStream( bos), sd);
-    dumpTA.setText( bos.toString());
-    dumpWindow.show();
+    NCdump.printStructureData(new PrintStream(bos), sd);
+    dumpTA.setText(bos.toString());
+    dumpWindow.setVisible(true);
   }
 
   private StructureData getSelectedStructureData() {
@@ -243,9 +258,9 @@ public class StructureTable extends JPanel {
     try {
       return dataModel.getStructureData(modelIdx);
     } catch (InvalidRangeException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     }
     return null;
   }
@@ -257,9 +272,9 @@ public class StructureTable extends JPanel {
     try {
       return dataModel.getRow(modelIdx);
     } catch (InvalidRangeException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     }
     return null;
   }
@@ -280,7 +295,7 @@ public class StructureTable extends JPanel {
     abstract public Date getDate(int row);
 
     public Object getRow(int row) throws InvalidRangeException, IOException {
-      return getStructureData( row);
+      return getStructureData(row);
     }
 
     public int getColumnCount() {
@@ -291,7 +306,7 @@ public class StructureTable extends JPanel {
     public String getColumnName(int columnIndex) {
       if (wantDate && (columnIndex == 0))
         return "date";
-      int memberCol = wantDate ? columnIndex-1 : columnIndex;
+      int memberCol = wantDate ? columnIndex - 1 : columnIndex;
       return members.getMember(memberCol).getName();
     }
 
@@ -299,18 +314,18 @@ public class StructureTable extends JPanel {
     public String getColumnDesc(int columnIndex) {
       if (wantDate && (columnIndex == 0))
         return "Date of observation";
-      int memberCol = wantDate ? columnIndex-1 : columnIndex;
+      int memberCol = wantDate ? columnIndex - 1 : columnIndex;
       StructureMembers.Member m = members.getMember(memberCol);
       return m.getUnitsString();
     }
 
-    /** get row data if in the cache, otherwise read it */
+     // get row data if in the cache, otherwise read it
     public StructureData getStructureDataHash(int row) throws InvalidRangeException, IOException {
-      Integer key =  new Integer(row);
-      StructureData sd = (StructureData) rowHash.get( key);
+      Integer key = new Integer(row);
+      StructureData sd = (StructureData) rowHash.get(key);
       if (sd == null) {
         sd = getStructureData(row);
-        rowHash.put( key, sd);
+        rowHash.put(key, sd);
       }
       return sd;
     }
@@ -318,17 +333,17 @@ public class StructureTable extends JPanel {
     public Object getValueAt(int row, int column) {
       if (wantDate && (column == 0))
         return getDate(row);
-      int memberCol = wantDate ? column-1 : column;
+      int memberCol = wantDate ? column - 1 : column;
 
       StructureData sd;
       try {
         sd = getStructureDataHash(row);
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        return "ERROR "+e.getMessage();
+        return "ERROR " + e.getMessage();
       } catch (IOException e) {
         e.printStackTrace();
-        return "ERROR "+e.getMessage();
+        return "ERROR " + e.getMessage();
       }
       return sd.getScalarObject(sd.getStructureMembers().getMember(memberCol));
     }
@@ -341,7 +356,7 @@ public class StructureTable extends JPanel {
     private Structure struct;
     private ArrayStructure seqData;
 
-    StructureModel( Structure s) {
+    StructureModel(Structure s) {
       this.struct = s;
       this.members = s.makeStructureMembers();
 
@@ -365,16 +380,18 @@ public class StructureTable extends JPanel {
 
         } catch (InvalidRangeException e) {
           e.printStackTrace();
-          throw new RuntimeException( e.getMessage()); // cant happen
+          throw new RuntimeException(e.getMessage()); // cant happen
 
         } catch (IOException ex) {
           ex.printStackTrace();
-          throw new RuntimeException( ex.getMessage());
+          throw new RuntimeException(ex.getMessage());
         }
       }
     }
 
-    public Date getDate(int row) { return null; }
+    public Date getDate(int row) {
+      return null;
+    }
 
     public int getRowCount() {
       if (struct == null) return 0;
@@ -383,18 +400,17 @@ public class StructureTable extends JPanel {
     }
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-       if (seqData != null) { // its a sequence
+      if (seqData != null) { // its a sequence
         return seqData.getStructureData(row);
       }
-      StructureData data = struct.readStructure(row);
-      return data;
+      return struct.readStructure(row);
     }
 
     public Object getValueAt(int row, int column) {
       if (seqData != null) { // its a sequence
         StructureData sd = seqData.getStructureData(row);
         return sd.getScalarObject(sd.getStructureMembers().getMember(column));
-     }
+      }
 
       return super.getValueAt(row, column);
     }
@@ -409,7 +425,7 @@ public class StructureTable extends JPanel {
   private class StructureDataModel extends StructureTableModel {
     private List structureData;
 
-    StructureDataModel( List structureData) {
+    StructureDataModel(List structureData) {
       this.structureData = structureData;
       if (structureData.size() > 0) {
         StructureData sd = (StructureData) structureData.get(0);
@@ -417,14 +433,16 @@ public class StructureTable extends JPanel {
       }
     }
 
-     public Date getDate(int row) { return null; }
+    public Date getDate(int row) {
+      return null;
+    }
 
     public int getRowCount() {
       return structureData.size();
     }
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      return (StructureData) structureData.get( row);
+      return (StructureData) structureData.get(row);
     }
 
     public void clear() {
@@ -437,15 +455,15 @@ public class StructureTable extends JPanel {
   private class TrajectoryModel extends StructureTableModel {
     private TrajectoryObsDatatype traj;
 
-    TrajectoryModel( TrajectoryObsDatatype traj) throws IOException {
+    TrajectoryModel(TrajectoryObsDatatype traj) throws IOException {
       this.traj = traj;
       StructureData sd = null;
       if (traj.getNumberPoints() > 0) {
         try {
-          sd = traj.getData( 0);
+          sd = traj.getData(0);
           this.members = sd.getStructureMembers();
         } catch (InvalidRangeException e) {
-          throw new IOException( e.getMessage());
+          throw new IOException(e.getMessage());
         }
       }
       wantDate = true;
@@ -453,7 +471,7 @@ public class StructureTable extends JPanel {
 
     public Date getDate(int row) {
       try {
-        return traj.getTime( row);
+        return traj.getTime(row);
       } catch (IOException e) {
         return null;
       }
@@ -464,11 +482,11 @@ public class StructureTable extends JPanel {
     }
 
     public Object getRow(int row) throws InvalidRangeException, IOException {
-      return traj.getPointObsData( row); // PointObsDatatype
+      return traj.getPointObsData(row); // PointObsDatatype
     }
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      return traj.getData( row);
+      return traj.getData(row);
     }
 
     public void clear() {
@@ -479,9 +497,9 @@ public class StructureTable extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////
   private class PointObsDataModel extends StructureTableModel {
-    private List obsData;
+    private List<PointObsDatatype> obsData;
 
-    PointObsDataModel( List obsData) throws IOException {
+    PointObsDataModel(List<PointObsDatatype> obsData) throws IOException {
       wantDate = true;
 
       this.obsData = obsData;
@@ -490,16 +508,15 @@ public class StructureTable extends JPanel {
         try {
           sd = getStructureData(0);
         } catch (InvalidRangeException e) {
-          throw new IOException( e.getMessage());
+          throw new IOException(e.getMessage());
         }
         this.members = sd.getStructureMembers();
       }
     }
 
     public Date getDate(int row) {
-      PointObsDatatype obs = (PointObsDatatype) obsData.get( row);
-      Date d = obs.getObservationTimeAsDate();
-      return d;
+      PointObsDatatype obs = (PointObsDatatype) obsData.get(row);
+      return obs.getObservationTimeAsDate();
     }
 
     public int getRowCount() {
@@ -507,16 +524,16 @@ public class StructureTable extends JPanel {
     }
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      PointObsDatatype obs = (PointObsDatatype) obsData.get( row);
+      PointObsDatatype obs = (PointObsDatatype) obsData.get(row);
       return obs.getData();
     }
 
-     public Object getRow(int row) throws InvalidRangeException, IOException {
-      return obsData.get( row); // PointObsDatatype
+    public Object getRow(int row) throws InvalidRangeException, IOException {
+      return obsData.get(row); // PointObsDatatype
     }
 
     public void clear() {
-      obsData = new ArrayList(); // empty list
+      obsData = new ArrayList<PointObsDatatype>(); // empty list
       fireTableDataChanged();
     }
   }
@@ -558,61 +575,62 @@ public class StructureTable extends JPanel {
     }
   } */
 
-
   /* private class SortedHeaderRenderer implements TableCellRenderer {
-    private int modelIdx;
-    private JPanel compPanel;
-    private JLabel headerLabel;
-    private boolean hasSortIndicator = false;
-    private boolean reverse = false;
+   private int modelIdx;
+   private JPanel compPanel;
+   private JLabel headerLabel;
+   private boolean hasSortIndicator = false;
+   private boolean reverse = false;
 
-    SortedHeaderRenderer(int modelIdx, String header, String tooltip) {
-      this.modelIdx = modelIdx;
+   SortedHeaderRenderer(int modelIdx, String header, String tooltip) {
+     this.modelIdx = modelIdx;
 
-      // java.beans.PropertyDescriptor pd = model.getProperty(modelIdx);
-      //headerLabel = new JLabel(pd.getDisplayName());
+     // java.beans.PropertyDescriptor pd = model.getProperty(modelIdx);
+     //headerLabel = new JLabel(pd.getDisplayName());
 
-      headerLabel = new JLabel(header);
-      compPanel = new JPanel(new BorderLayout());
-      compPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
-      compPanel.add( headerLabel, BorderLayout.CENTER);
+     headerLabel = new JLabel(header);
+     compPanel = new JPanel(new BorderLayout());
+     compPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
+     compPanel.add( headerLabel, BorderLayout.CENTER);
 
-      if (null != tooltip)
-        compPanel.setToolTipText(tooltip);
-      ToolTipManager.sharedInstance().registerComponent(compPanel);
-    }
+     if (null != tooltip)
+       compPanel.setToolTipText(tooltip);
+     ToolTipManager.sharedInstance().registerComponent(compPanel);
+   }
 
-    public Component getTableCellRendererComponent(JTable table, Object value,
-        boolean isSelected, boolean hasFocus, int row, int column) {
-      // System.out.println("getTableCellRendererComponent= "+headerLabel.getText());
-      return compPanel;
-    }
+   public Component getTableCellRendererComponent(JTable table, Object value,
+       boolean isSelected, boolean hasFocus, int row, int column) {
+     // System.out.println("getTableCellRendererComponent= "+headerLabel.getText());
+     return compPanel;
+   }
 
-    void setSortCol( int sortCol, boolean reverse) {
-      //System.out.println("setSortCol on "+modelCol+" "+sortCol+" "+reverse);
+   void setSortCol( int sortCol, boolean reverse) {
+     //System.out.println("setSortCol on "+modelCol+" "+sortCol+" "+reverse);
 
-      if (sortCol == modelIdx) {
+     if (sortCol == modelIdx) {
 
-        if (!hasSortIndicator)
-          compPanel.add(reverse? upLabel : downLabel, BorderLayout.EAST);
-        else if (reverse != this.reverse) {
-          compPanel.remove(1);
-          compPanel.add(reverse? upLabel : downLabel, BorderLayout.EAST);
-        }
+       if (!hasSortIndicator)
+         compPanel.add(reverse? upLabel : downLabel, BorderLayout.EAST);
+       else if (reverse != this.reverse) {
+         compPanel.remove(1);
+         compPanel.add(reverse? upLabel : downLabel, BorderLayout.EAST);
+       }
 
-        this.reverse = reverse;
-        hasSortIndicator = true;
+       this.reverse = reverse;
+       hasSortIndicator = true;
 
-        //System.out.println("setSortCol SET on "+modelCol+" "+sortCol+" "+reverse);
-      } else if (hasSortIndicator) {
-        compPanel.remove(1);
-        hasSortIndicator = false;
-        //System.out.println("setSortCol SET off "+modelCol+" "+sortCol+" "+reverse);
-      }
-    }
-  } */
+       //System.out.println("setSortCol SET on "+modelCol+" "+sortCol+" "+reverse);
+     } else if (hasSortIndicator) {
+       compPanel.remove(1);
+       hasSortIndicator = false;
+       //System.out.println("setSortCol SET off "+modelCol+" "+sortCol+" "+reverse);
+     }
+   }
+ } */
 
-  /** Renderer for Date type */
+  /**
+   * Renderer for Date type
+   */
   static class DateRenderer extends DefaultTableCellRenderer {
     private java.text.SimpleDateFormat newForm, oldForm;
     private Date cutoff;
@@ -643,19 +661,20 @@ public class StructureTable extends JPanel {
     }
   }
 
-        //Implement table header tool tips.
+  //Implement table header tool tips.
   static class MyJTable extends JTable {
-    MyJTable( TableModel m) {
+    MyJTable(TableModel m) {
       super(m);
     }
 
     protected JTableHeader createDefaultTableHeader() {
-      return new MyJTableHeader( columnModel, (StructureTableModel) getModel());
+      return new MyJTableHeader(columnModel, (StructureTableModel) getModel());
     }
 
     class MyJTableHeader extends javax.swing.table.JTableHeader {
       StructureTableModel tm;
-      MyJTableHeader( TableColumnModel tcm, StructureTableModel tm) {
+
+      MyJTableHeader(TableColumnModel tcm, StructureTableModel tm) {
         super(tcm);
         this.tm = tm;
       }

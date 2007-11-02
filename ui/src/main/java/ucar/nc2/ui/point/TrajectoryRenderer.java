@@ -1,6 +1,5 @@
-// $Id: TrajectoryRenderer.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,7 +22,6 @@ package ucar.nc2.ui.point;
 import thredds.ui.FontUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D;
@@ -39,31 +37,28 @@ import ucar.nc2.dt.EarthLocation;
 /**
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 public class TrajectoryRenderer implements thredds.viewer.ui.Renderer {
 
-  private ArrayList obsUIlist = new ArrayList(); // ObservationUI objects
+  private java.util.List<ObservationUI> obsUIlist = new ArrayList<ObservationUI>(); // ObservationUI objects
   private ProjectionImpl project = null;        // display projection
-  private AffineTransform world2Normal;
 
   // drawing parameters
   private Color color = Color.black;
   private Color selectedColor = Color.magenta;
   private int circleRadius = 3;
   private Rectangle2D circleBB = new Rectangle2D.Double(-circleRadius, -circleRadius, 2*circleRadius, 2*circleRadius);
-  private Rectangle2D typicalBB = circleBB;
   private FontUtil.StandardFont textFont;
 
   // working objects to minimize excessive gc
-  private Point2D.Double ptN = new Point2D.Double();
+ // private Point2D.Double ptN = new Point2D.Double();
 
   private ObservationUI selected = null;
 
   // misc state
   private boolean declutter = true;
   private boolean posWasCalc = false;
-  private boolean debug = false;
+  //private boolean debug = false;
 
     /** constructor */
   public TrajectoryRenderer () {
@@ -83,10 +78,11 @@ public class TrajectoryRenderer implements thredds.viewer.ui.Renderer {
   /**
    * Set the trajectory.
    * @param trajectory : obtain list of PointObsDatatype objects from here
+   * @throws java.io.IOException on read error
    */
   public void setTrajectory( TrajectoryObsDatatype trajectory) throws IOException {
     int n = trajectory.getNumberPoints();
-    obsUIlist = new ArrayList( n);
+    obsUIlist = new ArrayList<ObservationUI>( n);
     for (int i = 0; i < n; i++) {
       PointObsDatatype obs = trajectory.getPointObsData(i);
       ObservationUI sui = new ObservationUI( obs); // wrap in a StationUI
@@ -200,6 +196,7 @@ public class TrajectoryRenderer implements thredds.viewer.ui.Renderer {
     // transform World to Normal coords:
     //    world2Normal = pixelAT-1 * world2Device
     // cache for pick closest
+    AffineTransform world2Normal;
     try {
       world2Normal = normal2Device.createInverse();
       world2Normal.concatenate( world2Device);
@@ -239,7 +236,7 @@ public class TrajectoryRenderer implements thredds.viewer.ui.Renderer {
     GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, npts);
     for (int i=0; i < npts; i++) {
       ObservationUI s = (ObservationUI) obsUIlist.get(i);
-      s.calcPos( world2Normal);
+      s.calcPos(world2Normal);
       s.draw(g);
 
       if (Double.isNaN( s.screenPos.getX())) {
@@ -288,7 +285,6 @@ public class TrajectoryRenderer implements thredds.viewer.ui.Renderer {
       bb = new Rectangle2D.Double(-circleRadius, -circleRadius-t.getHeight(), t.getWidth(), t.getHeight());
       // add circle bb
       bb.add( circleBB);
-      typicalBB = bb;
     }
 
     public PointObsDatatype getObservation() { return obs; }
@@ -334,11 +330,11 @@ public class TrajectoryRenderer implements thredds.viewer.ui.Renderer {
       g.fillOval( x, y, 2*circleRadius, 2*circleRadius);
     }
 
-    private void drawText( Graphics2D g, Point2D loc, String text) {
+    /* private void drawText( Graphics2D g, Point2D loc, String text) {
       int x = (int) (loc.getX() - circleRadius);
       int y = (int) (loc.getY() - circleRadius);
       g.drawString( text, x, y);
-    }
+    } */
 
   } // end inner class ObservationUI
 

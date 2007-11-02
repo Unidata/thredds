@@ -1,6 +1,5 @@
-// $Id: GeoGridTable.java 68 2006-07-13 00:08:20Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -48,7 +47,6 @@ import javax.swing.*;
  *
  *
  * @author caron
- * @version $Revision: 68 $ $Date: 2006-07-13 00:08:20Z $
  */
 
 public class GeoGridTable extends JPanel {
@@ -94,7 +92,7 @@ public class GeoGridTable extends JPanel {
             infoTA.gotoTop();
             infoWindow.showIfNotIconified();
           } catch (IOException e1) {
-            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e1.printStackTrace();
           }
       }
     });
@@ -137,28 +135,25 @@ public class GeoGridTable extends JPanel {
     this.ds = ds;
     this.gridDataset = new ucar.nc2.dt.grid.GridDataset(ds);
 
-    ArrayList beanList = new ArrayList();
-    java.util.List list = gridDataset.getGrids();
-    for (int i=0; i<list.size(); i++) {
-      GridDatatype g = (GridDatatype) list.get(i);
+    List<GeogridBean> beanList = new ArrayList<GeogridBean>();
+    java.util.List<GridDatatype> list = gridDataset.getGrids();
+    for (GridDatatype g : list)
       beanList.add (new GeogridBean( g));
-    }
     varTable.setBeans( beanList);
 
     if (csTable != null) {
-      ArrayList csList = new ArrayList();
-      ArrayList axisList = new ArrayList();
-      Iterator iter  = gridDataset.getGridsets().iterator();
-      while (iter.hasNext()) {
-        GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
-        csList.add (new GeoCoordinateSystemBean( gset));
+      List<GeoCoordinateSystemBean> csList = new ArrayList<GeoCoordinateSystemBean>();
+      List<GeoAxisBean> axisList;
+      axisList = new ArrayList<GeoAxisBean>();
+      for (GridDataset.Gridset gset : gridDataset.getGridsets()) {
+        csList.add(new GeoCoordinateSystemBean(gset));
         GridCoordSystem gsys = gset.getGeoCoordSystem();
-        List axes = gsys.getCoordinateAxes();
+        List<CoordinateAxis> axes = gsys.getCoordinateAxes();
         for (int i = 0; i < axes.size(); i++) {
-          CoordinateAxis axis = (CoordinateAxis) axes.get(i);
-          GeoAxisBean axisBean = new GeoAxisBean( axis);
-          if (!axisList.contains( axisBean))
-            axisList.add (axisBean);
+          CoordinateAxis axis = axes.get(i);
+          GeoAxisBean axisBean = new GeoAxisBean(axis);
+          if (!axisList.contains(axisBean))
+            axisList.add(axisBean);
         }
       }
       csTable.setBeans( csList);
@@ -307,7 +302,7 @@ public class GeoGridTable extends JPanel {
         if (ct instanceof ProjectionCT) {
           ProjectionCT pct = (ProjectionCT)ct;
           if (pct.getProjection() == null) { // only show CT if theres no projection
-            buff.append("-"+pct.getName());
+            buff.append("-").append(pct.getName());
             count++;
           }
         }
@@ -432,6 +427,7 @@ public class GeoGridTable extends JPanel {
    * @param parent      JFrame (application) or JApplet (applet) or null
    * @param title       dialog window title
    * @param modal       modal dialog or not
+   * @return JDialog
    */
   public JDialog makeDialog( RootPaneContainer parent, String title, boolean modal) {
       return new Dialog( parent, title, modal);

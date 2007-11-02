@@ -1,6 +1,5 @@
-// $Id:DateType.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -45,7 +44,6 @@ import java.text.SimpleDateFormat;
  * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dateType"
  * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dateTypeFormatted"
  * @author john caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 
 public class DateType {
@@ -61,8 +59,8 @@ public class DateType {
 
   /**
    * Constructor using a java.util.Date
-   * @param isPresent
-   * @param date
+   * @param isPresent represents the "present time"
+   * @param date the given date
    */
   public DateType(boolean isPresent, java.util.Date date) {
     this.isPresent = isPresent;
@@ -75,7 +73,9 @@ public class DateType {
     isBlank = true;
   }
 
-  /** copy constructor */
+  /** copy constructor
+   * @param src copy from here
+   */
   public DateType( DateType src) {
     text = src.getText();
     format = src.getFormat();
@@ -91,7 +91,7 @@ public class DateType {
    * @param text string representation
    * @param format using java.text.SimpleDateFormat, or null
    * @param type type of date, or null
-   * @throws java.text.ParseException
+   * @throws java.text.ParseException if error parsing text
    */
   public DateType(String text, String format, String type) throws java.text.ParseException {
 
