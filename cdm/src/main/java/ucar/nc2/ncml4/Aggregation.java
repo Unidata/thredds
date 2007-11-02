@@ -117,7 +117,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
   protected boolean enhance = false, isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
-  protected boolean debug = false, debugOpenFile = true, debugSyncDetail = false, debugProxy = false,
+  protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
       debugRead = false, debugDateParse = false;
 
   /**
@@ -291,6 +291,8 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
     // Sort by date if it exists, else filename.
     Collections.sort(datasets, new Comparator<Aggregation.Dataset>() {
       public int compare(Aggregation.Dataset ds1, Aggregation.Dataset ds2) {
+        if(ds1.cd == null)
+           return ds1.getLocation().compareTo(ds2.getLocation()) ;
         if (ds1.cd.dateCoord != null) // LOOK can we generalize
           return ds1.cd.dateCoord.compareTo(ds2.cd.dateCoord);
         else
