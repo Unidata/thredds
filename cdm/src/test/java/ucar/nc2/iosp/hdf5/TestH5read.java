@@ -32,19 +32,11 @@ public class TestH5read extends TestCase {
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/complex");
   }
 
-  public void ntestNc4() {
-    readAllDir( TestAll.upcShareTestDataDir + "netcdf4");
-  }
-
   public void testAll() {
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/auraData");
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/IASI");
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/msg");
     readAllDir( TestAll.upcShareTestDataDir + "hdf5/wrf");
-  }
-
-  public void testNPoess() {
-    readAllDir( "C:/data/npoess/ExampleFiles/");
   }
 
   public void problemV() throws IOException {
@@ -95,10 +87,10 @@ public class TestH5read extends TestCase {
       for (Variable v : ncfile.getVariables()) {
         if (v.getSize() > max_size) {
           Section s = makeSubset(v);
-          //System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
+          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
           v.read(s);
         } else {
-          //System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
+          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
           v.read();
         }
       }

@@ -3491,7 +3491,7 @@ class H5header {
       }
     }
 
-    private void dump(DataType dt, List<DataChunk> entries) {
+    /* private void dump(DataType dt, List<DataChunk> entries) {
       try {
         for (DataChunk node : entries) {
           if (dt == DataType.STRING) {
@@ -3507,7 +3507,7 @@ class H5header {
       catch (IOException e) {
         e.printStackTrace();
       }
-    }
+    } */
 
     // these are part of the level 1A data structure, type 1
     // see "Key" field (type 1) p 10
@@ -3516,7 +3516,7 @@ class H5header {
       int size; // size of chunk in bytes; need storage layout dimensions to interpret
       int filterMask; // bitfield indicating which filters have been skipped for this chunk
       int[] offset; // offset index of this chunk, reletive to entire array
-      long address; // address of a single raw data chunk
+      long filePos; // filePos of a single raw data chunk
 
       DataChunk(int ndim, boolean last) throws IOException {
         this.size = raf.readInt();
@@ -3527,13 +3527,13 @@ class H5header {
           assert loffset < Integer.MAX_VALUE;
           offset[i] = (int) loffset;
         }
-        this.address = last ? -1 : readOffset();
-        if (debugTracker) memTracker.addByLen("Chunked Data (" + owner + ")", address, size);
+        this.filePos = last ? -1 : getFileOffset(readOffset());
+        if (debugTracker) memTracker.addByLen("Chunked Data (" + owner + ")", filePos, size);
       }
 
       public String toString() {
         StringBuffer sbuff = new StringBuffer();
-        sbuff.append("  ChunkedDataNode size=").append(size).append(" filterMask=").append(filterMask).append(" address=").append(address).append(" offsets= ");
+        sbuff.append("  ChunkedDataNode size=").append(size).append(" filterMask=").append(filterMask).append(" filePos=").append(filePos).append(" offsets= ");
         for (long anOffset : offset) sbuff.append(anOffset).append(" ");
         return sbuff.toString();
       }

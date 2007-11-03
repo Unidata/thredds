@@ -56,4 +56,18 @@ public class TestH5npoess extends TestCase {
     assert(null != dset );
   }
 
+  public void problem() throws InvalidRangeException, IOException {
+    H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    NetcdfFile ncfile = TestH5.open("C:/data/HDF5Files/CrIMSS - CrIS - ATMS/ATMS/ATMS_SCIENCE_RDR/RASCI_npp_d20030125_t104457_e104505_b00016_c20061210190242_den_SWC.h5");
+    Variable dset = ncfile.findVariable("Data_Products/ATMS-SCIENCE-RDR/ATMS-SCIENCE-RDR_Aggr");
+    assert (null != dset );
+    Array data = dset.read();
+    NCdump.printArray(data, dset.getName(), System.out, null);
+  }
+
+  public void testNPoess() {
+    //TestH5read.readAllDir( "C:/data/npoess/ExampleFiles/");
+    TestH5read.readAllDir( "C:/data/HDF5Files");
+  }
+
 }

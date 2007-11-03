@@ -129,8 +129,8 @@ class H5chunkLayout extends Indexer {
             break;
         }
 
-        if (debug) System.out.println(" found intersecting section: " + dataSection+" for address "+ dataChunk.address);
-        index = indexFactory(dataChunk, dataChunk.address, elemSize, dataSection, want);
+        if (debug) System.out.println(" found intersecting section: " + dataSection+" for filePos "+ dataChunk.filePos);
+        index = indexFactory(dataChunk, dataChunk.filePos, elemSize, dataSection, want);
 
       } catch (InvalidRangeException e) {
         throw new IllegalStateException(e);

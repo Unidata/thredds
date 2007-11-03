@@ -280,7 +280,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
       datasets.add(dataset);
     }
 
-    // now add the ordered list of Datasets to the result List
+    // now add the ordered list of scanned Datasets to the result List
     for (MyCrawlableDataset myf : fileList) {
       String location = myf.file.getPath();
       Aggregation.Dataset ds = makeDataset(location, location, null, myf.dateCoordS, null, enhance, null);

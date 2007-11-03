@@ -78,7 +78,7 @@ class H5chunkFilterLayout extends H5chunkLayout {
   protected Indexer indexFactory(H5header.DataBTree.DataChunk dataChunk, long filePos, int elemSize, Section dataSection, Section want) throws IOException, InvalidRangeException {
     // read the data
     byte[] data = new byte[dataChunk.size];
-    raf.seek(dataChunk.address);
+    raf.seek(dataChunk.filePos);
     raf.readFully(data);
 
     // apply filters backwards

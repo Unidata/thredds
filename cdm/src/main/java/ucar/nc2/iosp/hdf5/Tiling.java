@@ -20,11 +20,13 @@
 package ucar.nc2.iosp.hdf5;
 
 /**
- * A Tiling divides a multidimensional index into tiles. each tile has the same size.
+ * A Tiling divides a multidimensional index into tiles.
  * Abstraction of HDF5 chunking.
  * <p>
  * Index are points in the original multidimensional index.
  * Tiles are points in the tiled space.
+ * <p>
+ * Each tile has the same size, given by tileSize.
  *
  * @author caron
  * @since Jul 20, 2007
@@ -36,17 +38,18 @@ public class Tiling {
 
   /**
    * Create a Tiling
-   * @param shape overall shape of the index space
-   * @param tileSize tile size
+   * @param shape overall shape of the dataset's index space
+   * @param tileSize tile size. may be larger than the shape.
    */
   public Tiling(int[] shape, int[] tileSize) {
     assert shape.length <= tileSize.length; // convenient to allow tileSize to have (an) extra dimension at the end
                                             // to accomodate hdf5 storage, which has the element size
-
     this.rank = shape.length;
-    this.shape = shape;
     this.tileSize = tileSize;
-    this.tile = tile( shape); // dont really need this, but udeful for debugging
+    this.shape = new int[rank];
+    for (int i=0; i<rank; i++)
+      this.shape[i] = Math.max(shape[i], tileSize[i]);
+    this.tile = tile( this.shape); // dont really need this, but useful for debugging
 
     this.stride = new int[rank];
     int strider = 1;
