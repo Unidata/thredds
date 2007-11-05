@@ -437,9 +437,9 @@ public class NCdumpW {
       return ex.getMessage();
     }
 
-    CharArrayWriter bos = new CharArrayWriter();
-    printArray( data, v.getName(), new PrintWriter( bos), ct);
-    return bos.toString();
+    StringWriter writer = new StringWriter(10000);
+    printArray( data, v.getName(), new PrintWriter(writer), ct);
+    return writer.toString();
   }
 
   /**
@@ -454,9 +454,9 @@ public class NCdumpW {
   static public String printVariableDataSection(VariableIF v, String sectionSpec, ucar.nc2.util.CancelTask ct) throws IOException, InvalidRangeException {
     Array data = v.read(sectionSpec);
 
-    CharArrayWriter bos = new CharArrayWriter();
-    printArray( data, v.getName(), new PrintWriter( bos), ct);
-    return bos.toString();
+    StringWriter writer = new StringWriter(20000);
+    printArray( data, v.getName(), new PrintWriter( writer), ct);
+    return writer.toString();
   }
 
   /**

@@ -287,46 +287,49 @@ public class IO {
   }
 
   /**
-   * Read the contents from the named file and place into a String,
-   * with any error messages  put in the return String.
+   * Read the contents from the named file and place into a String, assuming UTF-8 encoding.
    *
    * @param filename the URL to read from.
-   * @return String holding the contents, or an error message.
+   * @return String holding the file contents
    * @throws java.io.IOException on io error
    */
   static public String readFile(String filename) throws IOException {
-    InputStream in = null;
+    InputStreamReader reader = new InputStreamReader( new FileInputStream(filename), "UTF-8");
+
     try {
-      in = new BufferedInputStream(new FileInputStream(filename));
-      return readContents(in);
+      StringWriter swriter = new StringWriter(50000);
+      UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(swriter);
+      writer.write(reader);
+      return swriter.toString();
 
     } finally {
-      if (in != null) in.close();
+      if (reader != null) reader.close();
     }
   }
 
   /**
-   * Write contents to a file
+   * Write String contents to a file, using UTF-8 encoding.
    *
    * @param contents String holding the contents
    * @param file     write to this file (overwrite if exists)
    * @throws java.io.IOException on io error
    */
   static public void writeToFile(String contents, File file) throws IOException {
-    OutputStream out = null;
+    OutputStreamWriter fw = new OutputStreamWriter( new FileOutputStream(file), "UTF-8");
+    UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(fw);
+
     try {
-      out = new BufferedOutputStream(new FileOutputStream(file));
-      thredds.util.IO.copy(new ByteArrayInputStream(contents.getBytes()), out);
-      out.flush();
+      writer.write(contents);
+      writer.flush();
 
     } finally {
-      if (null != out)
-        out.close();
+      if (null != writer)
+        writer.close();
     }
   }
 
   /**
-   * Write contents to a file
+   * Write contents to a file, using UTF-8 encoding.
    *
    * @param contents    String holding the contents
    * @param fileOutName write to this file (overwrite if exists)

@@ -949,11 +949,9 @@ public class NetcdfFile {
    * CDL representation of Netcdf header info.
    */
   public String toString() {
-    CharArrayWriter ba = new CharArrayWriter(40000);
-    PrintWriter out = new PrintWriter(ba);
-    writeCDL(out, false);
-    out.flush();
-    return ba.toString();
+    StringWriter writer = new StringWriter(50000);
+    writeCDL(new PrintWriter(writer), false);
+    return writer.toString();
   }
 
   protected void toStringStart(PrintWriter pw, boolean strict) {

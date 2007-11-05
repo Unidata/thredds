@@ -1601,7 +1601,7 @@ public class ToolsUI extends JPanel {
     // then write it back out via resulting dataset
     void doTransform(String text) {
       try {
-        CharArrayReader reader = new CharArrayReader( text.toCharArray());
+        StringReader reader = new StringReader( text);
         NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
         ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
         ncd.writeNcML(bos, null);
