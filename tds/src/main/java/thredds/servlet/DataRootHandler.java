@@ -1172,7 +1172,8 @@ public class DataRootHandler {
         if (expiresDateType.getDate().getTime() < System.currentTimeMillis()) {
           // If stale, re-read catalog from disk.
           String catalogFullPath = contentPath + workPath;
-          log.info( "\n********************\nRereading expired catalog: " + catalogFullPath);
+          log.info( "\n********************\nRereading expired catalog: " + catalogFullPath +
+                    "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
           InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
           InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
 
