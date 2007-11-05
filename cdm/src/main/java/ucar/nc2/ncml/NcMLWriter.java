@@ -56,6 +56,19 @@ public class NcMLWriter {
    * Write a NetcdfFile as an XML document to the specified file.
    *
    * @param ncfile      NcML for this NetcdfFile
+   * @return the NcML in a String
+   * @throws IOException on io error
+   */
+  public String writeXML(NetcdfFile ncfile) throws IOException {
+    ByteArrayOutputStream out = new ByteArrayOutputStream(50000);
+    writeXML(ncfile, out, null);
+    return out.toString();
+  }
+
+  /**
+   * Write a NetcdfFile as an XML document to the specified file.
+   *
+   * @param ncfile      NcML for this NetcdfFile
    * @param filenameOut write NcML to this location
    * @throws IOException on io error
    */

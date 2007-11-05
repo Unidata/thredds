@@ -101,7 +101,7 @@ public class CoordSysTable extends JPanel {
         CoordinateAxis axis = (CoordinateAxis) ds.findVariable(bean.getName());
         infoTA.clear();
         try {
-          infoTA.appendLine(NCdump.printVariableData(axis, null));
+          infoTA.appendLine(NCdumpW.printVariableData(axis, null));
           if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
             CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
             if (axis1D.isContiguous()) {
@@ -149,7 +149,7 @@ public class CoordSysTable extends JPanel {
 
         try {
           infoTA.appendLine( units);
-          infoTA.appendLine(NCdump.printVariableData(axis, null));
+          infoTA.appendLine(NCdumpW.printVariableData(axis, null));
           DateFormatter format = new DateFormatter();
           DateUnit du = new DateUnit(units);
           Array data = axis.read();

@@ -33,6 +33,7 @@ import thredds.viewer.ui.geoloc.*;
 import thredds.ui.BAMutil;
 
 import ucar.nc2.util.NamedObject;
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
@@ -504,12 +505,12 @@ public class GridController {
 
 
   String getNcML() {
-    if (gridDataset == null) return "";
+    if (gridDataset == null) return "Null gridset";
     try {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      gridDataset.getNetcdfFile().writeNcML( bos, null);
-      return bos.toString();
-    } catch (IOException ioe) {}
+      return new NcMLWriter().writeXML( gridDataset.getNetcdfFile());
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
     return "";
   }
 

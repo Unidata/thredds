@@ -53,7 +53,7 @@ public class TestN4 extends TestCase {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     String filename = "C:/data/netcdf4/files/tst_enum_data.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
-    Variable v = ncfile.findVariable("primary_cloud");
+    Variable v = ncfile.findVariable("primary_cloud");                        
     Array data = v.read();
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     NCdump.printArray(data, "primary_cloud", System.out, null);

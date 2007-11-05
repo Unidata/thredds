@@ -21,6 +21,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.ncml4.NcMLReader;
@@ -1551,6 +1552,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
+        String result;
         ds = openDataset(location, addCoords, null);
         if (ds == null) {
           ta.setText("Failed to open <" + location + ">");
@@ -1558,9 +1560,11 @@ public class ToolsUI extends JPanel {
           if (useG) {
             boolean showCoords = Debug.isSet("NcML/ncmlG-showCoords");
             ds.writeNcMLG(bos, showCoords, null);
-          } else
-            ds.writeNcML(bos, null);
-          ta.setText(bos.toString());
+            result = bos.toString();
+          } else {
+            result = new NcMLWriter().writeXML( ds);
+          }
+          ta.setText(result);
           ta.gotoTop();
         }
 
@@ -1577,7 +1581,6 @@ public class ToolsUI extends JPanel {
 
       return !err;
     }
-
 
     void doWriteNetCDF(String text, String filename) {
       if (debugNcmlWrite) {
@@ -1598,8 +1601,8 @@ public class ToolsUI extends JPanel {
     // then write it back out via resulting dataset
     void doTransform(String text) {
       try {
-        ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes());
-        NetcdfDataset ncd = NcMLReader.readNcML(bis, null);
+        CharArrayReader reader = new CharArrayReader( text.toCharArray());
+        NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
         ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
         ncd.writeNcML(bos, null);
         ta.setText(bos.toString());

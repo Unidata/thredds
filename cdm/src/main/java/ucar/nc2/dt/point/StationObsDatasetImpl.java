@@ -43,7 +43,7 @@ import java.util.*;
 
 public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implements StationObsDataset {
   protected StationDatasetHelper stationHelper;
-  protected ArrayList stations = new ArrayList();
+  protected List<Station> stations = new ArrayList<Station>();
 
   public StationObsDatasetImpl() {
     super();

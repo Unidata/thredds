@@ -14,10 +14,14 @@ Changes in version 4.0
    * Tiled aggregation
    * Existing accepts timeUnitsChange
    * Union accepts scan
+ Data Model
+  * Strings are Unicode. In Netcdf3/4, stored as UTF-8 encoded.
  API
   * Extensive API changes. Most, but not completely backwards-compatible.
   * ucar.ma2.Range, ucar.ma2.Section 
   * Array local iterator: hasNext() next() methods.
+  * Writer replaces OutputStream. Default is UTF-8.
+  * NetcdfFile.writeCDL(PrintWriter)
  Libraries
 
  Changes in version 2.2.22

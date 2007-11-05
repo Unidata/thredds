@@ -31,6 +31,7 @@ import java.util.*;
 import java.text.*;
 import java.io.IOException;
 import java.nio.*;
+import java.nio.charset.Charset;
 
 /**
  * Read all of the metadata of an HD5 file.
@@ -44,6 +45,7 @@ import java.nio.*;
  */
 class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
+  static private Charset utf8Charset = Charset.forName("UTF-8");
 
   // debugging
   static private boolean debugEnum = false, debugVlen = false;
@@ -71,7 +73,7 @@ class H5header {
   }
 
   static private final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
-  static private final String shead = new String(head);
+  static private final String hdf5magic = new String(head);
   static private final long maxHeaderPos = 500000; // header's gotta be within this
   static private boolean transformReference = true;
 
@@ -85,7 +87,7 @@ class H5header {
       raf.seek(filePos);
       raf.read(b);
       String magic = new String(b);
-      if (magic.equals(shead))
+      if (magic.equals(hdf5magic))
         return true;
       filePos = (filePos == 0) ? 512 : 2 * filePos;
     }
@@ -1427,8 +1429,8 @@ class H5header {
         // first byte was already read
         byte[] name = new byte[3];
         raf.read(name);
-        String nameS = new String(name);
-        if (!nameS.equals("HDR"))
+        String magic = new String(name);
+        if (!magic.equals("HDR"))
           throw new IllegalStateException("DataObject doesnt start with OHDR");
 
         version = raf.readByte();
@@ -2043,24 +2045,18 @@ class H5header {
         encoding = raf.readByte();
 
       int linkNameLength = (int) readVariableSizeFactor(flags & 3);
-      byte[] b = new byte[linkNameLength];
-      raf.read(b);
-      linkName = new String(b);
+      linkName = readStringFixedLength(linkNameLength);
 
       if (linkType == 0) {
         linkAddress = readOffset();
 
       } else if (linkType == 1) {
         short len = raf.readShort();
-        b = new byte[len];
-        raf.read(b);
-        link = new String(b);
+        link = readStringFixedLength(len);
 
       } else if (linkType == 64) {
         short len = raf.readShort();
-        b = new byte[len];
-        raf.read(b);
-        link = new String(b); // actually 2 strings - see docs
+        link = readStringFixedLength(len); // actually 2 strings - see docs
       }
 
       if (debug1)
@@ -2570,7 +2566,7 @@ class H5header {
         throw new IllegalStateException("MessageAttribute unknown version " + version);
       }
 
-      // read the name
+      // read the attribute name
       long filePos = raf.getFilePointer();
       name = readString(raf); // read at current pos
       if (version == 1) nameSize += padding(nameSize, 8);
@@ -2831,8 +2827,8 @@ class H5header {
 
       byte[] name = new byte[4];
       raf.read(name);
-      String nameS = new String(name);
-      if (!nameS.equals("TREE"))
+      String magic = new String(name);
+      if (!magic.equals("TREE"))
         throw new IllegalStateException("BtreeGroup doesnt start with TREE");
 
       int type = raf.readByte();
@@ -2896,9 +2892,9 @@ class H5header {
         // header
         byte[] sig = new byte[4];
         raf.read(sig);
-        String nameS = new String(sig);
-        if (!nameS.equals("SNOD"))
-          throw new IllegalStateException();
+        String magic = new String(sig);
+        if (!magic.equals("SNOD"))
+          throw new IllegalStateException(magic + " should equal SNOD");
 
         version = raf.readByte();
         raf.readByte(); // skip byte
@@ -3022,9 +3018,9 @@ class H5header {
       // header
       byte[] heapname = new byte[4];
       raf.read(heapname);
-      String nameS = new String(heapname);
-      if (!nameS.equals("BTHD"))
-        throw new IllegalStateException();
+      String magic = new String(heapname);
+      if (!magic.equals("BTHD"))
+        throw new IllegalStateException(magic + " should equal BTHD");
 
       byte version = raf.readByte();
       btreeType = raf.readByte();
@@ -3072,9 +3068,9 @@ class H5header {
         // header
         byte[] sig = new byte[4];
         raf.read(sig);
-        String nameS = new String(sig);
-        if (!nameS.equals("BTIN"))
-          throw new IllegalStateException();
+        String magic = new String(sig);
+        if (!magic.equals("BTIN"))
+          throw new IllegalStateException(magic + " should equal BTIN");
 
         byte version = raf.readByte();
         byte nodeType = raf.readByte();
@@ -3134,9 +3130,9 @@ class H5header {
         // header
         byte[] sig = new byte[4];
         raf.read(sig);
-        String nameS = new String(sig);
-        if (!nameS.equals("BTLF"))
-          throw new IllegalStateException();
+        String magic = new String(sig);
+        if (!magic.equals("BTLF"))
+          throw new IllegalStateException(magic + " should equal BTLF");
 
         byte version = raf.readByte();
         byte nodeType = raf.readByte();
@@ -3388,8 +3384,8 @@ class H5header {
 
         byte[] name = new byte[4];
         raf.read(name);
-        String nameS = new String(name);
-        if (!nameS.equals("TREE"))
+        String magic = new String(name);
+        if (!magic.equals("TREE"))
           throw new IllegalStateException("DataBTree doesnt start with TREE");
 
         int type = raf.readByte();
@@ -3617,10 +3613,8 @@ class H5header {
   String readHeapString(long heapIdAddress) throws IOException {
     H5header.HeapIdentifier heapId = new HeapIdentifier(heapIdAddress);
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
-    byte[] ba = new byte[(int) ho.dataSize];
     raf.seek(ho.dataPos);
-    raf.read(ba);
-    return new String(ba);
+    return readStringFixedLength((int) ho.dataSize);
   }
 
   /**
@@ -3735,9 +3729,9 @@ There is _no_ datatype information stored for these sort of selections currently
       // header
       byte[] heapname = new byte[4];
       raf.read(heapname);
-      String nameS = new String(heapname);
-      if (!nameS.equals("GCOL"))
-        throw new IllegalStateException(nameS + " should equal GCOL");
+      String magic = new String(heapname);
+      if (!magic.equals("GCOL"))
+        throw new IllegalStateException(magic + " should equal GCOL");
 
       version = raf.readByte();
       raf.skipBytes(3);
@@ -3803,9 +3797,9 @@ There is _no_ datatype information stored for these sort of selections currently
       // header
       byte[] heapname = new byte[4];
       raf.read(heapname);
-      String nameS = new String(heapname);
-      if (!nameS.equals("HEAP"))
-        throw new IllegalStateException();
+      String magic = new String(heapname);
+      if (!magic.equals("HEAP"))
+        throw new IllegalStateException(magic + " should equal HEAP");
 
       version = raf.readByte();
       raf.skipBytes(3);
@@ -3831,7 +3825,7 @@ There is _no_ datatype information stored for these sort of selections currently
     public String getString(int offset) {
       int count = 0;
       while (heap[offset + count] != 0) count++;
-      return new String(heap, offset, count);
+      return new String(heap, offset, count, utf8Charset);
     }
 
   } // LocalHeap
@@ -3869,9 +3863,9 @@ There is _no_ datatype information stored for these sort of selections currently
       // header
       byte[] heapname = new byte[4];
       raf.read(heapname);
-      String nameS = new String(heapname);
-      if (!nameS.equals("FRHP"))
-        throw new IllegalStateException();
+      String magic = new String(heapname);
+      if (!magic.equals("FRHP"))
+        throw new IllegalStateException(magic+" should equal FRHP");
 
       byte version = raf.readByte();
       heapIdLen = raf.readShort(); // bytes
@@ -4039,9 +4033,9 @@ There is _no_ datatype information stored for these sort of selections currently
       // header
       byte[] heapname = new byte[4];
       raf.read(heapname);
-      String nameS = new String(heapname);
-      if (!nameS.equals("FHIB"))
-        throw new IllegalStateException();
+      String magic = new String(heapname);
+      if (!magic.equals("FHIB"))
+        throw new IllegalStateException(magic+" should equal FHIB");
 
       byte version = raf.readByte();
       long heapHeaderAddress = readOffset();
@@ -4093,9 +4087,9 @@ There is _no_ datatype information stored for these sort of selections currently
       // header
       byte[] heapname = new byte[4];
       raf.read(heapname);
-      String nameS = new String(heapname);
-      if (!nameS.equals("FHDB"))
-        throw new IllegalStateException();
+      String magic = new String(heapname);
+      if (!magic.equals("FHDB"))
+        throw new IllegalStateException(magic+" should equal FHDB");
 
       byte version = raf.readByte();
       long heapHeaderAddress = readOffset();
@@ -4143,8 +4137,8 @@ There is _no_ datatype information stored for these sort of selections currently
     raf.seek(filePos);
     byte[] s = new byte[count];
     raf.read(s);
-    raf.readByte(); // skip the zero byte!
-    return new String(s);
+    raf.readByte(); // skip the zero byte! nn
+    return new String(s, utf8Charset); // all Strings are UTF-8 unicode
   }
 
   /**
@@ -4169,7 +4163,7 @@ There is _no_ datatype information stored for these sort of selections currently
     count += padding(count, 8);
     raf.seek(filePos + count);
 
-    return new String(s);
+    return new String(s, utf8Charset); // all Strings are UTF-8 unicode
   }
 
   /**
@@ -4182,7 +4176,7 @@ There is _no_ datatype information stored for these sort of selections currently
   private String readStringFixedLength(int size) throws IOException {
     byte[] s = new byte[size];
     raf.read(s);
-    return new String(s);
+    return new String(s, utf8Charset); // all Strings are UTF-8 unicode
   }
 
   private long readLength() throws IOException {

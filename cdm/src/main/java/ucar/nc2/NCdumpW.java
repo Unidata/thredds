@@ -17,7 +17,6 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 package ucar.nc2;
 
 import ucar.ma2.*;
@@ -26,7 +25,10 @@ import ucar.nc2.util.NetworkUtils;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-import java.util.*;
+import java.util.StringTokenizer;
+import java.util.List;
+import java.util.ArrayList;
+import java.nio.charset.Charset;
 
 /**
  * Print contents of an existing netCDF file of unknown structure, like ncdump.
@@ -34,33 +36,33 @@ import java.util.*;
  * A difference with ncdump is that the nesting of multidimensional array data is represented by nested brackets,
  * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h)
  *
- * @author Russ Rew, John Caron
- * @deprecated use NCdumpW, to handle Unicode correctly
+ * @author caron
+ * @since Nov 4, 2007
  */
 
-public class NCdump {
+public class NCdumpW {
   private static boolean debugSelector = false;
-  private static String usage = "usage: NCdump <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
+  private static String usage = "usage: NCdumpW <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
   /**
    * Print netcdf "header only" in CDL.
    * @param fileName open this file
-   * @param out print to this stream
+   * @param out print to this Writer
    * @return true if successful
-   * @throws IOException on write error
+   * @throws java.io.IOException on write error
    */
-  public static boolean printHeader(String fileName, OutputStream out) throws java.io.IOException {
+  public static boolean printHeader(String fileName, Writer out) throws java.io.IOException {
     return print( fileName, out, false, false, false, false, null, null);
   }
 
   /**
    * print NcML representation of this netcdf file, showing coordinate variable data.
    * @param fileName open this file
-   * @param out print to this stream
+   * @param out print to this Writer
    * @return true if successful
-   * @throws IOException on write error
+   * @throws java.io.IOException on write error
    */
-  public static boolean printNcML(String fileName, OutputStream out) throws java.io.IOException {
+  public static boolean printNcML(String fileName, Writer out) throws java.io.IOException {
     return print( fileName, out, false, true, true, false, null, null);
   }
 
@@ -71,9 +73,9 @@ public class NCdump {
    * @param command command string
    * @param out send output here
    * @return true if successful
-   * @throws IOException on write error
+   * @throws java.io.IOException on write error
    */
-  public static boolean print(String command, OutputStream out) throws java.io.IOException {
+  public static boolean print(String command, Writer out) throws java.io.IOException {
     return print( command, out, null);
   }
 
@@ -85,9 +87,9 @@ public class NCdump {
    * @param out send output here
    * @param ct allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws IOException on write error
+   * @throws java.io.IOException on write error
    */
-  public static boolean print(String command, OutputStream out, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
+  public static boolean print(String command, Writer out, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
 
     // pull out the filename from the command
     String filename;
@@ -95,7 +97,7 @@ public class NCdump {
     if (stoke.hasMoreTokens())
       filename = stoke.nextToken();
     else {
-      out.write( usage.getBytes());
+      out.write( usage);
       return false;
     }
 
@@ -106,11 +108,11 @@ public class NCdump {
       // the rest of the command
       int pos = command.indexOf(filename);
       command = command.substring(pos + filename.length());
-      return NCdump.print(nc, command, out, ct);
+      return print(nc, command, out, ct);
 
     } catch (java.io.FileNotFoundException e) {
-      String mess = "file not found= "+filename;
-      out.write( mess.getBytes());
+      out.write( "file not found= ");
+      out.write( filename);
       return false;
 
     } finally {
@@ -126,9 +128,9 @@ public class NCdump {
    * @param out send output here
    * @param ct allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws IOException on write error
+   * @throws java.io.IOException on write error
    */
-  public static boolean print(NetcdfFile nc, String command, OutputStream out, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
+  public static boolean print(NetcdfFile nc, String command, Writer out, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
 
     boolean showAll = false;
     boolean showCoords = false;
@@ -142,7 +144,7 @@ public class NCdump {
       while (stoke.hasMoreTokens()) {
         String toke = stoke.nextToken();
          if (toke.equalsIgnoreCase("-help")) {
-          out.write( usage.getBytes());
+          out.write( usage);
           out.write( '\n');
           return true;
         }
@@ -159,12 +161,12 @@ public class NCdump {
       }
     }
 
-    return NCdump.print( nc, out, showAll, showCoords, ncml, strict, varNames, ct);
+    return print( nc, out, showAll, showCoords, ncml, strict, varNames, ct);
   }
 
   /**
    *  ncdump-like print of netcdf file.
-   * @param fileName NetcdfFile to open
+   * @param filename NetcdfFile to open
    * @param out print to this stream
    * @param showAll dump all variable data
    * @param showCoords only print header and coordinate variables
@@ -173,25 +175,24 @@ public class NCdump {
    * @param varNames semicolon delimited list of variables whose data should be printed
    * @param ct allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws IOException on write error
+   * @throws java.io.IOException on write error
 
    */
-  public static boolean print(String fileName, OutputStream out, boolean showAll, boolean showCoords,
+  public static boolean print(String filename, Writer out, boolean showAll, boolean showCoords,
     boolean ncml, boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
 
     NetcdfFile nc = null;
     try {
       //nc = NetcdfFileCache.acquire(fileName, ct);
-      nc = NetcdfFile.open(fileName, ct);
+      nc = NetcdfFile.open(filename, ct);
       return print(nc, out, showAll, showCoords, ncml, strict, varNames, ct);
 
     } catch (java.io.FileNotFoundException e) {
-      String mess = "file not found= "+fileName;
-      out.write( mess.getBytes());
+      out.write( "file not found= ");
+      out.write( filename);
       return false;
 
     } finally {
-      //NetcdfFileCache.release(nc);
       if (nc != null) nc.close();
     }
 
@@ -212,15 +213,11 @@ public class NCdump {
    *  Fortran90 like selector: eg varName(1:2,*,2)
    * @param ct allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws IOException on write error
+   * @throws java.io.IOException on write error
    */
-  public static boolean print(NetcdfFile nc, OutputStream out, boolean showAll, boolean showCoords,
+  public static boolean print(NetcdfFile nc, Writer out, boolean showAll, boolean showCoords,
       boolean ncml, boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
 
-    PrintWriter pw = new PrintWriter( new OutputStreamWriter(out));
-    return NCdumpW.print(nc, pw, showAll, showCoords, ncml, strict, varNames, ct);
-  }
-  /*
     boolean headerOnly = !showAll && (varNames == null);
 
     try {
@@ -228,11 +225,11 @@ public class NCdump {
       if (ncml)
         writeNcML(nc, out, showCoords, null); // output schema in NcML
       else if (headerOnly)
-        nc.writeCDL(out, strict); // output schema in CDL form (like ncdump)
+        nc.writeCDL(new PrintWriter( out), strict); // output schema in CDL form (like ncdump)
       else {
-        PrintWriter pw = new PrintWriter( new OutputStreamWriter(out));
-        nc.toStringStart(pw, strict);
-        pw.print(" data:\n");
+        PrintWriter ps = new PrintWriter( out);
+        nc.toStringStart(ps, strict);
+        ps.print(" data:\n");
 
         if (showAll) { // dump all data
           for (Variable v : nc.getVariables()) {
@@ -278,19 +275,19 @@ public class NCdump {
 
     } catch (Exception e) {
       e.printStackTrace();
-      out.write(e.getMessage().getBytes());
+      out.write(e.getMessage());
       return false;
     }
 
     return true;
-  }    */
+  }
 
   /**
    * Parse a section specification String. These have the form:
    * <pre>
    *  section specification := selector | selector '.' selector
    *  selector := varName ['(' dims ')']
-   *  varName := STRING
+   *  varName := ESCAPED_STRING
    *
    *   dims := dim | dim, dims
    *   dim := ':' | slice | start ':' end | start ':' end ':' stride
@@ -429,7 +426,7 @@ public class NCdump {
    * @param v variable to print
    * @param ct allow task to be cancelled; may be null.
    * @return String result
-   * @throws IOException on write error
+   * @throws java.io.IOException on write error
    */
   static public String printVariableData(VariableIF v, ucar.nc2.util.CancelTask ct) throws IOException {
     Array data;
@@ -440,8 +437,8 @@ public class NCdump {
       return ex.getMessage();
     }
 
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    printArray( data, v.getName(), new PrintStream( bos), ct);
+    CharArrayWriter bos = new CharArrayWriter();
+    printArray( data, v.getName(), new PrintWriter( bos), ct);
     return bos.toString();
   }
 
@@ -457,8 +454,8 @@ public class NCdump {
   static public String printVariableDataSection(VariableIF v, String sectionSpec, ucar.nc2.util.CancelTask ct) throws IOException, InvalidRangeException {
     Array data = v.read(sectionSpec);
 
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    printArray( data, v.getName(), new PrintStream( bos), ct);
+    CharArrayWriter bos = new CharArrayWriter();
+    printArray( data, v.getName(), new PrintWriter( bos), ct);
     return bos.toString();
   }
 
@@ -469,11 +466,18 @@ public class NCdump {
    * @param out send output here.
    * @param ct allow task to be cancelled; may be null.
    */
-  static public void printArray(Array array, String name, PrintStream out, CancelTask ct) {
+  static public void printArray(Array array, String name, PrintWriter out, CancelTask ct) {
     printArray( array, name, null, out, new Indent(2), ct);
   }
 
-  static private void printArray(Array array, String name, String units, PrintStream out, Indent ilev, CancelTask ct) {
+  static public String printArray(Array array, String name, CancelTask ct) {
+    CharArrayWriter carray = new CharArrayWriter(100000);
+    PrintWriter pw = new PrintWriter( carray);
+    printArray( array, name, null, pw, new Indent(2), ct);
+    return carray.toString();
+  }
+
+  static private void printArray(Array array, String name, String units, PrintWriter out, Indent ilev, CancelTask ct) {
     if (ct != null && ct.isCancel()) return;
 
     if (name != null) out.print(ilev+name + " =");
@@ -503,7 +507,7 @@ public class NCdump {
     ilev.decr();
   }
 
-  static private void printArray(Array ma, PrintStream out, Indent indent, CancelTask ct) {
+  static private void printArray(Array ma, PrintWriter out, Indent indent, CancelTask ct) {
      if (ct != null && ct.isCancel()) return;
 
     int rank = ma.getRank();
@@ -542,7 +546,7 @@ public class NCdump {
     out.print("\n"+indent + "}");
   }
 
-  static void printStringArray(PrintStream out, ArrayChar ma, Indent indent, ucar.nc2.util.CancelTask ct) {
+  static void printStringArray(PrintWriter out, ArrayChar ma, Indent indent, ucar.nc2.util.CancelTask ct) {
     if (ct != null && ct.isCancel()) return;
 
     int rank = ma.getRank();
@@ -579,7 +583,7 @@ public class NCdump {
     out.print("\n"+indent + "}");
   }
 
-  static void printStringArray(PrintStream out, ArrayObject ma, Indent indent, ucar.nc2.util.CancelTask ct) {
+  static void printStringArray(PrintWriter out, ArrayObject ma, Indent indent, ucar.nc2.util.CancelTask ct) {
     if (ct != null && ct.isCancel()) return;
 
     int rank = ma.getRank();
@@ -616,7 +620,7 @@ public class NCdump {
     out.print("\n"+indent+ "}");
   }
 
-  static private void printStructureDataArray(PrintStream out, Array array, Indent indent,
+  static private void printStructureDataArray(PrintWriter out, Array array, Indent indent,
                                               ucar.nc2.util.CancelTask ct) {
     //int saveIndent = ilev.getIndentLevel();
     for (IndexIterator ii = array.getIndexIterator(); ii.hasNext(); ) {
@@ -634,17 +638,17 @@ public class NCdump {
    * @param out send output here.
    * @param  sdata StructureData to print.
    */
-  static public void printStructureData(PrintStream out, StructureData sdata) {
+  static public void printStructureData(PrintWriter out, StructureData sdata) {
      printStructureData(out, sdata, new Indent(2), null);
   }
 
-  static private void printStructureData(PrintStream out, StructureData sdata, Indent indent, CancelTask ct) {
+  static private void printStructureData(PrintWriter out, StructureData sdata, Indent indent, CancelTask ct) {
     indent.incr();
     //int saveIndent = ilev.getIndentLevel();
     for (StructureMembers.Member m : sdata.getMembers()) {
       Array sdataArray = sdata.getArray(m);
       //ilev.setIndentLevel(saveIndent);
-      NCdump.printArray(sdataArray, m.getName(), m.getUnitsString(), out, indent, ct);
+      printArray(sdataArray, m.getName(), m.getUnitsString(), out, indent, ct);
       if (ct != null && ct.isCancel()) return;
     }
     indent.decr();
@@ -697,13 +701,13 @@ public class NCdump {
    * This method implements only the "core" NcML for plain ole netcdf files.
    *
    * @param ncfile write NcML for this file
-   * @param os write to this Output Stream.
+   * @param os write to this Writer. Must be using UTF-8 encoding (where applicable)
    * @param showCoords show coordinate variable values.
    * @param uri use this for the uri attribute; if null use getLocation(). // ??
    * @throws IOException on write error
    */
-  static public void writeNcML( NetcdfFile ncfile, java.io.OutputStream os, boolean showCoords, String uri) throws IOException {
-     PrintStream out = new PrintStream( os);
+  static public void writeNcML( NetcdfFile ncfile, java.io.Writer os, boolean showCoords, String uri) throws IOException {
+     PrintWriter out = new PrintWriter( os);
      out.print("<?xml version='1.0' encoding='UTF-8'?>\n");
      out.print("<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'\n");
 
@@ -726,7 +730,7 @@ public class NCdump {
     out.flush();
   }
 
-  static private void writeNcMLGroup( NetcdfFile ncfile, Group g, PrintStream out, Indent indent, boolean showCoords) throws IOException {
+  static private void writeNcMLGroup( NetcdfFile ncfile, Group g, PrintWriter out, Indent indent, boolean showCoords) throws IOException {
     if (g != ncfile.getRootGroup()) {
       out.print(indent);
       out.print("<group name='" + StringUtil.quoteXmlAttribute(g.getShortName()) + "' >\n");
@@ -775,7 +779,7 @@ public class NCdump {
     }
   }
 
-  static private void writeNcMLStructure( Structure s, PrintStream out, Indent indent) throws IOException {
+  static private void writeNcMLStructure( Structure s, PrintWriter out, Indent indent) throws IOException {
     out.print(indent);
     out.print("<structure name='"+StringUtil.quoteXmlAttribute(s.getShortName()));
 
@@ -805,7 +809,7 @@ public class NCdump {
     out.print("</structure>\n");
   }
 
-  static private void writeNcMLVariable( Variable v, PrintStream out, Indent indent, boolean showCoords) throws IOException {
+  static private void writeNcMLVariable( Variable v, PrintWriter out, Indent indent, boolean showCoords) throws IOException {
       out.print(indent);
       out.print("<variable name='"+StringUtil.quoteXmlAttribute(v.getShortName())+"' type='"+ v.getDataType()+"'");
 
@@ -850,7 +854,7 @@ public class NCdump {
   }
 
   // LOOK anon dimensions
-  static private void writeNcMLDimension( Variable v, PrintStream out) {
+  static private void writeNcMLDimension( Variable v, PrintWriter out) {
     out.print(" shape='");
     java.util.List<Dimension> dims = v.getDimensions();
     for (int j = 0; j < dims.size(); j++) {
@@ -866,7 +870,7 @@ public class NCdump {
   }
 
   @SuppressWarnings({"ObjectToString"})
-  static private void writeNcMLAtt(Attribute att, PrintStream out, Indent indent) {
+  static private void writeNcMLAtt(Attribute att, PrintWriter out, Indent indent) {
     out.print(indent);
     out.print("<attribute name='"+StringUtil.quoteXmlAttribute(att.getName())+"' value='");
     if (att.isString()) {
@@ -885,7 +889,7 @@ public class NCdump {
   }
 
   static private int totalWidth = 80;
-  static private void writeNcMLValues(Variable v, PrintStream out, Indent indent) throws IOException {
+  static private void writeNcMLValues(Variable v, PrintWriter out, Indent indent) throws IOException {
     Array data = v.read();
     int width = formatValues(indent+"<values>", out, 0, indent);
 
@@ -895,7 +899,7 @@ public class NCdump {
     formatValues("</values>\n", out, width, indent);
   }
 
-  static private int formatValues(String s, PrintStream out, int width, Indent indent) {
+  static private int formatValues(String s, PrintWriter out, int width, Indent indent) {
     int len = s.length();
     if (len + width > totalWidth) {
       out.print("\n");
@@ -948,9 +952,8 @@ public class NCdump {
     }
 
     try {
-      NCdump.print(sbuff.toString(), System.out, null);
-
-      // NCdump.print(args[0], System.out, false, false, false, false, null, null);
+      Writer writer = new BufferedWriter( new OutputStreamWriter(System.out, Charset.forName("UTF-8")));
+      NCdumpW.print(sbuff.toString(),writer, null);
 
     } catch (java.io.IOException ioe) {
       ioe.printStackTrace();

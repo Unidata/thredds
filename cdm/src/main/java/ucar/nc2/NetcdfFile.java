@@ -144,7 +144,7 @@ public class NetcdfFile {
     }
   }
 
-  static public final String reserved = ".!*'();:@&=+$,/?%#[]";
+  static public final String reserved = " .!*'();:@&=+$,/?%#[]";
 
   public static String escapeName(String vname) {
     return StringUtil.escape2(vname, NetcdfFile.reserved);
@@ -534,6 +534,11 @@ public class NetcdfFile {
     return objectNamePattern.pattern();
   }
 
+  // a no-op but leave it in in case we change our minds
+  static public String createValidNetcdfObjectName(String name) {
+    return name;
+  }
+
   /**
    * Convert a name to a legal netcdf name.
    * From the user manual:
@@ -550,7 +555,7 @@ public class NetcdfFile {
    * @param name convert this name
    * @return converted name
    */
-  static public String createValidNetcdfObjectName(String name) {
+  static public String createValidNetcdfObjectNameOld(String name) {
     StringBuffer sb = new StringBuffer(name);
 
     //LOOK: could escape characters, as in DODS (%xx) ??
@@ -723,7 +728,7 @@ public class NetcdfFile {
    * If the name actually has a ".", you must escape it (replace with "%2e")
    * If the name actually has a "/", you must escape it (replace with "%??")
    *
-   * @param fullName eg "/group/subgroup/name1.name2.name".
+   * @param fullName eg "/group/subgroup/name1.name2.name". Any chars may be escaped
    * @return Variable or null if not found.
    */
   public Variable findVariable(String fullName) {
@@ -904,7 +909,7 @@ public class NetcdfFile {
    * @see NCdump#parseVariableSection for syntax of constraint expression
    */
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
-    NCdump.CEresult cer = NCdump.parseVariableSection(this, variableSection);
+    NCdumpW.CEresult cer = NCdumpW.parseVariableSection(this, variableSection);
     Section s = new Section(cer.ranges);
     if (cer.hasInner){
       return cer.v.readAllStructures(s, flatten);
@@ -914,31 +919,44 @@ public class NetcdfFile {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Write CDL representation to OutputStream.
    *
-   * @param os     write to this OutputStream
+   * @param out write to this OutputStream
    * @param strict if true, make it stricly CDL, otherwise, add a little extra info
    */
-  public void writeCDL(java.io.OutputStream os, boolean strict) {
-    PrintStream out = new PrintStream(os);
-    toStringStart(out, strict);
-    toStringEnd(out);
-    out.flush();
+  public void writeCDL(OutputStream out, boolean strict) {
+    PrintWriter pw = new PrintWriter( new OutputStreamWriter(out));
+    toStringStart(pw, strict);
+    toStringEnd(pw);
+    pw.flush();
+  }
+
+  /**
+   * Write CDL representation to PrintWriter.
+   *
+   * @param pw write to this PrintWriter
+   * @param strict if true, make it stricly CDL, otherwise, add a little extra info
+   */
+  public void writeCDL(PrintWriter pw, boolean strict) {
+    toStringStart(pw, strict);
+    toStringEnd(pw);
+    pw.flush();
   }
 
   /**
    * CDL representation of Netcdf header info.
    */
   public String toString() {
-    ByteArrayOutputStream ba = new ByteArrayOutputStream(40000);
-    PrintStream out = new PrintStream(ba);
+    CharArrayWriter ba = new CharArrayWriter(40000);
+    PrintWriter out = new PrintWriter(ba);
     writeCDL(out, false);
     out.flush();
     return ba.toString();
   }
 
-  protected void toStringStart(PrintStream out, boolean strict) {
+  protected void toStringStart(PrintWriter pw, boolean strict) {
     String name = getLocation();
     if (strict) {
       int pos = name.lastIndexOf('/');
@@ -947,12 +965,12 @@ public class NetcdfFile {
       if (name.endsWith(".nc")) name = name.substring(0, name.length() - 3);
       if (name.endsWith(".cdl")) name = name.substring(0, name.length() - 4);
     }
-    out.print("netcdf " + name + " {\n");
-    rootGroup.writeCDL(out, "", strict);
+    pw.print("netcdf " + name + " {\n");
+    rootGroup.writeCDL(pw, "", strict);
   }
 
-  protected void toStringEnd(PrintStream out) {
-    out.print("}\n");
+  protected void toStringEnd(PrintWriter pw) {
+    pw.print("}\n");
   }
 
   /**
@@ -961,10 +979,22 @@ public class NetcdfFile {
    * @param os : write to this Output Stream.
    * @param uri use this for the uri attribute; if null use getLocation(). // ??
    * @throws IOException if error
-   * @see NCdump#writeNcML
+   * @see NCdumpW#writeNcML
    */
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
-    NCdump.writeNcML(this, os, false, uri);
+    NCdumpW.writeNcML(this, new OutputStreamWriter(os), false, uri);
+  }
+
+  /**
+   * Write the NcML representation: dont show coodinate values
+   *
+   * @param os : write to this Writer, should have encoding of UTF-8 if applicable
+   * @param uri use this for the uri attribute; if null use getLocation().
+   * @throws IOException if error
+   * @see NCdumpW#writeNcML
+   */
+  public void writeNcML(java.io.Writer os, String uri) throws IOException {
+    NCdumpW.writeNcML(this, os, false, uri);
   }
 
   /**

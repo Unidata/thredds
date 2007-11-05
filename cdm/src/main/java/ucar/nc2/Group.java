@@ -24,7 +24,7 @@ import ucar.ma2.DataType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
  * A Group is a logical collection of Variables.
@@ -74,6 +74,7 @@ public class Group {
    */
   public Variable findVariable(String shortName) {
     if (shortName == null) return null;
+    shortName =  NetcdfFile.unescapeName(shortName);
 
     for (Variable v : variables) {
       if (shortName.equals(v.getShortName()))
@@ -89,6 +90,7 @@ public class Group {
    */
   public Variable findVariableRecurse(String shortName) {
     if (shortName == null) return null;
+    shortName =  NetcdfFile.unescapeName(shortName);
 
     Variable v = findVariable( shortName);
     if ((v == null) && (parent != null))
@@ -103,11 +105,13 @@ public class Group {
 
   /**
    * Retrieve the Group with the specified (short) name.
-   * @param shortName short name of the nested group you are looking for.
+   * @param shortName short name of the nested group you are looking for. May be escaped.
+   * @see NetcdfFile#unescapeName
    * @return the Group, or null if not found
    */
   public Group findGroup(String shortName) {
     if ( shortName == null) return null;
+    shortName = NetcdfFile.unescapeName(shortName);
 
     for (Group group : groups) {
       if (shortName.equals(group.getShortName()))
@@ -130,6 +134,8 @@ public class Group {
    * @return the Dimension, or null if not found
    */
   public Dimension findDimension(String name) {
+    if (name == null) return null;
+    name = NetcdfFile.unescapeName(name);
     Dimension d = findDimensionLocal( name);
     if (d != null) return d;
 
@@ -145,6 +151,8 @@ public class Group {
    * @return the Dimension, or null if not found
    */
   public Dimension findDimensionLocal(String name) {
+    if (name == null) return null;
+    name =  NetcdfFile.unescapeName(name);
     for (Dimension d : dimensions) {
       if (name.equals(d.getName()))
         return d;
@@ -162,10 +170,13 @@ public class Group {
   /**
    * Find an Attribute in this Group by its name.
    *
-   * @param name the name of the attribute
+   * @param name the name of the attribute. may be escaped
    * @return the attribute, or null if not found
    */
   public Attribute findAttribute(String name) {
+    if (name == null) return null;
+    name =  NetcdfFile.unescapeName(name);
+
     for (Attribute a : attributes) {
       if (name.equals(a.getName()))
         return a;
@@ -180,6 +191,8 @@ public class Group {
    * @return the attribute, or null if not found
    */
   public Attribute findAttributeIgnoreCase(String name) {
+    if (name == null) return null;
+    name =  NetcdfFile.unescapeName(name);
     for (Attribute a : attributes) {
       if (name.equalsIgnoreCase(a.getName()))
         return a;
@@ -195,6 +208,8 @@ public class Group {
    * @return the Enumeration, or null if not found
    */
   public Enumeration findEnumeration(String name) {
+    if (name == null) return null;
+    name =  NetcdfFile.unescapeName(name);
     for (Enumeration d : enums) {
       if (name.equals(d.getName()))
         return d;
@@ -225,11 +240,11 @@ public class Group {
     return sbuff.toString();
   }
 
-  protected void toString(PrintStream out, String indent) {
+  protected void toString(PrintWriter out, String indent) {
     writeCDL(out, indent, false);
   }
 
-  protected void writeCDL(PrintStream out, String indent, boolean strict) {
+  protected void writeCDL(PrintWriter out, String indent, boolean strict) {
     boolean hasE = (enums.size() > 0);
     boolean hasD = (dimensions.size() > 0);
     boolean hasV = (variables.size() > 0);

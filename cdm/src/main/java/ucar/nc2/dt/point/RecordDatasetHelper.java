@@ -50,7 +50,7 @@ public class RecordDatasetHelper {
   protected String latVName, lonVName, altVName;
   protected DataType stationIdType;
 
-  protected HashMap stnHash;
+  protected Map<Object,Station> stnHash;
   protected StructureDS recordVar;
   protected Dimension obsDim;
 
@@ -193,7 +193,7 @@ public class RecordDatasetHelper {
     // see if its a station or point dataset
     boolean hasStations = stnIdVName != null;
     if (hasStations)
-      stnHash = new HashMap();
+      stnHash = new HashMap<Object,Station>();
 
     // get min and max date and lat,lon
     double minDate = Double.MAX_VALUE;

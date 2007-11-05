@@ -310,7 +310,7 @@ public class DatasetViewer extends JPanel {
     dumpPane.clear();
     String spec = null;
 
-    try { spec = NCdump.makeSectionString(v, null); }
+    try { spec = NCdumpW.makeSectionString(v, null); }
     catch (InvalidRangeException ex) { return; }
 
     dumpPane.setContext(ds, spec);

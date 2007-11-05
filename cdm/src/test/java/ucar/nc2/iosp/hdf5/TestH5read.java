@@ -52,7 +52,7 @@ public class TestH5read extends TestCase {
 
   public void problem() {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    readAllData( "C:/data/testdata/compound/enumcmpnd.h5");
+    readAllData( "C:/data/testdata/hdf5/xmdf/mesh_datasets.h5");
   }
 
   public static void readAllDir(String dirName) {

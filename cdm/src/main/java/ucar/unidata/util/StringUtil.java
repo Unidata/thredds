@@ -290,8 +290,7 @@ public class StringUtil {
    * @param replaceWith replace with these
    * @return resulting string
    */
-  static public String replace(String x, char[] replaceChar,
-          String[] replaceWith) {
+  static public String replace(String x, char[] replaceChar,  String[] replaceWith) {
     // common case no replacement
     boolean ok = true;
     for (int i = 0; i < replaceChar.length; i++) {

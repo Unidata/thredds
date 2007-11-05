@@ -174,9 +174,9 @@ public class NCdumpPane extends thredds.ui.TextHistoryPane {
 
     CommonTask(String command) {
       this.command = command;
-      NCdump.CEresult cer = null;
+      NCdumpW.CEresult cer = null;
       try {
-        cer = NCdump.parseVariableSection(ds, command);
+        cer = NCdumpW.parseVariableSection(ds, command);
         v = cer.v;
       } catch (Exception e) {
         ta.setText(e.getMessage());
@@ -226,14 +226,13 @@ public class NCdumpPane extends thredds.ui.TextHistoryPane {
     }
 
     public void run() {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(100000);
-      PrintStream ps = new PrintStream(bos);
       try {
         data = ds.read(command, true);
-        NCdump.printArray( data, null, ps, this);
+        contents = NCdumpW.printArray( data, null, this);
 
       } catch (Exception e) {
         e.printStackTrace();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(100000);
         e.printStackTrace( new PrintStream(bos));
         contents = bos.toString();
 
@@ -243,8 +242,7 @@ public class NCdumpPane extends thredds.ui.TextHistoryPane {
       }
 
       if (cancel)
-        ps.println("\n***Cancelled by User");
-      contents = bos.toString();
+        contents = "\n***Cancelled by User";
 
       success = !cancel;
       done = true;

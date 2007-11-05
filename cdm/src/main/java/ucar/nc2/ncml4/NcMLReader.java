@@ -235,6 +235,36 @@ public class NcMLReader {
   }
 
   /**
+   * Read NcML doc from a Reader, and construct a NetcdfDataset.
+   *
+   * @param r        the Reader containing the NcML document
+   * @param cancelTask allow user to cancel the task; may be null
+   * @return the resulting NetcdfDataset
+   * @throws IOException on read error, or bad referencedDatasetUri URI
+   */
+  static public NetcdfDataset readNcML(Reader r, CancelTask cancelTask) throws IOException {
+
+    org.jdom.Document doc;
+    try {
+      SAXBuilder builder = new SAXBuilder(validate);
+      doc = builder.build(r);
+    } catch (JDOMException e) {
+      throw new IOException(e.getMessage());
+    }
+    if (debugXML) System.out.println(" SAXBuilder done");
+
+    if (showParsedXML) {
+      XMLOutputter xmlOut = new XMLOutputter();
+      System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
+    }
+
+    Element netcdfElem = doc.getRootElement();
+    NetcdfDataset ncd = readNcML(null, netcdfElem, cancelTask);
+    if (debugOpen) System.out.println("***NcMLReader.readNcML (stream) result= \n" + ncd);
+    return ncd;
+  }
+
+  /**
    * Read NcML from a JDOM Document, and construct a NetcdfDataset.
    *
    * @param ncmlLocation the location of the NcML, or may be just a unique name for caching purposes.

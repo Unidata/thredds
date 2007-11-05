@@ -225,7 +225,7 @@ public class Attribute {
       buff.append(" = ");
       for (int i = 0; i < getLength(); i++) {
         if (i != 0) buff.append(", ");
-        buff.append("\"").append( NCdump.encodeString(getStringValue(i)) ).append("\"");
+        buff.append("\"").append( NCdumpW.encodeString(getStringValue(i)) ).append("\"");
       }
     } else {
       buff.append(" = ");
@@ -392,11 +392,11 @@ public class Attribute {
     //if (validate) validate(name);
   }
 
-  private void validate(String name) {
+  /* private void validate(String name) {
     if (!NetcdfFile.isValidNetcdfObjectName(name))
       throw new IllegalArgumentException("Illegal Netcdf Object Name = '" + name + "', should be " +
               NetcdfFile.getValidNetcdfObjectNamePattern());
-  }
+  } */
 
 
   /**

@@ -80,9 +80,12 @@ public class TestUnicode extends TestCase {
     byte[] b = new byte[codes.length];
     for (int i=0; i<codes.length; i++)
       b[i] = (byte) codes[i];
-    if (debug) System.out.println(showBytes(b));
+    if (debug) System.out.println(" orgBytes= "+showBytes(b));
     String s = new String(b, "UTF-8");
-    return s; // Normalizer.normalize(s, Normalizer.Form.NFC);
+    if (debug) System.out.println("convBytes= "+showBytes( s.getBytes()));
+    s =  Normalizer.normalize(s, Normalizer.Form.NFC);
+    if (debug) System.out.println("normBytes= "+showBytes( s.getBytes()));
+    return s;
   }
 
   public void testString() throws IOException {
