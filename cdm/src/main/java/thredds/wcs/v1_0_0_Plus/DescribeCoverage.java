@@ -226,7 +226,19 @@ public class DescribeCoverage extends WcsRequest
   public Element genRangeSetElem( GridDatatype coverage )
   {
     Element rangeSetElem = new Element( "rangeSet", wcsNS);
+    Element innerRangeSetElem = new Element( "RangeSet", gmlNS);
+    if ( "" != null )
+      innerRangeSetElem.addContent(
+              new Element( "description").addContent(
+                      "" ) );
+    innerRangeSetElem.addContent(
+            new Element( "name", wcsNS).addContent( ""));
+    innerRangeSetElem.addContent(
+            new Element( "label", wcsNS ).addContent( "" ) );
+    //for ( double z : coverage.getCoordinateSystem().getVerticalAxis().getCoordValues())
+    innerRangeSetElem.addContent(
+            new Element( "axisDescription", wcsNS ).addContent( "" ) );
 
-    return rangeSetElem;
+    return rangeSetElem.addContent( innerRangeSetElem);
   }
 }
