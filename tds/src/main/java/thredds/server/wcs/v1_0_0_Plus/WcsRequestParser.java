@@ -83,8 +83,15 @@ public class WcsRequestParser
     else if ( operation.equals( WcsRequest.Operation.GetCoverage ) )
     {
       String coverageId = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
+      String crs = ServletUtil.getParameterIgnoreCase( req, "CRS" );
+      String responseCRS = ServletUtil.getParameterIgnoreCase( req, "RESPONSE_CRS" );
+      String bbox = ServletUtil.getParameterIgnoreCase( req, "BBOX" );
+      String time = ServletUtil.getParameterIgnoreCase( req, "TIME" );
+      // parameter
+      String format = ServletUtil.getParameterIgnoreCase( req, "FORMAT" );
 
-      return new GetCoverage( operation, version, datasetPath, dataset, coverageId);
+      return new GetCoverage( operation, version, datasetPath, dataset, coverageId,
+                              crs, responseCRS, bbox, time, format);
     }
     else
       throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation <" + requestParam + ">." );

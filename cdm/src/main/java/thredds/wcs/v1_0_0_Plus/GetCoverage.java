@@ -21,9 +21,12 @@ public class GetCoverage extends WcsRequest
           org.slf4j.LoggerFactory.getLogger( GetCoverage.class );
 
   private String coverageId;
+  private String crs, responseCRS;
+  private String bbox, time, format;
 
   public GetCoverage( Operation operation, String version, String datasetPath, GridDataset dataset,
-                      String coverageId )
+                      String coverageId, String crs, String responseCRS,
+                      String bbox, String time, String format )
   {
     super( operation, version, datasetPath, dataset);
     this.coverageId = coverageId;
@@ -31,6 +34,12 @@ public class GetCoverage extends WcsRequest
       throw new IllegalArgumentException( "Non-null coverage identifier required." );
     if ( !this.isAvailableCoverageName( this.coverageId ) )
       throw new IllegalArgumentException( "Unknown coverage ID <" + this.coverageId + ">." );
+
+    this.crs = crs;
+    this.responseCRS = responseCRS;
+    this.bbox = bbox;
+    this.time = time;
+    this.format = format;
   }
 
   //public NetcdfFile getCoverageData() {}
