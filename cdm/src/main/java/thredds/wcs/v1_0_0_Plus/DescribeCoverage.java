@@ -1,5 +1,6 @@
 package thredds.wcs.v1_0_0_Plus;
 
+import org.jdom.Namespace;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
@@ -170,8 +171,8 @@ public class DescribeCoverage extends WcsRequest
   protected Element genEnvelopeElem( GridCoordSystem gcs )
   {
     // spatialDomain/Envelope
-    Element envelopeElem = new Element( "EnvelopeWithTimePeriod", wcsNS );
-    if ( gcs.hasTimeAxis())
+    Element envelopeElem;
+    if ( gcs.hasTimeAxis() )
       envelopeElem = new Element( "EnvelopeWithTimePeriod", wcsNS );
     else
       envelopeElem = new Element( "Envelope", wcsNS );
