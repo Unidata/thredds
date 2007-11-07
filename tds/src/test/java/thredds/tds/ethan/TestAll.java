@@ -6,7 +6,6 @@ import java.util.*;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -16,10 +15,17 @@ import thredds.catalog.query.DqcFactory;
 import thredds.catalog.query.QueryCapability;
 import thredds.datatype.DateType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.TypedDatasetFactory;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.thredds.ThreddsDataFactory;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.Attribute;
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.geoloc.vertical.VerticalTransform;
+import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
  * _more_
@@ -525,6 +531,185 @@ public class TestAll extends TestCase
     }
 
     return pass;
+  }
+
+  /**
+   * Ethan's attempt to gather projection and vertical coordinate
+   * information for motherlode NCEP model data.
+   *
+   * @param args not used
+   */
+  public static void main( String[] args )
+  {
+    final ThreddsDataFactory threddsDataFactory = new ThreddsDataFactory();
+    final Map<String, String> failureMsgs = new HashMap<String, String>();
+    final StringBuffer gcsMsg = new StringBuffer();
+    final StringBuffer otherMsg = new StringBuffer();
+
+    List<String> catList = new ArrayList<String>();
+    catList.add( "fmrc/NCEP/GFS/Alaska_191km");
+    catList.add( "fmrc/NCEP/GFS/CONUS_80km");
+    catList.add( "fmrc/NCEP/GFS/CONUS_95km");
+    catList.add( "fmrc/NCEP/GFS/CONUS_191km");
+    catList.add( "fmrc/NCEP/GFS/Global_0p5deg");
+    catList.add( "fmrc/NCEP/GFS/Global_onedeg");
+    catList.add( "fmrc/NCEP/GFS/Global_2p5deg");
+    catList.add( "fmrc/NCEP/GFS/Hawaii_160km");
+    catList.add( "fmrc/NCEP/GFS/N_Hemisphere_381km");
+    catList.add( "fmrc/NCEP/GFS/Puerto_Rico_191km");
+    catList.add( "fmrc/NCEP/NAM/Alaska_11km");
+    catList.add( "fmrc/NCEP/NAM/Alaska_22km");
+    catList.add( "fmrc/NCEP/NAM/Alaska_45km/noaaport");
+    catList.add( "fmrc/NCEP/NAM/Alaska_45km/conduit");
+    catList.add( "fmrc/NCEP/NAM/Alaska_95km");
+    catList.add( "fmrc/NCEP/NAM/CONUS_12km");
+    catList.add( "fmrc/NCEP/NAM/CONUS_20km/surface");
+    catList.add( "fmrc/NCEP/NAM/CONUS_20km/selectsurface");
+    catList.add( "fmrc/NCEP/NAM/CONUS_20km/noaaport");
+    catList.add( "fmrc/NCEP/NAM/CONUS_40km/conduit");
+    catList.add( "fmrc/NCEP/NAM/CONUS_80km");
+    catList.add( "fmrc/NCEP/NAM/Polar_90km");
+    catList.add( "fmrc/NCEP/RUC2/CONUS_20km/surface");
+    catList.add( "fmrc/NCEP/RUC2/CONUS_20km/pressure");
+    catList.add( "fmrc/NCEP/RUC2/CONUS_20km/hybrid");
+    catList.add( "fmrc/NCEP/RUC2/CONUS_40km");
+    catList.add( "fmrc/NCEP/RUC/CONUS_80km");
+    catList.add( "fmrc/NCEP/DGEX/CONUS_12km");
+    catList.add( "fmrc/NCEP/DGEX/Alaska_12km");
+    catList.add( "fmrc/NCEP/NDFD/CONUS_5km");
+
+    CatalogCrawler.Listener listener = new CatalogCrawler.Listener()
+    {
+      public void getDataset( InvDataset ds )
+      {
+        StringBuffer localLog = new StringBuffer();
+
+        gcsMsg.append( ds.getFullName()).append("\n");
+        NetcdfDataset ncd;
+        try
+        {
+          ncd = threddsDataFactory.openDataset( ds, false, null, localLog );
+        }
+        catch ( IOException e )
+        {
+          failureMsgs.put( ds.getName(), "I/O error while trying to open: " + e.getMessage() + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
+          return;
+        }
+        catch ( Exception e )
+        {
+          ByteArrayOutputStream os = new ByteArrayOutputStream();
+          PrintStream ps = new PrintStream( os );
+          e.printStackTrace( ps );
+          ps.close();
+          failureMsgs.put( ds.getName(), "Exception while trying to open: " + os.toString() + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
+          return;
+        }
+
+        if ( ncd == null )
+        {
+          failureMsgs.put( ds.getName(), "Failed to open dataset: " + ( localLog.length() > 0 ? "\n" + localLog.toString() : "" ) );
+          return;
+        }
+
+        GridDataset gridDs = new ucar.nc2.dt.grid.GridDataset( ncd );
+
+        boolean getVertCoordInfo = true;
+        if ( getVertCoordInfo)
+        {
+          // Figure out vertical coord info
+          for ( GridDataset.Gridset curGridset : gridDs.getGridsets())
+          {
+            gcsMsg.append( "  GeoCoordSys Name=").append( curGridset.getGeoCoordSystem().getName()).append( "\n");
+            ProjectionImpl proj = curGridset.getGeoCoordSystem().getProjection();
+            if ( proj != null)
+            {
+              gcsMsg.append( "    Projection:\n")
+                    .append( "      Name=").append( proj.getName()).append( "\n")
+                    .append( "      ClassName=").append( proj.getClassName()).append( "\n")
+                    .append( "      Params=").append( proj.paramsToString()).append( "\n")
+                    .append( "      oString()=").append( proj.toString()).append( "\n");
+            }
+            CoordinateAxis1D verticalAxis = curGridset.getGeoCoordSystem().getVerticalAxis();
+            if ( verticalAxis != null )
+            {
+              gcsMsg.append( "    VerticalAxis:\n")
+                    .append( "      Name =").append( verticalAxis.getName()).append( "\n")
+                    .append( "      Description =").append( verticalAxis.getDescription()).append( "\n")
+                    .append( "      UnitsString =").append( verticalAxis.getUnitsString()).append( "\n");
+            }
+            VerticalCT vct = curGridset.getGeoCoordSystem().getVerticalCT();
+            if ( vct != null )
+            {
+              gcsMsg.append( "    VerticalCT:\n" )
+                    .append( "        name=" ).append( vct.getName()).append( "\n");
+            }
+
+            VerticalTransform vt = curGridset.getGeoCoordSystem().getVerticalTransform();
+            if ( vt != null )
+            {
+              gcsMsg.append( "    VerticalTransform:\n" )
+                    .append( "        unit=" ).append( vt.getUnitString() ).append( "\n" );
+            }
+          }
+        }
+        else
+        {
+// Figure out X-Y projection information
+          GridDataset.Gridset aGridset = gridDs.getGridsets().get( 0);
+          String gridMapping = aGridset.getGrids().get( 0).findAttributeIgnoreCase( "grid_mapping").getStringValue();
+          VariableSimpleIF gridMapVar = gridDs.getDataVariable( gridMapping);
+
+          gcsMsg.append( "    GridDataset GridMap <").append( gridMapVar.getName()).append("> Params:\n" );
+          for ( Attribute curAtt : gridMapVar.getAttributes())
+          {
+            gcsMsg.append( "      " ).append( curAtt.toString() ).append( "\n" );
+          }
+        }
+
+
+      }
+    };
+    CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT, false, listener );
+
+    for ( String curCat : catList )
+    {
+      gcsMsg.append( "********************\n<h4>" ).append( curCat ).append( "</h4>\n\n<pre>\n" );
+      curCat = "http://motherlode.ucar.edu:8080/thredds/catalog/" + curCat + "/files/catalog.xml";
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      PrintStream out = new PrintStream( os );
+      int numDs = 0;
+      try
+      {
+        numDs = crawler.crawl( curCat, null, out );
+      }
+      catch ( Exception e )
+      {
+        gcsMsg.append( "**********\n  Exception:\n" ).append( e.getMessage() ).append( "\n**********\n" );
+        otherMsg.append( "**********\n  Exception:\n" ).append( e.getMessage() ).append( "\n**********\n" );
+      }
+      out.close();
+      otherMsg.append( "********************\n" )
+              .append( curCat )
+              .append( "\n******************** <").append( numDs).append(">\n")
+              .append( os.toString());
+      gcsMsg.append( "</pre>\n\n");
+    }
+
+
+    if ( !failureMsgs.isEmpty() )
+    {
+      otherMsg.append( "\n********************\nFailed to open some datasets:" );
+      for ( String curPath : failureMsgs.keySet() )
+      {
+        String curMsg = failureMsgs.get( curPath );
+        otherMsg.append( "\n  " ).append( curPath ).append( ": " ).append( curMsg );
+      }
+    }
+
+    System.out.println( gcsMsg );
+    System.out.println( "\n\n\n\n********************\nMessage from catalog crawling:\n" + otherMsg);
+
+    return;
   }
 
   /**
