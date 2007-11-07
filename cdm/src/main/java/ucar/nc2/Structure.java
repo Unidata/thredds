@@ -399,7 +399,7 @@ public class Structure extends Variable {
   public String getNameAndAttributes() {
     StringBuffer sbuff = new StringBuffer();
     sbuff.append("Structure ");
-    getNameAndDimensions(sbuff, false, false);
+    getNameAndDimensions(sbuff, false, true);
     sbuff.append("\n");
     for (Attribute att : attributes) {
       sbuff.append("  ").append(getShortName()).append(":");
@@ -410,17 +410,9 @@ public class Structure extends Variable {
     return sbuff.toString();
   }
 
-  /** String representation of Structure and nested variables. */
-  @Override
-  public String toString() {
-    return writeCDL("   ", false, false);
-  }
-
   @Override
   public String writeCDL(String space, boolean useFullName, boolean strict) {
     StringBuffer buf = new StringBuffer();
-    buf.setLength(0);
-    //buf.append("\n");
     buf.append(space);
     buf.append(dataType.toString());
     buf.append(" {\n");
@@ -432,14 +424,14 @@ public class Structure extends Variable {
 
     buf.append(space);
     buf.append("} ");
-    getNameAndDimensions(buf, useFullName, false);
+    getNameAndDimensions(buf, useFullName, strict);
     buf.append(";");
     buf.append(extraInfo());
     buf.append("\n");
 
     for (Attribute att : getAttributes()) {
       buf.append(nestedSpace);
-      if (strict) buf.append(getShortName());
+      if (strict) buf.append( NetcdfFile.escapeName(getShortName()));
       buf.append("  :");
       buf.append(att.toString());
       buf.append(";");

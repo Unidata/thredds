@@ -53,16 +53,23 @@ public class NcMLWriter {
   private Variable aggCoord;
 
   /**
-   * Write a NetcdfFile as an XML document to the specified file.
+   * Write NcML from specified NetcdfFile to a String.
    *
    * @param ncfile      NcML for this NetcdfFile
    * @return the NcML in a String
    * @throws IOException on io error
    */
   public String writeXML(NetcdfFile ncfile) throws IOException {
-    ByteArrayOutputStream out = new ByteArrayOutputStream(50000);
-    writeXML(ncfile, out, null);
-    return out.toString();
+    if (ncfile instanceof NetcdfDataset)
+      ncd = (NetcdfDataset) ncfile;
+    else
+      ncd = new NetcdfDataset(ncfile, false);
+
+    // Output the document, use standard formatter
+    //fmt = new XMLOutputter("  ", true);
+    //fmt.setLineSeparator("\n");
+    fmt = new XMLOutputter(Format.getPrettyFormat());
+    return fmt.outputString(makeDocument( null));
   }
 
   /**

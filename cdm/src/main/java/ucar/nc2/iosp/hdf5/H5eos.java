@@ -58,7 +58,6 @@ public class H5eos {
     Element swathStructure = root.getChild("SwathStructure");
     Element swath1 = swathStructure.getChild("SWATH_1");
     String swathName = swath1.getChild("SwathName").getText();
-    swathName = NetcdfFile.createValidNetcdfObjectName( swathName);
 
     // global Dimensions
     Element d = swath1.getChild("Dimension");
@@ -80,7 +79,6 @@ public class H5eos {
     List<Element> varsLoc = (List<Element>) floc.getChildren();
     for (Element elem : varsLoc) {
       String varname = elem.getChild("GeoFieldName").getText();
-      varname = NetcdfFile.createValidNetcdfObjectName( varname);
       Variable v = gloc.findVariable( varname);
       assert v != null : varname;
 
@@ -101,7 +99,6 @@ public class H5eos {
     List<Element> vars = (List<Element>) f.getChildren();
     for (Element elem : vars) {
       String varname = elem.getChild("DataFieldName").getText();
-      varname = NetcdfFile.createValidNetcdfObjectName( varname);
       Variable v = g.findVariable( varname);
       assert v != null : varname;
 

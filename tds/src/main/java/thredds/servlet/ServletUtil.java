@@ -633,8 +633,8 @@ public class ServletUtil {
       throws IOException {
     // No file, nothing to view
     if (file == null) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
 

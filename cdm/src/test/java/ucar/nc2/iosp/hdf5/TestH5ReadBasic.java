@@ -116,7 +116,7 @@ public class TestH5ReadBasic extends TestCase {
     NetcdfFile ncfile = TestH5.openH5("support/dstr.h5");
 
     Variable v = null;
-    assert (null != (v = ncfile.findVariable("Char_Data")));
+    assert (null != (v = ncfile.findVariable("Char Data")));
     assert (v.getDataType() == DataType.CHAR);
 
     Dimension d = v.getDimension(0);

@@ -24,6 +24,7 @@ import ucar.unidata.util.Format;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.Attribute;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
@@ -82,9 +83,9 @@ public class TestUnicode extends TestCase {
       b[i] = (byte) codes[i];
     if (debug) System.out.println(" orgBytes= "+showBytes(b));
     String s = new String(b, "UTF-8");
-    if (debug) System.out.println("convBytes= "+showBytes( s.getBytes()));
-    s =  Normalizer.normalize(s, Normalizer.Form.NFC);
-    if (debug) System.out.println("normBytes= "+showBytes( s.getBytes()));
+    if (debug) System.out.println("convBytes= "+showString( s));
+    //s =  Normalizer.normalize(s, Normalizer.Form.NFC);
+    //if (debug) System.out.println("normBytes= "+showBytes( s.getBytes()));
     return s;
   }
 
@@ -99,10 +100,13 @@ public class TestUnicode extends TestCase {
     //String lineb = new String( b, "UTF-8");
     System.out.println(helloGreek);
     System.out.println("char values= "+showString(helloGreek));
-    System.out.println("norm values= "+showString(s2));
     System.out.println("      UTF-8= "+showBytes(helloGreek.getBytes("UTF-8")));
     System.out.println("     UTF-16= "+showBytes(helloGreek.getBytes("UTF-16")));
     System.out.println("    default= "+showBytes(helloGreek.getBytes()));
+    System.out.println("norm values= "+showString(s2));
+    System.out.println("      UTF-8= "+showBytes(s2.getBytes("UTF-8")));
+    System.out.println("     UTF-16= "+showBytes(s2.getBytes("UTF-16")));
+    System.out.println("    default= "+showBytes(s2.getBytes()));
 
     write(helloGreek, null);
     write(helloGreek, "UTF-8");
@@ -133,8 +137,10 @@ public class TestUnicode extends TestCase {
 
   public void makeNetCDF() throws IOException, InvalidRangeException {
     String helloGreek = makeString(helloGreekCode, true);
+    helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
+    System.out.println("normalized= "+showString(helloGreek));
 
-    String filename = "C:/data/unicode/hello.nc";
+    String filename = "C:/data/unicode/helloNorm.nc";
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename);
     ucar.nc2.Dimension dim = ncfile.addDimension(helloGreek, 20);
     ncfile.addVariable(helloGreek, DataType.CHAR, helloGreek);
@@ -149,16 +155,12 @@ public class TestUnicode extends TestCase {
     Variable v = ncfile.findVariable(helloGreek);
     assert v != null;
     assert v.getName().equals(helloGreek);
-    
-    Array rdata = v.read();
-    assert rdata instanceof ArrayChar;
-    ArrayChar.D1 ardata = (ArrayChar.D1) rdata;
-    String s = ardata.getString();
-    System.out.println(" s="+s);
-    System.out.println(showString(s));
 
-    assert s.equals(helloGreek);
-    nc.close();
+    Attribute att = v.findAttribute("units");
+    assert att != null;
+    assert att.isString();
+    assert(helloGreek.equals(att.getStringValue()));
+    nc.close();    
   }
 
   // read a string = (nelems, byte array), then skip to 4 byte boundary

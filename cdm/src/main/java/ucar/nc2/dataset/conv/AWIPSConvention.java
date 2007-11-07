@@ -230,7 +230,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     ds.addCoordinateAxis(v);
 
     parseInfo.append("Created Z Coordinate Axis = ");
-    v.getNameAndDimensions(parseInfo, true, false);
+    v.getNameAndDimensions(parseInfo);
     parseInfo.append("\n");
 
     return dim;
@@ -294,7 +294,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       ds.addVariable(null, varNew);
 
       parseInfo.append("Created New Variable as section = ");
-      varNew.getNameAndDimensions(parseInfo, true, false);
+      varNew.getNameAndDimensions(parseInfo);
       parseInfo.append("\n");
 
       count += dim.getLength();
@@ -421,7 +421,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     ds.setValues(v, nx, startx, dx);
 
     parseInfo.append("Created X Coordinate Axis = ");
-    v.getNameAndDimensions(parseInfo, true, false);
+    v.getNameAndDimensions(parseInfo);
     parseInfo.append("\n");
 
     return v;
@@ -433,7 +433,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     ds.setValues( v, ny, starty, dy);
 
     parseInfo.append("Created Y Coordinate Axis = ");
-    v.getNameAndDimensions(parseInfo, true, false);
+    v.getNameAndDimensions(parseInfo);
     parseInfo.append("\n");
 
     return v;
@@ -449,7 +449,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     double maxCalc = min + d * n;
     parseInfo.append("Created Lon Coordinate Axis (max calc= ").append(maxCalc).append(" should be ").append(max).append(") ");
-    v.getNameAndDimensions(parseInfo, true, false);
+    v.getNameAndDimensions(parseInfo);
     parseInfo.append("\n");
 
     return v;
@@ -465,7 +465,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     double maxCalc = min + d * n;
     parseInfo.append("Created Lat Coordinate Axis (max calc= ").append(maxCalc).append(" should be ").append(max).append(") ");
-    v.getNameAndDimensions(parseInfo, true, false);
+    v.getNameAndDimensions(parseInfo);
     parseInfo.append("\n");
 
     return v;
@@ -507,7 +507,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     timeCoord.setCachedData( vals, true);
 
     parseInfo.append("Created Time Coordinate Axis = ");
-    timeCoord.getNameAndDimensions(parseInfo, true, false);
+    timeCoord.getNameAndDimensions(parseInfo);
     parseInfo.append("\n");
 
     return timeCoord;
@@ -566,7 +566,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     timeCoord.setCachedData( dvals, true);
 
     parseInfo.append("Created Time Coordinate Axis From Reference = ");
-    timeCoord.getNameAndDimensions(parseInfo, true, false);
+    timeCoord.getNameAndDimensions(parseInfo);
     parseInfo.append("\n");
 
     return timeCoord;

@@ -947,7 +947,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   static String makeNetcdfName(String name) {
-    return NetcdfFile.createValidNetcdfObjectName(StringUtil.unescape(name));
+    return StringUtil.unescape(name);
   }
 
   /**

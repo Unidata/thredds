@@ -240,10 +240,6 @@ public class Group {
     return sbuff.toString();
   }
 
-  protected void toString(PrintWriter out, String indent) {
-    writeCDL(out, indent, false);
-  }
-
   protected void writeCDL(PrintWriter out, String indent, boolean strict) {
     boolean hasE = (enums.size() > 0);
     boolean hasD = (dimensions.size() > 0);
@@ -272,8 +268,9 @@ public class Group {
     }
 
     for (Group g : groups) {
-      out.print("\n " + indent + "Group " + g.getShortName() + " {\n");
-      g.toString(out, indent + "  ");
+      String gname = strict ? NetcdfFile.escapeName(g.getShortName()) : g.getShortName();
+      out.print("\n " + indent + "Group " + gname + " {\n");
+      g.writeCDL(out, indent + "  ", strict);
       out.print(indent + " }\n");
     }
 
@@ -283,8 +280,9 @@ public class Group {
     if (hasA && strict)
       out.print(indent + " // global attributes:\n");
     for (Attribute att : attributes) {
-      out.print(indent + " " + getShortName() + ":");
-      out.print( att.toString());
+      String name = strict ? NetcdfFile.escapeName(getShortName()) : getShortName();
+      out.print(indent + " " + name + ":");
+      out.print( att.toString(strict));
       out.print(";");
       if (!strict && (att.getDataType() != DataType.STRING)) out.print(" // " + att.getDataType());
       out.print("\n");
@@ -301,7 +299,7 @@ public class Group {
   public Group(NetcdfFile ncfile, Group parent, String shortName) {
     this.ncfile = ncfile;
     this.parent = parent == null ? ncfile.getRootGroup() : parent ;
-    this.shortName = NetcdfFile.createValidNetcdfObjectName(shortName);
+    this.shortName = shortName;
     this.name = (parent == null) ? shortName : parent.getName() + "/" + shortName;
   }
 

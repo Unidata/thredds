@@ -20,6 +20,7 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 
 import java.io.*;
 import java.util.*;
@@ -99,19 +100,22 @@ public class FileWriter {
     // global attributes
     List<Attribute> glist = fileIn.getGlobalAttributes();
     for (Attribute att : glist) {
+      String useName = N3iosp.makeValidNetcdfObjectName( att.getName());
+      Attribute useAtt;
       if (att.isArray())
-        ncfile.addGlobalAttribute(att.getName(), att.getValues());
+        useAtt = ncfile.addGlobalAttribute(useName, att.getValues());
       else if (att.isString())
-        ncfile.addGlobalAttribute(att.getName(), att.getStringValue());
+        useAtt = ncfile.addGlobalAttribute(useName, att.getStringValue());
       else
-        ncfile.addGlobalAttribute(att.getName(), att.getNumericValue());
-      if (debug) System.out.println("add gatt= " + att);
+        useAtt = ncfile.addGlobalAttribute(useName, att.getNumericValue());
+      if (debug) System.out.println("add gatt= " + useAtt);
     }
 
     // copy dimensions LOOK anon dimensions
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
     for (Dimension oldD : fileIn.getDimensions()) {
-      Dimension newD = ncfile.addDimension(oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
+      String useName = N3iosp.makeValidNetcdfObjectName( oldD.getName());
+      Dimension newD = ncfile.addDimension(useName, oldD.isUnlimited() ? 0 : oldD.getLength(),
           oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
       dimHash.put(newD.getName(), newD);
       if (debug) System.out.println("add dim= " + newD);
@@ -124,7 +128,8 @@ public class FileWriter {
       List<Dimension> dims = new ArrayList<Dimension>();
       List<Dimension> dimvList = oldVar.getDimensions();
       for (Dimension oldD : dimvList) {
-        dims.add(dimHash.get(oldD.getName()));
+        String useName = N3iosp.makeValidNetcdfObjectName( oldD.getName());
+        dims.add(dimHash.get(useName));
       }
 
       DataType newType = oldVar.getDataType();
@@ -140,24 +145,27 @@ public class FileWriter {
         }
 
         // add last dimension
-        Dimension newD = ncfile.addDimension(oldVar.getName() + "_strlen", max_len);
+        String useName = N3iosp.makeValidNetcdfObjectName( oldVar.getName()+ "_strlen");
+        Dimension newD = ncfile.addDimension(useName, max_len);
         dims.add(newD);
 
         newType = DataType.CHAR;
       }
 
-      ncfile.addVariable(oldVar.getName(), newType, dims);
-      if (debug) System.out.println("add var= " + oldVar.getName());
+      String varName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
+      Variable v = ncfile.addVariable( varName, newType, dims);
+      if (debug) System.out.println("add var= " + v);
 
       // attributes
       List<Attribute> attList = oldVar.getAttributes();
       for (Attribute att : attList) {
+        String useName = N3iosp.makeValidNetcdfObjectName( att.getName());
         if (att.isArray())
-          ncfile.addVariableAttribute(oldVar.getName(), att.getName(), att.getValues());
+          ncfile.addVariableAttribute(varName, useName, att.getValues());
         else if (att.isString())
-          ncfile.addVariableAttribute(oldVar.getName(), att.getName(), att.getStringValue());
+          ncfile.addVariableAttribute(varName, useName, att.getStringValue());
         else
-          ncfile.addVariableAttribute(oldVar.getName(), att.getName(), att.getNumericValue());
+          ncfile.addVariableAttribute(varName, useName, att.getNumericValue());
       }
 
     }
@@ -260,13 +268,15 @@ public class FileWriter {
   }
 
   private static void copyAll(NetcdfFileWriteable ncfile, Variable oldVar) throws IOException {
+    String newName = N3iosp.makeValidNetcdfObjectName( oldVar.getName());
+
     Array data = oldVar.read();
     try {
       if (oldVar.getDataType() == DataType.STRING) {
-        data = convertToChar(ncfile.findVariable(oldVar.getName()), data);
+        data = convertToChar(ncfile.findVariable(newName), data);
       }
       if (data.getSize() > 0)  // zero when record dimension = 0
-        ncfile.write(oldVar.getName(), data);
+        ncfile.write(newName, data);
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
@@ -275,6 +285,8 @@ public class FileWriter {
   }
 
   private static void copySome(NetcdfFileWriteable ncfile, Variable oldVar, int nelems) throws IOException {
+    String newName = N3iosp.makeValidNetcdfObjectName( oldVar.getName());
+
     int[] shape = oldVar.getShape();
     int[] origin = new int[oldVar.getRank()];
     int size = shape[0];
@@ -288,10 +300,10 @@ public class FileWriter {
       try {
         data = oldVar.read(origin, shape);
         if (oldVar.getDataType() == DataType.STRING) {
-          data = convertToChar(ncfile.findVariable(oldVar.getName()), data);
+          data = convertToChar(ncfile.findVariable(newName), data);
         }
         if (data.getSize() > 0)  {// zero when record dimension = 0
-          ncfile.write(oldVar.getName(), origin, data);
+          ncfile.write(newName, origin, data);
           if (debugWrite) System.out.println("write "+data.getSize()+" bytes");
         }
 
@@ -341,12 +353,13 @@ public class FileWriter {
    * @param att take attribute name, value, from here
    */
   public void writeGlobalAttribute(Attribute att) {
+    String useName = N3iosp.makeValidNetcdfObjectName( att.getName());
     if (att.isArray()) // why rewrite them ??
-      ncfile.addGlobalAttribute(att.getName(), att.getValues());
+      ncfile.addGlobalAttribute(useName, att.getValues());
     else if (att.isString())
-      ncfile.addGlobalAttribute(att.getName(), att.getStringValue());
+      ncfile.addGlobalAttribute(useName, att.getStringValue());
     else
-      ncfile.addGlobalAttribute(att.getName(), att.getNumericValue());
+      ncfile.addGlobalAttribute(useName, att.getNumericValue());
   }
 
   /**
@@ -356,12 +369,14 @@ public class FileWriter {
    * @param att     take attribute name, value, from here
    */
   public void writeAttribute(String varName, Attribute att) {
+    String attName = N3iosp.makeValidNetcdfObjectName( att.getName());
+    varName = N3iosp.makeValidNetcdfObjectName( varName);
     if (att.isArray())
-      ncfile.addVariableAttribute(varName, att.getName(), att.getValues());
+      ncfile.addVariableAttribute(varName, attName, att.getValues());
     else if (att.isString())
-      ncfile.addVariableAttribute(varName, att.getName(), att.getStringValue());
+      ncfile.addVariableAttribute(varName, attName, att.getStringValue());
     else
-      ncfile.addVariableAttribute(varName, att.getName(), att.getNumericValue());
+      ncfile.addVariableAttribute(varName, attName, att.getNumericValue());
   }
 
   /**
@@ -371,9 +386,10 @@ public class FileWriter {
    * @return the new Dimension
    */
   public Dimension writeDimension(Dimension dim) {
-    Dimension newDim = ncfile.addDimension(dim.getName(), dim.isUnlimited() ? 0 : dim.getLength(),
+    String useName = N3iosp.makeValidNetcdfObjectName( dim.getName());
+    Dimension newDim = ncfile.addDimension(useName, dim.isUnlimited() ? 0 : dim.getLength(),
             dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
-    dimHash.put(newDim.getName(), newDim);
+    dimHash.put(useName, newDim);
     if (debug) System.out.println("write dim= " + newDim);
     return newDim;
   }
@@ -390,7 +406,7 @@ public class FileWriter {
     List<Dimension> dimvList = oldVar.getDimensions();
     for (int j = 0; j < dimvList.size(); j++) {
       Dimension oldD = dimvList.get(j);
-      Dimension newD = dimHash.get(oldD.getName());
+      Dimension newD = dimHash.get( N3iosp.makeValidNetcdfObjectName(oldD.getName()));
       if (null == newD) {
         newD = writeDimension(oldD);
         dimHash.put(newD.getName(), newD);
@@ -398,6 +414,7 @@ public class FileWriter {
       dims[j] = newD;
     }
 
+    String useName = N3iosp.makeValidNetcdfObjectName( oldVar.getShortName());
     if (oldVar.getDataType() == DataType.STRING) {
       try {
         // need to get the maximum string length
@@ -409,21 +426,21 @@ public class FileWriter {
           max_strlen = Math.max(max_strlen, s.length());
         }
 
-        ncfile.addStringVariable(oldVar.getName(), Arrays.asList(dims), max_strlen);
+        ncfile.addStringVariable(useName, Arrays.asList(dims), max_strlen);
       } catch (IOException ioe) {
         log.error("Error reading String variable "+oldVar, ioe);
         return;
       }
     } else
-      ncfile.addVariable(oldVar.getName(), oldVar.getDataType(), dims);
+      ncfile.addVariable(useName, oldVar.getDataType(), dims);
 
 
     varList.add(oldVar);
     if (debug) System.out.println("write var= " + oldVar);
 
     List<Attribute> attList = oldVar.getAttributes();
-    for (Attribute anAttList : attList)
-      writeAttribute(oldVar.getName(), anAttList);
+    for (Attribute att : attList)
+      writeAttribute(useName, att);
   }
 
   /**

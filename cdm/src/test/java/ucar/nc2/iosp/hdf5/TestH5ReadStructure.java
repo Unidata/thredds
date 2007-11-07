@@ -31,7 +31,7 @@ public class TestH5ReadStructure extends TestCase {
   public void testStructureArray() throws IOException {
     NetcdfFile ncfile = TestH5.openH5("support/cstr.h5");
 
-    Variable v = ncfile.findVariable("Compound_String");
+    Variable v = ncfile.findVariable("Compound String");
     assert( null != v);
     assert( v.getDataType() == DataType.STRUCTURE);
     assert( v instanceof Structure);

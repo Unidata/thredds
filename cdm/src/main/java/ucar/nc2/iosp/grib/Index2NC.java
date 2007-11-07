@@ -548,12 +548,12 @@ public class Index2NC  {
 
   private String findVariableName(NetcdfFile ncfile, Index.GribRecord gr, TableLookup lookup, FmrcCoordSys fmr) {
     // first lookup with name & vert name
-    String name = NetcdfFile.createValidNetcdfObjectName( makeVariableName(gr, lookup));
+    String name = makeVariableName(gr, lookup);
     if (fmr.hasVariable( name))
       return name;
 
     // now try just the name
-    String pname = NetcdfFile.createValidNetcdfObjectName( lookup.getParameter(gr).getDescription());
+    String pname = lookup.getParameter(gr).getDescription();
     if (fmr.hasVariable( pname))
       return pname;
 

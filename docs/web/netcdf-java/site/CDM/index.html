@@ -21,16 +21,20 @@
 <p><img src="../images/CDMDataAccess.png" width="444" height="510"></p>
 <p>&nbsp;</p>
 <p><strong>A Dataset </strong>may be a netCDF, HDF5, GRIB, etc. file, an OPeNDAP dataset, a collection of files, or anything else which can be accessed through the netCDF API. We sometimes use the term <em><strong>CDM dataset</strong></em> to mean any of these possibilities, and to emphasize that a dataset does not have to be a file in netCDF format.</p>
-<p>A <strong>Group</strong> is a logical collection of Variables. The Groups in a Dataset form a hierarchical tree, like directories on a disk. A Group has a name and optionally a set of Attributes and Dimensions <strong>. </strong>There is always at least one Group in a Dataset, the <strong>root Group</strong>, whose name is the empty string.</p>
-<p><strong>A Variable</strong> is a container for data. It has a <em>DataType</em>, a set of Dimensions that define its array shape, and optionally a set of Attributes.</p>
+<p>A <strong>Group</strong> is a logical collection of Variables. The Groups in a Dataset form a hierarchical tree, like directories on a disk. A Group has a name and optionally a set of Attributes, Dimensions, and nested Groups <strong>. </strong>There is always at least one Group in a Dataset, the <strong>root Group</strong>, whose name is the empty string.</p>
+<p><strong>A Variable</strong> is a container for data. It has a <em>DataType</em>, a set of Dimensions that define its array shape, and optionally a set of Attributes. Any shared Dimension it uses must be in the same Group or a parent Group. </p>
 <p>A <strong>Dimension</strong> has a length, and is used to define the array shape of a Variable. It may be <em>shared</em> among Variables, which provides a simple yet powerful way of associating Variables. When a Dimension is shared, it has a unique name within the Group. If <em>unlimited</em>,  a Dimension's length may increase. If <em>variableLength</em>, then the actual length is data dependent, and is used to implement the equivilent of ragged arrays.</p>
 <p>An <strong>Attribute</strong> has a name and a value, and associates arbitrary metadata with a Variable or a Group. The value can be a one dimensional array of Strings or numeric values.</p>
-<p>A <strong>Structure</strong> is a type of Variable that contains other Variables, analogous to a <strong><em>struct</em></strong> in C. In general, the data in a Structure are physically stored close together on disk, so that it is efficient to retrieve all of the data in a Structure at the same time. </p>
+<p>A <strong>Structure</strong> is a type of Variable that contains other Variables, analogous to a <strong><em>struct</em></strong> in C. In general, the data in a Structure are physically stored close together on disk, so that it is efficient to retrieve all of the data in a Structure at the same time. A <strong>Sequence</strong> is a one dimensional Variable whose length is not known until you actually read the data. All other Variable types know what their array lengths are without having to read the data. You can have sequences of sequences, which is equivalent to ragged arrays.</p>
+<p>An <strong>object name</strong> refers to the name of a Group, Dimension, Variable, or Attribute. An object name is a String,  a variable length array of Unicode characters. There is no restriction on an object name, it can be any valid Unicode characters.</p>
 <p>An <strong>Array</strong> contains the actual data for a Variable after it is read from the disk or network. You get an Array from a Variable by calling <strong><em>read()</em></strong> or its variants. An Array is always rectangular in shape (like Fortran arrays). </p>
-<p>The <strong>primitive</strong> types are <strong><em>byte, char, short, int, long, float</em></strong> and <strong><em>double</em></strong>, same as in the Java language. The integer types (byte, short, int, long) may be signed or unsigned. Together with <strong><em>String, Structure</em></strong> and <em><strong>enum</strong></em>, these are the possible values of a  Variable's <strong>DataType. </strong> </p>
-<p>A <strong>String</strong> is a variable length array of UTF-8 encoded Unicode characters. Note that ASCII is a subset of UTF-8.</p>
-<p>An <strong>enum</strong> type is an enumeration of (distinct integer value, String) pairs.. A Variable with enum type stores  integer values, which are then mapped to the String values. </p>
-<p>A <strong>Sequence</strong> is a one dimensional Variable whose length is not known until you actually read the data. All other Variable types know what their array lengths are without having to read the data. You can have sequences of sequences, which is equivalent to ragged arrays.</p>
+<p><strong>DataType</strong> describes the possible types of data: </p>
+<blockquote>
+  <p>The <strong>primitive numeric </strong> types are <strong><em>byte, short, int, long, float</em></strong> and <strong><em>double</em></strong>. The integer types (byte, short, int, long) may be <em>signed</em> or <em>unsigned</em>.  </p>
+  <p>A <strong>String</strong> is a variable length array of <a href="http://unicode.org/">Unicode</a> characters. When reading/writing a String to a  file, the characters are <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8 encoded</a> (note that ASCII is a subset of UTF-8). Libraries may use different internal representations, for example the Java library uses UTF-16 encoding. </p>
+  <p>The <strong>char</strong> type contains ASCII characters, one character per byte. </p>
+  <p>An <strong>enum</strong> type is an enumeration of (distinct integer value, String) pairs.. A Variable with enum type stores  integer values, which are then mapped to  Strings. </p>
+</blockquote>
 <hr WIDTH="100%">
 <h2>Coordinate Systems</h2>
 <ul>
@@ -44,7 +48,7 @@
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 17, 2007
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 06, 2007
 </address>
 <p>&nbsp;</p>
 </body>

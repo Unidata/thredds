@@ -27,6 +27,7 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
+import ucar.unidata.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,9 +118,9 @@ public class GribVariable {
     decimalScale = firstRecord.decimalScale;
 
     if (vname == null)
-      vname = NetcdfFile.createValidNetcdfObjectName(useDesc ? desc : name);
+      vname = useDesc ? desc : name;
+    vname = StringUtil.replace(vname, ' ', "_");
 
-    //vname = StringUtil.replace(vname, '-', "_"); // Done in dods server now
     Variable v = new Variable( ncfile, g, null, vname);
     v.setDataType( DataType.FLOAT);
 

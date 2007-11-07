@@ -25,6 +25,7 @@ import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil;
 import ucar.nc2.units.SimpleUnit;
 
 import ucar.unidata.geoloc.*;
@@ -53,7 +54,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
   public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
     if (null != ds.findGlobalAttribute("_enhanced")) return; // check if its already been done - aggregating enhanced datasets.
-    ds.addAttribute(null, new Attribute("_enhanced", ""));
+    ds.addAttribute(null, new Attribute("_enhanced", "")); // LOOK
     
     // find all variables that have the nav dimension
     // put them into a NavInfoList
@@ -79,7 +80,12 @@ public class NUWGConvention extends CoordSysBuilder {
     int mode = 3; // default is LambertConformal
     try {
       mode = navInfo.getInt( "grid_type_code");
-      if (mode == 0) {
+    } catch (NoSuchElementException e) {
+      log.warn("No mode in navInfo - assume 3");
+    }
+
+    try {
+     if (mode == 0) {
         xaxisName = navInfo.getString( "i_dim");
         yaxisName = navInfo.getString( "j_dim");
       } else {
@@ -88,6 +94,7 @@ public class NUWGConvention extends CoordSysBuilder {
       }
     } catch (NoSuchElementException e) {
       log.warn("No mode in navInfo - assume = 1");
+      // could match variable grid_type, data = "tangential lambert conformal  "
     }
     grib = new Grib1( mode);
 
@@ -147,7 +154,7 @@ public class NUWGConvention extends CoordSysBuilder {
           continue; // cant be a structure
         if (makeCoordinateAxis( ncvar, dim)) {
           parseInfo.append("Added referential coordAxis = ");
-          ncvar.getNameAndDimensions(parseInfo, true, false);
+          ncvar.getNameAndDimensions(parseInfo);
           parseInfo.append("\n");
         } else {
           parseInfo.append("Couldnt add referential coordAxis = ").append(ncvar.getName());
@@ -156,14 +163,22 @@ public class NUWGConvention extends CoordSysBuilder {
       } else if (ncvars.size() == 2) {
 
         if (dimName.equals("record")) {
-          // LOOK: anything else to do besides hard code it ?
-          Variable ncvar = ncvars.get(1);
-          if (!(ncvar instanceof VariableDS)) continue; // cant be a structure
+          Variable ncvar0 = ncvars.get(0);
+          Variable ncvar1 = ncvars.get(1);
+          Variable ncvar = ncvar0.getName().equalsIgnoreCase("valtime") ? ncvar0 : ncvar1;
 
           if (makeCoordinateAxis( ncvar, dim)) {
             parseInfo.append("Added referential coordAxis (2) = ");
-            ncvar.getNameAndDimensions(parseInfo, true, false);
+            ncvar.getNameAndDimensions(parseInfo);
             parseInfo.append("\n");
+
+            // the usual crap - clean up time units
+            String units = ncvar.getUnitsString();
+            if (units != null) {
+              units = StringUtil.remove(units, '(');
+              units = StringUtil.remove(units, ')');
+              ncvar.addAttribute(new Attribute("units", units));
+            }
           } else {
             parseInfo.append("Couldnt add referential coordAxis = ").append(ncvar.getName());
           }
@@ -180,7 +195,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
           if (makeCoordinateAxis( ncvar, dim)) {
             parseInfo.append("Added referential boundary coordAxis (2) = ");
-            ncvar.getNameAndDimensions(parseInfo, true, false);
+            ncvar.getNameAndDimensions(parseInfo);
             parseInfo.append("\n");
           } else {
             parseInfo.append("Couldnt add referential coordAxis = ").append(ncvar.getName());
@@ -208,7 +223,6 @@ public class NUWGConvention extends CoordSysBuilder {
         }
       } // 2
     } // loop over dims
-
 
     if (grib.ct != null) {
       VariableDS v = makeCoordinateTransformVariable(ds, grib.ct);
@@ -321,8 +335,9 @@ public class NUWGConvention extends CoordSysBuilder {
     if (vname.equalsIgnoreCase("record"))
       return AxisType.Time;
     Dimension dim = v.getDimension(0);
-    if ((dim != null) && dim.getName().equalsIgnoreCase("record"))
+    if ((dim != null) && dim.getName().equalsIgnoreCase("record")) { // wow thats bad!
       return AxisType.Time;
+    }
 
     String unit = ve.getUnitsString();
     if (unit != null) {

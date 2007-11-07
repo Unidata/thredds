@@ -745,7 +745,7 @@ public class HtmlWriter {
     sb.append("\r\n");
 
     StringBuffer sbuff = new StringBuffer();
-    axis.getNameAndDimensions(sbuff, false, true);
+    axis.getNameAndDimensions(sbuff);
     String name = StringUtil.quoteHtmlContent(sbuff.toString());
     sb.append("&nbsp;");
     sb.append(name);

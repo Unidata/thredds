@@ -931,34 +931,55 @@ public class Variable implements VariableIF {
   /* nicely formatted string representation */
 
   /**
+   * Get the display name plus the dimensions, eg 'float name(dim1, dim2)'
    * @return display name plus the dimensions
    */
   public String getNameAndDimensions() {
     StringBuffer buf = new StringBuffer();
-    getNameAndDimensions(buf, true, true);
+    getNameAndDimensions(buf);
     return buf.toString();
   }
 
   /**
-   * display name plus the dimensions
+   * Get the display name plus the dimensions, eg 'name(dim1, dim2)'
+   * @param buf add info to this
    */
-  public void getNameAndDimensions(StringBuffer buf, boolean useFullName, boolean showDimLength) {
-    buf.append(useFullName ? getName() : getShortName());
+  public void getNameAndDimensions(StringBuffer buf) {
+    getNameAndDimensions(buf, true, false);
+  }
+
+
+  /**
+   * Add display name plus the dimensions to the StringBuffer
+   * @param buf add info to this
+   * @param useFullName use full name else short name. strict = true implies short name
+   * @param strict strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
+   */
+  public void getNameAndDimensions(StringBuffer buf, boolean useFullName, boolean strict) {
+    useFullName = useFullName && !strict;
+    String name = useFullName ? getName() : getShortName();
+    if (strict) name = NetcdfFile.escapeName( name);
+    buf.append(name);
+
     if (getRank() > 0) buf.append("(");
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension myd = dimensions.get(i);
-      if (i != 0)
-        buf.append(", ");
+      String dimName = myd.getName();
+      if ((dimName != null) && strict)
+        dimName = NetcdfFile.escapeName(dimName);
+
+      if (i != 0) buf.append(", ");
+
       if (myd.isVariableLength()) {
         buf.append("*");
       } else if (myd.isShared()) {
-        if (showDimLength)
-          buf.append(myd.getName()).append("=").append(myd.getLength());
+        if (!strict)
+          buf.append(dimName).append("=").append(myd.getLength());
         else
-          buf.append(myd.getName());
+          buf.append(dimName);
       } else {
-        if (myd.getName() != null) {
-          buf.append(myd.getName()).append("=");
+        if (dimName != null) {
+          buf.append(dimName).append("=");
         }
         buf.append(myd.getLength());
       }
@@ -978,7 +999,7 @@ public class Variable implements VariableIF {
    *
    * @param indent      start each line with this much space
    * @param useFullName use full name, else use short name
-   * @param strict      stictly comply with ncgen syntax
+   * @param strict      strictly comply with ncgen syntax
    * @return CDL representation of the Variable.
    */
   public String writeCDL(String indent, boolean useFullName, boolean strict) {
@@ -986,18 +1007,18 @@ public class Variable implements VariableIF {
     buf.setLength(0);
     buf.append(indent);
     buf.append(dataType.toString());
-    if (isVariableLength) buf.append("(*)");
+    if (isVariableLength) buf.append("(*)"); // LOOK
     buf.append(" ");
-    getNameAndDimensions(buf, useFullName, !strict);
+    getNameAndDimensions(buf, useFullName, strict);
     buf.append(";");
     if (!strict) buf.append(extraInfo());
     buf.append("\n");
 
     for (Attribute att : getAttributes()) {
       buf.append(indent).append("  ");
-      if (strict) buf.append(getName());
+      if (strict) buf.append( NetcdfFile.escapeName(getShortName()));
       buf.append(":");
-      buf.append( att.toString());
+      buf.append( att.toString(strict));
       buf.append(";");
       if (!strict && (att.getDataType() != DataType.STRING))
         buf.append(" // ").append(att.getDataType());
@@ -1077,7 +1098,7 @@ public class Variable implements VariableIF {
     this.ncfile = ncfile;
     this.group = (group == null) ? ncfile.getRootGroup() : group;
     this.parent = parent;
-    this.shortName = NetcdfFile.createValidNetcdfObjectName(shortName);
+    this.shortName = shortName;
   }
 
   /**
@@ -1154,7 +1175,7 @@ public class Variable implements VariableIF {
    */
   public void setName(String shortName) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.shortName = NetcdfFile.createValidNetcdfObjectName(shortName);
+    this.shortName = shortName;
   }
 
   /**

@@ -62,7 +62,7 @@ public class RadialCoordSys {
   public static RadialCoordSys makeRadialCoordSys( StringBuffer parseInfo, CoordinateSystem cs, VariableEnhanced v) {
     if (parseInfo != null) {
       parseInfo.append(" ");
-      v.getNameAndDimensions(parseInfo, true, false);
+      v.getNameAndDimensions(parseInfo, false, true);
       parseInfo.append(" check CS " + cs.getName());
     }
     if (isRadialCoordSys( parseInfo, cs)) {

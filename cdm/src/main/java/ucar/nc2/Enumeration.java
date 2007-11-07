@@ -51,7 +51,8 @@ public class Enumeration {
    */
   public String writeCDL(boolean strict) {
     StringBuffer buff = new StringBuffer();
-    buff.append("   ").append(getName()).append(" = ");
+    String name = strict ? NetcdfFile.escapeName(getName()) : getName();    
+    buff.append("   ").append(name).append(" = ");
     int count = 0;
     for (String s : map.values()) {
       if (0 < count++) buff.append(",");

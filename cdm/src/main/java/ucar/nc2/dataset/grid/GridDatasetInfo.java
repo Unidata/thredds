@@ -100,13 +100,13 @@ public class GridDatasetInfo {
     return doc;
   }
 
-  private String getDecl( VariableEnhanced ve) {
+  /* private String getDecl( VariableEnhanced ve) {
     StringBuffer sb = new StringBuffer();
     sb.append(ve.getDataType().toString());
     sb.append(" ");
     ve.getNameAndDimensions(sb, true, true);
     return sb.toString();
-  }
+  } */
 
   private String getCoordSys( VariableEnhanced ve) {
     List csList = ve.getCoordinateSystems();

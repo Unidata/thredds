@@ -131,6 +131,82 @@
   <li> You must close the file when you are done, else you risk not writing the data to disk. <span class="MsoNormal"><strong>NetcdfFileWriteable</strong></span>.flush() will flush to disk without closing. <br>
   </li>
 </ol>
+<h3><span class="MsoNormal"><a name="RecordAtaTime"></a>Writing data one record at a time along the record dimension </span></h3>
+<pre>public void testWriteRecordAtaTime() throws IOException, InvalidRangeException {
+<br>   NetcdfFileWriteable writeableFile = NetcdfFileWriteable.createNew(fileName);</pre>
+<pre>   // define dimensions, including unlimited
+   Dimension latDim = writeableFile.addDimension(&quot;lat&quot;, 3);
+   Dimension lonDim = writeableFile.addDimension(&quot;lon&quot;, 4);
+   Dimension timeDim = writeableFile.addUnlimitedDimension(&quot;time&quot;);</pre>
+<pre>   // define Variables
+   Dimension[] dim3 = new Dimension[3];
+   dim3[0] = timeDim;
+   dim3[1] = latDim;
+   dim3[2] = lonDim;</pre>
+<pre>   writeableFile.addVariable(&quot;lat&quot;, DataType.FLOAT, new Dimension[] {latDim});
+   writeableFile.addVariableAttribute(&quot;lat&quot;, &quot;units&quot;, &quot;degrees_north&quot;);</pre>
+<pre>   writeableFile.addVariable(&quot;lon&quot;, DataType.FLOAT, new Dimension[] {lonDim});
+   writeableFile.addVariableAttribute(&quot;lon&quot;, &quot;units&quot;, &quot;degrees_east&quot;);</pre>
+<pre>   writeableFile.addVariable(&quot;rh&quot;, DataType.INT, dim3);
+   writeableFile.addVariableAttribute(&quot;rh&quot;, &quot;long_name&quot;, &quot;relative humidity&quot;);
+   writeableFile.addVariableAttribute(&quot;rh&quot;, &quot;units&quot;, &quot;percent&quot;);</pre>
+<pre>   writeableFile.addVariable(&quot;T&quot;, DataType.DOUBLE, dim3);
+   writeableFile.addVariableAttribute(&quot;T&quot;, &quot;long_name&quot;, &quot;surface temperature&quot;);
+   writeableFile.addVariableAttribute(&quot;T&quot;, &quot;units&quot;, &quot;degC&quot;);</pre>
+<pre>   writeableFile.addVariable(&quot;time&quot;, DataType.INT, new Dimension[] {timeDim});
+   writeableFile.addVariableAttribute(&quot;time&quot;, &quot;units&quot;, &quot;hours since 1990-01-01&quot;);</pre>
+<pre>   // create the file
+<strong>1)</strong> writeableFile.create();</pre>
+<pre>   // write out the non-record variables
+<strong>2)</strong> writeableFile.write(&quot;lat&quot;, Array.factory(new float[] {41, 40, 39}));
+   writeableFile.write(&quot;lon&quot;, Array.factory(new float[] {-109, -107, -105, -103}));</pre>
+<pre>   //// heres where we write the record variables</pre>
+<pre>   // different ways to create the data arrays. 
+   // Note the outer dimension has shape 1, since we will write one record at a time
+<strong>3)</strong> ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength());
+   ArrayDouble.D3 tempData = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
+   Array timeData = Array.factory( DataType.INT, new int[] {1});</pre>
+<pre>   int[] origin = new int[] {0, 0, 0};
+   int[] time_origin = new int[] {0};</pre>
+<pre>   // loop over each record
+<strong>4)</strong> for (int time=0; time&lt;10; time++) {
+
+    // make up some data for this record, using different ways to fill the data arrays.
+<strong>5.1)</strong>timeData.setInt(timeData.getIndex(), time * 12);
+    Index ima = rhData.getIndex();
+    for (int lat=0; lat&lt;latDim.getLength(); lat++) {
+     for (int lon=0; lon&lt;lonDim.getLength(); lon++) {
+<strong>5.2)</strong> rhData.setInt(ima.set(0, lat, lon), time * lat * lon);
+<strong>5.3)</strong> tempData.set(0, lat, lon, time * lat * lon / 3.14159);
+     }
+    }</pre>
+<pre>   // write the data out for this record
+<strong>6)</strong> time_origin[0] = time;
+   origin[0] = time;</pre>
+<pre><strong>7)</strong> writeableFile.write(&quot;rh&quot;, origin, rhData);
+   writeableFile.write(&quot;T&quot;, origin, tempData);
+   writeableFile.write(&quot;time&quot;, time_origin, timeData);
+  }</pre>
+<pre>  // all done
+  writeableFile.close();
+}</pre>
+<ol>
+  <li>Define the dimensions, variables, and attributes. Note the use of <strong>NetcdfFileWriteable.addUnlimitedDimension()</strong> to add a <em>record</em> dimension. </li>
+  <li>Write the non-record variables</li>
+  <li>Create the arrays to hold the data. Note that the outer dimension has shape of 1, since we will write only one record at a time. </li>
+  <li>Loop over the unlimited (record) dimension. Each loop will write one record.</li>
+  <li>Set the data for this record, using three different ways to fill the data arrays. In all cases the first dimension has index = 0.
+    <ol>
+      <li><strong>Array.setInt(Index ima, int value)</strong> : <em>timeData.getIndex()</em> returns an Index initialized to zero. </li>
+      <li><strong>Array.setInt(Index ima, int value)</strong> : <em>ima.set(0, lat, lon)</em> explicitly sets the dimension indices</li>
+      <li><strong>ArrayDouble.D3.set(int i, int j, int k, double value): </strong>by using a type and rank specific Array class (ArrayDouble.D3), we don't need to use an <em>Index</em> object.</li>
+    </ol>
+  </li>
+  <li>Set the origin to the current record number. The other dimensions have origin 0. </li>
+  <li>Write the data at the specified origin.  <br>
+    <br>
+                      </li>
+</ol>
 <pre class="MsoNormal">&nbsp;
 </pre>
 <pre class="MsoNormal">&nbsp; </pre>

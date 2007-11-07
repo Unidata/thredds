@@ -201,7 +201,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   public static GridCoordSys makeGridCoordSys(StringBuffer sbuff, CoordinateSystem cs, VariableEnhanced v) {
     if (sbuff != null) {
       sbuff.append(" ");
-      v.getNameAndDimensions(sbuff, true, false);
+      v.getNameAndDimensions(sbuff, false, true);
       sbuff.append(" check CS ").append(cs.getName()).append(": ");
     }
     if (isGridCoordSys(sbuff, cs)) {

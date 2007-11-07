@@ -81,7 +81,7 @@ public class N3streamWriter {
 
     for (int i = 0; i < numdims; i++) {
       Dimension dim = (Dimension) dims.get(i);
-      count += writeString(stream, dim.getName());
+      count += writeString(stream, N3iosp.makeValidNetcdfObjectName( dim.getName()));
       stream.writeInt(dim.isUnlimited() ? 0 : dim.getLength());
       count += 4;
     }
@@ -159,7 +159,7 @@ public class N3streamWriter {
 
   private Vinfo writeVar(DataOutputStream stream, Variable var, int offset) throws IOException {
     int count = 0;
-    count += writeString(stream, var.getName());
+    count += writeString(stream, N3iosp.makeValidNetcdfObjectName( var.getName()));
 
     // dimensions
     int vsize = var.getDataType().getSize();
@@ -212,7 +212,7 @@ public class N3streamWriter {
     for (int i = 0; i < natts; i++) {
       Attribute att = atts.get(i);
 
-      count += writeString(stream, att.getName());
+      count += writeString(stream, N3iosp.makeValidNetcdfObjectName( att.getName()));
       int type = N3header.getType(att.getDataType());
       if (null != stream) stream.writeInt(type);
       count += 4;

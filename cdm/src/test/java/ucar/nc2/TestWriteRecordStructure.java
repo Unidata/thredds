@@ -19,12 +19,12 @@ public class TestWriteRecordStructure extends TestCase  {
   }
 
   public void testWriteRecordStructure() throws IOException, InvalidRangeException {
-    NetcdfFileWriteable writeableFile = new NetcdfFileWriteable(fileName, false);
+    NetcdfFileWriteable writeableFile = NetcdfFileWriteable.createNew(fileName);
 
     // define dimensions, including unlimited
     Dimension latDim = writeableFile.addDimension("lat", 3);
     Dimension lonDim = writeableFile.addDimension("lon", 4);
-    Dimension timeDim = writeableFile.addDimension("time", -1, true, true, false);
+    Dimension timeDim = writeableFile.addUnlimitedDimension("time");
 
     // define Variables
     Dimension[] dim3 = new Dimension[3];

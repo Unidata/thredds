@@ -356,7 +356,7 @@ class H5header {
     for (DataObjectFacade facadeNested : h5group.nestedObjects) {
 
       if (facadeNested.isGroup) {
-        ucar.nc2.Group nestedGroup = new ucar.nc2.Group(ncfile, ncGroup, NetcdfFile.createValidNetcdfObjectName(facadeNested.name));
+        ucar.nc2.Group nestedGroup = new ucar.nc2.Group(ncfile, ncGroup, facadeNested.name);
         ncGroup.addGroup(nestedGroup);
         if (debug1) debugOut.println("--made Group " + nestedGroup.getName() + " add to " + ncGroup.getName());
         H5Group h5groupNested = new H5Group(facadeNested);
@@ -514,7 +514,6 @@ class H5header {
   }
 
   private Attribute makeAttribute(String forWho, String attName, MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
-    attName = NetcdfFile.createValidNetcdfObjectName(attName);
     ucar.ma2.Array data = getAttributeData(forWho, null, attName, mdt, mds, dataPos);
 
     if (data.getElementType() == Array.class) { // vlen
@@ -677,7 +676,7 @@ class H5header {
     Variable v;
     Structure s = null;
     if (facade.dobj.mdt.type == 6) { // Compound
-      String vname = NetcdfFile.createValidNetcdfObjectName(facade.name);
+      String vname = facade.name;
       s = new Structure(ncfile, ncGroup, null, vname);
       v = s;
       if (!makeVariableShapeAndType(v, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList)) return null;
@@ -685,7 +684,7 @@ class H5header {
       v.setElementSize(facade.dobj.mdt.byteSize);
 
     } else {
-      String vname = NetcdfFile.createValidNetcdfObjectName(facade.name);
+      String vname = facade.name;
       v = new Variable(ncfile, ncGroup, null, vname);
       if (!makeVariableShapeAndType(v, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList)) return null;
     }
@@ -782,14 +781,14 @@ class H5header {
     }
 
     if (mdt.type == 6) {
-      String vname = NetcdfFile.createValidNetcdfObjectName(name); // look cannot search by name
+      String vname = name;
       v = new Structure(ncfile, g, s, vname);
       makeVariableShapeAndType(v, mdt, null, vinfo, null);
       addMembersToStructure( g, (Structure) v, vinfo, mdt);
       v.setElementSize(mdt.byteSize);
 
     } else {
-      String vname = NetcdfFile.createValidNetcdfObjectName(name); // look cannot search by name
+      String vname = name;
       v = new Variable(ncfile, g, s, vname);
       makeVariableShapeAndType(v, mdt, null, vinfo, null);
     }
@@ -826,7 +825,7 @@ class H5header {
 
       } else if (mess.mtype == MessageType.Comment) {
         MessageComment m = (MessageComment) mess.messData;
-        attributes.add(new Attribute("_comment", NetcdfFile.createValidNetcdfObjectName(m.comment)));
+        attributes.add(new Attribute("_comment", m.comment));
       }
     }
   }

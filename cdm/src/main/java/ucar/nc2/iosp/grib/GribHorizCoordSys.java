@@ -66,11 +66,11 @@ public class GribHorizCoordSys {
     this.lookup = lookup;
     this.g = g;
 
-    this.grid_name = NetcdfFile.createValidNetcdfObjectName(lookup.getGridName(gdsIndex));
+    this.grid_name = lookup.getGridName(gdsIndex);
+    grid_name = StringUtil.replace(grid_name, ' ', "_");
     this.shape_name = lookup.getShapeName(gdsIndex);
     this.g = g;
     isLatLon = lookup.isLatLon(gdsIndex);
-    grid_name = StringUtil.replace(grid_name, ' ', "_");
     id = (g == null) ? grid_name : g.getName();
 
     if (isLatLon && (lookup.getProjectionType(gdsIndex) == TableLookup.GaussianLatLon)) {
@@ -339,7 +339,7 @@ public class GribHorizCoordSys {
     List<String> keyList = new ArrayList<String>(keys);
     Collections.sort(keyList);
     for (String key : keyList) {
-      String name = NetcdfFile.createValidNetcdfObjectName("GRIB_param_" + key);
+      String name = "GRIB_param_" + key;
 
       String vals = (String) gdsIndex.params.get(key);
       try {
@@ -438,6 +438,7 @@ public class GribHorizCoordSys {
 
     attributes.add(new Attribute("grid_mapping_name", "polar_stereographic"));
     attributes.add(new Attribute("longitude_of_projection_origin", gdsIndex.LoV));
+    attributes.add(new Attribute("straight_vertical_longitude_from_pole", gdsIndex.LoV));
     attributes.add(new Attribute("scale_factor_at_projection_origin", scale));
     attributes.add(new Attribute("latitude_of_projection_origin", latOrigin));
   }

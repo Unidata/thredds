@@ -144,7 +144,7 @@ public class TestScaleOffsetMissing extends TestCase {
     StructureData sdata = s.readStructure(0);
     StructureMembers.Member m = sdata.findMember("testScale");
     assert null != m;
-    assert m.getUnitsString().equals("meters");
+    assert m.getUnitsString().equals("meters") : m.getUnitsString();
 
     Structure.Iterator siter = s.getStructureIterator();
     while (siter.hasNext()) {
@@ -157,16 +157,3 @@ public class TestScaleOffsetMissing extends TestCase {
     ncfile.close();
   }
 }
-
-/* Change History:
-   $Log: TestScaleOffsetMissing.java,v $
-   Revision 1.3  2005/07/25 00:07:12  caron
-   cache debugging
-
-   Revision 1.2  2005/05/23 20:55:36  caron
-   fix member.getUnitsString() when attribute is changed
-
-   Revision 1.1  2005/05/23 20:18:38  caron
-   refactor for scale/offset/missing
-
-*/

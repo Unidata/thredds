@@ -25,8 +25,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.Index;
 
 import java.util.List;
-import java.util.Collections;
-import java.util.Arrays;
 
 /**
  * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
@@ -219,8 +217,12 @@ public class Attribute {
    */
   @Override
   public String toString() {
+    return toString(false);
+  }
+
+  public String toString(boolean strict) {
     StringBuffer buff = new StringBuffer();
-    buff.append(getName());
+    buff.append(  strict ? NetcdfFile.escapeName(getName()) : getName());
     if (isString()) {
       buff.append(" = ");
       for (int i = 0; i < getLength(); i++) {
@@ -253,12 +255,10 @@ public class Attribute {
    * @param from copy value from here.
    */
   public Attribute(String name, Attribute from) {
-    this.name = NetcdfFile.createValidNetcdfObjectName(name);
-    //validate(name);
+    this.name = name;
     this.dataType = from.dataType;
     this.nelems = from.nelems;
     this.values = from.values;
-    //this.ima = from.ima;
   }
 
   /**
@@ -268,8 +268,7 @@ public class Attribute {
    * @param val  value of Attribute
    */
   public Attribute(String name, String val) {
-    this.name = NetcdfFile.createValidNetcdfObjectName(name);
-    //validate(name);
+    this.name = name;
     setStringValue(val);
   }
 
@@ -280,8 +279,7 @@ public class Attribute {
    * @param val  value of Attribute
    */
   public Attribute(String name, Number val) {
-    this.name = NetcdfFile.createValidNetcdfObjectName(name);
-    //validate(name);
+    this.name = name;
     int[] shape = new int[1];
     shape[0] = 1;
     DataType dt = DataType.getType(val.getClass());
@@ -298,7 +296,7 @@ public class Attribute {
    * @param values array of values.
    */
   public Attribute(String name, Array values) {
-    this.name = NetcdfFile.createValidNetcdfObjectName(name);
+    this.name = name;
     setValues(values);
   }
 
@@ -309,7 +307,7 @@ public class Attribute {
    * @param values list of values. must be String or Number, and have at least 1 member
    */
   public Attribute(String name, List values) {
-    this.name = NetcdfFile.createValidNetcdfObjectName(name);
+    this.name = name;
     int n = values.size();
     Object pa = null;
 
@@ -353,9 +351,7 @@ public class Attribute {
    * @param param copy info from here.
    */
   public Attribute(ucar.unidata.util.Parameter param) {
-    this.name = NetcdfFile.createValidNetcdfObjectName(param.getName());
-    //this.name = param.getName();
-    //validate(name);
+    this.name = param.getName();
 
     if (param.isString()) {
       setStringValue(param.getStringValue());
@@ -378,54 +374,8 @@ public class Attribute {
    * @param name name of Attribute
    */
   protected Attribute(String name) {
-    this(name, true);
-  }
-
-  /**
-   * Constructor. Must also set value
-   *
-   * @param name     name of Attribute
-   * @param validate whether to validate the name.
-   */
-  protected Attribute(String name, boolean validate) {
-    this.name = NetcdfFile.createValidNetcdfObjectName(name);
-    //if (validate) validate(name);
-  }
-
-  /* private void validate(String name) {
-    if (!NetcdfFile.isValidNetcdfObjectName(name))
-      throw new IllegalArgumentException("Illegal Netcdf Object Name = '" + name + "', should be " +
-              NetcdfFile.getValidNetcdfObjectNamePattern());
-  } */
-
-
-  /**
-   * Set the name of the Attribute.
-   * @param name name of Attribute
-   *
-  private void setName(String name) {
     this.name = name;
-    //validate(name);
-  } */
-
-  /**
-   * Create an Attribute with a String or a 1-dimensional array of primitives.
-   *
-   * @param val value of Attribute
-   * @deprecated use setValues( Array val)
-   *
-  private void setValueOld(Object val) {
-    if (val instanceof String)
-      setStringValue((String) val);
-    else {
-      int n = java.lang.reflect.Array.getLength(val);
-      int[] shape = new int[]{n};
-      Class elemType = val.getClass().getComponentType();
-      Array vala = Array.factory(elemType, shape, val);
-      setValues(vala);
-    }
-    hashCode = 0;
-  } */
+  }
 
   /**
    * set the value as a String, trimming trailing zeroes

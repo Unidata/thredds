@@ -28,6 +28,8 @@ import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.RegularLayout;
 
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.CharBuffer;
@@ -70,6 +72,80 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     if (name.equalsIgnoreCase("syncExtendOnly"))
       syncExtendOnly = value.equalsIgnoreCase("true");
   }
+
+  /**
+   * Convert a name to a legal netcdf-3 name.
+   * From the user manual:
+   * "The names of dimensions, variables and attributes consist of arbitrary sequences of
+   * alphanumeric characters (as well as underscore '_' and hyphen '-'), beginning with a letter
+   * or underscore. (However names commencing with underscore are reserved for system use.)
+   * Case is significant in netCDF names."
+   * <p/>
+   * Algorithm:
+   * <ol>
+   * <li>leading character: if alpha or underscore, ok; if digit, prepend "N"; otherwise discard
+   * <li>other characters: if space, change to underscore; otherwise delete.
+   * </ol>
+   * @param name convert this name
+   * @return converted name
+   */
+  static public String makeValidNetcdfObjectName(String name) {
+    StringBuffer sb = new StringBuffer(name);
+
+    while (sb.length() > 0) {
+      char c = sb.charAt(0);
+      if (Character.isLetter(c) || (c == '_')) break;
+      if (Character.isDigit(c)) {
+        sb.insert(0, 'N');
+        break;
+      }
+      sb.deleteCharAt(0);
+    }
+
+    int i = 1;
+    while (i < sb.length()) {
+      char c = sb.charAt(i);
+      if (c == ' ')
+        sb.setCharAt(i, '_');
+      else {
+        boolean ok = Character.isLetterOrDigit(c) || (c == '-') || (c == '_');
+        //        || (c == '@') || (c == ':') || (c == '(') || (c == ')') || (c == '+') || (c == '.');
+        if (!ok) {
+          sb.delete(i, i + 1);
+          i--;
+          // sb.setCharAt(i, '-');
+        }
+      }
+      i++;
+    }
+
+    return sb.toString();
+  }
+
+  /////////////////////////////////////////////////
+  // name pattern matching
+  //static private Pattern objectNamePattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\(\\)\\+]*");
+  static private Pattern objectNamePattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_\\-]*");
+
+  /**
+   * Determine if the given name can be used for a Dimension, Attribute, or Variable name.
+   * @param name test this.
+   * @return  true if valid name.
+   */
+  static public boolean isValidNetcdfObjectName(String name) {
+    Matcher m = objectNamePattern.matcher(name);
+    return m.matches();
+  }
+
+  /**
+   * Valid Netcdf Object name as a regular expression.
+   * @return regular expression pattern describing valid Netcdf Object names.
+   */
+  static public String getValidNetcdfObjectNamePattern() {
+    return objectNamePattern.pattern();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     return N3header.isValidFile(raf);

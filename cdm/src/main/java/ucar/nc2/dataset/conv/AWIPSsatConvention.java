@@ -236,7 +236,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     ds.setValues(v, nx, startx, dx);
 
     parseInfo.append("Created X Coordinate Axis = ");
-    v.getNameAndDimensions(parseInfo, true, false);
+    v.getNameAndDimensions(parseInfo);
     parseInfo.append("\n");
 
     if (debugProj)
@@ -249,7 +249,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     ds.setValues( v, ny, starty, dy);
 
     parseInfo.append("Created Y Coordinate Axis = ");
-    v.getNameAndDimensions(parseInfo, true, false);
+    v.getNameAndDimensions(parseInfo);
     parseInfo.append("\n");
 
     if (debugProj)

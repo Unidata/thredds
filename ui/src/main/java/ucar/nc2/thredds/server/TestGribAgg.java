@@ -163,7 +163,7 @@ public class TestGribAgg implements CatalogCrawler.Listener {
 
     private void reportDims(PrintStream out) {
       StringBuffer buff = new StringBuffer();
-      firstv.getNameAndDimensions(buff, false, true);
+      firstv.getNameAndDimensions(buff);
       out.println(buff+": ");
 
       boolean showed = false;

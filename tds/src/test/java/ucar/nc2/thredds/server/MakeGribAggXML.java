@@ -139,9 +139,7 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
     TimeSeq seq;
 
     UberVariable(Variable v) {
-      StringBuffer buff = new StringBuffer();
-      v.getNameAndDimensions(buff, true, true);
-      this.name = buff.toString();
+      this.name = v.getNameAndDimensions();
     }
 
     void addTimeCoord( TimeCoord tc) {

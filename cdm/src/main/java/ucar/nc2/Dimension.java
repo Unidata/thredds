@@ -145,7 +145,8 @@ public class Dimension implements Comparable {
    */
   public String writeCDL(boolean strict) {
     StringBuffer buff = new StringBuffer();
-    buff.append("   ").append(getName());
+    String name = strict ? NetcdfFile.escapeName(getName()) : getName();
+    buff.append("   ").append(name);
     if (isUnlimited())
       buff.append(" = UNLIMITED;   // (").append(getLength()).append(" currently)");
     else if (isVariableLength())
@@ -185,11 +186,12 @@ public class Dimension implements Comparable {
    * @param isVariableLength whether the length is unknown until the data is read.
    */
   public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
-    this.name = (name == null) ? null : NetcdfFile.createValidNetcdfObjectName(name);
+    this.name = name;
     this.isShared = isShared;
     this.isUnlimited = isUnlimited;
     this.isVariableLength = isVariableLength;
     setLength(length);
+    assert (name != null) || !this.isShared;
   }
 
   /**
@@ -198,12 +200,11 @@ public class Dimension implements Comparable {
    * @param from copy all other fields from here.
    */
   public Dimension(String name, Dimension from) {
-    this.name = (name == null) ? null : NetcdfFile.createValidNetcdfObjectName(name);
+    this.name = name;
     this.length = from.length;
     this.isUnlimited = from.isUnlimited;
     this.isVariableLength = from.isVariableLength;
     this.isShared = from.isShared;
-    //this.coordVars = new ArrayList<Variable>(from.coordVars);
   }
 
   ///////////////////////////////////////////////////////////

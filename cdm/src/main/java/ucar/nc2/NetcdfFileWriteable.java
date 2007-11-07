@@ -21,6 +21,7 @@ package ucar.nc2;
 
 import ucar.ma2.*;
 import ucar.nc2.iosp.netcdf3.SPFactory;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 
 import java.util.*;
@@ -134,6 +135,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   public Dimension addDimension(String dimName, int length) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
     if (length <= 0) throw new IllegalArgumentException("length must be > 0");
+    if (!N3iosp.isValidNetcdfObjectName(dimName)) throw new IllegalArgumentException("illegal netCDF-3 object name");
     Dimension dim = new Dimension(dimName, length, true, false, false);
     super.addDimension(null, dim);
     return dim;
@@ -151,6 +153,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
    */
   public Dimension addDimension(String dimName, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    if (!N3iosp.isValidNetcdfObjectName(dimName)) throw new IllegalArgumentException("illegal netCDF-3 object name");
     Dimension dim = new Dimension(dimName, length, isShared, isUnlimited, isVariableLength);
     super.addDimension(null, dim);
     return dim;
@@ -168,12 +171,12 @@ public class NetcdfFileWriteable extends NetcdfFile {
 
   /**
    * Add a Global attribute to the file. Must be in define mode.
-   *
    * @param att the attribute.
+   * @return the created attribute
    */
-  public void addGlobalAttribute(Attribute att) {
+  public Attribute addGlobalAttribute(Attribute att) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    super.addAttribute(null, att);
+    return super.addAttribute(null, att);
   }
 
   /**
@@ -181,10 +184,11 @@ public class NetcdfFileWriteable extends NetcdfFile {
    *
    * @param name  name of attribute.
    * @param value value of atribute.
+   * @return the created attribute
    */
-  public void addGlobalAttribute(String name, String value) {
+  public Attribute addGlobalAttribute(String name, String value) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    super.addAttribute(null, new Attribute(name, value));
+    return super.addAttribute(null, new Attribute(name, value));
   }
 
   /**
@@ -192,10 +196,11 @@ public class NetcdfFileWriteable extends NetcdfFile {
    *
    * @param name  name of attribute.
    * @param value must be of type Float, Double, Integer, Short or Byte
+   * @return the created attribute
    */
-  public void addGlobalAttribute(String name, Number value) {
+  public Attribute addGlobalAttribute(String name, Number value) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    super.addAttribute(null, new Attribute(name, value));
+    return super.addAttribute(null, new Attribute(name, value));
   }
 
   /**
@@ -203,10 +208,11 @@ public class NetcdfFileWriteable extends NetcdfFile {
    *
    * @param name   name of attribute.
    * @param values Array of values
+   * @return the created attribute
    */
-  public void addGlobalAttribute(String name, Array values) {
+  public Attribute addGlobalAttribute(String name, Array values) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    super.addAttribute(null, new Attribute(name, values));
+    return super.addAttribute(null, new Attribute(name, values));
   }
 
   /**
@@ -260,6 +266,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   public Variable addVariable(String varName, DataType dataType, List<Dimension> dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
+    if (!N3iosp.isValidNetcdfObjectName(varName)) throw new IllegalArgumentException("illegal netCDF-3 object name");
 
     Variable v = new Variable(this, rootGroup, null, varName);
     v.setDataType(dataType);
@@ -284,6 +291,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   public Variable addStringVariable(String varName, List<Dimension> dims, int max_strlen) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
+    if (!N3iosp.isValidNetcdfObjectName(varName)) throw new IllegalArgumentException("illegal netCDF-3 object name");
 
     Variable v = new Variable(this, rootGroup, null, varName);
     v.setDataType(DataType.CHAR);
@@ -307,6 +315,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   public void addVariableAttribute(String varName, Attribute att) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
+    if (!N3iosp.isValidNetcdfObjectName(att.getName())) throw new IllegalArgumentException("illegal netCDF-3 object name");
 
     Variable v = varHash.get(varName);
     if (null == v)

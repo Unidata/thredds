@@ -16,12 +16,13 @@ Changes in version 4.0
    * Union accepts scan
  Data Model
   * Strings are Unicode. In Netcdf3/4, stored as UTF-8 encoded.
+  * Allow Object names to be anything (experiment).
  API
   * Extensive API changes. Most, but not completely backwards-compatible.
   * ucar.ma2.Range, ucar.ma2.Section 
   * Array local iterator: hasNext() next() methods.
   * Writer replaces OutputStream. Default is UTF-8.
-  * NetcdfFile.writeCDL(PrintWriter)
+  * NetcdfFile.writeCDL(PrintWriter). strict escapes names.
  Libraries
 
  Changes in version 2.2.22

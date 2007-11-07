@@ -1045,10 +1045,9 @@ public class ToolsUI extends JPanel {
         else
           ncfile = NetcdfDataset.openFile(filename, null);
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        PrintStream ps = new PrintStream(bos);
-        NCdump.print(ncfile, command, ps, task);
-        result = bos.toString();
+        StringWriter writer = new StringWriter(50000);
+        NCdumpW.print(ncfile, command, writer, task);
+        result = writer.toString();
 
       } finally {
         try {
@@ -1066,10 +1065,9 @@ public class ToolsUI extends JPanel {
 
       GetDataRunnable runner = new GetDataRunnable() {
         public void run(Object o) throws IOException {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          PrintStream ps = new PrintStream(bos);
-          NCdump.print(ncfile, command, ps, task);
-          result = bos.toString();
+          StringWriter writer = new StringWriter(50000);
+           NCdumpW.print(ncfile, command, writer, task);
+           result = writer.toString();
         }
       };
       task = new GetDataTask(runner, filename, null);

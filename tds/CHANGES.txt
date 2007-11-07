@@ -8,6 +8,7 @@ Changes in version 4.0
 
 Changes in version 3.16
  Features
+  * can turn off NetcdfFileCache, NetcdfDatasetCache, FileCache by setting max <= 0
   * Netcdf Subset for Metars, Grids, Grids as Points
   * Write any GridDataset as CF compliant netCDF file.
   * Write UnidataStationObsDataset netCDF files.

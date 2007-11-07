@@ -205,12 +205,8 @@ public class TextHistoryPane extends JPanel {
           if (filename == null) return;
 
           try {
-            PrintStream ps = new PrintStream( new BufferedOutputStream (new FileOutputStream( filename)));
-            StringTokenizer token = new StringTokenizer(ta.getText(), "\r\n");
-            while (token.hasMoreTokens()) {
-              ps.println(token.nextToken());
-            }
-            ps.close();
+            thredds.util.IO.writeToFile(ta.getText(), new File( filename)); // UTF-8 encoding
+
             JOptionPane.showMessageDialog(null, "Text written to"+filename);
           } catch (IOException ioe) {
             //System.out.println(" write TextArea to file = "+filename+" "+ioe);
