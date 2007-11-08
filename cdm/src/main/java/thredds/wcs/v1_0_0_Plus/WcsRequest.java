@@ -147,16 +147,15 @@ public abstract class WcsRequest
     String firstPosition = llpt.getLongitude() + " " + llpt.getLatitude();
     double lon = llpt.getLongitude() + llbb.getWidth();
     String secondPosition = lon + " " + urpt.getLatitude();
-// ToDo Add vertical
+// ToDo WCS 1.0Plus - Add vertical (Deal with conversion to meters. Yikes!!)
 //    CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
 //    if ( vertAxis != null )
 //    {
-//      // ToDo Deal with conversion to meters. Yikes!!
 //      // See verAxis.getUnitsString()
 //      firstPosition += " " + vertAxis.getCoordValue( 0);
 //      secondPostion += " " + vertAxis.getCoordValue( ((int)vertAxis.getSize()) - 1);
 //    }
-// ToDo Add vertical
+    
     lonLatEnvelopeElem.addContent(
             new Element( "pos", gmlNS ).addContent( firstPosition ) );
     lonLatEnvelopeElem.addContent(

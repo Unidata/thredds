@@ -3,6 +3,7 @@ package thredds.wcs.v1_0_0_Plus;
 import org.jdom.Namespace;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.Attribute;
 import org.jdom.output.XMLOutputter;
 
 import java.net.URI;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import thredds.datatype.DateRange;
@@ -144,28 +146,45 @@ public class DescribeCoverage extends WcsRequest
     Element spatialDomainElem = new Element( "spatialDomain", wcsNS );
     // TODO if ( gcs.)
     // ../domainSet/spatialDomain/gml:Envelope [1..*]
-    // ../domainSet/spatialDomain/gml:Envelope@srsName [0..1] (URI)
-    // ../domainSet/spatialDomain/gml:Envelope/gml:pos [2] (space seperated list of double values)
-    // ../domainSet/spatialDomain/gml:Envelope/gml:pos@dimension [0..1]  (number of entries in list)
-    //this.
+    this.genEnvelopeElem( gridCoordSys);
 
-    // ../domainSet/spatialDomain/gml:RectifiedGrid [0..*]  OR gml:RectifiedGrid
-    // ../domainSet/spatialDomain/gml:RectifiedGrid@srsName [0..1] (URI)
-    // ../domainSet/spatialDomain/gml:RectifiedGrid@attribute [1] (positive integer)
-    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:limits [1]
-    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope [1]
-    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:low [1] (integer list)
-    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:high [1] (integer list)
-    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:axisName [1..*] (string)
-    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:origin [1]
-    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:origin/gml:pos [1] (space seperated list of double values)
-    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:origin/gml:pos@dimension [0..1]  (number of entries in list)
-    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:offsetVector [1..*] (space seperated list of double values)
-    // ../domainSet/spatialDomain/gml:RectifiedGrid/gml:offsetVector@dimension [0..1]  (number of entries in list)
+    // ../domainSet/spatialDomain/gml:RectifiedGrid [0..*]
+    this.genRectifiedGridElem( gridCoordSys);
 
     // ../domainSet/spatialDomain/gml:Polygon [0..*]
 
     return spatialDomainElem;
+  }
+
+  protected Element genRectifiedGridElem( GridCoordSystem gcs )
+  {
+    // ../spatialDomain/gml:RectifiedGrid
+    Element rectifiedGridElem = new Element( "RectifiedGrid", gmlNS);
+    
+    // ../spatialDomain/gml:RectifiedGrid@srsName [0..1] (URI)
+    rectifiedGridElem.setAttribute( "srsName", "EPSG:" );
+//    String gridMapping = aGridset.getGrids().get( 0 ).findAttributeIgnoreCase( "grid_mapping" ).getStringValue();
+//    VariableSimpleIF gridMapVar = gridDs.getDataVariable( gridMapping );
+//
+//    gcsMsg.append( "    GridDataset GridMap <" ).append( gridMapVar.getName() ).append( "> Params:\n" );
+//    for ( ucar.nc2.Attribute curAtt : gridMapVar.getAttributes() )
+//    {
+//      gcsMsg.append( "      " ).append( curAtt.toString() ).append( "\n" );
+//    }
+
+    // ../spatialDomain/gml:RectifiedGrid@attribute [1] (positive integer)
+    // ../spatialDomain/gml:RectifiedGrid/gml:limits [1]
+    // ../spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope [1]
+    // ../spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:low [1] (integer list)
+    // ../spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:high [1] (integer list)
+    // ../spatialDomain/gml:RectifiedGrid/gml:axisName [1..*] (string)
+    // ../spatialDomain/gml:RectifiedGrid/gml:origin [1]
+    // ../spatialDomain/gml:RectifiedGrid/gml:origin/gml:pos [1] (space seperated list of double values)
+    // ../spatialDomain/gml:RectifiedGrid/gml:origin/gml:pos@dimension [0..1]  (number of entries in list)
+    // ../spatialDomain/gml:RectifiedGrid/gml:offsetVector [1..*] (space seperated list of double values)
+    // ../spatialDomain/gml:RectifiedGrid/gml:offsetVector@dimension [0..1]  (number of entries in list)
+
+    return rectifiedGridElem;
   }
 
   protected Element genEnvelopeElem( GridCoordSystem gcs )
@@ -177,31 +196,38 @@ public class DescribeCoverage extends WcsRequest
     else
       envelopeElem = new Element( "Envelope", wcsNS );
 
+    // spatialDomain/Envelope@srsName [0..1] (URI)
     envelopeElem.setAttribute( "srsName", "urn:ogc:def:crs:OGC:1.3:CRS84" );
 
     LatLonRect llbb = gcs.getLatLonBoundingBox();
     LatLonPoint llpt = llbb.getLowerLeftPoint();
     LatLonPoint urpt = llbb.getUpperRightPoint();
 
-    // spatialDomain/Envelope/gml:pos
-
     double lon = llpt.getLongitude() + llbb.getWidth();
+    int posDim = 2;
     String firstPosition = llpt.getLongitude() + " " + llpt.getLatitude();
     String secondPosition = lon + " " + urpt.getLatitude();
-// ToDo Add vertical
+// ToDo WCS 1.0Plus - Add vertical (Deal with conversion to meters. Yikes!!)
 //    CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
 //    if ( vertAxis != null )
 //    {
-//      // ToDo Deal with conversion to meters. Yikes!!
 //      // See verAxis.getUnitsString()
+//      posDim++;
 //      firstPosition += " " + vertAxis.getCoordValue( 0);
 //      secondPosition += " " + vertAxis.getCoordValue( ((int)vertAxis.getSize()) - 1);
 //    }
-// ToDo Add vertical
+    String posDimString = Integer.toString( posDim );
+
+    // spatialDomain/Envelope/gml:pos [2] (space seperated list of double values)
+    // spatialDomain/Envelope/gml:pos@dimension [0..1]  (number of entries in list)
     envelopeElem.addContent(
-            new Element( "pos", gmlNS ).addContent( firstPosition ) );
+            new Element( "pos", gmlNS )
+                    .addContent( firstPosition )
+                    .setAttribute( new Attribute( "dimension", posDimString) ) );
     envelopeElem.addContent(
-            new Element( "pos", gmlNS ).addContent( secondPosition ) );
+            new Element( "pos", gmlNS )
+                    .addContent( secondPosition )
+                    .setAttribute( new Attribute( "dimension", posDimString ) ) );
 
     // spatialDomain/Envelope/gml:timePostion [2]
     if ( gcs.hasTimeAxis() )
