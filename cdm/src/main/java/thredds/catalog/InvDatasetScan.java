@@ -466,7 +466,7 @@ public class InvDatasetScan extends InvCatalogRef {
     // A very round about way to remove the filename (e.g., "catalog.xml").
     // Note: Gets around "path separator at end of path" issues that are CrDs implementation dependant.
     // Note: Does not check that CrDs is allowed by filters.
-    CrawlableDataset reqCrDs = scanLocationCrDs.getDescendant( dsDirPath.substring( scanLocationCrDs.getPath().length()));
+    CrawlableDataset reqCrDs = scanLocationCrDs.getDescendant( dsDirPath.substring( scanLocationCrDs.getPath().length() + 1 ));
     dsDirPath = reqCrDs.getParentDataset().getPath();
 
     // Setup and create catalog builder.
