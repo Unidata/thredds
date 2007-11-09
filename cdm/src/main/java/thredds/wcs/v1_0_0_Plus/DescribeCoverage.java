@@ -17,6 +17,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
 import thredds.datatype.DateRange;
 
 /**
@@ -105,6 +106,8 @@ public class DescribeCoverage extends WcsRequest
     covDescripElem.addContent( genRangeSetElem( coverage));
 
     // CoverageDescription/CoverageOffering/supportedCRSs [1]
+    covDescripElem.addContent( genSupportedCRSsElem( coverage));
+
     // CoverageDescription/CoverageOffering/supportedFormats [1]
     // CoverageDescription/CoverageOffering/supportedInterpolations [0..1]
 
@@ -267,5 +270,21 @@ public class DescribeCoverage extends WcsRequest
             new Element( "axisDescription", wcsNS ).addContent( "" ) );
 
     return rangeSetElem.addContent( innerRangeSetElem);
+  }
+
+  public Element genSupportedCRSsElem( GridDatatype coverage )
+  {
+    Element supportedCRSsElem = new Element( "supportedCRSs", wcsNS);
+
+    supportedCRSsElem.addContent(
+            new Element( "requestCRSs", wcsNS)
+                    .addContent( "OGC:CRS84"));
+
+    String nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( coverage.getCoordinateSystem().getProjection());
+    supportedCRSsElem.addContent(
+            new Element( "responseCRSs", wcsNS)
+                    .addContent( nativeCRS));
+
+    return supportedCRSsElem;
   }
 }
