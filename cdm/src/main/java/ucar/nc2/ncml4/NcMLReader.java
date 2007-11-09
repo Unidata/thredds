@@ -635,7 +635,7 @@ public class NcMLReader {
    * @param refParent parent Group in referenced dataset
    * @param groupElem ncml group element
    */
-  private void readGroup(NetcdfDataset newds, NetcdfDataset refds, Group parent, Group refParent, Element groupElem) {
+  private void readGroup(NetcdfDataset newds, NetcdfDataset refds, Group parent, Group refParent, Element groupElem) throws IOException {
 
     Group g, refg;
     if (parent == null) { // this is the <netcdf> element
@@ -747,7 +747,7 @@ public class NcMLReader {
    * @param refg    referenced dataset parent Group - may be same (modify) or different (explicit)
    * @param varElem ncml variable element
    */
-  private void readVariable(NetcdfDataset ds, Group g, Group refg, Element varElem) {
+  private void readVariable(NetcdfDataset ds, Group g, Group refg, Element varElem) throws IOException {
     String name = varElem.getAttributeValue("name");
     if (name == null) {
       log.info("NcML Variable name is required (" + varElem + ")");
@@ -767,7 +767,7 @@ public class NcMLReader {
     }
 
     // exists already
-    DataType dtype;
+    DataType dtype = null;
     String typeS = varElem.getAttributeValue("type");
     if (typeS != null)
       dtype = DataType.getType(typeS);
@@ -775,29 +775,36 @@ public class NcMLReader {
       dtype = refv.getDataType();
 
     String shape = varElem.getAttributeValue("shape");
-    if (shape == null) shape = refv.getDimensionsString();
-    // LOOK shape could be wrong
 
     Variable v;
     if (refg == g) { // modify
       v = refv;
       v.setName(name);
+      /* if (dtype != v.getDataType() && v.hasCachedData()) {
+        Array data = v.read();
+        Array newData = Array.factory(dtype, v.getShape());
+        MAMath.copy(newData, data);
+        v.setCachedData(newData, false);
+      } */ 
       v.setDataType(dtype);
-      v.setDimensions(shape);
+      if (shape != null)
+        v.setDimensions(shape); // LOOK check conformable
       if (debugConstruct) System.out.println(" modify existing var = " + nameInFile);
 
     } else { //explicit
       if (refv instanceof Structure) {
         v = new StructureDS(g, (Structure) refv, true);
         v.setName(name);
-        v.setDimensions(shape);
+        if (shape != null) // LOOK check conformable
+          v.setDimensions(shape);
         //StructureDS vs = new StructureDS(ds, g, null, name, shape, null, null);
         //vs.setIOVar(refv);
       } else {
         v = new VariableDS(g, refv, false);
         v.setName(name);
         v.setDataType(dtype);
-        v.setDimensions(shape);
+        if (shape != null) // LOOK check conformable
+          v.setDimensions(shape);
         //VariableDS vs = new VariableDS(ds, g, null, name, dtype, shape, null, null);
         //vs.setIOVar(refv);
       }

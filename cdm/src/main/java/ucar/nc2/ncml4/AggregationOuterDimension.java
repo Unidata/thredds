@@ -202,7 +202,14 @@ public abstract class AggregationOuterDimension extends Aggregation {
     if (spObj != null && spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
       try {
-        return pv.read(mainv.getShapeAsSection(), cancelTask);
+        Array data = pv.read(mainv.getShapeAsSection(), cancelTask);
+        if (data.getElementType() != mainv.getDataType().getPrimitiveClassType()) {
+          Array newData = Array.factory(mainv.getDataType(), data.getShape());
+          MAMath.copy(newData, data);
+          return newData;
+        }
+        return data;
+        
       } catch (InvalidRangeException e) {
         logger.error("readAgg " + getLocation(), e);
         throw new IllegalArgumentException("readAgg " + getLocation(), e);

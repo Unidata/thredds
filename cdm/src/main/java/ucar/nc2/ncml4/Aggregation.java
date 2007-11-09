@@ -276,11 +276,8 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
 
     // create new list of Datasets, transfer explicit first
     datasets = new ArrayList<Dataset>();
-    for (Aggregation.Dataset dataset : explicitDatasets) {
-      datasets.add(dataset);
-    }
 
-    // now add the ordered list of scanned Datasets to the result List
+    // add the ordered list of scanned Datasets to the result List
     for (MyCrawlableDataset myf : fileList) {
       String location = myf.file.getPath();
       Aggregation.Dataset ds = makeDataset(location, location, null, myf.dateCoordS, null, enhance, null);
@@ -299,6 +296,13 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
           return ds1.cd.file.getName().compareTo(ds2.cd.file.getName());
       }
     });
+
+    // add the explicit datasets - these need to be kept in order
+    // LOOK - should they be before or after scanned? Does it make sense to mix scan and explicit?
+    for (Aggregation.Dataset dataset : explicitDatasets) {
+      datasets.add(dataset);
+    }
+
 
   }
 
