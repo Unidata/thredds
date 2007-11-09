@@ -59,7 +59,7 @@ public class DatasetHandler {
   static private HashMap<String, String> resourceControlHash = new HashMap<String, String>(); // path, restrictAccess string for datasets
   static private volatile PathMatcher resourceControlMatcher = new PathMatcher(); // path, restrictAccess string for datasetScan
   static private boolean hasResourceControl = false;
-  static private boolean debugResourceControl = false;
+  static private boolean debugResourceControl = true;
 
   static void reinit() {
     ncmlDatasetHash = new HashMap<String, InvDatasetImpl>();
@@ -122,6 +122,7 @@ public class DatasetHandler {
     return getNetcdfFile( req, res, req.getPathInfo());
   }
 
+  // return null means request has been handled, and calling routine should exit without further processing
   static public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     if (log.isDebugEnabled()) log.debug("DatasetHandler wants " + reqPath);
     if (debugResourceControl) System.out.println("getNetcdfFile = " + ServletUtil.getRequest(req));

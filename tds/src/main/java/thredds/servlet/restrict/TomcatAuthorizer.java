@@ -55,7 +55,9 @@ public class TomcatAuthorizer implements Authorizer {
 
 
     if (debugResourceControl) System.out.println("redirect to = " + urlr);
-    res.sendRedirect(urlr);
+    res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+    res.addHeader("Location", urlr);
+    res.setHeader("Last-Modified", "");
     return false;
   }
 
@@ -85,7 +87,9 @@ public class TomcatAuthorizer implements Authorizer {
 
         if (origURI != null) {
           if (debugResourceControl) System.out.println("redirect to origRequest = "+origURI);
-          res.sendRedirect(origURI);
+          res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+          String frag = (origURI.indexOf("?") > 0) ? "&auth" : "?auth";
+          res.addHeader("Location", origURI+frag);
           return;
 
         } else {

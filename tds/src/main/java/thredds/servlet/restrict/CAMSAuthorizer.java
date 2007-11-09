@@ -65,7 +65,9 @@ public class CAMSAuthorizer extends TomcatAuthorizer {
 
           if (origURI != null) {
             if (debugResourceControl) System.out.println("redirect to origRequest = "+origURI);
-            res.sendRedirect(origURI);
+            res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+            String frag = (origURI.indexOf("?") > 0) ? "&auth" : "?auth";
+            res.addHeader("Location", origURI+frag);
             return;
 
           } else {

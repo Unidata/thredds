@@ -15,6 +15,8 @@ Changes in version 3.16
   * Documentation link on catalog.html pages points to unidata web site.
   * Default is allow=false for CdmValidator, WCS, NetcdfSubset.
  Bugs
+  * add auth fragment to avoid circular redirect.
+  * Authorization failure handling
   * metar ncss : escape content in XML.
   * AggExisting persistRead O(n**2) searching
   * Fmrc : set cache=3 to prevent closing agg

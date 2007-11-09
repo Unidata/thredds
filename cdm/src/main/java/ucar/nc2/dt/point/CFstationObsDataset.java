@@ -84,6 +84,8 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
   private RecordDatasetHelper recordHelper;
   private boolean debugRead = false;
 
+  private int firstRecord = 0;
+
   public CFstationObsDataset(NetcdfDataset ds) throws IOException {
     super(ds);
 
@@ -294,13 +296,13 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
   public List getData(CancelTask cancel) throws IOException {
     ArrayList allData = new ArrayList();
     int n = getDataCount();
-    for (int i = 0; i < n; i++) {
+    /*for (int i = 0; i < n; i++) {
       StationObsDatatype obs = makeObs(i, false, null);
       if (obs != null)
         allData.add(obs);
       if ((cancel != null) && cancel.isCancel())
         return null;
-    }
+    }*/
     return allData;
   }
 
@@ -334,25 +336,25 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
             log.info("UnidataStationObsDataset.makeObs recno=" + recno + " > " + n + "; after sync= " + getDataCount());
           }
           StructureData sdata = recordVar.readStructure(recno);
-          if (isContiguousList) {
+          /* if (isContiguousList) {
             if (nextRecord++ > end)
               break;
           } else {
             nextRecord = sdata.getScalarInt(next.getName());
           }
           double obsTime = getTime(timeVar, sdata);
-          double nomTime = getTime(timeNominalVar, sdata);
+          double nomTime = getTime(timeNominalVar, sdata); */
 
-          obs.add(recordHelper.new RecordStationObs(this, obsTime, nomTime, recno));
+          //obs.add(recordHelper.new RecordStationObs(this, obsTime, nomTime, recno));
           recno = nextRecord;
 
         } catch (ucar.ma2.InvalidRangeException e) {
           log.error("UnidataStationObsDataset.readObservation recno=" + recno, e);
           throw new IOException(e.getMessage());
 
-        } catch (ParseException e) {
+        /* } catch (ParseException e) {
           log.error("UnidataStationObsDataset.readObservation recno=" + recno, e);
-          throw new IOException(e.getMessage());
+          throw new IOException(e.getMessage()); */
         }
       }
 
@@ -392,13 +394,13 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
         if (!sobs.getStation().getName().equals(getName()))
           throw new IllegalStateException("BAD Station link ("+nextRecno+") station name="+sobs.getStation().getName()+" should be "+getName());
 
-        if (isContiguousList) {
+        /* if (isContiguousList) {
           nextRecno++;
           if (nextRecno > last)
             nextRecno = -1;
         } else {
           nextRecno = sobs.sdata.getScalarInt(next.getName());
-        }
+        } */
         if (hasDateRange) {
           double timeValue = sobs.getObservationTime();
           if ((timeValue < startTime) || (timeValue > endTime))

@@ -103,7 +103,7 @@ public class TestAggExistingCoordVars extends TestCase {
     String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    System.out.println(" TestNcmlAggExisting.open "+ filename+"\n"+ncfile);
 
     Variable time = ncfile.findVariable("time");
     assert null != time;

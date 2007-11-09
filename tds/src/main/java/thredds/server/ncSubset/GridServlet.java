@@ -121,6 +121,7 @@ public class GridServlet extends AbstractServlet {
       GridDataset gds = null;
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
+        if (null == gds) return;
         showForm(res, gds, pathInfo, wantXML, showPointForm);
       } catch (Exception e) {
         log.error("GridServlet.showForm", e);
@@ -161,6 +162,7 @@ public class GridServlet extends AbstractServlet {
 
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
+        if (null == gds) return;
       } catch (Exception e) {
         ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
@@ -302,6 +304,7 @@ public class GridServlet extends AbstractServlet {
 
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
+        if (null == gds) return;
       } catch (Exception e) {
         ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
