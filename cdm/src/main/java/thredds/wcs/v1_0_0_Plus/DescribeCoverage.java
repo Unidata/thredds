@@ -1,24 +1,24 @@
 package thredds.wcs.v1_0_0_Plus;
 
-import org.jdom.Namespace;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Attribute;
 import org.jdom.output.XMLOutputter;
 
-import java.net.URI;
 import java.util.List;
+import java.util.Date;
 import java.io.PrintWriter;
 import java.io.IOException;
 
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
-import thredds.datatype.DateRange;
 
 /**
  * _more_
@@ -28,23 +28,19 @@ import thredds.datatype.DateRange;
  */
 public class DescribeCoverage extends WcsRequest
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( DescribeCoverage.class );
+//  private static org.slf4j.Logger log =
+//          org.slf4j.LoggerFactory.getLogger( DescribeCoverage.class );
 
-  private URI serverURI;
   private List<String> coverages;
 
   private Document describeCoverageDoc;
 
   public DescribeCoverage( Operation operation, String version, String datasetPath, GridDataset dataset,
-                           URI serverURI, List<String> coverages )
+                           List<String> coverages )
   {
     super( operation, version, datasetPath, dataset );
 
-    this.serverURI = serverURI;
     this.coverages = coverages;
-    if ( this.serverURI == null )
-      throw new IllegalArgumentException( "Non-null server URI required." );
     if ( this.coverages == null )
       throw new IllegalArgumentException( "Non-null coverage list required." );
     if ( this.coverages.size() < 1 )
@@ -93,14 +89,14 @@ public class DescribeCoverage extends WcsRequest
   {
     // ToDo WCS 1.0Plus - Change GridDatatype to GridDataset.Gridset
     GridDatatype coverage = this.getAvailableCoverage( covId );
-    GridCoordSystem gcs = coverage.getCoordinateSystem();
+    GridCoordSystem gridCoordSystem = coverage.getCoordinateSystem();
 
     // CoverageDescription/CoverageOffering (wcs) [1..*]
     Element covDescripElem = genCoverageOfferingBriefElem( "CoverageOffering", covId,
-                                                           coverage.getDescription(), gcs );
+                                                           coverage.getDescription(), gridCoordSystem );
 
     // CoverageDescription/CoverageOffering/domainSet [1]
-    covDescripElem.addContent( genDomainSetElem( gcs));
+    covDescripElem.addContent( genDomainSetElem( gridCoordSystem));
 
     // CoverageDescription/CoverageOffering/rangeSet [1]
     covDescripElem.addContent( genRangeSetElem( coverage));
@@ -109,26 +105,15 @@ public class DescribeCoverage extends WcsRequest
     covDescripElem.addContent( genSupportedCRSsElem( coverage));
 
     // CoverageDescription/CoverageOffering/supportedFormats [1]
+    covDescripElem.addContent( genSupportedFormatsElem() );
+
     // CoverageDescription/CoverageOffering/supportedInterpolations [0..1]
-
-    //************************
-
-    // CoverageDescriptions/CoverageDescription/Title (ows) [0..1]
-    // CoverageDescriptions/CoverageDescription/Abstract (ows) [0..1]
-    // CoverageDescriptions/CoverageDescription/Keywords (ows) [0..*]
-    // CoverageDescriptions/CoverageDescription/Keywords/Keyword (ows) [0..*]
-    // CoverageDescriptions/CoverageDescription/Identifier (wcs) [1]
-    covDescripElem.addContent( new Element( "Identifier", wcsNS ).addContent( covId ) );
-    // CoverageDescriptions/CoverageDescription/Metadata (ows) [0..*]
-    // CoverageDescriptions/CoverageDescription/Domain (wcs) [1]
-    // CoverageDescriptions/CoverageDescription/Range (wcs) [1]
-    // CoverageDescriptions/CoverageDescription/SupportedCRS (wcs) [1..*] - URI
-    // CoverageDescriptions/CoverageDescription/SupportedFormat (wcs) [1..*] - MIME Type (e.g., "application/x-netcdf")
+    covDescripElem.addContent( genSupportedInterpolationsElem() );
 
     return covDescripElem;
   }
 
-  public Element genDomainSetElem( GridCoordSystem gridCoordSys)
+  private Element genDomainSetElem( GridCoordSystem gridCoordSys)
   {
     // ../domainSet
     Element domainSetElem = new Element( "domainSet", wcsNS);
@@ -137,7 +122,7 @@ public class DescribeCoverage extends WcsRequest
     domainSetElem.addContent( genSpatialDomainElem( gridCoordSys) );
     if ( gridCoordSys.hasTimeAxis() )
     {
-      domainSetElem.addContent( genTemporalDomainElem( gridCoordSys.getDateRange() ) );
+      domainSetElem.addContent( genTemporalDomainElem( gridCoordSys.getTimeAxis1D() ) );
     }
 
     return domainSetElem;
@@ -147,7 +132,7 @@ public class DescribeCoverage extends WcsRequest
   {
     // ../domainSet/spatialDomain
     Element spatialDomainElem = new Element( "spatialDomain", wcsNS );
-    // TODO if ( gcs.)
+    
     // ../domainSet/spatialDomain/gml:Envelope [1..*]
     this.genEnvelopeElem( gridCoordSys);
 
@@ -159,38 +144,114 @@ public class DescribeCoverage extends WcsRequest
     return spatialDomainElem;
   }
 
-  protected Element genRectifiedGridElem( GridCoordSystem gcs )
+  private Element genRectifiedGridElem( GridCoordSystem gcs )
   {
     // ../spatialDomain/gml:RectifiedGrid
     Element rectifiedGridElem = new Element( "RectifiedGrid", gmlNS);
-    
-    // ../spatialDomain/gml:RectifiedGrid@srsName [0..1] (URI)
-    rectifiedGridElem.setAttribute( "srsName", "EPSG:" );
-//    String gridMapping = aGridset.getGrids().get( 0 ).findAttributeIgnoreCase( "grid_mapping" ).getStringValue();
-//    VariableSimpleIF gridMapVar = gridDs.getDataVariable( gridMapping );
-//
-//    gcsMsg.append( "    GridDataset GridMap <" ).append( gridMapVar.getName() ).append( "> Params:\n" );
-//    for ( ucar.nc2.Attribute curAtt : gridMapVar.getAttributes() )
-//    {
-//      gcsMsg.append( "      " ).append( curAtt.toString() ).append( "\n" );
-//    }
 
-    // ../spatialDomain/gml:RectifiedGrid@attribute [1] (positive integer)
+    CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
+    CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
+    CoordinateAxis1D zaxis = gcs.getVerticalAxis();
+
+    // ../spatialDomain/gml:RectifiedGrid@srsName [0..1] (URI)
+    String nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( gcs.getProjection() );
+    rectifiedGridElem.setAttribute( "srsName", nativeCRS );
+
+    // ../spatialDomain/gml:RectifiedGrid@dimension [1] (positive integer)
+    int ndim = ( zaxis != null ) ? 3 : 2;
+    rectifiedGridElem.setAttribute( "dimension", Integer.toString( ndim ) );
+
     // ../spatialDomain/gml:RectifiedGrid/gml:limits [1]
+    int[] minValues = new int[ndim];
+    int[] maxValues = new int[ndim];
+
+    maxValues[0] = (int) ( xaxis.getSize() - 1 );
+    maxValues[1] = (int) ( yaxis.getSize() - 1 );
+    if ( zaxis != null )
+      maxValues[2] = (int) ( zaxis.getSize() - 1 );
+
+    Element limitsElem =  new Element( "limits", gmlNS);
+
     // ../spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope [1]
     // ../spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:low [1] (integer list)
     // ../spatialDomain/gml:RectifiedGrid/gml:limits/gml:GridEnvelope/gml:high [1] (integer list)
+    limitsElem.addContent(
+            new Element( "GridEnvelope", gmlNS)
+                    .addContent( new Element( "low", gmlNS ).addContent( genIntegerListString( minValues)))
+                    .addContent( new Element( "high", gmlNS).addContent( genIntegerListString( maxValues))) );
+
+    rectifiedGridElem.addContent( limitsElem);
+
     // ../spatialDomain/gml:RectifiedGrid/gml:axisName [1..*] (string)
+    rectifiedGridElem.addContent( new Element( "axisName", gmlNS).addContent( "x"));
+    rectifiedGridElem.addContent( new Element( "axisName", gmlNS).addContent( "y"));
+    if ( zaxis != null )
+      rectifiedGridElem.addContent( new Element( "axisName", gmlNS ).addContent( "z" ) );
+
     // ../spatialDomain/gml:RectifiedGrid/gml:origin [1]
     // ../spatialDomain/gml:RectifiedGrid/gml:origin/gml:pos [1] (space seperated list of double values)
     // ../spatialDomain/gml:RectifiedGrid/gml:origin/gml:pos@dimension [0..1]  (number of entries in list)
+    double[] origin = new double[ndim];
+    origin[0] = xaxis.getStart();
+    origin[1] = yaxis.getStart();
+    if ( zaxis != null )
+      origin[2] = zaxis.getStart();
+
+    rectifiedGridElem.addContent(
+            new Element( "origin", gmlNS).addContent(
+                    new Element( "pos", gmlNS).addContent( genDoubleListString( origin))));
+
     // ../spatialDomain/gml:RectifiedGrid/gml:offsetVector [1..*] (space seperated list of double values)
     // ../spatialDomain/gml:RectifiedGrid/gml:offsetVector@dimension [0..1]  (number of entries in list)
+    double[] xoffset = new double[ndim];
+    xoffset[0] = xaxis.getIncrement();
+    rectifiedGridElem.addContent(
+            new Element( "offsetVector", gmlNS)
+                    .addContent( genDoubleListString( xoffset)));
+
+    double[] yoffset = new double[ndim];
+    yoffset[1] = yaxis.getIncrement();
+    rectifiedGridElem.addContent(
+            new Element( "offsetVector", gmlNS )
+                    .addContent( genDoubleListString( yoffset ) ) );
+
+    if ( zaxis != null )
+    {
+      double[] zoffset = new double[ndim];
+      zoffset[2] = zaxis.getIncrement();
+      rectifiedGridElem.addContent(
+              new Element( "offsetVector", gmlNS )
+                      .addContent( genDoubleListString( zoffset ) ) );
+    }
 
     return rectifiedGridElem;
   }
 
-  protected Element genEnvelopeElem( GridCoordSystem gcs )
+  private String genIntegerListString( int[] values)
+  {
+    StringBuffer buf = new StringBuffer();
+    for ( int intValue : values )
+    {
+      if ( buf.length() > 0 )
+        buf.append( " ");
+      buf.append( intValue);
+    }
+    return buf.toString();
+  }
+
+  private String genDoubleListString( double[] values)
+  {
+    StringBuffer buf = new StringBuffer();
+    for ( double doubleValue : values )
+    {
+      if ( buf.length() > 0 )
+        buf.append( " ");
+      buf.append( doubleValue);
+    }
+    return buf.toString();
+  }
+
+  private Element genEnvelopeElem( GridCoordSystem gcs )
   {
     // spatialDomain/Envelope
     Element envelopeElem;
@@ -246,14 +307,26 @@ public class DescribeCoverage extends WcsRequest
     return envelopeElem;
   }
 
-  private Element genTemporalDomainElem( DateRange dateRange )
+  private Element genTemporalDomainElem( CoordinateAxis1DTime timeAxis )
   {
+    // temporalDomain
     Element temporalDomainElem = new Element( "temporalDomain", wcsNS );
 
-    return temporalDomainElem;
+    Date[] dates = timeAxis.getTimeDates();
+    DateFormatter formatter = new DateFormatter();
+
+    // temporalDomain/timePosition [1..*]
+    for ( Date curDate : dates )
+    {
+      temporalDomainElem.addContent(
+              new Element( "timePosition", gmlNS)
+                      .addContent( formatter.toDateTimeStringISO( curDate )));
+    }
+
+      return temporalDomainElem;
   }
 
-  public Element genRangeSetElem( GridDatatype coverage )
+  private Element genRangeSetElem( GridDatatype coverage )
   {
     Element rangeSetElem = new Element( "rangeSet", wcsNS);
     Element innerRangeSetElem = new Element( "RangeSet", gmlNS);
@@ -272,19 +345,53 @@ public class DescribeCoverage extends WcsRequest
     return rangeSetElem.addContent( innerRangeSetElem);
   }
 
-  public Element genSupportedCRSsElem( GridDatatype coverage )
+  private Element genSupportedCRSsElem( GridDatatype coverage )
   {
+    // supportedCRSs
     Element supportedCRSsElem = new Element( "supportedCRSs", wcsNS);
 
+    // supportedCRSs/requestCRSs [1..*] (wcs) (space seperated list of strings)
+    // supportedCRSs/requestCRSs@codeSpace [0..1] (URI)
     supportedCRSsElem.addContent(
             new Element( "requestCRSs", wcsNS)
                     .addContent( "OGC:CRS84"));
 
+    // supportedCRSs/responseCRSs [1..*] (wcs) (space seperated list of strings)
+    // supportedCRSs/responseCRSs@codeSpace [0..1] (URI)
     String nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( coverage.getCoordinateSystem().getProjection());
     supportedCRSsElem.addContent(
             new Element( "responseCRSs", wcsNS)
                     .addContent( nativeCRS));
 
     return supportedCRSsElem;
+  }
+
+  private Element genSupportedFormatsElem()
+  {
+    // supportedFormats
+    // supportedFormats@nativeFormat [0..1] (string)
+    Element supportedFormatsElem = new Element( "supportedFormats", wcsNS );
+
+    // supportedFormats/formats [1..*] (wcs) (space seperated list of strings)
+    // supportedFormats/formats@codeSpace [0..1] (URI)
+    supportedFormatsElem.addContent(
+            new Element( "formats", wcsNS )
+                    .addContent( "application/x-netcdf" ) );
+
+    return supportedFormatsElem;
+  }
+
+  private Element genSupportedInterpolationsElem()
+  {
+    // supportedInterpolations
+    // supportedInterpolations@default [0..1] ???
+    Element supportedInterpolationsElem = new Element( "supportedInterpolations", wcsNS);
+
+    // supportedInterpolations/interpolationMethod [1..*]
+    supportedInterpolationsElem.addContent(
+            new Element( "interpolationMethod", wcsNS)
+                    .addContent( "none"));
+
+    return supportedInterpolationsElem;
   }
 }

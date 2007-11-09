@@ -77,7 +77,7 @@ public class WcsRequestParser
       String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
       List<String> coverageIdList = splitCommaSeperatedList( coverageIdListParam );
 
-      return new DescribeCoverage( operation, version, datasetPath, dataset, serverURI, coverageIdList);
+      return new DescribeCoverage( operation, version, datasetPath, dataset, coverageIdList);
     }
     // Handle "GetCoverage" request.
     else if ( operation.equals( WcsRequest.Operation.GetCoverage ) )
