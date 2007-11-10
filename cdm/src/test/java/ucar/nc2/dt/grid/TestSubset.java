@@ -429,6 +429,38 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  // x,y in meters
+  public void testBBSubsetUnits() throws Exception {
+    GridDataset dataset = GridDataset.open("C:/data/cdp/test_for_jc.ncml");
+    GeoGrid grid = dataset.findGridByName("pr");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+
+    System.out.println("original bbox= "+gcs.getBoundingBox());
+    System.out.println("lat/lon bbox= "+gcs.getLatLonBoundingBox());
+
+    ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect( new LatLonPointImpl(38,-110), new LatLonPointImpl(42,-90));
+    System.out.println("subset lat/lon bbox= "+llbb_subset);
+
+    GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
+    GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
+    assert null != gcs2;
+
+    System.out.println("result lat/lon bbox= "+gcs2.getLatLonBoundingBox());
+    System.out.println("result bbox= "+gcs2.getBoundingBox());
+
+    ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
+    System.out.println("projection mapArea= "+pr);
+    assert(pr.equals(gcs2.getBoundingBox()));
+
+    CoordinateAxis xaxis = gcs.getXHorizAxis();
+    CoordinateAxis yaxis = gcs.getYHorizAxis();
+    System.out.println("(nx,ny)= "+xaxis.getSize()+","+yaxis.getSize());
+
+    dataset.close();
+  }
+
 
 }
 

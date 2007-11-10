@@ -12,76 +12,76 @@ import javax.servlet.http.*;
 
 import edu.yale.its.tp.cas.client.*;
 
-  /**
-   * <p>Protects web-accessible resources with CAS.</p>
-   * <p/>
-   * <p>The following filter initialization parameters are declared in
-   * <code>web.xml</code>:</p>
-   * <p/>
-   * <ul>
-   * <li><code>edu.yale.its.tp.cas.client.filter.loginUrl</code>: URL to
-   * login page on CAS server.  (Required)</li>
-   * <li><code>edu.yale.its.tp.cas.client.filter.validateUrl</code>: URL
-   * to validation URL on CAS server.  (Required)</li>
-   * <li><code>edu.yale.its.tp.cas.client.filter.serviceUrl</code>: URL
-   * of this service.  (Required if <code>serverName</code> is not
-   * specified)</li>
-   * <li><code>edu.yale.its.tp.cas.client.filter.serverName</code>: full
-   * hostname with port number (e.g. <code>www.foo.com:8080</code>).
-   * Port number isn't required if it is standard (80 for HTTP, 443 for
-   * HTTPS).  (Required if <code>serviceUrl</code> is not specified)</li>
-   * <li><code>edu.yale.its.tp.cas.client.filter.authorizedProxy</code>:
-   * whitespace-delimited list of valid proxies through which authentication
-   * may have proceeded.  One one proxy must match.  (Optional.  If nothing
-   * is specified, the filter will only accept service tickets &#150; not
-   * proxy tickets.)</li>
-   * <li><code>edu.yale.its.tp.cas.client.filter.proxyCallbackUrl</code>:
-   * URL of local proxy callback listener used to acquire PGT/PGTIOU.
-   * (Optional.)</li>
-   * <li><code>edu.yale.its.tp.cas.client.filter.renew</code>: value of
-   * CAS "renew" parameter.  Bypasses single sign-on and requires user
-   * to provide CAS with his/her credentials again.  (Optional.  If nothing
-   * is specified, this defaults to false.)</li>
-   * <li><code>edu.yale.its.tp.cas.client.filter.gateway</code>: value of
-   * CAS "gateway" parameter.  Redirects initial call through CAS and if
-   * the user has logged in, validates the ticket on return.  If the user
-   * has not logged in, returns to the web application without setting
-   * the <code>CAS_FILTER_USER</code> variable.  Note that once a redirect
-   * through CAS has occurred, the filter will not automatically try again
-   * to log the user in.  You can then either provide an explicit CAS login
-   * link (<code>https://cas-server/cas/login?service=http://your-app</code>)
-   * or set up two instances of the filter mapped to different paths.  One
-   * instance would have gateway=true, the other wouldn't.  When you need
-   * the user to be logged in, direct him/her to the path of the other
-   * filter.</li>
-   * <li><code>edu.yale.its.tp.cas.client.filter.wrapRequest</code>:
-   * wrap the <code>HttpServletRequest</code> object, overriding the
-   * <code>getRemoteUser()</code> method.  When set to "true",
-   * <code>request.getRemoteUser()</code> will return the username of the
-   * currently logged-in CAS user.  (Optional.  If nothing is specified,
-   * this defaults to false.)</li>
-   * </ul>
-   * <p/>
-   * <p>The logged-in username is set in the session attribute defined by
-   * the value of <code>CAS_FILTER_USER</code> and may be accessed from within
-   * your application either by setting <code>wrapRequest</code> and calling
-   * <code>request.getRemoteUser()</code>, or by calling
-   * <code>session.getAttribute(CASFilter.CAS_FILTER_USER)</code>.</p>
-   * <p/>
-   * <p>If <code>proxyCallbackUrl</code> is set, the URL will be passed to
-   * CAS upon validation.  If the callback URL is valid, it will receive a
-   * CAS PGT and a PGTIOU.  The PGTIOU will be returned to this filter and
-   * will be accessible through the session attribute,
-   * <code>CASFilter.CAS_FILTER_PGTIOU</code>.  You may then acquire
-   * proxy tickets to other services by calling
-   * <code>edu.yale.its.tp.cas.proxy.ProxyTicketReceptor.getProxyTicket(pgtIou, targetService)</code>.
-   *
-   * @author Shawn Bayern
-   * @author Drew Mazurek
-   * @author andrew.petro@yale.edu
-   *
-   * modified for TDS jcaron 1/23/07
-   */
+/**
+ * <p>Protects web-accessible resources with CAS.</p>
+ * <p/>
+ * <p>The following filter initialization parameters are declared in
+ * <code>web.xml</code>:</p>
+ * <p/>
+ * <ul>
+ * <li><code>edu.yale.its.tp.cas.client.filter.loginUrl</code>: URL to
+ * login page on CAS server.  (Required)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.validateUrl</code>: URL
+ * to validation URL on CAS server.  (Required)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.serviceUrl</code>: URL
+ * of this service.  (Required if <code>serverName</code> is not
+ * specified)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.serverName</code>: full
+ * hostname with port number (e.g. <code>www.foo.com:8080</code>).
+ * Port number isn't required if it is standard (80 for HTTP, 443 for
+ * HTTPS).  (Required if <code>serviceUrl</code> is not specified)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.authorizedProxy</code>:
+ * whitespace-delimited list of valid proxies through which authentication
+ * may have proceeded.  One one proxy must match.  (Optional.  If nothing
+ * is specified, the filter will only accept service tickets &#150; not
+ * proxy tickets.)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.proxyCallbackUrl</code>:
+ * URL of local proxy callback listener used to acquire PGT/PGTIOU.
+ * (Optional.)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.renew</code>: value of
+ * CAS "renew" parameter.  Bypasses single sign-on and requires user
+ * to provide CAS with his/her credentials again.  (Optional.  If nothing
+ * is specified, this defaults to false.)</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.gateway</code>: value of
+ * CAS "gateway" parameter.  Redirects initial call through CAS and if
+ * the user has logged in, validates the ticket on return.  If the user
+ * has not logged in, returns to the web application without setting
+ * the <code>CAS_FILTER_USER</code> variable.  Note that once a redirect
+ * through CAS has occurred, the filter will not automatically try again
+ * to log the user in.  You can then either provide an explicit CAS login
+ * link (<code>https://cas-server/cas/login?service=http://your-app</code>)
+ * or set up two instances of the filter mapped to different paths.  One
+ * instance would have gateway=true, the other wouldn't.  When you need
+ * the user to be logged in, direct him/her to the path of the other
+ * filter.</li>
+ * <li><code>edu.yale.its.tp.cas.client.filter.wrapRequest</code>:
+ * wrap the <code>HttpServletRequest</code> object, overriding the
+ * <code>getRemoteUser()</code> method.  When set to "true",
+ * <code>request.getRemoteUser()</code> will return the username of the
+ * currently logged-in CAS user.  (Optional.  If nothing is specified,
+ * this defaults to false.)</li>
+ * </ul>
+ * <p/>
+ * <p>The logged-in username is set in the session attribute defined by
+ * the value of <code>CAS_FILTER_USER</code> and may be accessed from within
+ * your application either by setting <code>wrapRequest</code> and calling
+ * <code>request.getRemoteUser()</code>, or by calling
+ * <code>session.getAttribute(CASFilter.CAS_FILTER_USER)</code>.</p>
+ * <p/>
+ * <p>If <code>proxyCallbackUrl</code> is set, the URL will be passed to
+ * CAS upon validation.  If the callback URL is valid, it will receive a
+ * CAS PGT and a PGTIOU.  The PGTIOU will be returned to this filter and
+ * will be accessible through the session attribute,
+ * <code>CASFilter.CAS_FILTER_PGTIOU</code>.  You may then acquire
+ * proxy tickets to other services by calling
+ * <code>edu.yale.its.tp.cas.proxy.ProxyTicketReceptor.getProxyTicket(pgtIou, targetService)</code>.
+ *
+ * @author Shawn Bayern
+ * @author Drew Mazurek
+ * @author andrew.petro@yale.edu
+ *         <p/>
+ *         modified for TDS jcaron 1/23/07
+ */
 
 public class CASAuthorizer implements Authorizer {
 
@@ -216,18 +216,19 @@ public class CASAuthorizer implements Authorizer {
   //*********************************************************************
   // Initialization
 
-  public CASAuthorizer() {}
+  public CASAuthorizer() {
+  }
 
   public void init(HttpServlet config) throws ServletException {
 
-    casLogin = config.getInitParameter( LOGIN_INIT_PARAM);
-    casValidate = config.getInitParameter( VALIDATE_INIT_PARAM);
-    casServiceUrl = config.getInitParameter( SERVICE_INIT_PARAM);
-    String casAuthorizedProxy = config.getInitParameter( AUTHORIZED_PROXY_INIT_PARAM);
+    casLogin = config.getInitParameter(LOGIN_INIT_PARAM);
+    casValidate = config.getInitParameter(VALIDATE_INIT_PARAM);
+    casServiceUrl = config.getInitParameter(SERVICE_INIT_PARAM);
+    String casAuthorizedProxy = config.getInitParameter(AUTHORIZED_PROXY_INIT_PARAM);
     casRenew = Boolean.valueOf(config.getInitParameter(RENEW_INIT_PARAM));
-    casServerName = config.getInitParameter( SERVERNAME_INIT_PARAM);
-    casProxyCallbackUrl = config.getInitParameter( PROXY_CALLBACK_INIT_PARAM);
-    wrapRequest =  Boolean.valueOf(config.getInitParameter(WRAP_REQUESTS_INIT_PARAM));
+    casServerName = config.getInitParameter(SERVERNAME_INIT_PARAM);
+    casProxyCallbackUrl = config.getInitParameter(PROXY_CALLBACK_INIT_PARAM);
+    wrapRequest = Boolean.valueOf(config.getInitParameter(WRAP_REQUESTS_INIT_PARAM));
     casGateway = Boolean.valueOf(config.getInitParameter(GATEWAY_INIT_PARAM));
 
     if (casGateway && casRenew) {
@@ -274,6 +275,7 @@ public class CASAuthorizer implements Authorizer {
   }
 
   private RoleSource db;
+
   public void setRoleSource(RoleSource db) {
     this.db = db;
   }
@@ -292,7 +294,9 @@ public class CASAuthorizer implements Authorizer {
     CASReceipt receipt = (CASReceipt) session.getAttribute(CAS_FILTER_RECEIPT);
     if (receipt != null && isReceiptAcceptable(receipt)) {
       log.debug("CAS_FILTER_RECEIPT attribute was present and acceptable..");
-      return authorize(receipt, role);
+      boolean ok = authorize(receipt, role);
+      if (!ok) response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return ok;
     }
 
     // otherwise, we need to authenticate via CAS
@@ -315,7 +319,7 @@ public class CASAuthorizer implements Authorizer {
 
       if (!didGateway) {
         log.debug("Did not previously gateway.  Setting session attribute to true.");
-        session.setAttribute( CAS_FILTER_GATEWAYED, "true");
+        session.setAttribute(CAS_FILTER_GATEWAYED, "true");
         redirectToCAS(request, response);
         // abort chain
         return false;
@@ -324,11 +328,13 @@ public class CASAuthorizer implements Authorizer {
         // if we should be logged in, make sure validation succeeded
         if (casGateway || session.getAttribute(CAS_FILTER_USER) != null) {
           log.debug("casGateway was true and CAS_FILTER_USER set: ok.");
-          return authorize(receipt, role);
+          boolean ok = authorize(receipt, role);
+          if (!ok) response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+          return ok;
 
         } else {
           // unknown state... redirect to CAS
-          session.setAttribute( CAS_FILTER_GATEWAYED, "true");
+          session.setAttribute(CAS_FILTER_GATEWAYED, "true");
           redirectToCAS(request, response);
           // abort chain
           return false;
@@ -341,11 +347,16 @@ public class CASAuthorizer implements Authorizer {
       receipt = getAuthenticatedUser(request);
     } catch (CASAuthenticationException e) {
       log.error("failed to authenticate", e);
-      throw new ServletException(e);
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return false;
+      //throw new ServletException(e);
     }
 
     if (!isReceiptAcceptable(receipt)) {
-      throw new ServletException("Authentication was technically successful but rejected as a matter of policy. [" + receipt + "]");
+      log.error("Authentication was technically successful but rejected as a matter of policy. [" + receipt + "]");
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return false;
+      //throw new ServletException("Authentication was technically successful but rejected as a matter of policy. [" + receipt + "]");
     }
 
     // Store the authenticated user in the session
@@ -353,13 +364,15 @@ public class CASAuthorizer implements Authorizer {
       session.setAttribute(CAS_FILTER_USER, receipt.getUserName());
       session.setAttribute(CAS_FILTER_RECEIPT, receipt);
       // don't store extra unnecessary session state
-      session.removeAttribute( CAS_FILTER_GATEWAYED);
+      session.removeAttribute(CAS_FILTER_GATEWAYED);
     }
     if (log.isDebugEnabled()) {
       log.debug("validated ticket to get authenticated receipt [" + receipt + "], now passing request along filter chain.");
     }
 
-    return authorize(receipt, role);
+    boolean ok = authorize(receipt, role);
+    if (!ok) response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    return ok;
   }
 
   private boolean authorize(CASReceipt receipt, String role) {
@@ -467,9 +480,7 @@ public class CASAuthorizer implements Authorizer {
     return serviceString;
   }
 
-  /**
-   * Redirects the user to CAS, determining the service from the request.
-   */
+  // Redirects the user to CAS, determining the service from the request.
   private void redirectToCAS(
           HttpServletRequest request,
           HttpServletResponse response)

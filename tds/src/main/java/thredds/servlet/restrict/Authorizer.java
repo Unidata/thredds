@@ -55,14 +55,14 @@ public interface Authorizer {
    * @param req the request
    * @param res the response
    * @param role need this role
-   * @return true if user is authenticated
+   * @return true if user is authenticated. if false, must set res.setStatus().
    * @throws IOException I/O error, eg network
    * @throws ServletException other errors
    */
   public boolean authorize(HttpServletRequest req, HttpServletResponse res, String role) throws IOException, ServletException;
 
   /**
-   * Process this request. May be a no-op.
+   * Process this request. May be a no-op. 
    * @param req the request
    * @param res the response
    * @throws IOException I/O error, eg network
