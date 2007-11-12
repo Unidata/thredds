@@ -20,12 +20,14 @@ import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Attribute;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
 
 /**
  * _more_
@@ -547,36 +549,36 @@ public class TestAll extends TestCase
     final StringBuffer otherMsg = new StringBuffer();
 
     List<String> catList = new ArrayList<String>();
-    catList.add( "fmrc/NCEP/GFS/Alaska_191km");
-    catList.add( "fmrc/NCEP/GFS/CONUS_80km");
-    catList.add( "fmrc/NCEP/GFS/CONUS_95km");
-    catList.add( "fmrc/NCEP/GFS/CONUS_191km");
-    catList.add( "fmrc/NCEP/GFS/Global_0p5deg");
-    catList.add( "fmrc/NCEP/GFS/Global_onedeg");
+//    catList.add( "fmrc/NCEP/GFS/Alaska_191km");
+//    catList.add( "fmrc/NCEP/GFS/CONUS_80km");
+//    catList.add( "fmrc/NCEP/GFS/CONUS_95km");
+//    catList.add( "fmrc/NCEP/GFS/CONUS_191km");
+//    catList.add( "fmrc/NCEP/GFS/Global_0p5deg");
+//    catList.add( "fmrc/NCEP/GFS/Global_onedeg");
     catList.add( "fmrc/NCEP/GFS/Global_2p5deg");
-    catList.add( "fmrc/NCEP/GFS/Hawaii_160km");
-    catList.add( "fmrc/NCEP/GFS/N_Hemisphere_381km");
-    catList.add( "fmrc/NCEP/GFS/Puerto_Rico_191km");
-    catList.add( "fmrc/NCEP/NAM/Alaska_11km");
-    catList.add( "fmrc/NCEP/NAM/Alaska_22km");
-    catList.add( "fmrc/NCEP/NAM/Alaska_45km/noaaport");
-    catList.add( "fmrc/NCEP/NAM/Alaska_45km/conduit");
-    catList.add( "fmrc/NCEP/NAM/Alaska_95km");
-    catList.add( "fmrc/NCEP/NAM/CONUS_12km");
-    catList.add( "fmrc/NCEP/NAM/CONUS_20km/surface");
-    catList.add( "fmrc/NCEP/NAM/CONUS_20km/selectsurface");
-    catList.add( "fmrc/NCEP/NAM/CONUS_20km/noaaport");
-    catList.add( "fmrc/NCEP/NAM/CONUS_40km/conduit");
-    catList.add( "fmrc/NCEP/NAM/CONUS_80km");
-    catList.add( "fmrc/NCEP/NAM/Polar_90km");
-    catList.add( "fmrc/NCEP/RUC2/CONUS_20km/surface");
-    catList.add( "fmrc/NCEP/RUC2/CONUS_20km/pressure");
-    catList.add( "fmrc/NCEP/RUC2/CONUS_20km/hybrid");
-    catList.add( "fmrc/NCEP/RUC2/CONUS_40km");
-    catList.add( "fmrc/NCEP/RUC/CONUS_80km");
-    catList.add( "fmrc/NCEP/DGEX/CONUS_12km");
-    catList.add( "fmrc/NCEP/DGEX/Alaska_12km");
-    catList.add( "fmrc/NCEP/NDFD/CONUS_5km");
+//    catList.add( "fmrc/NCEP/GFS/Hawaii_160km");
+//    catList.add( "fmrc/NCEP/GFS/N_Hemisphere_381km");
+//    catList.add( "fmrc/NCEP/GFS/Puerto_Rico_191km");
+//    catList.add( "fmrc/NCEP/NAM/Alaska_11km");
+//    catList.add( "fmrc/NCEP/NAM/Alaska_22km");
+//    catList.add( "fmrc/NCEP/NAM/Alaska_45km/noaaport");
+//    catList.add( "fmrc/NCEP/NAM/Alaska_45km/conduit");
+//    catList.add( "fmrc/NCEP/NAM/Alaska_95km");
+//    catList.add( "fmrc/NCEP/NAM/CONUS_12km");
+//    catList.add( "fmrc/NCEP/NAM/CONUS_20km/surface");
+//    catList.add( "fmrc/NCEP/NAM/CONUS_20km/selectsurface");
+//    catList.add( "fmrc/NCEP/NAM/CONUS_20km/noaaport");
+//    catList.add( "fmrc/NCEP/NAM/CONUS_40km/conduit");
+//    catList.add( "fmrc/NCEP/NAM/CONUS_80km");
+//    catList.add( "fmrc/NCEP/NAM/Polar_90km");
+//    catList.add( "fmrc/NCEP/RUC2/CONUS_20km/surface");
+//    catList.add( "fmrc/NCEP/RUC2/CONUS_20km/pressure");
+//    catList.add( "fmrc/NCEP/RUC2/CONUS_20km/hybrid");
+//    catList.add( "fmrc/NCEP/RUC2/CONUS_40km");
+//    catList.add( "fmrc/NCEP/RUC/CONUS_80km");
+//    catList.add( "fmrc/NCEP/DGEX/CONUS_12km");
+//    catList.add( "fmrc/NCEP/DGEX/Alaska_12km");
+//    catList.add( "fmrc/NCEP/NDFD/CONUS_5km");
 
     CatalogCrawler.Listener listener = new CatalogCrawler.Listener()
     {
@@ -613,7 +615,7 @@ public class TestAll extends TestCase
 
         GridDataset gridDs = new ucar.nc2.dt.grid.GridDataset( ncd );
 
-        boolean getVertCoordInfo = true;
+        boolean getVertCoordInfo = false;
         if ( getVertCoordInfo)
         {
           // Figure out vertical coord info
@@ -656,13 +658,38 @@ public class TestAll extends TestCase
         {
 // Figure out X-Y projection information
           GridDataset.Gridset aGridset = gridDs.getGridsets().get( 0);
-          String gridMapping = aGridset.getGrids().get( 0).findAttributeIgnoreCase( "grid_mapping").getStringValue();
-          VariableSimpleIF gridMapVar = gridDs.getDataVariable( gridMapping);
-
-          gcsMsg.append( "    GridDataset GridMap <").append( gridMapVar.getName()).append("> Params:\n" );
-          for ( Attribute curAtt : gridMapVar.getAttributes())
+          Attribute gridMappingAtt = aGridset.getGrids().get( 0 ).findAttributeIgnoreCase( "grid_mapping" );
+          if ( gridMappingAtt != null )
           {
-            gcsMsg.append( "      " ).append( curAtt.toString() ).append( "\n" );
+            String gridMapping = gridMappingAtt.getStringValue();
+            VariableSimpleIF gridMapVar = gridDs.getDataVariable( gridMapping );
+
+            gcsMsg.append( "    GridDataset GridMap <" ).append( gridMapVar.getName() ).append( "> Params:\n" );
+            for ( Attribute curAtt : gridMapVar.getAttributes() )
+            {
+              gcsMsg.append( "      " ).append( curAtt.toString() ).append( "\n" );
+            }
+          }
+          else
+          {
+            GridCoordSystem geoCoordSystem = aGridset.getGeoCoordSystem();
+            if ( geoCoordSystem != null )
+            {
+              ProjectionImpl proj = geoCoordSystem.getProjection();
+              if ( proj != null )
+              {
+                gcsMsg.append( "    Projection:\n" )
+                        .append( "      Name=" ).append( proj.getName() ).append( "\n" )
+                        .append( "      ClassName=" ).append( proj.getClassName() ).append( "\n" )
+                        .append( "      Params=" ).append( proj.paramsToString() ).append( "\n" )
+                        .append( "      oString()=" ).append( proj.toString() ).append( "\n" );
+
+                String crsId = EPSG_OGC_CF_Helper.getWcs1_0CrsId( proj );
+                gcsMsg.append( "    CRS:\n" )
+                        .append( "      ID=" ).append( crsId ).append( "\n" );
+
+              }
+            }
           }
         }
 

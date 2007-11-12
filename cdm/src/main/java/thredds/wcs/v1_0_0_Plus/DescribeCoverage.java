@@ -134,10 +134,10 @@ public class DescribeCoverage extends WcsRequest
     Element spatialDomainElem = new Element( "spatialDomain", wcsNS );
     
     // ../domainSet/spatialDomain/gml:Envelope [1..*]
-    this.genEnvelopeElem( gridCoordSys);
+    spatialDomainElem.addContent( this.genEnvelopeElem( gridCoordSys));
 
     // ../domainSet/spatialDomain/gml:RectifiedGrid [0..*]
-    this.genRectifiedGridElem( gridCoordSys);
+    spatialDomainElem.addContent( this.genRectifiedGridElem( gridCoordSys));
 
     // ../domainSet/spatialDomain/gml:Polygon [0..*]
 
@@ -337,22 +337,68 @@ public class DescribeCoverage extends WcsRequest
     // rangeSet/RangeSet@refSysLabel
     Element innerRangeSetElem = new Element( "RangeSet", wcsNS);
 
-    // rangeSet/gml:RangeSet/description [0..1]
+    // rangeSet/RangeSet/description [0..1]
     if ( "" != null )
       innerRangeSetElem.addContent(
               new Element( "description").addContent(
                       "" ) );
 
-    // rangeSet/gml:RangeSet/name [1]
+    // rangeSet/RangeSet/name [1]
     innerRangeSetElem.addContent(
-            new Element( "name", wcsNS).addContent( ""));
+            new Element( "name", wcsNS).addContent( "RangeSetName"));
 
-    // rangeSet/gml:RangeSet/label [1]
+    // rangeSet/RangeSet/label [1]
     innerRangeSetElem.addContent(
-            new Element( "label", wcsNS ).addContent( "" ) );
-    //for ( double z : coverage.getCoordinateSystem().getVerticalAxis().getCoordValues())
-    innerRangeSetElem.addContent(
-            new Element( "axisDescription", wcsNS ).addContent( "" ) );
+            new Element( "label", wcsNS ).addContent( "RangeSetLabel" ) );
+
+    CoordinateAxis1D zaxis = coverage.getCoordinateSystem().getVerticalAxis();
+    if ( zaxis != null )
+    {
+      // rangeSet/RangeSet/axisDescription [0..*]
+      Element axisDescElem = new Element( "axisDescription", wcsNS );
+
+      // rangeSet/RangeSet/axisDescription/AxisDescription [1]
+      Element innerAxisDescElem = new Element( "AxisDescription", wcsNS);
+
+      // rangeSet/RangeSet/axisDescription/AxisDescription/name [1]
+      // rangeSet/RangeSet/axisDescription/AxisDescription/label [1]
+      innerAxisDescElem.addContent( new Element( "name", wcsNS).addContent( "Vertical"));
+      innerAxisDescElem.addContent( new Element( "label", wcsNS).addContent( zaxis.getName()));
+
+      // rangeSet/RangeSet/axisDescription/AxisDescription/values [1]
+      Element valuesElem = new Element( "values", wcsNS);
+
+      // rangeSet/RangeSet/axisDescription/AxisDescription/values/singleValue [1..*]
+      // ----- interval is alternate for singleValue
+      // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval
+      // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/min [0..1]
+      // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/max [0..1]
+      // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/res [0..1]
+      // -----
+      for ( int z = 0; z < zaxis.getSize(); z++ )
+        valuesElem.addContent(
+                new Element( "singleValue", wcsNS)
+                        .addContent( zaxis.getCoordName( z ).trim()));
+
+      // rangeSet/RangeSet/axisDescription/AxisDescription/values/default [0..1]
+
+      innerAxisDescElem.addContent( valuesElem);
+      axisDescElem.addContent( innerAxisDescElem);
+      innerRangeSetElem.addContent( axisDescElem);
+    }
+
+
+
+    // rangeSet/RangeSet/nullValues [0..1]
+    // rangeSet/RangeSet/nullValues/{interval|singleValue} [1..*]
+    if ( coverage.hasMissingData() )
+    {
+      innerRangeSetElem.addContent(
+              new Element( "nullValues", wcsNS).addContent(
+                      new Element( "singleValue", wcsNS)
+                              // ToDo Is missing always NaN?
+                              .addContent( "NaN" ) ) );
+    }
 
     return rangeSetElem.addContent( innerRangeSetElem);
   }
