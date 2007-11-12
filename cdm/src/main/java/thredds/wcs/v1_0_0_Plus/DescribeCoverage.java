@@ -328,14 +328,26 @@ public class DescribeCoverage extends WcsRequest
 
   private Element genRangeSetElem( GridDatatype coverage )
   {
+    // rangeSet
     Element rangeSetElem = new Element( "rangeSet", wcsNS);
-    Element innerRangeSetElem = new Element( "RangeSet", gmlNS);
+
+    // rangeSet/RangeSet
+    // rangeSet/RangeSet@semantic
+    // rangeSet/RangeSet@refSys
+    // rangeSet/RangeSet@refSysLabel
+    Element innerRangeSetElem = new Element( "RangeSet", wcsNS);
+
+    // rangeSet/gml:RangeSet/description [0..1]
     if ( "" != null )
       innerRangeSetElem.addContent(
               new Element( "description").addContent(
                       "" ) );
+
+    // rangeSet/gml:RangeSet/name [1]
     innerRangeSetElem.addContent(
             new Element( "name", wcsNS).addContent( ""));
+
+    // rangeSet/gml:RangeSet/label [1]
     innerRangeSetElem.addContent(
             new Element( "label", wcsNS ).addContent( "" ) );
     //for ( double z : coverage.getCoordinateSystem().getVerticalAxis().getCoordValues())
