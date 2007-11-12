@@ -338,10 +338,11 @@ public class DescribeCoverage extends WcsRequest
     Element innerRangeSetElem = new Element( "RangeSet", wcsNS);
 
     // rangeSet/RangeSet/description [0..1]
-    if ( "" != null )
+    String description = null; // ToDo What should this be?
+    if ( description != null )
       innerRangeSetElem.addContent(
-              new Element( "description").addContent(
-                      "" ) );
+              new Element( "description")
+                      .addContent( description ) );
 
     // rangeSet/RangeSet/name [1]
     innerRangeSetElem.addContent(
