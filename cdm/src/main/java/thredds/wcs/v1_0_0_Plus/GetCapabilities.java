@@ -22,8 +22,8 @@ import ucar.nc2.dt.GridDatatype;
  */
 public class GetCapabilities extends WcsRequest
 {
-    private static org.slf4j.Logger log =
-            org.slf4j.LoggerFactory.getLogger( GetCapabilities.class );
+//    private static org.slf4j.Logger log =
+//            org.slf4j.LoggerFactory.getLogger( GetCapabilities.class );
 
   public enum Section
   {
@@ -43,7 +43,7 @@ public class GetCapabilities extends WcsRequest
         if ( curSection.altId.equals( altId))
           return curSection;
       }
-      throw new IllegalArgumentException( "No suce instance <" + altId + ">.");
+      throw new IllegalArgumentException( "No such instance <" + altId + ">.");
     }
   }
 

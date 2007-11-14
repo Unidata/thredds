@@ -32,6 +32,11 @@ public abstract class WcsRequest
   // ToDo WCS 1.0Plus - change GridDatatype to GridDataset.Gridset
   private HashMap<String,GridDatatype> availableCoverages;
 
+  private String rangeSetAxisName;
+  private String defaultRequestCrs;
+  private String allowedCoverageFormat;
+
+
   public enum Operation
   {
     GetCapabilities, DescribeCoverage, GetCoverage
@@ -82,12 +87,19 @@ public abstract class WcsRequest
       throw new IllegalArgumentException( "Non-null dataset path required." );
     if ( this.dataset == null )
       throw new IllegalArgumentException( "Non-null dataset required." );
+
+    rangeSetAxisName = "Vertical";
+    defaultRequestCrs = "OGC:CRS84";
+    allowedCoverageFormat = "application/x-netcdf";
   }
 
   public Operation getOperation() { return operation; }
   public String getVersion() { return version; }
   public String getDatasetPath() { return datasetPath; }
   public GridDataset getDataset() { return dataset; }
+  public String getDefaultRequestCrs() { return defaultRequestCrs; }
+  public String getAllowedCoverageFormat() { return allowedCoverageFormat; }
+  public String getRangeSetAxisName() { return rangeSetAxisName; }
 
   public boolean isAvailableCoverageName( String name )
   {

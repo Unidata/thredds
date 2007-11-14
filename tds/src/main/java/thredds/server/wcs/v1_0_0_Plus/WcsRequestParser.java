@@ -11,7 +11,6 @@ import ucar.nc2.dt.GridDataset;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.io.IOException;
 import java.net.URI;
 
@@ -35,7 +34,6 @@ public class WcsRequestParser
 //    String acceptVersionsParam = ServletUtil.getParameterIgnoreCase( req, "AcceptVersions" );
 
     // General request info
-    WcsRequest request; // The Request object to be built and returned.
     WcsRequest.Operation operation;
     String datasetPath = req.getPathInfo();
     GridDataset dataset = openDataset( req, res );
@@ -87,11 +85,12 @@ public class WcsRequestParser
       String responseCRS = ServletUtil.getParameterIgnoreCase( req, "RESPONSE_CRS" );
       String bbox = ServletUtil.getParameterIgnoreCase( req, "BBOX" );
       String time = ServletUtil.getParameterIgnoreCase( req, "TIME" );
-      // parameter
+      // ToDo Should get range parameter name from WcsRequest.getRangeSetAxisName() but it isn't static
+      String parameter = ServletUtil.getParameterIgnoreCase( req, "Vertical" );
       String format = ServletUtil.getParameterIgnoreCase( req, "FORMAT" );
 
       return new GetCoverage( operation, version, datasetPath, dataset, coverageId,
-                              crs, responseCRS, bbox, time, format);
+                              crs, responseCRS, bbox, time, parameter, format);
     }
     else
       throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation <" + requestParam + ">." );

@@ -363,7 +363,7 @@ public class DescribeCoverage extends WcsRequest
 
       // rangeSet/RangeSet/axisDescription/AxisDescription/name [1]
       // rangeSet/RangeSet/axisDescription/AxisDescription/label [1]
-      innerAxisDescElem.addContent( new Element( "name", wcsNS).addContent( "Vertical"));
+      innerAxisDescElem.addContent( new Element( "name", wcsNS).addContent( getRangeSetAxisName() ));
       innerAxisDescElem.addContent( new Element( "label", wcsNS).addContent( zaxis.getName()));
 
       // rangeSet/RangeSet/axisDescription/AxisDescription/values [1]
@@ -413,7 +413,7 @@ public class DescribeCoverage extends WcsRequest
     // supportedCRSs/requestCRSs@codeSpace [0..1] (URI)
     supportedCRSsElem.addContent(
             new Element( "requestCRSs", wcsNS)
-                    .addContent( "OGC:CRS84"));
+                    .addContent( getDefaultRequestCrs()));
 
     // supportedCRSs/responseCRSs [1..*] (wcs) (space seperated list of strings)
     // supportedCRSs/responseCRSs@codeSpace [0..1] (URI)
@@ -435,7 +435,7 @@ public class DescribeCoverage extends WcsRequest
     // supportedFormats/formats@codeSpace [0..1] (URI)
     supportedFormatsElem.addContent(
             new Element( "formats", wcsNS )
-                    .addContent( "application/x-netcdf" ) );
+                    .addContent( getAllowedCoverageFormat() ) );
 
     return supportedFormatsElem;
   }
