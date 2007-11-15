@@ -22,16 +22,14 @@ public class WcsDataset
   // Dataset specific
   private String datasetPath;
   private GridDataset dataset;
-  // ToDo WCS 1.0Plus - change GridDatatype to GridDataset.Gridset
-  private HashMap<String, GridDatatype> availableCoverages;
+  private HashMap<String, WcsCoverage> availableCoverages;
 
   public WcsDataset( GridDataset dataset, String datasetPath )
   {
     this.datasetPath = datasetPath;
     this.dataset = dataset;
 
-    // ToDo WCS 1.0Plus - change GridDatatype to GridDataset.Gridset
-    this.availableCoverages = new HashMap<String, GridDatatype>();
+    this.availableCoverages = new HashMap<String, WcsCoverage>();
 
     // ToDo WCS 1.0PlusPlus - compartmentalize coverage to hide GridDatatype vs GridDataset.Gridset ???
     // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
@@ -41,7 +39,7 @@ public class WcsDataset
       GridCoordSystem gcs = curGridDatatype.getCoordinateSystem();
       if ( !gcs.isRegularSpatial() )
         continue;
-      this.availableCoverages.put( curGridDatatype.getName(), curGridDatatype );
+      this.availableCoverages.put( curGridDatatype.getName(), new WcsCoverage( curGridDatatype) );
     }
     // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
     // This is WCS 1.1 style coverage for each coordinate system
@@ -62,14 +60,12 @@ public class WcsDataset
     return availableCoverages.containsKey( name );
   }
 
-  // ToDo WCS 1.0Plus - change response type to GridDataset.Gridset
-  public GridDatatype getAvailableCoverage( String name )
+  public WcsCoverage getAvailableCoverage( String name )
   {
     return availableCoverages.get( name );
   }
 
-  // ToDo WCS 1.0Plus - change response type to GridDataset.Gridset
-  public Collection<GridDatatype> getAvailableCoverageCollection()
+  public Collection<WcsCoverage> getAvailableCoverageCollection()
   {
     return Collections.unmodifiableCollection( availableCoverages.values() );
   }

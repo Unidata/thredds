@@ -7,6 +7,7 @@ import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
 
 import java.util.List;
 import java.util.Collections;
+import java.util.ArrayList;
 
 /**
  * _more_
@@ -19,8 +20,7 @@ public class WcsCoverage
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( WcsCoverage.class );
 
-  private WcsDataset dataset;
-  private String coverageId;
+  // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
   private GridDatatype coverage;
 
   private GridCoordSystem coordSys;
@@ -33,25 +33,14 @@ public class WcsCoverage
   private String rangeSetAxisName;
   private List<String> rangeSetAxisValues;
 
-  public WcsCoverage( WcsDataset dataset, String coverageId)
-          throws WcsException
+  public WcsCoverage( GridDatatype coverage)
   {
-    this.dataset = dataset;
-    this.coverageId = coverageId;
-
-    if ( ! this.dataset.isAvailableCoverageName( this.coverageId))
-    {
-      log.error( "WcsCoverage(): requested coverage <" + coverageId + "> not available.");
-      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Requested coverage <" + coverageId + "> not available.");
-    }
-
-    this.coverage = this.dataset.getAvailableCoverage( this.coverageId);
+    this.coverage = coverage;
     if ( this.coverage == null )
-    { // Redundant check ??
-      log.error( "WcsCoverage(): requested coverage <" + coverageId + "> not available." );
-      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Requested coverage <" + coverageId + "> not available." );
+    {
+      log.error( "WcsCoverage(): non-null coverage required." );
+      throw new IllegalArgumentException( "Non-null coverage required." );
     }
-
     this.coordSys = coverage.getCoordinateSystem();
 
     this.nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( coordSys.getProjection() );
@@ -61,11 +50,21 @@ public class WcsCoverage
 
     this.rangeSetAxisName = "Vertical";
     CoordinateAxis1D zaxis = coordSys.getVerticalAxis();
-    for ( int z = 0; z < zaxis.getSize(); z++ )
-      rangeSetAxisValues.add( zaxis.getCoordName( z ).trim());
+    if ( zaxis != null )
+    {
+      rangeSetAxisValues = new ArrayList<String>();
+      for ( int z = 0; z < zaxis.getSize(); z++ )
+        rangeSetAxisValues.add( zaxis.getCoordName( z ).trim() );
+    }
+    else
+      rangeSetAxisValues = Collections.emptyList();
   }
 
+  public String getName() { return coverage.getName(); }
+  public String getDescription() { return coverage.getDescription(); }
   public GridCoordSystem getCoordinateSystem() { return coordSys; }
+  public boolean hasMissingData() { return coverage.hasMissingData(); }
+
   public String getDefaultRequestCrs() { return defaultRequestCrs; }
   public String getNativeCrs() { return nativeCRS; }
   public String getAllowedCoverageFormat() { return allowedCoverageFormat; }

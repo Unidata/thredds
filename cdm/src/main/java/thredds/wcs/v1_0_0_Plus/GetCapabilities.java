@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.io.PrintWriter;
 import java.io.IOException;
 
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
-
 /**
  * _more_
  *
@@ -57,11 +54,11 @@ public class GetCapabilities extends WcsRequest
 
   private Document capabilitiesReport;
 
-  public GetCapabilities( Operation operation, String version, String datasetPath, GridDataset dataset,
+  public GetCapabilities( Operation operation, String version, WcsDataset dataset,
                           URI serverURI, Section section, String updateSequence,
                           ServiceInfo serviceInfo )
   {
-    super( operation, version, datasetPath, dataset);
+    super( operation, version, dataset);
     this.serverURI = serverURI;
     this.section = section;
     this.serviceInfo = serviceInfo;
@@ -336,14 +333,15 @@ public class GetCapabilities extends WcsRequest
     Element contMdElem = new Element( "ContentMetadata", wcsNS );
 
     // ToDo WCS 1.0Plus - change GridDatatype to GridDataset.Gridset
-    for ( GridDatatype curGridDatatype : this.getAvailableCoverageCollection())
+
+    for ( WcsCoverage curCoverage : this.getDataset().getAvailableCoverageCollection())
       // WCS_Capabilities/ContentMetadata/ContentOfferingBrief
       // WCS_Capabilities/ContentMetadata/ContentOfferingBrief
       contMdElem.addContent(
               genCoverageOfferingBriefElem( "ContentOfferingBrief",
-                                        curGridDatatype.getName(),
-                                        curGridDatatype.getDescription(),
-                                        curGridDatatype.getCoordinateSystem() ) );
+                                            curCoverage.getName(),
+                                            curCoverage.getDescription(),
+                                            curCoverage.getCoordinateSystem() ) );
 
     return contMdElem;
   }

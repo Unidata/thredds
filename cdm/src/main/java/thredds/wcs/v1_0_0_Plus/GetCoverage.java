@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.text.ParseException;
 
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.util.DiskCache2;
 import ucar.ma2.InvalidRangeException;
@@ -30,80 +28,75 @@ public class GetCoverage extends WcsRequest
           org.slf4j.LoggerFactory.getLogger( GetCoverage.class );
 
   private String coverageId;
-  private String crs, responseCRS;
-  private String bbox, time, parameter, format;
-  // private String width, height, depth; // Don't need since only interpolation method is "NONE".
-  // private String resx, resy, resz; // Don't need since only interpolation method is "NONE".
+
+  private WcsCoverage coverage;
 
   private LatLonRect bboxLatLonRect;
   private DateRange timeRange;
   private List<String> rangeSetAxisValueList;
 
 
-  public GetCoverage( Operation operation, String version, String datasetPath, GridDataset dataset,
+  public GetCoverage( Operation operation, String version, WcsDataset dataset,
                       String coverageId, String crs, String responseCRS,
                       String bbox, String time, String parameter, String format )
           throws WcsException
   {
-    super( operation, version, datasetPath, dataset);
+    super( operation, version, dataset);
 
     // Assign and validate coverage ID parameter.
     this.coverageId = coverageId;
     if ( this.coverageId == null )
       throw new WcsException( WcsException.Code.MissingParameterValue, "coverage", "Coverage identifier required." );
-    if ( !this.isAvailableCoverageName( this.coverageId ) )
+    if ( !this.getDataset().isAvailableCoverageName( this.coverageId ) )
       throw new WcsException( WcsException.Code.InvalidParameterValue, "coverage", "Unknown coverage identifier <" + this.coverageId + ">." );
-    GridDatatype coverage = this.getAvailableCoverage( this.coverageId );
-    if ( coverage == null ) // Double check just in case.
+    this.coverage = this.getDataset().getAvailableCoverage( this.coverageId );
+    if ( this.coverage == null ) // Double check just in case.
       throw new WcsException( WcsException.Code.InvalidParameterValue, "coverage", "Unknown coverage identifier <" + this.coverageId + ">." );
 
     // Assign and validate request and response CRS parameters.
-    this.crs = crs;
-    this.responseCRS = responseCRS;
 
-    if ( this.crs == null )
+    if ( crs == null )
       throw new WcsException( WcsException.Code.MissingParameterValue, "CRS", "Request CRS required.");
-    if ( ! this.crs.equalsIgnoreCase( getDefaultRequestCrs() ) )
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "CRS", "Request CRS <" + this.crs + "> not allowed <" + getDefaultRequestCrs() + ">." );
+    if ( ! crs.equalsIgnoreCase( this.coverage.getDefaultRequestCrs() ) )
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "CRS", "Request CRS <" + crs + "> not allowed <" + this.coverage.getDefaultRequestCrs() + ">." );
 
     String nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( coverage.getCoordinateSystem().getProjection() );
     if ( nativeCRS == null )
       throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Coverage not in recognized CRS. (???)");
 
     // Response CRS not required if data is in latLon ("OGC:CRS84"). Default is request CRS.
-    if ( this.responseCRS == null )
+    if ( responseCRS == null )
     {
-      if ( ! nativeCRS.equalsIgnoreCase( getDefaultRequestCrs()))
+      if ( ! nativeCRS.equalsIgnoreCase( this.coverage.getDefaultRequestCrs()))
         throw new WcsException( WcsException.Code.MissingParameterValue, "Response_CRS", "Response CRS required." );
     }
-    else if ( ! this.responseCRS.equalsIgnoreCase( nativeCRS))
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "response_CRS", "Respnse CRS <" + this.responseCRS + "> not allowed <" + nativeCRS + ">." );
+    else if ( ! responseCRS.equalsIgnoreCase( nativeCRS))
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "response_CRS", "Respnse CRS <" + responseCRS + "> not allowed <" + nativeCRS + ">." );
 
     // Assign and validate BBOX and TIME parameters.
-    this.bbox = bbox;
-    this.time = time;
-    if ( this.bbox == null && this.time == null )
+    if ( bbox == null && time == null )
       throw new WcsException( WcsException.Code.MissingParameterValue, "BBOX", "BBOX and/or TIME required.");
-    if ( this.bbox != null )
-      bboxLatLonRect = parseBoundingBox( this.bbox, coverage.getCoordinateSystem().getLatLonBoundingBox());
-    if ( this.time != null )
-      timeRange = parseTime( this.time);
+    if ( bbox != null )
+      bboxLatLonRect = parseBoundingBox( bbox, coverage.getCoordinateSystem().getLatLonBoundingBox());
+    if ( time != null )
+      timeRange = parseTime( time);
+
+    // WIDTH, HEIGHT, DEPTH parameters not needed since the only interpolation method is "NONE".
+    // RESX, RESY, RESZ parameters not needed since the only interpolation method is "NONE".
 
     // Assign and validate PARAMETER ("Vertical") parameter.
-    this.parameter = parameter;
-    if ( this.parameter != null )
-            rangeSetAxisValueList = parseRangeSetAxisValues( this.parameter);
+    if ( parameter != null )
+            rangeSetAxisValueList = parseRangeSetAxisValues( parameter, this.coverage);
 
     // Assign and validate FORMAT parameter.
-    this.format = format;
-    if ( this.format == null )
+    if ( format == null )
     {
       log.error( "GetCoverage(): FORMAT parameter required.");
       throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required.");
     }
-    if ( ! this.format.equalsIgnoreCase( getAllowedCoverageFormat() ))
+    if ( ! format.equalsIgnoreCase( this.coverage.getAllowedCoverageFormat() ))
     {
-      throw new WcsException( WcsException.Code.InvalidFormat, "", "Request format <" + this.format + "> now allowed <" + getAllowedCoverageFormat() + ">");
+      throw new WcsException( WcsException.Code.InvalidFormat, "", "Request format <" + format + "> now allowed <" + this.coverage.getAllowedCoverageFormat() + ">");
     }
   }
 
@@ -131,13 +124,13 @@ public class GetCoverage extends WcsRequest
   public File writeCoverageDataToFile()
           throws WcsException
   {
-    File ncFile = getDiskCache().getCacheFile( this.getDatasetPath() + "-" + coverageId + ".nc" );
+    File ncFile = getDiskCache().getCacheFile( this.getDataset().getDatasetPath() + "-" + coverageId + ".nc" );
 
     NetcdfCFWriter writer = new NetcdfCFWriter();
     try
     {
       rangeSetAxisValueList.size();  // ToDo figure out how to deal with vertical selection.
-      writer.makeFile( ncFile.getPath(), this.getDataset(),
+      writer.makeFile( ncFile.getPath(), this.getDataset().getDataset(),
                        Collections.singletonList( coverageId ),
                        this.bboxLatLonRect, this.timeRange,
                        true, 1, 1, 1 );
@@ -233,7 +226,7 @@ public class GetCoverage extends WcsRequest
     return dateRange;
   }
 
-  private List<String> parseRangeSetAxisValues( String rangeSetAxisSelectionString)
+  private List<String> parseRangeSetAxisValues( String rangeSetAxisSelectionString, WcsCoverage coverage)
           throws WcsException
   {
     if ( rangeSetAxisSelectionString == null || rangeSetAxisSelectionString.equals( "" ) )
@@ -248,8 +241,7 @@ public class GetCoverage extends WcsRequest
       StringBuffer badValueList = new StringBuffer();
       for ( String curItem : listSplit )
       {
-        //if ( ! coverage.isRangeSetAxisValue( curItem) )
-        if ( false)
+        if ( ! coverage.isRangeSetAxisValue( curItem) )
         {
           badValueList.append( badValueList.length() > 0 ? "," : "").append( curItem);
         }
@@ -259,7 +251,7 @@ public class GetCoverage extends WcsRequest
       if ( badValueList.length() > 0 )
       {
         log.error( "parseRangeSetAxisValues(): Unrecognized RangeSet Axis values <" + badValueList + ">." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical",
+        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(),
                                 "Unrecognized RangeSet Axis values <" + badValueList + ">." );
       }
     }
@@ -270,18 +262,17 @@ public class GetCoverage extends WcsRequest
       if ( timeRange.length != 2 )
       {
         log.error( "parseRangeSetAxisValues(): Unsupported Vertical value (range with resolution) <" + rangeSetAxisSelectionString + ">." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Not currently supporting vertical range with resolution." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(), "Not currently supporting vertical range with resolution." );
       }
       rangeSetAxisValueList.add( timeRange[0]);
       rangeSetAxisValueList.add( timeRange[1]);
     }
     else
     {
-      //if ( ! coverage.isRangeSetAxisValue( rangeSetAxisSelectionString ) )
-      if ( false )
+      if ( ! coverage.isRangeSetAxisValue( rangeSetAxisSelectionString ) )
       {
         log.error( "parseRangeSetAxisValues(): Unrecognized RangeSet Axis value <" + rangeSetAxisSelectionString + ">." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical",
+        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(),
                                 "Unrecognized RangeSet Axis value <" + rangeSetAxisSelectionString + ">." );
       }
       else

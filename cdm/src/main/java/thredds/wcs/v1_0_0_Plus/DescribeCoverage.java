@@ -10,15 +10,12 @@ import java.util.Date;
 import java.io.PrintWriter;
 import java.io.IOException;
 
-import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
 
 /**
  * _more_
@@ -35,10 +32,10 @@ public class DescribeCoverage extends WcsRequest
 
   private Document describeCoverageDoc;
 
-  public DescribeCoverage( Operation operation, String version, String datasetPath, GridDataset dataset,
+  public DescribeCoverage( Operation operation, String version, WcsDataset dataset,
                            List<String> coverages )
   {
-    super( operation, version, datasetPath, dataset );
+    super( operation, version, dataset );
 
     this.coverages = coverages;
     if ( this.coverages == null )
@@ -48,7 +45,7 @@ public class DescribeCoverage extends WcsRequest
     String badCovIds = "";
     for ( String curCov : coverages )
     {
-      if ( ! this.isAvailableCoverageName( curCov))
+      if ( ! this.getDataset().isAvailableCoverageName( curCov))
         badCovIds += (badCovIds.length() > 0 ? ", " : "") + curCov;
     }
     if ( badCovIds.length() > 0 )
@@ -88,7 +85,7 @@ public class DescribeCoverage extends WcsRequest
   public Element genCoverageOfferingElem( String covId )
   {
     // ToDo WCS 1.0Plus - Change GridDatatype to GridDataset.Gridset
-    GridDatatype coverage = this.getAvailableCoverage( covId );
+    WcsCoverage coverage = this.getDataset().getAvailableCoverage( covId );
     GridCoordSystem gridCoordSystem = coverage.getCoordinateSystem();
 
     // CoverageDescription/CoverageOffering (wcs) [1..*]
@@ -96,7 +93,7 @@ public class DescribeCoverage extends WcsRequest
                                                            coverage.getDescription(), gridCoordSystem );
 
     // CoverageDescription/CoverageOffering/domainSet [1]
-    covDescripElem.addContent( genDomainSetElem( gridCoordSystem));
+    covDescripElem.addContent( genDomainSetElem( coverage));
 
     // CoverageDescription/CoverageOffering/rangeSet [1]
     covDescripElem.addContent( genRangeSetElem( coverage));
@@ -105,7 +102,7 @@ public class DescribeCoverage extends WcsRequest
     covDescripElem.addContent( genSupportedCRSsElem( coverage));
 
     // CoverageDescription/CoverageOffering/supportedFormats [1]
-    covDescripElem.addContent( genSupportedFormatsElem() );
+    covDescripElem.addContent( genSupportedFormatsElem( coverage) );
 
     // CoverageDescription/CoverageOffering/supportedInterpolations [0..1]
     covDescripElem.addContent( genSupportedInterpolationsElem() );
@@ -113,49 +110,48 @@ public class DescribeCoverage extends WcsRequest
     return covDescripElem;
   }
 
-  private Element genDomainSetElem( GridCoordSystem gridCoordSys)
+  private Element genDomainSetElem( WcsCoverage coverage)
   {
     // ../domainSet
     Element domainSetElem = new Element( "domainSet", wcsNS);
 
     // ../domainSet/spatialDomain [0..1] AND/OR temporalDomain [0..1]
-    domainSetElem.addContent( genSpatialDomainElem( gridCoordSys) );
-    if ( gridCoordSys.hasTimeAxis() )
+    domainSetElem.addContent( genSpatialDomainElem( coverage) );
+    if ( coverage.getCoordinateSystem().hasTimeAxis() )
     {
-      domainSetElem.addContent( genTemporalDomainElem( gridCoordSys.getTimeAxis1D() ) );
+      domainSetElem.addContent( genTemporalDomainElem( coverage.getCoordinateSystem().getTimeAxis1D() ) );
     }
 
     return domainSetElem;
   }
 
-  private Element genSpatialDomainElem( GridCoordSystem gridCoordSys )
+  private Element genSpatialDomainElem( WcsCoverage coverage )
   {
     // ../domainSet/spatialDomain
     Element spatialDomainElem = new Element( "spatialDomain", wcsNS );
     
     // ../domainSet/spatialDomain/gml:Envelope [1..*]
-    spatialDomainElem.addContent( this.genEnvelopeElem( gridCoordSys));
+    spatialDomainElem.addContent( this.genEnvelopeElem( coverage.getCoordinateSystem()));
 
     // ../domainSet/spatialDomain/gml:RectifiedGrid [0..*]
-    spatialDomainElem.addContent( this.genRectifiedGridElem( gridCoordSys));
+    spatialDomainElem.addContent( this.genRectifiedGridElem( coverage));
 
     // ../domainSet/spatialDomain/gml:Polygon [0..*]
 
     return spatialDomainElem;
   }
 
-  private Element genRectifiedGridElem( GridCoordSystem gcs )
+  private Element genRectifiedGridElem( WcsCoverage coverage )
   {
     // ../spatialDomain/gml:RectifiedGrid
     Element rectifiedGridElem = new Element( "RectifiedGrid", gmlNS);
 
-    CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
-    CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
-    CoordinateAxis1D zaxis = gcs.getVerticalAxis();
+    CoordinateAxis1D xaxis = (CoordinateAxis1D) coverage.getCoordinateSystem().getXHorizAxis();
+    CoordinateAxis1D yaxis = (CoordinateAxis1D) coverage.getCoordinateSystem().getYHorizAxis();
+    CoordinateAxis1D zaxis = coverage.getCoordinateSystem().getVerticalAxis();
 
     // ../spatialDomain/gml:RectifiedGrid@srsName [0..1] (URI)
-    String nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( gcs.getProjection() );
-    rectifiedGridElem.setAttribute( "srsName", nativeCRS );
+    rectifiedGridElem.setAttribute( "srsName", coverage.getNativeCrs() );
 
     // ../spatialDomain/gml:RectifiedGrid@dimension [1] (positive integer)
     int ndim = ( zaxis != null ) ? 3 : 2;
@@ -326,7 +322,7 @@ public class DescribeCoverage extends WcsRequest
       return temporalDomainElem;
   }
 
-  private Element genRangeSetElem( GridDatatype coverage )
+  private Element genRangeSetElem( WcsCoverage coverage )
   {
     // rangeSet
     Element rangeSetElem = new Element( "rangeSet", wcsNS);
@@ -363,7 +359,7 @@ public class DescribeCoverage extends WcsRequest
 
       // rangeSet/RangeSet/axisDescription/AxisDescription/name [1]
       // rangeSet/RangeSet/axisDescription/AxisDescription/label [1]
-      innerAxisDescElem.addContent( new Element( "name", wcsNS).addContent( getRangeSetAxisName() ));
+      innerAxisDescElem.addContent( new Element( "name", wcsNS).addContent( coverage.getRangeSetAxisName() ));
       innerAxisDescElem.addContent( new Element( "label", wcsNS).addContent( zaxis.getName()));
 
       // rangeSet/RangeSet/axisDescription/AxisDescription/values [1]
@@ -404,7 +400,7 @@ public class DescribeCoverage extends WcsRequest
     return rangeSetElem.addContent( innerRangeSetElem);
   }
 
-  private Element genSupportedCRSsElem( GridDatatype coverage )
+  private Element genSupportedCRSsElem( WcsCoverage coverage )
   {
     // supportedCRSs
     Element supportedCRSsElem = new Element( "supportedCRSs", wcsNS);
@@ -413,19 +409,18 @@ public class DescribeCoverage extends WcsRequest
     // supportedCRSs/requestCRSs@codeSpace [0..1] (URI)
     supportedCRSsElem.addContent(
             new Element( "requestCRSs", wcsNS)
-                    .addContent( getDefaultRequestCrs()));
+                    .addContent( coverage.getDefaultRequestCrs()));
 
     // supportedCRSs/responseCRSs [1..*] (wcs) (space seperated list of strings)
     // supportedCRSs/responseCRSs@codeSpace [0..1] (URI)
-    String nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( coverage.getCoordinateSystem().getProjection());
     supportedCRSsElem.addContent(
             new Element( "responseCRSs", wcsNS)
-                    .addContent( nativeCRS));
+                    .addContent( coverage.getNativeCrs()));
 
     return supportedCRSsElem;
   }
 
-  private Element genSupportedFormatsElem()
+  private Element genSupportedFormatsElem( WcsCoverage coverage)
   {
     // supportedFormats
     // supportedFormats@nativeFormat [0..1] (string)
@@ -435,7 +430,7 @@ public class DescribeCoverage extends WcsRequest
     // supportedFormats/formats@codeSpace [0..1] (URI)
     supportedFormatsElem.addContent(
             new Element( "formats", wcsNS )
-                    .addContent( getAllowedCoverageFormat() ) );
+                    .addContent( coverage.getAllowedCoverageFormat() ) );
 
     return supportedFormatsElem;
   }

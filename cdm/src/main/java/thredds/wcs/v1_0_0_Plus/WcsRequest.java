@@ -1,10 +1,6 @@
 package thredds.wcs.v1_0_0_Plus;
 
-import java.util.*;
-
-import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import org.jdom.Element;
@@ -27,15 +23,7 @@ public abstract class WcsRequest
   private String version;
 
   // Dataset
-  private String datasetPath;
-  private GridDataset dataset;
-  // ToDo WCS 1.0Plus - change GridDatatype to GridDataset.Gridset
-  private HashMap<String,GridDatatype> availableCoverages;
-
-  private String rangeSetAxisName;
-  private String defaultRequestCrs;
-  private String allowedCoverageFormat;
-
+  private WcsDataset dataset;
 
   public enum Operation
   {
@@ -52,71 +40,21 @@ public abstract class WcsRequest
     NONE, GeoTIFF, GeoTIFF_Float, NetCDF3
   }
 
-  WcsRequest( Operation operation, String version, String datasetPath, GridDataset dataset )
+  WcsRequest( Operation operation, String version, WcsDataset dataset )
   {
     this.operation = operation;
     this.version = version;
-    this.datasetPath = datasetPath;
     this.dataset = dataset;
-    // ToDo WCS 1.0Plus - change GridDatatype to GridDataset.Gridset
-    this.availableCoverages = new HashMap<String,GridDatatype>();
-
-    // ToDo WCS 1.0PlusPlus - compartmentalize coverage to hide GridDatatype vs GridDataset.Gridset ???
-    // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
-    // This is WCS 1.0 coverage for each parameter
-    for ( GridDatatype curGridDatatype : this.dataset.getGrids() )
-    {
-      GridCoordSystem gcs = curGridDatatype.getCoordinateSystem();
-      if ( ! gcs.isRegularSpatial())
-        continue;
-      this.availableCoverages.put( curGridDatatype.getName(), curGridDatatype );
-    }
-    // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
-    // This is WCS 1.1 style coverage for each coordinate system
-    // for ( GridDataset.Gridset curGridSet : this.dataset.getGridsets())
-    // {
-    //   GridCoordSystem gcs = curGridSet.getGeoCoordSystem();
-    //   if ( !gcs.isRegularSpatial() )
-    //     continue;
-    //   this.availableCoverages.put( gcs.getName(), curGridSet );
-    // }
 
     if ( operation == null )
       throw new IllegalArgumentException( "Non-null operation required." );
-    if ( this.datasetPath == null )
-      throw new IllegalArgumentException( "Non-null dataset path required." );
     if ( this.dataset == null )
       throw new IllegalArgumentException( "Non-null dataset required." );
-
-    rangeSetAxisName = "Vertical";
-    defaultRequestCrs = "OGC:CRS84";
-    allowedCoverageFormat = "application/x-netcdf";
   }
 
   public Operation getOperation() { return operation; }
   public String getVersion() { return version; }
-  public String getDatasetPath() { return datasetPath; }
-  public GridDataset getDataset() { return dataset; }
-  public String getDefaultRequestCrs() { return defaultRequestCrs; }
-  public String getAllowedCoverageFormat() { return allowedCoverageFormat; }
-  public String getRangeSetAxisName() { return rangeSetAxisName; }
-
-  public boolean isAvailableCoverageName( String name )
-  {
-    return availableCoverages.containsKey( name);
-  }
-
-  // ToDo WCS 1.0Plus - change response type to GridDataset.Gridset
-  public GridDatatype getAvailableCoverage( String name )
-  {
-    return availableCoverages.get( name);
-  }
-
-  // ToDo WCS 1.0Plus - change response type to GridDataset.Gridset
-  public Collection<GridDatatype> getAvailableCoverageCollection()
-  {
-    return Collections.unmodifiableCollection( availableCoverages.values());
-  }
+  public WcsDataset getDataset() { return dataset; }
 
   protected Element genCoverageOfferingBriefElem( String elemName, String covName, String covLabel,
                                                   GridCoordSystem gridCoordSys )

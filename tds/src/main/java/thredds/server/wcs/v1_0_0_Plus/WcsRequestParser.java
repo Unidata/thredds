@@ -36,7 +36,13 @@ public class WcsRequestParser
     // General request info
     WcsRequest.Operation operation;
     String datasetPath = req.getPathInfo();
-    GridDataset dataset = openDataset( req, res );
+    GridDataset gridDataset = openDataset( req, res );
+    if ( gridDataset == null )
+    {
+      log.error( "parseRequest(): Failed to open dataset (???).");
+      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to open dataset.");
+    }
+    WcsDataset wcsDataset = new WcsDataset( gridDataset, datasetPath);
 
     // Determine the request operation.
     String requestParam = ServletUtil.getParameterIgnoreCase( req, "Request" );
@@ -67,7 +73,7 @@ public class WcsRequestParser
         throw new WcsException( WcsException.Code.InvalidParameterValue, "Section", "Unsupported GetCapabilities section requested <" + sectionParam + ">." );
       }
 
-      return new GetCapabilities( operation, version, datasetPath, dataset, serverURI, section, updateSequenceParam, null);
+      return new GetCapabilities( operation, version, wcsDataset, serverURI, section, updateSequenceParam, null);
     }
     // Handle "DescribeCoverage" request.
     else if ( operation.equals( WcsRequest.Operation.DescribeCoverage ) )
@@ -75,7 +81,7 @@ public class WcsRequestParser
       String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
       List<String> coverageIdList = splitCommaSeperatedList( coverageIdListParam );
 
-      return new DescribeCoverage( operation, version, datasetPath, dataset, coverageIdList);
+      return new DescribeCoverage( operation, version, wcsDataset, coverageIdList);
     }
     // Handle "GetCoverage" request.
     else if ( operation.equals( WcsRequest.Operation.GetCoverage ) )
@@ -85,11 +91,11 @@ public class WcsRequestParser
       String responseCRS = ServletUtil.getParameterIgnoreCase( req, "RESPONSE_CRS" );
       String bbox = ServletUtil.getParameterIgnoreCase( req, "BBOX" );
       String time = ServletUtil.getParameterIgnoreCase( req, "TIME" );
-      // ToDo Should get range parameter name from WcsRequest.getRangeSetAxisName() but it isn't static
+      // ToDo The name of this parameter is dependent on the coverage (see WcsCoverage.getRangeSetAxisName()).
       String parameter = ServletUtil.getParameterIgnoreCase( req, "Vertical" );
       String format = ServletUtil.getParameterIgnoreCase( req, "FORMAT" );
 
-      return new GetCoverage( operation, version, datasetPath, dataset, coverageId,
+      return new GetCoverage( operation, version, wcsDataset, coverageId,
                               crs, responseCRS, bbox, time, parameter, format);
     }
     else
