@@ -50,6 +50,7 @@ public class TypedDatasetFactory {
     registerFactory(DataType.STATION, ucar.nc2.dt.point.OldUnidataStationObsDataset.class);
     registerFactory(DataType.POINT, ucar.nc2.dt.point.OldUnidataPointObsDataset.class);
 
+    registerFactory(DataType.RADIAL, ucar.nc2.dt.radial.Netcdf2Dataset.class);
     registerFactory(DataType.RADIAL, ucar.nc2.dt.radial.Dorade2Dataset.class);
     registerFactory(DataType.RADIAL, ucar.nc2.dt.radial.LevelII2Dataset.class);
     registerFactory(DataType.RADIAL, ucar.nc2.dt.radial.Nids2Dataset.class);
