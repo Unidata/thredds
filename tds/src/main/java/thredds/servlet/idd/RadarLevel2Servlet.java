@@ -40,49 +40,40 @@ import org.jdom.output.Format;
 import ucar.nc2.dt.StationObsDataset;
 import ucar.nc2.dt.point.StationObsDatasetInfo;
 import ucar.nc2.units.DateFormatter;
-//import ucar.nc2.dt.Station;
 
 public class RadarLevel2Servlet extends AbstractServlet {
 
     // static configuration file ThreddsIDD.cfg parameters
-    static protected String catalogVersion;
-    static protected String defaultCatalog;
-    static protected String backgroundImage;
+    //static protected String catalogVersion;
+    //static protected String defaultCatalog;
+    //static protected String backgroundImage;
     static protected String radarLevel2DQC;
+
     static protected String radarLevel2Dir = null;
-    static protected String radarLevel2HTTPServiceName;
-    static protected String radarLevel2HTTPServiceType;
-    static protected String radarLevel2HTTPServiceBase;
-    static protected String radarLevel2HTTPDataFormatType;
-    static protected String radarLevel2ASCIIServiceName;
-    static protected String radarLevel2ASCIIUrlPath;
-    static protected String radarLevel2ASCIIDataFormatType;
-    static protected String radarLevel2ADDEServiceName;
-    static protected String radarLevel2ADDEUrlPath;
-    static protected String radarLevel2DODSServiceName;
-    static protected String radarLevel2DODSServiceType;
-    static protected String radarLevel2DODSServiceBase;
-    //static protected String radarLevel2DODSUrlPath;
+
+    static protected HashMap < String, String> configurations = null;
 
     private boolean allow = false;
     private IddMethods im;
-    private boolean debug = true;
+    private boolean debug = false;
 
     protected long getLastModified(HttpServletRequest req) {
-            //  get configurations from ThreddsIDD.cfg
-            if( radarLevel2Dir == null ) {
-                contentPath = ServletUtil.getContentPath(this);
-                getConfigurations("synoptic", null);
-            }
-            File file = new File(  radarLevel2DQC );
+        //  get configurations from ThreddsIDD.cfg
+        if( configurations == null ) {
+            contentPath = ServletUtil.getContentPath(this);
+            getConfigurations("synoptic", null);
+            radarLevel2DQC = contentPath + im.getPath() + configurations.get( "radarLevel2DQC" );
+        }
+        File file = new File( radarLevel2DQC );
 
-            return file.lastModified();
+        return file.lastModified();
     }
 
    // must end with "/"
    protected String getPath() {
      return "idd/";
    }
+
   protected void makeDebugActions() {
     DebugHandler debugHandler = DebugHandler.get("NetcdfSubsetServer");
     DebugHandler.Action act;
@@ -100,20 +91,21 @@ public class RadarLevel2Servlet extends AbstractServlet {
   }
 
   public void init() throws ServletException  {
-    super.init();
+      super.init();
+      allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true);
+      //String radarLevel2Dir = ThreddsConfig.get("NetcdfSubsetService.radarLevel2DataDir", "/data/ldm/pub/native/radar/level2/");
+      if (!allow) return;
 
-    allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true);
-    //String radarLevel2Dir = ThreddsConfig.get("NetcdfSubsetService.radarLevel2DataDir", "/data/ldm/pub/native/radar/level2/");
-    if (!allow) return;
-
-    im = new IddMethods();
-    if (null == im.stationList){
+      im = new IddMethods();
+      //String ISO = im.getObTimeISO( "KDMX19980629_185623");
+      if (null == im.stationList){
          if( radarLevel2Dir == null ) {
              contentPath = ServletUtil.getContentPath(this);
              getConfigurations("synoptic", null);
+             radarLevel2DQC = contentPath + im.getPath() + configurations.get( "radarLevel2DQC" );
           }
-          im.getStations(radarLevel2DQC);
-    }
+          im.getStations( radarLevel2DQC );
+      }
   }
 
 
@@ -123,13 +115,12 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
     // servlet parameters
-    String[] PRODS;
+    //String[] PRODS;
     String dtime;
     String accept, returns;
     String serviceName = null;
     String serviceType = null;
     String serviceBase = null;
-    String urlPath = null;
     PrintWriter pw;
 
 
@@ -139,7 +130,6 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
         pw = res.getWriter();
         im.setPW( pw );
         contentPath = ServletUtil.getContentPath(this);
-        //ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1);
 
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) pathInfo = "";
@@ -192,6 +182,16 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
         if (useAllStations)
           qp.stns = im.getStationNames(); //need station names
           //qp.stns = new ArrayList<String>(); // empty list denotes all
+
+        // get the requested dataset
+        String ds = ServletUtil.getParameterIgnoreCase(req, "ds");
+        if( ds == null )
+            ds = "TDS";
+
+        // need to extract data according to the ds(dataset) given
+        radarLevel2Dir = configurations.get( "radarLevel2Dir" + ds );
+        String dirStructure = configurations.get( "radarLevel2DirStructure" + ds );
+ 
         /*
         if (qp.hasTimePoint && ( im.filterDataset(qp.time) == null)) {
           qp.errs.append("ERROR: This dataset does not contain the time point= " + qp.time + " \n");
@@ -265,15 +265,13 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
                 now.add( Calendar.HOUR, -120 );
                 qp.time_start = new DateType(im.dateFormatISO.format(now.getTime()), null, null);
             } else if (dtime.equals("all")) {
-                now.add( Calendar.HOUR, -168 );
-                qp.time_start = new DateType(im.dateFormatISO.format(now.getTime()), null, null);
+                //now.add( Calendar.HOUR, -168 );
+                //qp.time_start = new DateType(im.dateFormatISO.format(now.getTime()), null, null);
+                qp.time_start = new DateType( "1971-01-00T00:00:00Z", null, null);
             }
 
         } else { // old style
-          //dateStart = ServletUtil.getParameterIgnoreCase(req, "dateStart");
           qp.time_start = qp.parseDate(  req, "dateStart");
-
-          //dateEnd = ServletUtil.getParameterIgnoreCase(req, "dateEnd");
           qp.time_end = qp.parseDate(  req, "dateEnd");
         }
 
@@ -282,7 +280,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
         //PRODS = ServletUtil.getParameterValuesIgnoreCase(req, "PROD");
 
         returns = ServletUtil.getParameterIgnoreCase(req, "returns");
-        if (returns == null || qp.acceptType.indexOf( "xml") > 0) // default
+        if (returns == null )  // default
             returns = "catalog";
 
         serviceType = ServletUtil.getParameterIgnoreCase(req, "serviceType");
@@ -290,8 +288,6 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
             serviceType = "OPENDAP";
 
         serviceName = ServletUtil.getParameterIgnoreCase(req, "serviceName");
-
-        urlPath = ServletUtil.getParameterIgnoreCase(req, "urlPath");
 
         // set content type
         String contentType = qp.acceptType;
@@ -301,15 +297,14 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
         res.setContentType(contentType);
 
         //  get configurations from ThreddsIDD.cfg
-        if( radarLevel2Dir == null )
+        if( radarLevel2Dir == null ) {
            getConfigurations("synoptic", pw);
-         //pw.println( "<p>radarLevel2DQC =" + radarLevel2DQC +"</p>");
-         //pw.println( "<p>radarLevel2Dir =" + radarLevel2Dir +"</p>");
+           radarLevel2DQC = contentPath + im.getPath() + configurations.get( "radarLevel2DQC" );
+        }
 
         if (IddMethods.p_qc_or_dqc_i.matcher(returns).find()) { // returns dqc doc
 
-            //pw.println(radarLevel2DQC);
-            BufferedReader br = im.getInputStreamReader(radarLevel2DQC);
+            BufferedReader br = im.getInputStreamReader( radarLevel2DQC );
             String input = "";
             while ((input = br.readLine()) != null) {
                 pw.println(input);
@@ -317,27 +312,65 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
             br.close();
             return;
         }
+        if (IddMethods.p_stn_i.matcher(returns).find()) { // returns stn names
+            res.setContentType("text/html");
+            if( ds.equals( "TDS")) {
+                 List<String> stations = im.getStationNames();
+                 for (String s : stations) {
+                     pw.print( s +" ");
+                 }
+                 pw.println();
+                 return;
+            }
+            if( dirStructure.startsWith( "STN")) {
+                File dir = new File(radarLevel2Dir );
+                String[] stations = dir.list();
+                for (String s : stations) {
+                     pw.print( s +" ");
+                 }
+                 pw.println();
+                 return;
+            }
+            if( dirStructure.startsWith( "DAY")) {
+                File dir = new File(radarLevel2Dir );
+                String[] days = dir.list();
+                for (String d : days) {
+                     pw.println( d +":" );
+                     dir = new File(radarLevel2Dir +"/"+ d );
+                     String[] stations = dir.list();
+                     for (String s : stations) {
+                         pw.print( s +" ");
+                     }
+                     pw.println();
 
+                 }
+                 pw.println();
+                 return;
+            }
+        }
         // requesting a catalog with different serviceTypes
         if (IddMethods.p_HTTPServer_i.matcher(serviceType).find() ) {
-                serviceName = radarLevel2HTTPServiceName;
-                serviceType = radarLevel2HTTPServiceType;
-                serviceBase = radarLevel2HTTPServiceBase;
+                serviceName = configurations.get( "radarLevel2HTTPServiceName");
+                serviceType = configurations.get( "radarLevel2HTTPServiceType");
+                serviceBase = configurations.get( "radarLevel2HTTPServiceBase" +ds);
         //  serviceType =~ /OPENDAP/i
         } else if (IddMethods.p_DODS_i.matcher(serviceType).find()) {
-                serviceName = radarLevel2DODSServiceName;
-                serviceType = radarLevel2DODSServiceType;
-                serviceBase = radarLevel2DODSServiceBase;
+                serviceName = configurations.get( "radarLevel2DODSServiceName");
+                serviceType = configurations.get( "radarLevel2DODSServiceType");
+                serviceBase = configurations.get( "radarLevel2DODSServiceBase" +ds);
         }
         // write out catalog with datasets
         if ( ! serviceType.equals( "" )) {
             pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             pw.print("<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\"");
-            pw.println(" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Level2 datasets in near real time\" version=\""+ catalogVersion +"\">");
+            pw.println(" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Level2 datasets in near real time\" version=\""+
+                    configurations.get( "catalogVersion") +"\">");
             pw.println("");
             pw.print("  <service name=\""+ serviceName +"\" serviceType=\""+ serviceType +"\"");
             pw.println(" base=\"" + serviceBase + "\"/>");
-            pw.print("    <dataset name=\"RadarLevel2 datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\"serviceType="+ 
+            if( ! ds.equals( "TDS"))
+                pw.println(" <datasetRoot path=\""+ ds +"\" location=\""+ radarLevel2Dir +"\" />");
+            pw.print("    <dataset name=\"RadarLevel2 datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\"serviceType="+
 serviceType +"&amp;returns=" + returns + "&amp;");
 
             if( useAllStations ) {
@@ -368,8 +401,6 @@ serviceType +"&amp;returns=" + returns + "&amp;");
             pw.println();
 
         } else if (IddMethods.p_html_i.matcher(returns).find()) { // returns html
-            serviceBase = "/thredds/fileServer/nexrad/level2/";
-
             pw.println("<Head><Title>THREDDS RadarLevel2 Server</Title></Head>");
             pw.println("<body bgcolor=\"lightblue\" link=\"red\" alink=\"red\" vlink=\"red\">");
             pw.println("<center><H1>RadarLevel2 Selection Results</H1></center>");
@@ -395,70 +426,74 @@ serviceType +"&amp;returns=" + returns + "&amp;");
             return;
         }
 
-        // main loop on qp.stns DAYS
+        // set date info 
         String yyyymmddStart = qp.time_start.toDateString();
         yyyymmddStart = yyyymmddStart.replace( "-", "");
         String yyyymmddEnd = qp.time_end.toDateString();
         yyyymmddEnd = yyyymmddEnd.replace( "-", "");
+        String dateStart =  yyyymmddStart +"_"+ im.hhmm( qp.time_start.toDateTimeString() );
+        String dateEnd =  yyyymmddEnd +"_"+ im.hhmm( qp.time_end.toDateTimeString() );
 
         boolean dataFound = false; // checks if any data found
-        for (String station : qp.stns) {
-            String fileStart = "Level2_" +  station +"_"+ yyyymmddStart +"_"+
-                    im.hhmm( qp.time_start.toDateTimeString() ) +".ar2v";
-            String fileEnd = "Level2_" +  station +"_"+ yyyymmddEnd +"_"+
-                    im.hhmm( qp.time_end.toDateTimeString() ) +".ar2v";
-            boolean done = false;
-            boolean firstTime = true; // so header only printed once
-
-            // Obtain the days available
-            String[] DAYS = im.getDAYS(radarLevel2Dir +"/"+ station, pw);
-            if (DAYS == null || DAYS.length == 0)
-                continue;
-
-            for (int i = 0; i < DAYS.length && !done; i++) {
-                if( ! im.isValidDay( DAYS[ i ], yyyymmddStart, yyyymmddEnd ) )
+        boolean done = false; // used for early exit when all data not required
+        // loop on qp.stns DAYS
+        if( dirStructure.startsWith( "STN")) {
+            for (String station : qp.stns) {
+                done = false;
+                // Obtain the days available
+                String[] DAYS = im.getDAYS(radarLevel2Dir +"/"+ station, pw);
+                if (DAYS == null || DAYS.length == 0)
                     continue;
+                for (int i = 0; i < DAYS.length && !done; i++) {
+                    if( ! im.isValidDay( DAYS[ i ], yyyymmddStart, yyyymmddEnd ) )
+                        continue;
 
-                ArrayList files = new ArrayList();
-                File dir = new File(radarLevel2Dir +"/"+ station +"/"+ DAYS[ i ]);
-                String[] FILES = dir.list();
-                for( int t = 0; t < FILES.length; t++ ) {
-                    if( ! im.isValidDate( FILES[ t ], fileStart, fileEnd ) )
-                       continue;
-                    files.add( FILES[ t ] );
+                     ArrayList<String> files = new ArrayList();
+                     File dir = new File(radarLevel2Dir +"/"+ station +"/"+ DAYS[ i ]);
+                     String[] FILES = dir.list();
+                     for( int t = 0; t < FILES.length; t++ ) {
+                         if( ! im.isValidDate( FILES[ t ], dateStart, dateEnd ) )
+                             continue;
+                         files.add( FILES[ t ] );
+
+                     }
+                     if( files.size() > 0 ) {
+                         dataFound = true;
+                         done = latest;
+                         processDS( files, DAYS[ i ], returns, station, latest, pw );
+                     }
+
                 }
-                 
-                Collections.sort(files, new CompareKeyDescend());
+            }
+        // loop on DAY STN
+        } else if( dirStructure.startsWith( "DAY")) {
+            String[] DAYS = im.getDAYS(radarLevel2Dir, pw);
+                for (int i = 0; i < DAYS.length; i++) {
+                    if( ! im.isValidDay( DAYS[ i ], yyyymmddStart, yyyymmddEnd ) )
+                        continue;
+                    for (String station : qp.stns) {
+                    //for (int j = 0; j < qp.stns.size(); j++ ) {
+                        //String station = qp.stns.get( j );
+                        ArrayList<String> files = new ArrayList();
+                        File dir = new File(radarLevel2Dir +"/"+ DAYS[ i ] +"/"+ station);
+                        if( !dir.exists() )
+                            continue;
+                        String[] FILES = dir.list();
+                        for( int t = 0; t < FILES.length; t++ ) {
+                             if( ! im.isValidDate( FILES[ t ], dateStart, dateEnd ) )
+                                  continue;
+                             files.add( FILES[ t ] );
 
-                // write out data/datasets element is latest first order
-                for( int t = 0; t < files.size(); t++ ) {
-                    if (IddMethods.p_html_i.matcher(returns).find()) {
-                        if (firstTime) {
-                            pw.println("<h3>Report(s) for station "
-                                    + station + "</h3>");
-                            firstTime = false;
-                            dataFound = true;
                         }
-                       pw.print( "<p><a href=\""+ serviceBase + station +"/"+ 
-                          DAYS[ i ] +"/"+ files.get( t ) +"\">" );
-                        pw.println( files.get( t ) + "</a></p>\n");
-                    } else if (!serviceType.equals( "" )) {
-                        dataFound = true;
-                        catalogOut( (String)files.get( t ), station, pw, serviceType, serviceBase, returns);
-                    } else if (IddMethods.p_ascii_i.matcher(returns).find()) {
-                            pw.println(files.get( t ));
-                    } else if (returns.equals( "data" )) {
-                       pw.println( "data for file"+ files.get( t ));
-                       File file = new File( (String)files.get( t ) );
-                       ServletUtil.returnFile(this, req, res, file, null);
+                        if( files.size() > 0 ) {
+                            dataFound = true;
+                            done = latest;
+                            processDS( files, DAYS[ i ], returns, station, latest, pw );
+                        }
+
                     }
-                    if ( latest ) {
-                        done = true;
-                        break;
-                    }
-                } // end files
-            } //end for DAYS
-        } //end foreach station
+                }
+        }
 
         // add ending tags
         if (IddMethods.p_catalog_i.matcher(returns).find() ) {
@@ -473,39 +508,62 @@ serviceType +"&amp;returns=" + returns + "&amp;");
         } else if (IddMethods.p_xml_i.matcher(returns).find()) {
             pw.println("</reports>");
         }
-        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1);
 
         } catch (Throwable t) {
            ServletUtil.handleException(t, res);
         }
+        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1);
     } // end doGet
 
+    private void processDS( ArrayList files, String day, String returns, String station, Boolean latest,
+                            PrintWriter pw ) {
+
+        Collections.sort(files, new CompareKeyDescend());
+        boolean firstTime = true;
+
+        // write out data/datasets element is latest first order
+        for( int t = 0; t < files.size(); t++ ) {
+            if (IddMethods.p_html_i.matcher(returns).find()) {
+                if (firstTime) {
+                    pw.println("<h3>Report(s) for station " + station + "</h3>");
+                    firstTime = false;
+                }
+                //pw.print( "<p><a href=\""+ serviceBase + station +"/"+
+                //   DAYS[ i ] +"/"+ files.get( t ) +"\">" );
+                 pw.println( files.get( t ) + "</a></p>\n");
+            } else if (returns.equals( "catalog" )) {
+                catalogOut(  (String)files.get( t ), station, day, pw );
+            } else if (IddMethods.p_ascii_i.matcher(returns).find()) {
+                    pw.println(files.get( t ));
+            } else if (returns.equals( "data" )) {
+               //pw.println( "data for file"+ files.get( t ));
+               //File file = new File( (String)files.get( t ) );
+               //ServletUtil.returnFile(this, req, res, file, null);
+            }
+            if ( latest ) {
+                break;
+            }
+        }
+        return;
+     }
+
     // create a dataset entry for a catalog
-    public void catalogOut(String product, String stn, PrintWriter pw, String serviceType, String serviceBase, String returns) {
+    public void catalogOut(String product, String stn, String day, PrintWriter pw ) {
+
         pw.println("      <dataset name=\""+ product +"\" ID=\""+
            product.hashCode() +"\"" );
 
         String pDate = im.getObTimeISO( product );
-        String pDay =  product.substring(12,20);
 
         pw.print("        urlPath=\"");
-        //if (IddMethods.p_HTTPServer_i.matcher(serviceType).find()) {
-            //pw.println("returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\"/>");
-             pw.println( stn +"/"+ pDay +"/"+ product +"\">" );
-             pw.println( "        <date type=\"start of ob\">"+ pDate +"</date>" );
-             pw.println( "      </dataset>" );
-
-        //} else if (IddMethods.p_DODS_i.matcher(serviceType).find()) {
-            //pw.println("serviceType="+ serviceType +"&amp;returns="+ returns +"&amp;stn=" + stn + "&amp;dtime=" + pTime + "\">");
-             //pw.println( "<date type=\"start of ob\">"+ pTime +"</date>" );
-             //pw.println( "</dataset>" );
-            //pw.println( "<a href=\""+ serviceBase + stn +"/"+ pDay +"\">"+
-            //   product +"</a>" );
-        //}
+        pw.println( stn +"/"+ day +"/"+ product +"\">" );
+        pw.println( "        <date type=\"start of ob\">"+ pDate +"</date>" );
+        pw.println( "      </dataset>" );
 
     } // end catalogOut
 
-    private void wants(HttpServletResponse res, boolean wantXml, boolean wantStationXml, boolean wantDQC, PrintWriter pw) throws IOException {
+    private void wants(HttpServletResponse res, boolean wantXml, boolean wantStationXml,
+                       boolean wantDQC, PrintWriter pw) throws IOException {
       String infoString = null;
 
       if (wantXml) {
@@ -529,7 +587,7 @@ serviceType +"&amp;returns=" + returns + "&amp;");
             return;
       } else {
         //InputStream xslt = getXSLT("ncssRadarLevel2.xsl");
-        InputStream xslt = im.getInputStream(contentPath + getPath() +"ncssRadarLevel2.xsl", null);  
+        InputStream xslt = im.getInputStream(contentPath + getPath() + "ncssRadarLevel2.xsl", RadarLevel2Servlet.class);
         Document doc = getDoc();
 
         try {
@@ -552,9 +610,6 @@ serviceType +"&amp;returns=" + returns + "&amp;");
       else
         res.setContentType("text/html; charset=iso-8859-1");
 
-      //OutputStream out = res.getOutputStream();
-      //out.write(infoString.getBytes());
-      //out.flush();
       pw.println( infoString );
 
       ServletUtil.logServerAccess(HttpServletResponse.SC_OK, infoString.length());
@@ -608,13 +663,13 @@ serviceType +"&amp;returns=" + returns + "&amp;");
     return doc;
   }
     
-    private InputStream getXSLT(String xslName) {
+  private InputStream getXSLT(String xslName) {
       return getClass().getResourceAsStream("/resources/xsl/" + xslName);
-    }
-    /**
-     * Create an XML document from this info
-     */
-    public Document makeStationDocument() throws IOException {
+  }
+  /**
+   * Create an XML document from this info
+   */
+  public Document makeStationDocument() throws IOException {
       Element rootElem = new Element("RadarLevel2Stations");
       Document doc = new Document(rootElem);
 
@@ -622,7 +677,6 @@ serviceType +"&amp;returns=" + returns + "&amp;");
       //System.out.println("nstns = "+stns.size());
       //for (int i = 0; i < stns.size(); i++) {
       for (Station s : stns) {
-        //Station s = (Station) stns.get(i);
         Element sElem = new Element("station");
         sElem.setAttribute("name",s.getValue());
         //if (s.getWmoId() != null)
@@ -655,65 +709,29 @@ serviceType +"&amp;returns=" + returns + "&amp;");
         String variable, value;
 
         try {
-        //pw.println(contentPath + getPath() +"ThreddsIDD.cfg" );
-        BufferedReader br = im.getInputStreamReader(contentPath + getPath() +"ThreddsIDD.cfg");
-        String input = "";
-        while ((input = br.readLine()) != null) {
+            //pw.println(contentPath + getPath() +"ThreddsIDD.cfg" );
+            configurations = new HashMap();
+            BufferedReader br = im.getInputStreamReader(contentPath + getPath() +"ThreddsIDD.cfg");
+            String input = "";
+            while ((input = br.readLine()) != null) {
 
-            // skip lines starting with #
-            if (IddMethods.p_B_pound.matcher(input).find() || input.length() == 0)
-                continue;
-            // stop at end of requested section
-            if (p_stop.matcher(input).find())
-                break;
-            m = IddMethods.p_config.matcher(input);
-            if (m.find()) {
-                variable = m.group(1);
-                // trim trailing spaces
-                value = IddMethods.p_spaces.matcher(m.group(2)).replaceAll("");
-                //pw.println( "<p>variable =" + variable +"</p>");
-                //pw.println( "<p>value =" + value +"</p>");
+                // skip lines starting with #
+                if (IddMethods.p_B_pound.matcher(input).find() || input.length() == 0)
+                    continue;
 
-                if (variable.equals("catalogVersion")) {
-                    catalogVersion = value;
-                } else if (variable.equals("defaultCatalog")) {
-                    defaultCatalog = value;
-                } else if (variable.equals("backgroundImage")) {
-                    backgroundImage = contentPath + getPath() + value;
-                } else if (variable.equals("radarLevel2DQC")) {
-                    radarLevel2DQC = contentPath + getPath() + value;
-                } else if (variable.equals("radarLevel2Dir")) {
-                    radarLevel2Dir = value;
-                } else if (variable.equals("radarLevel2HTTPServiceName")) {
-                    radarLevel2HTTPServiceName = value;
-                } else if (variable.equals("radarLevel2HTTPServiceType")) {
-                    radarLevel2HTTPServiceType = value;
-                } else if (variable.equals("radarLevel2HTTPServiceBase")) {
-                    radarLevel2HTTPServiceBase = value;
-                } else if (variable.equals("radarLevel2HTTPDataFormatType")) {
-                    radarLevel2HTTPDataFormatType = value;
-                } else if (variable.equals("radarLevel2ASCIIServiceName")) {
-                    radarLevel2ASCIIServiceName = value;
-                } else if (variable.equals("radarLevel2ASCIIUrlPath")) {
-                    radarLevel2ASCIIUrlPath = value;
-                } else if (variable.equals("radarLevel2ASCIIDataFormatType")) {
-                    radarLevel2ASCIIDataFormatType = value;
-                } else if (variable.equals("radarLevel2ADDEServiceName")) {
-                    radarLevel2ADDEServiceName = value;
-                } else if (variable.equals("radarLevel2ADDEUrlPath")) {
-                    radarLevel2ADDEUrlPath = value;
-                } else if (variable.equals("radarLevel2DODSServiceName")) {
-                    radarLevel2DODSServiceName = value;
-                } else if (variable.equals("radarLevel2DODSServiceType")) {
-                    radarLevel2DODSServiceType = value;
-                } else if (variable.equals("radarLevel2DODSServiceBase")) {
-                    radarLevel2DODSServiceBase = value;
+                // stop at end of requested section
+                if (p_stop.matcher(input).find())
+                    break;
+                m = IddMethods.p_config.matcher(input);
+                if (m.find()) {
+                    variable = m.group(1);
+                    // trim trailing spaces
+                    value = IddMethods.p_spaces.matcher(m.group(2)).replaceAll("");
+                    configurations.put( variable, value);
+                } else {
+                    pw.println("error in configuration line parse");
                 }
-            } else {
-                pw.println("error in configuration line parse");
             }
-            //pw.println( input );
-        }
         br.close();
         return;
         } catch ( IOException ioe ) {
