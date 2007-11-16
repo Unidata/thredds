@@ -51,7 +51,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       byte[] b = new byte[8];
       raf.read(b);
       String test = new String( b);
-      return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ;
+      return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ||
+              test.equals( Level2VolumeScan.AR2V0003);
     } catch (IOException ioe) {
       return false;
     }
@@ -79,15 +80,21 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
             makeVariable2( ncfile, Level2Record.VELOCITY_HIGH, "RadialVelocity", "Radial Velocity", "V", volScan);
 
         if( volScan.getHighResSpectrumGroups() != null) {
-            makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth_HI", "Radial Spectrum_HI", v1);
-            makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Radial Spectrum", v0);
+            List<Level2Record> gps = volScan.getHighResSpectrumGroups();
+            List<Level2Record> gp = (List)gps.get(0);
+            Level2Record record = gp.get(0);
+            makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth_HI", "Radial Spectrum_HI", v1, record);
+            makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Radial Spectrum", v0, record);
         }
     }
-    if( volScan.getReflectivityGroups().size() > 0) {
+    if( volScan.getReflectivityGroups() != null) {
         makeVariable( ncfile, Level2Record.REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups(), 0);
         int velocity_type =  (volScan.getDopplarResolution() == Level2Record.DOPPLER_RESOLUTION_HIGH_CODE) ? Level2Record.VELOCITY_HI : Level2Record.VELOCITY_LOW;
         Variable v = makeVariable( ncfile, velocity_type, "RadialVelocity", "Radial Velocity", "V", volScan.getVelocityGroups(), 0);
-        makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Spectrum Width", v);
+        List<Level2Record> gps = volScan.getVelocityGroups();
+        List<Level2Record> gp = (List)gps.get(0);
+        Level2Record record = gp.get(0);
+        makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Spectrum Width", v, record);
     }
     if (volScan.getStationId() != null) {
       ncfile.addAttribute(null, new Attribute("Station", volScan.getStationId()));
@@ -106,6 +113,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
 
           // add a radial coordinate transform (experimental)
+        /*
       Variable ct = new Variable(ncfile, null, null, "radialCoordinateTransform");
       ct.setDataType(DataType.CHAR);
       ct.setDimensions(""); // scalar
@@ -119,6 +127,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       Array data = Array.factory(DataType.CHAR.getPrimitiveClassType(), new int[0], new char[] {' '});
       ct.setCachedData(data, true);
       ncfile.addVariable(null, ct);
+      */
     }
 
     DateFormatter formatter = new DateFormatter();
@@ -236,8 +245,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     v.addAttribute( new Attribute("missing_value", missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", BELOW_THRESHOLD));
-    v.addAttribute( new Attribute("scale_factor", getDatatypeScaleFactor(datatype)));
-    v.addAttribute( new Attribute("add_offset", getDatatypeAddOffset(datatype)));
+    v.addAttribute( new Attribute("scale_factor", firstRecord.getDatatypeScaleFactor(datatype)));
+    v.addAttribute( new Attribute("add_offset", firstRecord.getDatatypeAddOffset(datatype)));
     v.addAttribute( new Attribute("_unsigned", "true"));
 
     List<Dimension> dim2 = new ArrayList<Dimension>();
@@ -341,7 +350,10 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     return v;
    }
 
-  private void makeVariableNoCoords(NetcdfFile ncfile, int datatype, String shortName, String longName, Variable from) {
+  private void makeVariableNoCoords(NetcdfFile ncfile, int datatype, String shortName, String longName, Variable from,
+                                    Level2Record record) {
+
+    // get representative record
 
     Variable v = new Variable(ncfile, null, null, shortName);
     v.setDataType(DataType.BYTE);
@@ -355,11 +367,12 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     b[0] = MISSING_DATA;
     b[1] = BELOW_THRESHOLD;
     Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] {2}, b);
-
+    Attribute scale = from.findAttribute("scale_factor");
+    Attribute offset = from.findAttribute("add_offset");
     v.addAttribute( new Attribute("missing_value", missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", BELOW_THRESHOLD));
-    v.addAttribute( new Attribute("scale_factor", getDatatypeScaleFactor(datatype)));
-    v.addAttribute( new Attribute("add_offset", getDatatypeAddOffset(datatype)));
+    v.addAttribute( new Attribute("scale_factor", record.getDatatypeScaleFactor(datatype)));
+    v.addAttribute( new Attribute("add_offset", record.getDatatypeAddOffset(datatype)));
     v.addAttribute( new Attribute("_unsigned", "true"));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
