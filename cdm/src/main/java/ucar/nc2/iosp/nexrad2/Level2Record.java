@@ -174,15 +174,15 @@ public class Level2Record {
      throw new IllegalArgumentException();
    }
 
-  static public float getDatatypeScaleFactor(int datatype) {
+   public float getDatatypeScaleFactor(int datatype) {
     switch (datatype) {
       case REFLECTIVITY: return 0.5f;
       case VELOCITY_LOW : return 1.0f;
       case VELOCITY_HI:
       case SPECTRUM_WIDTH : return 0.5f;
-        case REFLECTIVITY_HIGH : return 1.0f;
-        case VELOCITY_HIGH :
-        case SPECTRUM_WIDTH_HIGH : return 1.0f;
+        case REFLECTIVITY_HIGH : return 1/reflectHR_scale;
+        case VELOCITY_HIGH : return 1/velocityHR_scale;
+        case SPECTRUM_WIDTH_HIGH : return 1/spectrumHR_scale;
         case DIFF_REFLECTIVITY_HIGH : return 1.0f;
         case DIFF_PHASE :
         case CORRELATION_COEFFICIENT : return 1.0f;
@@ -191,15 +191,15 @@ public class Level2Record {
     }
   }
 
-  static public float getDatatypeAddOffset(int datatype) {
+  public float getDatatypeAddOffset(int datatype) {
     switch (datatype) {
       case REFLECTIVITY : return -33.0f;
       case VELOCITY_LOW : return -129.0f;
       case VELOCITY_HI:
       case SPECTRUM_WIDTH : return -64.5f;
-      case REFLECTIVITY_HIGH : return -66.0f;
-      case VELOCITY_HIGH : 
-      case SPECTRUM_WIDTH_HIGH : return -129.0f;
+      case REFLECTIVITY_HIGH : return reflectHR_addoffset*(-1)/reflectHR_scale;
+      case VELOCITY_HIGH : return velocityHR_addoffset*(-1)/velocityHR_scale;
+      case SPECTRUM_WIDTH_HIGH : return spectrumHR_addoffset*(-1)/spectrumHR_scale;
       case DIFF_REFLECTIVITY_HIGH : return -128.0f;
       case DIFF_PHASE :
       case CORRELATION_COEFFICIENT : return -2.0f;
@@ -341,6 +341,15 @@ public class Level2Record {
   short reflectHR_gate_count = 0;
   short velocityHR_gate_count = 0;
   short spectrumHR_gate_count = 0;
+  float reflectHR_scale = 0;
+  float velocityHR_scale = 0;
+  float spectrumHR_scale = 0;
+  float reflectHR_addoffset = 0;
+  float velocityHR_addoffset = 0;
+  float spectrumHR_addoffset = 0;
+  short reflectHR_offset = 0;
+  short velocityHR_offset = 0;
+  short spectrumHR_offset = 0;
   short zdrHR_gate_count = 0;
   short phiHR_gate_count = 0;
   short rhoHR_gate_count = 0;
@@ -457,18 +466,27 @@ public class Level2Record {
             reflectHR_gate_count = getDataBlockValue(din, (short) dbp4, 8);
             reflectHR_first_gate = getDataBlockValue(din, (short) dbp4, 10);
             reflectHR_gate_size = getDataBlockValue(din, (short) dbp4, 12);
+            reflectHR_scale = getDataBlockValue1(din, (short) dbp4, 20);
+            reflectHR_addoffset = getDataBlockValue1(din, (short) dbp4, 24);
+            reflectHR_offset =   (short)( dbp4+ 28);
         }
         hasHighResVELData = (dbp5 > 0);
         if(hasHighResVELData) {
             velocityHR_gate_count = getDataBlockValue(din, (short) dbp5, 8);
             velocityHR_first_gate = getDataBlockValue(din, (short) dbp5, 10);
             velocityHR_gate_size = getDataBlockValue(din, (short) dbp5, 12);
+            velocityHR_scale = getDataBlockValue1(din, (short) dbp5, 20);
+            velocityHR_addoffset = getDataBlockValue1(din, (short) dbp5, 24);
+            velocityHR_offset = (short)( dbp5+ 28);
         }
         hasHighResSWData  = (dbp6 > 0);
         if(hasHighResSWData) {
             spectrumHR_gate_count = getDataBlockValue(din, (short) dbp6, 8);
             spectrumHR_first_gate = getDataBlockValue(din, (short) dbp6, 10);
             spectrumHR_gate_size = getDataBlockValue(din, (short) dbp6, 12);
+            spectrumHR_scale = getDataBlockValue1(din, (short) dbp6, 20);
+            spectrumHR_addoffset = getDataBlockValue1(din, (short) dbp6, 24);
+            spectrumHR_offset = (short) (dbp6 + 28);
         }
         hasHighResZDRData = (dbp7 > 0);
         if(hasHighResZDRData) {
@@ -705,12 +723,12 @@ public class Level2Record {
       case VELOCITY_HI :
       case VELOCITY_LOW : return velocity_offset;
       case SPECTRUM_WIDTH : return spectWidth_offset;
-      case REFLECTIVITY_HIGH : return (short)dbp4;
-      case VELOCITY_HIGH : return (short)dbp4;
-      case SPECTRUM_WIDTH_HIGH : return (short)dbp4;
-      case DIFF_REFLECTIVITY_HIGH : return (short)dbp4;
-      case DIFF_PHASE : return (short)dbp4;
-      case CORRELATION_COEFFICIENT : return (short)dbp4;
+      case REFLECTIVITY_HIGH : return reflectHR_offset;
+      case VELOCITY_HIGH : return velocityHR_offset;
+      case SPECTRUM_WIDTH_HIGH : return spectrumHR_offset;
+      case DIFF_REFLECTIVITY_HIGH : return (short)dbp7;
+      case DIFF_PHASE : return (short)dbp8;
+      case CORRELATION_COEFFICIENT : return (short)dbp9;
     }
     return Short.MIN_VALUE;
   }
@@ -722,6 +740,12 @@ public class Level2Record {
       return  raf.readShort();
   }
 
+  private float getDataBlockValue1(RandomAccessFile raf, short offset, int skip) throws IOException {
+      long off = offset + message_offset + MESSAGE_HEADER_SIZE;
+      raf.seek(off);
+      raf.skipBytes(skip);
+      return  raf.readFloat();
+  }
   public java.util.Date getDate() {
     return getDate( data_julian_date, data_msecs);
   }
