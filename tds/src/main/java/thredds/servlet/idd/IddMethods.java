@@ -47,8 +47,10 @@ public class IddMethods {
     public static final Pattern p_space20 = Pattern.compile("%20");
     public static final Pattern p_spaces = Pattern.compile("\\s+");
     public static final Pattern p_station_name = Pattern.compile("\\s*<station\\s+name=\"(.*)\" ");
+    public static final Pattern p_stn_i = Pattern.compile("stn", Pattern.CASE_INSENSITIVE);
     public static final Pattern p_value2 = Pattern.compile("value=\"([A-Z0-9]*)\"");
     public static final Pattern p_xml_i = Pattern.compile("xml", Pattern.CASE_INSENSITIVE);
+    public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("(\\d{8}_\\d{4})");
 
     static protected SimpleDateFormat dateFormatISO;
     static protected SimpleDateFormat dateFormat;
@@ -69,6 +71,30 @@ public class IddMethods {
         return "idd/";
     }
 
+    /*
+      * gets files in a directory that are directory themselves
+      * returns them in descending order
+    */
+    public ArrayList getDirData(String dirS, PrintWriter pw) {
+
+        File dir = new File(dirS);
+        if( ! dir.exists() )
+            return null;
+        File[] dirs = dir.listFiles();
+        ArrayList<File> onlyDirs = new ArrayList();
+
+        // all entries must be directories
+        for (int i = 0; i < dirs.length; i++) {
+             if( dirs[ i ].isFile() )
+                continue;
+             onlyDirs.add(dirs[i]);
+        }
+        Collections.sort(onlyDirs, new CompareKeyDescend());
+
+        return onlyDirs;
+
+    }
+
     public String[] getDAYS(String dirS, PrintWriter pw) {
 
         // Obtain the days available
@@ -76,7 +102,6 @@ public class IddMethods {
         //$check = `date -u +"%Y%m%d"` ;
         Date now = Calendar.getInstance().getTime();
         String check = dateFormat.format(now);
-        //pw.println( "<p>check = "+ check +"</p>");
 
         File dir = new File(dirS);
         if( ! dir.exists() )
@@ -89,7 +114,6 @@ public class IddMethods {
             if ( p_B_D8.matcher(TMP[i]).find() &&
                     TMP[i].compareTo(check) <= 0) {
                 days.add(TMP[i]);
-                //pw.println("<p>days[ " + i +" ] = "+ days.get( i ) +"</p>");
             }
         }
         Collections.sort(days, new CompareKeyDescend());
@@ -186,9 +210,9 @@ public class IddMethods {
   }
 
   /**
-   * Get the list of station names that are contained within the bounding box.
+   * Get the list of station names .
    *
-   * @return list of station names contained within the bounding box
+   * @return list of station names
    * @throws IOException if read error
    */
   public List<String> getStationNames() throws IOException {
@@ -196,7 +220,6 @@ public class IddMethods {
     List<Station> stations = getStationList();
     for (Station s : stations) {
         result.add(s.getValue());
-        // boundingBox.contains(latlonPt);   debugging
     }
     return result;
   }
@@ -388,17 +411,25 @@ public class IddMethods {
     }
 
     // returns if date is between dateStart and dateEnd
-    public boolean isValidDate( String dateReport, String dateStart, 
-       String dateEnd ) {
+    public boolean isValidDate( String dateReport, String dateStart, String dateEnd ) {
 
-       if( dateReport.compareTo( dateStart ) >= 0 &&
-           dateReport.compareTo( dateEnd ) <= 0 )
+       Matcher m;
+       m = p_yyyymmdd_hhmm.matcher( dateReport );
+       String date;
+       if( m.find() ) {
+           date = m.group( 1 );
+       } else {
+           return false;
+       }
+       // extract hhmm from product 
+       if( date.compareTo( dateStart ) >= 0 &&
+           date.compareTo( dateEnd ) <= 0 )
            return true;
 
        return false;
 
     }
-
+ 
     // returns hhmm of datetime string
     public String hhmm( String dateTime ) {
        return dateTime.substring( 11, 13 ) + dateTime.substring( 14, 16 );
@@ -406,11 +437,17 @@ public class IddMethods {
 
     // returns ISO time extracted from a product 
     public String getObTimeISO( String product ) {
-        int i = product.indexOf( "_20");
-        i++;
-        return product.substring(i,i +4) +"-"+ product.substring(i +4,i +6)
-           +"-"+ product.substring(i +6,i +8) +"T"+ product.substring(i +9, i +11)
-           +":"+ product.substring(i +11, i +13) +":00";
+       Matcher m;
+       m = p_yyyymmdd_hhmm.matcher( product );
+       String date;
+       if( m.find() ) {
+           date = m.group( 1 );
+           return date.substring(0,4) +"-"+ date.substring(4,6)
+           +"-"+ date.substring(6,8) +"T"+ date.substring(9, 11)
+           +":"+ date.substring(11,13) +":00";
+       } else {
+           return "0000-00-00T00:00:00";
+       }
     }
 
     public void setPW( PrintWriter pw ){
