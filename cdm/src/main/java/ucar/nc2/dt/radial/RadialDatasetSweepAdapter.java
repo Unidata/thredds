@@ -23,7 +23,12 @@ package ucar.nc2.dt.radial;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.Dimension;
+import ucar.nc2.Attribute;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.ma2.DataType;
 
 import java.util.*;
 
@@ -48,51 +53,14 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     parseInfo.append("RadialDatasetAdapter look for RadialVariables\n");
     List vars  = ds.getVariables();
     for (int i=0; i< vars.size(); i++) {
-      VariableEnhanced varDS = (VariableEnhanced) vars.get(i);
-      constructCoordinateSystems( ds, varDS);
+     // VariableEnhanced varDS = (VariableEnhanced) vars.get(i);
+      addRadialVariable( ds, (Variable) vars.get(i));
     }
   }
 
-  protected void constructCoordinateSystems(NetcdfDataset ds, VariableEnhanced v) {
+  protected abstract void addRadialVariable(NetcdfDataset ds, Variable var);
 
-      if (v instanceof StructureDS) {
-        StructureDS s = (StructureDS) v;
-        List members = s.getVariables();
-        for (int i = 0; i < members.size(); i++) {
-          VariableEnhanced nested =  (VariableEnhanced) members.get(i);
-          // LOOK flatten here ??
-          constructCoordinateSystems( ds, nested);
-        }
-      } else {
-
-        // see if it has a radialCS
-        // LOOK: should add geogrid it multiple times if there are multiple geoCS ??
-        RadialCoordSys rcs = null;
-        List csys  = v.getCoordinateSystems();
-        for (int j=0; j< csys.size(); j++) {
-          CoordinateSystem cs = (CoordinateSystem) csys.get(j);
-          rcs = RadialCoordSys.makeRadialCoordSys( parseInfo, cs, v);
-          if (rcs != null) break;
-        }
-
-        if (rcs != null)
-          addRadialVariable( v, rcs);
-        }
-  }
-
-  protected void addRadialVariable( VariableEnhanced varDS, RadialCoordSys gcs) {
-    RadialCoordSys gcsUse = (RadialCoordSys) csHash.get( gcs.getName());
-    if (null == gcsUse) {
-      csHash.put( gcs.getName(), gcs);
-      parseInfo.append(" -make new RadialCoordSys= "+gcs.getName()+"\n");
-      gcsUse = gcs;
-    }
-
-    RadialVariable rsvar = makeRadialVariable( varDS, gcsUse);
-    dataVariables.add( rsvar);
-  }
-
-  protected abstract RadialVariable makeRadialVariable( VariableEnhanced varDS, RadialCoordSys gcs);
+  protected abstract RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0);
 
   protected abstract void setTimeUnits(); // reminder for subclasses to set this
 
@@ -141,4 +109,44 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     boundingBox = largestBB;
   }
 
+  public class MyRadialVariableAdapter implements VariableSimpleIF {
+
+    private int rank;
+    private int[] shape;
+    private String name;
+    private String desp;
+
+    public MyRadialVariableAdapter( String vName )
+    {
+      super();
+      rank = 1;
+      shape= new int[] {1};
+      name = vName;
+      desp = "A radial variable holding a list of radial sweeps";
+    }
+    public String toString() {
+    return name;
+  }
+
+  /**
+   * Sort by name
+   */
+    public int compareTo(VariableSimpleIF o) {
+     return getName().compareTo(o.getName());
+    }
+    public String getName() { return this.name; }
+    public String getShortName() { return this.name; }
+    public DataType getDataType() { return DataType.FLOAT; }
+    public String getDescription() { return this.desp; }
+    public String getInfo() { return this.desp; }
+    public String getUnitsString() { return "N/A"; }
+
+    public int getRank() {  return this.rank; }
+    public int[] getShape() { return this.shape; }
+    public List<Dimension> getDimensions() { return null; }
+    public List<Attribute> getAttributes() { return null; }
+    public ucar.nc2.Attribute findAttributeIgnoreCase(String attName){
+       return null;
+    }
+  }
 }
