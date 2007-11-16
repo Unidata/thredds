@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.text.ParseException;
 
 import ucar.nc2.dt.grid.NetcdfCFWriter;
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.DiskCache2;
 import ucar.ma2.InvalidRangeException;
 import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
@@ -125,6 +126,8 @@ public class GetCoverage extends WcsRequest
           throws WcsException
   {
     File ncFile = getDiskCache().getCacheFile( this.getDataset().getDatasetPath() + "-" + coverageId + ".nc" );
+
+    //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
 
     NetcdfCFWriter writer = new NetcdfCFWriter();
     try

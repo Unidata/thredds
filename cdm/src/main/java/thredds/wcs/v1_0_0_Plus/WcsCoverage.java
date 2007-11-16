@@ -60,6 +60,8 @@ public class WcsCoverage
       rangeSetAxisValues = Collections.emptyList();
   }
 
+  GridDatatype getGridDatatype() { return coverage; }
+
   public String getName() { return coverage.getName(); }
   public String getDescription() { return coverage.getDescription(); }
   public GridCoordSystem getCoordinateSystem() { return coordSys; }
