@@ -20,6 +20,7 @@
 package ucar.nc2.dt;
 
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.Variable;
 
 import java.io.IOException;
 import java.util.Date;
@@ -131,6 +132,9 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
      * @return the type of the Sweep
      */
     public RadialDatasetSweep.Type getType();
+
+
+      public Variable getsweepVar();
 
     /**
      * @return the number of radials for this Sweep
