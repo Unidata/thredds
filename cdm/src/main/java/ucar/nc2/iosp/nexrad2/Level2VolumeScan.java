@@ -51,6 +51,7 @@ public class Level2VolumeScan {
   // data formats
   static public final String ARCHIVE2 = "ARCHIVE2";
   static public final String AR2V0001 = "AR2V0001";
+  static public final String AR2V0003 = "AR2V0003";  
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Level2VolumeScan.class);
   ////////////////////////////////////////////////////////////////////////////////////
@@ -120,11 +121,16 @@ public class Level2VolumeScan {
 
     // try to find the station
     if (stationId != null) {
-      station = NexradStationDB.get(stationId);
+      if( !stationId.startsWith("K") && stationId.length()==4) {
+         String _stationId = "K" + stationId;
+         station = NexradStationDB.get(_stationId);
+      }
+      else
+        station = NexradStationDB.get(stationId);
     }
 
     //see if we have to uncompress
-    if (dataFormat.equals(AR2V0001)) {
+    if (dataFormat.equals(AR2V0001) || dataFormat.equals(AR2V0003)) {
       raf.skipBytes(4);
       String BZ = raf.readString(2);
       if (BZ.equals("BZ")) {
@@ -214,9 +220,10 @@ public class Level2VolumeScan {
       if ((cancelTask != null) && cancelTask.isCancel()) return;
     }
     if (debugRadials) System.out.println(" reflect ok= " + reflectivity.size() + " doppler ok= " + doppler.size());
-
-    reflectivityGroups = sortScans("reflect", reflectivity, 600);
-    dopplerGroups = sortScans("doppler", doppler, 600);
+    if(highReflectivity.size() == 0) {
+        reflectivityGroups = sortScans("reflect", reflectivity, 600);
+        dopplerGroups = sortScans("doppler", doppler, 600);
+    }
     if(highReflectivity.size() > 0)
         reflectivityHighResGroups = sortScans("reflect_HR", highReflectivity, 720);
     if(highVelocity.size() > 0)
@@ -329,7 +336,7 @@ public class Level2VolumeScan {
   }
 
   // do we have same characteristics for all records in a scan?
-  private int MAX_RADIAL = 720;
+  private int MAX_RADIAL = 721;
   private int[] radial = new int[MAX_RADIAL];
 
   private boolean testScan(String name, ArrayList group) {
