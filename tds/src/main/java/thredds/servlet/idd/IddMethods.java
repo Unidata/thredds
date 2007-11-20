@@ -32,6 +32,7 @@ import ucar.nc2.ncml.Aggregation;
 
 public class IddMethods {
 
+    public static final Pattern p_all_i = Pattern.compile("all", Pattern.CASE_INSENSITIVE);
     public static final Pattern p_ascii_i = Pattern.compile("ascii", Pattern.CASE_INSENSITIVE);
     public static final Pattern p_B_pound = Pattern.compile("^#");
     public static final Pattern p_catalog_i = Pattern.compile("catalog", Pattern.CASE_INSENSITIVE);

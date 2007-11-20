@@ -187,6 +187,12 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
         String ds = ServletUtil.getParameterIgnoreCase(req, "ds");
         if( ds == null )
             ds = "TDS";
+        if (IddMethods.p_all_i.matcher(ds).find()) { // ds names
+            res.setContentType("text/html");
+            String datasets = configurations.get( "radarLevel2Ds" );
+            pw.println( datasets.replaceAll( "/", " "));
+            return;
+        }
 
         // need to extract data according to the ds(dataset) given
         radarLevel2Dir = configurations.get( "radarLevel2Dir" + ds );
