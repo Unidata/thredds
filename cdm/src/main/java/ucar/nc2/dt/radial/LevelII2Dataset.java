@@ -30,6 +30,10 @@ import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.LatLonPointImpl;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -85,6 +89,39 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     setStartDate();
     setEndDate();
     setBoundingBox();
+  }
+
+  protected void setBoundingBox() {
+    LatLonRect bb;
+
+    if (origin == null)
+      return;
+
+    double dLat = Math.toDegrees( getMaximumRadialDist() / Earth.getRadius());
+    double latRadians = Math.toRadians( origin.getLatitude());
+    double dLon = dLat * Math.cos(latRadians);
+
+    double lat1 = origin.getLatitude() - dLat/2;
+    double lon1 = origin.getLongitude() - dLon/2;
+    bb = new LatLonRect( new LatLonPointImpl( lat1, lon1), dLat, dLon);
+
+    boundingBox = bb;
+  }
+
+  double getMaximumRadialDist() {
+    double maxdist = 0.0;
+    Iterator iter = dataVariables.iterator();
+
+    while (iter.hasNext()) {
+        RadialVariable rv = (RadialVariable) iter.next();
+        Sweep sp = rv.getSweep(0);
+        double dist = sp.getGateNumber() * sp.getGateSize();
+
+        if (dist > maxdist)
+          maxdist = dist;
+    }
+
+    return maxdist;
   }
 
   protected void setEarthLocation() {
