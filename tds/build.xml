@@ -701,6 +701,15 @@
     </antcall>
   </target>
 
+  <target name="test-TDS-crawl-motherlode-9080" description="crawl TDS on motherlode:9080">
+    <antcall target="test-TDS">
+      <param name="thredds.tds.test.id" value="crawl-motherlode-9080" />
+      <param name="thredds.tds.test.server" value="motherlode.ucar.edu:9080" />
+      <param name="thredds.tds.test.level" value="crawl-catalogs" />
+      <param name="thredds.tds.test.catalogs" value="${tdsIddCat-models}" />
+    </antcall>
+  </target>
+
   <target name="test-TDS-ping-overlode-8080" description="ping TDS on overlode:8080">
     <antcall target="test-TDS">
       <param name="thredds.tds.test.id" value="ping-overlode-8080" />
