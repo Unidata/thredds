@@ -735,6 +735,15 @@
     </antcall>
   </target>
 
+  <target name="test-TDS-crawlLimitedCat1Ds-mlode-9080">
+    <antcall target="test-TDS">
+      <param name="thredds.tds.test.id" value="crawlLimitedCat1Ds-mlode-9080" />
+      <param name="thredds.tds.test.server" value="motherlode.ucar.edu:9080" />
+      <param name="thredds.tds.test.level" value="crawl-catalogs-and1DsPerCollection"  />
+      <param name="thredds.tds.test.catalogs" value="${tdsIddCat-fullSample}" />
+    </antcall>
+  </target>
+
   <!-- Make sure to set the following properties:
        1) "thredds.tds.test.id"
        2) "thredds.tds.test.server"
