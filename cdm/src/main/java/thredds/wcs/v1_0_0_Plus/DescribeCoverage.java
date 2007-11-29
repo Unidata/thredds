@@ -90,7 +90,8 @@ public class DescribeCoverage extends WcsRequest
 
     // CoverageDescription/CoverageOffering (wcs) [1..*]
     Element covDescripElem = genCoverageOfferingBriefElem( "CoverageOffering", covId,
-                                                           coverage.getDescription(), gridCoordSystem );
+                                                           coverage.getLabel(), coverage.getDescription(),
+                                                           gridCoordSystem );
 
     // CoverageDescription/CoverageOffering/domainSet [1]
     covDescripElem.addContent( genDomainSetElem( coverage));

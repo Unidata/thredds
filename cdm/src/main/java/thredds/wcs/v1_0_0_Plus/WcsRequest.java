@@ -56,7 +56,8 @@ public abstract class WcsRequest
   public String getVersion() { return version; }
   public WcsDataset getDataset() { return dataset; }
 
-  protected Element genCoverageOfferingBriefElem( String elemName, String covName, String covLabel,
+  protected Element genCoverageOfferingBriefElem( String elemName,
+                                                  String covName, String covLabel, String covDescription,
                                                   GridCoordSystem gridCoordSys )
   {
 
@@ -71,6 +72,8 @@ public abstract class WcsRequest
     // <CoverageOfferingBrief>/description [0..1]
     // <CoverageOfferingBrief>/name [1]
     // <CoverageOfferingBrief>/label [1]
+    if ( covDescription != null && ! covDescription.equals( ""))
+      briefElem.addContent( new Element( "description", wcsNS ).addContent( covDescription ) );
     briefElem.addContent( new Element( "name", wcsNS ).addContent( covName ) );
     briefElem.addContent( new Element( "label", wcsNS ).addContent( covLabel ) );
 

@@ -340,6 +340,7 @@ public class GetCapabilities extends WcsRequest
       contMdElem.addContent(
               genCoverageOfferingBriefElem( "ContentOfferingBrief",
                                             curCoverage.getName(),
+                                            curCoverage.getLabel(),
                                             curCoverage.getDescription(),
                                             curCoverage.getCoordinateSystem() ) );
 

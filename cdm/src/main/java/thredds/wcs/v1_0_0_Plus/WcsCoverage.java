@@ -4,6 +4,8 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
+import ucar.ma2.Range;
+import ucar.ma2.InvalidRangeException;
 
 import java.util.List;
 import java.util.Collections;
@@ -63,7 +65,8 @@ public class WcsCoverage
   GridDatatype getGridDatatype() { return coverage; }
 
   public String getName() { return coverage.getName(); }
-  public String getDescription() { return coverage.getDescription(); }
+  public String getLabel() { return coverage.getDescription(); }
+  public String getDescription() { return coverage.getInfo(); }
   public GridCoordSystem getCoordinateSystem() { return coordSys; }
   public boolean hasMissingData() { return coverage.hasMissingData(); }
 
@@ -76,10 +79,41 @@ public class WcsCoverage
   {
     return rangeSetAxisValues.contains( value );
   }
+  public boolean isRangeSetAxisNumeric()
+  {
+    return coordSys.getVerticalAxis().isNumeric();
+  }
   public List<String> getRangeSetAxisValueList()
   {
     return Collections.unmodifiableList( rangeSetAxisValues );
-
   }
 
+  public Range getRangeSetAxisRange( double minValue, double maxValue)
+  {
+    if ( minValue > maxValue )
+    {
+      log.error( "getRangeSetAxisRange(): Min is greater than max <" + minValue + ", " + maxValue + ">." );
+      throw new IllegalArgumentException( "Min is greater than max <" + minValue + ", " + maxValue + ">." );
+    }
+    CoordinateAxis1D zaxis = coordSys.getVerticalAxis();
+    if ( zaxis != null )
+    {
+      int minIndex = zaxis.findCoordElement( minValue);
+      int maxIndex = zaxis.findCoordElement( maxValue);
+
+      if ( minIndex == -1 || maxIndex == -1 )
+        return null;
+
+      try
+      {
+        return new Range( minIndex, maxIndex);
+      }
+      catch ( InvalidRangeException e )
+      {
+        return null;
+      }
+    }
+    else
+      return null;
+  }
 }
