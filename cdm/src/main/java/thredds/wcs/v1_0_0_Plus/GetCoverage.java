@@ -1,17 +1,12 @@
 package thredds.wcs.v1_0_0_Plus;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
 import java.text.ParseException;
 
-import ucar.nc2.dt.grid.NetcdfCFWriter;
-import ucar.nc2.util.DiskCache2;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.nc2.dt.GridCoordSystem;
 import thredds.datatype.DateRange;
 import thredds.datatype.DateType;
 
@@ -26,13 +21,12 @@ public class GetCoverage extends WcsRequest
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( GetCoverage.class );
 
-  private String coverageId;
 
   private WcsCoverage coverage;
 
   private LatLonRect bboxLatLonRect;
   private DateRange timeRange;
-  private Range rangeSetAxisValueRange;
+  private WcsCoverage.VerticalRange rangeSetAxisValueRange;
 
 
   public GetCoverage( Operation operation, String version, WcsDataset dataset,
@@ -42,15 +36,14 @@ public class GetCoverage extends WcsRequest
   {
     super( operation, version, dataset);
 
-    // Assign and validate coverage ID parameter.
-    this.coverageId = coverageId;
-    if ( this.coverageId == null )
+    // Validate coverage ID parameter.
+    if ( coverageId == null )
       throw new WcsException( WcsException.Code.MissingParameterValue, "coverage", "Coverage identifier required." );
-    if ( !this.getDataset().isAvailableCoverageName( this.coverageId ) )
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "coverage", "Unknown coverage identifier <" + this.coverageId + ">." );
-    this.coverage = this.getDataset().getAvailableCoverage( this.coverageId );
+    if ( !this.getDataset().isAvailableCoverageName( coverageId ) )
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "coverage", "Unknown coverage identifier <" + coverageId + ">." );
+    this.coverage = this.getDataset().getAvailableCoverage( coverageId );
     if ( this.coverage == null ) // Double check just in case.
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "coverage", "Unknown coverage identifier <" + this.coverageId + ">." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "coverage", "Unknown coverage identifier <" + coverageId + ">." );
 
     // Assign and validate request and response CRS parameters.
 
@@ -76,7 +69,7 @@ public class GetCoverage extends WcsRequest
     if ( bbox == null && time == null )
       throw new WcsException( WcsException.Code.MissingParameterValue, "BBOX", "BBOX and/or TIME required.");
     if ( bbox != null )
-      bboxLatLonRect = parseBoundingBox( bbox, coverage.getCoordinateSystem().getLatLonBoundingBox());
+      bboxLatLonRect = parseBoundingBox( bbox, coverage.getCoordinateSystem());
     if ( time != null )
       timeRange = parseTime( time);
 
@@ -99,65 +92,20 @@ public class GetCoverage extends WcsRequest
     }
   }
 
-  //public NetcdfFile getCoverageData() {}
-
-  static private DiskCache2 diskCache = null;
-
-  static public void setDiskCache( DiskCache2 _diskCache )
-  {
-    diskCache = _diskCache;
-  }
-
-  static private DiskCache2 getDiskCache()
-  {
-    if ( diskCache == null )
-    {
-      log.error( "getDiskCache(): Disk cache has not been set." );
-      throw new IllegalStateException( "Disk cache must be set before calling GetCoverage.getDiskCache()." );
-      //diskCache = new DiskCache2( "/wcsCache/", true, -1, -1 );
-    }
-    return diskCache;
-  }
-
-
   public File writeCoverageDataToFile()
           throws WcsException
   {
-    File ncFile = getDiskCache().getCacheFile( this.getDataset().getDatasetPath() + "-" + coverageId + ".nc" );
-
-    //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
-
-    NetcdfCFWriter writer = new NetcdfCFWriter();
-    /* try
-    {
-      this.coverage.getCoordinateSystem().getVerticalAxis().isNumeric();
-      writer.makeFile( ncFile.getPath(), this.getDataset().getDataset(),
-                       Collections.singletonList( coverageId ),
-                       this.bboxLatLonRect,
-                       this.rangeSetAxisValueRange,
-                       this.timeRange,
-                       true, 1, 1, 1 );
-    }
-    catch ( InvalidRangeException e )
-    {
-      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + coverageId + ">: " + e.getMessage() );
-      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage <" + coverageId + ">." );
-    }
-    catch ( IOException e )
-    {
-      log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + coverageId + ">: " + e.getMessage() );
-      throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage <" + coverageId + ">." );
-    } */
-    return ncFile;
-
+    return this.coverage.writeCoverageDataToFile( this.bboxLatLonRect,
+                                                  this.rangeSetAxisValueRange,
+                                                  this.timeRange);
   }
 
-  private LatLonRect parseBoundingBox( String bbox, LatLonRect covLatLonRect)
+  private LatLonRect parseBoundingBox( String bbox, GridCoordSystem gcs)
           throws WcsException
   {
     if ( bbox == null || bbox.equals( "") )
       return null;
-    
+
     String[] bboxSplit = bbox.split( ",");
     if ( bboxSplit.length != 4)
     {
@@ -169,16 +117,26 @@ public class GetCoverage extends WcsRequest
     double maxx = Double.parseDouble( bboxSplit[2] );
     double maxy = Double.parseDouble( bboxSplit[3] );
 
+    boolean includesNorthPole = false;
+    int[] resultNP = new int[2];
+    resultNP = gcs.findXYindexFromLatLon( 90.0, 0, null );
+    if ( resultNP[0] == -1 || resultNP[1] == -1 ) includesNorthPole = true;
+    boolean includesSouthPole = false;
+    int[] resultSP = new int[2];
+    resultSP = gcs.findXYindexFromLatLon( -90.0, 0, null );
+    if ( resultSP[0] == -1 || resultSP[1] == -1 ) includesSouthPole = true;
+
+
     LatLonPointImpl minll = new LatLonPointImpl( miny, minx );
     LatLonPointImpl maxll = new LatLonPointImpl( maxy, maxx );
 
     LatLonRect bboxLatLonRect = new LatLonRect( minll, maxll );
 
-    if ( ! bboxLatLonRect.containedIn( covLatLonRect))
-    {
-      log.error( "parseBoundingBox(): BBOX <" + bbox + "> not contained in coverage BBOX <"+ covLatLonRect.toString2()+">.");
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX <" + bbox + "> not contained in coverage.");
-    }
+//    if ( ! bboxLatLonRect.containedIn( covLatLonRect))
+//    {
+//      log.error( "parseBoundingBox(): BBOX <" + bbox + "> not contained in coverage BBOX <"+ covLatLonRect.toString2()+">.");
+//      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX <" + bbox + "> not contained in coverage.");
+//    }
 
     return bboxLatLonRect;
   }
@@ -229,13 +187,13 @@ public class GetCoverage extends WcsRequest
     return dateRange;
   }
 
-  private Range parseRangeSetAxisValues( String rangeSetAxisSelectionString)
+  private WcsCoverage.VerticalRange parseRangeSetAxisValues( String rangeSetAxisSelectionString)
           throws WcsException
   {
     if ( rangeSetAxisSelectionString == null || rangeSetAxisSelectionString.equals( "" ) )
       return null;
 
-    Range range;
+    WcsCoverage.VerticalRange range;
 
     if ( rangeSetAxisSelectionString.indexOf( "," ) != -1 )
     {
@@ -267,7 +225,7 @@ public class GetCoverage extends WcsRequest
         log.error( "parseRangeSetAxisValues(): Vertical range must be \"min/max\" <" + rangeSetAxisSelectionString + ">." );
         throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(), "Vertical range must be \"min/max\"." );
       }
-      range = coverage.getRangeSetAxisRange( minValue, maxValue );
+      range = new WcsCoverage.VerticalRange( minValue, maxValue, 1);
     }
     else
     {
@@ -289,7 +247,7 @@ public class GetCoverage extends WcsRequest
           log.error( "parseRangeSetAxisValues(): Failed to parse Vertical value <" + rangeSetAxisSelectionString + ">: " + e.getMessage() );
           throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(), "Failed to parse Vertical value." );
         }
-        range = coverage.getRangeSetAxisRange( value, value );
+        range = new WcsCoverage.VerticalRange( value, value, 1 );
       }
     }
 
@@ -301,4 +259,5 @@ public class GetCoverage extends WcsRequest
 
     return range;
   }
+
 }

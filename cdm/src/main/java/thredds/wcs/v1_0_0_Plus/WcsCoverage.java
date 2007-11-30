@@ -2,14 +2,21 @@ package thredds.wcs.v1_0_0_Plus;
 
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
 
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
+
+import thredds.datatype.DateRange;
 
 /**
  * _more_
@@ -24,6 +31,7 @@ public class WcsCoverage
 
   // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
   private GridDatatype coverage;
+  private WcsDataset dataset;
 
   private GridCoordSystem coordSys;
 
@@ -35,8 +43,15 @@ public class WcsCoverage
   private String rangeSetAxisName;
   private List<String> rangeSetAxisValues;
 
-  public WcsCoverage( GridDatatype coverage)
+  public WcsCoverage( GridDatatype coverage, WcsDataset dataset)
   {
+    this.dataset = dataset;
+    if ( this.dataset == null )
+    {
+      log.error( "WcsCoverage(): non-null dataset required." );
+      throw new IllegalArgumentException( "Non-null dataset required." );
+    }
+
     this.coverage = coverage;
     if ( this.coverage == null )
     {
@@ -116,4 +131,88 @@ public class WcsCoverage
     else
       return null;
   }
+
+  static private DiskCache2 diskCache = null;
+  static public void setDiskCache( DiskCache2 _diskCache ) { diskCache = _diskCache; }
+  static private DiskCache2 getDiskCache()
+  {
+    if ( diskCache == null )
+    {
+      log.error( "getDiskCache(): Disk cache has not been set." );
+      throw new IllegalStateException( "Disk cache must be set before calling GetCoverage.getDiskCache()." );
+    }
+    return diskCache;
+  }
+
+  public File writeCoverageDataToFile( LatLonRect bboxLatLonRect, VerticalRange verticalRange, DateRange timeRange)
+          throws WcsException
+  {
+    File ncFile = getDiskCache().getCacheFile( this.dataset.getDatasetPath() + "-" + this.coverage.getName() + ".nc" );
+
+    //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
+
+    NetcdfCFWriter writer = new NetcdfCFWriter();
+    try
+    {
+      this.coverage.getCoordinateSystem().getVerticalAxis().isNumeric();
+      writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
+                       Collections.singletonList( this.coverage.getName() ),
+                       bboxLatLonRect, 1,
+                       verticalRange.getRange( this.coordSys),
+                       timeRange, 1,
+                       true );
+    }
+    catch ( InvalidRangeException e )
+    {
+      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
+      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage <" + this.coverage.getName() + ">." );
+    }
+    catch ( IOException e )
+    {
+      log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
+      throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage <" + this.coverage.getName() + ">." );
+    }
+    return ncFile;
+
+  }
+
+  public static class VerticalRange
+  {
+    private double min, max;
+    private int stride;
+
+    public VerticalRange( double minimum, double maximum, int stride )
+    {
+      if ( minimum > maximum )
+        throw new IllegalArgumentException( "VerticalRange minimum <" + minimum + "> greater than maximum <" + maximum + ">." );
+      if ( stride < 1 )
+        throw new IllegalArgumentException( "VerticalRange stride <" + stride + "> less than one (1 means all point)." );
+      this.min = minimum;
+      this.max = maximum;
+      this.stride = stride;
+    }
+
+    public double getMinimum() { return min; }
+    public double getMaximum() { return max; }
+    public int getStride() { return stride; }
+
+    public Range getRange( GridCoordSystem gcs )
+    {
+      if ( gcs == null )
+        throw new IllegalArgumentException( "GridCoordSystem must be non-null." );
+      int minIndex = gcs.getVerticalAxis().findCoordElement( min );
+      int maxIndex = gcs.getVerticalAxis().findCoordElement( max );
+      if ( minIndex == -1 || maxIndex == -1 )
+        return null;
+      try
+      {
+        return new Range( minIndex, maxIndex, stride );
+      }
+      catch ( InvalidRangeException e )
+      {
+        return null;
+      }
+    }
+  }
+
 }

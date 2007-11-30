@@ -39,7 +39,7 @@ public class WcsDataset
       GridCoordSystem gcs = curGridDatatype.getCoordinateSystem();
       if ( !gcs.isRegularSpatial() )
         continue;
-      this.availableCoverages.put( curGridDatatype.getName(), new WcsCoverage( curGridDatatype) );
+      this.availableCoverages.put( curGridDatatype.getName(), new WcsCoverage( curGridDatatype, this) );
     }
     // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
     // This is WCS 1.1 style coverage for each coordinate system

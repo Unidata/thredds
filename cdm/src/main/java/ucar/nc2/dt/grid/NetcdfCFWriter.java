@@ -67,9 +67,19 @@ public class NetcdfCFWriter {
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
                        LatLonRect llbb, DateRange range,
                        boolean addLatLon,
-                       int horizStride, int stride_z, int stride_time) throws IOException, InvalidRangeException {
+                       int horizStride, int stride_z, int stride_time)
+          throws IOException, InvalidRangeException
+  {
+    makeFile( location, gds, gridList, llbb, horizStride, null, range, stride_time, addLatLon);
+  }
 
-
+  public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
+                       LatLonRect llbb, int horizStride,
+                       Range zRange,
+                       DateRange range, int stride_time,
+                       boolean addLatLon )
+          throws IOException, InvalidRangeException
+  {
     FileWriter writer = new FileWriter(location, false);
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
 
@@ -105,8 +115,8 @@ public class NetcdfCFWriter {
         timeRange = new Range(startIndex, endIndex);
       }
 
-      if ((llbb != null) || (null != timeRange) || (horizStride > 1)) {
-        grid = grid.makeSubset(timeRange, null, llbb, 1, horizStride, horizStride);
+      if ( ( null != timeRange ) || (zRange != null) || (llbb != null) || (horizStride > 1)) {
+        grid = grid.makeSubset(timeRange, zRange, llbb, 1, horizStride, horizStride);
       }
 
       Variable gridV = (Variable) grid.getVariable();

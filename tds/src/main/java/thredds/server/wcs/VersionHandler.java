@@ -1,5 +1,7 @@
 package thredds.server.wcs;
 
+import ucar.nc2.util.DiskCache2;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +17,9 @@ import java.io.IOException;
 public interface VersionHandler
 {
   public Version getVersion();
-  
+
+  public VersionHandler setDiskCache( DiskCache2 diskCache );
+
   public void handleKVP( HttpServlet servlet,
                          HttpServletRequest req,
                          HttpServletResponse res )

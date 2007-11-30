@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import java.io.*;
 
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.util.DiskCache2;
 
 /**
  * Servlet handles serving data via WCS 1.0.
@@ -49,10 +50,14 @@ public class WCS_1_0_0 implements VersionHandler
     return ds;
   }
 
-  public Version getVersion()
+  public Version getVersion() { return this.version; }
+
+  public VersionHandler setDiskCache( DiskCache2 diskCache )
   {
-    return this.version;  
+    WcsDataset.setDiskCache( diskCache );
+    return this;
   }
+
 
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException

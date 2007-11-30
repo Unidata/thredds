@@ -48,14 +48,12 @@ public class WCSServlet extends AbstractServlet {
 
     // LOOK: what happens if we are still downloading when the disk scour starts?
     diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
-    WcsDataset.setDiskCache(diskCache);
-    GetCoverage.setDiskCache(diskCache);
 
     // Make sure to add these in increasing order!
     versionHandlers = new ArrayList<VersionHandler>();
-    versionHandlers.add( new WCS_1_0_0());
-    versionHandlers.add( new WcsHandler());
-    versionHandlers.add( new WCS_1_1_0());
+    versionHandlers.add( new WCS_1_0_0().setDiskCache( diskCache ));
+    versionHandlers.add( new WcsHandler().setDiskCache( diskCache ) );
+    versionHandlers.add( new WCS_1_1_0().setDiskCache( diskCache ));
     for ( VersionHandler vh: versionHandlers)
     {
       supportedVersionsString = (supportedVersionsString == null ? "" : supportedVersionsString + ",") + vh.getVersion().getVersionString();

@@ -16,6 +16,8 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
+import ucar.nc2.util.DiskCache2;
+
 /**
  * _more_
  *
@@ -37,9 +39,12 @@ public class WCS_1_1_0 implements VersionHandler
     this.version = new Version( "1.1.0" );
   }
 
-  public Version getVersion()
+  public Version getVersion() { return this.version; }
+
+  public VersionHandler setDiskCache( DiskCache2 diskCache )
   {
-    return this.version;  
+    GetCoverage.setDiskCache( diskCache );
+    return this;
   }
 
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res )
