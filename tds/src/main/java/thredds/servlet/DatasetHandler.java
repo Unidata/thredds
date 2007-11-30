@@ -59,7 +59,7 @@ public class DatasetHandler {
   static private HashMap<String, String> resourceControlHash = new HashMap<String, String>(); // path, restrictAccess string for datasets
   static private volatile PathMatcher resourceControlMatcher = new PathMatcher(); // path, restrictAccess string for datasetScan
   static private boolean hasResourceControl = false;
-  static private boolean debugResourceControl = true;
+  static private boolean debugResourceControl = false;
 
   static void reinit() {
     ncmlDatasetHash = new HashMap<String, InvDatasetImpl>();

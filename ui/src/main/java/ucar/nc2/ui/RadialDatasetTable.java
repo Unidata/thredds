@@ -21,17 +21,22 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.RadialDatasetSweep;
+import ucar.nc2.dt.image.ImageArrayAdapter;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import thredds.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
+import java.io.PrintStream;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -68,15 +73,15 @@ public class RadialDatasetTable extends JPanel {
 
     thredds.ui.PopupMenu csPopup = new thredds.ui.PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        VariableSimpleIF v = radialDataset.getDataVariable( vb.getName());
-        infoTA.clear();
-        infoTA.appendLine( v.toString());
-        infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
-      }
-    });
+       public void actionPerformed(ActionEvent e) {
+         VariableBean vb = (VariableBean) varTable.getSelectedBean();
+         VariableSimpleIF v = radialDataset.getDataVariable( vb.getName());
+         infoTA.clear();
+         infoTA.appendLine( v.toString());
+         infoTA.gotoTop();
+         infoWindow.showIfNotIconified();
+       }
+     });
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -85,6 +90,12 @@ public class RadialDatasetTable extends JPanel {
 
     sweepTable = new BeanTableSorted(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
 
+    thredds.ui.PopupMenu sweepPopup = new thredds.ui.PopupMenu(sweepTable.getJTable(), "Options");
+    sweepPopup.addAction("Show Image", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         showImage(  (SweepBean) sweepTable.getSelectedBean());
+       }
+     });
 
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, varTable, sweepTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
@@ -100,6 +111,11 @@ public class RadialDatasetTable extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
     if (sweepTable != null) sweepTable.saveState(false);
+  }
+
+  public void clear() {
+    varTable.setBeans( new ArrayList());
+    sweepTable.setBeans( new ArrayList());
   }
 
   public void setDataset(RadialDatasetSweep rds) {
@@ -233,6 +249,37 @@ public class RadialDatasetTable extends JPanel {
 
     public Date getEndingTime() {
       return sweep.getEndingTime();
+    }
+  }
+
+  // show image
+  private static final String ImageViewer_WindowSize = "ImageViewer_WindowSize";
+  private IndependentWindow imageWindow = null;
+  private ImageViewPanel imageView = null;
+
+  private void showImage( SweepBean bean) {
+    if (bean == null) return;
+
+    if (imageWindow == null) {
+        imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("ImageData"));
+        imageView = new ImageViewPanel( null);
+        imageWindow.setComponent( new JScrollPane(imageView));
+        //imageWindow.setComponent( imageView);
+        Rectangle b = (Rectangle) prefs.getBean(ImageViewer_WindowSize, new Rectangle(99, 33, 700, 900));
+        //System.out.println("bounds in = "+b);
+        imageWindow.setBounds( b);
+      }
+
+    float[] data;
+    try {
+      data = bean.sweep.readData();
+      int[] shape = new int[] {bean.getNumRadial(), bean.getNumGates()};
+      Array arrData = Array.factory( DataType.FLOAT.getPrimitiveClassType(), shape, data);
+
+      imageView.setImage( ImageArrayAdapter.makeGrayscaleImage(arrData));
+      imageWindow.show();
+
+    } catch (Exception e) {
     }
 
   }

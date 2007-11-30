@@ -20,49 +20,50 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.dt.*;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTableSorted;
+import ucar.nc2.dt.Station;
+import ucar.nc2.dt.StationImpl;
+import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ui.point.StationRegionDateChooser;
-
-import ucar.util.prefs.*;
-import ucar.util.prefs.ui.*;
-import ucar.unidata.geoloc.LatLonRect;
-import thredds.ui.*;
-import thredds.datatype.DateRange;
-
-import java.awt.BorderLayout;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.io.*;
-import java.util.*;
-import java.beans.PropertyChangeListener;
+import ucar.nc2.thredds.DqcRadarDatasetCollection;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
+
+import thredds.ui.IndependentDialog;
+import thredds.ui.TextHistoryPane;
+import thredds.datatype.DateRange;
+
+import java.beans.PropertyChangeListener;
+import java.awt.*;
+import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.io.IOException;
 
 /**
- * A Swing widget to view the contents of a ucar.nc2.dt.StationObsDataset or PointObsDataset.
- *
- * If its a StationObsDataset, the available Stations are shown in a BeanTable.
- * The obs are shown in a StructureTabel.
+ * A Swing widget to view the contents of a ucar.nc2.dt.StationRadarCollection
  *
  * @author caron
  */
 
-public class StationObsViewer extends JPanel {
+public class StationRadialViewer extends JPanel {
   private PreferencesExt prefs;
 
-  private StationObsDataset sds;
+  private ucar.nc2.thredds.DqcRadarDatasetCollection sds;
 
   private StationRegionDateChooser chooser;
   private BeanTableSorted stnTable;
-  private StructureTable obsTable;
+  private RadialDatasetTable rdTable;
   private JSplitPane splitH = null, splitV = null;
   private IndependentDialog infoWindow;
 
   private boolean eventsOK = true;
   private boolean debugStationRegionSelect = false, debugStationDatsets = false, debugQuery = false;
 
-  public StationObsViewer(PreferencesExt prefs) {
+  public StationRadialViewer(PreferencesExt prefs) {
     this.prefs = prefs;
 
     chooser = new StationRegionDateChooser();
@@ -78,72 +79,6 @@ public class StationObsViewer extends JPanel {
       }
     });
 
-    // do the query
-    AbstractAction queryAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        if (sds == null) return;
-
-        // is the date window showing ?
-        DateRange dateRange = chooser.getDateRange();
-        boolean useDate = (null != dateRange);
-        if (!useDate) return;
-
-        Date startDate = dateRange.getStart().getDate();
-        Date endDate = dateRange.getEnd().getDate();
-        if (debugQuery) System.out.println("date range="+dateRange);
-
-        // is the geoRegion mode true ?
-        LatLonRect geoRegion = null;
-        Station selectedStation = null;
-
-        boolean useRegion = chooser.getGeoSelectionMode();
-        if (useRegion) {
-          geoRegion = chooser.getGeoSelectionLL();
-          if (debugQuery) System.out.println("geoRegion="+geoRegion);
-        } else {
-          selectedStation = chooser.getSelectedStation();
-        }
-
-        if ((selectedStation == null) && !useRegion) return;
-
-        // fetch the requested dobs
-        try {
-          List obsList;
-          if (useRegion)
-            obsList = useDate ? sds.getData(geoRegion, startDate, endDate) : sds.getData(geoRegion);
-          else
-            obsList = useDate ? sds.getData(selectedStation, startDate, endDate) : sds.getData(selectedStation);
-
-          if (debugQuery)System.out.println("obsList="+obsList.size());
-          setObservations( obsList);
-
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-      }
-    };
-    BAMutil.setActionProperties( queryAction, "query", "query for data", false, 'Q', -1);
-    chooser.addToolbarAction( queryAction);
-
-    // get all data
-    AbstractAction getallAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        if (sds == null) return;
-        try {
-          List obsList = sds.getData();
-          if (obsList != null)
-            setObservations( obsList);
-          else
-            JOptionPane.showMessageDialog(StationObsViewer.this, "GetAllData not implemented");
-
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-      }
-    };
-    BAMutil.setActionProperties( getallAction, "GetAll", "get ALL data", false, 'A', -1);
-    chooser.addToolbarAction( getallAction);
-
     // station table
     stnTable = new BeanTableSorted(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
     stnTable.addListSelectionListener(new ListSelectionListener() {
@@ -155,8 +90,8 @@ public class StationObsViewer extends JPanel {
       }
     });
 
-    // the obs table
-    obsTable = new StructureTable( (PreferencesExt) prefs.node("ObsBean"));
+    // the RadialDatasetTable
+    rdTable = new RadialDatasetTable((PreferencesExt) prefs.node("RadialDatasetTable"));
 
     // the info window
     TextHistoryPane infoTA = new TextHistoryPane();
@@ -167,14 +102,14 @@ public class StationObsViewer extends JPanel {
     splitH = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, stnTable, chooser);
     splitH.setDividerLocation(prefs.getInt("splitPosH", 400));
 
-    splitV = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitH, obsTable);
+    splitV = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitH, rdTable);
     splitV.setDividerLocation(prefs.getInt("splitPos", 500));
 
     setLayout(new BorderLayout());
     add(splitV, BorderLayout.CENTER);
   }
 
-  public void setDataset(StationObsDataset dataset) {
+  public void setDataset(DqcRadarDatasetCollection dataset) {
     this.sds = dataset;
 
     if (debugStationDatsets)
@@ -199,31 +134,16 @@ public class StationObsViewer extends JPanel {
 
     stnTable.setBeans( stationBeans);
     chooser.setStations( stationBeans);
-    obsTable.clear();
+    rdTable.clear();
   }
 
   public void setStation(StationBean sb) {
     try {
-      List obsList = sds.getData(sb.s);
-      stnTable.getJTable().repaint();
-      setObservations( obsList);
-
+      RadialDatasetSweep rsds = sds.getRadarDataset(sb.getName(), new Date()); // LOOK kludge - should show all possibilities
+      rdTable.setDataset( rsds);
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  /**
-   * Set the list of Obs to show in the obs table
-   * @param obsList list of type PointObsDatatype
-   * @throws java.io.IOException on i/o error
-   */
-  public void setObservations( List obsList) throws IOException {
-    if (obsList.size() == 0) {
-      obsTable.clear();
-      return;
-    }
-    obsTable.setPointObsData( obsList);
   }
 
   public PreferencesExt getPrefs() { return prefs; }
@@ -233,7 +153,7 @@ public class StationObsViewer extends JPanel {
    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
    prefs.putInt("splitPos", splitV.getDividerLocation());
    prefs.putInt("splitPosH", splitH.getDividerLocation());
-   obsTable.saveState();
+   //rdTable.saveState();
   }
 
   public class StationBean implements Station {
@@ -270,7 +190,6 @@ public class StationObsViewer extends JPanel {
     public double getAltitude() {
       return s.getAltitude();
     }
-
 
     public int compareTo(Object o) {
       Station so = (Station) o;

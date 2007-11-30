@@ -128,7 +128,7 @@ public class GetCoverage extends WcsRequest
     //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
 
     NetcdfCFWriter writer = new NetcdfCFWriter();
-    try
+    /* try
     {
       this.coverage.getCoordinateSystem().getVerticalAxis().isNumeric();
       writer.makeFile( ncFile.getPath(), this.getDataset().getDataset(),
@@ -147,7 +147,7 @@ public class GetCoverage extends WcsRequest
     {
       log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + coverageId + ">: " + e.getMessage() );
       throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage <" + coverageId + ">." );
-    }
+    } */
     return ncFile;
 
   }

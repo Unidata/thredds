@@ -24,6 +24,7 @@ import ucar.unidata.util.Format;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
+import ucar.nc2.util.Misc;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
@@ -65,6 +66,9 @@ public class TestStaxReading {
     System.out.println("Read metar XML; # metars= " + nmetars);
     double took =  .001 * (System.currentTimeMillis() - start);
     System.out.println(" that took = " + took + "sec; "+ Format.d(nmetars/took,0)+" metars/sec");
+    
+    for (Field f : fields.values())
+      System.out.println(" "+f.name+ " = "+f.sum);
   }
 
   void readElement() throws XMLStreamException {
@@ -156,21 +160,26 @@ public class TestStaxReading {
 
     void sum( StructureData sdata, StructureMembers.Member m) {
       if (m.getDataType() == DataType.DOUBLE)
-        sum += sdata.getScalarDouble(m);
+        sum(sdata.getScalarDouble(m));
       else if (m.getDataType() == DataType.FLOAT)
-        sum += sdata.getScalarFloat(m);
+        sum(sdata.getScalarFloat(m));
       else if (m.getDataType() == DataType.INT)
-        sum += sdata.getScalarInt(m);
+        sum(sdata.getScalarInt(m));
     }
 
     void sum(String text) {
       if (isText) return;
       try {
-        sum += Double.parseDouble(text);
+        sum( Double.parseDouble(text));
       } catch (NumberFormatException e) {
         System.out.println(name+" is text");
         isText = true;
       }
+    }
+
+    void sum(double d) {
+      if (!Misc.closeEnough(d, -99999.0))
+        sum += d; // LOOK kludge for missing data
     }
   }
 
@@ -203,6 +212,9 @@ public class TestStaxReading {
     double took = .001 * (System.currentTimeMillis() - start);
     System.out.println(" that took = " + took + " sec; "+ Format.d(count/took,0)+" metars/sec");
 
+    for (Field f : fields.values())
+      System.out.println(" "+f.name+ " = "+f.sum);
+            
     ncfile.close();
   }
 
@@ -213,11 +225,11 @@ public class TestStaxReading {
     //myFactory.setXMLResolver(myXMLResolver);
     myFactory.setProperty("javax.xml.stream.isCoalescing", Boolean.TRUE);
 
-    String filename = "C:/TEMP/metars1day.xml";
-    new TestStaxReading(myFactory, filename);
+    new TestStaxReading(myFactory, "C:/TEMP/metars/save/xmlC.xml");
 
-    String nc_filename = "C:/TEMP/metars1day.nc";
-    readFromNetcdf(nc_filename);
+    readFromNetcdf("C:/TEMP/metars/save/netcdfC.nc");
+
+    readFromNetcdf("C:/TEMP/metars/save/netcdfStreamC.nc");
   }
 
 }

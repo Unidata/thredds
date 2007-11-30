@@ -95,10 +95,8 @@ public class H5iosp extends AbstractIOServiceProvider {
     headerParser = new H5header(myRaf, ncfile, this);
     headerParser.read();
 
-    Group root = ncfile.getRootGroup();
-    Group eos = root.findGroup("HDFEOS_INFORMATION");
-    if (null != eos)
-      H5eos.parse(ncfile);
+    // check if its an HDF5-EOS file
+    H5eos.parse(ncfile);
 
     ncfile.finish();
   }

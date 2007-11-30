@@ -40,8 +40,8 @@ public class LambertAzimuthal extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    double[] pars = readAttributeDouble2(ctv.findAttribute("standard_parallel"));
-    if (pars == null) return null;
+    //double[] pars = readAttributeDouble2(ctv.findAttribute("standard_parallel"));
+    //if (pars == null) return null;
 
     double lon0 = readAttributeDouble(ctv, "longitude_of_projection_origin");
     double lat0 = readAttributeDouble(ctv, "latitude_of_projection_origin");

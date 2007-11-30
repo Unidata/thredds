@@ -181,7 +181,6 @@
     <init-param>
       <param-name>Authorizer</param-name>
       <param-value>thredds.servlet.restrict.TomcatAuthorizer</param-value>
-      <!-- param-value>thredds.servlet.restrict.CAMSAuthorizer</param-value-->
     </init-param>
 
     <init-param>
@@ -195,7 +194,7 @@
     </init-param>
 
     <load-on-startup>2</load-on-startup>
-  </servlet> 
+  </servlet>
 
   <!-- Restricted Access (using CAS)
   <servlet>

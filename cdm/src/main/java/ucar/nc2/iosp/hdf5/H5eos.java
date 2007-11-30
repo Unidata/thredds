@@ -33,6 +33,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 /**
+ * Parse structural metadata from HDF-EOS.
+ * This allows us to use shared dimensions.
  * @author caron
  * @since Jul 23, 2007
  */
@@ -41,23 +43,32 @@ public class H5eos {
   static void parse(NetcdfFile ncfile) throws IOException {
     Group rootg = ncfile.getRootGroup();
 
-    Group eosInfo = rootg.findGroup("HDFEOS_INFORMATION");
+    Group eosInfo = rootg.findGroup("HDFEOS INFORMATION");
+    if (eosInfo == null) return;
+
     Variable structMetadata = eosInfo.findVariable("StructMetadata.0");
     if (structMetadata == null) return;
 
-    // read entire array
+    // read and parse the ODL
     Array A = structMetadata.read();
-
     ArrayChar ca = (ArrayChar) A;
     String sval = ca.getString();
 
     ODLparser2 parser = new ODLparser2();
     Element root = parser.parseFromString(sval);
 
-    // LOOK could use XPath
+    // now we have the ODL in JDOM elements
+
+    // LOOK this assumes a swath
     Element swathStructure = root.getChild("SwathStructure");
+    if (swathStructure == null) return;
+
     Element swath1 = swathStructure.getChild("SWATH_1");
-    String swathName = swath1.getChild("SwathName").getText();
+    if (swath1 == null) return;
+
+    Element swathNameElem = swath1.getChild("SwathName");
+    if (swathNameElem == null) return;
+    String swathName = swathNameElem.getText();
 
     // global Dimensions
     Element d = swath1.getChild("Dimension");
@@ -70,46 +81,55 @@ public class H5eos {
       rootg.addDimension(dim);
     }
 
-    Group eos = rootg.findGroup("HDFEOS").findGroup("SWATHS");
+    Group hdfeosG = rootg.findGroup("HDFEOS");
+    if (hdfeosG == null) return;
+    Group eosG = hdfeosG.findGroup("SWATHS");
+    if (eosG == null) return;
+    Group swathNameG = eosG.findGroup(swathName);
+    if (swathNameG == null) return;
 
         // Geolocation Variables
-    Group gloc = eos.findGroup(swathName).findGroup("Geolocation_Fields");
+    Group geoFieldsG = swathNameG.findGroup("Geolocation Fields");
+    if (geoFieldsG != null) {
 
-    Element floc = swath1.getChild("GeoField");
-    List<Element> varsLoc = (List<Element>) floc.getChildren();
-    for (Element elem : varsLoc) {
-      String varname = elem.getChild("GeoFieldName").getText();
-      Variable v = gloc.findVariable( varname);
-      assert v != null : varname;
+      Element floc = swath1.getChild("GeoField");
+      List<Element> varsLoc = (List<Element>) floc.getChildren();
+      for (Element elem : varsLoc) {
+        String varname = elem.getChild("GeoFieldName").getText();
+        Variable v = geoFieldsG.findVariable( varname);
+        assert v != null : varname;
 
-      StringBuffer sbuff = new StringBuffer();
-      Element dimList = elem.getChild("DimList");
-      List<Element> values = (List<Element>) dimList.getChildren("value");
-      for (Element value : values) {
-        sbuff.append( value.getText());
-        sbuff.append( " ");
+        StringBuffer sbuff = new StringBuffer();
+        Element dimList = elem.getChild("DimList");
+        List<Element> values = (List<Element>) dimList.getChildren("value");
+        for (Element value : values) {
+          sbuff.append( value.getText());
+          sbuff.append( " ");
+        }
+        v.setDimensions( sbuff.toString()); // livin dangerously
       }
-      v.setDimensions( sbuff.toString()); // livin dangerously
     }
 
-    // Variable Dimensions
-    Group g = eos.findGroup(swathName).findGroup("Data_Fields");
+    // Data Variables
+    Group dataG = swathNameG.findGroup("Data Fields");
+    if (dataG != null) {
 
-    Element f = swath1.getChild("DataField");
-    List<Element> vars = (List<Element>) f.getChildren();
-    for (Element elem : vars) {
-      String varname = elem.getChild("DataFieldName").getText();
-      Variable v = g.findVariable( varname);
-      assert v != null : varname;
+      Element f = swath1.getChild("DataField");
+      List<Element> vars = (List<Element>) f.getChildren();
+      for (Element elem : vars) {
+        String varname = elem.getChild("DataFieldName").getText();
+        Variable v = dataG.findVariable( varname);
+        assert v != null : varname;
 
-      StringBuffer sbuff = new StringBuffer();
-      Element dimList = elem.getChild("DimList");
-      List<Element> values = (List<Element>) dimList.getChildren("value");
-      for (Element value : values) {
-        sbuff.append( value.getText());
-        sbuff.append( " ");
+        StringBuffer sbuff = new StringBuffer();
+        Element dimList = elem.getChild("DimList");
+        List<Element> values = (List<Element>) dimList.getChildren("value");
+        for (Element value : values) {
+          sbuff.append( value.getText());
+          sbuff.append( " ");
+        }
+        v.setDimensions( sbuff.toString()); // livin dangerously
       }
-      v.setDimensions( sbuff.toString()); // livin dangerously
     }
   }
 

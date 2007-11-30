@@ -32,7 +32,6 @@ import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.*;
@@ -54,7 +53,7 @@ public class StationObsCollection {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationObsCollection.class);
   static private org.slf4j.Logger cacheLogger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
 
-  private static boolean debug = true, debugDetail = true;
+  private static boolean debug = false, debugDetail = false;
   private static long timeToScan = 0;
 
   private String archiveDir, realtimeDir;
@@ -1008,7 +1007,7 @@ public class StationObsCollection {
       return new Action() {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
           writer.print( format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
-          writer.print( ": ");
+          writer.print( "= ");
           String report = sdata.getScalarString("report");
           writer.println(report);
           count++;

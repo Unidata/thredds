@@ -30,7 +30,7 @@
  <p>When opening a file, if <strong>alwaysUse</strong> is true, TDS looks only in the cache directory for the temporary file. If <strong>alwaysUse</strong> is false, TDS will first look for the temporary file in the same directory as the original file, and if not found, then will look in the cache.</p>
  <p>Every <strong>scour</strong> amount of time, the largest items in the cache will be deleted, until the directory has less than <strong>maxSize</strong> bytes. Note that the directory will sometimes exceed <strong>maxSize</strong>, and will only be knocked back to <strong>maxSize</strong> when the scour thread runs.</p>
  <p>If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/</strong> directory. </p>
- <h3>THREDDS File Handle Caching </h3>
+ <h3>THREDDS File Handle<a name="FileHandles"></a> Caching </h3>
  <pre>  &lt;<strong>NetcdfFileCache</strong>&gt;
     &lt;<strong>minFiles</strong>&gt;200&lt;/minFiles&gt;
     &lt;<strong>maxFiles</strong>&gt;400&lt;/maxFiles&gt;

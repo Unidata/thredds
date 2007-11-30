@@ -20,15 +20,30 @@
  */
 package timing;
 
+import ucar.unidata.util.Format;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Stat {
+  static private HashMap<String, Stat> map = new HashMap<String, Stat>();
+  static public Stat factory(String name) {
+    Stat s = map.get(name);
+    if (s == null) {
+      s = new Stat(name, false);
+      map.put(name, s);
+    }
+    return s;
+  }
+
   private String name;
   private int n = 0;
   private double sum = 0.0;
   private double sumsq = 0.0;
   private ArrayList samples = null;
+
+
 
   public Stat() { }
 
@@ -202,6 +217,10 @@ public class Stat {
 
     if (showAll || bins[nbins-1] > 0)
       out.println("> "+intv[nbins-2]+" == "+bins[nbins-1]);
+  }
+
+  public String toString() {
+    return name +": avg= "+ Format.d(average(), 3)+" std=" +Format.d(std(), 3);
   }
 
 }

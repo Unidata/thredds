@@ -44,7 +44,7 @@ public class StationObsServlet extends AbstractServlet {
 
   private boolean allow = false;
   private StationObsCollection soc;
-  private boolean debug = true;
+  private boolean debug = false, showTime = false;
 
   // must end with "/"
   protected String getPath() {
@@ -188,15 +188,20 @@ public class StationObsServlet extends AbstractServlet {
       ServletUtil.returnFile(this, req, res, file, QueryParams.NETCDF);
       file.delete();
 
-      long took = System.currentTimeMillis() - start;
-      System.out.println("\ntotal response took = " + took + " msecs");
+      if (showTime) {
+        long took = System.currentTimeMillis() - start;
+        System.out.println("\ntotal response took = " + took + " msecs");
+      }
       return;
     }
 
     soc.write(qp, res);
+    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
 
-    long took = System.currentTimeMillis() - start;
-    System.out.println("\ntotal response took = " + took + " msecs");
+    if (showTime) {
+      long took = System.currentTimeMillis() - start;
+      System.out.println("\ntotal response took = " + took + " msecs");
+    }
   }
 
   private void showForm(HttpServletResponse res, boolean wantXml, boolean wantStationXml) throws IOException {

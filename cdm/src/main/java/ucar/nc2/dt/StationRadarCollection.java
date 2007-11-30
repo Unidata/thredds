@@ -40,7 +40,7 @@ public interface StationRadarCollection {
    * @return List of Station
    * @throws java.io.IOException on io error
    */
-  public List getStations() throws IOException;
+  public List<Station> getStations() throws IOException;
 
   /**
    * Get all the Stations within a bounding box, allow user to cancel.
@@ -50,7 +50,7 @@ public interface StationRadarCollection {
    * @return List of Station
    * @throws java.io.IOException on io error
    */
-  public List getStations(ucar.unidata.geoloc.LatLonRect boundingBox, ucar.nc2.util.CancelTask cancel) throws IOException;
+  public List<Station> getStations(ucar.unidata.geoloc.LatLonRect boundingBox, ucar.nc2.util.CancelTask cancel) throws IOException;
 
   /** Find a Station by name */
   //public Station getRadarStation( String name);

@@ -40,6 +40,9 @@ public final class DataType {
     public final static DataType TRAJECTORY = new DataType("Trajectory");
     public final static DataType OTHER_UNKNOWN = new DataType("other/unknown");
 
+  // experimental
+    public final static DataType StationRadarCollection = new DataType("StationRadarCollection");
+
     private String name;
     public DataType(String s) {
       this.name = s;
