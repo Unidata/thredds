@@ -5,8 +5,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.util.DiskCache2;
-import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.*;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
 
@@ -34,10 +33,11 @@ public class WcsCoverage
   private WcsDataset dataset;
 
   private GridCoordSystem coordSys;
-
   private String nativeCRS;
 
   private String defaultRequestCrs;
+  private LatLonRect latLonBoundingBox; // Estimate when native CRS is  not lat/lon.
+
   private String allowedCoverageFormat;
 
   private String rangeSetAxisName;
@@ -59,10 +59,11 @@ public class WcsCoverage
       throw new IllegalArgumentException( "Non-null coverage required." );
     }
     this.coordSys = coverage.getCoordinateSystem();
-
     this.nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( coordSys.getProjection() );
 
     this.defaultRequestCrs = "OGC:CRS84";
+    this.latLonBoundingBox = getLatLonBoundingBox( this.coordSys );
+
     this.allowedCoverageFormat = "application/x-netcdf";
 
     this.rangeSetAxisName = "Vertical";
@@ -213,6 +214,62 @@ public class WcsCoverage
         return null;
       }
     }
+  }
+
+  private LatLonRect getLatLonBoundingBox( GridCoordSystem gcs)
+  {
+
+    if ( latLonBoundingBox == null )
+    {
+
+      if ( gcs.isLatLon() )
+      {
+        double startLat = gcs.getYHorizAxis().getMinValue();
+        double startLon = gcs.getXHorizAxis().getMinValue();
+
+        double deltaLat = gcs.getYHorizAxis().getMaxValue() - startLat;
+        double deltaLon = gcs.getXHorizAxis().getMaxValue() - startLon;
+
+        LatLonPoint llpt = new LatLonPointImpl( startLat, startLon );
+        latLonBoundingBox = new LatLonRect( llpt, deltaLat, deltaLon );
+      }
+      else
+      {
+        Projection dataProjection = gcs.getProjection();
+        ProjectionRect bb = gcs.getBoundingBox();
+
+        // look at all 4 corners of the bounding box
+        LatLonPointImpl llLatLonPoint = (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerLeftPoint(), new LatLonPointImpl() );
+        LatLonPointImpl urLatLonPoint = (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperRightPoint(), new LatLonPointImpl() );
+        LatLonPointImpl ulLatLonPoint = (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperLeftPoint(), new LatLonPointImpl() );
+        LatLonPointImpl lrLatLonPoint = (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerRightPoint(), new LatLonPointImpl() );
+
+        // ToDo Find min/max lat/lon from all 4 points (in case data contains pole)
+        double latMin = Math.min( llLatLonPoint.getLatitude(), lrLatLonPoint.getLatitude() );
+        double latMax = Math.max( ulLatLonPoint.getLatitude(), urLatLonPoint.getLatitude() );
+
+        // longitude is a bit tricky as usual
+        double lonMin = getMinOrMaxLon( llLatLonPoint.getLongitude(), ulLatLonPoint.getLongitude(), true );
+        double lonMax = getMinOrMaxLon( lrLatLonPoint.getLongitude(), urLatLonPoint.getLongitude(), false );
+
+        llLatLonPoint.set( latMin, lonMin );
+        urLatLonPoint.set( latMax, lonMax );
+
+        latLonBoundingBox = new LatLonRect( llLatLonPoint, urLatLonPoint );
+        // System.out.println("GridCoordSys: bb= "+bb+" llbb= "+llbb);
+      }
+    }
+
+    return latLonBoundingBox;
+  }
+
+  private double getMinOrMaxLon( double lon1, double lon2, boolean wantMin )
+  {
+    double midpoint = ( lon1 + lon2 ) / 2;
+    lon1 = LatLonPointImpl.lonNormal( lon1, midpoint );
+    lon2 = LatLonPointImpl.lonNormal( lon2, midpoint );
+
+    return wantMin ? Math.min( lon1, lon2 ) : Math.max( lon1, lon2 );
   }
 
 }
