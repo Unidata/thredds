@@ -253,7 +253,7 @@ public class RadialDatasetTable extends JPanel {
   }
 
   // show image
-  private static final String ImageViewer_WindowSize = "ImageViewer_WindowSize";
+  private static final String ImageViewer_WindowSize = "RadialImageViewer_WindowSize";
   private IndependentWindow imageWindow = null;
   private ImageViewPanel imageView = null;
 

@@ -2347,8 +2347,8 @@ public class ToolsUI extends JPanel {
     }
 
     void save() {
-      super.save();
-      radialViewer.save();
+      //super.save();
+      //radialViewer.save();
     }
 
     boolean setStationRadialDataset(String location) {

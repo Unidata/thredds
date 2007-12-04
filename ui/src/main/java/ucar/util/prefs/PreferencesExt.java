@@ -210,7 +210,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
      *  "Two lists are defined to be equal if they contain the same elements in the same order."
      *
      * @param key key with which the specified value is to be associated.
-     * @param value value to be associated with the specified key.
+     * @param newValue value to be associated with the specified key.
      */
     public void putList(String key, List newValue) {
       putBeanObject(key, newValue);

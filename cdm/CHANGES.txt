@@ -14,6 +14,8 @@ Changes in version 4.0
    * Tiled aggregation
    * Existing accepts timeUnitsChange
    * Union accepts scan
+  UI
+   * XMLStore aborts rather than store bad preferences XML
  Data Model
   * Strings are Unicode. In Netcdf3/4, stored as UTF-8 encoded.
   * Allow Object names to be anything (experiment).
@@ -24,6 +26,7 @@ Changes in version 4.0
   * Writer replaces OutputStream. Default is UTF-8.
   * NetcdfFile.writeCDL(PrintWriter). strict escapes names.
  Libraries
+  * use new visad library 12/04/07
 
  Changes in version 2.2.22
  API

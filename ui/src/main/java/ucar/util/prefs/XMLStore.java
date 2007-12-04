@@ -509,6 +509,7 @@ public class XMLStore {
    * Save the current state of the Preferences tree to the given OutputStream.
    */
   public void save(OutputStream out) throws java.io.IOException {
+    outputExceptionMessage = null;
 
     // the OutputMunger strips off the XMLEncoder header
     OutputMunger bos = new OutputMunger( out);
@@ -517,8 +518,9 @@ public class XMLStore {
     XMLEncoder beanEncoder = new XMLEncoder( bos);
     beanEncoder.setExceptionListener(new ExceptionListener() {
       public void exceptionThrown(Exception exception) {
-        System.out.println("XMLStore.save() got Exception");
+        System.out.println("XMLStore.save() got Exception: abort saving the preferences!");
         exception.printStackTrace();
+        outputExceptionMessage = exception.getMessage();
       }
     });
 
@@ -532,12 +534,15 @@ public class XMLStore {
       pw.print("  <root type='user'>\n");
 
     writeXmlNode( bos, pw, rootPrefs, beanEncoder, "  ");
+    if (outputExceptionMessage != null)
+      throw new IOException(outputExceptionMessage);    
+
     pw.print("  </root>\n");
     //pw.println("</java>");
     pw.print("</preferences>\n");
     pw.flush();
   }
-
+  private String outputExceptionMessage;
 
   private void writeXmlNode( OutputMunger bos, PrintWriter out, PreferencesExt prefs, XMLEncoder beanEncoder, String m) throws IOException {
 
@@ -599,7 +604,7 @@ public class XMLStore {
             } catch (Exception e) {
               System.out.println("Exception beanEncoder: "+e);
               e.printStackTrace();
-              continue;
+              throw new IOException(e.getMessage());
             }
             beanEncoder.flush();
             bos.exitBeanStream();
@@ -619,6 +624,7 @@ public class XMLStore {
 
     } catch (java.util.prefs.BackingStoreException e) {
       e.printStackTrace();
+      throw new IOException(e.getMessage());
     }
   }
 
