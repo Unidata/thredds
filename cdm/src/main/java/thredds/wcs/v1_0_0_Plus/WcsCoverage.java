@@ -12,6 +12,7 @@ import ucar.ma2.InvalidRangeException;
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.File;
 import java.io.IOException;
 
@@ -238,38 +239,75 @@ public class WcsCoverage
         Projection dataProjection = gcs.getProjection();
         ProjectionRect bb = gcs.getBoundingBox();
 
-        // look at all 4 corners of the bounding box
-        LatLonPointImpl llLatLonPoint = (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerLeftPoint(), new LatLonPointImpl() );
-        LatLonPointImpl urLatLonPoint = (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperRightPoint(), new LatLonPointImpl() );
-        LatLonPointImpl ulLatLonPoint = (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperLeftPoint(), new LatLonPointImpl() );
-        LatLonPointImpl lrLatLonPoint = (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerRightPoint(), new LatLonPointImpl() );
+        // Find the min lat/lon point and the max lat/lon point
+        // by checking all 4 corners of the XY bounding box.
+        List<LatLonPointImpl> possibleLatLonMinMaxPoints = new ArrayList<LatLonPointImpl>();
+        possibleLatLonMinMaxPoints.add( (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerLeftPoint(), new LatLonPointImpl() ));
+        possibleLatLonMinMaxPoints.add( (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperRightPoint(), new LatLonPointImpl() ));
+        possibleLatLonMinMaxPoints.add( (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperLeftPoint(), new LatLonPointImpl() ));
+        possibleLatLonMinMaxPoints.add( (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerRightPoint(), new LatLonPointImpl() ));
 
-        // ToDo Find min/max lat/lon from all 4 points (in case data contains pole)
-        double latMin = Math.min( llLatLonPoint.getLatitude(), lrLatLonPoint.getLatitude() );
-        double latMax = Math.max( ulLatLonPoint.getLatitude(), urLatLonPoint.getLatitude() );
+        List<LatLonPointImpl> latLonMinMaxPoints = getMinandMaxLatLonPoints( possibleLatLonMinMaxPoints);
 
-        // longitude is a bit tricky as usual
-        double lonMin = getMinOrMaxLon( llLatLonPoint.getLongitude(), ulLatLonPoint.getLongitude(), true );
-        double lonMax = getMinOrMaxLon( lrLatLonPoint.getLongitude(), urLatLonPoint.getLongitude(), false );
+        boolean includesNorthPole = false;
+        int[] resultNP = new int[2];
+        resultNP = gcs.findXYindexFromLatLon( 90.0, 0, null );
+        if ( resultNP[0] == -1 || resultNP[1] == -1 ) includesNorthPole = true;
+        boolean includesSouthPole = false;
+        int[] resultSP = new int[2];
+        resultSP = gcs.findXYindexFromLatLon( -90.0, 0, null );
+        if ( resultSP[0] == -1 || resultSP[1] == -1 ) includesSouthPole = true;
 
-        llLatLonPoint.set( latMin, lonMin );
-        urLatLonPoint.set( latMax, lonMax );
-
-        latLonBoundingBox = new LatLonRect( llLatLonPoint, urLatLonPoint );
-        // System.out.println("GridCoordSys: bb= "+bb+" llbb= "+llbb);
+        if ( includesNorthPole && includesSouthPole )
+        {
+          latLonBoundingBox = new LatLonRect( new LatLonPointImpl( -90.0, -180.0),
+                                              new LatLonPointImpl( 90.0, 180.0));
+        }
+        else if ( includesNorthPole )
+        {
+          latLonBoundingBox = new LatLonRect( new LatLonPointImpl( latLonMinMaxPoints.get(0).getLatitude(), -180.0 ),
+                                              new LatLonPointImpl( 90.0, 180.0) );
+        }
+        else if ( includesSouthPole )
+        {
+          latLonBoundingBox = new LatLonRect( new LatLonPointImpl( -90.0, -180.0 ),
+                  new LatLonPointImpl( latLonMinMaxPoints.get( 1 ).getLatitude(), 180.0 ) );
+        }
+        else
+        {
+          latLonBoundingBox = new LatLonRect( latLonMinMaxPoints.get( 0 ), latLonMinMaxPoints.get( 1 ) );
+        }
       }
     }
 
     return latLonBoundingBox;
   }
 
-  private double getMinOrMaxLon( double lon1, double lon2, boolean wantMin )
+  private List<LatLonPointImpl> getMinandMaxLatLonPoints( List<LatLonPointImpl> latLonPointList )
   {
-    double midpoint = ( lon1 + lon2 ) / 2;
-    lon1 = LatLonPointImpl.lonNormal( lon1, midpoint );
-    lon2 = LatLonPointImpl.lonNormal( lon2, midpoint );
+    Iterator it = latLonPointList.iterator();
+    if ( ! it.hasNext()) return null;
+    LatLonPointImpl curLatLonPoint = (LatLonPointImpl) it.next();
+    double minLat = curLatLonPoint.getLatitude();
+    double maxLat = minLat;
+    double minLon = curLatLonPoint.getLongitude();
+    double maxLon = minLon;
 
-    return wantMin ? Math.min( lon1, lon2 ) : Math.max( lon1, lon2 );
+    for ( ; it.hasNext(); curLatLonPoint = (LatLonPointImpl) it.next() )
+    {
+      double curLat = curLatLonPoint.getLatitude();
+      double curLon = curLatLonPoint.getLongitude();
+      if ( curLat < minLat ) minLat = curLat;
+      if ( curLat > maxLat ) maxLat = curLat;
+      if ( curLon < minLon ) minLon = curLon;
+      if ( curLon > maxLon ) maxLon = curLon;
+    }
+
+    List <LatLonPointImpl> result = new ArrayList<LatLonPointImpl>();
+    result.add( new LatLonPointImpl(minLat, minLon) );
+    result.add( new LatLonPointImpl(maxLat, maxLon) );
+
+    return result;
   }
 
 }
