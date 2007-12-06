@@ -115,14 +115,16 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     private int[] shape;
     private String name;
     private String desp;
+    private List attributes;
 
-    public MyRadialVariableAdapter( String vName )
+    public MyRadialVariableAdapter( String vName, List atts )
     {
       super();
       rank = 1;
       shape= new int[] {1};
       name = vName;
       desp = "A radial variable holding a list of radial sweeps";
+      attributes = atts;
     }
     public String toString() {
     return name;
@@ -144,9 +146,16 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     public int getRank() {  return this.rank; }
     public int[] getShape() { return this.shape; }
     public List<Dimension> getDimensions() { return null; }
-    public List<Attribute> getAttributes() { return null; }
+    public List<Attribute> getAttributes() { return attributes; }
     public ucar.nc2.Attribute findAttributeIgnoreCase(String attName){
-       return null;
+        Iterator it = attributes.iterator();
+        Attribute at = null;
+        while(it.hasNext()){
+           at = (Attribute)it.next();
+           if(attName.equalsIgnoreCase(at.getName()))
+              break;
+        }
+        return at;
     }
   }
 }
