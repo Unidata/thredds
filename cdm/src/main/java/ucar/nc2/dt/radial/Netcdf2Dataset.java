@@ -233,10 +233,10 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         setIsVolume(nds);
 
         if(isVolume && rnk == 3) {
-            VariableSimpleIF v = new MyRadialVariableAdapter(vName);
+            VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
             rsvar = makeRadialVariable(nds, v, var);
         } else if(!isVolume && rnk == 2) {
-            VariableSimpleIF v = new MyRadialVariableAdapter(vName);
+            VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
             rsvar = makeRadialVariable(nds, v, var);
         }
 
@@ -274,7 +274,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
       String name;
 
       private Netcdf2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-        super(v.getName());
+        super(v.getName(), v0.getAttributes());
 
         sweeps = new ArrayList();
         nsweeps = 0;
