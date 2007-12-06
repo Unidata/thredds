@@ -239,11 +239,11 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
       if ( rnk == 3 ) {
           if (!isHighResolution(nds)) {
-             VariableSimpleIF v = new MyRadialVariableAdapter(vName);
+             VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
              rsvar = makeRadialVariable(nds, v, var);
           } else {
             if(! vName.endsWith("_HI")) {
-                 VariableSimpleIF v = new MyRadialVariableAdapter(vName);
+                 VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
                  rsvar = makeRadialVariable(nds, v, var);
             }
           }
@@ -257,7 +257,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
   protected RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0)  {
       // this function is null in level 2
-         return new LevelII2Variable(nds, v, v0);
+      return new LevelII2Variable(nds, v, v0);
   }
 
   public String getInfo() {
@@ -277,7 +277,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     String name;
 
     private LevelII2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getName());
+      super(v.getName(), v0.getAttributes());
 
       nsweepsHR = 0;
       sweeps = new ArrayList();
