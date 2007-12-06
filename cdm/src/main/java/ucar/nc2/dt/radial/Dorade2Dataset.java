@@ -151,7 +151,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         int rnk = var.getRank();
 
         if(rnk == 2)  {
-            VariableSimpleIF v = new MyRadialVariableAdapter(vName);
+            VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
             rsvar = makeRadialVariable(nds, v, var);
         }
 
@@ -241,7 +241,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         }
 
         private Dorade2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-          super(v.getName());
+          super(v.getName(), v0.getAttributes());
           sweeps = new ArrayList();
           nsweeps = 0;
           name = v.getName();
