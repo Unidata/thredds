@@ -29,7 +29,9 @@
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/jdom.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="http://www.jdom.org/docs/apidocs/" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>

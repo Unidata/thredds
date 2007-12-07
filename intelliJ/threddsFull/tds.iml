@@ -19,7 +19,9 @@
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/tomcat-5.5.20_servlet-api.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
