@@ -983,23 +983,56 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         ProjectionRect bb = getBoundingBox();
 
         // look at all 4 corners of the bounding box
-        LatLonPointImpl llpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
-        LatLonPointImpl urpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
-        LatLonPointImpl ulpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
-        LatLonPointImpl lrpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
+        LatLonPointImpl llpt = (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerLeftPoint(), new LatLonPointImpl() );
+        LatLonPointImpl lrpt = (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerRightPoint(), new LatLonPointImpl() );
+        LatLonPointImpl urpt = (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperRightPoint(), new LatLonPointImpl() );
+        LatLonPointImpl ulpt = (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperLeftPoint(), new LatLonPointImpl() );
 
-        double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
-        double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
+        // Check if grid contains poles.
+        boolean includesNorthPole = false;
+        int[] resultNP = new int[2];
+        resultNP = findXYindexFromLatLon( 90.0, 0, null );
+        if ( resultNP[0] != -1 && resultNP[1] != -1 )
+          includesNorthPole = true;
+        boolean includesSouthPole = false;
+        int[] resultSP = new int[2];
+        resultSP = findXYindexFromLatLon( -90.0, 0, null );
+        if ( resultSP[0] != -1 && resultSP[1] != -1 )
+          includesSouthPole = true;
 
-        // longitude is a bit tricky as usual
-        double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
-        double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
+        if ( includesNorthPole && ! includesSouthPole )
+        {
+          llbb = new LatLonRect( llpt, new LatLonPointImpl( 90.0, 0.0)); // ??? lon=???
+          llbb.extend( lrpt);
+          llbb.extend( urpt);
+          llbb.extend( ulpt);
+          // OR
+          //llbb.extend( new LatLonRect( llpt, lrpt ));
+          //llbb.extend( new LatLonRect( lrpt, urpt ) );
+          //llbb.extend( new LatLonRect( urpt, ulpt ) );
+          //llbb.extend( new LatLonRect( ulpt, llpt ) );
+        }
+        else if ( includesSouthPole && ! includesNorthPole )
+        {
+          llbb = new LatLonRect( llpt, new LatLonPointImpl( -90.0, -180.0 ) ); // ??? lon=???
+          llbb.extend( lrpt );
+          llbb.extend( urpt );
+          llbb.extend( ulpt );
+        }
+        else
+        {
+          double latMin = Math.min( llpt.getLatitude(), lrpt.getLatitude() );
+          double latMax = Math.max( ulpt.getLatitude(), urpt.getLatitude() );
 
-        llpt.set(latMin, lonMin);
-        urpt.set(latMax, lonMax);
+          // longitude is a bit tricky as usual
+          double lonMin = getMinOrMaxLon( llpt.getLongitude(), ulpt.getLongitude(), true );
+          double lonMax = getMinOrMaxLon( lrpt.getLongitude(), urpt.getLongitude(), false );
 
-        llbb = new LatLonRect(llpt, urpt);
-        // System.out.println("GridCoordSys: bb= "+bb+" llbb= "+llbb);
+          llpt.set( latMin, lonMin );
+          urpt.set( latMax, lonMax );
+
+          llbb = new LatLonRect( llpt, urpt );
+        }
       }
     }
 
