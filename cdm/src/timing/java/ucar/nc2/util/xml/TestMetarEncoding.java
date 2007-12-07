@@ -43,7 +43,7 @@ public class TestMetarEncoding extends java.util.TimerTask {
   String bbox = "&spatial=bb&north=90&west=-10&east=50&south=35";
   String timePoint = "&temporal=point&time=2007-11-25T01%3A00%3A00Z";
 
-  String timeRange = "&time_start=2007-11-22T00%3A00%3A00Z&time_end=2007-11-22T23%3A59%3A59Z";
+  String timeRange = "&time_start=2007-12-01T00%3A00%3A00Z&time_end=2007-12-01T23%3A59%3A59Z";
 
   String testA = "http://motherlode.ucar.edu:8080/thredds/ncss/metars?variables=all&spatial=all&time_start=2007-09-29T00%3A00%3A00Z&time_end=2007-09-29T23%3A59%3A59Z&accept=netcdf";
 
@@ -152,7 +152,7 @@ public class TestMetarEncoding extends java.util.TimerTask {
     Calendar c = Calendar.getInstance(); // contains current startup time
     //c.add(Calendar.SECOND, 30); // starting in 30 seconds
     Timer timer = new Timer();
-    timer.schedule(new TestMetarEncoding(), c.getTime(), (long) 1000 * 120); // delay 2 min between runs
+    timer.schedule(new TestMetarEncoding(), c.getTime(), (long) 1000 * 600); // delay 10 min between runs
   }
 
 }
