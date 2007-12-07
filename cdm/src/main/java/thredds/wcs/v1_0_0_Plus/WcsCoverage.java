@@ -41,6 +41,7 @@ public class WcsCoverage
 
   private String allowedCoverageFormat;
 
+  private boolean hasRangeSetAxis;
   private String rangeSetAxisName;
   private List<String> rangeSetAxisValues;
 
@@ -60,23 +61,34 @@ public class WcsCoverage
       throw new IllegalArgumentException( "Non-null coverage required." );
     }
     this.coordSys = coverage.getCoordinateSystem();
-    this.nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( coordSys.getProjection() );
+    if ( this.coordSys == null )
+    {
+      log.error( "WcsCoverage(): Coverage must have non-null coordinate system." );
+      throw new IllegalArgumentException( "Non-null coordinate system required." );
+    }
+
+    this.nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( this.coordSys.getProjection() );
 
     this.defaultRequestCrs = "OGC:CRS84";
-    this.latLonBoundingBox = getLatLonBoundingBox( this.coordSys );
+    this.latLonBoundingBox = getLatLonBoundingBox();
 
     this.allowedCoverageFormat = "application/x-netcdf";
 
-    this.rangeSetAxisName = "Vertical";
-    CoordinateAxis1D zaxis = coordSys.getVerticalAxis();
+    CoordinateAxis1D zaxis = this.coordSys.getVerticalAxis();
     if ( zaxis != null )
     {
-      rangeSetAxisValues = new ArrayList<String>();
+      this.hasRangeSetAxis = true;
+      this.rangeSetAxisName = "Vertical";
+      this.rangeSetAxisValues = new ArrayList<String>();
       for ( int z = 0; z < zaxis.getSize(); z++ )
-        rangeSetAxisValues.add( zaxis.getCoordName( z ).trim() );
+        this.rangeSetAxisValues.add( zaxis.getCoordName( z ).trim() );
     }
     else
-      rangeSetAxisValues = Collections.emptyList();
+    {
+      this.hasRangeSetAxis = false;
+      this.rangeSetAxisName = null;
+      this.rangeSetAxisValues = Collections.emptyList();
+    }
   }
 
   GridDatatype getGridDatatype() { return coverage; }
@@ -90,6 +102,7 @@ public class WcsCoverage
   public String getDefaultRequestCrs() { return defaultRequestCrs; }
   public String getNativeCrs() { return nativeCRS; }
   public String getAllowedCoverageFormat() { return allowedCoverageFormat; }
+  public boolean hasRangeSetAxis() { return hasRangeSetAxis; }
   public String getRangeSetAxisName() { return rangeSetAxisName; }
 
   public boolean isRangeSetAxisValue( String value )
@@ -156,7 +169,7 @@ public class WcsCoverage
     NetcdfCFWriter writer = new NetcdfCFWriter();
     try
     {
-      this.coverage.getCoordinateSystem().getVerticalAxis().isNumeric();
+      this.coordSys.getVerticalAxis().isNumeric();
       writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
                        Collections.singletonList( this.coverage.getName() ),
                        bboxLatLonRect, 1,
@@ -202,8 +215,11 @@ public class WcsCoverage
     {
       if ( gcs == null )
         throw new IllegalArgumentException( "GridCoordSystem must be non-null." );
-      int minIndex = gcs.getVerticalAxis().findCoordElement( min );
-      int maxIndex = gcs.getVerticalAxis().findCoordElement( max );
+      CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
+      if ( vertAxis == null )
+        return null;
+      int minIndex = vertAxis.findCoordElement( min );
+      int maxIndex = vertAxis.findCoordElement( max );
       if ( minIndex == -1 || maxIndex == -1 )
         return null;
       try
@@ -217,27 +233,25 @@ public class WcsCoverage
     }
   }
 
-  private LatLonRect getLatLonBoundingBox( GridCoordSystem gcs)
+  private LatLonRect getLatLonBoundingBox()
   {
-
     if ( latLonBoundingBox == null )
     {
-
-      if ( gcs.isLatLon() )
+      if ( coordSys.isLatLon() )
       {
-        double startLat = gcs.getYHorizAxis().getMinValue();
-        double startLon = gcs.getXHorizAxis().getMinValue();
+        double startLat = coordSys.getYHorizAxis().getMinValue();
+        double startLon = coordSys.getXHorizAxis().getMinValue();
 
-        double deltaLat = gcs.getYHorizAxis().getMaxValue() - startLat;
-        double deltaLon = gcs.getXHorizAxis().getMaxValue() - startLon;
+        double deltaLat = coordSys.getYHorizAxis().getMaxValue() - startLat;
+        double deltaLon = coordSys.getXHorizAxis().getMaxValue() - startLon;
 
         LatLonPoint llpt = new LatLonPointImpl( startLat, startLon );
         latLonBoundingBox = new LatLonRect( llpt, deltaLat, deltaLon );
       }
       else
       {
-        Projection dataProjection = gcs.getProjection();
-        ProjectionRect bb = gcs.getBoundingBox();
+        Projection dataProjection = coordSys.getProjection();
+        ProjectionRect bb = coordSys.getBoundingBox();
 
         // Find the min lat/lon point and the max lat/lon point
         // by checking all 4 corners of the XY bounding box.
@@ -251,17 +265,17 @@ public class WcsCoverage
 
         boolean includesNorthPole = false;
         int[] resultNP = new int[2];
-        resultNP = gcs.findXYindexFromLatLon( 90.0, 0, null );
+        resultNP = coordSys.findXYindexFromLatLon( 90.0, 0, null );
         if ( resultNP[0] == -1 || resultNP[1] == -1 ) includesNorthPole = true;
         boolean includesSouthPole = false;
         int[] resultSP = new int[2];
-        resultSP = gcs.findXYindexFromLatLon( -90.0, 0, null );
+        resultSP = coordSys.findXYindexFromLatLon( -90.0, 0, null );
         if ( resultSP[0] == -1 || resultSP[1] == -1 ) includesSouthPole = true;
 
         if ( includesNorthPole && includesSouthPole )
         {
-          latLonBoundingBox = new LatLonRect( new LatLonPointImpl( -90.0, -180.0),
-                                              new LatLonPointImpl( 90.0, 180.0));
+          latLonBoundingBox = new LatLonRect( new LatLonPointImpl( -90.0, latLonMinMaxPoints.get(0).getLongitude()),
+                                              new LatLonPointImpl( 90.0, latLonMinMaxPoints.get(1).getLongitude()));
         }
         else if ( includesNorthPole )
         {
