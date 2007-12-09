@@ -342,12 +342,13 @@ public class DescribeCoverage extends WcsRequest
                       .addContent( description ) );
 
     // rangeSet/RangeSet/name [1]
+
     innerRangeSetElem.addContent(
-            new Element( "name", wcsNS).addContent( "RangeSetName"));
+            new Element( "name", wcsNS).addContent( coverage.getName()));
 
     // rangeSet/RangeSet/label [1]
     innerRangeSetElem.addContent(
-            new Element( "label", wcsNS ).addContent( "RangeSetLabel" ) );
+            new Element( "label", wcsNS ).addContent( coverage.getLabel() ) );
 
     CoordinateAxis1D zaxis = coverage.getCoordinateSystem().getVerticalAxis();
     if ( zaxis != null )

@@ -173,7 +173,7 @@ public class WcsCoverage
       writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
                        Collections.singletonList( this.coverage.getName() ),
                        bboxLatLonRect, 1,
-                       verticalRange.getRange( this.coordSys),
+                       verticalRange != null ? verticalRange.getRange( this.coordSys) : null,
                        timeRange, 1,
                        true );
     }
