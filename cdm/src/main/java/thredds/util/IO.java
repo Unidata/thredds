@@ -27,6 +27,7 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Input/Output utilities.
@@ -380,7 +381,6 @@ public class IO {
 
     try {
       java.net.URLConnection connection = url.openConnection();
-
       if (connection instanceof HttpURLConnection) {
         java.net.HttpURLConnection httpConnection = (HttpURLConnection) connection;
         // check response code is good
@@ -388,6 +388,18 @@ public class IO {
         if (responseCode / 100 != 2)
           throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode
                   + "\n" + httpConnection.getResponseMessage() + "\n");
+      }
+
+      if (showHeaders) {
+         // request headers
+        System.out.println("HEADERS for "+urlString + ": ");
+        System.out.println(" contentEncoding: "+ connection.getContentEncoding());
+        for (int j = 1; ; j++) {
+          String header = connection.getHeaderField(j);
+          String key = connection.getHeaderFieldKey(j);
+          if (header == null || key == null) break;
+          System.out.println(" "+key + ": " + header);
+        }
       }
 
       // read it
@@ -403,6 +415,8 @@ public class IO {
       if (is != null) is.close();
     }
   }
+
+  private static boolean showHeaders = true;
 
   /**
    * read the contents from the named URL, write to a file.
@@ -655,20 +669,15 @@ public class IO {
 
   // read URL to File
   static public void main(String[] args) {
-    String url_point = "http:/thredds/ncss/metars?variables=all&north=82.5199&west=88.4499&east=90.4000&south=-90.0000&spatial=point&latitude=40&longitude=-100&stn=&temporal=all&time_start=2007-09-26T23%3A45%3A04Z&time_end=present&time=2007-09-26T23%3A45%3A04Z&accept=netcdf";
-    String url = "http://motherlode.ucar.edu:8080/thredds/ncss/metars?variables=all&spatial=all&time_start=2007-09-29T00%3A00%3A00Z&time_end=2007-09-29T23%3A59%3A59Z&accept=netcdf";
-    String url_box = "http:/thredds/ncss/metars?variables=all&spatial=bb&north=41&west=-103&east=-100&south=39&latitude=40&longitude=-100&stn=&temporal=all&time_start=2007-09-26T23%3A45%3A04Z&time_end=present&time=2007-09-26T23%3A45%3A04Z&accept=netcdf";
-
-    String filenameOut = "C:/temp/metars-timeseries-box.nc";
-    File f = new File(filenameOut);
-    System.out.println("Read = " + url + " to " + filenameOut);
+    String url = "http://motherlode.ucar.edu:9080/docs/jasper-howto.html";
 
     long start = System.currentTimeMillis();
-    String result = readURLtoFile(url_box, f);
+    String result = readURLcontents(url);
     double took = .001 * (System.currentTimeMillis() - start);
     System.out.println(result);
-    System.out.println(" that took = " + took + "sec");
-    System.out.println(" file size = " + f.length());
+    System.out.println(" that took = " + took + " sec");
+    System.out.println(" result size = " + result.length());
+    System.out.println(" result = " + result);
   }
 
 }
