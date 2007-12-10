@@ -6,16 +6,16 @@ package thredds.wcs.v1_0_0_Plus;
  * @author edavis
  * @since 4.0
  */
-public class WcsRange
+public class WcsRangeField
 {
   private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( WcsRange.class );
+          org.slf4j.LoggerFactory.getLogger( WcsRangeField.class );
 
   private String name;
   private String label;
   private String description;
 
-  public WcsRange( String name, String label, String description)
+  public WcsRangeField( String name, String label, String description)
   {
     if ( name == null )
       throw new IllegalArgumentException( "Range name must be non-null.");
