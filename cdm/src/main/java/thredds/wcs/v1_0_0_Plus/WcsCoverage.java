@@ -4,6 +4,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.*;
 import ucar.ma2.Range;
@@ -68,7 +69,7 @@ public class WcsCoverage
     this.nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( this.coordSys.getProjection() );
 
     this.defaultRequestCrs = "OGC:CRS84";
-    this.latLonBoundingBox = getLatLonBoundingBox();
+    this.latLonBoundingBox = this.coordSys.getLatLonBoundingBox();
 
     this.allowedCoverageFormat = "application/x-netcdf";
 
@@ -149,6 +150,16 @@ public class WcsCoverage
           throws WcsException
   {
     File ncFile = getDiskCache().getCacheFile( this.dataset.getDatasetPath() + "-" + this.coverage.getName() + ".nc" );
+    Range zRange = null;
+    try
+    {
+      zRange = verticalRange != null ? verticalRange.getRange( this.coordSys ) : null;
+    }
+    catch ( InvalidRangeException e )
+    {
+      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + "> along vertical range <" + verticalRange + ">: " + e.getMessage() );
+      throw new WcsException( WcsException.Code.CoverageNotDefined, "Vertical", "Failed to subset coverage <" + this.coverage.getName() + "> along vertical range." );
+    }
 
     //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
 
@@ -159,7 +170,7 @@ public class WcsCoverage
       writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
                        Collections.singletonList( this.coverage.getName() ),
                        bboxLatLonRect, 1,
-                       verticalRange != null ? verticalRange.getRange( this.coordSys) : null,
+                       zRange,
                        timeRange, 1,
                        true );
     }
@@ -185,9 +196,15 @@ public class WcsCoverage
     public VerticalRange( double minimum, double maximum, int stride )
     {
       if ( minimum > maximum )
+      {
+        log.error( "VerticalRange(): Minimum <" + minimum + "> is greater than maximum <" + maximum + ">." );
         throw new IllegalArgumentException( "VerticalRange minimum <" + minimum + "> greater than maximum <" + maximum + ">." );
+      }
       if ( stride < 1 )
-        throw new IllegalArgumentException( "VerticalRange stride <" + stride + "> less than one (1 means all point)." );
+      {
+        log.error( "VerticalRange(): stride <" + stride + "> less than one (1 means all points)." );
+        throw new IllegalArgumentException( "VerticalRange stride <" + stride + "> less than one (1 means all points)." );
+      }
       this.min = minimum;
       this.max = maximum;
       this.stride = stride;
@@ -196,118 +213,42 @@ public class WcsCoverage
     public double getMinimum() { return min; }
     public double getMaximum() { return max; }
     public int getStride() { return stride; }
+    public String toString()
+    {
+      return "[min="+ min + ",max=" + max + ",stride=" + stride + "]";
+    }
 
     public Range getRange( GridCoordSystem gcs )
+            throws InvalidRangeException
     {
       if ( gcs == null )
+      {
+        log.error("getRange(): GridCoordSystem must be non-null.");
         throw new IllegalArgumentException( "GridCoordSystem must be non-null." );
+      }
       CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
       if ( vertAxis == null )
-        return null;
+      {
+        log.error( "getRange(): GridCoordSystem must have vertical axis." );
+        throw new IllegalArgumentException( "GridCoordSystem must have vertical axis." );
+      }
+      if ( ! vertAxis.isNumeric())
+      {
+        log.error( "getRange(): GridCoordSystem must have numeric vertical axis to support min/max range." );
+        throw new IllegalArgumentException( "GridCoordSystem must have numeric vertical axis to support min/max range." );
+      }
       int minIndex = vertAxis.findCoordElement( min );
       int maxIndex = vertAxis.findCoordElement( max );
       if ( minIndex == -1 || maxIndex == -1 )
-        return null;
-      try
       {
-        return new Range( minIndex, maxIndex, stride );
+        log.error( "getRange(): GridCoordSystem vertical axis does not contain min/max points." );
+        throw new IllegalArgumentException( "GridCoordSystem vertical axis does not contain min/max points." );
       }
-      catch ( InvalidRangeException e )
-      {
-        return null;
-      }
-    }
-  }
 
-  private LatLonRect getLatLonBoundingBox()
-  {
-    if ( latLonBoundingBox == null )
-    {
-      if ( coordSys.isLatLon() )
-      {
-        double startLat = coordSys.getYHorizAxis().getMinValue();
-        double startLon = coordSys.getXHorizAxis().getMinValue();
-
-        double deltaLat = coordSys.getYHorizAxis().getMaxValue() - startLat;
-        double deltaLon = coordSys.getXHorizAxis().getMaxValue() - startLon;
-
-        LatLonPoint llpt = new LatLonPointImpl( startLat, startLon );
-        latLonBoundingBox = new LatLonRect( llpt, deltaLat, deltaLon );
-      }
+      if ( vertAxis.getPositive().equalsIgnoreCase( CoordinateAxis.POSITIVE_DOWN ) )
+        return new Range( maxIndex, minIndex, stride );
       else
-      {
-        Projection dataProjection = coordSys.getProjection();
-        ProjectionRect bb = coordSys.getBoundingBox();
-
-        // Find the min lat/lon point and the max lat/lon point
-        // by checking all 4 corners of the XY bounding box.
-        List<LatLonPointImpl> possibleLatLonMinMaxPoints = new ArrayList<LatLonPointImpl>();
-        possibleLatLonMinMaxPoints.add( (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerLeftPoint(), new LatLonPointImpl() ));
-        possibleLatLonMinMaxPoints.add( (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperRightPoint(), new LatLonPointImpl() ));
-        possibleLatLonMinMaxPoints.add( (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperLeftPoint(), new LatLonPointImpl() ));
-        possibleLatLonMinMaxPoints.add( (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerRightPoint(), new LatLonPointImpl() ));
-
-        List<LatLonPointImpl> latLonMinMaxPoints = getMinandMaxLatLonPoints( possibleLatLonMinMaxPoints);
-
-        boolean includesNorthPole = false;
-        int[] resultNP = new int[2];
-        resultNP = coordSys.findXYindexFromLatLon( 90.0, 0, null );
-        if ( resultNP[0] == -1 || resultNP[1] == -1 ) includesNorthPole = true;
-        boolean includesSouthPole = false;
-        int[] resultSP = new int[2];
-        resultSP = coordSys.findXYindexFromLatLon( -90.0, 0, null );
-        if ( resultSP[0] == -1 || resultSP[1] == -1 ) includesSouthPole = true;
-
-        if ( includesNorthPole && includesSouthPole )
-        {
-          latLonBoundingBox = new LatLonRect( new LatLonPointImpl( -90.0, latLonMinMaxPoints.get(0).getLongitude()),
-                                              new LatLonPointImpl( 90.0, latLonMinMaxPoints.get(1).getLongitude()));
-        }
-        else if ( includesNorthPole )
-        {
-          latLonBoundingBox = new LatLonRect( new LatLonPointImpl( latLonMinMaxPoints.get(0).getLatitude(), -180.0 ),
-                                              new LatLonPointImpl( 90.0, 180.0) );
-        }
-        else if ( includesSouthPole )
-        {
-          latLonBoundingBox = new LatLonRect( new LatLonPointImpl( -90.0, -180.0 ),
-                  new LatLonPointImpl( latLonMinMaxPoints.get( 1 ).getLatitude(), 180.0 ) );
-        }
-        else
-        {
-          latLonBoundingBox = new LatLonRect( latLonMinMaxPoints.get( 0 ), latLonMinMaxPoints.get( 1 ) );
-        }
-      }
+        return new Range( minIndex, maxIndex, stride );
     }
-
-    return latLonBoundingBox;
   }
-
-  private List<LatLonPointImpl> getMinandMaxLatLonPoints( List<LatLonPointImpl> latLonPointList )
-  {
-    Iterator it = latLonPointList.iterator();
-    if ( ! it.hasNext()) return null;
-    LatLonPointImpl curLatLonPoint = (LatLonPointImpl) it.next();
-    double minLat = curLatLonPoint.getLatitude();
-    double maxLat = minLat;
-    double minLon = curLatLonPoint.getLongitude();
-    double maxLon = minLon;
-
-    for ( ; it.hasNext(); curLatLonPoint = (LatLonPointImpl) it.next() )
-    {
-      double curLat = curLatLonPoint.getLatitude();
-      double curLon = curLatLonPoint.getLongitude();
-      if ( curLat < minLat ) minLat = curLat;
-      if ( curLat > maxLat ) maxLat = curLat;
-      if ( curLon < minLon ) minLon = curLon;
-      if ( curLon > maxLon ) maxLon = curLon;
-    }
-
-    List <LatLonPointImpl> result = new ArrayList<LatLonPointImpl>();
-    result.add( new LatLonPointImpl(minLat, minLon) );
-    result.add( new LatLonPointImpl(maxLat, maxLon) );
-
-    return result;
-  }
-
 }
