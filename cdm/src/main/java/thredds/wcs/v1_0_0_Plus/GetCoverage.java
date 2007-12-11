@@ -198,7 +198,7 @@ public class GetCoverage extends WcsRequest
     if ( rangeSetAxisSelectionString.indexOf( "," ) != -1 )
     {
       log.error( "parseRangeSetAxisValues(): Vertical value list not supported <" + rangeSetAxisSelectionString + ">." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(), "Not currently supporting list of Vertical values (just range, i.e., \"min/max\")." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Not currently supporting list of Vertical values (just range, i.e., \"min/max\")." );
     }
     else if ( rangeSetAxisSelectionString.indexOf( "/" ) != -1 )
     {
@@ -206,7 +206,7 @@ public class GetCoverage extends WcsRequest
       if ( rangeSplit.length != 2 )
       {
         log.error( "parseRangeSetAxisValues(): Unsupported Vertical value (range with resolution) <" + rangeSetAxisSelectionString + ">." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(), "Not currently supporting vertical range with resolution." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Not currently supporting vertical range with resolution." );
       }
       double minValue = 0;
       double maxValue = 0;
@@ -218,21 +218,21 @@ public class GetCoverage extends WcsRequest
       catch ( NumberFormatException e )
       {
         log.error( "parseRangeSetAxisValues(): Failed to parse Vertical range min or max <" + rangeSetAxisSelectionString + ">: " + e.getMessage() );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(), "Failed to parse Vertical range min or max." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Failed to parse Vertical range min or max." );
       }
       if ( minValue > maxValue)
       {
         log.error( "parseRangeSetAxisValues(): Vertical range must be \"min/max\" <" + rangeSetAxisSelectionString + ">." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(), "Vertical range must be \"min/max\"." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Vertical range must be \"min/max\"." );
       }
       range = new WcsCoverage.VerticalRange( minValue, maxValue, 1);
     }
     else
     {
-      if ( ! coverage.isRangeSetAxisValue( rangeSetAxisSelectionString ) )
+      if ( ! coverage.getRangeField().getAxis().getValues().contains( rangeSetAxisSelectionString))
       {
         log.error( "parseRangeSetAxisValues(): Unrecognized RangeSet Axis value <" + rangeSetAxisSelectionString + ">." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(),
+        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(),
                                 "Unrecognized RangeSet Axis value <" + rangeSetAxisSelectionString + ">." );
       }
       else
@@ -245,7 +245,7 @@ public class GetCoverage extends WcsRequest
         catch ( NumberFormatException e )
         {
           log.error( "parseRangeSetAxisValues(): Failed to parse Vertical value <" + rangeSetAxisSelectionString + ">: " + e.getMessage() );
-          throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(), "Failed to parse Vertical value." );
+          throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Failed to parse Vertical value." );
         }
         range = new WcsCoverage.VerticalRange( value, value, 1 );
       }
@@ -254,7 +254,7 @@ public class GetCoverage extends WcsRequest
     if ( range == null)
     {
       log.error( "parseRangeSetAxisValues(): Invalid Vertical range requested <" + rangeSetAxisSelectionString + ">." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeSetAxisName(), "Invalid Vertical range requested." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Invalid Vertical range requested." );
     }
 
     return range;

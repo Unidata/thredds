@@ -41,9 +41,7 @@ public class WcsCoverage
 
   private String allowedCoverageFormat;
 
-  private boolean hasRangeSetAxis;
-  private String rangeSetAxisName;
-  private List<String> rangeSetAxisValues;
+  private WcsRangeField range;
 
   public WcsCoverage( GridDatatype coverage, WcsDataset dataset)
   {
@@ -75,20 +73,21 @@ public class WcsCoverage
     this.allowedCoverageFormat = "application/x-netcdf";
 
     CoordinateAxis1D zaxis = this.coordSys.getVerticalAxis();
+    WcsRangeField.Axis vertAxis;
     if ( zaxis != null )
     {
-      this.hasRangeSetAxis = true;
-      this.rangeSetAxisName = "Vertical";
-      this.rangeSetAxisValues = new ArrayList<String>();
+      List<String> vals = new ArrayList<String>();
       for ( int z = 0; z < zaxis.getSize(); z++ )
-        this.rangeSetAxisValues.add( zaxis.getCoordName( z ).trim() );
+        vals.add( zaxis.getCoordName( z ).trim() );
+      vertAxis = new WcsRangeField.Axis( "Vertical", zaxis.getName(),
+                                         zaxis.getDescription(),
+                                         zaxis.isNumeric(), vals );
     }
     else
-    {
-      this.hasRangeSetAxis = false;
-      this.rangeSetAxisName = null;
-      this.rangeSetAxisValues = Collections.emptyList();
-    }
+      vertAxis = null;
+
+    range = new WcsRangeField( this.getName(), this.getLabel(),
+                               this.getDescription(), vertAxis );
   }
 
   GridDatatype getGridDatatype() { return coverage; }
@@ -102,21 +101,8 @@ public class WcsCoverage
   public String getDefaultRequestCrs() { return defaultRequestCrs; }
   public String getNativeCrs() { return nativeCRS; }
   public String getAllowedCoverageFormat() { return allowedCoverageFormat; }
-  public boolean hasRangeSetAxis() { return hasRangeSetAxis; }
-  public String getRangeSetAxisName() { return rangeSetAxisName; }
 
-  public boolean isRangeSetAxisValue( String value )
-  {
-    return rangeSetAxisValues.contains( value );
-  }
-  public boolean isRangeSetAxisNumeric()
-  {
-    return coordSys.getVerticalAxis().isNumeric();
-  }
-  public List<String> getRangeSetAxisValueList()
-  {
-    return Collections.unmodifiableList( rangeSetAxisValues );
-  }
+  public WcsRangeField getRangeField() { return range; }
 
   public Range getRangeSetAxisRange( double minValue, double maxValue)
   {

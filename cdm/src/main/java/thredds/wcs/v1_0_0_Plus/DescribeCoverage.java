@@ -325,6 +325,7 @@ public class DescribeCoverage extends WcsRequest
 
   private Element genRangeSetElem( WcsCoverage coverage )
   {
+    WcsRangeField rangeField = coverage.getRangeField();
     // rangeSet
     Element rangeSetElem = new Element( "rangeSet", wcsNS);
 
@@ -335,23 +336,22 @@ public class DescribeCoverage extends WcsRequest
     Element innerRangeSetElem = new Element( "RangeSet", wcsNS);
 
     // rangeSet/RangeSet/description [0..1]
-    String description = null; // ToDo What should this be?
-    if ( description != null )
+    if ( rangeField.getDescription() != null )
       innerRangeSetElem.addContent(
               new Element( "description")
-                      .addContent( description ) );
+                      .addContent( rangeField.getDescription() ) );
 
     // rangeSet/RangeSet/name [1]
 
     innerRangeSetElem.addContent(
-            new Element( "name", wcsNS).addContent( coverage.getName()));
+            new Element( "name", wcsNS).addContent( rangeField.getName()));
 
     // rangeSet/RangeSet/label [1]
     innerRangeSetElem.addContent(
-            new Element( "label", wcsNS ).addContent( coverage.getLabel() ) );
+            new Element( "label", wcsNS ).addContent( rangeField.getLabel() ) );
 
-    CoordinateAxis1D zaxis = coverage.getCoordinateSystem().getVerticalAxis();
-    if ( zaxis != null )
+    WcsRangeField.Axis vertAxis = rangeField.getAxis();
+    if ( vertAxis != null )
     {
       // rangeSet/RangeSet/axisDescription [0..*]
       Element axisDescElem = new Element( "axisDescription", wcsNS );
@@ -361,8 +361,8 @@ public class DescribeCoverage extends WcsRequest
 
       // rangeSet/RangeSet/axisDescription/AxisDescription/name [1]
       // rangeSet/RangeSet/axisDescription/AxisDescription/label [1]
-      innerAxisDescElem.addContent( new Element( "name", wcsNS).addContent( coverage.getRangeSetAxisName() ));
-      innerAxisDescElem.addContent( new Element( "label", wcsNS).addContent( zaxis.getName()));
+      innerAxisDescElem.addContent( new Element( "name", wcsNS).addContent( vertAxis.getName() ));
+      innerAxisDescElem.addContent( new Element( "label", wcsNS).addContent( vertAxis.getLabel()));
 
       // rangeSet/RangeSet/axisDescription/AxisDescription/values [1]
       Element valuesElem = new Element( "values", wcsNS);
@@ -374,10 +374,10 @@ public class DescribeCoverage extends WcsRequest
       // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/max [0..1]
       // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/res [0..1]
       // -----
-      for ( int z = 0; z < zaxis.getSize(); z++ )
+      for ( String curVal : vertAxis.getValues())
         valuesElem.addContent(
                 new Element( "singleValue", wcsNS)
-                        .addContent( zaxis.getCoordName( z ).trim()));
+                        .addContent( curVal));
 
       // rangeSet/RangeSet/axisDescription/AxisDescription/values/default [0..1]
 
