@@ -1,97 +1,45 @@
-<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en"><html><head>
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>THREDDS WCS Server</title>  
-
-</head>
-<body>
-<h1><img src="../images/unidataLogo.png" width="75" height="75" align="middle">
-  Configuring the Web Coverage Service</h1>
+<title>THREDDS WCS Server</title></head><body>
+<h1><img src="../images/unidataLogo.png" align="middle" height="75" width="75"> THREDDS Web Coverage Service</h1>
 <div class="head">
       <address>
       </address>
 </div>
 <hr>
-<p>The THREDDS WCS Server implements the <a href="http://www.opengeospatial.org/">OGC</a> Web Coverage Service 1.0.0 <a href="http://www.opengeospatial.org/docs/03-065r6.pdf">specification</a>. It serves out gridded data in <a href="http://www.remotesensing.org/geotiff/geotiff.html">GeoTIFF</a> or NetCDF format. </p>
-<h3>Which files can be served through the WCS server? </h3>
+<p>The THREDDS WCS Server implements the <a href="http://www.opengeospatial.org/">OGC</a> Web Coverage Service (<a href="http://www.opengeospatial.org/standards/wcs">WCS</a>) 1.0.0 <a href="http://www.opengeospatial.org/docs/03-065r6.pdf">specification</a>. It serves out gridded data in <a href="http://www.remotesensing.org/geotiff/geotiff.html">GeoTIFF</a> or NetCDF format. </p>
+<h2>Status</h2>
+The THREDDS WCS server is considered experimental, do not rely on it in a production environment. <h2>Which files can be served through the WCS server? </h2>
 <ol>
   <li>Data files must contain gridded data.</li>
-  <li>The NetCDF-Java Common Data Model must be able to identify the coordinates system used. Check this by opening in the Grid Panel of the <a href="http://www.unidata.ucar.edu/content/software/netcdf-java/v2.2/webstart/index.html">ToolsUI</a> application. There should be one or more variables shown as a GeoGrid.</li>
+  <li>The
+NetCDF-Java Common Data Model must be able to identify the coordinates
+system used. Check this by opening in the Grid Panel of the <a href="http://www.unidata.ucar.edu/content/software/netcdf-java/v2.2/webstart/index.html">ToolsUI</a> application. There should be one or more variables shown as a GeoGrid.</li>
   <li>Currently due to WCS and GeoTIFF limitations, the X,Y and (if it exists) Z axes must be regularly spaced.</li>
-</ol>
-<h3>Configuration</h3>
-<p>Available WCS datasets are listed in a THREDDS catalog like  other datasets. This is not necessarily of much use to WCS clients, who are more likely to expect a WCS Catalog. However it does allow users to find the needed URLs by browsing the catalog, or eventually through a search service. The files can be explicitly named in the catalog, e.g.:</p>
-<pre>
-&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
-  xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; version=&quot;1.0.1&quot;&gt;</pre>
-<pre>  &lt;<strong>datasetRoot</strong> path=&quot;testwcs&quot; dirLocation=&quot;/data/grids/&quot; /&gt;
-  &lt;service name=&quot;wcs&quot; serviceType=&quot;<strong>WCS</strong>&quot; base=&quot;<strong>/thredds/wcs/</strong>&quot; suffix=&quot;<strong>?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS</strong>&quot;/&gt;</pre>
-<pre>  &lt;dataset name=&quot;GALEON Test Data&quot;&gt;</pre>
-<pre>    &lt;metadata inherited=&quot;true&quot;&gt;
-      &lt;serviceName&gt;wcs&lt;/serviceName&gt;
-      &lt;authority&gt;unidata.ucar.edu:&lt;/authority&gt;
-      &lt;dataType&gt;Grid&lt;/dataType&gt;
-    &lt;/metadata&gt;</pre>
-<pre>    &lt;dataset name=&quot;striped.nc&quot; urlPath=&quot;striped.nc&quot; /&gt;
-    &lt;dataset name=&quot;sst.nc&quot; urlPath=&quot;sst.nc&quot; /&gt;
-    &lt;dataset name=&quot;ocean.nc&quot; urlPath=&quot;ocean.nc&quot; /&gt;
-    &lt;dataset name=&quot;eta.nc&quot; urlPath=&quot;eta.nc&quot; /&gt;
-    &lt;dataset name=&quot;RUC.nc&quot; urlPath=&quot;RUC.nc&quot; /&gt;</pre>
-<pre>  &lt;/dataset&gt;
-&lt;/catalog&gt;</pre>
-<p>The files named here all reside in the <strong>/data/grids/ </strong>directory, named by the <strong>datasetRoot</strong> element in the service. You can also use a DatasetScan element to serve all the files in a directory tree. See <a href="../tutorial/TDSConfiguration.html">TDS Configuration</a> for details. The only thing you need for WCS is to make the <strong>serviceType</strong> <em>WCS</em> and the <strong>base</strong> <em> /thredds/wcs/</em> . The optional <strong>suffix</strong> is added at the end of the URL, and forms the WCS <em>GetCapabilities</em> request URL. You may find it more convenient to not include the suffix. </p>
-<p>In summary, to enable WCS:</p>
-<ol>
-  <li>In your configuration catalogs, you must define a WCS service element as above, and indicate whicg datasets should use it. </li>
-  <li>In the <a href="ThreddsConfigXMLFile.html#WCS">threddsConfig.xml file</a>, set allow to true in the &lt;<strong>WCS</strong>&gt; element. <br>
-  </li>
-</ol>
-<h3>WCS Dataset URLs</h3>
+</ol><h2>Current Implementation Capabilities/Limitations</h2><p>The current TDS&nbsp;implementation of WCS 1.0 has the following restrictions:</p><ol><li>No interpolation is available (i.e., interpolationMethod="none").</li><li>All CRS/SRS are listed as "WGS84(DD)" even though it may have little relation to the actual CRS of the data.</li><ol><li>The response coverage is in the native CRS of the data.</li><li>The netCDF-Java library understands a number of projections (a subset of &nbsp;the <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.0/cf-conventions.html#grid-mappings-and-projections">CF convention grid mapping options</a>, and most assuming a spherical earth) including a simple lat/lon grid [-180/180 and -90/90].</li><li>All BBOX requests are assumed to be in the lat/lon of the native projection.</li></ol><li>Temporal selection: only min/max is supported. No resolution is allowed on the min/max and no lists are allowed.</li><li>Range axis selection: only min/max is supported. No resolution is allowed on the min/max and no lists are allowed.</li><li>Supported GetCoverage response formats:</li><ol><li><strong>GeoTIFF</strong>: A grayscale 8-bit GeoTIFF file </li><li><strong>GeoTIFFfloat</strong>: A floating point "Data Sample" GeoTIFF file </li><li><strong>NetCDF3</strong>: A NetCDF file</li></ol></ol><h2>Configuration</h2><p>&nbsp;For datasets that can be served by WCS, all
+that is required is to reference&nbsp;a&nbsp;service&nbsp;with "WCS" as the service
+type and&nbsp;"/thredds/wcs/" as the value of the URL base. See the <a href="WcsConfiguration.html">THREDDS WCS Configuration</a> page for more details.</p><h2>WCS Dataset URLs</h2>
 <p>All THREDDS WCS requests start with </p>
 <pre>  http://servername:8080/<strong>thredds/wcs/</strong>
 </pre>
 <p>The next part of the path indicates which file to use </p>
 <pre>  http://servername:8080/thredds/wcs/<strong>testwcs/sst.nc</strong>
 </pre>
-<p>This is typically the URL you will need to pass to a WCS client. The WCS Client then forms various queries to the THREDDS WCS server for that dataset, e.g.:</p>
-<pre>  http://servername:8080/thredds/wcs/test/sst.nc<strong>?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS&amp;</strong></pre>
-<h3>Serving Remote  Datasets </h3>
-<p>A slight extension of the WCS Dataset URL format allows the TDS to serve remote datasets. Identify the dataset by adding the parameter <strong>dataset</strong> whose value is a URL:</p>
-<pre>  http://servername:8080/thredds/wcs?<strong>dataset=<em>datasetURL</em>&amp;</strong></pre>
-<p>The URL must be a dataset readable by the NetCDF-Java library, typically an OPeNDAP dataset on another server. It must have gridded data, with identifiable coordinate systems, etc. For example, an OPeNDAP URL might be</p>
-<pre>  http://las.pfeg.noaa.gov/cgi-bin/nph-dods/data/oceanwatch/nrt/gac/AG14day.nc 
-</pre>
-<p>  This can be served remotely as a WCS dataset with this URL:</p>
-<pre>  http://servername:8080/thredds/wcs?<strong>dataset=http://las.pfeg.noaa.gov/cgi-bin/nph-dods/data/oceanwatch/nrt/gac/AG14day.nc&amp;
-</strong></pre>
-<h3>Notes for clients<a name="clients"></a></h3>
-<p>The following are WCS Coverage URLs for our test datasets: </p>
-<ul><li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/sst.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/ocean.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/eta.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/RUC.nc</strong></li>
-</ul>
+<p>This is typically the URL you will need to pass to a WCS client. The
+WCS Client then forms various queries to the THREDDS WCS server for
+that dataset, e.g.:</p>
+<pre>  http://servername:8080/thredds/wcs/test/sst.nc<strong>?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS&amp;<br></strong><strong></strong></pre><h2>Examples</h2><p>The following are WCS URLs for our test datasets: </p>
+<ul><li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc</strong></li><li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/sst.nc</strong></li><li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/ocean.nc</strong></li><li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/eta.nc</strong></li><li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/RUC.nc</strong></li></ul>
 <p>Here are example WCS queries for the first dataset: </p>
-<ul>
-  <li><strong>GetCapabilities</strong>:<a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&version=1.0.0&service=WCS">/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS</a></li>
-  <li><strong>DescribeCoverage</strong>: <a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=ta">/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&amp;version=1.0.0&amp;service=WCS&amp;coverage=ta</a></li>
-  <li><strong>GetCoverage</strong> (GeoTIFF): <a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57%20">/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=GeoTIFF&amp; coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57 </a></li>
-  <li><strong>GetCoverage </strong>(NetCDF3) : <a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57%20">/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=NetCDF3&amp; coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57 </a><br>
-  </li>
-</ul>
-<p>The supported formats are:</p>
-<ol>
-  <li><strong>GeoTIFF</strong>: A grayscale 8-bit GeoTIFF file </li>
-  <li><strong>GeoTIFFfloat</strong>: A floating point &quot;Data Sample&quot; GeoTIFF file </li>
-  <li><strong>NetCDF3</strong>: A NetCDF file</li>
-</ol>
-<h3>Status</h3>
-<p>The WCS server is considered experimental, do not rely on it in a production environment. <br>
-</p>
-<div class="head"></div>
+<ul><li><strong>GetCapabilities</strong>:<a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS">/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS</a></li><li><strong>DescribeCoverage</strong>: <a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&amp;version=1.0.0&amp;service=WCS&amp;coverage=ta">/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&amp;version=1.0.0&amp;service=WCS&amp;coverage=ta</a></li><li><strong>GetCoverage</strong> (GeoTIFF): <a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=GeoTIFF&amp;coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57%20">/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=GeoTIFF&amp;
+coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57
+</a></li><li><strong>GetCoverage </strong>(NetCDF3) : <a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=NetCDF3&amp;coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57%20">/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=NetCDF3&amp;
+coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57
+</a></li></ul><pre></pre><div class="head"></div>
 <hr width="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 08, 2007
+<img src="../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 08, 2007
 </address>
 <p align="center">&nbsp;</p>
 </body></html>
