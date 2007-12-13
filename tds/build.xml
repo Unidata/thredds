@@ -411,6 +411,7 @@
         <exclude name="cdm/doc/**" />
         <exclude name="cdm/target/**" />
         <exclude name="tds/target/**" />
+        <exclude name="tds/content/**" />
       </fileset>
 
       <manifest>
