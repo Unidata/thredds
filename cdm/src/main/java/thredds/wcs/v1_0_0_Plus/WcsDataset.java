@@ -1,7 +1,6 @@
 package thredds.wcs.v1_0_0_Plus;
 
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 
 import java.util.HashMap;
@@ -31,25 +30,13 @@ public class WcsDataset
 
     this.availableCoverages = new HashMap<String, WcsCoverage>();
 
-    // ToDo WCS 1.0PlusPlus - compartmentalize coverage to hide GridDatatype vs GridDataset.Gridset ???
-    // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
-    // This is WCS 1.0 coverage for each parameter
-    for ( GridDatatype curGridDatatype : this.dataset.getGrids() )
+    for ( GridDataset.Gridset curGridset : this.dataset.getGridsets() )
     {
-      GridCoordSystem gcs = curGridDatatype.getCoordinateSystem();
-      if ( !gcs.isRegularSpatial() )
+      GridCoordSystem gcs = curGridset.getGeoCoordSystem();
+      if ( ! gcs.isRegularSpatial() )
         continue;
-      this.availableCoverages.put( curGridDatatype.getName(), new WcsCoverage( curGridDatatype, this) );
+      this.availableCoverages.put( gcs.getName(), new WcsCoverage( curGridset, this) );
     }
-    // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
-    // This is WCS 1.1 style coverage for each coordinate system
-    // for ( GridDataset.Gridset curGridSet : this.dataset.getGridsets())
-    // {
-    //   GridCoordSystem gcs = curGridSet.getGeoCoordSystem();
-    //   if ( !gcs.isRegularSpatial() )
-    //     continue;
-    //   this.availableCoverages.put( gcs.getName(), curGridSet );
-    // }
   }
 
   public String getDatasetPath() { return datasetPath; }

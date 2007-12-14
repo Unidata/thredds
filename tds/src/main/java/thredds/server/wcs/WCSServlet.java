@@ -52,7 +52,8 @@ public class WCSServlet extends AbstractServlet {
     // Make sure to add these in increasing order!
     versionHandlers = new ArrayList<VersionHandler>();
     versionHandlers.add( new WCS_1_0_0().setDiskCache( diskCache ));
-    versionHandlers.add( new WcsHandler().setDiskCache( diskCache ) );
+    versionHandlers.add( new thredds.server.wcs.v1_0_0_1.WcsHandler().setDiskCache( diskCache ) );
+    versionHandlers.add( new thredds.server.wcs.v1_0_0_Plus.WcsHandler().setDiskCache( diskCache ) );
     versionHandlers.add( new WCS_1_1_0().setDiskCache( diskCache ));
     for ( VersionHandler vh: versionHandlers)
     {

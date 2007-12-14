@@ -325,7 +325,7 @@ public class DescribeCoverage extends WcsRequest
 
   private Element genRangeSetElem( WcsCoverage coverage )
   {
-    WcsRangeField rangeField = coverage.getRangeField();
+    List<WcsRangeField> range = coverage.getRange();
     // rangeSet
     Element rangeSetElem = new Element( "rangeSet", wcsNS);
 
@@ -336,21 +336,21 @@ public class DescribeCoverage extends WcsRequest
     Element innerRangeSetElem = new Element( "RangeSet", wcsNS);
 
     // rangeSet/RangeSet/description [0..1]
-    if ( rangeField.getDescription() != null )
+    if ( range.getDescription() != null )
       innerRangeSetElem.addContent(
               new Element( "description")
-                      .addContent( rangeField.getDescription() ) );
+                      .addContent( range.getDescription() ) );
 
     // rangeSet/RangeSet/name [1]
 
     innerRangeSetElem.addContent(
-            new Element( "name", wcsNS).addContent( rangeField.getName()));
+            new Element( "name", wcsNS).addContent( range.getName()));
 
     // rangeSet/RangeSet/label [1]
     innerRangeSetElem.addContent(
-            new Element( "label", wcsNS ).addContent( rangeField.getLabel() ) );
+            new Element( "label", wcsNS ).addContent( range.getLabel() ) );
 
-    WcsRangeField.Axis vertAxis = rangeField.getAxis();
+    WcsRangeField.Axis vertAxis = range.getAxis();
     if ( vertAxis != null )
     {
       // rangeSet/RangeSet/axisDescription [0..*]
