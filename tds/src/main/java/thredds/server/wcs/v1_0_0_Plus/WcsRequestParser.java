@@ -92,11 +92,11 @@ public class WcsRequestParser
       String bbox = ServletUtil.getParameterIgnoreCase( req, "BBOX" );
       String time = ServletUtil.getParameterIgnoreCase( req, "TIME" );
       // ToDo The name of this parameter is dependent on the coverage (see WcsCoverage.getRangeSetAxisName()).
-      String parameter = ServletUtil.getParameterIgnoreCase( req, "Vertical" );
+      String rangeSubset = ServletUtil.getParameterIgnoreCase( req, "RangeSubset" );
       String format = ServletUtil.getParameterIgnoreCase( req, "FORMAT" );
 
       return new GetCoverage( operation, version, wcsDataset, coverageId,
-                              crs, responseCRS, bbox, time, parameter, format);
+                              crs, responseCRS, bbox, time, rangeSubset, format);
     }
     else
       throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation <" + requestParam + ">." );

@@ -13,6 +13,7 @@ import java.io.IOException;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -84,7 +85,6 @@ public class DescribeCoverage extends WcsRequest
 
   public Element genCoverageOfferingElem( String covId )
   {
-    // ToDo WCS 1.0Plus - Change GridDatatype to GridDataset.Gridset
     WcsCoverage coverage = this.getDataset().getAvailableCoverage( covId );
     GridCoordSystem gridCoordSystem = coverage.getCoordinateSystem();
 
@@ -268,15 +268,25 @@ public class DescribeCoverage extends WcsRequest
     int posDim = 2;
     String firstPosition = llpt.getLongitude() + " " + llpt.getLatitude();
     String secondPosition = lon + " " + urpt.getLatitude();
-// ToDo WCS 1.0Plus - Add vertical (Deal with conversion to meters. Yikes!!)
-//    CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
-//    if ( vertAxis != null )
-//    {
-//      // See verAxis.getUnitsString()
-//      posDim++;
-//      firstPosition += " " + vertAxis.getCoordValue( 0);
-//      secondPosition += " " + vertAxis.getCoordValue( ((int)vertAxis.getSize()) - 1);
-//    }
+    // ToDo WCS 1.0Plus - Deal with conversion to meters. (Yikes!!)
+    CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
+    if ( vertAxis != null )
+    {
+      // See verAxis.getUnitsString()
+      double zeroIndexValue = vertAxis.getCoordValue( 0 );
+      double sizeIndexValue = vertAxis.getCoordValue( ( (int) vertAxis.getSize() ) - 1 );
+      if ( vertAxis.getPositive().equals( CoordinateAxis.POSITIVE_UP ) )
+      {
+        firstPosition += " " + zeroIndexValue;
+        secondPosition += " " + sizeIndexValue;
+      }
+      else
+      {
+        firstPosition += " " + sizeIndexValue;
+        secondPosition += " " + zeroIndexValue;
+      }
+    }
+
     String posDimString = Integer.toString( posDim );
 
     // spatialDomain/Envelope/gml:pos [2] (space seperated list of double values)
@@ -325,7 +335,6 @@ public class DescribeCoverage extends WcsRequest
 
   private Element genRangeSetElem( WcsCoverage coverage )
   {
-    List<WcsRangeField> range = coverage.getRange();
     // rangeSet
     Element rangeSetElem = new Element( "rangeSet", wcsNS);
 
@@ -333,73 +342,101 @@ public class DescribeCoverage extends WcsRequest
     // rangeSet/RangeSet@semantic
     // rangeSet/RangeSet@refSys
     // rangeSet/RangeSet@refSysLabel
-    Element innerRangeSetElem = new Element( "RangeSet", wcsNS);
-
-    // rangeSet/RangeSet/description [0..1]
-    if ( range.getDescription() != null )
-      innerRangeSetElem.addContent(
-              new Element( "description")
-                      .addContent( range.getDescription() ) );
-
-    // rangeSet/RangeSet/name [1]
-
-    innerRangeSetElem.addContent(
-            new Element( "name", wcsNS).addContent( range.getName()));
-
-    // rangeSet/RangeSet/label [1]
-    innerRangeSetElem.addContent(
-            new Element( "label", wcsNS ).addContent( range.getLabel() ) );
-
-    WcsRangeField.Axis vertAxis = range.getAxis();
-    if ( vertAxis != null )
+    //Element innerRangeSetElem = new Element( "RangeSet", wcsNS);
+    // ToDo How deal with range fields and thier axes?
+    List<WcsRangeField> range = coverage.getRange();
+    for ( WcsRangeField curField: range )
     {
-      // rangeSet/RangeSet/axisDescription [0..*]
-      Element axisDescElem = new Element( "axisDescription", wcsNS );
+      Element fieldElem = new Element( "Field", wcsNS);
 
-      // rangeSet/RangeSet/axisDescription/AxisDescription [1]
-      Element innerAxisDescElem = new Element( "AxisDescription", wcsNS);
+      // rangeSet/RangeSet/description [0..1]
+      if ( curField.getDescription() != null )
+        fieldElem.addContent(
+                new Element( "description")
+                        .addContent( curField.getDescription() ) );
 
-      // rangeSet/RangeSet/axisDescription/AxisDescription/name [1]
-      // rangeSet/RangeSet/axisDescription/AxisDescription/label [1]
-      innerAxisDescElem.addContent( new Element( "name", wcsNS).addContent( vertAxis.getName() ));
-      innerAxisDescElem.addContent( new Element( "label", wcsNS).addContent( vertAxis.getLabel()));
+      // rangeSet/RangeSet/name [1]
 
-      // rangeSet/RangeSet/axisDescription/AxisDescription/values [1]
-      Element valuesElem = new Element( "values", wcsNS);
+      fieldElem.addContent(
+              new Element( "name", wcsNS).addContent( curField.getName()));
 
-      // rangeSet/RangeSet/axisDescription/AxisDescription/values/singleValue [1..*]
-      // ----- interval is alternate for singleValue
-      // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval
-      // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/min [0..1]
-      // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/max [0..1]
-      // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/res [0..1]
-      // -----
-      for ( String curVal : vertAxis.getValues())
-        valuesElem.addContent(
-                new Element( "singleValue", wcsNS)
-                        .addContent( curVal));
+      // rangeSet/RangeSet/label [1]
+      fieldElem.addContent(
+              new Element( "label", wcsNS ).addContent( curField.getLabel() ) );
+      fieldElem.addContent(
+              new Element( "dataType", wcsNS ).addContent( curField.getDatatypeString() ) );
+      fieldElem.addContent(
+              new Element( "units", wcsNS ).addContent( curField.getUnitsString() ) );
 
-      // rangeSet/RangeSet/axisDescription/AxisDescription/values/default [0..1]
+      // .../values/interval
+      // .../values/interval/min [0..1]
+      // .../values/interval/max [0..1]
+      // .../values/interval/res [0..1]
 
-      innerAxisDescElem.addContent( valuesElem);
-      axisDescElem.addContent( innerAxisDescElem);
-      innerRangeSetElem.addContent( axisDescElem);
+      Element valuesElem = new Element( "AllowedValues", wcsNS );
+      Element minElem = new Element( "MinimumValue", wcsNS )
+              .addContent( Double.toString(
+                      curField.getValidMin()));
+      Element maxElem = new Element( "MaximumValue", wcsNS )
+              .addContent( Double.toString(
+                      curField.getValidMin()));
+      valuesElem.addContent( new Element( "Range", wcsNS)
+              .addContent( minElem )
+              .addContent( maxElem ));
+
+      List<WcsRangeField.Axis> axes = curField.getAxes();
+      for ( WcsRangeField.Axis curAxis: axes)
+      {
+        if ( curAxis != null )
+        {
+          // rangeSet/RangeSet/axisDescription [0..*]
+          Element axisDescElem = new Element( "axisDescription", wcsNS );
+
+          // rangeSet/RangeSet/axisDescription/AxisDescription [1]
+          Element innerAxisDescElem = new Element( "AxisDescription", wcsNS);
+
+          // rangeSet/RangeSet/axisDescription/AxisDescription/name [1]
+          // rangeSet/RangeSet/axisDescription/AxisDescription/label [1]
+          innerAxisDescElem.addContent( new Element( "name", wcsNS).addContent( curAxis.getName() ));
+          innerAxisDescElem.addContent( new Element( "label", wcsNS).addContent( curAxis.getLabel()));
+
+          // rangeSet/RangeSet/axisDescription/AxisDescription/values [1]
+          Element axisValuesElem = new Element( "values", wcsNS);
+
+          // rangeSet/RangeSet/axisDescription/AxisDescription/values/singleValue [1..*]
+          // ----- interval is alternate for singleValue
+          // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval
+          // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/min [0..1]
+          // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/max [0..1]
+          // rangeSet/RangeSet/axisDescription/AxisDescription/values/interval/res [0..1]
+          // -----
+          for ( String curVal : curAxis.getValues())
+            axisValuesElem.addContent(
+                    new Element( "singleValue", wcsNS)
+                            .addContent( curVal));
+
+          // rangeSet/RangeSet/axisDescription/AxisDescription/values/default [0..1]
+
+          innerAxisDescElem.addContent( axisValuesElem);
+          axisDescElem.addContent( innerAxisDescElem);
+          fieldElem.addContent( axisDescElem);
+        }
+      }
+
+
+      // rangeSet/RangeSet/nullValues [0..1]
+      // rangeSet/RangeSet/nullValues/{interval|singleValue} [1..*]
+      if ( curField.hasMissingData() )
+      {
+        fieldElem.addContent(
+                new Element( "nullValues", wcsNS).addContent(
+                        new Element( "singleValue", wcsNS)
+                                // ToDo Is missing always NaN?
+                                .addContent( "NaN" ) ) );
+      }
+      rangeSetElem.addContent( fieldElem);
     }
-
-
-
-    // rangeSet/RangeSet/nullValues [0..1]
-    // rangeSet/RangeSet/nullValues/{interval|singleValue} [1..*]
-    if ( coverage.hasMissingData() )
-    {
-      innerRangeSetElem.addContent(
-              new Element( "nullValues", wcsNS).addContent(
-                      new Element( "singleValue", wcsNS)
-                              // ToDo Is missing always NaN?
-                              .addContent( "NaN" ) ) );
-    }
-
-    return rangeSetElem.addContent( innerRangeSetElem);
+    return rangeSetElem;
   }
 
   private Element genSupportedCRSsElem( WcsCoverage coverage )

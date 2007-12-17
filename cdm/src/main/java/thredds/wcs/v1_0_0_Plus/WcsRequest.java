@@ -1,6 +1,8 @@
 package thredds.wcs.v1_0_0_Plus;
 
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import org.jdom.Element;
@@ -100,14 +102,24 @@ public abstract class WcsRequest
     String firstPosition = llpt.getLongitude() + " " + llpt.getLatitude();
     double lon = llpt.getLongitude() + llbb.getWidth();
     String secondPosition = lon + " " + urpt.getLatitude();
-// ToDo WCS 1.0Plus - Add vertical (Deal with conversion to meters. Yikes!!)
-//    CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
-//    if ( vertAxis != null )
-//    {
-//      // See verAxis.getUnitsString()
-//      firstPosition += " " + vertAxis.getCoordValue( 0);
-//      secondPostion += " " + vertAxis.getCoordValue( ((int)vertAxis.getSize()) - 1);
-//    }
+// ToDo WCS 1.0Plus - Deal with conversion to meters. (Yikes!!)
+    CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
+    if ( vertAxis != null )
+    {
+      // See verAxis.getUnitsString()
+      double zeroIndexValue = vertAxis.getCoordValue( 0 );
+      double sizeIndexValue = vertAxis.getCoordValue( ( (int) vertAxis.getSize() ) - 1 );
+      if ( vertAxis.getPositive().equals( CoordinateAxis.POSITIVE_UP))
+      {
+        firstPosition += " " + zeroIndexValue;
+        secondPosition += " " + sizeIndexValue;
+      }
+      else
+      {
+        firstPosition += " " + sizeIndexValue;
+        secondPosition += " " + zeroIndexValue;
+      }
+    }
     
     lonLatEnvelopeElem.addContent(
             new Element( "pos", gmlNS ).addContent( firstPosition ) );

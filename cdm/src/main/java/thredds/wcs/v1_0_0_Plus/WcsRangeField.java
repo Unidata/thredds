@@ -27,6 +27,11 @@ public class WcsRangeField
   private String name;
   private String label;
   private String description;
+  private String datatypeString;
+  private String unitsString;
+
+  private double validMin;
+  private double validMax;
 
   private List<Axis> axes;
 
@@ -39,6 +44,11 @@ public class WcsRangeField
     this.name = this.gridDatatype.getName();
     this.label = this.gridDatatype.getInfo();
     this.description = this.gridDatatype.getDescription();
+    this.datatypeString = this.gridDatatype.getDataType().toString();
+    this.unitsString = this.gridDatatype.getUnitsString();
+
+    this.validMin = this.gridDatatype.getVariable().getValidMin();
+    this.validMax = this.gridDatatype.getVariable().getValidMax();
 
     GridCoordSystem gcs = this.gridDatatype.getCoordinateSystem();
 
@@ -66,6 +76,11 @@ public class WcsRangeField
   public String getName() { return this.name; }
   public String getLabel() { return this.label; }
   public String getDescription() { return this.description; }
+  public String getDatatypeString() { return this.datatypeString; }
+  public String getUnitsString() { return this.unitsString; }
+
+  public double getValidMin() { return this.validMin; }
+  public double getValidMax() { return this.validMax; }
 
   public boolean hasMissingData() { return this.gridDatatype.hasMissingData(); }
 
