@@ -13,7 +13,6 @@ import ucar.ma2.InvalidRangeException;
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.io.File;
 import java.io.IOException;
 
@@ -38,7 +37,6 @@ public class WcsCoverage
   private String nativeCRS;
 
   private String defaultRequestCrs;
-  private LatLonRect latLonBoundingBox; // Estimate when native CRS is  not lat/lon.
 
   private String allowedCoverageFormat;
 
@@ -69,7 +67,6 @@ public class WcsCoverage
     this.nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( this.coordSys.getProjection() );
 
     this.defaultRequestCrs = "OGC:CRS84";
-    this.latLonBoundingBox = this.coordSys.getLatLonBoundingBox();
 
     this.allowedCoverageFormat = "application/x-netcdf";
 

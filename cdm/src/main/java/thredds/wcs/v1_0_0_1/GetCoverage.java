@@ -117,16 +117,6 @@ public class GetCoverage extends WcsRequest
     double maxx = Double.parseDouble( bboxSplit[2] );
     double maxy = Double.parseDouble( bboxSplit[3] );
 
-    boolean includesNorthPole = false;
-    int[] resultNP = new int[2];
-    resultNP = gcs.findXYindexFromLatLon( 90.0, 0, null );
-    if ( resultNP[0] == -1 || resultNP[1] == -1 ) includesNorthPole = true;
-    boolean includesSouthPole = false;
-    int[] resultSP = new int[2];
-    resultSP = gcs.findXYindexFromLatLon( -90.0, 0, null );
-    if ( resultSP[0] == -1 || resultSP[1] == -1 ) includesSouthPole = true;
-
-
     LatLonPointImpl minll = new LatLonPointImpl( miny, minx );
     LatLonPointImpl maxll = new LatLonPointImpl( maxy, maxx );
 

@@ -1,6 +1,6 @@
 package thredds.server.wcs.v1_0_0_1;
 
-import thredds.wcs.v1_0_0_Plus.*;
+import thredds.wcs.v1_0_0_1.*;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DatasetHandler;
 
