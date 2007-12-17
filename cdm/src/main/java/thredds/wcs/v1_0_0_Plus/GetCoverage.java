@@ -3,11 +3,13 @@ package thredds.wcs.v1_0_0_Plus;
 import java.io.File;
 import java.text.ParseException;
 import java.util.List;
+import java.util.ArrayList;
 
 import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import thredds.datatype.DateRange;
 import thredds.datatype.DateType;
 
@@ -25,10 +27,10 @@ public class GetCoverage extends WcsRequest
 
   private WcsCoverage coverage;
 
-  private LatLonRect bboxLatLonRect;
+  private LatLonRect requestLatLonBBox;
+  private AxisSubset requestVertSubset;
   private DateRange timeRange;
-  private List<AxisSubset> axisSubset;     // ??????
-
+  private List<String> rangeSubset;
 
   public GetCoverage( Operation operation, String version, WcsDataset dataset,
                       String coverageId, String crs, String responseCRS,
@@ -70,7 +72,11 @@ public class GetCoverage extends WcsRequest
     if ( bbox == null && time == null )
       throw new WcsException( WcsException.Code.MissingParameterValue, "BBOX", "BBOX and/or TIME required.");
     if ( bbox != null )
-      bboxLatLonRect = parseBoundingBox( bbox, coverage.getCoordinateSystem());
+    {
+      String[] bboxSplit = splitBoundingBox( bbox);
+      requestLatLonBBox = genRequestLatLonBoundingBox( bboxSplit, coverage.getCoordinateSystem());
+      requestVertSubset = genRequestVertSubset( bboxSplit, this.coverage.getCoordinateSystem().getVerticalAxis());
+    }
     if ( time != null )
       timeRange = parseTime( time);
 
@@ -79,7 +85,7 @@ public class GetCoverage extends WcsRequest
 
     // Assign and validate RangeSubset parameter.
     if ( rangeSubset != null )
-            axisSubset = parseRangeSubset( rangeSubset, coverage.getRange());
+            this.rangeSubset = parseRangeSubset( rangeSubset);//, coverage.getRange());
 
     // Assign and validate FORMAT parameter.
     if ( format == null )
@@ -96,50 +102,91 @@ public class GetCoverage extends WcsRequest
   public File writeCoverageDataToFile()
           throws WcsException
   {
-    return this.coverage.writeCoverageDataToFile( this.bboxLatLonRect,
-                                                  this.axisSubset,
+    return this.coverage.writeCoverageDataToFile( this.requestLatLonBBox,
+                                                  this.requestVertSubset,
+                                                  this.rangeSubset,
                                                   this.timeRange);
   }
 
-  private LatLonRect parseBoundingBox( String bbox, GridCoordSystem gcs)
+  private String[] splitBoundingBox( String bbox)
           throws WcsException
   {
-    if ( bbox == null || bbox.equals( "") )
+    if ( bbox == null || bbox.equals( "" ) )
       return null;
 
-    String[] bboxSplit = bbox.split( ",");
-    if ( bboxSplit.length != 4)
+    String[] bboxSplit = bbox.split( "," );
+    if ( bboxSplit.length != 4 && bboxSplit.length != 6 )
     {
-      log.error( "parseBoundingBox(): BBOX <" + bbox + "> not limited to X and Y." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX <"+bbox+"> has more values <" + bboxSplit.length + "> than expected <4>.");
+      log.error( "splitBoundingBox(): BBOX <" + bbox + "> must be \"minx,miny,maxx,maxy[,minz,maxz]\"." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX <" + bbox + "> not in expected format \"minx,miny,maxx,maxy[,minz,maxz]\"." );
     }
-    double minx = Double.parseDouble( bboxSplit[0] );
-    double miny = Double.parseDouble( bboxSplit[1] );
-    double maxx = Double.parseDouble( bboxSplit[2] );
-    double maxy = Double.parseDouble( bboxSplit[3] );
+    return bboxSplit;
+  }
 
-    boolean includesNorthPole = false;
-    int[] resultNP = new int[2];
-    resultNP = gcs.findXYindexFromLatLon( 90.0, 0, null );
-    if ( resultNP[0] == -1 || resultNP[1] == -1 ) includesNorthPole = true;
-    boolean includesSouthPole = false;
-    int[] resultSP = new int[2];
-    resultSP = gcs.findXYindexFromLatLon( -90.0, 0, null );
-    if ( resultSP[0] == -1 || resultSP[1] == -1 ) includesSouthPole = true;
+  private LatLonRect genRequestLatLonBoundingBox( String[] bboxSplit, GridCoordSystem gcs)
+          throws WcsException
+  {
+    if ( bboxSplit == null || gcs == null )
+      return null;
+    if ( bboxSplit.length < 4 )
+      throw new IllegalArgumentException( "BBOX contains fewer than four items \"" + bboxSplit.toString() + "\".");
 
+    double minx = 0;
+    double miny = 0;
+    double maxx = 0;
+    double maxy = 0;
+    try
+    {
+      minx = Double.parseDouble( bboxSplit[0] );
+      miny = Double.parseDouble( bboxSplit[1] );
+      maxx = Double.parseDouble( bboxSplit[2] );
+      maxy = Double.parseDouble( bboxSplit[3] );
+    }
+    catch ( NumberFormatException e )
+    {
+      String message = "BBOX item(s) have incorrect number format [not double] <" + bboxSplit.toString() + ">.";
+      log.error( "genRequestLatLonBoundingBox(): " + message + " - " + e.getMessage());
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", message );
+    }
 
     LatLonPointImpl minll = new LatLonPointImpl( miny, minx );
     LatLonPointImpl maxll = new LatLonPointImpl( maxy, maxx );
 
-    LatLonRect bboxLatLonRect = new LatLonRect( minll, maxll );
+    LatLonRect requestLatLonRect = new LatLonRect( minll, maxll );
 
-//    if ( ! bboxLatLonRect.containedIn( covLatLonRect))
+    LatLonRect covLatLonRect = gcs.getLatLonBoundingBox();
+//    if ( ! requestLatLonRect.containedIn( covLatLonRect))
 //    {
-//      log.error( "parseBoundingBox(): BBOX <" + bbox + "> not contained in coverage BBOX <"+ covLatLonRect.toString2()+">.");
+//      log.error( "genRequestLatLonBoundingBox(): BBOX <" + bbox + "> not contained in coverage BBOX <"+ covLatLonRect.toString2()+">.");
 //      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX <" + bbox + "> not contained in coverage.");
 //    }
 
-    return bboxLatLonRect;
+    return requestLatLonRect;
+  }
+
+  private AxisSubset genRequestVertSubset( String[] bboxSplit, CoordinateAxis1D vertAxis )
+          throws WcsException
+  {
+    if ( bboxSplit == null || bboxSplit.length == 4 )
+      return null;
+    if ( bboxSplit.length != 6 )
+      throw new IllegalArgumentException( "BBOX does not contain six items \"" + bboxSplit.toString() + "\"." );
+
+    double minz = 0;
+    double maxz = 0;
+    try
+    {
+      minz = Double.parseDouble( bboxSplit[4] );
+      maxz = Double.parseDouble( bboxSplit[5] );
+    }
+    catch ( NumberFormatException e )
+    {
+      String message = "BBOX item(s) have incorrect number format [not double] <" + bboxSplit.toString() + ">.";
+      log.error( "genRequestVertSubset(): " + message + " - " + e.getMessage() );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", message );
+    }
+
+    return new AxisSubset( vertAxis, minz, maxz, 1 );
   }
 
   private DateRange parseTime( String time )
@@ -188,77 +235,43 @@ public class GetCoverage extends WcsRequest
     return dateRange;
   }
 
-  private List<AxisSubset> parseRangeSubset( String rangeSubset, List<WcsRangeField> range)
+  private List<String> parseRangeSubset( String rangeSubset)
           throws WcsException
   {
+    List<String> response = new ArrayList<String>();
+
+    // Default is to return all fields.
     if ( rangeSubset == null || rangeSubset.equals( "" ) )
-      return null;
-
-    AxisSubset range;
-
-    if ( rangeSubset.indexOf( "," ) != -1 )
     {
-      log.error( "parseRangeSubset(): Vertical value list not supported <" + rangeSubset + ">." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Not currently supporting list of Vertical values (just range, i.e., \"min/max\")." );
+      response.addAll( this.coverage.getRangeFieldNames() );
+      return response;
     }
-    else if ( rangeSubset.indexOf( "/" ) != -1 )
+
+    // Split the rangeSubset request into fieldSubset requests.
+    String[] fieldSubsetArray;
+    if ( rangeSubset.indexOf( ";") == -1 )
     {
-      String[] rangeSplit = rangeSubset.split( "/" );
-      if ( rangeSplit.length != 2 )
-      {
-        log.error( "parseRangeSubset(): Unsupported Vertical value (range with resolution) <" + rangeSubset + ">." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Not currently supporting vertical range with resolution." );
-      }
-      double minValue = 0;
-      double maxValue = 0;
-      try
-      {
-        minValue = Double.parseDouble( rangeSplit[0] );
-        maxValue = Double.parseDouble( rangeSplit[1] );
-      }
-      catch ( NumberFormatException e )
-      {
-        log.error( "parseRangeSubset(): Failed to parse Vertical range min or max <" + rangeSubset + ">: " + e.getMessage() );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Failed to parse Vertical range min or max." );
-      }
-      if ( minValue > maxValue)
-      {
-        log.error( "parseRangeSubset(): Vertical range must be \"min/max\" <" + rangeSubset + ">." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Vertical range must be \"min/max\"." );
-      }
-      range = new AxisSubset( minValue, maxValue, 1);
+      fieldSubsetArray = new String[1];
+      fieldSubsetArray[0] = rangeSubset;
     }
     else
     {
-      if ( ! coverage.getRangeField().getAxis().getValues().contains( rangeSubset))
-      {
-        log.error( "parseRangeSubset(): Unrecognized RangeSet Axis value <" + rangeSubset + ">." );
-        throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(),
-                                "Unrecognized RangeSet Axis value <" + rangeSubset + ">." );
-      }
+      fieldSubsetArray = rangeSubset.split( ";" );
+    }
+
+    for ( String curFieldSubset : fieldSubsetArray )
+    {
+      if ( this.coverage.isRangeFieldName( curFieldSubset) )
+        response.add( curFieldSubset );
       else
       {
-        double value = 0;
-        try
-        {
-          value = Double.parseDouble( rangeSubset );
-        }
-        catch ( NumberFormatException e )
-        {
-          log.error( "parseRangeSubset(): Failed to parse Vertical value <" + rangeSubset + ">: " + e.getMessage() );
-          throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Failed to parse Vertical value." );
-        }
-        range = new AxisSubset( value, value, 1 );
+        String message = "Requested range field <" + curFieldSubset + "> not available.";
+        log.warn( "parseRangeSubset(): " + message );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "RangeSubset", message );
       }
     }
 
-    if ( range == null)
-    {
-      log.error( "parseRangeSubset(): Invalid Vertical range requested <" + rangeSubset + ">." );
-      throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Invalid Vertical range requested." );
-    }
-
-    return range;
+    return response;
   }
 
 }

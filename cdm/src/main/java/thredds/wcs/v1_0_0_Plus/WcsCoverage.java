@@ -9,9 +9,7 @@ import ucar.unidata.geoloc.*;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
 
-import java.util.List;
-import java.util.Collections;
-import java.util.ArrayList;
+import java.util.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -28,7 +26,6 @@ public class WcsCoverage
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( WcsCoverage.class );
 
-  // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
   private GridDataset.Gridset coverage;
   private WcsDataset dataset;
 
@@ -40,11 +37,10 @@ public class WcsCoverage
   private String nativeCRS;
 
   private String defaultRequestCrs;
-  private LatLonRect latLonBoundingBox; // Estimate when native CRS is  not lat/lon.
 
   private String allowedCoverageFormat;
 
-  private List<WcsRangeField> range;
+  private HashMap<String, WcsRangeField> range;
 
   public WcsCoverage( GridDataset.Gridset coverage, WcsDataset dataset)
   {
@@ -71,7 +67,7 @@ public class WcsCoverage
     this.name = this.coordSys.getName();
     this.label = this.coordSys.getName();
 
-    this.range = new ArrayList<WcsRangeField>();
+    this.range = new HashMap<String, WcsRangeField>();
     StringBuffer descripSB = new StringBuffer( "All parameters on the \"")
             .append( this.name).append( "\" coordinate system: ");
     for ( GridDatatype curField : this.coverage.getGrids() )
@@ -80,7 +76,8 @@ public class WcsCoverage
       descripSB.append( stdName.equals( "" ) ? curField.getName() : stdName )
               .append( "," );
 
-      range.add( new WcsRangeField( curField ) );
+      WcsRangeField field = new WcsRangeField( curField );
+      range.put( field.getName(), field );
     }
     descripSB.setCharAt( descripSB.length() - 1, '.' );
     this.description = descripSB.toString();
@@ -88,7 +85,6 @@ public class WcsCoverage
     this.nativeCRS = EPSG_OGC_CF_Helper.getWcs1_0CrsId( this.coordSys.getProjection() );
 
     this.defaultRequestCrs = "OGC:CRS84";
-    this.latLonBoundingBox = this.coordSys.getLatLonBoundingBox();
 
     this.allowedCoverageFormat = "application/x-netcdf";
   }
@@ -104,7 +100,9 @@ public class WcsCoverage
   public String getNativeCrs() { return nativeCRS; }
   public String getAllowedCoverageFormat() { return allowedCoverageFormat; }
 
-  public List<WcsRangeField> getRange() { return Collections.unmodifiableList( range ); }
+  public boolean isRangeFieldName( String fieldName ) { return range.containsKey( fieldName ); }
+  public Set<String> getRangeFieldNames() { return range.keySet(); }
+  public Collection<WcsRangeField> getRange() { return range.values(); }
 
   static private DiskCache2 diskCache = null;
   static public void setDiskCache( DiskCache2 _diskCache ) { diskCache = _diskCache; }
@@ -118,7 +116,7 @@ public class WcsCoverage
     return diskCache;
   }
 
-  public File writeCoverageDataToFile( LatLonRect bboxLatLonRect, AxisSubset vertSubset, List<AxisSubset> rangeSubset, DateRange timeRange)
+  public File writeCoverageDataToFile( LatLonRect bboxLatLonRect, AxisSubset vertSubset, List<String> rangeSubset, DateRange timeRange)
           throws WcsException
   {
     File ncFile = getDiskCache().getCacheFile( this.dataset.getDatasetPath() + "-" + this.getName() + ".nc" );
@@ -130,7 +128,7 @@ public class WcsCoverage
     catch ( InvalidRangeException e )
     {
       log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.getName() + "> along vertical range <" + vertSubset + ">: " + e.getMessage() );
-      throw new WcsException( WcsException.Code.CoverageNotDefined, "Vertical", "Failed to subset coverage <" + this.getName() + "> along vertical range." );
+      throw new WcsException( WcsException.Code.CoverageNotDefined, "BBOX", "Failed to subset coverage <" + this.getName() + "> along vertical range." );
     }
 
     //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
@@ -140,7 +138,7 @@ public class WcsCoverage
     {
       this.coordSys.getVerticalAxis().isNumeric();
       writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
-                       Collections.singletonList( this.getName() ),
+                       rangeSubset,
                        bboxLatLonRect, 1,
                        zRange,
                        timeRange, 1,
@@ -157,6 +155,5 @@ public class WcsCoverage
       throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage <" + this.getName() + ">." );
     }
     return ncFile;
-
   }
 }

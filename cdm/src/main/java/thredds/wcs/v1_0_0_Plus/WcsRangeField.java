@@ -1,11 +1,7 @@
 package thredds.wcs.v1_0_0_Plus;
 
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.ma2.Range;
-import ucar.ma2.InvalidRangeException;
 
 import java.util.List;
 import java.util.Collections;
@@ -19,8 +15,8 @@ import java.util.ArrayList;
  */
 public class WcsRangeField
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( WcsRangeField.class );
+//  private static org.slf4j.Logger log =
+//          org.slf4j.LoggerFactory.getLogger( WcsRangeField.class );
 
   private GridDatatype gridDatatype;
 
@@ -50,25 +46,8 @@ public class WcsRangeField
     this.validMin = this.gridDatatype.getVariable().getValidMin();
     this.validMax = this.gridDatatype.getVariable().getValidMax();
 
-    GridCoordSystem gcs = this.gridDatatype.getCoordinateSystem();
-
-    List<CoordinateAxis> fieldAxes = new ArrayList<CoordinateAxis>( gcs.getCoordinateAxes());
-    fieldAxes.remove( gcs.getXHorizAxis() );
-    fieldAxes.remove( gcs.getYHorizAxis() );
-    if ( gcs.getVerticalAxis() != null )
-      fieldAxes.remove( gcs.getVerticalAxis() );
-    if ( gcs.getTimeAxis() != null )
-      fieldAxes.remove( gcs.getTimeAxis() );
-
-    if ( fieldAxes.isEmpty())
-      axes = Collections.emptyList();
-    else
-    {
-      axes = new ArrayList<Axis>();
-      for ( CoordinateAxis curAxis : fieldAxes )
-        if ( curAxis instanceof CoordinateAxis1D )
-          axes.add( new Axis( (CoordinateAxis1D) curAxis ));
-    }
+    // ToDo GeoGrids only handle scalar range fields. (???)
+    axes = Collections.emptyList();
   }
 
   GridDatatype getGridDatatype() { return this.gridDatatype; }
@@ -84,7 +63,8 @@ public class WcsRangeField
 
   public boolean hasMissingData() { return this.gridDatatype.hasMissingData(); }
 
-  public List<Axis> getAxes() { return Collections.unmodifiableList( this.axes); }
+  public List<Axis> getAxes() { return this.axes; }
+  //public List<Axis> getAxes() { return Collections.unmodifiableList( this.axes); }
 
   public static class Axis
   {
@@ -116,70 +96,5 @@ public class WcsRangeField
     public String getDescription() { return this.description; }
     public boolean isNumeric() { return isNumeric; }
     public List<String> getValues() { return Collections.unmodifiableList( this.values); }
-  }
-
-  public static class RangeAxisSubset
-  {
-    private double min, max;
-    private int stride;
-
-    public RangeAxisSubset( double minimum, double maximum, int stride )
-    {
-      if ( minimum > maximum )
-      {
-        log.error( "RangeAxisSubset(): Minimum <" + minimum + "> is greater than maximum <" + maximum + ">." );
-        throw new IllegalArgumentException( "RangeAxisSubset minimum <" + minimum + "> greater than maximum <" + maximum + ">." );
-      }
-      if ( stride < 1 )
-      {
-        log.error( "RangeAxisSubset(): stride <" + stride + "> less than one (1 means all points)." );
-        throw new IllegalArgumentException( "RangeAxisSubset stride <" + stride + "> less than one (1 means all points)." );
-      }
-      this.min = minimum;
-      this.max = maximum;
-      this.stride = stride;
-    }
-
-    public double getMinimum() { return min; }
-    public double getMaximum() { return max; }
-    public int getStride() { return stride; }
-
-    public String toString()
-    {
-      return "[min=" + min + ",max=" + max + ",stride=" + stride + "]";
-    }
-
-    public Range getRange( GridCoordSystem gcs )
-            throws InvalidRangeException
-    {
-      if ( gcs == null )
-      {
-        log.error( "getRange(): GridCoordSystem must be non-null." );
-        throw new IllegalArgumentException( "GridCoordSystem must be non-null." );
-      }
-      CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
-      if ( vertAxis == null )
-      {
-        log.error( "getRange(): GridCoordSystem must have vertical axis." );
-        throw new IllegalArgumentException( "GridCoordSystem must have vertical axis." );
-      }
-      if ( !vertAxis.isNumeric() )
-      {
-        log.error( "getRange(): GridCoordSystem must have numeric vertical axis to support min/max range." );
-        throw new IllegalArgumentException( "GridCoordSystem must have numeric vertical axis to support min/max range." );
-      }
-      int minIndex = vertAxis.findCoordElement( min );
-      int maxIndex = vertAxis.findCoordElement( max );
-      if ( minIndex == -1 || maxIndex == -1 )
-      {
-        log.error( "getRange(): GridCoordSystem vertical axis does not contain min/max points." );
-        throw new IllegalArgumentException( "GridCoordSystem vertical axis does not contain min/max points." );
-      }
-
-      if ( vertAxis.getPositive().equalsIgnoreCase( CoordinateAxis.POSITIVE_DOWN ) )
-        return new Range( maxIndex, minIndex, stride );
-      else
-        return new Range( minIndex, maxIndex, stride );
-    }
   }
 }

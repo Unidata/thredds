@@ -344,8 +344,7 @@ public class DescribeCoverage extends WcsRequest
     // rangeSet/RangeSet@refSysLabel
     //Element innerRangeSetElem = new Element( "RangeSet", wcsNS);
     // ToDo How deal with range fields and thier axes?
-    List<WcsRangeField> range = coverage.getRange();
-    for ( WcsRangeField curField: range )
+    for ( WcsRangeField curField: coverage.getRange() )
     {
       Element fieldElem = new Element( "Field", wcsNS);
 
@@ -390,15 +389,16 @@ public class DescribeCoverage extends WcsRequest
         if ( curAxis != null )
         {
           // rangeSet/RangeSet/axisDescription [0..*]
-          Element axisDescElem = new Element( "axisDescription", wcsNS );
+          //Element axisDescElem = new Element( "axisDescription", wcsNS );
+          Element axisDescElem = new Element( "Axis", wcsNS );
 
           // rangeSet/RangeSet/axisDescription/AxisDescription [1]
-          Element innerAxisDescElem = new Element( "AxisDescription", wcsNS);
+          //Element innerAxisDescElem = new Element( "AxisDescription", wcsNS);
 
           // rangeSet/RangeSet/axisDescription/AxisDescription/name [1]
           // rangeSet/RangeSet/axisDescription/AxisDescription/label [1]
-          innerAxisDescElem.addContent( new Element( "name", wcsNS).addContent( curAxis.getName() ));
-          innerAxisDescElem.addContent( new Element( "label", wcsNS).addContent( curAxis.getLabel()));
+          axisDescElem.addContent( new Element( "name", wcsNS).addContent( curAxis.getName() ));
+          axisDescElem.addContent( new Element( "label", wcsNS).addContent( curAxis.getLabel()));
 
           // rangeSet/RangeSet/axisDescription/AxisDescription/values [1]
           Element axisValuesElem = new Element( "values", wcsNS);
@@ -417,8 +417,7 @@ public class DescribeCoverage extends WcsRequest
 
           // rangeSet/RangeSet/axisDescription/AxisDescription/values/default [0..1]
 
-          innerAxisDescElem.addContent( axisValuesElem);
-          axisDescElem.addContent( innerAxisDescElem);
+          axisDescElem.addContent( axisValuesElem);
           fieldElem.addContent( axisDescElem);
         }
       }
