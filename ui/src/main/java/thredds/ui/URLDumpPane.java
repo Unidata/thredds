@@ -196,6 +196,8 @@ public class URLDumpPane extends TextHistoryPane {
       m = p;
     }
 
+    m.setRequestHeader("Accept-Encoding","gzip,deflate");
+
     appendLine("HttpClient "+m.getName()+" "+urlString);
     appendLine("   do Authentication= "+m.getDoAuthentication());
     appendLine("   follow Redirects= "+m.getFollowRedirects());

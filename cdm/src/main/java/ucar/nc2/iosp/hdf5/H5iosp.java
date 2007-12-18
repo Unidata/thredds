@@ -77,11 +77,11 @@ public class H5iosp extends AbstractIOServiceProvider {
   private RandomAccessFile myRaf;
   private H5header headerParser;
 
-  private boolean showBytes = false;
-  private boolean showHeaderBytes = false;
+  //private boolean showBytes = false;
+  //private boolean showHeaderBytes = false;
 
-  public void setSpecial(Object special) {
-  }
+  ///public void setSpecial(Object special) {
+  //}
 
   /////////////////////////////////////////////////////////////////////////////
   // reading
@@ -212,7 +212,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       IndexIterator ii = codesArray.getIndexIterator();
       while(ii.hasNext()) {
         int code = ii.getIntNext();
-        stringData[count++] = vinfo.enumMap.get( code);
+        stringData[count++] = vinfo.enumMap.get(Integer.valueOf(code));
       }
       return Array.factory(String.class, shape, stringData);
     }
@@ -264,7 +264,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
   }
 
-  private Array convertReference(Array refArray) throws java.io.IOException, InvalidRangeException {
+  private Array convertReference(Array refArray) throws java.io.IOException {
     int nelems = (int) refArray.getSize();
     Index ima = refArray.getIndex();
     String[] result = new String[nelems];
@@ -369,7 +369,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     throw new IllegalStateException("H5iosp.readDataPrimitive: Unknown DataType "+dataType);
   }
 
-  protected Object fillArray(int size, DataType dataType, Object fillValue) throws java.io.IOException, InvalidRangeException {
+  private Object fillArray(int size, DataType dataType, Object fillValue) {
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR))  {
       byte[] pa = new byte[size];
@@ -724,7 +724,7 @@ static Object convert( byte[] barray, DataType dataType, int byteOrder) {
 
   // convert byte array to char array
 
-  protected char[] convertByteToChar(byte[] byteArray) {
+  private char[] convertByteToChar(byte[] byteArray) {
     int size = byteArray.length;
     char[] cbuff = new char[size];
     for (int i = 0; i < size; i++)

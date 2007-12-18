@@ -76,6 +76,17 @@ public final class Range {
   }
 
   /**
+   * Create a range starting at zero, with unit stride.
+   * @param length number of elements in the Rnage
+   */
+  public Range(int length) {
+    this.name = null;
+    this.first = 0;
+    this.stride = 1;
+    this.n = length;
+  }
+
+  /**
    * Create a named range with unit stride.
    *
    * @param name  name of Range
@@ -311,6 +322,7 @@ public final class Range {
   }
 
   /**
+   * Get the number of elements in the range.
    * @return the number of elements in the range.
    */
   public int length() {

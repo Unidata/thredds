@@ -21,12 +21,14 @@ package ucar.nc2.iosp.hdf4;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
+import ucar.nc2.*;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.DataType;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.File;
+import java.util.*;
 
 /**
  * @author caron
@@ -57,24 +59,23 @@ public class H4header {
     return false;
   }
 
-  private ucar.nc2.NetcdfFile ncfile;
+  private Map<Short, List<Tag>> tagMap = new HashMap<Short, List<Tag>>();
   private RandomAccessFile raf;
   private long actualSize;
-  private MemTracker memTracker;
 
+  private MemTracker memTracker;
   private PrintStream debugOut = System.out;
   private boolean debug = true, debugTracker = true;
 
   void read(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile) throws IOException {
-    this.ncfile = ncfile;
     this.raf = myRaf;
     actualSize = raf.length();
     memTracker = new MemTracker(actualSize);
 
     if (!isValidFile(myRaf))
       throw new IOException("Not an HDF4 file ");
-    // now we are positioned right after the header
 
+    // now we are positioned right after the header
     memTracker.add("header", 0, raf.getFilePointer());
 
     // header information is in le byte order
@@ -83,27 +84,137 @@ public class H4header {
     if (debug) debugOut.println("H4header 0pened file to read:'" + raf.getLocation() + "', size=" + actualSize);
     readDDH();
 
+    ncfile.addAttribute(null, new Attribute("History", "Direct read of HDF4 file through CDM library"));
+    construct(ncfile);
+
     if (debugTracker) memTracker.report();
+  }
+
+  private void construct(ucar.nc2.NetcdfFile ncfile) {
+    Set<Short> keys = tagMap.keySet();
+    for (Short key : keys) {
+      List<Tag> taglist = tagMap.get(key);
+      for (Tag t : taglist) {
+        if (t.code == 30)
+          ncfile.addAttribute(null, new Attribute("HDF4_Version", ((TagVersion) t).value()));
+        else if (t.code == 100)
+          ncfile.addAttribute(null, new Attribute("Title-"+t.refno, ((TagText) t).text));
+        else if (t.code == 101)
+          ncfile.addAttribute(null, new Attribute("Description-"+t.refno, ((TagText) t).text));
+        else if (t.code == 1962)
+          constructStructure(ncfile, taglist);
+      }
+    }
+  }
+
+  private void constructStructure(ucar.nc2.NetcdfFile ncfile, List<Tag> taglist) {
+    TagVH h = null;
+    Tag data = null;
+    for (Tag t : taglist) {
+      if (t.code == 1962)
+        h = (TagVH) t;
+      if (t.code == 1963)
+        data = t;
+    }
+    if ((h == null) || (data == null))
+      throw new IllegalStateException();
+
+    try {
+      Structure s = new Structure(ncfile, null, null, h.name);
+      if (h.nvert > 1)
+        s.setDimensionsAnonymous(new int[]{h.nvert});
+      else
+        s.setIsScalar();
+      s.setSPobject(new Vinfo(data.offset, h.ivsize));
+      ncfile.addVariable(null, s);
+
+      for (int fld = 0; fld < h.nfields; fld++) {
+        Variable m = new Variable(ncfile, null, s, h.fld_name[fld]);
+        short type = h.fld_type[fld];
+        short size = h.fld_isize[fld];
+        m.setDataType(getDataType(type));
+        if ((type == 3) || (type == 4) && (size > 1))
+          m.setDimensionsAnonymous(new int[]{size});
+        else
+          m.setIsScalar();
+        m.setSPobject(new Minfo(h.fld_offset[fld], size, h.fld_order[fld]));
+        s.addMemberVariable(m);
+      }
+
+    } catch (InvalidRangeException e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  private DataType getDataType(short type) {
+    switch (type) {
+      case 3:
+        return DataType.CHAR;
+      case 4:
+        return DataType.CHAR;
+      case 5:
+        return DataType.FLOAT;
+      case 6:
+        return DataType.DOUBLE;
+      case 20:
+        return DataType.BYTE;   // 21 unsigned
+      case 21:
+        return DataType.BYTE;   // unsigned
+      case 22:
+        return DataType.SHORT;   // 23 unsigned
+      case 24:
+        return DataType.INT;   // 25 unsigned
+      case 26:
+        return DataType.LONG;   // 27 unsigned
+      default:
+        throw new IllegalStateException("unknown type= " + type);
+    }
+  }
+
+  static class Vinfo {
+    int start, recsize, order;
+
+    Vinfo(int start, int recsize) {
+      this.start = start;
+      this.recsize = recsize;
+    }
+  }
+
+  // member info
+  static class Minfo {
+    short offset, size, order;
+
+    Minfo(short offset, short size, short order) {
+      this.offset = offset;
+      this.size = size;
+      this.order = order;
+    }
   }
 
   private void readDDH() throws IOException {
     long start = raf.getFilePointer();
 
-    short ndd = raf.readShort();
-    int link = raf.readInt(); // link == 0 means no more
-    System.out.println(" DDHeader ndd="+ndd+" link="+link);
+    short ndd = raf.readShort(); // number of DD blocks
+    int link = raf.readInt(); // point to the next DDH; link == 0 means no more
+    System.out.println(" DDHeader ndd=" + ndd + " link=" + link);
 
     long pos = raf.getFilePointer();
-    for (int i=0; i<ndd; i++) {
+    for (int i = 0; i < ndd; i++) {
       raf.seek(pos);
       Tag tag = factory();
       pos += 12; // tag usually changed the file pointer
-      if (debug && (tag.code > 1)) debugOut.println(tag);
-
+      if (tag.code > 1) {
+        List<Tag> taglist = tagMap.get(tag.refno);
+        if (taglist == null) {
+          taglist = new ArrayList<Tag>();
+          tagMap.put(tag.refno, taglist);
+        }
+        taglist.add(tag);
+        if (debug) debugOut.println(tag);
+      }
     }
-    memTracker.add("DD block", start, raf.getFilePointer());    
+    memTracker.add("DD block", start, raf.getFilePointer());
   }
-
 
   ////////////////////////////////////////////////////////////////////////////////
   // Tags
@@ -111,11 +222,20 @@ public class H4header {
   Tag factory() throws IOException {
     short code = raf.readShort();
     switch (code) {
-      case 30 : return new TagVersion(code);
-      case 1962 : return new TagVH(code);
-      case 1963 : return new TagVS(code);
-      case 1965 : return new TagVG(code);
-      default : return new Tag(code);
+      case 30:
+        return new TagVersion(code);
+      case 100:
+        return new TagText(code);
+      case 101:
+         return new TagText(code);
+      case 105:
+         return new TagAnnotate(code);
+      case 1962:
+        return new TagVH(code);
+      case 1965:
+        return new TagVG(code);
+      default:
+        return new Tag(code);
     }
   }
 
@@ -131,33 +251,70 @@ public class H4header {
       length = raf.readInt();
       t = TagEnum.getTag(code);
       if (code > 1)
-        memTracker.add(t.getName(), offset, offset+length);
+        memTracker.add(t.getName() + " " + refno, offset, offset + length);
     }
 
     public String toString() {
       if (t != null)
-        return " tag= "+t+" refno="+refno+" offset="+offset+" length="+length;
+        return " tag= " + t + " refno=" + refno + " offset=" + offset + " length=" + length;
       else
-        return " tag= "+code+" refno="+refno+" offset="+offset+" length="+length;
+        return " tag= " + code + " refno=" + refno + " offset=" + offset + " length=" + length;
     }
   }
 
+  // 30
   private class TagVersion extends Tag {
     int major, minor, release;
     String name;
+
     TagVersion(short code) throws IOException {
       super(code);
       raf.seek(offset);
       major = raf.readInt();
       minor = raf.readInt();
       release = raf.readInt();
-      name = readString(length-12);
+      name = readString(length - 12);
     }
+
+    public String value() {
+      return major + "." + minor + "." + release + " (" + name + ")";
+    }
+
     public String toString() {
-      return super.toString()+" version= "+major+"."+minor+"."+release+" ("+name+")";
+      return super.toString() + " version= " + major + "." + minor + "." + release + " (" + name + ")";
     }
   }
 
+  // 100, 101
+  private class TagText extends Tag {
+    String text;
+    TagText(short code) throws IOException {
+      super(code);
+      raf.seek(offset);
+      text = readString(length);
+    }
+    public String toString() {
+      return super.toString() + " "+text;
+    }
+  }
+
+  // 105
+  private class TagAnnotate extends Tag {
+    String text;
+    short obj_tagno, obj_refno;
+    TagAnnotate(short code) throws IOException {
+      super(code);
+      raf.seek(offset);
+      obj_tagno = raf.readShort();
+      obj_refno = raf.readShort();
+      text = readString(length);
+    }
+    public String toString() {
+      return super.toString() + " "+obj_tagno+ " "+obj_refno+" "+ text;
+    }
+  }
+
+  // 1963
   private class TagVG extends Tag {
     short nelems, extag, exref, version;
     short[] elem_tag, elem_ref;
@@ -169,11 +326,11 @@ public class H4header {
       nelems = raf.readShort();
 
       elem_tag = new short[nelems];
-      for (int i=0; i<nelems; i++)
+      for (int i = 0; i < nelems; i++)
         elem_tag[i] = raf.readShort();
 
       elem_ref = new short[nelems];
-      for (int i=0; i<nelems; i++)
+      for (int i = 0; i < nelems; i++)
         elem_ref[i] = raf.readShort();
 
       short len = raf.readShort();
@@ -196,16 +353,17 @@ public class H4header {
       sbuff.append(" name= ").append(name);
       sbuff.append("\n");
       sbuff.append("   tag ref\n   ");
-      for (int i=0; i<nelems; i++) {
+      for (int i = 0; i < nelems; i++) {
         sbuff.append(elem_tag[i]).append(" ");
         sbuff.append(elem_ref[i]).append(" ");
         sbuff.append("\n   ");
-      }      
+      }
 
       return sbuff.toString();
     }
   }
 
+  // 1962
   private class TagVH extends Tag {
     short interlace, ivsize, nfields, extag, exref, version;
     short[] fld_type, fld_isize, fld_offset, fld_order;
@@ -222,23 +380,23 @@ public class H4header {
       nfields = raf.readShort();
 
       fld_type = new short[nfields];
-      for (int i=0; i<nfields; i++)
+      for (int i = 0; i < nfields; i++)
         fld_type[i] = raf.readShort();
 
       fld_isize = new short[nfields];
-      for (int i=0; i<nfields; i++)
+      for (int i = 0; i < nfields; i++)
         fld_isize[i] = raf.readShort();
 
       fld_offset = new short[nfields];
-      for (int i=0; i<nfields; i++)
+      for (int i = 0; i < nfields; i++)
         fld_offset[i] = raf.readShort();
 
       fld_order = new short[nfields];
-      for (int i=0; i<nfields; i++)
+      for (int i = 0; i < nfields; i++)
         fld_order[i] = raf.readShort();
 
       fld_name = new String[nfields];
-      for (int i=0; i<nfields; i++) {
+      for (int i = 0; i < nfields; i++) {
         short len = raf.readShort();
         fld_name[i] = readString(len);
       }
@@ -266,7 +424,7 @@ public class H4header {
       sbuff.append(" name= ").append(name);
       sbuff.append("\n");
       sbuff.append("   name    type  isize  offset  order\n   ");
-      for (int i=0; i<nfields; i++) {
+      for (int i = 0; i < nfields; i++) {
         sbuff.append(fld_name[i]).append(" ");
         sbuff.append(fld_type[i]).append(" ");
         sbuff.append(fld_isize[i]).append(" ");
@@ -279,19 +437,12 @@ public class H4header {
     }
   }
 
-
-  private class TagVS extends Tag {
-    TagVS(short code) throws IOException {
-      super(code);
-    }
-  }
-
   String readString(int len) throws IOException {
     byte[] b = new byte[len];
     raf.read(b);
-    int count = len-1;
+    int count = len - 1;
     while (b[count] == 0) count--;
-    return new String(b, 0, count+1);
+    return new String(b, 0, count + 1);
   }
 
 
@@ -360,13 +511,47 @@ public class H4header {
     }
   }
 
-  static public void main( String args[]) throws IOException {
-    String filename = "17766010.hdf";
+  ///////////////////////////////////////////////////
+  /// testing
+
+  static class MyNetcdfFile extends NetcdfFile {
+  }
+
+  static void readAllDir(String dirName, boolean subdirs) throws IOException {
+    System.out.println("---------------Reading directory " + dirName);
+    File allDir = new File(dirName);
+    File[] allFiles = allDir.listFiles();
+    if (null == allFiles) {
+      System.out.println("---------------INVALID " + dirName);
+      return;
+    }
+
+    for (int i = 0; i < allFiles.length; i++) {
+      String name = allFiles[i].getAbsolutePath();
+      if (name.endsWith(".hdf"))
+        test(name);
+    }
+
+    for (int i = 0; i < allFiles.length; i++) {
+      File f = allFiles[i];
+      if (f.isDirectory() && subdirs)
+        readAllDir(allFiles[i].getAbsolutePath(), subdirs);
+    }
+  }
+
+  static void test(String filename) throws IOException {
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    NetcdfFile ncfile = new MyNetcdfFile();
+    H4header header = new H4header();
+    header.read(raf, ncfile);
+    System.out.println(" " + ncfile);
+  }
+
+  static public void main(String args[]) throws IOException {
+    String filename = "96108_08.hdf";
     String filename2 = "balloon_sonde.o3_knmi000_de.bilt_s2_20060905t112100z_002.hdf";
     String filename3 = "TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF";
-    RandomAccessFile raf = new RandomAccessFile("C:/data/hdf4/"+filename3,"r");
-    //NetcdfFile ncfile = new NetcdfFile();
-    H4header header = new H4header();
-    header.read(raf, null);
+    //readAllDir("C:/data/hdf4/", false);
+    test("C:/data/hdf4/" + filename3);
   }
 }

@@ -157,7 +157,7 @@
 
   <target name="compile" depends="init, release-settings" description="library compile">
     <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
-           includeAntRuntime="false" source="1.5" target="1.5">
+           includeAntRuntime="false" source="1.5" target="1.5" verbose="true">
       <src refid="sourcepath" />
       <patternset refid="sources"/>
       <classpath refid="compile.classpath"/>

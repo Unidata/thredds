@@ -22,7 +22,6 @@ package ucar.nc2.ui;
 
 import ucar.nc2.*;
 import ucar.nc2.ncml.NcMLWriter;
-import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.thredds.DqcRadarDatasetCollection;
 import ucar.nc2.ncml4.NcMLReader;
@@ -496,7 +495,7 @@ public class ToolsUI extends JPanel {
   public void setDebugFlags() {
     if (debug) System.out.println("checkDebugFlags ");
     NetcdfFile.setDebugFlags(debugFlags);
-    H5iosp.setDebugFlags(debugFlags);
+    ucar.nc2.iosp.hdf5.H5iosp.setDebugFlags(debugFlags);
     ucar.nc2.ncml4.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
     ucar.nc2.iosp.grib.GribServiceProvider.setDebugFlags(debugFlags);

@@ -28,13 +28,11 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
-import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.iosp.IOServiceProvider;
 
 import java.util.*;
 import java.util.zip.ZipInputStream;
 import java.util.zip.GZIPInputStream;
-import java.util.regex.*;
 import java.net.URL;
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
@@ -84,14 +82,17 @@ public class NetcdfFile {
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
-      // log.warn("Cant load class: " + e);
+      log.warn("Cant load class: " + e);
+    }
+    try {
+      registerIOProvider("ucar.nc2.iosp.hdf4.H4iosp");
+    } catch (Throwable e) {
       log.warn("Cant load class: " + e);
     }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib1.Grib1Input"); // only load if grib.jar is present
       registerIOProvider("ucar.nc2.iosp.grib.Grib1ServiceProvider");
     } catch (Throwable e) {
-      // log.warn("Cant load class: " + e);
       log.warn("Cant load class: " + e);
     }
     try {
@@ -104,7 +105,6 @@ public class NetcdfFile {
       NetcdfFile.class.getClassLoader().loadClass("ucar.bufr.BufrInput"); // only load if bufr.jar is present
       registerIOProvider("ucar.nc2.iosp.bufr.BufrIosp");
     } catch (Throwable e) {
-      // log.warn("Cant load class: " + e);
       log.warn("Cant load class: " + e);
     }
     try {
@@ -198,7 +198,7 @@ public class NetcdfFile {
    * @param printStream write to this stream.
    */
   static public void setDebugOutputStream(PrintStream printStream) {
-    H5iosp.setDebugOutputStream(printStream);
+    ucar.nc2.iosp.hdf5.H5iosp.setDebugOutputStream(printStream);
   }
 
   /**
