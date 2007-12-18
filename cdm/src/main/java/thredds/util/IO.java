@@ -28,6 +28,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Input/Output utilities.
@@ -41,6 +42,8 @@ public class IO {
   static private int default_socket_buffersize = 64000;
   static boolean showStackTrace = true;
   static boolean debug = false, showResponse = false;
+  private static boolean showHeaders = false;
+  
 
   /**
    * copy all bytes from in to out.
@@ -75,7 +78,7 @@ public class IO {
       int bytesRead = in.read(buffer);
       if (bytesRead == -1) break;
       out.write(buffer, 0, bytesRead);
-      
+
       if (show) {
         done += bytesRead;
         if (done > 1000 * 1000 * next) {
@@ -295,7 +298,7 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public String readFile(String filename) throws IOException {
-    InputStreamReader reader = new InputStreamReader( new FileInputStream(filename), "UTF-8");
+    InputStreamReader reader = new InputStreamReader(new FileInputStream(filename), "UTF-8");
 
     try {
       StringWriter swriter = new StringWriter(50000);
@@ -316,7 +319,7 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public void writeToFile(String contents, File file) throws IOException {
-    OutputStreamWriter fw = new OutputStreamWriter( new FileOutputStream(file), "UTF-8");
+    OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
     UnsynchronizedBufferedWriter writer = new UnsynchronizedBufferedWriter(fw);
 
     try {
@@ -363,7 +366,7 @@ public class IO {
   // URLs
 
   /**
-   * copy contents of URL to output stream, specify internal buffer size
+   * copy contents of URL to output stream, specify internal buffer size. request gzip encoding
    *
    * @param urlString  copy the contents of this URL
    * @param out        copy to this stream
@@ -380,43 +383,69 @@ public class IO {
     }
 
     try {
-      java.net.URLConnection connection = url.openConnection();
-      if (connection instanceof HttpURLConnection) {
-        java.net.HttpURLConnection httpConnection = (HttpURLConnection) connection;
-        // check response code is good
-        int responseCode = httpConnection.getResponseCode();
-        if (responseCode / 100 != 2)
-          throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode
-                  + "\n" + httpConnection.getResponseMessage() + "\n");
-      }
+      java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
+
+      connection.addRequestProperty("Accept-Encoding", "gzip");
 
       if (showHeaders) {
-         // request headers
-        System.out.println("HEADERS for "+urlString + ": ");
-        System.out.println(" contentEncoding: "+ connection.getContentEncoding());
+        System.out.println("\nREQUEST Properties for " + urlString + ": ");
+        Map reqs = connection.getRequestProperties();
+        Iterator reqIter = reqs.keySet().iterator();
+        while (reqIter.hasNext()) {
+          String key = (String) reqIter.next();
+          java.util.List values = (java.util.List) reqs.get(key);
+          System.out.print(" " + key + ": ");
+          for (int i = 0; i < values.size(); i++) {
+            String v = (String) values.get(i);
+            System.out.print(v + " ");
+          }
+          System.out.println("");
+        }
+      }
+
+      // get response
+      int responseCode = connection.getResponseCode();
+      if (responseCode / 100 != 2)
+        throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode
+            + "\n" + connection.getResponseMessage() + "\n");
+
+
+      if (showHeaders) {
+        int code = connection.getResponseCode();
+        String response = connection.getResponseMessage();
+
+        // response headers
+        System.out.println("\nRESPONSE for " + urlString + ": ");
+        System.out.println(" HTTP/1.x " + code + " " + response);
+        System.out.println("Headers: ");
+
         for (int j = 1; ; j++) {
           String header = connection.getHeaderField(j);
           String key = connection.getHeaderFieldKey(j);
           if (header == null || key == null) break;
-          System.out.println(" "+key + ": " + header);
+          System.out.println(" " + key + ": " + header);
         }
       }
 
       // read it
       is = connection.getInputStream();
+
+      // check if its gzipped
+      if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
+        is = new GZIPInputStream( new BufferedInputStream(is, 1024)); 
+      }
       thredds.util.IO.copyB(is, out, bufferSize);
 
     } catch (java.net.ConnectException e) {
       if (showStackTrace) e.printStackTrace();
       throw new IOException("** ConnectException on URL: <" + urlString + ">\n" +
-              e.getMessage() + "\nServer probably not running");
+          e.getMessage() + "\nServer probably not running");
 
     } finally {
       if (is != null) is.close();
     }
   }
 
-  private static boolean showHeaders = true;
 
   /**
    * read the contents from the named URL, write to a file.
@@ -669,7 +698,8 @@ public class IO {
 
   // read URL to File
   static public void main(String[] args) {
-    String url = "http://motherlode.ucar.edu:9080/docs/jasper-howto.html";
+    //String url = "http://motherlode.ucar.edu:9080/docs/jasper-howto.html";
+    String url = "http://motherlode.ucar.edu:9080/thredds/ncss/metars?variables=all&north=82.5199&west=88.4499&east=90.4000&south=-90.0000&latitude=&longitude=&spatial=stns&stn=LOWW&time_start=2007-12-02T23%3A45%3A04Z&time_end=present&temporal=point&time=2007-12-02T23%3A45%3A04Z&accept=raw";
 
     long start = System.currentTimeMillis();
     String result = readURLcontents(url);

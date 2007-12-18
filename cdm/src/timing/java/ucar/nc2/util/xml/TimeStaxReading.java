@@ -24,7 +24,6 @@ import ucar.unidata.util.Format;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
-import ucar.nc2.util.Misc;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
@@ -33,7 +32,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -41,14 +39,15 @@ import java.util.List;
  *
  * @author caron
  */
-public class TestStaxReading {
+public class TimeStaxReading {
+  static boolean show = false, process = true, showFields = false;
+
   XMLStreamReader r;
   int nmetars = 0;
   long nelems = Long.MAX_VALUE;
-  boolean show = false, process = true;
   boolean readFields = false;
 
-  TestStaxReading(XMLInputFactory myFactory, String filename) throws FileNotFoundException {
+  TimeStaxReading(XMLInputFactory myFactory, String filename) throws FileNotFoundException {
     long start = System.currentTimeMillis();
 
     InputStream in = new BufferedInputStream(new FileInputStream(filename));
@@ -67,7 +66,7 @@ public class TestStaxReading {
     double took =  .001 * (System.currentTimeMillis() - start);
     System.out.println(" that took = " + took + "sec; "+ Format.d(nmetars/took,0)+" metars/sec");
     
-    for (Field f : fields.values())
+    for (MetarField f : MetarField.fields.values())
       System.out.println(" "+f.name+ " = "+f.sum);
   }
 
@@ -87,8 +86,8 @@ public class TestStaxReading {
     }
     if (show) System.out.println();
     if (!readFields && r.getLocalName().equals("data")) {
-      if (fields.get(fldName) != null) readFields = true;
-      else new Field(fldName);
+      if (MetarField.fields.get(fldName) != null) readFields = true;
+      else new MetarField(fldName);
     }
 
     while (r.hasNext() && (nmetars < nelems)) {
@@ -100,7 +99,7 @@ public class TestStaxReading {
       else if (XMLStreamReader.CHARACTERS == eventType) {
         String text = r.hasText() ? r.getText().trim() : "";
         if (process && text.length() > 0) {
-          Field fld = fields.get(fldName);
+          MetarField fld = MetarField.fields.get(fldName);
           if (null != fld) fld.sum(text);
           indent();
           if (show) System.out.println("  text=(" + text + ")");
@@ -146,7 +145,7 @@ public class TestStaxReading {
     }
   }
 
-  static HashMap<String,Field> fields = new HashMap<String,Field>();
+  /* static HashMap<String,Field> fields = new HashMap<String,Field>();
   static class Field {
     String name;
     boolean isText;
@@ -155,7 +154,7 @@ public class TestStaxReading {
     Field( String name) {
       this.name = name;
       fields.put(name,this);
-      System.out.println(name+" added");
+      if (showFields) System.out.println(name+" added");
     }
 
     void sum( StructureData sdata, StructureMembers.Member m) {
@@ -172,7 +171,7 @@ public class TestStaxReading {
       try {
         sum( Double.parseDouble(text));
       } catch (NumberFormatException e) {
-        System.out.println(name+" is text");
+        if (showFields) System.out.println(name+" is text");
         isText = true;
       }
     }
@@ -181,7 +180,7 @@ public class TestStaxReading {
       if (!Misc.closeEnough(d, -99999.0))
         sum += d; // LOOK kludge for missing data
     }
-  }
+  }   */
 
   static void readFromNetcdf(String filename) throws IOException {
     long start = System.currentTimeMillis();
@@ -193,7 +192,7 @@ public class TestStaxReading {
     List<Variable> members = record.getVariables();
     for (Variable v : members) {
       if (v.getDataType() != DataType.CHAR)
-        new Field(v.getShortName());
+        new MetarField(v.getShortName());
     }
 
     Structure.Iterator siter = record.getStructureIterator();
@@ -202,7 +201,7 @@ public class TestStaxReading {
       StructureData sdata = siter.next();
       List<StructureMembers.Member> sm = sdata.getMembers();
       for (StructureMembers.Member m : sm) {
-        Field f = fields.get(m.getName());
+        MetarField f = MetarField.fields.get(m.getName());
         if (null != f) f.sum( sdata, m);
       }
       count++;
@@ -212,7 +211,7 @@ public class TestStaxReading {
     double took = .001 * (System.currentTimeMillis() - start);
     System.out.println(" that took = " + took + " sec; "+ Format.d(count/took,0)+" metars/sec");
 
-    for (Field f : fields.values())
+    for (MetarField f : MetarField.fields.values())
       System.out.println(" "+f.name+ " = "+f.sum);
             
     ncfile.close();
@@ -225,11 +224,12 @@ public class TestStaxReading {
     //myFactory.setXMLResolver(myXMLResolver);
     myFactory.setProperty("javax.xml.stream.isCoalescing", Boolean.TRUE);
 
-    new TestStaxReading(myFactory, "C:/TEMP/metars/save/xmlC.xml");
+    String dir = "C:/doc/metarEncoding/save/";
+    new TimeStaxReading(myFactory, dir+"xmlC.xml");
 
-    readFromNetcdf("C:/TEMP/metars/save/netcdfC.nc");
+    readFromNetcdf(dir+"netcdfC.nc");
 
-    readFromNetcdf("C:/TEMP/metars/save/netcdfStreamC.nc");
+    readFromNetcdf(dir+"netcdfStreamC.nc");
   }
 
 }
