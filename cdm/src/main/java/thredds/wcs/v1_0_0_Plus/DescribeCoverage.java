@@ -272,6 +272,7 @@ public class DescribeCoverage extends WcsRequest
     CoordinateAxis1D vertAxis = gcs.getVerticalAxis();
     if ( vertAxis != null )
     {
+      posDim++;
       // See verAxis.getUnitsString()
       double zeroIndexValue = vertAxis.getCoordValue( 0 );
       double sizeIndexValue = vertAxis.getCoordValue( ( (int) vertAxis.getSize() ) - 1 );
