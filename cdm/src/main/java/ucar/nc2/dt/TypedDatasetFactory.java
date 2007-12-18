@@ -42,6 +42,7 @@ public class TypedDatasetFactory {
   static {
     registerFactory(DataType.POINT, ucar.nc2.dt.point.UnidataPointObsDataset.class);
     registerFactory(DataType.STATION, ucar.nc2.dt.point.UnidataStationObsDataset.class);
+    registerFactory(DataType.STATION, ucar.nc2.dt.point.UnidataStationObsMultidimDataset.class);
     registerFactory(DataType.POINT, ucar.nc2.dt.point.DapperDataset.class);
     registerFactory(DataType.STATION, ucar.nc2.dt.point.SequenceObsDataset.class);
     registerFactory(DataType.STATION, ucar.nc2.dt.point.UnidataStationObsDataset2.class);

@@ -19,11 +19,16 @@
  */
 package ucar.nc2.dt;
 
-/** A collection of observations at one time and at one station ( = named location)
+/**
+ * A collection of observations at one time and at one station ( = named location)
+ *
  * @author caron
  */
-public interface StationObsDatatype extends ucar.nc2.dt.PointObsDatatype {
-  
-    /** Station location of the observation */
-    public ucar.nc2.dt.Station getStation();
+public interface StationObsDatatype extends ucar.nc2.dt.PointObsDatatype, Comparable {
+
+  /**
+   * Station location of the observation
+   * @return Station location of the observation
+   */
+  public ucar.nc2.dt.Station getStation();
 }

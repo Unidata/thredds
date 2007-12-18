@@ -1,3 +1,23 @@
+/*
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 package ucar.nc2.dt.point;
 
 import ucar.nc2.*;
@@ -7,18 +27,15 @@ import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.util.List;
 import java.util.Date;
-import java.util.ArrayList;
-import java.io.IOException;
 
 /**
+ * Helper routines for  station/point datasets
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 public class UnidataObsDatasetHelper {
 
@@ -77,23 +94,21 @@ public class UnidataObsDatasetHelper {
    * @return coordinate variable, or null if not found.
    */
   static public Variable getCoordinate(NetcdfDataset ds, AxisType a) {
-    List varList = ds.getVariables();
-    for (int i = 0; i < varList.size(); i++) {
-      Variable v = (Variable) varList.get(i);
-      if( v instanceof Structure ) {
-         //System.out.println( "v is a Structure" );
-          ArrayList vars = (ArrayList)((Structure)v).getVariables();
-          for( int j = 0; j < vars.size(); j++ ) {
-            Variable vs = (Variable) vars.get( j );
-            //System.out.println( "vs =" + vs.getShortName() );
-            String axisType = ds.findAttValueIgnoreCase(vs, _Coordinate.AxisType, null);
-            if ((axisType != null) && axisType.equals(a.toString()))
-              return vs;
-          }
-       } else {
-         String axisType = ds.findAttValueIgnoreCase(v, _Coordinate.AxisType, null);
-         if ((axisType != null) && axisType.equals(a.toString()))
-           return v;
+    List<Variable> varList = ds.getVariables();
+    for (Variable v : varList) {
+      if (v instanceof Structure) {
+        //System.out.println( "v is a Structure" );
+        List<Variable> vars = ((Structure) v).getVariables();
+        for (Variable vs : vars) {
+          //System.out.println( "vs =" + vs.getShortName() );
+          String axisType = ds.findAttValueIgnoreCase(vs, _Coordinate.AxisType, null);
+          if ((axisType != null) && axisType.equals(a.toString()))
+            return vs;
+        }
+      } else {
+        String axisType = ds.findAttValueIgnoreCase(v, _Coordinate.AxisType, null);
+        if ((axisType != null) && axisType.equals(a.toString()))
+          return v;
       }
     }
 
@@ -116,7 +131,7 @@ public class UnidataObsDatasetHelper {
     return null;
   }
 
-  static public Variable findVariable(NetcdfDataset ds, String name) {
+  static public Variable findVariable(NetcdfFile ds, String name) {
     Variable result = ds.findVariable(name);
     if (result == null) {
       String aname = ds.findAttValueIgnoreCase(null, name+"_coordinate", null);

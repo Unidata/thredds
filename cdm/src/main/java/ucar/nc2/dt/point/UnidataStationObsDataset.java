@@ -22,7 +22,6 @@ package ucar.nc2.dt.point;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.AxisType;
 import ucar.nc2.util.CancelTask;
@@ -32,14 +31,11 @@ import java.io.*;
 import java.util.*;
 import java.text.ParseException;
 
-import thredds.catalog.*;
-import thredds.catalog.DataType;
-
 /**
- * This handles station datasets in "Unidata Observation Dataset v1.0"
+ * This handles station datasets in "Unidata Observation Dataset v1.0" implemented as linked or contiguous lists.
+ * For "multidimensional Structures" use UnidataStationObsMultidimDataset
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class UnidataStationObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF {
@@ -53,14 +49,20 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if (conv == null) return false;
 
+    boolean convOk = false;
     StringTokenizer stoke = new StringTokenizer(conv, ",");
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken().trim();
       if (toke.equalsIgnoreCase("Unidata Observation Dataset v1.0"))
-        return true;
+        convOk = true;
     }
+    if (!convOk) return false;
 
-    return false;
+    // must have this field to be a linked list
+    Variable stationIndexVar = UnidataObsDatasetHelper.findVariable(ds, "parent_index");
+    if (stationIndexVar == null) return false;
+
+    return true;
   }
 
   // TypedDatasetFactoryIF
@@ -83,7 +85,6 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
   private boolean isForwardLinkedList, isBackwardLinkedList, isContiguousList;
   private Structure recordVar;
   private RecordDatasetHelper recordHelper;
-  private boolean debugRead = false;
 
   public UnidataStationObsDataset(NetcdfDataset ds) throws IOException {
     super(ds);
@@ -110,26 +111,19 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
     numChildrenVar = UnidataObsDatasetHelper.findVariable(ds, "numChildren");
     stationIndexVar = UnidataObsDatasetHelper.findVariable(ds, "parent_index");
 
-    if (stationIndexVar == null)
-      throw new IllegalStateException("Missing parent_index variable");
+    isForwardLinkedList = (firstVar != null) && (nextVar != null);
+    isBackwardLinkedList = (lastVar != null) && (prevVar != null);
+    isContiguousList = !isForwardLinkedList && !isBackwardLinkedList && (firstVar != null) && (numChildrenVar != null);
 
-    isForwardLinkedList = (nextVar != null);
-    isBackwardLinkedList = !isForwardLinkedList && (prevVar != null);
-
-    if (isForwardLinkedList) {
-      if (firstVar == null)
-        throw new IllegalStateException("Missing firstChild variable");
-
-    } else if (isBackwardLinkedList) {
-      if (lastVar == null)
-        throw new IllegalStateException("Missing lastChild variable");
-
-    } else {
-      if (firstVar == null)
-        throw new IllegalStateException("Missing firstChild variable");
-      if (numChildrenVar == null)
-        throw new IllegalStateException("Missing numChildren variable");
-      isContiguousList = true;
+    if (!isForwardLinkedList && !isBackwardLinkedList && !isContiguousList) {
+      if (firstVar != null)
+        throw new IllegalStateException("Missing nextVar (linked list) or numChildrenVar (contiguous list) variable");
+      if (lastVar != null)
+        throw new IllegalStateException("Missing prevVar (linked list) variable");
+      if (nextVar != null)
+        throw new IllegalStateException("Missing firstVar (linked list) variable");
+      if (prevVar != null)
+        throw new IllegalStateException("Missing lastVar (linked list) variable");
     }
 
     // station variables
@@ -210,7 +204,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
 
     // loop over stations
     Index ima = latArray.getIndex();
-    recordHelper.stnHash = new HashMap(2 * n);
+    recordHelper.stnHash = new HashMap<Object, Station>(2 * n);
     for (int i = 0; i < n; i++) {
       ima.set(i);
 
@@ -221,7 +215,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
         stationDesc = (stationDescVar != null) ? stationDescArray.getString(i) : null;
         if (stationDesc != null) stationDesc = stationDesc.trim();
       } else {
-        stationName = (String) stationIdArray.getObject(ima);
+        stationName = stationIdArray.getObject(ima).toString();
         stationDesc = (stationDescVar != null) ? (String) stationDescArray.getObject(ima) : null;
       }
 
@@ -234,7 +228,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       );
 
       stations.add(bean);
-      recordHelper.stnHash.put(new Integer(i), bean);
+      recordHelper.stnHash.put(i, bean);
     }
   }
 
@@ -252,7 +246,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
   }
 
   public List getData(CancelTask cancel) throws IOException {
-    ArrayList allData = new ArrayList();
+    List<StationObsDatatype> allData = new ArrayList<StationObsDatatype>();
     int n = getDataCount();
     for (int i = 0; i < n; i++) {
       StationObsDatatype obs = makeObs(i, false, null);
@@ -296,14 +290,14 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
           records.add(recNo);
           int stnFromRecord = stnArray.getInt( stnIndex.set(recNo));
           if (stnFromRecord != stnIdx) {
-            sbuff.append("recno "+recNo+" has bad station index\n");
+            sbuff.append("recno ").append(recNo).append(" has bad station index\n");
             countErrs++;
             if (countErrs > 10) return;
           }
           // get next one
           recNo = prevArray.getInt( prevIndex.set(recNo));
           if (records.contains(recNo)) {
-            sbuff.append("stn "+stnIdx+" has circular links\n");
+            sbuff.append("stn ").append(stnIdx).append(" has circular links\n");
             countErrs++;
             if (countErrs > 10) return;
             break;
@@ -338,8 +332,8 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       next = (isForwardLinkedList) ? nextVar : prevVar;
     }
 
-    protected ArrayList readObservations() throws IOException {
-      ArrayList obs = new ArrayList();
+    protected List<StationObsDatatype> readObservations() throws IOException {
+      List<StationObsDatatype> obs = new ArrayList<StationObsDatatype>();
       int recno = firstRecord;
       int end = firstRecord + count - 1;
       int nextRecord = firstRecord;
@@ -456,13 +450,13 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       // find the station
       int stationIndex = sdata.getScalarInt(stationIndexVar.getShortName());
       if (stationIndex < 0 || stationIndex >= stations.size()) {
-        parseInfo.append("cant find station at index = " + stationIndex + "\n");
+        parseInfo.append("cant find station at index = ").append(stationIndex).append("\n");
         return null;
       }
 
       Station station = (Station) stations.get(stationIndex);
       if (station == null) {
-        parseInfo.append("cant find station at index = " + stationIndex + "\n");
+        parseInfo.append("cant find station at index = ").append(stationIndex).append("\n");
         return null;
       }
 

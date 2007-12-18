@@ -1,6 +1,5 @@
-// $Id:StationObsDatasetImpl.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,7 +22,6 @@ package ucar.nc2.dt.point;
 
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -38,7 +36,6 @@ import java.util.*;
  * <li> implement getData( Station s, CancelTask)
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implements StationObsDataset {
@@ -74,18 +71,18 @@ public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implemen
 
   public Class getDataClass() { return StationObsDatatype.class; }
 
-  public List getStations() throws IOException {
+  public List<Station> getStations() throws IOException {
     return getStations( (CancelTask) null);
   }
-  public List getStations(CancelTask cancel)  throws IOException {
+  public List<Station> getStations(CancelTask cancel)  throws IOException {
     return stations;
   }
 
-  public List getStations(LatLonRect boundingBox) throws IOException {
+  public List<Station> getStations(LatLonRect boundingBox) throws IOException {
     return getStations(boundingBox, null);
   }
 
-  public List getStations(LatLonRect boundingBox, CancelTask cancel) throws IOException {
+  public List<Station> getStations(LatLonRect boundingBox, CancelTask cancel) throws IOException {
     return stationHelper.getStations(boundingBox, cancel);
   }
 
@@ -112,19 +109,19 @@ public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implemen
     return stationHelper.getStationObs(s, startTime, endTime, cancel);
   }
 
-  public List getData(List stations) throws IOException {
+  public List getData(List<Station> stations) throws IOException {
     return getData(stations, null);
   }
 
-  public List getData(List stations, CancelTask cancel) throws IOException {
+  public List getData(List<Station> stations, CancelTask cancel) throws IOException {
     return stationHelper.getStationObs(stations, cancel);
   }
 
-  public List getData(List stations, Date start, Date end) throws IOException {
+  public List getData(List<Station> stations, Date start, Date end) throws IOException {
     return getData(stations, start, end, null);
   }
 
-  public List getData(List stations, Date start, Date end, CancelTask cancel) throws IOException {
+  public List getData(List<Station> stations, Date start, Date end, CancelTask cancel) throws IOException {
     double startTime = timeUnit.makeValue( start);
     double endTime = timeUnit.makeValue( end);
     return stationHelper.getStationObs(stations, startTime, endTime, cancel);
@@ -140,7 +137,7 @@ public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implemen
     return stationHelper.getStationObs(boundingBox, startTime, endTime, cancel);
   }
 
-  public void sortByTime(List stationObs) {
+  public void sortByTime(List<StationObsDatatype> stationObs) {
     stationHelper.sortByTime(stationObs);
   }
 

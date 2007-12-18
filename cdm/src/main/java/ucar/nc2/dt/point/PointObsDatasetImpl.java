@@ -1,6 +1,5 @@
-// $Id:PointObsDatasetImpl.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,7 +23,6 @@ import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
@@ -41,7 +39,6 @@ import java.text.ParseException;
  *
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements PointObsDataset {
@@ -79,10 +76,10 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
   public String getDetailInfo() {
     StringBuffer sbuff = new StringBuffer();
     sbuff.append("PointObsDataset\n");
-    sbuff.append("  adapter   = "+getClass().getName()+"\n");
-    sbuff.append("  timeUnit  = "+getTimeUnits()+"\n");
-    sbuff.append("  dataClass = "+getDataClass()+"\n");
-    sbuff.append("  dataCount = "+getDataCount()+"\n");
+    sbuff.append("  adapter   = ").append(getClass().getName()).append("\n");
+    sbuff.append("  timeUnit  = ").append(getTimeUnits()).append("\n");
+    sbuff.append("  dataClass = ").append(getDataClass()).append("\n");
+    sbuff.append("  dataCount = ").append(getDataCount()).append("\n");
     sbuff.append(super.getDetailInfo());
 
     return sbuff.toString();

@@ -352,7 +352,7 @@ public class RecordDatasetHelper {
          llpt = new LatLonPointImpl( location.getLatitude(), location.getLongitude());
       return llpt;
     }
-
+    
     public Date getNominalTimeAsDate() {
       return timeUnit.makeDate( getNominalTime());
     }
@@ -409,8 +409,7 @@ public class RecordDatasetHelper {
 
       Object stationId;
       if ( stationIdType == DataType.INT) {
-        int stationNum = sdata.getScalarInt(stnIdVName);
-        stationId = new Integer(stationNum);
+        stationId = sdata.getScalarInt(stnIdVName);
       } else
         stationId = sdata.getScalarString( stnIdVName).trim();
 
@@ -418,7 +417,7 @@ public class RecordDatasetHelper {
       location = station;
       if (station == null) {
         if (null != errs)
-          errs.append(" cant find station = <"+stationId+">"+ "when reading record "+recno+"\n");
+          errs.append(" cant find station = <").append(stationId).append(">" + "when reading record ").append(recno).append("\n");
         if (showErrors)
           System.out.println(" cant find station = <"+stationId+">"+ "when reading record "+recno);
       }

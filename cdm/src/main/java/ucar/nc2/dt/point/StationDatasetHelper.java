@@ -158,7 +158,7 @@ public class StationDatasetHelper {
     return getStationObs( stations, startTime, endTime, cancel);
   }
 
-  public void sortByTime(List<Station> stationObs) {
+  public void sortByTime(List<StationObsDatatype> stationObs) {
     Collections.sort( stationObs, new StationObsComparator());
   }
 
