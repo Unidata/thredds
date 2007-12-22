@@ -121,21 +121,22 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
 
 
   //////////////////////////////////////////
-  private UnitFormat format;
-  protected double getFalseEastingScaleFactor(NetcdfDataset ds, Variable ctv) {
+  //private UnitFormat format;
+  static public double getFalseEastingScaleFactor(NetcdfDataset ds, Variable ctv) {
     String units = ds.findAttValueIgnoreCase(ctv, "units", null);
     if (units == null) {
       List<CoordinateAxis> axes = ds.getCoordinateAxes();
       for (CoordinateAxis axis : axes) {
         if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
-          units = axis.getUnitsString();
+          Variable v = axis.getOriginalVariable();
+          units = v.getUnitsString();
           break;
         }
       }
     }
     if (units != null) {
       try {
-        if (format == null) format = UnitFormatManager.instance();
+        UnitFormat format = UnitFormatManager.instance();
         Unit uuInput = format.parse(units);
         Unit uuOutput = format.parse("km");
         return uuInput.convertTo(1.0, uuOutput);

@@ -29,11 +29,15 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
+import ucar.units.UnitFormatManager;
+import ucar.units.Unit;
+import ucar.units.UnitFormat;
 
 import java.io.IOException;
 import java.util.*;
@@ -48,6 +52,7 @@ import thredds.datatype.DateRange;
  * @author caron
  */
 public class NetcdfCFWriter {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCFWriter.class);
 
   /**
    * Write a CF compliant Netcdf-3 file from any gridded dataset.
@@ -65,21 +70,19 @@ public class NetcdfCFWriter {
    * @throws InvalidRangeException if subset is illegal
    */
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-                       LatLonRect llbb, DateRange range,
-                       boolean addLatLon,
-                       int horizStride, int stride_z, int stride_time)
-          throws IOException, InvalidRangeException
-  {
-    makeFile( location, gds, gridList, llbb, horizStride, null, range, stride_time, addLatLon);
+          LatLonRect llbb, DateRange range,
+          boolean addLatLon,
+          int horizStride, int stride_z, int stride_time)
+          throws IOException, InvalidRangeException {
+    makeFile(location, gds, gridList, llbb, horizStride, null, range, stride_time, addLatLon);
   }
 
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-                       LatLonRect llbb, int horizStride,
-                       Range zRange,
-                       DateRange range, int stride_time,
-                       boolean addLatLon )
-          throws IOException, InvalidRangeException
-  {
+          LatLonRect llbb, int horizStride,
+          Range zRange,
+          DateRange range, int stride_time,
+          boolean addLatLon)
+          throws IOException, InvalidRangeException {
     FileWriter writer = new FileWriter(location, false);
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
 
@@ -89,8 +92,8 @@ public class NetcdfCFWriter {
 
     writer.writeGlobalAttribute(new Attribute("Conventions", "CF-1.0"));
     writer.writeGlobalAttribute(new Attribute("History",
-        "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
-            "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
+            "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
+                    "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
 
     ArrayList<Variable> varList = new ArrayList<Variable>();
     ArrayList<String> varNameList = new ArrayList<String>();
@@ -115,7 +118,7 @@ public class NetcdfCFWriter {
         timeRange = new Range(startIndex, endIndex);
       }
 
-      if ( ( null != timeRange ) || (zRange != null) || (llbb != null) || (horizStride > 1)) {
+      if ((null != timeRange) || (zRange != null) || (llbb != null) || (horizStride > 1)) {
         grid = grid.makeSubset(timeRange, zRange, llbb, 1, horizStride, horizStride);
       }
 
@@ -195,13 +198,48 @@ public class NetcdfCFWriter {
       // newV.addAttribute(new Attribute(_Coordinate.AxisType, axis.getAxisType().toString())); // cheating
     }
 
+    // coordinate transform variables : must convert false easting, northing to km
+    List<Variable> ctvList = new ArrayList<Variable>();
+    for (ucar.nc2.dt.GridDataset.Gridset gridSet : gds.getGridsets()) {
+      ucar.nc2.dt.GridCoordSystem gcs = gridSet.getGeoCoordSystem();
+      ProjectionCT pct = gcs.getProjectionCT();
+      if (pct != null) {
+        Variable v = root.findVariable(pct.getName()); // look for the ctv
+        if ((v != null) && !ctvList.contains(v)) {
+          convertProjectionCTV((NetcdfDataset) gds.getNetcdfFile(), v);
+          ctvList.add(v);
+        }
+      }
+    }
+
     // LOOK not dealing with crossing the seam
 
     writer.finish(); // this writes the data to the new file.
   }
 
+  private void convertProjectionCTV(NetcdfDataset ds, Variable ctv) {
+    Attribute att = ctv.findAttribute(_Coordinate.TransformType);
+    if ((null != att) && att.getStringValue().equals("Projection")) {
+      Attribute east = ctv.findAttribute("false_easting");
+      Attribute north = ctv.findAttribute("false_northing");
+      if ((null != east) || (null != north)) {
+        double scalef = AbstractCoordTransBuilder.getFalseEastingScaleFactor(ds, ctv);
+        if (scalef != 1.0) {
+          convertAttribute(ctv, east, scalef);
+          convertAttribute(ctv, north, scalef);
+        }
+      }
+    }
+  }
+
+  private void convertAttribute(Variable ctv, Attribute att, double scalef) {
+    if (att == null) return;
+    double val = scalef * att.getNumericValue().doubleValue();
+    ctv.addAttribute(new Attribute(att.getName(), val));
+  }
+
   private void addLatLon2D(NetcdfFile ncfile, List<Variable> varList, Projection proj,
-                           CoordinateAxis xaxis, CoordinateAxis yaxis) throws IOException {
+          CoordinateAxis xaxis, CoordinateAxis yaxis) throws IOException {
 
     double[] xData = (double[]) xaxis.read().get1DJavaArray(double.class);
     double[] yData = (double[]) yaxis.read().get1DJavaArray(double.class);
@@ -252,9 +290,9 @@ public class NetcdfCFWriter {
     varList.add(lonVar);
   }
 
-  public static void main(String args[]) throws IOException, InvalidRangeException, ParseException {
+  public static void test1() throws IOException, InvalidRangeException, ParseException {
     String fileIn = "C:/data/ncmodels/NAM_CONUS_80km_20051206_0000.nc";
-    String fileOut = "C:/temp3/cf3.nc";
+    String fileOut = "C:/temp/cf3.nc";
 
     ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(fileIn);
 
@@ -269,10 +307,33 @@ public class NetcdfCFWriter {
     Date end = format.isoDateTimeFormat("2005-12-07T18:00:00Z");
 
     writer.makeFile(fileOut, gds, gridList,
-        new LatLonRect(new LatLonPointImpl(37, -109), 400, 7),
-        new DateRange(start, end),
-        true,
-        1, 1, 1);
+            new LatLonRect(new LatLonPointImpl(37, -109), 400, 7),
+            new DateRange(start, end),
+            true,
+            1, 1, 1);
+
+  }
+
+  public static void main(String args[]) throws IOException, InvalidRangeException, ParseException {
+    String fileIn = "C:/data/cdp/test_for_jc.ncml";
+    String fileOut = "C:/temp/cf2.nc";
+
+    ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(fileIn);
+
+    NetcdfCFWriter writer = new NetcdfCFWriter();
+
+    List<String> gridList = new ArrayList<String>();
+    gridList.add("pr");
+
+    DateFormatter format = new DateFormatter();
+    Date start = format.isoDateTimeFormat("2003-06-01T03:00:00Z");
+    Date end = format.isoDateTimeFormat("2004-01-01T00:00:00Z");
+
+    writer.makeFile(fileOut, gds, gridList,
+            new LatLonRect(new LatLonPointImpl(30, -109), 10, 50),
+            new DateRange(start, end),
+            true,
+            1, 1, 1);
 
   }
 
