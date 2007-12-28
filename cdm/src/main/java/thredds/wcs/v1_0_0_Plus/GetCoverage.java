@@ -84,8 +84,7 @@ public class GetCoverage extends WcsRequest
     // RESX, RESY, RESZ parameters not needed since the only interpolation method is "NONE".
 
     // Assign and validate RangeSubset parameter.
-    if ( rangeSubset != null )
-            this.rangeSubset = parseRangeSubset( rangeSubset);//, coverage.getRange());
+    this.rangeSubset = parseRangeSubset( rangeSubset);//, coverage.getRange());
 
     // Assign and validate FORMAT parameter.
     if ( format == null )
