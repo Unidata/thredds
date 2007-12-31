@@ -20,7 +20,8 @@
 package ucar.nc2.iosp.hdf4;
 
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.netcdf3.N3header;
+import ucar.nc2.iosp.Indexer;
+import ucar.nc2.iosp.RegularLayout;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
@@ -50,8 +51,76 @@ public class H4iosp extends AbstractIOServiceProvider {
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
     if (v instanceof Structure)
       return readStructureData((Structure) v, section);
-    return null;
+
+    H4header.Vinfo vinfo = (H4header.Vinfo) v.getSPobject();
+    DataType dataType = v.getDataType();
+
+    Indexer index =  RegularLayout.factory(vinfo.start, v.getElementSize(), -1, v.getShape(), section);
+    Object data = readData(index, dataType);
+    return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
   }
+
+  // copy in N3raf - promote to superclass
+  protected Object readData( Indexer index, DataType dataType) throws java.io.IOException {
+    int size = (int) index.getTotalNelems();
+
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+      byte[] pa = new byte[size];
+      while (index.hasNext()) {
+        Indexer.Chunk chunk = index.next();
+        raf.seek ( chunk.getFilePos());
+        raf.read( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+      }
+      return (dataType == DataType.BYTE) ? pa : convertByteToChar( pa);  // leave (Object) cast, despite IntelliJ warning
+
+    } else if (dataType == DataType.SHORT) {
+      short[] pa = new short[size];
+      while (index.hasNext()) {
+        Indexer.Chunk chunk = index.next();
+        raf.seek ( chunk.getFilePos());
+        raf.readShort( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+      }
+      return pa;
+
+    } else if (dataType == DataType.INT) {
+      int[] pa = new int[size];
+      while (index.hasNext()) {
+        Indexer.Chunk chunk = index.next();
+        raf.seek ( chunk.getFilePos());
+        raf.readInt( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+      }
+      return pa;
+
+    } else if (dataType == DataType.FLOAT) {
+      float[] pa = new float[size];
+      while (index.hasNext()) {
+        Indexer.Chunk chunk = index.next();
+        raf.seek ( chunk.getFilePos());
+        raf.readFloat( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+      }
+      return pa;
+
+    } else if (dataType == DataType.DOUBLE) {
+      double[] pa = new double[size];
+      while (index.hasNext()) {
+        Indexer.Chunk chunk = index.next();
+        raf.seek ( chunk.getFilePos());
+        raf.readDouble( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+      }
+      return pa;
+    }
+
+    throw new IllegalStateException();
+  }
+
+  private char[] convertByteToChar(byte[] byteArray) {
+    int size = byteArray.length;
+    char[] cbuff = new char[size];
+    for (int i = 0; i < size; i++)
+      cbuff[i] = (char) DataType.unsignedByteToShort( byteArray[i]); // NOTE: not Unicode !
+    return cbuff;
+  }
+
 
   /**
    * Read data from record structure. For N3, this is the only possible structure, and there can be no nesting.
@@ -95,5 +164,14 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   public void close() throws IOException {
     raf.close();
+  }
+
+  public String toStringDebug (Object o) {
+    if (o instanceof Variable) {
+      Variable v = (Variable) o;
+      H4header.Vinfo vinfo = (H4header.Vinfo) v.getSPobject();
+      return vinfo.toString();
+    }
+    return null;
   }
 }

@@ -32,31 +32,47 @@ import java.util.StringTokenizer;
 public class TagEnum {
   private static java.util.Map<Short, TagEnum> hash = new java.util.HashMap<Short, TagEnum>(100);
 
+  public static int SPECIAL_LINKED = 1;    /* Fixed-size Linked blocks */
+  public static int SPECIAL_EXT = 2;       /* External */
+  public static int SPECIAL_COMP = 3;      /* Compressed */
+  public static int SPECIAL_VLINKED = 4;   /* Variable-length linked blocks */
+  public static int SPECIAL_CHUNKED = 5;   /* chunked element */
+  public static int SPECIAL_BUFFERED = 6;  /* Buffered element */
+  public static int SPECIAL_COMPRAS = 7;   /* Compressed Raster element */
+
   public final static TagEnum NONE = new TagEnum("NONE", "", (short) 0);
   public final static TagEnum NULL = new TagEnum("NULL", "", (short) 1);
-  public final static TagEnum LINKED = new TagEnum("LINKED", "linked-block special element", (short) 20);
-  public final static TagEnum VERSION = new TagEnum("VERSION", "", (short) 30);
-  public final static TagEnum COMPRESSED = new TagEnum("COMPRESSED", "compressed special element", (short) 40);
-  public final static TagEnum VLINKED = new TagEnum("VLINKED", "variable-len linked-block header", (short) 50);
-  public final static TagEnum VLINKED_DATA = new TagEnum("VLINKED_DATA", "variable-len linked-block data", (short) 51);
-  public final static TagEnum CHUNKED = new TagEnum("CHUNKED", "chunked special element header", (short) 60);
-  public final static TagEnum CHUNK = new TagEnum("CHUNK", "chunk element", (short) 61);
+  public final static TagEnum RLE = new TagEnum("RLE", "Run length encoding", (short) 11);
+  public final static TagEnum IMC = new TagEnum("IMC", "IMCOMP compression alias", (short) 12);
+  public final static TagEnum IMCOMP = new TagEnum("IMCOMP", "IMCOMP compression", (short) 12);
+  public final static TagEnum JPEG = new TagEnum("JPEG", "JPEG compression (24-bit data)", (short) 13);
+  public final static TagEnum GREYJPEG = new TagEnum("GREYJPEG", "JPEG compression (8-bit data)", (short) 14);
+  public final static TagEnum JPEG5 = new TagEnum("JPEG5", "JPEG compression (24-bit data)", (short) 15);
+  public final static TagEnum GREYJPEG5 = new TagEnum("GREYJPEG5", "JPEG compression (8-bit data)", (short) 16);
+
+  public final static TagEnum LINKED = new TagEnum("LINKED", "Linked-block special element", (short) 20);
+  public final static TagEnum VERSION = new TagEnum("VERSION", "Version", (short) 30);
+  public final static TagEnum COMPRESSED = new TagEnum("COMPRESSED", "Compressed special element", (short) 40);
+  public final static TagEnum VLINKED = new TagEnum("VLINKED", "Variable-len linked-block header", (short) 50);
+  public final static TagEnum VLINKED_DATA = new TagEnum("VLINKED_DATA", "Variable-len linked-block data", (short) 51);
+  public final static TagEnum CHUNKED = new TagEnum("CHUNKED", "Chunked special element header", (short) 60);
+  public final static TagEnum CHUNK = new TagEnum("CHUNK", "Chunk element", (short) 61);
 
   public final static TagEnum FID = new TagEnum("FID", "File identifier", (short) 100);
   public final static TagEnum FD = new TagEnum("FD", "File description", (short) 101);
   public final static TagEnum TID = new TagEnum("TID", "Tag identifier", (short) 102);
   public final static TagEnum TD = new TagEnum("TD", "Tag descriptor", (short) 103);
-  public final static TagEnum DIL = new TagEnum("DIL", "data identifier label", (short) 104);
-  public final static TagEnum DIA = new TagEnum("DIA", "data identifier annotation", (short) 105);
-  public final static TagEnum NT = new TagEnum("NT", "number type", (short) 106);
-  public final static TagEnum MT = new TagEnum("MT", "machine type", (short) 107);
-  public final static TagEnum FREE = new TagEnum("FREE", "free space in the file", (short) 108);
+  public final static TagEnum DIL = new TagEnum("DIL", "Data identifier label", (short) 104);
+  public final static TagEnum DIA = new TagEnum("DIA", "Data identifier annotation", (short) 105);
+  public final static TagEnum NT = new TagEnum("NT", "Number type", (short) 106);
+  public final static TagEnum MT = new TagEnum("MT", "Machine type", (short) 107);
+  public final static TagEnum FREE = new TagEnum("FREE", "Free space in the file", (short) 108);
 
-  public final static TagEnum ID8 = new TagEnum("ID8", "8-bit Image dimension", (short) 200);
-  public final static TagEnum IP8 = new TagEnum("IP8", "8-bit Image palette", (short) 201);
-  public final static TagEnum RI8 = new TagEnum("RI8", "Raster-8 image", (short) 202);
-  public final static TagEnum CI8 = new TagEnum("CI8", "RLE compressed 8-bit image", (short) 203);
-  public final static TagEnum II8 = new TagEnum("II8", "IMCOMP compressed 8-bit image", (short) 204);
+  public final static TagEnum ID8 = new TagEnum("ID8", "8-bit Image dimension", (short) 200); // obsolete
+  public final static TagEnum IP8 = new TagEnum("IP8", "8-bit Image palette", (short) 201); // obsolete
+  public final static TagEnum RI8 = new TagEnum("RI8", "Raster-8 image", (short) 202); // obsolete
+  public final static TagEnum CI8 = new TagEnum("CI8", "RLE compressed 8-bit image", (short) 203); // obsolete
+  public final static TagEnum II8 = new TagEnum("II8", "IMCOMP compressed 8-bit image", (short) 204); // obsolete
 
   public final static TagEnum ID = new TagEnum("ID", "Image DimRec", (short) 300);
   public final static TagEnum LUT = new TagEnum("LUT", "Image Palette", (short) 301);
@@ -67,20 +83,20 @@ public class TagEnum {
   public final static TagEnum LD = new TagEnum("LD", "Palette DimRec", (short) 307);
   public final static TagEnum MD = new TagEnum("MD", "Matte DimRec", (short) 308);
   public final static TagEnum MA = new TagEnum("MA", "Matte Data", (short) 309);
-  public final static TagEnum CCN = new TagEnum("CCN", "color correction", (short) 310);
-  public final static TagEnum CFM = new TagEnum("CFM", "color format", (short) 311);
-  public final static TagEnum AR = new TagEnum("AR", "aspect ratio", (short) 312);
+  public final static TagEnum CCN = new TagEnum("CCN", "Color correction", (short) 310);
+  public final static TagEnum CFM = new TagEnum("CFM", "Color format", (short) 311);
+  public final static TagEnum AR = new TagEnum("AR", "Cspect ratio", (short) 312);
 
   public final static TagEnum DRAW = new TagEnum("DRAW", "Draw these images in sequence", (short) 400);
-  public final static TagEnum RUN = new TagEnum("RUN", "run this as a program/script", (short) 401);
+  public final static TagEnum RUN = new TagEnum("RUN", "Cun this as a program/script", (short) 401);
 
-  public final static TagEnum XYP = new TagEnum("XYP", "x-y position", (short) 500);
-  public final static TagEnum MTO = new TagEnum("MTO", "machine-type override", (short) 501);
+  public final static TagEnum XYP = new TagEnum("XYP", "X-Y position", (short) 500);
+  public final static TagEnum MTO = new TagEnum("MTO", "Machine-type override", (short) 501);
 
   public final static TagEnum T14 = new TagEnum("T14", "TEK 4014 data", (short) 602);
   public final static TagEnum T105 = new TagEnum("T105", "TEK 4105 data", (short) 603);
 
-  public final static TagEnum SDG = new TagEnum("SDG", "Scientific Data Group", (short) 700);
+  public final static TagEnum SDG = new TagEnum("SDG", "Scientific Data Group", (short) 700);  // obsolete
   public final static TagEnum SDD = new TagEnum("SDD", "Scientific Data DimRec", (short) 701);
   public final static TagEnum SD = new TagEnum("SD", "Scientific Data", (short) 702);
   public final static TagEnum SDS = new TagEnum("SDS", "Scales", (short) 703);
@@ -89,7 +105,7 @@ public class TagEnum {
   public final static TagEnum SDF = new TagEnum("SDF", "Formats", (short) 706);
   public final static TagEnum SDM = new TagEnum("SDM", "Max/Min", (short) 707);
   public final static TagEnum SDC = new TagEnum("SDC", "Coord sys", (short) 708);
-  public final static TagEnum SDT = new TagEnum("SDT", "Transpose", (short) 709);
+  public final static TagEnum SDT = new TagEnum("SDT", "Transpose", (short) 709); // obsolete
   public final static TagEnum SDLNK = new TagEnum("SDLNK", "Links related to the dataset", (short) 710);
   public final static TagEnum NDG = new TagEnum("NDG", "Numeric Data Group", (short) 720);
   public final static TagEnum CAL = new TagEnum("CAL", "Calibration information", (short) 731);
@@ -101,14 +117,6 @@ public class TagEnum {
   public final static TagEnum VG = new TagEnum("VG", "Vgroup", (short) 1965);
   public final static TagEnum VH = new TagEnum("VH", "Vdata Header", (short) 1962);
   public final static TagEnum VS = new TagEnum("VS", "Vdata Storage", (short) 1963);
-
-  public final static TagEnum RLE = new TagEnum("RLE", "run length encoding", (short) 11);
-  public final static TagEnum IMC = new TagEnum("IMC", "IMCOMP compression alias", (short) 12);
-  public final static TagEnum IMCOMP = new TagEnum("IMCOMP", "IMCOMP compression", (short) 12);
-  public final static TagEnum JPEG = new TagEnum("JPEG", "JPEG compression (24-bit data)", (short) 13);
-  public final static TagEnum GREYJPEG = new TagEnum("GREYJPEG", "JPEG compression (8-bit data)", (short) 14);
-  public final static TagEnum JPEG5 = new TagEnum("JPEG5", "JPEG compression (24-bit data)", (short) 15);
-  public final static TagEnum GREYJPEG5 = new TagEnum("GREYJPEG5", "JPEG compression (8-bit data)", (short) 16);
 
   private String name, desc;
   private short code;
@@ -132,7 +140,9 @@ public class TagEnum {
    * @return Tag or null if no match.
    */
   public static TagEnum getTag(short code) {
-    return hash.get(code);
+    TagEnum te = hash.get(code);
+    if (te == null) te = new TagEnum("UNKNOWN", "UNKNOWN", code);
+    return te;
   }
 
   static public void main( String args[]) throws IOException {
