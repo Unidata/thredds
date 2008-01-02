@@ -393,9 +393,10 @@ public class RandomAccessFile implements DataInput, DataOutput {
       bufferModified = false;
     }
 
-    // debug
-    //FileChannel fc = file.getChannel();
-    //System.out.println("flush size = "+fc.size());
+      // check min length
+      if ( !readonly && (minLength != 0) && (minLength != file.length())) {
+          file.setLength(minLength);
+      }
   }
 
   /**

@@ -88,4 +88,31 @@ public class TestH5ReadStructure2 extends TestCase {
     ncfile.close();
     System.out.println("*** testReadH5StructureArrayMembers ok");
   }
+
+  public void testReadOneAtATime() throws java.io.IOException, InvalidRangeException {
+    NetcdfFile ncfile = TestH5.openH5("IASI/IASI.h5");
+
+    Variable dset = null;
+    assert(null != (dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_LAT_ARRAY")));
+    assert(dset.getDataType() == DataType.STRUCTURE);
+    assert(dset.getRank() == 1);
+    assert(dset.getSize() == 3600);
+
+    Dimension d = dset.getDimension(0);
+    assert(d.getLength() == 3600);
+
+    Structure s = (Structure) dset;
+
+    // read last one - chunked
+    s.readStructure(3599);
+
+    // read one at a time
+    for (int i=3590; i<d.getLength(); i++) {
+      s.readStructure(i);
+      System.out.println(" read structure "+i);
+    }
+
+    ncfile.close();
+    System.out.println("*** testReadIASI ok");
+  }
 }

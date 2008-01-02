@@ -21,6 +21,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.thredds.DqcRadarDatasetCollection;
@@ -2872,6 +2873,8 @@ public class ToolsUI extends JPanel {
       });
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    DODSNetcdfFile.setAllowCompression(true);
 
     // look for run line arguments
     boolean configRead = false;

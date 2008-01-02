@@ -1,4 +1,4 @@
-CHANGES for Netcdf-Java library
+ CHANGES for Netcdf-Java library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
@@ -32,6 +32,8 @@ Changes in version 4.0
  API
   * make Indexer, RegularIndexer public so can be used by IOSP
  Bugs
+  * NetcdfCFWriter convert false_easting, false_northing to km
+  * read/write interleave without fill; RandomAccessFile: flush now checks minLength
   * LambertAzimuthal was incorrectly requiring standard_parallel parameter
   * CF: look for axis=Z attrinute, make first in CoordSysBuilder list
   * Transverse Mercator accepts false_easting, false_northing

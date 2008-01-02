@@ -42,7 +42,7 @@ public class IO {
   static private int default_socket_buffersize = 64000;
   static boolean showStackTrace = true;
   static boolean debug = false, showResponse = false;
-  private static boolean showHeaders = false;
+  private static boolean showHeaders = true;
   
 
   /**
@@ -383,9 +383,12 @@ public class IO {
     }
 
     try {
-      java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-
-      connection.addRequestProperty("Accept-Encoding", "gzip");
+      java.net.URLConnection connection = url.openConnection();
+      java.net.HttpURLConnection httpConnection = null;
+      if (connection instanceof java.net.HttpURLConnection) {
+        httpConnection = (java.net.HttpURLConnection) connection;
+        httpConnection.addRequestProperty("Accept-Encoding", "gzip");
+      }
 
       if (showHeaders) {
         System.out.println("\nREQUEST Properties for " + urlString + ": ");
@@ -404,15 +407,16 @@ public class IO {
       }
 
       // get response
-      int responseCode = connection.getResponseCode();
-      if (responseCode / 100 != 2)
-        throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode
-            + "\n" + connection.getResponseMessage() + "\n");
+      if (httpConnection != null) {
+        int responseCode = httpConnection.getResponseCode();
+        if (responseCode / 100 != 2)
+          throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode
+              + "\n" + httpConnection.getResponseMessage() + "\n");
+      }
 
-
-      if (showHeaders) {
-        int code = connection.getResponseCode();
-        String response = connection.getResponseMessage();
+      if (showHeaders && (httpConnection != null)) {
+        int code = httpConnection.getResponseCode();
+        String response = httpConnection.getResponseMessage();
 
         // response headers
         System.out.println("\nRESPONSE for " + urlString + ": ");
@@ -700,13 +704,15 @@ public class IO {
   static public void main(String[] args) {
     //String url = "http://motherlode.ucar.edu:9080/docs/jasper-howto.html";
     String url = "http://motherlode.ucar.edu:9080/thredds/ncss/metars?variables=all&north=82.5199&west=88.4499&east=90.4000&south=-90.0000&latitude=&longitude=&spatial=stns&stn=LOWW&time_start=2007-12-02T23%3A45%3A04Z&time_end=present&temporal=point&time=2007-12-02T23%3A45%3A04Z&accept=raw";
-
+    String url2 = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_80km/files/NAM_CONUS_80km_20071217_0000.grib1.dods?Total_precipitation";
     long start = System.currentTimeMillis();
-    String result = readURLcontents(url);
+    File fileResult = new File("C:/TEMP/test.dods");
+    String result = readURLtoFile(url2, fileResult);
     double took = .001 * (System.currentTimeMillis() - start);
     System.out.println(result);
     System.out.println(" that took = " + took + " sec");
     System.out.println(" result size = " + result.length());
+    System.out.println(" file size = " + fileResult.length());
     System.out.println(" result = " + result);
   }
 

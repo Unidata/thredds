@@ -3455,12 +3455,14 @@ class H5header {
       // so keep skipping until want < offset(i+1)
       void first(int[] wantOrigin) throws IOException {
         if (level == 0) {
-          for (currentEntry = 0; currentEntry < nentries; currentEntry++) {
+          // note nentries-1 - assume dont skip the last one
+          for (currentEntry = 0; currentEntry < nentries-1; currentEntry++) {
             DataChunk entry = myEntries.get(currentEntry + 1);
             if ((wantOrigin == null) || tiling.compare(wantOrigin, entry.offset) < 0) break;
           }
 
         } else {
+          currentNode = null;
           for (currentEntry = 0; currentEntry < nentries; currentEntry++) {
             if ((wantOrigin == null) || tiling.compare(wantOrigin, offset[currentEntry + 1]) < 0) {
               currentNode = new Node(childPointer[currentEntry], this.address);
@@ -3468,11 +3470,18 @@ class H5header {
               break;
             }
           }
-          assert currentNode != null;
+
+          // heres the case where its the last entry we want; the tiling.compare() above may fail
+          if (currentNode == null) {
+            currentEntry = nentries-1;
+            currentNode = new Node(childPointer[currentEntry], this.address);
+            currentNode.first(wantOrigin);
+          }
         }
-        //if (nentries == 0)
-        // System.out.println("hah");
-        assert (nentries == 0) || (currentEntry < nentries);
+
+        //if (currentEntry >= nentries)
+        //  System.out.println("hah");
+        assert (nentries == 0) || (currentEntry < nentries) : currentEntry +" >= "+ nentries;
       }
 
       // LOOK - wouldnt be a bad idea to terminate if possible instead of running through all subsequent entries

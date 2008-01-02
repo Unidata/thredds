@@ -1034,6 +1034,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       return ((VariableEnhanced) v).getCoordinateSystems().size() > 0;
     }
 
+    public String toString() { return v.getShortName(); }
+
     /**
      * Turn the variable into a coordinate axis, if not already. Add to the dataset, replacing variable if needed.
      *

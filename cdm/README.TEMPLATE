@@ -21,6 +21,7 @@ OPTIONAL LIBRARIES
   grib.jar                    required to read Grib-1 or Grib-2 datasets
   jdom.jar                    required to read thredds catalogs, and read NcML
   jpeg2000.jar                required to read Grib-2 JPEG2000 compressed files
+  opendap.jar                 required to read OPeNDAP URLs
   nlog4j.jar                  log4j logging. Alternately, you can use any slf4j implementation.
   visadNoDods.jar             required to read ADDE datasets; this version has the dods libraries removed
   xercesImpl.jar              required to validate thredds catalogs (jdk 1.4 only)
@@ -41,7 +42,7 @@ or
 BUILD AND RUN FROM SOURCE
  1. get the source release (ncSrc-@VERSION@.zip)
  2. unzip into working directory
- 3. ant compileFromSource
+ 3. ant compileFromSrc
  4. sh runSrcRelease
 
  ---------------------------------------------------------------------------------------------------------------------

@@ -26,13 +26,13 @@ body {
 <p>The preferred place to ask questions, discuss problems and features and get 
   support is in the NetCDF-Java 
   email list, which you can subscribe to from <a href="http://www.unidata.ucar.edu/mailsubscribeform.php?list_name=netcdf-java&list_label=NetCDF-Java">this 
-  page</a>. Also you might want to <a href="http://www.unidata.ucar.edu/mailsearchform.php?archive=netcdf-java&archivename=NetCDF%20Java%20Support">search</a> 
-or <a href="http://www.unidata.ucar.edu/content/support/help/MailArchives/netcdf-java/maillist.html">browse</a> previous netCDF-Java support questions. 
+  page</a>. Also you might want to <a href="http://www.unidata.ucar.edu/search.jsp?netcdf-java">search</a> 
+or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">browse</a> previous netCDF-Java support questions. 
 <hr>
 <h2><a name="v22"></a>Version 2.2 <b> (alpha)</b></h2>
 <p><strong>Version 2.2 requires Java 1.4.2 or above. The latest version of Java 1.6 is recommended. </strong></p>
 <p>The NetCDF-Java library  implements a <a href="CDM/index.html">Common Data Model </a>(CDM),  a generalization of the NetCDF, OpenDAP and HDF5 data models. The   library is  a prototype for the <a href="http://www.unidata.ucar.edu/content/software/netcdf/netcdf-4/index.html">NetCDF-4 project</a>, which provides a C language  API for the &quot;data access layer&quot; of the CDM, on top of the <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html">HDF5 file format</a>. The NetCDF-Java  library is a 100% Java framework for  <em>reading</em>  netCDF and other file formats into the CDM, as well as <em>writing</em> to the netCDF-3 file format. The NetCDF-Java  library also implements  <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add  metadata to CDM datasets, as well as to create virtual datasets through aggregation.</p>
-<p><strong>Which jar files do I need?</strong> All libraries (except toolsUI.jar) require an <a href="http://www.slf4j.org/">SLF4J</a> library such as <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/slf4j-jdk14.jar">slf4j-jdk14.jar</a> (14k) or <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/nlog4j-1.2.21.jar">nlog4j.jar</a> (202k). We need to keep logging unbundled so your application has a choice of logging. All but the minimal library also need (at least) the JDOM library. The toolsUI jar has everything, use it if you arent worried about size. </p>
+<p><strong>Which jar files do I need?</strong> All libraries (except toolsUI.jar) require an <a href="http://www.slf4j.org/">SLF4J</a> library such as <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/slf4j-jdk14.jar">slf4j-jdk14.jar</a> (14k) or <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/nlog4j-1.2.21.jar">nlog4j.jar</a> (202k). We need to keep logging unbundled so your application has a choice of logging. All but the minimal library also need (at least) the JDOM library. There are a number of optional jars that you might want to use, see the <a href="v2.2.22/README">README</a> for information. The toolsUI jar has everything, use it if you arent worried about size. </p>
 <p><strong>Why do we designate this alpha? </strong>The stability and code quality is moderately good. However, until we implement the <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/">NetCDF-4</a> reader, we are not sure if the API might need some (probably minor) changes. A stable NetCDF-4 format was released April 2007, and we expect that the next stable version will incorporate this format and the APIs will be final. </p>
 <h3><strong>Current Stable version 2.2.22 (requires Java 1.5+) </strong></h3>
 <ul>
@@ -87,11 +87,12 @@ or <a href="http://www.unidata.ucar.edu/content/support/help/MailArchives/netcdf
 <p>The NetCDF-Java library (version 2.2)  can read the following file types and remote access protocols:</p>
 <ul>
   <li><a href="http://www.unidata.ucar.edu/content/software/netcdf/index.html">NetCDF-3</a> (classic and large format) </li>
-  <li><a href="http://hdf.ncsa.uiuc.edu/HDF5/">HDF5</a> (most) </li>
+  <li><a href="http://hdf.ncsa.uiuc.edu/HDF5/">HDF5</a> (version 4.0 will be mostly complete, earlier versions are partial) </li>
   <li><a href="http://opendap.org/">OPeNDAP</a> client/server protocol</li>
   <li>GRIB <a href="http://dss.ucar.edu/docs/formats/grib/gribdoc/">version 1</a> and <a href="http://www.wmo.ch/web/www/DPS/Global-Producers/Doc6-2-2.pdf">version 2</a> (ongoing work on tables) </li>
   <li><a href="http://dss.ucar.edu/docs/formats/bufr/">BUFR</a> (limited - ongoing work) </li>
   <li><a href="http://weather.unisys.com/wxp/Appendices/Formats/GINI.html">GINI</a> (GOES Ingest and NOAAPORT Interface ) image format</li>
+  <li><a href="http://www.unidata.ucar.edu/software/gempak/">GEMPAK</a> gridded data (as of version 2.23) </li>
   <li><a href="http://dmsp.ngdc.noaa.gov/">DMSP</a> (Defense Meteorological Satellite Program)</li>
   <li><a href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html">NEXRAD</a> Radar <a href="http://www.ncdc.noaa.gov/oa/radar/leveliidoc.html">level 2</a> and <a href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html">level 3.</a></li>
   <li>ATD's <a href="http://www.atd.ucar.edu/rsf/UserGuides/ELDORA/DataAnalysis/DataAnalysis.html#DORADE">DORADE</a> radar file <a href="http://www.atd.ucar.edu/rsf/UserGuides/ELDORA/DoradeFormat/DoradeFormat.html">format</a> </li>
@@ -161,7 +162,7 @@ or <a href="http://www.unidata.ucar.edu/content/support/help/MailArchives/netcdf
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated on Oct 22, 2007 
+and was last updated on Dec 19, 2007 
 </address>
 
 </body>
