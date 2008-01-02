@@ -135,6 +135,19 @@ public class Section {
     return new Section(s.getRanges(), shape);
   }
 
+  public Section subsection(int startElement, int endElement) throws InvalidRangeException {
+    int[] shape = getShape();
+    Index index = Index.factory( shape);
+    index.setCurrentCounter(startElement);
+    int[] startShape = index.getCurrentCounter();
+    index.setCurrentCounter(endElement);
+    int[] endShape = index.getCurrentCounter();
+    Section result = new Section();
+    for (int i=0; i<getRank();i++)
+      result.appendRange(startShape[i], endShape[i] - 1);
+    return result;
+  }
+
   /**
    * Parse an index section String specification, return equivilent Section.
    * A null Range means "all" (i.e.":") indices in that dimension.

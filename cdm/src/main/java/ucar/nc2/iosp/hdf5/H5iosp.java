@@ -722,25 +722,6 @@ static Object convert( byte[] barray, DataType dataType, int byteOrder) {
    throw new IllegalStateException();
  } */
 
-  // convert byte array to char array
-
-  private char[] convertByteToChar(byte[] byteArray) {
-    int size = byteArray.length;
-    char[] cbuff = new char[size];
-    for (int i = 0; i < size; i++)
-      cbuff[i] = (char) DataType.unsignedByteToShort(byteArray[i]);
-    return cbuff;
-  }
-
-  // convert char array to byte array
-  protected byte[] convertCharToByte(char[] from) {
-    int size = from.length;
-    byte[] to = new byte[size];
-    for (int i = 0; i < size; i++)
-      to[i] = (byte) from[i];
-    return to;
-  }
-
   /**
    * Read all the data from the netcdf file for this Variable and return a memory resident Array.
    * This Array has the same element type and shape as the Variable.

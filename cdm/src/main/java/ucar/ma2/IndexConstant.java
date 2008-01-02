@@ -72,13 +72,13 @@ public class IndexConstant extends Index {
     public String toString() {
       if (counter == null)
         counter = new Index(maa.getShape());
-      counter.setCurrentElement( currElement);
+      counter.setCurrentCounter( currElement);
       return counter.toString();
     }
     public int[] getCurrentCounter() {
       if (counter == null)
         counter = new Index(maa.getShape());
-      counter.setCurrentElement( currElement);
+      counter.setCurrentCounter( currElement);
       return counter.current;
     }
     

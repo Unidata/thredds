@@ -24,7 +24,7 @@ import java.io.IOException;
 /**
  * Iterator to read/write subsets of an array.
  * The transfer is broken into "chunks" that are contiguous in both the source and destination.
- * The sum over all the chunks should give the the wanted section. However, there may be
+ * Iterating over all the chunks should give the wanted section of data. However, there may be
  * missing values, so the caller cant count on all elements getting touched.
  *
  * <p>

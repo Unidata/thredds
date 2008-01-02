@@ -376,4 +376,15 @@ public class TestSection extends TestCase {
     assert offset == 98 : offset;
   }
 
+  public void testSubsection() throws InvalidRangeException {
+    Section s = new Section("0:180,0:287");
+    int total = (int) s.computeSize();
+    int start = 0;
+    int nelems = 0x1000;
+    while (start < total) {
+      Section ss = s.subsection(start, start+nelems);
+      start += nelems;
+      System.out.println(" section "+ss);
+    }
+  }
 }

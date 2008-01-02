@@ -285,28 +285,6 @@ public class Doradeiosp extends AbstractIOServiceProvider {
     // for the compressed data read all out into a array and then parse into requested
 
 
-
-
-   // convert byte array to char array
-  static protected char[] convertByteToChar( byte[] byteArray) {
-    int size = byteArray.length;
-    char[] cbuff = new char[size];
-    for (int i=0; i<size; i++)
-      cbuff[i] = (char) byteArray[i];
-    return cbuff;
-  }
-
-   // convert char array to byte array
-  static protected byte[] convertCharToByte( char[] from) {
-    int size = from.length;
-    byte[] to = new byte[size];
-    for (int i=0; i<size; i++)
-      to[i] = (byte) from[i];
-    return to;
-  }
-
-
-
   protected boolean fill;
   protected HashMap dimHash = new HashMap(50);
 

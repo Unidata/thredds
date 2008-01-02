@@ -74,13 +74,22 @@ public class Group {
    */
   public Variable findVariable(String shortName) {
     if (shortName == null) return null;
-    shortName =  NetcdfFile.unescapeName(shortName);
 
     for (Variable v : variables) {
       if (shortName.equals(v.getShortName()))
         return v;
     }
     return null;
+  }
+
+  /**
+   * Find the Variable with the specified (short) name in this group.
+   * @param shortName short name of Variable within this group.
+   * @return the Variable, or null if not found
+   */
+  public Variable findVariableEscaped(String shortName) {
+    if (shortName == null) return null;
+    return findVariable( NetcdfFile.unescapeName(shortName));
   }
 
   /**

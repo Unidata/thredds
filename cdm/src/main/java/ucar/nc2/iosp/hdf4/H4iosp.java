@@ -19,9 +19,7 @@
  */
 package ucar.nc2.iosp.hdf4;
 
-import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.Indexer;
-import ucar.nc2.iosp.RegularLayout;
+import ucar.nc2.iosp.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
@@ -40,12 +38,12 @@ public class H4iosp extends AbstractIOServiceProvider {
   private H4header header = new H4header();
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    return H4header.isValidFile( raf);
+    return H4header.isValidFile(raf);
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
-    header.read( raf, ncfile);
+    header.read(raf, ncfile);
   }
 
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
@@ -55,78 +53,30 @@ public class H4iosp extends AbstractIOServiceProvider {
     H4header.Vinfo vinfo = (H4header.Vinfo) v.getSPobject();
     DataType dataType = v.getDataType();
 
-    Indexer index =  RegularLayout.factory(vinfo.start, v.getElementSize(), -1, v.getShape(), section);
-    Object data = readData(index, dataType);
-    return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
-  }
+    if (!vinfo.isLinked && !vinfo.isCompressed) {
+      Indexer index = RegularLayout.factory(vinfo.start, v.getElementSize(), -1, v.getShape(), section);
+      Object data = readData(raf, index, dataType);
+      return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
-  // copy in N3raf - promote to superclass
-  protected Object readData( Indexer index, DataType dataType) throws java.io.IOException {
-    int size = (int) index.getTotalNelems();
+    } else if (vinfo.isLinked && !vinfo.isCompressed) {
+      Indexer index = new SegmentedLayout(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
+      Object data = readData(raf, index, dataType);
+      return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
-      byte[] pa = new byte[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.read( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return (dataType == DataType.BYTE) ? pa : convertByteToChar( pa);  // leave (Object) cast, despite IntelliJ warning
-
-    } else if (dataType == DataType.SHORT) {
-      short[] pa = new short[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.readShort( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.INT) {
-      int[] pa = new int[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.readInt( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.FLOAT) {
-      float[] pa = new float[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.readFloat( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.DOUBLE) {
-      double[] pa = new double[size];
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
-        raf.readDouble( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
+    } else if (vinfo.isLinked && vinfo.isCompressed) {
+      Indexer index = new SegmentedLayout(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
+      Object data = readData(raf, index, dataType);
+      return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
     throw new IllegalStateException();
   }
 
-  private char[] convertByteToChar(byte[] byteArray) {
-    int size = byteArray.length;
-    char[] cbuff = new char[size];
-    for (int i = 0; i < size; i++)
-      cbuff[i] = (char) DataType.unsignedByteToShort( byteArray[i]); // NOTE: not Unicode !
-    return cbuff;
-  }
-
-
   /**
    * Read data from record structure. For N3, this is the only possible structure, and there can be no nesting.
    * Read all variables for each record, for efficiency.
    *
-   * @param s           the record structure
+   * @param s       the record structure
    * @param section the record range to read
    * @return an ArrayStructure, with all the data read in.
    * @throws IOException on error
@@ -166,7 +116,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     raf.close();
   }
 
-  public String toStringDebug (Object o) {
+  public String toStringDebug(Object o) {
     if (o instanceof Variable) {
       Variable v = (Variable) o;
       H4header.Vinfo vinfo = (H4header.Vinfo) v.getSPobject();

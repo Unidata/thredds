@@ -40,6 +40,25 @@ public class TagEnum {
   public static int SPECIAL_BUFFERED = 6;  /* Buffered element */
   public static int SPECIAL_COMPRAS = 7;   /* Compressed Raster element */
 
+  /*
+typedef enum
+  {
+      COMP_CODE_NONE = 0,       /* don't encode at all, just store
+      COMP_CODE_RLE,            /* for simple RLE encoding
+      COMP_CODE_NBIT,           /* for N-bit encoding
+      COMP_CODE_SKPHUFF,        /* for Skipping huffman encoding
+      COMP_CODE_DEFLATE,        /* for gzip 'deflate' encoding
+      COMP_CODE_SZIP,		        /* for szip encoding
+      COMP_CODE_INVALID,        /* invalid last code, for range checking
+      COMP_CODE_JPEG            /* _Ugly_ hack to allow JPEG images to be created with GRsetcompress
+  }  */
+  public static int COMP_CODE_NONE = 0;    // don't encode at all, just store
+  public static int COMP_CODE_RLE = 1;     // for simple RLE encoding
+  public static int COMP_CODE_NBIT = 2;    // for N-bit encoding
+  public static int COMP_CODE_SKPHUFF = 3; // for Skipping huffman encoding
+  public static int COMP_CODE_DEFLATE = 4; // for gzip 'deflate' encoding
+  public static int COMP_CODE_SZIP = 5;    // for szip encoding
+
   public final static TagEnum NONE = new TagEnum("NONE", "", (short) 0);
   public final static TagEnum NULL = new TagEnum("NULL", "", (short) 1);
   public final static TagEnum RLE = new TagEnum("RLE", "Run length encoding", (short) 11);

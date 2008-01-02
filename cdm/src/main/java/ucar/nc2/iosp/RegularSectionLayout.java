@@ -53,6 +53,17 @@ public class RegularSectionLayout extends Indexer {
 
   private boolean debug = false, debugMerge = false, debugDetail = false, debugNext = false;
 
+  /**
+   * This factory allows us to optimize special cases.
+   *
+   * @param startFilePos starting address of the dataSection
+   * @param elemSize     size of an element in bytes.
+   * @param dataSection  the section of data we actually have. must have all ranges with stride = 1.
+   * @param wantSection  the wanted section of data, it will be intersected with dataSection.
+   *   dataSection.intersects(wantSection) must be true
+   * @throws InvalidRangeException if ranges are malformed
+   * @return an Indexer to handle this case
+   */
   static public Indexer factory(long startFilePos, int elemSize, Section dataSection, Section wantSection) throws InvalidRangeException {
     if (dataSection.equals(wantSection)) // optimize the simple case
       return new SingleChunkIndexer(startFilePos, (int) dataSection.computeSize(), elemSize);

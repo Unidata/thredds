@@ -759,7 +759,7 @@ public class NcMLReader {
     if (nameInFile == null) nameInFile = name;
 
     // see if it already exists
-    Variable refv = refg.findVariable(nameInFile);
+    Variable refv = refg.findVariableEscaped(nameInFile);
     if (refv == null) { // new
       if (debugConstruct) System.out.println(" add new var = " + name);
       g.addVariable(readVariableNew(ds, g, null, varElem));
@@ -1319,7 +1319,7 @@ public class NcMLReader {
         System.out.println("CMD remove " + type + " CANT find " + name);
 
     } else if (type.equals("variable")) {
-      Variable v = g.findVariable(name);
+      Variable v = g.findVariableEscaped(name);
       if (v != null) {
         g.remove(v);
         if (debugCmd) System.out.println("CMD remove " + type + " " + name);

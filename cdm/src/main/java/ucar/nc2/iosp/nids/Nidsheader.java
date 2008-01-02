@@ -24,6 +24,7 @@ import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.*;
 import ucar.nc2.iosp.nexrad2.NexradStationDB;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.DateFormatter;
@@ -2065,7 +2066,7 @@ class Nidsheader{
     }
 
     if (dataType == DataType.CHAR) {
-      return convertByteToChar( barray);
+      return AbstractIOServiceProvider.convertByteToChar( barray);
     }
 
     ByteBuffer bbuff = ByteBuffer.wrap( barray);
@@ -2138,28 +2139,6 @@ class Nidsheader{
 
     throw new IllegalStateException();
   }
-
-
-
-
-    // convert byte array to char array
-  protected char[] convertByteToChar( byte[] byteArray) {
-    int size = byteArray.length;
-    char[] cbuff = new char[size];
-    for (int i=0; i<size; i++)
-      cbuff[i] = (char) byteArray[i];
-    return cbuff;
-  }
-
-   // convert char array to byte array
-  protected byte[] convertCharToByte( char[] from) {
-    int size = from.length;
-    byte[] to = new byte[size];
-    for (int i=0; i<size; i++)
-      to[i] = (byte) from[i];
-    return to;
-  }
-
 
 
   //////////////////////////////////////////////////////////////////////////

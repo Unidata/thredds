@@ -21,7 +21,6 @@ package ucar.nc2.iosp.hdf5;
 
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.Indexer;
-import ucar.nc2.iosp.RegularSectionLayout;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.unidata.io.RandomAccessFile;

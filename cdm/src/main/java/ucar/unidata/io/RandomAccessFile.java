@@ -560,7 +560,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
     file.seek(pos);
     int n = file.read(b, offset, len);
     if (debugAccess)
-      System.out.println(" read_ " + location + " = " + len + " bytes at " + pos + "; block = " + (pos / buffer.length));
+      System.out.println(" **read_ " + location + " = " + len + " bytes at " + pos + "; block = " + (pos / buffer.length));
 
     if (extendMode && (n < len)) {
       //System.out.println(" read_ = "+len+" at "+pos+"; got = "+n);

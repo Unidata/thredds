@@ -24,6 +24,7 @@ import ucar.unidata.util.Format;
 import ucar.nc2.*;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.DataType;
+import ucar.ma2.Section;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -34,6 +35,7 @@ import java.nio.ByteBuffer;
 /**
  * Read the tags of an HDF4 file, construct CDM objects.
  * All page references are to "HDF Specification and Developers Guide" version 4.1r5, nov 2001.
+ *
  * @author caron
  * @since Jul 18, 2007
  */
@@ -109,7 +111,7 @@ public class H4header {
       if (debugTag1) System.out.println(debugTagDetail ? tag.detail() : tag);
     }
 
-    // constuct the netcdf objects
+    // construct the netcdf objects
     ncfile.setLocation(myRaf.getLocation());
     construct(ncfile, alltags);
 
@@ -131,12 +133,8 @@ public class H4header {
     // decide what netcdf objects are required
     // pass 1
     for (Tag t : alltags) {
-      if (t.code == 306) {
+      if (t.code == 306) { // raster image
         addImage((TagGroup) t);
-
-      } else if (t.code == 702) {
-        TagData tdata = (TagData) t;
-        tdata.read2();
 
       } else if (t.code == 1965) { // Vgroup
         TagVGroup vgroup = (TagVGroup) t;
@@ -153,24 +151,17 @@ public class H4header {
     for (Tag t : alltags) {
       if (t.used) continue;
 
-      if (t.code == 1962) {
+      if (t.code == 1962) { // VHeader
         TagVH tagVH = (TagVH) t;
         if (tagVH.className.startsWith("Data"))
           addStructure(tagVH);
       }
-      if (t.code == 720) {
+      if (t.code == 720) { // numeric data group
         addVariable((TagGroup) t);
       }
     }
 
-    /* assign tags
-    for (Tag t : alltags) {
-      Vinfo vinfo = refnoMap.get(t.refno);
-      if (vinfo != null)
-        vinfo.addTag(t);
-    } */
-
-    // annotations
+    // annotations become attributes
     for (Tag t : alltags) {
       if (t instanceof TagAnnotate) {
         TagAnnotate ta = (TagAnnotate) t;
@@ -182,7 +173,7 @@ public class H4header {
       }
     }
 
-    // global attributes
+    // misc global attributes
     ncfile.addAttribute(null, new Attribute("History", "Direct read of HDF4 file through CDM library"));
     for (Tag t : alltags) {
       if (t.code == 30) {
@@ -232,7 +223,8 @@ public class H4header {
         if (null != data2) {
           raf.seek(data2.offset);
           int length2 = raf.readInt();
-          System.out.println("dimension length=" + length + " for TagVGroup= " + group + " using data " + data2.refno);
+          if (debugConstruct)
+            System.out.println("dimension length=" + length + " for TagVGroup= " + group + " using data " + data2.refno);
           if (length2 > 0)
             length = length2;
           data2.used = true;
@@ -257,7 +249,7 @@ public class H4header {
 
     TagSDDimension dim = null;
     TagNumberType ntag = null;
-    Tag data = null;
+    TagData data = null;
     List<Dimension> dims = new ArrayList<Dimension>();
     for (int i = 0; i < group.nelems; i++) {
       Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
@@ -270,10 +262,12 @@ public class H4header {
 
       if (tag.code == 106)
         ntag = (TagNumberType) tag;
-      if (tag.code == 702)
-        data = tag;
+
       if (tag.code == 701)
         dim = (TagSDDimension) tag;
+      if (tag.code == 702)
+        data = (TagData) tag;
+
       if (tag.code == 1965) {
         TagVGroup vg = (TagVGroup) tag;
         if (vg.className.startsWith("Dim") || vg.className.startsWith("UDim")) {
@@ -303,8 +297,8 @@ public class H4header {
     H4type.setDataType(ntag.type, v);
     ncfile.addVariable(null, v);
 
-    vinfo.start = data.offset;
     vinfo.setVariable(v);
+    vinfo.setData(data);
 
     // look for attributes
     for (int i = 0; i < group.nelems; i++) {
@@ -337,8 +331,7 @@ public class H4header {
     vinfo.tags.add(group);
 
     TagSDDimension dim = null;
-    Tag data = null;
-    List<Dimension> dims = new ArrayList<Dimension>();
+    TagData data = null;
     for (int i = 0; i < group.nelems; i++) {
       Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
       if (tag == null) {
@@ -350,7 +343,7 @@ public class H4header {
       if (tag.code == 701)
         dim = (TagSDDimension) tag;
       if (tag.code == 702)
-        data = tag;
+        data = (TagData) tag;
     }
     if ((dim == null) || (data == null))
       throw new IllegalStateException();
@@ -367,7 +360,7 @@ public class H4header {
     DataType dataType = H4type.setDataType(nt.type, v);
     ncfile.addVariable(null, v);
 
-    vinfo.start = data.offset;
+    vinfo.setData(data);
     vinfo.setVariable(v);
 
     // now that we know n, read attribute tags
@@ -504,41 +497,6 @@ public class H4header {
     return att;
   }
 
-  class Vinfo implements Comparable<Vinfo> {
-    short refno;
-    List<Tag> tags = new ArrayList<Tag>();
-    int start, recsize; //, order;
-    Variable v;
-
-    Vinfo(short refno) {
-      this.refno = refno;
-      refnoMap.put(refno, this);
-    }
-
-    void setVariable(Variable v) {
-      this.v = v;
-      v.setSPobject(this);
-    }
-
-    public int compareTo(Vinfo o) {
-      return refno - o.refno;
-    }
-
-    public String toString() {
-      StringBuffer sbuff = new StringBuffer();
-      sbuff.append("refno=");
-      sbuff.append(refno);
-      sbuff.append(" variable=");
-      sbuff.append(v.getShortName());
-      sbuff.append(" data offset=");
-      sbuff.append(start);
-      sbuff.append("\n");
-      for (Tag t : tags)
-        sbuff.append(" ").append(t).append("\n");
-      return sbuff.toString();
-    }
-  }
-
   void addImage(TagGroup group) {
     TagRIDimension dimTag = null;
     TagRIPalette palette = null;
@@ -646,6 +604,91 @@ public class H4header {
 
   //////////////////////////////////////////////////////////////////////
 
+  class Vinfo implements Comparable<Vinfo> {
+    short refno;
+
+    List<Tag> tags = new ArrayList<Tag>();
+    long[] segPos;
+    int[] segSize;
+    boolean isLinked, isCompressed;
+
+    int start = -1;
+    int recsize;
+    Variable v;
+
+    Vinfo(short refno) {
+      this.refno = refno;
+      refnoMap.put(refno, this);
+    }
+
+    void setVariable(Variable v) {
+      this.v = v;
+      v.setSPobject(this);
+    }
+
+    public int compareTo(Vinfo o) {
+      return refno - o.refno;
+    }
+
+    void setData(TagData data) throws IOException {
+      if (null != data.linked) {
+        isLinked = true;
+        setDataBlocks(data.linked.getLinkedDataBlocks());
+
+    } else if (null != data.compress) {
+        isCompressed = true;
+        TagData compData =  data.compress.getDataTag();
+        tags.add( compData);
+        isLinked = (compData.linked != null);
+        if (isLinked)
+          setDataBlocks(compData.linked.getLinkedDataBlocks());
+
+      } else {
+        start = data.offset;
+      }
+    }
+
+    void setDataBlocks(List<TagLinkedBlock> linkedBlocks) {
+      int nsegs = linkedBlocks.size();
+      segPos = new long[nsegs];
+      segSize = new int[nsegs];
+      int count = 0;
+      for (TagLinkedBlock tag : linkedBlocks) {
+        segPos[count] = tag.offset;
+        segSize[count] = tag.length;
+        count++;
+      }
+    }
+
+    public String toString() {
+      StringBuffer sbuff = new StringBuffer();
+      sbuff.append("refno=");
+      sbuff.append(refno);
+      sbuff.append(" variable=");
+      sbuff.append(v.getShortName());
+      sbuff.append(" data offset=");
+      sbuff.append(start);
+      sbuff.append("\n");
+      for (Tag t : tags)
+        sbuff.append(" ").append(t).append("\n");
+      return sbuff.toString();
+    }
+  }
+
+  class DataBlock {
+    int offset, length;
+    int starting_element;
+    Section section;
+
+    DataBlock(int offset, int length, int starting_element) {
+      this.offset = offset;
+      this.length = length;
+      this.starting_element = starting_element;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////
+
   private void readDDH(List<Tag> alltags, long start) throws IOException {
     raf.seek(start);
 
@@ -680,6 +723,9 @@ public class H4header {
         return new TagLinkedBlock(code);
       case 30:
         return new TagVersion(code);
+      case 40:
+      case 702:
+        return new TagData(code);
       case 100:
       case 101:
       case 708:
@@ -700,8 +746,6 @@ public class H4header {
         return new TagGroup(code);
       case 701:
         return new TagSDDimension(code);
-      case 702:
-        return new TagData(code);
       case 704:
       case 705:
       case 706:
@@ -741,23 +785,22 @@ public class H4header {
     }
 
     // read the offset/length part of the tag. overridden by subclasses
-    void read() throws IOException {
-    }
+    void read() throws IOException { }
 
     public String detail() {
       return (used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "") + " offset=" + offset + " length=" + length;
     }
 
     public String toString() {
-      return (used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "");
+      return (used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "" + " length=" + length);
     }
   }
 
-  // 702 p 129
+  // 40 (not documented), 702 p 129
   private class TagData extends Tag {
-    int length, first_len;
-    short ext_tag, blk_len, num_blk, link_ref;
-    List<TagLinkedBlock> dataBlocks;
+    short ext_tag;
+    SpecialLinked linked;
+    SpecialComp compress;
 
     TagData(short code) throws IOException {
       super(code);
@@ -766,37 +809,160 @@ public class H4header {
     void read() throws IOException {
       if (extended) {
         raf.seek(offset);
-        ext_tag = raf.readShort();  // note sizes are wrong in doc
-        length = raf.readInt();
-        first_len = raf.readInt();
-        blk_len = raf.readShort();
-        num_blk = raf.readShort();
-        link_ref = raf.readShort();
-      }
-    }
+        ext_tag = raf.readShort();  // note size wrong in doc
 
-    void read2() throws IOException {
-      if (extended) {
-        dataBlocks = new ArrayList<TagLinkedBlock>();
-        if (debugLinked) System.out.println(" TagData read2 "+detail());
-        short next = (short) (link_ref & 0x3FFF);
-        while (next > 0) {
-          TagLinkedBlock tag = (TagLinkedBlock) tagMap.get(tagid(next, TagEnum.LINKED.getCode()));
-          if (tag == null)
-            throw new IllegalStateException("TagLinkedBlock not found for "+detail());
-          tag.used = true;
-          tag.read2(num_blk, dataBlocks);
-          next = (short) (tag.next_ref & 0x3FFF);
+        if (ext_tag == TagEnum.SPECIAL_LINKED) {
+          linked = new SpecialLinked();
+          linked.read();
+
+        } else if (ext_tag == TagEnum.SPECIAL_COMP) {
+          compress = new SpecialComp();
+          compress.read();
         }
       }
     }
 
     public String detail() {
-      if (extended) return super.detail() + " ext_tag= " + ext_tag + " length=" + length + " first_len=" + first_len +
-          " blk_len=" + blk_len + " num_blk=" + num_blk + " link_ref=" + link_ref;
-      else return super.detail();
+      if (linked != null)
+        return super.detail() + " ext_tag= " + ext_tag + " " + linked.detail();
+      else if (compress != null)
+        return super.detail() + " ext_tag= " + ext_tag + " " + compress.detail();
+      else
+        return super.detail();
     }
 
+  }
+
+  /* / 40 p 150
+  private class TagCompress extends Tag {
+    short version, model_type, compress_type, link_ref;
+    int uncomp_length;
+    short signFlag, fillValue;
+    int nt, startBit, bitLength;
+
+    TagCompress(short code) throws IOException {
+      super(code);
+    }
+
+    void read() throws IOException {
+      raf.seek(offset+2);
+      version = raf.readShort();
+      uncomp_length = raf.readInt();
+      link_ref = raf.readShort();
+      model_type = raf.readShort();
+      compress_type = raf.readShort();
+
+      if (compress_type == TagEnum.COMP_CODE_NBIT) {
+        nt =  raf.readInt();
+        signFlag = raf.readShort();
+        fillValue = raf.readShort();
+        startBit = raf.readInt();
+        bitLength = raf.readInt();
+      }
+    }
+
+    public String detail() {
+      StringBuffer sbuff = new StringBuffer(super.detail());
+      sbuff.append(" version=" + version + " uncompressed length =" + uncomp_length + " link_ref=" + link_ref);
+      sbuff.append(" model_type=" + model_type + " compress_type=" + compress_type);
+      if (compress_type == TagEnum.COMP_CODE_NBIT)
+        sbuff.append(" nt=" + nt + " signFlag=" + signFlag + " fillValue=" + fillValue + " startBit=" + startBit
+        + " bitLength=" + bitLength);
+      return sbuff.toString();
+    }
+
+  }   */
+
+
+  private class SpecialComp {
+    short version, model_type, compress_type, link_ref;
+    int uncomp_length;
+    TagData dataTag;
+
+    // compress_type == 2
+    short signFlag, fillValue;
+    int nt, startBit, bitLength;
+
+    // compress_type == 4
+    short deflateLevel;
+
+
+    void read() throws IOException {
+      version = raf.readShort();
+      uncomp_length = raf.readInt();
+      link_ref = raf.readShort();
+      model_type = raf.readShort();
+      compress_type = raf.readShort();
+
+      if (compress_type == TagEnum.COMP_CODE_NBIT) {
+        nt =  raf.readInt();
+        signFlag = raf.readShort();
+        fillValue = raf.readShort();
+        startBit = raf.readInt();
+        bitLength = raf.readInt();
+
+      } else if (compress_type == TagEnum.COMP_CODE_DEFLATE) {
+        deflateLevel = raf.readShort();
+      }
+    }
+
+    TagData getDataTag() throws IOException {
+      if (dataTag == null) {
+        dataTag = (TagData) tagMap.get(tagid(link_ref, TagEnum.COMPRESSED.getCode()));
+        if (dataTag == null)
+          throw new IllegalStateException("TagCompress not found for " + detail());
+        dataTag.used = true;
+      }
+      return dataTag;
+    }
+
+    public String detail() {
+      StringBuffer sbuff = new StringBuffer("SPECIAL_COMP ");
+      sbuff.append(" version=" + version + " uncompressed length =" + uncomp_length + " link_ref=" + link_ref);
+      sbuff.append(" model_type=" + model_type + " compress_type=" + compress_type);
+      if (compress_type == TagEnum.COMP_CODE_NBIT)
+        sbuff.append(" nt=" + nt + " signFlag=" + signFlag + " fillValue=" + fillValue + " startBit=" + startBit
+        + " bitLength=" + bitLength);
+      else if (compress_type == TagEnum.COMP_CODE_DEFLATE)
+        sbuff.append(" deflateLevel=" + deflateLevel);
+      return sbuff.toString();
+    }
+
+  }
+
+  private class SpecialLinked {
+    int length, first_len;
+    short blk_len, num_blk, link_ref;
+    List<TagLinkedBlock> linkedDataBlocks;
+
+    void read() throws IOException {
+      length = raf.readInt();
+      first_len = raf.readInt();
+      blk_len = raf.readShort(); // note size wrong in doc
+      num_blk = raf.readShort(); // note size wrong in doc
+      link_ref = raf.readShort();
+    }
+
+    List<TagLinkedBlock> getLinkedDataBlocks() throws IOException {
+      if (linkedDataBlocks == null) {
+        linkedDataBlocks = new ArrayList<TagLinkedBlock>();
+        if (debugLinked) System.out.println(" TagData readLinkTags " + detail());
+        short next = (short) (link_ref & 0x3FFF);
+        while (next > 0) {
+          TagLinkedBlock tag = (TagLinkedBlock) tagMap.get(tagid(next, TagEnum.LINKED.getCode()));
+          if (tag == null)
+            throw new IllegalStateException("TagLinkedBlock not found for " + detail());
+          tag.used = true;
+          tag.read2(num_blk, linkedDataBlocks);
+          next = (short) (tag.next_ref & 0x3FFF);
+        }
+      }
+      return linkedDataBlocks;
+    }
+
+    public String detail() {
+      return "SPECIAL_LINKED length=" + length + " first_len=" + first_len + " blk_len=" + blk_len + " num_blk=" + num_blk + " link_ref=" + link_ref;
+    }
   }
 
   // 20 p 146 Also used for data blocks, which has no next_ref! (!)
@@ -813,28 +979,28 @@ public class H4header {
       raf.seek(offset);
       next_ref = raf.readShort();
       block_ref = new short[nb];
-      for (int i =0; i<nb; i++) {
+      for (int i = 0; i < nb; i++) {
         block_ref[i] = raf.readShort();
         if (block_ref[i] == 0) break;
         n++;
       }
 
-      if (debugLinked) System.out.println(" TagLinkedBlock read2 "+detail());
-      for (int i =0; i<n; i++) {
+      if (debugLinked) System.out.println(" TagLinkedBlock read2 " + detail());
+      for (int i = 0; i < n; i++) {
         TagLinkedBlock tag = (TagLinkedBlock) tagMap.get(tagid(block_ref[i], TagEnum.LINKED.getCode()));
         tag.used = true;
-        dataBlocks.add( tag);
-        if (debugLinked) System.out.println("   Linked data= "+tag.detail());
+        dataBlocks.add(tag);
+        if (debugLinked) System.out.println("   Linked data= " + tag.detail());
       }
     }
 
     public String detail() {
-      if (block_ref == null) return  super.detail();
+      if (block_ref == null) return super.detail();
 
       StringBuffer sbuff = new StringBuffer(super.detail());
       sbuff.append(" next_ref= ").append(next_ref);
       sbuff.append(" dataBlks= ");
-      for (int i=0; i<n; i++) {
+      for (int i = 0; i < n; i++) {
         short ref = block_ref[i];
         sbuff.append(ref).append(" ");
       }
@@ -1406,12 +1572,134 @@ public class H4header {
     String filename2 = "balloon_sonde.o3_knmi000_de.bilt_s2_20060905t112100z_002.hdf";
     String filename3 = "TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF";
     String filename4 = "f13_owsa_04010_09A.hdf";
-    String filename5 = "olslit1995.oct_digital_12.hdf"; // no - linked elements
-    String filename6 = "c402_rp_02.diag.sfc.20020122_0130z.hdf";
+    String filename5 = "olslit1995.oct_digital_12.hdf"; // multiple strips plus a raster - crappy
+    String filename6 = "c402_rp_02.diag.sfc.20020122_0130z.hdf";  // COARDS, looks good
+    String filename7 = "MOP03M-200501-L3V81.0.1.hdf";  // bad links
+    String filename8 = "96108_08.hdf";  // bad links
     //readAllDir("C:/data/hdf4/", false);
 
     //ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
-    test("C:/data/hdf4/" + filename6);
+    test("C:/data/hdf4/" + filename7);
   }
 }
+
+
+/*--------------------------------------------------------------------------
+ NAME
+    HCPdecode_header -- Decode the compression header info from a memory buffer
+ USAGE
+    intn HCPdecode_header(model_type, model_info, coder_type, coder_info)
+    void * buf;                  IN: encoded compression info header
+    comp_model_t *model_type;   OUT: the type of modeling to use
+    model_info *m_info;         OUT: Information needed for the modeling type chosen
+    comp_coder_t *coder_type;   OUT: the type of encoding to use
+    coder_info *c_info;         OUT: Information needed for the encoding type chosen
+
+ RETURNS
+    Return SUCCEED or FAIL
+ DESCRIPTION
+    Decodes the compression information from a block in memory.
+
+ GLOBAL VARIABLES
+ COMMENTS, BUGS, ASSUMPTIONS
+ EXAMPLES
+ REVISION LOG
+--------------------------------------------------------------------------
+intn
+HCPdecode_header(uint8 *p, comp_model_t *model_type, model_info * m_info,
+         comp_coder_t *coder_type, comp_info * c_info)
+{
+    CONSTR(FUNC, "HCPdecode_header");    /* for HERROR
+    uint16 m_type, c_type;
+    int32 ret_value=SUCCEED;
+
+    /* clear error stack and validate args
+    HEclear();
+    if (p==NULL || model_type==NULL || m_info==NULL || coder_type==NULL || c_info==NULL)
+        HGOTO_ERROR(DFE_ARGS, FAIL);
+
+    UINT16DECODE(p, m_type);     /* get model type
+    *model_type=(comp_model_t)m_type;
+    UINT16DECODE(p, c_type);     /* get encoding type
+    *coder_type=(comp_coder_t)c_type;
+
+    /* read any additional information needed for modeling type
+    switch (*model_type)
+      {
+          default:      /* no additional information needed
+              break;
+      }     /* end switch */
+
+    /* read any additional information needed for coding type
+    switch (*coder_type)
+      {
+          case COMP_CODE_NBIT:      /* N-bit coding needs info
+              {
+                  uint16      s_ext;    /* temp. var for sign extend
+                  uint16      f_one;    /* temp. var for fill one
+                  int32       m_off, m_len;     /* temp. var for mask offset and len
+
+                  /* specify number-type of N-bit data
+                  INT32DECODE(p, c_info->nbit.nt);
+                  /* next is the flag to indicate whether to sign extend
+                  UINT16DECODE(p, s_ext);
+                  c_info->nbit.sign_ext = (intn) s_ext;
+                  /* the flag to indicate whether to fill with 1's or 0's
+                  UINT16DECODE(p, f_one);
+                  c_info->nbit.fill_one = (intn) f_one;
+                  /* the offset of the bits extracted
+                  INT32DECODE(p, m_off);
+                  c_info->nbit.start_bit = (intn) m_off;
+                  /* the number of bits extracted
+                  INT32DECODE(p, m_len);
+                  c_info->nbit.bit_len = (intn) m_len;
+              }     /* end case
+              break;
+
+          case COMP_CODE_SKPHUFF:   /* Skipping Huffman  coding needs info
+              {
+                  uint32      skp_size,     /* size of skipping unit
+                              comp_size;    /* # of bytes to compress
+
+                  /* specify skipping unit size
+                  UINT32DECODE(p, skp_size);
+                  /* specify # of bytes of skipping data to compress
+                  UINT32DECODE(p, comp_size);   /* ignored for now
+                  c_info->skphuff.skp_size = (intn) skp_size;
+              }     /* end case
+              break;
+
+          case COMP_CODE_DEFLATE:   /* Deflation coding stores deflation level
+              {
+                  uint16      level;    /* deflation level
+
+                  /* specify deflation level
+                  UINT16DECODE(p, level);
+                  c_info->deflate.level = (intn) level;
+              }     /* end case
+              break;
+
+          case COMP_CODE_SZIP:   /* Szip coding stores the following values
+	      {
+                  UINT32DECODE(p, c_info->szip.pixels);
+                  UINT32DECODE(p, c_info->szip.pixels_per_scanline);
+                  UINT32DECODE(p, c_info->szip.options_mask);
+                  c_info->szip.bits_per_pixel = *p++;
+                  c_info->szip.pixels_per_block = *p++;
+	      }
+              break;
+
+          default:      /* no additional information needed
+              break;
+      }     /* end switch
+
+done:
+    if(ret_value == FAIL)
+      { /* Error condition cleanup
+
+      } /* end if
+
+    /* Normal function cleanup
+    return ret_value;
+} /* end HCPdecode_header() */
 

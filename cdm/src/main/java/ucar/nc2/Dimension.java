@@ -113,7 +113,7 @@ public class Dimension implements Comparable {
       int result = 17;
       if (g != null) result += 37 * result + g.hashCode();
       result += 37 * result + getLength();
-      result += 37 * result + getName().hashCode();
+      if (null != getName()) result += 37 * result + getName().hashCode();
       result += 37 * result + (isUnlimited() ? 0 : 1);
       result += 37 * result + (isVariableLength() ? 0 : 1);
       result += 37 * result + (isShared() ? 0 : 1);

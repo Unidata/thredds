@@ -611,7 +611,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         for (int i = 1; i < dodsV.children.size(); i++) {
           DodsV map = dodsV.children.get(i);
           String shortName = DODSNetcdfFile.makeNetcdfName(map.bt.getName());
-          Variable mapV = parentGroup.findVariable(shortName);
+          Variable mapV = parentGroup.findVariableEscaped(shortName);
           if (mapV == null) {        // if not, add it LOOK need to compare values
             mapV = addVariable(parentGroup, parentStructure, map);
             makeCoordinateVariable(parentGroup, mapV, map.data);

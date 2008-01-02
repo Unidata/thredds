@@ -8,8 +8,12 @@ import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.FileFilter;
 
 import ucar.unidata.io.RandomAccessFile;
+import ucar.nc2.iosp.hdf5.TestH5;
+import ucar.ma2.Section;
+import ucar.ma2.InvalidRangeException;
 
 /**
  * TestSuite that runs all nj22 unit tests.
@@ -202,5 +206,62 @@ public class TestAll {
         " max= " + runtime.maxMemory() * .001 * .001 +
         " MB");
   }
+
+  public static void readAllDir(String dirName, FileFilter ff) {
+    System.out.println("---------------Reading directory "+dirName);
+    File allDir = new File( dirName);
+    File[] allFiles = allDir.listFiles();
+    if (null == allFiles) {
+      System.out.println("---------------INVALID "+dirName);
+      return;
+    }
+
+    for (File f : allFiles) {
+      String name = f.getAbsolutePath();
+      if (f.isDirectory())
+        continue;
+      if ((ff == null) || ff.accept(f))
+        readAll(name);
+    }
+
+    for (File f : allFiles) {
+      if (f.isDirectory())
+        readAllDir(f.getAbsolutePath(), ff);
+    }
+
+  }
+
+  static public void readAll( String filename) {
+    System.out.println("\n------Reading filename "+filename);
+    try {
+      NetcdfFile ncfile = NetcdfFile.open(filename);
+
+      for (Variable v : ncfile.getVariables()) {
+        if (v.getSize() > max_size) {
+          Section s = makeSubset(v);
+          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
+          v.read(s);
+        } else {
+          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
+          v.read();
+        }
+      }
+      ncfile.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      assert false;
+    }
+  }
+
+  static int max_size = 1000 * 1000 * 10;
+  static Section makeSubset(Variable v) throws InvalidRangeException {
+    int[] shape = v.getShape();
+    shape[0] = 1;
+    Section s = new Section(shape);
+    long size = s.computeSize();
+    shape[0] = (int) Math.max(1, max_size / size);
+    return new Section(shape);
+  }
+
 
 }

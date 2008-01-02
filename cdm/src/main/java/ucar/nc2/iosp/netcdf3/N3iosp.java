@@ -26,6 +26,7 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.Indexer;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.RegularLayout;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -44,7 +45,7 @@ import java.nio.channels.WritableByteChannel;
  * @see N3raf concrete class
  */
 
-public abstract class N3iosp implements IOServiceProviderWriter {
+public abstract class N3iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iosp.class);
 
   // Default fill values, used unless _FillValue variable attribute is set.
@@ -169,6 +170,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
   private ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
   private PrintStream out = new PrintStream(bos);
 
+  @Override
   public String getDetailInfo() {
     out.flush();
     return bos.toString();
@@ -404,24 +406,6 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     return output.array();
   }
 
-  // convert byte array to char array
-  static protected char[] convertByteToChar(byte[] byteArray) {
-    int size = byteArray.length;
-    char[] cbuff = new char[size];
-    for (int i = 0; i < size; i++)
-      cbuff[i] = (char) DataType.unsignedByteToShort( byteArray[i]); // NOTE: not Unicode !
-    return cbuff;
-  }
-
-  // convert char array to byte array
-  static public byte[] convertCharToByte(char[] from) {
-    int size = from.length;
-    byte[] to = new byte[size];
-    for (int i = 0; i < size; i++)
-      to[i] = (byte) from[i];    // LOOK wrong, convert back to unsigned byte
-    return to;
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////
   // create new file
 
@@ -633,6 +617,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
+  @Override
   public boolean syncExtend() throws IOException {
     boolean result = headerParser.synchNumrecs();
     if (result && log.isDebugEnabled())
@@ -640,6 +625,7 @@ public abstract class N3iosp implements IOServiceProviderWriter {
     return result;
   }
 
+  @Override
   public boolean sync() throws IOException {
     if (syncExtendOnly)
       return syncExtend();
@@ -679,10 +665,12 @@ public abstract class N3iosp implements IOServiceProviderWriter {
   /**
    * Debug info for this object.
    */
+  @Override
   public String toStringDebug(Object o) {
     return null;
   }
 
+  @Override
   public Object sendIospMessage(Object message) {
     if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
       return headerParser.addRecordStructure();

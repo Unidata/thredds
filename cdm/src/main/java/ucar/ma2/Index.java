@@ -410,38 +410,30 @@ public class Index implements Cloneable {
     return value;
   }
 
-  /*Get the current element's index.
-  public int[] current() {
-    return current;
-  } */
-
-  // only use from FasstIterator, where the indices are not permuted
 
   /**
+   * Get the current counter.
+   * @return
+   */
+  public int[] getCurrentCounter() {
+    return current.clone();
+  }
+
+  // only use from FastIterator, where the indices are not permuted
+
+  /**
+   * Set the current counter from the 1D "current element"
    * currElement = offset + stride[0]*current[0] + ...
    * @param currElement set to this value
    */
-  void setCurrentElement(int currElement) {
+  void setCurrentCounter(int currElement) {
     currElement -= offset;
     for (int ii = 0; ii < rank; ii++) { // general rank
       current[ii] = currElement / stride[ii];
       currElement -= current[ii] * stride[ii];
     }
+    set(current); // transfer to subclass fields
   }
-
-  /** Use index[] to calculate the index into the 1D backing array.
-   * Does not set the current element.
-   *
-   public int element(int [] index) {
-   int value = offset;
-   for(int ii = 0; ii < rank; ii++) {
-   final int thisIndex = index[ii];
-   if( thisIndex < 0 || thisIndex >= shape[ii])  // check each index
-   throw new ArrayIndexOutOfBoundsException();
-   value += thisIndex * stride[ii];
-   }
-   return value;
-   } */
 
   /**
    * Increment the current element by 1. Used by IndexIterator.
@@ -701,10 +693,6 @@ public class Index implements Cloneable {
       sbuff.append(current[ii]);
     }
     return sbuff.toString();
-  }
-
-  public int[] getCurrentCounter() {
-    return current.clone();
   }
 
   public Object clone() {

@@ -45,55 +45,7 @@ public class N3raf extends N3iosp  {
    * @return primitive array with data read in
    */
  protected Object readData( Indexer index, DataType dataType) throws java.io.IOException {
-   int size = (int) index.getTotalNelems();
-
-   if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
-     byte[] pa = new byte[size];
-     while (index.hasNext()) {
-       Indexer.Chunk chunk = index.next();
-       raf.seek ( chunk.getFilePos());
-       raf.read( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-     }
-     return (dataType == DataType.BYTE) ? pa : convertByteToChar( pa);  // leave (Object) cast, despite IntelliJ warning
-
-   } else if (dataType == DataType.SHORT) {
-     short[] pa = new short[size];
-     while (index.hasNext()) {
-       Indexer.Chunk chunk = index.next();
-       raf.seek ( chunk.getFilePos());
-       raf.readShort( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-     }
-     return pa;
-
-   } else if (dataType == DataType.INT) {
-     int[] pa = new int[size];
-     while (index.hasNext()) {
-       Indexer.Chunk chunk = index.next();
-       raf.seek ( chunk.getFilePos());
-       raf.readInt( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-     }
-     return pa;
-
-   } else if (dataType == DataType.FLOAT) {
-     float[] pa = new float[size];
-     while (index.hasNext()) {
-       Indexer.Chunk chunk = index.next();
-       raf.seek ( chunk.getFilePos());
-       raf.readFloat( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-     }
-     return pa;
-
-   } else if (dataType == DataType.DOUBLE) {
-     double[] pa = new double[size];
-     while (index.hasNext()) {
-       Indexer.Chunk chunk = index.next();
-       raf.seek ( chunk.getFilePos());
-       raf.readDouble( pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-     }
-     return pa;
-   }
-
-   throw new IllegalStateException();
+   return readData(raf, index, dataType); // from AbstractIOServiceProvider
  }
 
   /**
