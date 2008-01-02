@@ -376,7 +376,7 @@ public class TestSection extends TestCase {
     assert offset == 98 : offset;
   }
 
-  public void testSubsection() throws InvalidRangeException {
+  /* public void testSubsection() throws InvalidRangeException {
     Section s = new Section("0:180,0:287");
     int total = (int) s.computeSize();
     int start = 0;
@@ -386,5 +386,5 @@ public class TestSection extends TestCase {
       start += nelems;
       System.out.println(" section "+ss);
     }
-  }
+  } */
 }

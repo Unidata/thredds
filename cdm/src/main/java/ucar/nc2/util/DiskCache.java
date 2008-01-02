@@ -97,7 +97,6 @@ public class DiskCache {
     String policy = System.getProperty("nj22.cachePolicy");
     if (policy != null)
       standardPolicy = policy.equalsIgnoreCase("true");
-
   }
 
   /**

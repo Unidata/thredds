@@ -130,8 +130,11 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
     } else {
       // always check first if the index file lives inb the same dir as the regular file, and use it
       saveIndexFile = new File(indexLocation);
-      if (!saveIndexFile.exists()) // look in cache if need be
+      if (!saveIndexFile.exists()) { // look in cache if need be
+        System.out.println("GribServiceProvider: saveIndexFile not exist "+saveIndexFile.getPath());
         saveIndexFile = DiskCache.getFile(indexLocation, alwaysInCache);
+        System.out.println("GribServiceProvider: use "+saveIndexFile.getPath());
+      }
     }
 
     // if exist already, read it

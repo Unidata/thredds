@@ -135,7 +135,7 @@ public class Section {
     return new Section(s.getRanges(), shape);
   }
 
-  public Section subsection(int startElement, int endElement) throws InvalidRangeException {
+  /* public Section subsection(int startElement, int endElement) throws InvalidRangeException {
     int[] shape = getShape();
     Index index = Index.factory( shape);
     index.setCurrentCounter(startElement);
@@ -146,7 +146,7 @@ public class Section {
     for (int i=0; i<getRank();i++)
       result.appendRange(startShape[i], endShape[i] - 1);
     return result;
-  }
+  } */
 
   /**
    * Parse an index section String specification, return equivilent Section.
