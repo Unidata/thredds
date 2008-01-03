@@ -245,7 +245,6 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
     // create the ArrayStructure
     StructureMembers members = makeStructureMembers(s);
-    members.setStructureSize(recsize);
     ArrayStructureBB structureArray = new ArrayStructureBB(members, new int[]{recordRange.length()});
 
     // note dependency on raf; should probably defer to subclass
@@ -273,6 +272,8 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
       m.setDataParam((int) (vinfo.begin - recStart));
     }
+    members.setStructureSize(recsize);
+
     return members;
   }
 

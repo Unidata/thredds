@@ -43,7 +43,7 @@ public class Structure extends Variable {
   private static int defaultBufferSize = 500 * 1000; // 500K bytes
 
   protected List<Variable> members = new ArrayList<Variable>();
-  protected List<String> memberNames = new ArrayList<String>(); // String
+  protected HashMap<String, Variable> memberHash = new HashMap<String, Variable>();
 
   /** Constructor
    *
@@ -67,7 +67,7 @@ public class Structure extends Variable {
     super( from);
 
     members = new ArrayList<Variable>(from.members);
-    memberNames = new ArrayList<String>(from.memberNames);
+    memberHash = new HashMap<String, Variable>(from.memberHash);
 
     if (reparent) {
       for (Variable v : members) {
@@ -109,7 +109,7 @@ public class Structure extends Variable {
   public void addMemberVariable( Variable v) {
     if (isImmutable()) throw new IllegalStateException("Cant modify");
     members.add( v);
-    memberNames.add( v.getShortName());
+    memberHash.put( v.getShortName(), v);
     //smembers = null;
     v.setParentStructure( this);
   }
@@ -120,11 +120,11 @@ public class Structure extends Variable {
   public void setMemberVariables( List<Variable> vars) {
     if (isImmutable()) throw new IllegalStateException("Cant modify");
     members = new ArrayList<Variable>();
-    memberNames = new ArrayList<String>();
+    memberHash = new HashMap<String, Variable>(2*vars.size());
     //smembers = null;
     for (Variable v : vars) {
       members.add(v);
-      memberNames.add(v.getShortName());
+      memberHash.put( v.getShortName(), v);
     }
   }
 
@@ -141,7 +141,7 @@ public class Structure extends Variable {
       Variable mv =  iter.next();
       if (mv.getShortName().equals(v.getShortName())) {
         iter.remove();
-        memberNames.remove( v.getShortName());
+        memberHash.remove( v.getShortName());
         return true;
       }
     }
@@ -182,7 +182,6 @@ public class Structure extends Variable {
   @Override
   public Variable setImmutable() {
     members = Collections.unmodifiableList(members);
-    memberNames = Collections.unmodifiableList(memberNames);
     for (Variable m : members)
       m.setImmutable();
 
@@ -198,7 +197,9 @@ public class Structure extends Variable {
   /** Get the (short) names of the variables contained directly in this Structure.
    * @return List of type String.
    */
-  public java.util.List<String> getVariableNames() { return isImmutable() ? memberNames : new ArrayList<String>(memberNames); }
+  public java.util.List<String> getVariableNames() {
+    return new ArrayList(memberHash.keySet());
+  }
 
   /**
    * Find the Variable member with the specified (short) name.
@@ -207,11 +208,7 @@ public class Structure extends Variable {
    */
   public Variable findVariable(String shortName) {
     if (shortName == null) return null;
-    for( Variable v : members) {
-      if (shortName.equals(v.getShortName()))
-        return v;
-    }
-    return null;
+    return memberHash.get(shortName);
   }
 
   /**
