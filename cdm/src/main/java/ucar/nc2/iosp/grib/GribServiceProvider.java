@@ -91,7 +91,7 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
     long start = System.currentTimeMillis();
 
     int edition = (this instanceof Grib1ServiceProvider) ? 1 : 2;
-    Index index = getIndex(edition, ncfile.getLocation(), cancelTask);
+    Index index = getIndex(edition, raf.getLocation(), cancelTask);
 
     open(index, cancelTask);
     if (debugOpen) System.out.println(" GribServiceProvider.open " + ncfile.getLocation()+" took "+(System.currentTimeMillis()-start));

@@ -90,7 +90,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     this.raf = raf;
     this.ncfile = ncfile;
 
-    Index index = getIndex(ncfile.getLocation(), cancelTask);
+    Index index = getIndex(raf.getLocation(), cancelTask);
     open(index, cancelTask);
   }
 
