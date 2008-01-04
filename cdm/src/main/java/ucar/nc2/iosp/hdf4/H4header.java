@@ -462,13 +462,8 @@ public class H4header {
       if (tag.code == 1962) {
         TagVH vh = (TagVH) tag;
         if (vh.className.startsWith("Att")) {
-          if ( vh.name.startsWith("StructMetadata") || // too ugly to allow as attributes
-              vh.name.startsWith("coremetadata") ||
-              vh.name.startsWith("productmetadata") ||
-              vh.name.startsWith("dst_specific") ||
-              vh.name.startsWith("level_1_carryover") ||
-              vh.name.startsWith("product_summary_information") ||
-              vh.name.startsWith("formatted_product_summary")) {
+          if ((vh.nfields == 1) && (H4type.setDataType(vh.fld_type[0], null) == DataType.CHAR) &&
+              (vh.fld_isize[0] > 4000)) { // large EOS metadata - make into variable
             addVariable(vh);
           } else {
             Attribute att = addAttribute(vh);
