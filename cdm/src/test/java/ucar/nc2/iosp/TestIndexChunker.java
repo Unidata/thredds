@@ -27,18 +27,18 @@ import junit.framework.TestCase;
  * @author caron
  * @since Jan 2, 2008
  */
-public class TestIndexer2 extends TestCase {
+public class TestIndexChunker extends TestCase {
 
-  public TestIndexer2( String name) {
+  public TestIndexChunker( String name) {
     super(name);
   }
 
   public void testFull() throws InvalidRangeException {
     int[] shape = new int[] {123,22,92,12};
     Section section = new Section(shape);
-    Indexer2 index = new Indexer2(shape, section);
+    IndexChunker index = new IndexChunker(shape, section);
     assert index.getTotalNelems() == section.computeSize();
-    Indexer2.Chunk chunk = index.next();
+    IndexChunker.Chunk chunk = index.next();
     assert chunk.getNelems() == section.computeSize();
     assert !index.hasNext();
   }
@@ -47,9 +47,9 @@ public class TestIndexer2 extends TestCase {
     int[] full = new int[] {2, 10, 20};
     int[] part = new int[] {2, 5, 20};
     Section section = new Section(part);
-    Indexer2 index = new Indexer2(full, section);
+    IndexChunker index = new IndexChunker(full, section);
     assert index.getTotalNelems() == section.computeSize();
-    Indexer2.Chunk chunk = index.next();
+    IndexChunker.Chunk chunk = index.next();
     assert chunk.getNelems() == section.computeSize()/2;
   }
 

@@ -25,9 +25,13 @@ import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.io.PositioningDataInputStream;
 import ucar.ma2.*;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 /**
  * @author caron
@@ -54,18 +58,27 @@ public class H4iosp extends AbstractIOServiceProvider {
     DataType dataType = v.getDataType();
 
     if (!vinfo.isLinked && !vinfo.isCompressed) {
-      Indexer index = RegularLayout.factory(vinfo.start, v.getElementSize(), -1, v.getShape(), section);
-      Object data = readData(raf, index, dataType);
+      Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), section);
+      Object data = IospHelper.readData(raf, layout, dataType);
       return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
     } else if (vinfo.isLinked && !vinfo.isCompressed) {
-      Indexer index = new SegmentedLayout(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
-      Object data = readData(raf, index, dataType);
+      Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
+      Object data = IospHelper.readData(raf, layout, dataType);
+      return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
+
+    } else if (!vinfo.isLinked && vinfo.isCompressed) {
+      Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
+      InputStream is = getCompressedInputStream( vinfo);
+      PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
+      Object data = IospHelper.readData(dataSource, index, dataType);
       return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
     } else if (vinfo.isLinked && vinfo.isCompressed) {
-      Indexer index = new SegmentedLayout(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
-      Object data = readData(raf, index, dataType);
+      Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
+      InputStream is = getLinkedCompressedInputStream( vinfo);
+      PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
+      Object data = IospHelper.readData(dataSource, index, dataType);
       return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
@@ -124,4 +137,63 @@ public class H4iosp extends AbstractIOServiceProvider {
     }
     return null;
   }
+
+  private InputStream getCompressedInputStream(H4header.Vinfo vinfo) throws IOException {
+    // probably could construct an input stream from a channel from a raf
+    // for now, just read it in.
+    //System.out.println(" read "+ vinfo.length+" from "+ vinfo.start);
+    byte[] buffer = new byte[ vinfo.length];
+    raf.seek( vinfo.start);
+    raf.readFully(buffer);
+    ByteArrayInputStream in = new ByteArrayInputStream( buffer);
+    return new java.util.zip.InflaterInputStream( in);
+  }
+
+  private InputStream getLinkedCompressedInputStream(H4header.Vinfo vinfo) {
+    return new java.util.zip.InflaterInputStream( new LinkedInputStream(vinfo));
+  }
+
+  private class LinkedInputStream extends InputStream {
+    byte[] buffer;
+    long pos = 0;
+
+    int segno = -1;
+    int segpos = 0;
+    int segSize = 0;
+    H4header.Vinfo vinfo;
+
+    LinkedInputStream(H4header.Vinfo vinfo) {
+      this.vinfo = vinfo;
+    }
+
+    private void readSegment() throws IOException {
+      segno++;
+      segSize = vinfo.segSize[segno];
+      buffer = new byte[ segSize];  // Look: could do this in buffer size 4096 to save memory
+      raf.seek( vinfo.segPos[segno]);
+      raf.readFully(buffer);
+      segpos = 0;
+      //System.out.println("read at "+vinfo.segPos[segno]+ " n= "+segSize);
+    }
+
+    /*public int read(byte b[]) throws IOException {
+      //System.out.println("request "+b.length);
+      return super.read(b);
+    }
+
+    public int read(byte b[], int off, int len) throws IOException {
+      //System.out.println("request "+len+" buffer size="+b.length+" offset="+off);
+      return super.read(b, off, len);
+    } */
+
+    public int read() throws IOException {
+      if (segpos == segSize)
+        readSegment();
+      int b = buffer[segpos] & 0xff;
+      //System.out.println("  byte "+b+ " at= "+segpos);
+      segpos++;
+      return b;
+    }
+  }
+
 }

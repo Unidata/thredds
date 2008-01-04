@@ -23,10 +23,7 @@ import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import ucar.nc2.*;
-import ucar.nc2.iosp.Indexer;
-import ucar.nc2.iosp.IOServiceProviderWriter;
-import ucar.nc2.iosp.RegularLayout;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.iosp.*;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -225,8 +222,10 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
-    Indexer index =  RegularLayout.factory(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
-    Object data = readData(index, dataType);
+    Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section) :
+      new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), recsize, v2.getShape(), section);
+
+    Object data = readData(layout, dataType);
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
   }
 
@@ -287,8 +286,8 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     fullShape[0] = numrecs;  // the first dimension
     System.arraycopy(v2.getShape(), 0, fullShape, 1, v2.getRank()); // the remaining dimensions
 
-    Indexer index =  RegularLayout.factory(vinfo.begin, v2.getElementSize(), recsize, fullShape, section);
-    Object dataObject = readData(index, dataType);
+    Layout layout = new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), recsize, fullShape, section);
+    Object dataObject = readData(layout, dataType);
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), dataObject);
 
     //if (flatten)
@@ -359,8 +358,10 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
-    Indexer index =  RegularLayout.factory(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
-    return readData(index, dataType, channel);
+    Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section) :
+      new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), recsize, v2.getShape(), section);
+
+    return readData(layout, dataType, channel);
   }
 
   private long readRecordData(ucar.nc2.Structure s, Section section, WritableByteChannel out) throws java.io.IOException, InvalidRangeException {
@@ -465,8 +466,9 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       writeRecordData((Structure) v2, section, values);
 
     } else {
-      Indexer index =  RegularLayout.factory(vinfo.begin, v2.getElementSize(), v2.isUnlimited() ? recsize : -1, v2.getShape(), section);
-      writeData(values, index, dataType);
+      Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section) :
+        new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), recsize, v2.getShape(), section);
+      writeData(values, layout, dataType);
     }
   }
 
@@ -485,15 +487,18 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
       // loop over members
       for (Variable v2 : vars) {
-        N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-        long begin = vinfo.begin + recnum * recsize;
-        Indexer index =  RegularLayout.factory(begin, v2.getElementSize(), -1, v2.getShape(), v2.getShapeAsSection()); 
         StructureMembers.Member m = members.findMember(v2.getShortName());
         if (null == m)
           continue; // this means that the data is missing from the ArrayStructure
 
+        N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
+        long begin = vinfo.begin + recnum * recsize;
+        Layout layout = new LayoutRegular(begin, v2.getElementSize(), v2.getShape(), v2.getShapeAsSection());
+
+        // Indexer index =  RegularLayout.factory(begin, v2.getElementSize(), -1, v2.getShape(), v2.getShapeAsSection());
+
         Array data = structureData.getArray(count, m);
-        writeData(data, index, v2.getDataType());
+        writeData(data, layout, v2.getDataType());
       }
 
       count++;
@@ -691,9 +696,9 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * @return primitive array with data read in
    * @throws java.io.IOException on error
    */
-  abstract protected Object readData(Indexer index, DataType dataType) throws IOException;
+  abstract protected Object readData(Layout index, DataType dataType) throws IOException;
 
-  abstract protected long readData(Indexer index, DataType dataType, WritableByteChannel out) throws IOException;
+  abstract protected long readData(Layout index, DataType dataType, WritableByteChannel out) throws IOException;
 
 
   /**
@@ -704,7 +709,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * @param dataType dataType of the variable
    * @throws java.io.IOException on error
    */
-  abstract protected void writeData(Array aa, Indexer index, DataType dataType) throws IOException;
+  abstract protected void writeData(Array aa, Layout index, DataType dataType) throws IOException;
 
   abstract protected void _open(ucar.unidata.io.RandomAccessFile raf) throws java.io.IOException;
 

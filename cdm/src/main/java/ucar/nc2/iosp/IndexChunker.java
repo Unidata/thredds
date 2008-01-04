@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * <p/>
  * Example for Integers:
  * <pre>
-  int[] read( Indexer2 index, int[] src) {
+  int[] read( IndexChunker index, int[] src) {
     int[] dest = new int[index.getTotalNelems()];
     while (index.hasNext()) {
       Indexer2.Chunk chunk = index.next();
@@ -42,7 +42,7 @@ import java.util.ArrayList;
     return dest;
   }
 
-  int[] read( Indexer2 index, RandomAccessFile raf, long start_pos) {
+  int[] read( IndexChunker index, RandomAccessFile raf, long start_pos) {
     int[] dest = new int[index.getTotalNelems()];
     while (index.hasNext()) {
       Indexer2.Chunk chunk = index.next();
@@ -52,11 +52,12 @@ import java.util.ArrayList;
     return dest;
   }
 
-  void write( Indexer2 index, int[] src, RandomAccessFile raf, long start_pos) {
+ // note src and dest misnamed
+  void write( IndexChunker index, int[] src, RandomAccessFile raf, long start_pos) {
     while (index.hasNext()) {
       Indexer2.Chunk chunk = index.next();
-      raf.seek( start_pos + chunk.getDestElem() * 4);
-      raf.writeInt(src, chunk.getSrcElem(), chunk.getNelems());
+      raf.seek( start_pos + chunk.getSrcElem() * 4);
+      raf.writeInt(src, chunk.getDestElem(), chunk.getNelems());
     }
   }
  * </pre>
@@ -64,32 +65,44 @@ import java.util.ArrayList;
  * @author caron
  * @since Jan 2, 2008
  */
-public class Indexer2 {
+public class IndexChunker {
   private List<Dim> dimList = new ArrayList<Dim>();
-  private Index myIndex;
+  private Index chunkIndex; // each element is one chunk; strides track position in source
 
   private Chunk chunk; // gets returned on next().
   private int nelems; // number of elements to read at one time
   private long start, total, done;
 
-  private boolean debug = true, debugMerge = true, debugNext = false;
+  private boolean debug = false, debugMerge = false, debugNext = false;
 
-  public Indexer2(int[] varShape, Section wantSection) throws InvalidRangeException {
+  /**
+   * Constructor
+   * @param srcShape the shape of the source, eg Variable
+   * @param wantSection the wanted section in srcShape
+   * @throws InvalidRangeException if wantSection is incorrect
+   */
+  public IndexChunker(int[] srcShape, Section wantSection) throws InvalidRangeException {
 
-    wantSection = Section.fill(wantSection, varShape); // will throw InvalidRangeException if illegal section
+    wantSection = Section.fill(wantSection, srcShape); // will throw InvalidRangeException if illegal section
 
     // compute total size of wanted section
     this.total = wantSection.computeSize();
     this.done = 0;
+    this.start = 0;
 
-    // compute the layout
+    // see if this is a "want all of it" single chunk
+    if (wantSection.equivalent(srcShape)) {
+      this.nelems = (int) this.total;
+      chunkIndex = Index.factory(new int[] {1});
+      return;
+    }
 
-    // create the List<Dim>
-    int varRank = varShape.length;
+    // create the List<Dim> tracking each dimension
+    int varRank = srcShape.length;
     int stride = 1;
     for (int ii = varRank - 1; ii >= 0; ii--) {
-      dimList.add(new Dim(stride, varShape[ii], wantSection.getRange(ii))); // note reversed : fastest first
-      stride *= varShape[ii];
+      dimList.add(new Dim(stride, srcShape[ii], wantSection.getRange(ii))); // note reversed : fastest first
+      stride *= srcShape[ii];
     }
 
     // merge contiguous inner dimensions for efficiency
@@ -127,7 +140,7 @@ public class Indexer2 {
     else {
       Dim innerDim = dimList.get(0);
       this.nelems = innerDim.wantSize;
-      innerDim.wantSize = 1; // inner dimension has one element of length nelems
+      innerDim.wantSize = 1; // inner dimension has one element of length nelems (we dont actually need this here)
     }
 
     start = 0; // first wanted value
@@ -149,14 +162,14 @@ public class Indexer2 {
       printa("  indexShape=", shape);
       printa("  indexStride=", wstride);
     }
-    myIndex = new Index(shape, wstride);
+    chunkIndex = new Index(shape, wstride);
 
     // sanity check
     assert Index.computeSize(shape) * nelems == total;
 
     if (debug) {
       System.out.println("Index2= " + this);
-      System.out.println(" start= " + start + " varShape= " + printa(varShape) + " wantSection= " + wantSection);
+      System.out.println(" start= " + start + " varShape= " + printa(srcShape) + " wantSection= " + wantSection);
     }
   }
 
@@ -174,24 +187,36 @@ public class Indexer2 {
     }
   }
 
+  /**
+   * Get total number of elements in wantSection
+   * @return total number of elements in wantSection
+   */
   public long getTotalNelems() {
     return total;
   }
 
+  /**
+   * If there are  more chunks to process
+   * @return true if there are  more chunks to process
+   */
   public boolean hasNext() {
     return done < total;
   }
 
+  /**
+   * Get the next chunk
+   * @return the next chunk
+   */
   public Chunk next() {
     if (chunk == null) {
       chunk = new Chunk(start, nelems, 0);
     } else {
-      myIndex.incr(); // increment one element, but it represents one chunk = nelems * sizeElem
+      chunkIndex.incr(); // increment one element, which represents one chunk = nelems * sizeElem
       chunk.incrDestElem(nelems); // always read nelems at a time
     }
 
-    // Get the current element's byte index from the start of the file
-    chunk.setSrcElem(start + myIndex.currentElement());
+    // Get the current element's  index from the start of the file
+    chunk.setSrcElem(start + chunkIndex.currentElement());
 
     if (debugNext)
       System.out.println(" next chunk: " + chunk);
@@ -203,13 +228,14 @@ public class Indexer2 {
 
   /**
    * A chunk of data that is contiguous in both the source and destination.
-   * Read nelems from src at filePos, store in destination at startElem.
-   * (or) Write nelems to file at filePos, from array at startElem.
+   * Everything is done in elements, not bytes.
+   * Read nelems from src at srcPos, store in destination at destPos.
    */
-  public class Chunk {
+  static public class Chunk implements Layout.Chunk {
     private long srcElem;   // start reading/writing here in the file
     private int nelems;     // read these many contiguous elements
     private long destElem; // start writing/reading here in array
+    private long srcPos;
 
     public Chunk(long srcElem, int nelems, long destElem) {
       this.srcElem = srcElem;
@@ -261,8 +287,13 @@ public class Indexer2 {
     }
 
     public String toString() {
-      return " srcElem=" + srcElem + " nelems=" + nelems + " destElem=" + destElem;
+      return  " srcPos=" + srcPos + " srcElem=" + srcElem + " nelems=" + nelems + " destElem=" + destElem;
     }
+
+    // must be set by controlling class
+    public long getSrcPos() { return srcPos; }
+    public void setSrcPos(long srcPos) { this.srcPos = srcPos; }
+    public void incrSrcPos(int incr) { this.srcPos += incr; }
   }
 
   // debugging

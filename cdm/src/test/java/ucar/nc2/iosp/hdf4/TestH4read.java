@@ -26,6 +26,8 @@ import ucar.nc2.Structure;
 import ucar.nc2.TestAll;
 
 import java.io.IOException;
+import java.io.FileFilter;
+import java.io.File;
 
 /**
  * @author caron
@@ -76,11 +78,21 @@ public class TestH4read extends TestCase {
   }
 
   public void readAll() {
-    TestAll.readAllDir(testDir, null);
+    TestAll.readAllDir(testDir, new FileFilter() {
+
+      public boolean accept(File pathname) {
+        return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".eos");
+      }
+    });
   }
 
-  public void problem() {
-    TestAll.readAll(testDir+"f13_owsa_04010_09A.hdf");
+  public void problem() throws IOException {
+    TestAll.readAll(testDir+"eos/AsterSwath.hdf");
+    NetcdfFile ncfile = NetcdfFile.open(testDir+"eos/AsterSwath.hdf");
+    Variable v = ncfile.findVariable("Number of Pixels Day");
+    assert v != null;
+
+    v.read();
   }
 
 }

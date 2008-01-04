@@ -21,6 +21,7 @@ package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
 import ucar.nc2.iosp.Indexer;
+import ucar.nc2.iosp.Layout;
 
 import java.nio.channels.WritableByteChannel;
 
@@ -44,7 +45,7 @@ public class N3raf extends N3iosp  {
    * @param dataType dataType of the variable
    * @return primitive array with data read in
    */
- protected Object readData( Indexer index, DataType dataType) throws java.io.IOException {
+ protected Object readData( Layout index, DataType dataType) throws java.io.IOException {
    return readData(raf, index, dataType); // from AbstractIOServiceProvider
  }
 
@@ -53,30 +54,30 @@ public class N3raf extends N3iosp  {
    * @param index handles skipping around in the file.
    * @param dataType dataType of the variable
    */
- protected long readData( Indexer index, DataType dataType, WritableByteChannel out) throws java.io.IOException {
+ protected long readData( Layout index, DataType dataType, WritableByteChannel out) throws java.io.IOException {
    long count = 0;
    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
      while (index.hasNext()) {
-       Indexer.Chunk chunk = index.next();
-       count += raf.readToByteChannel( out, chunk.getFilePos(), chunk.getNelems());
+       Layout.Chunk chunk = index.next();
+       count += raf.readToByteChannel( out, chunk.getSrcPos(), chunk.getNelems());
      }
 
    } else if (dataType == DataType.SHORT) {
      while (index.hasNext()) {
-       Indexer.Chunk chunk = index.next();
-       count += raf.readToByteChannel( out, chunk.getFilePos(), 2 * chunk.getNelems());
+       Layout.Chunk chunk = index.next();
+       count += raf.readToByteChannel( out, chunk.getSrcPos(), 2 * chunk.getNelems());
      }
 
    } else if ((dataType == DataType.INT) || (dataType == DataType.FLOAT)) {
      while (index.hasNext()) {
-       Indexer.Chunk chunk = index.next();
-       count += raf.readToByteChannel( out, chunk.getFilePos(), 4 * chunk.getNelems());
+       Layout.Chunk chunk = index.next();
+       count += raf.readToByteChannel( out, chunk.getSrcPos(), 4 * chunk.getNelems());
      }
 
    } else if ((dataType == DataType.DOUBLE) || (dataType == DataType.LONG)) {
      while (index.hasNext()) {
-       Indexer.Chunk chunk = index.next();
-       count += raf.readToByteChannel( out, chunk.getFilePos(), 8 * chunk.getNelems());
+       Layout.Chunk chunk = index.next();
+       count += raf.readToByteChannel( out, chunk.getSrcPos(), 8 * chunk.getNelems());
      }
    }
 
@@ -89,12 +90,12 @@ public class N3raf extends N3iosp  {
     * @param index handles skipping around in the file.
     * @param dataType dataType of the variable
     */
-  protected void writeData( Array values, Indexer index, DataType dataType) throws java.io.IOException {
+  protected void writeData( Array values, Layout index, DataType dataType) throws java.io.IOException {
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
+        Layout.Chunk chunk = index.next();
+        raf.seek ( chunk.getSrcPos());
         for (int k=0; k<chunk.getNelems(); k++)
           raf.write( ii.getByteNext());
       }
@@ -103,8 +104,8 @@ public class N3raf extends N3iosp  {
     } else if (dataType == DataType.STRING) { // LOOK not really legal
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
+        Layout.Chunk chunk = index.next();
+        raf.seek ( chunk.getSrcPos());
         for (int k=0; k<chunk.getNelems(); k++) {
           String val = (String) ii.getObjectNext();
           if (val != null) raf.write( val.getBytes("UTF-8")); // LOOK ??
@@ -115,8 +116,8 @@ public class N3raf extends N3iosp  {
     } else if (dataType == DataType.SHORT) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
+        Layout.Chunk chunk = index.next();
+        raf.seek ( chunk.getSrcPos());
         for (int k=0; k<chunk.getNelems(); k++)
           raf.writeShort( ii.getShortNext());
       }
@@ -125,8 +126,8 @@ public class N3raf extends N3iosp  {
     } else if (dataType == DataType.INT) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
+        Layout.Chunk chunk = index.next();
+        raf.seek ( chunk.getSrcPos());
         for (int k=0; k<chunk.getNelems(); k++)
           raf.writeInt( ii.getIntNext());
       }
@@ -135,8 +136,8 @@ public class N3raf extends N3iosp  {
     } else if (dataType == DataType.FLOAT) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
+        Layout.Chunk chunk = index.next();
+        raf.seek ( chunk.getSrcPos());
         for (int k=0; k<chunk.getNelems(); k++)
           raf.writeFloat( ii.getFloatNext());
       }
@@ -145,8 +146,8 @@ public class N3raf extends N3iosp  {
     } else if (dataType == DataType.DOUBLE) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        raf.seek ( chunk.getFilePos());
+        Layout.Chunk chunk = index.next();
+        raf.seek ( chunk.getSrcPos());
         for (int k=0; k<chunk.getNelems(); k++)
           raf.writeDouble( ii.getDoubleNext());
       }

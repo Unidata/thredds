@@ -74,13 +74,13 @@ public class H4header {
   private MemTracker memTracker;
   private PrintStream debugOut = System.out;
   private static boolean debugTag1 = false; // show tags after read(), before read2().
-  private static boolean debugTag2 = true;  // show tags after everything is done.
-  private static boolean debugTagDetail = true; // when showing tags, show detail or not
+  private static boolean debugTag2 = false;  // show tags after everything is done.
+  private static boolean debugTagDetail = false; // when showing tags, show detail or not
   private static boolean debugConstruct = false; // show CDM objects as they are constructed
   private static boolean debugAtt = false; // show CDM attributes as they are constructed
-  private static boolean debugLinked = true; // linked data
+  private static boolean debugLinked = false; // linked data
   private static boolean debugTracker = false; // memory tracker
-  private static boolean showFile = false;
+  private static boolean showFile = false ;
 
   void read(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile) throws IOException {
     this.raf = myRaf;
@@ -326,6 +326,38 @@ public class H4header {
     }
   }
 
+  private void addVariable(TagVH vh) throws IOException {
+    Vinfo vinfo = new Vinfo(vh.refno);
+    vinfo.tags.add(vh);
+
+    Tag data = tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
+    if (data == null) {
+      log.error("Cant find tag " + vh.refno + "/" + TagEnum.VS.getCode() + " for TagVH=" + vh.detail());
+      return;
+    }
+
+        // for now assume only 1
+    if (vh.nfields != 1)
+      throw new IllegalStateException();
+
+    Variable v = new Variable(ncfile, null, null, vh.name);
+    try {
+      v.setDimensionsAnonymous(new int[] {vh.fld_isize[0]});
+    } catch (InvalidRangeException e) {
+      throw new IllegalStateException();
+    }
+
+    H4type.setDataType(vh.fld_type[0], v);
+    ncfile.addVariable(null, v);
+
+    vinfo.start = data.offset;
+    vinfo.setVariable(v);
+
+    vh.used = true;
+    data.used = true;
+  }
+
+
   private void addVariable(TagGroup group) throws IOException {
     Vinfo vinfo = new Vinfo(group.refno);
     vinfo.tags.add(group);
@@ -430,8 +462,18 @@ public class H4header {
       if (tag.code == 1962) {
         TagVH vh = (TagVH) tag;
         if (vh.className.startsWith("Att")) {
-          Attribute att = addAttribute(vh);
-          if (null != att) ncfile.addAttribute(null, att);
+          if ( vh.name.startsWith("StructMetadata") || // too ugly to allow as attributes
+              vh.name.startsWith("coremetadata") ||
+              vh.name.startsWith("productmetadata") ||
+              vh.name.startsWith("dst_specific") ||
+              vh.name.startsWith("level_1_carryover") ||
+              vh.name.startsWith("product_summary_information") ||
+              vh.name.startsWith("formatted_product_summary")) {
+            addVariable(vh);
+          } else {
+            Attribute att = addAttribute(vh);
+            if (null != att) ncfile.addAttribute(null, att);
+          }
         }
       }
     }
@@ -451,7 +493,7 @@ public class H4header {
 
     String name = vh.name;
     short type = vh.fld_type[0];
-    short size = vh.fld_isize[0];
+    int size = vh.fld_isize[0];
     vh.used = true;
     data.used = true;
 
@@ -576,7 +618,7 @@ public class H4header {
       for (int fld = 0; fld < vheader.nfields; fld++) {
         Variable m = new Variable(ncfile, null, s, vheader.fld_name[fld]);
         short type = vheader.fld_type[fld];
-        short size = vheader.fld_isize[fld];
+        int size = vheader.fld_isize[fld];
         H4type.setDataType(type, m);
         if ((type == 3) || (type == 4) && (size > 1))
           m.setDimensionsAnonymous(new int[]{size});
@@ -593,9 +635,10 @@ public class H4header {
 
   // member info
   static class Minfo {
-    short offset, size, order;
+    short order;
+    int offset, size;
 
-    Minfo(short offset, short size, short order) {
+    Minfo(int offset, int size, short order) {
       this.offset = offset;
       this.size = size;
       this.order = order;
@@ -613,6 +656,7 @@ public class H4header {
     boolean isLinked, isCompressed;
 
     int start = -1;
+    int length;
     int recsize;
     Variable v;
 
@@ -642,6 +686,10 @@ public class H4header {
         isLinked = (compData.linked != null);
         if (isLinked)
           setDataBlocks(compData.linked.getLinkedDataBlocks());
+        else {
+          start = compData.offset;
+          length = compData.length;
+        }
 
       } else {
         start = data.offset;
@@ -832,47 +880,6 @@ public class H4header {
     }
 
   }
-
-  /* / 40 p 150
-  private class TagCompress extends Tag {
-    short version, model_type, compress_type, link_ref;
-    int uncomp_length;
-    short signFlag, fillValue;
-    int nt, startBit, bitLength;
-
-    TagCompress(short code) throws IOException {
-      super(code);
-    }
-
-    void read() throws IOException {
-      raf.seek(offset+2);
-      version = raf.readShort();
-      uncomp_length = raf.readInt();
-      link_ref = raf.readShort();
-      model_type = raf.readShort();
-      compress_type = raf.readShort();
-
-      if (compress_type == TagEnum.COMP_CODE_NBIT) {
-        nt =  raf.readInt();
-        signFlag = raf.readShort();
-        fillValue = raf.readShort();
-        startBit = raf.readInt();
-        bitLength = raf.readInt();
-      }
-    }
-
-    public String detail() {
-      StringBuffer sbuff = new StringBuffer(super.detail());
-      sbuff.append(" version=" + version + " uncompressed length =" + uncomp_length + " link_ref=" + link_ref);
-      sbuff.append(" model_type=" + model_type + " compress_type=" + compress_type);
-      if (compress_type == TagEnum.COMP_CODE_NBIT)
-        sbuff.append(" nt=" + nt + " signFlag=" + signFlag + " fillValue=" + fillValue + " startBit=" + startBit
-        + " bitLength=" + bitLength);
-      return sbuff.toString();
-    }
-
-  }   */
-
 
   private class SpecialComp {
     short version, model_type, compress_type, link_ref;
@@ -1376,10 +1383,12 @@ public class H4header {
     }
   }
 
-  // 1962
+  // 1962 p 136
   private class TagVH extends Tag {
-    short interlace, ivsize, nfields, extag, exref, version;
-    short[] fld_type, fld_isize, fld_offset, fld_order;
+    short interlace, nfields, extag, exref, version;
+    int ivsize;
+    short[] fld_type, fld_order;
+    int[] fld_isize, fld_offset;
     String[] fld_name;
     int nvert;
     String name, className;
@@ -1392,20 +1401,20 @@ public class H4header {
       raf.seek(offset);
       interlace = raf.readShort();
       nvert = raf.readInt();
-      ivsize = raf.readShort();
+      ivsize = DataType.unsignedShortToInt( raf.readShort());
       nfields = raf.readShort();
 
       fld_type = new short[nfields];
       for (int i = 0; i < nfields; i++)
         fld_type[i] = raf.readShort();
 
-      fld_isize = new short[nfields];
+      fld_isize = new int[nfields];
       for (int i = 0; i < nfields; i++)
-        fld_isize[i] = raf.readShort();
+        fld_isize[i] = DataType.unsignedShortToInt( raf.readShort());
 
-      fld_offset = new short[nfields];
+      fld_offset = new int[nfields];
       for (int i = 0; i < nfields; i++)
-        fld_offset[i] = raf.readShort();
+        fld_offset[i] = DataType.unsignedShortToInt( raf.readShort());
 
       fld_order = new short[nfields];
       for (int i = 0; i < nfields; i++)
@@ -1458,6 +1467,8 @@ public class H4header {
   }
 
   String readString(int len) throws IOException {
+    if (len < 0)
+      System.out.println("what");
     byte[] b = new byte[len];
     raf.read(b);
     int count;
@@ -1576,10 +1587,9 @@ public class H4header {
     String filename6 = "c402_rp_02.diag.sfc.20020122_0130z.hdf";  // COARDS, looks good
     String filename7 = "MOP03M-200501-L3V81.0.1.hdf";  // bad links
     String filename8 = "96108_08.hdf";  // bad links
-    //readAllDir("C:/data/hdf4/", false);
-
+    String filename9 = "eos/AsterSwath.hdf";
     //ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
-    test("C:/data/hdf4/" + filename7);
+    test("C:/data/hdf4/" + filename9);
   }
 }
 
