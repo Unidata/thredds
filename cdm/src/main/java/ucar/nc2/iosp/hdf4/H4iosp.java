@@ -31,7 +31,6 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 /**
  * @author caron
@@ -48,6 +47,18 @@ public class H4iosp extends AbstractIOServiceProvider {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     header.read(raf, ncfile);
+
+    // check if its an HDF-EOS file
+    Variable structMetadataVar = ncfile.getRootGroup().findVariable("StructMetadata.0");
+    if (structMetadataVar != null) {
+      // read and parse the ODL
+      Array A = structMetadataVar.read();
+      ArrayChar ca = (ArrayChar) A;
+      String structMetadata = ca.getString();
+      H4eos.amendFromODL(ncfile, structMetadata);
+    }
+
+    ncfile.finish();
   }
 
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {

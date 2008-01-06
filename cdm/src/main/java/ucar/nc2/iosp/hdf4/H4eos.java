@@ -17,71 +17,85 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.iosp.hdf5;
+package ucar.nc2.iosp.hdf4;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
+import ucar.nc2.iosp.hdf5.ODLparser2;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.jdom.Document;
 import org.jdom.Element;
 
 /**
- * Parse structural metadata from HDF-EOS.
+ * Parse structural metadata from HDF4-EOS.
  * This allows us to use shared dimensions.
  * @author caron
  * @since Jul 23, 2007
  */
-public class H5eos {
+public class H4eos {
 
   static public void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
     Group rootg = ncfile.getRootGroup();
 
     ODLparser2 parser = new ODLparser2();
-    Element root = parser.parseFromString( structMetadata);
+    Element root = parser.parseFromString(structMetadata);
 
     // now we have the ODL in JDOM elements
 
-    // LOOK this assumes a swath
+    // SWATH
     Element swathStructure = root.getChild("SwathStructure");
-    if (swathStructure == null) return;
+    if (swathStructure != null){
+      Element swath1 = swathStructure.getChild("SWATH_1");
+      if (swath1 != null) {
+        amend(swath1, rootg);
+      }
+    }
 
-    Element swath1 = swathStructure.getChild("SWATH_1");
-    if (swath1 == null) return;
+    // GRID
+    Element gridStructure = root.getChild("GridStructure");
+    if (gridStructure != null){
+      Element grid1 = gridStructure.getChild("GRID_1");
+      if (grid1 != null) {
+        amend(grid1, rootg);
+      }
+    }
 
-    Element swathNameElem = swath1.getChild("SwathName");
-    if (swathNameElem == null) return;
-    String swathName = swathNameElem.getText();
+  }
+
+  static private void amend(Element infoElem, Group rootg) {
 
     // global Dimensions
-    Element d = swath1.getChild("Dimension");
+    Element d = infoElem.getChild("Dimension");
     List<Element> dims = (List<Element>) d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText();
       String sizeS = elem.getChild("Size").getText();
       int length = Integer.parseInt(sizeS);
       Dimension dim = new Dimension(name, length);
-      rootg.addDimension(dim);
+      rootg.addDimension(dim);   
     }
 
-    Group hdfeosG = rootg.findGroup("HDFEOS");
+    /* Group hdfeosG = rootg.findGroup("HDFEOS");
     if (hdfeosG == null) return;
     Group eosG = hdfeosG.findGroup("SWATHS");
     if (eosG == null) return;
     Group swathNameG = eosG.findGroup(swathName);
-    if (swathNameG == null) return;
+    if (swathNameG == null) return; */
 
         // Geolocation Variables
-    Group geoFieldsG = swathNameG.findGroup("Geolocation Fields");
+    Group geoFieldsG = findGroup(rootg, "Geolocation Fields");
     if (geoFieldsG != null) {
 
-      Element floc = swath1.getChild("GeoField");
+      Element floc = infoElem.getChild("GeoField");
       List<Element> varsLoc = (List<Element>) floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText();
@@ -100,10 +114,10 @@ public class H5eos {
     }
 
     // Data Variables
-    Group dataG = swathNameG.findGroup("Data Fields");
+    Group dataG = findGroup(rootg, "Data Fields");
     if (dataG != null) {
 
-      Element f = swath1.getChild("DataField");
+      Element f = infoElem.getChild("DataField");
       List<Element> vars = (List<Element>) f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText();
@@ -120,6 +134,37 @@ public class H5eos {
         v.setDimensions( sbuff.toString()); // livin dangerously
       }
     }
+
+    // now see if we can eliminate extraneous dimensions
+    List<Dimension> dimUsed = new ArrayList<Dimension>();
+    findUsedDimensions( rootg, dimUsed);
+    Iterator iter = rootg.getDimensions().iterator();
+    while (iter.hasNext()) {
+      Dimension dim = (Dimension) iter.next();
+      if (!dimUsed.contains(dim))
+        iter.remove();
+    }
+  }
+
+  static private void findUsedDimensions(Group parent, List<Dimension> dimUsed) {
+    for (Variable v : parent.getVariables()) {
+      dimUsed.addAll( v.getDimensions());
+    }
+    for (Group g : parent.getGroups())
+      findUsedDimensions(g, dimUsed);
+  }
+
+  static private Group findGroup(Group parent, String name) {
+    for (Group g : parent.getGroups()) {
+      if (g.getShortName().equals(name))
+        return g;
+    }
+    for (Group g : parent.getGroups()) {
+      Group result = findGroup(g, name);
+      if (result != null)
+        return result;
+    }
+    return null;
   }
 
 }

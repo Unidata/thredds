@@ -80,7 +80,16 @@ public class H4header {
   private static boolean debugAtt = false; // show CDM attributes as they are constructed
   private static boolean debugLinked = false; // linked data
   private static boolean debugTracker = false; // memory tracker
-  private static boolean showFile = false ;
+
+  static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+    debugTag1 = debugFlag.isSet("H4header/tag1");
+    debugTag2 = debugFlag.isSet("H4header/tag2");
+    debugTagDetail = debugFlag.isSet("H4header/tagDetail");
+    debugConstruct = debugFlag.isSet("H4header/construct");
+    debugAtt = debugFlag.isSet("H4header/att");
+    debugLinked = debugFlag.isSet("H4header/linked");
+    debugTracker = debugFlag.isSet("H4header/memTracker");
+  }
 
   void read(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile) throws IOException {
     this.raf = myRaf;
@@ -129,36 +138,80 @@ public class H4header {
   }
 
   private void construct(ucar.nc2.NetcdfFile ncfile, List<Tag> alltags) throws IOException {
+    List<Variable> vars = new ArrayList<Variable>();
+    List<Group> groups = new ArrayList<Group>();
 
     // decide what netcdf objects are required
-    // pass 1
+    // pass 1 : Vgroups with special classes
     for (Tag t : alltags) {
       if (t.code == 306) { // raster image
-        addImage((TagGroup) t);
+        Variable v = makeImage((TagGroup) t);
+        if (v != null) vars.add(v);
 
       } else if (t.code == 1965) { // Vgroup
         TagVGroup vgroup = (TagVGroup) t;
         if (vgroup.className.startsWith("Dim") || vgroup.className.startsWith("UDim"))
           addDimension(vgroup);
-        else if (vgroup.className.startsWith("Var"))
-          addVariable(vgroup);
-        else if (vgroup.className.startsWith("CDF0.0"))
+
+        else if (vgroup.className.startsWith("Var")) {
+          Variable v = makeVariable(vgroup);
+          if (v != null) vars.add(v);
+
+        } else if (vgroup.className.startsWith("CDF0.0"))
           addGlobalAttributes(vgroup);
       }
     }
 
-    // pass 2 - unused tags
+    // pass 2 - VHeaders, NDG
     for (Tag t : alltags) {
       if (t.used) continue;
 
       if (t.code == 1962) { // VHeader
         TagVH tagVH = (TagVH) t;
-        if (tagVH.className.startsWith("Data"))
-          addStructure(tagVH);
+        if (tagVH.className.startsWith("Data")) {
+          Variable v = makeStructure(tagVH);
+          if (v != null) vars.add(v);
+        }
+
+      } else if (t.code == 720) { // numeric data group
+        Variable v = makeVariable((TagGroup) t);
+        if (v != null) vars.add(v);
       }
-      if (t.code == 720) { // numeric data group
-        addVariable((TagGroup) t);
+    }
+
+    // pass 3 - misc not claimed yet
+    for (Tag t : alltags) {
+      if (t.used) continue;
+
+      if (t.code == 1962) { // VHeader
+        TagVH vh = (TagVH) t;
+        if (!vh.className.startsWith("Att")) {
+          Variable v = makeVariable(vh);
+          if (v != null) vars.add(v);
+        }
       }
+    }
+
+    // pass 4 - Groups
+    for (Tag t : alltags) {
+      if (t.used) continue;
+
+      if (t.code == 1965) { // VGroup
+        TagVGroup vgroup = (TagVGroup) t;
+        Group g = makeGroup(vgroup, null);
+        if (g != null) groups.add(g);
+      }
+    }
+    for (Group g : groups) {
+      if (g.getParentGroup() == ncfile.getRootGroup())
+        ncfile.addGroup(null, g);
+    }
+
+    // not in a group
+    Group root = ncfile.getRootGroup();
+    for (Variable v : vars) {
+      if (v.getParentGroup() == root)
+        root.addVariable(v);
     }
 
     // annotations become attributes
@@ -189,6 +242,7 @@ public class H4header {
         t.used = true;
       }
     }
+
   }
 
   private boolean checkOffset(int offset) {
@@ -243,216 +297,6 @@ public class H4header {
     ncfile.addDimension(null, dim);
   }
 
-  private void addVariable(TagVGroup group) throws IOException {
-    Vinfo vinfo = new Vinfo(group.refno);
-    vinfo.tags.add(group);
-
-    TagSDDimension dim = null;
-    TagNumberType ntag = null;
-    TagData data = null;
-    List<Dimension> dims = new ArrayList<Dimension>();
-    for (int i = 0; i < group.nelems; i++) {
-      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
-      if (tag == null) {
-        log.error("Reference tag missing= " + group.elem_ref[i] + "/" + group.elem_tag[i]);
-        continue;
-      }
-
-      vinfo.tags.add(tag);
-
-      if (tag.code == 106)
-        ntag = (TagNumberType) tag;
-
-      if (tag.code == 701)
-        dim = (TagSDDimension) tag;
-      if (tag.code == 702)
-        data = (TagData) tag;
-
-      if (tag.code == 1965) {
-        TagVGroup vg = (TagVGroup) tag;
-        if (vg.className.startsWith("Dim") || vg.className.startsWith("UDim")) {
-          Dimension d = ncfile.getRootGroup().findDimension(vg.name);
-          if (d == null) throw new IllegalStateException();
-          dims.add(d);
-          vg.used = true;
-        }
-      }
-      if (tag.code == 720) // assume if contained in Vgroup, then not needed, to avoid redundant variables
-        tag.used = true;
-    }
-    if (ntag == null) {
-      log.error("ntype tag missing vgroup= " + group.refno);
-      return;
-    }
-    if (dim == null) {
-      log.error("dim tag missing vgroup= " + group.refno);
-      return;
-    }
-    if (data == null) {
-      log.error("data tag missing vgroup= " + group.refno);
-      return;
-    }
-    Variable v = new Variable(ncfile, null, null, group.name);
-    v.setDimensions(dims);
-    H4type.setDataType(ntag.type, v);
-    ncfile.addVariable(null, v);
-
-    vinfo.setVariable(v);
-    vinfo.setData(data);
-
-    // look for attributes
-    for (int i = 0; i < group.nelems; i++) {
-      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
-      if (tag == null) throw new IllegalStateException();
-      if (tag.code == 1962) {
-        TagVH vh = (TagVH) tag;
-        if (vh.className.startsWith("Att")) {
-          Attribute att = addAttribute(vh);
-          if (null != att) v.addAttribute(att);
-        }
-      }
-    }
-
-    group.used = true;
-    data.used = true;
-    ntag.used = true;
-    dim.used = true;
-    if (debugConstruct) {
-      System.out.println("added variable " + v.getNameAndDimensions() + " from VG " + group.refno);
-      System.out.println("  SDdim= " + dim.detail());
-      System.out.print("  VGdim= ");
-      for (Dimension vdim : dims) System.out.print(vdim + " ");
-      System.out.println();
-    }
-  }
-
-  private void addVariable(TagVH vh) throws IOException {
-    Vinfo vinfo = new Vinfo(vh.refno);
-    vinfo.tags.add(vh);
-
-    Tag data = tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
-    if (data == null) {
-      log.error("Cant find tag " + vh.refno + "/" + TagEnum.VS.getCode() + " for TagVH=" + vh.detail());
-      return;
-    }
-
-        // for now assume only 1
-    if (vh.nfields != 1)
-      throw new IllegalStateException();
-
-    Variable v = new Variable(ncfile, null, null, vh.name);
-    try {
-      v.setDimensionsAnonymous(new int[] {vh.fld_isize[0]});
-    } catch (InvalidRangeException e) {
-      throw new IllegalStateException();
-    }
-
-    H4type.setDataType(vh.fld_type[0], v);
-    ncfile.addVariable(null, v);
-
-    vinfo.start = data.offset;
-    vinfo.setVariable(v);
-
-    vh.used = true;
-    data.used = true;
-  }
-
-
-  private void addVariable(TagGroup group) throws IOException {
-    Vinfo vinfo = new Vinfo(group.refno);
-    vinfo.tags.add(group);
-
-    TagSDDimension dim = null;
-    TagData data = null;
-    for (int i = 0; i < group.nelems; i++) {
-      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
-      if (tag == null) {
-        log.error("Cant find tag " + group.elem_ref[i] + "/" + group.elem_tag[i] + " for group=" + group.refno);
-        continue;
-      }
-      vinfo.tags.add(tag);
-
-      if (tag.code == 701)
-        dim = (TagSDDimension) tag;
-      if (tag.code == 702)
-        data = (TagData) tag;
-    }
-    if ((dim == null) || (data == null))
-      throw new IllegalStateException();
-
-    TagNumberType nt = (TagNumberType) tagMap.get(tagid(dim.nt_ref, TagEnum.NT.getCode()));
-    if (null == nt) throw new IllegalStateException();
-
-    Variable v = new Variable(ncfile, null, null, "SDS-" + group.refno);
-    try {
-      v.setDimensionsAnonymous(dim.shape);
-    } catch (InvalidRangeException e) {
-      throw new IllegalStateException();
-    }
-    DataType dataType = H4type.setDataType(nt.type, v);
-    ncfile.addVariable(null, v);
-
-    vinfo.setData(data);
-    vinfo.setVariable(v);
-
-    // now that we know n, read attribute tags
-    for (int i = 0; i < group.nelems; i++) {
-      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
-      if (tag == null) throw new IllegalStateException();
-      vinfo.tags.add(tag);
-
-      if (tag.code == 704) {
-        TagTextN labels = (TagTextN) tag;
-        labels.read(dim.rank);
-        tag.used = true;
-        v.addAttribute(new Attribute("long_name", labels.getList()));
-      }
-      if (tag.code == 705) {
-        TagTextN units = (TagTextN) tag;
-        units.read(dim.rank);
-        tag.used = true;
-        v.addAttribute(new Attribute("units", units.getList()));
-      }
-      if (tag.code == 706) {
-        TagTextN formats = (TagTextN) tag;
-        formats.read(dim.rank);
-        tag.used = true;
-        v.addAttribute(new Attribute("formats", formats.getList()));
-      }
-      if (tag.code == 707) {
-        TagSDminmax minmax = (TagSDminmax) tag;
-        tag.used = true;
-        v.addAttribute(new Attribute("min", minmax.getMin(dataType)));
-        v.addAttribute(new Attribute("max", minmax.getMax(dataType)));
-      }
-    }
-
-    // look for VH style attributes - dunno if they are actually used
-    for (int i = 0; i < group.nelems; i++) {
-      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
-      if (tag == null) throw new IllegalStateException();
-      if (tag.code == 1962) {
-        TagVH vh = (TagVH) tag;
-        if (vh.className.startsWith("Att")) {
-          Attribute att = addAttribute(vh);
-          if (null != att) v.addAttribute(att);
-        }
-      }
-    }
-
-    group.used = true;
-    data.used = true;
-    dim.used = true;
-    nt.used = true;
-    if (debugConstruct) {
-      System.out.println("added variable " + v.getNameAndDimensions() + " from VG " + group.refno);
-      System.out.println("  SDdim= " + dim.detail());
-      /*System.out.print("  VGdim= ");
-      for (Dimension vdim : dims) System.out.print(vdim + " ");
-      System.out.println(); */
-    }
-  }
-
   private void addGlobalAttributes(TagVGroup group) throws IOException {
 
     // look for attributes
@@ -464,10 +308,10 @@ public class H4header {
         if (vh.className.startsWith("Att")) {
           if ((vh.nfields == 1) && (H4type.setDataType(vh.fld_type[0], null) == DataType.CHAR) &&
               (vh.fld_isize[0] > 4000)) { // large EOS metadata - make into variable
-            addVariable(vh);
+            ncfile.addVariable(null, makeVariable(vh)); // make into variable in root group
           } else {
-            Attribute att = addAttribute(vh);
-            if (null != att) ncfile.addAttribute(null, att);
+            Attribute att = makeAttribute(vh);
+            if (null != att) ncfile.addAttribute(null, att); // make into attribute in root group
           }
         }
       }
@@ -476,7 +320,7 @@ public class H4header {
     group.used = true;
   }
 
-  private Attribute addAttribute(TagVH vh) throws IOException {
+  private Attribute makeAttribute(TagVH vh) throws IOException {
 
     Tag data = tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
     if (data == null)
@@ -534,16 +378,76 @@ public class H4header {
     return att;
   }
 
-  void addImage(TagGroup group) {
+  private Group makeGroup(TagVGroup tagGroup, Group parent) throws IOException {
+    if (tagGroup.nelems < 1)
+      return null;
+
+    Group group = new Group(ncfile, parent, tagGroup.name);
+    tagGroup.used = true;
+    tagGroup.group = group;
+
+    for (int i = 0; i < tagGroup.nelems; i++) {
+      Tag tag = tagMap.get(tagid(tagGroup.elem_ref[i], tagGroup.elem_tag[i]));
+      if (tag == null) {
+        log.error("Reference tag missing= " + tagGroup.elem_ref[i] + "/" + tagGroup.elem_tag[i]);
+        continue;
+      }
+
+      if (tag.code == 720) { // NG - prob var
+        if (tag.vinfo != null) {
+          Variable v = tag.vinfo.v;
+          group.addVariable(v);
+        }
+      }
+
+      if (tag.code == 1962) { //Vheader - may be an att or a var
+        TagVH vh = (TagVH) tag;
+        if (vh.className.startsWith("Att")) {
+          Attribute att = makeAttribute(vh);
+          if (null != att) group.addAttribute(att);
+        } else if (tag.vinfo != null) {
+          Variable v = tag.vinfo.v;
+          group.addVariable(v);
+        }
+      }
+
+      if (tag.code == 1965) {  // VGroup - prob a Group
+        TagVGroup vg = (TagVGroup) tag;
+        if ((vg.group != null) && (vg.group.getParentGroup() == ncfile.getRootGroup())) {
+          group.addGroup(vg.group);
+          vg.group.setParentGroup(group);
+        } else {
+          Group nested = makeGroup(vg, group); // danger - loops
+          group.addGroup( nested);
+        }
+      }
+    }
+
+    if (debugConstruct) {
+      System.out.println("added group " + group.getName() + " from VG " + tagGroup.refno);
+    }
+
+    return group;
+  }
+
+  Variable makeImage(TagGroup group) {
     TagRIDimension dimTag = null;
     TagRIPalette palette = null;
     TagNumberType ntag = null;
     Tag data = null;
 
+    Vinfo vinfo = new Vinfo(group.refno);
+    group.used = true;
+
     // use the list of elements in the group to find the other tags
     for (int i = 0; i < group.nelems; i++) {
       Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
       if (tag == null) throw new IllegalStateException();
+
+      vinfo.tags.add(tag);
+      tag.vinfo = vinfo; // track which variable this tag belongs to
+      tag.used = true;  // assume if contained in Group, then used, to avoid redundant variables
+
       if (tag.code == 300)
         dimTag = (TagRIDimension) tag;
       if (tag.code == 302)
@@ -560,7 +464,6 @@ public class H4header {
     ntag = (TagNumberType) tag;
 
     if (debugConstruct) System.out.println("construct image " + group.refno);
-    Vinfo vinfo = new Vinfo(group.refno);
     vinfo.start = data.offset;
     vinfo.tags.add(group);
     vinfo.tags.add(dimTag);
@@ -578,21 +481,17 @@ public class H4header {
     H4type.setDataType(ntag.type, v);
     v.setDimensions(dimTag.dims);
     vinfo.setVariable(v);
-    ncfile.addVariable(null, v);
 
-    dimTag.used = true;
-    ntag.used = true;
-    group.used = true;
-    data.used = true;
+    return v;
   }
 
-  void addStructure(TagVH vheader) {
+  Structure makeStructure(TagVH vheader) {
     if (debugConstruct) System.out.println("construct struct VH=" + vheader.refno + " name=" + vheader.name);
 
     Tag data = tagMap.get(tagid(vheader.refno, TagEnum.VS.getCode()));
     if (data == null) {
       log.error("No data for VH refid= " + vheader.refno);
-      return;
+      return null;
     }
 
     Vinfo vinfo = new Vinfo(vheader.refno);
@@ -601,14 +500,19 @@ public class H4header {
     vinfo.tags.add(vheader);
     vinfo.tags.add(data);
 
+    vheader.used = true;
+    vheader.vinfo = vinfo;
+    data.used = true;
+    data.vinfo = vinfo;
+
+    Structure s;
     try {
-      Structure s = new Structure(ncfile, null, null, vheader.name);
+      s = new Structure(ncfile, null, null, vheader.name);
       if (vheader.nvert > 1)
         s.setDimensionsAnonymous(new int[]{vheader.nvert});
       else
         s.setIsScalar();
       vinfo.setVariable(s);
-      ncfile.addVariable(null, s);
 
       for (int fld = 0; fld < vheader.nfields; fld++) {
         Variable m = new Variable(ncfile, null, s, vheader.fld_name[fld]);
@@ -626,6 +530,8 @@ public class H4header {
     } catch (InvalidRangeException e) {
       throw new IllegalStateException(e.getMessage());
     }
+
+    return s;
   }
 
   // member info
@@ -638,6 +544,211 @@ public class H4header {
       this.size = size;
       this.order = order;
     }
+  }
+
+  private Variable makeVariable(TagVGroup group) throws IOException {
+    Vinfo vinfo = new Vinfo(group.refno);
+    vinfo.tags.add(group);
+    group.used = true;
+
+    TagSDDimension dim = null;
+    TagNumberType ntag = null;
+    TagData data = null;
+    List<Dimension> dims = new ArrayList<Dimension>();
+    for (int i = 0; i < group.nelems; i++) {
+      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
+      if (tag == null) {
+        log.error("Reference tag missing= " + group.elem_ref[i] + "/" + group.elem_tag[i]);
+        continue;
+      }
+
+      vinfo.tags.add(tag);
+      tag.vinfo = vinfo; // track which variable this tag belongs to
+      tag.used = true;  // assume if contained in Vgroup, then not needed, to avoid redundant variables
+
+      if (tag.code == 106)
+        ntag = (TagNumberType) tag;
+      if (tag.code == 701)
+        dim = (TagSDDimension) tag;
+      if (tag.code == 702)
+        data = (TagData) tag;
+
+      if (tag.code == 1965) {
+        TagVGroup vg = (TagVGroup) tag;
+        if (vg.className.startsWith("Dim") || vg.className.startsWith("UDim")) {
+          Dimension d = ncfile.getRootGroup().findDimension(vg.name);
+          if (d == null) throw new IllegalStateException();
+          dims.add(d);
+        }
+      }
+    }
+    if (ntag == null) {
+      log.error("ntype tag missing vgroup= " + group.refno);
+      return null;
+    }
+    if (dim == null) {
+      log.error("dim tag missing vgroup= " + group.refno);
+      return null;
+    }
+    if (data == null) {
+      log.error("data tag missing vgroup= " + group.refno);
+      return null;
+    }
+    Variable v = new Variable(ncfile, null, null, group.name);
+    v.setDimensions(dims);
+    H4type.setDataType(ntag.type, v);
+
+    vinfo.setVariable(v);
+    vinfo.setData(data);
+
+    // look for attributes
+    for (int i = 0; i < group.nelems; i++) {
+      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
+      if (tag == null) throw new IllegalStateException();
+      if (tag.code == 1962) {
+        TagVH vh = (TagVH) tag;
+        if (vh.className.startsWith("Att")) {
+          Attribute att = makeAttribute(vh);
+          if (null != att) v.addAttribute(att);
+        }
+      }
+    }
+
+    if (debugConstruct) {
+      System.out.println("added variable " + v.getNameAndDimensions() + " from VG " + group.refno);
+      System.out.println("  SDdim= " + dim.detail());
+      System.out.print("  VGdim= ");
+      for (Dimension vdim : dims) System.out.print(vdim + " ");
+      System.out.println();
+    }
+
+    return v;
+  }
+
+  private Variable makeVariable(TagVH vh) throws IOException {
+    Vinfo vinfo = new Vinfo(vh.refno);
+    vinfo.tags.add(vh);
+    vh.vinfo = vinfo;
+
+    Tag data = tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
+    if (data == null) {
+      log.error("Cant find tag " + vh.refno + "/" + TagEnum.VS.getCode() + " for TagVH=" + vh.detail());
+      return null;
+    }
+    vinfo.tags.add(data);
+
+    // for now assume only 1
+    if (vh.nfields != 1)
+      throw new IllegalStateException();
+
+    Variable v = new Variable(ncfile, null, null, vh.name);
+    try {
+      v.setDimensionsAnonymous(new int[]{vh.fld_isize[0]});
+    } catch (InvalidRangeException e) {
+      throw new IllegalStateException();
+    }
+
+    H4type.setDataType(vh.fld_type[0], v);
+
+    vinfo.start = data.offset;
+    vinfo.setVariable(v);
+
+    vh.used = true;
+    data.used = true;
+
+    return v;
+  }
+
+
+  private Variable makeVariable(TagGroup group) throws IOException {
+    Vinfo vinfo = new Vinfo(group.refno);
+    vinfo.tags.add(group);
+    group.used = true;
+
+    TagSDDimension dim = null;
+    TagData data = null;
+    for (int i = 0; i < group.nelems; i++) {
+      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
+      if (tag == null) {
+        log.error("Cant find tag " + group.elem_ref[i] + "/" + group.elem_tag[i] + " for group=" + group.refno);
+        continue;
+      }
+      vinfo.tags.add(tag);
+      tag.vinfo = vinfo; // track which variable this tag belongs to
+      tag.used = true;  // assume if contained in Group, then used, to avoid redundant variables
+
+      if (tag.code == 701)
+        dim = (TagSDDimension) tag;
+      if (tag.code == 702)
+        data = (TagData) tag;
+    }
+    if ((dim == null) || (data == null))
+      throw new IllegalStateException();
+
+    TagNumberType nt = (TagNumberType) tagMap.get(tagid(dim.nt_ref, TagEnum.NT.getCode()));
+    if (null == nt) throw new IllegalStateException();
+
+    Variable v = new Variable(ncfile, null, null, "SDS-" + group.refno);
+    try {
+      v.setDimensionsAnonymous(dim.shape);
+    } catch (InvalidRangeException e) {
+      throw new IllegalStateException();
+    }
+    DataType dataType = H4type.setDataType(nt.type, v);
+
+    vinfo.setData(data);
+    vinfo.setVariable(v);
+
+    // now that we know n, read attribute tags
+    for (int i = 0; i < group.nelems; i++) {
+      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
+      if (tag == null) throw new IllegalStateException();
+
+      if (tag.code == 704) {
+        TagTextN labels = (TagTextN) tag;
+        labels.read(dim.rank);
+        tag.used = true;
+        v.addAttribute(new Attribute("long_name", labels.getList()));
+      }
+      if (tag.code == 705) {
+        TagTextN units = (TagTextN) tag;
+        units.read(dim.rank);
+        tag.used = true;
+        v.addAttribute(new Attribute("units", units.getList()));
+      }
+      if (tag.code == 706) {
+        TagTextN formats = (TagTextN) tag;
+        formats.read(dim.rank);
+        tag.used = true;
+        v.addAttribute(new Attribute("formats", formats.getList()));
+      }
+      if (tag.code == 707) {
+        TagSDminmax minmax = (TagSDminmax) tag;
+        tag.used = true;
+        v.addAttribute(new Attribute("min", minmax.getMin(dataType)));
+        v.addAttribute(new Attribute("max", minmax.getMax(dataType)));
+      }
+    }
+
+    // look for VH style attributes - dunno if they are actually used
+    for (int i = 0; i < group.nelems; i++) {
+      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
+      if (tag == null) throw new IllegalStateException();
+      if (tag.code == 1962) {
+        TagVH vh = (TagVH) tag;
+        if (vh.className.startsWith("Att")) {
+          Attribute att = makeAttribute(vh);
+          if (null != att) v.addAttribute(att);
+        }
+      }
+    }
+
+    if (debugConstruct) {
+      System.out.println("added variable " + v.getNameAndDimensions() + " from VG " + group.refno);
+      System.out.println("  SDdim= " + dim.detail());
+    }
+
+    return v;
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -674,10 +785,10 @@ public class H4header {
         isLinked = true;
         setDataBlocks(data.linked.getLinkedDataBlocks());
 
-    } else if (null != data.compress) {
+      } else if (null != data.compress) {
         isCompressed = true;
-        TagData compData =  data.compress.getDataTag();
-        tags.add( compData);
+        TagData compData = data.compress.getDataTag();
+        tags.add(compData);
         isLinked = (compData.linked != null);
         if (isLinked)
           setDataBlocks(compData.linked.getLinkedDataBlocks());
@@ -812,6 +923,7 @@ public class H4header {
     int offset, length;
     TagEnum t;
     boolean used;
+    Vinfo vinfo;
 
     // read just the DD part of the tag. see p 11
     Tag(short code) throws IOException {
@@ -828,7 +940,8 @@ public class H4header {
     }
 
     // read the offset/length part of the tag. overridden by subclasses
-    void read() throws IOException { }
+    void read() throws IOException {
+    }
 
     public String detail() {
       return (used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "") + " offset=" + offset + " length=" + length;
@@ -897,7 +1010,7 @@ public class H4header {
       compress_type = raf.readShort();
 
       if (compress_type == TagEnum.COMP_CODE_NBIT) {
-        nt =  raf.readInt();
+        nt = raf.readInt();
         signFlag = raf.readShort();
         fillValue = raf.readShort();
         startBit = raf.readInt();
@@ -924,7 +1037,7 @@ public class H4header {
       sbuff.append(" model_type=" + model_type + " compress_type=" + compress_type);
       if (compress_type == TagEnum.COMP_CODE_NBIT)
         sbuff.append(" nt=" + nt + " signFlag=" + signFlag + " fillValue=" + fillValue + " startBit=" + startBit
-        + " bitLength=" + bitLength);
+            + " bitLength=" + bitLength);
       else if (compress_type == TagEnum.COMP_CODE_DEFLATE)
         sbuff.append(" deflateLevel=" + deflateLevel);
       return sbuff.toString();
@@ -1327,6 +1440,7 @@ public class H4header {
     short nelems, extag, exref, version;
     short[] elem_tag, elem_ref;
     String name, className;
+    Group group;
 
     TagVGroup(short code) throws IOException {
       super(code);
@@ -1396,7 +1510,7 @@ public class H4header {
       raf.seek(offset);
       interlace = raf.readShort();
       nvert = raf.readInt();
-      ivsize = DataType.unsignedShortToInt( raf.readShort());
+      ivsize = DataType.unsignedShortToInt(raf.readShort());
       nfields = raf.readShort();
 
       fld_type = new short[nfields];
@@ -1405,11 +1519,11 @@ public class H4header {
 
       fld_isize = new int[nfields];
       for (int i = 0; i < nfields; i++)
-        fld_isize[i] = DataType.unsignedShortToInt( raf.readShort());
+        fld_isize[i] = DataType.unsignedShortToInt(raf.readShort());
 
       fld_offset = new int[nfields];
       for (int i = 0; i < nfields; i++)
-        fld_offset[i] = DataType.unsignedShortToInt( raf.readShort());
+        fld_offset[i] = DataType.unsignedShortToInt(raf.readShort());
 
       fld_order = new short[nfields];
       for (int i = 0; i < nfields; i++)
@@ -1565,15 +1679,18 @@ public class H4header {
     }
   }
 
+  private static boolean showFile = true;  
   static void test(String filename) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
     NetcdfFile ncfile = new MyNetcdfFile();
     H4header header = new H4header();
     header.read(raf, ncfile);
-    if (showFile) System.out.println(" " + ncfile);
+    if (showFile) System.out.println(ncfile);
   }
 
   static public void main(String args[]) throws IOException {
+    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag2 H4header/tagDetail"));
+
     String filename1 = "17766010.hdf";
     String filename2 = "balloon_sonde.o3_knmi000_de.bilt_s2_20060905t112100z_002.hdf";
     String filename3 = "TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF";
@@ -1582,129 +1699,128 @@ public class H4header {
     String filename6 = "c402_rp_02.diag.sfc.20020122_0130z.hdf";  // COARDS, looks good
     String filename7 = "MOP03M-200501-L3V81.0.1.hdf";  // bad links
     String filename8 = "96108_08.hdf";  // bad links
-    String filename9 = "eos/AsterSwath.hdf";
+    String filename9 = "tmi/tmi_L2c_2008.001_57703_v04.eos";
     //ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
-    test("C:/data/hdf4/" + filename9);
+    test("C:/data/hdf4/" + filename1);
   }
 }
 
-
 /*--------------------------------------------------------------------------
- NAME
-    HCPdecode_header -- Decode the compression header info from a memory buffer
- USAGE
-    intn HCPdecode_header(model_type, model_info, coder_type, coder_info)
-    void * buf;                  IN: encoded compression info header
-    comp_model_t *model_type;   OUT: the type of modeling to use
-    model_info *m_info;         OUT: Information needed for the modeling type chosen
-    comp_coder_t *coder_type;   OUT: the type of encoding to use
-    coder_info *c_info;         OUT: Information needed for the encoding type chosen
+NAME
+HCPdecode_header -- Decode the compression header info from a memory buffer
+USAGE
+intn HCPdecode_header(model_type, model_info, coder_type, coder_info)
+void * buf;                  IN: encoded compression info header
+comp_model_t *model_type;   OUT: the type of modeling to use
+model_info *m_info;         OUT: Information needed for the modeling type chosen
+comp_coder_t *coder_type;   OUT: the type of encoding to use
+coder_info *c_info;         OUT: Information needed for the encoding type chosen
 
- RETURNS
-    Return SUCCEED or FAIL
- DESCRIPTION
-    Decodes the compression information from a block in memory.
+RETURNS
+Return SUCCEED or FAIL
+DESCRIPTION
+Decodes the compression information from a block in memory.
 
- GLOBAL VARIABLES
- COMMENTS, BUGS, ASSUMPTIONS
- EXAMPLES
- REVISION LOG
+GLOBAL VARIABLES
+COMMENTS, BUGS, ASSUMPTIONS
+EXAMPLES
+REVISION LOG
 --------------------------------------------------------------------------
 intn
 HCPdecode_header(uint8 *p, comp_model_t *model_type, model_info * m_info,
-         comp_coder_t *coder_type, comp_info * c_info)
+comp_coder_t *coder_type, comp_info * c_info)
 {
-    CONSTR(FUNC, "HCPdecode_header");    /* for HERROR
-    uint16 m_type, c_type;
-    int32 ret_value=SUCCEED;
+CONSTR(FUNC, "HCPdecode_header");    /* for HERROR
+uint16 m_type, c_type;
+int32 ret_value=SUCCEED;
 
-    /* clear error stack and validate args
-    HEclear();
-    if (p==NULL || model_type==NULL || m_info==NULL || coder_type==NULL || c_info==NULL)
-        HGOTO_ERROR(DFE_ARGS, FAIL);
+/* clear error stack and validate args
+HEclear();
+if (p==NULL || model_type==NULL || m_info==NULL || coder_type==NULL || c_info==NULL)
+HGOTO_ERROR(DFE_ARGS, FAIL);
 
-    UINT16DECODE(p, m_type);     /* get model type
-    *model_type=(comp_model_t)m_type;
-    UINT16DECODE(p, c_type);     /* get encoding type
-    *coder_type=(comp_coder_t)c_type;
+UINT16DECODE(p, m_type);     /* get model type
+*model_type=(comp_model_t)m_type;
+UINT16DECODE(p, c_type);     /* get encoding type
+*coder_type=(comp_coder_t)c_type;
 
-    /* read any additional information needed for modeling type
-    switch (*model_type)
-      {
-          default:      /* no additional information needed
-              break;
-      }     /* end switch */
+/* read any additional information needed for modeling type
+switch (*model_type)
+{
+default:      /* no additional information needed
+break;
+}     /* end switch */
 
-    /* read any additional information needed for coding type
-    switch (*coder_type)
-      {
-          case COMP_CODE_NBIT:      /* N-bit coding needs info
-              {
-                  uint16      s_ext;    /* temp. var for sign extend
-                  uint16      f_one;    /* temp. var for fill one
-                  int32       m_off, m_len;     /* temp. var for mask offset and len
+/* read any additional information needed for coding type
+switch (*coder_type)
+  {
+      case COMP_CODE_NBIT:      /* N-bit coding needs info
+          {
+              uint16      s_ext;    /* temp. var for sign extend
+              uint16      f_one;    /* temp. var for fill one
+              int32       m_off, m_len;     /* temp. var for mask offset and len
 
-                  /* specify number-type of N-bit data
-                  INT32DECODE(p, c_info->nbit.nt);
-                  /* next is the flag to indicate whether to sign extend
-                  UINT16DECODE(p, s_ext);
-                  c_info->nbit.sign_ext = (intn) s_ext;
-                  /* the flag to indicate whether to fill with 1's or 0's
-                  UINT16DECODE(p, f_one);
-                  c_info->nbit.fill_one = (intn) f_one;
-                  /* the offset of the bits extracted
-                  INT32DECODE(p, m_off);
-                  c_info->nbit.start_bit = (intn) m_off;
-                  /* the number of bits extracted
-                  INT32DECODE(p, m_len);
-                  c_info->nbit.bit_len = (intn) m_len;
-              }     /* end case
-              break;
+              /* specify number-type of N-bit data
+              INT32DECODE(p, c_info->nbit.nt);
+              /* next is the flag to indicate whether to sign extend
+              UINT16DECODE(p, s_ext);
+              c_info->nbit.sign_ext = (intn) s_ext;
+              /* the flag to indicate whether to fill with 1's or 0's
+              UINT16DECODE(p, f_one);
+              c_info->nbit.fill_one = (intn) f_one;
+              /* the offset of the bits extracted
+              INT32DECODE(p, m_off);
+              c_info->nbit.start_bit = (intn) m_off;
+              /* the number of bits extracted
+              INT32DECODE(p, m_len);
+              c_info->nbit.bit_len = (intn) m_len;
+          }     /* end case
+          break;
 
-          case COMP_CODE_SKPHUFF:   /* Skipping Huffman  coding needs info
-              {
-                  uint32      skp_size,     /* size of skipping unit
-                              comp_size;    /* # of bytes to compress
+      case COMP_CODE_SKPHUFF:   /* Skipping Huffman  coding needs info
+          {
+              uint32      skp_size,     /* size of skipping unit
+                          comp_size;    /* # of bytes to compress
 
-                  /* specify skipping unit size
-                  UINT32DECODE(p, skp_size);
-                  /* specify # of bytes of skipping data to compress
-                  UINT32DECODE(p, comp_size);   /* ignored for now
-                  c_info->skphuff.skp_size = (intn) skp_size;
-              }     /* end case
-              break;
+              /* specify skipping unit size
+              UINT32DECODE(p, skp_size);
+              /* specify # of bytes of skipping data to compress
+              UINT32DECODE(p, comp_size);   /* ignored for now
+              c_info->skphuff.skp_size = (intn) skp_size;
+          }     /* end case
+          break;
 
-          case COMP_CODE_DEFLATE:   /* Deflation coding stores deflation level
-              {
-                  uint16      level;    /* deflation level
+      case COMP_CODE_DEFLATE:   /* Deflation coding stores deflation level
+          {
+              uint16      level;    /* deflation level
 
-                  /* specify deflation level
-                  UINT16DECODE(p, level);
-                  c_info->deflate.level = (intn) level;
-              }     /* end case
-              break;
+              /* specify deflation level
+              UINT16DECODE(p, level);
+              c_info->deflate.level = (intn) level;
+          }     /* end case
+          break;
 
-          case COMP_CODE_SZIP:   /* Szip coding stores the following values
-	      {
-                  UINT32DECODE(p, c_info->szip.pixels);
-                  UINT32DECODE(p, c_info->szip.pixels_per_scanline);
-                  UINT32DECODE(p, c_info->szip.options_mask);
-                  c_info->szip.bits_per_pixel = *p++;
-                  c_info->szip.pixels_per_block = *p++;
-	      }
-              break;
+      case COMP_CODE_SZIP:   /* Szip coding stores the following values
+    {
+              UINT32DECODE(p, c_info->szip.pixels);
+              UINT32DECODE(p, c_info->szip.pixels_per_scanline);
+              UINT32DECODE(p, c_info->szip.options_mask);
+              c_info->szip.bits_per_pixel = *p++;
+              c_info->szip.pixels_per_block = *p++;
+    }
+          break;
 
-          default:      /* no additional information needed
-              break;
-      }     /* end switch
+      default:      /* no additional information needed
+          break;
+  }     /* end switch
 
 done:
-    if(ret_value == FAIL)
-      { /* Error condition cleanup
+if(ret_value == FAIL)
+  { /* Error condition cleanup
 
-      } /* end if
+  } /* end if
 
-    /* Normal function cleanup
-    return ret_value;
+/* Normal function cleanup
+return ret_value;
 } /* end HCPdecode_header() */
 

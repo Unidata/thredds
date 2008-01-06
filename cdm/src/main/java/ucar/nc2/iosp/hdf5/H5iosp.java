@@ -96,7 +96,18 @@ public class H5iosp extends AbstractIOServiceProvider {
     headerParser.read();
 
     // check if its an HDF5-EOS file
-    H5eos.parse(ncfile);
+    Group eosInfo = ncfile.getRootGroup().findGroup("HDFEOS INFORMATION");
+    if (eosInfo != null){
+      Variable structMetadataVar = eosInfo.findVariable("StructMetadata.0");
+      if (structMetadataVar != null) {
+        // read and parse the ODL
+        Array A = structMetadataVar.read();
+        ArrayChar ca = (ArrayChar) A;
+        String structMetadata = ca.getString();
+
+        H5eos.amendFromODL(ncfile, structMetadata);
+      }
+    }
 
     ncfile.finish();
   }

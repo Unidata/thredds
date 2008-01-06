@@ -51,7 +51,7 @@ public class ODLparser2 {
     parseFromString(text);
   }
 
-  Element parseFromString(String text) throws IOException {
+  public Element parseFromString(String text) throws IOException {
     Element rootElem = new Element("odl");
     doc = new Document(rootElem);
 

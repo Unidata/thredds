@@ -312,6 +312,14 @@ public class Group {
     this.name = (parent == null) ? shortName : parent.getName() + "/" + shortName;
   }
 
+  /** Set the Group's parent Group
+   * @param parent parent group.
+   */
+  public void setParentGroup( Group parent) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    this.parent = parent;
+  }
+
   /** Set the Group short name
    * @param name short name.
    */
