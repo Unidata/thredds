@@ -33,6 +33,7 @@ import java.io.IOException;
 
 public class Station extends ListChoice {
   private Location location;
+  private String state = null, country = null;
 
    /**
     * Construct from fields in XML catalog.
@@ -40,6 +41,12 @@ public class Station extends ListChoice {
     */
   public Station( Selector parent, String name, String value, String description) {
     super( parent, name, value, description);
+  }
+
+  public Station( Selector parent, String name, String value, String state, String country, String description) {
+    super( parent, name, value, description);
+    this.state = state;
+    this.country = country;
   }
 
   public void setLocation(Location location) { this.location = location; }
@@ -62,6 +69,14 @@ public class Station extends ListChoice {
 
   public String getStationID() {
       return getValue();
+  }
+
+  public String getState() {
+      return state;
+  }
+
+  public String getCountry() {
+      return country;
   }
 
   public boolean equals(Object o) {
