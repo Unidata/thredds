@@ -1,5 +1,5 @@
 /*
- * $Id: DatedObject.java,v 1.9 2007/07/08 18:15:01 jeffmc Exp $
+ * $Id: DatedObject.java,v 1.10 2007/07/09 22:59:44 jeffmc Exp $
  *
  * Copyright  1997-2004 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -54,6 +54,9 @@ public class DatedObject implements DatedThing {
     /** The object */
     private Object object;
 
+    public DatedObject() {
+    }
+
     /**
      * Construct this object with just a date
      *
@@ -104,6 +107,7 @@ public class DatedObject implements DatedThing {
         }
         return selected;
     }
+
 
 
     /**
@@ -178,7 +182,10 @@ public class DatedObject implements DatedThing {
 
         Object[] array = datedThings.toArray();
         Arrays.sort(array, comp);
-        return Arrays.asList(array);
+        List result = Arrays.asList(array);
+        datedThings = new ArrayList();
+        datedThings.addAll(result);
+        return  datedThings;
     }
 
     /**

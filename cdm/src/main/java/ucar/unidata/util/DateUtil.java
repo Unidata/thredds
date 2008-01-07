@@ -1,5 +1,5 @@
 /*
- * $Id: DateUtil.java,v 1.10 2007/05/22 23:33:26 jeffmc Exp $
+ * $Id: DateUtil.java,v 1.11 2007/07/02 21:14:00 jeffmc Exp $
  *
  * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -77,10 +78,12 @@ public class DateUtil {
     public static final long MILLIS_MILLENIUM = MILLIS_CENTURY * 10;
 
 
+    public static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
+
 
     /** logger */
-    private static org.slf4j.Logger log =
-        org.slf4j.LoggerFactory.getLogger(DateUtil.class);
+    //    private static org.slf4j.Logger log =
+    //        org.slf4j.LoggerFactory.getLogger(DateUtil.class);
 
     /**
      * format current time
@@ -113,11 +116,124 @@ public class DateUtil {
      * @return formatted time
      */
     public static String getTimeAsISO8601(long time) {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        Calendar cal = Calendar.getInstance(TIMEZONE_GMT);
         cal.setTimeInMillis(time);
         Date curSysDate = cal.getTime();
         return DateFormatHandler.ISO_DATE_TIME.getDateTimeStringFromDate(
             curSysDate);
+    }
+
+    
+    private static final String[] formats = {
+        "yyyy-MM-dd'T'HH:mm:ss",
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyyMMdd'T'HHmmss",
+        "yyyy-MM-dd",
+        "EEE MMM dd HH:mm:ss Z yyyy"
+    };
+
+    private static SimpleDateFormat[] sdfs;
+    private static SimpleDateFormat lastSdf;
+
+
+    public static Date roundByDay(Date dttm,int day) {
+        if(day ==0) return dttm;
+        if(day<0) day++;
+        Calendar cal = Calendar.getInstance(TIMEZONE_GMT);
+        cal.setTimeInMillis(dttm.getTime());
+        cal.clear(Calendar.MILLISECOND);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.add(Calendar.DAY_OF_YEAR, day);
+        return new Date( cal.getTimeInMillis());
+    }
+
+    public static SimpleDateFormat findFormatter(String dateString) {
+        if(sdfs == null) {
+            sdfs = new SimpleDateFormat[formats.length];
+            for(int i=0;i<formats.length;i++) {
+                sdfs[i] = new SimpleDateFormat(formats[i]);
+            }
+        }
+        if(lastSdf!=null) {
+            try {
+                lastSdf.parse(dateString);
+                return lastSdf;
+            } catch(ParseException pe) {}
+        }
+
+        for(int i=0;i<formats.length;i++) {
+            try {
+                sdfs[i].parse(dateString);
+                lastSdf = sdfs[i];
+                return sdfs[i];
+            } catch(ParseException pe) {}
+        }
+        throw new IllegalArgumentException ("Could not find date format for:" + dateString);
+    }
+
+
+    public static Date parseRelative(Date baseDate, String s, int roundDays) throws java.text.ParseException {
+        s = s.trim();
+        Calendar cal = Calendar.getInstance(TIMEZONE_GMT);
+        cal.setTimeInMillis(baseDate.getTime());
+        Date dttm = null;
+        if(s.equals("now")) {
+            dttm = cal.getTime();
+        } else if(s.equals("today")) {
+            dttm = cal.getTime();
+        } else if(s.equals("yesterday")) {
+            dttm = new Date(cal.getTime().getTime()-daysToMillis(1));
+        } else if(s.equals("tomorrow")) {
+            dttm = new Date(cal.getTime().getTime()+daysToMillis(1));
+        } else if(s.startsWith("last")  || s.startsWith("next")) { 
+            List toks = StringUtil.split(s, " ", true,true);
+            if(toks.size()!=2) {
+                throw new IllegalArgumentException("Bad time format:" + s);
+            }
+            int factor = (toks.get(0).equals("last")?-1:+1);
+            String unit  = (String) toks.get(1);
+            if(unit.equals("week")) {
+                cal.add(Calendar.WEEK_OF_MONTH,factor);
+            } else  if(unit.equals("month")) {
+                cal.add(Calendar.MONTH,factor);
+            } else  if(unit.equals("year")) {
+                cal.add(Calendar.YEAR,factor);
+            } else  if(unit.equals("century")) {
+                cal.add(Calendar.YEAR,factor*100);
+            } else  if(unit.equals("millenium")) {
+                cal.add(Calendar.YEAR,factor*1000);
+            } else {
+                throw new IllegalArgumentException("Bad time format:" + s + " unknown time field:" + unit);
+            }
+            dttm =  cal.getTime();
+        } 
+        if(dttm!=null) {
+            return roundByDay(dttm,roundDays);
+        }
+        return null;
+    }
+
+
+    public static Date parse(String s) throws java.text.ParseException {
+        SimpleDateFormat sdf = findFormatter(s);
+        return sdf.parse(s);
+    }
+
+    public static double[] toSeconds(String[]s) throws java.text.ParseException {
+        double[]d = new double[s.length];
+        if(s.length == 0) return d;
+        SimpleDateFormat sdf = findFormatter(s[0]);
+        double lastTime = 0;
+        for(int i=0;i<s.length;i++) {
+            d[i] = sdf.parse(s[i]).getTime()/1000.0;
+            if(d[i]< lastTime) System.out.println ("****" + s[i]);
+            //            else  System.out.println (s[i]);
+            lastTime = d[i];
+            //            System.out.println(d[i]);
+        }
+        return d;
     }
 
     /**
@@ -175,13 +291,14 @@ public class DateUtil {
 
             SimpleDateFormat dateFormat =
                 new SimpleDateFormat(this.dateTimeFormatString, Locale.US);
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+            dateFormat.setTimeZone(TIMEZONE_GMT);
 
             try {
                 theDate = dateFormat.parse(dateTimeString);
             } catch (ParseException e) {
-                log.warn(e.getMessage());
-                return null;
+                throw new IllegalArgumentException(e.getMessage());
+                //                log.warn(e.getMessage());
+                //                return null;
             }
 
             return theDate;
@@ -197,7 +314,7 @@ public class DateUtil {
         public String getDateTimeStringFromDate(Date date) {
             SimpleDateFormat dateFormat =
                 new SimpleDateFormat(this.dateTimeFormatString, Locale.US);
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+            dateFormat.setTimeZone(TIMEZONE_GMT);
 
             String dateString = dateFormat.format(date);
 
@@ -254,7 +371,71 @@ public class DateUtil {
         return (long) (minutes * 60 * 1000);
     }
 
+    public static Date getRelativeDate(Date from, String relativeTimeString) {
+        return new Date(from.getTime()+ parseRelativeTimeString(relativeTimeString));
+    }
 
+    public static long parseRelativeTimeString(String relativeTimeString) {
+        List toks = StringUtil.split(relativeTimeString," ", true, true);
+        if(toks.size()!=2)
+            throw new IllegalArgumentException("Bad format for relative time string:" + relativeTimeString +" Needs to be of the form: +/-<number> timeunit");
+        int delta=0;
+        try {
+            String s = toks.get(0).toString();
+            int factor = 1;
+            if(s.startsWith("+")) {
+                s = s.substring(1);
+            } else if(s.startsWith("-")) {
+                s = s.substring(1);
+                factor = -1;
+            }
+            delta = factor*new Integer(s);
+        } catch(Exception exc) {
+            throw new IllegalArgumentException("Bad format for relative time string:" + relativeTimeString+" Could not parse initial number:" + toks.get(0));
+        }
+        String what = (String)toks.get(1);
+        long milliseconds = 0;
+        if(what.startsWith("second")) {
+            milliseconds = delta*1000;
+        } else if(what.startsWith("minute")) {
+            milliseconds = 60*delta*1000;
+        } else if(what.startsWith("hour")) {
+            milliseconds = 60*60*delta*1000;
+        } else if(what.startsWith("day")) {
+            milliseconds = 24*60*60*delta*1000;
+        } else if(what.startsWith("week")) {
+            milliseconds = 7*24*60*60*delta*1000;
+        } else if(what.startsWith("month")) {
+            milliseconds = 30*24*60*60*delta*1000;
+        } else if(what.startsWith("year")) {
+            milliseconds = 365*24*60*60*delta*1000;
+        } else if(what.startsWith("century")) {
+            milliseconds = 100*365*24*60*60*delta*1000;
+        } else if(what.startsWith("millenium")) {
+            milliseconds = 1000*365*24*60*60*delta*1000;
+        } else {
+            throw new IllegalArgumentException("Unknown unit in relative time string:" + relativeTimeString);
+        }
+        return milliseconds;
+    }
+
+
+
+    public static void main(String[]args) throws Exception {
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-mm-dd HH");
+        Date dttm = fmt.parse("2007-12-01 00.65");
+        System.err.println("dttm:" + dttm);
+        if(true) return;
+
+        Date now = new Date();
+        for(int i=0;i<args.length;i++) {
+            Date fromDttm = null;
+            String fromDate = args[i];
+            fromDttm = DateUtil.parseRelative(new Date(),fromDate,0);
+            System.err.println (args[i] + "=" + fromDttm);
+        }
+
+    } 
 
 
 }
