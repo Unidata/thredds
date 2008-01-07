@@ -30,6 +30,16 @@ import thredds.catalog.query.Station;
 //import ucar.nc2.ncml.AggregationFmr;
 import ucar.nc2.ncml.Aggregation;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.NodeList;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+import org.jdom.Element;
+
 public class ServerMethods {
 
     public static final Pattern p_all_i = Pattern.compile("all", Pattern.CASE_INSENSITIVE);
@@ -56,6 +66,7 @@ public class ServerMethods {
     public static final Pattern p_value2 = Pattern.compile("value=\"([A-Z0-9]*)\"");
     public static final Pattern p_xml_i = Pattern.compile("xml", Pattern.CASE_INSENSITIVE);
     public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("(\\d{8}_\\d{4})");
+    public static final String epic = "1970-01-01T00:00:00";
 
     static protected SimpleDateFormat dateFormatISO;
     static protected SimpleDateFormat dateFormat;
@@ -68,7 +79,7 @@ public class ServerMethods {
     }
 
     //private ArrayList<Aggregation.Dataset> datasetList;
-    private Date start, end;
+    //private Date start, end;
 
     private PrintWriter pw;
    /*
@@ -159,7 +170,7 @@ public class ServerMethods {
   }
   */
 
-  public boolean intersect(DateRange dr) throws IOException {
+  public boolean intersect(DateRange dr, Date start, Date end ) throws IOException {
     return dr.intersect(start, end);
   }
 
@@ -169,9 +180,75 @@ public class ServerMethods {
   }
    */
 
-  public List<Station> getStations( String dqcLocation ) {
-      //if( stationList != null)
-      //     return stationList;
+
+  public List<Station> getStations( String stnLocation ) {
+
+      List <Station> stationList = new ArrayList();
+      DocumentBuilder parser;
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setValidating(false);
+      factory.setNamespaceAware(true);
+      SelectStation parent = new SelectStation();  //kludge to use Station
+
+      try {
+          parser = factory.newDocumentBuilder();
+          //stnLocation = stnLocation.replaceAll( " ", "%20");
+          InputStream is = new FileInputStream( stnLocation );
+          org.w3c.dom.Document doc = parser.parse(is);
+          //System.out.println( "root=" + doc.getDocumentElement().getTagName() );
+          NodeList stns = doc.getElementsByTagName("station");
+          for (int i = 0; i < stns.getLength(); i++) {
+              //System.out.println( "node=" + d.item( i ).getNodeName() );
+              NamedNodeMap attr  = stns.item(i).getAttributes();
+              String name = "", value = "", state = "", country = "" ;
+              for (int j = 0; j < attr.getLength(); j++) {
+                    if (attr.item(j).getNodeName().equals("value")) {
+                        value = attr.item(j).getNodeValue();
+                    } else if (attr.item(j).getNodeName().equals("name")) {
+                        name = attr.item(j).getNodeValue();
+                    } else if (attr.item(j).getNodeName().equals("state")) {
+                        state = attr.item(j).getNodeValue();
+                    } else if (attr.item(j).getNodeName().equals("country")) {
+                        country = attr.item(j).getNodeValue();
+                    }
+
+              }
+              NodeList child = stns.item(i).getChildNodes();  //Children of station
+              Location location = null;
+              for (int j = 0; j < child.getLength(); j++) {
+                 //System.out.println( "child =" + child.item( j ).getNodeName() );
+                 if ( child.item(j).getNodeName().equals("location3D")) {
+                     NamedNodeMap ca  = child.item(j).getAttributes();
+                     String latitude = "", longitude = "", elevation = "" ;
+                     for (int k = 0; k < ca.getLength(); k++) {
+                         if (ca.item(k).getNodeName().equals("latitude")) {
+                             latitude = ca.item(k).getNodeValue();
+                         } else if (ca.item(k).getNodeName().equals("longitude")) {
+                             longitude = ca.item(k).getNodeValue();
+                         } else if (ca.item(k).getNodeName().equals("elevation")) {
+                             elevation = ca.item(k).getNodeValue();
+                         }
+
+                     }
+                     location = new Location(latitude, longitude, elevation, null, null, null );
+                 }
+              }
+              Station station = new Station( parent, name, value, state, country, null );
+              station.setLocation( location );
+              stationList.add( station );
+          }
+
+      } catch (SAXException e) {
+          e.printStackTrace();
+      } catch (IOException e) {
+          e.printStackTrace();
+      } catch (ParserConfigurationException e) {
+          e.printStackTrace();
+      }
+      return stationList;
+  }
+
+  public List<Station> getStationsOld( String dqcLocation ) {
 
       StringBuffer errlog = new StringBuffer();
       try {
@@ -291,7 +368,7 @@ public class ServerMethods {
     ArrayList<String> result = new ArrayList<String>();
     //List<Station> stations = getStationList();
     for (Station s : stations) {
-      latlonPt.set(s.getLatitude(), s.getLongitude());
+      latlonPt.set(s.getLocation().getLatitude(), s.getLocation().getLongitude());
       if (boundingBox.contains(latlonPt)) {
         result.add(s.getValue());
         // boundingBox.contains(latlonPt);   debugging
@@ -337,8 +414,8 @@ public class ServerMethods {
     double min_dist = Double.MAX_VALUE;
 
     for (Station s : stations) {
-      double lat1 = s.getLatitude();
-      double lon1 = LatLonPointImpl.lonNormal(s.getLongitude(), lon);
+      double lat1 = s.getLocation().getLatitude();
+      double lon1 = LatLonPointImpl.lonNormal(s.getLocation().getLongitude(), lon);
       double dy = Math.toRadians(lat - lat1);
       double dx = cos * Math.toRadians(lon - lon1);
       double dist = dy * dy + dx * dx;
