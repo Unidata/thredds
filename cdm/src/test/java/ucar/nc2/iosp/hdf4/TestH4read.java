@@ -38,7 +38,7 @@ public class TestH4read extends TestCase {
 
   public void testReadAndCount() throws IOException {
     System.out.println("  dims  vars gatts  atts strFlds groups");
-    /* read(testDir+"17766010.hdf", 0, 1, 3, 0, 8, 0);
+    read(testDir+"17766010.hdf", 0, 1, 3, 0, 8, 0);
     read(testDir+"balloon_sonde.o3_knmi000_de.bilt_s2_20060905t112100z_002.hdf", 4, 11, 33, 286, 0, 0);
     read(testDir+"TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF", 2, 3, 5, 9, 0, 0);
     read(testDir+"f13_owsa_04010_09A.hdf", 0, 7, 3, 35, 0, 0);

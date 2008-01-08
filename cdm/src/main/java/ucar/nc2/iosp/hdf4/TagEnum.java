@@ -71,11 +71,11 @@ typedef enum
 
   public final static TagEnum LINKED = new TagEnum("LINKED", "Linked-block special element", (short) 20);
   public final static TagEnum VERSION = new TagEnum("VERSION", "Version", (short) 30);
-  public final static TagEnum COMPRESSED = new TagEnum("COMPRESSED", "Compressed special element", (short) 40);
+  public final static TagEnum COMPRESSED = new TagEnum("COMPRESSED", "Compressed special element", (short) 40); // 0x28
   public final static TagEnum VLINKED = new TagEnum("VLINKED", "Variable-len linked-block header", (short) 50);
   public final static TagEnum VLINKED_DATA = new TagEnum("VLINKED_DATA", "Variable-len linked-block data", (short) 51);
   public final static TagEnum CHUNKED = new TagEnum("CHUNKED", "Chunked special element header", (short) 60);
-  public final static TagEnum CHUNK = new TagEnum("CHUNK", "Chunk element", (short) 61);
+  public final static TagEnum CHUNK = new TagEnum("CHUNK", "Chunk element", (short) 61);  // 0x3d
 
   public final static TagEnum FID = new TagEnum("FID", "File identifier", (short) 100);
   public final static TagEnum FD = new TagEnum("FD", "File description", (short) 101);
