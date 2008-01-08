@@ -338,9 +338,6 @@ public class DatasetTreeView extends JPanel {
 
     void makeChildren() {
       children = new ArrayList<Object>();
-      List groups = group.getGroups();
-      for (int i=0; i<groups.size(); i++)
-        children.add( new GroupNode( this, (Group) groups.get(i)));
 
       List dims = group.getDimensions();
       for (int i=0; i<dims.size(); i++)
@@ -349,6 +346,10 @@ public class DatasetTreeView extends JPanel {
       List vars = group.getVariables();
       for (int i=0; i<vars.size(); i++)
         children.add( new VariableNode( this, (VariableIF) vars.get(i)));
+
+      List groups = group.getGroups();
+      for (int i=0; i<groups.size(); i++)
+        children.add( new GroupNode( this, (Group) groups.get(i)));
 
       if (debugTree) System.out.println("children="+group.getName()+" ");
     }
@@ -370,8 +371,10 @@ public class DatasetTreeView extends JPanel {
     public GroupNode findNestedGroup( Group g) {
       if (children == null) makeChildren();
       for (int i=0; i<children.size(); i++) {
-        GroupNode elem = (GroupNode) children.get(i);
-        if (elem.group == g) return elem;
+        if (children.get(i) instanceof GroupNode) {
+          GroupNode elem = (GroupNode) children.get(i);
+          if (elem.group == g) return elem;
+        }
       }
       return null;
     }

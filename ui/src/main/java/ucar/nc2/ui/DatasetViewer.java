@@ -518,7 +518,9 @@ public class DatasetViewer extends JPanel {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getGroup() { return vs.getParentGroup().getName(); }
+    public String getGroup() {
+      return vs.getParentGroup().getName(); 
+    }
 
     public String getDimensions() { return dimensions; }
     public void setDimensions(String dimensions) { this.dimensions = dimensions; }

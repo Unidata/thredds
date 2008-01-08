@@ -1051,7 +1051,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public void setValues(Variable v, int npts, double start, double incr) {
     if (npts != v.getSize())
       throw new IllegalArgumentException("bad npts = " + npts + " should be " + v.getSize());
-    Array data = makeArray(v.getDataType(), npts, start, incr);
+    Array data = Array.makeArray(v.getDataType(), npts, start, incr);
     if (v.getRank() > 1)
       data = data.reshape(v.getShape());
     v.setCachedData(data, true);
@@ -1101,25 +1101,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         double val = Double.parseDouble(s);
         dataI.setDoubleNext(val);
       }
-    }
-    return result;
-  }
-
-  /**
-   * Make a 1D array from a start and inccr.
-   *
-   * @param dtype data type of result. must be convertible to double.
-   * @param npts  number of points
-   * @param start starting values
-   * @param incr  increment
-   * @return 1D array
-   */
-  static public Array makeArray(DataType dtype, int npts, double start, double incr) {
-    Array result = Array.factory(dtype.getPrimitiveClassType(), new int[]{npts});
-    IndexIterator dataI = result.getIndexIterator();
-    for (int i = 0; i < npts; i++) {
-      double val = start + i * incr;
-      dataI.setDoubleNext(val);
     }
     return result;
   }

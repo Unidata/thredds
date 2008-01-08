@@ -85,7 +85,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     lat.setDimensions("lat");
     lat.addAttribute(new Attribute("units", "degrees_north"));
     ncfile.addVariable(null, lat);
-    Array data = NetcdfDataset.makeArray(DataType.FLOAT, nlats, starty, -incr);
+    Array data = Array.makeArray(DataType.FLOAT, nlats, starty, -incr);
     lat.setCachedData(data, false);
 
     Variable lon = new Variable(ncfile, null, null, "lon");
@@ -93,7 +93,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     lon.setDimensions("lon");
     lon.addAttribute(new Attribute("units", "degrees_east"));
     ncfile.addVariable(null, lon);
-    Array lonData = NetcdfDataset.makeArray(DataType.FLOAT, nlons, startx, incr);
+    Array lonData = Array.makeArray(DataType.FLOAT, nlons, startx, incr);
     lon.setCachedData(lonData, false);
 
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));

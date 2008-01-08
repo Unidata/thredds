@@ -37,6 +37,8 @@ import java.io.ByteArrayInputStream;
  * @since Dec 17, 2007
  */
 public class H4iosp extends AbstractIOServiceProvider {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
+
   private RandomAccessFile raf;
   private H4header header = new H4header();
 
@@ -47,17 +49,6 @@ public class H4iosp extends AbstractIOServiceProvider {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     header.read(raf, ncfile);
-
-    // check if its an HDF-EOS file
-    Variable structMetadataVar = ncfile.getRootGroup().findVariable("StructMetadata.0");
-    if (structMetadataVar != null) {
-      // read and parse the ODL
-      Array A = structMetadataVar.read();
-      ArrayChar ca = (ArrayChar) A;
-      String structMetadata = ca.getString();
-      H4eos.amendFromODL(ncfile, structMetadata);
-    }
-
     ncfile.finish();
   }
 
@@ -144,7 +135,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     if (o instanceof Variable) {
       Variable v = (Variable) o;
       H4header.Vinfo vinfo = (H4header.Vinfo) v.getSPobject();
-      return vinfo.toString();
+      return (vinfo != null) ? vinfo.toString() : "";
     }
     return null;
   }

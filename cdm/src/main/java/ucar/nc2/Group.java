@@ -38,7 +38,7 @@ import java.io.PrintWriter;
 public class Group {
   protected NetcdfFile ncfile;
   protected Group parent;
-  protected String name;
+  //protected String name;
   protected String shortName;
   protected List<Variable> variables = new ArrayList<Variable>();
   protected List<Dimension> dimensions = new ArrayList<Dimension>();
@@ -50,7 +50,9 @@ public class Group {
    /** Get the full name, starting from the root Group.
     * @return group full name
     */
-  public String getName() { return name; }
+  public String getName() {
+    return (parent == null) ? shortName : parent.getName() + "/" + shortName;
+  }
 
    /** Get the "short" name, unique within its parent Group.
     * @return group short name
@@ -230,6 +232,31 @@ public class Group {
     return null;
   }
 
+  /**
+   * Get the common parent of this and the other group.
+   * Cant fail, since the root group is always a parent of any 2 groups.
+   * @param other the other group
+   * @return common parent of this and the other group
+   */
+  public Group commonParent( Group other) {
+    if (isParent(other)) return this;
+    if (other.isParent(this)) return other;
+    while (!other.isParent(this))
+      other = other.getParentGroup();
+    return other;
+  }
+
+  /**
+   * Is this a parent of the other Group?
+   * @param other another Group
+   * @return true is it is equal or a parent
+   */
+  public boolean isParent( Group other) {
+    while ((other != this) && (other.getParentGroup() != null))
+      other = other.getParentGroup();
+    return (other == this);
+  }
+
     //////////////////////////////////////////////////////////////////////////////////////
 
   /** Get String with name and attributes. Used in short descriptions like tooltips.
@@ -309,7 +336,6 @@ public class Group {
     this.ncfile = ncfile;
     this.parent = parent == null ? ncfile.getRootGroup() : parent ;
     this.shortName = shortName;
-    this.name = (parent == null) ? shortName : parent.getName() + "/" + shortName;
   }
 
   /** Set the Group's parent Group
@@ -317,15 +343,15 @@ public class Group {
    */
   public void setParentGroup( Group parent) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.parent = parent;
+    this.parent = parent == null ? ncfile.getRootGroup() : parent ;
   }
 
   /** Set the Group short name
-   * @param name short name.
+   * @param shortName short name.
    */
-  public void setName( String name) {
+  public void setName( String shortName) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.name = name;
+    this.shortName = shortName;
   }
 
   /**

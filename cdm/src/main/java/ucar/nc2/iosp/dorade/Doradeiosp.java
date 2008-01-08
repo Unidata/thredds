@@ -160,7 +160,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
             }
         }
         int nc = mySweep.getNCells(j);
-        Array data = NetcdfDataset.makeArray( DataType.FLOAT, nc,
+        Array data = Array.makeArray( DataType.FLOAT, nc,
           (double) mySweep.getRangeToFirstCell(j), (double) mySweep.getCellSpacing(j));
         dist = (float [])data.get1DJavaArray(Float.class);
         outputData = readData1(v2, ranges, dist);;

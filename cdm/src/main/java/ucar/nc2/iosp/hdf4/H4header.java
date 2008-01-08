@@ -22,9 +22,7 @@ package ucar.nc2.iosp.hdf4;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import ucar.nc2.*;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.DataType;
-import ucar.ma2.Section;
+import ucar.ma2.*;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -124,6 +122,9 @@ public class H4header {
     ncfile.setLocation(myRaf.getLocation());
     construct(ncfile, alltags);
 
+    checkEOS();
+    adjustDimensions();
+
     if (debugTag2) {
       for (Tag tag : alltags)
         debugOut.println(debugTagDetail ? tag.detail() : tag);
@@ -141,7 +142,6 @@ public class H4header {
     List<Variable> vars = new ArrayList<Variable>();
     List<Group> groups = new ArrayList<Group>();
 
-    // decide what netcdf objects are required
     // pass 1 : Vgroups with special classes
     for (Tag t : alltags) {
       if (t.code == 306) { // raster image
@@ -186,7 +186,7 @@ public class H4header {
       if (t.code == 1962) { // VHeader
         TagVH vh = (TagVH) t;
         if (!vh.className.startsWith("Att")) {
-          Variable v = makeVariable(vh);
+          Variable v = (vh.nfields > 1) ? makeStructure(vh) :  makeVariable(vh);
           if (v != null) vars.add(v);
         }
       }
@@ -245,10 +245,68 @@ public class H4header {
 
   }
 
-  private boolean checkOffset(int offset) {
-    boolean ok = (offset >= 0) && (offset < actualSize);
-    if (!ok) log.error("**bad offset=" + offset);
-    return ok;
+  private void checkEOS() throws IOException {
+    // check if its an HDF-EOS file
+    Variable structMetadataVar = ncfile.getRootGroup().findVariable("StructMetadata.0");
+    if (structMetadataVar != null) {
+      // read and parse the ODL
+      Array A = structMetadataVar.read();
+      ArrayChar ca = (ArrayChar) A;
+      String structMetadata = ca.getString();
+      new H4eos().amendFromODL(ncfile, structMetadata);
+    }
+
+  }
+
+  private void adjustDimensions() {
+    Map<Dimension, List<Variable>> dimUsedMap = new HashMap<Dimension, List<Variable>>();
+    findUsedDimensions( ncfile.getRootGroup(), dimUsedMap);
+    Set<Dimension> dimUsed = dimUsedMap.keySet();
+
+    // remove unused dimensions
+    Iterator iter = ncfile.getRootGroup().getDimensions().iterator();
+    while (iter.hasNext()) {
+      Dimension dim = (Dimension) iter.next();
+      if (!dimUsed.contains(dim))
+        iter.remove();
+    }
+
+    // push used dimensions to the lowest group that contains all variables
+    for (Dimension dim : dimUsed) {
+      Group lowest = null;
+      List<Variable> vlist = dimUsedMap.get(dim);
+      for (Variable v : vlist) {
+        if (lowest == null)
+          lowest = v.getParentGroup();
+        else {
+          lowest = lowest.commonParent(v.getParentGroup());
+        }
+      }
+      Group current = dim.getGroup();
+      if (current == null)
+        System.out.println("HEY!");
+      if (current != lowest) {
+        lowest.addDimension(dim);
+        current.remove(dim);
+      }
+    }
+  }
+
+  private void findUsedDimensions(Group parent, Map<Dimension, List<Variable>> dimUsedMap) {
+    for (Variable v : parent.getVariables()) {
+      for (Dimension d : v.getDimensions()) {
+        if (!d.isShared()) continue;
+        List<Variable> vlist = dimUsedMap.get(d);
+        if (vlist == null) {
+          vlist = new ArrayList<Variable>();
+          dimUsedMap.put(d, vlist);
+        }
+        vlist.add(v);
+      }
+    }
+
+    for (Group g : parent.getGroups())
+      findUsedDimensions(g, dimUsedMap);
   }
 
   private void addDimension(TagVGroup group) throws IOException {
@@ -307,8 +365,8 @@ public class H4header {
         TagVH vh = (TagVH) tag;
         if (vh.className.startsWith("Att")) {
           if ((vh.nfields == 1) && (H4type.setDataType(vh.fld_type[0], null) == DataType.CHAR) &&
-              (vh.fld_isize[0] > 4000)) { // large EOS metadata - make into variable
-            ncfile.addVariable(null, makeVariable(vh)); // make into variable in root group
+              ((vh.fld_isize[0] > 4000) || vh.name.startsWith("productmetadata") || vh.name.startsWith("coremetadata"))) {
+            ncfile.addVariable(null, makeVariable(vh)); // // large EOS metadata - make into variable in root group
           } else {
             Attribute att = makeAttribute(vh);
             if (null != att) ncfile.addAttribute(null, att); // make into attribute in root group
@@ -396,7 +454,7 @@ public class H4header {
       if (tag.code == 720) { // NG - prob var
         if (tag.vinfo != null) {
           Variable v = tag.vinfo.v;
-          group.addVariable(v);
+          addVariableToGroup( group, v, tag);
         }
       }
 
@@ -407,18 +465,18 @@ public class H4header {
           if (null != att) group.addAttribute(att);
         } else if (tag.vinfo != null) {
           Variable v = tag.vinfo.v;
-          group.addVariable(v);
+          addVariableToGroup( group, v, tag);
         }
       }
 
       if (tag.code == 1965) {  // VGroup - prob a Group
         TagVGroup vg = (TagVGroup) tag;
         if ((vg.group != null) && (vg.group.getParentGroup() == ncfile.getRootGroup())) {
-          group.addGroup(vg.group);
+          addGroupToGroup(group, vg.group, vg);
           vg.group.setParentGroup(group);
         } else {
           Group nested = makeGroup(vg, group); // danger - loops
-          group.addGroup( nested);
+          if (nested != null) addGroupToGroup(group, nested, vg);
         }
       }
     }
@@ -428,6 +486,24 @@ public class H4header {
     }
 
     return group;
+  }
+
+  private void addVariableToGroup(Group g, Variable v, Tag tag) {
+    Variable varExisting = g.findVariable(v.getShortName());
+    if (varExisting != null) {
+      //Vinfo vinfo = (Vinfo) v.getSPobject();
+      //varExisting.setName(varExisting.getShortName()+vinfo.refno);
+      v.setName(v.getShortName()+tag.refno);
+    }
+    g.addVariable(v);
+  }
+
+  private void addGroupToGroup(Group parent, Group g, Tag tag) {
+    Group groupExisting = parent.findGroup(g.getShortName());
+    if (groupExisting != null) {
+      g.setName(g.getShortName()+tag.refno);
+    }
+    parent.addGroup(g);
   }
 
   Variable makeImage(TagGroup group) {
@@ -954,9 +1030,10 @@ public class H4header {
 
   // 40 (not documented), 702 p 129
   private class TagData extends Tag {
-    short ext_tag;
+    short ext_type;
     SpecialLinked linked;
     SpecialComp compress;
+    SpecialChunked chunked;
 
     TagData(short code) throws IOException {
       super(code);
@@ -965,32 +1042,112 @@ public class H4header {
     void read() throws IOException {
       if (extended) {
         raf.seek(offset);
-        ext_tag = raf.readShort();  // note size wrong in doc
+        ext_type = raf.readShort();  // note size wrong in doc
 
-        if (ext_tag == TagEnum.SPECIAL_LINKED) {
+        if (ext_type == TagEnum.SPECIAL_LINKED) {
           linked = new SpecialLinked();
           linked.read();
 
-        } else if (ext_tag == TagEnum.SPECIAL_COMP) {
+        } else if (ext_type == TagEnum.SPECIAL_COMP) {
           compress = new SpecialComp();
           compress.read();
-        }
+
+        } else if (ext_type == TagEnum.SPECIAL_CHUNKED) {
+          chunked = new SpecialChunked();
+          chunked.read();
+         }
       }
     }
 
     public String detail() {
       if (linked != null)
-        return super.detail() + " ext_tag= " + ext_tag + " " + linked.detail();
+        return super.detail() + " ext_tag= " + ext_type + " " + linked.detail();
       else if (compress != null)
-        return super.detail() + " ext_tag= " + ext_tag + " " + compress.detail();
+        return super.detail() + " ext_tag= " + ext_type + " " + compress.detail();
+      else if (chunked != null)
+        return super.detail() + " ext_tag= " + ext_type + " " + chunked.detail();
       else
         return super.detail();
     }
 
   }
 
+  private class SpecialChunked {
+    byte version, flag;
+    short chunk_tbl_tag, chunk_tbl_ref;
+    int head_len, elem_tot_length, chunk_size, nt_size, ndims;
+    int[] dim_length, chunk_length;
+    byte [][] dim_flag;
+    // List<TagChunkTable> linkedChunkTable;
+
+    // compress_type == 2
+    short signFlag, fillValue;
+    int nt, startBit, bitLength;
+
+    // compress_type == 4
+    short deflateLevel;
+
+
+    void read() throws IOException {
+      head_len = raf.readInt();
+      version = raf.readByte();
+      raf.skipBytes(3);
+      flag = raf.readByte();
+      elem_tot_length = raf.readInt();
+      chunk_size = raf.readInt();
+      nt_size = raf.readInt();
+
+      chunk_tbl_tag = raf.readShort();
+      chunk_tbl_ref = raf.readShort();
+      short sp_tag = raf.readShort();
+      short sp_ref = raf.readShort();
+      ndims = raf.readInt();
+
+      dim_flag = new byte[ndims][4];
+      dim_length = new int[ndims];
+      chunk_length = new int[ndims];
+      for (int i=0; i<ndims; i++) {
+        raf.read(dim_flag[i]);
+        dim_length[i] = raf.readInt();
+        chunk_length[i] = raf.readInt();
+      }
+
+      int fill_val_numtype = raf.readInt();
+
+    }
+
+    /* List<TagChunkTable> getLinkedDataBlocks() throws IOException {
+      if (linkedChunkTable == null) {
+        linkedChunkTable = new ArrayList<TagChunkTable>();
+        if (debugLinked) System.out.println(" TagData readLinkTags " + detail());
+        short next = (short) (chunk_tbl_ref & 0x3FFF);
+        while (next > 0) {
+          TagChunkTable tag = (TagChunkTable) tagMap.get(tagid(next, TagEnum.CHUNK.getCode()));
+          if (tag == null)
+            throw new IllegalStateException("TagLinkedBlock not found for " + detail());
+          tag.used = true;
+          tag.read2(num_blk, linkedDataBlocks);
+          next = (short) (tag.next_ref & 0x3FFF);
+        }
+      }
+      return linkedChunkTable;
+    } */
+
+    public String detail() {
+      StringBuffer sbuff = new StringBuffer("SPECIAL_CHUNKED ");
+      sbuff.append(" head_len=" + head_len + " version=" + version + " special =" + flag + " elem_tot_length=" + elem_tot_length);
+      sbuff.append(" chunk_size=" + chunk_size + " nt_size=" + nt_size+ " chunk_tbl_tag=" + chunk_tbl_tag+ " chunk_tbl_ref=" + chunk_tbl_ref);
+      sbuff.append("\n flag  dim  chunk\n");
+      for (int i=0; i<ndims; i++)
+        sbuff.append(" " + dim_flag[i][2]+","+dim_flag[i][3] + " " + dim_length[i] + " " + chunk_length[i]+"\n");
+      return sbuff.toString();
+    }
+
+  }
+
+  // p 151
   private class SpecialComp {
-    short version, model_type, compress_type, link_ref;
+    short version, model_type, compress_type, data_ref;
     int uncomp_length;
     TagData dataTag;
 
@@ -1005,7 +1162,7 @@ public class H4header {
     void read() throws IOException {
       version = raf.readShort();
       uncomp_length = raf.readInt();
-      link_ref = raf.readShort();
+      data_ref = raf.readShort();
       model_type = raf.readShort();
       compress_type = raf.readShort();
 
@@ -1023,7 +1180,7 @@ public class H4header {
 
     TagData getDataTag() throws IOException {
       if (dataTag == null) {
-        dataTag = (TagData) tagMap.get(tagid(link_ref, TagEnum.COMPRESSED.getCode()));
+        dataTag = (TagData) tagMap.get(tagid(data_ref, TagEnum.COMPRESSED.getCode()));
         if (dataTag == null)
           throw new IllegalStateException("TagCompress not found for " + detail());
         dataTag.used = true;
@@ -1033,7 +1190,7 @@ public class H4header {
 
     public String detail() {
       StringBuffer sbuff = new StringBuffer("SPECIAL_COMP ");
-      sbuff.append(" version=" + version + " uncompressed length =" + uncomp_length + " link_ref=" + link_ref);
+      sbuff.append(" version=" + version + " uncompressed length =" + uncomp_length + " link_ref=" + data_ref);
       sbuff.append(" model_type=" + model_type + " compress_type=" + compress_type);
       if (compress_type == TagEnum.COMP_CODE_NBIT)
         sbuff.append(" nt=" + nt + " signFlag=" + signFlag + " fillValue=" + fillValue + " startBit=" + startBit
@@ -1045,6 +1202,7 @@ public class H4header {
 
   }
 
+  // p 145
   private class SpecialLinked {
     int length, first_len;
     short blk_len, num_blk, link_ref;
@@ -1680,7 +1838,7 @@ public class H4header {
   }
 
   private static boolean showFile = true;  
-  static void test(String filename) throws IOException {
+  static void testPelim(String filename) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
     NetcdfFile ncfile = new MyNetcdfFile();
     H4header header = new H4header();
@@ -1688,18 +1846,16 @@ public class H4header {
     if (showFile) System.out.println(ncfile);
   }
 
-  static public void main(String args[]) throws IOException {
-    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag2 H4header/tagDetail"));
+  static void test(String filename) throws IOException {
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+    if (showFile) System.out.println(ncfile);
+  }
 
-    String filename1 = "17766010.hdf";
-    String filename2 = "balloon_sonde.o3_knmi000_de.bilt_s2_20060905t112100z_002.hdf";
-    String filename3 = "TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF";
-    String filename4 = "f13_owsa_04010_09A.hdf";
-    String filename5 = "olslit1995.oct_digital_12.hdf"; // multiple strips plus a raster - crappy
-    String filename6 = "c402_rp_02.diag.sfc.20020122_0130z.hdf";  // COARDS, looks good
-    String filename7 = "MOP03M-200501-L3V81.0.1.hdf";  // bad links
-    String filename8 = "96108_08.hdf";  // bad links
-    String filename9 = "tmi/tmi_L2c_2008.001_57703_v04.eos";
+  static public void main(String args[]) throws IOException {
+    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/construct"));
+
+    String filename1 = "eos/MISR_AM1_AGP_P040_F01_24.subset";
+
     //ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
     test("C:/data/hdf4/" + filename1);
   }

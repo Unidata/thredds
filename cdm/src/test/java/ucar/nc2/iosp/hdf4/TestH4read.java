@@ -37,8 +37,8 @@ public class TestH4read extends TestCase {
   }
 
   public void testReadAndCount() throws IOException {
-    System.out.println("  dims  vars gatts  atts structs groups");
-    read(testDir+"17766010.hdf", 0, 1, 3, 0, 1, 0);
+    System.out.println("  dims  vars gatts  atts strFlds groups");
+    /* read(testDir+"17766010.hdf", 0, 1, 3, 0, 8, 0);
     read(testDir+"balloon_sonde.o3_knmi000_de.bilt_s2_20060905t112100z_002.hdf", 4, 11, 33, 286, 0, 0);
     read(testDir+"TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF", 2, 3, 5, 9, 0, 0);
     read(testDir+"f13_owsa_04010_09A.hdf", 0, 7, 3, 35, 0, 0);
@@ -46,14 +46,18 @@ public class TestH4read extends TestCase {
     //read(testDir+"olslit1995.oct_digital_12.hdf", 0, 0, 0, 0, 0, 0); // missing lots : multiple strips plus a raster - crappy
     read(testDir+"96108_08.hdf", 5, 44, 39, 39, 0, 0); // "MODIS Airborne Simulator (MAS) Level-1B Data" Swath data 810 x 716 x 50 channels
 
-    // EOS
-    read(testDir+"MOP03M-200501-L3V81.0.1.hdf", 3, 26, 7, 0, 0, 3);
-    read(testDir+"tmi/tmi_L2c_2008.001_57703_v04.eos", 2, 16, 11, 8, 0, 4); //  */
-    read(testDir+"amsua/amsua16_2008.001_37503_0001_0108_GC.eos", 2, 19, 22, 17, 0, 4); //
-    read(testDir+"aster/AsterSwath.hdf", 4, 13, 5, 5, 0, 4); //
+    // EOS swaths
+    read(testDir+"eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", 3, 26, 7, 0, 0, 3);
+    read(testDir+"eos/tmi/tmi_L2c_2008.001_57703_v04.eos", 2, 16, 11, 8, 0, 4); //
+    read(testDir+"eos/amsua/amsua16_2008.001_37503_0001_0108_GC.eos", 2, 19, 22, 17, 0, 4); //
+    read(testDir+"eos/aster/AsterSwath.hdf", 4, 15, 5, 7, 0, 4); //
+    read(testDir+"eos/PR1B0000-2000101203_010_001.hdf", 25, 67, 3, 27, 351, 14); // */
+
+    // EOS Grids
+    read(testDir+"eos/MISR_AM1_AGP_P040_F01_24.subset", 6, 25, 43, 5, 40, 6); //
   }
 
-  private void read(String filename, int ndims, int nvars, int ngatts, int natts, int nstructs, int ngroups) throws IOException {
+  private void read(String filename, int ndims, int nvars, int ngatts, int natts, int nstructFields, int ngroups) throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(filename);
     Counter c = new Counter();
     c.count(ncfile.getRootGroup());
@@ -62,14 +66,14 @@ public class TestH4read extends TestCase {
     print(nvars, c.nvars);
     print(ngatts, c.ngatts);
     print(natts, c.natts);
-    print(nstructs, c.nstructs);
+    print(nstructFields, c.nstructFields);
     print(ngroups, c.ngroups);
     System.out.println("   "+filename);
     ncfile.close();
   }
 
   private class Counter {
-    int ndims, nvars, natts, ngatts, nstructs, ngroups;
+    int ndims, nvars, natts, ngatts, nstructFields, ngroups;
 
     private void count(Group g) {
       ndims += g.getDimensions().size();
@@ -79,8 +83,9 @@ public class TestH4read extends TestCase {
 
       for (Variable v : g.getVariables()) {
         natts += v.getAttributes().size();
-        if (v instanceof Structure)
-          nstructs++;
+        if (v instanceof Structure) {
+          nstructFields += ((Structure)v).getVariables().size();
+        }
        }
       for (Group ng : g.getGroups())
         count(ng);
@@ -93,18 +98,18 @@ public class TestH4read extends TestCase {
   }
 
   public void readAll() {
-    TestAll.readAllDir(testDir, new FileFilter() {
+    TestAll.readAllDir(testDir, null);
+    /* TestAll.readAllDir(testDir, new FileFilter() {
 
       public boolean accept(File pathname) {
         return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".eos");
       }
-    });
+    }); */
   }
 
   public void problem() throws IOException {
-    TestAll.readAll(testDir+"eos/AsterSwath.hdf");
-    NetcdfFile ncfile = NetcdfFile.open(testDir+"eos/AsterSwath.hdf");
-    Variable v = ncfile.findVariable("Number of Pixels Day");
+    NetcdfFile ncfile = NetcdfFile.open(testDir+"eos/MISR_AM1_AGP_P040_F01_24.subset");
+    Variable v = ncfile.findVariable("Standard/Data Fields/AveSceneElev");
     assert v != null;
 
     v.read();

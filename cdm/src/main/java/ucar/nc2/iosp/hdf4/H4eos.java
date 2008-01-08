@@ -19,13 +19,11 @@
  */
 package ucar.nc2.iosp.hdf4;
 
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Group;
-import ucar.nc2.Variable;
-import ucar.nc2.Dimension;
+import ucar.nc2.*;
 import ucar.nc2.iosp.hdf5.ODLparser2;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
+import ucar.ma2.DataType;
 
 import java.io.IOException;
 import java.util.List;
@@ -42,60 +40,99 @@ import org.jdom.Element;
  * @since Jul 23, 2007
  */
 public class H4eos {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4eos.class);
 
-  static public void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
-    Group rootg = ncfile.getRootGroup();
+  private NetcdfFile ncfile;
+  private Group rootg;
+  public void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
+    this.ncfile = ncfile;
+    this.rootg = ncfile.getRootGroup();
 
     ODLparser2 parser = new ODLparser2();
-    Element root = parser.parseFromString(structMetadata);
-
-    // now we have the ODL in JDOM elements
+    Element root = parser.parseFromString(structMetadata); // now we have the ODL in JDOM elements
 
     // SWATH
     Element swathStructure = root.getChild("SwathStructure");
     if (swathStructure != null){
-      Element swath1 = swathStructure.getChild("SWATH_1");
-      if (swath1 != null) {
-        amend(swath1, rootg);
+      List<Element> swaths = (List<Element>) swathStructure.getChildren();
+      for (Element elemSwath : swaths) {
+        Element swathNameElem = elemSwath.getChild("SwathName");
+        if (swathNameElem == null) {
+          log.warn("No SwathName element in "+elemSwath.getName());
+          continue;
+        }
+        String swathName = swathNameElem.getText();
+        Group swathGroup = findGroupNested(rootg, swathName);
+        if (swathGroup != null) {
+          amendSwath(elemSwath, swathGroup);
+        } else {
+          log.warn("Cant find swath group "+swathName);
+        }
       }
     }
 
     // GRID
     Element gridStructure = root.getChild("GridStructure");
     if (gridStructure != null){
-      Element grid1 = gridStructure.getChild("GRID_1");
-      if (grid1 != null) {
-        amend(grid1, rootg);
+      List<Element> grids = (List<Element>) gridStructure.getChildren();
+      for (Element elemGrid : grids) {
+        Element gridNameElem = elemGrid.getChild("GridName");
+        if (gridNameElem == null) {
+          log.warn("Ne GridName element in "+elemGrid.getName());
+          continue;
+        }
+        String gridName = gridNameElem.getText();
+        Group gridGroup = findGroupNested(rootg, gridName);
+        if (gridGroup != null) {
+          amendGrid(elemGrid, gridGroup);
+        } else {
+          log.warn("Cant find Grid group "+gridName);
+        }
       }
     }
 
   }
 
-  static private void amend(Element infoElem, Group rootg) {
+  private void amendSwath(Element swathElem, Group parent) {
 
-    // global Dimensions
-    Element d = infoElem.getChild("Dimension");
+    // Dimensions
+    Element d = swathElem.getChild("Dimension");
     List<Element> dims = (List<Element>) d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText();
       String sizeS = elem.getChild("Size").getText();
       int length = Integer.parseInt(sizeS);
       Dimension dim = new Dimension(name, length);
-      rootg.addDimension(dim);   
+      parent.addDimension(dim);
     }
 
-    /* Group hdfeosG = rootg.findGroup("HDFEOS");
-    if (hdfeosG == null) return;
-    Group eosG = hdfeosG.findGroup("SWATHS");
-    if (eosG == null) return;
-    Group swathNameG = eosG.findGroup(swathName);
-    if (swathNameG == null) return; */
+    // Dimensions
+    Element dmap = swathElem.getChild("DimensionMap");
+    List<Element> dimMaps = (List<Element>) dmap.getChildren();
+    for (Element elem : dimMaps) {
+      String geoDimName = elem.getChild("GeoDimension").getText();
+      String dataDimName = elem.getChild("DataDimension").getText();
+      String offsetS = elem.getChild("Offset").getText();
+      String incrS = elem.getChild("Increment").getText();
+      int offset = Integer.parseInt(offsetS);
+      int incr = Integer.parseInt(incrS);
+
+      // make new variable for this dimension map
+      Variable v = new Variable(ncfile, parent, null, dataDimName);
+      v.setDimensions(geoDimName);
+      v.setDataType( DataType.INT);
+      int npts = (int) v.getSize();
+      Array data = Array.makeArray(v.getDataType(), npts, offset, incr);
+      v.setCachedData(data, true);
+      v.addAttribute( new Attribute("_DimensionMap",""));
+      parent.addVariable(v);
+    }
 
         // Geolocation Variables
-    Group geoFieldsG = findGroup(rootg, "Geolocation Fields");
+    Group geoFieldsG = parent.findGroup("Geolocation Fields");
     if (geoFieldsG != null) {
 
-      Element floc = infoElem.getChild("GeoField");
+      Element floc = swathElem.getChild("GeoField");
       List<Element> varsLoc = (List<Element>) floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText();
@@ -114,10 +151,10 @@ public class H4eos {
     }
 
     // Data Variables
-    Group dataG = findGroup(rootg, "Data Fields");
+    Group dataG = parent.findGroup("Data Fields");
     if (dataG != null) {
 
-      Element f = infoElem.getChild("DataField");
+      Element f = swathElem.getChild("DataField");
       List<Element> vars = (List<Element>) f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText();
@@ -135,32 +172,83 @@ public class H4eos {
       }
     }
 
-    // now see if we can eliminate extraneous dimensions
-    List<Dimension> dimUsed = new ArrayList<Dimension>();
-    findUsedDimensions( rootg, dimUsed);
-    Iterator iter = rootg.getDimensions().iterator();
-    while (iter.hasNext()) {
-      Dimension dim = (Dimension) iter.next();
-      if (!dimUsed.contains(dim))
-        iter.remove();
-    }
   }
 
-  static private void findUsedDimensions(Group parent, List<Dimension> dimUsed) {
-    for (Variable v : parent.getVariables()) {
-      dimUsed.addAll( v.getDimensions());
+
+  private void amendGrid(Element gridElem, Group parent) {
+    // always has x and y dimension
+    String xdimSizeS = gridElem.getChild("XDim").getText();
+    String ydimSizeS = gridElem.getChild("YDim").getText();
+    int xdimSize = Integer.parseInt(xdimSizeS);
+    int ydimSize = Integer.parseInt(ydimSizeS);
+    parent.addDimension( new Dimension("XDim", xdimSize));
+    parent.addDimension( new Dimension("YDim", ydimSize));
+
+    // global Dimensions
+    Element d = gridElem.getChild("Dimension");
+    List<Element> dims = (List<Element>) d.getChildren();
+    for (Element elem : dims) {
+      String name = elem.getChild("DimensionName").getText();
+      String sizeS = elem.getChild("Size").getText();
+      int length = Integer.parseInt(sizeS);
+      Dimension dim = new Dimension(name, length);
+      parent.addDimension(dim);
     }
-    for (Group g : parent.getGroups())
-      findUsedDimensions(g, dimUsed);
+
+        // Geolocation Variables
+    Group geoFieldsG = parent.findGroup("Geolocation Fields");
+    if (geoFieldsG != null) {
+
+      Element floc = gridElem.getChild("GeoField");
+      List<Element> varsLoc = (List<Element>) floc.getChildren();
+      for (Element elem : varsLoc) {
+        String varname = elem.getChild("GeoFieldName").getText();
+        Variable v = geoFieldsG.findVariable( varname);
+        assert v != null : varname;
+
+        StringBuffer sbuff = new StringBuffer();
+        Element dimList = elem.getChild("DimList");
+        List<Element> values = (List<Element>) dimList.getChildren("value");
+        for (Element value : values) {
+          sbuff.append( value.getText());
+          sbuff.append( " ");
+        }
+        v.setDimensions( sbuff.toString()); // livin dangerously
+      }
+    }
+
+    // Data Variables
+    Group dataG = parent.findGroup("Data Fields");
+    if (dataG != null) {
+
+      Element f = gridElem.getChild("DataField");
+      List<Element> vars = (List<Element>) f.getChildren();
+      for (Element elem : vars) {
+        String varname = elem.getChild("DataFieldName").getText();
+        Variable v = dataG.findVariable( varname);
+        assert v != null : varname;
+
+        StringBuffer sbuff = new StringBuffer();
+        Element dimList = elem.getChild("DimList");
+        List<Element> values = (List<Element>) dimList.getChildren("value");
+        for (Element value : values) {
+          sbuff.append( value.getText());
+          sbuff.append( " ");
+        }
+        v.setDimensions( sbuff.toString()); // livin dangerously
+      }
+    }
+
   }
 
-  static private Group findGroup(Group parent, String name) {
+  // look for a group with the given name. recurse into subgroups if needed. breadth first
+  private Group findGroupNested(Group parent, String name) {
     for (Group g : parent.getGroups()) {
       if (g.getShortName().equals(name))
         return g;
     }
     for (Group g : parent.getGroups()) {
-      Group result = findGroup(g, name);
+      Group result = findGroupNested(g, name);
       if (result != null)
         return result;
     }

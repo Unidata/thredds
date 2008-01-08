@@ -300,7 +300,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     Variable gateVar = new Variable(ncfile, null, null, gateCoordName);
     gateVar.setDataType(DataType.FLOAT);
     gateVar.setDimensions(gateDimName);
-    Array data = NetcdfDataset.makeArray( DataType.FLOAT, ngates,
+    Array data = Array.makeArray( DataType.FLOAT, ngates,
         (double) firstRecord.getGateStart(datatype), (double) firstRecord.getGateSize(datatype));
     gateVar.setCachedData( data, false);
     ncfile.addVariable(null, gateVar);
