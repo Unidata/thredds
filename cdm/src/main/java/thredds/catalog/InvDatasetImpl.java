@@ -934,7 +934,7 @@ public class InvDatasetImpl extends InvDataset {
    */
 
   static public void writeHtmlDescription(StringBuffer buff, InvDatasetImpl ds,
-                                          boolean complete, boolean isServer, boolean datasetEvents, boolean catrefEvents) {
+                     boolean complete, boolean isServer, boolean datasetEvents, boolean catrefEvents) {
 
     if (ds == null) return;
 

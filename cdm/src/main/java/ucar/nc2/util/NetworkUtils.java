@@ -132,7 +132,12 @@ public class NetworkUtils {
     System.out.println(" getSchemeSpecificPart=" + uri.getSchemeSpecificPart());
     System.out.println(" getAuthority=" + uri.getAuthority());
     System.out.println(" getPath=" + uri.getPath());
+    System.out.println(" getQuery=" + uri.getQuery());
     System.out.println();
+  }
+
+  public static void main(String args[]) {
+    test("http://localhost:8080/thredds/catalog.html?hi=lo");
   }
 
   public static void main2(String args[]) {
@@ -176,7 +181,7 @@ public class NetworkUtils {
     }
   }
 
-  public static void main(String args[]) throws URISyntaxException {
+  public static void main5(String args[]) throws URISyntaxException {
     String uriString = "http://dods.coas.oregonstate.edu:8080/dods/dts/test.53.dods?types[0:1:9]";
     URI uri = new URI(uriString);
   }

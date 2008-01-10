@@ -129,7 +129,11 @@ public class FileWriter {
       List<Dimension> dimvList = oldVar.getDimensions();
       for (Dimension oldD : dimvList) {
         String useName = N3iosp.makeValidNetcdfObjectName( oldD.getName());
-        dims.add(dimHash.get(useName));
+        Dimension dim = dimHash.get(useName);
+        if (dim != null)
+          dims.add(dim);
+        else
+          throw new IllegalStateException("Unknown dimension= "+oldD.getName());
       }
 
       DataType newType = oldVar.getDataType();

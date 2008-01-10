@@ -480,14 +480,18 @@ public class HtmlWriter {
   }
 
   private boolean doDatasets(InvCatalogImpl cat, List<InvDataset> datasets, StringBuffer sb, boolean shade, int level, boolean isLocalCatalog) {
-    URI catURI = cat.getBaseURI();
+    //URI catURI = cat.getBaseURI();
     String catHtml;
     if (!isLocalCatalog) {
       // Setup HREF url to link to HTML dataset page (more below).
       catHtml = contextPath + "/catalog.html?cmd=subset&catalog=" + cat.getUriString() + "&";
-      // Can't be "/catalogServices?..." because subset decides on xml or html by trailing ".html" on URL path 
+      // Can't be "/catalogServices?..." because subset decides on xml or html by trailing ".html" on URL path
+
     } else { // replace xml with html
-      catHtml = cat.getUriString();
+      URI catURI = cat.getBaseURI();
+      catHtml = catURI.getPath();  // remove the server name - we want a reletive URL
+
+      // change the ending to "catalog.html?"
       int pos = catHtml.lastIndexOf('.');
       if (pos < 0)
         catHtml = catHtml + "catalog.html?";

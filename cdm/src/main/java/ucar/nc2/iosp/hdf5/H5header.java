@@ -54,7 +54,7 @@ class H5header {
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;
-  static private boolean warnings = true, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
+  static private boolean warnings = false, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
   static java.io.PrintStream debugOut = System.out;
 
   static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -732,8 +732,9 @@ class H5header {
 
     // debugging
     vinfo.setOwner(v);
-    if (vinfo.typeInfo.hdfType == 7) debugOut.println("WARN:  Variable " + facade.name + " is a Reference type");
-    if ((vinfo.mfp != null) && (vinfo.mfp.filters[0].id != 1))
+    if ((vinfo.typeInfo.hdfType == 7) && warnings)
+      debugOut.println("WARN:  Variable " + facade.name + " is a Reference type");
+    if ((vinfo.mfp != null) && (vinfo.mfp.filters[0].id != 1) && warnings)
       debugOut.println("WARN:  Variable " + facade.name + " has a Filter = " + vinfo.mfp);
     if (debug1) debugOut.println("makeVariable " + v.getName() + "; vinfo= " + vinfo);
 
@@ -939,7 +940,7 @@ class H5header {
       this.mds = facade.dobj.mds;
       this.mfp = facade.dobj.mfp;
 
-      if (!facade.dobj.mdt.isOK) {
+      if (!facade.dobj.mdt.isOK && warnings) {
         debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling " + facade.dobj.mdt);
         return; // not a supported datatype
       }
@@ -967,7 +968,7 @@ class H5header {
       this.mds = mds;
       this.dataPos = dataPos;
 
-      if (!mdt.isOK) {
+      if (!mdt.isOK && warnings) {
         debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling " + mdt);
         return; // not a supported datatype
       }
@@ -1047,7 +1048,7 @@ class H5header {
         } else
           tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
 
-      } else {
+      } else if (warnings) {
         debugOut.println("WARNING not handling hdf dataType = " + hdfType + " size= " + byteSize);
       }
 
@@ -1066,7 +1067,7 @@ class H5header {
           return DataType.INT;
         else if (size == 8)
           return DataType.LONG;
-        else {
+        else if (warnings) {
           debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
           log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
           return null;
@@ -1077,7 +1078,7 @@ class H5header {
           return DataType.FLOAT;
         else if (size == 8)
           return DataType.DOUBLE;
-        else {
+        else if (warnings) {
           debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf float type with size= " + size);
           log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf float type with size= " + size);
           return null;
@@ -1089,11 +1090,11 @@ class H5header {
       } else if (hdfType == 7) { // reference
         return DataType.LONG;
 
-      } else {
+      } else if (warnings) {
         debugOut.println("WARNING not handling hdf type = " + hdfType + " size= " + size);
         log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf type = " + hdfType + " size= " + size);
-        return null;
       }
+      return null;
     }
 
     public String toString() {
@@ -1289,7 +1290,7 @@ class H5header {
       } else if (dobj.mdt != null) {
         isTypedef = true;
 
-      } else { // we dont know what it is
+      } else if (warnings) { // we dont know what it is
         debugOut.println("WARNING Unknown DataObjectFacade = " + this);
         return;
       }
@@ -1302,10 +1303,15 @@ class H5header {
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append(getName()).append(" id= ").append(dobj.address);
-      sbuff.append(" messages= ");
-      for (Message message : dobj.messages)
-        sbuff.append("\n  ").append(message);
+      sbuff.append(getName());
+      if (dobj == null) {
+        sbuff.append(" dobj is NULL! ");
+      } else {
+        sbuff.append(" id= ").append(dobj.address);
+        sbuff.append(" messages= ");
+        for (Message message : dobj.messages)
+          sbuff.append("\n  ").append(message);
+      }
 
       return sbuff.toString();
     }
@@ -2264,7 +2270,7 @@ class H5header {
         base = new MessageDatatype(); // base type
         base.read();
 
-      } else {
+      } else if (warnings) {
         debugOut.println(" WARNING not dealing with type= " + type);
       }
     }

@@ -256,7 +256,7 @@ public class H4header {
       Array A = structMetadataVar.read();
       ArrayChar ca = (ArrayChar) A;
       String structMetadata = ca.getString();
-      new H4eos().amendFromODL(ncfile, structMetadata);
+      new HdfEos().amendFromODL(ncfile, structMetadata);
     }
 
   }

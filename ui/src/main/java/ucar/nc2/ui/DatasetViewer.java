@@ -493,9 +493,9 @@ public class DatasetViewer extends JPanel {
       setUnits( vs.getUnitsString());
       setDataType( vs.getDataType().toString());
 
-      Attribute csAtt = vs.findAttribute("_coordSystems");
-      if (csAtt != null)
-        setCoordSys( csAtt.getStringValue());
+      //Attribute csAtt = vs.findAttribute("_coordSystems");
+      //if (csAtt != null)
+      //  setCoordSys( csAtt.getStringValue());
 
       // collect dimensions
       StringBuffer lens = new StringBuffer();
@@ -537,8 +537,8 @@ public class DatasetViewer extends JPanel {
     public String getAxisType() { return axisType; }
     public void setAxisType(String axisType) { this.axisType = axisType; } */
 
-    public String getCoordSys() { return coordSys; }
-    public void setCoordSys(String coordSys) { this.coordSys = coordSys; }
+    //public String getCoordSys() { return coordSys; }
+    //public void setCoordSys(String coordSys) { this.coordSys = coordSys; }
 
     /* public String getPositive() { return positive; }
     public void setPositive(String positive) { this.positive = positive; }

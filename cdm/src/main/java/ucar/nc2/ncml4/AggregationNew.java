@@ -25,10 +25,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.DatasetConstructor;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
+import ucar.nc2.*;
 import ucar.ma2.DataType;
 
 import java.io.IOException;
@@ -75,14 +72,15 @@ public class AggregationNew extends AggregationOuterDimension {
     // now we can create all the aggNew variables
     // use only named variables
     for (String varname : getAggVariableNames()) {
-      Variable aggVar = ncDataset.getRootGroup().findVariable(varname);
+      Variable aggVar = ncDataset.findVariable(varname);
       if (aggVar == null) {
         logger.error(ncDataset.getLocation() + " aggNewDimension cant find variable " + varname);
         continue;
       }
 
       // construct new variable, replace old one LOOK what about Structures?
-      VariableDS vagg = new VariableDS(ncDataset, null, null, aggVar.getShortName(), aggVar.getDataType(),
+      Group aggGroup = aggVar.getParentGroup();
+      VariableDS vagg = new VariableDS(ncDataset, aggGroup, null, aggVar.getShortName(), aggVar.getDataType(),
           dimName + " " + aggVar.getDimensionsString(), null, null);
       vagg.setProxyReader(this);
       DatasetConstructor.transferVariableAttributes(aggVar, vagg);
@@ -94,8 +92,8 @@ public class AggregationNew extends AggregationOuterDimension {
         vagg.addAttribute(new Attribute(_Coordinate.Axes, axes));
       }
 
-      ncDataset.removeVariable(null, aggVar.getShortName());
-      ncDataset.addVariable(null, vagg);
+      aggGroup.removeVariable( aggVar.getShortName());
+      aggGroup.addVariable( vagg);
       aggVars.add(vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) return;

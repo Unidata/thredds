@@ -102,13 +102,14 @@ public class AggregationTiled extends Aggregation {
     // run through all variables
     for (Variable v : typical.getVariables()) {
       if (isTiled(v)) {
-        VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
+        Group aggGroup = v.getParentGroup();
+        VariableDS vagg = new VariableDS(ncDataset, aggGroup, null, v.getShortName(), v.getDataType(),
                 v.getDimensionsString(), null, null);
         vagg.setProxyReader(this); // do the reading here
         DatasetConstructor.transferVariableAttributes(v, vagg);
 
-        ncDataset.removeVariable(null, v.getShortName());
-        ncDataset.addVariable(null, vagg);
+        aggGroup.removeVariable( v.getShortName());
+        aggGroup.addVariable( vagg);
         // aggVars.add(vagg);
       }
       if (cancelTask != null && cancelTask.isCancel()) return;

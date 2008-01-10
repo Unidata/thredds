@@ -180,6 +180,50 @@ public class TestTransforms extends TestCase {
     ncd.close();
   }
 
+  public void testOceanS2() throws IOException, InvalidRangeException {
+    String filename = "C:/data/problem/test_bora.nc";
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
+    VariableDS lev = (VariableDS) ncd.findVariable("s_rho");
+    assert lev != null;
+    System.out.println(" dump of ctv = \n" + lev);
+
+    VariableDS v = (VariableDS) ncd.findVariable("temp");
+    assert v != null;
+
+    List cList = v.getCoordinateSystems();
+    assert cList != null;
+    assert cList.size() == 1;
+    CoordinateSystem csys = (CoordinateSystem) cList.get(0);
+
+    List tList = csys.getCoordinateTransforms();
+    assert tList != null;
+    assert tList.size() == 1;
+    CoordinateTransform ct = (CoordinateTransform) tList.get(0);
+    assert ct.getTransformType() == TransformType.Vertical;
+    assert ct instanceof VerticalCT;
+
+    VerticalCT vct = (VerticalCT) ct;
+    assert vct.getVerticalTransformType() == VerticalCT.Type.OceanS;
+
+    VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
+    System.out.println(" dump of equivilent ctv = \n" + ctv);
+
+    Dimension timeDim = ncd.findDimension("ocean_time");
+    assert null != timeDim;
+    VerticalTransform vt = vct.makeVerticalTransform(ncd, timeDim);
+    assert vt != null;
+    assert vt instanceof OceanS;
+
+    assert vt.getUnitString().equals("meter") : vt.getUnitString();
+    assert vt.isTimeDependent();
+
+    for (int i = 0; i < timeDim.getLength(); i++) {
+      ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
+    }
+
+    ncd.close();
+  }
+
 
   public void testOceanSigma() throws IOException, InvalidRangeException {
     String filename = TestAll.upcShareTestDataDir + "grid/transforms/OceanSigma.nc";

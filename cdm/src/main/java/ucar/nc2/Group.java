@@ -51,7 +51,7 @@ public class Group {
     * @return group full name
     */
   public String getName() {
-    return (parent == null) ? shortName : parent.getName() + "/" + shortName;
+    return (parent == null) || (parent == ncfile.getRootGroup()) ? shortName : parent.getName() + "/" + shortName;
   }
 
    /** Get the "short" name, unique within its parent Group.
@@ -472,14 +472,14 @@ public class Group {
 
  /**
   * remove a Variable using its (short) name, in this group only
-  * @param varName Variable name.
+  * @param shortName Variable name.
   * @return true if Variable found and removed
   */
- public boolean removeVariable(String varName) {
+ public boolean removeVariable(String shortName) {
    if (immutable) throw new IllegalStateException("Cant modify");
    for (int i=0; i<variables.size(); i++) {
      Variable v = variables.get(i);
-     if (varName.equals(v.getShortName())) {
+     if (shortName.equals(v.getShortName())) {
        variables.remove(v);
        return true;
      }

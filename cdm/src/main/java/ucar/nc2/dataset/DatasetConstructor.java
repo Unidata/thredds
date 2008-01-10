@@ -72,7 +72,8 @@ public class DatasetConstructor {
 
         if (null != targetV) target.remove(targetV);
         target.addVariable(v); // reparent
-        v.setDimensions(v.getDimensionsString()); // rediscover dimensions
+        //v.setDimensions(v.getDimensionsString()); // rediscover dimensions
+        v.resetShape();
 
       } else if (!targetV.hasCachedData() && (targetVe.getOriginalVariable() == null)) {
         // this is the case where we defined the variable, but didnt set its data. we now set it with the first nested
@@ -83,7 +84,7 @@ public class DatasetConstructor {
 
     // nested groups
     for (Group srcNested : src.getGroups()) {
-      Group nested = new Group(ds, target, srcNested.getName());
+      Group nested = new Group(ds, target, srcNested.getShortName());
       target.addGroup(nested);
       transferGroup(ds, srcNested, nested, replaceCheck);
     }

@@ -151,7 +151,8 @@ public class AggregationFmrc extends AggregationOuterDimension {
       String dims = dimName + " " + v.getDimensionsString();
 
       // construct new variable, replace old one
-      VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(), dims, null, null);
+      Group aggGroup = v.getParentGroup();
+      VariableDS vagg = new VariableDS(ncDataset, aggGroup, null, v.getShortName(), v.getDataType(), dims, null, null);
       vagg.setProxyReader(this);
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
@@ -159,8 +160,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       vagg.addAttribute(new Attribute(_Coordinate.Axes, dimName + " " + grid.getCoordinateSystem().getName()));
       vagg.addAttribute(new Attribute("coordinates", dimName + " " + grid.getCoordinateSystem().getName())); // CF
 
-      ncDataset.removeVariable(null, v.getShortName());
-      ncDataset.addVariable(null, vagg);
+      aggGroup.removeVariable( v.getShortName());
       aggVars.add(vagg);
 
       if (debug) System.out.println("FmrcAggregation: added grid " + v.getName());
@@ -309,13 +309,16 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
       // do we already have the coordinate variable ?
       Variable oldV = ncDataset.getRootGroup().findVariable(timeDimName);
+      Group aggGroup = null;
+
       if (null != oldV) {
         //NcMLReader.transferVariableAttributes(oldV, newV);
         //Attribute att = newV.findAttribute(_Coordinate.AliasForDimension);  // ??
         //if (att != null) newV.remove(att);
-        ncDataset.removeVariable(null, timeDimName);
+        aggGroup = oldV.getParentGroup();
+        aggGroup.removeVariable(timeDimName);
       }
-      ncDataset.addVariable(null, newV);
+      ncDataset.addVariable(aggGroup, newV); // add to root if group is null
 
       newV.addAttribute(new Attribute("units", units));
       newV.addAttribute(new Attribute("long_name", desc));
@@ -352,14 +355,15 @@ public class AggregationFmrc extends AggregationOuterDimension {
     // promote the time coordinate(s) to 2D, read in values if we have to
     for (CoordinateAxis1D taxis : timeAxes) {
       // construct new variable, replace old one
+      Group aggGroup = taxis.getParentGroup();
       String dims = dimName + " " + taxis.getDimensionsString();
-      VariableDS vagg = new VariableDS(ncDataset, null, null, taxis.getShortName(), taxis.getDataType(), dims, null, null);
+      VariableDS vagg = new VariableDS(ncDataset, aggGroup, null, taxis.getShortName(), taxis.getDataType(), dims, null, null);
       DatasetConstructor.transferVariableAttributes(taxis, vagg);
       Attribute att = vagg.findAttribute(_Coordinate.AliasForDimension);
       if (att != null) vagg.remove(att);
 
-      ncDataset.removeVariable(null, taxis.getShortName());
-      ncDataset.addVariable(null, vagg);
+      aggGroup.removeVariable( taxis.getShortName());
+      aggGroup.addVariable(vagg);
 
       if (!timeUnitsChange)
         // Case 1: assume the units are all the same, so its just another agg variable

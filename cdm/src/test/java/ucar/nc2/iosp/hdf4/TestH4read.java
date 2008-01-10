@@ -31,7 +31,7 @@ import java.io.File;
  * @since Jan 1, 2008
  */
 public class TestH4read extends TestCase {
-  static public String testDir = "C:/data/hdf4/";
+  static public String testDir = "R:/testdata/hdf4"; // "C:/data/hdf4/";
   public TestH4read(String name) {
     super(name);
   }

@@ -25,6 +25,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.Indexer;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.RegularSectionLayout;
+import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.*;
 
 import java.io.IOException;
@@ -105,7 +106,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         ArrayChar ca = (ArrayChar) A;
         String structMetadata = ca.getString();
 
-        H5eos.amendFromODL(ncfile, structMetadata);
+        new HdfEos().amendFromODL(ncfile, structMetadata);
       }
     }
 

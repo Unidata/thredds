@@ -22,15 +22,11 @@ package ucar.nc2.iosp.hdf4;
 import ucar.nc2.*;
 import ucar.nc2.iosp.hdf5.ODLparser2;
 import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 
-import org.jdom.Document;
 import org.jdom.Element;
 
 /**
@@ -39,8 +35,8 @@ import org.jdom.Element;
  * @author caron
  * @since Jul 23, 2007
  */
-public class H4eos {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4eos.class);
+public class HdfEos {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
 
   private NetcdfFile ncfile;
   private Group rootg;
@@ -102,8 +98,10 @@ public class H4eos {
       String name = elem.getChild("DimensionName").getText();
       String sizeS = elem.getChild("Size").getText();
       int length = Integer.parseInt(sizeS);
-      Dimension dim = new Dimension(name, length);
-      parent.addDimension(dim);
+      if (length > 0) {
+        Dimension dim = new Dimension(name, length);
+        parent.addDimension(dim);
+      }
     }
 
     // Dimensions
@@ -191,8 +189,11 @@ public class H4eos {
       String name = elem.getChild("DimensionName").getText();
       String sizeS = elem.getChild("Size").getText();
       int length = Integer.parseInt(sizeS);
-      Dimension dim = new Dimension(name, length);
-      parent.addDimension(dim);
+      Dimension old = parent.findDimension(name);
+      if ((old == null) || (old.getLength() != length)) {
+        Dimension dim = new Dimension(name, length);
+        parent.addDimension(dim);
+      }
     }
 
         // Geolocation Variables

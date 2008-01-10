@@ -1452,8 +1452,8 @@ public class NcMLReader {
   }
 
   public static void main(String arg[]) {
-    String ncmlFile = "C:/dev/netcdf-java-2.2/test/data/ncml/aggDirectory.xml";
-    String ncmlFileOut = "C:\\TEMP\\New Folder\\aggDirectory.nc";
+    String ncmlFile = "C:/data/AStest/oots/test.ncml";
+    String ncmlFileOut = "C:/TEMP/testNcmlOut.nc";
     try {
       //NetcdfDataset ncd = NcMLReader.readNcML (ncmlFile, null);
       //ncd.writeNcMLG(System.out, true, null);

@@ -26,10 +26,7 @@ import ucar.nc2.dataset.DatasetConstructor;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
+import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
@@ -85,13 +82,14 @@ public class AggregationExisting extends AggregationOuterDimension {
       if (!dimName.equals(d.getName()))
         continue;
 
-      VariableDS vagg = new VariableDS(ncDataset, null, null, v.getShortName(), v.getDataType(),
+      Group aggGroup = v.getParentGroup();
+      VariableDS vagg = new VariableDS(ncDataset, aggGroup, null, v.getShortName(), v.getDataType(),
               v.getDimensionsString(), null, null);
       vagg.setProxyReader(this); // do the reading here
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
-      ncDataset.removeVariable(null, v.getShortName());
-      ncDataset.addVariable(null, vagg);
+      aggGroup.removeVariable( v.getShortName());
+      aggGroup.addVariable( vagg);
       aggVars.add(vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) return;
