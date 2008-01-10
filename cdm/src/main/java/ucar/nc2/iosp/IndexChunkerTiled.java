@@ -19,75 +19,55 @@
  */
 package ucar.nc2.iosp;
 
-import ucar.ma2.*;
+import ucar.ma2.Index;
+import ucar.ma2.Section;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 
 import java.util.List;
 import java.util.ArrayList;
 
+
 /**
  * Assume that the data is stored divided into sections, described by dataSection. All the data within a dataSection is
- * stored contiguously, in a regular layout. Assume dataSection strides must be = 1, that is the stored data is not strided.
+ * stored contiguously, in a regular layout. Assume dataSection strides must be = 1, that is, the stored data is not strided.
  * <p/>
  * The user asks for some section, wantSection (may have strides).
- * For each dataSection that intersects wantSection, a RegularSectionLayout is created, which
+ * For each dataSection that intersects wantSection, a IndexChunkerTiled is created, which
  * figures out the optimal access pattern, based on reading contiguous runs of data. Each
- * RegularSectionLayout handles only one dataSection.
+ * IndexChunkerTiled handles only one dataSection. Typically the cllaing program loops over
+ * all dataSections that intersect the wanted section.
  * <p/>
  * Both dataSection and wantSection refer to the variable's overall shape.
  *
  * @author caron
- * @deprecated see  LayoutTiled
+ * @since Jan 9, 2008
  */
-public class RegularSectionLayout extends Indexer {
+public class IndexChunkerTiled {
   private List<Dim> dimList = new ArrayList<Dim>();
-  private Index dataIndex; // Index into the data source section - used to calculate chunk.filePos
+  private Index dataIndex;    // Index into the data source section - used to calculate chunk.filePos
   private Index resultIndex; // Index into the data result section - used to calculate chunk.startElem
 
-  private int elemSize; // size of each element
-  private long startPos; // starting address
-  private int startElem;
-
-  private Chunk chunk; // gets returned on next().
+  private IndexChunker.Chunk chunk; // gets returned on next().
   private int nelems; // number of elements to read at one time
   private long total, done;
+  private int startDestElem; // the offset in the result Array of this piece of it
 
   private boolean debug = false, debugMerge = false, debugDetail = false, debugNext = false;
-
-  /**
-   * This factory allows us to optimize special cases.
-   *
-   * @param startFilePos starting address of the dataSection
-   * @param elemSize     size of an element in bytes.
-   * @param dataSection  the section of data we actually have. must have all ranges with stride = 1.
-   * @param wantSection  the wanted section of data, it will be intersected with dataSection.
-   *   dataSection.intersects(wantSection) must be true
-   * @throws InvalidRangeException if ranges are malformed
-   * @return an Indexer to handle this case
-   */
-  static public Indexer factory(long startFilePos, int elemSize, Section dataSection, Section wantSection) throws InvalidRangeException {
-    if (dataSection.equals(wantSection)) // optimize the simple case
-      return new SingleChunkIndexer(startFilePos, (int) dataSection.computeSize(), elemSize);
-
-    return new RegularSectionLayout(startFilePos, elemSize, dataSection, wantSection);
-  }
 
   /**
    * Constructor.
    * Assume varSection.intersects(wantSection).
    *
-   * @param startFilePos starting address of the dataSection
-   * @param elemSize     size of an element in bytes.
    * @param dataSection  the section of data we actually have. must have all ranges with stride = 1.
    * @param wantSection  the wanted section of data, it will be intersected with dataSection.
    *   dataSection.intersects(wantSection) must be true
    * @throws InvalidRangeException if ranges are malformed
    */
-  public RegularSectionLayout(long startFilePos, int elemSize, Section dataSection, Section wantSection) throws InvalidRangeException {
-    assert startFilePos >= 0;
-    assert elemSize > 0;
-
-    this.elemSize = elemSize;
+  public IndexChunkerTiled(Section dataSection, Section wantSection) throws InvalidRangeException {
     this.done = 0;
+
+    // LOOK - need test for "all" common case
 
     // The actual wanted data we can get from this section
     Section intersect = dataSection.intersect(wantSection);
@@ -111,16 +91,16 @@ public class RegularSectionLayout extends Indexer {
       wantStride *= wr.length();
     }
 
-    // the origin can be handled by adding to the startPos
+    /* the origin can be handled by adding to the startPos
      long fileOffset = 0; // offset in file
      for (Dim dim : dimList) {
        int d = dim.intersect.first() - dim.data.first();
        if (d > 0) fileOffset += elemSize * dim.dataStride * d;
      }
-     this.startPos = startFilePos + fileOffset;
+     this.startPos = startFilePos + fileOffset; */
 
-     // thhe offset in the result Array of this piece of it
-     startElem = wantSection.offset( intersect);
+     // the offset in the result Array of this piece of it
+     startDestElem = wantSection.offset( intersect);
 
      /* for (Dim dim : dimList) {
        int d = dim.intersect.first() - dim.want.first();
@@ -128,6 +108,7 @@ public class RegularSectionLayout extends Indexer {
      } */
 
 
+    // LOOK : not merging inner dimensions
     /* merge contiguous inner dimensions for efficiency
     if (debugMerge) System.out.println("RegularSectionLayout= " + this);
 
@@ -199,7 +180,7 @@ public class RegularSectionLayout extends Indexer {
     assert nchunks * nelems == total;
 
     if (debug) {
-      System.out.println("RegularSectionLayout total = "+total+" nchunks= "+nchunks+" nelems= "+nelems+" elemSize= "+elemSize+
+      System.out.println("RegularSectionLayout total = "+total+" nchunks= "+nchunks+" nelems= "+nelems+
           " dataSection= " + dataSection + " wantSection= " + wantSection+ " intersect= " + intersect+ this);
     }
   }
@@ -238,26 +219,23 @@ public class RegularSectionLayout extends Indexer {
     return total;
   }
 
-  public int getElemSize() {
-    return elemSize;
-  }
-
   public boolean hasNext() {
     return done < total;
   }
 
-  public Chunk next() {
+  public IndexChunker.Chunk next() {
     if (chunk == null) {
-      chunk = new Chunk(startPos, nelems, startElem);
+      chunk = new IndexChunker.Chunk(0, nelems, startDestElem);
     } else {
       dataIndex.incr();
       resultIndex.incr();
     }
 
-    // Get the current element's byte index from the start of the file
-    chunk.setFilePos(startPos + elemSize * dataIndex.currentElement());
+    // Set the current element's index from the start of the data array
+    chunk.setSrcElem(dataIndex.currentElement());
 
-    chunk.setStartElem(startElem + resultIndex.currentElement());
+    // Set the current element's index from the start of the result array
+    chunk.setDestElem(startDestElem + resultIndex.currentElement());
 
     if (debugNext)
       System.out.println(" chunk: " + chunk);
@@ -280,6 +258,12 @@ public class RegularSectionLayout extends Indexer {
       sbuff.append(elem);
     }
     return sbuff.toString();
+  }
+
+  private void printa(String name, int[] a) {
+    System.out.print(name + "= ");
+    for (int i = 0; i < a.length; i++) System.out.print(a[i] + " ");
+    System.out.println();
   }
 
 }

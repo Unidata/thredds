@@ -71,12 +71,14 @@ public class H4header {
 
   private MemTracker memTracker;
   private PrintStream debugOut = System.out;
+  private static boolean debugDD = false; // DDH/DD
   private static boolean debugTag1 = false; // show tags after read(), before read2().
   private static boolean debugTag2 = false;  // show tags after everything is done.
   private static boolean debugTagDetail = false; // when showing tags, show detail or not
   private static boolean debugConstruct = false; // show CDM objects as they are constructed
   private static boolean debugAtt = false; // show CDM attributes as they are constructed
   private static boolean debugLinked = false; // linked data
+  private static boolean debugChunked = false; // chunked data
   private static boolean debugTracker = false; // memory tracker
 
   static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -86,6 +88,7 @@ public class H4header {
     debugConstruct = debugFlag.isSet("H4header/construct");
     debugAtt = debugFlag.isSet("H4header/att");
     debugLinked = debugFlag.isSet("H4header/linked");
+    debugChunked = debugFlag.isSet("H4header/chunked");
     debugTracker = debugFlag.isSet("H4header/memTracker");
   }
 
@@ -260,7 +263,7 @@ public class H4header {
 
   private void adjustDimensions() {
     Map<Dimension, List<Variable>> dimUsedMap = new HashMap<Dimension, List<Variable>>();
-    findUsedDimensions( ncfile.getRootGroup(), dimUsedMap);
+    findUsedDimensions(ncfile.getRootGroup(), dimUsedMap);
     Set<Dimension> dimUsed = dimUsedMap.keySet();
 
     // remove unused dimensions
@@ -454,7 +457,7 @@ public class H4header {
       if (tag.code == 720) { // NG - prob var
         if (tag.vinfo != null) {
           Variable v = tag.vinfo.v;
-          addVariableToGroup( group, v, tag);
+          addVariableToGroup(group, v, tag);
         }
       }
 
@@ -465,7 +468,7 @@ public class H4header {
           if (null != att) group.addAttribute(att);
         } else if (tag.vinfo != null) {
           Variable v = tag.vinfo.v;
-          addVariableToGroup( group, v, tag);
+          addVariableToGroup(group, v, tag);
         }
       }
 
@@ -493,7 +496,7 @@ public class H4header {
     if (varExisting != null) {
       //Vinfo vinfo = (Vinfo) v.getSPobject();
       //varExisting.setName(varExisting.getShortName()+vinfo.refno);
-      v.setName(v.getShortName()+tag.refno);
+      v.setName(v.getShortName() + tag.refno);
     }
     g.addVariable(v);
   }
@@ -501,7 +504,7 @@ public class H4header {
   private void addGroupToGroup(Group parent, Group g, Tag tag) {
     Group groupExisting = parent.findGroup(g.getShortName());
     if (groupExisting != null) {
-      g.setName(g.getShortName()+tag.refno);
+      g.setName(g.getShortName() + tag.refno);
     }
     parent.addGroup(g);
   }
@@ -567,13 +570,12 @@ public class H4header {
     vh.vinfo = vinfo;
     vh.used = true;
 
-    Tag data = tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
+    TagData data = (TagData) tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
     if (data == null) {
       log.error("Cant find tag " + vh.refno + "/" + TagEnum.VS.getCode() + " for TagVH=" + vh.detail());
       return null;
     }
     vinfo.tags.add(data);
-    vinfo.start = data.offset;
     data.used = true;
     data.vinfo = vinfo;
 
@@ -592,7 +594,7 @@ public class H4header {
         throw new IllegalStateException();
       }
 
-      return v;
+      vinfo.setData(data);
 
     } else {
       vinfo.recsize = vh.ivsize;
@@ -626,6 +628,7 @@ public class H4header {
         throw new IllegalStateException(e.getMessage());
       }
 
+      vinfo.setData(data);
       v = s;
     }
 
@@ -686,6 +689,7 @@ public class H4header {
   } */
 
   // member info
+
   static class Minfo {
     short nelems;
     int offset, nbytes;
@@ -877,6 +881,9 @@ public class H4header {
     int[] segSize;
     boolean isLinked, isCompressed, isChunked;
 
+    List<DataChunk> chunks;
+    int[] chunkSize;
+
     int start = -1;
     int length;
     int recsize;
@@ -915,9 +922,10 @@ public class H4header {
 
       } else if (null != data.chunked) {
         isChunked = true;
-        Tag compData = data.chunked.getChunkedTable();
-        tags.add(compData);
-
+        chunks = data.chunked.getDataChunks();
+        chunkSize = data.chunked.chunk_length;
+        isCompressed = data.chunked.isCompressed;
+        
       } else {
         start = data.offset;
       }
@@ -950,18 +958,6 @@ public class H4header {
     }
   }
 
-  class DataBlock {
-    int offset, length;
-    int starting_element;
-    Section section;
-
-    DataBlock(int offset, int length, int starting_element) {
-      this.offset = offset;
-      this.length = length;
-      this.starting_element = starting_element;
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////
 
   private void readDDH(List<Tag> alltags, long start) throws IOException {
@@ -969,7 +965,7 @@ public class H4header {
 
     int ndd = DataType.unsignedShortToInt(raf.readShort()); // number of DD blocks
     long link = DataType.unsignedIntToLong(raf.readInt()); // point to the next DDH; link == 0 means no more
-    if (debugConstruct) System.out.println(" DDHeader ndd=" + ndd + " link=" + link);
+    if (debugDD) System.out.println(" DDHeader ndd=" + ndd + " link=" + link);
 
     long pos = raf.getFilePointer();
     for (int i = 0; i < ndd; i++) {
@@ -998,8 +994,10 @@ public class H4header {
         return new TagLinkedBlock(code);
       case 30:
         return new TagVersion(code);
-      case 40:
-      case 702:
+      case 40:   // Compressed
+      case 61:   // Chunk
+      case 702:  // Scientific data
+      case 1963: // VData
         return new TagData(code);
       case 100:
       case 101:
@@ -1075,7 +1073,7 @@ public class H4header {
   }
 
   // 40 (not documented), 702 p 129
-  private class TagData extends Tag {
+  class TagData extends Tag {
     short ext_type;
     SpecialLinked linked;
     SpecialComp compress;
@@ -1102,7 +1100,7 @@ public class H4header {
         } else if (ext_type == TagEnum.SPECIAL_CHUNKED) {
           chunked = new SpecialChunked();
           chunked.read();
-         }
+        }
         tag_len = (int) (raf.getFilePointer() - offset);
       }
     }
@@ -1111,9 +1109,9 @@ public class H4header {
       if (linked != null)
         return super.detail() + " ext_tag= " + ext_type + " tag_len= " + tag_len + " " + linked.detail();
       else if (compress != null)
-        return super.detail() + " ext_tag= " + ext_type + " tag_len= " + tag_len+ " " + compress.detail();
+        return super.detail() + " ext_tag= " + ext_type + " tag_len= " + tag_len + " " + compress.detail();
       else if (chunked != null)
-        return super.detail() + " ext_tag= " + ext_type + " tag_len= " + tag_len+ " " + chunked.detail();
+        return super.detail() + " ext_tag= " + ext_type + " tag_len= " + tag_len + " " + chunked.detail();
       else
         return super.detail();
     }
@@ -1127,8 +1125,8 @@ public class H4header {
     int head_len, elem_tot_length, chunk_size, nt_size, ndims;
 
     int[] dim_length, chunk_length;
-    byte [][] dim_flag;
-    // List<TagChunkTable> linkedChunkTable;
+    byte[][] dim_flag;
+    boolean isCompressed;
 
     short sp_tag_desc; // SPECIAL_XXX constant
     byte[] sp_tag_header;
@@ -1151,7 +1149,7 @@ public class H4header {
       dim_flag = new byte[ndims][4];
       dim_length = new int[ndims];
       chunk_length = new int[ndims];
-      for (int i=0; i<ndims; i++) {
+      for (int i = 0; i < ndims; i++) {
         raf.read(dim_flag[i]);
         dim_length[i] = raf.readInt();
         chunk_length[i] = raf.readInt();
@@ -1159,41 +1157,79 @@ public class H4header {
 
       int fill_val_numtype = raf.readInt();
       byte[] fill_value = new byte[fill_val_numtype];
-      raf.read( fill_value);
+      raf.read(fill_value);
 
       // LOOK wuzzit stuff? "specialness"
       sp_tag_desc = raf.readShort();
       int sp_header_len = raf.readInt();
       sp_tag_header = new byte[sp_header_len];
-      raf.read( sp_tag_header);
+      raf.read(sp_tag_header);
     }
 
-    Tag getChunkedTable() throws IOException {
-      if (debugLinked) System.out.println(" TagData getChunkedTable " + detail());
-      TagVH chunkTableTag = (TagVH) tagMap.get(tagid(chunk_tbl_ref, chunk_tbl_tag));
-      Structure s = (Structure) makeVariable(chunkTableTag);
-      Array sdata = s.read();
-      System.out.println(NCdumpW.printArray(sdata, "getChunkedTable", null));
-      return chunkTableTag;
+    List<DataChunk> dataChunks = null;
+
+    List<DataChunk> getDataChunks() throws IOException {
+      if (dataChunks == null) {
+        dataChunks = new ArrayList<DataChunk>();
+
+        // read the chunk table - stored as a Structure in the data
+        if (debugChunked) System.out.println(" TagData getChunkedTable " + detail());
+        TagVH chunkTableTag = (TagVH) tagMap.get(tagid(chunk_tbl_ref, chunk_tbl_tag));
+        Structure s = (Structure) makeVariable(chunkTableTag);
+        ArrayStructure sdata = (ArrayStructure) s.read();
+        if (debugChunked) System.out.println(NCdumpW.printArray(sdata, "getChunkedTable", null));
+
+        // construct the chunks
+        StructureMembers members = sdata.getStructureMembers();
+        StructureMembers.Member originM = members.findMember("origin");
+        StructureMembers.Member tagM = members.findMember("chk_tag");
+        StructureMembers.Member refM = members.findMember("chk_ref");
+        int n = (int) sdata.getSize();
+        for (int i = 0; i < n; i++) {
+          int[] origin = sdata.getJavaArrayInt(i, originM);
+          short tag = sdata.getScalarShort(i, tagM);
+          short ref = sdata.getScalarShort(i, refM);
+          TagData data = (TagData) tagMap.get(tagid(ref, tag));
+          dataChunks.add( new DataChunk(origin, data));
+          data.used = true;
+          if (data.compress != null) isCompressed = true;
+        }
+      }
+      return dataChunks;
     }
 
     public String detail() {
       StringBuffer sbuff = new StringBuffer("SPECIAL_CHUNKED ");
       sbuff.append(" head_len=" + head_len + " version=" + version + " special =" + flag + " elem_tot_length=" + elem_tot_length);
-      sbuff.append(" chunk_size=" + chunk_size + " nt_size=" + nt_size+ " chunk_tbl_tag=" + chunk_tbl_tag+ " chunk_tbl_ref=" + chunk_tbl_ref);
+      sbuff.append(" chunk_size=" + chunk_size + " nt_size=" + nt_size + " chunk_tbl_tag=" + chunk_tbl_tag + " chunk_tbl_ref=" + chunk_tbl_ref);
       sbuff.append("\n flag  dim  chunk\n");
-      for (int i=0; i<ndims; i++)
-        sbuff.append(" " + dim_flag[i][2]+","+dim_flag[i][3] + " " + dim_length[i] + " " + chunk_length[i]+"\n");
-      sbuff.append(" special="+sp_tag_desc+" val=");
-      for (int i=0; i<sp_tag_header.length; i++)
+      for (int i = 0; i < ndims; i++)
+        sbuff.append(" " + dim_flag[i][2] + "," + dim_flag[i][3] + " " + dim_length[i] + " " + chunk_length[i] + "\n");
+      sbuff.append(" special=" + sp_tag_desc + " val=");
+      for (int i = 0; i < sp_tag_header.length; i++)
         sbuff.append(" " + sp_tag_header[i]);
       return sbuff.toString();
     }
 
   }
 
+  class DataChunk {
+    int origin[];
+    TagData data;
+
+    DataChunk(int[] origin, TagData data) {
+      this.origin = origin;
+      this.data = data;
+      if (debugChunked) {
+        System.out.print(" Chunk origin=");
+        for (int i = 0; i < origin.length; i++) System.out.print(origin[i]+ " ");
+        System.out.println(" data="+data.detail());
+      }
+    }
+  }
+
   // p 151
-  private class SpecialComp {
+  class SpecialComp {
     short version, model_type, compress_type, data_ref;
     int uncomp_length;
     TagData dataTag;
@@ -1889,6 +1925,7 @@ public class H4header {
   }
 
   private static boolean showFile = true;
+
   static void testPelim(String filename) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
     NetcdfFile ncfile = new MyNetcdfFile();
@@ -1903,131 +1940,12 @@ public class H4header {
   }
 
   static public void main(String args[]) throws IOException {
-    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag2 H4header/tagDetail H4header/memTracker")); // H4header/construct"));
+    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail")); // H4header/construct"));
 
-    String filename1 = "eos/MISR_AM1_AGP_P040_F01_24.subset";
+    String filename1 = "eos/modis/MOD04_243.1850.hdf";
 
     //ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
     test("C:/data/hdf4/" + filename1);
   }
 }
-
-/*--------------------------------------------------------------------------
-NAME
-HCPdecode_header -- Decode the compression header info from a memory buffer
-USAGE
-intn HCPdecode_header(model_type, model_info, coder_type, coder_info)
-void * buf;                  IN: encoded compression info header
-comp_model_t *model_type;   OUT: the type of modeling to use
-model_info *m_info;         OUT: Information needed for the modeling type chosen
-comp_coder_t *coder_type;   OUT: the type of encoding to use
-coder_info *c_info;         OUT: Information needed for the encoding type chosen
-
-RETURNS
-Return SUCCEED or FAIL
-DESCRIPTION
-Decodes the compression information from a block in memory.
-
-GLOBAL VARIABLES
-COMMENTS, BUGS, ASSUMPTIONS
-EXAMPLES
-REVISION LOG
---------------------------------------------------------------------------
-intn
-HCPdecode_header(uint8 *p, comp_model_t *model_type, model_info * m_info,
-comp_coder_t *coder_type, comp_info * c_info)
-{
-CONSTR(FUNC, "HCPdecode_header");    /* for HERROR
-uint16 m_type, c_type;
-int32 ret_value=SUCCEED;
-
-/* clear error stack and validate args
-HEclear();
-if (p==NULL || model_type==NULL || m_info==NULL || coder_type==NULL || c_info==NULL)
-HGOTO_ERROR(DFE_ARGS, FAIL);
-
-UINT16DECODE(p, m_type);     /* get model type
-*model_type=(comp_model_t)m_type;
-UINT16DECODE(p, c_type);     /* get encoding type
-*coder_type=(comp_coder_t)c_type;
-
-/* read any additional information needed for modeling type
-switch (*model_type)
-{
-default:      /* no additional information needed
-break;
-}     /* end switch */
-
-/* read any additional information needed for coding type
-switch (*coder_type)
-  {
-      case COMP_CODE_NBIT:      /* N-bit coding needs info
-          {
-              uint16      s_ext;    /* temp. var for sign extend
-              uint16      f_one;    /* temp. var for fill one
-              int32       m_off, m_len;     /* temp. var for mask offset and len
-
-              /* specify number-type of N-bit data
-              INT32DECODE(p, c_info->nbit.nt);
-              /* next is the flag to indicate whether to sign extend
-              UINT16DECODE(p, s_ext);
-              c_info->nbit.sign_ext = (intn) s_ext;
-              /* the flag to indicate whether to fill with 1's or 0's
-              UINT16DECODE(p, f_one);
-              c_info->nbit.fill_one = (intn) f_one;
-              /* the offset of the bits extracted
-              INT32DECODE(p, m_off);
-              c_info->nbit.start_bit = (intn) m_off;
-              /* the number of bits extracted
-              INT32DECODE(p, m_len);
-              c_info->nbit.bit_len = (intn) m_len;
-          }     /* end case
-          break;
-
-      case COMP_CODE_SKPHUFF:   /* Skipping Huffman  coding needs info
-          {
-              uint32      skp_size,     /* size of skipping unit
-                          comp_size;    /* # of bytes to compress
-
-              /* specify skipping unit size
-              UINT32DECODE(p, skp_size);
-              /* specify # of bytes of skipping data to compress
-              UINT32DECODE(p, comp_size);   /* ignored for now
-              c_info->skphuff.skp_size = (intn) skp_size;
-          }     /* end case
-          break;
-
-      case COMP_CODE_DEFLATE:   /* Deflation coding stores deflation level
-          {
-              uint16      level;    /* deflation level
-
-              /* specify deflation level
-              UINT16DECODE(p, level);
-              c_info->deflate.level = (intn) level;
-          }     /* end case
-          break;
-
-      case COMP_CODE_SZIP:   /* Szip coding stores the following values
-    {
-              UINT32DECODE(p, c_info->szip.pixels);
-              UINT32DECODE(p, c_info->szip.pixels_per_scanline);
-              UINT32DECODE(p, c_info->szip.options_mask);
-              c_info->szip.bits_per_pixel = *p++;
-              c_info->szip.pixels_per_block = *p++;
-    }
-          break;
-
-      default:      /* no additional information needed
-          break;
-  }     /* end switch
-
-done:
-if(ret_value == FAIL)
-  { /* Error condition cleanup
-
-  } /* end if
-
-/* Normal function cleanup
-return ret_value;
-} /* end HCPdecode_header() */
 

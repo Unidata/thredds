@@ -20,14 +20,11 @@
 
 package ucar.nc2.iosp.misc;
 
-import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.RegularLayout;
-import ucar.nc2.iosp.Indexer;
+import ucar.nc2.iosp.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
@@ -127,11 +124,11 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     int size = (int) wantSection.computeSize();
     short[] arr = new short[size];
 
-    RegularLayout indexer = new RegularLayout(0, v2.getElementSize(), -1, v2.getShape(), wantSection);
+    LayoutRegular indexer = new LayoutRegular(0, v2.getElementSize(), v2.getShape(), wantSection);
     while (indexer.hasNext()) {
-      Indexer.Chunk chunk = indexer.next();
-      raf.seek(chunk.getFilePos());
-      raf.readShort(arr, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+      Layout.Chunk chunk = indexer.next();
+      raf.seek(chunk.getSrcPos());
+      raf.readShort(arr, (int) chunk.getDestElem(), chunk.getNelems()); // copy into primitive array
     }
 
     return Array.factory(v2.getDataType().getPrimitiveClassType(), wantSection.getShape(), arr);

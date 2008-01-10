@@ -24,7 +24,7 @@ import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 
 /**
- * LayoutSegmented has data stored in segments.
+ * LayoutSegmented has data stored in segments, eg HDF4 linked lists.
  *
  * @author caron
  * @since Dec 31, 2007

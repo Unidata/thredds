@@ -20,17 +20,21 @@
 package ucar.nc2.iosp;
 
 import java.io.IOException;
+import java.nio.*;
 
 /**
  * Iterator to read/write subsets of a multidimensional array, finding the contiguous chunks.
  * The iteration is monotonic in both src and dest positions.
+ * The "source" is a ByteBuffer, supplied by the chunk. This is used when the data must be massaged, eg uncompresed or
+ * filtered.
+ * 
  * <p/>
  * Example for Integers:
  * <pre>
-  int[] read( Layout index, int[] src) {
+  int[] read( LayoutBB index, int[] src) {
     int[] dest = new int[index.getTotalNelems()];
     while (index.hasNext()) {
-      Layout.Chunk chunk = index.next();
+      LayoutBB.Chunk chunk = index.next();
       System.arraycopy(src, chunk.getSrcElem(), dest, chunk.getDestElem(), chunk.getNelems());
     }
     return dest;
@@ -59,10 +63,10 @@ import java.io.IOException;
  * </pre>
  *
  * @author caron
- * @since Jan 2, 2008
+ * @since Jan 9, 2008
  */
 
-public interface Layout {
+public interface LayoutBB {
 
   /**
    * Get total number of elements in the wanted subset.
@@ -95,31 +99,41 @@ public interface Layout {
 
   /**
    * A chunk of data that is contiguous in both the source and destination.
-   * Read nelems from src at filePos, store in destination at startElem.
-   * (or) Write nelems to file at filePos, from array at startElem.
+   * Read nelems from ByteBuffer at filePos, store in destination at startElem.
    */
   public interface Chunk {
 
     /**
-     * Get starting element position as a 1D element index into the source where to read or write
-     * @return starting element in the array (Note: elements, not bytes)
-     */
-    public long getSrcElem();
-
-    /**
      * Get the position in source where to read or write: "file position"
-     * @return position as a byte count into the source, eg a file
+     *
+     * @return position as a byte count into the ByteBuffer
      */
     public long getSrcPos();
 
     /**
+     * Get the position in source where to read or write: "file position"
+     *
+     * @return position as a element index into the <Type>Buffer
+     */
+    public long getSrcElem();
+
+    public ByteBuffer getByteBuffer();
+    public ShortBuffer getShortBuffer();
+    public IntBuffer getIntBuffer();
+    public FloatBuffer getFloatBuffer();
+    public DoubleBuffer getDoubleBuffer();
+    public LongBuffer getLongBuffer();
+
+    /**
      * Get number of elements to transfer contiguously (Note: elements, not bytes)
+     *
      * @return number of elements to transfer
      */
     public int getNelems();
 
     /**
      * Get starting element position as a 1D element index into the destination, eg the requested array with shape "wantSection".
+     *
      * @return starting element in the array (Note: elements, not bytes)
      */
     public long getDestElem();

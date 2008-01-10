@@ -49,7 +49,7 @@ import java.io.IOException;
       }
 
    </pre>
- * @author caron
+ * @deprecated use Layout
  */
 public abstract class Indexer {
 

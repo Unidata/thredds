@@ -17,40 +17,20 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.iosp;
+package ucar.nc2.iosp.hdf4;
+
+import ucar.ma2.Section;
+import ucar.ma2.InvalidRangeException;
+
+import java.io.IOException;
 
 /**
- * An Indexer that has exactly one chunk.
  * @author caron
- * @since Jul 13, 2007
- * @deprecated
+ * @since Jan 9, 2008
  */
-public class SingleChunkIndexer extends Indexer {
-  private Chunk chunk;
-  private boolean done = false;
-  private int elemSize;
-  private int totalElems;
+public class H4chunkLayout extends ucar.nc2.iosp.LayoutTiled {
 
-  public SingleChunkIndexer(long filePos, int totalElems, int elemSize) {
-    this.chunk = new Chunk(filePos, totalElems, 0);
-    this.totalElems = totalElems;
-    this.elemSize = elemSize;
-  }
-
-  public long getTotalNelems() {
-    return totalElems;
-  }
-
-  public int getElemSize() {
-    return elemSize;
-  }
-
-  public boolean hasNext() {
-    return !done;
-  }
-
-  public Chunk next() {
-    done = true;
-    return chunk;
+  public H4chunkLayout(DataChunkIterator chunkIterator, int[] chunkSize, int elemSize, int[] srcShape, Section wantSection) throws InvalidRangeException, IOException {
+    super(chunkIterator, chunkSize, elemSize, srcShape, wantSection);
   }
 }

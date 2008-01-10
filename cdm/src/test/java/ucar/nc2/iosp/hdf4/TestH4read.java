@@ -43,18 +43,22 @@ public class TestH4read extends TestCase {
     read(testDir+"TOVS_BROWSE_MONTHLY_AM_B861001.E861031_NF.HDF", 2, 3, 5, 9, 0, 0);
     read(testDir+"f13_owsa_04010_09A.hdf", 0, 7, 3, 35, 0, 0);
     read(testDir+"c402_rp_02.diag.sfc.20020122_0130z.hdf", 3, 86, 6, 590, 0, 0);
-    //read(testDir+"olslit1995.oct_digital_12.hdf", 0, 0, 0, 0, 0, 0); // missing lots : multiple strips plus a raster - crappy
     read(testDir+"96108_08.hdf", 5, 44, 39, 39, 0, 0); // "MODIS Airborne Simulator (MAS) Level-1B Data" Swath data 810 x 716 x 50 channels
 
     // EOS swaths
-    read(testDir+"eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", 3, 26, 7, 0, 0, 3);
-    read(testDir+"eos/tmi/tmi_L2c_2008.001_57703_v04.eos", 2, 16, 11, 8, 0, 4); //
     read(testDir+"eos/amsua/amsua16_2008.001_37503_0001_0108_GC.eos", 2, 19, 22, 17, 0, 4); //
     read(testDir+"eos/aster/AsterSwath.hdf", 4, 15, 5, 7, 0, 4); //
-    read(testDir+"eos/PR1B0000-2000101203_010_001.hdf", 25, 67, 3, 27, 351, 14); // */
+    read(testDir+"eos/aster/PR1B0000-2000101203_010_001.hdf", 25, 67, 3, 27, 351, 14); // */
+    read(testDir+"eos/modis/MOD02SSH.A2000243.1850.003.hdf", 20, 38, 50, 155, 14, 3);
+    read(testDir+"eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", 5, 26, 7, 0, 0, 3);
+    read(testDir+"eos/tmi/tmi_L2c_2008.001_57703_v04.eos", 2, 16, 11, 8, 0, 4); //
 
     // EOS Grids
-    read(testDir+"eos/MISR_AM1_AGP_P040_F01_24.subset", 6, 25, 43, 5, 40, 6); //
+    read(testDir+"eos/misr/MISR_AM1_AGP_P040_F01_24.subset", 6, 14, 43, 5, 7, 6);
+    read(testDir+"eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", 3, 24, 55, 20, 7, 3); //
+
+    // bad drugs
+    read(testDir+"olslit1995.oct_digital_12.hdf", 2, 2908, 2, 1, 5895, 2907); // missing lots : multiple strips plus a raster - crappy
   }
 
   private void read(String filename, int ndims, int nvars, int ngatts, int natts, int nstructFields, int ngroups) throws IOException {
@@ -108,7 +112,9 @@ public class TestH4read extends TestCase {
   }
 
   public void problem() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(testDir+"eos/MISR_AM1_AGP_P040_F01_24.subset");
+    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/chunked"));
+
+    NetcdfFile ncfile = NetcdfFile.open(testDir+"eos/ceres/CER_ES8_023019.0830_sub.hdf");
     Variable v = ncfile.findVariable("Standard/Data Fields/AveSceneElev");
     assert v != null;
 

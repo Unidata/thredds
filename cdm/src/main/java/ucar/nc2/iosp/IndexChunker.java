@@ -30,6 +30,7 @@ import java.util.ArrayList;
 /**
  * Iterator to read/write subsets of a multidimensional array, finding the contiguous chunks.
  * The iteration is monotonic in both src and dest positions.
+ *
  * <p/>
  * Example for Integers:
  * <pre>
@@ -77,8 +78,8 @@ public class IndexChunker {
 
   /**
    * Constructor
-   * @param srcShape the shape of the source, eg Variable
-   * @param wantSection the wanted section in srcShape
+   * @param srcShape the shape of the source, eg Variable.getSHape()
+   * @param wantSection the wanted section in srcShape, ie must be sibset of srcShape.
    * @throws InvalidRangeException if wantSection is incorrect
    */
   public IndexChunker(int[] srcShape, Section wantSection) throws InvalidRangeException {
@@ -290,7 +291,7 @@ public class IndexChunker {
       return  " srcPos=" + srcPos + " srcElem=" + srcElem + " nelems=" + nelems + " destElem=" + destElem;
     }
 
-    // must be set by controlling class
+    // must be set by controlling Layout class - not used here
     public long getSrcPos() { return srcPos; }
     public void setSrcPos(long srcPos) { this.srcPos = srcPos; }
     public void incrSrcPos(int incr) { this.srcPos += incr; }

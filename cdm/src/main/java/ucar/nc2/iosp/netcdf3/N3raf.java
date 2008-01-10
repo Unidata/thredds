@@ -20,7 +20,6 @@
 package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
-import ucar.nc2.iosp.Indexer;
 import ucar.nc2.iosp.Layout;
 
 import java.nio.channels.WritableByteChannel;

@@ -32,7 +32,7 @@ import java.util.*;
  * Also handles netcdf3 record dimensions.
  *
  * @author caron
- * @deprecated use RegularLayout
+ * @deprecated use LayoutRegular
  */
 public class RegularIndexer extends Indexer {
   private int elemSize; // size of each element

@@ -32,7 +32,7 @@ import java.util.ArrayList;
  * The wanted section is always a subset of the data section (see RegularSectionLayout where thats not the case).
  *
  * @author caron
- * @see Indexer
+ * @deprecated use LayoutRegular
  */
 public class RegularLayout extends Indexer {
   private List<Dim> dimList = new ArrayList<Dim>();

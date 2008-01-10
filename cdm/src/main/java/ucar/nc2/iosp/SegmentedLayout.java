@@ -32,6 +32,7 @@ import java.util.ArrayList;
  *
  * @author caron
  * @since Dec 31, 2007
+ * @deprecated use LayoutSegmented
  */
 public class SegmentedLayout extends Indexer {
   private List<Dim> dimList = new ArrayList<Dim>();
