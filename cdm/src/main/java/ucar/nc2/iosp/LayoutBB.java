@@ -23,42 +23,26 @@ import java.io.IOException;
 import java.nio.*;
 
 /**
- * Iterator to read/write subsets of a multidimensional array, finding the contiguous chunks.
- * The iteration is monotonic in both src and dest positions.
- * The "source" is a ByteBuffer, supplied by the chunk. This is used when the data must be massaged, eg uncompresed or
- * filtered.
+ * A Layout that supplies the "source" ByteBuffer.
+ * This is used when the data must be massaged after being read, eg uncompresed or filtered.
+ * The modified data is placed in a ByteBuffer, which may change for different chunks, and
+ * so is supplied by each chunk.
  * 
  * <p/>
  * Example for Integers:
  * <pre>
-  int[] read( LayoutBB index, int[] src) {
-    int[] dest = new int[index.getTotalNelems()];
-    while (index.hasNext()) {
-      LayoutBB.Chunk chunk = index.next();
-      System.arraycopy(src, chunk.getSrcElem(), dest, chunk.getDestElem(), chunk.getNelems());
-    }
-    return dest;
-  }
 
-  int[] read( Layout index, RandomAccessFile raf) {
-    int[] dest = new int[index.getTotalNelems()];
-    while (index.hasNext()) {
-      Layout.Chunk chunk = index.next();
-      raf.seek( chunk.getSrcPos());
-      raf.readInt(dest, chunk.getDestElem(), chunk.getNelems());
-    }
-    return dest;
-  }
-
-   // note src and dest misnamed
-    void write( Layout index, int[] src, RandomAccessFile raf) {
+  int[] read( LayoutBB index, int[] pa) {
       while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek ( chunk.getSrcPos());
-        for (int k=0; k<chunk.getNelems(); k++)
-          raf.writeInt(src, chunk.getDestElem(), chunk.getNelems());
-          raf.writeInt( ii.getByteNext());
+        LayoutBB.Chunk chunk = index.next();
+        IntBuffer buff = chunk.getIntBuffer();
+        buff.position(chunk.getSrcElem());
+        int pos = (int) chunk.getDestElem();
+        for (int i = 0; i < chunk.getNelems(); i++)
+          pa[pos++] = buff.get();
       }
+      return pa;
+  }
 
  * </pre>
  *
@@ -104,18 +88,10 @@ public interface LayoutBB {
   public interface Chunk {
 
     /**
-     * Get the position in source where to read or write: "file position"
-     *
-     * @return position as a byte count into the ByteBuffer
-     */
-    public long getSrcPos();
-
-    /**
-     * Get the position in source where to read or write: "file position"
-     *
+     * Get the position in source <Type>Buffer where to read or write: "file position"
      * @return position as a element index into the <Type>Buffer
      */
-    public long getSrcElem();
+    public int getSrcElem();
 
     public ByteBuffer getByteBuffer();
     public ShortBuffer getShortBuffer();
@@ -136,6 +112,6 @@ public interface LayoutBB {
      *
      * @return starting element in the array (Note: elements, not bytes)
      */
-    public long getDestElem();
+    public int getDestElem();
   }
 }

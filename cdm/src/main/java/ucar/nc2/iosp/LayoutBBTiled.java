@@ -83,13 +83,11 @@ public class LayoutBBTiled implements LayoutBB {
     if (totalNelemsDone >= totalNelems) return false;
 
     if ((index == null) || !index.hasNext()) { // get new data node
-
       try {
         Section dataSection;
         DataChunk dataChunk;
 
         while (true) { // look for intersecting sections
-
           if (!chunkIterator.hasNext()) {
             next = null;
             return false;
@@ -98,7 +96,6 @@ public class LayoutBBTiled implements LayoutBB {
           // get next dataChunk
           try {
             dataChunk = chunkIterator.next();
-
           } catch (IOException e) {
             e.printStackTrace();
             next = null;
@@ -107,12 +104,9 @@ public class LayoutBBTiled implements LayoutBB {
 
           // make the dataSection for this chunk
           dataSection = new Section(dataChunk.offset, chunkSize);
-
           if (debugIntersection)
             System.out.println(" test intersecting: " + dataSection + " want: " + want);
-
-          // does it intersect ?
-          if (dataSection.intersects(want))
+          if (dataSection.intersects(want)) // does it intersect ?
             break;
         }
 
@@ -160,7 +154,7 @@ public class LayoutBBTiled implements LayoutBB {
   static public class DataChunk {
     int[] offset; // offset index of this chunk, reletive to entire array
     long filePos; // filePos of a single raw data chunk
-    ByteBuffer bb;
+    ByteBuffer bb;  // the data is placed into here
 
     public DataChunk(int[] offset, long filePos, ByteBuffer bb) {
       this.offset = offset;
@@ -191,17 +185,14 @@ public class LayoutBBTiled implements LayoutBB {
       this.bb = bb;
     }
 
-    public long getSrcElem() {
-      return delegate.getSrcElem();
+    public int getSrcElem() {
+      return (int) delegate.getSrcElem();
     }
     public int getNelems() {
       return delegate.getNelems();
     }
-    public long getDestElem() {
-      return delegate.getDestElem();
-    }
-    public long getSrcPos() {
-      return 0; // LOOK
+    public int getDestElem() {
+      return (int) delegate.getDestElem();
     }
 
     public ByteBuffer getByteBuffer() {

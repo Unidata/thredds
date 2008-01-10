@@ -186,8 +186,6 @@ public class IndexChunkerTiled {
   }
 
   private class Dim {
-    //int byteStride; // bytes per element
-    //int maxSize;    // number of elements
     Range data;       // Range we got
     Range want;       // Range we want
     Range intersect;  // Range we want

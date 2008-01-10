@@ -259,7 +259,7 @@ public class IospHelper {
       while (index.hasNext()) {
         LayoutBB.Chunk chunk = index.next();
         IntBuffer buff = chunk.getIntBuffer();
-        buff.position((int) chunk.getSrcPos());
+        buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
           pa[pos++] = buff.get();
@@ -271,7 +271,7 @@ public class IospHelper {
       while (index.hasNext()) {
         LayoutBB.Chunk chunk = index.next();
         FloatBuffer buff = chunk.getFloatBuffer();
-        buff.position((int) chunk.getSrcPos());
+        buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
           pa[pos++] = buff.get();
@@ -283,7 +283,7 @@ public class IospHelper {
       while (index.hasNext()) {
         LayoutBB.Chunk chunk = index.next();
         DoubleBuffer buff = chunk.getDoubleBuffer();
-        buff.position((int) chunk.getSrcPos());
+        buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
           pa[pos++] = buff.get();
@@ -295,7 +295,7 @@ public class IospHelper {
       while (index.hasNext()) {
         LayoutBB.Chunk chunk = index.next();
         LongBuffer buff = chunk.getLongBuffer();
-        buff.position((int) chunk.getSrcPos());
+        buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
           pa[pos++] = buff.get();

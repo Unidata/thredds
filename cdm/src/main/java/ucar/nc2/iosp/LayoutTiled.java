@@ -50,7 +50,7 @@ public class LayoutTiled implements Layout {
   /**
    * Constructor.
    *
-   * @param chunkIterator iterator over all data chunks
+   * @param chunkIterator iterator over all available data chunks
    * @param chunkSize     all chunks assumed to be the same size
    * @param elemSize      size of an element in bytes.
    * @param srcShape      shape of the entire data array.
@@ -78,11 +78,10 @@ public class LayoutTiled implements Layout {
 
   private Layout.Chunk next = null;
 
-  public boolean hasNext() { // have to actually fetch the thing
+  public boolean hasNext() { // have to actually fetch the thing here
     if (totalNelemsDone >= totalNelems) return false;
 
     if ((index == null) || !index.hasNext()) { // get new data node
-
       try {
         Section dataSection;
         DataChunk dataChunk;
@@ -97,7 +96,6 @@ public class LayoutTiled implements Layout {
           // get next dataChunk
           try {
             dataChunk = chunkIterator.next();
-
           } catch (IOException e) {
             e.printStackTrace();
             next = null;
@@ -106,9 +104,7 @@ public class LayoutTiled implements Layout {
 
           // make the dataSection for this chunk
           dataSection = new Section(dataChunk.offset, chunkSize);
-
-          // does it intersect ?
-          if (dataSection.intersects(want))
+          if (dataSection.intersects(want)) // does it intersect ?
             break;
         }
 
@@ -149,7 +145,6 @@ public class LayoutTiled implements Layout {
 
   static public interface DataChunkIterator {
     public boolean hasNext();
-
     public DataChunk next() throws IOException;
   }
 

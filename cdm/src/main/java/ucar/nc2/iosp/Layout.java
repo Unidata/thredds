@@ -101,12 +101,6 @@ public interface Layout {
   public interface Chunk {
 
     /**
-     * Get starting element position as a 1D element index into the source where to read or write
-     * @return starting element in the array (Note: elements, not bytes)
-     */
-    public long getSrcElem();
-
-    /**
      * Get the position in source where to read or write: "file position"
      * @return position as a byte count into the source, eg a file
      */
