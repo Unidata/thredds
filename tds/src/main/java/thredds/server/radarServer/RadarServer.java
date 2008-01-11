@@ -253,7 +253,9 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
                   ds.getPath() +"\" serviceName=\"radarServer\">");
                 pw.println("    <dataType>"+ ds.getDataType() +"</dataType>");
                 pw.println("    <dataFormat>"+ ds.getDataFormatType() +"</dataFormat>");
+                pw.println( "   <serviceName>"+ ds.getLocalMetadataInheritable().getServiceName() +"</serviceName>" );
                 pw.println("    <metadata inherited=\"true\">");
+
                 pw.println( "    <documentation type=\"summary\">" + ds.getSummary() +
                                 "</documentation>" );
                 /*

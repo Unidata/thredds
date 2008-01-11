@@ -633,6 +633,7 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
       for (int i = 0; i < stns.length; i++) {
       //for (Station s : stationList) {
         Station s = stationMap.get( stns[ i ]);  
+        if( s == null ) continue;
         Element sElem = new Element("station");
         sElem.setAttribute("id",s.getValue());
         if( s.getState() != null )
@@ -686,6 +687,14 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
     public void printStations( String[] stations ) {
         for (String s : stations ) {
             Station stn = stationMap.get( s );
+            if(  stn == null ) {
+                pw.println( "   <station id=\""+ s +"\" state=\"XX\" country=\"XX\">");
+                pw.println( "      <latitude>0.0</latitude>");
+                pw.println( "      <longitude>0.0</longitude>");
+                pw.println( "      <altitude>0.0</altitude>");
+                pw.println( "   </station>");
+                continue;
+            }
             pw.println( "   <station id=\""+ stn.getValue() +"\" state=\""+ stn.getState()
                     +"\" country=\""+ stn.getCountry() +"\">");
             pw.println( "      <latitude>"+
