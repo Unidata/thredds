@@ -23,6 +23,7 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.hdf5.ODLparser2;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.ArrayChar;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,11 +39,38 @@ import org.jdom.Element;
 public class HdfEos {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
 
+  static public void amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
+    StringBuffer sbuff = null;
+    String structMetadata = null;
+
+    int n = 0;
+    while (true) {
+      Variable structMetadataVar = eosGroup.findVariable("StructMetadata."+n);
+      if (structMetadataVar == null) break;
+      if (structMetadata != null) { // already have StructMetadata
+        if (sbuff == null) sbuff = new StringBuffer(64000);
+        sbuff.append(structMetadata);
+      }
+
+      // read and parse the ODL
+      Array A = structMetadataVar.read();
+      ArrayChar ca = (ArrayChar) A;
+      structMetadata = ca.getString(); // common case only StructMetadata.0, avoid extra copy
+
+      if (sbuff != null)
+        sbuff.append(structMetadata);
+      n++;
+    }
+    if (sbuff != null )
+      structMetadata = sbuff.toString();
+    if (structMetadata != null)
+      new HdfEos().amendFromODL(ncfile, structMetadata);
+  }
+
   private NetcdfFile ncfile;
-  private Group rootg;
   public void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
     this.ncfile = ncfile;
-    this.rootg = ncfile.getRootGroup();
+    Group rootg = ncfile.getRootGroup();
 
     ODLparser2 parser = new ODLparser2();
     Element root = parser.parseFromString(structMetadata); // now we have the ODL in JDOM elements
@@ -155,7 +183,9 @@ public class HdfEos {
       Element f = swathElem.getChild("DataField");
       List<Element> vars = (List<Element>) f.getChildren();
       for (Element elem : vars) {
-        String varname = elem.getChild("DataFieldName").getText();
+        Element dataFieldNameElem = elem.getChild("DataFieldName");
+        if (dataFieldNameElem == null) continue;
+        String varname = dataFieldNameElem.getText();
         Variable v = dataG.findVariable( varname);
         assert v != null : varname;
 

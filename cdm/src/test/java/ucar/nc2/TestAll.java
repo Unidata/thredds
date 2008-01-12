@@ -208,6 +208,34 @@ public class TestAll {
         " MB");
   }
 
+  public static void openAllInDir(String dirName, FileFilter ff) throws IOException {
+    System.out.println("---------------Reading directory "+dirName);
+    File allDir = new File( dirName);
+    File[] allFiles = allDir.listFiles();
+    if (null == allFiles) {
+      System.out.println("---------------INVALID "+dirName);
+      return;
+    }
+
+    for (File f : allFiles) {
+      String name = f.getAbsolutePath();
+      if (f.isDirectory())
+        continue;
+      if ((ff == null) || ff.accept(f)) {
+        System.out.println("  try to open "+name);
+        NetcdfFile ncfile = NetcdfFile.open(name);
+        ncfile.close();
+      }
+    }
+
+    for (File f : allFiles) {
+      if (f.isDirectory())
+        openAllInDir(f.getAbsolutePath(), ff);
+    }
+
+  }
+
+
   public static void readAllDir(String dirName, FileFilter ff) {
     System.out.println("---------------Reading directory "+dirName);
     File allDir = new File( dirName);

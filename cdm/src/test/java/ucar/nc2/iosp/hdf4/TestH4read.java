@@ -31,7 +31,8 @@ import java.io.File;
  * @since Jan 1, 2008
  */
 public class TestH4read extends TestCase {
-  static public String testDir = "R:/testdata/hdf4"; // "C:/data/hdf4/";
+  //static public String testDir = "R:/testdata/hdf4"; 
+  static public String testDir = "C:/data/hdf4/";
   public TestH4read(String name) {
     super(name);
   }
@@ -58,7 +59,7 @@ public class TestH4read extends TestCase {
     read(testDir+"eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", 3, 24, 55, 20, 7, 3); //
 
     // bad drugs
-    read(testDir+"olslit1995.oct_digital_12.hdf", 2, 2908, 2, 1, 5895, 2907); // missing lots : multiple strips plus a raster - crappy
+    //read(testDir+"olslit1995.oct_digital_12.hdf", 2, 2908, 2, 1, 5895, 2907); // missing lots : multiple strips plus a raster - crappy
   }
 
   private void read(String filename, int ndims, int nvars, int ngatts, int natts, int nstructFields, int ngroups) throws IOException {
@@ -112,12 +113,17 @@ public class TestH4read extends TestCase {
   }
 
   public void problem() throws IOException {
-    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/chunked"));
+    //TestAll.openAllInDir(testDir, null);
 
-    NetcdfFile ncfile = NetcdfFile.open(testDir+"eos/ceres/CER_ES8_023019.0830_sub.hdf");
-    Variable v = ncfile.findVariable("Standard/Data Fields/AveSceneElev");
+    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/linked H4header/construct"));
+    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/construct"));
+    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/linked"));
+
+    //TestAll.readAll(testDir+"ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf");
+
+    NetcdfFile ncfile = NetcdfFile.open(testDir+"ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf");
+    Variable v = ncfile.findVariable("Profile_Time");
     assert v != null;
-
     v.read();
   }
 

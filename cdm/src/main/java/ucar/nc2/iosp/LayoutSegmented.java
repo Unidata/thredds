@@ -49,7 +49,7 @@ public class LayoutSegmented implements Layout {
    * Constructor.
    *
    * @param segPos      starting address of each segment.
-   * @param segSize     number of bytes in each segment.
+   * @param segSize     number of bytes in each segment. Must be multiple of elemSize.
    * @param elemSize    size of an element in bytes.
    * @param srcShape    shape of the entire data array.
    * @param wantSection the wanted section of data
@@ -72,6 +72,9 @@ public class LayoutSegmented implements Layout {
       totalElems += segSize[i];
       segMax[i] = totalElems;
     }
+    if (totalElems <  Index.computeSize(srcShape) * elemSize)
+      System.out.println("here= "+totalElems+" "+(Index.computeSize(srcShape) * elemSize));
+
     assert totalElems >=  Index.computeSize(srcShape) * elemSize;
 
     chunker = new IndexChunker(srcShape, wantSection);
