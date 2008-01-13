@@ -32,14 +32,14 @@ import java.io.File;
  * @since Jan 1, 2008
  */
 public class TestH4read extends TestCase {
-  //static public String testDir = "R:/testdata/hdf4"; 
-  static public String testDir = "C:/data/hdf4/";
+  static public String testDir = "R:/testdata/hdf4/";
+  //static public String testDir = "C:/data/hdf4/";
 
   public TestH4read(String name) {
     super(name);
   }
 
-  public void testReadAndCountAll() throws IOException {
+  public void testReadAndCount() throws IOException {
     System.out.println("  dims  vars gatts  atts strFlds groups");
 // ---------------Reading directory C:/data/hdf4/
     read(testDir + "17766010.hdf", 0, 1, 3, 0, 8, 0);
@@ -87,7 +87,6 @@ public class TestH4read extends TestCase {
     read(testDir + "ssec/MOD021KM.A2001149.1030.003.2001154234131.hdf", 20, 40, 51, 179, 14, 3);
     read(testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", 13, 62, 63, 560, 0, 4);
   }
-
 
   private class Counter {
     int ndims, nvars, natts, ngatts, nstructFields, ngroups;
@@ -171,6 +170,39 @@ public class TestH4read extends TestCase {
         return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".eos");
       }
     }); */
+  }
+
+  public void testReadAndCountAll() throws IOException {
+    testReadAndCountAllInDir("C:/data/hdf4/", new FileFilter() {
+      public boolean accept(File pathname) {
+        return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".15");
+      }
+    }); // */
+  }
+
+  void testReadAndCountAllInDir(String dirName, FileFilter ff) throws IOException {
+    System.out.println("---------------Reading directory " + dirName);
+    System.out.println("  dims  vars gatts  atts strFlds groups");
+    File allDir = new File(dirName);
+    File[] allFiles = allDir.listFiles();
+    if (null == allFiles) {
+      System.out.println("---------------INVALID " + dirName);
+      return;
+    }
+
+    for (File f : allFiles) {
+      String name = f.getAbsolutePath();
+      if (f.isDirectory())
+        continue;
+      if ((ff == null) || ff.accept(f))
+        read(name, 0, 0, 0, 0, 0, 0);
+    }
+
+    for (File f : allFiles) {
+      if (f.isDirectory())
+        testReadAndCountAllInDir(f.getAbsolutePath(), ff);
+    }
+
   }
 
   public void problem() throws IOException {

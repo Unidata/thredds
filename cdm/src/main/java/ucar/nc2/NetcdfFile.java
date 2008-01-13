@@ -73,7 +73,7 @@ public class NetcdfFile {
 
   static private int default_buffersize = 8092;
   static private ArrayList<IOServiceProvider> registeredProviders = new ArrayList<IOServiceProvider>();
-  static private boolean debugSPI = false, debugCompress = false;
+  static private boolean debugSPI = false, debugCompress = false, showRequest = false;
   static boolean debugStructureIterator = false;
 
   // this is so that we can run without specialized IOServiceProviders, but they will
@@ -1454,6 +1454,8 @@ public class NetcdfFile {
    * Ranges must be filled (no nulls)
    */
   protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException {
+    if (showRequest)
+      System.out.println("Data request for variable: "+v.getName()+" section= "+ranges);
     return spi.readData(v, ranges);
   }
 

@@ -112,6 +112,6 @@ public interface LayoutBB {
      *
      * @return starting element in the array (Note: elements, not bytes)
      */
-    public int getDestElem();
+    public long getDestElem();
   }
 }

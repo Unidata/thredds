@@ -200,7 +200,7 @@ public class TestCompare {
           double v1 = iter1.getDoubleNext();
           double v2 = iter2.getDoubleNext();
           if (!Double.isNaN(v1) || !Double.isNaN(v2))
-            assert v1 == v2 : v1 + " != "+ v2;
+            assert v1 == v2 : v1 + " != "+ v2 + " at "+iter1;
       }
     }
 

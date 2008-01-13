@@ -387,7 +387,7 @@ public class H4iosp extends AbstractIOServiceProvider {
         throw new IllegalStateException();
       }
 
-      return new LayoutBBTiled.DataChunk(chunk.origin, chunkData.offset, bb);
+      return new LayoutBBTiled.DataChunk(chunk.origin, bb);
     }
   }
 

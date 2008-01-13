@@ -53,4 +53,14 @@ public class TestIndexChunker extends TestCase {
     assert chunk.getNelems() == section.computeSize()/2;
   }
 
+  public void testChunkerTiled() throws InvalidRangeException {
+    Section dataSection = new Section("53:53,0:7,0:31");
+    Section wantSection = new Section("38:173,0:7,10:31");
+    IndexChunkerTiled index = new IndexChunkerTiled(dataSection, wantSection);
+    while(index.hasNext()) {
+      Layout.Chunk chunk = index.next();
+      System.out.println(" "+chunk);
+    }
+  }
+
 }

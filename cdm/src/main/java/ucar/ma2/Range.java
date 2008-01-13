@@ -466,7 +466,7 @@ public final class Range {
   }
 
   public String toString() {
-    return first + ":" + last() + ":" + stride;
+    return first + ":" + last() + (stride > 1 ? ":" + stride : "");
   }
 
   /**

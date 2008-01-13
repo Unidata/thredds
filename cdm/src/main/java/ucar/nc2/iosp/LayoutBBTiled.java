@@ -27,8 +27,8 @@ import java.nio.*;
 
 /**
  * For datasets where the data are stored in chunks, and must be processed, eg compressed or filtered.
+ * The data is read, processed, and placed in a ByteBuffer. Chunks have an offset into the ByteBuffer.
  * "Tiled" means that all chunks are assumed to be equal size.
- * Chunks have an offset into the complete array.
  * Chunks do not necessarily cover the array, missing data is possible.
  *
  * @author caron
@@ -38,7 +38,7 @@ public class LayoutBBTiled implements LayoutBB {
   private Section want;
   private int[] chunkSize; // all chunks assumed to be the same size
   private int elemSize;
-  private long startSrcPos;
+  //private long startSrcPos;
 
   private DataChunkIterator chunkIterator; // iterate across chunks
   private IndexChunkerTiled index = null; // iterate within a chunk
@@ -111,9 +111,9 @@ public class LayoutBBTiled implements LayoutBB {
         }
 
         if (debug)
-          System.out.println(" found intersecting section: " + dataSection + " for filePos " + dataChunk.filePos);
+          System.out.println(" found intersecting section: " + dataSection);
         index = new IndexChunkerTiled(dataSection, want);
-        startSrcPos = dataChunk.filePos;
+        //startSrcPos = dataChunk.filePos;
         bb = dataChunk.bb;
 
       } catch (InvalidRangeException e) {
@@ -123,7 +123,7 @@ public class LayoutBBTiled implements LayoutBB {
 
     IndexChunker.Chunk chunk = index.next();
     totalNelemsDone += chunk.getNelems();
-    chunk.setSrcPos(startSrcPos + chunk.getSrcElem() * elemSize);
+    //chunk.setSrcPos(startSrcPos + chunk.getSrcElem() * elemSize);
     next = new Chunk( chunk, bb);
     return true;
   }
@@ -145,20 +145,25 @@ public class LayoutBBTiled implements LayoutBB {
     return sbuff.toString();
   }
 
-
+  /**
+   * An iterator over the data chunks.
+   */
   static public interface DataChunkIterator {
     public boolean hasNext();
     public DataChunk next() throws IOException;
   }
 
+  /**
+   * The Data Chunks.
+   */
   static public class DataChunk {
     int[] offset; // offset index of this chunk, reletive to entire array
-    long filePos; // filePos of a single raw data chunk
+    //long filePos; // filePos of a single raw data chunk
     ByteBuffer bb;  // the data is placed into here
 
-    public DataChunk(int[] offset, long filePos, ByteBuffer bb) {
+    public DataChunk(int[] offset, /*long filePos, */ ByteBuffer bb) {
       this.offset = offset;
-      this.filePos = filePos;
+      //this.filePos = filePos;
       this.bb = bb;
     }
   }
@@ -186,13 +191,13 @@ public class LayoutBBTiled implements LayoutBB {
     }
 
     public int getSrcElem() {
-      return (int) delegate.getSrcElem();
+      return (int) delegate.getSrcElem(); // LOOK this is the problem ????
     }
     public int getNelems() {
       return delegate.getNelems();
     }
-    public int getDestElem() {
-      return (int) delegate.getDestElem();
+    public long getDestElem() {
+      return delegate.getDestElem();
     }
 
     public ByteBuffer getByteBuffer() {

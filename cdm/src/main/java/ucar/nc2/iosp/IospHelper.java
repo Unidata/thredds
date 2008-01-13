@@ -32,7 +32,7 @@ import java.nio.*;
  * @since Jan 3, 2008
  */
 public class IospHelper {
-  static private boolean showLayoutTypes = false;
+   static private boolean showLayoutTypes = false;
 
   /**
    * Read data subset from RandomAccessFile, create primitive array of size Layout.getTotalNelems.
@@ -165,7 +165,7 @@ public class IospHelper {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
-        raf.read(chunk.getSrcPos(), pa, (int) chunk.getDestElem(), chunk.getNelems()); 
+        raf.read(chunk.getSrcPos(), pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
       return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
 
@@ -233,7 +233,7 @@ public class IospHelper {
    */
   static public Object readData(LayoutBB index, DataType dataType, Object arr) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***BB LayoutType="+index.getClass().getName());
-    
+
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {

@@ -52,6 +52,7 @@ public class IndexChunkerTiled {
   private int nelems; // number of elements to read at one time
   private long total, done;
   private int startDestElem; // the offset in the result Array of this piece of it
+  private int startSrcElem; // the offset in the source Array of this piece of it
 
   private boolean debug = false, debugMerge = false, debugDetail = false, debugNext = false;
 
@@ -101,6 +102,7 @@ public class IndexChunkerTiled {
 
      // the offset in the result Array of this piece of it
      startDestElem = wantSection.offset( intersect);
+     startSrcElem = dataSection.offset( intersect);
 
      /* for (Dim dim : dimList) {
        int d = dim.intersect.first() - dim.want.first();
@@ -230,7 +232,7 @@ public class IndexChunkerTiled {
     }
 
     // Set the current element's index from the start of the data array
-    chunk.setSrcElem(dataIndex.currentElement());
+    chunk.setSrcElem(startSrcElem + dataIndex.currentElement());
 
     // Set the current element's index from the start of the result array
     chunk.setDestElem(startDestElem + resultIndex.currentElement());
