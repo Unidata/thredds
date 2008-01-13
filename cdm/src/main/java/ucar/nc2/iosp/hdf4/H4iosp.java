@@ -62,6 +62,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     H4header.Vinfo vinfo = (H4header.Vinfo) v.getSPobject();
     DataType dataType = v.getDataType();
+    vinfo.setLayoutInfo();   // make sure needed info is present
 
     /* if (vinfo.isChunked) {
       Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
@@ -126,7 +127,8 @@ public class H4iosp extends AbstractIOServiceProvider {
    */
   private ucar.ma2.ArrayStructure readStructureData(ucar.nc2.Structure s, Section section) throws java.io.IOException, InvalidRangeException {
     H4header.Vinfo vinfo = (H4header.Vinfo) s.getSPobject();
-    int recsize = vinfo.recsize;
+    vinfo.setLayoutInfo();   // make sure needed info is present
+    int recsize = vinfo.elemSize;
 
     // create the ArrayStructure
     StructureMembers members = s.makeStructureMembers();
@@ -264,7 +266,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     private void readChunk() throws IOException {
       H4header.DataChunk chunk = chunks.get(chunkNo);
-      H4header.TagData chunkData = chunk.data; // LOOK can it be private?
+      H4header.TagData chunkData = chunk.data;
       chunkNo++;
 
       if (chunkData.ext_type == TagEnum.SPECIAL_COMP) {

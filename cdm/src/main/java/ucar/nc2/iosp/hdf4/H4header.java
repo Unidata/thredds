@@ -80,6 +80,7 @@ public class H4header {
   private static boolean debugLinked = false; // linked data
   private static boolean debugChunked = false; // chunked data
   private static boolean debugTracker = false; // memory tracker
+  private static boolean warnings = false; // log messages
 
   static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugTag1 = debugFlag.isSet("H4header/tag1");
@@ -115,7 +116,7 @@ public class H4header {
     readDDH(alltags, raf.getFilePointer());
 
     // now read the individual tags where needed
-    for (Tag tag : alltags) {// LOOK could sort by file offset to minimize I/O
+    for (Tag tag : alltags) {//  LOOK could sort by file offset to minimize I/O
       tag.read();
       tagMap.put(tagid(tag.refno, tag.code), tag); // track all tags in a map, key is the "tag id".
       if (debugTag1) System.out.println(debugTagDetail ? tag.detail() : tag);
@@ -190,7 +191,7 @@ public class H4header {
 
       if (t.code == 1962) { // VHeader
         TagVH vh = (TagVH) t;
-        if (!vh.className.startsWith("Att")) {
+        if (!vh.className.startsWith("Att") && !vh.className.startsWith("_HDF_CHK_TBL")) {
           Variable v = makeVariable(vh);
           if (v != null) vars.add(v);
         }
@@ -573,7 +574,7 @@ public class H4header {
       throw new IllegalStateException();
 
     Variable v;
-    if (vh.nfields == 1) {   // LOOK what about vh.nvert ??
+    if (vh.nfields == 1) {
       v = new Variable(ncfile, null, null, vh.name);
       vinfo.setVariable(v);
       H4type.setDataType(vh.fld_type[0], v);
@@ -601,12 +602,12 @@ public class H4header {
       vinfo.setData(data, v.getElementSize());
 
     } else {
-      vinfo.recsize = vh.ivsize;
 
       Structure s;
       try {
         s = new Structure(ncfile, null, null, vh.name);
         vinfo.setVariable(s);
+        //vinfo.recsize = vh.ivsize;
 
         if (vh.nvert > 1)
           s.setDimensionsAnonymous(new int[]{vh.nvert});
@@ -632,7 +633,7 @@ public class H4header {
         throw new IllegalStateException(e.getMessage());
       }
 
-      vinfo.setData(data, vinfo.recsize);
+      vinfo.setData(data, vh.ivsize);
       v = s;
     }
 
@@ -716,7 +717,7 @@ public class H4header {
     boolean ok = true;
     for (int i=0; i<dim.shape.length; i++)
       if(dim.shape[i] != v.getDimension(i).getLength()) {
-        log.warn( dim.shape[i] + " != "+ v.getDimension(i).getLength()+" for "+v.getName());
+        if (warnings) log.warn( dim.shape[i] + " != "+ v.getDimension(i).getLength()+" for "+v.getName());
         ok = false;
       }
 
@@ -847,19 +848,28 @@ public class H4header {
 
   class Vinfo implements Comparable<Vinfo> {
     short refno;
-
+    Variable v;
     List<Tag> tags = new ArrayList<Tag>();
-    long[] segPos;
-    int[] segSize;
+
+    // info about reading the data
+    TagData data;
+    int elemSize; // for Structures, this is recsize
+    //int recsize; // Structures only
+
+    // below is not set until setLayoutInfo() is called
     boolean isLinked, isCompressed, isChunked;
 
-    List<DataChunk> chunks;
-    int[] chunkSize;
-
+    // regular
     int start = -1;
     int length;
-    int recsize;
-    Variable v;
+
+    // linked
+    long[] segPos;
+    int[] segSize;
+
+    // chunked
+    List<DataChunk> chunks;
+    int[] chunkSize;
 
     Vinfo(short refno) {
       this.refno = refno;
@@ -875,8 +885,16 @@ public class H4header {
       return refno - o.refno;
     }
 
-    // LOOK: this should be deffered until data is requested
     void setData(TagData data, int elemSize) throws IOException {
+      this.data = data;
+      this.elemSize = elemSize;
+    }
+
+    // make sure needed info is present : call this when variable needs to be read
+    // this allows us to defer getting layout info until then
+    void setLayoutInfo() throws IOException {
+      if (data == null) return;
+      
       if (null != data.linked) {
         isLinked = true;
         setDataBlocks(data.linked.getLinkedDataBlocks(), elemSize);
@@ -1161,6 +1179,7 @@ public class H4header {
         StructureMembers.Member tagM = members.findMember("chk_tag");
         StructureMembers.Member refM = members.findMember("chk_ref");
         int n = (int) sdata.getSize();
+        if (debugChunked) System.out.println(" Reading "+n+" DataChunk tags");
         for (int i = 0; i < n; i++) {
           int[] origin = sdata.getJavaArrayInt(i, originM);
           short tag = sdata.getScalarShort(i, tagM);

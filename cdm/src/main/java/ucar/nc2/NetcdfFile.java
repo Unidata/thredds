@@ -654,7 +654,7 @@ public class NetcdfFile {
    * An embedded "." is interpreted as structure.member.
    * An embedded "/" is interpreted as group/variable.
    * If the name actually has a ".", you must escape it (replace with "%2e")
-   * If the name actually has a "/", you must escape it (replace with "%??")
+   * If the name actually has a "/", you must escape it (replace with "%2f")
    *
    * @param fullName eg "/group/subgroup/name1.name2.name". Any chars may be escaped
    * @return Variable or null if not found.

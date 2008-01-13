@@ -32,6 +32,7 @@ import java.nio.*;
  * @since Jan 3, 2008
  */
 public class IospHelper {
+  static private boolean showLayoutTypes = false;
 
   /**
    * Read data subset from RandomAccessFile, create primitive array of size Layout.getTotalNelems.
@@ -60,6 +61,7 @@ public class IospHelper {
    * @throws java.io.IOException on read error
    */
   static public Object readData(RandomAccessFile raf, Layout index, DataType dataType, Object arr) throws java.io.IOException {
+    if (showLayoutTypes) System.out.println("***RAF LayoutType="+index.getClass().getName());
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
       byte[] pa = (byte[]) arr;
@@ -157,6 +159,7 @@ public class IospHelper {
    * @throws java.io.IOException on read error
    */
   static public Object readData(PositioningDataInputStream raf, Layout index, DataType dataType, Object arr) throws java.io.IOException {
+    if (showLayoutTypes) System.out.println("***PositioningDataInputStream LayoutType="+index.getClass().getName());
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
       byte[] pa = (byte[]) arr;
@@ -229,7 +232,8 @@ public class IospHelper {
    * @throws java.io.IOException on read error
    */
   static public Object readData(LayoutBB index, DataType dataType, Object arr) throws java.io.IOException {
-
+    if (showLayoutTypes) System.out.println("***BB LayoutType="+index.getClass().getName());
+    
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {

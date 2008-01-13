@@ -20,6 +20,8 @@
 package ucar.nc2.iosp.hdf4;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.dataset.AxisType;
 import ucar.nc2.iosp.hdf5.ODLparser2;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -33,11 +35,13 @@ import org.jdom.Element;
 /**
  * Parse structural metadata from HDF4-EOS.
  * This allows us to use shared dimensions.
+ *
  * @author caron
  * @since Jul 23, 2007
  */
 public class HdfEos {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
+  static private boolean showTypes = false;
 
   static public void amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
     StringBuffer sbuff = null;
@@ -45,7 +49,7 @@ public class HdfEos {
 
     int n = 0;
     while (true) {
-      Variable structMetadataVar = eosGroup.findVariable("StructMetadata."+n);
+      Variable structMetadataVar = eosGroup.findVariable("StructMetadata." + n);
       if (structMetadataVar == null) break;
       if (structMetadata != null) { // already have StructMetadata
         if (sbuff == null) sbuff = new StringBuffer(64000);
@@ -61,13 +65,14 @@ public class HdfEos {
         sbuff.append(structMetadata);
       n++;
     }
-    if (sbuff != null )
+    if (sbuff != null)
       structMetadata = sbuff.toString();
     if (structMetadata != null)
       new HdfEos().amendFromODL(ncfile, structMetadata);
   }
 
   private NetcdfFile ncfile;
+
   public void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
     this.ncfile = ncfile;
     Group rootg = ncfile.getRootGroup();
@@ -76,42 +81,79 @@ public class HdfEos {
     Element root = parser.parseFromString(structMetadata); // now we have the ODL in JDOM elements
 
     // SWATH
+    boolean isSwath = false;
     Element swathStructure = root.getChild("SwathStructure");
-    if (swathStructure != null){
+    if (swathStructure != null) {
       List<Element> swaths = (List<Element>) swathStructure.getChildren();
       for (Element elemSwath : swaths) {
         Element swathNameElem = elemSwath.getChild("SwathName");
         if (swathNameElem == null) {
-          log.warn("No SwathName element in "+elemSwath.getName());
+          log.warn("No SwathName element in " + elemSwath.getName());
           continue;
         }
         String swathName = swathNameElem.getText();
         Group swathGroup = findGroupNested(rootg, swathName);
         if (swathGroup != null) {
           amendSwath(elemSwath, swathGroup);
+          isSwath = true;
         } else {
-          log.warn("Cant find swath group "+swathName);
+          log.warn("Cant find swath group " + swathName);
         }
+      }
+      if (isSwath) {
+        if (showTypes) System.out.println("***EOS SWATH");
+        rootg.addAttribute(new Attribute("cdm_data_type", thredds.catalog.DataType.SWATH.toString()));
       }
     }
 
     // GRID
+    boolean isGrid = false;
     Element gridStructure = root.getChild("GridStructure");
-    if (gridStructure != null){
+    if (gridStructure != null) {
       List<Element> grids = (List<Element>) gridStructure.getChildren();
       for (Element elemGrid : grids) {
         Element gridNameElem = elemGrid.getChild("GridName");
         if (gridNameElem == null) {
-          log.warn("Ne GridName element in "+elemGrid.getName());
+          log.warn("Ne GridName element in " + elemGrid.getName());
           continue;
         }
         String gridName = gridNameElem.getText();
         Group gridGroup = findGroupNested(rootg, gridName);
         if (gridGroup != null) {
           amendGrid(elemGrid, gridGroup);
+          isGrid = true;
         } else {
-          log.warn("Cant find Grid group "+gridName);
+          log.warn("Cant find Grid group " + gridName);
         }
+      }
+      if (isGrid) {
+        if (showTypes) System.out.println("***EOS GRID");
+        rootg.addAttribute(new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
+      }
+    }
+
+    // POINT
+    boolean isPoint = false;
+    Element pointStructure = root.getChild("PointStructure");
+    if (pointStructure != null) {
+      List<Element> pts = (List<Element>) pointStructure.getChildren();
+      for (Element elem : pts) {
+        Element nameElem = elem.getChild("PointName");
+        if (nameElem == null) {
+          log.warn("No PointName element in " + elem.getName());
+          continue;
+        }
+        String name = nameElem.getText();
+        Group ptGroup = findGroupNested(rootg, name);
+        if (ptGroup != null) {
+          isPoint = true;
+        } else {
+          log.warn("Cant find Point group " + name);
+        }
+      }
+      if (isPoint) {
+        if (showTypes) System.out.println("***EOS POINT");
+        rootg.addAttribute(new Attribute("cdm_data_type", thredds.catalog.DataType.POINT.toString()));
       }
     }
 
@@ -146,15 +188,15 @@ public class HdfEos {
       // make new variable for this dimension map
       Variable v = new Variable(ncfile, parent, null, dataDimName);
       v.setDimensions(geoDimName);
-      v.setDataType( DataType.INT);
+      v.setDataType(DataType.INT);
       int npts = (int) v.getSize();
       Array data = Array.makeArray(v.getDataType(), npts, offset, incr);
       v.setCachedData(data, true);
-      v.addAttribute( new Attribute("_DimensionMap",""));
+      v.addAttribute(new Attribute("_DimensionMap", ""));
       parent.addVariable(v);
     }
 
-        // Geolocation Variables
+    // Geolocation Variables
     Group geoFieldsG = parent.findGroup("Geolocation Fields");
     if (geoFieldsG != null) {
 
@@ -162,17 +204,18 @@ public class HdfEos {
       List<Element> varsLoc = (List<Element>) floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText();
-        Variable v = geoFieldsG.findVariable( varname);
+        Variable v = geoFieldsG.findVariable(varname);
         assert v != null : varname;
+        addAxisType(v);
 
         StringBuffer sbuff = new StringBuffer();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         for (Element value : values) {
-          sbuff.append( value.getText());
-          sbuff.append( " ");
+          sbuff.append(value.getText());
+          sbuff.append(" ");
         }
-        v.setDimensions( sbuff.toString()); // livin dangerously
+        v.setDimensions(sbuff.toString()); // livin dangerously
       }
     }
 
@@ -186,20 +229,34 @@ public class HdfEos {
         Element dataFieldNameElem = elem.getChild("DataFieldName");
         if (dataFieldNameElem == null) continue;
         String varname = dataFieldNameElem.getText();
-        Variable v = dataG.findVariable( varname);
+        Variable v = dataG.findVariable(varname);
         assert v != null : varname;
 
         StringBuffer sbuff = new StringBuffer();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         for (Element value : values) {
-          sbuff.append( value.getText());
-          sbuff.append( " ");
+          sbuff.append(value.getText());
+          sbuff.append(" ");
         }
-        v.setDimensions( sbuff.toString()); // livin dangerously
+        v.setDimensions(sbuff.toString()); // livin dangerously
       }
     }
 
+  }
+
+  private void addAxisType(Variable v) {
+    String name = v.getShortName();
+    if (name.equalsIgnoreCase("Latitude") || name.equalsIgnoreCase("GeodeticLatitude")) {
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+      v.addAttribute(new Attribute("units", "degrees_north"));
+    } else if (name.equalsIgnoreCase("Longitude")) {
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+      v.addAttribute(new Attribute("units", "degrees_east"));
+    } else if (name.equalsIgnoreCase("Time")) {
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+      //v.addAttribute(new Attribute("units", "unknown"));
+    }
   }
 
 
@@ -209,8 +266,8 @@ public class HdfEos {
     String ydimSizeS = gridElem.getChild("YDim").getText();
     int xdimSize = Integer.parseInt(xdimSizeS);
     int ydimSize = Integer.parseInt(ydimSizeS);
-    parent.addDimension( new Dimension("XDim", xdimSize));
-    parent.addDimension( new Dimension("YDim", ydimSize));
+    parent.addDimension(new Dimension("XDim", xdimSize));
+    parent.addDimension(new Dimension("YDim", ydimSize));
 
     // global Dimensions
     Element d = gridElem.getChild("Dimension");
@@ -226,7 +283,7 @@ public class HdfEos {
       }
     }
 
-        // Geolocation Variables
+    // Geolocation Variables
     Group geoFieldsG = parent.findGroup("Geolocation Fields");
     if (geoFieldsG != null) {
 
@@ -234,17 +291,17 @@ public class HdfEos {
       List<Element> varsLoc = (List<Element>) floc.getChildren();
       for (Element elem : varsLoc) {
         String varname = elem.getChild("GeoFieldName").getText();
-        Variable v = geoFieldsG.findVariable( varname);
+        Variable v = geoFieldsG.findVariable(varname);
         assert v != null : varname;
 
         StringBuffer sbuff = new StringBuffer();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         for (Element value : values) {
-          sbuff.append( value.getText());
-          sbuff.append( " ");
+          sbuff.append(value.getText());
+          sbuff.append(" ");
         }
-        v.setDimensions( sbuff.toString()); // livin dangerously
+        v.setDimensions(sbuff.toString()); // livin dangerously
       }
     }
 
@@ -256,17 +313,17 @@ public class HdfEos {
       List<Element> vars = (List<Element>) f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText();
-        Variable v = dataG.findVariable( varname);
+        Variable v = dataG.findVariable(varname);
         assert v != null : varname;
 
         StringBuffer sbuff = new StringBuffer();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         for (Element value : values) {
-          sbuff.append( value.getText());
-          sbuff.append( " ");
+          sbuff.append(value.getText());
+          sbuff.append(" ");
         }
-        v.setDimensions( sbuff.toString()); // livin dangerously
+        v.setDimensions(sbuff.toString()); // livin dangerously
       }
     }
 
