@@ -732,17 +732,7 @@ public class H4header {
     }
 
     // look for attributes
-    for (int i = 0; i < group.nelems; i++) {
-      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
-      if (tag == null) throw new IllegalStateException();
-      if (tag.code == 1962) {
-        TagVH vh = (TagVH) tag;
-        if (vh.className.startsWith("Att")) {
-          Attribute att = makeAttribute(vh);
-          if (null != att) v.addAttribute(att);
-        }
-      }
-    }
+    addVariableAttributes(group, vinfo);
 
     if (debugConstruct) {
       System.out.println("added variable " + v.getNameAndDimensions() + " from VG " + group.refno);
@@ -826,17 +816,7 @@ public class H4header {
     }
 
     // look for VH style attributes - dunno if they are actually used
-    for (int i = 0; i < group.nelems; i++) {
-      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
-      if (tag == null) throw new IllegalStateException();
-      if (tag.code == 1962) {
-        TagVH vh = (TagVH) tag;
-        if (vh.className.startsWith("Att")) {
-          Attribute att = makeAttribute(vh);
-          if (null != att) v.addAttribute(att);
-        }
-      }
-    }
+    addVariableAttributes(group, vinfo);
 
     if (debugConstruct) {
       System.out.println("added variable " + v.getNameAndDimensions() + " from Group " + group);
@@ -844,6 +824,25 @@ public class H4header {
     }
 
     return v;
+  }
+
+  private void addVariableAttributes(TagGroup group, Vinfo vinfo) throws IOException {
+    // look for attributes
+    for (int i = 0; i < group.nelems; i++) {
+      Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
+      if (tag == null) throw new IllegalStateException();
+      if (tag.code == 1962) {
+        TagVH vh = (TagVH) tag;
+        if (vh.className.startsWith("Att")) {
+          Attribute att = makeAttribute(vh);
+          if (null != att) {
+            vinfo.v.addAttribute(att);
+            if (att.getName().equals("_FillValue"))
+              vinfo.setFillValue(att);
+          }
+        }
+      }
+    }
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -856,7 +855,7 @@ public class H4header {
     // info about reading the data
     TagData data;
     int elemSize; // for Structures, this is recsize
-    //int recsize; // Structures only
+    Object fillValue;
 
     // below is not set until setLayoutInfo() is called
     boolean isLinked, isCompressed, isChunked;
@@ -890,6 +889,11 @@ public class H4header {
     void setData(TagData data, int elemSize) throws IOException {
       this.data = data;
       this.elemSize = elemSize;
+    }
+
+    void setFillValue( Attribute att) {
+      // see IospHelper.makePrimitiveArray(int size, DataType dataType, Object fillValue)
+      fillValue = (v.getDataType() == DataType.STRING) ? att.getStringValue() : att.getNumericValue();
     }
 
     // make sure needed info is present : call this when variable needs to be read
@@ -1679,9 +1683,8 @@ public class H4header {
   }
 
   // 1965 p135
-  private class TagVGroup extends Tag {
-    short nelems, extag, exref, version;
-    short[] elem_tag, elem_ref;
+  private class TagVGroup extends TagGroup {
+    short extag, exref, version;
     String name, className;
     Group group;
 

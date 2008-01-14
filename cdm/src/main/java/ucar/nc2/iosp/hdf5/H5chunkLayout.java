@@ -35,6 +35,7 @@ import java.io.IOException;
  * for unfiltered data only
  *
  * @author caron
+ * @deprecated use H5tiledLayout
  */
 class H5chunkLayout extends Indexer {
   private Section want;

@@ -17,7 +17,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.iosp.hdf5;
+package ucar.nc2.iosp.hdf4;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 /**
+ * Turn ODL into XML
  * @author caron
  * @since Aug 7, 2007
  */

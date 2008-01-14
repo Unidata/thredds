@@ -41,11 +41,13 @@ public class IospHelper {
    * @param raf      read from here.
    * @param index    handles skipping around in the file.
    * @param dataType dataType of the variable
+   * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readData(RandomAccessFile raf, Layout index, DataType dataType) throws java.io.IOException {
-    Object arr = makePrimitiveArray((int) index.getTotalNelems(), dataType);
+  static public Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue) throws java.io.IOException {
+    Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType) :
+        makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
     return readData(raf, index, dataType, arr);
   }
 
@@ -135,15 +137,17 @@ public class IospHelper {
    * Read data subset from PositioningDataInputStream, create primitive array of size Layout.getTotalNelems.
    * Reading is controlled by the Layout object.
    *
-   * @param raf      read from here.
+   * @param is      read from here.
    * @param index    handles skipping around in the file.
    * @param dataType dataType of the variable
+   * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readData(PositioningDataInputStream raf, Layout index, DataType dataType) throws java.io.IOException {
-    Object arr = makePrimitiveArray((int) index.getTotalNelems(), dataType);
-    return readData(raf, index, dataType, arr);
+  static public Object readDataFill(PositioningDataInputStream is, Layout index, DataType dataType, Object fillValue) throws java.io.IOException {
+    Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType) :
+        makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
+    return readData(is, index, dataType, arr);
   }
 
 
@@ -222,22 +226,38 @@ public class IospHelper {
   }
 
   /**
+   * Read data subset from PositioningDataInputStream, create primitive array of size Layout.getTotalNelems.
+   * Reading is controlled by the Layout object.
+   *
+   * @param layout    handles skipping around in the file, privide ByteBuffer to read from
+   * @param dataType dataType of the variable
+   * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
+   * @return primitive array with data read in
+   * @throws java.io.IOException on read error
+   */
+  static public Object readDataFill(LayoutBB layout, DataType dataType, Object fillValue) throws java.io.IOException {
+    Object arr = (fillValue == null) ? makePrimitiveArray((int) layout.getTotalNelems(), dataType) :
+        makePrimitiveArray((int) layout.getTotalNelems(), dataType, fillValue);
+    return readData(layout, dataType, arr);
+  }
+
+  /**
    * Read data subset from ByteBuffer, place in given primitive array.
    * Reading is controlled by the LayoutBB object.
    *
-   * @param index    handles skipping around in the file.
+   * @param layout    handles skipping around in the file, privide ByteBuffer to read from
    * @param dataType dataType of the variable
    * @param arr      primitive array to read data into
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readData(LayoutBB index, DataType dataType, Object arr) throws java.io.IOException {
-    if (showLayoutTypes) System.out.println("***BB LayoutType="+index.getClass().getName());
+  static public Object readData(LayoutBB layout, DataType dataType, Object arr) throws java.io.IOException {
+    if (showLayoutTypes) System.out.println("***BB LayoutType="+layout.getClass().getName());
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
       byte[] pa = (byte[]) arr;
-      while (index.hasNext()) {
-        LayoutBB.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
         bb.position((int) chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
@@ -248,8 +268,8 @@ public class IospHelper {
 
     } else if (dataType == DataType.SHORT) {
       short[] pa = (short[]) arr;
-      while (index.hasNext()) {
-        LayoutBB.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        LayoutBB.Chunk chunk = layout.next();
         ShortBuffer buff = chunk.getShortBuffer();
         buff.position((int) chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
@@ -260,8 +280,8 @@ public class IospHelper {
 
     } else if (dataType == DataType.INT) {
       int[] pa = (int[]) arr;
-      while (index.hasNext()) {
-        LayoutBB.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        LayoutBB.Chunk chunk = layout.next();
         IntBuffer buff = chunk.getIntBuffer();
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
@@ -272,8 +292,8 @@ public class IospHelper {
 
     } else if (dataType == DataType.FLOAT) {
       float[] pa = (float[]) arr;
-      while (index.hasNext()) {
-        LayoutBB.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        LayoutBB.Chunk chunk = layout.next();
         FloatBuffer buff = chunk.getFloatBuffer();
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
@@ -284,8 +304,8 @@ public class IospHelper {
 
     } else if (dataType == DataType.DOUBLE) {
       double[] pa = (double[]) arr;
-      while (index.hasNext()) {
-        LayoutBB.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        LayoutBB.Chunk chunk = layout.next();
         DoubleBuffer buff = chunk.getDoubleBuffer();
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
@@ -296,8 +316,8 @@ public class IospHelper {
 
     } else if (dataType == DataType.LONG) {
       long [] pa = (long[]) arr;
-      while (index.hasNext()) {
-        LayoutBB.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        LayoutBB.Chunk chunk = layout.next();
         LongBuffer buff = chunk.getLongBuffer();
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
@@ -308,9 +328,9 @@ public class IospHelper {
 
     } else if (dataType == DataType.STRUCTURE) {
       byte[] pa = (byte[]) arr;
-      int recsize = index.getElemSize();
-      while (index.hasNext()) {
-        LayoutBB.Chunk chunk = index.next();
+      int recsize = layout.getElemSize();
+      while (layout.hasNext()) {
+        LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
         bb.position((int) chunk.getSrcElem()*recsize);
         int pos = (int) chunk.getDestElem()*recsize;
@@ -328,9 +348,8 @@ public class IospHelper {
    * @param size     the size of the array to create
    * @param dataType dataType of the variable
    * @return primitive array with data read in
-   * @throws java.io.IOException on read error
    */
-  static public Object makePrimitiveArray(int size, DataType dataType) throws java.io.IOException {
+  static public Object makePrimitiveArray(int size, DataType dataType) {
     Object arr = null;
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
@@ -350,6 +369,71 @@ public class IospHelper {
     }
 
     return arr;
+  }
+
+
+  /**
+   * Create 1D primitive array of the given size and type, fill it with the given value
+   *
+   * @param size     the size of the array to create
+   * @param dataType dataType of the variable
+   * @param fillValue must be Byte, Short, Integer, Long, Float, Double, or String, matching dataType
+   * @return primitive array with data read in
+   */
+  static public Object makePrimitiveArray(int size, DataType dataType, Object fillValue) {
+
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR))  {
+      byte[] pa = new byte[size];
+      byte val = (Byte) fillValue;
+      if (val != 0)
+        for (int i = 0; i < size; i++) pa[i] = val;
+      return pa;
+
+    } else if (dataType == DataType.OPAQUE) {
+      return new byte[size];
+
+    } else if (dataType == DataType.SHORT) {
+      short[] pa = new short[size];
+      short val = (Short) fillValue;
+      if (val != 0)
+        for (int i = 0; i < size; i++) pa[i] = val;
+      return pa;
+
+    } else if (dataType == DataType.INT) {
+      int[] pa = new int[size];
+      int val = (Integer) fillValue;
+      if (val != 0)
+        for (int i = 0; i < size; i++) pa[i] = val;
+      return pa;
+
+    } else if (dataType == DataType.LONG) {
+      long[] pa = new long[size];
+      long val = (Long) fillValue;
+      if (val != 0)
+        for (int i = 0; i < size; i++) pa[i] = val;
+      return pa;
+
+    } else if (dataType == DataType.FLOAT) {
+      float[] pa = new float[size];
+      float val = (Float) fillValue;
+      if (val != 0.0)
+        for (int i = 0; i < size; i++) pa[i] = val;
+      return pa;
+
+    } else if (dataType == DataType.DOUBLE) {
+      double[] pa = new double[size];
+      double val = (Double) fillValue;
+      if (val != 0.0)
+        for (int i = 0; i < size; i++) pa[i] = val;
+      return pa;
+
+    } else if ((dataType == DataType.STRING) || (dataType == DataType.ENUM)) {
+      String[] pa = new String[size];
+      for (int i = 0; i < size; i++) pa[i] = (String) fillValue;
+      return pa;
+    }
+
+    throw new IllegalStateException();
   }
 
   // convert byte array to char array

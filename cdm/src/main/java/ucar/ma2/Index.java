@@ -35,6 +35,7 @@ import java.util.List;
  */
 
 public class Index implements Cloneable {
+  public final static Index SCALAR = new Index(0); // can be used for any scalar
 
   /**
    * array shape

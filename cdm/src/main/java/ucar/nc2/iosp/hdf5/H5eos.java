@@ -23,13 +23,11 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
+import ucar.nc2.iosp.hdf4.ODLparser2;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.jdom.Document;
 import org.jdom.Element;
 
 /**
@@ -37,6 +35,7 @@ import org.jdom.Element;
  * This allows us to use shared dimensions.
  * @author caron
  * @since Jul 23, 2007
+ * @deprecated use hdf4.HdfEos
  */
 public class H5eos {
 

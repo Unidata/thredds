@@ -33,7 +33,6 @@ import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
-import java.util.Iterator;
 import java.nio.ByteBuffer;
 
 /**
@@ -65,21 +64,24 @@ public class H4iosp extends AbstractIOServiceProvider {
     DataType dataType = v.getDataType();
     vinfo.setLayoutInfo();   // make sure needed info is present
 
+    // make sure section is complete
+    section = Section.fill(section, v.getShape());
+
     if (!vinfo.isCompressed) {
       if (!vinfo.isLinked && !vinfo.isChunked) {
         Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), section);
-        Object data = IospHelper.readData(raf, layout, dataType);
+        Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue);
         return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
       } else if (vinfo.isLinked) {
         Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
-        Object data = IospHelper.readData(raf, layout, dataType);
+        Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue);
         return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
       } else if (vinfo.isChunked) {
         H4ChunkIterator chunkIterator = new H4ChunkIterator(vinfo);
-        Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), v.getShape(), section);
-        Object data = IospHelper.readData(raf, layout, dataType);
+        Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
+        Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue);
         return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
       }
 
@@ -89,7 +91,7 @@ public class H4iosp extends AbstractIOServiceProvider {
         Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
         InputStream is = getCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-        Object data = IospHelper.readData(dataSource, index, dataType);
+        Object data = IospHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
         return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
       } else if (vinfo.isLinked) {
@@ -97,14 +99,13 @@ public class H4iosp extends AbstractIOServiceProvider {
         Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
         InputStream is = getLinkedCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-        Object data = IospHelper.readData(dataSource, index, dataType);
+        Object data = IospHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
         return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
       } else if (vinfo.isChunked) {
         LayoutBBTiled.DataChunkIterator chunkIterator = new H4CompressedChunkIterator(vinfo);
-        LayoutBB layout = new LayoutBBTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), v.getShape(), section);
-        Object arr = makePrimitiveArray((int) layout.getTotalNelems(), dataType); // LOOK - need fill value
-        Object data = IospHelper.readData(layout, dataType, arr);
+        LayoutBB layout = new LayoutBBTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
+        Object data = IospHelper.readDataFill(layout, dataType, vinfo.fillValue);
         return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
       }
     }
@@ -335,8 +336,7 @@ public class H4iosp extends AbstractIOServiceProvider {
       H4header.TagData chunkData = chunk.data; 
       chunkNo++;
 
-      LayoutTiled.DataChunk dc = new LayoutTiled.DataChunk(chunk.origin, chunkData.offset);
-      return dc;
+      return new LayoutTiled.DataChunk(chunk.origin, chunkData.offset);
     }
   }
 

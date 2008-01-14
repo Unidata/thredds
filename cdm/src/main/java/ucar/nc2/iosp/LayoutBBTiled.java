@@ -53,16 +53,15 @@ public class LayoutBBTiled implements LayoutBB {
    * @param chunkIterator iterator over all data chunks
    * @param chunkSize     all chunks assumed to be the same size
    * @param elemSize      size of an element in bytes.
-   * @param srcShape      shape of the entire data array.
-   * @param wantSection   the wanted section of data, contains a List of Range objects.
+   * @param wantSection   the wanted section of data, contains a List of Range objects. Must be complete.
    * @throws ucar.ma2.InvalidRangeException if section invalid for this variable
    * @throws java.io.IOException            on io error
    */
-  public LayoutBBTiled(DataChunkIterator chunkIterator, int[] chunkSize, int elemSize, int[] srcShape, Section wantSection) throws InvalidRangeException, IOException {
+  public LayoutBBTiled(DataChunkIterator chunkIterator, int[] chunkSize, int elemSize, Section wantSection) throws InvalidRangeException, IOException {
     this.chunkIterator = chunkIterator;
     this.chunkSize = chunkSize;
     this.elemSize = elemSize;
-    this.want = Section.fill(wantSection, srcShape);
+    this.want = wantSection;
     if (debug) System.out.println(" want section="+this.want);
 
     this.totalNelems = this.want.computeSize();

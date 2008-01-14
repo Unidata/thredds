@@ -161,7 +161,7 @@ public class TestH4read extends TestCase {
     System.out.print((want != have) ? "*" : " ");
   }
 
-  public void readAll() throws IOException {
+  public void testReadAll() throws IOException {
     //readandCountAllInDir(testDir, null);
     TestAll.readAllDir(testDir, null);
     /* TestAll.readAllDir(testDir, new FileFilter() {
@@ -172,7 +172,7 @@ public class TestH4read extends TestCase {
     }); */
   }
 
-  public void testReadAndCountAll() throws IOException {
+  public void makeReadAndCountAll() throws IOException {
     testReadAndCountAllInDir("C:/data/hdf4/", new FileFilter() {
       public boolean accept(File pathname) {
         return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".15");

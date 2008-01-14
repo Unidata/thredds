@@ -25,6 +25,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.*;
 import ucar.nc2.iosp.nexrad2.NexradStationDB;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.units.DateFormatter;
@@ -2066,7 +2067,7 @@ class Nidsheader{
     }
 
     if (dataType == DataType.CHAR) {
-      return AbstractIOServiceProvider.convertByteToChar( barray);
+      return IospHelper.convertByteToChar( barray);
     }
 
     ByteBuffer bbuff = ByteBuffer.wrap( barray);

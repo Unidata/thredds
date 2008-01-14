@@ -21,7 +21,6 @@
 package ucar.nc2.iosp;
 
 import ucar.ma2.*;
-import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -116,7 +115,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
    * @param dataType dataType of the variable
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
-   */
+   *
   protected Object readData(RandomAccessFile raf, Layout index, DataType dataType) throws java.io.IOException {
     Object arr = makePrimitiveArray((int) index.getTotalNelems(), dataType);
     return readData(raf, index, dataType, arr);
@@ -129,7 +128,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
    * @param dataType dataType of the variable
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
-   */
+   *
   protected Object makePrimitiveArray(int size, DataType dataType) throws java.io.IOException {
     Object arr = null;
 
@@ -160,7 +159,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
    * @param arr primitive array to read data into
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
-   */
+   *
   protected Object readData(RandomAccessFile raf, Layout index, DataType dataType, Object arr) throws java.io.IOException {
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
@@ -217,7 +216,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     int size = byteArray.length;
     char[] cbuff = new char[size];
     for (int i = 0; i < size; i++)
-      cbuff[i] = (char) DataType.unsignedByteToShort(byteArray[i]); // NOTE: not Unicode ! // LOOK (char) byteArray[i]
+      cbuff[i] = (char) DataType.unsignedByteToShort(byteArray[i]); // NOTE: not Unicode !
     return cbuff;
   }
 
@@ -226,8 +225,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     int size = from.length;
     byte[] to = new byte[size];
     for (int i = 0; i < size; i++)
-      to[i] = (byte) from[i]; // LOOK wrong, convert back to unsigned byte
+      to[i] = (byte) from[i];
     return to;
-  }
+  } */
 
 }

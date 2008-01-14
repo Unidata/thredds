@@ -22,7 +22,7 @@ package ucar.nc2.iosp.hdf4;
 import ucar.nc2.*;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.dataset.AxisType;
-import ucar.nc2.iosp.hdf5.ODLparser2;
+import ucar.nc2.iosp.hdf4.ODLparser2;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;

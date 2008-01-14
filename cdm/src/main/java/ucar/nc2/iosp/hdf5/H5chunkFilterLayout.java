@@ -33,6 +33,7 @@ import java.nio.*;
 /**
  * @author caron
  * @since Jul 21, 2007
+ * @deprecated use H5tiledLayoutBB
  */
 class H5chunkFilterLayout extends H5chunkLayout {
   private RandomAccessFile raf;

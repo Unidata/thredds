@@ -21,6 +21,7 @@ package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
 import ucar.nc2.iosp.Layout;
+import ucar.nc2.iosp.IospHelper;
 
 import java.nio.channels.WritableByteChannel;
 
@@ -45,7 +46,7 @@ public class N3raf extends N3iosp  {
    * @return primitive array with data read in
    */
  protected Object readData( Layout index, DataType dataType) throws java.io.IOException {
-   return readData(raf, index, dataType); // from AbstractIOServiceProvider
+   return IospHelper.readDataFill(raf, index, dataType, null);
  }
 
   /**

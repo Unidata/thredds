@@ -53,16 +53,15 @@ public class LayoutTiled implements Layout {
    * @param chunkIterator iterator over all available data chunks
    * @param chunkSize     all chunks assumed to be the same size
    * @param elemSize      size of an element in bytes.
-   * @param srcShape      shape of the entire data array.
-   * @param wantSection   the wanted section of data, contains a List of Range objects.
+   * @param wantSection   the wanted section of data, contains a List of Range objects. Must be complete
    * @throws ucar.ma2.InvalidRangeException if section invalid for this variable
    * @throws java.io.IOException            on io error
    */
-  public LayoutTiled(DataChunkIterator chunkIterator, int[] chunkSize, int elemSize, int[] srcShape, Section wantSection) throws InvalidRangeException, IOException {
+  public LayoutTiled(DataChunkIterator chunkIterator, int[] chunkSize, int elemSize, Section wantSection) throws InvalidRangeException, IOException {
     this.chunkIterator = chunkIterator;
     this.chunkSize = chunkSize;
     this.elemSize = elemSize;
-    this.want = Section.fill(wantSection, srcShape);
+    this.want = wantSection;
 
     this.totalNelems = this.want.computeSize();
     this.totalNelemsDone = 0;
@@ -149,8 +148,8 @@ public class LayoutTiled implements Layout {
   }
 
   static public class DataChunk {
-    int[] offset; // offset index of this chunk, reletive to entire array
-    long filePos; // filePos of a single raw data chunk
+    public int[] offset; // offset index of this chunk, reletive to entire array
+    public long filePos; // filePos of a single raw data chunk
 
     public DataChunk(int[] offset, long filePos) {
       this.offset = offset;

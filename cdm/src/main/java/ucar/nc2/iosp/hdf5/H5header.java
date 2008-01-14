@@ -25,6 +25,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
 import ucar.nc2.Enumeration;
 import ucar.nc2.iosp.netcdf3.N3iosp;
+import ucar.nc2.iosp.LayoutTiled;
 import ucar.ma2.*;
 
 import java.util.*;
@@ -3354,6 +3355,45 @@ class H5header {
     DataChunkIterator getDataChunkIterator(Section want) throws IOException {
       return new DataChunkIterator(want);
     }
+
+    LayoutTiled.DataChunkIterator getDataChunkIterator2(Section want, int nChunkDim) throws IOException {
+      return new DataChunkIterator2(want, nChunkDim);
+    }
+
+    // An Iterator over the DataChunks in the btree.
+    // returns only the actual data from the btree leaf (level 0) nodes.
+    class DataChunkIterator2 implements LayoutTiled.DataChunkIterator {
+      private Node root;
+      private int nChunkDim;
+
+      /**
+       * Constructor
+       *
+       * @param want skip any nodes that are before this section
+       * @throws IOException on error
+       */
+      DataChunkIterator2(Section want, int nChunkDim) throws IOException {
+        this.nChunkDim = nChunkDim;
+        root = new Node(rootNodeAddress, -1); // should we cache the nodes ???
+        int[] wantOrigin = (want != null) ? want.getOrigin() : null;
+        root.first(wantOrigin);
+      }
+
+      public boolean hasNext() {
+        return root.hasNext(); //  && !node.greaterThan(wantOrigin);
+      }
+
+      public LayoutTiled.DataChunk next() throws IOException {
+        DataChunk dc = root.next();
+        int[] offset = dc.offset;
+        if (offset.length > nChunkDim) { // may have to eliminate last offset
+          offset = new int[nChunkDim];
+          System.arraycopy(dc.offset, 0, offset, 0, nChunkDim);
+        }
+        return new LayoutTiled.DataChunk( offset, dc.filePos);
+      }
+    }
+
 
     // An Iterator over the DataChunks in the btree.
     // returns only the actual data from the btree leaf (level 0) nodes.

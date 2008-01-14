@@ -22,6 +22,7 @@ package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.IospHelper;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -467,7 +468,7 @@ public class N3streamWriter {
       return pa.length;
 
     } else if (dataType == DataType.CHAR) {
-      byte[] pa = N3iosp.convertCharToByte((char[]) values.get1DJavaArray(char.class));
+      byte[] pa = IospHelper.convertCharToByte((char[]) values.get1DJavaArray(char.class));
       for (int i = 0; i < pa.length; i++)
         stream.write(pa[i]);
       return pa.length;
