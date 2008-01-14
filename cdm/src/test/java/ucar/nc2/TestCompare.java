@@ -200,7 +200,7 @@ public class TestCompare {
           double v1 = iter1.getDoubleNext();
           double v2 = iter2.getDoubleNext();
           if (!Double.isNaN(v1) || !Double.isNaN(v2))
-            assert v1 == v2 : v1 + " != "+ v2 + " at "+iter1;
+            assert v1 == v2 : v1 + " != "+ v2+" count="+iter1;
       }
     }
 
@@ -209,7 +209,7 @@ public class TestCompare {
           float v1 = iter1.getFloatNext();
           float v2 = iter2.getFloatNext();
           if (!Float.isNaN(v1) || !Float.isNaN(v2))
-            assert v1 == v2 : v1 + " != "+ v2;
+            assert v1 == v2 : v1 + " != "+ v2+" count="+iter1;
       }
     }
 
@@ -225,7 +225,7 @@ public class TestCompare {
       while (iter1.hasNext()) {
           short v1 = iter1.getShortNext();
           short v2 = iter2.getShortNext();
-          assert v1 == v2 : v1 + " != "+ v2;
+          assert v1 == v2 : v1 + " != "+ v2+" count="+iter1;
       }
     }
 
@@ -233,7 +233,7 @@ public class TestCompare {
       while (iter1.hasNext()) {
           byte v1 = iter1.getByteNext();
           byte v2 = iter2.getByteNext();
-          assert v1 == v2 : v1 + " != "+ v2;
+          assert v1 == v2 : v1 + " != "+ v2+" count="+iter1;
       }
     }
   }

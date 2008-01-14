@@ -54,8 +54,18 @@ public class TestIndexChunker extends TestCase {
   }
 
   public void testChunkerTiled() throws InvalidRangeException {
-    Section dataSection = new Section("53:53,0:7,0:31");
-    Section wantSection = new Section("38:173,0:7,10:31");
+    Section dataSection = new Section("0:0, 20:39,  0:1353 ");
+    Section wantSection = new Section("0:2, 22:3152,0:1350");
+    IndexChunkerTiled index = new IndexChunkerTiled(dataSection, wantSection);
+    while(index.hasNext()) {
+      Layout.Chunk chunk = index.next();
+      System.out.println(" "+chunk);
+    }
+  }
+
+  public void testChunkerTiled2() throws InvalidRangeException {
+    Section dataSection = new Section("0:0, 40:59,  0:1353  ");
+    Section wantSection = new Section("0:2, 22:3152,0:1350");
     IndexChunkerTiled index = new IndexChunkerTiled(dataSection, wantSection);
     while(index.hasNext()) {
       Layout.Chunk chunk = index.next();

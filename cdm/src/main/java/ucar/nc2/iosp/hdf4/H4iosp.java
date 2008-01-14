@@ -42,6 +42,7 @@ import java.nio.ByteBuffer;
  */
 public class H4iosp extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4iosp.class);
+  static private boolean showLayoutTypes = false;
 
   private RandomAccessFile raf;
   private H4header header = new H4header();
@@ -64,13 +65,6 @@ public class H4iosp extends AbstractIOServiceProvider {
     DataType dataType = v.getDataType();
     vinfo.setLayoutInfo();   // make sure needed info is present
 
-    /* if (vinfo.isChunked) {
-      Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
-      InputStream is = getChunkedInputStream(vinfo);
-      PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-      Object data = IospHelper.readData(dataSource, index, dataType);
-      return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);  */
-
     if (!vinfo.isCompressed) {
       if (!vinfo.isLinked && !vinfo.isChunked) {
         Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), section);
@@ -91,6 +85,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     } else {
       if (!vinfo.isLinked && !vinfo.isChunked) {
+        if (showLayoutTypes) System.out.println("***notLinked, compressed");
         Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
         InputStream is = getCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
@@ -98,6 +93,7 @@ public class H4iosp extends AbstractIOServiceProvider {
         return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
       } else if (vinfo.isLinked) {
+        if (showLayoutTypes) System.out.println("***Linked, compressed");
         Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
         InputStream is = getLinkedCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
@@ -336,7 +332,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     public LayoutTiled.DataChunk next() throws IOException {
       H4header.DataChunk chunk = chunks.get(chunkNo);
-      H4header.TagData chunkData = chunk.data; // LOOK can H4header.XXX remain private?
+      H4header.TagData chunkData = chunk.data; 
       chunkNo++;
 
       LayoutTiled.DataChunk dc = new LayoutTiled.DataChunk(chunk.origin, chunkData.offset);
@@ -359,36 +355,53 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     public LayoutBBTiled.DataChunk next() throws IOException {
       H4header.DataChunk chunk = chunks.get(chunkNo);
-      H4header.TagData chunkData = chunk.data; // LOOK can it be private?
+      H4header.TagData chunkData = chunk.data;
+      assert (chunkData.ext_type == TagEnum.SPECIAL_COMP);
       chunkNo++;
 
-      ByteBuffer bb;
-      if (chunkData.ext_type == TagEnum.SPECIAL_COMP) {
+      return new DataChunk(chunk.origin, chunkData.compress);
+    }
+  }
+
+  private class DataChunk implements LayoutBBTiled.DataChunk {
+    private int[] offset; // offset index of this chunk, reletive to entire array
+    private H4header.SpecialComp compress;
+    private ByteBuffer bb;  // the data is placed into here
+
+    public DataChunk(int[] offset, H4header.SpecialComp compress) {
+      this.offset = offset;
+      this.compress = compress;
+    }
+
+    public int[] getOffset() {
+      return offset;
+    }
+
+    public ByteBuffer getByteBuffer() throws IOException {
+      if (bb == null) {
         // read compressed data in
-        H4header.TagData cdata = chunkData.compress.getDataTag();
+        H4header.TagData cdata = compress.getDataTag();
         byte[] cbuffer = new byte[cdata.length];
         raf.seek(cdata.offset);
         raf.readFully(cbuffer);
         //System.out.println("  read compress " + cdata.length + " at= " + cdata.offset);
 
         // uncompress it
-        if (chunkData.compress.compress_type == TagEnum.COMP_CODE_DEFLATE) {
+        if (compress.compress_type == TagEnum.COMP_CODE_DEFLATE) {
           InputStream in = new java.util.zip.InflaterInputStream(new ByteArrayInputStream(cbuffer));
-          ByteArrayOutputStream out = new ByteArrayOutputStream(chunkData.compress.uncomp_length);
+          ByteArrayOutputStream out = new ByteArrayOutputStream(compress.uncomp_length);
           thredds.util.IO.copy(in, out);
           byte[] buffer = out.toByteArray();
           bb = ByteBuffer.wrap(buffer);
-          //System.out.println("  uncompress "+buffer.length + ", wanted="+chunkData.compress.uncomp_length);
+          //System.out.println("  uncompress " + buffer.length + ", wanted=" + compress.uncomp_length);
         } else {
-          throw new IllegalStateException("unknown compression type =" + chunkData.compress.compress_type);
+          throw new IllegalStateException("unknown compression type =" + compress.compress_type);
         }
-
-      } else {
-        throw new IllegalStateException();
       }
-
-      return new LayoutBBTiled.DataChunk(chunk.origin, bb);
+      
+      return bb;
     }
+
   }
 
 

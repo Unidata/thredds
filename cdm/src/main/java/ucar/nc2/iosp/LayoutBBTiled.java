@@ -38,11 +38,9 @@ public class LayoutBBTiled implements LayoutBB {
   private Section want;
   private int[] chunkSize; // all chunks assumed to be the same size
   private int elemSize;
-  //private long startSrcPos;
 
   private DataChunkIterator chunkIterator; // iterate across chunks
   private IndexChunkerTiled index = null; // iterate within a chunk
-  private ByteBuffer bb = null;
 
   // track the overall iteration
   private long totalNelems, totalNelemsDone; // total number of elemens
@@ -65,6 +63,7 @@ public class LayoutBBTiled implements LayoutBB {
     this.chunkSize = chunkSize;
     this.elemSize = elemSize;
     this.want = Section.fill(wantSection, srcShape);
+    if (debug) System.out.println(" want section="+this.want);
 
     this.totalNelems = this.want.computeSize();
     this.totalNelemsDone = 0;
@@ -78,7 +77,7 @@ public class LayoutBBTiled implements LayoutBB {
     return elemSize;
   }
 
-  private LayoutBB.Chunk next;
+  private LayoutBBTiled.Chunk next;
   public boolean hasNext() { // have to actually fetch the thing
     if (totalNelemsDone >= totalNelems) return false;
 
@@ -103,7 +102,7 @@ public class LayoutBBTiled implements LayoutBB {
           }
 
           // make the dataSection for this chunk
-          dataSection = new Section(dataChunk.offset, chunkSize);
+          dataSection = new Section(dataChunk.getOffset(), chunkSize);
           if (debugIntersection)
             System.out.println(" test intersecting: " + dataSection + " want: " + want);
           if (dataSection.intersects(want)) // does it intersect ?
@@ -111,20 +110,23 @@ public class LayoutBBTiled implements LayoutBB {
         }
 
         if (debug)
-          System.out.println(" found intersecting section: " + dataSection);
-        index = new IndexChunkerTiled(dataSection, want);
-        //startSrcPos = dataChunk.filePos;
-        bb = dataChunk.bb;
+          System.out.println(" found intersecting dataSection: " + dataSection+" intersect= "+dataSection.intersect(want));
+
+        index = new IndexChunkerTiled(dataSection, want); // new indexer into this chunk
+        next = new Chunk( dataChunk.getByteBuffer()); // this does the uncompression
 
       } catch (InvalidRangeException e) {
+        throw new IllegalStateException(e);
+
+      } catch (IOException e) {
         throw new IllegalStateException(e);
       }
     }
 
     IndexChunker.Chunk chunk = index.next();
     totalNelemsDone += chunk.getNelems();
-    //chunk.setSrcPos(startSrcPos + chunk.getSrcElem() * elemSize);
-    next = new Chunk( chunk, bb);
+    next.setDelegate( chunk);
+
     return true;
   }
 
@@ -154,18 +156,11 @@ public class LayoutBBTiled implements LayoutBB {
   }
 
   /**
-   * The Data Chunks.
+   * A data chunk
    */
-  static public class DataChunk {
-    int[] offset; // offset index of this chunk, reletive to entire array
-    //long filePos; // filePos of a single raw data chunk
-    ByteBuffer bb;  // the data is placed into here
-
-    public DataChunk(int[] offset, /*long filePos, */ ByteBuffer bb) {
-      this.offset = offset;
-      //this.filePos = filePos;
-      this.bb = bb;
-    }
+  static public interface DataChunk {
+    public int[] getOffset();
+    public ByteBuffer getByteBuffer() throws IOException;
   }
 
   /**
@@ -183,15 +178,16 @@ public class LayoutBBTiled implements LayoutBB {
     private FloatBuffer fb;
     private DoubleBuffer db;
 
-    private boolean debug = false;
-
-    public Chunk(IndexChunker.Chunk delegate, ByteBuffer bb) {
-      this.delegate = delegate;
+    public Chunk(ByteBuffer bb) {
       this.bb = bb;
     }
 
+    public void setDelegate(IndexChunker.Chunk delegate) {
+      this.delegate = delegate;
+    }
+
     public int getSrcElem() {
-      return (int) delegate.getSrcElem(); // LOOK this is the problem ????
+      return (int) delegate.getSrcElem();
     }
     public int getNelems() {
       return delegate.getNelems();

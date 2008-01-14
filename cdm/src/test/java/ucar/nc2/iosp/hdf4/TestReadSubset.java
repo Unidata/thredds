@@ -40,7 +40,7 @@ public class TestReadSubset extends TestCase {
     super(name);
   }
 
-  public void testReadVariableSection() throws InvalidRangeException, IOException {
+  public void testSpecificVariableSection() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = NetcdfFile.open(TestH4read.testDir + "96108_08.hdf");
 
     Variable v = ncfile.findVariable("CalibratedData");
@@ -78,27 +78,45 @@ public class TestReadSubset extends TestCase {
   }
 
   public void testSubsetting() throws IOException, InvalidRangeException {
-    /* LayoutRegular
-    testVariableSubset(TestH4read.testDir + "96108_08.hdf", "BlackBody1Temperature");
+    // LayoutRegular
     testVariableSubset(TestH4read.testDir + "MI1B2T_B54_O003734_AN_05.hdf", "Infrared Radiance%2FRDQI");
     testVariableSubset(TestH4read.testDir + "ncidc/AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf", "High_Res_B_Swath/Data Fields/Cold_Sky_Mirror_Count_89B");
 
-    // PositioningDataInputStream
+    // LayoutSegmented (linked)
+    testVariableSubset(TestH4read.testDir + "96108_08.hdf", "BlackBody1Temperature");
+    testVariableSubset(TestH4read.testDir + "ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf", "Total_Attenuated_Backscatter_532");
+    //testVariableSubset(TestH4read.testDir + "ncidc/AMSR_E_L2_Land_T06_200801012345_A.hdf", "AMSR-E Level 2B Land Data/Data Vgroup/Land Parameters");
+
+    // PositioningDataInputStream (not linked, compressed)
+    testVariableSubset(TestH4read.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "DC Restore Change for Reflective 1km Bands");
+    testVariableSubset(TestH4read.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data Fields/Cloud_Top_Pressure");
+    testVariableSubset(TestH4read.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data Fields/Quality_Assurance_1km");
+
+    // PositioningDataInputStream (linked, compressed)
     testVariableSubset(TestH4read.testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", "MOP03/Data Fields/Surface Pressure Day");
     testVariableSubset(TestH4read.testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", "MOP03/Data Fields/Averaging Kernel Night");
-    testVariableSubset(TestH4read.testDir + "ncidc/MOD10A1.A2008001.h23v15.005.2008003161138.hdf", "MOD_Grid_Snow_500m/Data Fields/Fractional_Snow_Cover");
-    testVariableSubset(TestH4read.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data Fields/Cloud_Top_Pressure");
-    testVariableSubset(TestH4read.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data Fields/Quality_Assurance_1km"); // */
+    testVariableSubset(TestH4read.testDir + "ncidc/MOD10A1.A2008001.h23v15.005.2008003161138.hdf", "MOD_Grid_Snow_500m/Data Fields/Fractional_Snow_Cover"); // */
 
-    // LayoutBBTiled
-    //testVariableSubset(TestH4read.testDir + "eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", "GeometricParameters/Data Fields/CaZenith");
-    testVariableSubset(TestH4read.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "MODIS_SWATH_Type_L1B/Data Fields/EV_500_RefSB");
-
-    // LayoutSegmented
-    testVariableSubset(TestH4read.testDir + "ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf", "Total_Attenuated_Backscatter_532");
-    testVariableSubset(TestH4read.testDir + "eos/misr/MISR_AM1_AGP_P040_F01_24.subset", "Standard/Data Fields/AveSceneElev");
-
+     // LayoutBBTiled (chunked and compressed)
+    testVariableSubset(TestH4read.testDir + "eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", "GeometricParameters/Data Fields/CaZenith");
+    testVariableSubset(TestH4read.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "MODIS_SWATH_Type_L1B/Data Fields/EV_500_RefSB_Uncert_Indexes");
  }
+
+  public void problemSubset() throws IOException, InvalidRangeException {
+    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/chunked"));
+    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/chunkTable"));
+    testVariableSubset(TestH4read.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf","MODIS_SWATH_Type_L1B/Data Fields/EV_500_RefSB_Uncert_Indexes",
+        new Section("0:3,1049:3957,464:1452"));
+  }
+
+  void testVariableSubset(String filename, String varName, Section s) throws InvalidRangeException, IOException {
+    System.out.println("testVariableSubset="+filename+","+varName);
+
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+    Variable v = ncfile.findVariable(varName);
+    assert (null != v);
+    testOne(v, s, v.read());
+  }
 
   void testVariableSubset(String filename, String varName) throws InvalidRangeException, IOException {
     System.out.println("testVariableSubset="+filename+","+varName);
@@ -138,11 +156,11 @@ public class TestReadSubset extends TestCase {
   }
 
   public void problem() throws InvalidRangeException, IOException {
-    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/chunked")); // H4header/construct"));
+    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/chunkTable")); // H4header/construct"));
 
     NetcdfFile ncfile = NetcdfFile.open(TestH4read.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf");
-    Variable v = ncfile.findVariable("MODIS_SWATH_Type_L1B/Data Fields/EV_500_RefSB_Uncert_Indexes");
-    Section s= new Section("0:2:2,28:3152:2,530:1358:2"); // 1:3:2,38:3378:2,1045:1527:2
+    Variable v = ncfile.findVariable("MODIS_SWATH_Type_L1B/Data Fields/EV_500_RefSB");
+    Section s= new Section("0:2:1,22:3152:1,0:1350:1"); // "0:2:1,28:3152:1,530:1358:1"
     testOne(v, s, v.read());
   }
 

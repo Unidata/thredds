@@ -54,7 +54,7 @@ public class IndexChunkerTiled {
   private int startDestElem; // the offset in the result Array of this piece of it
   private int startSrcElem; // the offset in the source Array of this piece of it
 
-  private boolean debug = false, debugMerge = false, debugDetail = false, debugNext = false;
+  private boolean debug = false, debugMerge = false, debugDetail = false, debugNext = false, debugStartingElems = false;
 
   /**
    * Constructor.
@@ -100,9 +100,11 @@ public class IndexChunkerTiled {
      }
      this.startPos = startFilePos + fileOffset; */
 
-     // the offset in the result Array of this piece of it
-     startDestElem = wantSection.offset( intersect);
-     startSrcElem = dataSection.offset( intersect);
+    // the offset in the result Array of this piece of it
+    startDestElem = wantSection.offset( intersect);
+    startSrcElem = dataSection.offset( intersect);
+    if (debugStartingElems)
+      System.out.println(" startDestElem="+ startDestElem + " startSrcElem="+ startSrcElem);
 
      /* for (Dim dim : dimList) {
        int d = dim.intersect.first() - dim.want.first();

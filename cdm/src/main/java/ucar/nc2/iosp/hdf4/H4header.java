@@ -78,7 +78,8 @@ public class H4header {
   private static boolean debugConstruct = false; // show CDM objects as they are constructed
   private static boolean debugAtt = false; // show CDM attributes as they are constructed
   private static boolean debugLinked = false; // linked data
-  private static boolean debugChunked = false; // chunked data
+  private static boolean debugChunkTable = false; // chunked data
+  private static boolean debugChunkDetail = false; // chunked data
   private static boolean debugTracker = false; // memory tracker
   private static boolean warnings = false; // log messages
 
@@ -89,7 +90,8 @@ public class H4header {
     debugConstruct = debugFlag.isSet("H4header/construct");
     debugAtt = debugFlag.isSet("H4header/att");
     debugLinked = debugFlag.isSet("H4header/linked");
-    debugChunked = debugFlag.isSet("H4header/chunked");
+    debugChunkTable = debugFlag.isSet("H4header/chunkTable");
+    debugChunkDetail = debugFlag.isSet("H4header/chunkDetail");
     debugTracker = debugFlag.isSet("H4header/memTracker");
   }
 
@@ -1167,11 +1169,11 @@ public class H4header {
         dataChunks = new ArrayList<DataChunk>();
 
         // read the chunk table - stored as a Structure in the data
-        if (debugChunked) System.out.println(" TagData getChunkedTable " + detail());
+        if (debugChunkTable) System.out.println(" TagData getChunkedTable " + detail());
         TagVH chunkTableTag = (TagVH) tagMap.get(tagid(chunk_tbl_ref, chunk_tbl_tag));
         Structure s = (Structure) makeVariable(chunkTableTag);
         ArrayStructure sdata = (ArrayStructure) s.read();
-        if (debugChunked) System.out.println(NCdumpW.printArray(sdata, "getChunkedTable", null));
+        if (debugChunkDetail) System.out.println(NCdumpW.printArray(sdata, "getChunkedTable", null));
 
         // construct the chunks
         StructureMembers members = sdata.getStructureMembers();
@@ -1179,13 +1181,13 @@ public class H4header {
         StructureMembers.Member tagM = members.findMember("chk_tag");
         StructureMembers.Member refM = members.findMember("chk_ref");
         int n = (int) sdata.getSize();
-        if (debugChunked) System.out.println(" Reading "+n+" DataChunk tags");
+        if (debugChunkTable) System.out.println(" Reading "+n+" DataChunk tags");
         for (int i = 0; i < n; i++) {
           int[] origin = sdata.getJavaArrayInt(i, originM);
           short tag = sdata.getScalarShort(i, tagM);
           short ref = sdata.getScalarShort(i, refM);
           TagData data = (TagData) tagMap.get(tagid(ref, tag));
-          dataChunks.add(new DataChunk(origin, data));
+          dataChunks.add(new DataChunk(origin, chunk_length, data));
           data.used = true;
           if (data.compress != null) isCompressed = true;
         }
@@ -1212,10 +1214,15 @@ public class H4header {
     int origin[];
     TagData data;
 
-    DataChunk(int[] origin, TagData data) {
+    DataChunk(int[] origin, int[] chunk_length, TagData data) {
+      // origin is in units of chunks - convert to indices
+      assert origin.length == chunk_length.length;
+      for (int i=0; i<origin.length; i++)
+        origin[i] *= chunk_length[i];
       this.origin = origin;
+
       this.data = data;
-      if (debugChunked) {
+      if (debugChunkTable) {
         System.out.print(" Chunk origin=");
         for (int i = 0; i < origin.length; i++) System.out.print(origin[i] + " ");
         System.out.println(" data=" + data.detail());
