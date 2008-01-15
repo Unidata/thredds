@@ -181,7 +181,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testOceanS2() throws IOException, InvalidRangeException {
-    String filename = "C:/data/problem/test_bora.nc";
+    String filename = TestAll.upcShareTestDataDir + "grid/transforms/OceanS2.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VariableDS lev = (VariableDS) ncd.findVariable("s_rho");
     assert lev != null;

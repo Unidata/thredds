@@ -16,14 +16,14 @@ import java.util.List;
  */
 
 public class TestN4 extends TestCase {
-
+  String testDir = TestAll.upcShareTestDataDir + "netcdf4/";
   public TestN4(String name) {
     super(name);
   }
 
   public void testOpen() throws IOException {
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/files/tst_enums.nc";
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = testDir+"nc4/tst_enums.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     List<Variable> vars = ncfile.getVariables();
@@ -33,25 +33,23 @@ public class TestN4 extends TestCase {
     ncfile.close();
   }
 
-  public void testReadOne() throws IOException {
-    //H5iosp.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5iosp/read"));
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/files/c0.nc";
-    TestH5read.readAllData(filename);
+  public void testReadAll() throws IOException {
+    TestAll.readAllDir(testDir+"nc4", null);
+    TestAll.readAllDir(testDir+"nc4-classic", null);
   }
 
-  public void test() throws IOException {
+  public void problem() throws IOException {
     //H5iosp.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5iosp/read"));
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/files/c0.nc";
+    String filename = testDir+"nc4/c0_4.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
-    Variable v = ncfile.findVariable("c213");
+    Variable v = ncfile.findVariable("cr");
     Array data = v.read();
   }
 
-  public void testEnum() throws IOException {
+  public void utestEnum() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/files/tst_enum_data.nc";
+    String filename = testDir+"nc4/tst_enum_data.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
     Variable v = ncfile.findVariable("primary_cloud");                        
     Array data = v.read();
@@ -61,8 +59,8 @@ public class TestN4 extends TestCase {
   }
 
   public void testVlenStrings() throws IOException {
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/files/tst_strings.nc";
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = testDir+"nc4/tst_strings.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("measure_for_measure_var");
@@ -73,7 +71,7 @@ public class TestN4 extends TestCase {
 
   public void testCompoundVlens() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/files/cdm_sea_soundings.nc";
+    String filename = testDir+"files/cdm_sea_soundings.nc4";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("fun_soundings");
@@ -83,8 +81,8 @@ public class TestN4 extends TestCase {
   }
 
   public void testStrings() throws IOException {
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/netcdf4/files/nc_test_netcdf4.nc";
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = testDir+"files/nc_test_netcdf4.nc4";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("d");
@@ -94,34 +92,6 @@ public class TestN4 extends TestCase {
     //Array data = v.read();
     //NCdump.printArray(data, "cr", System.out, null);
     ncfile.close();
-  }
-
-  public void testReadAll() {
-    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
-    readAllDir("C:/data/netcdf4/files/");
-  }
-
-  public void readAllDir(String dirName) {
-    System.out.println("---------------Reading directory " + dirName);
-    File allDir = new File(dirName);
-    File[] allFiles = allDir.listFiles();
-    if (null == allFiles) {
-      System.out.println("---------------INVALID " + dirName);
-      return;
-    }
-
-    for (int i = 0; i < allFiles.length; i++) {
-      String name = allFiles[i].getAbsolutePath();
-      if (name.endsWith(".h5") || name.endsWith(".H5") || name.endsWith(".he5") || name.endsWith(".nc"))
-        TestH5read.readAllData(name);
-    }
-
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
-      if (f.isDirectory())
-        readAllDir(allFiles[i].getAbsolutePath());
-    }
-
   }
 
   public static void main(String args[]) {

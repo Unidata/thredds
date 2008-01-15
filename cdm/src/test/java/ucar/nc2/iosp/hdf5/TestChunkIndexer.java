@@ -66,12 +66,8 @@ public class TestChunkIndexer extends TestCase {
   public void testSection() throws InvalidRangeException, IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
     NetcdfFile ncfile = TestH5.openH5("IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5");
-    Group root = ncfile.getRootGroup();
-    Group g1 = root.findGroup("U-MARF");
-    Group g2 = g1.findGroup("EPS");
-    Group g3 = g2.findGroup("IASI_xxx_1C");
-    Group g4 = g3.findGroup("DATA");
-    Variable v2 = g4.findVariable("IMAGE_DATA");  // chunked short
+    Variable v2 = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_DATA");  // chunked short
+    assert v2 != null;
 
     Array allData = v2.read();
     System.out.println("allData.section ="+allData.shapeToString());

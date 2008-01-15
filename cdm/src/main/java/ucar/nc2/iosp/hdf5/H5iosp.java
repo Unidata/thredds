@@ -171,7 +171,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         // System.out.println("************RegularSectionLayout for "+v2.getShortName());
         layout = new LayoutRegular(dataPos, elemSize, v2.getShape(), wantSection);
       }
-      myRaf.order(byteOrder);
+      if (byteOrder >= 0) myRaf.order(byteOrder);
       data = readData(vinfo, v2, layout, readDtype, wantSection.getShape(), fillValue, byteOrder);
     }
 
@@ -225,7 +225,8 @@ public class H5iosp extends AbstractIOServiceProvider {
       IndexIterator ii = codesArray.getIndexIterator();
       while(ii.hasNext()) {
         int code = ii.getIntNext();
-        stringData[count++] = vinfo.enumMap.get(code);
+        String s = vinfo.enumMap.get(code);
+        stringData[count++] = (s == null) ? "" : s;
       }
       return Array.factory(String.class, shape, stringData);
     }

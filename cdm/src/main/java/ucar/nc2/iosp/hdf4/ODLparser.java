@@ -32,8 +32,8 @@ import java.util.StringTokenizer;
  * @author caron
  * @since Aug 7, 2007
  */
-public class ODLparser2 {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ODLparser2.class);
+public class ODLparser {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ODLparser.class);
 
   private Document doc;
   private boolean debug = false, show = false;
@@ -157,7 +157,7 @@ public class ODLparser2 {
 
 
   static public void main(String args[]) throws IOException {
-    ODLparser2 p = new ODLparser2();
+    ODLparser p = new ODLparser();
     p.parseFile("c:/temp/odl.struct.txt");
   }
 }

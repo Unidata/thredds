@@ -227,7 +227,9 @@ public class Attribute {
       buff.append(" = ");
       for (int i = 0; i < getLength(); i++) {
         if (i != 0) buff.append(", ");
-        buff.append("\"").append( NCdumpW.encodeString(getStringValue(i)) ).append("\"");
+        String val = getStringValue(i);
+        if (val != null)
+          buff.append("\"").append( NCdumpW.encodeString(val) ).append("\"");
       }
     } else {
       buff.append(" = ");

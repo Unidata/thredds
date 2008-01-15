@@ -16,13 +16,19 @@ import ucar.ma2.Array;
 /** Test nc2 read JUnit framework. */
 
 public class TestH5read extends TestCase {
-
   public TestH5read( String name) {
     super(name);
   }
 
  public void testH5data() {
-     readAllDir ("C:/data/testdata");
+
+   TestAll.readAllDir (TestH5.testDir, new FileFilter() {
+      public boolean accept(File file) {
+        String name = file.getPath();
+        return (name.endsWith(".h5") || name.endsWith(".H5") || name.endsWith(".he5") || name.endsWith(".nc"));
+      }
+    });
+
  }
 
   public void testSamples() {

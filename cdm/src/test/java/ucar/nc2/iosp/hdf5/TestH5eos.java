@@ -20,10 +20,7 @@
 
 package ucar.nc2.iosp.hdf5;
 
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.TestAll;
-import ucar.nc2.Group;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
@@ -43,12 +40,12 @@ public class TestH5eos extends TestCase {
     super(name);
   }
 
-  public void testStructMetadata() {
+  public void testStructMetadata() throws IOException {
     //NetcdfFile ncfile = TestH5.open("c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
-    NetcdfFile ncfile = TestH5.open(TestAll.upcShareTestDataDir+"hdf5/auraData/HIRDLS2-Aura73p_b029_2000d275.he5");
+    NetcdfFile ncfile = TestH5.openH5("eos/HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5");
 
     Group root = ncfile.getRootGroup();
-    Group g = root.findGroup("HDFEOS_INFORMATION");
+    Group g = root.findGroup("HDFEOS INFORMATION");
     Variable dset = g.findVariable("StructMetadata.0");
     assert(null != dset );
     assert(dset.getDataType() == DataType.CHAR);
@@ -71,18 +68,32 @@ public class TestH5eos extends TestCase {
     System.out.println(dset.getName());
     System.out.println(" Length = "+sval.length());
     System.out.println(" Value = "+sval);
+    ncfile.close();
   }
 
-  public void test1() {
-    NetcdfFile ncfile = TestH5.openH5("auraData/HIR2ARSP_c3_na.he5");
-    assert ncfile.findDimension("nChans") != null;
+  public void test1() throws IOException {
+    NetcdfFile ncfile = TestH5.openH5("eos/HIRDLS/HIR2ARSP_c3_na.he5");
+    Variable v =  ncfile.findVariable("HDFEOS/SWATHS/H2SO4_H2O_Tisdale/Data Fields/Wavenumber");
+    assert v != null;
+    Dimension dim = v.getDimension(0);
+    assert dim != null;
 
-    System.out.println(ncfile);
+    assert dim.getName().equals("nChans");
+    ncfile.close();
   }
 
-  public void test2() {
-    NetcdfFile ncfile = TestH5.openH5("auraData/HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5");
-    System.out.println(ncfile);
+  public void test2() throws IOException {
+    NetcdfFile ncfile = TestH5.openH5("eos/HIRDLS/HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5");
+
+    Variable v =  ncfile.findVariable("HDFEOS/SWATHS/HIRDLS_L1_Swath/Data Fields/Elevation Angle");
+    assert v != null;
+    assert v.getRank() == 4;
+    assert v.getDimension(0).getName().equals("MaF");
+    assert v.getDimension(1).getName().equals("MiF");
+    assert v.getDimension(2).getName().equals("CR");
+    assert v.getDimension(3).getName().equals("CC");
+
+    ncfile.close();
   }
 
 

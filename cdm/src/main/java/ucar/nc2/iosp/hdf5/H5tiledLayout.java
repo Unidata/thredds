@@ -79,7 +79,7 @@ class H5tiledLayout implements Layout {
 
     // create the data chunk iterator
     LayoutTiled.DataChunkIterator iter = vinfo.btree.getDataChunkIterator2( this.want, nChunkDims);
-    delegate = new LayoutTiled(iter, chunkSize, elemSize, wantSection);
+    delegate = new LayoutTiled(iter, chunkSize, elemSize, this.want);
   }
 
   public long getTotalNelems() {

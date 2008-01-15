@@ -10,6 +10,7 @@ import ucar.nc2.TestAll;
  */
 public class TestH5 {
   public static boolean dumpFile = false;
+  public static String testDir = TestAll.upcShareTestDataDir + "hdf5/";
 
  public static NetcdfFile open( String filename) {
     try {
@@ -45,16 +46,20 @@ public class TestH5 {
     TestSuite suite= new TestSuite();
 
     // hdf5 reading
-    //suite.addTest(new TestSuite(TestN4.class)); //
+    suite.addTest(new TestSuite(TestN4.class)); //
     suite.addTest(new TestSuite(TestH5read.class)); //
     suite.addTest(new TestSuite(TestH5ReadBasic.class)); //
+    suite.addTest(new TestSuite(TestH5ReadAndCount.class)); //
     suite.addTest(new TestSuite(TestH5ReadStructure.class)); //
     suite.addTest(new TestSuite(TestH5ReadStructure2.class)); //
     suite.addTest(new TestSuite(TestH5Vlength.class)); //
     suite.addTest(new TestSuite(TestH5ReadArray.class)); //
     suite.addTest(new TestSuite(TestOddTypes.class)); //
     suite.addTest(new TestSuite(TestH5compressed.class)); //
+    suite.addTest(new TestSuite(TestH5subset.class)); //
     suite.addTest(new TestSuite(TestChunkIndexer.class)); //
+    suite.addTest(new TestSuite(TestH5filter.class)); //
+    suite.addTest(new TestSuite(TestH5eos.class)); //
     suite.addTest(new TestSuite(TestH5aura.class)); //
     suite.addTest(new TestSuite(TestH5npoess.class)); //
 

@@ -22,7 +22,7 @@ package ucar.nc2.iosp.hdf4;
 import ucar.nc2.*;
 import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.dataset.AxisType;
-import ucar.nc2.iosp.hdf4.ODLparser2;
+import ucar.nc2.iosp.hdf4.ODLparser;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
@@ -77,7 +77,7 @@ public class HdfEos {
     this.ncfile = ncfile;
     Group rootg = ncfile.getRootGroup();
 
-    ODLparser2 parser = new ODLparser2();
+    ODLparser parser = new ODLparser();
     Element root = parser.parseFromString(structMetadata); // now we have the ODL in JDOM elements
 
     // SWATH

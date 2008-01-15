@@ -39,7 +39,7 @@ public class TestH5subset extends TestCase {
     super(name);
   }
 
-  private String dirName = "C:/data/hdf5/";
+  private String dirName = TestH5.testDir; // "C:/data/hdf5/";
   public void testReadAll() throws IOException {
     TestAll.readAllDir(dirName, new FileFilter() {
       public boolean accept(File file) {
@@ -54,7 +54,7 @@ public class TestH5subset extends TestCase {
     int ntrials = 100;
 
     // H5chunkFilterLayout
-    TestIosp.testVariableSubset(dirName + "HIRDLS2-Aura12h_b033_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
+    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRDLS2-Aura12h_b033_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
     TestIosp.testVariableSubset(dirName + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/GRIDS/O3Descending/Data Fields/L3dmValue", ntrials);
     TestIosp.testVariableSubset(dirName + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/SWATHS/O3AscendingResiduals/Data Fields/L2gpValue", ntrials);
     TestIosp.testVariableSubset(dirName + "aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", "HDFEOS/GRIDS/OMI Column Amount O3/Data Fields/ColumnAmountO3", ntrials);

@@ -235,7 +235,14 @@ public class TestAll {
 
   }
 
-
+  /* usage:
+    TestAll.readAllDir(dirName, new FileFilter() {
+      public boolean accept(File file) {
+        String name = file.getPath();
+        return (name.endsWith(".h5") || name.endsWith(".H5") || name.endsWith(".he5") || name.endsWith(".nc"));
+      }
+    });
+   */
   public static void readAllDir(String dirName, FileFilter ff) {
     System.out.println("---------------Reading directory "+dirName);
     File allDir = new File( dirName);
@@ -249,7 +256,7 @@ public class TestAll {
       String name = f.getAbsolutePath();
       if (f.isDirectory())
         continue;
-      if ((ff == null) || ff.accept(f))
+      if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude"))
         readAll(name);
     }
 

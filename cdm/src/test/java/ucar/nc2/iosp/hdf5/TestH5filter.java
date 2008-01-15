@@ -67,7 +67,7 @@ public class TestH5filter extends TestCase {
 
     // probably bogus also, cant find any non-zero filtered variables
     NetcdfFile ncfile = TestH5.openH5("wrf/wrf_input_seq.h5");
-    Variable v = ncfile.findVariable("DATASETINPUT/GSW");
+    Variable v = ncfile.findVariable("DATASET=INPUT/GSW");
     assert v != null;
     Array data = v.read();
     int[] shape = data.getShape();
@@ -78,7 +78,7 @@ public class TestH5filter extends TestCase {
 
   public void testDeflate() throws IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.openH5("msg/Europe_MSG1_8bit_HRV.H5");
+    NetcdfFile ncfile = TestH5.openH5("msg/MSG1_8bit_HRV.H5");
 
     // picture looks ok in ToolsUI
     Variable v = ncfile.findVariable("image1/image_data");
@@ -91,10 +91,10 @@ public class TestH5filter extends TestCase {
 
   public void testMissing() throws IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.openH5("auraData/HIRDLS2-AFGL_b027_na.he5");
+    NetcdfFile ncfile = TestH5.openH5("eos/HIRDLS/HIRDLS2-AFGL_b027_na.he5");
 
     // picture looks ok in ToolsUI
-    Variable v = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data_Fields/Altitude");
+    Variable v = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data Fields/Altitude");
     assert v != null;
     Array data = v.read();
     int[] shape = data.getShape();
