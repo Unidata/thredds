@@ -328,7 +328,7 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
         //serviceName = "OPENDAP";
         //serviceType = "OPENDAP";
         //serviceBase = "/thredds/dodsC";
-        serviceBase += pathInfo;
+        serviceBase += pathInfo +"/";
 
         // write out catalog with datasets
         if ( ! serviceType.equals( "" )) {
@@ -365,9 +365,9 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
                 pw.println( "\">" );
             }
             pw.println("    <metadata inherited=\"true\">");
-            pw.println("      <dataType>radialCollection</dataType>");
+            pw.println("      <dataType>Radial</dataType>");
             pw.println("      <dataFormat>" + "NEXRAD2" + "</dataFormat>");
-            //pw.println("      <serviceName>" + serviceName + "</serviceName>");
+            pw.println("      <serviceName>" + serviceName + "</serviceName>");
             pw.println("    </metadata>");
             pw.println();
 
@@ -689,22 +689,24 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
             Station stn = stationMap.get( s );
             if(  stn == null ) {
                 pw.println( "   <station id=\""+ s +"\" state=\"XX\" country=\"XX\">");
+                pw.println( "      <name>Unknown</name>");
                 pw.println( "      <latitude>0.0</latitude>");
                 pw.println( "      <longitude>0.0</longitude>");
-                pw.println( "      <altitude>0.0</altitude>");
+                pw.println( "      <elevation>0.0</elevation>");
                 pw.println( "   </station>");
                 continue;
             }
             pw.println( "   <station id=\""+ stn.getValue() +"\" state=\""+ stn.getState()
                     +"\" country=\""+ stn.getCountry() +"\">");
+            pw.println( "      <name>"+ stn.getName() +"</name>");
             pw.println( "      <latitude>"+
                     ucar.unidata.util.Format.d(stn.getLocation().getLatitude(), 6) +"</latitude>");
             pw.println( "      <longitude>"+
                     ucar.unidata.util.Format.d(stn.getLocation().getLongitude(), 6) +"</longitude>");
 
            if (!Double.isNaN(stn.getLocation().getElevation()))
-               pw.println( "      <altitude>"+
-                    ucar.unidata.util.Format.d(stn.getLocation().getElevation(), 6) +"</altitude>");
+               pw.println( "      <elevation>"+
+                    ucar.unidata.util.Format.d(stn.getLocation().getElevation(), 6) +"</elevation>");
 
            pw.println( "   </station>");
         }
