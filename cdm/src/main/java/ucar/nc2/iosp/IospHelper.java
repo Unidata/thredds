@@ -65,7 +65,7 @@ public class IospHelper {
   static public Object readData(RandomAccessFile raf, Layout index, DataType dataType, Object arr) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***RAF LayoutType="+index.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -165,7 +165,7 @@ public class IospHelper {
   static public Object readData(PositioningDataInputStream raf, Layout index, DataType dataType, Object arr) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***PositioningDataInputStream LayoutType="+index.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -254,7 +254,7 @@ public class IospHelper {
   static public Object readData(LayoutBB layout, DataType dataType, Object arr) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***BB LayoutType="+layout.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -352,7 +352,7 @@ public class IospHelper {
   static public Object makePrimitiveArray(int size, DataType dataType) {
     Object arr = null;
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
       arr = new byte[size];
 
     } else if (dataType == DataType.SHORT) {
@@ -382,7 +382,7 @@ public class IospHelper {
    */
   static public Object makePrimitiveArray(int size, DataType dataType, Object fillValue) {
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR))  {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE))  {
       byte[] pa = new byte[size];
       byte val = (Byte) fillValue;
       if (val != 0)

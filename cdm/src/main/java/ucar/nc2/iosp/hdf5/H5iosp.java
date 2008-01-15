@@ -97,15 +97,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     // check if its an HDF5-EOS file
     Group eosInfo = ncfile.getRootGroup().findGroup("HDFEOS INFORMATION");
     if (eosInfo != null){
-      Variable structMetadataVar = eosInfo.findVariable("StructMetadata.0");
-      if (structMetadataVar != null) {
-        // read and parse the ODL
-        Array A = structMetadataVar.read();
-        ArrayChar ca = (ArrayChar) A;
-        String structMetadata = ca.getString();
-
-        new HdfEos().amendFromODL(ncfile, structMetadata);
-      }
+      HdfEos.amendFromODL(ncfile, eosInfo);
     }
 
     ncfile.finish();
@@ -120,7 +112,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   private Array readData(ucar.nc2.Variable v2, long dataPos, Section wantSection) throws IOException, InvalidRangeException {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
-    Object data;
+    Object data = null;
 
     //if (v2.getShortName().equals("cr"))
     //  System.out.println("hey");
@@ -173,14 +165,14 @@ public class H5iosp extends AbstractIOServiceProvider {
         //data = readData(vinfo, v2, index, readDtype, wantSection.getShape(), fillValue, byteOrder); // LOOK! byteOrder
         //System.out.println("************H5chunkLayout");
         layout = new H5tiledLayout(v2, readDtype, wantSection);
-        //System.out.println("************H5chunkLayout");
       } else {
-        //Indexer index = RegularSectionLayout.factory(dataPos, elemSize, new Section(v2.getShape()), wantSection); LOOK why RegularSectionLayout ??
+        //Indexer index = RegularSectionLayout.factory(dataPos, elemSize, new Section(v2.getShape()), wantSection); // LOOK why RegularSectionLayout ??
         //data = readData(vinfo, v2, index, readDtype, wantSection.getShape(), fillValue, byteOrder);
         // System.out.println("************RegularSectionLayout for "+v2.getShortName());
         layout = new LayoutRegular(dataPos, elemSize, v2.getShape(), wantSection);
       }
-      data = IospHelper.readDataFill( myRaf, layout, readDtype, fillValue);
+      myRaf.order(byteOrder);
+      data = readData(vinfo, v2, layout, readDtype, wantSection.getShape(), fillValue, byteOrder);
     }
 
     if (data instanceof Array)
@@ -193,21 +185,22 @@ public class H5iosp extends AbstractIOServiceProvider {
    * Read data subset from file for a variable, create primitive array.
    *
    * @param v         the variable to read.
-   * @param index     handles skipping around in the file.
+   * @param layout     handles skipping around in the file.
    * @param dataType  dataType of the data to read
    * @param shape     the shape of the output
    * @param fillValue fill value as a wrapped primitive
    * @return primitive array or Array with data read in
    * @throws java.io.IOException            if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
-   *
-  private Object readData(H5header.Vinfo vinfo, Variable v, Indexer index, DataType dataType, int[] shape,
+   */
+  private Object readData(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
           Object fillValue, int byteOrder) throws java.io.IOException, InvalidRangeException {
 
     // special processing
     H5header.TypeInfo typeInfo = vinfo.typeInfo;
     if (typeInfo.hdfType == 2) { // time
-      Object data = readDataPrimitive(index, dataType, fillValue, byteOrder);
+      Object data = readDataPrimitive(layout, dataType, fillValue, byteOrder);
+      //Object data = IospHelper.readDataFill( myRaf, layout, dataType, fillValue);
       Array timeArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
 
       // now transform into an ISO Date String
@@ -222,7 +215,8 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     if (typeInfo.hdfType == 8) { // enum
-      Object data = readDataPrimitive(index, dataType, fillValue, byteOrder);
+      Object data = readDataPrimitive(layout, dataType, fillValue, byteOrder);
+      //Object data = IospHelper.readDataFill( myRaf, layout, dataType, fillValue);
       Array codesArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
 
       // now transform into a String array
@@ -231,7 +225,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       IndexIterator ii = codesArray.getIndexIterator();
       while(ii.hasNext()) {
         int code = ii.getIntNext();
-        stringData[count++] = vinfo.enumMap.get(Integer.valueOf(code));
+        stringData[count++] = vinfo.enumMap.get(code);
       }
       return Array.factory(String.class, shape, stringData);
     }
@@ -245,14 +239,14 @@ public class H5iosp extends AbstractIOServiceProvider {
 
       // general case is to read an array of vlen objects
       // each vlen generates an Array - so return ArrayObject of Array
-      boolean scalar = index.getTotalNelems() == 1; // if scalar, return just the len Array
-      Array[] data = new Array[(int) index.getTotalNelems()];
+      boolean scalar = layout.getTotalNelems() == 1; // if scalar, return just the len Array
+      Array[] data = new Array[(int) layout.getTotalNelems()];
       int count = 0;
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
         if (chunk == null) continue;
         for (int i = 0; i < chunk.getNelems(); i++) {
-          long address = chunk.getFilePos() + index.getElemSize() * i;
+          long address = chunk.getSrcPos() + layout.getElemSize() * i;
           Array vlenArray = headerParser.getHeapDataArray(address, readType, byteOrder);
           data[count++] = (typeInfo.base.hdfType == 7) ? convertReference(vlenArray) : vlenArray;
         }
@@ -265,23 +259,24 @@ public class H5iosp extends AbstractIOServiceProvider {
       ArrayStructureW asw = new ArrayStructureW(s.makeStructureMembers(), shape);
 
       int count = 0;
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
         if (chunk == null) continue;
         for (int i = 0; i < chunk.getNelems(); i++) {
           if (debug) H5header.debugOut.println(" readStructure " + v.getName() + " chunk.getFilePos= " +
-                  chunk.getFilePos() + " index.getElemSize= " + index.getElemSize());
+                  chunk.getSrcPos() + " index.getElemSize= " + layout.getElemSize());
 
-          StructureData sdata = readStructure(s, asw, chunk.getFilePos() + index.getElemSize() * i);
+          StructureData sdata = readStructure(s, asw, chunk.getSrcPos() + layout.getElemSize() * i);
           asw.setStructureData(sdata, count++);
         }
       }
       return asw;
 
     } else {
-      return readDataPrimitive(index, dataType, fillValue, byteOrder);
+      // normal case
+      return readDataPrimitive(layout, dataType, fillValue, byteOrder);
     }
-  } */
+  }
 
   private Array convertReference(Array refArray) throws java.io.IOException {
     int nelems = (int) refArray.getSize();
@@ -293,6 +288,39 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
     return Array.factory(String.class, new int[] {nelems}, result);
   }
+
+  /*
+   * Read data subset from file for a variable, create primitive array.
+   *
+   * @param index     handles skipping around in the file.
+   * @param dataType  dataType of the variable
+   * @param fillValue fill value as a wrapped primitive
+   * @return primitive array with data read in
+   * @throws java.io.IOException            if read error
+   * @throws ucar.ma2.InvalidRangeException if invalid section
+   */
+  private Object readDataPrimitive(Layout layout, DataType dataType, Object fillValue, int byteOrder) throws java.io.IOException, InvalidRangeException {
+    int size = (int) layout.getTotalNelems();
+
+   if (dataType == DataType.STRING) {
+      String[] sa = new String[size];
+      int count = 0;
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
+        if (chunk == null) continue;
+        for (int i = 0; i < chunk.getNelems(); i++) {
+          sa[count++] = headerParser.readHeapString(chunk.getSrcPos() + layout.getElemSize() * i);
+        }
+      }
+      return sa;
+
+   }  else {
+
+     return IospHelper.readDataFill( myRaf, layout, dataType, fillValue);
+   }
+
+  }
+
 
   /*
    * Read data subset from file for a variable, create primitive array.
@@ -386,7 +414,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     throw new IllegalStateException("H5iosp.readDataPrimitive: Unknown DataType "+dataType);
-  } */
+  }  */
 
   /* private Object readFilteredData(Variable v, H5chunkFilterLayout index, Object fillValue)
           throws java.io.IOException, InvalidRangeException {
