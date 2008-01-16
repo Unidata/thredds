@@ -140,7 +140,7 @@ public class TestAll {
     suite.addTest( ucar.nc2.TestNC2.suite());
     suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
     //suite.addTest( ucar.nc2.ncml4.TestNcML.suite());  // leave off for now
-    suite.addTest( ucar.nc2.ncml4.TestNcMLoffsite.suite());
+    //suite.addTest( ucar.nc2.ncml4.TestNcMLoffsite.suite());
 
     suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
     suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite());
