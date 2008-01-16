@@ -42,13 +42,14 @@ public class IospHelper {
    * @param index    handles skipping around in the file.
    * @param dataType dataType of the variable
    * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
+   * @param byteOrder if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue) throws java.io.IOException {
+  static public Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue, int byteOrder) throws java.io.IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType) :
         makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
-    return readData(raf, index, dataType, arr);
+    return readData(raf, index, dataType, arr, byteOrder);
   }
 
   /**
@@ -62,13 +63,14 @@ public class IospHelper {
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readData(RandomAccessFile raf, Layout index, DataType dataType, Object arr) throws java.io.IOException {
+  static public Object readData(RandomAccessFile raf, Layout index, DataType dataType, Object arr, int byteOrder) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***RAF LayoutType="+index.getClass().getName());
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
+        raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
@@ -78,6 +80,7 @@ public class IospHelper {
       short[] pa = (short[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
+        raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.readShort(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
@@ -87,6 +90,7 @@ public class IospHelper {
       int[] pa = (int[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
+        raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.readInt(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
@@ -96,6 +100,7 @@ public class IospHelper {
       float[] pa = (float[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
+        raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.readFloat(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
@@ -105,6 +110,7 @@ public class IospHelper {
       double[] pa = (double[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
+        raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.readDouble(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
@@ -114,6 +120,7 @@ public class IospHelper {
       long[] pa = (long[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
+        raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.readLong(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
@@ -124,6 +131,7 @@ public class IospHelper {
       int recsize = index.getElemSize();
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
+        raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.read(pa, (int) chunk.getDestElem()*recsize, chunk.getNelems()*recsize);
       }

@@ -317,7 +317,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
    }  else {
 
-     return IospHelper.readDataFill( myRaf, layout, dataType, fillValue);
+     return IospHelper.readDataFill( myRaf, layout, dataType, fillValue, byteOrder);
    }
 
   }

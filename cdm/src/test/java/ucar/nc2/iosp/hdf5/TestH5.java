@@ -46,8 +46,6 @@ public class TestH5 {
     TestSuite suite= new TestSuite();
 
     // hdf5 reading
-    suite.addTest(new TestSuite(TestN4.class)); //
-    suite.addTest(new TestSuite(TestH5read.class)); //
     suite.addTest(new TestSuite(TestH5ReadBasic.class)); //
     suite.addTest(new TestSuite(TestH5ReadAndCount.class)); //
     suite.addTest(new TestSuite(TestH5ReadStructure.class)); //
@@ -63,6 +61,8 @@ public class TestH5 {
     suite.addTest(new TestSuite(TestH5aura.class)); //
     suite.addTest(new TestSuite(TestH5npoess.class)); //
 
+    suite.addTest(new TestSuite(TestN4.class)); //
+    suite.addTest(new TestSuite(TestH5read.class)); //
     return suite;
   }
 }

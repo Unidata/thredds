@@ -70,18 +70,18 @@ public class H4iosp extends AbstractIOServiceProvider {
     if (!vinfo.isCompressed) {
       if (!vinfo.isLinked && !vinfo.isChunked) {
         Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), section);
-        Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue);
+        Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
         return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
       } else if (vinfo.isLinked) {
         Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
-        Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue);
+        Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
         return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
 
       } else if (vinfo.isChunked) {
         H4ChunkIterator chunkIterator = new H4ChunkIterator(vinfo);
         Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
-        Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue);
+        Object data = IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
         return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
       }
 
@@ -148,11 +148,11 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     if (!vinfo.isLinked && !vinfo.isCompressed) {
       Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), section);
-      IospHelper.readData(raf, layout, DataType.STRUCTURE, result);
+      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, -1);
 
     } else if (vinfo.isLinked && !vinfo.isCompressed) {
       Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, recsize, s.getShape(), section);
-      IospHelper.readData(raf, layout, DataType.STRUCTURE, result);
+      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, -1);
 
     } else if (!vinfo.isLinked && vinfo.isCompressed) {
       InputStream is = getCompressedInputStream(vinfo);

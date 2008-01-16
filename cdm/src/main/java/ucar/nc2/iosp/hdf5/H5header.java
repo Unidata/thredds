@@ -64,6 +64,7 @@ class H5header {
     debugContinueMessage = debugFlag.isSet("H5header/continueMessage");
     debugDetail = debugFlag.isSet("H5header/headerDetails");
     debugDataBtree = debugFlag.isSet("H5header/dataBtree");
+    debugDataChunk = debugFlag.isSet("H5header/dataChunk");
     debugGroupBtree = debugFlag.isSet("H5header/groupBtree");
     debugFractalHeap = debugFlag.isSet("H5header/fractalHeap");
     debugHeap = debugFlag.isSet("H5header/Heap");

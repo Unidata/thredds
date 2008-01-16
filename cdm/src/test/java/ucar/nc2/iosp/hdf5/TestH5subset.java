@@ -40,47 +40,39 @@ public class TestH5subset extends TestCase {
   }
 
   private String dirName = TestH5.testDir; // "C:/data/hdf5/";
-  public void testReadAll() throws IOException {
-    TestAll.readAllDir(dirName, new FileFilter() {
-      public boolean accept(File file) {
-        String name = file.getPath();
-        return (name.endsWith(".h5") || name.endsWith(".H5") || name.endsWith(".he5") || name.endsWith(".nc"));
-      }
-    });
-
-  }
 
   public void testSubsetting() throws IOException, InvalidRangeException {
-    int ntrials = 100;
+    int ntrials = 37;
 
-    // H5chunkFilterLayout
-    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRDLS2-Aura12h_b033_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
-    TestIosp.testVariableSubset(dirName + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/GRIDS/O3Descending/Data Fields/L3dmValue", ntrials);
-    TestIosp.testVariableSubset(dirName + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/SWATHS/O3AscendingResiduals/Data Fields/L2gpValue", ntrials);
-    TestIosp.testVariableSubset(dirName + "aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", "HDFEOS/GRIDS/OMI Column Amount O3/Data Fields/ColumnAmountO3", ntrials);
-    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
-    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
-    TestIosp.testVariableSubset(dirName + "ssec-h5/I3A_CCD_13FEB2007_0501_L1B_STD.h5", "CCD/Image Data/CCD_VIS", ntrials);
-    TestIosp.testVariableSubset(dirName + "ssec-h5/K01_VHR_28AUG2007_0000_L02_IND.h5", "VHRR/Image Data/VHRR_WV", ntrials);
-    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/Temperature", ntrials); // */
+    // H5tiledLayoutBB
+    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRDLS2-Aura12h_b033_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
+    TestIosp.testVariableSubset(dirName + "eos/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/GRIDS/O3Descending/Data Fields/L3dmValue", ntrials);
+    TestIosp.testVariableSubset(dirName + "eos/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/SWATHS/O3AscendingResiduals/Data Fields/L2gpValue", ntrials);
+    TestIosp.testVariableSubset(dirName + "eos/aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", "HDFEOS/GRIDS/OMI Column Amount O3/Data Fields/ColumnAmountO3", ntrials);
+    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
+    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
+    TestIosp.testVariableSubset(dirName + "ssec/I3A_CCD_13FEB2007_0501_L1B_STD.h5", "CCD/Image Data/CCD_VIS", ntrials);
+    TestIosp.testVariableSubset(dirName + "ssec/K01_VHR_28AUG2007_0000_L02_IND.h5", "VHRR/Image Data/VHRR_WV", ntrials);
+    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/Temperature", ntrials); // */
 
-    // H5chunkLayout
-    TestIosp.testVariableSubset(dirName + "aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO/Data Fields/L2gpValue", ntrials);
-    TestIosp.testVariableSubset(dirName + "aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO column/Geolocation Fields/Latitude", ntrials);
+    // H5tiledLayout
+    TestIosp.testVariableSubset(dirName + "eos/aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO/Data Fields/L2gpValue", ntrials);
+    TestIosp.testVariableSubset(dirName + "eos/aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO column/Geolocation Fields/Latitude", ntrials);
+    TestIosp.testVariableSubset(dirName + "IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5","U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_DATA", ntrials);
 
-    // RegularSectionLayout
-    TestIosp.testVariableSubset(dirName + "HIRDLS/HIR2ARSP_c3_na.he5", "HDFEOS/SWATHS/H2SO4_H2O_Tisdale/Data Fields/EXTC", ntrials);
-    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/AERO01", ntrials);
-    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/7%2E10MicronAerosolExtinction", ntrials);
-    TestIosp.testVariableSubset(dirName + "oon/TES-Aura_L3-CH4-M2007m08_F01_04.he5", "HDFEOS/GRIDS/NadirGrid/Data Fields/CH4", ntrials); // */
+    // LayoutRegular
+    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIR2ARSP_c3_na.he5", "HDFEOS/SWATHS/H2SO4_H2O_Tisdale/Data Fields/EXTC", ntrials);
+    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/AERO01", ntrials);
+    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/7%2E10MicronAerosolExtinction", ntrials);
+    TestIosp.testVariableSubset(dirName + "eos/aura/TES-Aura_L3-CH4-M2007m08_F01_04.he5", "HDFEOS/GRIDS/NadirGrid/Data Fields/CH4", ntrials); // */
 
  }
 
   public void problemSubset() throws IOException, InvalidRangeException {
-    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/chunked"));
-    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/chunkTable"));
-    TestIosp.testVariableSubset(TestH4read.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf","MODIS_SWATH_Type_L1B/Data Fields/EV_500_RefSB_Uncert_Indexes",
-        new Section("0:3,1049:3957,464:1452"));
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/dataBtree H5header/dataChunk"));
+    TestIosp.testVariableSubset(dirName + "IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5",
+            "U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_DATA", 100);
   }
 
 }

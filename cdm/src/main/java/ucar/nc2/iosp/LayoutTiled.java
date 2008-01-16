@@ -45,7 +45,7 @@ public class LayoutTiled implements Layout {
   // track the overall iteration
   private long totalNelems, totalNelemsDone; // total number of elemens
 
-  private boolean debug = false;
+  private boolean debug = false, debugNext= false;
 
   /**
    * Constructor.
@@ -125,6 +125,7 @@ public class LayoutTiled implements Layout {
   }
 
   public Layout.Chunk next() throws IOException {
+    if (debugNext) System.out.println("  next="+next);
     return next;
   }
 

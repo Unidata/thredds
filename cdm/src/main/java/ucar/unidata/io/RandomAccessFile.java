@@ -365,6 +365,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @param endian RandomAccessFile.BIG_ENDIAN or RandomAccessFile.LITTLE_ENDIAN
    */
   public void order(int endian) {
+    if (endian < 0) return;
     this.bigEndian = (endian == BIG_ENDIAN);
   }
 

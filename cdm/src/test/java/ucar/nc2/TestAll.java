@@ -135,12 +135,11 @@ public class TestAll {
     RandomAccessFile.setDebugLeaks( true);
 
     TestSuite suite= new TestSuite();
-    suite.addTest( ucar.nc2.TestLocal.suite());
-    suite.addTest( ucar.nc2.TestNC2.suite());
-    suite.addTest( ucar.nc2.TestIosp.suite());   //
+    suite.addTest( ucar.nc2.TestLocal.suite()); // data in the release
 
+    suite.addTest( ucar.nc2.TestNC2.suite());
     suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
-    suite.addTest( ucar.nc2.ncml4.TestNcML.suite());
+    //suite.addTest( ucar.nc2.ncml4.TestNcML.suite());  // leave off for now
     suite.addTest( ucar.nc2.ncml4.TestNcMLoffsite.suite());
 
     suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
@@ -151,8 +150,10 @@ public class TestAll {
 
     suite.addTest( thredds.catalog.TestCatalogAll.suite()); // */
 
+    suite.addTest( ucar.nc2.TestIosp.suite());   //
+    suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite()); //
     suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); //
-    
+
     TestSetup wrapper = new TestSetup(suite) {
 
       protected void setUp() {

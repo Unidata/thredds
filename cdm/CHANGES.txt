@@ -27,6 +27,8 @@ Changes in version 4.0
   * NetcdfFile.writeCDL(PrintWriter). strict escapes names.
  Libraries
   * use new visad library 12/04/07
+ Bugs
+  09: hdf5 byteOrder must be set for chunked, not compressed (tiledLayout)
 
  Changes in version 2.2.22
  API

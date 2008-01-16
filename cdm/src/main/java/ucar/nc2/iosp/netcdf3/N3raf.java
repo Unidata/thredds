@@ -46,7 +46,7 @@ public class N3raf extends N3iosp  {
    * @return primitive array with data read in
    */
  protected Object readData( Layout index, DataType dataType) throws java.io.IOException {
-   return IospHelper.readDataFill(raf, index, dataType, null);
+   return IospHelper.readDataFill(raf, index, dataType, null, -1);
  }
 
   /**
