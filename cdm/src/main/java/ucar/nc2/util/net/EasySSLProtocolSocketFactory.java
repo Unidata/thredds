@@ -1,8 +1,4 @@
 /*
- * $Header: /upc/share/CVS/thredds/src/thredds/util/net/EasySSLProtocolSocketFactory.java,v 1.2 2006/01/20 02:08:24 caron Exp $
- * $Revision:63 $
- * $Date:2006-07-12 21:50:51Z $
- *
  * ====================================================================
  *
  *  Copyright 2002-2004 The Apache Software Foundation
@@ -27,7 +23,7 @@
  *
  */
 
-package thredds.util.net;
+package ucar.nc2.util.net;
 
 import java.io.IOException;
 import java.net.InetAddress;

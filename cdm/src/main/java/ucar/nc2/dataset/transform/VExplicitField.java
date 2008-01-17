@@ -54,7 +54,7 @@ public class VExplicitField extends AbstractCoordTransBuilder {
   }
 
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new VTfromExistingData(ds, timeDim, vCT);
+    return new VTfromExistingData(ds, timeDim, vCT.getParameters());
   }
 
 }

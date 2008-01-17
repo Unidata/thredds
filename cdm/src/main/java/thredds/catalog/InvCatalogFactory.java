@@ -27,7 +27,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import thredds.util.IO;
+import ucar.nc2.util.IO;
 
 /**
  * Reads an XML document and constructs thredds.catalog object.

@@ -22,6 +22,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.projection.LambertConformal;

@@ -24,6 +24,8 @@ package thredds.tds;
 import junit.framework.*;
 import java.io.IOException;
 
+import ucar.nc2.util.IO;
+
 public class TestDLwriter extends TestCase {
 
   public TestDLwriter( String name) {
@@ -34,7 +36,7 @@ public class TestDLwriter extends TestCase {
     String url = "/DLwriter?type=ADN&catalog=/thredds/catalog/testEnhanced/catalog.xml";
 
     System.out.println("Response from "+TestTDSAll.topCatalog+url);
-    String result = thredds.util.IO.readURLcontents(TestTDSAll.topCatalog+url);
+    String result = IO.readURLcontents(TestTDSAll.topCatalog+url);
     System.out.println(result);
   }
 }

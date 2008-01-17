@@ -20,7 +20,6 @@
 
 package thredds.catalog;
 
-import thredds.datatype.*;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 
 import java.util.*;
@@ -31,7 +30,10 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.SimpleUnit;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.DataType;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Element;

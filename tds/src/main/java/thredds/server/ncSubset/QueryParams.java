@@ -23,7 +23,6 @@ package thredds.server.ncSubset;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,9 +33,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import thredds.servlet.ServletUtil;
-import thredds.datatype.DateRange;
-import thredds.datatype.TimeDuration;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.TimeDuration;
+import ucar.nc2.units.DateType;
 
 /**
  * Query parameter parsing for Netcdf Subset Service

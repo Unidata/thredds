@@ -13,7 +13,7 @@ package thredds.server.radarServer;
 
 import thredds.servlet.*;
 import thredds.catalog.*;
-import thredds.datatype.DateRange;
+import ucar.nc2.units.DateRange;
 
 import java.io.*;
 import java.util.*;

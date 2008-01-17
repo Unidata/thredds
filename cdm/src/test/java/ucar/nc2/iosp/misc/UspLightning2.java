@@ -23,8 +23,8 @@ package ucar.nc2.iosp.misc;
 
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.*;
-import ucar.nc2.dataset.conv._Coordinate;
-import ucar.nc2.dataset.AxisType;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;

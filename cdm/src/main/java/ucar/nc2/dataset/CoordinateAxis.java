@@ -22,6 +22,7 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.unidata.util.Format;
 
 import java.io.IOException;

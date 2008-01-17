@@ -20,6 +20,8 @@
  */
 package thredds.viewer.ui.event;
 
+import ucar.nc2.ui.util.ListenerManager;
+
 /** ActionSourceListeners are used by objects that are both source and listener for
  *  a particular type of ActionValue events. They register themselves with the
  *  ActionCoordinator of that type of event. They send events
@@ -34,14 +36,14 @@ package thredds.viewer.ui.event;
 public abstract class ActionSourceListener implements ActionValueListener {
   static public final String SELECTED = "selected";
 
-  private thredds.util.ListenerManager lm;
+  private ListenerManager lm;
   private String eventType;
 
   public ActionSourceListener(String eventType) {
     this.eventType = eventType;
 
     // manage ActionValueEvent Listeners
-    lm = new thredds.util.ListenerManager(
+    lm = new ListenerManager(
         "thredds.viewer.ui.event.ActionValueListener",
         "thredds.viewer.ui.event.ActionValueEvent",
         "actionPerformed");

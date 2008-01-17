@@ -3,7 +3,7 @@ package ucar.nc2.dt.radial;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
 
 /**
  * Factory to create RadialDatasets

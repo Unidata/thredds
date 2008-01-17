@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.io.IOException;
 
-import thredds.datatype.DateRange;
+import ucar.nc2.units.DateRange;
 
 /**
  * A 1-dimensional Coordinate Axis representing Calendar time.

@@ -22,7 +22,7 @@ package ucar.nc2.dods;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.*;
 import ucar.unidata.util.StringUtil;
 

@@ -23,9 +23,9 @@ import thredds.catalog.*;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.crawlabledataset.CrawlableDatasetDods;
-import thredds.util.PathMatcher;
+import thredds.servlet.PathMatcher;
 import thredds.cataloggen.ProxyDatasetHandler;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.DateUtil;
 

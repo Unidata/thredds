@@ -3,7 +3,6 @@ package ucar.nc2.dt.grid;
 import junit.framework.TestCase;
 import ucar.ma2.*;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.NCdump;
 import ucar.nc2.TestAll;
@@ -15,7 +14,7 @@ import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
-import thredds.catalog.DataType;
+import ucar.nc2.constants.DataType;
 
 public class TestSubset extends TestCase {
 

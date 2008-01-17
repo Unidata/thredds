@@ -23,7 +23,6 @@ package thredds.servlet;
 
 import thredds.catalog.*;
 import thredds.catalog.dl.*;
-import thredds.util.*;
 
 import java.io.*;
 import java.net.*;
@@ -31,6 +30,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import ucar.unidata.util.StringUtil;
+import ucar.nc2.util.IO;
 
 /**
  * Servlet handles creating DL records.

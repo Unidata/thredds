@@ -1,5 +1,7 @@
 package IO;
 
+import ucar.nc2.util.IO;
+
 import java.io.*;
 import java.nio.channels.*;
 import java.nio.ByteBuffer;
@@ -146,7 +148,7 @@ public class TimeCopy {
     if (buffer) out = new BufferedOutputStream(out, 1000);
 
     long start = System.currentTimeMillis();
-    thredds.util.IO.copyB(in, out, 10000);
+    IO.copyB(in, out, 10000);
     out.flush();
     double took = .001 * (System.currentTimeMillis() - start);
 
@@ -227,7 +229,7 @@ public class TimeCopy {
     File outFile = new File(filenameOut);
 
     long start = System.currentTimeMillis();
-    String ok = thredds.util.IO.readURLtoFileWithExceptions(url, outFile, bufferSize);
+    String ok = IO.readURLtoFileWithExceptions(url, outFile, bufferSize);
     double took = .001 * (System.currentTimeMillis() - start);
 
     double len = (double) outFile.length() / (1000 * 1000);

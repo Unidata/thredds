@@ -4,6 +4,7 @@ import junit.framework.*;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.*;
+import ucar.nc2.util.IO;
 
 import java.io.IOException;
 import java.io.File;
@@ -18,14 +19,14 @@ public class TestNetcdfSubsetService extends TestCase {
     String url = "/ncServer/gribCollection/NAM_CONUS_20km_surface_20060316_0000.grib1.nc?grid=K_index&grid=Sweat_index&west=-140&east=-90&north=50&south=20&time_start=3&time_end=12";
     File fileSave = new File("C:/TEMP/testNetcdfSubsetService.nc");
 
-    thredds.util.IO.readURLtoFile(TestTDSAll.topCatalog+url, fileSave);
+    IO.readURLtoFile(TestTDSAll.topCatalog+url, fileSave);
     System.out.println("Copied "+TestTDSAll.topCatalog+url+" to "+fileSave.getPath());
 
     NetcdfFile ncd = null;
     try {
       ncd = NetcdfDataset.openFile(fileSave.getPath(), null);
     } catch (Throwable t) {
-      thredds.util.IO.copyFile(fileSave.getPath(), System.out);
+      IO.copyFile(fileSave.getPath(), System.out);
       return;
     }
     assert ncd != null;

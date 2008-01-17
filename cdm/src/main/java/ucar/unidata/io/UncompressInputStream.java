@@ -312,10 +312,8 @@ public class UncompressInputStream extends FilterInputStream {
   }
 
 
-  /**
-   * Moves the unread data in the buffer to the beginning and resets the pointers.
-   * @return 0
-   */
+  // Moves the unread data in the buffer to the beginning and resets the pointers.
+  // @return 0
   private int resetbuf(int bit_pos) {
     int pos = bit_pos >> 3;
     System.arraycopy(data, pos, data, 0, end - pos);

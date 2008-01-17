@@ -50,7 +50,7 @@ public class IospHelper {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType) :
         makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
     return readData(raf, index, dataType, arr, byteOrder);
-  }
+  } 
 
   /**
    * Read data subset from RandomAccessFile, place in given primitive array.
@@ -66,7 +66,7 @@ public class IospHelper {
   static public Object readData(RandomAccessFile raf, Layout index, DataType dataType, Object arr, int byteOrder) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***RAF LayoutType="+index.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
+   if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -74,7 +74,8 @@ public class IospHelper {
         raf.seek(chunk.getSrcPos());
         raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
-      return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
+      //return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
+      if (dataType == DataType.CHAR) return convertByteToChar(pa); else return pa;
 
     } else if (dataType == DataType.SHORT) {
       short[] pa = (short[]) arr;
@@ -136,7 +137,7 @@ public class IospHelper {
         raf.read(pa, (int) chunk.getDestElem()*recsize, chunk.getNelems()*recsize);
       }
       return pa;
-    }
+    }  
 
     throw new IllegalStateException();
   }
@@ -179,7 +180,8 @@ public class IospHelper {
         Layout.Chunk chunk = index.next();
         raf.read(chunk.getSrcPos(), pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
-      return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
+      //return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
+      if (dataType == DataType.CHAR) return convertByteToChar(pa); else return pa;
 
     } else if (dataType == DataType.SHORT) {
       short[] pa = (short[]) arr;
@@ -231,7 +233,7 @@ public class IospHelper {
     }
 
     throw new IllegalStateException();
-  }
+  } //
 
   /**
    * Read data subset from PositioningDataInputStream, create primitive array of size Layout.getTotalNelems.
@@ -267,19 +269,20 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
-        bb.position((int) chunk.getSrcElem());
+        bb.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
           pa[pos++] = bb.get();
       }
-      return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
+      //return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
+      if (dataType == DataType.CHAR) return convertByteToChar(pa); else return pa;
 
     } else if (dataType == DataType.SHORT) {
       short[] pa = (short[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ShortBuffer buff = chunk.getShortBuffer();
-        buff.position((int) chunk.getSrcElem());
+        buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
           pa[pos++] = buff.get();
@@ -340,7 +343,7 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
-        bb.position((int) chunk.getSrcElem()*recsize);
+        bb.position(chunk.getSrcElem()*recsize);
         int pos = (int) chunk.getDestElem()*recsize;
         for (int i = 0; i < chunk.getNelems()*recsize; i++)
           pa[pos++] = bb.get();
@@ -348,7 +351,7 @@ public class IospHelper {
     }
 
     throw new IllegalStateException();
-  }
+  } // */
 
   /**
    * Create 1D primitive array of the given size and type

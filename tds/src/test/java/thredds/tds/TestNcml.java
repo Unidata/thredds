@@ -8,6 +8,8 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NCdump;
+import ucar.nc2.util.IO;
+import ucar.nc2.constants.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
@@ -201,14 +203,14 @@ public class TestNcml extends TestCase {
       getURL = getURL + "&bbox="+bb;
 
     File file = new File("C:/TEMP/"+grid+"3.nc");
-    thredds.util.IO.readURLtoFile(getURL, file);
+    IO.readURLtoFile(getURL, file);
     System.out.println(" copied contents to "+file.getPath());
   }
 
   private void showRead(String url) throws IOException {
     System.out.println("****************\n");
     System.out.println(url+"\n");
-    String contents = thredds.util.IO.readURLcontentsWithException( url);
+    String contents = IO.readURLcontentsWithException( url);
     System.out.println(contents);
   }
 

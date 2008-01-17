@@ -21,8 +21,8 @@
 package thredds.catalog.dl;
 
 import thredds.catalog.*;
-import thredds.datatype.DateType;
-import thredds.datatype.DateRange;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.DateRange;
 
 
 import org.jdom.*;

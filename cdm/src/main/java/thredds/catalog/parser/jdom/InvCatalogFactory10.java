@@ -21,7 +21,6 @@
 package thredds.catalog.parser.jdom;
 
 import thredds.catalog.*;
-import thredds.datatype.*;
 import thredds.crawlabledataset.*;
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
 import thredds.crawlabledataset.filter.*;
@@ -43,6 +42,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import ucar.unidata.util.Format;
+import ucar.nc2.constants.DataType;
+import ucar.nc2.units.TimeDuration;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
 /**
  * Inventory Catalog parser, version 1.0.

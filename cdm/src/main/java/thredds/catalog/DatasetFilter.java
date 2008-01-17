@@ -20,6 +20,8 @@
 
 package thredds.catalog;
 
+import ucar.nc2.constants.DataType;
+
 /**
  * Abstract class to filter datasets.
  * @see InvCatalog#filter

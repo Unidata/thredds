@@ -21,23 +21,20 @@
 package ucar.nc2.dt.radial;
 
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants.*;
+import ucar.nc2.constants.DataType;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
 import ucar.ma2.*;
-import ucar.ma2.DataType;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.ArrayList;
-
-import thredds.catalog.*;
 
 /**
  * Make a Nids NetcdfDataset into a RadialDataset.
@@ -65,7 +62,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         return new Nids2Dataset(ncd);
     }
 
-    public thredds.catalog.DataType getScientificDataType() { return thredds.catalog.DataType.RADIAL; }
+    public DataType getScientificDataType() { return DataType.RADIAL; }
 
 
     public Nids2Dataset() {}
@@ -547,7 +544,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         //String fileIn = "/home/yuanho/NIDS/Level3_BYX_N1V_20051012_0000.nids";
         //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
         //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
-        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( thredds.catalog.DataType.RADIAL, fileIn, null, new StringBuffer());
+        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( DataType.RADIAL, fileIn, null, new StringBuffer());
         String st = rds.getStartDate().toString();
         String et = rds.getEndDate().toString();
         String id = rds.getRadarID();
@@ -561,7 +558,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         String fileIn1 = "/home/yuanho/NIDS/Level3_BYX_N0V_20051013_0908.nids";
         //RadialDatasetSweepFactory datasetFactory1 = new RadialDatasetSweepFactory();
         //RadialDatasetSweep rds1 = datasetFactory1.open(fileIn1, null);
-        RadialDatasetSweep rds1 = (RadialDatasetSweep) TypedDatasetFactory.open( thredds.catalog.DataType.RADIAL, fileIn1, null, new StringBuffer());
+        RadialDatasetSweep rds1 = (RadialDatasetSweep) TypedDatasetFactory.open( ucar.nc2.constants.DataType.RADIAL, fileIn1, null, new StringBuffer());
 
         //List rvars1 = rds1.getDataVariables();
         RadialDatasetSweep.RadialVariable rf1 = (RadialDatasetSweep.RadialVariable) rds1.getDataVariable("RadialVelocity");

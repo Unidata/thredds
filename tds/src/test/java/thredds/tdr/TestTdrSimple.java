@@ -20,6 +20,8 @@
 
 package thredds.tdr;
 
+import ucar.nc2.util.IO;
+
 import java.io.OutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -56,7 +58,7 @@ public class TestTdrSimple {
 
       // read it
       is = connection.getInputStream();
-      thredds.util.IO.copyB(is, out, bufferSize);
+      IO.copyB(is, out, bufferSize);
 
     } catch (java.net.ConnectException e) {
       throw new IOException("** ConnectException on URL: <" + urlString + ">\n" +

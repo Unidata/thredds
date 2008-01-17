@@ -5,13 +5,13 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.ArrayList;
 
-import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
+import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import thredds.datatype.DateRange;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
 /**
  * _more_

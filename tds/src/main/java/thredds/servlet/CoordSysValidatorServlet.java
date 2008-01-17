@@ -275,7 +275,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
 
   private int showValidatorResults(HttpServletResponse res, NetcdfDataset ncd, boolean wantXml) throws Exception {
 
-    NetcdfDatasetInfo info = ncd.getInfo();
+      NetcdfDatasetInfo info = ncd.getInfo();
     String infoString;
 
     if (wantXml) {

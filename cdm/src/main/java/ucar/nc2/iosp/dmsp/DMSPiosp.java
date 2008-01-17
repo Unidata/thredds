@@ -3,8 +3,8 @@ package ucar.nc2.iosp.dmsp;
 
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.dataset.AxisType;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;

@@ -23,18 +23,10 @@ package ucar.nc2.thredds.server;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.InvDataset;
-import thredds.catalog.InvCatalogRef;
-import thredds.catalog.InvAccess;
-import thredds.catalog.DataType;
 
 import java.io.PrintStream;
-import java.io.IOException;
-import java.util.List;
 
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridDataset;
-import ucar.ma2.Array;
 
 /**
  * Created by IntelliJ IDEA.

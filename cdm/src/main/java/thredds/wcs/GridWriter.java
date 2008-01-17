@@ -28,7 +28,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.*;

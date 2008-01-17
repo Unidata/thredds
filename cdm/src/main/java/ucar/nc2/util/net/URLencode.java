@@ -1,4 +1,3 @@
-// $Id: $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -19,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package thredds.util.net;
+package ucar.nc2.util.net;
 
 /**
  * Provides a method to encode any string into a URL-safe

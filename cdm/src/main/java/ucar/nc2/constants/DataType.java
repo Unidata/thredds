@@ -18,10 +18,10 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package thredds.catalog;
+package ucar.nc2.constants;
 
 /**
- * Type-safe enumeration of THREDDS Data types.
+ * Type-safe enumeration of Scientific Data types.
  *
  * @author john caron
  */

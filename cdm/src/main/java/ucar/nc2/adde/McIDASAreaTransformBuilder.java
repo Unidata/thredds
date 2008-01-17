@@ -18,15 +18,15 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.dataset.transform;
+package ucar.nc2.adde;
 
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
-import ucar.unidata.geoloc.projection.McIDASAreaProjection;
 import ucar.ma2.Array;
 
 /**
@@ -34,7 +34,7 @@ import ucar.ma2.Array;
  *
  * @author caron
  */
-public class McIDASArea extends AbstractCoordTransBuilder {
+public class McIDASAreaTransformBuilder extends AbstractCoordTransBuilder {
 
   public String getTransformName() {
     return "mcidas_area";

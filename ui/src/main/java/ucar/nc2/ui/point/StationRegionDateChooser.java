@@ -27,7 +27,7 @@ import thredds.ui.BAMutil;
 import thredds.ui.PopupManager;
 import thredds.ui.RangeDateSelector;
 import thredds.ui.IndependentDialog;
-import thredds.datatype.DateRange;
+import ucar.nc2.units.DateRange;
 
 import ucar.unidata.geoloc.*;
 import ucar.util.prefs.ui.*;

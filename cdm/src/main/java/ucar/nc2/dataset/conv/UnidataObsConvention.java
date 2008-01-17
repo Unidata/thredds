@@ -20,12 +20,13 @@
 package ucar.nc2.dataset.conv;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.AxisType;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
 
 import java.io.IOException;

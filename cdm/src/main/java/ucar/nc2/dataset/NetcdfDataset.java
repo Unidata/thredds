@@ -441,17 +441,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
-  /**
+  /*
    * Retrieve a "standard" Variable with the specified name, that handles scale, offset, etc.
    * This is for backwards compatibility with 2.1,
    * used in ucar.unidata.geoloc.vertical
    *
    * @param name String which //identifies the desired variable
    * @return the VariableStandardized, or null if not found
-   */
+   *
   public Variable findStandardVariable(String name) {
     return findVariable(name); // all VariableDS handle scale/offset
-  }
+  } */
 
   ////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////

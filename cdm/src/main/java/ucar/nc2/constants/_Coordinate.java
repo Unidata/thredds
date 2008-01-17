@@ -18,10 +18,11 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.dataset.conv;
+package ucar.nc2.constants;
 
 /**
  * Constants for _Coordinate Conventions.
+ * Since this is used by many IOSPs, place in ucar.nc2, rather than  ucar.nc2.dataset.
  *
  * @author caron
  */

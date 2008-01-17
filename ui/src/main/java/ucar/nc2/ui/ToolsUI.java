@@ -21,6 +21,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.DataType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -36,6 +37,8 @@ import ucar.nc2.dataset.*;
 
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.util.*;
+import ucar.nc2.util.net.URLStreamHandlerFactory;
+import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.nc2.units.*;
 
@@ -43,11 +46,12 @@ import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
 import thredds.ui.*;
+import thredds.ui.Resource;
 
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
-import thredds.util.URLStreamHandlerFactory;
-import thredds.util.SocketMessage;
+import ucar.nc2.ui.util.*;
+import ucar.unidata.io.http.HTTPRandomAccessFile;
 import thredds.catalog.query.DqcFactory;
 
 import java.awt.*;
@@ -60,6 +64,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.commons.httpclient.HttpClient;
+import opendap.dap.DConnect2;
 
 /**
  * Netcdf Tools user interface.
@@ -444,7 +450,7 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionProperties(clearDebugFlagsAction, null, "Delete All Debug Flags", false, 'C', -1);
     BAMutil.addActionToMenu(debugMenu, clearDebugFlagsAction);
 
-    // send output to the debug message window
+    /* send output to the debug message window
     useDebugWindowAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
@@ -452,7 +458,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionProperties(useDebugWindowAction, null, "Use Debug Window", true, 'C', -1);
-    BAMutil.addActionToMenu(debugMenu, useDebugWindowAction);
+    BAMutil.addActionToMenu(debugMenu, useDebugWindowAction); */
     /* if (mainPrefs.getBoolean("useDebugWindow", false)) {
       useDebugWindowAction.putValue(BAMutil.STATE, Boolean.TRUE);
       setDebugFlags();
@@ -505,7 +511,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.FileWriter.setDebugFlags(debugFlags);
   }
 
-  public void setDebugOutputStream(boolean b) {
+  /*public void setDebugOutputStream(boolean b) {
     // System.out.println("setDebugOutputStream "+b);
     if (b) {
       if (debugOS == null) debugOS = new PrintStream(debugPane.getOutputStream());
@@ -513,7 +519,7 @@ public class ToolsUI extends JPanel {
     } else {
       NetcdfFile.setDebugOutputStream(System.out);
     }
-  }
+  } */
 
   private void makeModesMenu(JMenu modeMenu) {
     AbstractAction a;
@@ -678,32 +684,32 @@ public class ToolsUI extends JPanel {
       return;
     }
 
-    if (threddsData.dataType == thredds.catalog.DataType.GRID) {
+    if (threddsData.dataType == DataType.GRID) {
       makeComponent("Grids");
       gridPanel.setDataset((NetcdfDataset) threddsData.tds.getNetcdfFile());
       tabbedPane.setSelectedComponent(gridPanel);
 
-    } else if (threddsData.dataType == thredds.catalog.DataType.IMAGE) {
+    } else if (threddsData.dataType == DataType.IMAGE) {
       makeComponent("Images");
       imagePanel.setImageLocation(threddsData.imageURL);
       tabbedPane.setSelectedComponent(imagePanel);
 
-    } else if (threddsData.dataType == thredds.catalog.DataType.RADIAL) {
+    } else if (threddsData.dataType == DataType.RADIAL) {
       makeComponent("Radial");
       radialPanel.setDataset((RadialDatasetSweep) threddsData.tds);
       tabbedPane.setSelectedComponent(radialPanel);
 
-    } else if (threddsData.dataType == thredds.catalog.DataType.POINT) {
+    } else if (threddsData.dataType == DataType.POINT) {
       makeComponent("PointObs");
       pointObsPanel.setPointObsDataset((PointObsDataset) threddsData.tds);
       tabbedPane.setSelectedComponent(pointObsPanel);
 
-    } else if (threddsData.dataType == thredds.catalog.DataType.STATION) {
+    } else if (threddsData.dataType == DataType.STATION) {
       makeComponent("StationObs");
       stationObsPanel.setStationObsDataset((StationObsDataset) threddsData.tds);
       tabbedPane.setSelectedComponent(stationObsPanel);
 
-    } else if (threddsData.dataType == thredds.catalog.DataType.StationRadarCollection) {
+    } else if (threddsData.dataType == DataType.StationRadarCollection) {
       makeComponent("StationRadial");
       stationRadialPanel.setStationRadialDataset((StationRadarCollectionImpl) threddsData.tds);
       tabbedPane.setSelectedComponent(stationRadialPanel);
@@ -822,7 +828,7 @@ public class ToolsUI extends JPanel {
         }
 
         try {
-          thredds.util.IO.copyUrlB(values[1], out, 60000);
+          IO.copyUrlB(values[1], out, 60000);
           downloadStatus = values[1] + " written to " + values[0];
         } catch (IOException ioe) {
           downloadStatus = "Error reading " + values[1] + "\n" + ioe.getMessage();
@@ -1544,7 +1550,7 @@ public class ToolsUI extends JPanel {
       if (ncmlLocation.endsWith(".xml") || ncmlLocation.endsWith(".ncml")) {
         if (!ncmlLocation.startsWith("http:") && !ncmlLocation.startsWith("file:"))
           ncmlLocation = "file:" + ncmlLocation;
-        String text = thredds.util.IO.readURLcontents(ncmlLocation);
+        String text = IO.readURLcontents(ncmlLocation);
 
         ta.setText(text);
       } else {
@@ -1633,7 +1639,7 @@ public class ToolsUI extends JPanel {
       }
 
       try {
-        thredds.util.IO.writeToFile(text, new File(filename));
+        IO.writeToFile(text, new File(filename));
         JOptionPane.showMessageDialog(this, "File successfully written");
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
@@ -2014,7 +2020,7 @@ public class ToolsUI extends JPanel {
         //ucar.nc2.dt.radial.RadialDatasetSweepFactory fac = new ucar.nc2.dt.radial.RadialDatasetSweepFactory();
         //RadialDatasetSweep rds = fac.open(newds);
         StringBuffer errlog = new StringBuffer();
-        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(thredds.catalog.DataType.RADIAL, newds, null, errlog);
+        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(DataType.RADIAL, newds, null, errlog);
         if (rds == null) {
           JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + errlog.toString());
           err = true;
@@ -2200,7 +2206,7 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        pobsDataset = (PointObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.POINT, location, null, log);
+        pobsDataset = (PointObsDataset) TypedDatasetFactory.open(DataType.POINT, location, null, log);
         if (pobsDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -2281,7 +2287,7 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        sobsDataset = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, log);
+        sobsDataset = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, location, null, log);
         if (sobsDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -2362,7 +2368,7 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        radarCollectionDataset = (StationRadarCollectionImpl) TypedDatasetFactory.open(thredds.catalog.DataType.StationRadarCollection, location, null, log);
+        radarCollectionDataset = (StationRadarCollectionImpl) TypedDatasetFactory.open(DataType.StationRadarCollection, location, null, log);
         if (radarCollectionDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -2444,7 +2450,7 @@ public class ToolsUI extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         StringBuffer errlog = new StringBuffer();
-        ds = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
+        ds = (TrajectoryObsDataset) TypedDatasetFactory.open(DataType.TRAJECTORY, location, null, errlog);
         if (ds == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + errlog);
           return false;
@@ -2735,7 +2741,7 @@ public class ToolsUI extends JPanel {
 
     String version;
     try {
-      InputStream is = thredds.util.Resource.getFileResource("/README");
+      InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README");
       if (is == null) return "N/A";
       // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
@@ -2961,7 +2967,11 @@ public class ToolsUI extends JPanel {
 
     // use HTTPClient
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
-    ucar.nc2.dataset.HttpClientManager.init(provider, "ToolsUI");
+    HttpClient client = HttpClientManager.init(provider, "ToolsUI");
+    DConnect2.setHttpClient(client);
+    HTTPRandomAccessFile.setHttpClient(client);
+
+    // open dap initializations
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(false);
 
     // load protocol for ADDE URLs

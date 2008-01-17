@@ -21,7 +21,7 @@
 
 package ucar.nc2.thredds.server;
 
-import thredds.util.IO;
+import ucar.nc2.util.IO;
 
 import java.io.File;
 import java.io.IOException;

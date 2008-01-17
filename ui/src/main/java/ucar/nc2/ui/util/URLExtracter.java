@@ -1,10 +1,9 @@
-package thredds.util.net;
+package ucar.nc2.ui.util;
 
-import thredds.util.IO;
+import ucar.nc2.util.IO;
 
 import javax.swing.text.*;
 import javax.swing.text.html.*;
-import javax.swing.text.html.parser.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;

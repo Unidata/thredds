@@ -24,9 +24,8 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import static ucar.nc2.iosp.nexrad2.Level2Record.*;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.AxisType;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 

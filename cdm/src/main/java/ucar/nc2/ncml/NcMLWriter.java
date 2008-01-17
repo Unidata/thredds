@@ -22,10 +22,8 @@ package ucar.nc2.ncml;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
-import ucar.nc2.util.NetworkUtils;
+import ucar.nc2.util.URLnaming;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.conv._Coordinate;
-import ucar.unidata.util.StringUtil;
 
 import thredds.catalog.XMLEntityResolver;
 import org.jdom.*;
@@ -138,7 +136,7 @@ public class NcMLWriter {
       location = ncd.getLocation();
 
     if (null != location) {
-      rootElem.setAttribute("location", NetworkUtils.canonicalizeWrite(location));
+      rootElem.setAttribute("location", URLnaming.canonicalizeWrite(location));
     }
 
     if (null != ncd.getId())

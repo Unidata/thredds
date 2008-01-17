@@ -22,7 +22,7 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.bufr.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.DataType;
 
@@ -127,11 +127,11 @@ public class Index2NC {
     ncfile.addAttribute( null, new Attribute( "geospatial_lon_max", "360" ) );
     ncfile.addAttribute( null, new Attribute( "geospatial_lon_min", "0" ) );
     if( pointDS || satelliteDS ) {
-      ncfile.addAttribute( null, new Attribute( "cdm_data_type", thredds.catalog.DataType.POINT.toString() ) );
+      ncfile.addAttribute( null, new Attribute( "cdm_data_type", ucar.nc2.constants.DataType.POINT.toString() ) );
     } else if( stationDS ) {
-      ncfile.addAttribute( null, new Attribute( "cdm_data_type", thredds.catalog.DataType.STATION.toString() ) );
+      ncfile.addAttribute( null, new Attribute( "cdm_data_type", ucar.nc2.constants.DataType.STATION.toString() ) );
     } else if( trajectoryDS ) {
-      ncfile.addAttribute( null, new Attribute( "cdm_data_type", thredds.catalog.DataType.TRAJECTORY.toString() ) );
+      ncfile.addAttribute( null, new Attribute( "cdm_data_type", ucar.nc2.constants.DataType.TRAJECTORY.toString() ) );
     }
     // create variables
     if( stationDS ) {

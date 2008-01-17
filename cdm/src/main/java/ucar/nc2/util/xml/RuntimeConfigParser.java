@@ -27,7 +27,7 @@ package ucar.nc2.util.xml;
   import java.io.InputStream;
   import java.util.List;
 
-  import thredds.catalog.DataType;
+  import ucar.nc2.constants.DataType;
 
 /**
  * Read Runtime Configuration

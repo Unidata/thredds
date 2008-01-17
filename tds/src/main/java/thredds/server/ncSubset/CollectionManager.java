@@ -21,11 +21,8 @@
 
 package thredds.server.ncSubset;
 
-import ucar.nc2.units.TimeUnit;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.util.CancelTask;
+import ucar.nc2.units.DateFromString;
 
-import java.io.IOException;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.List;
@@ -50,7 +47,7 @@ public class CollectionManager {
     File dir = new File(dirName);
     File[] files = dir.listFiles(ff);
     for (File f : files) {
-      Date d = thredds.util.DateFromString.getDateUsingSimpleDateFormat(f.getName(), dateFormatString);
+      Date d = DateFromString.getDateUsingSimpleDateFormat(f.getName(), dateFormatString);
       add(f, d);
     }
   }

@@ -3,8 +3,8 @@ package ucar.nc2.dt.point;
 import junit.framework.*;
 
 import ucar.ma2.*;
+import ucar.ma2.DataType;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
@@ -29,7 +29,7 @@ public class TestStationDataset extends TestCase {
     String filename = ucar.nc2.TestAll.upcShareTestDataDir+"point/netcdf/madis.nc";
     StringBuffer sbuff = new StringBuffer();
     long start = System.currentTimeMillis();
-    PointObsDataset pods = (PointObsDataset) TypedDatasetFactory.open( thredds.catalog.DataType.POINT, filename, null, sbuff);
+    PointObsDataset pods = (PointObsDataset) TypedDatasetFactory.open( ucar.nc2.constants.DataType.POINT, filename, null, sbuff);
     long took = System.currentTimeMillis() - start;
     System.out.println(" open madis as point dataset "+filename+" "+sbuff+" took "+took);
 
@@ -122,7 +122,7 @@ public class TestStationDataset extends TestCase {
       else {
         System.out.println("\ndoOneFromEach="+file.getPath());
         try {
-          PointObsDataset pod = (PointObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.POINT, file.getPath(), null, new StringBuffer());
+          PointObsDataset pod = (PointObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.POINT, file.getPath(), null, new StringBuffer());
           //if (null != pobs) testAllMethods(pobs);
         } catch (Exception e) {
           e.printStackTrace();
@@ -146,7 +146,7 @@ public class TestStationDataset extends TestCase {
 
   private void testAllMethods(String location) throws IOException {
     StringBuffer sbuff = new StringBuffer();
-    StationObsDataset sod = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, sbuff);
+    StationObsDataset sod = (StationObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.STATION, location, null, sbuff);
     assert sod != null : sbuff.toString();
 
     System.out.println("-----------");

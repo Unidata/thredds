@@ -23,6 +23,7 @@ package ucar.nc2.dt.point;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.constants.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.*;
@@ -65,8 +66,8 @@ public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implemen
     return sbuff.toString();
   }
 
-  public thredds.catalog.DataType getScientificDataType() {
-    return thredds.catalog.DataType.STATION;
+  public DataType getScientificDataType() {
+    return DataType.STATION;
   }
 
   public Class getDataClass() { return StationObsDatatype.class; }

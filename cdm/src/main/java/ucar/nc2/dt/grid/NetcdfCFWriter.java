@@ -26,24 +26,21 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.AxisType;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
-import ucar.units.UnitFormatManager;
-import ucar.units.Unit;
-import ucar.units.UnitFormat;
 
 import java.io.IOException;
 import java.util.*;
 import java.text.ParseException;
-
-import thredds.datatype.DateRange;
 
 /**
  * Write a CF compliant Netcdf-3 file from any gridded dataset. The datasets can optionally be subsetted by a lat/lon

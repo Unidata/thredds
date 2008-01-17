@@ -23,40 +23,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.List;
-import java.util.Random;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.conv._Coordinate;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.FileWriter;
-import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
-import ucar.nc2.util.DiskCache2;
-import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.ProjectionPointImpl;
-import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.projection.LatLonProjection;
-import ucar.unidata.util.StringUtil;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.DataType;
 import ucar.ma2.Array;
-
-import org.jdom.Document;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.transform.XSLTransformer;
 
 /**
  * Experimental testing.

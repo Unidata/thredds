@@ -23,6 +23,7 @@ package ucar.nc2.dt.grid;
 import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.AxisType;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.DateFormatter;
@@ -45,8 +46,7 @@ import java.io.FileOutputStream;
 /**
  * A helper class to GridDataset; creates a GridDataset XML document.
  * This is a candidate for the XML representation of the Grid SDT.
- * <p/>
- * ForecastModelRunInventory.makeDocument is currently being used in NetcdfServer.
+ * Used to create form for NetcdfSubsetService for Grids.
  *
  * @author caron
  */

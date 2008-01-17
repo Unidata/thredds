@@ -19,6 +19,8 @@
  */
 package thredds.servlet;
 
+import ucar.nc2.util.IO;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +46,7 @@ public class TesterServlet extends AbstractServlet {
     res.setHeader("Content-Encoding","gzip");
     OutputStream out = res.getOutputStream();
     GZIPOutputStream zout = new GZIPOutputStream(out);
-    thredds.util.IO.writeContents(stuff, zout);
+    IO.writeContents(stuff, zout);
     zout.finish();
     out.flush();
   }

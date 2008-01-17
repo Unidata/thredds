@@ -35,7 +35,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
 
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
@@ -43,6 +43,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.Variable;
 import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.IO;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -949,7 +950,7 @@ public class ForecastModelRunInventory {
     fmr.releaseDataset();
 
     if (showXML)
-      thredds.util.IO.copyFile(summaryFileLocation, System.out);
+      IO.copyFile(summaryFileLocation, System.out);
 
     return fmr;
   }

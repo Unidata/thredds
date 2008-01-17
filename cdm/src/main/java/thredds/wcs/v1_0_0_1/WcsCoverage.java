@@ -6,7 +6,9 @@ import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.util.DiskCache2;
+import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
 
@@ -15,8 +17,6 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
-
-import thredds.datatype.DateRange;
 
 /**
  * _more_

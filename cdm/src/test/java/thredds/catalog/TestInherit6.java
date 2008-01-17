@@ -3,6 +3,8 @@ package thredds.catalog;
 import junit.framework.*;
 import java.util.*;
 
+import ucar.nc2.constants.DataType;
+
 /** Test catalog read JUnit framework. */
 
 public class TestInherit6 extends TestCase {

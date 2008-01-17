@@ -13,6 +13,7 @@ import java.util.Vector;
 import ucar.ma2.*;
 import ucar.nc2.Variable;
 import ucar.nc2.NCdump;
+import ucar.nc2.util.IO;
 
 /**
  * Created by IntelliJ IDEA.
@@ -66,7 +67,7 @@ public class TestConvertD2N {
 
     // show the original contents
     System.out.println("--"+urlName+".asc?"+CE);
-    System.out.println( thredds.util.IO.readURLcontents( urlName+".asc?"+CE));
+    System.out.println( IO.readURLcontents( urlName+".asc?"+CE));
 
     System.out.println("============");
 

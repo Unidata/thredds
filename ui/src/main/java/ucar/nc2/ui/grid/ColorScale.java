@@ -23,6 +23,7 @@ package ucar.nc2.ui.grid;
 import thredds.ui.FontUtil;
 
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ui.util.ListenerManager;
 import ucar.unidata.util.Format;
 
 import java.awt.*;
@@ -61,7 +62,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
 
   // reset after deserializing
   private Color[] useColors;
-  private thredds.util.ListenerManager lm;
+  private ListenerManager lm;
 
   // this is set for each grid
   private GridDatatype gg;
@@ -230,7 +231,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
 
     edge = new double[ ncolors];
     hist = new int[ ncolors + 1];
-    lm = new thredds.util.ListenerManager(
+    lm = new ListenerManager(
             "java.beans.PropertyChangeListener",
             "java.beans.PropertyChangeEvent",
             "propertyChange");

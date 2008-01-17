@@ -22,8 +22,8 @@ package ucar.nc2.iosp.grib;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.dataset.AxisType;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants._Coordinate;
 import ucar.grib.Index;
 import ucar.grib.TableLookup;
 

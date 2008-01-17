@@ -26,6 +26,8 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.Timer;
 
+import ucar.nc2.util.IO;
+
 /**
  * Class Description.
  *
@@ -56,7 +58,7 @@ public class TestMetarEncoding extends java.util.TimerTask {
     if (show) System.out.println("Read = " + url + " to " + filenameOut);
 
     long start = System.currentTimeMillis();
-    String result = thredds.util.IO.readURLtoFile(url, f);
+    String result = IO.readURLtoFile(url, f);
     double took = .001 * (System.currentTimeMillis() - start);
     if (show) {
       System.out.println(result);
@@ -75,7 +77,7 @@ public class TestMetarEncoding extends java.util.TimerTask {
     if (show) System.out.println("Read = " + url + " to " + filenameOut);
 
     long start = System.currentTimeMillis();
-    String result = thredds.util.IO.readURLtoFile(url, f);
+    String result = IO.readURLtoFile(url, f);
     double took = .001 * (System.currentTimeMillis() - start);
     if (show) {
       System.out.println(result);
@@ -94,7 +96,7 @@ public class TestMetarEncoding extends java.util.TimerTask {
     if (show) System.out.println("Read = " + url + " to " + filenameOut);
 
     long start = System.currentTimeMillis();
-    String result = thredds.util.IO.readURLtoFile(url, f);
+    String result = IO.readURLtoFile(url, f);
     double took = .001 * (System.currentTimeMillis() - start);
     if (show) {
       System.out.println(result);

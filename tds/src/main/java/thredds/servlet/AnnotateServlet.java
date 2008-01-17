@@ -28,6 +28,8 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import ucar.nc2.util.IO;
+
 /**
  * Servlet handles catalog annotation.
  * Not currently used.
@@ -157,7 +159,7 @@ public class AnnotateServlet extends AbstractServlet {
       File dir = new File(contentPath);
       try {
         File jnlpFile = File.createTempFile("IDV", ".jnlp", dir);
-        thredds.util.IO.writeToFile(jnlpString, jnlpFile);
+        IO.writeToFile(jnlpString, jnlpFile);
 
         String title = req.getParameter("title");
         String desc = req.getParameter("description");

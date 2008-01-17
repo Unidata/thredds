@@ -25,10 +25,9 @@ import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.ArrayChar;
+import ucar.nc2.util.IO;
 
 import java.io.IOException;
-
-import thredds.util.IO;
 
 public class TestOpenInMemory extends TestCase {
 

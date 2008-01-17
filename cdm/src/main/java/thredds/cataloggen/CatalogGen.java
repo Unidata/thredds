@@ -7,7 +7,7 @@ import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.cataloggen.config.CatGenConfigMetadataFactory;
 import thredds.cataloggen.config.CatalogGenConfig;
 import thredds.cataloggen.config.DatasetSource;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateType;
 
 import java.io.*;
 import java.net.URI;

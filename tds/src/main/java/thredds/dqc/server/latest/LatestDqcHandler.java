@@ -15,6 +15,7 @@ import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.catalog.query.*;
 import thredds.servlet.ServletUtil;
 import thredds.dqc.server.DqcHandler;
+import ucar.nc2.constants.DataType;
 
 /**
  * _more_

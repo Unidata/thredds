@@ -26,6 +26,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
 
@@ -104,7 +105,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     String location = raf.getLocation();
     int pos = location.lastIndexOf(".");
     String HDRname = location.substring(0, pos)+".HDR";
-    String HDRcontents = thredds.util.IO.readFile(HDRname);
+    String HDRcontents = IO.readFile(HDRname);
     StringTokenizer stoke = new StringTokenizer(HDRcontents);
     while (stoke.hasMoreTokens()) {
       String key = stoke.nextToken();

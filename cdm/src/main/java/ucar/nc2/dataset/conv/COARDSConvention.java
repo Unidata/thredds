@@ -22,6 +22,7 @@ package ucar.nc2.dataset.conv;
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
 
 /**
  * COARDS Convention.

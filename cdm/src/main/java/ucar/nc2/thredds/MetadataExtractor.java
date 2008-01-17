@@ -20,11 +20,11 @@
 
 package ucar.nc2.thredds;
 
-import thredds.catalog.DataType;
+import ucar.nc2.constants.DataType;
 import thredds.catalog.ThreddsMetadata;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.DataFormatType;
-import thredds.datatype.DateRange;
+import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
 import java.util.Date;

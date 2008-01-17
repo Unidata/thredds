@@ -20,6 +20,8 @@
 
 package thredds.catalog;
 
+import ucar.nc2.constants.DataType;
+
 /**
  * Type-safe enumeration of THREDDS Service types.
  *

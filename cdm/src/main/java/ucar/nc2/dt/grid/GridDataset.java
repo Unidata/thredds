@@ -26,11 +26,10 @@ import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.*;
-
-import thredds.datatype.DateRange;
 
 /**
  * Make a NetcdfDataset into a collection of GeoGrids with Georeferencing coordinate systems.

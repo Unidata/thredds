@@ -21,7 +21,6 @@ package ucar.nc2.util;
 
 import java.net.URI;
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.io.File;
 
@@ -30,17 +29,7 @@ import java.io.File;
  *
  * @author caron
  */
-public class NetworkUtils {
-
-  public static void initProtocolHandler() {
-    // test setting the http protocol handler
-    try {
-      new java.net.URL(null, "http://motherlode.ucar.edu:8080/", new sun.net.www.protocol.http.Handler());
-    } catch (java.net.MalformedURLException e) {
-      e.printStackTrace();
-    }
-
-  }
+public class URLnaming {
 
   /**
    * This augments URI.resolve(), by also dealing with base file: URIs.
@@ -121,6 +110,16 @@ public class NetworkUtils {
   }
 
   ///////////////////////////////////////////////////////////////////
+
+  private static void initProtocolHandler() {
+    // test setting the http protocol handler
+    try {
+      new java.net.URL(null, "http://motherlode.ucar.edu:8080/", new sun.net.www.protocol.http.Handler());
+    } catch (java.net.MalformedURLException e) {
+      e.printStackTrace();
+    }
+
+  }
 
   private static void test(String uriS) {
     System.out.println(uriS);

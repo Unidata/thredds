@@ -22,8 +22,8 @@ package ucar.nc2.dataset;
 
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.transform.*;
-import ucar.nc2.dataset.conv._Coordinate;
 import ucar.unidata.util.Parameter;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
@@ -45,7 +45,7 @@ public class CoordTransBuilder {
     registerTransform("albers_conical_equal_area", AlbersEqualArea.class);
     registerTransform("lambert_azimuthal_equal_area", LambertAzimuthal.class);
     registerTransform("lambert_conformal_conic", LambertConformalConic.class);
-    registerTransform("mcidas_area", McIDASArea.class);
+    registerTransformMaybe("mcidas_area", "ucar.nc2.adde.McIDASAreaTransformBuilder"); // optional - needs visad.jar
     registerTransform("mercator", Mercator.class);
     registerTransform("orthographic", Orthographic.class);
     registerTransform("polar_stereographic", PolarStereographic.class);
@@ -93,16 +93,31 @@ public class CoordTransBuilder {
 
   }
 
-   /**
-    * Register a class that implements a Coordinate Transform.
-    * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
-    * @param className name of class that implements CoordTransBuilderIF.
-    * @throws ClassNotFoundException if Class.forName( className) fails
-    */
-   static public void registerTransform( String transformName, String className) throws ClassNotFoundException {
-     Class c = Class.forName( className);
-     registerTransform( transformName, c);
-   }
+  /**
+   * Register a class that implements a Coordinate Transform.
+   * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
+   * @param className name of class that implements CoordTransBuilderIF.
+   * @throws ClassNotFoundException if Class.forName( className) fails
+   */
+  static public void registerTransform( String transformName, String className) throws ClassNotFoundException {
+    Class c = Class.forName( className);
+    registerTransform( transformName, c);
+  }
+
+  /**
+   * Register a class that implements a Coordinate Transform.
+   * @param transformName name of transform. This name is used in the datasets to identify the transform, eg CF names.
+   * @param className name of class that implements CoordTransBuilderIF.
+   */
+  static public void registerTransformMaybe( String transformName, String className) {
+    Class c = null;
+    try {
+      c = Class.forName( className);
+    } catch (ClassNotFoundException e) {
+      log.warn("Coordinate Transform Class "+className+" not found.");
+    }
+    registerTransform( transformName, c);
+  }
 
   static private class Transform {
     String transName;

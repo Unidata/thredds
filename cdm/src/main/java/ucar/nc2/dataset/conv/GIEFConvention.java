@@ -20,6 +20,7 @@
 package ucar.nc2.dataset.conv;
 
 import ucar.nc2.*;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.ncml4.NcMLReader;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;

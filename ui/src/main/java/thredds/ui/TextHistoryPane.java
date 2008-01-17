@@ -20,6 +20,8 @@
  */
 package thredds.ui;
 
+import ucar.nc2.util.IO;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.print.*;
@@ -205,7 +207,7 @@ public class TextHistoryPane extends JPanel {
           if (filename == null) return;
 
           try {
-            thredds.util.IO.writeToFile(ta.getText(), new File( filename)); // UTF-8 encoding
+            IO.writeToFile(ta.getText(), new File( filename)); // UTF-8 encoding
 
             JOptionPane.showMessageDialog(null, "Text written to"+filename);
           } catch (IOException ioe) {

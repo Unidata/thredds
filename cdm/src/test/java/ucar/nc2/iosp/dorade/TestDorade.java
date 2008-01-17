@@ -5,7 +5,7 @@ import junit.framework.*;
 import ucar.nc2.NetcdfFile;
 
 import ucar.nc2.*;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 

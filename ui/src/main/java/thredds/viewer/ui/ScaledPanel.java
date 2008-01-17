@@ -21,14 +21,13 @@
 package thredds.viewer.ui;
 
 import thredds.viewer.ui.geoloc.*;
-import thredds.util.ListenerManager;
+import ucar.nc2.ui.util.ListenerManager;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.*;
 import javax.swing.*;
-import javax.swing.event.*;
 
 /* A simple version of NavigatedPanel.
  * Allows drawing on it in scaled (world) coordinates.

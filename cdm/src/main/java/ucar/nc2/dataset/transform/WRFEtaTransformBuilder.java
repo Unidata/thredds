@@ -67,7 +67,7 @@ public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
   }
 
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new WRFEta(ds, timeDim, vCT);
+    return new WRFEta(ds, timeDim, vCT.getParameters());
   }
 
   private boolean isStaggered(CoordinateAxis axis) {

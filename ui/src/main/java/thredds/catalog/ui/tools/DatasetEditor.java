@@ -22,11 +22,12 @@ package thredds.catalog.ui.tools;
 
 import ucar.util.prefs.ui.*;
 import ucar.nc2.thredds.MetadataExtractor;
+import ucar.nc2.constants.DataType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import thredds.catalog.*;
 import thredds.datatype.prefs.DateField;
 import thredds.datatype.prefs.DurationField;
-import thredds.datatype.DateType;
-import thredds.datatype.DateRange;
 import thredds.ui.RangeDateSelector;
 import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
@@ -136,7 +137,7 @@ public class DatasetEditor extends JPanel {
     row++;
      // row 2
     addPopups( metadataPP.addEnumComboField(FORMAT_TYPE, "Data format", DataFormatType.getAllTypes(), true, 0, row, null));
-    addPopups( metadataPP.addEnumComboField(DATA_TYPE, "Data type", thredds.catalog.DataType.getAllTypes(), true, 2, row, null));
+    addPopups( metadataPP.addEnumComboField(DATA_TYPE, "Data type", DataType.getAllTypes(), true, 2, row, null));
     metadataPP.addEnumComboField(COLLECTION_TYPE, "Collection type", CollectionType.getAllTypes(), true, 4, row++, null);
 
 ////////////

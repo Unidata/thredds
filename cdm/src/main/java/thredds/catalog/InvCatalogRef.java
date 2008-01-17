@@ -20,10 +20,12 @@
 
 package thredds.catalog;
 
-import thredds.datatype.DateRange;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
 import java.net.URI;
+
+import ucar.nc2.constants.DataType;
 
 /**
  * A reference to a InvCatalog. The referenced catalog is not read until getDatasets() is called.
@@ -376,7 +378,7 @@ public class InvCatalogRef extends InvDatasetImpl {
     return !useProxy ? super.getDataFormatType() : proxy.getDataFormatType();
   }
 
-  public thredds.catalog.DataType getDataType() {
+  public DataType getDataType() {
     return !useProxy ? super.getDataType() : proxy.getDataType();
   }
 

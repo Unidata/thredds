@@ -21,7 +21,8 @@
 package ucar.nc2.dt.fmrc;
 
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;

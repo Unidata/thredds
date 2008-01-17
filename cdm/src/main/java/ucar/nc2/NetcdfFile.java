@@ -25,6 +25,7 @@ import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.IO;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
@@ -196,10 +197,10 @@ public class NetcdfFile {
   /**
    * debugging
    * @param printStream write to this stream.
-   */
+   *
   static public void setDebugOutputStream(PrintStream printStream) {
     ucar.nc2.iosp.hdf5.H5iosp.setDebugOutputStream(printStream);
-  }
+  } */
 
   /**
    * Set properties. Currently recognized:
@@ -433,7 +434,7 @@ public class NetcdfFile {
     File file = new File(location);
     ByteArrayOutputStream bos = new ByteArrayOutputStream( (int) file.length());
     InputStream in = new BufferedInputStream( new FileInputStream( location));
-    thredds.util.IO.copy(in, bos);
+    IO.copy(in, bos);
     return openInMemory(location, bos.toByteArray());
   }
 

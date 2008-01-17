@@ -22,8 +22,8 @@ package thredds.catalog;
 
 import junit.framework.TestCase;
 
-import thredds.datatype.DateRange;
-import thredds.datatype.TimeDuration;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.TimeUnit;
 
 /**

@@ -20,6 +20,8 @@ import java.util.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;

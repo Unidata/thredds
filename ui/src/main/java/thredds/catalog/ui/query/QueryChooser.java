@@ -3,7 +3,6 @@ package thredds.catalog.ui.query;
 import thredds.catalog.*;
 import thredds.catalog.query.*;
 import thredds.catalog.ui.*;
-import thredds.datatype.*;
 
 import thredds.ui.RangeSelector;
 import thredds.ui.RangeDateSelector;
@@ -14,6 +13,8 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.ui.Debug;
 import ucar.nc2.ui.point.StationRegionDateChooser;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.util.IO;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -547,7 +548,7 @@ public class QueryChooser extends JPanel {
     }
     if (Debug.isSet("dqc/showQueryResult")) {
       System.out.println("dqc/showQueryResult catalog check msgs= " + buff.toString());
-      System.out.println("  query result =\n" + thredds.util.IO.readURLcontents(queryString));
+      System.out.println("  query result =\n" + IO.readURLcontents(queryString));
     }
     cc.setCatalog((InvCatalogImpl) catalog);
   }

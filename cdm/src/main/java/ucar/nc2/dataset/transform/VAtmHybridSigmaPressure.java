@@ -79,7 +79,7 @@ public class VAtmHybridSigmaPressure extends AbstractCoordTransBuilder {
   }
 
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new HybridSigmaPressure(ds, timeDim, vCT);
+    return new HybridSigmaPressure(ds, timeDim, vCT.getParameters());
   }
 }
 

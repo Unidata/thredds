@@ -3,14 +3,6 @@ package thredds.tds.ethan;
 import junit.framework.*;
 
 import thredds.catalog.*;
-import thredds.datatype.DateType;
-
-import java.util.*;
-import java.io.IOException;
-
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.TypedDatasetFactory;
-import ucar.nc2.dt.TypedDataset;
 
 /**
  * _more_

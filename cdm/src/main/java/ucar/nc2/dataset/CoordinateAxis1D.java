@@ -21,7 +21,8 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
 import ucar.unidata.geoloc.*;
@@ -627,7 +628,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    *
    * @return List of ucar.nc2.util.NamedObject, or empty list.
    */
-  public List getNames() {
+  public List<NamedObject> getNames() {
     if (named == null) makeNames();
     return named;
   }

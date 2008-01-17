@@ -21,15 +21,11 @@
 
 package thredds.ui;
 
-import thredds.datatype.*;
 import thredds.datatype.prefs.*;
-import thredds.datatype.*;
 import thredds.viewer.ui.event.*;
 
 import ucar.util.prefs.ui.*;
-import ucar.nc2.units.TimeUnit;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.*;
 
 import java.awt.*;
 import java.awt.event.*;

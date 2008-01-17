@@ -30,8 +30,6 @@ import java.util.Map;
 import java.io.File;
 import java.io.IOException;
 
-import thredds.util.DateFromString;
-
 /**
  * Encapsolate a "scan" or "scan2" element: a directory that we want to scan.
  *

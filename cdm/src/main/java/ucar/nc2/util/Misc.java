@@ -21,7 +21,7 @@
 package ucar.nc2.util;
 
 /**
- * Class Description.
+ * Miscellaneous statis routines.
  *
  * @author caron
  */

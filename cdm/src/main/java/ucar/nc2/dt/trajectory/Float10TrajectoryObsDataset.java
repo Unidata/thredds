@@ -3,14 +3,13 @@ package ucar.nc2.dt.trajectory;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.*;
+import ucar.nc2.constants.DataType;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 
 import java.util.*;
 import java.io.IOException;
-
-import thredds.catalog.DataType;
 
 /*
 netcdf U:/testdata/trajectory/buoy/testfloat10.nc {

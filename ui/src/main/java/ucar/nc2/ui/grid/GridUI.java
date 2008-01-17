@@ -33,6 +33,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.util.NamedObject;
+import ucar.nc2.constants.DataType;
 
 import ucar.util.prefs.PreferencesExt;
 

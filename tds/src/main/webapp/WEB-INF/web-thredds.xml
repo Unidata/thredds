@@ -280,6 +280,12 @@
     <load-on-startup>10</load-on-startup>
   </servlet>
 
+  <servlet>
+    <servlet-name>tester</servlet-name>
+    <servlet-class>thredds.servlet.TesterServlet</servlet-class>
+    <load-on-startup>10</load-on-startup>
+  </servlet>
+
   <!-- Setup for the ADDE servlet.
 <servlet>
   <servlet-name>adde</servlet-name>
@@ -398,11 +404,16 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>View</servlet-name>
-    <url-pattern>/view/*</url-pattern>
-  </servlet-mapping>
+     <servlet-name>View</servlet-name>
+     <url-pattern>/view/*</url-pattern>
+   </servlet-mapping>
 
-  <!--
+  <servlet-mapping>
+     <servlet-name>tester</servlet-name>
+     <url-pattern>/tester/*</url-pattern>
+   </servlet-mapping>
+
+   <!--
 
  <servlet-mapping>
    <servlet-name>CatalogAnnotate</servlet-name>

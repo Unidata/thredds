@@ -21,15 +21,14 @@
 package ucar.nc2.iosp.nids;
 
 import ucar.ma2.*;
+import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.*;
 import ucar.nc2.iosp.nexrad2.NexradStationDB;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
-import ucar.nc2.dataset.AxisType;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.*;
 import ucar.nc2.units.DateFormatter;
-import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.FlatEarth;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
@@ -1391,7 +1390,7 @@ class Nidsheader{
 
         //prod_info_size = 2 * (int) (num_bin * scale + 0.5);
         //dimensions: radial, bin
-        ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.RADIAL.toString()));
+        ncfile.addAttribute(null, new Attribute("cdm_data_type", ucar.nc2.constants.DataType.RADIAL.toString()));
         Dimension radialDim = new Dimension("azimuth", num_radials);
         ncfile.addDimension( null, radialDim);
 

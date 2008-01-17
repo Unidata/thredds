@@ -24,7 +24,8 @@ import ucar.nc2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.NetworkUtils;
+import ucar.nc2.util.IO;
+import ucar.nc2.util.URLnaming;
 import ucar.unidata.util.StringUtil;
 
 import thredds.catalog.XMLEntityResolver;
@@ -81,7 +82,7 @@ public class NcMLReader {
     if (debugXML) {
       System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
       InputStream is2 = cl.getResourceAsStream(ncmlResourceLocation);
-      System.out.println(" contents=\n" + thredds.util.IO.readContents(is2));
+      System.out.println(" contents=\n" + IO.readContents(is2));
     }
 
     org.jdom.Document doc;
@@ -303,7 +304,7 @@ public class NcMLReader {
                                  Element netcdfElem, CancelTask cancelTask) throws IOException {
 
     // augment URI.resolve(), by also dealing with base file: URIs
-    referencedDatasetUri = NetworkUtils.resolve(ncmlLocation, referencedDatasetUri);
+    referencedDatasetUri = URLnaming.resolve(ncmlLocation, referencedDatasetUri);
 
     // common error causing infinite regression
     if ((referencedDatasetUri != null) && referencedDatasetUri.equals(ncmlLocation))

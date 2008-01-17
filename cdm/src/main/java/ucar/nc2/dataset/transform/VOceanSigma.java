@@ -78,7 +78,7 @@ public class VOceanSigma extends AbstractCoordTransBuilder {
   }
 
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new OceanSigma(ds, timeDim, vCT);
+    return new OceanSigma(ds, timeDim, vCT.getParameters());
   }
 }
 

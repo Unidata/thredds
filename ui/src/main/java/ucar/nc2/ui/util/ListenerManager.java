@@ -1,6 +1,5 @@
-// $Id:ListenerManager.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -18,7 +17,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package thredds.util;
+package ucar.nc2.ui.util;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;

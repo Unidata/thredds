@@ -24,6 +24,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.PositioningDataInputStream;
 import ucar.ma2.*;
@@ -278,7 +279,7 @@ public class H4iosp extends AbstractIOServiceProvider {
         if (chunkData.compress.compress_type == TagEnum.COMP_CODE_DEFLATE) {
           InputStream in = new java.util.zip.InflaterInputStream(new ByteArrayInputStream(cbuffer));
           ByteArrayOutputStream out = new ByteArrayOutputStream(chunkData.compress.uncomp_length);
-          thredds.util.IO.copy(in, out);
+          IO.copy(in, out);
           buffer = out.toByteArray();
           //System.out.println("  uncompress "+buffer.length + ", wanted="+chunkData.compress.uncomp_length);
         } else {
@@ -390,7 +391,7 @@ public class H4iosp extends AbstractIOServiceProvider {
         if (compress.compress_type == TagEnum.COMP_CODE_DEFLATE) {
           InputStream in = new java.util.zip.InflaterInputStream(new ByteArrayInputStream(cbuffer));
           ByteArrayOutputStream out = new ByteArrayOutputStream(compress.uncomp_length);
-          thredds.util.IO.copy(in, out);
+          IO.copy(in, out);
           byte[] buffer = out.toByteArray();
           bb = ByteBuffer.wrap(buffer);
           //System.out.println("  uncompress " + buffer.length + ", wanted=" + compress.uncomp_length);

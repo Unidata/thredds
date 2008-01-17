@@ -21,12 +21,12 @@
 package ucar.nc2.dt.point;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.StructureDS;
 import ucar.unidata.geoloc.LatLonRect;

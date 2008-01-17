@@ -9,8 +9,8 @@
 
 package thredds.servlet.idd;
 
-import thredds.datatype.DateRange;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import thredds.catalog.query.*;
 
 import java.io.*;

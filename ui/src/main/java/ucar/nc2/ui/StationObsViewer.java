@@ -22,12 +22,12 @@ package ucar.nc2.ui;
 
 import ucar.nc2.dt.*;
 import ucar.nc2.ui.point.StationRegionDateChooser;
+import ucar.nc2.units.DateRange;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
 import thredds.ui.*;
-import thredds.datatype.DateRange;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;

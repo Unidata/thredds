@@ -23,6 +23,7 @@ package ucar.nc2.ui;
 import ucar.nc2.dt.*;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.NCdump;
 
 import ucar.util.prefs.*;
@@ -30,7 +31,6 @@ import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.StructureData;
 import thredds.ui.*;
-import thredds.datatype.DateRange;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;

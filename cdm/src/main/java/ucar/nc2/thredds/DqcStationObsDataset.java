@@ -20,8 +20,6 @@
 
 package ucar.nc2.thredds;
 
-import ucar.nc2.*;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.Station;
@@ -29,11 +27,9 @@ import ucar.nc2.dt.point.StationObsDatatypeImpl;
 import ucar.nc2.dt.point.decode.MetarParseReport;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
-import ucar.ma2.DataType;
 
 import java.util.*;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -42,7 +38,6 @@ import java.net.HttpURLConnection;
 
 import thredds.catalog.*;
 import thredds.catalog.query.*;
-import thredds.util.IO;
 
 /**
  * This implements a StationObsDataset with a DQC.

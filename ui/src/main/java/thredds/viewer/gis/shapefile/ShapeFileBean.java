@@ -20,7 +20,7 @@
  */
 package thredds.viewer.gis.shapefile;
 
-import thredds.util.Resource;
+import ucar.nc2.ui.util.Resource;
 import thredds.viewer.ui.Renderer;
 
 /** Wraps shapefile maps into a MapBean

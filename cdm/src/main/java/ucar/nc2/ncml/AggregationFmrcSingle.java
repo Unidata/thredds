@@ -27,6 +27,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateFromString;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -36,8 +37,6 @@ import ucar.ma2.*;
 
 import java.io.IOException;
 import java.util.*;
-
-import thredds.util.DateFromString;
 
 /**
  * Implement NcML Forecast Model Run Collection Aggregation

@@ -29,6 +29,7 @@ import javax.servlet.http.*;
 
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.IO;
 import ucar.unidata.io.FileCache;
 import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.ncml4.Aggregation;
@@ -507,7 +508,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     if (version == null) {
       String readme;
       try {
-        readme = thredds.util.IO.readFile(rootPath + "docs/README.txt");
+        readme = IO.readFile(rootPath + "docs/README.txt");
       } catch (IOException e) {
         return "unknown version";
       }
@@ -592,7 +593,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     act = new DebugHandler.Action("showVersion", "Show Build Version") {
       public void doAction(DebugHandler.Event e) {
         try {
-          thredds.util.IO.copyFile(rootPath + "docs/README.txt", e.pw);
+          IO.copyFile(rootPath + "docs/README.txt", e.pw);
         } catch (Exception ioe) {
           e.pw.println(ioe.getMessage());
         }

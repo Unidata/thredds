@@ -4,7 +4,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.JavaDateUnit;
-import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.point.StationObsDatasetImpl;
 import ucar.nc2.dt.point.StationObsDatatypeImpl;
@@ -22,7 +21,7 @@ import thredds.catalog.InvAccess;
 import thredds.catalog.InvDataset;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.ThreddsMetadata;
-import thredds.datatype.DateRange;
+import ucar.nc2.units.DateRange;
 
 /**
  * An adde "point" dataset.

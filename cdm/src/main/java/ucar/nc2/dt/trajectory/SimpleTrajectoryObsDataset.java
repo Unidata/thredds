@@ -3,6 +3,7 @@ package ucar.nc2.dt.trajectory;
 
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.DataType;
 import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -12,8 +13,6 @@ import ucar.nc2.units.SimpleUnit;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
-import thredds.catalog.DataType;
 
 /**
  * Implements TrajectoryDataset for datasets with these characteristics:

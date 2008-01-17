@@ -23,8 +23,8 @@ package ucar.nc2.iosp.dorade;
 
 import ucar.nc2.*;
 
-import ucar.nc2.dataset.AxisType;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants._Coordinate;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.MAMath;

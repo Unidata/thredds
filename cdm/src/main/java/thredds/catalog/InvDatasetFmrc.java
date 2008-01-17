@@ -37,9 +37,9 @@ import ucar.nc2.dt.fmrc.ForecastModelRunCollection;
 import ucar.nc2.dt.fmrc.FmrcImpl;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.TimeUnit;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.thredds.MetadataExtractor;
 import ucar.unidata.util.StringUtil;
-import thredds.datatype.DateRange;
 
 /**
  * InvDatasetFmrc represents an <datasetFmrc> element in a TDS catalog.

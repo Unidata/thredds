@@ -27,6 +27,8 @@ import org.jdom.output.Format;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+import ucar.nc2.util.IO;
+
 /**
  * Turn ODL into XML
  * @author caron
@@ -48,7 +50,7 @@ public class ODLparser {
   }
 
   void parseFile(String filename) throws IOException {
-    String text = new String(thredds.util.IO.readFileToByteArray(filename));
+    String text = new String(IO.readFileToByteArray(filename));
     parseFromString(text);
   }
 

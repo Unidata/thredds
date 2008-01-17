@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.File;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.util.IO;
 
 /** Test WCS server */
 
@@ -76,7 +77,7 @@ public class TestWcsServer extends TestCase {
 
   private void testGC(String dataset) throws IOException {
     String url = server+dataset+"?request=GetCapabilities&version=1.0.0&service=WCS";
-    String contents = thredds.util.IO.readURLcontentsWithException( url);
+    String contents = IO.readURLcontentsWithException( url);
     System.out.println(url+" is OK, len= "+ contents.length());
   }
 
@@ -122,7 +123,7 @@ public class TestWcsServer extends TestCase {
       filename = filename + ".tiff";
 
     File file = new File(filename);
-    String result = thredds.util.IO.readURLtoFile(getURL, file);
+    String result = IO.readURLtoFile(getURL, file);
 
     System.out.println("****************\n");
     System.out.println("result= "+result);
@@ -144,7 +145,7 @@ public class TestWcsServer extends TestCase {
 
     File file = new File("C:/TEMP/martin.tiff");
     System.out.println("****************\n");
-    String result = thredds.util.IO.readURLtoFile(req, file);
+    String result = IO.readURLtoFile(req, file);
     System.out.println("result= "+result);
 
     System.out.println(" copied contents to "+file.getPath());
@@ -154,7 +155,7 @@ public class TestWcsServer extends TestCase {
   private void showRead(String url) throws IOException {
     System.out.println("****************\n");
     System.out.println(url+"\n");
-    String contents = thredds.util.IO.readURLcontentsWithException( url);
+    String contents = IO.readURLcontentsWithException( url);
     System.out.println(contents);
   }
 

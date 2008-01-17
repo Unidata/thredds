@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.IO;
 
 /**
  * _more_
@@ -96,7 +97,7 @@ public class WCS_1_1_0 implements VersionHandler
 
           //ServletUtil.returnFile( servlet, req, res, covFile, "application/netcdf");
           ServletOutputStream out = res.getOutputStream();
-          thredds.util.IO.copyFileB( covFile, out, 60000 );
+          IO.copyFileB( covFile, out, 60000 );
           res.flushBuffer();
           out.close();
           ServletUtil.logServerAccess( HttpServletResponse.SC_OK, covFile.length() );

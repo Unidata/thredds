@@ -23,7 +23,7 @@ package thredds.catalog.ui.tools;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.util.StringUtil;
-import ucar.nc2.dataset.HttpClientManager;
+import ucar.nc2.util.net.HttpClientManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +40,7 @@ import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogExtractor;
 import thredds.ui.*;
 import thredds.ui.PopupMenu;
-import thredds.util.IO;
+import ucar.nc2.util.IO;
 //import thredds.util.net.HttpSession;
 
 /**

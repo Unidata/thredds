@@ -4,22 +4,13 @@ import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.point.UnidataObsDatasetHelper;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.AxisType;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.SimpleUnit;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.IndexIterator;
+import ucar.nc2.constants.DataType;
 
 import java.io.IOException;
 import java.util.*;
-
-import thredds.catalog.DataType;
 
 /**
  * Handle trajectory data files that follow the
@@ -49,7 +40,7 @@ public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset  imp
 
     String cdmDtString = cdmDtAtt.getStringValue();
     if ( cdmDtString == null ) return false;
-    if ( ! cdmDtString.equalsIgnoreCase( thredds.catalog.DataType.TRAJECTORY.toString() ))
+    if ( ! cdmDtString.equalsIgnoreCase( DataType.TRAJECTORY.toString() ))
       return false;
 
     Attribute conventionsAtt = ds.findGlobalAttributeIgnoreCase( "Conventions");

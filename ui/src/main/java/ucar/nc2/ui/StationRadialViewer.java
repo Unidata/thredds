@@ -34,7 +34,7 @@ import javax.swing.event.ListSelectionEvent;
 
 import thredds.ui.IndependentDialog;
 import thredds.ui.TextHistoryPane;
-import thredds.datatype.DateRange;
+import ucar.nc2.units.DateRange;
 
 import java.beans.PropertyChangeListener;
 import java.awt.*;

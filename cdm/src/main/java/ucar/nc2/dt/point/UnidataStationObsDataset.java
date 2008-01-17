@@ -22,8 +22,9 @@ package ucar.nc2.dt.point;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
 
@@ -42,8 +43,8 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataStationObsDataset.class);
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(thredds.catalog.DataType.STATION.toString()) &&
-            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(thredds.catalog.DataType.STATION.toString()))
+    if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(ucar.nc2.constants.DataType.STATION.toString()) &&
+            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(DataType.STATION.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);

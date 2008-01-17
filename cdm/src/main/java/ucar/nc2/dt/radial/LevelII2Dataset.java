@@ -22,13 +22,13 @@ package ucar.nc2.dt.radial;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants.*;
+import ucar.nc2.constants.DataType;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
-import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Earth;
@@ -36,8 +36,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.io.IOException;
 import java.util.*;
-
-import thredds.catalog.*;
 
 
 /**
@@ -69,7 +67,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     return new LevelII2Dataset(ncd);
   }
 
-  public thredds.catalog.DataType getScientificDataType() { return thredds.catalog.DataType.RADIAL; }
+  public ucar.nc2.constants.DataType getScientificDataType() { return DataType.RADIAL; }
 
 
   public LevelII2Dataset() {}
@@ -965,7 +963,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
  // ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
-    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( thredds.catalog.DataType.RADIAL, fileIn, null, new StringBuffer());
+    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( DataType.RADIAL, fileIn, null, new StringBuffer());
  // ucar.unidata.util.Trace.call2("LevelII2Dataset:main dataset");
     String st = rds.getStartDate().toString();
     String et = rds.getEndDate().toString();

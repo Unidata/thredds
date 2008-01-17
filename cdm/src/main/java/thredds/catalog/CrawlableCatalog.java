@@ -21,7 +21,7 @@ package thredds.catalog;
 
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateType;
 
 import java.util.List;
 import java.util.Date;

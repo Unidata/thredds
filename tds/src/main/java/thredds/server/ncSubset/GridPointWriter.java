@@ -31,12 +31,11 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateType;
 
 import java.io.*;
 import java.util.*;
 import java.text.ParseException;
-
-import thredds.datatype.DateType;
 
 public class GridPointWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridPointWriter.class);

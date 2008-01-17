@@ -25,6 +25,7 @@ import thredds.catalog.ui.*;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
+import ucar.nc2.util.IO;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -168,8 +169,8 @@ public class ThreddsUI extends JPanel {
             if (format == DataFormatType.PLAIN || format == DataFormatType.XML) {
               String urlString = access.getStandardUrlName();
               //System.out.println("got station XML data access = "+urlString);
-              thredds.util.IO.readURLcontents(urlString);
-              xmlPane.setText( thredds.util.IO.readURLcontents(urlString));
+              IO.readURLcontents(urlString);
+              xmlPane.setText( IO.readURLcontents(urlString));
               xmlPane.gotoTop();
               xmlWindow.setVisible(true);
               return;

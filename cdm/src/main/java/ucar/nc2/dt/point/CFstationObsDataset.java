@@ -22,18 +22,14 @@ package ucar.nc2.dt.point;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
 
 import java.io.*;
 import java.util.*;
 import java.text.ParseException;
-
-import thredds.catalog.*;
-import thredds.catalog.DataType;
 
 /**
  * This handles station datasets in "Unidata Observation Dataset v1.0"
@@ -46,7 +42,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataStationObsDataset.class);
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if (!ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(thredds.catalog.DataType.STATION.toString()))
+    if (!ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(ucar.nc2.constants.DataType.STATION.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);

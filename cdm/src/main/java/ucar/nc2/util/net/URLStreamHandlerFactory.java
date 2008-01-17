@@ -1,6 +1,5 @@
-// $Id:URLStreamHandlerFactory.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -19,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package thredds.util;
+package ucar.nc2.util.net;
 
 import java.net.*;
 
@@ -34,7 +33,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
   static public void install() {
     try {
       if (!installed) {
-        java.net.URL.setURLStreamHandlerFactory( new thredds.util.URLStreamHandlerFactory() );
+        java.net.URL.setURLStreamHandlerFactory( new URLStreamHandlerFactory() );
         installed = true;
       }
     } catch (Error e) {

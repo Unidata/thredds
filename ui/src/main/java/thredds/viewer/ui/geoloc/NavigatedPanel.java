@@ -25,7 +25,7 @@ import ucar.unidata.geoloc.projection.*;
 import thredds.viewer.ui.*;
 
 import thredds.ui.BAMutil;
-import thredds.util.ListenerManager;
+import ucar.nc2.ui.util.ListenerManager;
 import ucar.unidata.util.Format;
 import ucar.util.prefs.ui.Debug;
 
@@ -193,27 +193,27 @@ public class NavigatedPanel extends JPanel {
                                 new myDropTargetListener());
 
     // manage Event Listener's
-    lmPick = new thredds.util.ListenerManager(
+    lmPick = new ListenerManager(
         "thredds.viewer.ui.geoloc.PickEventListener",
         "thredds.viewer.ui.geoloc.PickEvent",
         "actionPerformed");
 
-    lmMove = new thredds.util.ListenerManager(
+    lmMove = new ListenerManager(
         "thredds.viewer.ui.geoloc.CursorMoveEventListener",
         "thredds.viewer.ui.geoloc.CursorMoveEvent",
         "actionPerformed");
 
-    lmMapArea = new thredds.util.ListenerManager(
+    lmMapArea = new ListenerManager(
         "thredds.viewer.ui.geoloc.NewMapAreaListener",
         "thredds.viewer.ui.geoloc.NewMapAreaEvent",
         "actionPerformed");
 
-    lmProject = new thredds.util.ListenerManager(
+    lmProject = new ListenerManager(
         "thredds.viewer.ui.geoloc.NewProjectionListener",
         "thredds.viewer.ui.geoloc.NewProjectionEvent",
         "actionPerformed");
 
-    lmGeoSelect = new thredds.util.ListenerManager(
+    lmGeoSelect = new ListenerManager(
         "thredds.viewer.ui.geoloc.GeoSelectionListener",
         "thredds.viewer.ui.geoloc.GeoSelectionEvent",
         "actionPerformed");

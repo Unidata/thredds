@@ -20,11 +20,11 @@
 package thredds.servlet;
 
 import thredds.catalog.*;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Format;
 
-import ucar.nc2.dataset.AxisType;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.VariableEnhanced;

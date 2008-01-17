@@ -27,12 +27,12 @@ import thredds.ui.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
+import ucar.nc2.constants.DataType;
 
 import java.io.*;
 import java.util.*;
@@ -245,7 +245,7 @@ public class CatalogSearcher extends JPanel {
     int row = 0;
     pp.addHeading("Find Datasets that must have:", row++);
 
-    pp.addEnumComboField("DataType", "Data type", thredds.catalog.DataType.getAllTypes(),
+    pp.addEnumComboField("DataType", "Data type", DataType.getAllTypes(),
         true, 0, row, null);
 
     pp.addEnumComboField("ServiceType", "Service type", ServiceType.getAllTypes(),

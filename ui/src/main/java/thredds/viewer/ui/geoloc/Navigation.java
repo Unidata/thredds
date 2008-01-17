@@ -21,6 +21,7 @@
 package thredds.viewer.ui.geoloc;
 
 import ucar.unidata.geoloc.*;
+import ucar.nc2.ui.util.ListenerManager;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -50,7 +51,7 @@ public class Navigation  {
   private boolean mapAreaIsSet = false;         // cant initialize until screen size is known
   private boolean screenSizeIsSet = false;      // and initial bounding box is known
   private ZoomStack zoom = new ZoomStack();
-  private thredds.util.ListenerManager lm; // manage NewMapAreaListener's
+  private ListenerManager lm; // manage NewMapAreaListener's
 
   private static boolean debug = false, debugZoom = false, debugTransform = false;
   private static boolean debugRecalc = false;

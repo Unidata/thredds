@@ -22,7 +22,7 @@ package ucar.nc2;
 
 import ucar.ma2.*;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.NetworkUtils;
+import ucar.nc2.util.URLnaming;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -713,7 +713,7 @@ public class NCdump {
     if (uri != null)
       out.print("    location='"+ StringUtil.quoteXmlAttribute(uri)+"' >\n\n");
     else
-      out.print("    location='"+ StringUtil.quoteXmlAttribute( NetworkUtils.canonicalizeWrite(ncfile.getLocation()))+"' >\n\n");
+      out.print("    location='"+ StringUtil.quoteXmlAttribute( URLnaming.canonicalizeWrite(ncfile.getLocation()))+"' >\n\n");
 
     if (ncfile.getId() != null)
       out.print("    id='"+ StringUtil.quoteXmlAttribute(ncfile.getId())+"' >\n");

@@ -7,6 +7,8 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.util.IO;
+import ucar.nc2.constants.DataType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
@@ -25,7 +27,7 @@ public class TestDodsServer extends TestCase {
   public void testGrid() {
     String grid = dataset + ".ascii?Visibility[0:1:0][0:1:0][0:1:0]";
     System.out.println(" request= "+grid);
-    String result = thredds.util.IO.readURLcontents(grid);
+    String result = IO.readURLcontents(grid);
     System.out.println(" result= "+result);
     assert result.indexOf("Error") < 0;  // not an error message
   }
@@ -33,7 +35,7 @@ public class TestDodsServer extends TestCase {
   public void testGridArray() {
     String array = dataset + ".asc?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
     System.out.println(" request= "+array);
-    String result = thredds.util.IO.readURLcontents(array);
+    String result = IO.readURLcontents(array);
     System.out.println(" result= "+result);
     assert result.indexOf("Error") < 0;  // not an error message
   }

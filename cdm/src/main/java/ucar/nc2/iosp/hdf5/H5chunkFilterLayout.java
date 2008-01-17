@@ -20,6 +20,7 @@
 package ucar.nc2.iosp.hdf5;
 
 import ucar.nc2.Variable;
+import ucar.nc2.util.IO;
 import ucar.nc2.iosp.Indexer;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
@@ -115,7 +116,7 @@ class H5chunkFilterLayout extends H5chunkLayout {
      ByteArrayInputStream in = new ByteArrayInputStream(compressed);
      java.util.zip.InflaterInputStream inflater = new java.util.zip.InflaterInputStream( in);
      ByteArrayOutputStream out = new ByteArrayOutputStream(8 * compressed.length);
-     thredds.util.IO.copy(inflater, out);
+     IO.copy(inflater, out);
 
      byte[] uncomp = out.toByteArray();
      if (debug) System.out.println(" inflate bytes in= "+compressed.length+ " bytes out= "+uncomp.length);

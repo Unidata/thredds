@@ -31,7 +31,7 @@ import ucar.unidata.util.StringUtil;
 import java.util.*;
 import java.io.*;
 
-import thredds.util.DateFromString;
+import ucar.nc2.units.DateFromString;
 import org.jdom.Element;
 
 /**
@@ -547,7 +547,7 @@ public abstract class Aggregation implements AggregationIF, ProxyReader {
           return null;
 
         if (debugRead)
-          System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation() + " " + Range.toString(section));
+          System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation() + " " + new Section(section));
 
         Variable v = ncd.findVariable(mainv.getName());
         return v.read(section);

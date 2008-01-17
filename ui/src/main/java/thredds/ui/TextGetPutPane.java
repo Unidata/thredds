@@ -23,10 +23,10 @@ package thredds.ui;
 
 import thredds.catalog.*;
 import thredds.catalog.query.*;
-import thredds.util.*;
 
 import ucar.util.prefs.*;
-import ucar.nc2.dataset.HttpClientManager;
+import ucar.nc2.util.net.HttpClientManager;
+import ucar.nc2.util.IO;
 
 import java.awt.*;
 import java.awt.event.*;

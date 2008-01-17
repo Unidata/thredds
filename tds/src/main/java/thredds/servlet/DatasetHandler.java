@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetFmrc;
 import thredds.catalog.InvDatasetScan;
-import thredds.util.PathMatcher;
+import thredds.servlet.PathMatcher;
 import thredds.servlet.restrict.RestrictedDatasetServlet;
 
 import javax.servlet.http.HttpServletRequest;

@@ -29,6 +29,8 @@ import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
 
+import ucar.nc2.util.IO;
+
 /**
  * Handles the interaction with JAXP, resolving dtd, schemas locally if possible.
  * Get a javax.xml.parsers.DocumentBuilder from here, allows you to validate or not.
@@ -274,14 +276,14 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
     try { // try to read from local file resource, eg from catalog.jar
       ByteArrayOutputStream sbuff = new ByteArrayOutputStream(3000);
-      InputStream is = thredds.util.Resource.getFileResource( resourceName);
+      InputStream is = ucar.nc2.util.IO.getFileResource( resourceName);
       if (is != null) {
-        thredds.util.IO.copy(is, sbuff);
+        IO.copy(is, sbuff);
         entity = sbuff.toString();
         if (debugEntityResolution) System.out.println(" *** entity "+entityName+" mapped to local resource at "+resourceName);
 
       } else if (urlName != null) { // otherwise, get from network
-        entity = thredds.util.IO.readURLcontentsWithException(urlName);
+        entity = IO.readURLcontentsWithException(urlName);
         if (debugEntityResolution) System.out.println(" *** entity "+entityName+" mapped to remote URL at "+urlName);
       }
 

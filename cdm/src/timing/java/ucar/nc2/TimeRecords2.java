@@ -1,13 +1,8 @@
 package ucar.nc2;
 
 import ucar.ma2.Array;
-import ucar.ma2.StructureData;
-import ucar.nc2.dt.*;
 
 import java.io.IOException;
-import java.util.List;
-
-import thredds.catalog.DataType;
 
 /**
  * @author john

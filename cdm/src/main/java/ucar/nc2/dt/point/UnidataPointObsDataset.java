@@ -30,14 +30,14 @@ import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.AxisType;
+import ucar.nc2.constants.AxisType;
 import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.*;
 import java.io.IOException;
 
-import thredds.catalog.DataType;
+import ucar.nc2.constants.DataType;
 
 /**
  * This handles point datasets in "Unidata Observation Dataset v1.0"
@@ -49,8 +49,8 @@ import thredds.catalog.DataType;
 public class UnidataPointObsDataset extends PointObsDatasetImpl implements TypedDatasetFactoryIF {
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(thredds.catalog.DataType.POINT.toString()) &&
-            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(thredds.catalog.DataType.POINT.toString()))
+    if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(DataType.POINT.toString()) &&
+            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(DataType.POINT.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);

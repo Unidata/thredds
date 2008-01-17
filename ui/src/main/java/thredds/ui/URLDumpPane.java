@@ -21,10 +21,10 @@
 
 package thredds.ui;
 
-import thredds.util.IO;
+import ucar.nc2.util.IO;
+import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
-import ucar.nc2.dataset.HttpClientManager;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -36,8 +36,6 @@ import java.util.Enumeration;
 import javax.swing.*;
 
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.methods.*;
 
@@ -311,7 +309,7 @@ public class URLDumpPane extends TextHistoryPane {
       // read it
       java.io.InputStream is = currentConnection.getInputStream();
       ByteArrayOutputStream bout = new ByteArrayOutputStream(200000);
-      thredds.util.IO.copy(is, bout);
+      IO.copy(is, bout);
       is.close();
 
       append(new String(bout.toByteArray()));
@@ -368,7 +366,7 @@ public class URLDumpPane extends TextHistoryPane {
       // read it
       java.io.InputStream is = currentConnection.getInputStream();
       ByteArrayOutputStream bout = new ByteArrayOutputStream(200000);
-      thredds.util.IO.copy(is, bout);
+      IO.copy(is, bout);
       is.close();
 
       append(new String(bout.toByteArray()));
@@ -404,7 +402,7 @@ public class URLDumpPane extends TextHistoryPane {
     void putURL(String urlString) {
       if (urlString == null) return;
       String contents = ta.getText();
-      IO.Result result = thredds.util.IO.putToURL( urlString, contents);
+      IO.Result result = IO.putToURL( urlString, contents);
       javax.swing.JOptionPane.showMessageDialog(this, "Status code= "+result.code+"\n"+result.message);
     }
 
@@ -483,7 +481,7 @@ public class URLDumpPane extends TextHistoryPane {
 
     public void run() {
       try {
-        contents = thredds.util.IO.readURLcontentsWithException(urlString);
+        contents = IO.readURLcontentsWithException(urlString);
       } catch (IOException e) {
         setError(e.getMessage());
         done = true;

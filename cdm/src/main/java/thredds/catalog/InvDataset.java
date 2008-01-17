@@ -20,10 +20,12 @@
 
 package thredds.catalog;
 
-import thredds.datatype.DateRange;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
 import java.util.*;
+
+import ucar.nc2.constants.DataType;
 
 /**
  * Public interface to a thredds dataset, basic abstraction for data.
@@ -151,7 +153,7 @@ public abstract class InvDataset {
    *
    * @return the DataType or null
    */
-  public thredds.catalog.DataType getDataType() {
+  public DataType getDataType() {
     return dataType;
   }
 

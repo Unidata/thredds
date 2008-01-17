@@ -24,8 +24,8 @@ import ucar.grib.TableLookup;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.AxisType;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 

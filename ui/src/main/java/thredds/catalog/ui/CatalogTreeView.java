@@ -35,6 +35,8 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.tree.*;
 
+import ucar.nc2.constants.DataType;
+
 /**
  * A Swing widget for THREDDS clients to display catalogs in a JTree, and allows
  * the user to select a dataset.

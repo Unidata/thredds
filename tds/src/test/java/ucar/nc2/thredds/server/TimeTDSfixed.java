@@ -23,9 +23,7 @@ package ucar.nc2.thredds.server;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.InvDataset;
-import thredds.catalog.InvCatalogRef;
-import thredds.catalog.InvAccess;
-import thredds.catalog.DataType;
+import ucar.nc2.constants.DataType;
 
 import java.io.PrintStream;
 import java.io.IOException;

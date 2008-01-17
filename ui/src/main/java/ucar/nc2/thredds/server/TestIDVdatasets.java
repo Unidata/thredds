@@ -21,13 +21,14 @@
 package ucar.nc2.thredds.server;
 
 import thredds.catalog.*;
-import thredds.datatype.DateRange;
+import ucar.nc2.units.DateRange;
 
 import java.io.*;
 import java.util.List;
 
 import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.DataType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.thredds.ThreddsDataFactory;

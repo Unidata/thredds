@@ -22,8 +22,8 @@ package thredds.viewer.ui.table;
 
 import thredds.ui.BAMutil;
 import thredds.ui.MyMouseAdapter;
-import thredds.util.Resource;
 import ucar.util.prefs.PreferencesExt;
+import ucar.nc2.ui.util.ListenerManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -68,7 +68,7 @@ public class JTreeTableSorted extends JPanel {
   private boolean treeSort;
   private boolean useThreads;
 
-  private thredds.util.ListenerManager lm;
+  private ListenerManager lm;
   private ListSelectionEvent listSelectionEvent = null;
 
   private MouseAdapter allowSortColChangeMouseListener;
@@ -161,7 +161,7 @@ public class JTreeTableSorted extends JPanel {
     allowSortColChange( allowSortColChange);
 
     // event manager for ListSelection
-    lm = new thredds.util.ListenerManager (
+    lm = new ListenerManager(
         "javax.swing.event.ListSelectionListener",
         "javax.swing.event.ListSelectionEvent",
         "valueChanged");

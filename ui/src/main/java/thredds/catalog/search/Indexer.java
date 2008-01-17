@@ -28,8 +28,9 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.*;
 
 import java.io.*;
-import java.net.*;
 import java.util.*;
+
+import ucar.nc2.constants.DataType;
 
 /**
  * Creates a lucene index for a list of datasets .

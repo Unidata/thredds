@@ -1,6 +1,7 @@
 package thredds.catalog;
 
 import junit.framework.*;
+import ucar.nc2.constants.DataType;
 
 public class TestDatasets extends TestCase {
 

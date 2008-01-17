@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.dataset;
+package ucar.nc2.util.net;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -31,9 +31,9 @@ import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
+
 import opendap.dap.DConnect2;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
-import thredds.util.net.EasySSLProtocolSocketFactory;
 
 import java.io.IOException;
 
@@ -42,7 +42,7 @@ import java.io.IOException;
  * <pre>
  * Example:
  *   org.apache.commons.httpclient.auth.CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
- * ucar.nc2.dataset.HttpClientManager.init(provider, "ToolsUI");
+ * ucar.nc2.util.net.HttpClientManager.init(provider, "ToolsUI");
  * </pre>
  *
  * @author caron
@@ -58,7 +58,7 @@ public class HttpClientManager {
    * @param provider  CredentialsProvider.
    * @param userAgent Content of User-Agent header, may be null
    */
-  static public void init(CredentialsProvider provider, String userAgent) {
+  static public org.apache.commons.httpclient.HttpClient init(CredentialsProvider provider, String userAgent) {
     initHttpClient();
     
     if (provider != null)
@@ -76,18 +76,7 @@ public class HttpClientManager {
         _client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
     }
 
-    setHttpClient(_client);
-  }
-
-  /**
-   * Set the HttpClient object - a single instance is used.
-   * Propagate to entire NetcdfJava library.
-   * @param client use this HttpClient object for all calls.
-   */
-  static public void setHttpClient(HttpClient client) {
-    _client = client;
-    DConnect2.setHttpClient(_client);
-    HTTPRandomAccessFile.setHttpClient(_client);
+    return _client;
   }
 
   /**

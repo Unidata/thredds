@@ -13,7 +13,7 @@ import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.query.DqcFactory;
 import thredds.catalog.query.QueryCapability;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VerticalCT;
@@ -27,7 +27,7 @@ import ucar.nc2.Attribute;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
+import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 
 /**
  * _more_

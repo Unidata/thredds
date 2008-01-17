@@ -14,6 +14,7 @@ import java.io.PrintStream;
 import java.util.*;
 
 import org.apache.log4j.*;
+import ucar.nc2.util.IO;
 
 /**
  * _more_
@@ -194,7 +195,7 @@ public class ExampleThreddsServlet extends HttpServlet
       {
         try
         {
-          thredds.util.IO.copyFile( rootPath + "README.txt", e.pw );
+          IO.copyFile( rootPath + "README.txt", e.pw );
         }
         catch ( Exception ioe )
         {

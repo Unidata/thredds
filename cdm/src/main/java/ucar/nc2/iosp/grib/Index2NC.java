@@ -23,7 +23,8 @@ import ucar.grib.*;
 import ucar.grib.grib1.Grib1Lookup;
 import ucar.nc2.*;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.DataType;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 
@@ -149,7 +150,7 @@ public class Index2NC  {
     ncfile.addAttribute(null, new Attribute("Product_Type", lookup.getFirstProductTypeName()) );
 
     // dataset discovery
-    ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
+    ncfile.addAttribute(null, new Attribute("cdm_data_type", DataType.GRID.toString()));
     ncfile.addAttribute(null, new Attribute("creator_name", creator));
     ncfile.addAttribute(null, new Attribute("file_format", "GRIB-"+version));
     ncfile.addAttribute(null, new Attribute("location", ncfile.getLocation()));

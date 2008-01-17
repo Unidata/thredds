@@ -19,6 +19,7 @@ import edu.wisc.ssec.mcidas.LAMBnav;
 import edu.wisc.ssec.mcidas.TANCnav;
 
 import ucar.ma2.*;
+import ucar.nc2.util.net.URLStreamHandlerFactory;
 
 import java.io.*;
 import java.lang.*;
@@ -76,7 +77,7 @@ public class AreaFile3 {
   public AreaFile3(String urlString) throws java.io.IOException, java.net.MalformedURLException {
     long timeStart = System.currentTimeMillis();
 
-    URL url = thredds.util.URLStreamHandlerFactory.makeURL( urlString);
+    URL url = URLStreamHandlerFactory.makeURL( urlString);
     DataInputStream af = new DataInputStream(new BufferedInputStream(url.openStream()));
     readMetaData( af);
     readData( af);

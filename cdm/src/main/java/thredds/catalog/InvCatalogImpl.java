@@ -20,7 +20,7 @@
 
 package thredds.catalog;
 
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateType;
 
 import java.util.*;
 import java.net.*;

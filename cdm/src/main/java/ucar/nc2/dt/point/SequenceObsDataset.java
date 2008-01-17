@@ -21,22 +21,18 @@
 
 package ucar.nc2.dt.point;
 
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.Structure;
-import ucar.nc2.Dimension;
+import ucar.nc2.*;
 import ucar.nc2.dods.*;
 import ucar.nc2.dt.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.AxisType;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.DataType;
 import ucar.ma2.StructureData;
 
 import java.util.*;
 import java.io.IOException;
-
-import thredds.catalog.DataType;
 
 /**
  * This handles DODS sequences that have station obs data.
@@ -48,8 +44,8 @@ import thredds.catalog.DataType;
 public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF  {
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(thredds.catalog.DataType.STATION.toString()) &&
-            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(thredds.catalog.DataType.STATION.toString()))
+    if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(DataType.STATION.toString()) &&
+            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(DataType.STATION.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);

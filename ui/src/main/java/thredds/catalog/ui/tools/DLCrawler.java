@@ -22,6 +22,7 @@ package thredds.catalog.ui.tools;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
+import ucar.nc2.constants.DataType;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -489,7 +490,7 @@ public class DLCrawler extends JPanel {
 
       private thredds.catalog.InvAccess access;
       private String name, url, URLok = "";
-      private thredds.catalog.DataType dataType;
+      private DataType dataType;
       private DataFormatType dataFormatType;
       private ServiceType serviceType;
       private int ngrids, readTime;

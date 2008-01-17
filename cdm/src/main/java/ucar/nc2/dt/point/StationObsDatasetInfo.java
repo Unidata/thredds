@@ -20,8 +20,8 @@
 
 package ucar.nc2.dt.point;
 
-import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.DataType;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.DateFormatter;
@@ -40,8 +40,6 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.File;
-
-import thredds.catalog.DataType;
 
 /**
  * A helper class to StationObsDataset; creates XML documents.

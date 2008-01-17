@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.dataset;
+package ucar.nc2.constants;
 
 /**
  * Type-safe enumeration of netCDF Coordinate Axis types. These are used for tagging

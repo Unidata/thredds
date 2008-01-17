@@ -5,9 +5,9 @@ import thredds.cataloggen.DatasetEnhancer;
 import thredds.catalog.InvDataset;
 import thredds.catalog.InvDatasetImpl;
 import thredds.crawlabledataset.CrawlableDataset;
-import thredds.datatype.DateRange;
-import thredds.datatype.DateType;
-import thredds.datatype.TimeDuration;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeDuration;
 
 /**
  * Try to add timeCoverage to the InvDataset using a regular expression match,

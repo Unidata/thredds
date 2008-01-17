@@ -33,6 +33,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.FileCache;
+import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
 
 public class ServletUtil {
@@ -722,7 +723,7 @@ public class ServletUtil {
         ucar.unidata.io.RandomAccessFile raf = null;
         try {
           raf = FileCache.acquire(filename);
-          thredds.util.IO.copyRafB(raf, startPos, contentLength, res.getOutputStream(), new byte[60000]);
+          IO.copyRafB(raf, startPos, contentLength, res.getOutputStream(), new byte[60000]);
           ServletUtil.logServerAccess(HttpServletResponse.SC_PARTIAL_CONTENT, contentLength);
           return;
         } finally {
@@ -732,7 +733,7 @@ public class ServletUtil {
 
       // Return the file
       ServletOutputStream out = res.getOutputStream();
-      thredds.util.IO.copyFileB(file, out, 60000);
+      IO.copyFileB(file, out, 60000);
       res.flushBuffer();
       out.close();
       if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);
@@ -777,7 +778,7 @@ public class ServletUtil {
 
     try {
       ServletOutputStream out = res.getOutputStream();
-      thredds.util.IO.copy(new ByteArrayInputStream(contents.getBytes()), out);
+      IO.copy(new ByteArrayInputStream(contents.getBytes()), out);
       ServletUtil.logServerAccess(HttpServletResponse.SC_OK, contents.length());
     }
     catch (IOException e) {
@@ -842,7 +843,7 @@ public class ServletUtil {
     File file = new File(filename);
     if (file.exists()) {
       try {
-        thredds.util.IO.copyFile(filename, fileSave);
+        IO.copyFile(filename, fileSave);
       } catch (IOException e) {
         log.error("saveFile(): Unable to save copy of file " + filename + " to " + fileSave + "\n" + e.getMessage());
         return false;
@@ -852,7 +853,7 @@ public class ServletUtil {
     // save new file
     try {
       OutputStream out = new BufferedOutputStream(new FileOutputStream(filename));
-      thredds.util.IO.copy(req.getInputStream(), out);
+      IO.copy(req.getInputStream(), out);
       out.close();
       if (debugRequest) log.debug("saveFile(): ok= " + filename);
       res.setStatus(HttpServletResponse.SC_CREATED);
@@ -894,7 +895,7 @@ public class ServletUtil {
   static public boolean copyDir(String fromDir, String toDir) throws IOException {
     File contentFile = new File(toDir + ".INIT");
     if (!contentFile.exists()) {
-      thredds.util.IO.copyDirTree(fromDir, toDir);
+      IO.copyDirTree(fromDir, toDir);
       contentFile.createNewFile();
       return true;
     }

@@ -2,21 +2,16 @@
 package ucar.nc2.dt.trajectory;
 
 import junit.framework.TestCase;
-import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dt.*;
-import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.Range;
 import ucar.ma2.Array;
 
 import java.io.IOException;
 import java.io.File;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * A description
@@ -52,7 +47,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -110,7 +105,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -165,7 +160,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -196,7 +191,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -248,7 +243,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {

@@ -6,7 +6,7 @@ import java.util.*;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
 import ucar.ma2.*;
 import ucar.unidata.util.StringUtil;
 

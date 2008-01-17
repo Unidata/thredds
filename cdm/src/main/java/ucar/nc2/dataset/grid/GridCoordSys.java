@@ -21,6 +21,7 @@
 package ucar.nc2.dataset.grid;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.units.*;
@@ -34,7 +35,7 @@ import ucar.units.ConversionException;
 import java.util.*;
 import java.io.IOException;
 
-import thredds.datatype.DateRange;
+import ucar.nc2.units.DateRange;
 
 /**
  * A georeferencing "gridded" CoordinateSystem. This describes a "grid" of coordinates, which

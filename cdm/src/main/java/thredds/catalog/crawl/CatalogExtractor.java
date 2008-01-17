@@ -1,6 +1,5 @@
-// $Id: CatalogExtractor.java 68 2006-07-13 00:08:20Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -23,28 +22,30 @@ package thredds.catalog.crawl;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.TimeUnit;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.IO;
+import ucar.nc2.util.NamedObject;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.DataType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.Parameter;
 
 import java.io.*;
 import java.util.List;
 
-import thredds.datatype.DateRange;
-import thredds.util.IO;
 import thredds.catalog.*;
 
 /**
  * Utilities for extracting info from a catalog.
  *
  * @author John Caron
- * @version $Id: CatalogExtractor.java 68 2006-07-13 00:08:20Z caron $
  */
 
 public class CatalogExtractor implements CatalogCrawler.Listener {
@@ -58,7 +59,8 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
   private String copyDir = null;
 
   /**
-   * @param verbose
+   * Constuctor
+   * @param verbose output status messages
    */
   public CatalogExtractor(boolean verbose) {
     this.verbose = verbose;
@@ -264,9 +266,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     DateRange dateRange = null;
     long nx = 0, ny = 0;
 
-    java.util.Iterator iter = gridDs.getGridsets().iterator();
-    while (iter.hasNext()) {
-      GridDataset.Gridset gset = (GridDataset.Gridset) iter.next();
+    for (GridDataset.Gridset gset : gridDs.getGridsets()) {
       GridCoordSystem gcs = gset.getGeoCoordSystem();
 
       CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
@@ -279,18 +279,17 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
         double dx = xaxis.getIncrement();
         double dy = yaxis.getIncrement();
         out.println("  horizontal = " + nx + " by " + ny + " points, resolution " + Format.d(dx, 4) + " " + Format.d(dy, 4)
-                + " " + xaxis.getUnitsString());
+            + " " + xaxis.getUnitsString());
       }
 
       ProjectionImpl proj = gcs.getProjection();
       if (proj != null) {
         out.println(", " + proj.getClassName() + " projection;");
 
-        List params = proj.getProjectionParameters();
-        for (int i = 0; i < params.size(); i++) {
-          ucar.unidata.util.Parameter p = (ucar.unidata.util.Parameter) params.get(i);
+        List<Parameter> params = proj.getProjectionParameters();
+        for (Parameter p : params)
           out.println("       " + p.getName() + " " + p.getStringValue());
-        }
+
       } else
         out.println();
 
@@ -333,9 +332,9 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
           TimeUnit tUnit = taxis.getTimeResolution();
           dateRange = new DateRange(dateRange2, "1 hour");
           out.println("  DateRange == " + "start= " + dateRange.getStart() + " end= " + dateRange.getEnd() +
-                  " duration= " + dateRange.getDuration() + " ntimes = " + ntimes + " data resolution = " + tUnit);
+              " duration= " + dateRange.getDuration() + " ntimes = " + ntimes + " data resolution = " + tUnit);
         } catch (Exception e) {
-          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          e.printStackTrace();
         }
       }
 
@@ -347,10 +346,9 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
         if (vt != null)
           out.print(" transform= " + vt.getVerticalTransformType());
 
-        List vertNames = vaxis.getNames();
-        for (int i = 0; i < vertNames.size(); i++) {
-          out.print(" " + vertNames.get(i));
-        }
+        List<NamedObject> vertNames = vaxis.getNames();
+        for (NamedObject vertName : vertNames)
+          out.print(" " + vertName);
         out.println();
 
         if ((gcsMax == null) || (gcsMax.getVerticalAxis().getSize() < vaxis.getSize()))
@@ -380,19 +378,16 @@ makeGrib1Vocabulary(grids, out);   */
 
   }
 
-  private void showAtts(PrintStream out, List atts) {
-    for (int i = 0; i < atts.size(); i++) {
-      Attribute att = (Attribute) atts.get(i);
+  private void showAtts(PrintStream out, List<Attribute> atts) {
+    for (Attribute att : atts)
       out.println("  " + att);
-    }
   }
 
-  private void makeGrib1Vocabulary(List grids, PrintStream out) {
+  private void makeGrib1Vocabulary(List<GridDatatype> grids, PrintStream out) {
     String stdName;
     out.println("\n<variables vocabulary='GRIB-1'>");
-    for (int i = 0; i < grids.size(); i++) {
-      GridDatatype grid = (GridDatatype) grids.get(i);
-      ucar.nc2.Attribute att = grid.findAttributeIgnoreCase("GRIB_param_number");
+    for (GridDatatype grid : grids) {
+      Attribute att = grid.findAttributeIgnoreCase("GRIB_param_number");
       stdName = (att != null) ? att.getNumericValue().toString() : null;
 
       out.print("  <variable name='");

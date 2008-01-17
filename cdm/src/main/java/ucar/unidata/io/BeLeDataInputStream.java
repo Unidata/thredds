@@ -1,7 +1,5 @@
 /*
- * $Id: BeLeDataInputStream.java 64 2006-07-12 22:30:50Z edavis $
- *
- * Copyright  1997-2004 Unidata Program Center/University Corporation for
+ * Copyright  1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,8 +19,6 @@
  */
 
 package ucar.unidata.io;
-
-
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +57,7 @@ public class BeLeDataInputStream extends DataInputStream {
      *
      *  @param inputStream from which to read
      *
-     * @throws IOException
+     * @throws IOException on read error
      */
     public BeLeDataInputStream(InputStream inputStream) throws IOException {
         super(inputStream);
@@ -73,7 +69,7 @@ public class BeLeDataInputStream extends DataInputStream {
      *
      * @param filename of file
      *
-     * @throws IOException
+     * @throws IOException on read error
      */
     public BeLeDataInputStream(String filename) throws IOException {
         this(new BufferedInputStream(new FileInputStream(filename)));
@@ -96,7 +92,7 @@ public class BeLeDataInputStream extends DataInputStream {
      * read an int in little endian format
      * @return int created from next 4 bytes in stream, in littleEndian order
      *
-     * @throws IOException
+     * @throws IOException on read error
      */
     public int readLEInt() throws IOException {
         readFully(w, 0, 4);
@@ -109,7 +105,7 @@ public class BeLeDataInputStream extends DataInputStream {
      * read an int in little endian format
      * @return int created from next 4 bytes in stream, in littleEndian order
      *
-     * @throws IOException
+     * @throws IOException on read error
      */
     public float readLEFloat() throws IOException {
         return Float.intBitsToFloat(readLEInt());
@@ -120,7 +116,7 @@ public class BeLeDataInputStream extends DataInputStream {
      *  read a double in little endian format
      * @return double from next 8 bytes in stream, littleEndian order
      *
-     * @throws IOException
+     * @throws IOException on read error
      */
     public double readLEDouble() throws IOException {
         return Double.longBitsToDouble(readLELong());
@@ -135,7 +131,7 @@ public class BeLeDataInputStream extends DataInputStream {
      * @param d the buffer into which the doubles are read
      * @param n number of little-endian doubles to read
      *
-     * @throws IOException
+     * @throws IOException on read error
      */
     public final void readLEDoubles(double[] d, int n) throws IOException {
         int nLeft   = n;
@@ -158,7 +154,7 @@ public class BeLeDataInputStream extends DataInputStream {
      *  read a long in little endian format
      * @return long from next 8 bytes in stream, littleEndian order
      *
-     * @throws IOException
+     * @throws IOException on read error
      */
     public long readLELong() throws IOException {
         readFully(w, 0, 8);
@@ -178,7 +174,7 @@ public class BeLeDataInputStream extends DataInputStream {
      * @param lbuf the buffer into which the longs are read
      * @param n the number of little-endian longs to read
      *
-     * @throws IOException
+     * @throws IOException on read error
      */
     public final void readLELongs(long lbuf[], int n) throws IOException {
         int nLeft   = n;

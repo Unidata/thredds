@@ -27,7 +27,7 @@ import ucar.nc2.dt.*;
 import java.io.IOException;
 import java.util.List;
 
-import thredds.catalog.DataType;
+import ucar.nc2.constants.DataType;
 
 /**
  * @author john
@@ -100,7 +100,7 @@ public class TimeRecords {
   }
 
   static private void readStationIterator(String netcdfFileURI) throws IOException {
-    PointObsDataset tob = (PointObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.POINT, netcdfFileURI, null, new StringBuffer());
+    PointObsDataset tob = (PointObsDataset) TypedDatasetFactory.open(DataType.POINT, netcdfFileURI, null, new StringBuffer());
 
     double count = 0;
     long start = System.currentTimeMillis();

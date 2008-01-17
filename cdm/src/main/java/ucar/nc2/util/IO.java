@@ -1,6 +1,5 @@
-// $Id:IO.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -19,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package thredds.util;
+package ucar.nc2.util;
 
 import ucar.unidata.util.StringUtil;
 
@@ -30,20 +29,49 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
+import ucar.nc2.util.UnsynchronizedBufferedWriter;
+
 /**
  * Input/Output utilities.
  *
  * @author John Caron
- * @version $Id:IO.java 63 2006-07-12 21:50:51Z edavis $
  */
 public class IO {
 
   static private int default_file_buffersize = 9200;
   static private int default_socket_buffersize = 64000;
-  static boolean showStackTrace = true;
-  static boolean debug = false, showResponse = false;
-  private static boolean showHeaders = true;
-  
+  static private boolean showStackTrace = true;
+  static private boolean debug = false, showResponse = false;
+  static private boolean showHeaders = true;
+
+  static private Class cl;
+
+  /** Open a resource as a Stream. First try ClassLoader.getResourceAsStream().
+   *  If that fails, try a plain old FileInputStream().
+   * @param resourcePath name of file path (use forward slashes!)
+   * @return InputStream or null on failure
+  */
+  public static InputStream getFileResource( String resourcePath) {
+    if (cl == null) cl = (new IO()).getClass();
+
+    InputStream is = cl.getResourceAsStream(resourcePath);
+    if (is != null) {
+      if (debug) System.out.println("Resource.getResourceAsStream ok on "+resourcePath);
+      return is;
+    } else if (debug)
+      System.out.println("Resource.getResourceAsStream failed on ("+resourcePath+")");
+
+    try {
+      is =  new FileInputStream(resourcePath);
+      if (debug) System.out.println("Resource.FileInputStream ok on "+resourcePath);
+    } catch (FileNotFoundException e) {
+      if (debug)  System.out.println("  FileNotFoundException: Resource.getFile failed on "+resourcePath);
+    } catch (java.security.AccessControlException e) {
+      if (debug)  System.out.println("  AccessControlException: Resource.getFile failed on "+resourcePath);
+    }
+
+    return is;
+  }
 
   /**
    * copy all bytes from in to out.
@@ -119,7 +147,7 @@ public class IO {
    */
   static public String readContents(InputStream is) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(10 * default_file_buffersize);
-    thredds.util.IO.copy(is, bout);
+    IO.copy(is, bout);
     return bout.toString();
   }
 
@@ -133,7 +161,7 @@ public class IO {
    */
   static public byte[] readContentsToByteArray(InputStream is) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(10 * default_file_buffersize);
-    thredds.util.IO.copy(is, bout);
+    IO.copy(is, bout);
     return bout.toByteArray();
   }
 
@@ -146,7 +174,7 @@ public class IO {
    */
   static public void writeContents(String contents, OutputStream os) throws IOException {
     ByteArrayInputStream bin = new ByteArrayInputStream(contents.getBytes());
-    thredds.util.IO.copy(bin, os);
+    IO.copy(bin, os);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,7 +193,7 @@ public class IO {
     try {
       in = new BufferedInputStream(new FileInputStream(fileInName));
       out = new BufferedOutputStream(new FileOutputStream(fileOutName));
-      thredds.util.IO.copy(in, out);
+      IO.copy(in, out);
     } finally {
       if (null != in) in.close();
       if (null != out) out.close();
@@ -185,7 +213,7 @@ public class IO {
     try {
       in = new BufferedInputStream(new FileInputStream(fileIn));
       out = new BufferedOutputStream(new FileOutputStream(fileOut));
-      thredds.util.IO.copy(in, out);
+      IO.copy(in, out);
     } finally {
       if (null != in) in.close();
       if (null != out) out.close();
@@ -215,7 +243,7 @@ public class IO {
     InputStream in = null;
     try {
       in = new BufferedInputStream(new FileInputStream(fileIn));
-      thredds.util.IO.copyB(in, out, bufferSize);
+      IO.copyB(in, out, bufferSize);
     } finally {
       if (null != in) in.close();
     }
@@ -261,9 +289,7 @@ public class IO {
     if (!toDir.exists())
       toDir.mkdirs();
 
-    File[] files = fromDir.listFiles();
-    for (int i = 0; i < files.length; i++) {
-      File f = files[i];
+    for (File f : fromDir.listFiles()) {
       if (f.isDirectory())
         copyDirTree(f.getAbsolutePath(), toDir.getAbsolutePath() + "/" + f.getName());
       else
@@ -354,7 +380,7 @@ public class IO {
     OutputStream out = null;
     try {
       out = new BufferedOutputStream(new FileOutputStream(fileOutName));
-      thredds.util.IO.copy(in, out);
+      IO.copy(in, out);
 
     } finally {
       if (null != in) in.close();
@@ -438,7 +464,7 @@ public class IO {
       if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
         is = new GZIPInputStream( new BufferedInputStream(is, 1024)); 
       }
-      thredds.util.IO.copyB(is, out, bufferSize);
+      IO.copyB(is, out, bufferSize);
 
     } catch (java.net.ConnectException e) {
       if (showStackTrace) e.printStackTrace();
@@ -578,7 +604,7 @@ public class IO {
 
       // read it
       OutputStream out = new BufferedOutputStream(c.getOutputStream());
-      thredds.util.IO.copy(new ByteArrayInputStream(contents.getBytes()), out);
+      IO.copy(new ByteArrayInputStream(contents.getBytes()), out);
       out.flush();
       out.close();
 

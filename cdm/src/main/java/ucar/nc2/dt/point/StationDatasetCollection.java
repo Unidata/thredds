@@ -2,6 +2,7 @@ package ucar.nc2.dt.point;
 
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.constants.DataType;
 import ucar.ma2.StructureData;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class StationDatasetCollection {
   private StringBuffer log = new StringBuffer();
 
   public void add(String location) throws IOException {
-    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, log);
+    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, location, null, log);
     if (typical == null)
       typical = sobs;
 

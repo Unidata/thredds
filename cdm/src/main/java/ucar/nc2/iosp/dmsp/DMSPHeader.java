@@ -3,7 +3,7 @@ package ucar.nc2.iosp.dmsp;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants._Coordinate;
 
 import java.io.IOException;
 import java.util.*;

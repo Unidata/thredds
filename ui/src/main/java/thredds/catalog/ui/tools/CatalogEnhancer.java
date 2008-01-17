@@ -22,10 +22,10 @@
 package thredds.catalog.ui.tools;
 
 import thredds.catalog.*;
-import thredds.catalog.DataType;
+import ucar.nc2.constants.DataType;
+import ucar.nc2.units.DateType;
 import thredds.catalog.dl.*;
 import thredds.catalog.ui.*;
-import thredds.datatype.*;
 import thredds.datatype.prefs.*;
 import thredds.ui.*;
 

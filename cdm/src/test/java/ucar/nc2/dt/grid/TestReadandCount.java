@@ -3,7 +3,7 @@ package ucar.nc2.dt.grid;
 import junit.framework.*;
 import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.AxisType;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.TestAll;

@@ -22,9 +22,8 @@ package thredds.viewer.ui.table;
 
 import thredds.ui.BAMutil;
 import thredds.viewer.ui.event.*;
-import thredds.util.ListenerManager;
+import ucar.nc2.ui.util.ListenerManager;
 import ucar.nc2.util.NamedObject;
-import thredds.util.Resource;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,8 +33,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
-import javax.swing.table.*;
-import javax.swing.plaf.metal.MetalLookAndFeel;  // LOOK
+import javax.swing.table.*;  // LOOK
 
   /**
     JTableSorted adds sorting functionality to a JTable.

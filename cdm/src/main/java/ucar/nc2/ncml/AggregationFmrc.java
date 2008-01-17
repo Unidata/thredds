@@ -20,6 +20,7 @@
 package ucar.nc2.ncml;
 
 import ucar.ma2.*;
+import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.GridDatatype;
@@ -28,8 +29,9 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.conv._Coordinate;
+import ucar.nc2.constants.*;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.URLnaming;
 
 import java.util.*;
 import java.io.*;
@@ -63,7 +65,7 @@ public class AggregationFmrc extends Aggregation {
   }
 
   public void setInventoryDefinition(String invDef) {
-    String path = ucar.nc2.util.NetworkUtils.resolveFile( definitionDir, invDef);
+    String path = URLnaming.resolveFile( definitionDir, invDef);
     fmrcDefinition = new FmrcDefinition();
     try {
       boolean ok = fmrcDefinition.readDefinitionXML(path);
@@ -102,7 +104,7 @@ public class AggregationFmrc extends Aggregation {
     // some additional global attributes
     Group root = ncDataset.getRootGroup();
     root.addAttribute(new Attribute("Conventions", "CF-1.0, "+_Coordinate.Convention));
-    root.addAttribute(new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
+    root.addAttribute(new Attribute("cdm_data_type", ucar.nc2.constants.DataType.GRID.toString()));
 
     // create runtime aggregation dimension
     String dimName = getDimensionName();

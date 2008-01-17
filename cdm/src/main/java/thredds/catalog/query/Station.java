@@ -21,10 +21,6 @@
 
 package thredds.catalog.query;
 
-import ucar.nc2.iosp.nexrad2.NexradStationDB;
-
-import java.io.IOException;
-
 /**
  * Implementation of a DQC  station element. This extends Choice with a location.
  *

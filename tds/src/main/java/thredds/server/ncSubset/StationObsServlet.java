@@ -29,7 +29,7 @@ import thredds.servlet.AbstractServlet;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DebugHandler;
 import thredds.servlet.ThreddsConfig;
-import thredds.datatype.DateRange;
+import ucar.nc2.units.DateRange;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;

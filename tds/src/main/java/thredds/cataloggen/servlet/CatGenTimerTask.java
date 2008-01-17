@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 
 import thredds.cataloggen.*;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateType;
 
 /**
  * Describes a task to be run by the CatalogGenerator Servlet.

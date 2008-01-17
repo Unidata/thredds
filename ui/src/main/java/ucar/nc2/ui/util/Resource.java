@@ -1,6 +1,5 @@
-// $Id:Resource.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -18,7 +17,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package thredds.util;
+package ucar.nc2.ui.util;
 
 import java.awt.*;
 import java.awt.image.*;
@@ -156,22 +155,3 @@ public class Resource {
   }
 
 }
-
-/* Change History:
-   $Log: Resource.java,v $
-   Revision 1.4  2005/02/20 00:36:59  caron
-   reorganize resources
-
-   Revision 1.3  2004/09/24 03:26:36  caron
-   merge nj22
-
-   Revision 1.2  2004/02/20 05:02:54  caron
-   release 1.3
-
-   Revision 1.1  2002/12/13 00:51:11  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/15 00:01:48  caron
-   import sources
-
-*/

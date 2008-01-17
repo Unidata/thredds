@@ -3,12 +3,12 @@ package thredds.wcs.v1_0_0_1;
 import java.io.File;
 import java.text.ParseException;
 
-import ucar.unidata.geoloc.EPSG_OGC_CF_Helper;
+import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.dt.GridCoordSystem;
-import thredds.datatype.DateRange;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
 /**
  * _more_

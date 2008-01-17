@@ -21,6 +21,8 @@ package thredds.wcs;
 
 import ucar.nc2.geotiff.GeotiffWriter;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -40,9 +42,6 @@ import java.io.*;
 import java.util.List;
 import java.util.Collections;
 import java.text.ParseException;
-
-import thredds.datatype.DateRange;
-import thredds.datatype.DateType;
 
 /**
  * Encapsolates a GridDataset, making it into something to be served through WCS.

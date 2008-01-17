@@ -21,6 +21,8 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
@@ -122,7 +124,7 @@ public class CSMConvention extends COARDSConvention {
     }
 
     public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-      return new HybridSigmaPressure(ds, timeDim, vCT);
+      return new HybridSigmaPressure(ds, timeDim, vCT.getParameters());
     }
   }
 
@@ -147,7 +149,7 @@ public class CSMConvention extends COARDSConvention {
     }
 
     public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-      return new AtmosSigma(ds, timeDim, vCT);
+      return new AtmosSigma(ds, timeDim, vCT.getParameters());
     }
   }
 

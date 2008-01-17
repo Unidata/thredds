@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import thredds.catalog.DataType;
+import ucar.nc2.constants.DataType;
 
 /**
  * Manager of factories for TypedDatasets.
@@ -73,7 +73,7 @@ public class TypedDatasetFactory {
     * @param datatype  scientific data type
     * @throws ClassNotFoundException if loading error
     */
-   static public void registerFactory( thredds.catalog.DataType datatype, String className) throws ClassNotFoundException {
+   static public void registerFactory( DataType datatype, String className) throws ClassNotFoundException {
      Class c = Class.forName( className);
      registerFactory( datatype, c);
    }
@@ -83,7 +83,7 @@ public class TypedDatasetFactory {
     * @param datatype scientific data type
     * @param c class that implements TypedDatasetFactoryIF.
     */
-  static public void registerFactory( thredds.catalog.DataType datatype, Class c) {
+  static public void registerFactory( DataType datatype, Class c) {
     if (!(TypedDatasetFactoryIF.class.isAssignableFrom( c)))
       throw new IllegalArgumentException("Class "+c.getName()+" must implement TypedDatasetFactoryIF");
 
@@ -128,7 +128,7 @@ public class TypedDatasetFactory {
    * @return a subclass of TypedDataset
    * @throws java.io.IOException on io error
    */
-  static public TypedDataset open( thredds.catalog.DataType datatype, String location, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  static public TypedDataset open( DataType datatype, String location, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     // special processing for thredds: datasets
     if (location.startsWith("thredds:") && (datatype != null)) {
       ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype( location, task);
@@ -151,7 +151,7 @@ public class TypedDatasetFactory {
    * @return a subclass of TypedDataset, or null if cant find
    * @throws java.io.IOException on io error
    */
-  static public TypedDataset open( thredds.catalog.DataType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  static public TypedDataset open( DataType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
 
     // look for a Factory that claims this dataset
     Class useClass = null;
@@ -169,7 +169,7 @@ public class TypedDatasetFactory {
 
       // POINT is also a STATION
       if (datatype == DataType.POINT) {
-        return open( thredds.catalog.DataType.STATION, ncd, task, errlog);
+        return open( DataType.STATION, ncd, task, errlog);
       }
 
       // if explicitly requested, give em a GridDataset even if no Grids

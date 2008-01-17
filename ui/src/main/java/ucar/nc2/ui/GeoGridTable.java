@@ -22,6 +22,7 @@ package ucar.nc2.ui;
 
 import ucar.nc2.*;
 import ucar.nc2.Dimension;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;

@@ -24,6 +24,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.Parameter;
 import ucar.units.UnitFormat;

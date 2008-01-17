@@ -24,14 +24,13 @@ import ucar.nc2.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateFromString;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 import java.io.*;
-
-import thredds.util.DateFromString;
 
 /**
  * Implement NcML Aggregation.

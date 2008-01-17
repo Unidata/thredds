@@ -1,6 +1,5 @@
-// $Id: CatalogCrawler.java 48 2006-07-12 16:15:40Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -51,7 +50,6 @@ import thredds.catalog.InvCatalogRef;
  * </pre>
  *
  * @author John Caron
- * @version $Id: CatalogCrawler.java 48 2006-07-12 16:15:40Z caron $
  */
 
 public class CatalogCrawler {
@@ -136,9 +134,7 @@ public class CatalogCrawler {
       out.println("***CATALOG " + cat.getCreateFrom());
     countCatrefs = 0;
 
-    List datasets = cat.getDatasets();
-    for (int i = 0; i < datasets.size(); i++) {
-      InvDataset ds = (InvDataset) datasets.get(i);
+    for (InvDataset ds : cat.getDatasets()) {
       if (type == USE_ALL)
         crawlDataset(ds, task, out);
       else
@@ -172,7 +168,7 @@ public class CatalogCrawler {
 
     // recurse - depth first
     if (!skipScanChildren) {
-      java.util.List dlist = ds.getDatasets();
+      List<InvDataset> dlist = ds.getDatasets();
       if (isCatRef) {
         InvCatalogRef catref = (InvCatalogRef) ds;
         if (!isDataScan) {
@@ -180,8 +176,7 @@ public class CatalogCrawler {
         }
       }
 
-      for (int i = 0; i < dlist.size(); i++) {
-        InvDataset dds = (InvDataset) dlist.get(i);
+      for (InvDataset dds : dlist) {
         crawlDataset(dds, task, out);
         if ((task != null) && task.isCancel())
           break;
@@ -214,11 +209,11 @@ public class CatalogCrawler {
     }
 
     // get datasets with data access ("leaves")
-    java.util.List dlist = ds.getDatasets();
-    ArrayList leaves = new ArrayList();
-    for (int i = 0; i < dlist.size(); i++) {
-      InvDataset dds = (InvDataset) dlist.get(i);
-      if (dds.hasAccess()) leaves.add(dds);
+    List<InvDataset> dlist = ds.getDatasets();
+    List<InvDataset> leaves = new ArrayList<InvDataset>();
+    for (InvDataset dds : dlist) {
+      if (dds.hasAccess())
+        leaves.add(dds);
     }
 
     if (leaves.size() > 0) {
@@ -230,8 +225,7 @@ public class CatalogCrawler {
         listen.getDataset(chooseRandom(leaves));
 
       } else { // do all of them
-        for (int i = 0; i < leaves.size(); i++) {
-          InvDataset dds = (InvDataset) leaves.get(i);
+        for (InvDataset dds : leaves) {
           listen.getDataset(dds);
           if ((task != null) && task.isCancel()) break;
         }
@@ -240,8 +234,7 @@ public class CatalogCrawler {
 
     // recurse
     if (!skipScanChildren) {
-      for (int i = 0; i < dlist.size(); i++) {
-        InvDataset dds = (InvDataset) dlist.get(i);
+      for (InvDataset dds : dlist) {
         if (dds.hasNestedDatasets())
           crawlDirectDatasets(dds, task, out);
         if ((task != null) && task.isCancel())
@@ -269,6 +262,7 @@ public class CatalogCrawler {
   static public interface Listener {
     /**
      * Gets called for each dataset.
+     * @param dd the dataset
      */
     public void getDataset(InvDataset dd);
   }

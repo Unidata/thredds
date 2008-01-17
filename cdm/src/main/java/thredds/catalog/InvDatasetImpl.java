@@ -20,13 +20,15 @@
 
 package thredds.catalog;
 
-import thredds.datatype.*;
-
 import java.util.*;
 import java.net.URI;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Format;
+import ucar.nc2.constants.DataType;
+import ucar.nc2.units.TimeDuration;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
 /**
  * Concrete implementation of a thredds Dataset, for reading and writing from XML.

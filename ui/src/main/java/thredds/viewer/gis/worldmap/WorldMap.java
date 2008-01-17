@@ -20,15 +20,13 @@
  */
 package thredds.viewer.gis.worldmap;
 
-import java.awt.*;
-import java.awt.geom.*;
 import java.io.*;
 import java.util.*;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
+import ucar.nc2.ui.util.Resource;
 import thredds.datamodel.gis.*;
-import thredds.util.Resource;
 
 /** A simple "default" world map Renderer.
  * @author John Caron

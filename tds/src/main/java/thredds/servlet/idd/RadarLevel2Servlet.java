@@ -26,8 +26,8 @@ import java.util.Calendar;
 import javax.servlet.*;
 import javax.servlet.http.*;
 //import thredds.server.ncSubset.QueryParams;
-import thredds.datatype.DateRange;
-import thredds.datatype.DateType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 //import thredds.datatype.TimeDuration;
 import thredds.server.ncSubset.QueryParams;
 import thredds.catalog.XMLEntityResolver;
@@ -37,8 +37,6 @@ import org.jdom.Element;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
-import ucar.nc2.dt.StationObsDataset;
-import ucar.nc2.dt.point.StationObsDatasetInfo;
 import ucar.nc2.units.DateFormatter;
 
 public class RadarLevel2Servlet extends AbstractServlet {

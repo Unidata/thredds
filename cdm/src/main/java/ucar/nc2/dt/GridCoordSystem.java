@@ -21,6 +21,7 @@ package ucar.nc2.dt;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
+import ucar.nc2.units.DateRange;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -234,7 +235,7 @@ public interface GridCoordSystem {
    * If there is a time coordinate, get the time covered.
    * @return DateRange or null if no time coordinate
    */
-  public thredds.datatype.DateRange getDateRange();
+  public DateRange getDateRange();
    
   /**
    * True if there is a Time Axis.

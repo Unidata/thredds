@@ -22,7 +22,7 @@
 package thredds.catalog.query;
 
 import thredds.catalog.XMLEntityResolver;
-import thredds.util.IO;
+import ucar.nc2.util.IO;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.*;

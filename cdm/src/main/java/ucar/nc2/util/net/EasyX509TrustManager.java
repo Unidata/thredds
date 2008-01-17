@@ -23,7 +23,7 @@
  *
  */
 
-package thredds.util.net;
+package ucar.nc2.util.net;
 
 
 import java.security.KeyStore;

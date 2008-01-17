@@ -1,4 +1,4 @@
-package thredds.util.reflect;
+package ucar.nc2.util.reflect;
 
 import java.lang.reflect.*;
 import java.io.*;

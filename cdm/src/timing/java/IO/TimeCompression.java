@@ -1,5 +1,7 @@
 package IO;
 
+import ucar.nc2.util.IO;
+
 import java.io.*;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -75,7 +77,7 @@ public class TimeCompression {
     out = new BufferedOutputStream(out, 1000);
 
     long start = System.currentTimeMillis();
-    thredds.util.IO.copyB( in, out, 10000);
+    IO.copyB( in, out, 10000);
     out.flush();
     double took = .001 * (System.currentTimeMillis() - start);
 
@@ -103,7 +105,7 @@ public class TimeCompression {
     OutputStream out = new BufferedOutputStream(fout, 1000);
 
     long start = System.currentTimeMillis();
-    thredds.util.IO.copyB( in, out, 10000);
+    IO.copyB( in, out, 10000);
     out.flush();
     double took = .001 * (System.currentTimeMillis() - start);
 
@@ -234,7 +236,7 @@ public class TimeCompression {
     DeflaterOutputStream out = new DeflaterOutputStream(fout);
 
     long start = System.currentTimeMillis();
-    thredds.util.IO.copyB(fin, out, 10 * 1000);
+    IO.copyB(fin, out, 10 * 1000);
     double took = .001 * (System.currentTimeMillis() - start);
     System.out.println(" that took = "+took+"sec");
 

@@ -1,6 +1,5 @@
-// $Id: SocketMessage.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -18,7 +17,9 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package thredds.util;
+package ucar.nc2.ui.util;
+
+import ucar.nc2.util.IO;
 
 import java.net.*;
 import java.io.*;
@@ -29,7 +30,7 @@ public class SocketMessage {
   private ServerSocket server;
   private boolean isAlreadyRunning = false;
   private Thread listen;
-  private thredds.util.ListenerManager lm;
+  private ListenerManager lm;
 
   public SocketMessage(int port, String message) {
 
@@ -40,7 +41,7 @@ public class SocketMessage {
       listen.start();
 
       // manage Event Listener's
-      lm = new thredds.util.ListenerManager(
+      lm = new ListenerManager(
         "thredds.util.SocketMessage$EventListener",
         "thredds.util.SocketMessage$Event",
         "setMessage");

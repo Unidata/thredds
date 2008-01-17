@@ -20,6 +20,8 @@
  */
 package thredds.viewer.ui.event;
 
+import ucar.nc2.ui.util.ListenerManager;
+
 /** An ActionCoordinator helps manage the set of objects that send and receive
  *  an ActionValueEvent. It is assumed that each event generator is also
  *  interested in recieving the event if its from someone else; these objects are
@@ -37,14 +39,14 @@ package thredds.viewer.ui.event;
  */
 
 public class ActionCoordinator implements ActionValueListener {
-  private thredds.util.ListenerManager lm;
+  private ListenerManager lm;
   private String eventType;
 
   public ActionCoordinator(String eventType) {
     this.eventType = eventType;
 
     // manage Action Listeners
-    lm = new thredds.util.ListenerManager(
+    lm = new ListenerManager(
         "thredds.viewer.ui.event.ActionValueListener",
         "thredds.viewer.ui.event.ActionValueEvent",
         "actionPerformed");

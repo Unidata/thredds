@@ -34,8 +34,6 @@ import ucar.ma2.StructureData;
 import java.io.*;
 import java.util.*;
 
-import thredds.catalog.DataType;
-
 /**
  * This handles datasets in the old metar2nc format. It identifies them by looking at the title,
  *  expecting "METAR definition", "SYNOPTIC definition", or "BUOY definition". It uses an NcML

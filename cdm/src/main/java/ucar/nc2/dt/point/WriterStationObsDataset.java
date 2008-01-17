@@ -476,7 +476,7 @@ public class WriterStationObsDataset {
 
     String location = "C:/data/metars/Surface_METAR_20070513_0000.nc";
     StringBuffer errlog = new StringBuffer();
-    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, location, null, errlog);
+    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.STATION, location, null, errlog);
 
     String fileOut = "C:/temp/Surface_METAR_20070513_0000.rewrite.nc";
     WriterStationObsDataset writer = new WriterStationObsDataset(fileOut, "test");
@@ -512,7 +512,7 @@ public class WriterStationObsDataset {
     NetcdfDataset ncd = new NetcdfDataset( ncfile);
 
     StringBuffer errlog = new StringBuffer();
-    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(thredds.catalog.DataType.STATION, ncd, null, errlog);
+    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.STATION, ncd, null, errlog);
 
     List<Station> stns = sobs.getStations();
     List<VariableSimpleIF> vars = sobs.getDataVariables();

@@ -21,6 +21,8 @@
 package thredds.servlet;
 
 import ucar.unidata.util.StringUtil;
+import ucar.nc2.constants.DataType;
+import ucar.nc2.util.IO;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +37,6 @@ import java.net.URISyntaxException;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvAccess;
 import thredds.catalog.ServiceType;
-import thredds.catalog.DataType;
 
 /**
  * Catalog Serving
@@ -90,7 +91,7 @@ public class ViewServlet extends AbstractServlet {
     if (template != null) return template;
 
     try {
-      template = thredds.util.IO.readFile(path);
+      template = IO.readFile(path);
     } catch (IOException ioe) {
       return null;
     }

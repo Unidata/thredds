@@ -22,9 +22,9 @@ package thredds.catalog.dl;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
-import thredds.datatype.DateType;
-import thredds.datatype.DateRange;
-import thredds.datatype.TimeDuration;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.TimeDuration;
 
 import org.jdom.*;
 import org.jdom.output.*;
