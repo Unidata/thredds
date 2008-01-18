@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="cdm" default="makeJar" basedir=".">
+<project name="cdm" default="makeMain" basedir=".">
   <property name="release.version" value="4.0"/>
   <property name="release.version.minor" value="${release.version}.10"/>
   <property name="build.debug" value="on"/>
@@ -36,8 +36,10 @@
   <property name="release.doc.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
   <property name="release.html.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/"/>
   <property name="release.schema.dir" value="${uni.www.dir}/content/schema"/>
-  <property name="release.javadoc.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
-  <property name="release.javadocAll.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadocAll/"/>
+  <property name="release.javadoc.dir"
+            value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
+  <property name="release.javadocAll.dir"
+            value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadocAll/"/>
   <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/webstart"/>
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
@@ -59,48 +61,36 @@
   <property name="opendap.jar" value="opendap-2.1.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="visadNoDods.jar" value="visadNoDods.jar"/>
-  <property name="xml-apis.jar" value="xml-apis.jar"/>
-  <property name="xercesImpl.jar" value="xercesImpl.jar"/>
+  <!--property name="xml-apis.jar" value="xml-apis.jar"/>
+  <property name="xercesImpl.jar" value="xercesImpl.jar"/ -->
 
   <!-- source -->
   <path id="sourcepath">
     <pathelement location="${src.dir}"/>
   </path>
 
-  <patternset id="sources">
-    <include name="ucar/**/*.java"/>
-    <exclude name="ucar/nc2/dt2/**/*.java" />
-    <!-- include name="dods/**/*.java"/ -->
-    <include name="thredds/**/*.java"/>
-    <exclude name="thredds/cataloggen/config/*"/>
-    <exclude name="thredds/wcs/**"/>
-    <exclude name="ucar/nc2/dataset/grid/*"/>
-    <exclude name="ucar/nc2/stream/*"/>
-    <exclude name="ucar/nc2/util/reflect/*"/>
-  </patternset>
-
   <!-- Libraries -->
   <fileset id="compile.libraries" dir="${lib.dir}">
-     <include name="release/${bufr.jar}"/>
-     <include name="release/${grib.jar}"/>
-     <include name="release/${opendap.jar}"/>
-     <include name="external/${httpclient.jar}"/>
-     <include name="external/${jdom.jar}"/>
-     <include name="external/${logging.jar}"/>
-     <include name="release/${visadNoDods.jar}"/>
-   </fileset>
+    <include name="release/${bufr.jar}"/>
+    <include name="release/${grib.jar}"/>
+    <include name="release/${opendap.jar}"/>
+    <include name="external/${httpclient.jar}"/>
+    <include name="external/${jdom.jar}"/>
+    <include name="external/${logging.jar}"/>
+    <include name="release/${visadNoDods.jar}"/>
+  </fileset>
 
   <fileset id="compileFromSrc.libraries" dir="${root.dir}">
-     <include name="lib/${bufr.jar}"/>
-     <include name="lib/${grib.jar}"/>
-     <include name="lib/${opendap.jar}"/>
-     <include name="lib/${httpclient.jar}"/>
-     <include name="lib/${jdom.jar}"/>
-     <include name="lib/${logging.jar}"/>
-     <include name="lib/${visadNoDods.jar}"/>
-     <include name="lib/${jgoodies.jar}"/>
-     <include name="lib/${lucene.jar}"/>
-   </fileset>
+    <include name="lib/${bufr.jar}"/>
+    <include name="lib/${grib.jar}"/>
+    <include name="lib/${opendap.jar}"/>
+    <include name="lib/${httpclient.jar}"/>
+    <include name="lib/${jdom.jar}"/>
+    <include name="lib/${logging.jar}"/>
+    <include name="lib/${visadNoDods.jar}"/>
+    <include name="lib/${jgoodies.jar}"/>
+    <include name="lib/${lucene.jar}"/>
+  </fileset>
 
   <path id="compile.classpath">
     <fileset refid="compile.libraries"/>
@@ -114,8 +104,8 @@
     <include name="external/${http-codec.jar}"/>
     <include name="external/${http-logging.jar}"/>
     <include name="external/${jpeg2000.jar}"/>
-    <include name="external/${xercesImpl.jar}"/>
-    <include name="external/${xml-apis.jar}"/>
+    <!--include name="external/${xercesImpl.jar}"/>
+    <include name="external/${xml-apis.jar}"/ -->
   </fileset>
 
   <path id="runtime.classpath">
@@ -157,19 +147,30 @@
        <echo>build.debuglevel=${build.debuglevel}</echo -->
   </target>
 
-  <target name="compile" depends="init, release-settings" description="library compile">
+  <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
+  <!-- core library -->
+  <patternset id="sources-core">
+    <include name="ucar/ma2/*.java"/>
+    <include name="ucar/nc2/*.java"/>
+    <include name="ucar/nc2/iosp/netcdf3/N3iosp.java"/>
+    <include name="ucar/nc2/util/DebugFlagsImpl.java"/>
+  </patternset>
+
+  <target name="compile-core" depends="release-settings" description="library compile">
+    <delete dir="${build.classes.dir}" failonerror="false"/>
+    <mkdir dir="${build.classes.dir}"/>
+
     <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
            includeAntRuntime="false" source="1.5" target="1.5">
-      <src refid="sourcepath" />
-      <patternset refid="sources"/>
+      <src refid="sourcepath"/>
+      <patternset refid="sources-core"/>
       <classpath refid="compile.classpath"/>
     </javac>
   </target>
 
-  <!-- make library jars -->
-  <property name="jarMinimal" value="ncCore-${release.version}.jar"/>
-  <property name="jarMain" value="netcdf-${release.version}.jar"/>
-  <target name="makeJar" depends="compile" description="make library jars">
+  <!-- make core library jars -->
+  <property name="jarCore" value="ncCore-${release.version}.jar"/>
+  <target name="makeCore" depends="compile-core" description="make core library jar">
     <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${buildtime}"/>
@@ -186,22 +187,10 @@
       </filterset>
     </copy>
 
-    <jar jarfile="${build.dir}/${jarMinimal}" index="true">
-      <fileset dir="${build.classes.dir}">
-        <include name="ucar/ma2/*"/>
-        <include name="ucar/nc2/*"/>
-        <include name="ucar/nc2/iosp/*"/>
-        <include name="ucar/nc2/iosp/netcdf3/*"/>
-        <include name="ucar/nc2/util/*"/>
-        <include name="ucar/unidata/io/*"/>
-        <include name="ucar/unidata/io/http/*"/>
-        <include name="ucar/unidata/io/bzip2/*"/>
-        <include name="ucar/unidata/util/Format.class"/>
-        <include name="ucar/unidata/util/StringUtil.class"/>
-      </fileset>
+    <jar jarfile="${build.dir}/${jarCore}" index="true">
+      <fileset dir="${build.classes.dir}"/>
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
-      <!--fileset dir="${lib.dir}/slf4j" /-->
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
@@ -212,6 +201,85 @@
       </manifest>
 
     </jar>
+  </target>
+
+  <property name="jarCoreComplete" value="ncCoreComplete-${release.version}.jar"/>
+  <property name="core.dir" value="${build.dir}/core"/>
+  <target name="makeCoreComplete" depends="makeCore" description="make coreAll jar">
+    <delete dir="${core.dir}" failonerror="false"/>
+    <mkdir dir="${core.dir}"/>
+    <unzip dest="${core.dir}">
+      <fileset dir="${lib.dir}">
+        <include name="external/${httpclient.jar}"/>
+        <include name="external/${http-codec.jar}"/>
+        <include name="external/${http-logging.jar}"/>
+        <include name="external/${logging-minimal.jar}"/>
+      </fileset>
+    </unzip>
+    <unzip dest="${core.dir}">
+      <fileset dir="${build.dir}">
+        <include name="${jarCore}"/>
+      </fileset>
+    </unzip>
+
+    <jar jarfile="${build.dir}/${jarCoreComplete}" index="true" duplicate="preserve">
+      <fileset dir="${core.dir}"/>
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="NetCDF-Java-MinimalLibrary COmplete"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
+  <!-- main library  -->
+
+  <patternset id="sources">
+    <include name="thredds/catalog/*.java"/>
+    <include name="thredds/catalog/parser/jdom/*.java"/>
+    <include name="ucar/**/*.java"/>
+    <exclude name="ucar/nc2/dataset/grid/*"/>
+    <exclude name="ucar/nc2/stream/*"/>
+    <exclude name="ucar/nc2/dt2/**/*.java"/>
+    <exclude name="ucar/nc2/util/reflect/*"/>
+    <exclude name="ucar/unidata/geoloc/ogc/*"/>
+    <!-- include name="dods/**/*.java"/ -->
+  </patternset>
+
+  <target name="compile" depends="release-settings" description="library compile">
+    <delete dir="${build.classes.dir}" failonerror="false"/>
+    <mkdir dir="${build.classes.dir}"/>
+
+    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
+           includeAntRuntime="false" source="1.5" target="1.5">
+      <src refid="sourcepath"/>
+      <patternset refid="sources"/>
+      <classpath refid="compile.classpath"/>
+    </javac>
+  </target>
+
+  <!-- make library jars -->
+  <property name="jarMain" value="netcdf-${release.version}.jar"/>
+  <target name="makeMain" depends="compile" description="make library jars">
+    <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
+      <filterset>
+        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="VERSION" value="${release.version}"/>
+        <filter token="VERSION.MINOR" value="${release.version.minor}"/>
+      </filterset>
+    </copy>
+
+    <copy file="CHANGES.txt" tofile="${build.dir}/CHANGES" overwrite="true">
+      <filterset>
+        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="VERSION" value="${release.version}"/>
+        <filter token="VERSION.MINOR" value="${release.version.minor}"/>
+      </filterset>
+    </copy>
 
     <jar jarfile="${build.dir}/${jarMain}" index="true">
       <fileset dir="${build.classes.dir}"/>
@@ -235,12 +303,53 @@
 
   </target>
 
-  <property name="idv.jar" value="nc-idv.jar"/>
+  <property name="jarMainComplete" value="netcdfComplete-${release.version}.jar"/>
+  <property name="main.dir" value="${build.dir}/main"/>
+  <target name="makeMainComplete" depends="makeMain" description="make netcdfAll jar">
+    <delete dir="${main.dir}" failonerror="false"/>
+    <mkdir dir="${main.dir}"/>
+    <unzip dest="${main.dir}">
+      <fileset dir="${lib.dir}">
+        <include name="release/${bufr.jar}"/>
+        <include name="release/${grib.jar}"/>
+        <include name="external/${jdom.jar}"/>
+        <include name="external/${jpeg2000.jar}"/>
+        <include name="external/${httpclient.jar}"/>
+        <include name="external/${http-codec.jar}"/>
+        <include name="external/${http-logging.jar}"/>
+        <include name="external/${logging-minimal.jar}"/>
+        <include name="release/${opendap.jar}"/>
+        <include name="release/${visadNoDods.jar}"/>
+      </fileset>
+    </unzip>
+    <unzip dest="${main.dir}">
+      <fileset dir="${build.dir}">
+        <include name="${jarMain}"/>
+      </fileset>
+    </unzip>
+
+    <jar jarfile="${build.dir}/${jarMainComplete}" index="true" duplicate="preserve">
+      <fileset dir="${main.dir}"/>
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="NetCDF-Java-Library Complete"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
+  </target>
+
   <property name="zip.dir" location="${build.dir}/zip"/>
   <property name="uiZip.dir" location="${build.dir}/uiZip"/>
+
+  <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
+  <!-- idv library  -->
+
+  <property name="jarIdv" value="ncIdv.jar"/>
   <property name="idv.dir" location="${build.dir}/idv"/>
-  <target name="makeIDVjar" depends="makeJar" description="create jar for idv">
-    <!--unzip so we can make idv jar -->
+  <target name="makeIDVjar" depends="makeMain" description="create jar for idv">
     <mkdir dir="${idv.dir}"/>
     <unzip dest="${idv.dir}">
       <fileset dir="${lib.dir}">
@@ -261,7 +370,7 @@
       </fileset>
     </unzip>
 
-    <jar jarfile="${build.dir}/${idv.jar}" index="true" duplicate="preserve">
+    <jar jarfile="${build.dir}/${jarIdv}" index="true" duplicate="preserve">
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
       <fileset dir="${idv.dir}"/>
@@ -276,20 +385,22 @@
     </jar>
   </target>
 
+  <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- source release -->
+
   <property name="ncSrcRelease.jar" value="ncSrc-${release.version}.jar"/>
   <target name="makeSrc-CDM" description="create CDM source release">
 
     <jar jarfile="${build.dir}/${ncSrcRelease.jar}" index="true" duplicate="preserve">
       <fileset dir="${root.dir}/..">
-        <include name="cdm/**" />
-        <include name="lib/**" />
-        <include name="intelliJ/**" />
-        <include name="ui/**" />
+        <include name="cdm/**"/>
+        <include name="lib/**"/>
+        <include name="intelliJ/**"/>
+        <include name="ui/**"/>
 
-        <exclude name="cdm/doc/**" />
-        <exclude name="cdm/target/**" />
-        <exclude name="ui/target/**" />
+        <exclude name="cdm/doc/**"/>
+        <exclude name="cdm/target/**"/>
+        <exclude name="ui/target/**"/>
       </fileset>
 
       <manifest>
@@ -307,13 +418,13 @@
   <target name="makeSrc-Full" description="make nj22/tds full source jar = threddsSrc-${release.version.minor}.jar">
     <jar jarfile="${build.dir}/${fullSrc.jar}" index="true" duplicate="preserve">
       <fileset dir="${root.dir}/..">
-        <exclude name="cdm/doc/**" />
-        <exclude name="cdm/target/**" />
-        <exclude name="tds/target/**" />
-        <exclude name="tds/doc/**" />
-        <exclude name="ui/target/**" />
-        <exclude name="docs/**" />
-        <exclude name="intelliJ/**" />
+        <exclude name="cdm/doc/**"/>
+        <exclude name="cdm/target/**"/>
+        <exclude name="tds/target/**"/>
+        <exclude name="tds/doc/**"/>
+        <exclude name="ui/target/**"/>
+        <exclude name="docs/**"/>
+        <exclude name="intelliJ/**"/>
       </fileset>
 
       <manifest>
@@ -327,8 +438,11 @@
 
   </target>
 
+  <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- get rid of dods stuff in visad.jar -->
-  <property name="visad.jar" value="C:/dev/lib/visad/visad.jar"/>   <!-- checkout visad.jar from cvs -->
+
+  <property name="visad.jar" value="C:/dev/lib/visad/visad.jar"/>
+  <!-- checkout visad.jar from cvs -->
   <property name="visadNoDods.tempdir" location="C:/TEMP/visad/"/>
   <target name="makeVisadNoDods" description="remove dods from visad">
     <delete dir="${visadNoDods.tempdir}" failonerror="false"/>
@@ -339,6 +453,8 @@
 
     <delete dir="${visadNoDods.tempdir}/dods" failonerror="true"/>
     <delete dir="${visadNoDods.tempdir}/gnu/regexp" failonerror="true"/>
+    <delete dir="${visadNoDods.tempdir}/HTTPClient" failonerror="true"/>
+    <delete dir="${visadNoDods.tempdir}/ucar" failonerror="true"/>
 
     <jar jarfile="${lib.dir}/release/${visadNoDods.jar}" index="true" duplicate="preserve">
       <fileset dir="${visadNoDods.tempdir}"/>
@@ -361,8 +477,9 @@
     </jar>
   </target>
 
-
+  <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- make javadoc -->
+  <property name="jarJavadoc" value="javadoc-${release.version}.jar"/>
   <target name="javadoc" description="make the javadocs">
     <mkdir dir="${javadoc.dir}"/>
     <javadoc Doctitle="NetCDF-Java ${release.version} API" Use="true" Windowtitle="NetCDF-Java ${release.version} API"
@@ -370,18 +487,18 @@
       <classpath refid="compile.classpath"/>
 
       <package name="thredds.catalog"/>
-      <package name="thredds.datatype"/>
       <package name="ucar.ma2"/>
       <package name="ucar.nc2"/>
       <package name="ucar.nc2.dataset"/>
-      <!--package name="ucar.nc2.dataset.conv"/ -->
-      <!-- package name="ucar.nc2.geotiff"/ -->
+      <package name="ucar.nc2.dataset.conv"/>
+      <package name="ucar.nc2.dataset.transform"/>
       <package name="ucar.nc2.dt"/>
       <!-- package name="ucar.nc2.dt.grid"/ -->
       <!-- package name="ucar.nc2.dt.image"/ -->
       <!-- package name="ucar.nc2.dt.radial"/-->
       <!-- package name="ucar.nc2.dt.point"/-->
       <!--package name="ucar.nc2.dt.trajectory"/ -->
+      <!-- package name="ucar.nc2.geotiff"/ -->
       <!-- package name="ucar.nc2.ncml"/ -->
       <package name="ucar.nc2.thredds"/>
       <package name="ucar.nc2.units"/>
@@ -392,9 +509,22 @@
       <package name="ucar.unidata.io"/>
       <package name="ucar.unidata.util"/>
     </javadoc>
+
+    <jar jarfile="${build.dir}/${jarJavadoc}" index="true" duplicate="preserve">
+      <fileset dir="${javadoc.dir}"/>
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="Public Javadoc for NetCDF-Java-library "/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
   </target>
 
 
+  <property name="jarJavadocAll" value="javadocAll-${release.version}.jar"/>
   <target name="javadocAll" description="make all javadocs">
     <mkdir dir="${javadocAll.dir}"/>
     <javadoc Doctitle="NetCDF-Java ${release.version} API" Use="true" Windowtitle="NetCDF-Java ${release.version} API"
@@ -404,8 +534,24 @@
       <package name="dods.*"/>
       <package name="thredds.*"/>
       <package name="ucar.*"/>
-      <excludepackage name="ucar/nc2/dt2/*"/>      
+      <excludepackage name="ucar/nc2/dataset/grid"/>
+      <excludepackage name="ucar/nc2/stream"/>
+      <excludepackage name="ucar/nc2/dt2/*"/>
+      <excludepackage name="ucar/nc2/util/reflect"/>
+      <excludepackage name="ucar/unidata/geoloc/ogc"/>
     </javadoc>
+
+    <jar jarfile="${build.dir}/${jarJavadocAll}" index="true" duplicate="preserve">
+      <fileset dir="${javadocAll.dir}"/>
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="All Javadoc for NetCDF-Java-library "/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
   </target>
 
   <!-- release user manual -->
@@ -443,12 +589,13 @@
     <pathconvert property="sourcepath.prop" refid="sourcepath" targetos="windows"/>
     <echo>sourcepath=${sourcepath.prop}</echo>
 
-    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false" source="1.5" target="1.5">
+    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
+           includeAntRuntime="false" source="1.5" target="1.5">
       <src refid="sourcepathUI"/>
 
       <patternset refid="sources"/>
       <patternset>
-        <include name="ucar/nc2/ui/*.java"/>
+        <include name="ucar/nc2/ui/**/*.java"/>
       </patternset>
 
       <classpath refid="compile.classpath"/>
@@ -477,54 +624,54 @@
 
   </target>
 
-   <property name="jarUI" value="netcdfUI-${release.version}.jar"/>
-   <target name="makeJarUI" depends="compile, compileUI" description="make toolsUI jar">
-     <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
-       <filterset>
-         <filter token="BUILDTIME" value="${buildtime}"/>
-         <filter token="VERSION" value="${release.version}"/>
-         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
-       </filterset>
-     </copy>
+  <property name="jarUI" value="netcdfUI-${release.version}.jar"/>
+  <target name="makeUI" depends="compile, compileUI" description="make toolsUI jar">
+    <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
+      <filterset>
+        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="VERSION" value="${release.version}"/>
+        <filter token="VERSION.MINOR" value="${release.version.minor}"/>
+      </filterset>
+    </copy>
 
-     <copy file="CHANGES.txt" tofile="${build.dir}/CHANGES" overwrite="true">
-       <filterset>
-         <filter token="BUILDTIME" value="${buildtime}"/>
-         <filter token="VERSION" value="${release.version}"/>
-         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
-       </filterset>
-     </copy>
+    <copy file="CHANGES.txt" tofile="${build.dir}/CHANGES" overwrite="true">
+      <filterset>
+        <filter token="BUILDTIME" value="${buildtime}"/>
+        <filter token="VERSION" value="${release.version}"/>
+        <filter token="VERSION.MINOR" value="${release.version.minor}"/>
+      </filterset>
+    </copy>
 
-     <jar jarfile="${build.dir}/${jarUI}" index="true" duplicate="preserve">
-       <fileset dir="${build.dir}" includes="README"/>
-       <fileset dir="${build.dir}" includes="CHANGES"/>
-       <fileset dir="${build.classes.dir}" />
-       <zipfileset dir="${resources.dir}/resources" prefix="resources"/>
-       <zipfileset dir="${resourcesUI.dir}/resources" prefix="resources"/>
+    <jar jarfile="${build.dir}/${jarUI}" index="true" duplicate="preserve">
+      <fileset dir="${build.dir}" includes="README"/>
+      <fileset dir="${build.dir}" includes="CHANGES"/>
+      <fileset dir="${build.classes.dir}"/>
+      <zipfileset dir="${resources.dir}/resources" prefix="resources"/>
+      <zipfileset dir="${resourcesUI.dir}/resources" prefix="resources"/>
 
-       <manifest>
-         <attribute name="Main-Class" value="ucar.nc2.ui.ToolsUI"/>
-         <attribute name="Class-Path" value="${Class-Path}"/>
-         <attribute name="Built-By" value="${user.name}"/>
-         <attribute name="Built-On" value="${buildtime}"/>
-         <attribute name="Implementation-Title" value="NetCDF-Java-UITools"/>
-         <attribute name="Implementation-Version" value="${release.version.minor}"/>
-         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-       </manifest>
+      <manifest>
+        <attribute name="Main-Class" value="ucar.nc2.ui.ToolsUI"/>
+        <attribute name="Class-Path" value="${Class-Path}"/>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="NetCDF-Java-UITools"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
 
-       <indexjars>
-         <path refid="compile.classpath"/>
-         <path refid="compileUI.classpath"/>
-         <pathelement location="${lib.dir}/release/${resourcesOptional.jar}"/>
-       </indexjars>
+      <indexjars>
+        <path refid="compile.classpath"/>
+        <path refid="compileUI.classpath"/>
+        <pathelement location="${lib.dir}/release/${resourcesOptional.jar}"/>
+      </indexjars>
 
-     </jar>
+    </jar>
 
-   </target>
+  </target>
 
   <property name="toolsUI" value="toolsUI-${release.version}.jar"/>
   <property name="ncAll" value="netcdfAll-${release.version}.zip"/>
-  <target name="makeAll" depends="makeJar, makeJarUI" description="create netcdfAll zip file">
+  <target name="makeAll" depends="makeCoreComplete, makeMainComplete, makeUI" description="create netcdfAll zip file">
     <copy file="${build.dir}/${jarUI}" todir="${zip.dir}" overwrite="true" preservelastmodified="true"/>
 
     <!--gather jars for the application and make ncAll.zip -->
@@ -534,7 +681,7 @@
       <fileset refid="runtime.libraries"/>
       <fileset file="${lib.dir}/release/${resourcesOptional.jar}"/>
     </copy>
-    <zip destfile="${build.dir}/${ncAll}"  basedir="${zip.dir}" />
+    <zip destfile="${build.dir}/${ncAll}" basedir="${zip.dir}"/>
 
     <!--unzip all so we can make uiAll -->
     <mkdir dir="${uiZip.dir}"/>
@@ -547,7 +694,7 @@
     <jar jarfile="${build.dir}/${toolsUI}" index="true" duplicate="preserve">
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
-      <fileset dir="${uiZip.dir}" />
+      <fileset dir="${uiZip.dir}"/>
 
       <manifest>
         <attribute name="Main-Class" value="ucar.nc2.ui.ToolsUI"/>
@@ -564,32 +711,33 @@
   <property name="jarResourcesOptional" value="resourcesOptional-${release.version}.jar"/>
   <target name="makeResourcesOptional" description="make resourcesOptional.jar">
 
-     <jar jarfile="${build.dir}/${jarResourcesOptional}" index="true" duplicate="preserve">
-       <zipfileset dir="${resources.dir}/optional" prefix="optional"/>
+    <jar jarfile="${build.dir}/${jarResourcesOptional}" index="true" duplicate="preserve">
+      <zipfileset dir="${resources.dir}/optional" prefix="optional"/>
 
-       <manifest>
-         <attribute name="Built-By" value="${user.name}"/>
-         <attribute name="Built-On" value="${buildtime}"/>
-         <attribute name="Implementation-Title" value="NetCDF-Java Optional Resources"/>
-         <attribute name="Implementation-Version" value="${release.version.minor}"/>
-         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-       </manifest>
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="NetCDF-Java Optional Resources"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
 
-     </jar>
+    </jar>
 
-   </target>
+  </target>
 
   <target name="releaseResourcesOptionalInternal" depends="makeResourcesOptional">
     <copy todir="${lib.dir}/release" overwrite="true" preservelastmodified="true">
-      <fileset dir="${build.dir}" includes="${jarResourcesOptional}" />
+      <fileset dir="${build.dir}" includes="${jarResourcesOptional}"/>
     </copy>
   </target>
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
-  <target name="dist" depends="makeAll, makeIDVjar, makeSrc-CDM, javadoc, javadocAll" description="create a full distribution"/>
+  <target name="dist" depends="makeAll, makeIDVjar, makeSrc-CDM, javadoc, javadocAll"
+          description="create a full distribution"/>
 
-    <!-- release library -->
-  <target name="releaseInternal" depends="makeJar" description="internal release to lib">
+  <!-- release library -->
+  <target name="releaseInternal" depends="makeMain" description="internal release to lib">
     <copy todir="${lib.dir}/release" overwrite="true">
       <fileset dir="${build.dir}" includes="${jarMain}"/>
     </copy>
@@ -598,13 +746,17 @@
   <!-- release library -->
   <target name="release" description="Release library and source jar files to release directory: do 'ant dist' first">
     <copy todir="${release.library.dir}" overwrite="true">
-      <fileset dir="${build.dir}" includes="${jarMinimal}"/>
+      <fileset dir="${build.dir}" includes="${jarCore}"/>
+      <fileset dir="${build.dir}" includes="${jarCoreComplete}"/>
       <fileset dir="${build.dir}" includes="${jarMain}"/>
+      <fileset dir="${build.dir}" includes="${jarMainComplete}"/>
       <fileset dir="${build.dir}" includes="${ncSrcRelease.jar}"/>
-      <fileset dir="${build.dir}" includes="${idv.jar}"/>
+      <fileset dir="${build.dir}" includes="${jarIdv}"/>
       <fileset dir="${build.dir}" includes="${jarUI}"/>
       <fileset dir="${build.dir}" includes="${toolsUI}"/>
       <fileset dir="${build.dir}" includes="${ncAll}"/>
+      <fileset dir="${build.dir}" includes="${jarJavadoc}"/>
+      <fileset dir="${build.dir}" includes="${jarJavadocAll}"/>
     </copy>
 
     <checksum>
@@ -634,38 +786,54 @@
 
   <target name="releaseInvCatSchema" description="Release InvCatalog schema to web.">
     <copy todir="${release.schema.dir}/thredds" overwrite="true">
-      <fileset file="${resources.dir}/resources/thredds/schemas/InvCatalog.1.0.2.xsd" />
+      <fileset file="${resources.dir}/resources/thredds/schemas/InvCatalog.1.0.2.xsd"/>
     </copy>
   </target>
 
-    <!-- netcdfUI webstart release -->
-	<target name="releaseWebstart" description="make webstart release; do dist or release first">
-    <signjar alias="idv" jar="${build.dir}/${jarUI}" keystore="${keystore}" signedjar="${webstart_dir}/netcdfUI.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/release/${bufr.jar}" keystore="${keystore}" signedjar="${webstart_dir}/bufr.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}" signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${jdom.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jdom.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${jgoodies.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jgoodies.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${jpeg2000.jar}" keystore="${keystore}" signedjar="${webstart_dir}/jpeg2000.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${httpclient.jar}" keystore="${keystore}" signedjar="${webstart_dir}/httpclient.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${http-codec.jar}" keystore="${keystore}" signedjar="${webstart_dir}/codec.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${http-logging.jar}" keystore="${keystore}" signedjar="${webstart_dir}/httplogging.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${logging.jar}" keystore="${keystore}" signedjar="${webstart_dir}/logging.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${lucene.jar}" keystore="${keystore}" signedjar="${webstart_dir}/lucene.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/release/${opendap.jar}" keystore="${keystore}" signedjar="${webstart_dir}/opendap.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/release/${resourcesOptional.jar}" keystore="${keystore}" signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/release/${visadNoDods.jar}" keystore="${keystore}" signedjar="${webstart_dir}/visadNoDods.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${xercesImpl.jar}" keystore="${keystore}" signedjar="${webstart_dir}/xercesImpl.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${xml-apis.jar}" keystore="${keystore}" signedjar="${webstart_dir}/xml-apis.jar" storepass="${keystore.password}"/>
-	</target>
+  <!-- netcdfUI webstart release -->
+  <target name="releaseWebstart" description="make webstart release; do dist or release first">
+    <signjar alias="idv" jar="${build.dir}/${jarUI}" keystore="${keystore}" signedjar="${webstart_dir}/netcdfUI.jar"
+             storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${bufr.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/bufr.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${jdom.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/jdom.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${jgoodies.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/jgoodies.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${jpeg2000.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/jpeg2000.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${httpclient.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/httpclient.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${http-codec.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/codec.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${http-logging.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/httplogging.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${logging.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/logging.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${lucene.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/lucene.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${opendap.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/opendap.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${resourcesOptional.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${visadNoDods.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/visadNoDods.jar" storepass="${keystore.password}"/>
+    <!-- signjar alias="idv" jar="${lib.dir}/external/${xercesImpl.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/xercesImpl.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${xml-apis.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/xml-apis.jar" storepass="${keystore.password}"/ -->
+  </target>
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <property name="test.src.dir" location="${root.dir}/src/test/java"/>
-	<property name="test.dir" location="${root.dir}/target/build/test"/>
+  <property name="test.dir" location="${root.dir}/target/build/test"/>
 
   <path id="test.sourcepath">
-		<path refid="sourcepathUI"/>
-		<pathelement location="${test.src.dir}"/>
-	</path>
+    <path refid="sourcepathUI"/>
+    <pathelement location="${test.src.dir}"/>
+  </path>
 
   <fileset id="test.libraries" dir="${lib.dir}">
     <include name="external/${junit.jar}"/>
@@ -675,7 +843,7 @@
   <path id="test.classpath">
     <fileset refid="compile.libraries"/>
     <fileset refid="compileUI.libraries"/>
-    <fileset refid="runtime.libraries" />
+    <fileset refid="runtime.libraries"/>
     <pathelement location="${build.classes.dir}"/>
     <pathelement location="${test.dir}/classes"/>
     <pathelement location="${resources.dir}"/>
@@ -693,37 +861,37 @@
     <javac srcdir="${test.src.dir}" destdir="${test.dir}/classes"
            debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false"
            source="1.5" target="1.5">
-      <exclude name="examples/*.java" />
+      <exclude name="examples/*.java"/>
       <classpath refid="test.classpath"/>
     </javac>
 
   </target>
 
   <target name="unit-test" depends="compile, test-setup" description="run junit tests">
-		<junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
-			<classpath refid="test.classpath"/>
-			<jvmarg value="-ea"/>
-			<jvmarg value="-Xmx1024m"/>
-			<formatter type="xml"/>
-			<formatter type="brief" usefile="false"/>
-			<test todir="${test.dir}" name="ucar.nc2.TestAll"/>
-		</junit>
+    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on" dir="${root.dir}">
+      <classpath refid="test.classpath"/>
+      <jvmarg value="-ea"/>
+      <jvmarg value="-Xmx1024m"/>
+      <formatter type="xml"/>
+      <formatter type="brief" usefile="false"/>
+      <test todir="${test.dir}" name="ucar.nc2.TestAll"/>
+    </junit>
 
-		<!-- #Generate test reports -->
-		<junitreport todir="${test.dir}">
-			<fileset dir="${test.dir}">
-				<include name="TEST-*.xml"/>
-			</fileset>
-			<report format="frames" todir="${test.dir}"/>
-		</junitreport>
-		<!-- create temporary file indicating these tests failed -->
-		<!-- #Test case bypass trick -->
-		<echo message="last build failed tests" file="${test.dir}/failed"/>
-		<fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.dir}/index.html for details.</fail>
-		<!-- Remove test failed file, as these tests succeeded -->
-		<delete file="${test.dir}/failed"/>
-		<echo message="SUCCESS! Unit tests succeeded.  Look at ${test.dir}/index.html for details."/>
-	</target>
+    <!-- #Generate test reports -->
+    <junitreport todir="${test.dir}">
+      <fileset dir="${test.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${test.dir}"/>
+    </junitreport>
+    <!-- create temporary file indicating these tests failed -->
+    <!-- #Test case bypass trick -->
+    <echo message="last build failed tests" file="${test.dir}/failed"/>
+    <fail if="test.failed">FAILED! Unit tests failed. Look at ${test.dir}/index.html for details.</fail>
+    <!-- Remove test failed file, as these tests succeeded -->
+    <delete file="${test.dir}/failed"/>
+    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.dir}/index.html for details."/>
+  </target>
 
   <!-- -->
 

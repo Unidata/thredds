@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import thredds.cataloggen.config.DatasetSource;
+import thredds.cataloggen.config.CatalogRefInfo;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogImpl;
 
