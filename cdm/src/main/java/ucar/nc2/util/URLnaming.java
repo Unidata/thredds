@@ -111,7 +111,7 @@ public class URLnaming {
 
   ///////////////////////////////////////////////////////////////////
 
-  private static void initProtocolHandler() {
+  /* private static void initProtocolHandler() {
     // test setting the http protocol handler
     try {
       new java.net.URL(null, "http://motherlode.ucar.edu:8080/", new sun.net.www.protocol.http.Handler());
@@ -119,7 +119,7 @@ public class URLnaming {
       e.printStackTrace();
     }
 
-  }
+  } */
 
   private static void test(String uriS) {
     System.out.println(uriS);

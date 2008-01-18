@@ -3,7 +3,7 @@
 package thredds.cataloggen.config;
 
 import thredds.catalog.*;
-import thredds.cataloggen.CatalogRefInfo;
+import thredds.cataloggen.config.CatalogRefInfo;
 import thredds.cataloggen.DatasetEnhancer1;
 
 import java.io.IOException;

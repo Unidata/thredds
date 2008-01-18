@@ -1,5 +1,5 @@
 // $Id: CatalogRefInfo.java 63 2006-07-12 21:50:51Z edavis $
-package thredds.cataloggen;
+package thredds.cataloggen.config;
 
 import thredds.catalog.InvDataset;
 import thredds.cataloggen.config.DatasetSource;
