@@ -53,8 +53,19 @@
 <h2> Loading your class at runtime</h2>
 <p>You must place your <strong>DatasetSource</strong> class into <strong>the ${tomcat_home}/webapps/thredds/WEB-INF/lib </strong>or<strong> classes </strong>directory<strong>. </strong></p>
 <p>Then tell the TDS to load it by adding a line to the <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong> file, for example:</p>
-<pre>  &lt;<strong>datasetSource</strong>&gt;my.package.DatasetSourceImpl&lt;/datasetSource&gt;</pre>
-<hr width="100%">
+<pre>  &lt;<strong>datasetSource</strong>&gt;my.package.DatasetSourceImpl&lt;/datasetSource&gt;
+
+</pre>
+<h2>Adding to the Thredds Configuration Catalog</h2>
+ <p>In the above example, <strong>ExampleDataSource</strong> will &quot;claim&quot; any request whose path starts with <em><strong>/special/</strong></em>. In the Thredds Configuration Catalog, you will add datasets which have that path. A simple example: </p>
+ <pre> &lt;service name="<strong>thisDODS</strong>" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+ &lt;dataset name="Test ExampleDataSource" ID="testDataset" serviceName="thisDODS" <strong>urlPath="special/my/testData.foo"</strong> /&gt;
+</pre>
+ <p>The dataset will have a URL of <strong>http://server:port/thredds/dodsC/special/my/testData.foo</strong>. Its path will be <strong>/special/my/testData.foo</strong>, so <strong>ExampleDataSource</strong> will claim it, and will be required to return a <strong>NetcdfFile</strong> object. </p>
+ <p>The value that you put into urlPath will be used by  TDS clients. You can use anything you want, as long as your DatasetSource recognizes the path and correctly returns the corresponding NetcdfFile. <br>
+ </p>
+ <pre>&nbsp;  </pre>
+ <hr width="100%">
 <strong><br>
 </strong>
 <address>

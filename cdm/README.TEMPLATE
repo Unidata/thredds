@@ -5,30 +5,30 @@ Build Date = @BUILDTIME@
 see http://www.unidata.ucar.edu/packages/netcdf-java/
 
 DISTRIBUTIONS
-  ncCore-@VERSION@.jar        just the core netcdf-java classes
-  netcdf-@VERSION@.jar        complete netcdf-java, except for the UI and optional libraries
-  netcdfUI-@VERSION@.jar      complete netcdf-java including the UI, without optional libraries
-  toolsUI-@VERSION@.jar       complete netcdf-java including the UI and optional libraries
+  ncCore-@VERSION@.jar        core classes, for reading/writing netcdf-3 files. requires commons-httpclient, logging, codec, slf4j jars
+  ncCoreComplete-@VERSION@.jar        core classes with required libraries
+  netcdf-@VERSION@.jar        complete implementation of common data model. requires commons-httpclient, logging, codec, jdom, jpeg2000, slf4j, visad jars
+  netcdfComplete-@VERSION@.jar        complete with required libraries
+  netcdfUI-@VERSION@.jar      complete including the UI classes.
+  toolsUI-@VERSION@.jar       complete UI and libraries, to run toolsUI from a single jar.
 
   netcdfAll-@VERSION@.zip     all of netcdf-java and optional libraries
   ncSrc-@VERSION@.zip         source distribution
-  nc2.2.zip                   library that can be used in the IDV
+  ncIdv.jar                   library that can be used in the IDV
+  javadoc.jar                 public javadoc
+  javadocAll.jar              complete javadoc
 
 OPTIONAL LIBRARIES
   commons-httpclient          required to read files remotely over HTTP
   commons-logging, codec      required by commons-httpclient
-  gnu-regexp                  required by dods; dods library itself is now directly contained in netcdf
   grib.jar                    required to read Grib-1 or Grib-2 datasets
   jdom.jar                    required to read thredds catalogs, and read NcML
   jpeg2000.jar                required to read Grib-2 JPEG2000 compressed files
-  opendap.jar                 required to read OPeNDAP URLs
   nlog4j.jar                  log4j logging. Alternately, you can use any slf4j implementation.
+  slf4f-jdk14-1.2.jar         simple logging using java.util.loging, Use either nlog4j or slf4f.
   visadNoDods.jar             required to read ADDE datasets; this version has the dods libraries removed
-  xercesImpl.jar              required to validate thredds catalogs (jdk 1.4 only)
-  xml-apis.jar                required by xerces library
 
 RELATED UI LIBRARIES
-  prefsAll.jar                required for UI state persistence, related widgets
   resourcesOptional.jar       optional detailed maps and tables
 
 RUN THE NETCDF TOOLS UI APPLICATION FROM COMMAND LINE
@@ -46,10 +46,10 @@ BUILD AND RUN FROM SOURCE
  4. sh runSrcRelease
 
  ---------------------------------------------------------------------------------------------------------------------
- /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ Copyright and License:
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support@unidata.ucar.edu.
+ * support-netcdf-java@unidata.ucar.edu.
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by

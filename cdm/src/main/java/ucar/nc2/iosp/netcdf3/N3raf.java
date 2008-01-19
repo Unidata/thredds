@@ -101,7 +101,7 @@ public class N3raf extends N3iosp  {
       }
       return;
 
-    } else if (dataType == DataType.STRING) { // LOOK not really legal
+    } else if (dataType == DataType.STRING) { // LOOK not legal
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();

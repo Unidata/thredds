@@ -44,6 +44,7 @@ public class StructureDataW extends StructureData {
 
   /** Copy constructor.
    *  This makes a local copy of all the data in the from StrucureData.
+   * @param from copy from here
    */
   public StructureDataW (StructureData from) {
     this(from.getStructureMembers());
@@ -175,7 +176,7 @@ public class StructureDataW extends StructureData {
     return data.getByte(Array.scalarIndex);
   }
 
-    /**
+  /**
    * Get java byte array for a member of type byte.
    * @param m get data from this StructureMembers.Member. Must be of type byte.
    * @return 1D java array of bytes
@@ -337,10 +338,10 @@ public class StructureDataW extends StructureData {
       Array data = getArray(m);
       return (String) data.getObject(0);
     } else {
-      byte[] ba = getJavaArrayByte(m);
+      char[] ba = getJavaArrayChar(m);
       int count = 0;
-      for (int i = 0; i < ba.length; i++) {
-        if (0 == ba[i]) break;
+      while (count < ba.length) {
+        if (0 == ba[count]) break;
         count++;
       }
       return new String(ba, 0, count);

@@ -115,10 +115,10 @@ public class ToolsUI extends JPanel {
   // debugging
   private JMenu debugFlagMenu;
   private DebugFlags debugFlags;
-  private AbstractAction useDebugWindowAction;
-  private IndependentWindow debugWindow;
-  private TextOutputStreamPane debugPane;
-  private PrintStream debugOS;
+  // private AbstractAction useDebugWindowAction;
+  //private IndependentWindow debugWindow;
+  //private TextOutputStreamPane debugPane;
+  //  private PrintStream debugOS;
   private boolean debug = false, debugTab = false, debugNcmlWrite = false, debugCB = false;
 
 
@@ -171,12 +171,12 @@ public class ToolsUI extends JPanel {
     // dynamic proxy for DebugFlags
     debugFlags = (DebugFlags) java.lang.reflect.Proxy.newProxyInstance(DebugFlags.class.getClassLoader(), new Class[]{DebugFlags.class}, new DebugProxyHandler());
 
-    // the debug message window
+    /* the debug message window
     debugPane = new TextOutputStreamPane();
     debugWindow = debugPane.makeIndependentWindow("Debug Messages");
     Rectangle bounds = (Rectangle) mainPrefs.getBean(DEBUG_FRAME_SIZE, new Rectangle(100, 50, 500, 700));
     debugWindow.setBounds(bounds);
-    debugWindow.setIconImage(BAMutil.getImage("netcdfUI"));
+    debugWindow.setIconImage(BAMutil.getImage("netcdfUI")); */
 
     makeMenuBar();
     setDebugFlags();
@@ -463,7 +463,7 @@ public class ToolsUI extends JPanel {
       useDebugWindowAction.putValue(BAMutil.STATE, Boolean.TRUE);
       setDebugFlags();
       setDebugOutputStream(true);
-    } */
+    }
 
     // show the debug window
     AbstractAction showDebugAction = new AbstractAction() {
@@ -473,7 +473,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionProperties(showDebugAction, null, "Show Debug Window", false, 'D', 0);
-    BAMutil.addActionToMenu(debugMenu, showDebugAction);
+    BAMutil.addActionToMenu(debugMenu, showDebugAction);  */
 
     JMenu helpMenu = new JMenu("Help");
     helpMenu.setMnemonic('H');
@@ -590,12 +590,9 @@ public class ToolsUI extends JPanel {
 
   public void save() {
     fileChooser.save();
-    if (debugWindow != null) {
-      mainPrefs.putBeanObject(DEBUG_FRAME_SIZE, debugWindow.getBounds());
-    }
-    Boolean useDebugWindow = (Boolean) useDebugWindowAction.getValue(BAMutil.STATE);
-    if (useDebugWindow.booleanValue())
-      mainPrefs.putBoolean("useDebugWindow", true);
+    //if (debugWindow != null) {
+    //  mainPrefs.putBeanObject(DEBUG_FRAME_SIZE, debugWindow.getBounds());
+    //}
 
     if (viewerPanel != null) viewerPanel.save();
     if (coordSysPanel != null) coordSysPanel.save();

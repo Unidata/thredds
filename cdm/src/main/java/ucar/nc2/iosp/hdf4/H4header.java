@@ -450,7 +450,10 @@ public class H4header {
       if (tag.code == 720) { // NG - prob var
         if (tag.vinfo != null) {
           Variable v = tag.vinfo.v;
-          addVariableToGroup(group, v, tag);
+          if (v != null)
+            addVariableToGroup(group, v, tag);
+          else
+            log.error("Missing variable "+tag.refno);
         }
       }
 
@@ -704,8 +707,8 @@ public class H4header {
       return null;
     }
     if (data == null) {
-      log.error("data tag missing vgroup= " + group.refno);
-      return null;
+      log.warn("data tag missing vgroup= " + group.refno+" "+group.name);
+      //return null;
     }
     Variable v = new Variable(ncfile, null, null, group.name);
     v.setDimensions(dims);
@@ -858,7 +861,7 @@ public class H4header {
     Object fillValue;
 
     // below is not set until setLayoutInfo() is called
-    boolean isLinked, isCompressed, isChunked;
+    boolean isLinked, isCompressed, isChunked, hasNoData;
 
     // regular
     int start = -1;
@@ -889,6 +892,7 @@ public class H4header {
     void setData(TagData data, int elemSize) throws IOException {
       this.data = data;
       this.elemSize = elemSize;
+      hasNoData = (data == null);
     }
 
     void setFillValue( Attribute att) {
@@ -1719,7 +1723,9 @@ public class H4header {
     }
 
     public String detail() {
-      StringBuffer sbuff = new StringBuffer(super.detail());
+      StringBuffer sbuff = new StringBuffer();
+      sbuff.append((used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "") + " offset=" + offset + " length=" + length +
+          (((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.getName() : ""));
       sbuff.append(" class= ").append(className);
       sbuff.append(" extag= ").append(extag);
       sbuff.append(" exref= ").append(exref);

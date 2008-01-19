@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,8 +27,8 @@ import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.*;
 
 import java.io.IOException;
-import java.nio.*;
 import java.util.Date;
+import java.nio.ByteBuffer;
 
 /**
  * HDF5 I/O
@@ -46,6 +46,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugFilterIndexer = false;
   static boolean debugChunkIndexer = false;
   static boolean debugVlen = false;
+  static boolean debugStructure = true;
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
 
@@ -72,7 +73,6 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  private NetcdfFile ncfile;
   private RandomAccessFile myRaf;
   private H5header headerParser;
 
@@ -86,9 +86,8 @@ public class H5iosp extends AbstractIOServiceProvider {
   // reading
 
   public void open(RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile,
-          ucar.nc2.util.CancelTask cancelTask) throws IOException {
+                   ucar.nc2.util.CancelTask cancelTask) throws IOException {
 
-    this.ncfile = ncfile;
     this.myRaf = raf;
 
     headerParser = new H5header(myRaf, ncfile, this);
@@ -96,7 +95,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     // check if its an HDF5-EOS file
     Group eosInfo = ncfile.getRootGroup().findGroup("HDFEOS INFORMATION");
-    if (eosInfo != null){
+    if (eosInfo != null) {
       HdfEos.amendFromODL(ncfile, eosInfo);
     }
 
@@ -120,7 +119,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (vinfo.useFillValue) { // fill value only
       Object pa = IospHelper.makePrimitiveArray((int) wantSection.computeSize(), dataType, vinfo.getFillValue());
       if (dataType == DataType.CHAR)
-        pa = IospHelper.convertByteToChar((byte []) pa);
+        pa = IospHelper.convertByteToChar((byte[]) pa);
       return Array.factory(dataType.getPrimitiveClassType(), wantSection.getShape(), pa);
     }
 
@@ -194,7 +193,7 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
   private Object readData(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
-          Object fillValue, int byteOrder) throws java.io.IOException, InvalidRangeException {
+                          Object fillValue, int byteOrder) throws java.io.IOException, InvalidRangeException {
 
     // special processing
     H5header.TypeInfo typeInfo = vinfo.typeInfo;
@@ -207,9 +206,9 @@ public class H5iosp extends AbstractIOServiceProvider {
       String[] stringData = new String[(int) timeArray.getSize()];
       int count = 0;
       IndexIterator ii = timeArray.getIndexIterator();
-      while(ii.hasNext()) {
+      while (ii.hasNext()) {
         long time = ii.getLongNext();
-        stringData[count++] = headerParser.formatter.toDateTimeStringISO( new Date(time));
+        stringData[count++] = headerParser.formatter.toDateTimeStringISO(new Date(time));
       }
       return Array.factory(String.class, shape, stringData);
     }
@@ -223,7 +222,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       String[] stringData = new String[(int) codesArray.getSize()];
       int count = 0;
       IndexIterator ii = codesArray.getIndexIterator();
-      while(ii.hasNext()) {
+      while (ii.hasNext()) {
         int code = ii.getIntNext();
         String s = vinfo.enumMap.get(code);
         stringData[count++] = (s == null) ? "" : s;
@@ -256,6 +255,49 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     if (dataType == DataType.STRUCTURE) {
+      boolean hasStrings = false;
+      Structure s = (Structure) v;
+
+      // create StructureMembers - must set offsets
+      StructureMembers sm = s.makeStructureMembers();
+      for (StructureMembers.Member m : sm.getMembers()) {
+        Variable v2 = s.findVariable(m.getName());
+        H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
+        m.setDataParam((int) (vm.dataPos)); // offset since start of Structure
+        if (v2.getDataType() == DataType.STRING)
+          hasStrings = true;
+      }
+      int recsize = layout.getElemSize();
+      sm.setStructureSize(recsize);
+
+      // place data into an ArrayStructureBB for efficiency
+      ArrayStructureBB asbb = new ArrayStructureBB(sm, shape);
+      byte[] byteArray = (byte[]) asbb.getStorage();
+      ByteBuffer bb = asbb.getByteBuffer();
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
+        if (chunk == null) continue;
+        if (debugStructure)
+          H5header.debugOut.println(" readStructure " + v.getName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
+        // copy bytes directly into the underlying byte[]
+        myRaf.seek(chunk.getSrcPos());
+        myRaf.read(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
+      }
+
+      // strings are stored on the heap, and must be read seperately
+      if (hasStrings) {
+        int destPos = 0;
+        for (int i = 0; i< layout.getTotalNelems(); i++) { // loop over each structure
+          convertStrings(asbb, destPos, sm);
+          destPos += layout.getElemSize();
+        }
+      }
+
+
+      return asbb;
+    } // */
+
+    /* if (dataType == DataType.STRUCTURE) {
       Structure s = (Structure) v;
       ArrayStructureW asw = new ArrayStructureW(s.makeStructureMembers(), shape);
 
@@ -264,7 +306,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         Layout.Chunk chunk = layout.next();
         if (chunk == null) continue;
         for (int i = 0; i < chunk.getNelems(); i++) {
-          if (debug) H5header.debugOut.println(" readStructure " + v.getName() + " chunk.getFilePos= " +
+          if (debugStructure) H5header.debugOut.println(" readStructure " + v.getName() + " chunk.getSrcPos= " +
                   chunk.getSrcPos() + " index.getElemSize= " + layout.getElemSize());
 
           StructureData sdata = readStructure(s, asw, chunk.getSrcPos() + layout.getElemSize() * i);
@@ -272,11 +314,10 @@ public class H5iosp extends AbstractIOServiceProvider {
         }
       }
       return asw;
+    } // */
 
-    } else {
-      // normal case
-      return readDataPrimitive(layout, dataType, fillValue, byteOrder);
-    }
+    // normal case
+    return readDataPrimitive(layout, dataType, fillValue, byteOrder);
   }
 
   private Array convertReference(Array refArray) throws java.io.IOException {
@@ -285,9 +326,24 @@ public class H5iosp extends AbstractIOServiceProvider {
     String[] result = new String[nelems];
     for (int i = 0; i < nelems; i++) {
       long reference = refArray.getLong(ima.set(i));
-      result[i] = headerParser.getDataObjectName( reference);
+      result[i] = headerParser.getDataObjectName(reference);
     }
-    return Array.factory(String.class, new int[] {nelems}, result);
+    return Array.factory(String.class, new int[]{nelems}, result);
+  }
+
+  private void convertStrings(ArrayStructureBB asbb, int pos, StructureMembers sm) throws java.io.IOException {
+    ByteBuffer bb = asbb.getByteBuffer();
+    for (StructureMembers.Member m : sm.getMembers()) {
+      if (m.getDataType() == DataType.STRING) {
+        int size = m.getSize();
+        int destPos = pos  + m.getDataParam();
+        for (int i = 0; i < size; i++)  { // 16 byte "heap ids" are in the ByteBuffer
+          String s = headerParser.readHeapString(bb, destPos + i * 16);
+          int index = asbb.addStringToHeap(s);
+          bb.putInt(destPos + i * 4, index); // overwrite with the index into the StringHeap
+        }
+      }
+    }
   }
 
   /*
@@ -303,119 +359,116 @@ public class H5iosp extends AbstractIOServiceProvider {
   private Object readDataPrimitive(Layout layout, DataType dataType, Object fillValue, int byteOrder) throws java.io.IOException, InvalidRangeException {
     int size = (int) layout.getTotalNelems();
 
-   if (dataType == DataType.STRING) {
+    if (dataType == DataType.STRING) {
       String[] sa = new String[size];
       int count = 0;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
         if (chunk == null) continue;
-        for (int i = 0; i < chunk.getNelems(); i++) {
+        for (int i = 0; i < chunk.getNelems(); i++) { // 16 byte "heap ids"
           sa[count++] = headerParser.readHeapString(chunk.getSrcPos() + layout.getElemSize() * i);
-        }
-      }
-      return sa;
-
-   }  else {
-
-     return IospHelper.readDataFill( myRaf, layout, dataType, fillValue, byteOrder);
-   }
-
-  }
-
-
-  /*
-   * Read data subset from file for a variable, create primitive array.
-   *
-   * @param index     handles skipping around in the file.
-   * @param dataType  dataType of the variable
-   * @param fillValue fill value as a wrapped primitive
-   * @return primitive array with data read in
-   * @throws java.io.IOException            if read error
-   * @throws ucar.ma2.InvalidRangeException if invalid section
-   *
-  private Object readDataPrimitive(Indexer index, DataType dataType, Object fillValue, int byteOrder) throws java.io.IOException, InvalidRangeException {
-    int size = (int) index.getTotalNelems();
-
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
-      byte[] pa = (byte[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        if (chunk == null) continue;
-        myRaf.seek(chunk.getFilePos());
-        myRaf.read(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return (dataType == DataType.CHAR) ? IospHelper.convertByteToChar(pa) : pa;
-
-    } else if (dataType == DataType.SHORT) {
-      short[] pa = (short[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        if (chunk == null) continue;
-        if (byteOrder >= 0) myRaf.order(byteOrder);
-        myRaf.seek(chunk.getFilePos());
-        myRaf.readShort(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.INT) {
-      int[] pa = (int[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        if (chunk == null) continue;
-        if (byteOrder >= 0) myRaf.order(byteOrder);
-        myRaf.seek(chunk.getFilePos());
-        myRaf.readInt(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.LONG) {
-      long[] pa = (long[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        if (chunk == null) continue;
-        if (byteOrder >= 0) myRaf.order(byteOrder);
-        myRaf.seek(chunk.getFilePos());
-        myRaf.readLong(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.FLOAT) {
-      float[] pa = (float[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        if (chunk == null) continue;
-        if (byteOrder >= 0) myRaf.order(byteOrder);
-        myRaf.seek(chunk.getFilePos());
-        myRaf.readFloat(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.DOUBLE) {
-      double[] pa = (double[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        if (chunk == null) continue;
-        if (byteOrder >= 0) myRaf.order(byteOrder);
-        myRaf.seek(chunk.getFilePos());
-        myRaf.readDouble(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.STRING) {
-      String[] sa = new String[size];
-      int count = 0;
-      while (index.hasNext()) {
-        Indexer.Chunk chunk = index.next();
-        if (chunk == null) continue;
-        for (int i = 0; i < chunk.getNelems(); i++) {
-          sa[count++] = headerParser.readHeapString(chunk.getFilePos() + index.getElemSize() * i);
         }
       }
       return sa;
     }
 
-    throw new IllegalStateException("H5iosp.readDataPrimitive: Unknown DataType "+dataType);
-  }  */
+    // normal case
+    return IospHelper.readDataFill(myRaf, layout, dataType, fillValue, byteOrder);
+  }
+
+  /*
+ * Read data subset from file for a variable, create primitive array.
+ *
+ * @param index     handles skipping around in the file.
+ * @param dataType  dataType of the variable
+ * @param fillValue fill value as a wrapped primitive
+ * @return primitive array with data read in
+ * @throws java.io.IOException            if read error
+ * @throws ucar.ma2.InvalidRangeException if invalid section
+ *
+private Object readDataPrimitive(Indexer index, DataType dataType, Object fillValue, int byteOrder) throws java.io.IOException, InvalidRangeException {
+  int size = (int) index.getTotalNelems();
+
+  if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
+    byte[] pa = (byte[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
+    while (index.hasNext()) {
+      Indexer.Chunk chunk = index.next();
+      if (chunk == null) continue;
+      myRaf.seek(chunk.getFilePos());
+      myRaf.read(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+    }
+    return (dataType == DataType.CHAR) ? IospHelper.convertByteToChar(pa) : pa;
+
+  } else if (dataType == DataType.SHORT) {
+    short[] pa = (short[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
+    while (index.hasNext()) {
+      Indexer.Chunk chunk = index.next();
+      if (chunk == null) continue;
+      if (byteOrder >= 0) myRaf.order(byteOrder);
+      myRaf.seek(chunk.getFilePos());
+      myRaf.readShort(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+    }
+    return pa;
+
+  } else if (dataType == DataType.INT) {
+    int[] pa = (int[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
+    while (index.hasNext()) {
+      Indexer.Chunk chunk = index.next();
+      if (chunk == null) continue;
+      if (byteOrder >= 0) myRaf.order(byteOrder);
+      myRaf.seek(chunk.getFilePos());
+      myRaf.readInt(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+    }
+    return pa;
+
+  } else if (dataType == DataType.LONG) {
+    long[] pa = (long[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
+    while (index.hasNext()) {
+      Indexer.Chunk chunk = index.next();
+      if (chunk == null) continue;
+      if (byteOrder >= 0) myRaf.order(byteOrder);
+      myRaf.seek(chunk.getFilePos());
+      myRaf.readLong(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+    }
+    return pa;
+
+  } else if (dataType == DataType.FLOAT) {
+    float[] pa = (float[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
+    while (index.hasNext()) {
+      Indexer.Chunk chunk = index.next();
+      if (chunk == null) continue;
+      if (byteOrder >= 0) myRaf.order(byteOrder);
+      myRaf.seek(chunk.getFilePos());
+      myRaf.readFloat(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+    }
+    return pa;
+
+  } else if (dataType == DataType.DOUBLE) {
+    double[] pa = (double[]) IospHelper.makePrimitiveArray(size, dataType, fillValue);
+    while (index.hasNext()) {
+      Indexer.Chunk chunk = index.next();
+      if (chunk == null) continue;
+      if (byteOrder >= 0) myRaf.order(byteOrder);
+      myRaf.seek(chunk.getFilePos());
+      myRaf.readDouble(pa, (int) chunk.getStartElem(), chunk.getNelems()); // copy into primitive array
+    }
+    return pa;
+
+  } else if (dataType == DataType.STRING) {
+    String[] sa = new String[size];
+    int count = 0;
+    while (index.hasNext()) {
+      Indexer.Chunk chunk = index.next();
+      if (chunk == null) continue;
+      for (int i = 0; i < chunk.getNelems(); i++) {
+        sa[count++] = headerParser.readHeapString(chunk.getFilePos() + index.getElemSize() * i);
+      }
+    }
+    return sa;
+  }
+
+  throw new IllegalStateException("H5iosp.readDataPrimitive: Unknown DataType "+dataType);
+}  */
 
   /* private Object readFilteredData(Variable v, H5chunkFilterLayout index, Object fillValue)
           throws java.io.IOException, InvalidRangeException {
@@ -589,7 +642,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   /**
    * Debug info for this object.
    */
-  public String toStringDebug (Object o) {
+  public String toStringDebug(Object o) {
     if (o instanceof Variable) {
       Variable v = (Variable) o;
       H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();

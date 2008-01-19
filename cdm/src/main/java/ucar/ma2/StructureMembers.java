@@ -23,7 +23,6 @@ import java.util.*;
 
 /**
  * A Collection of members contained in a StructureData.
- * *
  *
  * @author caron
  */

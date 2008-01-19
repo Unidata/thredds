@@ -42,8 +42,8 @@ public class SocketMessage {
 
       // manage Event Listener's
       lm = new ListenerManager(
-        "thredds.util.SocketMessage$EventListener",
-        "thredds.util.SocketMessage$Event",
+        "ucar.nc2.ui.util.SocketMessage$EventListener",
+        "ucar.nc2.ui.util.SocketMessage$Event",
         "setMessage");
 
     } catch (java.net.BindException e) {

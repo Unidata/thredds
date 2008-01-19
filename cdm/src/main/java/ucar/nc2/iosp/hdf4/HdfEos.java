@@ -230,7 +230,10 @@ public class HdfEos {
         if (dataFieldNameElem == null) continue;
         String varname = dataFieldNameElem.getText();
         Variable v = dataG.findVariable(varname);
-        assert v != null : varname;
+        if (v == null) {
+          log.error("Cant find "+varname);
+          continue;
+        }
 
         StringBuffer sbuff = new StringBuffer();
         Element dimList = elem.getChild("DimList");

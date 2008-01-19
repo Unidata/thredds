@@ -209,15 +209,15 @@ public class TestH4read extends TestCase {
     //TestAll.openAllInDir(testDir, null);
 
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/linked H4header/construct"));
-    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/construct"));
+    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag2 H4header/tagDetail H4header/construct"));
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/linked"));
 
     //TestAll.readAll(testDir+"ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf");
-
-    NetcdfFile ncfile = NetcdfFile.open(testDir + "ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf");
-    Variable v = ncfile.findVariable("Profile_Time");
-    assert v != null;
-    v.read();
+    NetcdfFile ncfile = NetcdfFile.open(testDir + "ssec/MYD04_L2.A2006188.1830.005.2006194121515.hdf");
+    //Variable v = ncfile.findVariable("Profile_Time");
+    //assert v != null;
+    //v.read();
+    ncfile.close();
   }
 
 }

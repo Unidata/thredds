@@ -27,7 +27,12 @@ public class TestH5ReadStructure extends TestCase {
     out.close();
     tempFile.delete();
   }
-
+  
+  /*Structure {
+     char a_string(10);
+     char b_string(13);
+   } Compound String(10);
+   */
   public void testStructureArray() throws IOException {
     NetcdfFile ncfile = TestH5.openH5("support/cstr.h5");
 
@@ -69,6 +74,14 @@ public class TestH5ReadStructure extends TestCase {
       ncfile.close();
   } // */
 
+  /*
+   Structure {
+     int a_name;
+     double c_name;
+     float b_name;
+   } ArrayOfStructures(30);
+   type = Layout(8);  type= 2 (chunked) storageSize = (3,16) dataSize=0 dataAddress=1576
+   */
   public void testStructureArrayChunked() throws IOException {
     NetcdfFile ncfile = TestH5.openH5("support/cuslab.h5");
 
@@ -121,6 +134,13 @@ public class TestH5ReadStructure extends TestCase {
     ncfile.close();
   } // */
 
+  /*
+    Structure {
+     int a_name;
+     float b_name(3);
+   } ArrayOfStructures(10);
+    type = Layout(8);  type= 1 (contiguous) storageSize = (10,16) dataSize=0 dataAddress=2048
+   */
    public void testStructureWithArrayMember() throws IOException {
     NetcdfFile ncfile = TestH5.openH5("support/DSwith_array_member.h5");
 

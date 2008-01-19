@@ -198,7 +198,7 @@ public class Structure extends Variable {
    * @return List of type String.
    */
   public java.util.List<String> getVariableNames() {
-    return new ArrayList(memberHash.keySet());
+    return new ArrayList<String>(memberHash.keySet());
   }
 
   /**

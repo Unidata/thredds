@@ -21,7 +21,7 @@ package ucar.ma2;
 
 /**
  * A StructureData implementation delegates everything to the containing ArrayStructure.
- *  *
+ *  
  * @author caron
  */
 

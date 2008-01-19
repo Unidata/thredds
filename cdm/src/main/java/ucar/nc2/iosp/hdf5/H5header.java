@@ -2107,7 +2107,7 @@ class H5header {
 
     // enum, variable-length, array types have "base" DataType
     MessageDatatype base;
-    boolean isVString;
+    boolean isVString; // variable length (not a string)
 
     // array (10)
     int[] dim;
@@ -3692,6 +3692,20 @@ class H5header {
   }
 
   /**
+   * Fetch a String from the heap, when the heap identifier has already beed read into a ByteBuffer at given pos
+   * @param bb heap id is here
+   * @param pos at this position
+   * @return String the String read from the heap
+   * @throws IOException on read error
+   */
+  String readHeapString(ByteBuffer bb, int pos) throws IOException {
+    H5header.HeapIdentifier heapId = new HeapIdentifier(bb, pos);
+    H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
+    raf.seek(ho.dataPos);
+    return readStringFixedLength((int) ho.dataSize);
+  }
+
+  /**
    * Get a data object's name, using the objectId your get from a reference (aka hard link).
    *
    * @param objId address of the data object
@@ -3709,7 +3723,7 @@ class H5header {
     }
   }
 
-  private class HeapIdentifier {
+  class HeapIdentifier {
     private int nelems; // "number of 'base type' elements in the sequence in the heap"
     private long heapAddress;
     private int index;
@@ -3725,6 +3739,17 @@ class H5header {
       if (debugDetail)
         debugOut.println("   read HeapIdentifier address=" + address + this);
       if (debugHeap) dump("heapIdentifier", getFileOffset(address), 16, true);
+    }
+
+    // the heap id is has already beed read into a byte array at given pos
+    HeapIdentifier(ByteBuffer bb, int pos) throws IOException {
+      bb.order(ByteOrder.LITTLE_ENDIAN); // header information is in le byte order
+      bb.position(pos); // reletive reading
+      nelems = bb.getInt();
+      heapAddress = isOffsetLong ? bb.getLong() : (long) bb.getInt();
+      index = bb.getInt();
+      if (debugDetail)
+        debugOut.println("   read HeapIdentifier from ByteBuffer=" + this);
     }
 
     public String toString() {
@@ -4249,7 +4274,7 @@ There is _no_ datatype information stored for these sort of selections currently
   }
 
   /**
-   * Read a fixed length String.
+   * Read a String of known length.
    *
    * @param size number of bytes
    * @return String result

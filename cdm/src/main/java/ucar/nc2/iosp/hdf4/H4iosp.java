@@ -68,6 +68,12 @@ public class H4iosp extends AbstractIOServiceProvider {
     // make sure section is complete
     section = Section.fill(section, v.getShape());
 
+    if (vinfo.hasNoData) {
+      Object arr = (vinfo.fillValue == null) ? IospHelper.makePrimitiveArray((int) section.computeSize(), dataType) :
+        IospHelper.makePrimitiveArray((int) section.computeSize(), dataType, vinfo.fillValue);
+      return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), arr);
+    }
+
     if (!vinfo.isCompressed) {
       if (!vinfo.isLinked && !vinfo.isChunked) {
         Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), section);
