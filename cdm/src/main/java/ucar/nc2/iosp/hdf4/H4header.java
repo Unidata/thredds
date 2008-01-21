@@ -64,7 +64,6 @@ public class H4header {
 
   private ucar.nc2.NetcdfFile ncfile;
   private RandomAccessFile raf;
-  private long actualSize;
 
   private Map<Integer, Tag> tagMap = new HashMap<Integer, Tag>();
   private Map<Short, Vinfo> refnoMap = new HashMap<Short, Vinfo>();
@@ -99,7 +98,7 @@ public class H4header {
     this.raf = myRaf;
     this.ncfile = ncfile;
 
-    actualSize = raf.length();
+    long actualSize = raf.length();
     memTracker = new MemTracker(actualSize);
 
     if (!isValidFile(myRaf))
@@ -1205,14 +1204,14 @@ public class H4header {
 
     public String detail() {
       StringBuffer sbuff = new StringBuffer("SPECIAL_CHUNKED ");
-      sbuff.append(" head_len=" + head_len + " version=" + version + " special =" + flag + " elem_tot_length=" + elem_tot_length);
-      sbuff.append(" chunk_size=" + chunk_size + " nt_size=" + nt_size + " chunk_tbl_tag=" + chunk_tbl_tag + " chunk_tbl_ref=" + chunk_tbl_ref);
+      sbuff.append(" head_len=").append(head_len).append(" version=").append(version).append(" special =").append(flag).append(" elem_tot_length=").append(elem_tot_length);
+      sbuff.append(" chunk_size=").append(chunk_size).append(" nt_size=").append(nt_size).append(" chunk_tbl_tag=").append(chunk_tbl_tag).append(" chunk_tbl_ref=").append(chunk_tbl_ref);
       sbuff.append("\n flag  dim  chunk\n");
       for (int i = 0; i < ndims; i++)
-        sbuff.append(" " + dim_flag[i][2] + "," + dim_flag[i][3] + " " + dim_length[i] + " " + chunk_length[i] + "\n");
-      sbuff.append(" special=" + sp_tag_desc + " val=");
+        sbuff.append(" ").append(dim_flag[i][2]).append(",").append(dim_flag[i][3]).append(" ").append(dim_length[i]).append(" ").append(chunk_length[i]).append("\n");
+      sbuff.append(" special=").append(sp_tag_desc).append(" val=");
       for (int i = 0; i < sp_tag_header.length; i++)
-        sbuff.append(" " + sp_tag_header[i]);
+        sbuff.append(" ").append(sp_tag_header[i]);
       return sbuff.toString();
     }
 
@@ -1283,13 +1282,13 @@ public class H4header {
 
     public String detail() {
       StringBuffer sbuff = new StringBuffer("SPECIAL_COMP ");
-      sbuff.append(" version=" + version + " uncompressed length =" + uncomp_length + " link_ref=" + data_ref);
-      sbuff.append(" model_type=" + model_type + " compress_type=" + compress_type);
-      if (compress_type == TagEnum.COMP_CODE_NBIT)
-        sbuff.append(" nt=" + nt + " signFlag=" + signFlag + " fillValue=" + fillValue + " startBit=" + startBit
-            + " bitLength=" + bitLength);
-      else if (compress_type == TagEnum.COMP_CODE_DEFLATE)
-        sbuff.append(" deflateLevel=" + deflateLevel);
+      sbuff.append(" version=").append(version).append(" uncompressed length =").append(uncomp_length).append(" link_ref=").append(data_ref);
+      sbuff.append(" model_type=").append(model_type).append(" compress_type=").append(compress_type);
+      if (compress_type == TagEnum.COMP_CODE_NBIT) {
+        sbuff.append(" nt=").append(nt).append(" signFlag=").append(signFlag).append(" fillValue=").append(fillValue).append(" startBit=").append(startBit).append(" bitLength=").append(bitLength);
+      } else if (compress_type == TagEnum.COMP_CODE_DEFLATE) {
+        sbuff.append(" deflateLevel=").append(deflateLevel);
+      }
       return sbuff.toString();
     }
 
@@ -1547,7 +1546,7 @@ public class H4header {
       sbuff.append("   dims= ");
       for (int i = 0; i < rank; i++)
         sbuff.append(shape[i]).append(" ");
-      sbuff.append("   nt= " + nt_ref + " nt_scale=");
+      sbuff.append("   nt= ").append(nt_ref).append(" nt_scale=");
       for (int i = 0; i < rank; i++)
         sbuff.append(nt_ref_scale[i]).append(" ");
       return sbuff.toString();
@@ -1558,7 +1557,7 @@ public class H4header {
       sbuff.append("   dims= ");
       for (int i = 0; i < rank; i++)
         sbuff.append(shape[i]).append(" ");
-      sbuff.append("   nt= " + nt_ref + " nt_scale=");
+      sbuff.append("   nt= ").append(nt_ref).append(" nt_scale=");
       for (int i = 0; i < rank; i++)
         sbuff.append(nt_ref_scale[i]).append(" ");
       return sbuff.toString();
@@ -1645,8 +1644,8 @@ public class H4header {
 
     public String detail() {
       StringBuffer sbuff = new StringBuffer(super.detail());
-      sbuff.append("   min= " + getMin(dt));
-      sbuff.append("   max= " + getMax(dt));
+      sbuff.append("   min= ").append(getMin(dt));
+      sbuff.append("   max= ").append(getMax(dt));
       return sbuff.toString();
     }
   }
@@ -1724,8 +1723,9 @@ public class H4header {
 
     public String detail() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append((used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "") + " offset=" + offset + " length=" + length +
-          (((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.getName() : ""));
+      sbuff.append(used ? " " : "*").append("refno=").append(refno).append(" tag= ").append(t).append(extended ? " EXTENDED" : "")
+          .append(" offset=").append(offset).append(" length=").append(length)
+          .append(((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.getName() : "");
       sbuff.append(" class= ").append(className);
       sbuff.append(" extag= ").append(extag);
       sbuff.append(" exref= ").append(exref);

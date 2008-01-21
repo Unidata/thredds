@@ -105,7 +105,7 @@ class H5header {
   private ucar.nc2.NetcdfFile ncfile;
   private H5iosp h5iosp;
 
-  private long actualSize, baseAddress;
+  private long baseAddress;
   private byte sizeOffsets, sizeLengths;
   private boolean isOffsetLong, isLengthLong;
 
@@ -127,7 +127,7 @@ class H5header {
   }
 
   void read() throws IOException {
-    actualSize = raf.length();
+    long actualSize = raf.length();
     memTracker = new MemTracker(actualSize);
 
     if (!isValidFile(raf))
@@ -783,15 +783,13 @@ class H5header {
     }
 
     if (mdt.type == 6) {
-      String vname = name;
-      v = new Structure(ncfile, g, s, vname);
+      v = new Structure(ncfile, g, s, name);
       makeVariableShapeAndType(v, mdt, null, vinfo, null);
       addMembersToStructure(g, (Structure) v, vinfo, mdt);
       v.setElementSize(mdt.byteSize);
 
     } else {
-      String vname = name;
-      v = new Variable(ncfile, g, s, vname);
+      v = new Variable(ncfile, g, s, name);
       makeVariableShapeAndType(v, mdt, null, vinfo, null);
     }
 
@@ -961,6 +959,7 @@ class H5header {
      * Constructor, used for reading attributes
      *
      * @param mdt     datatype
+     * @param mds dataspace
      * @param dataPos start of data in file
      * @throws java.io.IOException on read error
      */
@@ -1965,9 +1964,11 @@ class H5header {
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append("   GroupNew fractalHeapAddress=" + fractalHeapAddress + " v2BtreeAddress=" + v2BtreeAddress);
-      if (v2BtreeAddressCreationOrder > -2) sbuff.append(" v2BtreeAddressCreationOrder=" + v2BtreeAddressCreationOrder);
-      if (maxCreationIndex > -2) sbuff.append(" maxCreationIndex=" + maxCreationIndex);
+      sbuff.append("   GroupNew fractalHeapAddress=").append(fractalHeapAddress).append(" v2BtreeAddress=").append(v2BtreeAddress);
+      if (v2BtreeAddressCreationOrder > -2)
+        sbuff.append(" v2BtreeAddressCreationOrder=").append(v2BtreeAddressCreationOrder);
+      if (maxCreationIndex > -2)
+        sbuff.append(" maxCreationIndex=").append(maxCreationIndex);
       return sbuff.toString();
     }
 
@@ -1998,9 +1999,10 @@ class H5header {
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
       sbuff.append("   MessageGroupInfo ");
-      if ((flags & 1) != 0) sbuff.append(" maxCompactValue=" + maxCompactValue + " minDenseValue=" + minDenseValue);
+      if ((flags & 1) != 0)
+        sbuff.append(" maxCompactValue=").append(maxCompactValue).append(" minDenseValue=").append(minDenseValue);
       if ((flags & 2) != 0)
-        sbuff.append(" estNumEntries=" + estNumEntries + " estLengthEntryName=" + estLengthEntryName);
+        sbuff.append(" estNumEntries=").append(estNumEntries).append(" estLengthEntryName=").append(estLengthEntryName);
       return sbuff.toString();
     }
 
@@ -2034,11 +2036,11 @@ class H5header {
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
       sbuff.append("   MessageLink ");
-      sbuff.append(" name=" + linkName + " type=" + linkType);
+      sbuff.append(" name=").append(linkName).append(" type=").append(linkType);
       if (linkType == 0)
         sbuff.append(" linkAddress=" + linkAddress);
       else
-        sbuff.append(" link=" + link);
+        sbuff.append(" link=").append(link);
 
       if ((flags & 4) != 0)
         sbuff.append(" creationOrder=" + creationOrder);
@@ -2408,7 +2410,7 @@ class H5header {
 
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
-      sbuff.append(" type= ").append(+type + " (");
+      sbuff.append(" type= ").append(+type).append(" (");
       switch (type) {
         case 0:
           sbuff.append("compact");
@@ -2628,9 +2630,11 @@ class H5header {
     public String toString() {
       StringBuffer sbuff = new StringBuffer();
       sbuff.append("   MessageAttributeInfo ");
-      if ((flags & 1) != 0) sbuff.append(" maxCreationIndex=" + maxCreationIndex);
-      sbuff.append(" fractalHeapAddress=" + fractalHeapAddress + " v2BtreeAddress=" + v2BtreeAddress);
-      if ((flags & 2) != 0) sbuff.append(" v2BtreeAddressCreationOrder=" + v2BtreeAddressCreationOrder);
+      if ((flags & 1) != 0)
+        sbuff.append(" maxCreationIndex=" + maxCreationIndex);
+      sbuff.append(" fractalHeapAddress=").append(fractalHeapAddress).append(" v2BtreeAddress=").append(v2BtreeAddress);
+      if ((flags & 2) != 0)
+        sbuff.append(" v2BtreeAddressCreationOrder=").append(v2BtreeAddressCreationOrder);
       return sbuff.toString();
     }
 
@@ -3027,8 +3031,7 @@ class H5header {
     private byte btreeType;
     private int nodeSize; // size in bytes of btree nodes
     private short recordSize; // size in bytes of btree records
-    private short treeDepth, numRecordsRootNode;
-    private long rootNodeAddress;
+    private short numRecordsRootNode;
 
     private List<Entry2> entryList = new ArrayList<Entry2>();
 
@@ -3048,10 +3051,10 @@ class H5header {
       btreeType = raf.readByte();
       nodeSize = raf.readInt();
       recordSize = raf.readShort();
-      treeDepth = raf.readShort();
+      short treeDepth = raf.readShort();
       byte split = raf.readByte();
       byte merge = raf.readByte();
-      rootNodeAddress = readOffset();
+      long rootNodeAddress = readOffset();
       numRecordsRootNode = raf.readShort();
       long totalRecords = readLength(); // total in entire btree
       int checksum = raf.readInt();
@@ -3368,8 +3371,8 @@ class H5header {
 
       /**
        * Constructor
-       *
        * @param want skip any nodes that are before this section
+       * @param nChunkDim number of chunk dimensions - may be less than the offset[] length
        * @throws IOException on error
        */
       DataChunkIterator2(Section want, int nChunkDim) throws IOException {
@@ -3626,6 +3629,8 @@ class H5header {
    * Fetch a Vlen data array.
    *
    * @param globalHeapIdAddress address of the heapId, used to get the String out of the heap
+   * @param dataType type of data
+   * @param byteOrder byteOrder of the data
    * @return String the String read from the heap
    * @throws IOException on read error
    */

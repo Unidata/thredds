@@ -38,7 +38,7 @@ public class N3streamWriter {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   private ucar.nc2.NetcdfFile ncfile;
-  private List vinfoList = new ArrayList(); // output order of the variables
+  private List<Vinfo> vinfoList = new ArrayList<Vinfo>(); // output order of the variables
   private boolean debugPos = false, debugWriteData = false;
   private int recStart, recSize;
   private long filePos = 0;
@@ -168,8 +168,7 @@ public class N3streamWriter {
     if (null != stream) stream.writeInt(dims.size());
     count += 4;
 
-    for (int j = 0; j < dims.size(); j++) {
-      Dimension dim = dims.get(j);
+    for (Dimension dim : dims) {
       int dimIndex = findDimensionIndex(dim);
       if (null != stream) stream.writeInt(dimIndex);
       count += 4;
@@ -326,8 +325,7 @@ public class N3streamWriter {
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   public void writeDataAll(DataOutputStream stream) throws IOException {
-    for (int i = 0; i < vinfoList.size(); i++) {
-      Vinfo vinfo = (Vinfo) vinfoList.get(i);
+    for (Vinfo vinfo : vinfoList) {
       if (!vinfo.isRecord) {
         Variable v = vinfo.v;
         writeDataFast(v, stream, v.read());
@@ -352,8 +350,7 @@ public class N3streamWriter {
         StructureData sdata = ii.next();
         int count = 0;
 
-        for (int i = 0; i < vinfoList.size(); i++) {
-          Vinfo vinfo = (Vinfo) vinfoList.get(i);
+        for (Vinfo vinfo : vinfoList) {
           if (vinfo.isRecord) {
             Variable v = vinfo.v;
             int nbytes = (int) writeDataFast(v, stream, sdata.getArray(v.getName()));
@@ -453,11 +450,6 @@ public class N3streamWriter {
     throw new IllegalStateException("dataType= " + dataType);
   }
 
-  /**
-   * write data to a file for a variable.
-   *
-   * @param values write this data.
-   */
   private int writeDataFast(Variable v, DataOutputStream stream, Array values) throws java.io.IOException {
     DataType dataType = v.getDataType();
 

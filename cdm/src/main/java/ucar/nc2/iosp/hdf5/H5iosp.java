@@ -230,7 +230,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       return (scalar) ? data[0] : Array.factory(Array.class, shape, data);
     }
 
-    if (dataType == DataType.STRUCTURE) {
+    if (dataType == DataType.STRUCTURE) {  // LOOK subset
       boolean hasStrings = false;
       Structure s = (Structure) v;
 

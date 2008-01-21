@@ -22,7 +22,6 @@ package ucar.nc2.iosp.hdf4;
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.iosp.hdf4.ODLparser;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
