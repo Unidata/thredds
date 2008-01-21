@@ -114,7 +114,7 @@ public class TestStructure extends TestCase {
     IndexIterator iter = dataAll.getIndexIterator();
     while (iter.hasNext()) {
       StructureData s = (StructureData) iter.next();
-      Array rh = s.findMemberArray("rh");
+      Array rh = s.getArray("rh");
       assert( rh instanceof ArrayInt.D2);
       checkValues( rh, recnum); // check the values are right
       recnum++;
@@ -125,7 +125,7 @@ public class TestStructure extends TestCase {
     long totalOne = 0;
     for (int i=0; i<numrecs; i++) {
       StructureData s = record.readStructure(i);
-      Array rh = s.findMemberArray("rh");
+      Array rh = s.getArray("rh");
       assert( rh instanceof ArrayInt.D2);
       checkValues( rh, i); // check the values are right
     }
@@ -135,7 +135,7 @@ public class TestStructure extends TestCase {
     Structure.Iterator iter2 = record.getStructureIterator();
     while (iter2.hasNext()) {
       StructureData s = (StructureData) iter2.next();
-      Array rh = s.findMemberArray("rh");
+      Array rh = s.getArray("rh");
       assert( rh instanceof ArrayInt.D2);
       checkValues( rh, recnum); // check the values are right
       recnum++;

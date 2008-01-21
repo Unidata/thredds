@@ -653,7 +653,7 @@ public class ConvertD2N {
   }
 
   private Array convertStringToChar(Array data, Variable ncVar) {
-    String s = (String) data.getObject(Array.scalarIndex);
+    String s = (String) data.getObject(Index.scalarIndex);
 
     int total = (int) ncVar.getSize();
     char[] storage = new char[total];

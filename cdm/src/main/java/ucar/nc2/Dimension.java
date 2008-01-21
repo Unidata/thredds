@@ -38,6 +38,7 @@ import java.util.ArrayList;
  */
 
 public class Dimension implements Comparable {
+  /** A variable-length dimension: the length is not known until the data is read. */
   static public Dimension VLEN = new Dimension( "*", -1, true, false, true).setImmutable(); // for Sequences, HDF5 VarLength
 
   private boolean isUnlimited = false;
@@ -123,7 +124,7 @@ public class Dimension implements Comparable {
   }
   private volatile int hashCode = 0;
 
-  /** String representation. */
+  /** CDL representation, not strict. */
   @Override
   public String toString() {
     return writeCDL( false);
@@ -139,7 +140,7 @@ public class Dimension implements Comparable {
     return name.compareTo(odim.getName());
   }
 
-  /** String representation.
+  /** CDL representation.
    * @param strict if true, write in strict adherence to CDL definition.
    * @return CDL representation.
    */

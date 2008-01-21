@@ -43,6 +43,10 @@ import java.util.*;
  */
 
 public class FileWriter {
+  /**
+   * Set debugging flags
+   * @param debugFlags debug flags
+   */
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlags) {
     debug = debugFlags.isSet("ncfileWriter/debug");
     debugExtend = debugFlags.isSet("ncfileWriter/debugExtend");
@@ -349,6 +353,10 @@ public class FileWriter {
     ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
   }
 
+  /**
+   * Get underlying NetcdfFileWriteable
+   * @return underlying NetcdfFileWriteable
+   */
   public NetcdfFileWriteable getNetcdf() { return ncfile; }
 
   /**

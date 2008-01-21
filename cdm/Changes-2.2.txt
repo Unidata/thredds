@@ -1,0 +1,577 @@
+CHANGES for Netcdf-Java library
+Version @VERSION.MINOR@
+Build Date = @BUILDTIME@
+
+ Changes in version 2.2.22
+ API
+  * make Indexer, RegularIndexer public so can be used by IOSP
+ Bugs
+  * NetcdfCFWriter convert false_easting, false_northing to km
+  * read/write interleave without fill; RandomAccessFile: flush now checks minLength
+  * LambertAzimuthal was incorrectly requiring standard_parallel parameter
+  * CF: look for axis=Z attrinute, make first in CoordSysBuilder list
+  * Transverse Mercator accepts false_easting, false_northing
+  * WRFConventions: makeZCoordAxis: SHORT should be DOUBLE
+  * UnidataStationObsDataset : use timeObs if no timeNominal
+  * UnidataStationObsDataset : check that obs links point to station
+  * AWIPS, WRF Stereographic projection needs abs() in scale calculation (thanks to R. Schmunk)
+  * OceanS case when a = 0.
+  * opendap DConnect2 : escape query strings
+  * CoordSysBuilder was putting non-CoordinateAxis into axis list, getting a ClassCast Error
+  * If adding recordStructure, add to N3headers uvars list, so gets updated on a syncExtend.
+  * quote special XML chars correctly in NcML
+  * add "file:" prefix to reletive URLs when writing NcML location
+ Library
+  * httpClient 3.1
+  * opendap 2.1 fix for struct.member
+  * use grib 6.0 for fix of mixed table use
+
+Changes in version 2.2.21
+ Features
+  * VerticalPerspectiveView: projection overrides latlon2projBB, use in GeoGrid to calculate ranges
+  * Grib: handle Gaussian Lat/Lon correctly
+  * NcML: new type: JoinExistingOne has one coordinate per file, with coordValue specified from filename
+ API
+  * static CoordinateAxis1DTime.factory, constructors made private
+  * LatLonRect.intersect()
+ Bugs
+  * NetcdfFileWriter.addLatLonCoordinates bug
+  * FileWriter can handle String values variables by converting to char
+  * CoordinateAxis1DTime handles char time coordinates by converting to String.
+  * NetcdfDataset.setCoordSysWereAdded(false) : empty coordinate systems so they can be rebuilt correctly
+  * FmrcSingle aggregation not correctly handling changing datasets
+  * GridCoordSys.getRangesFromLatLonRect(LatLonRect rect): first clip the request rectangle to the bounding box of the grid
+  * Dimension.addCoordinateVariable: synchronize, for FmrcImpl concurrent access
+  * UnidataStationObsDataset allow missing altitude variable
+  * CoordinateAxis1DTime.section : must subset timeDates
+  * FmrcImpl: make threadsafe
+  * FmrcImpl: reparenting "non-grid" variables was making them into Variable, not VariableDS
+  * DODSNetcdfFile: check for _Coordinate.Axes and coordinates attributes (bug allowed null)
+ Libraries
+  * grib-5.1.04.jar
+
+Changes in version 2.2.20
+ Feature
+   * look for http.proxyHost, http.proxyPort System properties, use then in commons HttpClient library if found
+     (from Nick Bower)
+   * speedup UnidataStationObsDataset for ncss - optimize fetch by station
+ API
+  * Add NetcdfFile.openInMemory( filename) - read file completely into memory.
+  * Add NetcdfFileWriteable.setLength( size) - preallocate file size, for efficiency
+  * StationObsDatasetWriter - use memory files, set output size, to rewrite into canonical form.
+ Bugs
+  * WRF : Mercator, not TransverseMercator
+  * FmrcInventory: starts a DiskCache scouring task; dont do that.
+  * GRIB: write index / open existing index giving different params for projection (gdsIndex.param hashmap)
+  * GRIB: thinned lat/lon grids get dx wrong if lo2<lo2 (cross the seam)
+  * UnidataStationObsDataset : synchExtend if recno > numrecs; try to deal with updating datasets
+  * Range.checkInRange wasnt properly checking last index in range
+  * GRIB: not handling polar stereographic when latOrigin = -90.0 (south pole)
+  * DODS: Inflate must be bufferred; default compress = false
+  * GRIB: always check first if the index file lives in the same dir as the regular file, and use it
+  * GRIB: latlonProjection coordSys dummy Variable did not have the GDS params attached.
+  * Aggregation: If dataset.acquire gets error, resync aggregation, but throw IOException anyway.
+  * InvDatasetFmrc: checkIfChanged when requesting a dataset.
+  * remove opendap catalog, status, systemproperties requests
+  * make opendap Content-Description: conform to spec
+
+Changes in version 2.2.19
+ Features
+  * NetcdfFile.makeUncompress: delete failed uncompressed files; try as regular.
+  * N3header: all names, attributes are assumed to be UTF-8 Unicode
+  * UnidataStationObs allows ISO dates
+  * HttpClientManager - single place to control HTTP client usage
+  * DQC improvements - select Service
+  * DODSNetcdfFile accept_deflate = true
+  * OpenDAP client uses HttpClient, implements full security options
+  * "Mcidas Area" projections based on mcidas area file parameters.
+  * "vertical perspective" projection (GRIB2 Grid Definition Template 3.90)
+  * typed dataset factory : if point fails, check for station
+ NcML
+  * can specify iosp class, parameter, buffer_size
+ API changes
+  * RandomAccessFile.getChannel() removed
+  * LatLonRect now has get Lat/Lon Min/Max methods, toString2()
+  * NetcdfFileWriteable, IOSPwriter.updateAttribute()
+  * NetcdfFileWriteable.writeStringData()
+  * Switch to HttpRandomAccessFile (improvements in HttpClient use)
+  * add ProjectionImpl.constructCopy() - deprecate clone()
+  * NetcdfFile.hasRecordStructure - optimization for Netcdf-3 writing.
+  * NetcdfFileWriteable.addVariable() now returns the new Variable
+  * protected NetcdfFile constructor for passing in iosp class name
+  * add GridCoordSys.getLatLon()
+ Bugs
+  * LatLonRect handle the "full latitude case" better (LonWidth >= 360)
+  * CoordinateAxis1D: make edge[] even when not contiguous.
+  * CF parser: add _Coordinate.Axes attribute for vertical transform only if attribute not already existing. Affects the case
+      where same variable is used for both coordinate system and transform.
+  * FileWriter allows 0 in umlimited dimension
+  * thredds.util.getDateUsingCompleteDateFormatWithOffset() : java.text.SimpleDateFormat is grabbing extra characters at the end.
+      Filed bug report with Sun. workaround : truncate the input string.
+  * DODS Grids: check for coordinates attribute, add to _Coordinate.Axes
+  * NetcdfFileWriteable: bug when FillValue = ""
+  * COARDS: dont assign units="m" to AxisType.HEIGHT
+  * AggregationNew: look for _CoordinateAxes and add new dimension
+  * NcML: silent failure when incorrect # <values>
+  * Convention attribute: look for "/" separator
+  * VariableDS has scale/offset attributes removed when its enhanced.
+  * CoordinateAxis2D.getValues() not checking if read in
+  * M3IOConvention wasnt working
+  * Grib2: levels 0 and 255 means no level name
+  * NCdump.print was using NetcdfFileCache
+ ToolsUI
+  * add some details to Viewer Tab Info button
+  * File menu has "clear HTTP state" option.
+  * HttpSession deprecated, use HttpClientManager.
+  * GridUI: bug in showDatasetXMLAction, rename showNcML; add showGridDatasetInfo XML
+  * add refresh button to FileManager
+ Libraries
+  * visad.jar (4/19/2007) -> visadNoDods.jar
+  * opendap now in seperate jar opendap.2.0, includes gnu-regexp, gnu-getopt
+  * bring ucar.util.prefs into ui module, use jgoodies.forms.1.0.7
+  * upgrade commons libraries: httpclient.3.0.1, logging-1.1
+  * upgrade log4j : nlog4j.1.2.25, slf4j-jdk14-1.2
+  * detect if java version 1.5+ in XMLEntityResolver, dont need to include Xerces if so.
+  * grib-5.1.02
+  * bufr-1.1.00
+
+ Changes in version 2.2.18
+ Bugs
+  * Gini strides not working
+  * CoordinateAxis1D.findCoordElementBounded not staying in bounds for longitudes
+  * Cinrad iosp (Chinese NEXRAD radar)
+  * bzip2 not in core library
+  * GRIB Orthographic projections
+  * CoordSysBuilders must set their name in constructor, for reflection
+  * WRF Stereographic Projection (thanks to Heiko Klein)
+
+Changes in version 2.2.17
+ Features
+  * default log4j.xml in resources directory
+  * Netcdf3iosp: dont validate Attribute names.probably have same problem with variable and dimensions??
+  * ucar.nc2.util.xml.RuntimeConfigParser: read XML config file with runtime classes, grib tables to be loaded.
+  * ucar.nc2.dt.TypedDatasetFactory : new framework for plugging in TypedDataset implementations
+  * ForecastModelRunSingleCollection: fmrc files have single hour in them
+  * ForecastModelRunCollection, (fmrc) Aggregation.
+  * ForecastModelInventory: keep vertical coordinates of length 1; write layer coordinate with low,high syntax.
+  * GRIB: handle vertical coordinates with multiple values, considered as bounds.
+    Allow fmrcDefinition.xml to be passed in to determine the coordinate system.
+  * FileWriter converts DataType STRING to CHAR. doesnt work for record variables yet.
+  * Grib files: vertical coordinates variables with two values now are represented by their midpoint; a "cell boundary"
+      variable is added. This fixes some of the "duplicate record" warnings in Grib files.
+  * GridCoordSystem.isRegularSpatial() - remove Z axis from test, to allow non-regular variables in WCS
+  * NetcdfFile: add bzip2 uncompression
+  * NcML: add forecastModelRunCollection aggregation
+  * Refactor the GeoGrid API - now use ucar.nc2.dt.Grid* interfaces; add ensemble, runtime dimensions.
+    GridCoordSystem allows time to depend on runtime.
+  * Variable.slice()
+ API changes
+  * NetcdfFileWriteable: addUnlimitedDimension, createNew and openExisting with default fill mode = true
+  * VariableEnhanced interface: remove getOriginalVariable(), now package private on VariableDS.
+  * new Grid processing moved to ucar.nc2.dt.grid, old one (deprecated) stays in ucar.nc2.dataset.grid. Some tweaks on the
+    new grid interface, since we no longer have to be strictly backwards compatible.
+  * CoordinateAxis1D now looks for bounds (using CF-1 bounds attribute convention) check if contiguous.
+    CoordinateAxis1D add isLayer(), check for _Coordinate.ZisLayer attribute.
+  * VariableDS uses ProxyReader interface, rather than Aggregation directly.
+  * AxisType.Ensemble, AxisType.RunTime
+  * GeoGridCoordSys.getTimeCoordinate() implements ucar.nc2.dt.GridCoordSystem:
+    getTimeAxis() returns CoordinateAxis instead of CoordinateAxis1D.
+    add getTimeAxis1D(), getTimeAxisForRun.
+  * GeoGrid : getLevels(), getTimes() returns List, not ArrayList; implements ucar.nc2.dt.GridDaatatype
+  * CoordinateSystem: remove get/setDataType(), make setImplicit() protected.
+  * Variable.getRanges() vs .getSectionRanges(). Remove isSection(), getRangesAll() until we understand use case.
+  * remove old RadialDataset interfaces and implementations : only RadialDatasetSweep is used
+ Bugs
+  * try to figure out when file: needs to be added to location in NcML
+  * relax CoordinateAxis1D.isRegular() to 5.0e-3 tolerance
+  * cant (necessarily) use FastIterator on convertScaleOffset!
+  * cleanup ucar.nc2.util.NetworkUtils.resolve() for file: baseURLS. only reletive URLS not starting with / are supported. This is
+    apparently different from the behavior of URI.resolve(), so may be trouble, but it allows NcML absolute location to be specified without
+    the file: prefix.
+  * UnidataPointObsDataset: fix various bugs, let altitude field be optional
+  * Cleanup Vertical Transforms (use variable name, not numbers in parameters), review
+  * Nexrad2 IOSP: recover from bad bzip, deal with missing data in the coordinates
+  * WRF netcdf output: projection info missing when version < 2, may be wrong, give warning in userInfo.
+  * ucar.nc2.dataset.transform.VExplicitField had wrong value for existingDataField parameter.
+  * parse polar_stereographic projection according to CF
+  * StringUtil.replace() bug
+  * DODS: distinguish netcdf name from dods name (again!), problem is escape chars. Still work to do in data reading (ConvertD2N)
+  * when creating a section, always use this, not orgVar, so scale/offset is in the read chain.
+  * scale/offset enhance: valid_range must be wider (>=) than packed data to interpret as unpacked units. Also,
+    bug with getOriginalVariable(), preventing correct scaling
+  * VariableDS: grid subsetting and aggregation not working together.
+  * if projection CoordinateTransform missing units, look for units on GeoX axis. (CF compliance)
+  * ucar.ma2.Range.contains() off-by-one
+  * NcML aggregation caching wasnt working correctly.
+ ToolsUI
+  * CoordSysTable : show values as Date contenxt menu on coordinate axis table
+  * GridViewer: 2D lat/lon, MFlowLayout
+  * default nj22Config.xml in home/.unidata
+  * look for -nj22Config <filename> on command line
+  * seperate out PointObs and StationObsViewer, add showData in PontObsViewer
+  * CoordSysTable axis has context menu to show coordinate values
+  * Grid Viewer will show ensemble, runtime coordinates if they exist.
+  * Radial Tab now works with RadialDatasetSweep interface
+ Libraries
+  * grib-5.0.03
+  * bufr.lib had outdated version of raf
+  * build: calculate MD5 checksum
+
+Changes in version 2.2.16
+ Bugs
+  * NetcdfFile: check if compressed file exists
+  * Dorade fixes
+  * RadialVelocity nexrad2.
+  * ucar.nc2.dt.radial.Nids2Dataset check for both versions of Nids attribute(s) like "ProductStation".
+  * Yuan/JeffMcW's performance improvements.
+  * nexrad2 iosp: SpectrumWidth is now in bytes, unsigned with scale and offset. Also correct the time units.
+  * ucar.nc2.dt.radial.NexradIIDataset: dont cache origin, shape arrays
+  * Nexrad2 error when ngates different within a scan; unneeded, removed.
+  * Grib IOSP workaround for "Grib2 generating process" field being ignored.
+  * WRFEta not figuring out staggering
+  * RadialDataset slow (cache)
+
+Changes in version 2.2.15
+ Features
+  * CF-1 atmosphere_ln_pressure_coordinate - create new pressure 1D coordinate
+  * incorporate Jeff McW improvements to bzip2 - 4x speedup on level2 compressed files.
+  * factor out CoordTransBuilder from CoordSysBuilder: users can now plug in their own coordinate transforms.
+  * dods client now allows compression ("Accept_Deflate"), previous bug made it too slow.
+      however, it may still slow things down on a fast network.
+  * NcML aggregation element processed first, so nested objects exist and can be modified by other NcML elements.
+  * Nexrad2 iosp uses more accurate station table locations.
+  * NetcdfDataset: structure members can be coordinate axes.
+  * BUFR iosp
+  * Radar Dataset improvements
+  * improve GRIB DL metadata
+  * metar decoding
+  * ForecastModelRunCollection
+  * DiskCache2 improved
+ API changes
+  * VerticalCT.makeVerticalTransform(); also now takes a CoordTransBuilder in constructor.
+  * include thredds.catalog.crawl package
+  * DODSNetcdfFile.setAllowSessions(), DODSNetcdfFile.setAllowDeflate().
+  * ThreddsDataFactory.openDataset() needs an acquire parameter to call open (not acquire) from NetcdfDatset.openFile()
+  * PointCollection.getData return DataIterator, so that the IOException can be declared.
+  * RadialDatasetSweep is new interface, other RadialDataset interfaces will be removed.
+  * IOSP.readNestedData() remove flatten, handle flatten=false in NetcdfFile.readMemberData(); this allows IOSPs to be simpler
+  * static DateUnit methods are removed, they are not thread safe, so we are forcing them to be changed. Use DateFormatter.
+ Bugs
+  * CF-1: assignment of vertical transforms may require time axis in coordinate system.
+  * gini iosp : cache only if < Variable.defaultSizeToCache
+  * dodsfile not always calling finish()
+  * bugs in gini, nids, dmsp iosp on reading section with  ranges of length one, needs sectionNoReduce().
+  * DateUnit.getDate(value) unecessarilty constructing a new TimUnit: ucar.units is slow !!
+  * ThreddsDataFactory.openDataset("thredds:resolve") was leaving something in the NetcdfDatasetCache, because of a nested acquire.
+  * strided access on NcML aggregation outer range was wrong.
+  * remove dods DConnect retry on getData.
+  * "NCDump -cdl" now generates valid input to ncgen
+  * UnidataPoint/StationObsDataset more complete implementation
+  * some bugs in CoordinateAxis when size = 0
+  * grid.getLatLonBoundingBox() use all 4 corners; still not great for stuff close to the poles
+  * Add Michael Godin patch for aggregation
+  * grib.TimeCoord not thread-safe
+  * ThreddsDataFactory: dont use HTTPServer / GRIB combination - too slow!
+ ToolsUI
+  * bug in viewer panel, hiding and showing nested structures
+  * StructureTable deal with sequences (probably only dods)
+ Libraries
+  * remove bzip2 - modified version in ucar.unidata.io.bzip2
+
+ Changes in version 2.2.14
+ Bugs
+  * N3iosp.open() trying a file.exists() when its an HTTP file, causing Security Error with applets.
+  * bug with length 0 dods strings
+  * close raf when NetcdfFile.open() fails
+  * not handling dods servers that "send chars as String[1]" correctly
+  * Array of DODS Strings -> Char werent getting subsetted
+  * RandomAccessFile.readIntUnbuffered not converting to unsigned - only used by syncExtend().
+  * grib time coordinates: check timeUnit when creating valid times; use baseTime in udunit, instead of times(0).
+  * VerticalTransformSubset didnt properly deal with t_range == null
+  * DODS Strings werent getting processed
+
+Changes in version 2.2.13
+ Features
+  * clean up javadoc + user manual
+  * CoordSysBuilder - try to give user advice of conventions problems. Uses NetcdfDatsetInfo helper class .
+  * NetcdfDataset.openFile can handle thredds:catalog.xml#datasetId for thredds datasets and thredds:resolve:resolveURL
+     for resolution of thredds datasets. Refactored ThreddsDataFactory.
+  * IRIDL, EpicInSitu Convention parsers.
+  * Refactor DODS reading - now can handle sequences and nested structures. More efficient handling of Structures.
+  * User registered CoordSysBuilderIF will override system
+  * Nexrad II variable descriptions follow IDV
+  * FileWriter now writes by record; main has sleep option for testing.
+  * Netcdf3 IOSP now can write records.
+  * Implement sessions, add close() in dods.dap.DConnect().
+ API changes
+  * Variable.isUnknownLength() -> isVariableLength()
+  * VerticalTransform.getCoordinateArray() now throws InvalidRangeExcception
+  * ThreddsDataFactory.Result changes.
+  * Refactor ArrayStructure, StructureData, make abstract. Clean up API, deprecate some methods.
+    Add ArraySequence for nested sequences.
+  * CoordSysBuilder now uses CoordSysBuilderIF
+  * use static opens on NetcdfFileWriteable, deprecate constructors
+ Bugs
+  * bug when file size > 2^31
+  * copy NcML (ncgen mode) to file, when there was a record structure.
+  * geogrid.subset() was not dealing with vertical transforms.
+  * ucar.ma2.Index.setCurrentElement() was wrong. This is only used for debugging.
+  * RecordDatasetHelper.getData() returning List<StructureData> instead of List<PointObsDattype>
+  * Point/StationObs: check altitude units, convert values to meters.
+  * DODS: unescape dimension, structure names; dodsName dont change.
+  * GribIosp assumed all reference times were identical; now it creates validTime = refTime + forecastHour
+  * n3iosp.syncExtend() needs to bypass the raf buffer when checking on numrecs.
+  * fill mode wasnt working correctly when writing.
+ ToolsUI
+  * add syncExtend button on Viewer Tab
+ Libraries
+  * change logging to use SLF4J. This is now deep in the core.
+     - Use slf4j-jdk14.jar for ncCore (7K), which wraps JDK 1.4.
+     - Use nlog4j for other jars (202K), which has log4j embedded in it.
+  * upgrade commons-httpclient to version 3.0
+  * remove STNDB.txt from resources, put in optional resources
+  * use jdom 1.0
+  * put dods code into nj22 library rather than leaving seperate. Remove from visad.jar. (visadNoDods.jar)
+
+Changes in version 2.2.11
+ Features
+  * GridCoordSys allows String valued (ISO 8601) dates for time coordinates
+  * geogrid subset deal with 2D lat, lon
+  * new  projections: Albers, LambertAzimuth, Orthographic
+  * NcML aggregation now works - uses NetcdfFileCache, DiskCache2
+  * netcdf3: sync() will update numrecs if changed
+  * geogrid.writeFile() to write a geogrid and its coord system to a file.
+  * new ADAS Convention parser
+  * add false_easting and false_northing to Lambert Conformal.
+  * nexrad2 variables are now unsigned bytes with scale and offset
+  * clean up nexrad level 2 processing - use logging for debug and error messages (iosp.nexrad2)
+  * Add GINI Satellite reading
+  * Add GeoGrid subsetting.
+  * Detect if HTTP Server supports Range requests (HTTPRandomAccessFile)
+ API changes
+   * synch() -> sync() and syncExtend()
+   * Dimension.isUnknown() -> Dimension.isVariableLength()
+   * NetcdfDataset.acquire -> NetcdfDatasetCache.acquire
+   * ucar.nc2.dt.RadialDataset refactored
+ Bugs
+  * Nids reader variable length strings
+  * Grib reader now does subsetting
+  * bug in Attribute.equals(): not allowing subclasses
+  * was truncating non-netcdf raf files
+  * GeoGrid lat/lon axis switched.
+ ToolsUI
+  * show grids as images
+  * movie loop on image panel
+  * Grid viewer now allows to enter x/y stride. must hit redraw to see.
+  * add axes to GeoGridTable
+  * Use HttpSession to deal with PUT redirect (302) from TDS SSH
+
+Changes in version 2.2.10
+ Features
+  * add xerces to webstart to get catalog schema validation
+  * add Dorade radar file reading
+  * read all NIDS products; improve variable names, metadata.
+  * CoordSysBuilder: choose comma delimited Conventions in order of adding
+  * add iosp.synch(), implement for growing GRIB files.
+  * NetcdfDataset no longer deals with thredds:dataset
+  * add NetcdfFileCache, NetcdfFile.acquire, NetcdfDataset.acquireFile
+  * change FileCache to DiskCache for clarity
+  * start to use commons logging
+  * add MADISStation convention parser
+  * add IOServiceProviderWriter
+ API changes
+  * Dimension.isUnknown() -> Dimension.isVariableLength()
+ Bugs
+  * bugs in Unit parsing fixed
+  * test if HTTP servers handle byte Ranges; upgrade to commons HTTPClient 3.0
+  * always write "canonical length" files; truncate on overwrite.
+  * read "non-canonical length" files.
+  * accept COARDS vertical coordinates without positive attribute
+  * DODS Structure attributes now work.
+  * NIDS Structures now work.
+  * Allow "." in NetCDF names
+  * DODS CHAR variables now work.
+  * append multiple String attributes when writing
+  * speed up HDF5.isMine(): header must be within first 50K.
+  * NetcdfFile.openInMemory was broken
+  * cached data in VariableDS works : needed by NcML <values>
+  * NCMLGWriter now works
+  * RangeDateSelector now works
+ ToolsUI
+  * can startup with thredds:dataset on command line; also check for already running process
+  * TDS Configurator tab for configuring Thredds Data Servers
+  * improve ucar.util.prefs.ui
+  * add HTTPServer access
+  * use NetcdfFileCache
+  * save prefs on exit always
+  * openFile from THREDDS Catalog Chooser
+  * can delete items from prefs.ComboBox
+  * Trajectory Viewer uses NP to show trajectories; refactor NPController etc.
+  * move station rendering to nc2.ui.point; add listener to StructureTable.
+  * standard MapBeans
+
+Changes in version 2.2.09
+ Features
+  * Add Stereographic projection in AWIPS conventions reader; handles MADIS RSAS files.
+  * MADIS station data adapter handles most madis station data
+  * automatically unzip ".zip", ".gzip", and ".gz" files (NetcdfFile.open())
+  * GRIB uses "dense" coordinate systems.
+  * PointObsDataset, StationObsDataset, TrajectoryObsDataset datatypes ready to be used
+  * StructureData.convertScalarDouble() deals with scale/offset/missing
+  * optimize StructureData: move it & DataType to ucar.ma2; add ArrayStructure
+  * Netcdf-3 record Structure can be added after opening
+ Bugs
+  * put thredds schemas into released jars
+  * Grib Polar Stereographic bug when longitude != 0
+  * fix FileCache standardPolicy - was always using file cache directory
+  * "wart" in netcdf C library allows file padding to be truncated
+  * DateUnit, TimeUnit redone to always use "base" units.
+  * NcML deals with record Structure
+ ToolsUI
+  * StructureTable use modal popup
+  * PointObsViewer, StructureTable improved
+  * DateRange widget mostly works now
+
+Changes in version 2.2.08
+ Features
+  * Improve AWIPS convention parser for NSSL radar mosaic
+  * Add ADAS convention parser
+  * use standard cache policy (FileCache)
+  * Add Atmospheric Sigma vertical transform
+  * add ucar.nc2.geotiff package to release
+  * IFSP Convention parsing
+ Bugs
+  * infinite loop on NIDS compress failure
+  * check for _unsigned in scale/offset
+  * Grib file can be HTTP, put index in cache
+  * get unused dimensions through opendap server
+  * truncated file when data not fully writtten, no fill
+  * Grib1: constant value data
+  * CSM vertical transform conflict with CF; general clean up
+  * CF projections had incorrect _CoordinateAxes
+  * Get ucar.unidata.io into minimal and standard libraries
+  * Coordinate Transform attributes as Strings
+  * CoordSysBuilder: dont add coordinate variables twice
+ ToolsUI
+  * fix twist-down handles in CatalogTreeView (thanks to Eric Russell)
+  * first pass on TrajectoryDataset tab
+  * add WCS testing to GridTable
+
+Changes in version 2.2.07
+ Features
+  * add "maximal" coord system search to pick up forgotten coordinate axes (CoordSysBuilder)
+  * improve GRIB vertical coord handling
+  * NcML can be used like ncgen to create new files
+  * NetcdfDataset "enhance" mode optional, also add equivilent flag to NcML
+  * allow relative NcML file URIs
+  * add Universal Transverse Mercator projection
+  * add Ocean_Sigma vertical coordinate system
+  * if filename ends with "*.Z", uncompress. Works for any iosp. (NetcdfFile)
+  * use FileCache directory for writing (eg GRIB index, uncompress) when original directory not writeable
+  * remove access to Structure and Variables from StructureData : more like Array now
+ Bugs
+  * bug in DODS reading when Grid array returns wrapped in Structure
+  * bug using Double.MIN_VALUE instead of -Double.MAX_VALUE when finding limits (MAMath, and lots of other places)
+  * recognize when a _CoordinateAxis attribute refers to a CoordinateSystem variable, rather than a data variable (CoordSysBuilder)
+  * NUWG generated axis gave lat/lon AxisType GeoX/GeoY.
+  * dont load GribServiceProvider if grib.jar  not present
+  * correctly deal with GRIB latitude going from north to south.
+ ToolsUI
+  * RadialPanel added, no viewer yet
+  * GeoGridPanel correctly shows detail window.
+  * NCDump window now works correctly when you change variable in combobox
+  * StructureTable has resize off, so columns are visible in a scrollpane
+
+Changes in version 2.2.06
+ * add AWIPS satellite convention parser
+ * try to find coordinate system when a variable has none. (CoordSysBuilder)
+ * add FileManager widget to TextGetPutPane
+ * add Mercator, Stereographic projections
+ * missing data converted to NaNs as default.
+ * fixed bug with some GRIB time units
+ * fixed bug when CoordinateAxis wraps VariableDS wrads DODSVariable
+ * Use Java-OPeNDAP library JDAP 1.1.7
+ * ucar.nc2.dods uses unsigned types instead of widening
+ * HTTP files should open without error message from opendap
+ * geotiff reading/writing tab in ToolsUI
+ * improvements for THREDDS WCS server
+ * GRIB quasi-grids
+ * add deprecated methods for backwards compatibility.
+
+Changes in version 2.2.05
+
+ * Prototype ADDE Station Data interface
+ * Prototype catgen interface
+ * fix bugs in GRIB reading
+
+Changes in version 2.2.04
+
+ * Lots of bug fixes and improvements, some minor API changes.
+ * Add reading NIDS (Nexrad level 3) files. Radial and raster data only so far.
+ * Convention parsing uses proposed Coordinates conventions.
+ * NcML roundtrip (write NcML, read back in) pretty much works.
+
+
+========================================
+Changes from Java-Netcdf version 2.1
+
+Package ucar.nc2
+
+    Adds a "Pluggable Service Provider" layer for the actual I/O. This factors out specific code for reading HDF5 vs
+      netCDF version 1 file formats.
+    Also have a number of "I/O Service Providers" for non NetCDF file formats, eg GRIB, NEXRAD, etc.
+
+DataType
+
+   1. Add DataType STRUCTURE.
+   2. Use DataType STRING for variable length array of chars.
+   3. Use DataType CHAR for fixed length array of chars as in nc2 files. HDF5 has both fixed and variable length.
+
+Attribute
+
+   1. Use STRING DataType, don’t use CHAR.
+   2. Allow Array of Strings.
+   3. remove public Object getValue() , add Array getValues()
+
+Dimension
+
+   1. Allow Dimensions that are not “shared”, i.e. are private to a Variable, for HDF5 and DODS: boolean isShared();
+      Only shared Dimensions appear in the NetcdfFile.getDimensions() list.
+   2. We need to press OpenDAP and HDF5 to add shared Dimensions to their data models.
+
+Group
+   1. logical container for variables, dimensions, attributes, so looks like old netcdfFIle.
+   2. always a "root group" in the netcdfFIle.
+
+Variable
+
+   1. adds convenience methods for scalars, eg double readScalarDouble().
+   2. add Structure getParent() for Variables that are inside of a Structure.
+   3. read with strides
+   4. add section() method, creates a logical section of a Variable. This replaces the equivalent functionality in ucar.ma2.MultiArraySection,
+      which is removed.
+
+Sequence
+
+   1. A Sequence is a 1D Variable whose length is unknown until the data is actually read.
+   2. This corresponds to the HDF5 "Variable Length" DataType (type = 0) Sequence
+   3. This corresponds to the DODS Sequence datatype.
+
+Structure
+
+   1. A subclass of Variable, is a container for other Variables, may be nested. This handles both arrays of Structures
+      and scalar Structures as a rank-0 array, with some convenience routines for accessing scalar Structures.
+   2. Generally, the programmer can assume that the data in a Structure are stored together, so that it is efficient to
+      read a Structure all at once, then access the Variable data through the Arrays in the StructureData.
+
+StructureData
+
+   1. Container of the data for a Structure, analogous to how Array contains the data for a Variable.
+
+Package ucar.ma2
+
+   1. Remove MultiArray, IOArray, Array and Index interfaces; make ArrayAbstract into Array, IndexImpl into Index.
+   2. Allow Array of Reference types. NetCDF will use String and StructureData.
+   3. Use List of Range for section operations.
+   4. Ranges can be specified by a String in fortran 90 syntax
+

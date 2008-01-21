@@ -61,8 +61,6 @@ import java.nio.ByteBuffer;
  * @author caron
  */
 public abstract class Array {
-    public static final Index scalarIndex = new Index0D( new int[0]); // immutable, so can be shared
-
 /* implementation notes.
   Could create interface for Ranges, ScatterIndex and pass array of that (?)
  */
@@ -819,13 +817,67 @@ public abstract class Array {
   }
 
   /**
-   * Return the next element in the local iterator.
+   * Return the next object in the local iterator.
    * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
    * @return next element as an Object, same as IndexIterator.getObjectNext().
    */
-  public Object next() {
-    return ii.getObjectNext();
-  }
+  public Object next() { return ii.getObjectNext(); }
+
+  /**
+   * Return the next double in the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * @return next element as a double, same as IndexIterator.getDoubleNext().
+   */
+  public double nextDouble() { return ii.getDoubleNext(); }
+
+  /**
+   * Return the next float in the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * @return next element as a float, same as IndexIterator.getFloatNext().
+   */
+  public float nextFloat() { return ii.getFloatNext(); }
+
+  /**
+   * Return the next byte in the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * @return next element as a byte, same as IndexIterator.getByteNext().
+   */
+  public byte nextByte() { return ii.getByteNext(); }
+
+  /**
+   * Return the next short in the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * @return next element as a short, same as IndexIterator.getShortNext().
+   */
+  public short nextShort() { return ii.getShortNext(); }
+
+  /**
+   * Return the next int in the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * @return next element as a int, same as IndexIterator.getIntNext().
+   */
+  public int nextInt() { return ii.getIntNext(); }
+
+  /**
+   * Return the next long in the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * @return next element as a long, same as IndexIterator.getLongNext().
+   */
+  public long nextLong() { return ii.getLongNext(); }
+
+  /**
+   * Return the next char in the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * @return next element as a char, same as IndexIterator.getCharNext().
+   */
+  public char nextChar() { return ii.getCharNext(); }
+
+  /**
+   * Return the next boolean in the local iterator.
+   * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * @return next element as a boolean, same as IndexIterator.getBooleanNext().
+   */
+  public boolean nextBoolean() { return ii.getBooleanNext(); }
 
   /**
    * Reset the local iterator.

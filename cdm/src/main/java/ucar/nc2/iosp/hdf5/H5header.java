@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -114,7 +114,7 @@ class H5header {
   private Map<Long, DataObject> addressMap = new HashMap<Long, DataObject>(200);
 
   private Map<Long, GlobalHeap> heapMap = new HashMap<Long, GlobalHeap>();
-  private Map<Long, H5Group> hashGroups = new HashMap<Long, H5Group>(100);
+  //private Map<Long, H5Group> hashGroups = new HashMap<Long, H5Group>(100);
 
   DateFormatter formatter = new DateFormatter();
   private java.text.SimpleDateFormat hdfDateParser;
@@ -168,7 +168,7 @@ class H5header {
 
   private void readSuperBlock1(long superblockStart, byte versionSB) throws IOException {
     byte versionFSS, versionGroup, versionSHMF;
-    short btreeLeafNodeSize, btreeInternalNodeSize, storageInternalNodeSize;
+    short btreeLeafNodeSize, btreeInternalNodeSize;
     int fileFlags;
 
     long heapAddress;
@@ -205,7 +205,7 @@ class H5header {
     if (debugDetail) debugOut.println(" fileFlags= 0x" + Integer.toHexString(fileFlags));
 
     if (versionSB == 1) {
-      storageInternalNodeSize = raf.readShort();
+      short storageInternalNodeSize = raf.readShort();
       raf.skipBytes(2);
     }
 
@@ -400,8 +400,7 @@ class H5header {
         Attribute att = makeAttribute(facade.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
         String val = att.getStringValue();
         if (val.equals("DIMENSION_SCALE")) {
-          String dimName = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
-          facade.dimList = dimName;
+          facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
           iter.remove();
         }
       }
@@ -726,7 +725,7 @@ class H5header {
       int nelems = (int) v.getSize();
       int heapIdSize = 12;
       for (int i = 0; i < nelems; i++) {
-        H5header.RegionReference heapId = new RegionReference(vinfo.dataPos + heapIdSize * i);
+        H5header.RegionReference heapId = new RegionReference(vinfo.dataPos + heapIdSize * i); // LOOK
       }
 
       v.addAttribute(new Attribute("_HDF5ReferenceType", "values are regions of referenced Variables"));
@@ -860,7 +859,7 @@ class H5header {
       if (dims != null) {
         v.setDimensions(dims);
         if ((mdt.type == 9) && !mdt.isVString) { // variable length (not a string)
-          v.setVariableLength(true);
+          // v.setVariableLength(true); // LOOK ???
         }
         /*
          List<Dimension> dimList = new ArrayList<Dimension>(v.getDimensions());
@@ -1140,7 +1139,7 @@ class H5header {
     }
 
     Object getFillValueDefault(DataType dtype) {
-      if (dtype == DataType.BYTE) return N3iosp.NC_FILL_BYTE;
+      if ((dtype == DataType.BYTE) || (typeInfo.dataType == DataType.OPAQUE)) return N3iosp.NC_FILL_BYTE;
       if (dtype == DataType.CHAR) return (byte) 0;
       if (dtype == DataType.SHORT) return N3iosp.NC_FILL_SHORT;
       if (dtype == DataType.INT) return N3iosp.NC_FILL_INT;
@@ -1153,7 +1152,7 @@ class H5header {
     Object getFillValueNonDefault() {
       if (fillValue == null) return null;
 
-      if ((typeInfo.dataType == DataType.BYTE) || (typeInfo.dataType == DataType.CHAR))
+      if ((typeInfo.dataType == DataType.BYTE) || (typeInfo.dataType == DataType.CHAR) || (typeInfo.dataType == DataType.OPAQUE))
         return fillValue[0];
 
       ByteBuffer bbuff = ByteBuffer.wrap(fillValue);

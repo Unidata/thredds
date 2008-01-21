@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -75,7 +75,7 @@ public class StructureDataA extends StructureData {
       return sa.getScalarDouble(recno, m);
 
     Array data = getArray(m);
-    return data.getDouble(Array.scalarIndex);
+    return data.getDouble(Index.scalarIndex);
   }
 
   /**
@@ -86,16 +86,6 @@ public class StructureDataA extends StructureData {
   public float getScalarFloat(StructureMembers.Member m) {
     return sa.getScalarFloat(recno, m);
   }
-
-  /*
-   * Get value as a double. Underlying type must be convertible to double.
-   * @param m member Variable.
-   * @throws ForbiddenConversionException if not convertible to double.
-   *
-  public double convertScalarDouble(StructureMembers.Member m) {
-    return sa.convertScalarDouble(recno, m);
-  } */
-
 
   /**
    * Get member data of type float array.
@@ -120,17 +110,8 @@ public class StructureDataA extends StructureData {
       return sa.getScalarFloat(recno, m);
 
     Array data = getArray(m);
-    return data.getFloat(Array.scalarIndex);
+    return data.getFloat(Index.scalarIndex);
   }
-
-  /*
-   * Get float value. Underlying type must be convertible to float.
-   * @param m member Variable.
-   * @throws ForbiddenConversionException if not convertible to float.
-   *
-  public float convertScalarFloat(StructureMembers.Member m) {
-    return (float) sa.convertScalarDouble(recno, m);
-  } */
 
     /**
    * Get member data of type byte.
@@ -163,7 +144,7 @@ public class StructureDataA extends StructureData {
       return sa.getScalarByte(recno, m);
 
     Array data = getArray(m);
-    return data.getByte(Array.scalarIndex);
+    return data.getByte(Index.scalarIndex);
   }
 
   /**
@@ -197,7 +178,7 @@ public class StructureDataA extends StructureData {
       return sa.getScalarShort(recno, m);
 
     Array data = getArray(m);
-    return data.getShort(Array.scalarIndex);
+    return data.getShort(Index.scalarIndex);
   }
 
   /**
@@ -231,7 +212,7 @@ public class StructureDataA extends StructureData {
       return sa.getScalarInt(recno, m);
 
     Array data = getArray(m);
-    return data.getInt(Array.scalarIndex);
+    return data.getInt(Index.scalarIndex);
   }
 
   /**
@@ -265,7 +246,7 @@ public class StructureDataA extends StructureData {
       return sa.getScalarLong(recno, m);
 
     Array data = getArray(m);
-    return data.getLong(Array.scalarIndex);
+    return data.getLong(Index.scalarIndex);
   }
 
   /**
@@ -299,7 +280,7 @@ public class StructureDataA extends StructureData {
       return sa.getScalarChar(recno, m);
 
     Array data = getArray(m);
-    return data.getChar(Array.scalarIndex);
+    return data.getChar(Index.scalarIndex);
   }
 
   /**

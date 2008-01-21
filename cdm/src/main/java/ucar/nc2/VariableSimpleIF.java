@@ -25,41 +25,70 @@ import java.util.List;
 
 /**
  * A "Simple" Variable, that allows non-netcdf implementations of typed datasets.
- * @see ucar.nc2.dt.TypedDataset
+ *
  * @author caron
+ * @see ucar.nc2.dt.TypedDataset
  */
 public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
-  /** @return full name of the data Variable */
+  /**
+   * full name of the data Variable
+   * @return full name of the data Variable
+   */
   public String getName();
-  /** @return short name of the data Variable */
+
+  /**
+   * short name of the data Variable
+   * @return short name of the data Variable
+   */
   public String getShortName();
-  /** @return  description of the Variable */
+
+  /**
+   * description of the Variable
+   * @return description of the Variable, or null if none.
+   */
   public String getDescription();
-  /** @return Units of the Variable. These should be udunits compatible if possible */
+
+  /**
+   * Units of the Variable. These should be udunits compatible if possible
+   * @return Units of the Variable, or null if none.
+   */
   public String getUnitsString();
 
-  /** @return Variable rank */
+  /**
+   * Variable rank
+   * @return Variable rank
+   */
   public int getRank();
-  /** @return Variable shape */
+
+  /**
+   * Variable shape
+   * @return Variable shape
+   */
   public int[] getShape();
-  /** @return List of ucar.nc2.Dimension */
+
+  /**
+   * Dimension List. empty for a scalar variable.
+   * @return List of ucar.nc2.Dimension
+   */
   public List<Dimension> getDimensions();
-  /** @return Variable's data type */
+
+  /**
+   * Variable's data type
+   * @return Variable's data type
+   */
   public DataType getDataType();
 
-  /** Attributes for the variable.
-   * @return List of type ucar.nc2.Attribute */
+  /**
+   * Attributes for the variable.
+   * @return List of type ucar.nc2.Attribute
+   */
   public List<Attribute> getAttributes();
 
   /**
+   * find the attribute for the variable with the given name, ignoring case.
    * @param name attribute name
-   * @return the attribute for the variable with the given name, ignoring case.
+   * @return the attribute for the variable with the given name, or null if not found.
    */
-  public ucar.nc2.Attribute findAttributeIgnoreCase( String name );
+  public ucar.nc2.Attribute findAttributeIgnoreCase(String name);
 
-  /* public double convertScaleOffsetMissing(byte value);
-  public double convertScaleOffsetMissing(short value);
-  public double convertScaleOffsetMissing(int value);
-  public double convertScaleOffsetMissing(long value);
-  public double convertScaleOffsetMissing(double value); */
 }

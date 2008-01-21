@@ -37,6 +37,7 @@ import java.io.IOException;
  */
 
 public class Variable implements VariableIF {
+  /** cache any variable whose size() < defaultSizeToCache */
   static public final int defaultSizeToCache = 4000; // bytes
   static protected boolean debugCaching = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
@@ -73,6 +74,7 @@ public class Variable implements VariableIF {
   }
 
   /**
+   * Get the full name of this Variable, with special characters escaped.
    * @return the full name of this Variable, with special characters escaped.
    */
   public String getNameEscaped() {
@@ -170,9 +172,9 @@ public class Variable implements VariableIF {
     return isVariableLength;
   }
 
-  public void setVariableLength(boolean b) {
+  /* public void setVariableLength(boolean b) {
     isVariableLength = b;
-  }
+  } */
 
   /**
    * Is this Variable unsigned?. Only meaningful for byte, short, int, long types.
@@ -735,7 +737,6 @@ public class Variable implements VariableIF {
    * *********************************************************************
    */
   // scalar reading
-  static final protected Index scalarIndex = new Index0D(new int[0]); // immutable, can be shared
 
   /**
    * Get the value as a byte for a scalar Variable. May also be one-dimensional of length 1.
@@ -746,7 +747,7 @@ public class Variable implements VariableIF {
    */
   public byte readScalarByte() throws IOException {
     Array data = getScalarData();
-    return data.getByte(scalarIndex);
+    return data.getByte(Index.scalarIndex);
   }
 
   /**
@@ -758,7 +759,7 @@ public class Variable implements VariableIF {
    */
   public short readScalarShort() throws IOException {
     Array data = getScalarData();
-    return data.getShort(scalarIndex);
+    return data.getShort(Index.scalarIndex);
   }
 
   /**
@@ -770,7 +771,7 @@ public class Variable implements VariableIF {
    */
   public int readScalarInt() throws IOException {
     Array data = getScalarData();
-    return data.getInt(scalarIndex);
+    return data.getInt(Index.scalarIndex);
   }
 
   /**
@@ -782,7 +783,7 @@ public class Variable implements VariableIF {
    */
   public long readScalarLong() throws IOException {
     Array data = getScalarData();
-    return data.getLong(scalarIndex);
+    return data.getLong(Index.scalarIndex);
   }
 
   /**
@@ -794,7 +795,7 @@ public class Variable implements VariableIF {
    */
   public float readScalarFloat() throws IOException {
     Array data = getScalarData();
-    return data.getFloat(scalarIndex);
+    return data.getFloat(Index.scalarIndex);
   }
 
   /**
@@ -806,7 +807,7 @@ public class Variable implements VariableIF {
    */
   public double readScalarDouble() throws IOException {
     Array data = getScalarData();
-    return data.getDouble(scalarIndex);
+    return data.getDouble(Index.scalarIndex);
   }
 
   /**
@@ -820,7 +821,7 @@ public class Variable implements VariableIF {
   public String readScalarString() throws IOException {
     Array data = getScalarData();
     if (dataType == DataType.STRING)
-      return (String) data.getObject(scalarIndex);
+      return (String) data.getObject(Index.scalarIndex);
     else if (dataType == DataType.CHAR) {
       ArrayChar dataC = (ArrayChar) data;
       return dataC.getString();
@@ -988,14 +989,14 @@ public class Variable implements VariableIF {
   }
 
   /**
-   * String representation of Variable and its attributes.
+   * CDL representation of Variable, not strict.
    */
   public String toString() {
     return writeCDL("   ", false, false);
   }
 
   /**
-   * String representation of a Variable and its attributes.
+   * CDL representation of a Variable.
    *
    * @param indent      start each line with this much space
    * @param useFullName use full name, else use short name
@@ -1235,7 +1236,7 @@ public class Variable implements VariableIF {
    * @param attName if exists, remove this attribute
    * @return true if was found and removed
    */
-  public boolean remove(String attName) {
+  public boolean removeAttribute(String attName) {
     if (immutable) throw new IllegalStateException("Cant modify");
     Attribute att = findAttribute(attName);
     return att != null && attributes.remove(att);
@@ -1255,6 +1256,9 @@ public class Variable implements VariableIF {
     resetShape();
   }
 
+  /**
+   * Use when dimensions have changed to recalculate the shape. 
+   */
   public void resetShape() {
     // if (immutable) throw new IllegalStateException("Cant modify");  LOOK allow this for unlimited dimension updating
     this.shape = new int[dimensions.size()];
@@ -1469,13 +1473,14 @@ public class Variable implements VariableIF {
   }
 
   /**
-   * Create a new cache. Use this when you dont want to share the cache.
+   * Create a new data cache, use this when you dont want to share the cache.
    */
   public void createNewCache() {
     this.cache = new Cache();
   }
 
   /**
+   * Has data been read and cached
    * @return true if data is read and cached
    */
   public boolean hasCachedData() {

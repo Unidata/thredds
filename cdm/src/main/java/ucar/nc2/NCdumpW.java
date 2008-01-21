@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.nio.charset.Charset;
 
 /**
- * Print contents of an existing netCDF file of unknown structure, like ncdump.
+ * Print contents of an existing netCDF file, using a Writer.
  *
  * A difference with ncdump is that the nesting of multidimensional array data is represented by nested brackets,
  * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h)

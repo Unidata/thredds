@@ -20,6 +20,7 @@
 package ucar.ma2;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Variation of ArrayStructureBB, where the offsets into the ByteBuffer are uneven and must be
@@ -67,7 +68,10 @@ public class ArrayStructureBBpos extends ArrayStructureBB {
   } */
 
 
-  protected int calcOffset(int recnum, StructureMembers.Member m) {
+  @Override
+  protected int calcOffsetSetOrder(int recnum, StructureMembers.Member m) {
+    if (null != m.getDataObject())
+      bbuffer.order( (ByteOrder) m.getDataObject());
     return positions[recnum] + m.getDataParam();
   }
 }

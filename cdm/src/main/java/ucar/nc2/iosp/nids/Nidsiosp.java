@@ -1033,7 +1033,7 @@ asw.setStructureData(sdata, i);
 
     public String getScalarString(int recnum, StructureMembers.Member m) {
       if ((m.getDataType() == DataType.CHAR) || (m.getDataType() == DataType.STRING)) {
-        int offset = calcOffset(recnum, m);
+        int offset = calcOffsetSetOrder(recnum, m);
         int count = size[recnum];
         byte[] pa = new byte[count];
         int i;

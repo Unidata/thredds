@@ -120,25 +120,25 @@ public class TestPointDataset extends TestCase {
         DataType dt = member.getDataType();
         if (dt == DataType.FLOAT) {
           sdata.getScalarFloat(member);
-          sdata.getArrayFloat(member);
+          sdata.getJavaArrayFloat(member);
         } else if (dt == DataType.DOUBLE) {
           sdata.getScalarDouble(member);
-          sdata.getArrayDouble(member);
+          sdata.getJavaArrayDouble(member);
         } else if (dt == DataType.BYTE) {
           sdata.getScalarByte(member);
-          sdata.getArrayByte(member);
+          sdata.getJavaArrayByte(member);
         } else if (dt == DataType.SHORT) {
           sdata.getScalarShort(member);
-          sdata.getArrayShort(member);
+          sdata.getJavaArrayShort(member);
         } else if (dt == DataType.INT) {
           sdata.getScalarInt(member);
-          sdata.getArrayInt(member);
+          sdata.getJavaArrayInt(member);
         } else if (dt == DataType.LONG) {
           sdata.getScalarLong(member);
-          sdata.getArrayLong(member);
+          sdata.getJavaArrayLong(member);
         } else if (dt == DataType.CHAR) {
           sdata.getScalarChar(member);
-          sdata.getArrayChar(member);
+          sdata.getJavaArrayChar(member);
           sdata.getScalarString(member);
         } else if (dt == DataType.STRING) {
           sdata.getScalarString(member);

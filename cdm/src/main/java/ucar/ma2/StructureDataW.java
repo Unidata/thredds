@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -78,14 +78,6 @@ public class StructureDataW extends StructureData {
     return memberData.get(m);
   }
 
-  /* public float convertScalarFloat(StructureMembers.Member m) {
-    return getScalarFloat(m);
-  }
-
-  public double convertScalarDouble(StructureMembers.Member m) {
-    return getScalarDouble(m);
-  }  */
-
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -96,7 +88,7 @@ public class StructureDataW extends StructureData {
    */
   public double getScalarDouble(String memberName) {
     Array data = getArray(memberName);
-    return data.getDouble(Array.scalarIndex);
+    return data.getDouble(Index.scalarIndex);
   }
 
   /**
@@ -106,7 +98,7 @@ public class StructureDataW extends StructureData {
    */
   public double getScalarDouble(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getDouble(Array.scalarIndex);
+    return data.getDouble(Index.scalarIndex);
   }
 
 
@@ -130,7 +122,7 @@ public class StructureDataW extends StructureData {
    */
   public float getScalarFloat(String memberName) {
     Array data = getArray(memberName);
-    return data.getFloat(Array.scalarIndex);
+    return data.getFloat(Index.scalarIndex);
   }
 
   /**
@@ -140,7 +132,7 @@ public class StructureDataW extends StructureData {
    */
   public float getScalarFloat(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getFloat(Array.scalarIndex);
+    return data.getFloat(Index.scalarIndex);
   }
 
   /**
@@ -163,7 +155,7 @@ public class StructureDataW extends StructureData {
    */
   public byte getScalarByte(String memberName) {
     Array data = getArray(memberName);
-    return data.getByte(Array.scalarIndex);
+    return data.getByte(Index.scalarIndex);
   }
 
   /**
@@ -173,7 +165,7 @@ public class StructureDataW extends StructureData {
    */
   public byte getScalarByte(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getByte(Array.scalarIndex);
+    return data.getByte(Index.scalarIndex);
   }
 
   /**
@@ -195,7 +187,7 @@ public class StructureDataW extends StructureData {
    */
   public int getScalarInt(String memberName) {
     Array data = getArray(memberName);
-    return data.getInt(Array.scalarIndex);
+    return data.getInt(Index.scalarIndex);
   }
 
   /**
@@ -205,7 +197,7 @@ public class StructureDataW extends StructureData {
    */
   public int getScalarInt(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getInt(Array.scalarIndex);
+    return data.getInt(Index.scalarIndex);
   }
 
   /**
@@ -227,7 +219,7 @@ public class StructureDataW extends StructureData {
    */
   public short getScalarShort(String memberName) {
     Array data = getArray(memberName);
-    return data.getShort(Array.scalarIndex);
+    return data.getShort(Index.scalarIndex);
   }
 
   /**
@@ -237,7 +229,7 @@ public class StructureDataW extends StructureData {
    */
   public short getScalarShort(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getShort(Array.scalarIndex);
+    return data.getShort(Index.scalarIndex);
   }
 
   /**
@@ -260,7 +252,7 @@ public class StructureDataW extends StructureData {
    */
   public long getScalarLong(String memberName) {
     Array data = getArray(memberName);
-    return data.getLong(Array.scalarIndex);
+    return data.getLong(Index.scalarIndex);
   }
 
   /**
@@ -270,7 +262,7 @@ public class StructureDataW extends StructureData {
    */
   public long getScalarLong(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getLong(Array.scalarIndex);
+    return data.getLong(Index.scalarIndex);
   }
 
   /**
@@ -293,7 +285,7 @@ public class StructureDataW extends StructureData {
    */
   public char getScalarChar(String memberName) {
     Array data = getArray(memberName);
-    return data.getChar(Array.scalarIndex);
+    return data.getChar(Index.scalarIndex);
   }
 
   /**
@@ -303,7 +295,7 @@ public class StructureDataW extends StructureData {
    */
   public char getScalarChar(StructureMembers.Member m) {
     Array data = getArray(m);
-    return data.getChar(Array.scalarIndex);
+    return data.getChar(Index.scalarIndex);
   }
 
   /**

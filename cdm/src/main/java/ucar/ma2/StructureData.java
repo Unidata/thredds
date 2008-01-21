@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -163,22 +163,6 @@ abstract public class StructureData {
      throw new RuntimeException("Dont have implemenation for "+dataType);
   }
 
-  /*
-   * Get scalar value as a float, with conversion as needed. Underlying type must be convertible to float.
-   * Does not handle scale/offset
-   * @param m member Variable.
-   * @throws ForbiddenConversionException if not convertible to float.
-   *
-  abstract public float convertScalarFloat(StructureMembers.Member m); */
-
-  /*
-   * Get scalar value as a double, with conversion as needed. Underlying type must be convertible to double.
-   * Does not handle scale/offset
-   * @param m member Variable.
-   * @throws ForbiddenConversionException if not convertible to double.
-   *
-  abstract public double convertScalarDouble(StructureMembers.Member m); */
-
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -190,7 +174,7 @@ abstract public class StructureData {
    */
   public double getScalarDouble(String memberName) {
     Array data = getArray(memberName);
-    return data.getDouble(Array.scalarIndex);
+    return data.getDouble(Index.scalarIndex);
   }
 
   /**
@@ -218,7 +202,7 @@ abstract public class StructureData {
    */
   public float getScalarFloat(String memberName) {
     Array data = getArray(memberName);
-    return data.getFloat(Array.scalarIndex);
+    return data.getFloat(Index.scalarIndex);
   }
 
   /**
@@ -246,7 +230,7 @@ abstract public class StructureData {
    */
   public byte getScalarByte(String memberName) {
     Array data = getArray(memberName);
-    return data.getByte(Array.scalarIndex);
+    return data.getByte(Index.scalarIndex);
   }
 
   /**
@@ -273,7 +257,7 @@ abstract public class StructureData {
    */
   public int getScalarInt(String memberName) {
     Array data = getArray(memberName);
-    return data.getInt(Array.scalarIndex);
+    return data.getInt(Index.scalarIndex);
   }
 
   /**
@@ -300,7 +284,7 @@ abstract public class StructureData {
    */
   public short getScalarShort(String memberName) {
     Array data = getArray(memberName);
-    return data.getShort(Array.scalarIndex);
+    return data.getShort(Index.scalarIndex);
   }
 
   /**
@@ -327,7 +311,7 @@ abstract public class StructureData {
    */
   public long getScalarLong(String memberName) {
     Array data = getArray(memberName);
-    return data.getLong(Array.scalarIndex);
+    return data.getLong(Index.scalarIndex);
   }
 
   /**
@@ -354,7 +338,7 @@ abstract public class StructureData {
    */
   public char getScalarChar(String memberName) {
     Array data = getArray(memberName);
-    return data.getChar(Array.scalarIndex);
+    return data.getChar(Index.scalarIndex);
   }
 
   /**
@@ -426,74 +410,5 @@ abstract public class StructureData {
    * @return ArrayStructure
    */
   abstract public ArrayStructure getArrayStructure(StructureMembers.Member m);
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  // deprecated
-
-
-  /**
-   * @deprecated use getArray(String memberName), or getArray(StructureMembers.Member m)
-   */
-  public Array findMemberArray(String memberName) {
-   return getArray(memberName);
-  }
-
-    /**
-   * @deprecated use getScalarObject(m)
-   */
-  public Object getObject(StructureMembers.Member m) {
-    return getScalarObject( m);
-  }
-
-  /**
-   * @deprecated use getJavaArrayDouble(m)
-   */
-  public double[] getArrayDouble(StructureMembers.Member m) {
-    return getJavaArrayDouble(m);
-  }
-
-  /**
-   * @deprecated use getJavaArrayFloat(m)
-   */
-  public float[] getArrayFloat(StructureMembers.Member m) {
-    return getJavaArrayFloat(m);
-  }
-
-   /**
-   * @deprecated use getJavaArrayByte(m)
-   */
-  public byte[] getArrayByte(StructureMembers.Member m) {
-    return getJavaArrayByte(m);
-  }
-
-  /**
-   * @deprecated use getJavaArrayInt(m)
-   */
-    public int[] getArrayInt(StructureMembers.Member m) {
-    return getJavaArrayInt(m);
-  }
-
-    /**
-   * @deprecated use getJavaArrayShort(m)
-   */
-  public short[] getArrayShort(StructureMembers.Member m) {
-    return getJavaArrayShort(m);
-  }
-
-    /**
-   * @deprecated use getJavaArrayLong(m)
-   */
-  public long[] getArrayLong(StructureMembers.Member m) {
-    return getJavaArrayLong(m);
-  }
-
-  /**
-   * @deprecated use getJavaArrayChar(m)
-   */
-  public char[] getArrayChar(StructureMembers.Member m) {
-    return getJavaArrayChar(m);
-  }
-
 
 }

@@ -145,12 +145,25 @@ public class NetcdfFile {
     }
   }
 
+  /**
+   * The set of characters in a netcdf object name that must be escaped.
+   */
   static public final String reserved = " .!*'();:@&=+$,/?%#[]";
 
+  /**
+   * Escape any special characters in a netcdf object name.
+   * @param vname the name
+   * @return escaped version of it
+   */
   public static String escapeName(String vname) {
     return StringUtil.escape2(vname, NetcdfFile.reserved);
   }
 
+  /**
+   * Unescape any escaped characters in a name.
+   * @param vname the escaped name
+   * @return unescaped version of it
+   */
   public static String unescapeName(String vname) {
     return StringUtil.unescape(vname);
   }
@@ -599,7 +612,7 @@ public class NetcdfFile {
   }
 
   /**
-   * Get the globally unique dataset identifier
+   * Get the globally unique dataset identifier, if it exists.
    * @return id, or null if none.
    */
   public String getId() {
@@ -607,7 +620,7 @@ public class NetcdfFile {
   }
 
   /**
-   * Get the human-readable title.
+   * Get the human-readable title, if it exists.
    * @return title, or null if none.
    */
   public String getTitle() {
@@ -720,7 +733,7 @@ public class NetcdfFile {
   }
 
   /**
-   * Return true if this file has an unlimited (record) dimension.
+   * Return true if this file has one or more unlimited (record) dimension.
    * @return if this file has an unlimited Dimension(s)
    */
   public boolean hasUnlimitedDimension() {

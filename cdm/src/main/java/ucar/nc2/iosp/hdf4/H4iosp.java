@@ -71,6 +71,8 @@ public class H4iosp extends AbstractIOServiceProvider {
     if (vinfo.hasNoData) {
       Object arr = (vinfo.fillValue == null) ? IospHelper.makePrimitiveArray((int) section.computeSize(), dataType) :
         IospHelper.makePrimitiveArray((int) section.computeSize(), dataType, vinfo.fillValue);
+      if (dataType == DataType.CHAR)
+        arr = IospHelper.convertByteToChar((byte[]) arr);
       return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), arr);
     }
 

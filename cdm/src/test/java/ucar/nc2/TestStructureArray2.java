@@ -94,30 +94,29 @@ public class TestStructureArray2 extends TestCase {
   }
 
   private void testStructureArray(ArrayStructure as ) {
-
     StructureMembers sms = as.getStructureMembers();
-    List members = sms.getMembers();
+    List<StructureMembers.Member> members = sms.getMembers();
 
+    Index index = as.getIndex();
     int n = (int) as.getSize();
     for (int recno=0; recno<n; recno++) {
-      Object o = as.getObject( recno);
+      Object o = as.getObject( index.set(recno));
       assert (o instanceof StructureData);
       StructureData sdata = as.getStructureData( recno);
       assert (o == sdata);
       testStructureData( sdata);
 
-      for (int i = 0; i < members.size(); i++) {
-        StructureMembers.Member m = (StructureMembers.Member) members.get(i);
+      for (StructureMembers.Member m : members) {
 
         Array sdataArray = sdata.getArray(m);
         assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
 
         Array sdataArray2 = sdata.getArray(m.getName());
-        ucar.ma2.TestMA2.testEquals( sdataArray, sdataArray2);
+        TestMA2.testEquals(sdataArray, sdataArray2);
 
         Array a = as.getArray(recno, m);
         assert (a.getElementType() == m.getDataType().getPrimitiveClassType());
-        ucar.ma2.TestMA2.testEquals( sdataArray, a);
+        TestMA2.testEquals(sdataArray, a);
 
         NCdump.printArray(a, m.getName(), System.out, null);
 

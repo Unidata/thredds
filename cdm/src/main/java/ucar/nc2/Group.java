@@ -85,9 +85,11 @@ public class Group {
   }
 
   /**
-   * Find the Variable with the specified (short) name in this group.
-   * @param shortName short name of Variable within this group.
+   * Find the Variable with the specified escaped (short) name in this group.
+   * @param shortName escaped short name of Variable within this group.
    * @return the Variable, or null if not found
+   * @see NetcdfFile#escapeName
+   * @see NetcdfFile#unescapeName
    */
   public Variable findVariableEscaped(String shortName) {
     if (shortName == null) return null;
@@ -95,8 +97,8 @@ public class Group {
   }
 
   /**
-   * Find the Variable with the specified (short) name in this group or a parent group.
-   * @param shortName short name of Variable.
+   * Find the Variable with the specified escaped (short) name in this group or a parent group.
+   * @param shortName escaped short name of Variable.
    * @return the Variable, or null if not found
    */
   public Variable findVariableRecurse(String shortName) {

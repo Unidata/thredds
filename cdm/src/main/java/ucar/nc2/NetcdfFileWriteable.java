@@ -28,8 +28,8 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Create/Write netCDF files. <p>
- * Because of the limitations of the underlying implementation, netcdf
+ * Create/Write netCDF-3 format files. <p>
+ * Because of the limitations of the underlying implementation, netcdf-3
  * files can only have Dimensions, Attributes and Variables added to it
  * at creation time. Thus, when a file is first opened, it in is "define mode"
  * where these may added. Once create() is called, you can no longer add, delete, or modify

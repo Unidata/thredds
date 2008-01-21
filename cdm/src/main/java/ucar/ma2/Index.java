@@ -22,11 +22,10 @@ package ucar.ma2;
 import java.util.List;
 
 /**
- * Indexes for Multidimensional arrays. This refers to a particular element of an array.
+ * Indexes for Multidimensional arrays. An Index refers to a particular element of an array.
  * <p/>
  * This is a generalization of index as int []. Its main function is
- * to do the index arithmetic to translate an n-dim index into a 1-dim
- * index.
+ * to do the index arithmetic to translate an n-dim index into a 1-dim index.
  * The user obtains this by calling getIndex() on a Array.
  * The set() and seti() routines are convenience routines for 1-7 dim arrays.
  *
@@ -35,7 +34,7 @@ import java.util.List;
  */
 
 public class Index implements Cloneable {
-  public final static Index SCALAR = new Index(0); // can be used for any scalar
+  public static final Index scalarIndex = new Index0D( new int[0]); // immutable, so can be shared
 
   /**
    * array shape

@@ -231,19 +231,28 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
   /**
    * Read data from record structure. For N3, this is the only possible structure, and there can be no nesting.
-   * Read all variables for each record, for efficiency.
+   * Read all variables for each record, put in ByteBuffer.
    *
-   * @param s           the record structure
+   * @param s the record structure
    * @param section the record range to read
    * @return an ArrayStructure, with all the data read in.
    * @throws IOException on error
    */
   private ucar.ma2.Array readRecordData(ucar.nc2.Structure s, Section section) throws java.io.IOException {
+    if (s.isSubset())
+      return readRecordDataSubset(s, section);
+
     // has to be 1D
     Range recordRange = section.getRange(0);
 
     // create the ArrayStructure
-    StructureMembers members = makeStructureMembers(s);
+    StructureMembers members = s.makeStructureMembers();
+    for (StructureMembers.Member m : members.getMembers()) {
+      Variable v2 = s.findVariable(m.getName());
+      N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
+      m.setDataParam((int) (vinfo.begin - recStart));
+    }
+    members.setStructureSize(recsize);
     ArrayStructureBB structureArray = new ArrayStructureBB(members, new int[]{recordRange.length()});
 
     // note dependency on raf; should probably defer to subclass
@@ -264,20 +273,64 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     return structureArray;
   }
 
-  private StructureMembers makeStructureMembers(Structure s) {
+  /**
+   * Read data from record structure, that has been subsetted.
+   * Read one record at at time, but requested variable into ArrayStructureMA.
+   *
+   * @param s the record structure
+   * @param section the record range to read
+   * @return an ArrayStructure, with all the data read in.
+   * @throws IOException on error
+   */
+  private ucar.ma2.Array readRecordDataSubset(ucar.nc2.Structure s, Section section) throws java.io.IOException {
+    Range recordRange = section.getRange(0);
+    int nrecords = recordRange.length();
+
+    // create the ArrayStructureMA
     StructureMembers members = s.makeStructureMembers();
     for (StructureMembers.Member m : members.getMembers()) {
       Variable v2 = s.findVariable(m.getName());
       N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-      m.setDataParam((int) (vinfo.begin - recStart));
+      m.setDataParam((int) (vinfo.begin - recStart)); // offset from start of record
+
+      // construct the full shape
+      int rank = m.getShape().length;
+      int[] fullShape = new int[rank + 1];
+      fullShape[0] = nrecords;  // the first dimension
+      System.arraycopy(m.getShape(), 0, fullShape, 1, rank); // the remaining dimensions
+
+      Array data = Array.factory(m.getDataType(), fullShape);
+      m.setDataObject( data);
+      m.setDataObject2( data.getIndexIterator());
     }
     members.setStructureSize(recsize);
+    ArrayStructureMA structureArray = new ArrayStructureMA(members, new int[]{nrecords});
 
-    return members;
+    // note dependency on raf; should probably defer to subclass
+    // loop over records
+    byte[] record = new byte[ recsize];
+    ByteBuffer bb = ByteBuffer.wrap(record);
+    for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
+      if (debugRecord) System.out.println(" readRecordDataSubset recno= " + recnum);
+
+      // read one record
+      raf.seek(recStart + recnum * recsize); // where the record starts
+      if (recnum != numrecs - 1)
+        raf.readFully(record, 0, recsize);
+      else
+        raf.read(record, 0, recsize); // "wart" allows file to be one byte short. since its always padding, we allow
+
+      // transfer desired variable(s) to result array(s)
+      for (StructureMembers.Member m : members.getMembers()) {
+        IndexIterator dataIter = (IndexIterator) m.getDataObject2();
+        IospHelper.copyFromByteBuffer(bb, m, dataIter);
+      }
+    }
+
+    return structureArray;
   }
 
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
@@ -289,65 +342,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     Layout layout = new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), recsize, fullShape, section);
     Object dataObject = readData(layout, dataType);
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), dataObject);
-
-    //if (flatten)
-    //  return result;
-
-    /* If flatten is false, wrap the result Array in an ArrayStructureMA
-    StructureMembers members = new StructureMembers( v2.getName());
-    StructureMembers.Member member = new StructureMembers.Member( v2.getShortName(), v2.getDescription(),
-          v2.getUnitsString(), v2.getDataType(), v2.getShape());
-    member.setDataObject( result);
-    Range outerRange = (Range) sectionList.get(0);
-    ArrayStructureMA structureArray = new ArrayStructureMA(members, new int[] {outerRange.length()});
-
-    return structureArray; */
-
-    /* Range recordRange = (Range) sectionList.get(0);
-    Array result = Array.factory( StructureData.class, new int[] { recordRange.length()} );
-    Index resultIndex = result.getIndex();
-
-    // the inner section
-    ArrayList innerSection = new ArrayList( sectionList);
-    innerSection.remove(0);
-    int[] innerShape = Range.getShape( innerSection);
-
-    // loop over records
-    N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-    int count = 0;
-    for (int recnum=recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
-      StructureData sdata = new StructureData( v2.getParentStructure());
-      result.setObject( resultIndex.set(count++), sdata);
-
-      // get the data for just this variable, in just the current record
-      Indexer index = new RegularIndexer( v2.getShape(), v2.getElementSize(), vinfo.begin+recnum*recsize, innerSection, -1);
-      Object data = readData( index, v2.getDataType());
-      Array dataArray = Array.factory( v2.getDataType().getPrimitiveClassType(), innerShape, data);
-
-      sdata.addMember( v2, dataArray);
-    }
-
-    return result; */
   }
-
-    /* If flatten is true, return an Array of the same type as the Variable.
-   * The shape of the returned Array will include the shape of the Structure containing the variable.
- private Array readNestedDataFlatten(ucar.nc2.Variable v2, java.util.List sectionList) throws IOException, InvalidRangeException  {
-   N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-   DataType dataType = v2.getDataType();
-
-   // construct the full shape for use by RegularIndexer
-   int[] varShape = v2.getShape();
-   int[] fullShape = new int[ v2.getRank()+1];
-   fullShape[0] = numrecs;
-   for (int i=0; i<v2.getRank(); i++ ) {
-     fullShape[i+1] = varShape[i];
-   }
-
-   Indexer index = new RegularIndexer( fullShape, v2.getElementSize(), vinfo.begin, sectionList, recsize);
-   Object dataObject = readData( index, dataType);
-   return Array.factory( dataType.getPrimitiveClassType(), Range.getShape(sectionList), dataObject);
- } */
 
   public long readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {

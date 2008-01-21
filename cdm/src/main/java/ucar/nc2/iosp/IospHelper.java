@@ -22,6 +22,8 @@ package ucar.nc2.iosp;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.PositioningDataInputStream;
 import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.StructureMembers;
 
 import java.nio.*;
 
@@ -258,7 +260,7 @@ public class IospHelper {
    * @param layout    handles skipping around in the file, privide ByteBuffer to read from
    * @param dataType dataType of the variable
    * @param arr      primitive array to read data into
-   * @return primitive array with data read in
+   * @return the primitive array with data read in
    * @throws java.io.IOException on read error
    */
   static public Object readData(LayoutBB layout, DataType dataType, Object arr) throws java.io.IOException {
@@ -352,6 +354,43 @@ public class IospHelper {
 
     throw new IllegalStateException();
   } // */
+
+  static public void copyFromByteBuffer(ByteBuffer bb, StructureMembers.Member m, IndexIterator result) {
+    int offset = m.getDataParam();
+    int count = m.getSize();
+    DataType dtype = m.getDataType();
+
+    if (dtype == DataType.FLOAT) {
+      for (int i = 0; i < count; i++)
+        result.setFloatNext( bb.getFloat(offset + i*4));
+
+    } else if (dtype == DataType.DOUBLE) {
+      for (int i = 0; i < count; i++)
+        result.setDoubleNext( bb.getDouble(offset + i*8));
+
+    } else if (dtype == DataType.INT) {
+      for (int i = 0; i < count; i++)
+        result.setIntNext( bb.getInt(offset + i*4));
+
+    } else if (dtype == DataType.SHORT) {
+      for (int i = 0; i < count; i++)
+        result.setShortNext( bb.getShort(offset + i*2));
+
+    } else if ((dtype == DataType.BYTE) || (dtype == DataType.OPAQUE)) {
+      for (int i = 0; i < count; i++)
+        result.setByteNext( bb.get(offset + i));
+
+    } else if (dtype == DataType.CHAR) {
+      for (int i = 0; i < count; i++)
+        result.setCharNext( (char) bb.get(offset + i));
+
+    } else if (dtype == DataType.LONG) {
+      for (int i = 0; i < count; i++)
+        result.setLongNext( bb.get(offset + i*8));
+
+    } else
+      throw new IllegalStateException();
+  }
 
   /**
    * Create 1D primitive array of the given size and type

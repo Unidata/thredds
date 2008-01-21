@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -48,7 +48,6 @@ import java.util.ArrayList;
  * @see Array
  */
 public class ArrayStructureBB extends ArrayStructure {
-
   protected ByteBuffer bbuffer;
   protected int bb_offset = 0;
 
@@ -128,14 +127,14 @@ public class ArrayStructureBB extends ArrayStructure {
   public double getScalarDouble(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.DOUBLE)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be double");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     return bbuffer.getDouble(offset);
   }
 
   public double[] getJavaArrayDouble(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.DOUBLE)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be double");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     double[] pa = new double[count];
     for (int i = 0; i < count; i++)
@@ -143,17 +142,26 @@ public class ArrayStructureBB extends ArrayStructure {
     return pa;
   }
 
+  protected void copyDoubles(int recnum, StructureMembers.Member m, IndexIterator result) {
+    if (m.getDataType() != DataType.DOUBLE)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be double");
+    int offset = calcOffsetSetOrder(recnum, m);
+    int count = m.getSize();
+    for (int i = 0; i < count; i++)
+      result.setDoubleNext( bbuffer.getDouble(offset + i * 8));
+  }
+
   public float getScalarFloat(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.FLOAT)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be float");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     return bbuffer.getFloat(offset);
   }
 
   public float[] getJavaArrayFloat(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.FLOAT)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be float");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     float[] pa = new float[count];
     for (int i = 0; i < count; i++)
@@ -161,17 +169,26 @@ public class ArrayStructureBB extends ArrayStructure {
     return pa;
   }
 
+  protected void copyFloats(int recnum, StructureMembers.Member m, IndexIterator result) {
+    if (m.getDataType() != DataType.FLOAT)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
+    int offset = calcOffsetSetOrder(recnum, m);
+    int count = m.getSize();
+    for (int i = 0; i < count; i++)
+      result.setFloatNext( bbuffer.getFloat(offset + i * 4));
+  }
+
   public byte getScalarByte(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.BYTE)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     return bbuffer.get(offset);
   }
 
   public byte[] getJavaArrayByte(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.BYTE)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     byte[] pa = new byte[count];
     for (int i = 0; i < count; i++)
@@ -179,17 +196,26 @@ public class ArrayStructureBB extends ArrayStructure {
     return pa;
   }
 
+  protected void copyBytes(int recnum, StructureMembers.Member m, IndexIterator result) {
+    if (m.getDataType() != DataType.BYTE)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
+    int offset = calcOffsetSetOrder(recnum, m);
+    int count = m.getSize();
+    for (int i = 0; i < count; i++)
+      result.setByteNext( bbuffer.get(offset + i));
+  }
+
   public short getScalarShort(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.SHORT)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     return bbuffer.getShort(offset);
   }
 
   public short[] getJavaArrayShort(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.SHORT)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     short[] pa = new short[count];
     for (int i = 0; i < count; i++)
@@ -197,17 +223,26 @@ public class ArrayStructureBB extends ArrayStructure {
     return pa;
   }
 
+  protected void copyShorts(int recnum, StructureMembers.Member m, IndexIterator result) {
+    if (m.getDataType() != DataType.SHORT)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
+    int offset = calcOffsetSetOrder(recnum, m);
+    int count = m.getSize();
+    for (int i = 0; i < count; i++)
+      result.setShortNext(  bbuffer.getShort(offset + i * 2));
+  }
+
   public int getScalarInt(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.INT)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     return bbuffer.getInt(offset);
   }
 
   public int[] getJavaArrayInt(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.INT)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     int[] pa = new int[count];
     for (int i = 0; i < count; i++)
@@ -215,17 +250,26 @@ public class ArrayStructureBB extends ArrayStructure {
     return pa;
   }
 
+  protected void copyInts(int recnum, StructureMembers.Member m, IndexIterator result) {
+    if (m.getDataType() != DataType.INT)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be integer");
+    int offset = calcOffsetSetOrder(recnum, m);
+    int count = m.getSize();
+    for (int i = 0; i < count; i++)
+      result.setIntNext(  bbuffer.getInt(offset + i * 4));
+  }
+
   public long getScalarLong(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.LONG)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be long");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     return bbuffer.getLong(offset);
   }
 
   public long[] getJavaArrayLong(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.LONG)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be long");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     long[] pa = new long[count];
     for (int i = 0; i < count; i++)
@@ -233,17 +277,26 @@ public class ArrayStructureBB extends ArrayStructure {
     return pa;
   }
 
+  protected void copyLongs(int recnum, StructureMembers.Member m, IndexIterator result) {
+    if (m.getDataType() != DataType.LONG)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be long");
+    int offset = calcOffsetSetOrder(recnum, m);
+    int count = m.getSize();
+    for (int i = 0; i < count; i++)
+      result.setLongNext(  bbuffer.getLong(offset + i * 8));
+  }
+
   public char getScalarChar(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.CHAR)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be char");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     return (char) bbuffer.get(offset);
   }
 
   public char[] getJavaArrayChar(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.CHAR)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be char");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     char[] pa = new char[count];
     for (int i = 0; i < count; i++)
@@ -251,16 +304,25 @@ public class ArrayStructureBB extends ArrayStructure {
     return pa;
   }
 
+  protected void copyChars(int recnum, StructureMembers.Member m, IndexIterator result) {
+    if (m.getDataType() != DataType.CHAR)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be char");
+    int offset = calcOffsetSetOrder(recnum, m);
+    int count = m.getSize();
+    for (int i = 0; i < count; i++)
+      result.setCharNext(  (char) bbuffer.get(offset + i));
+  }
+
   public String getScalarString(int recnum, StructureMembers.Member m) {
 
     if (m.getDataType() == DataType.STRING) {
-      int offset = calcOffset(recnum, m);
+      int offset = calcOffsetSetOrder(recnum, m);
       int index = bbuffer.getInt(offset);
       return stringHeap.get(index);
     }
 
     if (m.getDataType() == DataType.CHAR) {
-      int offset = calcOffset(recnum, m);
+      int offset = calcOffsetSetOrder(recnum, m);
       int count = m.getSize();
       byte[] pa = new byte[count];
       int i;
@@ -277,7 +339,7 @@ public class ArrayStructureBB extends ArrayStructure {
   public String[] getJavaArrayString(int recnum, StructureMembers.Member m) {
     if (m.getDataType() == DataType.STRING) {
       int n = m.getSize();
-      int offset = calcOffset(recnum, m);
+      int offset = calcOffsetSetOrder(recnum, m);
       String[] result = new String[n];
       for (int i = 0; i < n; i++) {
         int index = bbuffer.getInt(offset + i*4);
@@ -297,7 +359,7 @@ public class ArrayStructureBB extends ArrayStructure {
 
       int strlen = shape[rank - 1];
       int n = m.getSize() / strlen;
-      int offset = calcOffset(recnum, m);
+      int offset = calcOffsetSetOrder(recnum, m);
       String[] result = new String[n];
       for (int i = 0; i < n; i++) {
         byte[] bytes = new byte[strlen];
@@ -311,11 +373,22 @@ public class ArrayStructureBB extends ArrayStructure {
     throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be char");
   }
 
+  protected void copyStrings(int recnum, StructureMembers.Member m, IndexIterator result) {
+    if (m.getDataType() != DataType.STRING)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be String");
+    int offset = calcOffsetSetOrder(recnum, m);
+    int count = m.getSize();
+    for (int i = 0; i < count; i++) {
+      int index = bbuffer.getInt(offset + i*4);
+      result.setObjectNext(  stringHeap.get(index));
+    }
+  }
+
   // LOOK - has not been tested !!!
   public StructureData getScalarStructure(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.STRUCTURE)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Structure");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     ArrayStructureBB subset = new ArrayStructureBB(m.getStructureMembers(), new int[]{1}, this.bbuffer, offset);
 
     return new StructureDataA(subset, 0);
@@ -324,11 +397,21 @@ public class ArrayStructureBB extends ArrayStructure {
   public ArrayStructure getArrayStructure(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.STRUCTURE)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Structure");
-    int offset = calcOffset(recnum, m);
+    int offset = calcOffsetSetOrder(recnum, m);
     return new ArrayStructureBB(m.getStructureMembers(), m.getShape(), this.bbuffer, offset);
   }
 
-  protected int calcOffset(int recnum, StructureMembers.Member m) {
+  protected void copyStructures(int recnum, StructureMembers.Member m, IndexIterator result) {
+    if (m.getDataType() != DataType.STRUCTURE)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Stucture");
+    int count = m.getSize();
+    for (int i = 0; i < count; i++)
+      result.setObjectNext(  makeStructureData(this, recnum)); // LOOK ????
+  }
+
+  protected int calcOffsetSetOrder(int recnum, StructureMembers.Member m) {
+    if (null != m.getDataObject())
+      bbuffer.order( (ByteOrder) m.getDataObject());
     return bb_offset + recnum * getStructureSize() + m.getDataParam();
   }
 
@@ -338,6 +421,7 @@ public class ArrayStructureBB extends ArrayStructure {
     return stringHeap.size() - 1;
   }
 
+  ////////////////////////////////////////////////////////////////////////
   // debugging
   public static void main(String argv[]) {
     byte[] ba = new byte[20];

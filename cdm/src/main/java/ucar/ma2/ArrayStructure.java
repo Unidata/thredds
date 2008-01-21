@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,7 +26,6 @@ package ucar.ma2;
  * @see Array
  */
 public abstract class ArrayStructure extends Array {
-
   protected StructureMembers members;
   protected int nelems;
   protected StructureData[] sdata;
@@ -49,17 +48,6 @@ public abstract class ArrayStructure extends Array {
     super(ima);
     this.members = members;
     this.nelems = (int) indexCalc.getSize();
-  }
-
-   /** LOOK DO NOT USE, throws UnsupportedOperationException */
-  public Array createView( Index index) {
-    if (index.getSize() == getSize()) return this;
-    throw new UnsupportedOperationException();
-  }
-
-  /** LOOK DO NOT USE, throws UnsupportedOperationException */
-  public Array copy() {
-    throw new UnsupportedOperationException();
   }
 
   // copy from javaArray to storage using the iterator: used by factory( Object);
@@ -107,7 +95,7 @@ public abstract class ArrayStructure extends Array {
    * @param index which one to get, specified by an integer.
    * @return object of type StructureData.
    */
-  public Object getObject(int index) {
+  Object getObject(int index) {
     return getStructureData(index);
   }
 
@@ -149,8 +137,8 @@ public abstract class ArrayStructure extends Array {
   abstract protected StructureData makeStructureData( ArrayStructure as, int index);
 
   /**
-   * Get the size each StructureData object in bytes.
-   * @return the size each StructureData object in bytes.
+   * Get the size of each StructureData object in bytes.
+   * @return the size of each StructureData object in bytes.
    */
   public int getStructureSize() {
     return members.getStructureSize();
@@ -159,7 +147,7 @@ public abstract class ArrayStructure extends Array {
   ///////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Get member data array of any type as an Array.
+   * Get member data of any type for a specific record as an Array.
    * @param recno get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
    * @param m get data from this StructureMembers.Member.
    * @return Array values.
@@ -175,7 +163,7 @@ public abstract class ArrayStructure extends Array {
       float[] pa = getJavaArrayFloat(recno, m);
       return Array.factory( float.class, m.getShape(), pa);
 
-    } else if (dataType == DataType.BYTE) {
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE)) {
       byte[] pa = getJavaArrayByte(recno, m);
       return Array.factory( byte.class, m.getShape(), pa);
 
@@ -201,18 +189,115 @@ public abstract class ArrayStructure extends Array {
 
     } else if (dataType == DataType.STRUCTURE) {
       return getArrayStructure(recno, m);
-      /* StructureData[] sdata = getJavaArrayStructure(recno, m);
-      return new ArrayStructureW(  members, m.getShape(), sdata); */
     }
 
      throw new RuntimeException("Dont have implemenation for "+dataType);
   }
 
   /**
-   * @deprecated use getScalarObject(recno, m);
+   * Extract data for one member, over all structures.
+   * @param m get data from this StructureMembers.Member.
+   * @return Array values.
    */
-  public Object getObject(int recno, StructureMembers.Member m) {
-    return getScalarObject( recno, m);
+  public Array getMemberArray(StructureMembers.Member m) {
+    DataType dataType = m.getDataType();
+
+    // combine the shapes
+    int[] mshape = m.getShape();
+    int rrank = rank + mshape.length;
+    int[] rshape = new int[rrank];
+    System.arraycopy(getShape(), 0, rshape, 0, rank);
+    for (int i=0; i<mshape.length; i++)
+      rshape[i+rank] = mshape[i];
+
+    // create an empty array
+    Array result = Array.factory( dataType.getPrimitiveClassType(), rshape);
+    IndexIterator resultIter = result.getIndexIterator();
+
+    if (dataType == DataType.DOUBLE) {
+      for (int recno=0; recno<getSize(); recno++)
+        copyDoubles(recno, m, resultIter);
+
+    } else if (dataType == DataType.FLOAT) {
+      for (int recno=0; recno<getSize(); recno++)
+        copyFloats(recno, m, resultIter);
+
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE)) {
+      for (int recno=0; recno<getSize(); recno++)
+        copyBytes(recno, m, resultIter);
+
+    } else if (dataType == DataType.SHORT) {
+      for (int recno=0; recno<getSize(); recno++)
+        copyShorts(recno, m, resultIter);
+
+    } else if (dataType == DataType.INT) {
+      for (int recno=0; recno<getSize(); recno++)
+        copyInts(recno, m, resultIter);
+
+    } else if (dataType == DataType.LONG) {
+      for (int recno=0; recno<getSize(); recno++)
+        copyLongs(recno, m, resultIter);
+
+    } else if (dataType == DataType.CHAR) {
+      for (int recno=0; recno<getSize(); recno++)
+        copyChars(recno, m, resultIter);
+
+    } else if (dataType == DataType.STRING) {
+      for (int recno=0; recno<getSize(); recno++)
+        copyStrings(recno, m, resultIter);
+
+    } else if (dataType == DataType.STRUCTURE) {
+      for (int recno=0; recno<getSize(); recno++)
+        copyStructures(recno, m, resultIter);
+   }
+
+    return result;
+  }
+
+  protected void copyChars(int recnum, StructureMembers.Member m, IndexIterator result) {
+    IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
+    while (dataIter.hasNext())
+      result.setCharNext( dataIter.getCharNext());
+  }
+  protected void copyDoubles(int recnum, StructureMembers.Member m, IndexIterator result) {
+    IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
+    while (dataIter.hasNext())
+      result.setDoubleNext( dataIter.getDoubleNext());
+  }
+  protected void copyFloats(int recnum, StructureMembers.Member m, IndexIterator result) {
+    IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
+    while (dataIter.hasNext())
+      result.setFloatNext( dataIter.getFloatNext());
+  }
+  protected void copyBytes(int recnum, StructureMembers.Member m, IndexIterator result) {
+    IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
+    while (dataIter.hasNext())
+      result.setByteNext( dataIter.getByteNext());
+  }
+  protected void copyShorts(int recnum, StructureMembers.Member m, IndexIterator result) {
+    IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
+    while (dataIter.hasNext())
+      result.setShortNext( dataIter.getShortNext());
+  }
+  protected void copyInts(int recnum, StructureMembers.Member m, IndexIterator result) {
+    IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
+    while (dataIter.hasNext())
+      result.setIntNext( dataIter.getIntNext());
+  }
+  protected void copyLongs(int recnum, StructureMembers.Member m, IndexIterator result) {
+    IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
+    while (dataIter.hasNext())
+      result.setLongNext( dataIter.getLongNext());
+  }
+  protected void copyStrings(int recnum, StructureMembers.Member m, IndexIterator result) {
+    IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
+    while (dataIter.hasNext())
+      result.setObjectNext( dataIter.getObjectNext());
+  }
+  protected void copyStructures(int recnum, StructureMembers.Member m, IndexIterator result) {
+    IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
+    while (dataIter.hasNext())
+      result.setObjectNext( dataIter.getObjectNext()); // LOOK ??
   }
 
   /**
@@ -231,7 +316,7 @@ public abstract class ArrayStructure extends Array {
     } else if (dataType == DataType.FLOAT) {
       return getScalarFloat(recno, m);
 
-    } else if (dataType == DataType.BYTE) {
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE)) {
       return getScalarByte(recno, m);
 
     } else if (dataType == DataType.SHORT) {
@@ -272,9 +357,6 @@ public abstract class ArrayStructure extends Array {
    */
   public abstract double[] getJavaArrayDouble(int recnum, StructureMembers.Member m);
 
-  /** @deprecated use getJavaArrayDouble( recnum, m) */
-  public double[] getArrayDouble(int recnum, StructureMembers.Member m) { return  getJavaArrayDouble(recnum, m); }
-
   /**
    * Get scalar member data of type float.
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
@@ -290,9 +372,6 @@ public abstract class ArrayStructure extends Array {
    * @return float[]
    */
   public abstract float[] getJavaArrayFloat(int recnum, StructureMembers.Member m);
-
-  /** @deprecated use getJavaArrayFloat( recnum, m) */
-  public float[] getArrayFloat(int recnum, StructureMembers.Member m) { return  getJavaArrayFloat(recnum, m); }
 
   /**
    * Get scalar member data of type byte.
@@ -310,9 +389,6 @@ public abstract class ArrayStructure extends Array {
    */
   public abstract byte[] getJavaArrayByte(int recnum, StructureMembers.Member m);
 
-  /** @deprecated use getJavaArrayByte( recnum, m) */
-  public byte[] getArrayByte(int recnum, StructureMembers.Member m) { return  getJavaArrayByte(recnum, m); }
-
   /**
    * Get scalar member data of type short.
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
@@ -328,9 +404,6 @@ public abstract class ArrayStructure extends Array {
    * @return short[]
    */
   public abstract short[] getJavaArrayShort(int recnum, StructureMembers.Member m);
-
-  /** @deprecated use getJavaArrayShort( recnum, m) */
-  public short[] getArrayShort(int recnum, StructureMembers.Member m) { return  getJavaArrayShort(recnum, m); }
 
   /**
    * Get scalar member data of type int.
@@ -348,9 +421,6 @@ public abstract class ArrayStructure extends Array {
    */
   public abstract int[] getJavaArrayInt(int recnum, StructureMembers.Member m);
 
-  /** @deprecated use getJavaArrayInt( recnum, m) */
-  public int[] getArrayInt(int recnum, StructureMembers.Member m) { return  getJavaArrayInt(recnum, m); }
-
   /**
    * Get scalar member data of type long.
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
@@ -366,9 +436,6 @@ public abstract class ArrayStructure extends Array {
    * @return long[]
    */
   public abstract long[] getJavaArrayLong(int recnum, StructureMembers.Member m);
-
-  /** @deprecated use getJavaArrayLong( recnum, m) */
-  public long[] getArrayLong(int recnum, StructureMembers.Member m) { return  getJavaArrayLong(recnum, m); }
 
   /**
    * Get scalar member data of type char.
@@ -386,9 +453,6 @@ public abstract class ArrayStructure extends Array {
    */
   public abstract char[] getJavaArrayChar(int recnum, StructureMembers.Member m);
 
-  /** @deprecated use getJavaArrayChar( recnum, m) */
-  public char[] getArrayChar(int recnum, StructureMembers.Member m) { return  getJavaArrayChar(recnum, m); }
-
    /**
    * Get member data of type String or char.
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
@@ -404,9 +468,6 @@ public abstract class ArrayStructure extends Array {
    * @return String[]
    */
   public abstract String[] getJavaArrayString(int recnum, StructureMembers.Member m);
-
-  /** @deprecated use getJavaArrayString( recnum, m) */
-  public String[] getArrayString(int recnum, StructureMembers.Member m) { return  getJavaArrayString(recnum, m); }
 
   /**
   * Get member data of type Structure.
@@ -451,6 +512,18 @@ public abstract class ArrayStructure extends Array {
   } */
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /** DO NOT USE, throws UnsupportedOperationException */
+  public Array createView( Index index) {
+    if (index.getSize() == getSize()) return this;
+    throw new UnsupportedOperationException();
+  }
+
+ /** DO NOT USE, throws UnsupportedOperationException */
+  public Array copy() {
+    throw new UnsupportedOperationException();
+  }
+
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */

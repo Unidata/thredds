@@ -54,7 +54,7 @@ public class TestH5ReadStructure extends TestCase {
         Object o = iter.next();
         assert (o instanceof StructureData);
         StructureData d = (StructureData) o;
-        Array arr = d.findMemberArray("a_string");
+        Array arr = d.getArray("a_string");
         assert (arr != null);
         assert (arr.getElementType() == char.class);
         assert (arr instanceof ArrayChar);
@@ -62,7 +62,7 @@ public class TestH5ReadStructure extends TestCase {
         out.println(arrc.getString());
         assert arrc.getString().equals("Astronomy") : arrc.getString();
 
-        arr = d.findMemberArray("b_string");
+        arr = d.getArray("b_string");
         assert (arr != null);
         assert (arr.getElementType() == char.class);
         assert (arr instanceof ArrayChar);
@@ -107,19 +107,19 @@ public class TestH5ReadStructure extends TestCase {
       Object o = iter.next();
       assert (o instanceof StructureData) : o;
       StructureData d = (StructureData) o;
-      Array arr = d.findMemberArray("a_name");
+      Array arr = d.getArray("a_name");
       assert (arr != null);
       assert (arr.getElementType() == int.class);
       assert (arr instanceof ArrayInt);
       NCdump.printArray( arr, "a_name", out, null);
 
-      arr = d.findMemberArray("b_name");
+      arr = d.getArray("b_name");
       assert (arr != null);
       assert (arr.getElementType() == float.class);
       assert (arr instanceof ArrayFloat);
       NCdump.printArray( arr, "b_name", out, null);
 
-      arr = d.findMemberArray("c_name");
+      arr = d.getArray("c_name");
       assert (arr != null);
       assert (arr.getElementType() == double.class);
       assert (arr instanceof ArrayDouble);
@@ -166,14 +166,14 @@ public class TestH5ReadStructure extends TestCase {
         assert (o instanceof StructureData);
         StructureData d = (StructureData) o;
 
-        Array arr = d.findMemberArray("a_name");
+        Array arr = d.getArray("a_name");
         assert (arr != null);
         assert (arr.getElementType() == int.class);
         assert (arr instanceof ArrayInt);
         assert (arr.getInt( arr.getIndex()) == 4 + count);
         NCdump.printArray( arr, "a_name", out, null);
 
-        arr = d.findMemberArray("b_name");
+        arr = d.getArray("b_name");
         assert (arr != null);
         assert (arr.getElementType() == float.class);
         assert (arr instanceof ArrayFloat);
@@ -202,14 +202,14 @@ public class TestH5ReadStructure extends TestCase {
         assert (o instanceof StructureData);
         StructureData d = (StructureData) o;
 
-        Array arr = d.findMemberArray("a_name");
+        Array arr = d.getArray("a_name");
         assert (arr != null);
         assert (arr.getElementType() == int.class);
         assert (arr instanceof ArrayInt);
         assert (arr.getInt( arr.getIndex()) == count);
         NCdump.printArray( arr, "a_name", out, null);
 
-        arr = d.findMemberArray("b_name");
+        arr = d.getArray("b_name");
         assert (arr != null);
         assert (arr.getElementType() == float.class);
         assert (arr instanceof ArrayFloat);

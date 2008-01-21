@@ -213,13 +213,19 @@ public class Attribute {
   private volatile int hashCode = 0;
 
   /**
-   * String representation
+   * CDL representation, not strict
+   * @return CDL representation
    */
   @Override
   public String toString() {
     return toString(false);
   }
 
+  /**
+   * CDL representation
+   * @param strict if true, create strict CDL, escaping names
+   * @return CDL representation
+   */
   public String toString(boolean strict) {
     StringBuffer buff = new StringBuffer();
     buff.append(  strict ? NetcdfFile.escapeName(getName()) : getName());

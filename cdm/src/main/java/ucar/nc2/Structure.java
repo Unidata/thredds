@@ -40,10 +40,11 @@ import java.io.IOException;
 
 public class Structure extends Variable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
-  private static int defaultBufferSize = 500 * 1000; // 500K bytes
+  static private int defaultBufferSize = 500 * 1000; // 500K bytes
 
   protected List<Variable> members = new ArrayList<Variable>();
   protected HashMap<String, Variable> memberHash = new HashMap<String, Variable>();
+  protected boolean isSubset;
 
   /** Constructor
    *
@@ -75,6 +76,22 @@ public class Structure extends Variable {
       }
     }
   }
+
+  /**
+   * Create a subset of the Structure consisting only of the given member variables
+   * @param members list of Variable
+   * @return subsetted Structure
+   */
+  public Structure subset( List<Variable> members) {
+    Structure result = new Structure(this.ncfile, this.group, this.parent, this.shortName);
+    result.setDimensions( this.getDimensions());
+    for (Variable m : members)
+      result.addMemberVariable(m);
+    result.isSubset = true;
+    return result;
+  }
+
+  public boolean isSubset() { return isSubset; }
 
   // for section and slice
   @Override
@@ -330,7 +347,7 @@ public class Structure extends Variable {
    *    StructureData sdata = ii.next();
    *  }
    * </pre>
-   *  @param bufferSize size in bytes to buffer
+   *  @param bufferSize size in bytes to buffer, set < 0 to use default size
    *  @return Structure.Iterator over type StructureData
    */
   public Structure.Iterator getStructureIterator(int bufferSize) {

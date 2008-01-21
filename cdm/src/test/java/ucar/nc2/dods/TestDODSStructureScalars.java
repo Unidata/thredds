@@ -59,7 +59,7 @@ public class TestDODSStructureScalars extends TestCase {
     Variable v = null;
     Array a = null;
 
-    assert(null != (a = s.findMemberArray("b")));
+    assert(null != (a = s.getArray("b")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == byte.class;
@@ -68,7 +68,7 @@ public class TestDODSStructureScalars extends TestCase {
     assert (valb == 0);
 
     // int16
-    assert(null != (a = s.findMemberArray("i16")));
+    assert(null != (a = s.getArray("i16")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == short.class;
@@ -77,7 +77,7 @@ public class TestDODSStructureScalars extends TestCase {
     assert (vals == 0);
 
     // int32
-    assert(null != (a = s.findMemberArray("i32")));
+    assert(null != (a = s.getArray("i32")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
@@ -86,7 +86,7 @@ public class TestDODSStructureScalars extends TestCase {
     assert (vali == 1) : vali;
 
     // uint32
-    assert(null != (a = s.findMemberArray("ui32")));
+    assert(null != (a = s.getArray("ui32")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == int.class;
@@ -95,7 +95,7 @@ public class TestDODSStructureScalars extends TestCase {
     assert (vall == 0);
 
     // uint16
-    assert(null != (a = s.findMemberArray("ui16")));
+    assert(null != (a = s.getArray("ui16")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == short.class;
@@ -104,7 +104,7 @@ public class TestDODSStructureScalars extends TestCase {
     assert (vali == 0);
 
     // float
-    assert(null != (a = s.findMemberArray("f32")));
+    assert(null != (a = s.getArray("f32")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == float.class;
@@ -113,7 +113,7 @@ public class TestDODSStructureScalars extends TestCase {
     assert (valf == 0.0);
 
     // double
-    assert(null != (a = s.findMemberArray("f64")));
+    assert(null != (a = s.getArray("f64")));
     assert a.getRank() == 0;
     assert a.getSize() == 1;
     assert a.getElementType() == double.class;
@@ -122,7 +122,7 @@ public class TestDODSStructureScalars extends TestCase {
     assert (vald == 1000.0);
 
     // string
-    assert(null != (a = s.findMemberArray("s")));
+    assert(null != (a = s.getArray("s")));
     assert a.getRank() == 0;
     assert a.getElementType() == String.class;
     assert a instanceof ArrayObject.D0;
@@ -130,7 +130,7 @@ public class TestDODSStructureScalars extends TestCase {
     assert str.equals("This is a data test string (pass 0).");
 
     // url
-    assert(null != (a = s.findMemberArray("u")));
+    assert(null != (a = s.getArray("u")));
     assert a.getRank() == 0;
     assert a.getElementType() == String.class;
     assert a instanceof ArrayObject.D0;
