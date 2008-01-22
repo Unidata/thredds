@@ -439,7 +439,7 @@ public class NetcdfServlet extends AbstractServlet {
       List ctList = gcs.getCoordinateTransforms();
       for (int j = 0; j < ctList.size(); j++) {
         CoordinateTransform ct = (CoordinateTransform) ctList.get(j);
-        Variable v = ncd.findVariable(ct.getName());
+        Variable v = ncd.findVariable(ct.getName()); // LOOK WRONG
         if (!varNameList.contains(ct.getName()) && (null != v)) {
           varNameList.add(ct.getName());
           varList.add(v);

@@ -44,7 +44,7 @@ public class VExplicitField extends AbstractCoordTransBuilder {
 
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    VerticalCT ct = new VerticalCT (ctv.getName(), getTransformName(), VerticalCT.Type.Existing3DField, this);
+    VerticalCT ct = new VerticalCT (ctv.getShortName(), getTransformName(), VerticalCT.Type.Existing3DField, this);
     String fieldName = ds.findAttValueIgnoreCase(ctv, VTfromExistingData.existingDataField, null);
     if (null == fieldName)
       throw new IllegalArgumentException("ExplicitField Vertical Transform must have attribute "+VTfromExistingData.existingDataField);

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,13 +28,11 @@ import java.io.IOException;
 /**
  * An wrapper around a Variable, creating an "enhanced" Variable.
  * The original Variable is used for the I/O.
- * LOOK: Is the original Variable untouched?
  * There are several distinct uses:
  *   1) "enhanced mode" : handle scale/offset/missing values; this can change DataType and data values
  *   2) container for coordinate system information
  *   3) NcML modifications to underlying Variable
  * @author caron
- * @see EnhanceScaleMissing
  */
 
 public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
@@ -44,7 +42,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
 
   protected Variable orgVar; // wrap this Variable
   private DataType orgDataType; // keep seperate for the case where there is no ioVar.
-  //private ProxyReader2 proxyReader2 = null;
 
   /**
    * Constructor when there's no underlying variable.
@@ -89,7 +86,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
    * Does not share cache, iosp.
    *
    * @param g logical container, if null use orgVar's group
-   * @param orgVar the original Variable to wrap.
+   * @param orgVar the original Variable to wrap. The original Variable is not modified.
+   *    Must not be a Structure, use StructureDS instead.
    * @param enhance if true, handle scale/offset/missing values; this can change DataType and data values.
    *   You can also call enhance() later.
    */
@@ -110,9 +108,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     this.orgDataType = orgVar.getDataType();
     if (g != null) this.group = g; // otherwise super() sets group; this affects the long name.
 
-    if (orgVar instanceof VariableDS) {
-      VariableDS ncVarDS = (VariableDS) orgVar;
-    }
+    //if (orgVar instanceof VariableDS) {
+    //  VariableDS ncVarDS = (VariableDS) orgVar;
+    //}
 
     this.proxy = new EnhancementsImpl( this);
     if (enhance) {
@@ -375,7 +373,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
 
   // structure-member Variables.
-  @Override
+  /*
   protected Array _readMemberData(Section section, boolean flatten) throws IOException, InvalidRangeException  {
     Array result;
     //if (agg != null)
@@ -383,25 +381,16 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     //else
     /* if (ioVar != null)
       result = ioVar.readAllStructures(section, flatten);
-    else */
+    else /
       result = super._readMemberData(section, flatten);
 
-    // LOOK should do recursively
+    // look should do recursively
     /* if (smProxy.hasScaleOffset())
       result = smProxy.convertScaleOffset( result);
     else if (smProxy.hasMissing() && smProxy.getUseNaNs())
-      result = smProxy.convertMissing( result); */
+      result = smProxy.convertMissing( result); /
 
     return result;
-  }
+  }  */
 
-  //////////////////////////////////////////////////////////
-  // deprecated
-
-    /** @deprecated use getUnitsString()
-     * @return getUnitsString()
-     */
-  public java.lang.String getUnitString() {
-    return getUnitsString();
-  }
 }

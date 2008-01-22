@@ -71,7 +71,7 @@ public class GeoGridTable extends JPanel {
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
-        Variable v = ds.findVariable( vb.getName());
+        Variable v = ds.findVariable( NetcdfFile.escapeName( vb.getName()));
         infoTA.clear();
         infoTA.appendLine( v.toString());
         infoTA.gotoTop();

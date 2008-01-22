@@ -142,7 +142,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
       // if we encountered NaNs, shorten it up
       if (count != ncoords) {
-        Dimension localDim = new Dimension( getName(), count, false);
+        Dimension localDim = new Dimension( getShortName(), count, false);
         setDimension(0, localDim);
 
         // set the shortened values

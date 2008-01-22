@@ -189,7 +189,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
     // recalc runtime array
     VariableDS runtimeCoord = (VariableDS) ncDataset.findVariable(dimName);
-    runtimeCoord.setDimensions(runtimeCoord.getDimensionsString());
+    runtimeCoord.resetDimensions();
     if (true) { // LOOK detect if we have the info
       ArrayObject.D1 runData = (ArrayObject.D1) Array.factory(DataType.STRING, new int[]{nruns});
       List<Dataset> nestedDatasets = getDatasets();
@@ -224,7 +224,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
         String units = "hours since " + formatter.toDateTimeStringISO(baseDate);
 
         VariableDS timeCoord = (VariableDS) ncDataset.findVariable(timeDimName);
-        timeCoord.setDimensions(timeCoord.getDimensionsString());
+        timeCoord.resetDimensions();
         timeCoord.addAttribute(new Attribute("units", units));
         timeCoord.setUnitsString(units);
 
@@ -253,7 +253,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       }
 
       if ((v.getRank() > 0) && v.getDimension(0).getName().equals(dimName) && (v != runtimeCoord)) {
-        v.setDimensions(v.getDimensionsString()); // reset dimension
+        v.resetDimensions();
         v.setCachedData(null, false); // get rid of any cached data, since its now wrong
 
       } else {
@@ -542,7 +542,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       shape[1] = maxTimes;
       Dimension d = timeAxis.getDimension(1);
       d.setLength(maxTimes);
-      timeAxis.setDimensions(timeAxis.getDimensionsString());
+      timeAxis.resetDimensions();
     }
 
     Array timeCoordVals = Array.factory(timeAxis.getDataType(), shape);

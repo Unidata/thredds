@@ -53,7 +53,7 @@ public class NcDDS extends ServerDDS implements Cloneable {
     // LOOK: this should get optimized to store data once
     for (Object o : ncfile.getDimensions()) {
       Dimension dim = (Dimension) o;
-      Variable cv = ncfile.findVariable(dim.getName());
+      Variable cv = ncfile.findVariable(dim.getName()); // LOOK WRONG
       if ((cv != null) && cv.isCoordinateVariable()) {
         BaseType bt = new NcSDArray(cv, createScalarVariable(ncfile, cv));
         if ((cv.getDataType() == DataType.CHAR) && (cv.getRank() > 1))
@@ -135,7 +135,7 @@ public class NcDDS extends ServerDDS implements Cloneable {
     Iterator iter = v.getDimensions().iterator();
     while (isGrid && iter.hasNext()) {
       Dimension dim = (Dimension) iter.next();
-      Variable cv = ncfile.findVariable(dim.getName());
+      Variable cv = ncfile.findVariable(dim.getName());  // LOOK WRONG
       if ((cv == null) || !cv.isCoordinateVariable())
         isGrid = false;
     }

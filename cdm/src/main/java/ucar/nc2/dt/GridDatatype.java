@@ -43,6 +43,13 @@ public interface GridDatatype extends Comparable<GridDatatype> {
   public String getName();
 
   /**
+   * Get the escaped name of the Grid
+   *
+   * @return the escaped name of the Grid
+   */
+  public String getNameEscaped();
+
+  /**
    * Get the description/long_name of the Grid
    * @return the description/long_name of the Grid
    */

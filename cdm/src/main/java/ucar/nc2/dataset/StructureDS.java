@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,7 +37,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   private boolean isEnhanced = false;
 
   protected Structure orgVar; // wrap this Variable
-  //private ProxyReader2 proxyReader2 = null;
 
   /**
    * Constructor when theres no underlying variable. You better set the values too!
@@ -70,6 +69,13 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     this.orgVar = orgVar;
     this.proxy = new EnhancementsImpl(this);
     this.smProxy = new EnhanceScaleMissingImpl(); // scale/offset not applied to Structure
+
+    this.proxy = new EnhancementsImpl( this);
+    if (false) {
+      enhance();
+    } else {
+      this.smProxy = new EnhanceScaleMissingImpl();
+    }
   }
 
   // for section and slice
@@ -170,14 +176,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
     /** recalc any enhancement info */
   public void enhance() {
-    for (Variable mv : getVariables()) {
-     if (mv instanceof VariableDS)
-        ((VariableDS) mv).enhance();
-      else if (mv instanceof StructureDS)
-        ((StructureDS) mv).enhance();
+    for (Variable v : getVariables()) {
+      VariableEnhanced ve = (VariableEnhanced) v;
+      ve.enhance();
     }
-
-    //this.smembers = null; // in case datatypes changed
     this.isEnhanced = true;
   }
 

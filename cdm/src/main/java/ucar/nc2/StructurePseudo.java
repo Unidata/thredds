@@ -54,7 +54,7 @@ public class StructurePseudo extends Structure {
     for (Variable orgV : vars) {
       Dimension dim0 = orgV.getDimension(0);
       if ((dim0 != null) && dim0.equals(dim)) {
-        Variable memberV = new Variable(ncfile, group, this, orgV.getName());
+        Variable memberV = new Variable(ncfile, group, this, orgV.getShortName());
         memberV.setDataType(orgV.getDataType());
         memberV.setSPobject(orgV.getSPobject()); // ??
         memberV.attributes.addAll(orgV.getAttributes());
@@ -83,7 +83,7 @@ public class StructurePseudo extends Structure {
 
     for (Variable v : orgVariables) {
       Array data = v.read();
-      StructureMembers.Member m = smembers.findMember(v.getName());
+      StructureMembers.Member m = smembers.findMember(v.getShortName());
       m.setDataObject(data);
     }
 
@@ -111,7 +111,7 @@ public class StructurePseudo extends Structure {
       List<Range> vsection =  new ArrayList<Range>(v.getRanges());
       vsection.set(0, r);
       Array data = v.read(vsection);
-      StructureMembers.Member m = smembers.findMember(v.getName());
+      StructureMembers.Member m = smembers.findMember(v.getShortName());
       m.setDataObject(data);
     }
 

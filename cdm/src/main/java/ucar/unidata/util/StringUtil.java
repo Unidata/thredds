@@ -513,7 +513,7 @@ public class StringUtil {
   }
 
   /**
-   * Inverse of escape().
+   * This finds any '%xx' and converts to the equivilent char. Inverse of escape().
    *
    * @param x
    * @return original String.

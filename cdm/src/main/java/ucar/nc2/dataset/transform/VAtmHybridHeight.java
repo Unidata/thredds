@@ -93,7 +93,7 @@ public class VAtmHybridHeight extends AbstractCoordTransBuilder {
         }
 
         CoordinateTransform rs = new VerticalCT("AtmHybridHeight_Transform_"
-                                     + ctv.getName(), getTransformName(),
+                                     + ctv.getShortName(), getTransformName(),
                                          VerticalCT.Type.HybridHeight, this);
         rs.addParameter(new Parameter("standard_name", getTransformName()));
         rs.addParameter(new Parameter("formula_terms", formula_terms));

@@ -338,7 +338,7 @@ public class NCdumpW {
     }
   }
 
-  // parse variable name and index selector out of the selector String
+  // parse variable name and index selector out of the selector String. variable name must be escaped
   private static Variable parseVariableSelector( Object parent, String selector, List<Range> fullSelection)
           throws InvalidRangeException {
     String varName, indexSelect = null;

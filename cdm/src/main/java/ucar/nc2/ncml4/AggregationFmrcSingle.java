@@ -290,7 +290,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     List<Variable> vars = ncDataset.getVariables();
     for (Variable v : vars) {
       if (v.findDimensionIndex(dimName) >= 0) {
-        v.setDimensions(v.getDimensionsString());   // recalc the shape if needed
+        v.resetDimensions();   
         v.setCachedData(null, false); // get rid of any cached data, since its now wrong
       }
     }

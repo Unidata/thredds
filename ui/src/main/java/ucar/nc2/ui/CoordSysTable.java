@@ -87,9 +87,20 @@ public class CoordSysTable extends JPanel {
     varPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        Variable v = ds.findVariable(vb.getName());
+        Variable v = ds.findVariable( NetcdfFile.escapeName( vb.getName()));
         infoTA.clear();
         infoTA.appendLine(v.toString());
+        infoTA.gotoTop();
+        infoWindow.showIfNotIconified();
+      }
+    });
+
+    varPopup.addAction("Try as Grid", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        VariableBean vb = (VariableBean) varTable.getSelectedBean();
+        VariableEnhanced v = (VariableEnhanced) ds.findVariable( NetcdfFile.escapeName( vb.getName()));
+        infoTA.clear();
+        infoTA.appendLine(tryGrid(v));
         infoTA.gotoTop();
         infoWindow.showIfNotIconified();
       }
@@ -99,7 +110,7 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Values", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        CoordinateAxis axis = (CoordinateAxis) ds.findVariable(bean.getName());
+        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( NetcdfFile.escapeName( bean.getName()));
         infoTA.clear();
         try {
           infoTA.appendLine(NCdumpW.printVariableData(axis, null));
@@ -122,15 +133,15 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Value Differences", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        CoordinateAxis axis = (CoordinateAxis) ds.findVariable(bean.getName());
+        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( NetcdfFile.escapeName( bean.getName()));
         infoTA.clear();
         try {
           if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
             CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
             double[] mids = axis1D.getCoordValues();
-            for (int i=0; i<mids.length-1;i++)
-              mids[i] = mids[i+1] - mids[i];
-            mids[mids.length-1] = 0.0;
+            for (int i = 0; i < mids.length - 1; i++)
+              mids[i] = mids[i + 1] - mids[i];
+            mids[mids.length - 1] = 0.0;
 
             printArray("midpoint differences=", mids);
           }
@@ -144,12 +155,12 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Values as Date", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        CoordinateAxis axis = (CoordinateAxis) ds.findVariable(bean.getName());
+        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( NetcdfFile.escapeName( bean.getName()));
         String units = axis.getUnitsString();
         infoTA.clear();
 
         try {
-          infoTA.appendLine( units);
+          infoTA.appendLine(units);
           infoTA.appendLine(NCdumpW.printVariableData(axis, null));
           DateFormatter format = new DateFormatter();
           DateUnit du = new DateUnit(units);
@@ -158,7 +169,7 @@ public class CoordSysTable extends JPanel {
           while (ii.hasNext()) {
             double val = ii.getDoubleNext();
             if (Double.isNaN(val)) {
-              infoTA.appendLine(" N/A");             
+              infoTA.appendLine(" N/A");
             } else {
               Date date = du.makeDate(val);
               infoTA.appendLine(" " + format.toDateTimeString(date));
@@ -279,6 +290,22 @@ public class CoordSysTable extends JPanel {
     }
   }
 
+  private String tryGrid(VariableEnhanced v) {
+    StringBuffer buff = new StringBuffer(v.getName()).append(": ");
+    List<CoordinateSystem> csList = v.getCoordinateSystems();
+    for (CoordinateSystem cs : csList) {
+      buff.append(cs.getName()).append(":");
+      if (GridCoordSys.isGridCoordSys(buff, cs)) {
+        buff.append(" GRID ");
+        GridCoordSys gcs = new GridCoordSys(cs, buff);
+        buff.append(gcs.isComplete(v) ? " COMPLETE" : " NOT COMPLETE");
+      } else {
+        buff.append(" NOT GRID");
+      }
+    }
+    return buff.toString();
+  }
+
   public class VariableBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
@@ -318,9 +345,8 @@ public class CoordSysTable extends JPanel {
       setShape(lens.toString());
 
       StringBuffer buff = new StringBuffer();
-      List csList = v.getCoordinateSystems();
-      for (int i = 0; i < csList.size(); i++) {
-        CoordinateSystem cs = (CoordinateSystem) csList.get(i);
+      List<CoordinateSystem> csList = v.getCoordinateSystems();
+      for (CoordinateSystem cs : csList) {
         buff.append(cs.getName()).append(" ");
         if (firstCoordSys == null)
           firstCoordSys = cs;

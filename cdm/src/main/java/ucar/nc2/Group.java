@@ -47,7 +47,8 @@ public class Group {
   protected List<Enumeration> enums = new ArrayList<Enumeration>();
   private boolean immutable = false;
 
-   /** Get the full name, starting from the root Group.
+   /**
+    * Get the full name, starting from the root Group.
     * @return group full name
     */
   public String getName() {
@@ -71,43 +72,42 @@ public class Group {
 
   /**
    * Find the Variable with the specified (short) name in this group.
-   * @param shortName short name of Variable within this group.
+   * @param varShortName short name of Variable within this group.
    * @return the Variable, or null if not found
    */
-  public Variable findVariable(String shortName) {
-    if (shortName == null) return null;
+  public Variable findVariable(String varShortName) {
+    if (varShortName == null) return null;
 
     for (Variable v : variables) {
-      if (shortName.equals(v.getShortName()))
+      if (varShortName.equals(v.getShortName()))
         return v;
     }
     return null;
   }
 
-  /**
+  /*
    * Find the Variable with the specified escaped (short) name in this group.
-   * @param shortName escaped short name of Variable within this group.
+   * @param varShortNameEscaped escaped short name of Variable within this group.
    * @return the Variable, or null if not found
    * @see NetcdfFile#escapeName
    * @see NetcdfFile#unescapeName
-   */
-  public Variable findVariableEscaped(String shortName) {
-    if (shortName == null) return null;
-    return findVariable( NetcdfFile.unescapeName(shortName));
-  }
+   *
+  public Variable findVariableEscaped(String varShortNameEscaped) {
+    if (varShortNameEscaped == null) return null;
+    return findVariable( NetcdfFile.unescapeName(varShortNameEscaped));
+  } */
 
   /**
-   * Find the Variable with the specified escaped (short) name in this group or a parent group.
-   * @param shortName escaped short name of Variable.
+   * Find the Variable with the specified (short) name in this group or a parent group.
+   * @param varShortName short name of Variable.
    * @return the Variable, or null if not found
    */
-  public Variable findVariableRecurse(String shortName) {
-    if (shortName == null) return null;
-    shortName =  NetcdfFile.unescapeName(shortName);
+  public Variable findVariableOrInParent(String varShortName) {
+    if (varShortName == null) return null;
 
-    Variable v = findVariable( shortName);
+    Variable v = findVariable( varShortName);
     if ((v == null) && (parent != null))
-      v = parent.findVariableRecurse(shortName);
+      v = parent.findVariableOrInParent( varShortName);
     return v;
   }
 
@@ -118,16 +118,16 @@ public class Group {
 
   /**
    * Retrieve the Group with the specified (short) name.
-   * @param shortName short name of the nested group you are looking for. May be escaped.
+   * @param groupShortName short name of the nested group you are looking for. May be escaped.
    * @see NetcdfFile#unescapeName
    * @return the Group, or null if not found
    */
-  public Group findGroup(String shortName) {
-    if ( shortName == null) return null;
-    shortName = NetcdfFile.unescapeName(shortName);
+  public Group findGroup(String groupShortName) {
+    if ( groupShortName == null) return null;
+    groupShortName = NetcdfFile.unescapeName(groupShortName);
 
     for (Group group : groups) {
-      if (shortName.equals(group.getShortName()))
+      if (groupShortName.equals(group.getShortName()))
         return group;
     }
 
@@ -391,8 +391,8 @@ public class Group {
   public void addGroup( Group g) {
     if (immutable) throw new IllegalStateException("Cant modify");
 
-    if (findGroup(g.getName()) != null)
-      throw new IllegalArgumentException("Variable name (" + g.getName() + ") must be unique within Group " + getName());
+    if (findGroup(g.getShortName()) != null)
+      throw new IllegalArgumentException("Variable name (" + g.getShortName() + ") must be unique within Group " + getName());
 
     groups.add( g);
     g.parent = this; // groups are a tree - only one parent
@@ -513,7 +513,7 @@ public class Group {
     if (this == oo) return true;
     if ( !(oo instanceof Group)) return false;
     Group og = (Group) oo;
-    if (!getName().equals(og.getName()))
+    if (!getShortName().equals(og.getShortName()))
       return false;
     if ((getParentGroup() != null) && !getParentGroup().equals(og.getParentGroup()))
       return false;
@@ -525,7 +525,7 @@ public class Group {
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
-      result = 37*result + getName().hashCode();
+      result = 37*result + getShortName().hashCode();
       if (getParentGroup() != null)
         result = 37*result + getParentGroup().hashCode();
       hashCode = result;

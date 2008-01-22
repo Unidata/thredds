@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -221,10 +221,9 @@ public class Variable implements VariableIF {
 
   /**
    * Get the list of Dimension names, space delineated.
-   *
    * @return Dimension names, space delineated
    */
-  public String getDimensionsString() { // LOOK what about anon dimensions?
+  public String getDimensionsString() {
     StringBuffer buff = new StringBuffer();
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension dim = dimensions.get(i);
@@ -1086,7 +1085,6 @@ public class Variable implements VariableIF {
   protected Variable() {
   }
 
-
   /**
    * Create a Variable. Also must call setDataType() and setDimensions()
    *
@@ -1110,10 +1108,10 @@ public class Variable implements VariableIF {
    * @param from copy from this Variable.
    */
   public Variable(Variable from) {
-    this.attributes = new ArrayList<Attribute>(from.attributes);
+    this.attributes = new ArrayList<Attribute>(from.attributes); // attributes are immutable
     this.cache = from.cache; // LOOK do we always want to share?
     this.dataType = from.getDataType();
-    this.dimensions = new ArrayList<Dimension>(from.dimensions);
+    this.dimensions = new ArrayList<Dimension>(from.dimensions); // dimensions are shared
     this.elementSize = from.getElementSize();
     this.group = from.group;
     this.isMetadata = from.isMetadata;
@@ -1127,33 +1125,6 @@ public class Variable implements VariableIF {
     this.sizeToCache = from.sizeToCache;
     this.spiObject = from.spiObject;
   }
-
-  /**
-   * Copy constructor, with different parent Group.
-   * The Dimensions are found from new Group, and shape is recalculated.
-   *
-   * @param from copy from here
-   *
-  public Variable(Group parentGroup, Variable from) {
-  this.attributes = new ArrayList<Attribute>(from.getAttributes());
-  this.cache = from.cache; // share the cache
-  this.dataType = from.getDataType();
-  this.dimensions = new ArrayList<Dimension>(from.getDimensions());
-  this.elementSize = from.getElementSize();
-  this.group = from.group;
-  this.isCoordinateAxis = from.isCoordinateAxis;
-  this.isMetadata = from.isMetadata;
-  //this.isSection = from.isSection;
-  this.isVlen = from.isVlen;
-  this.ncfile = from.ncfile;
-  //this.ioVar = from;
-  this.parent = from.parent;
-  //this.section = from.section;
-  this.shape = from.getShape().clone();
-  this.shortName = from.shortName;
-  this.sizeToCache = from.sizeToCache;
-  this.spiObject = from.spiObject;
-  } */
 
   ///////////////////////////////////////////////////
   // the following make this mutable
@@ -1290,7 +1261,7 @@ public class Variable implements VariableIF {
       resetShape();
       return;
     }
-    
+
     StringTokenizer stoke = new StringTokenizer(dimString);
     while (stoke.hasMoreTokens()) {
       String dimName = stoke.nextToken();
@@ -1300,6 +1271,27 @@ public class Variable implements VariableIF {
       this.dimensions.add(d);
     }
 
+    resetShape();
+  }
+
+  /**
+   * Reset the dimension array. Anonymous dimensions are left alone. Shared dimensions are searched for recursively in the parent groups.
+   */
+  public void resetDimensions() {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    ArrayList<Dimension> newDimensions = new ArrayList<Dimension>();
+
+    for (Dimension dim : dimensions) {
+      if (dim.isShared()) {
+        Dimension newD = group.findDimension(dim.getName());
+        if (newD == null)
+          throw new IllegalArgumentException("Variable " + getName() + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);
+        newDimensions.add(newD);
+      } else {
+        newDimensions.add( dim);
+      }
+    }
+    this.dimensions = newDimensions;
     resetShape();
   }
 

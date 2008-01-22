@@ -104,7 +104,7 @@ public class AggregationTiled extends Aggregation {
       if (isTiled(v)) {
         Group aggGroup = v.getParentGroup();
         VariableDS vagg = new VariableDS(ncDataset, aggGroup, null, v.getShortName(), v.getDataType(),
-                v.getDimensionsString(), null, null);
+                v.getDimensionsString(), null, null);   // LOOK what about anon dimensions?
         vagg.setProxyReader(this); // do the reading here
         DatasetConstructor.transferVariableAttributes(v, vagg);
 

@@ -527,7 +527,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
       Subsetter subs = new Subsetter(invList);
 
       for (GridDatatype grid : gridset.gridList) {
-        Variable orgVar = ncd_2dtime.findVariable(grid.getName());
+        Variable orgVar = ncd_2dtime.findVariable(grid.getNameEscaped());
 
         VariableDS v = new VariableDS(target, orgVar, false);
         v.setDimensions(gridset.makeDimensions(v.getDimensions()));
@@ -698,7 +698,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     }
 
     public Array read(Variable mainv, CancelTask cancelTask) throws IOException {
-      Variable orgVar = ncd_2dtime.findVariable(mainv.getName());
+      Variable orgVar = ncd_2dtime.findVariable(mainv.getNameEscaped());
       int[] orgVarShape = orgVar.getShape();
 
       // calculate shape - wants it "all"  (we dont seem to have access to the derived variable, so must construct)
@@ -739,7 +739,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
       if (size == mainv.getSize())
         return read(mainv, cancelTask);
 
-      Variable orgVar = ncd_2dtime.findVariable(mainv.getName());
+      Variable orgVar = ncd_2dtime.findVariable(mainv.getNameEscaped());
 
       Array sectionData = Array.factory(mainv.getDataType(), section.getShape());
       int destPos = 0;

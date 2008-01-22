@@ -62,7 +62,7 @@ public class VAtmHybridSigmaPressure extends AbstractCoordTransBuilder {
         p0 = stoke.nextToken();
     }
 
-    CoordinateTransform rs = new VerticalCT("AtmHybridSigmaPressure_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
+    CoordinateTransform rs = new VerticalCT("AtmHybridSigmaPressure_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
 

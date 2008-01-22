@@ -338,7 +338,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   /**
    * Add an attribute of type Number to the named Variable. Must be in define mode.
    *
-   * @param varName name of attribute. IllegalArgumentException if not valid name.
+   * @param varName name of variable. IllegalArgumentException if not valid name.
    * @param attName name of attribute.
    * @param value   must be of type Float, Double, Integer, Short or Byte
    */
@@ -349,7 +349,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
   /**
    * Add an attribute of type Array to the named Variable. Must be in define mode.
    *
-   * @param varName name of attribute. IllegalArgumentException if not valid name.
+   * @param varName name of variable. IllegalArgumentException if not valid name.
    * @param attName name of attribute.
    * @param value   Array of valkues
    */

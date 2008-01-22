@@ -31,6 +31,7 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
+    11: start to fix name/shortName, ie deal with Groups systematically
     10: hdf4 bug fix - no data tag, use missing data
         Structure.subset(), nc3 optimizes for it
         hdf5, ArrayStructureBB : set byteOrder
@@ -94,6 +95,9 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    * NetcdfFile.addRecordStructure removed, use sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
 
    * Structure.subset() create subset consisting only of given member variables
+
+  Package ucar.nc2.dataset
+   * NetcdfDataset.EnhanceMode to control enhancing
 
   Package ucar.nc2.iosp
    * Layouts and Chunkers factored out for reuse

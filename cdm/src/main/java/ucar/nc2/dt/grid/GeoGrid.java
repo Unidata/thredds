@@ -300,6 +300,13 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   }
 
   /**
+   * get the escaped name of the geoGrid.
+   */
+  public String getNameEscaped() {
+    return vs.getNameEscaped();
+  }
+
+  /**
    * get the GridCoordSys for this GeoGrid.
    */
   //public GridCoordSys getCoordinateSystem() { return gcs; }

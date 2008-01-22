@@ -66,7 +66,7 @@ public class VOceanS extends AbstractCoordTransBuilder {
         depth_c = stoke.nextToken();
     }
 
-    CoordinateTransform rs = new VerticalCT("OceanS_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.OceanS, this);
+    CoordinateTransform rs = new VerticalCT("OceanS_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.OceanS, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
     rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y)*(1+s(z)) + depth_c*s(z) + (depth(x,y)-depth_c)*C(z)")));

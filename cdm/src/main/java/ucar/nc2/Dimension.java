@@ -47,7 +47,7 @@ public class Dimension implements Comparable {
   private String name;
   private int length;
   private boolean immutable = false;
-  private Group g;
+  private Group g; // null if !isShared
 
   /**
    * Returns the name of this Dimension; may be null.
@@ -86,7 +86,7 @@ public class Dimension implements Comparable {
 
   /**
    * Get the Group that owns this Dimension.
-   * @return owning group
+   * @return owning group or null if !isShared
    */
   public Group getGroup() { return g; }
 
@@ -154,8 +154,6 @@ public class Dimension implements Comparable {
       buff.append(" = UNKNOWN;" );
     else
       buff.append(" = ").append(getLength()).append(";");
-    /* if (!strict && (getCoordinateVariables().size() > 0))
-      buff.append("   // (has coord.var)"); */
     return buff.toString();
   }
 

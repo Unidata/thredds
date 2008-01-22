@@ -254,7 +254,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           String vname = proj.substring(0, subsetPos);
           String vCE = proj.substring(subsetPos);
           if (debugCE) System.out.println(" vCE = <" + vname + "><" + vCE + ">");
-          DODSVariable dodsVar = (DODSVariable) findVariable(vname); // LOOK ??
+          DODSVariable dodsVar = (DODSVariable) findVariable(vname); // LOOK must be escaped ??
           dodsVar.setCE(vCE);
           dodsVar.setCaching(true);
         }
@@ -611,7 +611,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         for (int i = 1; i < dodsV.children.size(); i++) {
           DodsV map = dodsV.children.get(i);
           String shortName = DODSNetcdfFile.makeNetcdfName(map.bt.getName());
-          Variable mapV = parentGroup.findVariableEscaped(shortName);
+          Variable mapV = parentGroup.findVariable(shortName); // LOOK WRONG
           if (mapV == null) {        // if not, add it LOOK need to compare values
             mapV = addVariable(parentGroup, parentStructure, map);
             makeCoordinateVariable(parentGroup, mapV, map.data);

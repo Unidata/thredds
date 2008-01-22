@@ -76,7 +76,10 @@ import java.util.*;
 
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static public enum EnhanceMode {
-    None, ScaleMissing, CoordSystems, All
+    None, /** no enhancement */
+    ScaleMissing, /** add scale/offset and missing values */
+    CoordSystems, /** build coordinate systems */
+    All  /** do all enhancements */
   }
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
@@ -566,7 +569,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public CoordinateAxis findCoordinateAxis(String fullName) {
     if (fullName == null) return null;
     for (CoordinateAxis v : coordAxes) {
-      if (fullName.equals(v.getName()))
+      if (fullName.equals(v.getName())) // LOOK WRONG must be escaped !!
         return v;
     }
     return null;
@@ -1000,7 +1003,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (v.isMemberOfStructure()) {
       Structure parentOrg = v.getParentStructure();  // gotta be careful to get the wrapping parent
-      Structure parent = (Structure) findVariable(parentOrg.getName());
+      Structure parent = (Structure) findVariable(parentOrg.getNameEscaped());
       parent.replaceMemberVariable(ca);
 
     } else {

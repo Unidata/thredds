@@ -27,8 +27,6 @@ import ucar.nc2.dataset.VariableDS;
 
 import java.io.IOException;
 
-/** Test StationObsDataset adapters in the JUnit framework. */
-
 public class TestScaleOffsetMissing extends TestCase {
   String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "point/netcdf/";
   public TestScaleOffsetMissing( String name) {
@@ -138,7 +136,6 @@ public class TestScaleOffsetMissing extends TestCase {
     assert (s != null);
 
     Variable v2 = s.findVariable("testScale");
-    v2.addAttribute( new Attribute("units", "meters"));
     assert v2.getUnitsString().equals("meters");
 
     StructureData sdata = s.readStructure(0);

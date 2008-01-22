@@ -56,7 +56,7 @@ public class NetcdfCFWriter {
    *
    * @param location    write to this location on disk
    * @param gds         A gridded dataset
-   * @param gridList    the list of grid names to be written, must not be empty.
+   * @param gridList    the list of grid names to be written, must not be empty. Full name (not short).
    * @param llbb        optional lat/lon bounding box
    * @param range       optional time range
    * @param addLatLon   should 2D lat/lon variables be added, if its a projection coordainte system?
@@ -178,7 +178,7 @@ public class NetcdfCFWriter {
     }
 
     for (CoordinateAxis axis : axisList) {
-      Variable newV = root.findVariable(axis.getName());
+      Variable newV = root.findVariable(axis.getShortName()); // LOOK ???
       if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
         if (null != axis.getPositive())
           newV.addAttribute(new Attribute("positive", axis.getPositive()));

@@ -60,7 +60,7 @@ public class VOceanSigma extends AbstractCoordTransBuilder {
         depth = stoke.nextToken();
     }
 
-    CoordinateTransform rs = new VerticalCT("OceanSigma_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.OceanSigma, this);
+    CoordinateTransform rs = new VerticalCT("OceanSigma_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.OceanSigma, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
     rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y) + sigma(k)*(depth(x,y) + eta(x,y))")));

@@ -90,23 +90,23 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
 
   /**
    * Add a Parameter to a CoordinateTransform.
-   * Make sure that variable exist. If readData is true, read the data and use it as the value of the
+   * Make sure that the variable exists. If readData is true, read the data and use it as the value of the
    * parameter, otherwise use the variable name as the value of the parameter.
    *
    * @param rs        the CoordinateTransform
    * @param paramName the parameter name
    * @param ds        dataset
-   * @param varName   variable name
+   * @param varNameEscaped   escaped variable name
    * @return true if success, false is failed
    */
-  protected boolean addParameter(CoordinateTransform rs, String paramName, NetcdfFile ds, String varName) {
-    if (null == (ds.findVariable(varName))) {
+  protected boolean addParameter(CoordinateTransform rs, String paramName, NetcdfFile ds, String varNameEscaped) {
+    if (null == (ds.findVariable(varNameEscaped))) {
       if (null != errBuffer)
-        errBuffer.append("CoordTransBuilder ").append(getTransformName()).append(": no Variable named ").append(varName);
+        errBuffer.append("CoordTransBuilder ").append(getTransformName()).append(": no Variable named ").append(varNameEscaped);
       return false;
     }
 
-    rs.addParameter(new Parameter(paramName, varName));
+    rs.addParameter(new Parameter(paramName, varNameEscaped));
     return true;
   }
 

@@ -42,8 +42,8 @@ public class Structure extends Variable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
   static private int defaultBufferSize = 500 * 1000; // 500K bytes
 
-  protected List<Variable> members = new ArrayList<Variable>();
-  protected HashMap<String, Variable> memberHash = new HashMap<String, Variable>();
+  protected List<Variable> members;
+  protected HashMap<String, Variable> memberHash;
   protected boolean isSubset;
 
   /** Constructor
@@ -57,6 +57,8 @@ public class Structure extends Variable {
     super (ncfile, group, parent, shortName);
     this.dataType = DataType.STRUCTURE;
     this.elementSize = -1; // gotta wait before calculating
+    members = new ArrayList<Variable>();
+    memberHash = new HashMap<String, Variable>();
   }
 
 
@@ -69,6 +71,7 @@ public class Structure extends Variable {
 
     members = new ArrayList<Variable>(from.members);
     memberHash = new HashMap<String, Variable>(from.memberHash);
+    isSubset = from.isSubset();
 
     if (reparent) {
       for (Variable v : members) {
