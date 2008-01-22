@@ -2,15 +2,15 @@ CHANGES for Netcdf-Java library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
-
 Changes in version 4.0
+This code is ALPHA
 
  Data Model
   * Object names are Unicode Strings. No Restrictions on characters used.
   * DataType STRING are Unicode. In Netcdf3/4, stored as UTF-8 encoded.
   * DataType CHAR are uninterpreted bytes, default is to consider them ascii.
-  * DataType ENUM
-  * DataType OPAQUE
+  * DataType ENUM : stored as 1,2,4 byte ints, map to Strings
+  * DataType OPAQUE : byte[] cant be subsetted.
 
  Features:
   netcdf
@@ -31,13 +31,14 @@ Changes in version 4.0
   * use new visad library 12/04/07
 
  Release Details:
-    11: ArrayStructureBB puts Strings on "heap"
-        hdf5 uses ArrayStructureBB
-        hdf4 bug fix - no data tag, use missing data
-    10: rearrange packages to separate modules
+    10: hdf4 bug fix - no data tag, use missing data
+        Structure.subset(), nc3 optimizes for it
+        hdf5, ArrayStructureBB : set byteOrder
+        ArrayStructureBB puts Strings on "heap"
+        rearrange packages to separate modules
+        cdm build redone - xxxComplete.jar added
+        fix problem preventing 1.5 compilation (ternary op returns array)
     09: hdf5 byteOrder must be set when chunked (tiledLayout)
-  prev: XMLStore aborts rather than store bad preferences XML
-
 
 ========================================
 Changes from Java-Netcdf version 2.2

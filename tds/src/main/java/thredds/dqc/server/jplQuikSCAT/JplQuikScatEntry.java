@@ -233,7 +233,7 @@ public class JplQuikScatEntry
   private Array getCatalogEntryVariableArray( String varName )
           throws IOException
   {
-    Array a = this.entry.findMemberArray( varName );
+    Array a = this.entry.getArray( varName );
     if ( a == null )
     {
       String tmpMsg = "getCatalogEntryVariableArray(): backing store does not contain \"" +

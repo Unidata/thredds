@@ -7,8 +7,8 @@
     <output-test url="file://$MODULE_DIR$/../../cdm/target/test/classes" />
     <content url="file://$MODULE_DIR$/../../cdm">
       <sourceFolder url="file://$MODULE_DIR$/../../cdm/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../cdm/src/test" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../cdm/src/timing" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../cdm/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../cdm/src/timing/java" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

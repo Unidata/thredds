@@ -21,6 +21,7 @@ public class TestH5read extends TestCase {
   }
 
  public void testH5data() {
+   H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
 
    TestAll.readAllDir (TestH5.testDir, new FileFilter() {
       public boolean accept(File file) {
