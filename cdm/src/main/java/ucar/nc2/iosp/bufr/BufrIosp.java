@@ -311,7 +311,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
              ArrayList im = (ArrayList)imembers.getMembers();
              for( int j = 0; j < im.size(); j++ ) {
                 StructureMembers.Member m = (StructureMembers.Member)im.get( j );
-                Array data = (Array) m.getDataObject();
+                Array data = (Array) m.getDataArray();
                 IndexIterator ii = data.getIndexIterator();
                 //System.out.println( "IndexIterator ii ="+ ii );
                 sdataHash.put( m.getName(), data );
@@ -444,7 +444,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
            Array data = (Array)dataHash.get( v.getShortName() );
            StructureMembers.Member m = members.findMember( v.getShortName());
            if( v instanceof Structure ) {
-              m.setDataObject ( ias );
+              m.setDataArray( ias );
               // dump ias as a check
               //m = (StructureMembers.Member) imembers.findMember( "Hgt_above_station" );
               // data = (Array) m.getDataObject();
@@ -454,7 +454,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
               //   System.out.print( ii.getFloatNext()  +", " );
               //}
            } else {
-              m.setDataObject ( data );
+              m.setDataArray( data );
            }
        }
        return ama;
@@ -557,7 +557,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
            v = (Variable) vars.get( k );
            Array data = (Array)dataHash.get( v.getShortName() );
            StructureMembers.Member m = members.findMember( v.getShortName());
-           m.setDataObject ( data );
+           m.setDataArray( data );
        }
   } // end readDataCompressed
 
@@ -711,7 +711,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
                 }
              }
              ias.finish();
-                data = (Array) member.getDataObject();
+                data = (Array) member.getDataArray();
                 //ii = data.getIndexIterator();
                 //System.out.println( "IndexIterator ii ="+ ii );
           } else { // end inner Structure

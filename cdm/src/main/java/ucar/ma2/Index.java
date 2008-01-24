@@ -371,6 +371,15 @@ public class Index implements Cloneable {
     return result;
   }
 
+  /**
+   * Get the length of the ith dimension.
+   * @return  the ith dimension length
+   * @param index which dimension. must be in [0, getRank())
+   */
+  public int getShape(int index) {
+    return shape[index];
+  }
+
   /** Get the current element's index as an int [] LOOK why not ?
    public int [] getCurrentIndex() { return (int []) current.clone(); } */
 

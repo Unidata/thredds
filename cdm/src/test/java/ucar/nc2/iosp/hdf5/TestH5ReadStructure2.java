@@ -3,6 +3,7 @@ package ucar.nc2.iosp.hdf5;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
 import java.util.*;
@@ -87,6 +88,53 @@ public class TestH5ReadStructure2 extends TestCase {
 
     ncfile.close();
     System.out.println("*** testReadH5Structure ok");
+  }
+
+  public void testH5StructureDS() throws java.io.IOException {
+    int a_name = 0;
+    String[] b_name = new String[]{"A fight is a contract that takes two people to honor.",
+        "A combative stance means that you've accepted the contract.",
+        "In which case, you deserve what you get.",
+        "  --  Professor Cheng Man-ch'ing"};
+    String c_name = "Hello!";
+
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestAll.upcShareTestDataDir + "hdf5/complex/compound_complex.h5");
+
+    Variable dset = null;
+    assert (null != (dset = ncfile.findVariable("CompoundComplex")));
+    assert (dset.getDataType() == DataType.STRUCTURE);
+    assert (dset.getRank() == 1);
+    assert (dset.getSize() == 6);
+
+    Dimension d = dset.getDimension(0);
+    assert (d.getLength() == 6);
+
+    Structure s = (Structure) dset;
+
+    // read all with the iterator
+    Structure.Iterator iter = s.getStructureIterator();
+    while (iter.hasNext()) {
+      StructureData sd = (StructureData) iter.next();
+      assert sd.getScalarInt("a_name") == a_name;
+      a_name++;
+      assert sd.getScalarString("c_name").equals(c_name);
+      String[] results = sd.getJavaArrayString(sd.findMember("b_name"));
+      assert results.length == b_name.length;
+      int count = 0;
+      for (String r : results)
+        assert r.equals(b_name[count++]);
+
+      Iterator viter = sd.getMembers().iterator();
+      while (viter.hasNext()) {
+        StructureMembers.Member m = (StructureMembers.Member) viter.next();
+        Array data = sd.getArray(m);
+        NCdump.printArray(data, m.getName(), out, null);
+      }
+    }
+
+    ncfile.close();
+    System.out.println("*** testH5StructureDS ok");
 
   }
 

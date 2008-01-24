@@ -112,7 +112,7 @@ public class ArraySequence extends ArrayStructure {
 
       // LOOK not doing nested structures
       Array data = Array.factory(m.getDataType(), shape);
-      m.setDataObject(data);
+      m.setDataArray(data);
     }
   }
 
@@ -120,9 +120,6 @@ public class ArraySequence extends ArrayStructure {
    * @return the total number of Structures over all the nested sequences.
    */
   public int getTotalNumberOfStructures() { return total; }
-
-  /** Return backing storage in the StructureMembers */
-  public Object getStorage() { return members; }
 
   /**
    * Flatten the Structures into a 1D array of Structures of length getTotalNumberOfStructures().
@@ -139,14 +136,14 @@ public class ArraySequence extends ArrayStructure {
 
   public double getScalarDouble(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.DOUBLE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be double");
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     return data.getDouble( recnum * m.getSize()); // gets first one in the array
   }
 
   public double[] getJavaArrayDouble(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.DOUBLE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be double");
     int count = m.getSize();
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     double[] pa = new double[count];
     for (int i=0; i<count; i++)
       pa[i] = data.getDouble( recnum * count + i);
@@ -155,14 +152,14 @@ public class ArraySequence extends ArrayStructure {
 
   public float getScalarFloat(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.FLOAT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be float");
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     return data.getFloat( recnum * m.getSize()); // gets first one in the array
   }
 
   public float[] getJavaArrayFloat(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.FLOAT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be float");
     int count = m.getSize();
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     float[] pa = new float[count];
     for (int i=0; i<count; i++)
       pa[i] = data.getFloat( recnum * count + i);
@@ -171,14 +168,14 @@ public class ArraySequence extends ArrayStructure {
 
   public byte getScalarByte(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.BYTE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be byte");
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     return data.getByte( recnum * m.getSize()); // gets first one in the array
   }
 
   public byte[] getJavaArrayByte(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.BYTE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be byte");
     int count = m.getSize();
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     byte[] pa = new byte[count];
     for (int i=0; i<count; i++)
       pa[i] = data.getByte( recnum * count + i);
@@ -187,14 +184,14 @@ public class ArraySequence extends ArrayStructure {
 
   public short getScalarShort(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.SHORT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be short");
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     return data.getShort( recnum * m.getSize()); // gets first one in the array
   }
 
   public short[] getJavaArrayShort(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.SHORT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be short");
     int count = m.getSize();
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     short[] pa = new short[count];
     for (int i=0; i<count; i++)
       pa[i] = data.getShort( recnum * count + i);
@@ -203,14 +200,14 @@ public class ArraySequence extends ArrayStructure {
 
   public int getScalarInt(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.INT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be int");
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     return data.getInt( recnum * m.getSize()); // gets first one in the array
   }
 
   public int[] getJavaArrayInt(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.INT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be int");
     int count = m.getSize();
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     int[] pa = new int[count];
     for (int i=0; i<count; i++)
       pa[i] = data.getInt( recnum * count + i);
@@ -219,14 +216,14 @@ public class ArraySequence extends ArrayStructure {
 
   public long getScalarLong(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.LONG) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be long");
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     return data.getLong( recnum * m.getSize()); // gets first one in the array
   }
 
   public long[] getJavaArrayLong(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.LONG) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be long");
     int count = m.getSize();
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     long[] pa = new long[count];
     for (int i=0; i<count; i++)
       pa[i] = data.getLong( recnum * count + i);
@@ -235,14 +232,14 @@ public class ArraySequence extends ArrayStructure {
 
   public char getScalarChar(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.CHAR) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be char");
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     return data.getChar( recnum * m.getSize()); // gets first one in the array
   }
 
   public char[] getJavaArrayChar(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.CHAR) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be char");
     int count = m.getSize();
-    Array data = (Array) m.getDataObject();
+    Array data = (Array) m.getDataArray();
     char[] pa = new char[count];
     for (int i=0; i<count; i++)
       pa[i] = data.getChar( recnum * count + i);
@@ -251,12 +248,12 @@ public class ArraySequence extends ArrayStructure {
 
   public String getScalarString(int recnum, StructureMembers.Member m) {
     if (m.getDataType() == DataType.CHAR) {
-      ArrayChar data = (ArrayChar) m.getDataObject();
+      ArrayChar data = (ArrayChar) m.getDataArray();
       return data.getString( recnum);
     }
 
     if (m.getDataType() == DataType.STRING) {
-      ArrayObject data = (ArrayObject) m.getDataObject();
+      ArrayObject data = (ArrayObject) m.getDataArray();
       return (String) data.getObject( recnum);
     }
 
@@ -269,14 +266,14 @@ public class ArraySequence extends ArrayStructure {
 
     if (m.getDataType() == DataType.CHAR) {
 
-      ArrayChar data = (ArrayChar) m.getDataObject();
+      ArrayChar data = (ArrayChar) m.getDataArray();
       for (int i=0; i<n; i++)
         result[i] = data.getString( recnum * n + i);
       return result;
 
     } else if (m.getDataType() == DataType.STRING) {
 
-      Array data = (Array) m.getDataObject();
+      Array data = (Array) m.getDataArray();
       for (int i=0; i<n; i++)
         result[i] = (String) data.getObject( recnum * n + i);
       return result;
@@ -287,7 +284,7 @@ public class ArraySequence extends ArrayStructure {
 
   public StructureData getScalarStructure(int recnum, StructureMembers.Member m) {
     if (m.getDataType() == DataType.STRUCTURE) {
-      ArrayStructure data = (ArrayStructure) m.getDataObject();
+      ArrayStructure data = (ArrayStructure) m.getDataArray();
       return data.getStructureData( recnum * m.getSize());  // gets first in the array
     }
 
@@ -296,7 +293,7 @@ public class ArraySequence extends ArrayStructure {
 
   public ArrayStructure getArrayStructure(int recnum, StructureMembers.Member m) {
     if (m.getDataType() == DataType.STRUCTURE) {
-      ArrayStructure data = (ArrayStructure) m.getDataObject();
+      ArrayStructure data = (ArrayStructure) m.getDataArray();
       // we need to subset this array structure to deal with just the subset for this recno
       // use "brute force" for now, see if we can finesse later
       int count = m.getSize();

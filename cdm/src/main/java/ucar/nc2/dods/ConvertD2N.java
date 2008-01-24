@@ -95,7 +95,7 @@ public class ConvertD2N {
       }
 
       StructureMembers.Member m = findNested(as, names, v.getShortName());
-      Array mdata = (Array) m.getDataObject();
+      Array mdata = (Array) m.getDataArray();
       if (mdata instanceof ArraySequence) {
         // gotta unroll
         ArraySequence arraySeq = (ArraySequence) mdata;
@@ -114,7 +114,7 @@ public class ConvertD2N {
       return m;
 
     // keep going
-    ArrayStructure nested = (ArrayStructure) m.getDataObject();
+    ArrayStructure nested = (ArrayStructure) m.getDataArray();
     names.remove(0);
     return findNested( nested, names, want);
   }
@@ -241,8 +241,8 @@ public class ConvertD2N {
       } else {
         data = Array.factory(dodsV.getDataType(), dodsV.getShapeAll());
       }
-      m.setDataObject(data);
-      m.setDataObject2(data.getIndexIterator()); // for setting values
+      m.setDataArray(data);
+      m.setDataObject(data.getIndexIterator()); // for setting values
     }
 
     return new ArrayStructureMA( members, dataV.getShapeAll());
@@ -281,8 +281,8 @@ public class ConvertD2N {
     // ArraySequence makes the inner data arrays; now make iterators for them
     List<StructureMembers.Member> memberList = members.getMembers();
     for (StructureMembers.Member m : memberList) {
-      Array data = (Array) m.getDataObject();
-      m.setDataObject2(data.getIndexIterator()); // for setting values
+      Array data = (Array) m.getDataArray();
+      m.setDataObject(data.getIndexIterator()); // for setting values
     }
 
     return aseq;
@@ -296,7 +296,7 @@ public class ConvertD2N {
 
       // get the Array for this member
       String name = member.getName();
-      IndexIterator ii = (IndexIterator) member.getDataObject2();
+      IndexIterator ii = (IndexIterator) member.getDataObject();
 
       // loop over each row, fill up the data
       BaseTypePrimitiveVector pv = (BaseTypePrimitiveVector) darray.getPrimitiveVector();
@@ -314,7 +314,7 @@ public class ConvertD2N {
       for (int j = 0; j < dv.size(); j++) {
         BaseType member_data = (BaseType) dv.elementAt(j);
         StructureMembers.Member member = members.findMember( member_data.getName());
-        IndexIterator ii = (IndexIterator) member.getDataObject2();
+        IndexIterator ii = (IndexIterator) member.getDataObject();
         iconvertData( member_data, ii);
       }
     }
@@ -325,7 +325,7 @@ public class ConvertD2N {
     for (StructureMembers.Member member : mlist) {
 
       // get the Array for this member
-      IndexIterator ii = (IndexIterator) member.getDataObject2();
+      IndexIterator ii = (IndexIterator) member.getDataObject();
 
       // track down the corresponding DODS member
       String name = member.getName();

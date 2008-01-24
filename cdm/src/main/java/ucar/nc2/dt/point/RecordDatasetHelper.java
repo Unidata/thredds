@@ -108,7 +108,7 @@ public class RecordDatasetHelper {
         throw new IllegalArgumentException("File <" + this.ncfile.getLocation() +
                 "> has no unlimited dimension, specify psuedo record dimension with observationDimension global attribute.");
       this.obsDim = this.ncfile.getRootGroup().findDimension(recDimName);
-      this.recordVar = new StructureDS( null, new StructurePseudo(this.ncfile, null, "record", obsDim), false);
+      this.recordVar = new StructureDS( null, new StructurePseudo(this.ncfile, null, "record", obsDim), true);
     }
 
     // create member variables

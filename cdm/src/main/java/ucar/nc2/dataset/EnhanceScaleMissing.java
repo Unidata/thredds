@@ -19,6 +19,8 @@
  */
 package ucar.nc2.dataset;
 
+import ucar.ma2.Array;
+
 /**
  * A Variable decorator that handles missing data, and scale/offset packed data.
  * Specifically, this handles:
@@ -156,18 +158,28 @@ public interface EnhanceScaleMissing {
   public void setMissingDataIsMissing( boolean b);
   /** set whether to use NaNs for missing values, for efficiency */
   public void setUseNaNs(boolean useNaNs);
+  /** @return whether to use NaNs for missing values (for efficiency) */
+  public boolean getUseNaNs();
 
   /** true if Variable data will be converted using scale and offet */
   public boolean hasScaleOffset();
 
-  /** Convert this byte value to a double, using scale/offset/missing value if applicable */
+  /**
+   * Convert data if hasScaleOffset, using scale and offset.
+   * Also if useNaNs = true, return NaN if value is missing data.
+   * @param data convert this
+   * @return converted data.
+   */
+  public Array convert(Array data);
+
+  /* Convert this byte value to a double, using scale/offset/missing value if applicable *
   public double convertScaleOffsetMissing(byte value);
-  /** Convert this short value to a double, using scale/offset/missing value if applicable */
+  /** Convert this short value to a double, using scale/offset/missing value if applicable *
   public double convertScaleOffsetMissing(short value);
-  /** Convert this int value to a double, using scale/offset/missing value if applicable */
+  /** Convert this int value to a double, using scale/offset/missing value if applicable *
   public double convertScaleOffsetMissing(int value);
-  /** Convert this long value to a double, using scale/offset/missing value if applicable */
+  /** Convert this long value to a double, using scale/offset/missing value if applicable *
   public double convertScaleOffsetMissing(long value);
-  /** Convert this double value using scale/offset/missing value if applicable */
-  public double convertScaleOffsetMissing(double value);
+  /** Convert this double value using scale/offset/missing value if applicable *
+  public double convertScaleOffsetMissing(double value); */
 }

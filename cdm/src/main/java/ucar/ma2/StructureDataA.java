@@ -74,7 +74,7 @@ public class StructureDataA extends StructureData {
     if (m.getDataType() == DataType.DOUBLE)
       return sa.getScalarDouble(recno, m);
 
-    Array data = getArray(m);
+    Array data = getArray(m); // LOOK: might be able to use sa.getScalarObject()
     return data.getDouble(Index.scalarIndex);
   }
 

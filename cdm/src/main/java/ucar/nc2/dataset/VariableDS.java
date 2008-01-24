@@ -89,7 +89,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
    * @param orgVar the original Variable to wrap. The original Variable is not modified.
    *    Must not be a Structure, use StructureDS instead.
    * @param enhance if true, handle scale/offset/missing values; this can change DataType and data values.
-   *   You can also call enhance() later.
+   *   You can also call enhance() later. If orgVar is VariableDS, then enhance is inherited from there,
+   *   and this parameter is ignored.
    */
   public VariableDS( Group g, Variable orgVar, boolean enhance) {
     super(orgVar);
@@ -97,7 +98,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     if (orgVar instanceof Structure)
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
 
-    // dont share cache, iosp
+    // dont share cache, iosp : all IO is delegated
     this.ncfile = null;
     this.spiObject = null;
     this.preReader = null;
@@ -108,15 +109,19 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     this.orgDataType = orgVar.getDataType();
     if (g != null) this.group = g; // otherwise super() sets group; this affects the long name.
 
-    //if (orgVar instanceof VariableDS) {
-    //  VariableDS ncVarDS = (VariableDS) orgVar;
-    //}
+    if (orgVar instanceof VariableDS) {
+      VariableDS ncVarDS = (VariableDS) orgVar;
+      this.proxy = ncVarDS.proxy;
+      this.smProxy = ncVarDS.smProxy;
+      this.isEnhanced = ncVarDS.isEnhanced;
 
-    this.proxy = new EnhancementsImpl( this);
-    if (enhance) {
-      enhance();
     } else {
-      this.smProxy = new EnhanceScaleMissingImpl();
+      this.proxy = new EnhancementsImpl( this);
+      if (enhance) {
+        enhance();
+      } else {
+        this.smProxy = new EnhanceScaleMissingImpl();
+      }
     }
   }
 
@@ -144,6 +149,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
 
   /** recalc scale/offset/missing value. This may change the DataType */
   public void enhance() {
+    if (orgVar instanceof VariableDS) return; // LOOK ????
+
     this.smProxy = new EnhanceScaleMissingImpl( this);
     if (smProxy.hasScaleOffset() && (smProxy.getConvertedDataType() != getDataType()))
       setDataType( smProxy.getConvertedDataType());
@@ -186,6 +193,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
 
   // EnhanceScaleMissing interface
+
+
+  public Array convert(Array data) {
+    return smProxy.convert( data);
+  }
 
   public double getValidMax() {
     return smProxy.getValidMax();
@@ -247,12 +259,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     smProxy.setUseNaNs( useNaNs);
   }
 
-  /**
-   * Convert data if hasScaleOffset, using scale and offset.
-   * Also if useNaNs = true, return NaN if value is missing data.
-   * @param value data to convert
-   * @return converted data.
-   */
+  public boolean getUseNaNs() {
+    return smProxy.getUseNaNs() ;
+  }
+
   public double convertScaleOffsetMissing(byte value) {
     return smProxy.convertScaleOffsetMissing( value);
   }
@@ -267,7 +277,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
   public double convertScaleOffsetMissing(double value) {
     return smProxy.convertScaleOffsetMissing( value);
-  }
+  } 
 
   /*
    * A VariableDS usually wraps another Variable.
@@ -330,19 +340,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       return Array.factoryConstant( dataType.getPrimitiveClassType(), getShape(), data);
     }
 
-    if (smProxy.hasScaleOffset())
-      result = smProxy.convertScaleOffset( result);
-    else if (smProxy.hasMissing() && smProxy.getUseNaNs())
-      result = smProxy.convertMissing( result);
-
-    // LOOK - could try to cache modified array
-    /* if (isCaching()) {
-      cache.data = result;
-      if (debugCaching) System.out.println("cacheDS "+getName());
-      return cache.data.copy(); // dont let users get their nasty hands on cached data
-    } */
-
-    return result;
+    // LOOK not caching
+    
+    return convert(result);
   }
 
   // section of regular Variable
@@ -364,12 +364,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       return Array.factoryConstant( dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
-    if (smProxy.hasScaleOffset())
-      result = smProxy.convertScaleOffset( result);
-    else if (smProxy.hasMissing() && smProxy.getUseNaNs())
-      result = smProxy.convertMissing( result);
-
-    return result;
+    return convert(result);
   }
 
   // structure-member Variables.

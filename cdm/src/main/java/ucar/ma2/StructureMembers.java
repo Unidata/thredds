@@ -19,6 +19,8 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.VariableIF;
+
 import java.util.*;
 
 /**
@@ -145,7 +147,8 @@ public class StructureMembers {
     private StructureMembers members;
 
     // optional, use depends on ArrayStructure subclass
-    private Object dataObject, dataObject2;
+    private Array dataArray;
+    private Object dataObject;
     private int dataParam;
 
     public Member(String name, String desc, String units, DataType dtype, int[] shape) {
@@ -274,8 +277,24 @@ public class StructureMembers {
     }
 
     /**
-     * Get an opaque data object, for use behind the scenes. May be null
+     * Get the data array, if any. Used for implementation, DO NOT USE DIRECTLY!
      * @return  data object, may be null
+     */
+    public Array getDataArray() {
+      return dataArray;
+    }
+
+    /**
+     * Set the data array. Used for implementation, DO NOT USE DIRECTLY!
+     * @param data set to this value
+     */
+    public void setDataArray(Array data) {
+      this.dataArray = data;
+    }
+
+    /**
+     * Get an opaque data object, for use behind the scenes. May be null
+     * @return data object, may be null
      */
     public Object getDataObject() {
       return dataObject;
@@ -289,21 +308,14 @@ public class StructureMembers {
       this.dataObject = o;
     }
 
-    /**
-     * Get an opaque data object, for use behind the scenes. May be null
-     * @return data object, may be null
-     */
-    public Object getDataObject2() {
-      return dataObject2;
+    public void setVariableInfo(VariableIF v) {
+      String u = v.getUnitsString();
+      if (u != null) units = u;
+      String d = v.getDescription();
+      if (d != null) desc = d;
+      dtype = v.getDataType();
     }
 
-    /**
-     * Set an opaque data object, for use behind the scenes.
-     * @param o set to this value
-     */
-    public void setDataObject2(Object o) {
-      this.dataObject2 = o;
-    }
   }
 
 }

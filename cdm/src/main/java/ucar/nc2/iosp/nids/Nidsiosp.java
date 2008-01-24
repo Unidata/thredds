@@ -408,19 +408,19 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     // these are the offsets into the record
     data = Array.factory(short.class, new int[]{vlen}, sArray[0]);
     StructureMembers.Member m = members.findMember("sValue");
-    if (m != null) m.setDataObject(data);
+    if (m != null) m.setDataArray(data);
     data = Array.factory(short.class, new int[]{vlen}, sArray[1]);
     m = members.findMember("x_start");
-    m.setDataObject(data);
+    m.setDataArray(data);
     data = Array.factory(short.class, new int[]{vlen}, sArray[2]);
     m = members.findMember("y_start");
-    m.setDataObject(data);
+    m.setDataArray(data);
     data = Array.factory(short.class, new int[]{vlen}, sArray[3]);
     m = members.findMember("x_end");
-    m.setDataObject(data);
+    m.setDataArray(data);
     data = Array.factory(short.class, new int[]{vlen}, sArray[4]);
     m = members.findMember("y_end");
-    m.setDataObject(data);
+    m.setDataArray(data);
     return asma;
   }
 
@@ -1133,19 +1133,19 @@ asw.setStructureData(sdata, i);
     // these are the offsets into the record
     data = Array.factory(short.class, new int[]{vlen}, sArray[0]);
     StructureMembers.Member m = members.findMember("iValue");
-    m.setDataObject(data);
+    m.setDataArray(data);
     data = Array.factory(short.class, new int[]{vlen}, sArray[1]);
     m = members.findMember("x_start");
-    m.setDataObject(data);
+    m.setDataArray(data);
     data = Array.factory(short.class, new int[]{vlen}, sArray[2]);
     m = members.findMember("y_start");
-    m.setDataObject(data);
+    m.setDataArray(data);
     data = Array.factory(short.class, new int[]{vlen}, sArray[3]);
     m = members.findMember("x_end");
-    m.setDataObject(data);
+    m.setDataArray(data);
     data = Array.factory(short.class, new int[]{vlen}, sArray[4]);
     m = members.findMember("y_end");
-    m.setDataObject(data);
+    m.setDataArray(data);
     return asma;
 
   }

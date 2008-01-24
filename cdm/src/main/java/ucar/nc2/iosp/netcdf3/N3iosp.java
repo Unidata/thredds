@@ -257,7 +257,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
     // note dependency on raf; should probably defer to subclass
     // loop over records
-    byte[] result = (byte[]) structureArray.getStorage();
+    byte[] result = structureArray.getByteBuffer().array();
     int count = 0;
     for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += recordRange.stride()) {
       if (debugRecord) System.out.println(" read record " + recnum);
@@ -300,8 +300,8 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       System.arraycopy(m.getShape(), 0, fullShape, 1, rank); // the remaining dimensions
 
       Array data = Array.factory(m.getDataType(), fullShape);
-      m.setDataObject( data);
-      m.setDataObject2( data.getIndexIterator());
+      m.setDataArray( data);
+      m.setDataObject( data.getIndexIterator());
     }
     members.setStructureSize(recsize);
     ArrayStructureMA structureArray = new ArrayStructureMA(members, new int[]{nrecords});
@@ -322,7 +322,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
       // transfer desired variable(s) to result array(s)
       for (StructureMembers.Member m : members.getMembers()) {
-        IndexIterator dataIter = (IndexIterator) m.getDataObject2();
+        IndexIterator dataIter = (IndexIterator) m.getDataObject();
         IospHelper.copyFromByteBuffer(bb, m, dataIter);
       }
     }
@@ -674,7 +674,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   @Override
   public Object sendIospMessage(Object message) {
     if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
-      return headerParser.addRecordStructure();
+      return headerParser.makeRecordStructure();
     else if (message == NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE)
       return headerParser.removeRecordStructure();
     return null;

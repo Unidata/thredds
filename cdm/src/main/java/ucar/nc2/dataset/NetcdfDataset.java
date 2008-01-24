@@ -760,7 +760,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       g.addAttribute(a);
 
     for (Variable v : from.getVariables())
-      g.addVariable(convertVariable(g, v));
+      g.addVariable( convertVariable(g, v));
 
     for (Group nested : from.getGroups()) {
       Group nnested = new Group(this, g, nested.getShortName());
@@ -772,8 +772,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private Variable convertVariable(Group g, Variable v) {
     Variable newVar;
     if (v instanceof Structure) {
-      newVar = new StructureDS(g, (Structure) v, false);
-      convertStructure(g, (Structure) newVar);
+      newVar = new StructureDS(g, (Structure) v, true);
     } else {
       newVar = new VariableDS(g, v, false); // enhancement done later
     }
@@ -781,7 +780,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   // take all the members in newStructure, and wrap them in a new VariableDS or StructureDS
-  // We do this when wrapping a netcdfFile, or when adding the record Structure.
+  /* We do this when wrapping a netcdfFile, or when adding the record Structure.
   private void convertStructure(Group g, Structure newStructure) {
     Variable newVar;
     ArrayList<Variable> newList = new ArrayList<Variable>();
@@ -798,7 +797,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // replaceStructureMembers(newStructure, newList);
     newStructure.setMemberVariables(newList);
-  }
+  } */
 
   //////////////////////////////////////
 
@@ -823,14 +822,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     for (Variable v : getVariables()) {
       if (!v.isUnlimited()) continue;
 
-      VariableDS memberV = new VariableDS(root, v, isEnhancedScaleOffset());
-      memberV.setParentStructure(newStructure);
-      memberV.createNewCache(); // decouple caching
-      orgV = orgStructure.findVariable(v.getShortName());
-      if (orgV != null)
-        memberV.setOriginalVariable(orgV);
+      VariableDS memberV = new VariableDS(root, v, false);  // dont enhance - underlying variable is enhance
+      memberV.setParentStructure(newStructure); // reparent
+      //memberV.createNewCache(); // decouple caching
+      //orgV = orgStructure.findVariable(v.getShortName());
+      //if (orgV != null)
+      //  memberV.setOriginalVariable(orgV);
 
-      //remove record dimension
+      // remove record dimension
       List<Dimension> dims = new ArrayList<Dimension>(v.getDimensions());
       dims.remove(0);
       memberV.setDimensions(dims);
@@ -840,6 +839,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     root.addVariable(newStructure);
     finish();
+
+    //if (isEnhancedScaleOffset())
+    //  newStructure.enhance();
     return true;
   }
 

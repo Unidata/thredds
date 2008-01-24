@@ -84,7 +84,7 @@ public class StructurePseudo extends Structure {
     for (Variable v : orgVariables) {
       Array data = v.read();
       StructureMembers.Member m = smembers.findMember(v.getShortName());
-      m.setDataObject(data);
+      m.setDataArray(data);
     }
 
     return asma;
@@ -112,7 +112,7 @@ public class StructurePseudo extends Structure {
       vsection.set(0, r);
       Array data = v.read(vsection);
       StructureMembers.Member m = smembers.findMember(v.getShortName());
-      m.setDataObject(data);
+      m.setDataArray(data);
     }
 
     return asma;

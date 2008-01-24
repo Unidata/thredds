@@ -286,7 +286,7 @@ public class ArrayChar extends Array {
     int rank = getRank();
     if (rank != 1)
       throw new IllegalArgumentException("ArayChar.getString rank must be 1");
-    int strLen = getShape()[0];
+    int strLen = indexCalc.getShape(0);
 
     int count = 0;
     for (int k = 0; k < strLen; k++) {
@@ -344,7 +344,7 @@ public class ArrayChar extends Array {
     if (rank == 1)
       return getString();
 
-    int strLen = getShape()[rank - 1];
+    int strLen = indexCalc.getShape(rank - 1);
 
     char[] carray = new char[strLen];
     int count = 0;
@@ -370,7 +370,7 @@ public class ArrayChar extends Array {
     int rank = getRank();
     if (rank != 1)
       throw new IllegalArgumentException("ArayChar.setString rank must be 1");
-    int arrayLen = getShape()[0];
+    int arrayLen = indexCalc.getShape(0);
     int strLen = Math.min(val.length(), arrayLen);
 
     for (int k = 0; k < strLen; k++)
@@ -434,7 +434,7 @@ public class ArrayChar extends Array {
     int rank = getRank();
     if (rank == 0)
       throw new IllegalArgumentException("ArrayChar.setString rank must not be 0");
-    int arrayLen = getShape()[rank - 1];
+    int arrayLen = indexCalc.getShape(rank - 1);
     int strLen = Math.min(val.length(), arrayLen);
 
     int count = 0;
@@ -832,7 +832,7 @@ public class ArrayChar extends Array {
       if (rank == 0)
         strLen = 1;
       else
-        strLen = getShape()[rank - 1];
+        strLen = indexCalc.getShape(rank - 1);
       carray = new char[strLen];
     }
 
@@ -861,7 +861,7 @@ public class ArrayChar extends Array {
    * @return 1D ArrayObject of Strings
    */
   public ArrayObject make1DStringArray() {
-    int nelems = (getRank() == 0) ? 1 : (int) getSize() / getShape()[getRank() - 1];
+    int nelems = (getRank() == 0) ? 1 : (int) getSize() / indexCalc.getShape(getRank()-1);
     Array sarr = Array.factory(String.class, new int[]{nelems});
     IndexIterator newsiter = sarr.getIndexIterator();
 

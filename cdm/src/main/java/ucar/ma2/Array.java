@@ -316,7 +316,7 @@ public abstract class Array {
    * @return array whose length is the rank of this
    * Array and whose elements represent the length of each of its indices.
    */
-  public int [] getShape() { return indexCalc.getShape(); }
+  public int[] getShape() { return indexCalc.getShape(); }
 
   /**
    * Get the total number of elements in the array.

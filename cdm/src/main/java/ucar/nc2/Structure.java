@@ -61,10 +61,10 @@ public class Structure extends Variable {
     memberHash = new HashMap<String, Variable>();
   }
 
-
   /** Copy constructor.
    * @param from  copy from this
-   * @param reparent : if true, reparent the members. if so, cant use 'from' anymore
+   * @param reparent : if true, reparent the members, which modifies the original.
+   *   In effect, this says "Im not using the original Structure anywhere else".
    */
   protected Structure( Structure from, boolean reparent) {
     super( from);
@@ -85,11 +85,9 @@ public class Structure extends Variable {
    * @param members list of Variable
    * @return subsetted Structure
    */
-  public Structure subset( List<Variable> members) {
-    Structure result = new Structure(this.ncfile, this.group, this.parent, this.shortName);
-    result.setDimensions( this.getDimensions());
-    for (Variable m : members)
-      result.addMemberVariable(m);
+  public Structure subsetMembers( List<Variable> members) {
+    Structure result = new Structure(this, false);
+    result.setMemberVariables(members);
     result.isSubset = true;
     return result;
   }
@@ -141,7 +139,6 @@ public class Structure extends Variable {
     if (isImmutable()) throw new IllegalStateException("Cant modify");
     members = new ArrayList<Variable>();
     memberHash = new HashMap<String, Variable>(2*vars.size());
-    //smembers = null;
     for (Variable v : vars) {
       members.add(v);
       memberHash.put( v.getShortName(), v);

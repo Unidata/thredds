@@ -1496,7 +1496,7 @@ public class NetcdfFile {
     StructureMembers members = new StructureMembers(v.getName());
     StructureMembers.Member member = new StructureMembers.Member(v.getShortName(), v.getDescription(),
             v.getUnitsString(), v.getDataType(), v.getShape());
-    member.setDataObject(result);
+    member.setDataArray(result);
 
     // LOOK this only works for a single structure, what about nested ?
     // LOOK what about scalar, rank - 0 ??

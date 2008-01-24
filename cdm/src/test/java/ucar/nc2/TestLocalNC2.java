@@ -22,6 +22,7 @@ package ucar.nc2;
 import junit.framework.*;
 import ucar.nc2.iosp.TestIndexer;
 import ucar.nc2.iosp.TestRegularLayout;
+import ucar.nc2.dataset.TestScaleOffsetMissingForStructure;
 
 /**
  * ucar.nc2 core testing, using only local files (part of release)
@@ -71,6 +72,8 @@ public class TestLocalNC2 {
     suite.addTest(new TestSuite(TestStructureArray.class)); //
 
     suite.addTest(new TestSuite(TestReadStrides.class));// */
+
+    suite.addTestSuite( TestScaleOffsetMissingForStructure.class);
 
     return suite;
   }

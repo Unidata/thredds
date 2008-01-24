@@ -147,7 +147,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     ArrayStructureBB structureArray = new ArrayStructureBB(members, section.getShape());  // LOOK subset
 
     // loop over records
-    byte[] result = (byte[]) structureArray.getStorage();
+    byte[] result = structureArray.getByteBuffer().array();
 
     /*if (vinfo.isChunked) {
       InputStream is = getChunkedInputStream(vinfo);

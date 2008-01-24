@@ -24,6 +24,8 @@ import ucar.nc2.*;
 import ucar.ma2.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An "enhanced" Structure.
@@ -68,20 +70,32 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     this.group = g;
     this.orgVar = orgVar;
     this.proxy = new EnhancementsImpl(this);
-    this.smProxy = new EnhanceScaleMissingImpl(); // scale/offset not applied to Structure
+    this.smProxy = new EnhanceScaleMissingImpl(); // scale/offset not applied to Structure, only members.
 
-    this.proxy = new EnhancementsImpl( this);
-    if (false) {
-      enhance();
-    } else {
-      this.smProxy = new EnhanceScaleMissingImpl();
+    // dont share cache, iosp : all IO is delegated
+    this.ncfile = null;
+    this.spiObject = null;
+    this.preReader = null;
+    this.postReader = null;
+    createNewCache();
+
+    if (orgVar instanceof StructureDS)
+      return;
+
+    // all member variables must be wrapped, reparented
+    List<Variable> newList = new ArrayList<Variable>(members.size());
+    for (Variable v : members) {
+      Variable newVar = (v instanceof Structure) ? new StructureDS(g, (Structure) v, reparent) : new VariableDS(g, v, false);
+      newVar.setParentStructure( this);
+      newList.add(newVar);
     }
+    setMemberVariables(newList);
   }
 
   // for section and slice
   @Override
   protected Variable copy() {
-    return new StructureDS(null, this, false); // dont need to enhance
+    return new StructureDS(null, this, false); // dont need to reparent, enhance
   }
 
    /*
@@ -135,14 +149,12 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       result = postReader.read( this, null);
     else if (orgVar != null)
       result = orgVar.read();
-    else { // return fill value in a "constant array"; this allow NcML to act as ncgen
+    else { // return fill value in a "constant array"; this allow NcML to act as ncgen LOOK not tested?
       Object data = smProxy.getFillValue( getDataType());
       return Array.factoryConstant( dataType.getPrimitiveClassType(), getShape(), data);
     }
 
-    ArrayStructure as = (ArrayStructure) result;
-    //enhanceMembers(as.getStructureMembers()); // LOOK enhancing ??
-    return as;
+    return convert( result);
   }
 
   // section of regular Variable
@@ -156,31 +168,12 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       result = postReader.read( this, section, null);
     else if (orgVar != null)
       result = orgVar.read(section);
-    else  { // return fill value in a "constant array"
+    else  { // return fill value in a "constant array" LOOK not tested?
       Object data = smProxy.getFillValue( getDataType());
       return Array.factoryConstant( dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
-    ArrayStructure as = (ArrayStructure) result;
-    //enhanceMembers(as.getStructureMembers());
-    return as;
-  }
-
-  /* non-structure-member Variables.
-  private void enhanceMembers(StructureMembers members) {
-    for (StructureMembers.Member m : members.getMembers()) {
-      VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
-      m.setVariableEnhanced(v2);
-    }
-  } */
-
-    /** recalc any enhancement info */
-  public void enhance() {
-    for (Variable v : getVariables()) {
-      VariableEnhanced ve = (VariableEnhanced) v;
-      ve.enhance();
-    }
-    this.isEnhanced = true;
+    return convert( result);
   }
 
   /** If this Variable has been "enhanced", ie processed for scale/offset/missing value
@@ -191,6 +184,30 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   ///////////////////////////////////////
 
   // VariableEnhanced implementation
+
+  public Array convert(Array data) {
+    ArrayStructure as = (ArrayStructure) data;
+    StructureMembers sm = as.getStructureMembers();
+    for (StructureMembers.Member m : sm.getMembers()) {
+      VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
+      if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs())) {
+        Array mdata = as.getMemberArray(m); // LOOK can we use ASBB directly?
+        mdata = v2.convert( mdata);
+        as.setMemberArray(m, mdata);
+      }
+      m.setVariableInfo(v2);
+    }
+    return as;
+  }
+
+    /** recalc any enhancement info */
+  public void enhance() {
+    for (Variable v : getVariables()) {
+      VariableEnhanced ve = (VariableEnhanced) v;
+      ve.enhance();
+    }
+    this.isEnhanced = true;
+  }
 
   public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
     proxy.addCoordinateSystem(p0);
@@ -207,10 +224,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   public java.lang.String getDescription() {
     return proxy.getDescription();
   }
-
-  /* public ucar.nc2.Variable getOriginalVariable() {
-   return proxy.getOriginalVariable();
- } */
 
   public java.lang.String getUnitsString() {
     return proxy.getUnitsString();
@@ -276,13 +289,17 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     smProxy.setUseNaNs(useNaNs);
   }
 
-  /**
+  public boolean getUseNaNs() {
+    return smProxy.getUseNaNs() ;
+  }
+
+  /*
    * Convert data if hasScaleOffset, using scale and offset.
    * Also if useNaNs = true, return NaN if value is missing data.
    *
    * @param value data to convert
    * @return converted data.
-   */
+   *
   public double convertScaleOffsetMissing(byte value) {
     return smProxy.convertScaleOffsetMissing(value);
   }
@@ -301,7 +318,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   public double convertScaleOffsetMissing(double value) {
     return smProxy.convertScaleOffsetMissing(value);
-  }
+  } */
 
   /**
    * Extract scalar value and convert to double value, with scale, offset if applicable.

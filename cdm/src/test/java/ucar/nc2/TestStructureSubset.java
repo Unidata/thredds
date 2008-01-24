@@ -52,7 +52,7 @@ public class TestStructureSubset extends TestCase {
     vars.add( record.findVariable("wind_speed"));
     vars.add( record.findVariable("wind_gust"));
     vars.add( record.findVariable("report"));
-    Structure subset = record.subset(vars);
+    Structure subset = record.subsetMembers(vars);
 
     // read entire subset
     ArrayStructure dataAll = (ArrayStructure) subset.read();

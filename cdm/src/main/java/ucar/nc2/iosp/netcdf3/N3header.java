@@ -282,7 +282,7 @@ public class N3header {
     return found;
   }
 
-  synchronized boolean addRecordStructure() {
+  synchronized boolean makeRecordStructure() {
     // create record structure
     if (uvars.size() > 0) {
       Structure recordStructure = new Structure(ncfile, ncfile.getRootGroup(), null, "record");

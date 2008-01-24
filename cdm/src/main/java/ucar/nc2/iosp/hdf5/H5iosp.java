@@ -250,7 +250,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
       // place data into an ArrayStructureBB for efficiency
       ArrayStructureBB asbb = new ArrayStructureBB(sm, shape);
-      byte[] byteArray = (byte[]) asbb.getStorage();
+      byte[] byteArray = asbb.getByteBuffer().array();
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
         if (chunk == null) continue;

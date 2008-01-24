@@ -241,7 +241,7 @@ public class TestConvertD2N {
         out.print(space+" "+member.getDataType()+" "+member.getName());
         showShape( member.getShape(), out);
         out.println();
-        Object data = member.getDataObject();
+        Object data = member.getDataArray();
         if ((data != null) && (data instanceof Array))  {
           Array array = (Array) data;
           showArray( member.getName(), array, out, space+"  ");

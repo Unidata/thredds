@@ -87,102 +87,116 @@ public class ArrayStructureW extends ArrayStructure {
     this.sdata = sdata;
   }   */
 
-  /**
-   * Get underlying StructureData primitive array storage. CAUTION! You may invalidate your warrentee!
-   */
-  public Object getStorage() { return sdata; }
-
   public Array getArray(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getArray(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getArray(m);
   }
 
   public double getScalarDouble(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getScalarDouble(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getScalarDouble(m);
   }
 
   public double[] getJavaArrayDouble(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getJavaArrayDouble(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getJavaArrayDouble(m);
   }
 
   public float getScalarFloat(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getScalarFloat(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getScalarFloat(m);
   }
 
   public float[] getJavaArrayFloat(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getJavaArrayFloat(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getJavaArrayFloat(m);
   }
 
   public byte getScalarByte(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getScalarByte(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getScalarByte(m);
   }
 
   public byte[] getJavaArrayByte(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getJavaArrayByte(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getJavaArrayByte(m);
   }
 
   public short getScalarShort(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getScalarShort(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getScalarShort(m);
   }
 
   public short[] getJavaArrayShort(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getJavaArrayShort(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getJavaArrayShort(m);
   }
 
   public int getScalarInt(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getScalarInt(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getScalarInt(m);
   }
 
   public int[] getJavaArrayInt(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getJavaArrayInt(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getJavaArrayInt(m);
   }
 
   public long getScalarLong(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getScalarLong(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getScalarLong(m);
   }
 
   public long[] getJavaArrayLong(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getJavaArrayLong(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getJavaArrayLong(m);
   }
 
   public char getScalarChar(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getScalarChar(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getScalarChar(m);
   }
 
   public char[] getJavaArrayChar(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getJavaArrayChar(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getJavaArrayChar(m);
   }
 
   public String getScalarString(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getScalarString(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getScalarString(m);
   }
 
   public String[] getJavaArrayString(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getJavaArrayString(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getJavaArrayString(m);
   }
 
   public StructureData getScalarStructure(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getScalarStructure(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getScalarStructure(m);
   }
 
   public ArrayStructure getArrayStructure(int recnum, StructureMembers.Member m) {
+    if (m.getDataArray() != null) return super.getArrayStructure(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getArrayStructure(m);
   }

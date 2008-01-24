@@ -54,19 +54,19 @@ public class TestStructureArray extends TestCase {
     StructureMembers.Member m = new StructureMembers.Member("f1", "desc", "units", DataType.FLOAT, new int[] {1});
     members.addMember( m);
     Array data = Array.factory(DataType.FLOAT, new int[] {4});
-    m.setDataObject( data);
+    m.setDataArray( data);
     fill(data);
 
     m = new StructureMembers.Member("f2", "desc", "units", DataType.SHORT, new int[] {3});
     members.addMember( m);
     data = Array.factory(DataType.SHORT, new int[] {4, 3});
-    m.setDataObject( data);
+    m.setDataArray( data);
     fill(data);
 
     m = new StructureMembers.Member("nested1", "desc", "units", DataType.STRUCTURE, new int[] {9});
     members.addMember( m);
     data = makeNested1( m);
-    m.setDataObject( data);
+    m.setDataArray( data);
 
     ArrayStructureMA as = new ArrayStructureMA( members, new int[] {4});
     testArrayStructure( as);
@@ -89,25 +89,25 @@ public class TestStructureArray extends TestCase {
     StructureMembers.Member m = new StructureMembers.Member("g1", "desc", "units", DataType.INT, new int[] {1});
     members.addMember( m);
     Array data = Array.factory(DataType.INT, new int[] {4, 9});
-    m.setDataObject( data);
+    m.setDataArray( data);
     fill(data);
 
     m = new StructureMembers.Member("g2", "desc", "units", DataType.DOUBLE, new int[] {2});
     members.addMember( m);
     data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 2});
-    m.setDataObject( data);
+    m.setDataArray( data);
     fill(data);
 
     m = new StructureMembers.Member("g3", "desc", "units", DataType.DOUBLE, new int[] {3, 4});
     members.addMember( m);
     data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 3, 4});
-    m.setDataObject( data);
+    m.setDataArray( data);
     fill(data);
 
     m = new StructureMembers.Member("nested2", "desc", "units", DataType.STRUCTURE, new int[] {7});
     members.addMember( m);
     data = makeNested2( m);
-    m.setDataObject( data);
+    m.setDataArray( data);
 
     return new ArrayStructureMA( members, new int[] {4, 9});
   }
@@ -119,13 +119,13 @@ public class TestStructureArray extends TestCase {
     StructureMembers.Member m = new StructureMembers.Member("h1", "desc", "units", DataType.INT, new int[] {1});
     members.addMember( m);
     Array data = Array.factory(DataType.INT, new int[] {4, 9, 7});
-    m.setDataObject( data);
+    m.setDataArray( data);
     fill(data);
 
     m = new StructureMembers.Member("h2", "desc", "units", DataType.DOUBLE, new int[] {2});
     members.addMember( m);
     data = Array.factory(DataType.DOUBLE, new int[] {4, 9, 7, 2});
-    m.setDataObject( data);
+    m.setDataArray( data);
     fill(data);
 
     return new ArrayStructureMA( members, new int[] {4, 9, 7});
