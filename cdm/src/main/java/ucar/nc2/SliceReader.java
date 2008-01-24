@@ -52,7 +52,7 @@ class SliceReader implements ProxyReader {
       log.error("InvalidRangeException in slice, var="+orgVar.getName());
       throw new IllegalStateException(e.getMessage());
     }
-    data.reduce( sliceDim);
+    data = data.reduce( sliceDim);
     return data;
   }
 

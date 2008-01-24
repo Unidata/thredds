@@ -78,8 +78,7 @@ public class TestStructureArray extends TestCase {
     ArrayStructure nestedData2 = nestedData.getArrayStructure(6, nested2);
     StructureMembers.Member nested3 = nestedData2.getStructureMembers().findMember("h1");
     int val = nestedData2.getScalarInt(4, nested3);
-    assert (val == 264);
-    System.out.println("value="+val);
+    assert (val == 264) : val;
   }
 
   public ArrayStructure makeNested1(StructureMembers.Member parent) throws IOException, InvalidRangeException {

@@ -130,7 +130,7 @@ public class TestARMTrajectoryObsDataset extends TestCase
     }
 
     String u = sdata.findMember( "alt").getUnitsString();
-    assert u.equals( "meters above Mean Sea Level") : "traj.getPointObsData().getData().findMember( \"alt\") units <" + u + "> not as expected";
+    assert u.equals( "meters") : "traj.getPointObsData().getData().findMember( \"alt\") units <" + u + "> not as expected";
     //assertTrue( "traj.getPointObsData().getData().findMember( \"alt\") units <" + u + "> not as expected <meters>.",
     //            u.equals( "meters") );
 

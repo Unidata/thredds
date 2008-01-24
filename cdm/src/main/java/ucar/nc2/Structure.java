@@ -46,7 +46,7 @@ public class Structure extends Variable {
   protected HashMap<String, Variable> memberHash;
   protected boolean isSubset;
 
-  /** Constructor
+   /* Create a Structure "from scratch". Also must call setDimensions().
    *
    * @param ncfile    the containing NetcdfFile.
    * @param group     the containing group; if null, use rootGroup

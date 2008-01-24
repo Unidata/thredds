@@ -35,6 +35,8 @@ import java.io.PrintStream;
  */
 
 public class N3header {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
+
   static final byte[] MAGIC = new byte[]{0x43, 0x44, 0x46, 0x01};
   static final int MAGIC_DIM = 10;
   static final int MAGIC_VAR = 11;
@@ -288,14 +290,20 @@ public class N3header {
       Structure recordStructure = new Structure(ncfile, ncfile.getRootGroup(), null, "record");
       recordStructure.setDimensions(udim.getName());
       for (Variable v : uvars) {
-        Variable memberV = new Variable(v);
+        Variable memberV = null;
+        try {
+          memberV = v.slice(0,0); // set unlimited dimension to 0
+        } catch (InvalidRangeException e) {
+          log.error("Cant slice variable "+v);
+          return false;
+        }
         memberV.setParentStructure(recordStructure);
         //memberV.createNewCache(); // decouple caching - LOOK could use this ??
 
         //remove record dimension
-        List<Dimension> dims = new ArrayList<Dimension>(v.getDimensions());
-        dims.remove(0);
-        memberV.setDimensions(dims);
+        //List<Dimension> dims = new ArrayList<Dimension>(v.getDimensions());
+        //dims.remove(0);
+        //memberV.setDimensions(dims);
 
         recordStructure.addMemberVariable(memberV);
       }
