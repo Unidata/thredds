@@ -76,17 +76,19 @@ import java.util.*;
 
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static public enum EnhanceMode {
-    None, /** no enhancement */
-    ScaleMissing, /** add scale/offset and missing values */
-    CoordSystems, /** build coordinate systems */
-    All  /** do all enhancements */
+    /** no enhancement*/
+    None,
+    /** add scale/offset and missing values */
+    ScaleMissing,
+    /** build coordinate systems */
+    CoordSystems,
+    /** do all enhancements */
+    All
   }
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
   static protected boolean useNaNs = true;
   static protected boolean fillValueIsMissing = true, invalidDataIsMissing = true, missingDataIsMissing = true;
-
-  // modes
 
   /**
    * Set whether to use NaNs for missing values, for efficiency
@@ -499,6 +501,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
+   * Get whether the dataset enhancment mode.
    * @return whether the dataset enhancment mode.
    */
   public EnhanceMode getEnhanceMode() {
@@ -506,6 +509,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
+   * Get whether the dataset has scale/ offset enhancement.
    * @return whether the dataset has scale/ offset enhancement.
    */
   public boolean isEnhancedScaleOffset() {
@@ -513,6 +517,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
+   * Get whether the dataset has coordinate systems added.
    * @return whether the dataset has coordinate systems added.
    */
   public boolean isEnhancedCoordSystems() {
@@ -537,13 +542,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return coordAxes;
   }
 
-  /*
-   * @return if Coordinate System metadata been added.
-   *
-  public boolean getCoordSysWereAdded() {
-    return coordSysWereAdded;
-  } */
-
   /**
    * Clear any Coordinate System metadata.
    */
@@ -553,13 +551,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     coordTransforms = new ArrayList<CoordinateTransform>();
     coordSysWereAdded = false;
   }
-   /**
+
+  /**
    * Set whether Coordinate System metadata has been added.
+   * @param coordSysWereAdded set to this value
    */
   public void setCoordSysWereAdded(boolean coordSysWereAdded) {
     this.coordSysWereAdded = coordSysWereAdded;
-
   }
+
   /**
    * Retrieve the CoordinateAxis with the specified name.
    *
@@ -749,7 +749,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     convertGroup(getRootGroup(), ncfile.getRootGroup());
     finish(); // build global lists
 
-    enhance( this, mode, null);
+    enhance(this, mode, null);
   }
 
   private void convertGroup(Group g, Group from) {
@@ -760,7 +760,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       g.addAttribute(a);
 
     for (Variable v : from.getVariables())
-      g.addVariable( convertVariable(g, v));
+      g.addVariable(convertVariable(g, v));
 
     for (Group nested : from.getGroups()) {
       Group nnested = new Group(this, g, nested.getShortName());
@@ -778,26 +778,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
     return newVar;
   }
-
-  // take all the members in newStructure, and wrap them in a new VariableDS or StructureDS
-  /* We do this when wrapping a netcdfFile, or when adding the record Structure.
-  private void convertStructure(Group g, Structure newStructure) {
-    Variable newVar;
-    ArrayList<Variable> newList = new ArrayList<Variable>();
-    for (Variable v : newStructure.getVariables()) {
-      if (v instanceof Structure) {
-        newVar = new StructureDS(g, (Structure) v, false);
-        convertStructure(g, (Structure) newVar);
-      } else {
-        newVar = new VariableDS(g, v, false); // enhancement done later
-      }
-
-      newList.add(newVar);
-    }
-
-    // replaceStructureMembers(newStructure, newList);
-    newStructure.setMemberVariables(newList);
-  } */
 
   //////////////////////////////////////
 
@@ -821,10 +801,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     for (Variable v : getVariables()) {
       if (!v.isUnlimited()) continue;
+      VariableDS memberV;
 
-      VariableDS memberV = new VariableDS(root, v, false);  // dont enhance - underlying variable is enhance
+      try {
+        memberV = (VariableDS) v.slice(0, 0); // set unlimited dimension to 0
+      } catch (InvalidRangeException e) {
+        log.error("Cant slice variable " + v);
+        return false;
+      }
       memberV.setParentStructure(newStructure); // reparent
-      //memberV.createNewCache(); // decouple caching
+      /* memberV.createNewCache(); // decouple caching
       //orgV = orgStructure.findVariable(v.getShortName());
       //if (orgV != null)
       //  memberV.setOriginalVariable(orgV);
@@ -832,7 +818,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       // remove record dimension
       List<Dimension> dims = new ArrayList<Dimension>(v.getDimensions());
       dims.remove(0);
-      memberV.setDimensions(dims);
+      memberV.setDimensions(dims); */
 
       newStructure.addMemberVariable(memberV);
     }
@@ -902,64 +888,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public void setReferencedFile(NetcdfFile ncfile) {
     orgFile = ncfile;
   }
-
-  /* public void setReferencedDatasetUri( String referencedDatasetUri) {
-    this.referencedDatasetUri = referencedDatasetUri;
-  } */
-  /* void setReferencedDataset( NetcdfDataset refds) {
-    this.referencedDataset = refds;
-    this.useReferencedDataset = true;
-  } */
-
-  //String getAggDimensionName( ) { return aggDimName; }
-  //void setAggDimensionName( String aggDimName) { this.aggDimName = aggDimName; }
-  //String getAggDimensionValue( ) { return aggDimValue; }
-  //void setAggDimensionValue( String aggDimValue) { this.aggDimValue = aggDimValue; }
-
-  /* NetcdfDataset openReferencedDataset(CancelTask cancelTask) throws IOException, java.net.MalformedURLException {
-    if (referencedDataset == null)
-      referencedDataset = NetcdfDataset.openDataset( referencedDatasetUri, false, cancelTask);
-    return referencedDataset;
-  }
-
-  Variable findReferencedVariable(VariableDS vds) {
-    if (vds.referencedVariable == null)
-      vds.referencedVariable = referencedDataset.findVariable( vds.getName());
-    if (vds.referencedVariable == null)
-      throw new IllegalStateException("NcML referenced Variable is Missing="+vds.getName());
-    return vds.referencedVariable;
-  }
-
-  // LOOK if NcML, send I/O to referencedDataset, else to superclass
-  public Array readData(ucar.nc2.Variable v, List section) throws IOException, InvalidRangeException  {
-    if (useReferencedDataset) {
-      openReferencedDataset(null);
-      Variable referV = findReferencedVariable((VariableDS) v);
-      return referencedDataset.readData( referV, section);
-    } else {
-      return orgFile.readData(v, section);
-    }
-  }
-
-    public Array readMemberData(ucar.nc2.Variable v, List section, boolean flatten) throws IOException, InvalidRangeException  {
-    if (useReferencedDataset) {
-      openReferencedDataset(null);
-      Variable referV = findReferencedVariable((VariableDS) v);
-      return referencedDataset.readMemberData(referV, section, flatten);
-    } else {
-      return orgFile.readMemberData(v, section, flatten);
-    }
-  } */
-
-  /* public Array readMemberData(ucar.nc2.Variable v, Section section, boolean flatten) throws IOException, InvalidRangeException {
-    return orgFile.readMemberData(v, section, flatten);
-  }
-
-  // if NcML, send I/O to referencedDataset, else to superclass
-  public Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
-    return orgFile.readData(v, section);
-  } */
-
 
   protected String toStringDebug(Object o) {
     return "";

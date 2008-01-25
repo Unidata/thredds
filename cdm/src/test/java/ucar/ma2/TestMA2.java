@@ -33,6 +33,7 @@ public class TestMA2 {
     suite.addTest(new TestSuite(TestJavaArray.class));
     
     suite.addTest(new TestSuite(TestStructureArrayMA.class));
+    suite.addTest(new TestSuite(TestStructureArrayW.class));
 
     return suite;
   }

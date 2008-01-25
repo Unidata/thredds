@@ -490,13 +490,20 @@ public class NetcdfFile {
       throw new IOException("Cant read " + location + ": not a valid NetCDF file.");
     }
 
+    // send before iosp is opened
     if (iospMessage != null)
       spi.sendIospMessage(iospMessage);
 
     if (log.isDebugEnabled())
       log.debug("Using IOSP " + spi.getClass().getName());
 
-    return new NetcdfFile(spi, raf, location, cancelTask);
+    NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
+
+    // send after iosp is opened
+    if (iospMessage != null)
+      spi.sendIospMessage(iospMessage);
+
+    return result;
   }
 
   // experimental - pass in the iosp
@@ -506,6 +513,7 @@ public class NetcdfFile {
     Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
     IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
 
+    // send before iosp is opened
     if (iospMessage != null)
       spi.sendIospMessage(iospMessage);
 
@@ -523,7 +531,13 @@ public class NetcdfFile {
       bufferSize = default_buffersize;
     ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(uriString, "r", bufferSize);
 
-    return new NetcdfFile(spi, raf, location, cancelTask);
+    NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
+
+    // send after iosp is opened
+    if (iospMessage != null)
+      spi.sendIospMessage(iospMessage);
+
+    return result;
   }
 
 

@@ -673,10 +673,13 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
   @Override
   public Object sendIospMessage(Object message) {
+    if (null == headerParser)
+      return null;
     if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
       return headerParser.makeRecordStructure();
     else if (message == NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE)
       return headerParser.removeRecordStructure();
+
     return null;
   }
 
