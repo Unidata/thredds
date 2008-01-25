@@ -75,7 +75,16 @@ public class StructureDataW extends StructureData {
    * @return Array values.
    */
   public Array getArray(StructureMembers.Member m) {
+    if (m == null) throw new IllegalArgumentException("member is null");
     return memberData.get(m);
+  }
+
+  public float convertScalarFloat(StructureMembers.Member m) {
+    return getScalarFloat(m);
+  }
+
+  public double convertScalarDouble(StructureMembers.Member m) {
+    return getScalarDouble(m);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////

@@ -304,9 +304,9 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     int n = (int) as.getSize();
     for (int i=0; i<n; i++) {
       StructureData sdata = as.getStructureData(i);
-      double lat = outerSequence.convertScalarDouble(sdata, latMember); // sdata.convertScalarDouble(latMember);
-      double lon = outerSequence.convertScalarDouble(sdata, lonMember); // sdata.convertScalarDouble(lonMember);
-      double alt = outerSequence.convertScalarDouble(sdata, altMember); // sdata.convertScalarDouble(altMember);
+      double lat = sdata.convertScalarDouble(latMember);
+      double lon = sdata.convertScalarDouble(lonMember);
+      double alt = sdata.convertScalarDouble(altMember);
       int id = sdata.getScalarInt(idMember);
 
       StationImpl s = new StationImpl(Integer.toString(id), "Station"+i,lat, lon, alt);
@@ -334,7 +334,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     ArrayList stationData = new ArrayList(n);
     for (int i=0; i<n; i++) {
       StructureData sdata = asInner.getStructureData(i);
-      double obsTime = outerSequence.convertScalarDouble(sdata, timeMember); // sdata.convertScalarDouble(timeMember);
+      double obsTime = sdata.convertScalarDouble(timeMember);
       stationData.add( new SeqStationObs(s, obsTime, sdata));
     }
     return stationData;
@@ -364,18 +364,18 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
       this.recno = recno;
       this.sdata = sdata;
 
-      double lat = outerSequence.convertScalarDouble(sdata, latMember); // sdata.convertScalarDouble(latMember);
-      double lon = outerSequence.convertScalarDouble(sdata, lonMember); // sdata.convertScalarDouble(lonMember);
+      double lat = sdata.convertScalarDouble(latMember);
+      double lon = sdata.convertScalarDouble(lonMember);
       StructureData inner = sdata.getScalarStructure(innerMember);
 
       double alt = 0.0;
 
       if (isProfile) {
-        obsTime = outerSequence.convertScalarDouble(sdata, timeMember); // sdata.convertScalarDouble(timeMember);
-        alt = innerSequence.convertScalarDouble(inner, altMember); // inner.convertScalarDouble(altMember);
+        obsTime = sdata.convertScalarDouble(timeMember);
+        alt = inner.convertScalarDouble(altMember);
       } else {
-        obsTime = innerSequence.convertScalarDouble(inner, timeMember); // inner.convertScalarDouble(timeMember);
-        alt = outerSequence.convertScalarDouble(sdata, altMember); // sdata.convertScalarDouble(altMember);
+        obsTime = inner.convertScalarDouble(timeMember);
+        alt = sdata.convertScalarDouble(altMember);
       }
 
       nomTime = obsTime;

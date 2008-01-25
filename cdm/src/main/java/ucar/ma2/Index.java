@@ -422,7 +422,7 @@ public class Index implements Cloneable {
 
   /**
    * Get the current counter.
-   * @return
+   * @return copy of the current counter.
    */
   public int[] getCurrentCounter() {
     return current.clone();
@@ -435,7 +435,7 @@ public class Index implements Cloneable {
    * currElement = offset + stride[0]*current[0] + ...
    * @param currElement set to this value
    */
-  void setCurrentCounter(int currElement) {
+  public void setCurrentCounter(int currElement) {
     currElement -= offset;
     for (int ii = 0; ii < rank; ii++) { // general rank
       current[ii] = currElement / stride[ii];

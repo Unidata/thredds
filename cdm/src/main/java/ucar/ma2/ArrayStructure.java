@@ -22,8 +22,44 @@ package ucar.ma2;
 /**
  * Superclass for implementations of Array of StructureData.
  *
+ * The general way to access data in an ArrayStructure is to use
+   <pre> StructureData getStructureData(Index index).</pre>
+
+ * For 1D arrays (or by caclulating your own recnum for nD arrays), you can also use:
+   <pre> StructureData getStructureData(int recnum).</pre>
+
+ * Once you have a StructureData object, you can access data in a general way by using:
+   <pre> Array StructureData.getArray(Member m) </pre>
+
+ * When dealing with large arrays of Structures, there can be significant overhead in using the generic interfaces.
+ * A number of convenience routines may be able to avoid extra Object creation, and so are recommended for efficiency.
+ * The following may avoid the overhead of creating the StructureData object:
+   <pre> Array getArray(int recno, StructureMembers.Member m) </pre>
+
+ * The following can be convenient for accessing all the data in the ArrayStructure for one member, but its efficiency 
+ *  depends on the implementation:
+   <pre> Array getMemberArray(StructureMembers.Member m) </pre>
+
+ * These require that you know the data types of the member data, but they are the most efficent:
+   <pre>
+    getScalarXXX(int recnum, Member m)
+    getJavaArrayXXX(int recnum, Member m) </pre>
+  where XXX is Byte, Char, Double, Float, Int, Long, Short, or String. For members that are themselves Structures,
+   the equivilent is:
+   <pre>
+    StructureData getScalarStructure(int recnum, Member m)
+    ArrayStructure getArrayStructure(int recnum, Member m) </pre>
+
+ * These will return any compatible type as a double or float, but will have extra overhead when the types dont match:
+   <pre>
+    convertScalarXXX(int recnum, Member m)
+    convertJavaArrayXXX(int recnum, Member m) </pre>
+  where XXX is Double or Float
+
+ *
  * @author caron
  * @see Array
+ * @see StructureData
  */
 public abstract class ArrayStructure extends Array {
   protected StructureMembers members;
@@ -155,6 +191,9 @@ public abstract class ArrayStructure extends Array {
 
   /**
    * Get member data of any type for a specific record as an Array.
+   * This may avoid the overhead of creating the StructureData object, but is equivilent to
+   * getStructure(recno).getArray( Member m).
+
    * @param recno get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
    * @param m get data from this StructureMembers.Member.
    * @return Array values.
@@ -359,6 +398,38 @@ public abstract class ArrayStructure extends Array {
 
      throw new RuntimeException("Dont have implemenation for "+dataType);
   }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Get scalar value as a float, with conversion as needed. Underlying type must be convertible to float.
+   * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
+   * @param m member Variable.
+   * @throws ForbiddenConversionException if not convertible to float.
+   * @return scalar float value
+   */
+  public float convertScalarFloat(int recnum, StructureMembers.Member m) {
+    if (m.getDataType() == DataType.FLOAT) return getScalarFloat( recnum, m);
+    Object o = getScalarObject(recnum, m);
+    if (o instanceof Number) return ((Number)o).floatValue();
+    throw new ForbiddenConversionException("Type is "+m.getDataType()+", not convertible to float");
+  }
+
+  /**
+   * Get scalar value as a double, with conversion as needed. Underlying type must be convertible to double.
+   * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
+   * @param m member Variable.
+   * @throws ForbiddenConversionException if not convertible to double.
+   * @return scalar double value
+   */
+  public double convertScalarDouble(int recnum, StructureMembers.Member m) {
+    if (m.getDataType() == DataType.DOUBLE) return getScalarDouble( recnum, m);
+    Object o = getScalarObject(recnum, m);
+    if (o instanceof Number) return ((Number)o).doubleValue();
+    throw new ForbiddenConversionException("Type is "+m.getDataType()+", not convertible to double");
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Get scalar member data of type double.
@@ -593,12 +664,12 @@ public abstract class ArrayStructure extends Array {
      }
 
      if (m.getDataType() == DataType.CHAR) {
-       ArrayChar data = (ArrayChar) m.getDataArray();
-       int n = m.getSize();
-       int strLen = indexCalc.getShape(rank - 1);
+       int strlen = indexCalc.getShape(rank - 1);
+       int n = m.getSize() / strlen;
        String[] result = new String[n];
+       ArrayChar data = (ArrayChar) m.getDataArray();
        for (int i=0; i<n; i++)
-         result[i] = data.getString( recnum * n + i);
+         result[i] = data.getString( (recnum * n + i) * strlen);
        return result;
      }
 
@@ -680,7 +751,7 @@ public abstract class ArrayStructure extends Array {
     return new ArrayStructureW( array.getStructureMembers(), shape, this_sdata);
   }
 
-  /**
+  /*
    * Convert to double value, with scale, offset if applicable.
    * Underlying type must be convertible to double.
    * @param m member Variable.
@@ -705,7 +776,7 @@ public abstract class ArrayStructure extends Array {
       return m.convertScaleOffsetMissing( getScalarChar(recno, m));
 
     throw new ForbiddenConversionException();
-  } */
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
 

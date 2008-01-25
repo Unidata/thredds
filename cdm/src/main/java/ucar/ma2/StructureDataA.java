@@ -21,7 +21,7 @@ package ucar.ma2;
 
 /**
  * A StructureData implementation delegates everything to the containing ArrayStructure.
- *  
+ *
  * @author caron
  */
 
@@ -31,11 +31,12 @@ public class StructureDataA extends StructureData {
 
   /**
    * Constructor.
-   * @param sa StructureData is always contained in a StructureArray.
+   *
+   * @param sa    StructureData is always contained in a StructureArray.
    * @param recno the recno in the StructureArray.
    */
   public StructureDataA(ArrayStructure sa, int recno) {
-    super( sa.getStructureMembers());
+    super(sa.getStructureMembers());
     this.sa = sa;
     this.recno = recno;
   }
@@ -44,20 +45,18 @@ public class StructureDataA extends StructureData {
     return sa.getArray(recno, m);
   }
 
-  /**
-   * Get member data of type double.
-   * @param m get data from this StructureMembers.Member. Must be of type double.
-   * @return scalar double value
-   */
+  public float convertScalarFloat(StructureMembers.Member m) {
+    return sa.convertScalarFloat(recno, m);
+  }
+
+  public double convertScalarDouble(StructureMembers.Member m) {
+    return sa.convertScalarDouble(recno, m);
+  }
+
   public double getScalarDouble(StructureMembers.Member m) {
     return sa.getScalarDouble(recno, m);
   }
 
-  /**
-   * Get member data of type double array.
-   * @param m get data from this StructureMembers.Member. Must be of type double.
-   * @return 1D array of doubles
-   */
   public double[] getJavaArrayDouble(StructureMembers.Member m) {
     return sa.getJavaArrayDouble(recno, m);
   }
@@ -65,6 +64,7 @@ public class StructureDataA extends StructureData {
   /**
    * Get double value. Underlying type must be convertible to double.
    * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
+   *
    * @param memberName name of member Variable.
    * @throws IllegalArgumentException if name is not legal member name.
    */
@@ -80,6 +80,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type float.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type float.
    * @return scalar float value
    */
@@ -89,6 +90,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type float array.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type float.
    * @return 1D array of floats
    */
@@ -99,7 +101,8 @@ public class StructureDataA extends StructureData {
   /**
    * Get float value. Underlying type must be convertible to float.
    * For more efficiency, use getScalarFloat(StructureMembers.Member m) if possible, or
-   *   convertScalarFloat(StructureMembers.Member m). 
+   * convertScalarFloat(StructureMembers.Member m).
+   *
    * @param memberName name of member Variable.
    * @throws IllegalArgumentException if name is not legal member name.
    */
@@ -113,8 +116,9 @@ public class StructureDataA extends StructureData {
     return data.getFloat(Index.scalarIndex);
   }
 
-    /**
+  /**
    * Get member data of type byte.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type byte.
    * @return scalar byte value
    */
@@ -124,6 +128,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type byte array.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type byte.
    * @return 1D array of bytes
    */
@@ -134,6 +139,7 @@ public class StructureDataA extends StructureData {
   /**
    * Get byte value. Underlying type must be convertible to byte.
    * For more efficiency, use getScalarByte(StructureMembers.Member m) if possible.
+   *
    * @param memberName name of member Variable.
    * @throws IllegalArgumentException if name is not legal member name.
    */
@@ -149,6 +155,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type short.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type short.
    * @return scalar short value
    */
@@ -158,6 +165,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type short array.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type short.
    * @return 1D array of shorts
    */
@@ -168,6 +176,7 @@ public class StructureDataA extends StructureData {
   /**
    * Get short value. Underlying type must be convertible to short.
    * For more efficiency, use getScalarShort(StructureMembers.Member m) if possible.
+   *
    * @param memberName name of member Variable.
    * @throws IllegalArgumentException if name is not legal member name.
    */
@@ -183,6 +192,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type int.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type int.
    * @return scalar int value
    */
@@ -192,6 +202,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type int array.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type int.
    * @return 1D array of ints
    */
@@ -202,6 +213,7 @@ public class StructureDataA extends StructureData {
   /**
    * Get int value. Underlying type must be convertible to int.
    * For more efficiency, use getScalarInt(StructureMembers.Member m) if possible.
+   *
    * @param memberName name of member Variable.
    * @throws IllegalArgumentException if name is not legal member name.
    */
@@ -217,6 +229,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type long.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type long.
    * @return scalar long value
    */
@@ -226,6 +239,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type long array.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type long.
    * @return 1D array of longs
    */
@@ -236,6 +250,7 @@ public class StructureDataA extends StructureData {
   /**
    * Get long value. Underlying type must be convertible to long.
    * For more efficiency, use getScalarLong(StructureMembers.Member m) if possible.
+   *
    * @param memberName name of member Variable.
    * @throws IllegalArgumentException if name is not legal member name.
    */
@@ -251,6 +266,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type char.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type char.
    * @return scalar char value
    */
@@ -260,6 +276,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type char array.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type char.
    * @return 1D array of chars
    */
@@ -270,6 +287,7 @@ public class StructureDataA extends StructureData {
   /**
    * Get char value. Underlying type must be convertible to char.
    * For more efficiency, use getScalarChar(StructureMembers.Member m) if possible.
+   *
    * @param memberName name of member Variable.
    * @throws IllegalArgumentException if name is not legal member name.
    */
@@ -285,6 +303,7 @@ public class StructureDataA extends StructureData {
 
   /**
    * Get member data of type String or 1D char.
+   *
    * @param m get data from this StructureMembers.Member. Must be of type char.
    * @return scalar char value
    */
@@ -295,6 +314,7 @@ public class StructureDataA extends StructureData {
   /**
    * Get String value, from rank 0 String or rank 1 char member array.
    * For more efficiency, use getScalarString(StructureMembers.Member m) if possible.
+   *
    * @param memberName name of member Variable.
    * @throws IllegalArgumentException if name is not legal member name.
    */
@@ -323,19 +343,19 @@ public class StructureDataA extends StructureData {
       String[] result = new String[n];
       for (int i = 0; i < result.length; i++)
         result[i] = (String) data.getObject(i);
-     return result;
+      return result;
 
     } else if (m.getDataType() == DataType.CHAR) {
       ArrayChar data = (ArrayChar) getArray(m);
       ArrayChar.StringIterator iter = data.getStringIterator();
-      String[] result = new String[ iter.getNumElems()];
+      String[] result = new String[iter.getNumElems()];
       int count = 0;
       while (iter.hasNext())
-        result[count++] =  iter.next();
+        result[count++] = iter.next();
       return result;
     }
 
-    throw new IllegalArgumentException("getJavaArrayString: not String DataType :"+m.getDataType());
+    throw new IllegalArgumentException("getJavaArrayString: not String DataType :" + m.getDataType());
   }
 
   public StructureData getScalarStructure(StructureMembers.Member m) {

@@ -320,7 +320,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return smProxy.convertScaleOffsetMissing(value);
   } */
 
-  /**
+  /*
    * Extract scalar value and convert to double value, with scale, offset if applicable.
    * Underlying type must be convertible to double.
    * @param sdata the StructureData
@@ -328,7 +328,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    * @return values converted with scale/offset/missing if appropriate
    * @throws IllegalArgumentException if m is not legal member.
    * @throws ForbiddenConversionException if not convertible to float.
-   */
+   *
   public double convertScalarDouble(StructureData sdata, StructureMembers.Member m) {
     VariableDS mv = (VariableDS) findVariable(m.getName());
     DataType dt = m.getDataType();
@@ -348,6 +348,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       return mv.convertScaleOffsetMissing(  sdata.getScalarChar( m));
 
     throw new ForbiddenConversionException();
-  }
+  } */
 
 }

@@ -282,27 +282,39 @@ public class Structure extends Variable {
   }
 
   /**
-   * Use this when this is a one dimensional array of Structures. This will read only the ith structure,
-   * and return the data as a StructureData object.
+   * Use this when this is a one dimensional array of Structures, or you are doing the index calculation yourself for
+   * a multidimension array. This will read only the ith structure, and return the data as a StructureData object.
    * @param index index into 1D array
    * @return ith StructureData
    * @throws java.io.IOException on read error
    * @throws ucar.ma2.InvalidRangeException if index out of range
    */
   public StructureData readStructure(int index) throws IOException, ucar.ma2.InvalidRangeException {
-    if (getRank() > 1) throw new java.lang.UnsupportedOperationException("not a vector structure");
-    int[] origin = new int[] {index};
-    int[] shape = new int[] {1};
-    Array dataArray = read(origin, shape);
+    Section section = null; // works for scalars i think
+
+    if (getRank() == 1) {
+      section = new Section().appendRange(index,index);
+
+    } else if (getRank() > 1) {
+      Index ii = Index.factory(shape); // convert to nD index
+      ii.setCurrentCounter(index);
+      int[] origin = ii.getCurrentCounter();
+      section = new Section();
+      for (int i=0;i<origin.length;i++)
+        section.appendRange(origin[i], origin[i]);
+    }
+
+    Array dataArray = read(section);
     ArrayStructure data = (ArrayStructure) dataArray;
     return data.getStructureData(0);
   }
 
   /**
-   * Use this when this is a one dimensional array of Structures.
+   * For rank 1 array of Structures, read count Structures and return the data as an ArrayStructure.
+   * Use only when this is a one dimensional array of Structures.
    * @param start start at this index
    * @param count return this many StructureData
-   * @return start - start + count-1 StructureData records in an ArrayStructure
+   * @return the StructureData recordsfrom start to start+count-1
    * @throws java.io.IOException on read error
    * @throws ucar.ma2.InvalidRangeException if start, count out of range
    */
@@ -361,8 +373,8 @@ public class Structure extends Variable {
     private int count = 0;
     private int recnum = (int) getSize();
     private int readStart = 0;
-    private int readAtaTime = 100;
     private int readCount = 0;
+    private int readAtaTime;
     private ArrayStructure as = null;
 
     protected Iterator(int bufferSize) {
@@ -381,18 +393,21 @@ public class Structure extends Variable {
      * @throws java.io.IOException on read error
      */
     public StructureData next() throws IOException {
-      if (count >= readStart)
-        readNext();
+      if (count >= readStart) {
+        if (getRank() == 1) readNextRank1();
+        else readNextGeneralRank();
+      }
 
       count++;
       return as.getStructureData( readCount++);
     }
 
-    private void readNext() throws IOException {
+    private void readNextRank1() throws IOException {
       int left = Math.min(recnum, readStart+readAtaTime); // dont go over recnum
       int need = left - readStart; // how many to read this time
       try {
-        as = readStructure( readStart, need); // LOOK 1D only
+        // System.out.println(" read start= "+readStart+" count= "+need);
+        as = readStructure( readStart, need);
         if (NetcdfFile.debugStructureIterator)
           System.out.println("readNext "+count+" "+readStart);
 
@@ -403,6 +418,11 @@ public class Structure extends Variable {
       readStart += need;
       readCount = 0;
     }
+
+    private void readNextGeneralRank() throws IOException {
+      throw new UnsupportedOperationException();  // not implemented yet - need example to test
+    }
+
   }
 
   ////////////////////////////////////////////

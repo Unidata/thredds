@@ -22,7 +22,7 @@ package ucar.ma2;
 /**
  * Concrete implementation of ArrayStructure, data storage is in member arrays, which are converted to
  *   StructureData member data on the fly.
- * This defers object creation for efficiency. Use getArray<type>() and getScalar<type>() data accessors if possible.
+ * This defers object creation for efficiency. Use getJavaArrayXXX<type>() and getScalarXXX<type>() data accessors if possible.
  *
  * How to create:
  * <pre>
@@ -146,6 +146,10 @@ package ucar.ma2;
  * @see Array
  */
 public class ArrayStructureMA extends ArrayStructure {
+  /* Implementation notes
+     Most of the methods are now the default methods in the superclass, so that other subclasses can call them.
+     This happens when the data is "enhanced", member arrays are set and must override the other possible storage methods.
+   */
 
   /**
    * Create a new Array of type StructureData and the given members and shape.
@@ -161,6 +165,12 @@ public class ArrayStructureMA extends ArrayStructure {
     super(members, shape);
   }
 
+  public ArrayStructureMA(StructureMembers members, int[] shape, StructureData[] sdata) {
+    super(members, shape);
+    if (nelems != sdata.length)
+      throw new IllegalArgumentException("StructureData length= "+sdata.length+"!= shape.length="+nelems);
+    this.sdata = sdata;
+  }  
 
   protected StructureData makeStructureData( ArrayStructure as, int index) {
     return new StructureDataA( as, index);

@@ -263,7 +263,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return smProxy.getUseNaNs() ;
   }
 
-  public double convertScaleOffsetMissing(byte value) {
+  /* public double convertScaleOffsetMissing(byte value) {
     return smProxy.convertScaleOffsetMissing( value);
   }
   public double convertScaleOffsetMissing(short value) {
@@ -277,7 +277,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
   public double convertScaleOffsetMissing(double value) {
     return smProxy.convertScaleOffsetMissing( value);
-  } 
+  } */
 
   /*
    * A VariableDS usually wraps another Variable.

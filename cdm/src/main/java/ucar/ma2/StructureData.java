@@ -33,8 +33,35 @@ import java.util.List;
       ...
    }
   </pre>
+
+ * General ways to access data in an StructureData are:
+    <pre> Array getArray(Member m) </pre>
+    <pre> Array getArray(String memberName) </pre>
+
+ * The following will return an object of type Byte, Char, Double, Float, Int, Long, Short, String, or Structure, depending 
+ * upon the member type:
+   <pre> Object getScalarObject( Member m) </pre>
+
+ * A number of convenience routines may be able to avoid extra Object creation, and so are recommended for efficiency.
+ * These require that you know the data types of the member data, but they are the most efficent:
+   <pre>
+    getScalarXXX(int recnum, Member m)
+    getJavaArrayXXX(int recnum, Member m) </pre>
+ * where XXX is Byte, Char, Double, Float, Int, Long, Short, or String. For members that are themselves Structures,
+   the equivilent is:
+   <pre>
+    StructureData getScalarStructure(int recnum, Member m)
+    ArrayStructure getArrayStructure(int recnum, Member m) </pre>
+
+ * These will return any compatible type as a double or float, but may have extra overhead when the types dont match:
+   <pre>
+    convertScalarXXX(int recnum, Member m)
+    convertJavaArrayXXX(int recnum, Member m) </pre>
+  where XXX is Double or Float
+
  *
  * @author caron
+ * @see ArrayStructure
  */
 
 abstract public class StructureData {
@@ -162,6 +189,23 @@ abstract public class StructureData {
 
      throw new RuntimeException("Dont have implemenation for "+dataType);
   }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  /**
+   * Get scalar value as a float, with conversion as needed. Underlying type must be convertible to float.
+   * @param m member Variable.
+   * @throws ForbiddenConversionException if not convertible to float.
+   */
+  abstract public float convertScalarFloat(StructureMembers.Member m);
+
+  /**
+   * Get scalar value as a double, with conversion as needed. Underlying type must be convertible to double.
+   * @param m member Variable.
+   * @throws ForbiddenConversionException if not convertible to double.
+   */
+  abstract public double convertScalarDouble(StructureMembers.Member m);
 
   /////////////////////////////////////////////////////////////////////////////////////////////
 

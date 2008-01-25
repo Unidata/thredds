@@ -15,6 +15,7 @@ This code is ALPHA
  Features:
   netcdf
     * Structure.subset(): create subset consisting only of selected member variables
+    * StructureDS correctly gets enhanced
   iosp
    * netcdf-4
    * complete HDF5 access
@@ -32,6 +33,7 @@ This code is ALPHA
 
  Release Details:
     11: start to fix name/shortName, ie deal with Groups systematically
+        Structure/ArrayStructure/StructureData refactor
     10: hdf4 bug fix - no data tag, use missing data
         Structure.subset(), nc3 optimizes for it
         hdf5, ArrayStructureBB : set byteOrder
@@ -63,6 +65,8 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    * StructureData.findMemberArray removed - use getArray
    * ArrayStructure.getArrayXXX removed - use getJavaArrayXXX
    * ArrayStructure.getMemberArray() to extract individual member data as Arrays
+   * ArrayStructure.convertScalarDouble, Float
+   * StructureData.convertScalarDouble, Float
 
  Package ucar.nc2
    * Attribute mutable methods no longer public, so Attribute is immutable
@@ -95,9 +99,11 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    * NetcdfFile.addRecordStructure removed, use sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
 
    * Structure.subset() create subset consisting only of given member variables
+   * Structure.convertXXX removed
 
   Package ucar.nc2.dataset
    * NetcdfDataset.EnhanceMode to control enhancing
+   * StructureDS correctly gets enhanced
 
   Package ucar.nc2.iosp
    * Layouts and Chunkers factored out for reuse

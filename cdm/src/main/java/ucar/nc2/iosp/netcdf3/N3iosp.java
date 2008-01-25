@@ -275,7 +275,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
   /**
    * Read data from record structure, that has been subsetted.
-   * Read one record at at time, but requested variable into ArrayStructureMA.
+   * Read one record at at time, put requested variable into ArrayStructureMA.
    *
    * @param s the record structure
    * @param section the record range to read

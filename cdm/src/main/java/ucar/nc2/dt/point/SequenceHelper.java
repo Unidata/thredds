@@ -23,13 +23,9 @@ package ucar.nc2.dt.point;
 
 import ucar.nc2.*;
 import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.nc2.dods.DODSVariable;
-import ucar.nc2.dods.DODSStructure;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
@@ -234,8 +230,8 @@ public class SequenceHelper {
       this.recno = recno;
       this.sdata = sdata;
 
-      double lat = sequenceOuter.convertScalarDouble(sdata, latMember);
-      double lon = sequenceOuter.convertScalarDouble(sdata, lonMember);
+      double lat = sdata.convertScalarDouble( latMember);
+      double lon = sdata.convertScalarDouble( lonMember);
 
       // double lat = sdata.convertScalarDouble(latMember);
       // double lon = sdata.convertScalarDouble(lonMember);
@@ -244,11 +240,11 @@ public class SequenceHelper {
       double alt = 0.0;
 
       if (isProfile) {
-        obsTime = sequenceOuter.convertScalarDouble(sdata, timeMember); // sdata.convertScalarDouble(timeMember);
-        alt = sequenceInner.convertScalarDouble(inner, altMember); // inner.convertScalarDouble(altMember);
+        obsTime = sdata.convertScalarDouble( timeMember); // sdata.convertScalarDouble(timeMember);
+        alt = inner.convertScalarDouble( altMember); // inner.convertScalarDouble(altMember);
       } else {
-        obsTime = sequenceInner.convertScalarDouble(inner, timeMember); // inner.convertScalarDouble(timeMember);
-        alt = sequenceOuter.convertScalarDouble(sdata, altMember); // sdata.convertScalarDouble(altMember);
+        obsTime = inner.convertScalarDouble( timeMember); // inner.convertScalarDouble(timeMember);
+        alt = sdata.convertScalarDouble( altMember); // sdata.convertScalarDouble(altMember);
       }
 
       nomTime = obsTime;

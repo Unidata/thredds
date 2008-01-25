@@ -228,8 +228,8 @@ public class RecordDatasetHelper {
       double lat = sdata.getScalarDouble(latVName);
       double lon = sdata.getScalarDouble(lonVName);
       double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.getScalarDouble(altVName);
-      double obsTime = recordVar.convertScalarDouble(sdata, members.findMember( obsTimeVName));
-      double nomTime = (nomTimeVName == null) ? obsTime : recordVar.convertScalarDouble(sdata, members.findMember( nomTimeVName));
+      double obsTime = sdata.convertScalarDouble(members.findMember( obsTimeVName));
+      double nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
 
       //double obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName) );
       //double nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
@@ -335,8 +335,8 @@ public class RecordDatasetHelper {
       this.sdata = sdata;
 
       StructureMembers members = sdata.getStructureMembers();
-      obsTime = recordVar.convertScalarDouble(sdata, members.findMember( obsTimeVName));
-      nomTime = (nomTimeVName == null) ? obsTime : recordVar.convertScalarDouble(sdata, members.findMember( nomTimeVName));
+      obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName));
+      nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
 
       // obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
       //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
@@ -401,8 +401,8 @@ public class RecordDatasetHelper {
 
       StructureMembers members = sdata.getStructureMembers();
 
-      obsTime = recordVar.convertScalarDouble(sdata, members.findMember( obsTimeVName));
-      nomTime = (nomTimeVName == null) ? obsTime : recordVar.convertScalarDouble(sdata, members.findMember( nomTimeVName));
+      obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName));
+      nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
 
       //obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
       //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
@@ -448,8 +448,8 @@ public class RecordDatasetHelper {
       this.location = station;
       this.sdata = sdata;
       StructureMembers members = sdata.getStructureMembers();
-      obsTime = recordVar.convertScalarDouble(sdata, members.findMember( obsTimeVName));
-      nomTime = (nomTimeVName == null) ? obsTime : recordVar.convertScalarDouble(sdata, members.findMember( nomTimeVName));
+      obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName));
+      nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
 
       //obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
       //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
