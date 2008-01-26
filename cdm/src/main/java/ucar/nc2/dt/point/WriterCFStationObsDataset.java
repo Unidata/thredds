@@ -38,7 +38,6 @@ import java.io.*;
  * Also experiment with streaming netcdf.
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class WriterCFStationObsDataset {
   private static final String recordDimName = "record";

@@ -85,13 +85,17 @@ public class Structure extends Variable {
    * @param members list of Variable
    * @return subsetted Structure
    */
-  public Structure subsetMembers( List<Variable> members) {
+  public Structure select( List<Variable> members) {
     Structure result = new Structure(this, false);
     result.setMemberVariables(members);
     result.isSubset = true;
     return result;
   }
 
+  /**
+   * Find if this was created from a subset() method.
+   * @return true if this is a subset
+   */
   public boolean isSubset() { return isSubset; }
 
   // for section and slice

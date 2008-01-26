@@ -6,7 +6,6 @@ import junit.framework.*;
 /**
  *
  * @author John Caron
- * @version $Id: TestLatLonProjection.java 51 2006-07-12 17:13:13Z caron $
  */
 public class TestLatLonProjection extends TestCase {
 
@@ -98,7 +97,68 @@ public class TestLatLonProjection extends TestCase {
     bbox = new LatLonRect(new LatLonPointImpl(-90.0, -100.0), 90.0, 200.0);
     bbox2 = new LatLonRect(new LatLonPointImpl(-40.0, -220.0), 120.0, 140.0);
     assert testIntersection( bbox, bbox2) != null;
-
   }
+
+  private LatLonRect testExtend(LatLonRect bbox, LatLonRect bbox2) {
+    System.out.println("\n bbox ="+bbox.toString2()+" width="+bbox.getWidth());
+    System.out.println(" bbox extend by="+bbox2.toString2()+" width="+bbox2.getWidth());
+    bbox.extend( bbox2);
+    System.out.println(" result="+bbox.toString2()+" width="+bbox.getWidth());
+    return bbox;
+  }
+
+  public void testExtend() {
+    LatLonRect bbox;
+
+    //     ---------
+    //   --------
+    bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, 30.0), new LatLonPointImpl(-60.0, 120.0)),
+                        new LatLonRect(new LatLonPointImpl(-81.0, -10.0), new LatLonPointImpl(-60.0, 55.0)));
+    assert bbox.getWidth() == 130.0;
+    assert !bbox.crossDateline();
+
+    //   ---------
+    //     ----
+    bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, -200.0), new LatLonPointImpl(-60.0, -100.0)),
+                        new LatLonRect(new LatLonPointImpl(-81.0, 177.0), new LatLonPointImpl(-60.0, 200.0)));
+    assert bbox.getWidth() == 100.0;
+    assert bbox.crossDateline();
+
+    //  ---------
+    //     --------------
+    bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, -200.0), new LatLonPointImpl(-60.0, -100.0)),
+                        new LatLonRect(new LatLonPointImpl(-81.0, -150.0), new LatLonPointImpl(-60.0, 200.0)));
+    assert bbox.getWidth() == 360.0;
+    assert !bbox.crossDateline();
+
+    //  -------
+    //         ---------
+    bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 135.0)),
+                        new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 180.0)));
+    assert bbox.getWidth() == 360.0;
+    assert !bbox.crossDateline();
+
+    //  ------
+    //            ------
+    bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 0.0)),
+                        new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 160.0)));
+    assert bbox.getWidth() == 225.0;
+    assert bbox.crossDateline();
+
+    //  ---------
+    //               ------
+    bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 0.0)),
+                        new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 180.0)));
+    assert bbox.getWidth() == 225.0;
+    assert bbox.crossDateline();
+
+    //         ---------
+    //   ------
+    bbox = testExtend( new LatLonRect(new LatLonPointImpl(-81.0, 135.0), new LatLonPointImpl(-60.0, 180.0)),
+        new LatLonRect(new LatLonPointImpl(-81.0, -180.0), new LatLonPointImpl(-60.0, 0.0)));
+    assert bbox.getWidth() == 225.0;
+    assert bbox.crossDateline();
+  }
+
 
 }

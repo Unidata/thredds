@@ -146,20 +146,20 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     CoordinateAxis v = new CoordinateAxis1D(ds, null, "Lat", DataType.FLOAT, "Lat", "degrees_north", "latitude coordinate");
     ds.setValues(v, nlat, lat, -dlat);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-    ds.addVariable(null, v);
+    ds.addCoordinateAxis( v);
 
     // add lon
     v = new CoordinateAxis1D(ds, null, "Lon", DataType.FLOAT, "Lon", "degrees_east", "longitude coordinate");
     ds.setValues(v, nlon, lon, dlon);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-    ds.addVariable(null, v);
+    ds.addCoordinateAxis( v);
 
     // add time
     ds.addDimension(null, new Dimension("Time", 1));
     v = new CoordinateAxis1D(ds, null, "Time", DataType.INT, "Time", "seconds since 1970-1-1 00:00:00", "time coordinate");
     ds.setValues(v, 1, time, 1);
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-    ds.addVariable(null, v);
+    ds.addCoordinateAxis( v);
 
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -33,9 +33,9 @@ import java.text.ParseException;
 
 /**
  * This handles station datasets in "Unidata Observation Dataset v1.0"
+ * Read StationObsDataset in "CF" experimental point/ungridded convention.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
 
 public class CFstationObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF {

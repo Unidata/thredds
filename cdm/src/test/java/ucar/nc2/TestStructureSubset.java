@@ -22,7 +22,6 @@ package ucar.nc2;
 import ucar.ma2.*;
 
 import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.io.IOException;
 
@@ -52,7 +51,7 @@ public class TestStructureSubset extends TestCase {
     vars.add( record.findVariable("wind_speed"));
     vars.add( record.findVariable("wind_gust"));
     vars.add( record.findVariable("report"));
-    Structure subset = record.subsetMembers(vars);
+    Structure subset = record.select(vars);
 
     // read entire subset
     ArrayStructure dataAll = (ArrayStructure) subset.read();

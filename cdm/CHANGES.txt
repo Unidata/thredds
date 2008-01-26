@@ -14,7 +14,7 @@ This code is ALPHA
 
  Features:
   netcdf
-    * Structure.subset(): create subset consisting only of selected member variables
+    * Structure.select(): create subset consisting only of selected member variables
     * StructureDS correctly gets enhanced
   iosp
    * netcdf-4
@@ -98,7 +98,7 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    * NetcdfFile.addStringVariable(), addVariable() convenience methods
    * NetcdfFile.addRecordStructure removed, use sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
 
-   * Structure.subset() create subset consisting only of given member variables
+   * Structure.select() create subset consisting only of given member variables
    * Structure.convertXXX removed
 
   Package ucar.nc2.dataset

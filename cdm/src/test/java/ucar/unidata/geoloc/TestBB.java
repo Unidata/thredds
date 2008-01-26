@@ -66,5 +66,4 @@ public class TestBB extends TestCase {
     return Misc.closeEnough(pt1.getX(), pt2.getX()) &&  Misc.closeEnough(pt1.getY(), pt2.getY());
   }
 
-
 }

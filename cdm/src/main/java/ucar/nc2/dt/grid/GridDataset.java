@@ -277,8 +277,12 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
     buf.setLength(0);
 
     for (Gridset gs : gridsetHash.values()) {
-
-      buf.append("\nGridset ").append(countGridset).append(" coordSys ").append(gs.getGeoCoordSystem()).append("\n");
+      GridCoordSystem gcs = gs.getGeoCoordSystem();
+      buf.append("\nGridset ").append(countGridset).append(" coordSys=").append(gcs);
+      buf.append(" LLbb=").append(gcs.getLatLonBoundingBox());
+      if ((gcs.getProjection() != null)  && !gcs.getProjection().isLatLon())
+        buf.append(" bb=").append(gcs.getBoundingBox());
+      buf.append("\n");
       buf.append("Name___________Unit___________hasMissing_____Description\n");
       for (GeoGrid grid : grids) {
         buf.append(grid.getInfo());
@@ -309,13 +313,13 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
    */
   public String getDetailInfo() {
     StringBuffer buff = new StringBuffer(5000);
-    buff.append(ds.toString());
-    buff.append("\n\n----------------------------------------------------\n");
     buff.append(getInfo());
     buff.append("\n\n----------------------------------------------------\n");
     buff.append(ds.getInfo().getParseInfo());
     buff.append("\n\n----------------------------------------------------\n");
     buff.append(parseInfo.toString());
+    buff.append(ds.toString());
+    buff.append("\n\n----------------------------------------------------\n");
 
     return buff.toString();
   }

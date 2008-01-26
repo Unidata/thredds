@@ -1871,11 +1871,10 @@ public class ToolsUI extends JPanel {
           GridDataset gridDataset = dsTable.getGridDataset();
           if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
             ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
-            if (gdsImpl.getParseInfo() != null) {
-              detailTA.setText(gdsImpl.getParseInfo().toString());
-              detailTA.gotoTop();
-              detailWindow.show();
-            }
+            detailTA.clear();
+            detailTA.appendLine(gdsImpl.getDetailInfo());            
+            detailTA.gotoTop();
+            detailWindow.show();
           }
         }
       });

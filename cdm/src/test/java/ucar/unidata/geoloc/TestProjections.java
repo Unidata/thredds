@@ -5,13 +5,10 @@ import junit.framework.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.nc2.TestAll;
 
-import java.awt.geom.Point2D;
-
 /**
  * test methods projections have in common
  *
  * @author John Caron
- * @version $Id: TestProjections.java 51 2006-07-12 17:13:13Z caron $
  */
 
 public class TestProjections extends TestCase {

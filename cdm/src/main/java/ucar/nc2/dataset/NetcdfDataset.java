@@ -937,7 +937,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       parent.replaceMemberVariable(ca);
 
     } else {
-      removeVariable(v.getParentGroup(), v.getShortName()); // remove by hashCode if it exists
+      removeVariable(v.getParentGroup(), v.getShortName()); // remove by short name if it exists
       addVariable(ca.getParentGroup(), ca);
     }
 
