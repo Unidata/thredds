@@ -707,7 +707,8 @@ public class NetcdfFile {
     }
 
     StringTokenizer stoke = new StringTokenizer(vars, ".");
-    Variable v = g.findVariable( stoke.nextToken());
+    String varShortName = NetcdfFile.unescapeName(stoke.nextToken());
+    Variable v = g.findVariable( varShortName);
     if (v == null) return null;
 
     while (stoke.hasMoreTokens()) {

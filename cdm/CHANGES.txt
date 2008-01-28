@@ -23,6 +23,8 @@ This code is ALPHA
    * parsing of HDF-EOS/HDF5-EOS metadata to identify dimensions.
   geoloc
    * Add RotatedPole projection
+  dt
+   * UnidataStationObsMultidimDataset station/point datasets
   NcML
    * Tiled aggregation
    * Existing accepts timeUnitsChange
@@ -32,6 +34,8 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
+    12: DODS preload
+        put back HttpClientManager, RuntimeConfigParsser temporarily (testing with IDV)
     11: start to fix name/shortName, ie deal with Groups systematically
         Structure/ArrayStructure/StructureData refactor
     10: hdf4 bug fix - no data tag, use missing data

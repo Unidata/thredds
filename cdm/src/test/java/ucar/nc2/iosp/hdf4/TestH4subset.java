@@ -37,7 +37,7 @@ public class TestH4subset extends TestCase {
   }
 
   public void testSpecificVariableSection() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestH4read.testDir + "96108_08.hdf");
+    NetcdfFile ncfile = NetcdfFile.open(TestH4readAndCount.testDir + "96108_08.hdf");
 
     Variable v = ncfile.findVariable("CalibratedData");
     assert (null != v);
@@ -77,34 +77,34 @@ public class TestH4subset extends TestCase {
     int ntrials = 100;
 
     // LayoutRegular
-    TestIosp.testVariableSubset(TestH4read.testDir + "MI1B2T_B54_O003734_AN_05.hdf", "Infrared Radiance%2FRDQI", ntrials);
-    TestIosp.testVariableSubset(TestH4read.testDir + "ncidc/AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf", "High_Res_B_Swath/Data Fields/Cold_Sky_Mirror_Count_89B", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "MI1B2T_B54_O003734_AN_05.hdf", "Infrared Radiance%2FRDQI", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ncidc/AMSR_E_L2A_BrightnessTemperatures_V08_200801012345_A.hdf", "High_Res_B_Swath/Data Fields/Cold_Sky_Mirror_Count_89B", ntrials);
 
     // LayoutSegmented (linked)
-    TestIosp.testVariableSubset(TestH4read.testDir + "96108_08.hdf", "BlackBody1Temperature", ntrials);
-    TestIosp.testVariableSubset(TestH4read.testDir + "ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf", "Total_Attenuated_Backscatter_532", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "96108_08.hdf", "BlackBody1Temperature", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf", "Total_Attenuated_Backscatter_532", ntrials);
     //testVariableSubset(TestH4read.testDir + "ncidc/AMSR_E_L2_Land_T06_200801012345_A.hdf", "AMSR-E Level 2B Land Data/Data Vgroup/Land Parameters");
 
     // PositioningDataInputStream (not linked, compressed)
-    TestIosp.testVariableSubset(TestH4read.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "DC Restore Change for Reflective 1km Bands", ntrials);
-    TestIosp.testVariableSubset(TestH4read.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data Fields/Cloud_Top_Pressure", ntrials);
-    TestIosp.testVariableSubset(TestH4read.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data Fields/Quality_Assurance_1km", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "DC Restore Change for Reflective 1km Bands", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data Fields/Cloud_Top_Pressure", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", "mod06/Data Fields/Quality_Assurance_1km", ntrials);
 
     // PositioningDataInputStream (linked, compressed)
-    TestIosp.testVariableSubset(TestH4read.testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", "MOP03/Data Fields/Surface Pressure Day", ntrials);
-    TestIosp.testVariableSubset(TestH4read.testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", "MOP03/Data Fields/Averaging Kernel Night", ntrials);
-    TestIosp.testVariableSubset(TestH4read.testDir + "ncidc/MOD10A1.A2008001.h23v15.005.2008003161138.hdf", "MOD_Grid_Snow_500m/Data Fields/Fractional_Snow_Cover", ntrials); // */
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", "MOP03/Data Fields/Surface Pressure Day", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", "MOP03/Data Fields/Averaging Kernel Night", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ncidc/MOD10A1.A2008001.h23v15.005.2008003161138.hdf", "MOD_Grid_Snow_500m/Data Fields/Fractional_Snow_Cover", ntrials); // */
 
      // LayoutBBTiled (chunked and compressed)
-    TestIosp.testVariableSubset(TestH4read.testDir + "eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", "GeometricParameters/Data Fields/CaZenith", ntrials);
-    TestIosp.testVariableSubset(TestH4read.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "MODIS_SWATH_Type_L1B/Data Fields/EV_500_RefSB_Uncert_Indexes", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", "GeometricParameters/Data Fields/CaZenith", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "MODIS_SWATH_Type_L1B/Data Fields/EV_500_RefSB_Uncert_Indexes", ntrials);
 
     // all missing data
-    TestIosp.testVariableSubset(TestH4read.testDir + "ssec/MYD04_L2.A2006188.1830.005.2006194121515.hdf", "mod04/Data Fields/Aerosol_Cldmask_Byproducts_Land", ntrials);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ssec/MYD04_L2.A2006188.1830.005.2006194121515.hdf", "mod04/Data Fields/Aerosol_Cldmask_Byproducts_Land", ntrials);
  }
 
   public void problemSubset() throws IOException, InvalidRangeException {
-    TestIosp.testVariableSubset(TestH4read.testDir + "ssec/MYD04_L2.A2006188.1830.005.2006194121515.hdf", "mod04/Data Fields/Aerosol_Cldmask_Byproducts_Land", 10);
+    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ssec/MYD04_L2.A2006188.1830.005.2006194121515.hdf", "mod04/Data Fields/Aerosol_Cldmask_Byproducts_Land", 10);
 
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/chunked"));
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/chunkTable"));

@@ -20,21 +20,34 @@
 
 package ucar.nc2.iosp.hdf4;
 
-import junit.framework.TestSuite;
+import ucar.nc2.TestAll;
+
+import java.io.IOException;
+import java.io.FileFilter;
+import java.io.File;
+
+import junit.framework.TestCase;
 
 /**
  * Class Description.
  *
  * @author caron
  */
-public class TestH4 {
+public class TestH4readAll extends TestCase {
 
-  public static junit.framework.Test suite ( ) {
-    TestSuite suite= new TestSuite();
+  public TestH4readAll(String name) {
+    super(name);
+  }
 
-    suite.addTest(new TestSuite(TestH4readAndCount.class)); //
-    suite.addTest(new TestSuite(TestH4subset.class)); //
+  public void testReadAll() throws IOException {
+    //readandCountAllInDir(testDir, null);
+    TestAll.readAllDir("D:/hdf4/", null);
+    TestAll.readAllDir("R:/testdata/hdf4/", new MyFileFilter());
+  }
 
-    return suite;
+  class MyFileFilter implements java.io.FileFilter {
+    public boolean accept(File pathname) {
+      return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".eos");
+    }
   }
 }

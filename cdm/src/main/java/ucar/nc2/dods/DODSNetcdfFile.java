@@ -48,6 +48,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   static public boolean debugCharArray = false;
   static public boolean debugConvertData = false;
   static public boolean debugConstruct = false;
+  static public boolean debugPreload = false;
   static public boolean debugTime = false;
   static public boolean showNCfile = false;
   static public boolean debugAttributes = false;
@@ -93,6 +94,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     debugDataResult = debugFlag.isSet("DODS/debugDataResult");
     debugCharArray = debugFlag.isSet("DODS/charArray");
     debugConstruct = debugFlag.isSet("DODS/constructNetcdf");
+    debugPreload = debugFlag.isSet("DODS/preload");
     debugTime = debugFlag.isSet("DODS/timeCalls");
     showNCfile = debugFlag.isSet("DODS/showNCfile");
     debugAttributes = debugFlag.isSet("DODS/attributes");
@@ -101,13 +103,22 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   static private boolean preload = true;
   static private boolean useGroups = false;
+  static private int preloadCoordVarSize = 50000; // default 50K
 
   /**
    * Set whether small variables are preloaded; only turn off for debugging.
    * @param b true if small variables are preloaded (default true)
    */
-  static void setPreload(boolean b) {
+  static public void setPreload(boolean b) {
     preload = b;
+  }
+
+  /**
+   * If preloading, set maximum size of coordinate variables to be preloaded.
+   * @param size maximum size of coordinate variables to be preloaded.
+   */
+  static public void setCoordinateVariablePreloadSize(int size) {
+    preloadCoordVarSize = size;
   }
 
   /**
@@ -265,10 +276,12 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     if (preload) {
       List<Variable> preloadList = new ArrayList<Variable>();
       for (Variable dodsVar : variables) {
-        if (dodsVar.isCoordinateVariable() || dodsVar.isCaching() ||
-            dodsVar.getDataType() == DataType.STRING) {
+        long size = dodsVar.getSize() * dodsVar.getElementSize();
+        if ((dodsVar.isCoordinateVariable() && size < preloadCoordVarSize)
+           || dodsVar.isCaching() || dodsVar.getDataType() == DataType.STRING) {
           dodsVar.setCaching(true);
           preloadList.add(dodsVar);
+          if (debugPreload) System.out.println("  preload"+dodsVar);
         }
       }
       if (cancelTask != null && cancelTask.isCancel()) return;

@@ -31,11 +31,11 @@ import java.io.File;
  * @author caron
  * @since Jan 1, 2008
  */
-public class TestH4read extends TestCase {
+public class TestH4readAndCount extends TestCase {
   static public String testDir = "R:/testdata/hdf4/";
   //static public String testDir = "C:/data/hdf4/";
 
-  public TestH4read(String name) {
+  public TestH4readAndCount(String name) {
     super(name);
   }
 
@@ -159,17 +159,6 @@ public class TestH4read extends TestCase {
   private void print(int want, int have) {
     System.out.format("%5d", have);
     System.out.print((want != have) ? "*" : " ");
-  }
-
-  public void testReadAll() throws IOException {
-    //readandCountAllInDir(testDir, null);
-    TestAll.readAllDir(testDir, null);
-    /* TestAll.readAllDir(testDir, new FileFilter() {
-
-      public boolean accept(File pathname) {
-        return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".eos");
-      }
-    }); */
   }
 
   public void makeReadAndCountAll() throws IOException {

@@ -240,8 +240,8 @@ public class TestReadRecord extends TestCase  {
       assert t2 == 18;
 
     /* Read the times: unlimited dimension */
-    Variable time = rs.findVariable("time");
-    Array timeValues = time.read();
+    Variable time = rs.findVariable("time ");
+      Array timeValues = time.read();
     assert( timeValues instanceof ArrayInt.D0);
     ArrayInt.D0 ta = (ArrayInt.D0) timeValues;
     assert ( ta.get() ==  6) : ta.get();

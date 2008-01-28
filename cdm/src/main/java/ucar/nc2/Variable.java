@@ -1662,7 +1662,8 @@ public class Variable implements VariableIF {
   ////////////////////////////////
 
   /**
-   * Calculate if this is a coordinate variable: has same name as its first dimension. If type char, must be 2D, else must be 1D.
+   * Calculate if this is a coordinate variable: has same name as its first dimension.
+   * If type char, must be 2D, else must be 1D.
    * @return true if a coordinate variable.
    */
   public boolean isCoordinateVariable() {
@@ -1686,8 +1687,6 @@ public class Variable implements VariableIF {
 
     return false;
   }
-
-
 
   ///////////////////////////////////////////////////////////////////////
   // deprecated

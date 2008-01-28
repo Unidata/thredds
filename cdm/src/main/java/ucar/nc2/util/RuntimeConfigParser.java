@@ -1,5 +1,6 @@
+// $Id: $
 /*
- * Copyright 1997-2008 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -18,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.util.xml;
+package ucar.nc2.util;
 
 import org.jdom.*;
 import org.jdom.input.*;
@@ -30,18 +31,7 @@ import java.util.List;
 import ucar.nc2.constants.DataType;
 
 /**
- * Read Runtime Configuration
- *
- * <pre>
-   <runtimeConfig>
-     <ioServiceProvider  class="edu.univ.ny.stuff.FooFiles"/>
-     <coordSysBuilder convention="foo" class="test.Foo"/>
-     <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
-     <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
-   </runtimeConfig>
- * </pre>
- *
- * @author caron
+ * DO NOT USE, TEMPORARY!
  */
 public class RuntimeConfigParser {
 

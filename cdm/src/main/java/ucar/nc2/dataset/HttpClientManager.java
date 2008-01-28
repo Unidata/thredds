@@ -1,5 +1,6 @@
+// $Id: $
 /*
- * Copyright 1997-2008 Unidata Program Center/University Corporation for
+ * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -18,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.util.net;
+package ucar.nc2.dataset;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -26,26 +27,20 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
-
-//import opendap.dap.DConnect2;
-//import ucar.unidata.io.http.HTTPRandomAccessFile;
+import opendap.dap.DConnect2;
+import ucar.unidata.io.http.HTTPRandomAccessFile;
+import ucar.nc2.util.net.EasySSLProtocolSocketFactory;
 
 import java.io.IOException;
 
 /**
- * Manage Http Client protocol settings.
- * <pre>
- * Example:
- *   org.apache.commons.httpclient.auth.CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
- * ucar.nc2.util.net.HttpClientManager.init(provider, "ToolsUI");
- * </pre>
- *
- * @author caron
+ * DO NOT USE, TEMPORARY!
  */
 public class HttpClientManager {
   static private boolean debug = false;
@@ -58,9 +53,9 @@ public class HttpClientManager {
    * @param provider  CredentialsProvider.
    * @param userAgent Content of User-Agent header, may be null
    */
-  static public org.apache.commons.httpclient.HttpClient init(CredentialsProvider provider, String userAgent) {
+  static public void init(CredentialsProvider provider, String userAgent) {
     initHttpClient();
-    
+
     if (provider != null)
       _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
 
@@ -72,16 +67,25 @@ public class HttpClientManager {
     // nick.bower@metoceanengineers.com
     String proxyHost = System.getProperty("http.proxyHost");
     String proxyPort = System.getProperty("http.proxyPort");
-    if ((proxyHost != null) && (proxyPort != null)) {
+    if ((proxyHost != null) && (proxyPort != null) && !proxyPort.trim().equals("")) {
         _client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
     }
 
-    return _client;
+    setHttpClient(_client);
+  }
+
+  /**
+   * Set the HttpClient object - a single instance is used.
+   * Propaget to entire NetcdfJava library.
+   */
+  static public void setHttpClient(HttpClient client) {
+    _client = client;
+    DConnect2.setHttpClient(_client);
+    HTTPRandomAccessFile.setHttpClient(_client);
   }
 
   /**
    * Get the HttpClient object - a single instance is used.
-   * @return the  HttpClient object
    */
   static public HttpClient getHttpClient() {
     return _client;
@@ -93,7 +97,7 @@ public class HttpClientManager {
     _client = new HttpClient(connectionManager);
 
     HttpClientParams params = _client.getParams();
-    params.setParameter(HttpMethodParams.SO_TIMEOUT, timeout);
+    params.setParameter(HttpMethodParams.SO_TIMEOUT, new Integer(timeout));
     params.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
     params.setParameter(HttpClientParams.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
@@ -111,10 +115,7 @@ public class HttpClientManager {
   }
 
   /**
-   * Get the content from a url. For large returns, its better to use getResponseAsStream.
-   * @param urlString url as a String
-   * @return contents of url as a String
-   * @throws java.io.IOException on error
+   * COnvenience better to use getResponseAsStream
    */
   public static String getContent(String urlString) throws IOException {
     GetMethod m = new GetMethod(urlString);
@@ -129,13 +130,6 @@ public class HttpClientManager {
     }
   }
 
-  /**
-   * Put content to a url, using HTTP PUT. Handles one level of 302 redirection.
-   * @param urlString url as a String
-   * @param content PUT this content at the given url.
-   * @return the HTTP status return code
-   * @throws java.io.IOException on error
-   */
   public static int putContent(String urlString, String content) throws IOException {
     PutMethod m = new PutMethod(urlString);
     m.setDoAuthentication( true );
