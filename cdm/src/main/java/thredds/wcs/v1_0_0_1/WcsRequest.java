@@ -38,6 +38,7 @@ public abstract class WcsRequest
   public enum Format
   {
     NONE, GeoTIFF, GeoTIFF_Float, NetCDF3
+    // application/x-netcdf
   }
 
   WcsRequest( Operation operation, String version, WcsDataset dataset )

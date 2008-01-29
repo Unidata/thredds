@@ -28,6 +28,11 @@ public class GetCoverage extends WcsRequest
   private DateRange timeRange;
   private WcsCoverage.VerticalRange rangeSetAxisValueRange;
 
+  private Format format;
+  // GeoTIFF only supported for requests for a single time and a single vertical level.
+  private boolean isSingleTimeRequest = false;
+  private boolean isSingleVerticalRequest = false;
+
 
   public GetCoverage( Operation operation, String version, WcsDataset dataset,
                       String coverageId, String crs, String responseCRS,
@@ -86,16 +91,49 @@ public class GetCoverage extends WcsRequest
       log.error( "GetCoverage(): FORMAT parameter required.");
       throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required.");
     }
-    if ( ! format.equalsIgnoreCase( this.coverage.getAllowedCoverageFormat() ))
+    try
     {
-      throw new WcsException( WcsException.Code.InvalidFormat, "", "Request format <" + format + "> now allowed <" + this.coverage.getAllowedCoverageFormat() + ">");
+      this.format = Format.valueOf( format.trim() );
+    }
+    catch( IllegalArgumentException e)
+    {
+      String msg = "Unknown format value [" + format + "].";
+      log.error( "GetCoverage(): " + msg);
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msg);
+    }
+
+    if ( ! this.coverage.isSupportedCoverageFormat( this.format ))
+    {
+      String msg = "Unsupported format value [" + format + "].";
+      log.error( "GetCoverage(): " + msg );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msg );
+    }
+
+    if ( this.format == WcsRequest.Format.GeoTIFF || this.format == WcsRequest.Format.GeoTIFF_Float)
+    {
+      // Check that request is for one time and one vertical level
+      // since that is all we support for GeoTIFF[-Float].
+      if ( ! this.isSingleTimeRequest && ! this.isSingleVerticalRequest )
+      {
+        StringBuffer msgB = new StringBuffer( "GeoTIFF supported only for requests at a single time [");
+        if ( time != null )
+          msgB.append( time);
+        msgB.append( "] and a single vertical level [");
+        if ( parameter != null )
+          msgB.append( parameter);
+        msgB.append( "].");
+
+        log.error( "GetCoverage(): " + msgB );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msgB.toString() );
+      }
     }
   }
 
   public File writeCoverageDataToFile()
           throws WcsException
   {
-    return this.coverage.writeCoverageDataToFile( this.bboxLatLonRect,
+    return this.coverage.writeCoverageDataToFile( this.format,
+                                                  this.bboxLatLonRect,
                                                   this.rangeSetAxisValueRange,
                                                   this.timeRange);
   }
@@ -164,6 +202,7 @@ public class GetCoverage extends WcsRequest
       {
         DateType date = new DateType( time, null, null );
         dateRange = new DateRange( date, date, null, null );
+        this.isSingleTimeRequest = true;
       }
     }
     catch ( ParseException e )
@@ -238,6 +277,7 @@ public class GetCoverage extends WcsRequest
           throw new WcsException( WcsException.Code.InvalidParameterValue, coverage.getRangeField().getAxis().getName(), "Failed to parse Vertical value." );
         }
         range = new WcsCoverage.VerticalRange( value, value, 1 );
+        this.isSingleVerticalRequest = true;
       }
     }
 
