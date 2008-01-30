@@ -50,8 +50,8 @@ public class HdfEos {
     while (true) {
       Variable structMetadataVar = eosGroup.findVariable("StructMetadata." + n);
       if (structMetadataVar == null) break;
-      if (structMetadata != null) { // already have StructMetadata
-        if (sbuff == null) sbuff = new StringBuffer(64000);
+      if ((structMetadata != null) && (sbuff == null)) { // more than 1 StructMetadata
+        sbuff = new StringBuffer(64000);
         sbuff.append(structMetadata);
       }
 

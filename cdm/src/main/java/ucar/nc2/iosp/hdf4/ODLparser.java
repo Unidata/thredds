@@ -38,7 +38,7 @@ public class ODLparser {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ODLparser.class);
 
   private Document doc;
-  private boolean debug = false, show = false;
+  private boolean debug = false, showRaw = false, show = false;
 
   void showDoc() {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
@@ -55,6 +55,8 @@ public class ODLparser {
   }
 
   public Element parseFromString(String text) throws IOException {
+    if (showRaw) System.out.println("Raw ODL=\n"+text);
+    
     Element rootElem = new Element("odl");
     doc = new Document(rootElem);
 
@@ -120,7 +122,7 @@ public class ODLparser {
     assert toke.equals("END_OBJECT");
     String name = stoke.nextToken();
     if (debug) System.out.println(line+" -> "+current);
-    assert name.equals( current.getName());
+    assert name.equals( current.getName()) : name +" !+ "+ current.getName();
   }
 
   void addField(Element parent, String line) throws IOException {

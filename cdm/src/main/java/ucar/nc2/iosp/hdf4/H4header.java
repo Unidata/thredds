@@ -359,8 +359,10 @@ public class H4header {
       if (tag.code == 1962) {
         TagVH vh = (TagVH) tag;
         if (vh.className.startsWith("Att")) {
+          String lowername = vh.name.toLowerCase();
           if ((vh.nfields == 1) && (H4type.setDataType(vh.fld_type[0], null) == DataType.CHAR) &&
-              ((vh.fld_isize[0] > 4000) || vh.name.startsWith("productmetadata") || vh.name.startsWith("coremetadata"))) {
+              ((vh.fld_isize[0] > 4000) || lowername.startsWith("archivemetadata") || lowername.startsWith("coremetadata")
+                || lowername.startsWith("productmetadata") || lowername.startsWith("structmetadata"))) {
             ncfile.addVariable(null, makeVariable(vh)); // // large EOS metadata - make into variable in root group
           } else {
             Attribute att = makeAttribute(vh);
@@ -586,8 +588,10 @@ public class H4header {
       try {
         if (vh.nvert > 1) {
 
-           if (vh.fld_order[0] > 1)
+          if (vh.fld_order[0] > 1)
             v.setDimensionsAnonymous(new int[]{vh.nvert, vh.fld_order[0]});
+          else if (vh.fld_order[0] < 0)
+             v.setDimensionsAnonymous(new int[]{vh.nvert, vh.fld_isize[0]});
           else
             v.setDimensionsAnonymous(new int[]{vh.nvert});
 
@@ -595,6 +599,8 @@ public class H4header {
           
           if (vh.fld_order[0] > 1)
             v.setDimensionsAnonymous(new int[]{vh.fld_order[0]});
+          else if (vh.fld_order[0] < 0)
+            v.setDimensionsAnonymous(new int[]{vh.fld_isize[0]});
           else
             v.setIsScalar();
         }
