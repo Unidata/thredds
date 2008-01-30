@@ -1255,9 +1255,10 @@ public class Variable implements VariableIF {
    */
   public void setDimensions(String dimString) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.dimensions = new ArrayList<Dimension>();
+    List<Dimension> newDimensions = new ArrayList<Dimension>();
 
     if ((dimString == null) || (dimString.length() == 0)) { // scalar
+      this.dimensions = newDimensions;
       resetShape();
       return;
     }
@@ -1268,9 +1269,10 @@ public class Variable implements VariableIF {
       Dimension d = dimName.equals("*") ? Dimension.VLEN : group.findDimension(dimName);
       if (d == null)
         throw new IllegalArgumentException("Variable " + getName() + " setDimensions = " + dimString + " FAILED, dim doesnt exist=" + dimName);
-      this.dimensions.add(d);
+      newDimensions.add(d);
     }
 
+    this.dimensions = newDimensions;
     resetShape();
   }
 

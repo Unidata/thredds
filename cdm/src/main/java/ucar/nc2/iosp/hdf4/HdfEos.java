@@ -28,6 +28,7 @@ import ucar.ma2.ArrayChar;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.jdom.Element;
 
@@ -40,7 +41,7 @@ import org.jdom.Element;
  */
 public class HdfEos {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
-  static private boolean showTypes = false;
+  static private boolean showTypes = false, debug = true;
 
   static public void amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
     StringBuffer sbuff = null;
@@ -159,6 +160,7 @@ public class HdfEos {
   }
 
   private void amendSwath(Element swathElem, Group parent) {
+    List<Dimension> unknownDims = new ArrayList<Dimension>();
 
     // Dimensions
     Element d = swathElem.getChild("Dimension");
@@ -170,6 +172,11 @@ public class HdfEos {
       if (length > 0) {
         Dimension dim = new Dimension(name, length);
         parent.addDimension(dim);
+      } else {
+        log.warn("Dimension "+name+" has size "+sizeS);
+        Dimension udim = new Dimension(name, 1);
+        udim.setGroup(parent);
+        unknownDims.add( udim);
       }
     }
 
@@ -210,11 +217,7 @@ public class HdfEos {
         StringBuffer sbuff = new StringBuffer();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
-        for (Element value : values) {
-          sbuff.append(value.getText());
-          sbuff.append(" ");
-        }
-        v.setDimensions(sbuff.toString()); // livin dangerously
+        setSharedDimensions( v, values, unknownDims);
       }
     }
 
@@ -237,11 +240,7 @@ public class HdfEos {
         StringBuffer sbuff = new StringBuffer();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
-        for (Element value : values) {
-          sbuff.append(value.getText());
-          sbuff.append(" ");
-        }
-        v.setDimensions(sbuff.toString()); // livin dangerously
+        setSharedDimensions( v, values, unknownDims);
       }
     }
 
@@ -263,6 +262,8 @@ public class HdfEos {
 
 
   private void amendGrid(Element gridElem, Group parent) {
+    List<Dimension> unknownDims = new ArrayList<Dimension>();
+
     // always has x and y dimension
     String xdimSizeS = gridElem.getChild("XDim").getText();
     String ydimSizeS = gridElem.getChild("YDim").getText();
@@ -280,8 +281,15 @@ public class HdfEos {
       int length = Integer.parseInt(sizeS);
       Dimension old = parent.findDimension(name);
       if ((old == null) || (old.getLength() != length)) {
-        Dimension dim = new Dimension(name, length);
-        parent.addDimension(dim);
+        if (length > 0) {
+          Dimension dim = new Dimension(name, length);
+          parent.addDimension(dim);
+        } else {
+          log.warn("Dimension "+name+" has size "+sizeS);
+          Dimension udim = new Dimension(name, 1);
+          udim.setGroup(parent);
+          unknownDims.add( udim);
+        }
       }
     }
 
@@ -299,11 +307,7 @@ public class HdfEos {
         StringBuffer sbuff = new StringBuffer();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
-        for (Element value : values) {
-          sbuff.append(value.getText());
-          sbuff.append(" ");
-        }
-        v.setDimensions(sbuff.toString()); // livin dangerously
+        setSharedDimensions( v, values, unknownDims);
       }
     }
 
@@ -321,14 +325,51 @@ public class HdfEos {
         StringBuffer sbuff = new StringBuffer();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
-        for (Element value : values) {
-          sbuff.append(value.getText());
-          sbuff.append(" ");
-        }
-        v.setDimensions(sbuff.toString()); // livin dangerously
+        setSharedDimensions( v, values, unknownDims);
       }
     }
 
+  }
+
+  // convert to shared dimensions
+  private void setSharedDimensions(Variable v, List<Element> values, List<Dimension> unknownDims) {
+    List<Dimension> newDims = new ArrayList<Dimension>();
+    List<Dimension> oldDims = v.getDimensions();
+    Group group = v.getParentGroup();
+    for (int i=0; i<values.size(); i++) {
+      Element value = values.get(i);
+      String dimName = value.getText();
+      Dimension dim = group.findDimension(dimName);
+      Dimension oldDim = oldDims.get(i);
+      if (dim == null)
+        dim = checkUnknownDims(dimName, unknownDims, oldDim);
+
+      if (dim == null) {
+        log.error("Unknown Dimension= "+dimName+" for variable = "+v.getName());
+        return;
+      }
+      if (dim.getLength() != oldDim.getLength()) {
+        log.error("Shared dimension has different length: shared="+ dim.getLength() + " org=" + oldDim.getLength() + " for "+ v);
+        return;
+      }
+      newDims.add(dim);
+    }
+    v.setDimensions(newDims);
+  }
+
+  // look if the wanted dimension is in the  unknownDims list.
+  private Dimension checkUnknownDims(String wantDim, List<Dimension> unknownDims, Dimension oldDim) {
+    for (Dimension dim : unknownDims) {
+      if (dim.getName().equals(wantDim)) {
+        dim.setLength(oldDim.getLength()); // use existing (anon) dimension
+        Group parent = dim.getGroup();
+        parent.addDimension(dim);  // add to the parent
+        unknownDims.remove(dim); // remove from list
+        log.warn("unknownDim " + wantDim+" length set to "+oldDim.getLength());
+        return dim;
+      }
+    }
+    return null;
   }
 
   // look for a group with the given name. recurse into subgroups if needed. breadth first

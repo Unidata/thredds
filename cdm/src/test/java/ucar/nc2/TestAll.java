@@ -244,13 +244,15 @@ public class TestAll {
       }
     });
    */
-  public static void readAllDir(String dirName, FileFilter ff) {
+  public static int readAllDir(String dirName, FileFilter ff) {
+    int count = 0;
+
     System.out.println("---------------Reading directory "+dirName);
     File allDir = new File( dirName);
     File[] allFiles = allDir.listFiles();
     if (null == allFiles) {
       System.out.println("---------------INVALID "+dirName);
-      return;
+      return count;
     }
 
     for (File f : allFiles) {
@@ -258,17 +260,18 @@ public class TestAll {
       if (f.isDirectory())
         continue;
       if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude"))
-        readAll(name);
+        count += readAll(name);
     }
 
     for (File f : allFiles) {
-      if (f.isDirectory())
-        readAllDir(f.getAbsolutePath(), ff);
+      if (f.isDirectory() && !f.getName().equals("exclude"))
+        count += readAllDir(f.getAbsolutePath(), ff);
     }
 
+    return count;
   }
 
-  static public void readAll( String filename) {
+  static public int readAll( String filename) {
     System.out.println("\n------Reading filename "+filename);
     try {
       NetcdfFile ncfile = NetcdfFile.open(filename);
@@ -288,6 +291,8 @@ public class TestAll {
       e.printStackTrace();
       assert false;
     }
+
+    return 1;
   }
 
   static int max_size = 1000 * 1000 * 10;

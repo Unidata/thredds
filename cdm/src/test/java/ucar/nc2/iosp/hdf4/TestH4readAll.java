@@ -21,6 +21,8 @@
 package ucar.nc2.iosp.hdf4;
 
 import ucar.nc2.TestAll;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 import java.io.IOException;
 import java.io.FileFilter;
@@ -41,13 +43,27 @@ public class TestH4readAll extends TestCase {
 
   public void testReadAll() throws IOException {
     //readandCountAllInDir(testDir, null);
-    TestAll.readAllDir("D:/hdf4/", null);
-    TestAll.readAllDir("R:/testdata/hdf4/", new MyFileFilter());
+    int count = TestAll.readAllDir("D:/hdf4/", null);
+    System.out.println("***READ "+count+" files");
+    count = TestAll.readAllDir("R:/testdata/hdf4/", new MyFileFilter());
+    System.out.println("***READ "+count+" files");
   }
 
   class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
       return pathname.getName().endsWith(".hdf") || pathname.getName().endsWith(".eos");
     }
+  }
+
+    public void problem() throws IOException {
+    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/linked H4header/construct"));
+    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag2 H4header/tagDetail H4header/construct"));
+    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/linked"));
+
+    NetcdfFile ncfile = NetcdfFile.open("D:\\hdf4\\ndsic\\Data\\GESC\\exclude\\problem/AIRS.2007.10.17.L1B.Cal_Subset.v5.0.16.0.G07292194950.hdf");
+    Variable v = ncfile.findVariable("L1B_AIRS_Cal_Subset/Data Fields/radiances");
+    assert v != null;
+    v.read();
+    ncfile.close();
   }
 }

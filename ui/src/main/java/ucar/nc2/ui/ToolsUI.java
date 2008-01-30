@@ -52,6 +52,7 @@ import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.util.*;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
+
 import thredds.catalog.query.DqcFactory;
 
 import java.awt.*;

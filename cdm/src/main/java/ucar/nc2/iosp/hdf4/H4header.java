@@ -1200,6 +1200,8 @@ public class H4header {
           short tag = sdata.getScalarShort(i, tagM);
           short ref = sdata.getScalarShort(i, refM);
           TagData data = (TagData) tagMap.get(tagid(ref, tag));
+          if (null == data)
+            System.out.println("HEY");
           dataChunks.add(new DataChunk(origin, chunk_length, data));
           data.used = true;
           if (data.compress != null) isCompressed = true;
