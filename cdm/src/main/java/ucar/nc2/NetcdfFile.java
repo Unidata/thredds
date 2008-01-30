@@ -103,6 +103,12 @@ public class NetcdfFile {
       log.warn("Cant load class: " + e);
     }
     try {
+      NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib2.Grib2Input"); // only load if grib.jar is present
+      registerIOProvider("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
+    } catch (Throwable e) {
+      log.warn("Cant load class: " + e);
+    }
+    try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.bufr.BufrInput"); // only load if bufr.jar is present
       registerIOProvider("ucar.nc2.iosp.bufr.BufrIosp");
     } catch (Throwable e) {
