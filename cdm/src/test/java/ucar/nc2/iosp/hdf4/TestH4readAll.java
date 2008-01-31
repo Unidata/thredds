@@ -55,15 +55,24 @@ public class TestH4readAll extends TestCase {
     }
   }
 
-    public void problem() throws IOException {
+  public void testProblems() throws IOException {
+    //readandCountAllInDir(testDir, null);
+    int count = TestAll.readAllDir("E:/problem/", null);
+    System.out.println("***READ "+count+" files");
+  }
+
+
+  public void problem() throws IOException {
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/linked H4header/construct"));
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag2 H4header/tagDetail H4header/construct"));
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/linked"));
 
-    NetcdfFile ncfile = NetcdfFile.open("D:\\hdf4\\ndsic\\Data\\GESC\\exclude\\problem/AIRS.2007.10.17.L1B.Cal_Subset.v5.0.16.0.G07292194950.hdf");
-    Variable v = ncfile.findVariable("L1B_AIRS_Cal_Subset/Data Fields/radiances");
-    assert v != null;
-    v.read();
+    //TestAll.readAll("E:/problem/MAC021S0.A2007287.1920.002.2007289002404.hdf");
+
+    NetcdfFile ncfile = NetcdfFile.open("E:/problem/MAC021S0.A2007287.1920.002.2007289002404.hdf");
+    //Variable v = ncfile.findVariable("L1B_AIRS_Cal_Subset/Data Fields/radiances");
+    //assert v != null;
+    //v.read();
     ncfile.close();
   }
 }

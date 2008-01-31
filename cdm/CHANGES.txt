@@ -21,6 +21,7 @@ This code is ALPHA
    * complete HDF5 access
    * complete HDF4 access
    * parsing of HDF-EOS/HDF5-EOS metadata to identify dimensions.
+   * GEMPAK grids
   geoloc
    * Add RotatedPole projection
   dt
@@ -95,12 +96,15 @@ API Extensive API changes. Most, but not completely backwards-compatible.
 
    * Variable.getCoordinateDimension() removed
    * Variable.calcIsCoordinateVariable() removed
+   * Variable.isCoordinateVariable() added
    * Variable.setIsCoordinateAxis() removed
    * Variable.set/getIOVar() removed
    * Variable can be set immutable.
+   * Variable.readAllStructures is deprecated
 
    * NetcdfFile.addStringVariable(), addVariable() convenience methods
    * NetcdfFile.addRecordStructure removed, use sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
+   * NetcdfFile.readMemberData() deprecated: use Structure.select()
 
    * Structure.select() create subset consisting only of given member variables
    * Structure.convertXXX removed
@@ -119,4 +123,31 @@ API Extensive API changes. Most, but not completely backwards-compatible.
   Package ucar.nc2.iosp.netcdf3
     * netcdf3 format is now just one of the possible IOSPs
     * N3streamWriter allows netcdf3 to be written as a stream
+
+  Refactoring to reduce depemdencies among modules (core, netcdf, ui, tds)
+    * ucar.nc2.dataset.conv._Coordinate moved to ucar.nc2.constants
+    * thredds.catalog.DataType moved to ucar.nc2.constants
+    * ucar.nc2.dataset.AxisType moved to ucar.nc2.constants
+
+    * thredds.util.DateFromString moved to ucar.nc2.units
+    * thredds.datatype to ucar.nc2.units
+
+    * thredds.util to ucar.nc2.util
+    * thredds.util.net to ucar.nc2.util.net
+    * ucar.nc2.dataset.HttpClientManager to ucar.nc2.util.net
+    * remove opendap.dap.DConnect2, ucar.unidata.io.http.HTTPRandomAccessFile from HttpClientManager: must be done seperately
+    * ucar.nc2.util.NetworkUtils to ucar.nc2.util.net.URLnaming
+
+    * thredds.util.net.URLExtractor to ui module
+    * thredds.util.ListenerManager to ui module
+    * thredds.util.Resource to ui module
+    * thredds.util.SocketMessage to ui module
+    * thredds.datamodel to ui
+    * thredds.tools to ui
+
+    * thredds.cataloggen.catalogGenMain (org.apache.log4j) to tds module
+    * thredds.dqc to tds
+    * thredds.cataloggen.CatalogRefInfo to thredds.cataloggen.config
+
+
 

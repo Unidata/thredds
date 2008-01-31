@@ -1518,19 +1518,6 @@ public class Variable implements VariableIF {
     this.parent = parent;
   }
 
-  /*
-   * Get index subsection as an array of Range objects, including parents.
-   * @return array of Ranges, rank of v plus all parents.
-   *
-  public Section getSectionAll() {
-    try {
-      return makeSectionAddParents(null, false);
-    } catch (InvalidRangeException e) {
-      log.error("VariableStructureMember.getRangesAll got InvalidRangeException", e);
-      throw new IllegalStateException("VariableStructureMember.getRangesAll got InvalidRangeException");
-    }
-  } */
-
   /**
    * Get list of Dimensions, including parents if any.
    *
@@ -1558,6 +1545,7 @@ public class Variable implements VariableIF {
    * @param flatten     if true, remove enclosing StructureData.
    * @return the requested data which has the shape of the request.
    * @see #readAllStructures
+   * @deprecated
    */
   public Array readAllStructuresSpec(String sectionSpec, boolean flatten) throws IOException, InvalidRangeException {
     return readAllStructures(new Section(sectionSpec), flatten);
@@ -1583,6 +1571,7 @@ public class Variable implements VariableIF {
    * @param flatten    if true, remove enclosing StructureData. Otherwise, each parent Structure will create a
    *                   StructureData container for the returned data array. LOOK maybe always flatten = true ??
    * @return the requested data which has the shape of the request.
+   * @deprecated
    */
   public Array readAllStructures(ucar.ma2.Section sectionAll, boolean flatten) throws java.io.IOException, ucar.ma2.InvalidRangeException {
     Section resolved; // resolve all nulls

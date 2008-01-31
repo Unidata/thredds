@@ -536,7 +536,6 @@
       <package name="ucar.*"/>
       <excludepackage name="ucar/nc2/dataset/grid"/>
       <excludepackage name="ucar/nc2/stream"/>
-      <excludepackage name="ucar/nc2/dt2/*"/>
       <excludepackage name="ucar/nc2/util/reflect"/>
       <excludepackage name="ucar/unidata/geoloc/ogc"/>
     </javadoc>

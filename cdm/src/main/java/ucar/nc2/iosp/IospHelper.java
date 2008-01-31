@@ -232,6 +232,7 @@ public class IospHelper {
         Layout.Chunk chunk = index.next();
         raf.read(chunk.getSrcPos(), pa, (int) chunk.getDestElem()*recsize, chunk.getNelems()*recsize);
       }
+      return pa;
     }
 
     throw new IllegalStateException();

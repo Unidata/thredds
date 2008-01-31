@@ -38,7 +38,7 @@ public class ODLparser {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ODLparser.class);
 
   private Document doc;
-  private boolean debug = false, showRaw = false, show = false;
+  private boolean debug = false, showRaw = true, show = true;
 
   void showDoc() {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());

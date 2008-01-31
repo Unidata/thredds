@@ -349,7 +349,8 @@ public class HdfEos {
         return;
       }
       if (dim.getLength() != oldDim.getLength()) {
-        log.error("Shared dimension has different length: shared="+ dim.getLength() + " org=" + oldDim.getLength() + " for "+ v);
+        log.error("Shared dimension ("+dim.getName()+") has different length than data dimension ("+oldDim.getName()+
+            ") shared="+ dim.getLength() + " org=" + oldDim.getLength() + " for "+ v);
         return;
       }
       newDims.add(dim);

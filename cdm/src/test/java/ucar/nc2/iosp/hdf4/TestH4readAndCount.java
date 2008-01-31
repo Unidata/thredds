@@ -32,8 +32,8 @@ import java.io.File;
  * @since Jan 1, 2008
  */
 public class TestH4readAndCount extends TestCase {
-  static public String testDir = "R:/testdata/hdf4/";
-  //static public String testDir = "C:/data/hdf4/";
+  //static public String testDir = "R:/testdata/hdf4/";
+  static public String testDir = "C:/data/hdf4/";
 
   public TestH4readAndCount(String name) {
     super(name);
@@ -202,7 +202,7 @@ public class TestH4readAndCount extends TestCase {
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/linked"));
 
     //TestAll.readAll(testDir+"ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf");
-    NetcdfFile ncfile = NetcdfFile.open("D:\\hdf4\\ndsic\\Data\\GESC\\AIRS\\AIRS.2003.01.24.116.L2.RetSup_H.v5.0.14.0.G07295101113.hdf.gz");
+    NetcdfFile ncfile = NetcdfFile.open(testDir + "AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf");
     //Variable v = ncfile.findVariable("Profile_Time");
     //assert v != null;
     //v.read();

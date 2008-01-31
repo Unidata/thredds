@@ -924,6 +924,7 @@ public class H4header {
         else {
           start = compData.offset;
           length = compData.length;
+          hasNoData = (start < 0) || (length < 0);
         }
 
       } else if (null != data.chunked) {
@@ -945,9 +946,17 @@ public class H4header {
       for (TagLinkedBlock tag : linkedBlocks) {
         segPos[count] = tag.offset;
 
+        // option 1
         // the size must be a multiple of elemSize - assume remaining is unused
-        int nelems = tag.length / elemSize;
-        segSize[count] = nelems * elemSize;
+        //int nelems = tag.length / elemSize;
+        //segSize[count] = nelems * elemSize;
+
+        // option 2
+        // Stucture that requires requires full use of the block length.
+        // structure size = 12, block size = 4096, has 4 extra bytes
+        // E:/problem/AIRS.2007.10.17.L1B.Cal_Subset.v5.0.16.0.G07292194950.hdf#L1B_AIRS_Cal_Subset/Data Fields/radiances
+        // LOOK do we sometimes need option 1) above ??
+        segSize[count] = tag.length;
         count++;
       }
     }
@@ -1196,13 +1205,18 @@ public class H4header {
         int n = (int) sdata.getSize();
         if (debugChunkTable) System.out.println(" Reading "+n+" DataChunk tags");
         for (int i = 0; i < n; i++) {
+          //if (i == 341)
+            //System.out.println("HEYA");
+
           int[] origin = sdata.getJavaArrayInt(i, originM);
           short tag = sdata.getScalarShort(i, tagM);
           short ref = sdata.getScalarShort(i, refM);
           TagData data = (TagData) tagMap.get(tagid(ref, tag));
           if (null == data)
             System.out.println("HEY");
-          dataChunks.add(new DataChunk(origin, chunk_length, data));
+          //else
+            //System.out.println(i+" origin="+printa(origin)+" data="+data.detail());
+          dataChunks.add( new DataChunk(origin, chunk_length, data));
           data.used = true;
           if (data.compress != null) isCompressed = true;
         }
@@ -1222,7 +1236,13 @@ public class H4header {
         sbuff.append(" ").append(sp_tag_header[i]);
       return sbuff.toString();
     }
+  }
 
+  private String printa(int[] array) {
+    StringBuffer sbuff = new StringBuffer();
+    for (int i = 0; i < array.length; i++)
+      sbuff.append(" ").append(array[i]);
+    return sbuff.toString();
   }
 
   class DataChunk {

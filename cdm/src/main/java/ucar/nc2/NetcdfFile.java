@@ -871,7 +871,7 @@ public class NetcdfFile {
    * @return Array data read.
    * @throws IOException if error
    * @throws InvalidRangeException if variableSection is invalid
-   * @see NCdump#parseVariableSection for syntax of constraint expression
+   * @see NCdumpW#parseVariableSection for syntax of constraint expression
    */
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
     NCdumpW.CEresult cer = NCdumpW.parseVariableSection(this, variableSection);
@@ -970,9 +970,7 @@ public class NetcdfFile {
    * @throws IOException if error
    */
   public boolean syncExtend() throws IOException {
-    if (spi != null)
-      return spi.syncExtend();
-    return false;
+    return (spi != null) && spi.syncExtend();
   }
 
   /**
@@ -984,9 +982,7 @@ public class NetcdfFile {
    * @throws IOException if error
    */
   public boolean sync() throws IOException {
-    if (spi != null)
-      return spi.sync();
-    return false;
+    return (spi != null) && spi.sync();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -1113,6 +1109,7 @@ public class NetcdfFile {
    * Add an attribute to a group.
    * @param parent add to this group. If group is null, use root group
    * @param att add this attribute
+   * @return the attribute that was added
    */
   public Attribute addAttribute(Group parent, Attribute att) {
     if (immutable) throw new IllegalStateException("Cant modify");
@@ -1125,6 +1122,7 @@ public class NetcdfFile {
    * Add a group to the parent group.
    * @param parent add to this group. If group is null, use root group
    * @param g add this group
+   * @return the group that was added
    */
   public Group addGroup(Group parent, Group g) {
     if (immutable) throw new IllegalStateException("Cant modify");
@@ -1137,6 +1135,7 @@ public class NetcdfFile {
    * Add a shared Dimension to a Group.
    * @param parent add to this group. If group is null, use root group
    * @param d add this Dimension
+   * @return the dimension that was added
    */
   public Dimension addDimension(Group parent, Dimension d) {
     if (immutable) throw new IllegalStateException("Cant modify");
@@ -1161,6 +1160,7 @@ public class NetcdfFile {
    * Add a Variable to the given group.
    * @param g add to this group. If group is null, use root group
    * @param v add this Variable
+   * @return the variable that was added
    */
   public Variable addVariable(Group g, Variable v) {
     if (immutable) throw new IllegalStateException("Cant modify");
@@ -1507,6 +1507,7 @@ public class NetcdfFile {
   /**
    * Do not call this directly, use Variable.readSection() !!
    * Ranges must be filled (no nulls)
+   * @deprecated
    */
   protected Array readMemberData(ucar.nc2.Variable v, Section ranges, boolean flatten) throws IOException, InvalidRangeException {
     Array result = spi.readNestedData(v, ranges);

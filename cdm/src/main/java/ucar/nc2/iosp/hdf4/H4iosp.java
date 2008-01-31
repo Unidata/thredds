@@ -159,9 +159,17 @@ public class H4iosp extends AbstractIOServiceProvider {
       Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), section);
       IospHelper.readData(raf, layout, DataType.STRUCTURE, result, -1);
 
+      /* option 1
     } else if (vinfo.isLinked && !vinfo.isCompressed) {
       Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, recsize, s.getShape(), section);
-      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, -1);
+      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, -1);  */
+
+      // option 2
+    } else if (vinfo.isLinked && !vinfo.isCompressed) {
+      InputStream is = new LinkedInputStream(vinfo);
+      PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
+      Layout layout = new LayoutRegular(0, recsize, s.getShape(), section);
+      IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
 
     } else if (!vinfo.isLinked && vinfo.isCompressed) {
       InputStream is = getCompressedInputStream(vinfo);
