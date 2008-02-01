@@ -9,12 +9,15 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.ma2.Range;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Array;
 
 import java.util.*;
 import java.io.File;
 import java.io.IOException;
 
 import ucar.nc2.units.DateRange;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.geotiff.GeotiffWriter;
 
 /**
  * _more_
@@ -39,7 +42,7 @@ public class WcsCoverage
 
   private String defaultRequestCrs;
 
-  private String allowedCoverageFormat;
+  private List<WcsRequest.Format> supportedCoverageFormatList;
 
   private HashMap<String, WcsRangeField> range;
 
@@ -87,7 +90,11 @@ public class WcsCoverage
 
     this.defaultRequestCrs = "OGC:CRS84";
 
-    this.allowedCoverageFormat = "application/x-netcdf";
+    this.supportedCoverageFormatList = new ArrayList<WcsRequest.Format>();
+    //this.supportedCoverageFormatList = "application/x-netcdf";
+    this.supportedCoverageFormatList.add( WcsRequest.Format.GeoTIFF);
+    this.supportedCoverageFormatList.add( WcsRequest.Format.GeoTIFF_Float);
+    this.supportedCoverageFormatList.add( WcsRequest.Format.NetCDF3);
   }
 
   GridDataset.Gridset getGridset() { return coverage; }
@@ -99,7 +106,14 @@ public class WcsCoverage
 
   public String getDefaultRequestCrs() { return defaultRequestCrs; }
   public String getNativeCrs() { return nativeCRS; }
-  public String getAllowedCoverageFormat() { return allowedCoverageFormat; }
+  public List<WcsRequest.Format> getSupportedCoverageFormatList()
+  {
+    return Collections.unmodifiableList( supportedCoverageFormatList );
+  }
+  public boolean isSupportedCoverageFormat( WcsRequest.Format covFormat)
+  {
+    return this.supportedCoverageFormatList.contains( covFormat );
+  }
 
   public boolean isRangeFieldName( String fieldName ) { return range.containsKey( fieldName ); }
   public Set<String> getRangeFieldNames() { return range.keySet(); }
@@ -117,44 +131,97 @@ public class WcsCoverage
     return diskCache;
   }
 
-  public File writeCoverageDataToFile( LatLonRect bboxLatLonRect, AxisSubset vertSubset, List<String> rangeSubset, DateRange timeRange)
+  public File writeCoverageDataToFile( WcsRequest.Format format, LatLonRect bboxLatLonRect, AxisSubset vertSubset, List<String> rangeSubset, DateRange timeRange)
           throws WcsException
   {
-    File ncFile = getDiskCache().getCacheFile( this.dataset.getDatasetPath() + "-" + this.getName() + ".nc" );
-    Range zRange = null;
+    boolean zRangeDone = false;
+    boolean tRangeDone = false;
+
     try
     {
-      zRange = vertSubset != null ? vertSubset.getRange() : null;
+      // Get the height range.
+      Range zRange = vertSubset != null ? vertSubset.getRange() : null;
+      zRangeDone = true;
+
+      // Get the time range.
+      Range tRange = null;
+      if ( timeRange != null )
+      {
+        CoordinateAxis1DTime timeAxis = this.coordSys.getTimeAxis1D();
+        int startIndex = timeAxis.findTimeIndexFromDate( timeRange.getStart().getDate() );
+        int endIndex = timeAxis.findTimeIndexFromDate( timeRange.getEnd().getDate() );
+        tRange = new Range( startIndex, endIndex );
+        tRangeDone = true;
+      }
+
+      if ( format == WcsRequest.Format.GeoTIFF || format == WcsRequest.Format.GeoTIFF_Float )
+      {
+        if ( rangeSubset.size() != 1 )
+        {
+          String msg = "GeoTIFF response encoding only available for single range field selection [" + rangeSubset + "].";
+          log.error( "writeCoverageDataToFile(): " + msg );
+          throw new WcsException( WcsException.Code.InvalidParameterValue, "RangeSubset", msg );
+        }
+        String reqRangeFieldName = rangeSubset.get( 0);
+
+        //String dname = (datasetURL != null) ? datasetURL : datasetPath;
+        File tifFile = getDiskCache().getCacheFile( this.dataset.getDatasetPath() + "-" + this.getName() + ".tif" );
+        if ( log.isDebugEnabled() )
+          log.debug( "writeCoverageDataToFile(): tifFile=" + tifFile.getPath() );
+
+        WcsRangeField rangeField = this.range.get( reqRangeFieldName );
+        GridDatatype subset = rangeField.getGridDatatype()
+                .makeSubset( tRange, zRange, bboxLatLonRect, 1, 1, 1 );
+        Array data = subset.readDataSlice( 0, 0, -1, -1 );
+
+        GeotiffWriter writer = new GeotiffWriter( tifFile.getPath() );
+        writer.writeGrid( this.dataset.getDataset(), subset, data, format == WcsRequest.Format.GeoTIFF );
+
+        writer.close();
+
+        return tifFile;
+      }
+      else if ( format == WcsRequest.Format.NetCDF3 )
+      {
+        File ncFile = getDiskCache().getCacheFile( this.dataset.getDatasetPath() + "-" + this.getName() + ".nc" );
+        if ( log.isDebugEnabled() )
+          log.debug( "writeCoverageDataToFile(): ncFile=" + ncFile.getPath() );
+
+        //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
+
+        NetcdfCFWriter writer = new NetcdfCFWriter();
+        this.coordSys.getVerticalAxis().isNumeric();
+        writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
+                         rangeSubset,
+                         bboxLatLonRect, 1,
+                         zRange,
+                         timeRange, 1,
+                         true );
+        return ncFile;
+      }
+      else
+      {
+        log.error( "writeCoverageDataToFile(): Unsupported response encoding format [" + format + "]." );
+        throw new WcsException( WcsException.Code.InvalidFormat, "Format", "Unsupported response encoding format [" + format + "]." );
+      }
     }
     catch ( InvalidRangeException e )
     {
-      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.getName() + "> along vertical range <" + vertSubset + ">: " + e.getMessage() );
-      throw new WcsException( WcsException.Code.CoverageNotDefined, "BBOX", "Failed to subset coverage <" + this.getName() + "> along vertical range." );
-    }
-
-    //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
-
-    NetcdfCFWriter writer = new NetcdfCFWriter();
-    try
-    {
-      this.coordSys.getVerticalAxis().isNumeric();
-      writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
-                       rangeSubset,
-                       bboxLatLonRect, 1,
-                       zRange,
-                       timeRange, 1,
-                       true );
-    }
-    catch ( InvalidRangeException e )
-    {
-      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.getName() + ">: " + e.getMessage() );
-      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage <" + this.getName() + ">." );
+      String msg = "Failed to subset coverage [" + this.getName();
+      if ( ! zRangeDone )
+        msg += "] along vertical axis [" + vertSubset + "]. ";
+      else if ( ! tRangeDone )
+        msg += "] along time axis [" + timeRange + "]. ";
+      else
+        msg += "] in horizontal plane [" + bboxLatLonRect + "]. ";
+      log.error( "writeCoverageDataToFile(): " + msg + e.getMessage() );
+      throw new WcsException( WcsException.Code.CoverageNotDefined, "", msg );
     }
     catch ( IOException e )
     {
       log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + this.getName() + ">: " + e.getMessage() );
-      throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage <" + this.getName() + ">." );
+      throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.getName() + "]." );
     }
-    return ncFile;
   }
+
 }

@@ -467,9 +467,12 @@ public class DescribeCoverage extends WcsRequest
 
     // supportedFormats/formats [1..*] (wcs) (space seperated list of strings)
     // supportedFormats/formats@codeSpace [0..1] (URI)
-    supportedFormatsElem.addContent(
-            new Element( "formats", wcsNS )
-                    .addContent( coverage.getAllowedCoverageFormat() ) );
+    for ( WcsRequest.Format curFormat : coverage.getSupportedCoverageFormatList() )
+    {
+      supportedFormatsElem.addContent(
+              new Element( "formats", wcsNS )
+                      .addContent( curFormat.toString() ) );
+    }
 
     return supportedFormatsElem;
   }

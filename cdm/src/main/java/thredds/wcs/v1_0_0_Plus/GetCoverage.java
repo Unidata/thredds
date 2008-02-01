@@ -12,6 +12,8 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
+import ucar.ma2.Range;
+import ucar.ma2.InvalidRangeException;
 
 /**
  * _more_
@@ -31,6 +33,12 @@ public class GetCoverage extends WcsRequest
   private AxisSubset requestVertSubset;
   private DateRange timeRange;
   private List<String> rangeSubset;
+
+  private Format format;
+  // Requests for GeoTIFF encoding must be for a single time, single vertical level, and single range field.
+  private boolean isSingleTimeRequest = false;
+  private boolean isSingleVerticalRequest = false;
+  private boolean isSingleRangeFieldRequest = false;
 
   public GetCoverage( Operation operation, String version, WcsDataset dataset,
                       String coverageId, String crs, String responseCRS,
@@ -69,15 +77,23 @@ public class GetCoverage extends WcsRequest
         throw new WcsException( WcsException.Code.InvalidParameterValue, "response_CRS", "Respnse CRS <" + responseCRS + "> not allowed <" + nativeCRS + ">." );
 
     // Assign and validate BBOX and TIME parameters.
-    if ( bbox == null && time == null )
-      throw new WcsException( WcsException.Code.MissingParameterValue, "BBOX", "BBOX and/or TIME required.");
-    if ( bbox != null )
+// -----
+//    WCS Spec says at least one of BBOX and TIME are required in a request.
+//    We will not require, default is everything.
+//    
+//    if ( bbox == null && time == null )
+//      throw new WcsException( WcsException.Code.MissingParameterValue, "BBOX", "BBOX and/or TIME required.");
+// -----
+    if ( bbox != null && ( ! bbox.equals( "" ) ) )
     {
       String[] bboxSplit = splitBoundingBox( bbox);
       requestLatLonBBox = genRequestLatLonBoundingBox( bboxSplit, coverage.getCoordinateSystem());
-      requestVertSubset = genRequestVertSubset( bboxSplit, this.coverage.getCoordinateSystem().getVerticalAxis());
+
+      CoordinateAxis1D vertAxis = this.coverage.getCoordinateSystem().getVerticalAxis();
+      if ( vertAxis != null )
+        requestVertSubset = genRequestVertSubset( bboxSplit, vertAxis );
     }
-    if ( time != null )
+    if ( time != null && ( ! time.equals( "" )) )
       timeRange = parseTime( time);
 
     // WIDTH, HEIGHT, DEPTH parameters not needed since the only interpolation method is "NONE".
@@ -87,21 +103,60 @@ public class GetCoverage extends WcsRequest
     this.rangeSubset = parseRangeSubset( rangeSubset);//, coverage.getRange());
 
     // Assign and validate FORMAT parameter.
-    if ( format == null )
+    if ( format == null || format.equals( "" ))
     {
       log.error( "GetCoverage(): FORMAT parameter required.");
       throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required.");
     }
-    if ( ! format.equalsIgnoreCase( this.coverage.getAllowedCoverageFormat() ))
+    try
     {
-      throw new WcsException( WcsException.Code.InvalidFormat, "", "Request format <" + format + "> now allowed <" + this.coverage.getAllowedCoverageFormat() + ">");
+      this.format = Format.valueOf( format.trim());
     }
+    catch ( IllegalArgumentException e )
+    {
+      String msg = "Unknown format value [" + format + "].";
+      log.error( "GetCoverage(): " + msg );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msg );
+    }
+
+    if ( ! this.coverage.isSupportedCoverageFormat( this.format ))
+    {
+      String msg = "Unsupported format value [" + format + "].";
+      log.error( "GetCoverage(): " + msg );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msg );
+    }
+
+    if ( this.format == WcsRequest.Format.GeoTIFF || this.format == WcsRequest.Format.GeoTIFF_Float)
+    {
+      // Check that request is for one time and one vertical level and one range field
+      // since that is all we support for GeoTIFF[-Float].
+      if ( ! this.isSingleTimeRequest &&
+           ! this.isSingleVerticalRequest &&
+           ! this.isSingleRangeFieldRequest )
+      {
+        StringBuffer msgB = new StringBuffer( "GeoTIFF supported only for requests at a single time [");
+        if ( time != null )
+          msgB.append( time);
+        msgB.append( "] and a single vertical level [");
+        if ( bbox != null )
+          msgB.append( bbox);
+        msgB.append( "] and a single range field [");
+        if ( rangeSubset != null )
+          msgB.append( rangeSubset );
+        msgB.append( "].");
+
+        log.error( "GetCoverage(): " + msgB );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msgB.toString() );
+      }
+    }
+
   }
 
   public File writeCoverageDataToFile()
           throws WcsException
   {
-    return this.coverage.writeCoverageDataToFile( this.requestLatLonBBox,
+    return this.coverage.writeCoverageDataToFile( this.format,
+                                                  this.requestLatLonBBox,
                                                   this.requestVertSubset,
                                                   this.rangeSubset,
                                                   this.timeRange);
@@ -166,10 +221,28 @@ public class GetCoverage extends WcsRequest
   private AxisSubset genRequestVertSubset( String[] bboxSplit, CoordinateAxis1D vertAxis )
           throws WcsException
   {
+    // Check if no vertical range request.
     if ( bboxSplit == null || bboxSplit.length == 4 )
+    {
+      // If there is no vertical axis (or only one level), still a single level request.
+      if ( vertAxis == null || vertAxis.getShape()[0] == 1 )
+        this.isSingleVerticalRequest = true;
+
       return null;
+    }
     if ( bboxSplit.length != 6 )
-      throw new IllegalArgumentException( "BBOX does not contain six items \"" + bboxSplit.toString() + "\"." );
+    {
+      String message = "BBOX must have 4 or 6 items [" + bboxSplit.toString() + "].";
+      log.error( "genRequestVertSubset(): " + message );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", message );
+    }
+
+    // If there is no vertical axis (or only one level), still a single level request.
+    if ( vertAxis == null || vertAxis.getShape()[0] == 1 )
+    {
+      this.isSingleVerticalRequest = true;
+      return null;
+    }
 
     double minz = 0;
     double maxz = 0;
@@ -180,12 +253,31 @@ public class GetCoverage extends WcsRequest
     }
     catch ( NumberFormatException e )
     {
-      String message = "BBOX item(s) have incorrect number format [not double] <" + bboxSplit.toString() + ">.";
+      String message = "BBOX item(s) have incorrect number format (not double) [" + bboxSplit.toString() + "].";
       log.error( "genRequestVertSubset(): " + message + " - " + e.getMessage() );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", message );
     }
 
-    return new AxisSubset( vertAxis, minz, maxz, 1 );
+    AxisSubset axisSubset = new AxisSubset( vertAxis, minz, maxz, 1 );
+    Range range = null;
+    try
+    {
+      range = axisSubset.getRange();
+    }
+    catch ( InvalidRangeException e )
+    {
+      String message = "BBOX results in invalid array index range [" + bboxSplit.toString() + "].";
+      log.error( "genRequestVertSubset(): " + message + " - " + e.getMessage() );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", message );
+    }
+    if ( range.length() == 1 )
+    {
+      // Check whether vertical range results in a single level.
+      this.isSingleVerticalRequest = true;
+      return null;
+    }
+
+    return axisSubset;
   }
 
   private DateRange parseTime( String time )
@@ -221,6 +313,7 @@ public class GetCoverage extends WcsRequest
       {
         DateType date = new DateType( time, null, null );
         dateRange = new DateRange( date, date, null, null );
+        this.isSingleTimeRequest = true;
       }
     }
     catch ( ParseException e )
@@ -243,6 +336,8 @@ public class GetCoverage extends WcsRequest
     if ( rangeSubset == null || rangeSubset.equals( "" ) )
     {
       response.addAll( this.coverage.getRangeFieldNames() );
+      if ( response.size() == 1 )
+        this.isSingleRangeFieldRequest = true;
       return response;
     }
 
@@ -269,6 +364,9 @@ public class GetCoverage extends WcsRequest
         throw new WcsException( WcsException.Code.InvalidParameterValue, "RangeSubset", message );
       }
     }
+
+    if ( response.size() == 1 )
+      this.isSingleRangeFieldRequest = true;
 
     return response;
   }
