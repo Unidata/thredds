@@ -27,10 +27,14 @@ import java.util.StringTokenizer;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.nio.channels.WritableByteChannel;
+import java.nio.channels.Channels;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NCdumpW;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
+import ucar.ma2.Section;
 
 /**
  * Experimental testing.
@@ -64,19 +68,50 @@ public class RemoteNetcdfServlet extends AbstractServlet {
 
     String pathInfo = req.getPathInfo();
 
+    boolean wantNull = false;
+    OutputStream out = new BufferedOutputStream( res.getOutputStream(), 10 * 1000);
+
+    WritableByteChannel wbc = null;
+    if (pathInfo.startsWith("/stream")) {
+      wbc = Channels.newChannel(out);
+      pathInfo = pathInfo.substring(7);
+    } else if (pathInfo.startsWith("/null")) {
+      wantNull = true;
+      pathInfo = pathInfo.substring(5);
+    }
+
+    if (wantNull) {
+      byte[] b = new byte[1000];
+      for (int i=0; i < 20 * 1000; i++) {
+        out.write(b);
+      }
+      out.flush();
+      return;
+    }
+
     NetcdfFile ncfile = null;
     try {
-      ncfile = DatasetHandler.getNetcdfFile(req, res);
+      ncfile = DatasetHandler.getNetcdfFile(req, res, pathInfo);
 
       long length = 0;
       String query = req.getQueryString();
       StringTokenizer stoke = new StringTokenizer(query, ",");
       while (stoke.hasMoreTokens()) {
-        Array result = ncfile.read(stoke.nextToken(), false);
-        length += copy2stream(result, res.getOutputStream(), true);
+        if (wantNull) {
+          byte[] b = new byte[1000];
+          for (int i=0; i < 10 * 1000; i++) {
+            out.write(b);
+          }
+
+        } else if (wbc != null) {
+          NCdumpW.CEresult cer = NCdumpW.parseVariableSection(ncfile, stoke.nextToken());
+          ncfile.readData(cer.v, new Section(cer.ranges), wbc);
+        } else {
+          Array result = ncfile.read(stoke.nextToken(), false);
+          length += copy2stream(result, out, false);
+        }
       }
       System.out.println(query + ": length = " + length);
-
 
     } catch (InvalidRangeException e) {
       ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);

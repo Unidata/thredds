@@ -22,6 +22,7 @@ package ucar.nc2.iosp;
 import ucar.ma2.Section;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 
 /**
@@ -70,6 +71,7 @@ public interface IOServiceProvider {
 
   /**
    * Read data from a top level Variable and send data to a WritableByteChannel.
+   * Must be in big-endian order.
    *
    * @param v2 a top-level Variable
    * @param section the section of data to read.

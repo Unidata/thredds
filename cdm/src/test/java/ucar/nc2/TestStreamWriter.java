@@ -4,8 +4,8 @@ import junit.framework.*;
 
 import java.io.*;
 
-import ucar.nc2.iosp.netcdf3.N3streamWriter;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
+import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -19,37 +19,64 @@ public class TestStreamWriter extends TestCase {
     super(name);
   }
 
+  public void test() throws IOException, InvalidRangeException {
 
-  static public void test() throws IOException {
-    //String fileInName = "C:/data/metars/Surface_METAR_20070326_0000.nc";
-    String fileInName = "C:/data/RUC2_CONUS_40km_20070709_1800.nc";
-    //String fileInName = "C:/data/test.nc";
-    //String fileInName = "C:/data/test_UD.nc";
-    //String fileInName = "C:/data/testEmpty.nc";
+    testChannelWriter("C:/data/metars/Surface_METAR_20070326_0000.nc");
+    testChannelWriter("C:/data/RUC2_CONUS_40km_20070709_1800.nc");
 
+    testOutputStreamWriter("C:/data/metars/Surface_METAR_20070326_0000.nc");
+    testOutputStreamWriter("C:/data/RUC2_CONUS_40km_20070709_1800.nc");
+  }
+
+  private void testOutputStreamWriter(String fileInName) throws IOException {
     System.out.println("\nFile= " + fileInName + " size=" + new File(fileInName).length());
-
     NetcdfFile fileIn = NetcdfFile.open(fileInName);
 
     long start = System.currentTimeMillis();
-    N3streamWriter.writeFromFile(fileIn, "C:/data/testStream.nc");
+    N3outputStreamWriter.writeFromFile(fileIn, "C:/data/testStream.nc");
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
-    //fileIn.close();
 
-    //NetcdfFile file1= NetcdfFile.open(fileInName);
     NetcdfFile file2 = NetcdfFile.open("C:/data/testStream.nc");
-
     ucar.nc2.TestCompare.compareFiles(fileIn, file2, true, true, false);
+
+    fileIn.close();
+    file2.close();
   }
 
-  static public void testTime(String[] filename) throws IOException, InvalidRangeException {
+  private void testChannelWriter(String fileInName) throws IOException, InvalidRangeException {
+    System.out.println("\nFile= " + fileInName + " size=" + new File(fileInName).length());
+    NetcdfFile fileIn = NetcdfFile.open(fileInName);
+
+    long start = System.currentTimeMillis();
+    N3channelWriter.writeFromFile(fileIn, "C:/data/testStream.nc");
+    long took = System.currentTimeMillis() - start;
+    System.out.println("N3streamWriter took " + took + " msecs");
+
+    NetcdfFile file2 = NetcdfFile.open("C:/data/testStream.nc");
+    ucar.nc2.TestCompare.compareFiles(fileIn, file2, true, true, false);
+
+    fileIn.close();
+    file2.close();
+  }
+
+  public void utestTime() throws IOException, InvalidRangeException {
+    testTime(new String[] {"C:/data/RUC2_CONUS_40km_20070709_1800.nc",
+        "C:/data/CopyRUC2_CONUS_40km_20070709_1800.nc",
+        "C:/data/Copy2RUC2_CONUS_40km_20070709_1800.nc"});
+
+    testTime(new String[] {"C:/data/metars/Surface_METAR_20070329_0000.nc",
+        "C:/data/metars/Surface_METAR_20070330_0000.nc",
+        "C:/data/metars/Surface_METAR_20070326_0000.nc"});
+  }
+
+  public void testTime(String[] filename) throws IOException, InvalidRangeException {
     System.out.println("\nFile= " + filename[0] + " size=" + new File(filename[0]).length());
  
     NetcdfFile fileIn = NetcdfFile.open(filename[0]);
     File fileOut = File.createTempFile("Test", ".tmp", new File("C:/data/"));
     long start = System.currentTimeMillis();
-    N3streamWriter.writeFromFile(fileIn, fileOut.getPath());
+    N3outputStreamWriter.writeFromFile(fileIn, fileOut.getPath());
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");  // */
     fileIn.close();
@@ -71,16 +98,5 @@ public class TestStreamWriter extends TestCase {
     System.out.println("N3channelWriter took " + took3 + " msecs");
     fileIn3.close();
   }
-
-  static public void testTime() throws IOException, InvalidRangeException {
-    testTime(new String[] {"C:/data/RUC2_CONUS_40km_20070709_1800.nc",
-        "C:/data/CopyRUC2_CONUS_40km_20070709_1800.nc",
-        "C:/data/Copy2RUC2_CONUS_40km_20070709_1800.nc"});
-    
-    testTime(new String[] {"C:/data/metars/Surface_METAR_20070329_0000.nc",
-        "C:/data/metars/Surface_METAR_20070330_0000.nc",
-        "C:/data/metars/Surface_METAR_20070326_0000.nc"});
-  }
-
 
 }

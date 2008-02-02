@@ -23,6 +23,7 @@ package ucar.nc2.dt.point;
 import ucar.nc2.dt.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.netcdf3.N3streamWriter;
+import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
@@ -75,13 +76,13 @@ public class WriterCFStationObsDataset {
   }
 
   private class NetcdfFileStream extends NetcdfFile {
-    N3streamWriter swriter;
+    N3outputStreamWriter swriter;
     DataOutputStream stream;
 
     NetcdfFileStream(DataOutputStream stream) {
       super();
       this.stream = stream;
-      swriter = new N3streamWriter(this);
+      swriter = new N3outputStreamWriter(this);
     }
 
     void writeHeader() throws IOException {

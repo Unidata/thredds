@@ -159,6 +159,7 @@ public class N3header {
 
     // loop over variables
     for (int i = 0; i < nvars; i++) {
+      long startPos = raf.getFilePointer();
       String name = readString();
       Variable var = new Variable(ncfile, ncfile.getRootGroup(), null, name);
 
@@ -217,6 +218,8 @@ public class N3header {
 
       if (debugVariablePos)
         System.out.println(var.getName() + " begin at = " + begin + " end=" + (begin + vsize) + " isRecord=" + isRecord + " nonRecordData=" + nonRecordData);
+      if (debugHeaderSize)
+        System.out.println(var.getName() + " header size= "+ (raf.getFilePointer() - startPos) + " data size= "+ vsize);
 
       ncfile.addVariable(null, var);
     }
@@ -234,14 +237,16 @@ public class N3header {
       System.out.println("  nonRecordData size= " + nonRecordData);
       System.out.println("  recsize= " + recsize);
       System.out.println("  numrecs= " + numrecs);
+      System.out.println("  actualSize= " + actualSize);
     }
 
     // check for streaming file - numrecs must be caclulated
     if (isStreaming) {
-      long recordSpace = actualSize - dataStart - nonRecordData;
-      if (debug)
-        System.out.println(" isStreaming recordSpace=" + recordSpace + " has extra bytes = " + (recordSpace % recsize));
+      long recordSpace = actualSize - recStart;
       numrecs = (int) (recordSpace / recsize);
+      //if (debug)
+        System.out.println(" isStreaming recordSpace=" + recordSpace + " numrecs="+numrecs+
+            " has extra bytes = " + (recordSpace % recsize));
 
       // set it in the unlimited dimension, all of the record variables
       if (udim != null) {

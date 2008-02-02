@@ -24,6 +24,7 @@ import ucar.ma2.*;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
+import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 
@@ -41,11 +42,11 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
     Array result = readData(v2, section);
 
+    // LOOK should we buffer ?? 
+    DataOutputStream outStream = new DataOutputStream( Channels.newOutputStream( channel));
+
     IndexIterator iterA = result.getIndexIterator();
     Class classType = result.getElementType();
-
-    // LOOK should we buffer ??
-    DataOutputStream outStream = new DataOutputStream( Channels.newOutputStream(channel));
 
     if (classType == double.class) {
       while (iterA.hasNext())
@@ -84,6 +85,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
     return 0;
   }
+
+
 
   public Object sendIospMessage(Object message) {
     return null;

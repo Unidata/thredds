@@ -24,6 +24,7 @@ import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.IospHelper;
 
 import java.nio.channels.WritableByteChannel;
+import java.io.DataOutputStream;
 
 
 /**
@@ -49,7 +50,7 @@ public class N3raf extends N3iosp  {
    return IospHelper.readDataFill(raf, index, dataType, null, -1);
  }
 
-  /**
+  /** LOOK move to IospHelper
    * Read data subset from file for a variable, to WritableByteChannel .
    * @param index handles skipping around in the file.
    * @param dataType dataType of the variable

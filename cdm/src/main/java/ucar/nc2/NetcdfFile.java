@@ -1496,10 +1496,24 @@ public class NetcdfFile {
     return spi.readData(v, ranges);
   }
 
-  /** Experimental */
+  /**
+   * Read data from a top level Variable and send data to a WritableByteChannel.
+   * Must be in big-endian order.
+   *
+   * @param v a top-level Variable
+   * @param section the section of data to read.
+   *   There must be a Range for each Dimension in the variable, in order.
+   *   Note: no nulls allowed. IOSP may not modify.
+   * @param out write data to this WritableByteChannel
+   * @return the number of bytes written to the channel
+   * @throws java.io.IOException if read error
+   * @throws ucar.ma2.InvalidRangeException if invalid section
+   */
+
   public long readData(ucar.nc2.Variable v, Section section, WritableByteChannel out)
        throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
+    // LOOK: should go through Variable for caching ??
     return spi.readData(v, section, out);
   }
 

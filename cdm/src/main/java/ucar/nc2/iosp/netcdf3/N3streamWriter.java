@@ -20,30 +20,29 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
-import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.iosp.IospHelper;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.io.IOException;
 import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.BufferedOutputStream;
 
 /**
  * @author john
  */
-public class N3streamWriter {
+public abstract class N3streamWriter {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private ucar.nc2.NetcdfFile ncfile;
-  private List<Vinfo> vinfoList = new ArrayList<Vinfo>(); // output order of the variables
-  private boolean debugPos = false, debugWriteData = false;
-  private int recStart, recSize;
-  private long filePos = 0;
+  protected ucar.nc2.NetcdfFile ncfile;
+  protected Map<Variable,Vinfo> vinfoMap = new HashMap<Variable,Vinfo>();
+  protected List<Vinfo> vinfoList = new ArrayList<Vinfo>(); // output order of the variables
+  protected boolean debug=false, debugPos=false, debugWriteData = false;
+  protected int recStart, recSize;
+  protected long filePos = 0;
 
-  public N3streamWriter(ucar.nc2.NetcdfFile ncfile) {
+  protected N3streamWriter(ucar.nc2.NetcdfFile ncfile) {
     this.ncfile = ncfile;
   }
 
@@ -90,6 +89,8 @@ public class N3streamWriter {
     // global attributes
     count += writeAtts(stream, ncfile.getGlobalAttributes());
 
+    if (debug) System.out.println("vars header starts at "+count);
+
     // variables
     List vars = ncfile.getVariables();
     int nvars = vars.size();
@@ -101,6 +102,7 @@ public class N3streamWriter {
       stream.writeInt(nvars);
     }
     count += 8;
+
 
     // we have to calculate how big the header is before we can actually write it
     // so we set stream = null
@@ -114,6 +116,7 @@ public class N3streamWriter {
     // now calculate where things go
     int dataStart = count; // data starts right after the header
     int offset = dataStart; // track data offset
+    if (debug) System.out.println(" non-record vars start at "+dataStart);
 
     // do all non-record variables first
     for (int i = 0; i < nvars; i++) {
@@ -121,8 +124,8 @@ public class N3streamWriter {
       //if (var instanceof Structure) continue;
 
       if (!var.isUnlimited()) {
-        Vinfo vinfo = writeVar(stream, var, (int) offset);
-        var.setSPobject(vinfo);
+        Vinfo vinfo = writeVar(stream, var, offset);
+        vinfoMap.put(var, vinfo);
         if (debugPos)
           System.out.println(" " + var.getNameAndDimensions() + " begin at = " + offset + " end=" + (offset + vinfo.vsize));
 
@@ -131,7 +134,8 @@ public class N3streamWriter {
       }
     }
 
-    recStart = (int) offset; // record variables' data starts here
+    if (debug) System.out.println(" record vars start at "+offset);
+    recStart = offset; // record variables' data starts here
     recSize = 0;
 
     // do all record variables
@@ -140,8 +144,8 @@ public class N3streamWriter {
 
       if (var.isUnlimited()) {
         if (var instanceof Structure) continue;
-        Vinfo vinfo = writeVar(stream, var, (int) offset);
-        var.setSPobject(vinfo);
+        Vinfo vinfo = writeVar(stream, var, offset);
+        vinfoMap.put(var, vinfo);
 
         if (debugPos)
           System.out.println(" " + var.getNameAndDimensions() + "(record) begin at = " + offset + " end=" + (offset + vinfo.vsize) + " size=" + vinfo.vsize);
@@ -153,25 +157,23 @@ public class N3streamWriter {
     }
 
     filePos = count;
-    if (debugPos) System.out.println("header written filePos= " + filePos);
-
-
+    if (debugPos) System.out.println("header written filePos= " + filePos+" recsize= "+recSize);
   }
 
   private Vinfo writeVar(DataOutputStream stream, Variable var, int offset) throws IOException {
-    int count = 0;
-    count += writeString(stream, N3iosp.makeValidNetcdfObjectName( var.getName()));
+    int hsize = 0;
+    hsize += writeString(stream, N3iosp.makeValidNetcdfObjectName( var.getName()));
 
     // dimensions
     int vsize = var.getDataType().getSize();
     List<Dimension> dims = var.getDimensions();
     if (null != stream) stream.writeInt(dims.size());
-    count += 4;
+    hsize += 4;
 
     for (Dimension dim : dims) {
       int dimIndex = findDimensionIndex(dim);
       if (null != stream) stream.writeInt(dimIndex);
-      count += 4;
+      hsize += 4;
 
       if (!dim.isUnlimited())
         vsize *= dim.getLength();
@@ -180,7 +182,7 @@ public class N3streamWriter {
     vsize += pad;
 
     // variable attributes
-    count += writeAtts(stream, var.getAttributes());
+    hsize += writeAtts(stream, var.getAttributes());
 
     // data type, variable size, beginning file position
     int type = N3header.getType(var.getDataType());
@@ -189,12 +191,11 @@ public class N3streamWriter {
       stream.writeInt(vsize);
       stream.writeInt(offset);
     }
-    count += 12;
+    hsize += 12;
 
     //if (debug) out.println(" name= "+name+" type="+type+" vsize="+vsize+" begin= "+begin+" isRecord="+isRecord+"\n");
-    return new Vinfo(var, count, vsize, offset, pad, var.isUnlimited());
+    return new Vinfo(var, hsize, vsize, offset, pad, var.isUnlimited());
   }
-
 
   private int writeAtts(DataOutputStream stream, List<Attribute> atts) throws IOException {
     int natts = atts.size();
@@ -207,33 +208,33 @@ public class N3streamWriter {
         stream.writeInt(natts);
       }
     }
-    int count = 8;
+    int hsize = 8;
 
     for (int i = 0; i < natts; i++) {
       Attribute att = atts.get(i);
 
-      count += writeString(stream, N3iosp.makeValidNetcdfObjectName( att.getName()));
+      hsize += writeString(stream, N3iosp.makeValidNetcdfObjectName( att.getName()));
       int type = N3header.getType(att.getDataType());
       if (null != stream) stream.writeInt(type);
-      count += 4;
+      hsize += 4;
 
       if (type == 2) {
-        count += writeStringValues(stream, att);
+        hsize += writeStringValues(stream, att);
       } else {
         int nelems = att.getLength();
         if (null != stream) stream.writeInt(nelems);
-        count += 4;
+        hsize += 4;
 
         int nbytes = 0;
         for (int j = 0; j < nelems; j++)
           nbytes += writeAttributeValue(stream, att.getNumericValue(j));
-        count += nbytes;
+        hsize += nbytes;
 
-        count += pad(stream, nbytes, (byte) 0);
+        hsize += pad(stream, nbytes, (byte) 0);
       }
     }
 
-    return count;
+    return hsize;
   }
 
   private int writeStringValues(DataOutputStream stream, Attribute att) throws IOException {
@@ -294,7 +295,7 @@ public class N3streamWriter {
   }
 
   // pad to a 4 byte boundary
-  private int pad(DataOutputStream stream, int nbytes, byte fill) throws IOException {
+  protected int pad(DataOutputStream stream, int nbytes, byte fill) throws IOException {
     int pad = N3header.padding(nbytes);
     if (null != stream) {
       for (int i = 0; i < pad; i++)
@@ -304,10 +305,10 @@ public class N3streamWriter {
   }
 
   // variable info for reading/writing
-  static class Vinfo {
+  static protected class Vinfo {
     Variable v;
     int hsize; // header size
-    int vsize; // size of array in bytes. if isRecord, size per record.
+    int vsize; // size of array in bytes. if isRecord, size per record. includes padding
     int offset; // offset of start of data from start of file
     int pad; // number of padding bytes
     boolean isRecord; // is it a record variable?
@@ -320,189 +321,8 @@ public class N3streamWriter {
       this.pad = pad;
       this.isRecord = isRecord;
     }
+
+    public String toString() { return v.getName()+" vsize= "+vsize+" pad="+pad; }
   }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-
-  public void writeDataAll(DataOutputStream stream) throws IOException {
-    for (Vinfo vinfo : vinfoList) {
-      if (!vinfo.isRecord) {
-        Variable v = vinfo.v;
-        writeDataFast(v, stream, v.read());
-        pad(stream, vinfo.vsize, (byte) 0);
-      }
-    }
-
-    // see if it has a record dimension we can use
-    // see if it has a record dimension we can use
-    boolean useRecordDimension = ncfile.hasUnlimitedDimension();
-    if (useRecordDimension) {
-      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    }
-
-    // write record data
-    if (useRecordDimension) {
-      boolean first = true;
-
-      Structure recordVar = (Structure) ncfile.findVariable("record");
-      Structure.Iterator ii = recordVar.getStructureIterator();
-      while (ii.hasNext()) {
-        StructureData sdata = ii.next();
-        int count = 0;
-
-        for (Vinfo vinfo : vinfoList) {
-          if (vinfo.isRecord) {
-            Variable v = vinfo.v;
-            int nbytes = (int) writeDataFast(v, stream, sdata.getArray(v.getName()));
-            count += nbytes;
-            count += pad(stream, nbytes, (byte) 0);
-            if (first && debugWriteData) System.out.println(v.getName() + " wrote " + count + " bytes");
-
-          }
-        }
-        if (first && debugWriteData) System.out.println("wrote " + count + " bytes");
-        first = false;
-      }
-
-      // remove the record structure this is rather fishy, perhaps better to leave it
-      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
-      ncfile.finish();
-    }
-  }
-
-  public void writeNonRecordData(Variable v, DataOutputStream stream, Array data) throws IOException {
-    Vinfo vinfo = (Vinfo) v.getSPobject();
-    if (debugWriteData)
-      System.out.println("Write " + v.getName() + " at filePos= " + filePos + " vinfo.offset= " + vinfo.offset);
-    if (filePos != vinfo.offset) throw new IllegalStateException();
-
-    filePos += writeData(v, stream, data);
-    if (vinfo.pad > 0) {
-      byte[] dummy = new byte[vinfo.pad];
-      stream.write(dummy);
-      filePos += vinfo.pad;
-    }
-  }
-
-  private int recno = 0;
-  private boolean first = true;
-
-  public void writeRecordData(DataOutputStream stream, List<Variable> varList) throws IOException {
-    long want = recStart + recno * recSize;
-    if (debugWriteData) System.out.println("Write record at filePos= " + filePos + " should be= " + want);
-    if (filePos != want) throw new IllegalStateException();
-
-    for (Variable v : varList) {
-      if (first && debugWriteData) System.out.println("  write record var " + v.getNameAndDimensions());
-      filePos += writeData(v, stream, v.read());
-
-      Vinfo vinfo = (Vinfo) v.getSPobject();
-      if (vinfo.pad > 0) {
-        byte[] dummy = new byte[vinfo.pad];
-        stream.write(dummy);
-        filePos += vinfo.pad;
-      }
-
-    }
-    first = false;
-
-    recno++;
-  }
-
-  /////////////////////////////////////////////
-
-
-  private long writeData(Variable v, DataOutputStream stream, Array values) throws java.io.IOException {
-    DataType dataType = v.getDataType();
-    IndexIterator ii = values.getIndexIterator();
-
-    if (dataType == DataType.BYTE) {
-      while (ii.hasNext())
-        stream.write(ii.getByteNext());
-      return values.getSize();
-
-    } else if (dataType == DataType.CHAR) {
-      while (ii.hasNext())
-        stream.write(ii.getByteNext());
-      return values.getSize();
-
-    } else if (dataType == DataType.SHORT) {
-      while (ii.hasNext())
-        stream.writeShort(ii.getShortNext());
-      return 2 * values.getSize();
-
-    } else if (dataType == DataType.INT) {
-      while (ii.hasNext())
-        stream.writeInt(ii.getIntNext());
-      return 4 * values.getSize();
-
-    } else if (dataType == DataType.FLOAT) {
-      while (ii.hasNext())
-        stream.writeFloat(ii.getFloatNext());
-      return 4 * values.getSize();
-
-    } else if (dataType == DataType.DOUBLE) {
-      while (ii.hasNext())
-        stream.writeDouble(ii.getDoubleNext());
-      return 8 * values.getSize();
-    }
-
-    throw new IllegalStateException("dataType= " + dataType);
-  }
-
-  private int writeDataFast(Variable v, DataOutputStream stream, Array values) throws java.io.IOException {
-    DataType dataType = v.getDataType();
-
-    if (dataType == DataType.BYTE) {
-      byte[] pa = (byte[]) values.get1DJavaArray(byte.class);
-      for (int i = 0; i < pa.length; i++)
-        stream.write(pa[i]);
-      return pa.length;
-
-    } else if (dataType == DataType.CHAR) {
-      byte[] pa = IospHelper.convertCharToByte((char[]) values.get1DJavaArray(char.class));
-      for (int i = 0; i < pa.length; i++)
-        stream.write(pa[i]);
-      return pa.length;
-
-    } else if (dataType == DataType.SHORT) {
-      short[] pa = (short[]) values.get1DJavaArray(short.class);
-      for (int i = 0; i < pa.length; i++)
-        stream.writeShort(pa[i]);
-      return 2 * pa.length;
-
-    } else if (dataType == DataType.INT) {
-      int[] pa = (int[]) values.get1DJavaArray(int.class);
-      for (int i = 0; i < pa.length; i++)
-        stream.writeInt(pa[i]);
-      return 4 * pa.length;
-
-    } else if (dataType == DataType.FLOAT) {
-      float[] pa = (float[]) values.get1DJavaArray(float.class);
-      for (int i = 0; i < pa.length; i++)
-        stream.writeFloat(pa[i]);
-      return 4 * pa.length;
-
-    } else if (dataType == DataType.DOUBLE) {
-      double[] pa = (double[]) values.get1DJavaArray(double.class);
-      for (int i = 0; i < pa.length; i++)
-        stream.writeDouble(pa[i]);
-      return 8 * pa.length;
-    }
-
-    throw new IllegalStateException("dataType= " + dataType);
-  }
-
-  ////////////////////////////////////////
-
-  public static void writeFromFile(NetcdfFile fileIn, String fileOutName) throws IOException {
-
-    DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileOutName), 10 * 1000));
-    N3streamWriter writer = new N3streamWriter(fileIn);
-    writer.writeHeader(stream);
-    writer.writeDataAll(stream);
-    stream.close();
-  }
-
 
 }

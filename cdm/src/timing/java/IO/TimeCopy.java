@@ -1,6 +1,7 @@
 package IO;
 
 import ucar.nc2.util.IO;
+import ucar.unidata.util.Format;
 
 import java.io.*;
 import java.nio.channels.*;
@@ -37,7 +38,19 @@ public class TimeCopy {
   static boolean debug = true;
 
   static public void main(String args[]) throws IOException {
-    //copyURL("http://localhost:8080/thredds/netcdf/dd/NAM_CONUS_80km_20070501_1200.nc?v,u,RH", "C:/temp/netcdf.nc", 10000);
+    copyURL("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
+    copyURL("http://localhost:8080/thredds/netcdf/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/ruc.nc", 10000);
+    copyURL("http://localhost:8080/thredds/netcdf/stream/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/rucStream.nc", 10000);
+    copyURL("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
+
+    copyURL2null("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
+    copyURL2null("http://localhost:8080/thredds/netcdf/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/ruc.nc", 10000);
+    copyURL2null("http://localhost:8080/thredds/netcdf/stream/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/rucStream.nc", 10000);
+    copyURL2null("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
+    //copyURL("http://localhost:8080/thredds/netcdf/dd/nssl/mosaic3d_nc/tile1/20070803-2300.netcdf?mrefl_mosaic", "C:/temp/netcdf2.nc", 10000);
+    //copyURL("http://localhost:8080/thredds/netcdf/stream/dd/nssl/mosaic3d_nc/tile1/20070803-2300.netcdf?mrefl_mosaic", "C:/temp/nsslStream.nc", 10000);
+    //copyURL("http://localhost:8080/thredds/netcdf/dd/nssl/mosaic3d_nc/tile1/20070803-2300.netcdf?mrefl_mosaic", "C:/temp/nssl.nc", 10000); // */
+  }
 
     /* readURL( "http://localhost:8080/thredds/fileServer/bigOle/copyOut", 10000);
     readURL( "http://localhost:8080/thredds/fileServer/bigOle/copyOut2", 20000);
@@ -97,7 +110,7 @@ public class TimeCopy {
 
     */
 
-    copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut", true);
+    //copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut", true);
     /* copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut2", true);
     copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut3", false);
     copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut4", true); */
@@ -135,7 +148,7 @@ public class TimeCopy {
     copyFile("C:/data/hdf5/IASI.h5", "C:/temp/copyOut4", true);
     copyFileNIO("C:/data/hdf5/IASI.h5", "C:/temp/nio", 100);  */
 
-  }
+  //}
 
   static public void copyFile(String filenameIn, String filenameOut, boolean buffer) throws IOException {
     long lenIn = new File(filenameIn).length();
@@ -235,8 +248,20 @@ public class TimeCopy {
     double len = (double) outFile.length() / (1000 * 1000);
 
     double rate = len / took ;
-    System.out.println(" copyURL (" + bufferSize + ") took = " + took + " sec; len= "+len+" Mbytes; rate = " + rate + "Mb/sec ok="+ok);
+    System.out.println(" copyURL (" + url + ") took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + "Mb/sec ok="+ok);
   }
+
+  static public void copyURL2null(String url, String filenameOut, int bufferSize) throws IOException {
+
+    long start = System.currentTimeMillis();
+    long count = IO.copyUrlB(url, null, bufferSize);
+    double len = (double) count / (1000 * 1000);
+    double took = .001 * (System.currentTimeMillis() - start);
+
+    double rate = len / took ;
+    System.out.println(" copyURL2null (" + url + ") took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+  }
+
 
   static public void readURL(String urlString, int bufferSize) throws IOException {
 

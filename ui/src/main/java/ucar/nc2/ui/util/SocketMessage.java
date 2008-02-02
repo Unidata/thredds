@@ -20,24 +20,33 @@
 package ucar.nc2.ui.util;
 
 import ucar.nc2.util.IO;
+import ucar.unidata.util.Format;
 
 import java.net.*;
 import java.io.*;
 
+/**
+ * Starts up a server socket on the given port, and listens for messages sent to it.
+ * Sends the contents of the message to anyone who is registered as a listener.
+ */
 public class SocketMessage {
-  static private final boolean debug = false;
+  static private final boolean debug = true, throwAway = true;
 
   private ServerSocket server;
   private boolean isAlreadyRunning = false;
-  private Thread listen;
   private ListenerManager lm;
 
+  /**
+   * Try to start a listener on the given port. If that port is already used, send the given message to it.
+   * @param port listen on this server port.
+   * @param message send this message if port in use
+   */
   public SocketMessage(int port, String message) {
 
     try {
       server = new ServerSocket(port, 1);
-      if (debug) System.out.println("SocketMessage on port " + server.getLocalPort());
-      listen = new ListenThread();
+      if (debug) System.out.println("SocketMessage started on port " + server.getLocalPort());
+      Thread listen = new ListenThread();
       listen.start();
 
       // manage Event Listener's
@@ -57,10 +66,15 @@ public class SocketMessage {
     }
   }
 
+  /**
+   * Was the port already in use?
+   * @return true if the port was already in use
+   */
   public boolean isAlreadyRunning() { return isAlreadyRunning; }
 
   /**
    * Add a EventListener
+   * @param l the listener
    */
   public void addEventListener( EventListener l) {
     lm.addListener( l);
@@ -68,6 +82,7 @@ public class SocketMessage {
 
   /**
    * Remove an EventListener.
+   * @param l the listener
    */
   public void removeEventListener( EventListener l) {
     lm.removeListener(l);
@@ -80,6 +95,7 @@ public class SocketMessage {
     try {
       connection = new Socket("localhost", port);
       IO.writeContents(message, connection.getOutputStream());
+      if (debug) System.out.println("sent message " + message);
 
     }  catch (IOException e) {
       System.err.println(e);
@@ -98,7 +114,7 @@ public class SocketMessage {
     public void run()  {
 
       while (true) {
-        Socket connection = null;
+        Socket connection;
         if (debug) System.out.println("Listening for connections on port " + server.getLocalPort());
         try {
           connection = server.accept();
@@ -111,9 +127,15 @@ public class SocketMessage {
 
         try {
           if (debug) System.out.println("SocketMessage Connection established with " + connection);
-          message = IO.readContents(connection.getInputStream());
-          System.out.println(" SocketMessage got message= "+message);
-          lm.sendEvent(new Event( message));
+          if (throwAway) {
+            // IO.copy2null(connection.getInputStream());
+            long count = IO.writeToFile(connection.getInputStream(), "C:/temp/save");
+            if (debug) System.out.println("SocketMessage had length " + count/(1000*1000)+" Mb");
+          } else {
+            message = IO.readContents(connection.getInputStream());
+            if (debug) System.out.println(" SocketMessage got message= "+message);
+            lm.sendEvent(new Event( message));
+          }
 
         } catch (IOException e) {
           System.out.println("SocketMessage IOException reading= " + e);
@@ -147,8 +169,9 @@ public class SocketMessage {
   }
 
   //////////////////////////////////////////////
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     new SocketMessage( 4444, "no");
-    new SocketMessage( 4444, "testit");
+    new SocketMessage( 4444, "testing");
   }
+
 }

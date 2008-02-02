@@ -40,9 +40,9 @@ public class IO {
 
   static private int default_file_buffersize = 9200;
   static private int default_socket_buffersize = 64000;
-  static private boolean showStackTrace = true;
+  static private boolean showStackTrace = false;
   static private boolean debug = false, showResponse = false;
-  static private boolean showHeaders = true;
+  static private boolean showHeaders = false;
 
   static private Class cl;
 
@@ -78,15 +78,37 @@ public class IO {
    *
    * @param in  InputStream
    * @param out OutputStream
+   * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public void copy(InputStream in, OutputStream out) throws IOException {
+  static public long copy(InputStream in, OutputStream out) throws IOException {
+    long totalBytesRead = 0;
     byte[] buffer = new byte[default_file_buffersize];
     while (true) {
       int bytesRead = in.read(buffer);
       if (bytesRead == -1) break;
       out.write(buffer, 0, bytesRead);
+      totalBytesRead += bytesRead;
     }
+    return totalBytesRead;
+  }
+
+  /**
+   * copy all bytes from in and throw them away.
+   *
+   * @param in  InputStream
+   * @return number of bytes copied
+   * @throws java.io.IOException on io error
+   */
+  static public long copy2null(InputStream in) throws IOException {
+    long totalBytesRead = 0;
+    byte[] buffer = new byte[default_file_buffersize];
+    while (true) {
+      int n = in.read(buffer);
+      if (n == -1) break;
+      totalBytesRead += n;
+    }
+    return totalBytesRead;
   }
 
   /**
@@ -95,26 +117,30 @@ public class IO {
    * @param in         InputStream
    * @param out        OutputStream
    * @param bufferSize : internal buffer size.
+   * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public void copyB(InputStream in, OutputStream out, int bufferSize) throws IOException {
+  static public long copyB(InputStream in, OutputStream out, int bufferSize) throws IOException {
+    long totalBytesRead = 0;
     int done = 0, next = 1;
     boolean show = false;
 
     byte[] buffer = new byte[bufferSize];
     while (true) {
-      int bytesRead = in.read(buffer);
-      if (bytesRead == -1) break;
-      out.write(buffer, 0, bytesRead);
+      int n = in.read(buffer);
+      if (n == -1) break;
+      out.write(buffer, 0, n);
+      totalBytesRead += n;
 
       if (show) {
-        done += bytesRead;
+        done += n;
         if (done > 1000 * 1000 * next) {
           System.out.println(next + " Mb");
           next++;
         }
       }
     }
+    return totalBytesRead;
   }
 
   /**
@@ -374,13 +400,14 @@ public class IO {
    *
    * @param in          copy from here
    * @param fileOutName open this file (overwrite) and copy to it.
+   * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public void writeToFile(InputStream in, String fileOutName) throws IOException {
+  static public long writeToFile(InputStream in, String fileOutName) throws IOException {
     OutputStream out = null;
     try {
       out = new BufferedOutputStream(new FileOutputStream(fileOutName));
-      IO.copy(in, out);
+      return IO.copy(in, out);
 
     } finally {
       if (null != in) in.close();
@@ -395,11 +422,13 @@ public class IO {
    * copy contents of URL to output stream, specify internal buffer size. request gzip encoding
    *
    * @param urlString  copy the contents of this URL
-   * @param out        copy to this stream
+   * @param out        copy to this stream. If null, throw bytes away
    * @param bufferSize internal buffer size.
+   * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
-  static public void copyUrlB(String urlString, OutputStream out, int bufferSize) throws IOException {
+  static public long copyUrlB(String urlString, OutputStream out, int bufferSize) throws IOException {
+    long count;
     URL url;
     java.io.InputStream is = null;
     try {
@@ -464,7 +493,10 @@ public class IO {
       if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
         is = new GZIPInputStream( new BufferedInputStream(is, 1024)); 
       }
-      IO.copyB(is, out, bufferSize);
+      if (out == null)
+        count = IO.copy2null(is);
+      else
+        count = IO.copyB(is, out, bufferSize);
 
     } catch (java.net.ConnectException e) {
       if (showStackTrace) e.printStackTrace();
@@ -474,6 +506,8 @@ public class IO {
     } finally {
       if (is != null) is.close();
     }
+
+    return count;
   }
 
 
