@@ -320,8 +320,8 @@ public class TestIDVdatasets {
 
     //ts.extract(System.out, "http://lead.unidata.ucar.edu:8080/thredds/idv/latestModels.xml", false, null, 0);
 
-    ts.extract(System.out, "http://motherlode.ucar.edu:8080/thredds/idv/models.xml", false, null, 0);
-    ts.extract(System.out, "http://motherlode.ucar.edu:8080/thredds/idv/rt-models.1.0.xml", false, null, 0);
+    ts.extract(System.out, "http://motherlode.ucar.edu:8081/thredds/idv/models.xml", false, null, 0);
+    //ts.extract(System.out, "http://motherlode.ucar.edu:8081/thredds/idv/rt-models.1.0.xml", false, null, 0);
 
     //ts.extract( pout, "http://motherlode.ucar.edu:9080/thredds/catalog.xml", true, "NEXRAD Radar", 0);
     //ts.extract( pout, "http://motherlode.ucar.edu:8088/thredds/dodsC/radars.xml", true, null, 0);

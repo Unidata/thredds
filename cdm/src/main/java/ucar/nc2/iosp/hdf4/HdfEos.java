@@ -29,6 +29,7 @@ import ucar.ma2.ArrayChar;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.jdom.Element;
 
@@ -167,6 +168,8 @@ public class HdfEos {
     List<Element> dims = (List<Element>) d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText();
+      if (name.equalsIgnoreCase("scalar"))
+        continue;
       String sizeS = elem.getChild("Size").getText();
       int length = Integer.parseInt(sizeS);
       if (length > 0) {
@@ -180,7 +183,7 @@ public class HdfEos {
       }
     }
 
-    // Dimensions
+    // Dimension Maps
     Element dmap = swathElem.getChild("DimensionMap");
     List<Element> dimMaps = (List<Element>) dmap.getChildren();
     for (Element elem : dimMaps) {
@@ -277,6 +280,9 @@ public class HdfEos {
     List<Element> dims = (List<Element>) d.getChildren();
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText();
+      if (name.equalsIgnoreCase("scalar"))
+        continue;
+
       String sizeS = elem.getChild("Size").getText();
       int length = Integer.parseInt(sizeS);
       Dimension old = parent.findDimension(name);
@@ -333,9 +339,28 @@ public class HdfEos {
 
   // convert to shared dimensions
   private void setSharedDimensions(Variable v, List<Element> values, List<Dimension> unknownDims) {
-    List<Dimension> newDims = new ArrayList<Dimension>();
+    if (values.size() == 0)
+      return;
+
+    // remove the "scalar" dumbension
+    Iterator<Element> iter = values.iterator();
+    while (iter.hasNext()) {
+      Element value = iter.next();
+      String dimName = value.getText();
+      if (dimName.equalsIgnoreCase("scalar"))
+        iter.remove();
+    }
+
+    // gotta have same number of dimensions
     List<Dimension> oldDims = v.getDimensions();
+    if (oldDims.size() != values.size()) {
+      log.error("Different number of dimensions for "+ v);
+      return;
+    }
+
+    List<Dimension> newDims = new ArrayList<Dimension>();
     Group group = v.getParentGroup();
+
     for (int i=0; i<values.size(); i++) {
       Element value = values.get(i);
       String dimName = value.getText();
@@ -362,10 +387,13 @@ public class HdfEos {
   private Dimension checkUnknownDims(String wantDim, List<Dimension> unknownDims, Dimension oldDim) {
     for (Dimension dim : unknownDims) {
       if (dim.getName().equals(wantDim)) {
-        dim.setLength(oldDim.getLength()); // use existing (anon) dimension
+        int len = oldDim.getLength();
+        if (len == 0)
+          dim.setUnlimited( true); // allow zero length dimension !!
+        dim.setLength(len); // use existing (anon) dimension
         Group parent = dim.getGroup();
         parent.addDimension(dim);  // add to the parent
-        unknownDims.remove(dim); // remove from list
+        unknownDims.remove(dim); // remove from list LOOK is this ok?
         log.warn("unknownDim " + wantDim+" length set to "+oldDim.getLength());
         return dim;
       }

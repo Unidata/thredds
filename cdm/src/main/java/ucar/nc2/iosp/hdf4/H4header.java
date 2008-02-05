@@ -80,7 +80,7 @@ public class H4header {
   private static boolean debugChunkTable = false; // chunked data
   private static boolean debugChunkDetail = false; // chunked data
   private static boolean debugTracker = false; // memory tracker
-  private static boolean warnings = false; // log messages
+  private static boolean warnings = true; // log messages
 
   static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugTag1 = debugFlag.isSet("H4header/tag1");
@@ -114,7 +114,9 @@ public class H4header {
 
     // read the DDH and DD records
     List<Tag> alltags = new ArrayList<Tag>();
-    readDDH(alltags, raf.getFilePointer());
+    long link = raf.getFilePointer();
+    while (link > 0)
+      link = readDDH(alltags, link);
 
     // now read the individual tags where needed
     for (Tag tag : alltags) {//  LOOK could sort by file offset to minimize I/O
@@ -158,7 +160,7 @@ public class H4header {
       } else if (t.code == 1965) { // Vgroup
         TagVGroup vgroup = (TagVGroup) t;
         if (vgroup.className.startsWith("Dim") || vgroup.className.startsWith("UDim"))
-          addDimension(vgroup);
+          makeDimension(vgroup);
 
         else if (vgroup.className.startsWith("Var")) {
           Variable v = makeVariable(vgroup);
@@ -217,7 +219,7 @@ public class H4header {
     // not in a group
     Group root = ncfile.getRootGroup();
     for (Variable v : vars) {
-      if (v.getParentGroup() == root)
+      if ((v.getParentGroup() == root) && root.findVariable(v.getShortName()) == null)
         root.addVariable(v);
     }
 
@@ -303,8 +305,9 @@ public class H4header {
       findUsedDimensions(g, dimUsedMap);
   }
 
-  private void addDimension(TagVGroup group) throws IOException {
+  private void makeDimension(TagVGroup group) throws IOException {
     List<TagVH> dims = new ArrayList<TagVH>();
+
     Tag data = null;
     for (int i = 0; i < group.nelems; i++) {
       Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
@@ -326,26 +329,33 @@ public class H4header {
     } else {
 
       for (TagVH vh : dims) {
-        Tag data2 = tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
-        if (null != data2) {
-          raf.seek(data2.offset);
+        vh.used = true;
+        data = tagMap.get(tagid(vh.refno, TagEnum.VS.getCode()));
+        if (null != data) {
+          data.used = true;
+          raf.seek(data.offset);
           int length2 = raf.readInt();
           if (debugConstruct)
-            System.out.println("dimension length=" + length2 + " for TagVGroup= " + group + " using data " + data2.refno);
-          if (length2 > 0)
+            System.out.println("dimension length=" + length2 + " for TagVGroup= " + group + " using data " + data.refno);
+          if (length2 > 0) {
             length = length2;
-          data2.used = true;
+            break;
+          }
         }
-        vh.used = true;
       }
     }
 
-    if (length <= 0) {
-      log.error("**bad dimension length=" + length + " for TagVGroup= " + group + " using data " + data.refno);
-      length = 1;
+    if (data == null) {
+      log.error("**no data for dimension TagVGroup= " + group);
+      return;
     }
 
-    Dimension dim = new Dimension(group.name, length);
+    if (length <= 0) {
+      log.warn("**dimension length=" + length + " for TagVGroup= " + group + " using data " + data.refno);
+    }
+
+    boolean isUnlimited = (length == 0);
+    Dimension dim = new Dimension(group.name, length, true, isUnlimited, false);
     if (debugConstruct) System.out.println("added dimension " + dim + " from VG " + group.refno);
     ncfile.addDimension(null, dim);
   }
@@ -935,6 +945,7 @@ public class H4header {
 
       } else {
         start = data.offset;
+        hasNoData = (start < 0);
       }
     }
 
@@ -978,7 +989,7 @@ public class H4header {
 
   //////////////////////////////////////////////////////////////////////
 
-  private void readDDH(List<Tag> alltags, long start) throws IOException {
+  private long readDDH(List<Tag> alltags, long start) throws IOException {
     raf.seek(start);
 
     int ndd = DataType.unsignedShortToInt(raf.readShort()); // number of DD blocks
@@ -994,11 +1005,7 @@ public class H4header {
         alltags.add(tag);
     }
     memTracker.add("DD block", start, raf.getFilePointer());
-
-    // any more links in the chain ?
-    if (link > 0) {
-      readDDH(alltags, link);
-    }
+    return link;
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -1323,7 +1330,7 @@ public class H4header {
   }
 
   // p 145
-  private class SpecialLinked {
+  class SpecialLinked {
     int length, first_len;
     short blk_len, num_blk, link_ref;
     List<TagLinkedBlock> linkedDataBlocks;
@@ -1359,7 +1366,7 @@ public class H4header {
   }
 
   // 20 p 146 Also used for data blocks, which has no next_ref! (!)
-  private class TagLinkedBlock extends Tag {
+  class TagLinkedBlock extends Tag {
     short next_ref;
     short[] block_ref;
     int n;
@@ -1374,7 +1381,8 @@ public class H4header {
       block_ref = new short[nb];
       for (int i = 0; i < nb; i++) {
         block_ref[i] = raf.readShort();
-        if (block_ref[i] == 0) break;
+        if (block_ref[i] == 0)
+          break;
         n++;
       }
 

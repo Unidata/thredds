@@ -32,8 +32,8 @@ import java.io.File;
  * @since Jan 1, 2008
  */
 public class TestH4readAndCount extends TestCase {
-  //static public String testDir = "R:/testdata/hdf4/";
-  static public String testDir = "C:/data/hdf4/";
+  static public String testDir = "R:/testdata/hdf4/";
+  //static public String testDir = "C:/data/hdf4/";
 
   public TestH4readAndCount(String name) {
     super(name);
@@ -42,7 +42,7 @@ public class TestH4readAndCount extends TestCase {
   public void testReadAndCount() throws IOException {
     System.out.println("  dims  vars gatts  atts strFlds groups");
 // ---------------Reading directory C:/data/hdf4/
-    read(testDir + "17766010.hdf", 0, 1, 3, 0, 8, 0);
+    read(testDir + "17766010.hdf", 0, 2, 2, 0, 8, 0);
     read(testDir + "96108_08.hdf", 5, 44, 39, 39, 0, 0);
     read(testDir + "balloon_sonde.o3_knmi000_de.bilt_s2_20060905t112100z_002.hdf", 4, 11, 33, 286, 0, 0);
     read(testDir + "c402_rp_02.diag.sfc.20020122_0130z.hdf", 3, 86, 6, 590, 0, 0);
@@ -64,8 +64,8 @@ public class TestH4readAndCount extends TestCase {
     read(testDir + "eos/misr/MISR_AM1_AGP_P040_F01_24.subset", 6, 14, 44, 5, 7, 6);
     read(testDir + "eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", 3, 24, 56, 20, 7, 3);
     read(testDir + "eos/misr/MISR_AM1_GRP_TERR_GM_P040_AN", 12, 8, 60, 8, 17, 12);
-    read(testDir + "eos/modis/MOD02SSH.A2000243.1850.003.hdf", 20, 38, 51, 157, 14, 3);
-    read(testDir + "eos/modis/MOD35_L2.A2000243.1850.003.hdf", 6, 14, 19, 96, 0, 4);
+    read(testDir + "eos/modis/MOD02SSH.A2000243.1850.003.hdf", 20, 39, 50, 157, 14, 3);
+    read(testDir + "eos/modis/MOD35_L2.A2000243.1850.003.hdf", 6, 15, 18, 96, 0, 4);
     read(testDir + "eos/mopitt/MOP03M-200501-L3V81.0.1.hdf", 5, 26, 8, 0, 0, 3);
     read(testDir + "eos/tmi/tmi_L2c_2008.001_57703_v04.eos", 2, 16, 12, 13, 0, 4);
 
@@ -75,16 +75,16 @@ public class TestH4readAndCount extends TestCase {
     read(testDir + "ncidc/AMSR_E_L2_Land_T06_200801012345_A.hdf", 0, 4, 4, 1, 14, 2);
     read(testDir + "ncidc/AMSR_E_L3_DailyLand_B04_20080101.hdf", 4, 36, 38, 34, 0, 6);
     read(testDir + "ncidc/ESMR-1977131.tne.15", 2, 1, 2, 2, 0, 0);
-    read(testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", 16, 22, 53, 64, 14, 3);
-    read(testDir + "ncidc/MOD02OBC.A2007001.0005.005.2007307210540.hdf", 46, 139, 51, 7, 865, 0);
+    read(testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", 16, 23, 52, 64, 14, 3);
+    read(testDir + "ncidc/MOD02OBC.A2007001.0005.005.2007307210540.hdf", 46, 140, 50, 7, 865, 0);
     read(testDir + "ncidc/MOD10A1.A2008001.h23v15.005.2008003161138.hdf", 2, 7, 11, 34, 0, 2);
 
     System.out.println("\n  dims  vars gatts  atts strFlds groups");
 // ---------------Reading directory C:\data\hdf4\ssec
-    read(testDir + "ssec/2006166131201_00702_CS_2B-GEOPROF_GRANULE_P_R03_E00.hdf", 3, 27, 188, 35, 0, 4);
+    read(testDir + "ssec/2006166131201_00702_CS_2B-GEOPROF_GRANULE_P_R03_E00.hdf", 2, 27, 188, 35, 0, 4);
     read(testDir + "ssec/AIRS.2005.08.28.103.L1B.AIRS_Rad.v4.0.9.0.G05241172839.hdf", 9, 216, 284, 20, 0, 4);
-    read(testDir + "ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf", 0, 58, 3, 164, 22, 0);
-    read(testDir + "ssec/MOD021KM.A2001149.1030.003.2001154234131.hdf", 20, 40, 51, 179, 14, 3);
+    read(testDir + "ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf", 0, 59, 2, 164, 22, 0);
+    read(testDir + "ssec/MOD021KM.A2001149.1030.003.2001154234131.hdf", 20, 41, 50, 179, 14, 3);
     read(testDir + "ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", 13, 62, 63, 560, 0, 4);
   }
 
@@ -198,11 +198,11 @@ public class TestH4readAndCount extends TestCase {
     //TestAll.openAllInDir(testDir, null);
 
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/linked H4header/construct"));
-    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag2 H4header/tagDetail H4header/construct"));
+    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag2 H4header/tagDetail H4header/construct"));
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/linked"));
 
     //TestAll.readAll(testDir+"ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf");
-    NetcdfFile ncfile = NetcdfFile.open(testDir + "AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf");
+    NetcdfFile ncfile = NetcdfFile.open(testDir + "ssec/2006166131201_00702_CS_2B-GEOPROF_GRANULE_P_R03_E00.hdf");
     //Variable v = ncfile.findVariable("Profile_Time");
     //assert v != null;
     //v.read();

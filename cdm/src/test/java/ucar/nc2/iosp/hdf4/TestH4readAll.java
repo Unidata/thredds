@@ -43,9 +43,10 @@ public class TestH4readAll extends TestCase {
 
   public void testReadAll() throws IOException {
     //readandCountAllInDir(testDir, null);
-    int count = TestAll.readAllDir("D:/hdf4/", null);
+    int count = 0;
+    count += TestAll.readAllDir("R:/testdata/hdf4/", new MyFileFilter());
     System.out.println("***READ "+count+" files");
-    count = TestAll.readAllDir("R:/testdata/hdf4/", new MyFileFilter());
+    count += TestAll.readAllDir("D:/hdf4/", null);
     System.out.println("***READ "+count+" files");
   }
 
@@ -63,16 +64,16 @@ public class TestH4readAll extends TestCase {
 
 
   public void problem() throws IOException {
-    //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/linked H4header/construct"));
+    H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag1 H4header/tagDetail H4header/linked H4header/construct"));
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/tag2 H4header/tagDetail H4header/construct"));
     //H4header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H4header/linked"));
 
     //TestAll.readAll("E:/problem/MAC021S0.A2007287.1920.002.2007289002404.hdf");
 
-    NetcdfFile ncfile = NetcdfFile.open("E:/problem/MAC021S0.A2007287.1920.002.2007289002404.hdf");
-    //Variable v = ncfile.findVariable("L1B_AIRS_Cal_Subset/Data Fields/radiances");
-    //assert v != null;
-    //v.read();
+    NetcdfFile ncfile = NetcdfFile.open("R:\\testdata\\hdf4\\c402_rp_02.diag.sfc.20020122_0130z.hdf");
+    Variable v = ncfile.findVariable("MOD_Grid_MOD17A2/Data Fields/PsnNet_1km");
+    assert v != null;
+    v.read();
     ncfile.close();
   }
 }

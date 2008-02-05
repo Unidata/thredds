@@ -1,0 +1,204 @@
+Feb 4, 2008
+catalogErrors.log
+
+**************************************
+Catalog init catalog.xml
+[2008-02-04T18:15:52GMT]
+
+Catalog /opt/tds-test/content/thredds/catalog.xml
+
+Catalog /opt/tds-test/content/thredds/idd/models.xml
+
+Catalog /opt/tds-test/content/thredds/idd/allModels.TDS-nc.xml
+  gribtonc models, uses modelsNc data root.
+
+Catalog /opt/tds-test/content/thredds/idd/radars.xml
+
+Catalog /opt/tds-test/content/thredds/idd/obsData.xml
+
+Catalog /opt/tds-test/content/thredds/idd/satellite.xml
+**Warning: Dataset WEST-CONUS_4km using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset PR-REGIONAL_4km using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset HI-REGIONAL_4km using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset EAST-CONUS_4km using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset AK-REGIONAL_8km using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset 12.0 using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset 13.3 using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset Cloud Top Pressure using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset Infrared using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset Lifted Index using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset Precipitable Water using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset SOUND-3.98 using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset SOUND-4.45 using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset SOUND-6.51 using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset SOUND-7.02 using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset SOUND-7.43 using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset SOUND-11.03 using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset SOUND-14.06 using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset SOUND-VIS using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset SUPER-NATIONAL_1km using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset Visible using old form of DatasetScan (dirLocation instead of location)
+**Warning: Dataset Water Vapor using old form of DatasetScan (dirLocation instead of location)
+
+Catalog /opt/tds-test/content/thredds/idd/rtmodel.xml
+
+Catalog /opt/tds-test/content/thredds/galeon/catalog.xml
+
+**************************************
+Catalog init topcatalog.xml
+[2008-02-04T18:15:53GMT]
+
+Catalog /opt/tds-test/content/thredds/topcatalog.xml
+----Catalog Validation version 1.0.01
+
+
+**************************************
+Catalog init gempakTestCat.xml
+[2008-02-04T18:15:53GMT]
+
+Catalog /opt/tds-test/content/thredds/gempakTestCat.xml
+----Catalog Validation version 1.0.01
+ ** warning: non-standard dataFormat type = GEMPAK-1
+
+
+**************************************
+Catalog init idv/models.xml
+[2008-02-04T18:15:53GMT]
+
+Catalog /opt/tds-test/content/thredds/idv/models.xml
+----Catalog Validation version 1.0.01
+
+
+Catalog /opt/tds-test/content/thredds/idv/dgex_model.xml
+----Catalog Validation version 1.0.01
+
+
+Catalog /opt/tds-test/content/thredds/idv/gfs_model.xml
+----Catalog Validation version 1.0.01
+
+
+Catalog /opt/tds-test/content/thredds/idv/nam_model.xml
+----Catalog Validation version 1.0.01
+
+
+Catalog /opt/tds-test/content/thredds/idv/ruc_model.xml
+----Catalog Validation version 1.0.01
+
+
+Catalog /opt/tds-test/content/thredds/idv/ndfd_model.xml
+----Catalog Validation version 1.0.01
+
+DataRootHandler.initCatalog has already seen catalog=/opt/tds-test/content/thredds/idd/allModels.TDS-nc.xml possible loop (skip)
+
+**************************************
+Catalog init idv/latestModels.xml
+[2008-02-04T18:15:54GMT]
+
+Catalog /opt/tds-test/content/thredds/idv/latestModels.xml
+----Catalog Validation version 1.0.01
+**Warning: Dataset (Latest NCEP Model Data/NCEP Rapid Update Cycle Model): is not selectable and does not have nested datasets
+
+
+**************************************
+Catalog init idv/rt-models.1.0.xml
+[2008-02-04T18:15:54GMT]
+
+Catalog /opt/tds-test/content/thredds/idv/rt-models.1.0.xml
+----Catalog Validation version 1.0.01
+
+
+**************************************
+Catalog init idv/rt-models.xml
+[2008-02-04T18:15:55GMT]
+
+Catalog /opt/tds-test/content/thredds/idv/rt-models.xml
+----Catalog Validation version 1.0.01
+
+Duplicate id on  Unidata IDD Model Data id= unidata.ucar.edu::ucar.unidata.idd.model
+Duplicate id on  Unidata IDD Model Data/NCEP NAM 80km CONUS model data (real and near time) id= unidata.ucar.edu::idd.model.nam_211
+Duplicate id on  Unidata IDD Model Data/NCEP GFS 80km CONUS model data id= ucar.unidata.idd.model.gfs_211
+Duplicate id on  Unidata IDD Model Data/NCEP GFS Global 5.0 x 2.5 degree model data (thin grid) id= ucar.unidata.edu::ucar.unidata.idd.model.gfs_37-44
+Duplicate id on  Unidata IDD Model Data/NCEP GFS Extended Global 5.0 x 5.0 degree model data id= unidata.ucar.edu::ucar.unidata.idd.model.gfs_25-26
+Duplicate id on  Unidata IDD Model Data/NCEP RUC 80km CONUS model data id= unidata.ucar.edu::ucar.unidata.idd.model.ruc_211
+Duplicate id on  Unidata IDD Model Data/NCEP RUC2 40km CONUS model data id= unidata.ucar.edu::ucar.unidata.idd.model.ruc2_236
+Duplicate id on  Unidata IDD Model Data/NCEP SST Global 5.0 x 2.5 degree model data id= unidata.ucar.edu::ucar.unidata.idd.model.sst_21-24
+Duplicate id on  Unidata IDD Model Data/NCEP SST Global 2.0 x 2.0 degree model data id= unidata.ucar.edu::ucar.unidata.idd.model.sst_61-64
+Duplicate id on  Unidata IDD Model Data/NCEP Wind-Wave Global 5.0 x 2.5 degree model data id= unidata.ucar.edu::ucar.unidata.idd.model.ocean_21-24
+
+**************************************
+Catalog init cataloggen/catalogs/uniModelsInvCat1.0en.xml
+[2008-02-04T18:15:55GMT]
+
+Catalog /opt/tds-test/content/thredds/cataloggen/catalogs/uniModelsInvCat1.0en.xml
+----Catalog Validation version 1.0.01
+
+Duplicate id on  Unidata IDD Model Data id= unidata.ucar.edu::ucar.unidata.idd.model
+Duplicate id on  Unidata IDD Model Data/NCEP GFS Extended Global 5.0 x 5.0 degree model data id= unidata.ucar.edu::ucar.unidata.idd.model.gfs_25-26
+Duplicate id on  Unidata IDD Model Data/NCEP RUC 80km CONUS model data (RSAS) id= unidata.ucar.edu::ucar.unidata.idd.model.ruc_211
+Duplicate id on  Unidata IDD Model Data/NCEP RUC2 40km CONUS model data id= unidata.ucar.edu::ucar.unidata.idd.model.ruc2_236
+Duplicate id on  Unidata IDD Model Data/NCEP SST Global 5.0 x 2.5 degree model data id= unidata.ucar.edu::ucar.unidata.idd.model.sst_21-24
+Duplicate id on  Unidata IDD Model Data/NCEP SST Global 2.0 x 2.0 degree model data id= unidata.ucar.edu::ucar.unidata.idd.model.sst_61-64
+Duplicate id on  Unidata IDD Model Data/NCEP Wind-Wave Global 5.0 x 2.5 degree model data id= unidata.ucar.edu::ucar.unidata.idd.model.ocean_21-24
+
+**************************************
+Catalog init servers/radarCollections.xml
+[2008-02-04T18:15:55GMT]
+
+Catalog /opt/tds-test/content/thredds/servers/radarCollections.xml
+----Catalog Validation version 1.0.01
+**Error: DatasetScan (NEXRAD Radar Data/NEXRAD level 3 Radar (NIDS)): must have a default service
+**Error: DatasetScan (NEXRAD Radar Data/NEXRAD level 3 Radar (NIDS)): must have a default service
+
+InvDatasetScan NEXRAD Radar Data/NEXRAD level 3 Radar (NIDS) has no default Service - skipping
+InvDatasetScan NEXRAD Radar Data/NEXRAD level 3 Radar (NIDS) has no default Service - skipping
+
+**************************************
+Catalog init casestudies/catalog.xml
+[2008-02-04T18:15:56GMT]
+
+Catalog /opt/tds-test/content/thredds/casestudies/catalog.xml
+----Catalog Validation version 1.0.01
+
+
+**************************************
+Catalog init casestudies/vgeeCatalog.xml
+[2008-02-04T18:15:56GMT]
+
+Catalog /opt/tds-test/content/thredds/casestudies/vgeeCatalog.xml
+----Catalog Validation version 1.0.01
+
+
+**************************************
+Catalog init casestudies/ccs034Catalog.xml
+[2008-02-04T18:15:56GMT]
+
+Catalog /opt/tds-test/content/thredds/casestudies/ccs034Catalog.xml
+----Catalog Validation version 1.0.01
+
+
+**************************************
+Catalog init casestudies/ccs039Catalog.xml
+[2008-02-04T18:15:56GMT]
+
+Catalog /opt/tds-test/content/thredds/casestudies/ccs039Catalog.xml
+----Catalog Validation version 1.0.01
+
+
+**************************************
+Catalog init casestudies/july18_2002cat.xml
+[2008-02-04T18:15:57GMT]
+
+Catalog /opt/tds-test/content/thredds/casestudies/july18_2002cat.xml
+----Catalog Validation version 1.0.01
+**Warning: Dataset (IDV July 18 2002 Case Study/NCEP ETA (2002-07-18 00:00:00 UTC)): is selectable but no data type declared in it or in a parent element
+**Warning: Dataset (IDV July 18 2002 Case Study/NCEP ETA (2002-07-18 12:00:00 UTC)): is selectable but no data type declared in it or in a parent element
+**Warning: Dataset (IDV July 18 2002 Case Study/NCEP AVN (2002-07-18 00:00:00 UTC)): is selectable but no data type declared in it or in a parent element
+**Warning: Dataset (IDV July 18 2002 Case Study/NCEP AVN (2002-07-18 12:00:00 UTC)): is selectable but no data type declared in it or in a parent element
+**Warning: Dataset (IDV July 18 2002 Case Study/NCEP RUC (2002-07-18 00:00:00 UTC)): is selectable but no data type declared in it or in a parent element
+**Warning: Dataset (IDV July 18 2002 Case Study/NCEP RUC (2002-07-18 06:00:00 UTC)): is selectable but no data type declared in it or in a parent element
+**Warning: Dataset (IDV July 18 2002 Case Study/NCEP RUC (2002-07-18 12:00:00 UTC)): is selectable but no data type declared in it or in a parent element
+
+
+Catalog /opt/tds-test/content/thredds/idv/rt-models.1.0.xml
+----Catalog Validation version 1.0.01
+

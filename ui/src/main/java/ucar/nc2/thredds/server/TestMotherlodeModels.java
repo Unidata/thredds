@@ -113,10 +113,11 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   public static JPanel main;
   public static void main(String args[]) throws IOException {
     //String server = "http://thredds.cise-nsf.gov:8080/thredds/";
-    String server = "http://motherlode.ucar.edu:9080/thredds";
+    String server = "http://motherlode.ucar.edu:8081/thredds";
     //String server = "http://lead1.unidata.ucar.edu:8080/thredds";
     String catalog = "/idd/models.xml";
-    String catalog2 = "/idd/rtmodel.xml";
+    String chizModels = "/idd/rtmodel.xml";
+    String gribtonc = "/idd/allModels.TDS-nc.xml";
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
 
@@ -134,8 +135,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
 
     TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
-    //TestMotherlodeModels uni_models = new TestMotherlodeModels("model2", server+catalog2, CatalogCrawler.USE_RANDOM_DIRECT, false);
-    // TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+catalog, CatalogCrawler.USE_ALL_DIRECT, false);
+    TestMotherlodeModels chiz_models = new TestMotherlodeModels("chiz_models", server+chizModels, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    TestMotherlodeModels nc_models = new TestMotherlodeModels("gribtonc", server+gribtonc, CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);
     frame.pack();
@@ -143,7 +144,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     frame.setVisible(true);
 
     all_models.extract();
-    //uni_models.extract();
+    chiz_models.extract();
+    nc_models.extract();
   }
 
 }

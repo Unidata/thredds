@@ -222,23 +222,53 @@ public class H4iosp extends AbstractIOServiceProvider {
     byte[] buffer;
     long pos = 0;
 
+    int nsegs;
+    long[] segPosA;
+    int[] segSizeA;
+
     int segno = -1;
     int segpos = 0;
     int segSize = 0;
-    H4header.Vinfo vinfo;
+    //H4header.Vinfo vinfo;
 
     LinkedInputStream(H4header.Vinfo vinfo) {
-      this.vinfo = vinfo;
+      segPosA = vinfo.segPos;
+      segSizeA = vinfo.segSize;
+      nsegs = segSizeA.length;
     }
 
-    private void readSegment() throws IOException {
+    LinkedInputStream(H4header.SpecialLinked linked) throws IOException {
+      List<H4header.TagLinkedBlock>  linkedBlocks = linked.getLinkedDataBlocks();
+      nsegs = linkedBlocks.size();
+      segPosA = new long[nsegs];
+      segSizeA = new int[nsegs];
+      int count = 0;
+      for (H4header.TagLinkedBlock tag : linkedBlocks) {
+        segPosA[count] = tag.offset;
+        segSizeA[count] = tag.length;
+        count++;
+      }
+    }
+
+    private boolean readSegment() throws IOException {
       segno++;
-      segSize = vinfo.segSize[segno];
+      if (segno == nsegs)
+        return false;
+
+      segSize = segSizeA[segno];
+      while (segSize == 0) { // for some reason may have a 0 length segment
+        segno++;
+        if (segno == nsegs)
+          return false;
+        segSize = segSizeA[segno];
+      }
+      
       buffer = new byte[segSize];  // Look: could do this in buffer size 4096 to save memory
-      raf.seek(vinfo.segPos[segno]);
+      raf.seek(segPosA[segno]);
       raf.readFully(buffer);
       segpos = 0;
-      //System.out.println("read at "+vinfo.segPos[segno]+ " n= "+segSize);
+
+      return true;
     }
 
     /*public int read(byte b[]) throws IOException {
@@ -252,8 +282,11 @@ public class H4iosp extends AbstractIOServiceProvider {
     } */
 
     public int read() throws IOException {
-      if (segpos == segSize)
-        readSegment();
+      if (segpos == segSize) {
+        boolean ok = readSegment();
+        if (!ok) return -1;
+      }
+
       int b = buffer[segpos] & 0xff;
       //System.out.println("  byte "+b+ " at= "+segpos);
       segpos++;
@@ -398,16 +431,25 @@ public class H4iosp extends AbstractIOServiceProvider {
       if (bb == null) {
         // read compressed data in
         H4header.TagData cdata = compress.getDataTag();
-        byte[] cbuffer = new byte[cdata.length];
-        raf.seek(cdata.offset);
-        raf.readFully(cbuffer);
+        InputStream in;
+
+        // compressed data stored in one place
+        if (cdata.linked == null) {
+          byte[] cbuffer = new byte[cdata.length];
+          raf.seek(cdata.offset);
+          raf.readFully(cbuffer);
+          in = new ByteArrayInputStream(cbuffer);
+
+        } else { // or compressed data stored in linked storage
+          in = new LinkedInputStream(cdata.linked);
+        }
         //System.out.println("  read compress " + cdata.length + " at= " + cdata.offset);
 
         // uncompress it
         if (compress.compress_type == TagEnum.COMP_CODE_DEFLATE) {
-          InputStream in = new java.util.zip.InflaterInputStream(new ByteArrayInputStream(cbuffer));
+          InputStream zin = new java.util.zip.InflaterInputStream(in);
           ByteArrayOutputStream out = new ByteArrayOutputStream(compress.uncomp_length);
-          IO.copy(in, out);
+          IO.copy(zin, out);
           byte[] buffer = out.toByteArray();
           bb = ByteBuffer.wrap(buffer);
           //System.out.println("  uncompress " + buffer.length + ", wanted=" + compress.uncomp_length);
