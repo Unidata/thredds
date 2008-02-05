@@ -182,7 +182,7 @@
     <echo>build.debuglevel=${build.debuglevel}</echo -->
   </target>
 
-  <target name="dist" depends="compile, makeWar"/>
+  <target name="dist" depends="compile, makeWar, makeJar-TSF, makeSrc-TDS, makeJavadocZip"/>
 
   <target name="compile" depends="init, release-settings" description="TDS compile">
     <javac destdir="${build.classes.dir}" source="1.5" target="1.5" debug="${build.debug}"
