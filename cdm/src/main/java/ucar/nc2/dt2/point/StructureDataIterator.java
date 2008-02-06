@@ -62,16 +62,4 @@ public abstract class StructureDataIterator implements DataIterator {
     boolean filter(StructureData sdata);
   }
 
-/*  public Object next() {
-    try {
-      return nextData();
-    } catch (IOException e) {
-      throw new RuntimeException(e.getMessage());
-    }
-  }
-
-  public void remove() {
-    throw new UnsupportedOperationException();
-  }  */
-
 }

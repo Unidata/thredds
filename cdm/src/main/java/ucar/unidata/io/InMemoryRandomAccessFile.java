@@ -31,12 +31,12 @@ public class InMemoryRandomAccessFile extends RandomAccessFile {
   /**
    * Constructor for in-memory "files"
    *
-   * @param location used as a name
+   * @param name used as a name
    * @param data     the complete file
    */
-  public InMemoryRandomAccessFile(String location, byte[] data) {
+  public InMemoryRandomAccessFile(String name, byte[] data) {
     super(1);
-    this.location = location;
+    this.location = name;
     this.file = null;
     if (data == null)
       throw new IllegalArgumentException("data array is null");

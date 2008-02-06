@@ -30,5 +30,5 @@ public interface StationObsFeature extends PointObsFeature {
    * Station location of the observation
    * @return the Station for the observation
    */
-  public ucar.nc2.dt.Station getStation();
+  public Station getStation();
 }

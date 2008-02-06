@@ -1,4 +1,4 @@
-package IO;
+package timing.IO;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

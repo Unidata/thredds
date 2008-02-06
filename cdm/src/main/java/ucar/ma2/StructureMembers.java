@@ -139,12 +139,12 @@ public class StructureMembers {
   /**
    * A member of a StructureData.
    */
-  static public class Member { // implements ucar.nc2.VariableSimpleIF {
+  public class Member { // implements ucar.nc2.VariableSimpleIF {
     private String name, desc, units;
     private DataType dtype;
     private int size = 1;
     private int[] shape;
-    private StructureMembers members;
+    private StructureMembers members; // only if member is type Structure
 
     // optional, use depends on ArrayStructure subclass
     private Array dataArray;
@@ -160,7 +160,7 @@ public class StructureMembers {
       this.size = (int) Index.computeSize(shape);
     }
 
-    /**
+    /*
      * If member is type Structure, you must set its constituent members
      *
      * @param members set to this value
@@ -309,6 +309,11 @@ public class StructureMembers {
     }
 
     public void setVariableInfo(VariableIF v) {
+      if (!name.equals(v.getShortName())) {
+        memberHash.remove(name);
+        name = v.getShortName(); // see StructureDS.convert()
+        memberHash.put(name, this);
+      }
       String u = v.getUnitsString();
       if (u != null) units = u;
       String d = v.getDescription();

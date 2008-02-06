@@ -24,6 +24,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.Date;
@@ -32,16 +33,38 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
+ * Abstract superclass for implementations of FeatureDataset
  * @author caron
  * @since Sep 7, 2007
  */
 public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected NetcdfDataset ncfile;
   protected String title, desc, location;
-  protected Date startDate, endDate;
-  protected LatLonRect boundingBox;
   protected List<VariableSimpleIF> dataVariables = new ArrayList<VariableSimpleIF>(); // VariableSimpleIF
   protected StringBuffer parseInfo = new StringBuffer();
+  protected Date startDate, endDate;
+  protected LatLonRect boundingBox;
+
+  // for subsetting
+  protected FeatureDatasetImpl(FeatureDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
+    this.ncfile = from.ncfile;
+    this.title = from.title;
+    this.desc = from.desc;
+    this.location = from.location;
+    this.dataVariables = new ArrayList<VariableSimpleIF>( from.dataVariables);
+    this.parseInfo = new StringBuffer(from.parseInfo);
+    this.parseInfo.append("Subsetted from original\n");
+
+    this.boundingBox = (filter_bb == null) ? from.boundingBox : filter_bb;
+
+    if (filter_date == null) { // LOOK maybe use DateRange
+      this.startDate = from.startDate;
+      this.endDate = from.endDate;
+    } else {
+      this.startDate = filter_date.getStart().getDate();
+      this.endDate = filter_date.getEnd().getDate();
+    }
+  }
 
   /** No-arg constuctor */
   public FeatureDatasetImpl() {}
@@ -72,14 +95,12 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
       desc = ncfile.findAttValueIgnoreCase(null, "description", null);
   }
 
-  public void setTitle( String title) { this.title = title; }
-  public void setDescription( String desc) { this.desc = desc; }
-  public void setLocationURI( String location) {this.location = location; }
-
-  // reminder for subclasses to set these
-  protected abstract void setStartDate();
-  protected abstract void setEndDate();
-  protected abstract void setBoundingBox();
+  protected void setTitle( String title) { this.title = title; }
+  protected void setDescription( String desc) { this.desc = desc; }
+  protected void setLocationURI( String location) {this.location = location; }
+  protected void setStartDate(Date startDate) { this.startDate = startDate; }
+  protected void setEndDate(Date endDate) { this.endDate = endDate; }
+  protected void setBoundingBox(LatLonRect boundingBox) { this.boundingBox = boundingBox; }
 
   protected void removeDataVariable( String varName) {
     Iterator iter = dataVariables.iterator();
@@ -132,7 +153,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     }
 
     List<VariableSimpleIF> vars = getDataVariables();
-    sbuff.append("  Variables (").append(vars.size()).append(")\n");
+    sbuff.append("  Data Variables (").append(vars.size()).append(")\n");
     for (VariableSimpleIF v : vars) {
       sbuff.append("    name='").append(v.getShortName()).append("' desc='").append(v.getDescription()).append("' units='").append(v.getUnitsString()).append("' type=").append(v.getDataType()).append("\n");
     }

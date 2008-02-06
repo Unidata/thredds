@@ -17,13 +17,35 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2;
+package ucar.nc2.dt2.point;
+
+import ucar.nc2.dt2.StationObsFeature;
+import ucar.nc2.dt2.FeatureDatasetImpl;
+import ucar.nc2.dt2.StationObsDataset;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.units.DateRange;
+import ucar.unidata.geoloc.LatLonRect;
 
 /**
- * A collection of Stations with StationObsFeature objects.
- *
+ * Abstract superclass for implementations of StationObsDataset
  * @author caron
+ * @since Feb 5, 2008
  */
-public interface StationObsDataset extends PointObsDataset, StationCollection {
+public abstract class StationObsDatasetImpl extends FeatureDatasetImpl implements StationObsDataset {
+  protected StationHelper stationHelper;
 
+  public StationObsDatasetImpl() {}
+  public StationObsDatasetImpl(NetcdfDataset ds) {
+    super(ds);
+    stationHelper = new StationHelper(this);
+  }
+
+  protected StationObsDatasetImpl(StationObsDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
+    super(from, filter_bb, filter_date);
+    this.stationHelper = from.stationHelper;
+  }
+
+  public Class getFeatureClass() {
+    return StationObsFeature.class;
+  }
 }

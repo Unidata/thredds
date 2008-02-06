@@ -21,6 +21,7 @@ package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.Date;
@@ -40,7 +41,7 @@ public class CFpointObsDataset extends FeatureDatasetImpl implements PointObsDat
     return PointObsFeature.class;
   }
 
-  public PointCollection subset(LatLonRect boundingBox, Date start, Date end) throws IOException {
+  public PointCollection subset(LatLonRect boundingBox, DateRange dr) throws IOException {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 

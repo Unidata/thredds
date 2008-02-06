@@ -53,13 +53,13 @@ public class TestStructureArrayW extends TestCase {
   public void testW() throws IOException, InvalidRangeException {
     StructureMembers members = new StructureMembers("s");
 
-    StructureMembers.Member f1 = new StructureMembers.Member("f1", "desc", "units", DataType.FLOAT, new int[]{1});
+    StructureMembers.Member f1 = members.addMember("f1", "desc", "units", DataType.FLOAT, new int[]{1});
     members.addMember(f1);
 
-    StructureMembers.Member f2 = new StructureMembers.Member("f2", "desc", "units", DataType.SHORT, new int[]{3});
+    StructureMembers.Member f2 = members.addMember("f2", "desc", "units", DataType.SHORT, new int[]{3});
     members.addMember(f2);
 
-    StructureMembers.Member nested1 = new StructureMembers.Member("nested1", "desc", "units", DataType.STRUCTURE, new int[]{9});
+    StructureMembers.Member nested1 = members.addMember("nested1", "desc", "units", DataType.STRUCTURE, new int[]{9});
     members.addMember(nested1);
 
     int size = 4;
@@ -124,13 +124,13 @@ public class TestStructureArrayW extends TestCase {
     StructureMembers members = new StructureMembers(nested1.getName());
     nested1.setStructureMembers(members);
 
-    StructureMembers.Member g1 = new StructureMembers.Member("g1", "desc", "units", DataType.INT, new int[]{1});
+    StructureMembers.Member g1 = members.addMember("g1", "desc", "units", DataType.INT, new int[]{1});
     members.addMember(g1);
-    StructureMembers.Member g2 = new StructureMembers.Member("g2", "desc", "units", DataType.DOUBLE, new int[]{2});
+    StructureMembers.Member g2 = members.addMember("g2", "desc", "units", DataType.DOUBLE, new int[]{2});
     members.addMember(g2);
-    StructureMembers.Member g3 =  new StructureMembers.Member("g3", "desc", "units", DataType.DOUBLE, new int[]{3, 4});
+    StructureMembers.Member g3 =  members.addMember("g3", "desc", "units", DataType.DOUBLE, new int[]{3, 4});
     members.addMember(g3);
-    StructureMembers.Member nested2 =  new StructureMembers.Member("nested2", "desc", "units", DataType.STRUCTURE, new int[]{7});
+    StructureMembers.Member nested2 =  members.addMember("nested2", "desc", "units", DataType.STRUCTURE, new int[]{7});
     members.addMember(nested2);
 
     StructureData[] sdata = new StructureData[size1];
@@ -161,9 +161,9 @@ public class TestStructureArrayW extends TestCase {
     StructureMembers members = new StructureMembers(nested.getName());
     nested.setStructureMembers(members);
 
-    StructureMembers.Member h1 = new StructureMembers.Member("h1", "desc", "units", DataType.INT, new int[]{1});
+    StructureMembers.Member h1 = members.addMember("h1", "desc", "units", DataType.INT, new int[]{1});
     members.addMember(h1);
-    StructureMembers.Member h2 = new StructureMembers.Member("h2", "desc", "units", DataType.DOUBLE, new int[]{2});
+    StructureMembers.Member h2 = members.addMember("h2", "desc", "units", DataType.DOUBLE, new int[]{2});
     members.addMember(h2);
 
     StructureData[] sdata = new StructureData[size];

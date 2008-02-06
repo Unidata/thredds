@@ -229,7 +229,7 @@ public class ConvertD2N {
   private ArrayStructure makeArrayStructure(DodsV dataV) {
     StructureMembers members = new StructureMembers( dataV.getNetcdfShortName());
     for (DodsV dodsV : dataV.children) {
-      StructureMembers.Member m = new StructureMembers.Member(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
+      StructureMembers.Member m = members.addMember(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
       members.addMember(m);
 
       Array data;
@@ -253,7 +253,7 @@ public class ConvertD2N {
     // make the members
     StructureMembers members = new StructureMembers(dataV.getName());
     for (DodsV dodsV : dataV.children) {
-      StructureMembers.Member m = new StructureMembers.Member(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
+      StructureMembers.Member m = members.addMember(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
       members.addMember(m);
     }
 

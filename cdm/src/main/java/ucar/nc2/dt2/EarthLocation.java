@@ -24,22 +24,37 @@ package ucar.nc2.dt2;
  *
  * @author caron
  */
-public interface EarthLocation {
+public class EarthLocation {
+  protected double lat, lon, alt;
+
   /**
    * latitude in decimal degrees north
    * @return latitude in decimal degrees north
    */
-  public double getLatitude();
+  public double getLatitude() { return lat; }
 
   /**
    * longitude in decimal degrees east
    * @return longitude in decimal degrees east
    */
-  public double getLongitude();
+  public double getLongitude() { return lon; }
 
   /**
    * altitude in meters;  missing = NaN.
    * @return altitude in meters;  missing = NaN.
    */
-  public double getAltitude();
+  public double getAltitude() { return alt; }
+
+
+  public EarthLocation( double lat, double lon, double alt) {
+    this.lat = lat;
+    this.lon = lon;
+    this.alt = alt;
+  }
+
+  protected void setLatitude(double lat) { this.lat = lat; }
+  protected void setLongitude(double lon) { this.lon = lon; }
+  protected void setAltitude(double alt) { this.alt = alt; }
+
+  public String toString() { return "lat="+lat+" lon="+lon+" alt="+alt; }
 }

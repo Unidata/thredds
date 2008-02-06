@@ -24,20 +24,27 @@ package ucar.nc2.dt2;
  *
  * @author caron
  */
-public interface DataCost {
+public class DataCost {
+  private int dataCount;
+  private int timeMsecs;
+
+  public DataCost(int dataCount, int timeMsecs) {
+    this.dataCount = dataCount;
+    this.timeMsecs = timeMsecs;
+  }
 
   /**
    * Estimated number of data objects this operation will return
    *
    * @return number of data objects or -1 if unknown
    */
-  int estimateDataCount();
+  int estimateDataCount() { return dataCount; }
 
   /**
-   * Estimated number of seconds this operation will take.
+   * Estimated number of millisecs this operation will take.
    * Zero means data is memory resident.
    *
-   * @return number of seconds or -1 if unknown
+   * @return number of millisecs or -1 if unknown
    */
-  int estimateTimeCostInSeconds();
+  int estimateTimeCostInMilliSeconds() { return timeMsecs; }
 }

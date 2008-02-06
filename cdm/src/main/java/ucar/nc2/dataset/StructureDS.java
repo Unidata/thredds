@@ -26,6 +26,7 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 /**
  * An "enhanced" Structure.
@@ -187,9 +188,12 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   public Array convert(Array data) {
     ArrayStructure as = (ArrayStructure) data;
-    StructureMembers sm = as.getStructureMembers();
+    StructureMembers sm = as.getStructureMembers(); // these are from orgVar - may have been renamed
     for (StructureMembers.Member m : sm.getMembers()) {
       VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
+      if ((v2 == null) && (orgVar != null))
+        v2 = findVariableFromOrgName(m.getName());
+      assert v2 != null;
       if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs())) {
         Array mdata = as.getMemberArray(m); // LOOK can we use ASBB directly?
         mdata = v2.convert( mdata);
@@ -198,6 +202,19 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       m.setVariableInfo(v2);
     }
     return as;
+  }
+
+  private VariableEnhanced findVariableFromOrgName(String shortName) {
+    for (Variable vTop : getVariables()) {
+      Variable v = vTop;
+      while (v instanceof VariableEnhanced) {
+        Variable org = ((VariableEnhanced)v).getOriginalVariable();
+        if (org.getShortName().equals(shortName))
+          return (VariableEnhanced) vTop;
+        v = org;
+      }
+    }
+    return null;
   }
 
     /** recalc any enhancement info */

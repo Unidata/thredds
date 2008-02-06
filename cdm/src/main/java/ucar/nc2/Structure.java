@@ -243,7 +243,7 @@ public class Structure extends Variable {
     //if (smembers == null) {
       StructureMembers smembers = new StructureMembers( getName());
       for (Variable v2 : getVariables()) {
-        StructureMembers.Member m = new StructureMembers.Member( v2.getShortName(), v2.getDescription(),
+        StructureMembers.Member m = smembers.addMember( v2.getShortName(), v2.getDescription(),
             v2.getUnitsString(), v2.getDataType(), v2.getShape());
         if (v2 instanceof Structure)
           m.setStructureMembers( ((Structure)v2).makeStructureMembers());

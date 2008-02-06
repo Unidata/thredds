@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,26 +21,51 @@ package ucar.nc2.dt2;
 
 /**
  * A named location on the Earth.
- *
  * @author caron
  */
-public interface Station extends EarthLocation {
+public class Station extends EarthLocation {
+  protected String name, desc, wmoId;
+
   /**
    * Station name or id. Must be unique within the collection
    * @return station name or id. May not be null.
    */
-  public String getName();
+  public String getName() { return name; }
 
   /**
    * Station description
    * @return station description
    */
-  public String getDescription();
+  public String getDescription() { return desc; }
 
-  /**
+  /*
    * Get the named attribute for this station
    * @param name name of attribute, ignore case
    * @return value of attribute
-   */
-  public String getAttributeValue(String name);
+   *
+  public String getAttributeValue(String name); */
+
+  public Station( String name, String desc, double lat, double lon, double alt) {
+    super( lat, lon, alt);
+    this.name = name;
+    this.desc = desc;
+  }
+
+  //public String getWmoId() { return wmoId; }
+
+  /////
+
+  protected void setName(String name) { this.name = name; }
+  protected void setDescription(String desc) { this.desc = desc; }
+  protected void setWmoId(String wmoId) { this.wmoId = wmoId; }
+
+  public int compareTo(Object o) {
+    Station so = (Station) o;
+    return name.compareTo( so.getName());
+  }
+
+  public String toString() {
+    return "name="+name+" desc="+desc+" "+super.toString();
+  }
+
 }

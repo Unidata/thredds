@@ -35,6 +35,7 @@ import java.util.*;
 import java.util.zip.ZipInputStream;
 import java.util.zip.GZIPInputStream;
 import java.net.URL;
+import java.net.URI;
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
 
@@ -433,28 +434,40 @@ public class NetcdfFile {
   /**
    * Open an in-memory netcdf file.
    *
-   * @param location location of file, used as the name.
+   * @param name name of the dataset. Typically use the filename or URI.
    * @param data     in-memory netcdf file
    * @return memory-resident NetcdfFile
    * @throws java.io.IOException if error
    */
-  public static NetcdfFile openInMemory(String location, byte[] data) throws IOException {
-    ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(location, data);
-    return open(raf, location, null, null);
+  public static NetcdfFile openInMemory(String name, byte[] data) throws IOException {
+    ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
+    return open(raf, name, null, null);
   }
 
   /**
-   * Read a netcdf file into memory. All reads are then done from memory.
-   * @param location location of CDM file, used as the name.
+   * Read a local CDM file into memory. All reads are then done from memory.
+   * @param filename location of CDM file, must be a local file.
    * @return a NetcdfFile, which is completely in memory
    * @throws IOException if error reading file
    */
-  public static NetcdfFile openInMemory(String location) throws IOException {
-    File file = new File(location);
+  public static NetcdfFile openInMemory(String filename) throws IOException {
+    File file = new File(filename);
     ByteArrayOutputStream bos = new ByteArrayOutputStream( (int) file.length());
-    InputStream in = new BufferedInputStream( new FileInputStream( location));
+    InputStream in = new BufferedInputStream( new FileInputStream( filename));
     IO.copy(in, bos);
-    return openInMemory(location, bos.toByteArray());
+    return openInMemory(filename, bos.toByteArray());
+  }
+
+  /**
+   * Read a remote CDM file into memory. All reads are then done from memory.
+   * @param uri location of CDM file, must be accessible through uri.toURL().openStream().
+   * @return a NetcdfFile, which is completely in memory
+   * @throws IOException if error reading file
+   */
+  public static NetcdfFile openInMemory(URI uri) throws IOException {
+    URL url = uri.toURL();
+    byte[] contents = IO.readContentsToByteArray(url.openStream());
+    return openInMemory(uri.toString(), contents);
   }
 
 
@@ -1530,7 +1543,7 @@ public class NetcdfFile {
 
     // If flatten is false, wrap the result Array in an ArrayStructureMA
     StructureMembers members = new StructureMembers(v.getName());
-    StructureMembers.Member member = new StructureMembers.Member(v.getShortName(), v.getDescription(),
+    StructureMembers.Member member = members.addMember(v.getShortName(), v.getDescription(),
             v.getUnitsString(), v.getDataType(), v.getShape());
     member.setDataArray(result);
 

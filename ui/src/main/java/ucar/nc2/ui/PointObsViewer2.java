@@ -20,7 +20,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.dt.*;
+import ucar.nc2.dt2.*;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
@@ -43,7 +43,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 /**
- * A Swing widget to view the contents of a ucar.nc2.dt.StationObsDataset or PointObsDataset.
+ * A Swing widget to view the contents of a ucar.nc2.dt2.PointObsDataset.
  * <p/>
  * If its a StationObsDataset, the available Stations are shown in a BeanTable.
  * The obs are shown in a StructureTabel.
@@ -51,7 +51,7 @@ import javax.swing.event.*;
  * @author caron
  */
 
-public class PointObsViewer extends JPanel {
+public class PointObsViewer2 extends JPanel {
   private PreferencesExt prefs;
 
   private PointObsDataset pds;
@@ -68,7 +68,7 @@ public class PointObsViewer extends JPanel {
   private boolean eventsOK = true;
   private boolean debugStationRegionSelect = false, debugStationDatsets = false, debugQuery = false;
 
-  public PointObsViewer(PreferencesExt prefs) {
+  public PointObsViewer2(PreferencesExt prefs) {
     this.prefs = prefs;
 
     df = new DateFormatter();
@@ -93,21 +93,13 @@ public class PointObsViewer extends JPanel {
 
         // is the date window showing ?
         DateRange dateRange = chooser.getDateRange();
-        boolean useDate = (null != dateRange);
-        // if (!useDate) return;
-
-        Date startDate = dateRange.getStart().getDate();
-        Date endDate = dateRange.getEnd().getDate();
         if (debugQuery) System.out.println("date range=" + dateRange);
-
         LatLonRect geoRegion = chooser.getGeoSelectionLL();
         if (debugQuery) System.out.println("geoRegion=" + geoRegion);
 
-        // fetch the requested dobs
         try {
-          List obsList = useDate ? pds.getData(geoRegion, startDate, endDate) : pds.getData(geoRegion);
-          if (debugQuery) System.out.println("obsList=" + obsList.size());
-          setObservations(obsList);
+          PointCollection subset = pds.subset(geoRegion, dateRange);
+          setObservations(subset);
 
         } catch (IOException e1) {
           e1.printStackTrace();
@@ -122,11 +114,8 @@ public class PointObsViewer extends JPanel {
       public void actionPerformed(ActionEvent e) {
         if (pds == null) return;
         try {
-          List obsList = pds.getData();
-          if (obsList != null)
-            setObservations(obsList);
-          else
-            JOptionPane.showMessageDialog(PointObsViewer.this, "GetAllData not implemented");
+          setObservations(pds);
+          //JOptionPane.showMessageDialog(PointObsViewer2.this, "GetAllData not implemented");
 
         } catch (IOException e1) {
           e1.printStackTrace();
@@ -171,7 +160,7 @@ public class PointObsViewer extends JPanel {
     dumpWindow.setBounds((Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle(300, 300, 300, 200)));
   }
 
-  public void setDataset(PointObsDataset dataset) {
+  public void setDataset(PointObsDataset dataset) throws IOException {
     this.pds = dataset;
 
     if (debugStationDatsets)
@@ -182,24 +171,23 @@ public class PointObsViewer extends JPanel {
       chooser.setDateRange(new DateRange(startDate, endDate));
 
     // clear
-    setObservations(new ArrayList());
+    setObservations( null);
   }
 
-  /**
-   * Set the list of Obs to show in the obs table
-   *
-   * @param obsList List<PointObsDatatype>
-   */
-  public void setObservations(List obsList) {
+  public void setObservations(PointCollection pobsDataset) throws IOException {
+    List<PointObsBean> pointBeans = new ArrayList<PointObsBean>();
+    int count = 0;
 
-    List<Station> pointBeans = new ArrayList<Station>();
-    for (int i = 0; i < obsList.size(); i++) {
-      PointObsDatatype pob = (PointObsDatatype) obsList.get(i);
-      pointBeans.add(new PointObsBean(i, pob));
+    if (pobsDataset != null)  {
+      DataIterator iter = pobsDataset.getDataIterator(-1);
+      while (iter.hasNext()) {
+        PointObsFeature pob = (PointObsFeature) iter.nextData();
+        pointBeans.add(new PointObsBean(count++, pob));
+      }
     }
 
     stnTable.setBeans(pointBeans);
-    chooser.setStations(pointBeans);
+    chooser.setStations( pointBeans);
     stnTable.clearSelectedCells();
   }
 
@@ -214,7 +202,7 @@ public class PointObsViewer extends JPanel {
     prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
   }
 
-  private void showData(PointObsDatatype pobs) {
+  private void showData(PointObsFeature pobs) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
     try {
       StructureData sd = pobs.getData();
@@ -231,12 +219,12 @@ public class PointObsViewer extends JPanel {
     return "description wmoId";
   } // for prefs.BeanTable LOOK
 
-  public class PointObsBean implements Station {  // fake Station, so we can use StationRegionChooser
-    private PointObsDatatype pobs;
+  public class PointObsBean implements ucar.nc2.dt.Station {  // fake Station, so we can use StationRegionChooser
+    private PointObsFeature pobs;
     private String timeObs;
     private int id;
 
-    public PointObsBean(int id, PointObsDatatype obs) {
+    public PointObsBean(int id, PointObsFeature obs) {
       this.id = id;
       this.pobs = obs;
       setTime(obs.getObservationTimeAsDate());

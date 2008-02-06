@@ -683,7 +683,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
        // inner structure
           if( v2.getName().startsWith( "record.level" )) {
-             member = new StructureMembers.Member( v2.getShortName(), v2.getDescription(),
+             member = imembers.addMember( v2.getShortName(), v2.getDescription(),
                 v2.getUnitsString(), v2.getDataType(), v2.getShape());
              imembers = new StructureMembers( "level" );
              imembers.addMember( member );

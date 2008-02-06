@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -19,8 +19,9 @@
  */
 package ucar.nc2.dt2;
 
+import ucar.nc2.units.DateRange;
+
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * A collection of data at unconnected locations.
@@ -40,13 +41,12 @@ public interface PointCollection {
   /**
    * Subset the collection using the specified bounding box and date range.
    *
-   * @param boundingBox spatial subset
-   * @param start       starting date
-   * @param end         ending date
+   * @param boundingBox spatial subset, may be null
+   * @param dateRange   dateRange, may be null
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
-  public PointCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end) throws IOException;
+  public PointCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
   /**
    * Get an efficient iterator over all the data in the Collection. You must fully process the

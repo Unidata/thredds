@@ -21,6 +21,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.dt2.point.UnidataPointObsDataset;
 import ucar.nc2.constants.DataType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
@@ -93,6 +94,7 @@ public class ToolsUI extends JPanel {
   private NCdumpPanel ncdumpPanel;
   private OpPanel coordSysPanel, ncmlPanel, geotiffPanel;
   private PointObsPanel pointObsPanel;
+  private PointObsPanel2 pointObsPanel2;
   private StationObsPanel stationObsPanel;
   private StationRadialPanel stationRadialPanel;
   private RadialPanel radialPanel;
@@ -146,6 +148,7 @@ public class ToolsUI extends JPanel {
     tabbedPane.addTab("Fmrc", new JLabel("Fmrc"));
     tabbedPane.addTab("Radial", new JLabel("Radial"));
     tabbedPane.addTab("PointObs", new JLabel("PointObs"));
+    tabbedPane.addTab("PointObs2", new JLabel("PointObs2"));
     tabbedPane.addTab("StationObs", new JLabel("StationObs"));
     tabbedPane.addTab("Trajectory", new JLabel("Trajectory"));
     tabbedPane.addTab("Images", new JLabel("Images"));
@@ -225,6 +228,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("PointObs")) {
       pointObsPanel = new PointObsPanel((PreferencesExt) mainPrefs.node("points"));
       c = pointObsPanel;
+
+    } else if (title.equals("PointObs2")) {
+      pointObsPanel2 = new PointObsPanel2((PreferencesExt) mainPrefs.node("point2"));
+      c = pointObsPanel2;
 
     } else if (title.equals("StationObs")) {
       stationObsPanel = new StationObsPanel((PreferencesExt) mainPrefs.node("stations"));
@@ -604,6 +611,7 @@ public class ToolsUI extends JPanel {
     if (fmrcPanel != null) fmrcPanel.save();
     if (radialPanel != null) radialPanel.save();
     if (pointObsPanel != null) pointObsPanel.save();
+    if (pointObsPanel2 != null) pointObsPanel2.save();
     if (stationObsPanel != null) stationObsPanel.save();
     if (stationRadialPanel != null) stationRadialPanel.save();
     if (trajTablePanel != null) trajTablePanel.save();
@@ -2238,6 +2246,89 @@ public class ToolsUI extends JPanel {
       return true;
     }
   }
+
+  private class PointObsPanel2 extends OpPanel {
+    PointObsViewer2 povTable;
+    JSplitPane split;
+    ucar.nc2.dt2.PointObsDataset pobsDataset = null;
+
+    PointObsPanel2(PreferencesExt dbPrefs) {
+      super(dbPrefs, "dataset:", true, false);
+      povTable = new PointObsViewer2(dbPrefs);
+      add(povTable, BorderLayout.CENTER);
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          String info;
+          if ((pobsDataset != null) && ((info = pobsDataset.getDetailInfo()) != null)) {
+            detailTA.setText(info);
+            detailTA.gotoTop();
+            detailWindow.show();
+          }
+        }
+      });
+      buttPanel.add(infoButton);
+    }
+
+    boolean process(Object o) {
+      String location = (String) o;
+      return setPointObsDataset(location);
+    }
+
+    void save() {
+      super.save();
+      povTable.save();
+    }
+
+    boolean setPointObsDataset(String location) {
+      if (location == null) return false;
+
+      try {
+        if (pobsDataset != null) pobsDataset.close();
+      } catch (IOException ioe) {
+      }
+
+      StringBuffer log = new StringBuffer();
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        //pobsDataset = (PointObsDataset) TypedDatasetFactory.open(DataType.POINT, location, null, log);
+        pobsDataset = new UnidataPointObsDataset( NetcdfDataset.openDataset(location));
+        if (pobsDataset == null) {
+          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
+          return false;
+        }
+
+        povTable.setDataset(pobsDataset);
+        setSelectedItem(location);
+        return true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        ta.setText(log.toString());
+        ta.appendLine(bos.toString());
+
+        JOptionPane.showMessageDialog(this, e.getMessage());
+        return false;
+      }
+    }
+
+    boolean setPointObsDataset(ucar.nc2.dt2.PointObsDataset dataset) throws IOException {
+      if (dataset == null) return false;
+
+      try {
+        if (pobsDataset != null) pobsDataset.close();
+      } catch (IOException ioe) {
+      }
+
+      povTable.setDataset(dataset);
+      pobsDataset = dataset;
+      setSelectedItem(pobsDataset.getLocationURI());
+      return true;
+    }
+  }
+
 
   private class StationObsPanel extends OpPanel {
     StationObsViewer povTable;

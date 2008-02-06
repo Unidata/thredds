@@ -160,7 +160,7 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
 
         AddeTypedDataVariable tdv = new AddeTypedDataVariable( params[paramNo], unitString, dt);
         dataVariables.add( tdv);
-        StructureMembers.Member m = new StructureMembers.Member( tdv.getShortName(), tdv.getDescription(),
+        StructureMembers.Member m = members.addMember( tdv.getShortName(), tdv.getDescription(),
           tdv.getUnitsString(), tdv.getDataType(), tdv.getShape());
         m.setDataParam( paramNo);
         members.addMember( m);
