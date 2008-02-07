@@ -36,17 +36,9 @@ public interface DataIterator  {
 
   /**
    * Returns the next Feature object
-   * @return the next Feature object
+   * @return the next Feature object  Look what about a Feature superclass ??
    * @throws java.io.IOException on i/o error
    */
   public Object nextData() throws java.io.IOException;
-
-  /*
-   * Returns the next Feature object.
-   *
-   * @throws RuntimeException (unchecked) instead of IOException.
-   * @deprecated use nextData()
-   *
-  public Object next();   */
 
 }

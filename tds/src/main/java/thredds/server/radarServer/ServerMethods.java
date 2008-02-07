@@ -167,7 +167,7 @@ public class ServerMethods {
   */
 
   public boolean intersect(DateRange dr, Date start, Date end ) throws IOException {
-    return dr.intersect(start, end);
+    return dr.intersects(start, end);
   }
 
     /*

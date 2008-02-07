@@ -19,7 +19,6 @@
  */
 package ucar.nc2.dt2.point;
 
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt2.*;
 import ucar.unidata.geoloc.*;
 
@@ -41,33 +40,35 @@ import java.io.IOException;
  */
 public class StationHelper {
   private StationObsDataset obsDataset;
+  private List<Station> stations;
   private Map<String, Station> stationHash;
   private boolean debug = false;
 
   public StationHelper( StationObsDataset obsDataset) {
     this.obsDataset = obsDataset;
+    stations = new ArrayList<Station>();
+    stationHash = new HashMap<String, Station>();
+  }
+
+  public void addStation( Station s) {
+    stations.add(s);
+    stationHash.put(s.getName(), s);
   }
 
   private LatLonRect rect;
   public LatLonRect getBoundingBox() {
     if (rect == null) {
-      List stations;
-      try {
-        stations = obsDataset.getStations();
-      } catch (IOException e) {
-        return null;
-      }
       if (stations.size() == 0)
         return null;
 
-      Station s =  (Station) stations.get(0);
+      Station s = stations.get(0);
       LatLonPointImpl llpt = new LatLonPointImpl();
       llpt.set( s.getLatitude(), s.getLongitude());
       rect = new LatLonRect(llpt, .001, .001);
       if (debug) System.out.println("start="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
 
       for (int i = 1; i < stations.size(); i++) {
-        s =  (Station) stations.get(i);
+        s = stations.get(i);
         llpt.set( s.getLatitude(), s.getLongitude());
         rect.extend( llpt);
         if (debug) System.out.println("add="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
@@ -82,35 +83,23 @@ public class StationHelper {
     return rect;
   }
 
-  public List<Station> getStations(LatLonRect boundingBox, CancelTask cancel) throws IOException {
+  public List<Station> getStations(LatLonRect boundingBox) throws IOException {
     LatLonPointImpl latlonPt = new LatLonPointImpl();
     List<Station> result = new ArrayList<Station>();
-    List<Station> stations = obsDataset.getStations();
     for (Station s : stations) {
       latlonPt.set(s.getLatitude(), s.getLongitude());
       if (boundingBox.contains(latlonPt))
         result.add(s);
-      if ((cancel != null) && cancel.isCancel()) return null;
     }
     return result;
   }
 
   public Station getStation(String name) {
-    if (stationHash == null) {
-      List<Station> stations;
-      try {
-        stations = obsDataset.getStations();
-      } catch (IOException e) {
-        return null;
-      }
-
-      stationHash = new HashMap<String,Station>( 2*stations.size());
-      for (Station s : stations) {
-        stationHash.put(s.getName(), s);
-      }
-    }
-
     return stationHash.get( name);
+  }
+
+  public List<Station> getStations() {
+    return stations;
   }
 
   /* public List getStationObs(Station s, double startTime, double endTime, CancelTask cancel) throws IOException {

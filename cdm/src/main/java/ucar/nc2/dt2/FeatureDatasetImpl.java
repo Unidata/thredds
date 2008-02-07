@@ -42,7 +42,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected String title, desc, location;
   protected List<VariableSimpleIF> dataVariables = new ArrayList<VariableSimpleIF>(); // VariableSimpleIF
   protected StringBuffer parseInfo = new StringBuffer();
-  protected Date startDate, endDate;
+  protected DateRange dateRange;
   protected LatLonRect boundingBox;
 
   // for subsetting
@@ -55,14 +55,15 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     this.parseInfo = new StringBuffer(from.parseInfo);
     this.parseInfo.append("Subsetted from original\n");
 
-    this.boundingBox = (filter_bb == null) ? from.boundingBox : filter_bb;
+    if (filter_bb == null)
+      this.boundingBox = from.boundingBox;
+    else
+      this.boundingBox = (from.boundingBox == null) ? filter_bb : from.boundingBox.intersect( filter_bb);
 
-    if (filter_date == null) { // LOOK maybe use DateRange
-      this.startDate = from.startDate;
-      this.endDate = from.endDate;
+    if (filter_date == null) {
+      this.dateRange = from.dateRange;
     } else {
-      this.startDate = filter_date.getStart().getDate();
-      this.endDate = filter_date.getEnd().getDate();
+      this.dateRange =  (from.dateRange == null) ? filter_date : from.dateRange.intersect( filter_date);
     }
   }
 
@@ -98,8 +99,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected void setTitle( String title) { this.title = title; }
   protected void setDescription( String desc) { this.desc = desc; }
   protected void setLocationURI( String location) {this.location = location; }
-  protected void setStartDate(Date startDate) { this.startDate = startDate; }
-  protected void setEndDate(Date endDate) { this.endDate = endDate; }
+  protected void setDateRange(DateRange dateRange) { this.dateRange = dateRange; }
   protected void setBoundingBox(LatLonRect boundingBox) { this.boundingBox = boundingBox; }
 
   protected void removeDataVariable( String varName) {
@@ -138,6 +138,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     sbuff.append("  location= ").append(getLocationURI()).append("\n");
     sbuff.append("  title= ").append(getTitle()).append("\n");
     sbuff.append("  desc= ").append(getDescription()).append("\n");
+    sbuff.append("  range= ").append(getDateRange()).append("\n");
     sbuff.append("  start= ").append(formatter.toDateTimeString(getStartDate())).append("\n");
     sbuff.append("  end  = ").append(formatter.toDateTimeString(getEndDate())).append("\n");
     sbuff.append("  bb   = ").append(getBoundingBox()).append("\n");
@@ -165,8 +166,9 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     return sbuff.toString();
   }
 
-  public Date getStartDate() { return startDate; }
-  public Date getEndDate() { return endDate; }
+  public DateRange getDateRange() { return dateRange; }
+  public Date getStartDate() { return dateRange.getStart().getDate(); }
+  public Date getEndDate() { return dateRange.getEnd().getDate(); }
   public LatLonRect getBoundingBox() { return boundingBox; }
 
   public List<VariableSimpleIF> getDataVariables() {return dataVariables; }

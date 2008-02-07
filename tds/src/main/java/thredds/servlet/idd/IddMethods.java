@@ -147,7 +147,7 @@ public class IddMethods {
   }
 
   public boolean intersect(DateRange dr) throws IOException {
-    return dr.intersect(start, end);
+    return dr.intersects(start, end);
   }
 
   public List<Station> getStationList() throws IOException {

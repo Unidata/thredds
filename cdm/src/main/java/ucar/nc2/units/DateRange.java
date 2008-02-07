@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,12 +20,8 @@
 
 package ucar.nc2.units;
 
-import ucar.nc2.units.TimeDuration;
-
 import java.util.Date;
 import java.text.ParseException;
-
-import ucar.nc2.units.DateType;
 
 /**
  * Implements a range of dates, using DateType and/or TimeDuration.
@@ -38,7 +34,7 @@ import ucar.nc2.units.DateType;
 public class DateRange {
   private DateType start, end;
   private TimeDuration duration, resolution;
-  private boolean invalid, useStart, useEnd, useDuration, useResolution;
+  private boolean isEmpty, useStart, useEnd, useDuration, useResolution;
 
   /** default Constructor
    * @throws java.text.ParseException artifact, cant happen
@@ -57,13 +53,13 @@ public class DateRange {
   }
 
   /**
-   * Create DateRange from another DateRange, with a different units ofr the Resolution.
-   * @param range sopy start and end from here
-   * @param units make resolution using new TimeDuration( units)
+   * Create DateRange from another DateRange, with a different units of resolution.
+   * @param range copy start and end from here
+   * @param timeUnits make resolution using new TimeDuration( timeUnits)
    * @throws Exception is units are not valid time units
    */
-  public DateRange(DateRange range, String units) throws Exception {
-    this( new DateType(false, range.getStart().getDate()), new DateType(false, range.getEnd().getDate()), null, new TimeDuration( units));
+  public DateRange(DateRange range, String timeUnits) throws Exception {
+    this( new DateType(false, range.getStart().getDate()), new DateType(false, range.getEnd().getDate()), null, new TimeDuration( timeUnits));
   }
 
   /**
@@ -91,22 +87,30 @@ public class DateRange {
     useDuration = (duration != null);
     useResolution = (resolution != null);
 
-    invalid = true;
+    boolean invalid = true;
     if (useStart && useEnd) {
       invalid = false;
       recalcDuration();
 
     } else if (useStart && useDuration) {
       invalid = false;
-      this.end = start.add( duration);
+      this.end = this.start.add( duration);
 
     } else if (useEnd && useDuration) {
       invalid = false;
-      this.start = end.subtract( duration);
+      this.start = this.end.subtract( duration);
     }
     if (invalid)
       throw new IllegalArgumentException("DateRange must have 2 of start, end, duration");
+
+    checkIfEmpty();
     hashCode = 0;
+  }
+
+  private void checkIfEmpty() {
+    isEmpty = this.end.before( this.start);
+    if (isEmpty)
+      duration.setValueInSeconds(0);
   }
 
     // choose a resolution based on # seconds
@@ -129,7 +133,6 @@ public class DateRange {
   }
 
   private void recalcDuration() {
-
     long min = getStart().getDate().getTime();
     long max = getEnd().getDate().getTime();
     double secs = .001 * (max - min);
@@ -164,7 +167,7 @@ public class DateRange {
    * @return  true if date in inside this range
    */
   public boolean included( Date d) {
-    if (invalid) return false;
+    if (isEmpty) return false;
 
     if (start.after( d)) return false;
     if (end.before( d)) return false;
@@ -178,13 +181,39 @@ public class DateRange {
    * @param end_want  range ends here
    * @return  true if ranges intersect
    */
-  public boolean intersect( Date start_want, Date end_want) {
-    if (invalid) return false;
+  public boolean intersects( Date start_want, Date end_want) {
+    if (isEmpty) return false;
 
     if (start.after( end_want)) return false;
     if (end.before( start_want)) return false;
 
     return true;
+  }
+
+  /**
+   * Intersect with another date range
+   * @param clip interset with this date range
+   * @return new date range that is the intersection
+   */
+  public DateRange intersect( DateRange clip) {
+    if (isEmpty) return this;
+    if (clip.isEmpty) return clip;
+
+    DateType s = start.before( clip.getStart()) ? clip.getStart() : start;
+    DateType e = end.before( clip.getEnd()) ? end : clip.getEnd();
+
+    return new DateRange(s, e, null, resolution);
+  }
+
+  /** Extend this date range by the given one.
+   * @param dr given DateRange
+   **/
+  public void extend( DateRange dr) {
+    boolean localEmpty = isEmpty;
+    if (localEmpty || dr.getStart().before( start))
+      setStart( dr.getStart());
+    if (localEmpty || end.before(dr.getEnd()))
+      setEnd( dr.getEnd());
   }
 
   public DateType getStart() { return start; }
@@ -202,6 +231,7 @@ public class DateRange {
       recalcDuration();
       this.end = start.add( duration);
     }
+    checkIfEmpty();
   }
 
   public DateType getEnd() { return end; }
@@ -219,16 +249,7 @@ public class DateRange {
       recalcDuration();
       this.start = end.subtract( duration);
     }
-  }
-  
-  /** Extend this date range by the given one, if needed.
-   * @param dr given DateRange
-   **/
-  public void extend( DateRange dr) {
-    if (dr.getStart().getDate().before( start.getDate()))
-      setStart( dr.getStart());
-    if (dr.getEnd().getDate().after( end.getDate()))
-      setEnd( dr.getEnd());
+    checkIfEmpty();
   }
 
   public TimeDuration getDuration() { return duration; }
@@ -243,6 +264,7 @@ public class DateRange {
       this.end = start.add( duration);
       useEnd = false;
     }
+    checkIfEmpty();
   }
 
   public TimeDuration getResolution() { return resolution; }
@@ -261,7 +283,15 @@ public class DateRange {
    * @return true if start = end
    */
   public boolean isPoint() {
-    return start.equals( end);
+    return !isEmpty && start.equals( end);
+  }
+
+  /**
+   * If the range is empty
+   * @return if the range is empty
+   */
+  public boolean isEmpty() {
+    return isEmpty;
   }
 
   public String toString() { return "start= "+start +" end= "+end+ " duration= "+ duration

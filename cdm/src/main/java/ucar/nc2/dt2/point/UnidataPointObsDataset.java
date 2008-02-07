@@ -78,9 +78,15 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
     super(from, filter_bb, filter_date);
     this.recordHelper = from.recordHelper;
 
-    // LOOK need to compose
-    this.filter_bb = filter_bb;
-    this.filter_date = filter_date;
+    if (from.filter_bb == null)
+      this.filter_bb = filter_bb;
+    else
+      this.filter_bb = (filter_bb == null) ? from.filter_bb : from.filter_bb.intersect( filter_bb);
+
+    if (from.filter_date == null)
+      this.filter_date = filter_date;
+    else
+      this.filter_date = (filter_date == null) ? from.filter_date : from.filter_date.intersect( filter_date);
   }
 
   public UnidataPointObsDataset() {}
@@ -119,8 +125,9 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
     if (altVar != null)
       removeDataVariable(altVar.getName());
 
-    setStartDate( UnidataObsDatasetHelper.getStartDate( ds, recordHelper.timeUnit));
-    setEndDate( UnidataObsDatasetHelper.getEndDate( ds, recordHelper.timeUnit));
+    Date startDate = UnidataObsDatasetHelper.getStartDate( ds, recordHelper.timeUnit);
+    Date endDate = UnidataObsDatasetHelper.getEndDate( ds, recordHelper.timeUnit);
+    setDateRange( new DateRange(startDate, endDate));
     setBoundingBox( UnidataObsDatasetHelper.getBoundingBox( ds));
 
     title = ds.findAttValueIgnoreCase(null, "title", null);

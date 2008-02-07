@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,18 +20,14 @@
 
 package ucar.nc2.units;
 
-import ucar.nc2.units.TimeUnit;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.TimeDuration;
-
 import java.util.*;
 import java.text.SimpleDateFormat;
 
 /**
  * Implements the thredds "dateType" and "dateTypeFormatted" XML element types.
  * This is mostly a general way to specify dates in a string.
- * It also allows a date to mean "present".
- * It also allows an optional attribute called "type" which is an enumeration like "created", "modified", etc
+ * It allows a date to mean "present". <strong>"Present" always sorts after any date, including dates in the future.</strong>
+ * It allows an optional attribute called "type" which is an enumeration like "created", "modified", etc
  *  taken from Dublin Core vocabulary.
  *
  * A DateType can be specified in the following ways:
@@ -154,6 +150,12 @@ public class DateType {
   public boolean before( Date d) {
     if (isPresent()) return false;
     return date.before( d);
+  }
+
+  public boolean before( DateType d) {
+    if (d.isPresent()) return true;
+    if (isPresent()) return false;
+    return date.before( d.getDate());
   }
 
   public boolean after( Date d) {

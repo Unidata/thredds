@@ -436,7 +436,7 @@ public class StationObsCollection {
   }
 
   public boolean intersect(DateRange dr) throws IOException {
-    return dr.intersect(start, end);
+    return dr.intersects(start, end);
   }
 
   private List<Station> getStationList() throws IOException {
@@ -731,7 +731,7 @@ public class StationObsCollection {
 
     List<Dataset> result = new ArrayList<Dataset>();
     for (Dataset ds : datasetList) {
-      if (range.intersect(ds.time_start, ds.time_end))
+      if (range.intersects(ds.time_start, ds.time_end))
         result.add(ds);
     }
     return result;

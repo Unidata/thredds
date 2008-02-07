@@ -21,6 +21,7 @@
 package ucar.nc2.dt2;
 
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.units.DateRange;
 
 import java.util.*;
 
@@ -55,16 +56,10 @@ public interface FeatureDataset {
   public String getLocationURI();
 
   /**
-   * Start date for the entire dataset.
-   * @return the start date for the entire dataset,, or null
+   * Date range for the entire dataset.
+   * @return the date range for the entire dataset, or null if unknown
    */
-  public Date getStartDate();
-
-  /**
-   * End date for the entire dataset.
-   * @return the end date for the entire dataset, or null
-   */
-  public Date getEndDate();
+  public DateRange getDateRange();
 
   /**
    * The boundingBox for the entire dataset.

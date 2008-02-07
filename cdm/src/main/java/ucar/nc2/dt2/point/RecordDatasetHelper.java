@@ -31,6 +31,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -39,6 +40,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 
 import java.io.*;
 import java.util.*;
+import java.text.ParseException;
 
 /**
  * Helper class for using the netcdf-3 record dimension. Can be used for PointObs or StationObs.
@@ -47,13 +49,16 @@ import java.util.*;
  */
 
 public class RecordDatasetHelper {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RecordDatasetHelper.class);
+
   protected NetcdfDataset ncfile;
   protected String obsTimeVName, nomTimeVName;
-  protected String stnIdVName, stnNameVName, stnDescVName;
   protected String latVName, lonVName, altVName;
+
+  protected String stnIdVName, stnIndexVName, stnDescVName;
+  protected StationHelper stationHelper;
   protected DataType stationIdType;
 
-  protected Map<Object, Station> stnHash;
   protected StructureDS recordVar;
   protected Dimension obsDim;
 
@@ -68,32 +73,16 @@ public class RecordDatasetHelper {
 
   /**
    * Constructor.
-   * @param ncfile the netccdf file
+   *
+   * @param ncfile             the netccdf file
    * @param typedDataVariables list of data variables; all record variables will be added to this list, except . You
-   *    can remove extra
-   * @param obsTimeVName observation time variable name (required)
-   * @param nomTimeVName nominal time variable name (may be null)
-   * @throws IllegalArgumentException if ncfile has no unlimited dimension.
-   */
-  public RecordDatasetHelper(NetcdfDataset ncfile, String obsTimeVName, String nomTimeVName, List<VariableSimpleIF> typedDataVariables) {
-    this(ncfile, obsTimeVName, nomTimeVName, typedDataVariables, null, null);
-  }
-
-  public RecordDatasetHelper( NetcdfDataset ncfile, String obsTimeVName, String nomTimeVName, List<VariableSimpleIF> typedDataVariables,
-          StringBuffer errBuffer )  {
-    this( ncfile, obsTimeVName, nomTimeVName, typedDataVariables, null, errBuffer );
-  }
-  /**
-   * Constructor.
-   * @param ncfile the netccdf file
-   * @param typedDataVariables list of data variables; all record variables will be added to this list, except . You
-   *    can remove extra
-   * @param obsTimeVName observation time variable name (required)
-   * @param nomTimeVName nominal time variable name (may be null)
+   *                           can remove extra
+   * @param obsTimeVName       observation time variable name (required)
+   * @param nomTimeVName       nominal time variable name (may be null)
    * @throws IllegalArgumentException if ncfile has no unlimited dimension and recDimName is null.
    */
   public RecordDatasetHelper(NetcdfDataset ncfile, String obsTimeVName, String nomTimeVName, List<VariableSimpleIF> typedDataVariables,
-          String recDimName, StringBuffer errBuffer) {
+                             String recDimName, StringBuffer errBuffer) {
     this.ncfile = ncfile;
     this.obsTimeVName = obsTimeVName;
     this.nomTimeVName = nomTimeVName;
@@ -109,9 +98,9 @@ public class RecordDatasetHelper {
     } else {
       if (recDimName == null)
         throw new IllegalArgumentException("File <" + this.ncfile.getLocation() +
-                "> has no unlimited dimension, specify psuedo record dimension with observationDimension global attribute.");
+            "> has no unlimited dimension, specify psuedo record dimension with observationDimension global attribute.");
       this.obsDim = this.ncfile.getRootGroup().findDimension(recDimName);
-      this.recordVar = new StructureDS( null, new StructurePseudo(this.ncfile, null, "record", obsDim), true);
+      this.recordVar = new StructureDS(null, new StructurePseudo(this.ncfile, null, "record", obsDim), true);
     }
 
     // create member variables
@@ -137,39 +126,44 @@ public class RecordDatasetHelper {
 
   /**
    * Set extra information used by station obs datasets.
-   * @param stnIdVName the obs variable that is used to find the station in the stnHash; may be type  int or a String (char).
+   * Use stnIdVName or stnIndexVName.
+   * @param stnIdVName   the obs variable that is used to find the station in the stnHash; may be type  int or a String (char).
    * @param stnDescVName optional station var containing station description
    */
-  public void setStationInfo( String stnIdVName, String stnDescVName) {
+  public void setStationInfo(String stnIdVName, String stnDescVName, String stnIndexVName, StationHelper stationHelper) {
     this.stnIdVName = stnIdVName;
     this.stnDescVName = stnDescVName;
+    this.stnIndexVName = stnIndexVName;
+    this.stationHelper = stationHelper;
 
-    Variable stationVar = ncfile.findVariable( stnIdVName);
-    stationIdType = stationVar.getDataType();
+    if (stnIdVName != null) {
+      Variable stationVar = ncfile.findVariable(stnIdVName);
+      stationIdType = stationVar.getDataType();
+    }
   }
 
-  public void setLocationInfo( String latVName, String lonVName, String altVName) {
+  public void setLocationInfo(String latVName, String lonVName, String altVName) {
     this.latVName = latVName;
     this.lonVName = lonVName;
     this.altVName = altVName;
 
     // check for meter conversion
     if (altVName != null) {
-      Variable v = ncfile.findVariable( altVName);
+      Variable v = ncfile.findVariable(altVName);
       String units = ncfile.findAttValueIgnoreCase(v, "units", null);
       if (units != null)
         try {
-          altScaleFactor = getMetersConversionFactor( units);
+          altScaleFactor = getMetersConversionFactor(units);
         } catch (Exception e) {
-          if (errs != null) errs.append (e.getMessage());
+          if (errs != null) errs.append(e.getMessage());
         }
     }
   }
 
-    // make structure variable names to shortNames so StructureData sdata can
+  // make structure variable names to shortNames so StructureData sdata can
   // access it members
-  public void setShortNames( String latVName, String lonVName, String altVName, String obsTimeVName, String nomTimeVName){
-    this.latVName =  latVName;
+  public void setShortNames(String latVName, String lonVName, String altVName, String obsTimeVName, String nomTimeVName) {
+    this.latVName = latVName;
     this.lonVName = lonVName;
     this.altVName = altVName;
     this.obsTimeVName = obsTimeVName;
@@ -177,42 +171,64 @@ public class RecordDatasetHelper {
   }
 
   protected static SimpleUnit meterUnit = SimpleUnit.factory("m");
-  protected static double getMetersConversionFactor( String unitsString) throws Exception {
+
+  protected static double getMetersConversionFactor(String unitsString) throws Exception {
     SimpleUnit unit = SimpleUnit.factoryWithExceptions(unitsString);
     return unit.convertTo(1.0, meterUnit);
   }
 
   public Structure getRecordVar() {
-    return( this.recordVar);
+    return (this.recordVar);
   }
+
   public int getRecordCount() {
     Dimension unlimitedDim = ncfile.getUnlimitedDimension();
     return unlimitedDim.getLength();
   }
 
-  public void setTimeUnit( DateUnit timeUnit) {
+  public void setTimeUnit(DateUnit timeUnit) {
     this.timeUnit = timeUnit;
   }
 
   public DateUnit getTimeUnit() {
-    return( this.timeUnit );
+    return this.timeUnit;
   }
 
-   public LatLonPoint getLocation(StructureData sdata) {
-      StructureMembers members = sdata.getStructureMembers();
-      double lat = sdata.getScalarDouble(latVName);
-      double lon = sdata.getScalarDouble(lonVName);
-      return new LatLonPointImpl( lat, lon);
-    }
+  public LatLonPoint getLocation(StructureData sdata) {
+    StructureMembers members = sdata.getStructureMembers();
+    double lat = sdata.convertScalarDouble( members.findMember( latVName));
+    double lon = sdata.convertScalarDouble( members.findMember(lonVName));
+    return new LatLonPointImpl(lat, lon);
+  }
 
   public Date getObservationDate(StructureData sdata) {
     StructureMembers members = sdata.getStructureMembers();
-    double obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName));
+    double obsTime = getTime(members.findMember(obsTimeVName), sdata);
     return timeUnit.makeDate(obsTime);
-   }
+  }
 
+  private DateFormatter formatter;
+  private double getTime(StructureMembers.Member timeVar, StructureData sdata) {
+    if (timeVar == null) return 0.0;
 
-  /**
+    if ((timeVar.getDataType() == DataType.CHAR) || (timeVar.getDataType() == DataType.STRING)) {
+      String time = sdata.getScalarString(timeVar);
+      if (null == formatter) formatter = new DateFormatter();
+      Date date = null;
+      try {
+        date = formatter.isoDateTimeFormat(time);
+      } catch (ParseException e) {
+        log.error("Cant parse date - not ISO formatted, = "+time);
+        return 0.0;
+      }
+      return date.getTime() / 1000.0;
+
+    } else {
+      return sdata.convertScalarDouble(timeVar);
+    }
+  }
+
+  /*
    * This reads through all the records in the dataset, and constructs a list of
    * RecordPointObs or RecordStationObs. It does not cache the data.
    * <p>If stnIdVName is not null, its a StationDataset, then construct a Station HashMap of StationImpl
@@ -221,13 +237,13 @@ public class RecordDatasetHelper {
    * @param cancel allow user to cancel
    * @return List of RecordPointObs or RecordStationObs
    * @throws IOException on read error
-   */
+   *
   public List<RecordPointObs> readAllCreateObs(CancelTask cancel) throws IOException {
 
     // see if its a station or point dataset
     boolean hasStations = stnIdVName != null;
     if (hasStations)
-      stnHash = new HashMap<Object,Station>();
+      stnHash = new HashMap<Object, Station>();
 
     // get min and max date and lat,lon
     double minDate = Double.MAX_VALUE;
@@ -251,18 +267,18 @@ public class RecordDatasetHelper {
 
       Object stationId = null;
       if (hasStations) {
-        if ( stationIdType == DataType.INT) {
+        if (stationIdType == DataType.INT) {
           stationId = sdata.getScalarInt(stnIdVName);
         } else
-          stationId = sdata.getScalarString( stnIdVName).trim();
+          stationId = sdata.getScalarString(stnIdVName).trim();
       }
 
       String desc = (stnDescVName == null) ? null : sdata.getScalarString(stnDescVName);
       double lat = sdata.getScalarDouble(latVName);
       double lon = sdata.getScalarDouble(lonVName);
       double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.getScalarDouble(altVName);
-      double obsTime = sdata.convertScalarDouble(members.findMember( obsTimeVName));
-      double nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
+      double obsTime = sdata.convertScalarDouble(members.findMember(obsTimeVName));
+      double nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble(members.findMember(nomTimeVName));
 
       //double obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName) );
       //double nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
@@ -273,27 +289,27 @@ public class RecordDatasetHelper {
           stn = new Station(stationId.toString(), desc, lat, lon, alt);
           stnHash.put(stationId, stn);
         }
-        RecordStationObs stnObs = new RecordStationObs( stn, obsTime, nomTime, timeUnit, recno);
-        records.add( stnObs);
+        RecordStationObs stnObs = new RecordStationObs(stn, obsTime, nomTime, timeUnit, recno);
+        records.add(stnObs);
         //stn.addObs( stnObs);
 
       } else {
-        records.add( new RecordPointObs( new EarthLocation(lat, lon, alt), obsTime, nomTime, timeUnit, recno));
+        records.add(new RecordPointObs(new EarthLocation(lat, lon, alt), obsTime, nomTime, timeUnit, recno));
       }
 
       // track date range and bounding box
-      minDate = Math.min( minDate, obsTime);
-      maxDate = Math.max( maxDate, obsTime);
+      minDate = Math.min(minDate, obsTime);
+      maxDate = Math.max(maxDate, obsTime);
 
-      minLat = Math.min( minLat, lat);
-      maxLat = Math.max( maxLat, lat);
-      minLon = Math.min( minLon, lon);
-      maxLon = Math.max( maxLon, lon);
+      minLat = Math.min(minLat, lat);
+      maxLat = Math.max(maxLat, lat);
+      minLon = Math.min(minLon, lon);
+      maxLon = Math.max(maxLon, lon);
 
       recno++;
       if ((cancel != null) && cancel.isCancel()) return null;
     }
-    boundingBox = new LatLonRect( new LatLonPointImpl( minLat, minLon), new LatLonPointImpl( maxLat, maxLon));
+    boundingBox = new LatLonRect(new LatLonPointImpl(minLat, minLon), new LatLonPointImpl(maxLat, maxLon));
 
     return records;
   }
@@ -334,7 +350,6 @@ public class RecordDatasetHelper {
 
   public class RecordPointObs extends PointObsFeatureImpl {
     protected int recno;
-    protected LatLonPointImpl llpt = null;
     protected StructureData sdata;
 
     protected RecordPointObs() {
@@ -343,14 +358,15 @@ public class RecordDatasetHelper {
     /**
      * Constructor for the case where you keep track of the location, time of each record, but not the data.
      */
-    protected RecordPointObs( EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
-      super( location, obsTime, nomTime, timeUnit);
+    protected RecordPointObs(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
+      super(location, obsTime, nomTime, timeUnit);
       this.recno = recno;
     }
 
     /**
      * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
-     * @param recno record number LOOK why do we need ??
+     *
+     * @param recno record number
      * @param sdata the structure data
      */
     public RecordPointObs(int recno, StructureData sdata) {
@@ -359,33 +375,37 @@ public class RecordDatasetHelper {
       this.timeUnit = RecordDatasetHelper.this.timeUnit;
 
       StructureMembers members = sdata.getStructureMembers();
-      obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName));
-      nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
+      obsTime = getTime(members.findMember(obsTimeVName), sdata);
+      nomTime = (nomTimeVName == null) ? obsTime : getTime(members.findMember(nomTimeVName), sdata);
 
-      // obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
-      //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
-
-      double lat = sdata.getScalarDouble(latVName);
-      double lon = sdata.getScalarDouble(lonVName);
-      double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.getScalarDouble(altVName);
-      location = new EarthLocation( lat, lon, alt);
+      // this assumes the lat/lon/alt is stored in the obs record
+      double lat = sdata.convertScalarDouble(members.findMember(latVName));
+      double lon = sdata.convertScalarDouble(members.findMember(lonVName));
+      double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.convertScalarDouble(members.findMember(altVName));
+      location = new EarthLocation(lat, lon, alt);
     }
 
     public LatLonPoint getLatLon() {
-      if (llpt == null)
-         llpt = new LatLonPointImpl( location.getLatitude(), location.getLongitude());
-      return llpt;
+      return new LatLonPointImpl(location.getLatitude(), location.getLongitude());
     }
 
     public StructureData getData() throws IOException {
-      if (null != sdata) return sdata;
+      if (null == sdata) {
+        try {
+          // deal with files that are updating // LOOK kludge?
+          if (recno > getRecordCount()) {
+            int n = getRecordCount();
+            ncfile.syncExtend();
+            log.info("RecordPointObs.getData recno=" + recno + " > " + n + "; after sync= " + getRecordCount());
+          }
 
-      try {
-        return recordVar.readStructure(recno);
-      } catch (ucar.ma2.InvalidRangeException e) {
-        e.printStackTrace();
-        throw new IOException(e.getMessage());
+          sdata = recordVar.readStructure(recno);
+        } catch (ucar.ma2.InvalidRangeException e) {
+          e.printStackTrace();
+          throw new IOException(e.getMessage());
+        }
       }
+      return sdata;
     }
   }
 
@@ -396,55 +416,24 @@ public class RecordDatasetHelper {
 
     /**
      * Constructor for the case where you keep track of the station, time of each record, but the data reading is deferred.
+     *
      * @param station data is for this Station
      * @param obsTime observation time
      * @param nomTime nominal time (may be NaN)
-     * @param recno data is at this record number
+     * @param recno   data is at this record number
      */
-    protected RecordStationObs( Station station, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
-      super( station, obsTime, nomTime, timeUnit, recno);
+    protected RecordStationObs(Station station, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
+      super(station, obsTime, nomTime, timeUnit, recno);
       this.station = station;
     }
 
     /**
-     * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
-     * @param recno record number LOOK why do we need ??
-     * @param sdata the structure data
-     */
-    protected RecordStationObs(int recno, StructureData sdata) {
-      this.recno = recno;
-      this.sdata = sdata;
-
-      StructureMembers members = sdata.getStructureMembers();
-
-      obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName));
-      nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
-
-      //obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
-      //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
-
-      Object stationId;
-      if ( stationIdType == DataType.INT) {
-        stationId = sdata.getScalarInt(stnIdVName);
-      } else
-        stationId = sdata.getScalarString( stnIdVName).trim();
-
-      station = stnHash.get( stationId);
-      location = station;
-      if (station == null) {
-        if (null != errs)
-          errs.append(" cant find station = <").append(stationId).append(">" + "when reading record ").append(recno).append("\n");
-        if (showErrors)
-          System.out.println(" cant find station = <"+stationId+">"+ "when reading record "+recno);
-      }
-    }
-
-    /**
-     * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
+     * Constructor for when you have everything
+     *
      * @param station data is for this Station
      * @param obsTime observation time
      * @param nomTime nominal time (may be NaN)
-     * @param sdata the structure data
+     * @param sdata   the structure data
      */
     protected RecordStationObs(Station station, double obsTime, double nomTime, StructureData sdata) {
       this.station = station;
@@ -455,33 +444,63 @@ public class RecordDatasetHelper {
     }
 
     /**
-     * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
+     * Constructor for when you already have the StructureData and Station, and calculate times
+     *
      * @param station data is for this Station
-     * @param sdata the structure data
+     * @param sdata   the structure data
      */
     protected RecordStationObs(Station station, StructureData sdata) {
       this.station = station;
       this.location = station;
       this.sdata = sdata;
-      StructureMembers members = sdata.getStructureMembers();
-      obsTime = sdata.convertScalarDouble( members.findMember( obsTimeVName));
-      nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
 
-      //obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
-      //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
+      StructureMembers members = sdata.getStructureMembers();
+      obsTime = getTime(members.findMember(obsTimeVName), sdata);
+      nomTime = (nomTimeVName == null) ? obsTime : getTime(members.findMember(nomTimeVName), sdata);
     }
 
-    public Station getStation() { return station; }
+    /**
+     * Constructor for when you already have the StructureData, and need to find Station and times
+     *
+     * @param recno record number
+     * @param sdata the structure data
+     */
+    protected RecordStationObs(int recno, StructureData sdata, boolean useId) {
+      this.recno = recno;
+      this.sdata = sdata;
+      this.timeUnit = RecordDatasetHelper.this.timeUnit;
 
-    public StructureData getData() throws IOException {
-      if (null != sdata) return sdata;
+      StructureMembers members = sdata.getStructureMembers();
+      obsTime = getTime(members.findMember(obsTimeVName), sdata);
+      nomTime = (nomTimeVName == null) ? obsTime : getTime(members.findMember(nomTimeVName), sdata);
 
-      try {
-        return recordVar.readStructure(recno); // note we dont cache sdata
-      } catch (ucar.ma2.InvalidRangeException e) {
-        e.printStackTrace();
-        throw new IOException(e.getMessage());
+      if (useId) {
+        // this assumes the station id/name is stored in the obs record
+        String stationId;
+        if (stationIdType == DataType.INT) {
+          stationId = Integer.toString( sdata.getScalarInt(stnIdVName));
+        } else
+          stationId = sdata.getScalarString(stnIdVName).trim();
+        station = stationHelper.getStation(stationId);
+        if (null != errs) errs.append(" cant find station id = <").append(stationId).append("> when reading record ").append(recno).append("\n");
+        log.error(" cant find station id = <"+stationId+"> when reading record "+recno);
+
+      } else {
+              // find the station
+        List<Station> stations = stationHelper.getStations();
+        int stationIndex = sdata.getScalarInt(stnIndexVName);
+        if (stationIndex < 0 || stationIndex >= stations.size()) {
+          if (null != errs) errs.append("cant find station at index = ").append(stationIndex).append(" when reading record ").append(recno).append("\n");
+          log.error("cant find station at index = "+stationIndex+" when reading record "+recno);
+        } else
+          station = stations.get(stationIndex);
       }
+
+      location = station;
+    }
+
+    public Station getStation() {
+      return station;
     }
   }
 

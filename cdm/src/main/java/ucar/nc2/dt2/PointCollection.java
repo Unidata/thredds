@@ -52,19 +52,10 @@ public interface PointCollection {
    * Get an efficient iterator over all the data in the Collection. You must fully process the
    * data, or copy it out of the StructureData, as you iterate over it. DO NOT KEEP ANY REFERENCES to the
    * dataType object or the StructureData object.
-   * <p/>
-   * This is the efficient way to get all the data, it can be 100 times faster than getData().
-   * This will return an iterator over type getDataClass(), and the actual data has already been read
-   * into memory, that is, dataType.getData() will not incur any I/O.
-   * This is accomplished by buffering bufferSize amount of data at once.
-   * <p/>
-   * <p> We dont need a cancelTask, just stop the iteration if the user wants to cancel.
-   * <p/>
    * <pre>Example for point observations:
-   * <p/>
    * Iterator iter = pointObsDataset.getDataIterator();
    * while (iter.hasNext()) {
-   *   PointObsDatatype pobs = (PointObsDatatype) iter.next();
+   *   PointObsFeature pobs = (PointObsFeature) iter.next();
    *   StructureData sdata = pobs.getData();
    *   // process fully
    * }
