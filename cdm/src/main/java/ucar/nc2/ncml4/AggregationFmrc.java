@@ -153,8 +153,8 @@ public class AggregationFmrc extends AggregationOuterDimension {
       String dims = dimName + " " + v.getDimensionsString();
 
       // construct new variable, replace old one
-      Group aggGroup = v.getParentGroup();
-      VariableDS vagg = new VariableDS(ncDataset, aggGroup, null, v.getShortName(), v.getDataType(), dims, null, null);
+      Group newGroup =  DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
+      VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(), dims, null, null);
       vagg.setProxyReader(this);
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
@@ -162,7 +162,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       vagg.addAttribute(new Attribute(_Coordinate.Axes, dimName + " " + grid.getCoordinateSystem().getName()));
       vagg.addAttribute(new Attribute("coordinates", dimName + " " + grid.getCoordinateSystem().getName())); // CF
 
-      aggGroup.removeVariable( v.getShortName());
+      newGroup.removeVariable( v.getShortName());
       aggVars.add(vagg);
 
       if (debug) System.out.println("FmrcAggregation: added grid " + v.getName());
@@ -317,7 +317,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
         //NcMLReader.transferVariableAttributes(oldV, newV);
         //Attribute att = newV.findAttribute(_Coordinate.AliasForDimension);  // ??
         //if (att != null) newV.remove(att);
-        aggGroup = oldV.getParentGroup();
+        aggGroup =  DatasetConstructor.findGroup(ncDataset, oldV.getParentGroup());
         aggGroup.removeVariable(timeDimName);
       }
       ncDataset.addVariable(aggGroup, newV); // add to root if group is null
@@ -357,15 +357,16 @@ public class AggregationFmrc extends AggregationOuterDimension {
     // promote the time coordinate(s) to 2D, read in values if we have to
     for (CoordinateAxis1D taxis : timeAxes) {
       // construct new variable, replace old one
-      Group aggGroup = taxis.getParentGroup();
+      Group newGroup =  DatasetConstructor.findGroup(ncDataset, taxis.getParentGroup());
+
       String dims = dimName + " " + taxis.getDimensionsString();
-      VariableDS vagg = new VariableDS(ncDataset, aggGroup, null, taxis.getShortName(), taxis.getDataType(), dims, null, null);
+      VariableDS vagg = new VariableDS(ncDataset, newGroup, null, taxis.getShortName(), taxis.getDataType(), dims, null, null);
       DatasetConstructor.transferVariableAttributes(taxis, vagg);
       Attribute att = vagg.findAttribute(_Coordinate.AliasForDimension);
       if (att != null) vagg.remove(att);
 
-      aggGroup.removeVariable( taxis.getShortName());
-      aggGroup.addVariable(vagg);
+      newGroup.removeVariable( taxis.getShortName());
+      newGroup.addVariable(vagg);
 
       if (!timeUnitsChange)
         // Case 1: assume the units are all the same, so its just another agg variable

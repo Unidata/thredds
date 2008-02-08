@@ -82,14 +82,14 @@ public class AggregationExisting extends AggregationOuterDimension {
       if (!dimName.equals(d.getName()))
         continue;
 
-      Group aggGroup = v.getParentGroup();
-      VariableDS vagg = new VariableDS(ncDataset, aggGroup, null, v.getShortName(), v.getDataType(),
+      Group newGroup =  DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
+      VariableDS vagg = new VariableDS(ncDataset, newGroup, null, v.getShortName(), v.getDataType(),
               v.getDimensionsString(), null, null);
       vagg.setProxyReader(this); // do the reading here
       DatasetConstructor.transferVariableAttributes(v, vagg);
 
-      aggGroup.removeVariable( v.getShortName());
-      aggGroup.addVariable( vagg);
+      newGroup.removeVariable( v.getShortName());
+      newGroup.addVariable( vagg);
       aggVars.add(vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) return;

@@ -78,6 +78,11 @@ public class InvCatalogRef extends InvDatasetImpl {
     return href;
   }
 
+  public void setXlinkHref(String href) {
+    this.href = href;
+    this.uri = null;
+  }
+
   /**
    * @return Xlink reference as a URI, resolved
    */

@@ -530,12 +530,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
     
     // extract the bounds
     int n = shape[0];
-    if (n < 2) return false;
     double[] value1 = new double[n];
     double[] value2 = new double[n];
-    int[] shape = data.getShape();
     Index ima = data.getIndex();
-    for (int i = 0; i < shape[0]; i++) {
+    for (int i = 0; i < n; i++) {
       ima.set0(i);
       value1[i] = data.getDouble(ima.set1(0));
       value2[i] = data.getDouble(ima.set1(1));

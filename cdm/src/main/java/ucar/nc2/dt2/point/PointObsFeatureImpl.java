@@ -41,7 +41,7 @@ import java.io.IOException;
  */
 
 
-public class PointObsFeatureImpl implements PointObsFeature, Comparable<PointObsFeature> {
+public abstract class PointObsFeatureImpl implements PointObsFeature, Comparable<PointObsFeature> {
   protected EarthLocation location;
   protected double obsTime, nomTime;
   protected DateUnit timeUnit;

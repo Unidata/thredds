@@ -165,8 +165,8 @@ public class PointObsViewer2 extends JPanel {
 
     if (debugStationDatsets)
       System.out.println("PointObsViewer open type " + dataset.getClass().getName());
-    Date startDate = dataset.getStartDate();
-    Date endDate = dataset.getEndDate();
+    Date startDate = dataset.getDateRange().getStart().getDate();
+    Date endDate = dataset.getDateRange().getEnd().getDate();
     if ((startDate != null) && (endDate != null))
       chooser.setDateRange(new DateRange(startDate, endDate));
 

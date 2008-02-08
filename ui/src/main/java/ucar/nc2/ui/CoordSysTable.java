@@ -88,6 +88,7 @@ public class CoordSysTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
         Variable v = ds.findVariable( NetcdfFile.escapeName( vb.getName()));
+        if (v == null) return;
         infoTA.clear();
         infoTA.appendLine(v.toString());
         infoTA.gotoTop();
@@ -99,6 +100,7 @@ public class CoordSysTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
         VariableEnhanced v = (VariableEnhanced) ds.findVariable( NetcdfFile.escapeName( vb.getName()));
+        if (v == null) return;
         infoTA.clear();
         infoTA.appendLine(tryGrid(v));
         infoTA.gotoTop();

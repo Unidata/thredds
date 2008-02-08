@@ -79,8 +79,8 @@ public class AggregationNew extends AggregationOuterDimension {
       }
 
       // construct new variable, replace old one LOOK what about Structures?
-      Group aggGroup = aggVar.getParentGroup();
-      VariableDS vagg = new VariableDS(ncDataset, aggGroup, null, aggVar.getShortName(), aggVar.getDataType(),
+      Group newGroup =  DatasetConstructor.findGroup(ncDataset, aggVar.getParentGroup());
+      VariableDS vagg = new VariableDS(ncDataset, newGroup, null, aggVar.getShortName(), aggVar.getDataType(),
           dimName + " " + aggVar.getDimensionsString(), null, null);
       vagg.setProxyReader(this);
       DatasetConstructor.transferVariableAttributes(aggVar, vagg);
@@ -92,8 +92,8 @@ public class AggregationNew extends AggregationOuterDimension {
         vagg.addAttribute(new Attribute(_Coordinate.Axes, axes));
       }
 
-      aggGroup.removeVariable( aggVar.getShortName());
-      aggGroup.addVariable( vagg);
+      newGroup.removeVariable( aggVar.getShortName());
+      newGroup.addVariable( vagg);
       aggVars.add(vagg);
 
       if (cancelTask != null && cancelTask.isCancel()) return;

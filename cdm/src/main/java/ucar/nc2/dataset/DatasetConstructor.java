@@ -21,6 +21,10 @@ package ucar.nc2.dataset;
 
 import ucar.nc2.*;
 
+import java.util.StringTokenizer;
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * Helper methods for constructing NetcdfDatasets.
  * @author caron
@@ -112,5 +116,28 @@ public class DatasetConstructor {
       if (null == target.findAttribute(a.getName()))
         target.addAttribute(a);
     }
+  }
+
+  /**
+   * Find the Group in newFile that corresponds (by name) with oldGroup
+   *
+   * @param newFile look in this NetcdfFile
+   * @param oldGroup corresponding (by name) with oldGroup
+   * @return corresponding Group, or null if no match.
+   */
+  static public Group findGroup(NetcdfFile newFile, Group oldGroup) {
+    List<Group> chain = new ArrayList<Group>(5);
+    Group g = oldGroup;
+    while ( g.getParentGroup() != null) { // skip the root
+      chain.add(0, g); // put in front
+      g = g.getParentGroup();
+    }
+
+    Group newg = newFile.getRootGroup();
+    for (Group oldg : chain) {
+      newg = newg.findGroup( oldg.getShortName());
+      if (newg == null) return null;
+    }
+    return newg;
   }
 }
