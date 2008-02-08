@@ -21,7 +21,7 @@
     <variable name="Categorical_snow" />
     <variable name="Convective_Avail_Pot_Energy" />
     <variable name="Convective_inhibition" />
-    <variable name="Mean_sea_level_pressure_ETA_model" />
+    <variable name="Mean_sea_level_pressure_NAM_model" />
     <variable name="Precipitable_water" />
     <variable name="Pressure" />
     <variable name="Pressure_reduced_to_MSL" />

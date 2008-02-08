@@ -40,8 +40,8 @@
     <variable name="Planetary_Boundary_Layer_Height" />
     <variable name="Potential_temperature" />
     <variable name="Precipitable_water" />
-    <variable name="Pressure" vertCoord="4" />
     <variable name="Pressure_maximum_wind" />
+    <variable name="Pressure" vertCoord="4" />
     <variable name="Pressure_reduced_to_MSL" />
     <variable name="Pressure_surface" />
     <variable name="Pressure_tropopause" />
@@ -135,8 +135,8 @@
   </runSequence>
   <runSequence allUseSeq="2">
     <variable name="Potential_Evaporation_Rate" />
-    <variable name="Pressure_convective_cloud_bottom" />
     <variable name="Pressure_convective_cloud_top" />
+    <variable name="Pressure_convective_cloud_bottom" />
   </runSequence>
 </fmrcDefinition>
 

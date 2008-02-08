@@ -24,7 +24,7 @@
     <variable name="Convective_precipitation" />
     <variable name="Dew_point_temperature" vertCoord="2" />
     <variable name="Max_temperature" vertCoord="2" />
-    <variable name="Mean_sea_level_pressure_ETA_model" />
+    <variable name="Mean_sea_level_pressure_NAM_model" />
     <variable name="Min_temperature" vertCoord="2" />
     <variable name="Parcel_lifted_index_to_500_hPa" vertCoord="3" />
     <variable name="Precipitable_water" />

@@ -29,7 +29,7 @@
     <variable name="v_wind_tropopause" />
   </runSequence>
   <runSequence allUseSeq="1">
-    <variable name="Mean_sea_level_pressure_ETA_model" />
+    <variable name="Mean_sea_level_pressure_NAM_model" />
   </runSequence>
 </fmrcDefinition>
 
