@@ -61,7 +61,7 @@ public interface PointCollection {
    * }
    * </pre>
    *
-   * @param bufferSize if > 0, the internal buffer size, else use the default. Typically 100k - 1M for best results.
+   * @param bufferSize if > 0, the internal buffer size, else use the default. 100k - 1M gives good results in all cases.
    * @return iterator over type getDataClass(), no guarenteed order.
    * @throws IOException on i/o error
    */

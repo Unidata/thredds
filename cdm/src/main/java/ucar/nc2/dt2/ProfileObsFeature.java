@@ -19,49 +19,27 @@
  */
 package ucar.nc2.dt2;
 
-import java.util.Date;
-
 /**
- * An observation at one time and location.
+ * A Profile of observations. A set of observations along the vertical (z) axis.
+ * All obs have the same lat/lon. Time is either constant, or it may vary with z.
+ * The z coordinates are monotonc, but may be increasing or decreasing.
  *
  * @author caron
+ * @since Feb 8, 2008
  */
-public interface PointObsFeature extends ObsFeature {
+public interface ProfileObsFeature extends ObsFeature {
 
   /**
-   * Actual time of this observation. Units are found from getTimeUnits() in the containing dataset.
-   * @return actual time of this observation.
+   * The number of points along the z axis.
+   * @return number of points along the z axis.
    */
-  public double getObservationTime();
+  public int getNumberPoints();
 
   /**
-   * Actual time of this observation, as a Date.
-   * @return actual time of this observation, as a Date.
-   */
-  public Date getObservationTimeAsDate();
-
-  /**
-   * Nominal time of this observation.
-   * @return Nominal time of this observation.
-   */
-  public double getNominalTime();
-
-  /**
-   * Nominal time of this observation, as a Date.
-   * @return Nominal time of this observation, as a Date.
-   */
-  public Date getNominalTimeAsDate();
-
-  /**
-   * Location of this observation
+   * Location of this profile
+   *
    * @return the location of this observation
    */
   public EarthLocation getLocation();
 
-  /**
-   * The actual data of this observation.
-   * @return the actual data of this observation.
-   * @throws java.io.IOException on i/o error
-   */
-  public ucar.ma2.StructureData getData() throws java.io.IOException;
 }
