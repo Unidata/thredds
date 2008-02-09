@@ -71,8 +71,14 @@ public class GetCoverage extends WcsRequest
         throw new WcsException( WcsException.Code.InvalidParameterValue, "response_CRS", "Respnse CRS <" + responseCRS + "> not allowed <" + nativeCRS + ">." );
 
     // Assign and validate BBOX and TIME parameters.
-    if ( bbox == null && time == null )
-      throw new WcsException( WcsException.Code.MissingParameterValue, "BBOX", "BBOX and/or TIME required.");
+// -----
+//    WCS Spec says at least one of BBOX and TIME are required in a request.
+//    We will not require, default is everything.
+//
+//    if ( bbox == null && time == null )
+//      throw new WcsException( WcsException.Code.MissingParameterValue, "BBOX", "BBOX and/or TIME required.");
+// -----
+
     if ( bbox != null )
       bboxLatLonRect = parseBoundingBox( bbox, coverage.getCoordinateSystem());
     if ( time != null )
