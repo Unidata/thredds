@@ -17,7 +17,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.ui.util;
+package ucar.nc2.util;
 
 import ucar.unidata.util.Format;
 import ucar.nc2.NetcdfFile;
@@ -35,15 +35,13 @@ import java.net.SocketAddress;
 import java.net.InetSocketAddress;
 import java.net.InetAddress;
 import java.nio.channels.*;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * @author caron
  * @since Feb 1, 2008
  */
 public class TimeSocket {
-  static int port = 4444;
-  static InetAddress host;
 
   static double sendFake(int len) throws IOException {
     Socket s = new Socket(host, port);
@@ -55,34 +53,31 @@ public class TimeSocket {
     return (double) len;
   }
 
-  static double copyFile() throws IOException {
+  static double copyFile(File f) throws IOException {
     Socket s = new Socket(host, port);
     OutputStream out = new BufferedOutputStream( s.getOutputStream(), 8000);
-    File f = new File("C:/data/hdf5/ssec-h5/I3A_CCD_13FEB2007_0501_L1B_STD.h5");
     ucar.nc2.util.IO.copyFileB(f, out, 8000);
     out.close();
     return f.length() / (1000 * 1000);
   }
 
-  static double copyChannel() throws IOException {
+  static double copyChannel(File f) throws IOException {
     InetSocketAddress sadd = new InetSocketAddress(host, port);
     SocketChannel sc = java.nio.channels.SocketChannel.open(sadd);
-    File f = new File("C:/install/oxygen.exe");
     FileChannel fc = new FileInputStream(f).getChannel();
     long len = f.length();
     long done = 0;
     while (done < len) {
       done += fc.transferTo(done, len-done, sc);
-      System.out.println(" done= "+done);
+      //System.out.println(" done= "+done);
     }
     sc.close();
     return ((double) done) / (1000 * 1000);
   }
 
-  static double copyChannelFromRaf() throws IOException {
+  static double copyChannelFromRaf(File f) throws IOException {
     InetSocketAddress sadd = new InetSocketAddress(host, port);
     SocketChannel sc = java.nio.channels.SocketChannel.open(sadd);
-    File f = new File("C:/install/jdk-6-windows-i586.exe");
     FileChannel fc = new RandomAccessFile(f,"r").getChannel();
     long len = f.length();
     long done = 0;
@@ -94,14 +89,13 @@ public class TimeSocket {
     return ((double) done) / (1000 * 1000);
   }
 
-  static double copyChannelFromNetcdf() throws IOException, InvalidRangeException {
+  static double copyChannelFromNetcdf(File f) throws IOException, InvalidRangeException {
     InetSocketAddress sadd = new InetSocketAddress(host, port);
     SocketChannel sc = java.nio.channels.SocketChannel.open(sadd);
-    File f = new File("C:/install/jdk-6-windows-i586.exe");
 
     int done = 0;
-    NetcdfFile ncfile = NetcdfFile.open("C:/data/nssl/mosaic2d_nc/tile1/20070803-2300.netcdf");
-    String want = "cref,shi,posh,hsr,hsrh,pcp_type";
+    NetcdfFile ncfile = NetcdfFile.open(f.getPath());
+    String want = "T,u,v,RH,Z,omega,absvor,T_fhg,u_fhg,v_fhg,RH_fhg";
     StringTokenizer stoke = new StringTokenizer(want, ",");
     while (stoke.hasMoreTokens()) {
       NCdumpW.CEresult cer = NCdumpW.parseVariableSection(ncfile, stoke.nextToken());
@@ -111,12 +105,11 @@ public class TimeSocket {
     return ((double) done) / (1000 * 1000);
   }
 
-  static double streamOutputWriter() throws IOException, InvalidRangeException {
+  static double streamOutputWriter(File f) throws IOException, InvalidRangeException {
     Socket s = new Socket(host, port);
     DataOutputStream stream = new DataOutputStream(new BufferedOutputStream( s.getOutputStream(), 8000));
 
-    String filename = "C:/data/metars/Surface_METAR_20070326_0000.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFile.open(f.getPath());
     N3outputStreamWriter writer = new N3outputStreamWriter(ncfile);
 
     writer.writeHeader(stream);
@@ -125,39 +118,93 @@ public class TimeSocket {
 
     stream.close();
 
-    File f = new File(filename);
-
     return ((double) f.length()) / (1000 * 1000);
   }
 
-  static double streamChannelWriter() throws IOException, InvalidRangeException {
+  static double streamChannelWriter(File f) throws IOException, InvalidRangeException {
     InetSocketAddress sadd = new InetSocketAddress(host, port);
     SocketChannel sc = java.nio.channels.SocketChannel.open(sadd);
 
-    String filename = "C:/data/metars/Surface_METAR_20070326_0000.nc";
-    NetcdfFile ncfile = NetcdfFile.open(filename);
+    NetcdfFile ncfile = NetcdfFile.open(f.getPath());
     
     N3channelWriter.writeToChannel(ncfile, sc);
     sc.close();
 
-    File f = new File(filename);
     return ((double) f.length()) / (1000 * 1000);
   }
 
+  static private String dir = "/data/ldm/pub/decoded/netcdf/grid/NCEP/GFS/Global_5x2p5deg/";
+  static private Iterator<File> files;
+  static private File getFile() {
+    if (null == files) {
+      File[] fila = new File(dir).listFiles(new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+          return name.endsWith(".nc");
+        }
+      });
+      files = Arrays.asList(fila).iterator();
+    }
+    return files.next();
+  }
+
+  static int port = 8080;
+  static InetAddress host;
+  static String hostname = "BERT.unidata.ucar.edu";
   public static void main(String[] args) throws IOException, InvalidRangeException {
-    host = InetAddress.getByName(null);
+    host = InetAddress.getByName(hostname);
+    System.out.println("host="+host);
 
     long start = System.currentTimeMillis();
-    //double len = sendFake( 100);
+    double len = sendFake( 100);
+    double took = .001 * (System.currentTimeMillis() - start);
+    double rate = len / took ;
+    System.out.println("sendFake took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+
+    start = System.currentTimeMillis();
+    len = copyFile( getFile());
+    took = .001 * (System.currentTimeMillis() - start);
+    rate = len / took ;
+    System.out.println("copyFile took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+
+    start = System.currentTimeMillis();
+    len = copyChannel( getFile());
+    took = .001 * (System.currentTimeMillis() - start);
+    rate = len / took ;
+    System.out.println("copyChannel took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+
+    start = System.currentTimeMillis();
+    len = copyChannelFromRaf( getFile());
+    took = .001 * (System.currentTimeMillis() - start);
+    rate = len / took ;
+    System.out.println("copyChannelFromRaf took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+
+    start = System.currentTimeMillis();
+    len = streamOutputWriter( getFile());
+    took = .001 * (System.currentTimeMillis() - start);
+    rate = len / took ;
+    System.out.println("streamOutputWriter took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+
+    start = System.currentTimeMillis();
+    len = streamChannelWriter( getFile());
+    took = .001 * (System.currentTimeMillis() - start);
+    rate = len / took ;
+    System.out.println("streamChannelWriter took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+
+    start = System.currentTimeMillis();
+    len = copyChannelFromNetcdf( getFile());
+    took = .001 * (System.currentTimeMillis() - start);
+    rate = len / took ;
+    System.out.println("copyChannelFromNetcdf took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+
     //double len = copyFile();
     //double len = copyChannel();
     //double len = copyChannelFromRaf();
     //double len = copyChannelFromNetcdf();
     // double len = streamOutputWriter();
-    double len = streamChannelWriter();
-    double took = .001 * (System.currentTimeMillis() - start);
-    double rate = len / took ;
-    System.out.println(" took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+    //double len = streamChannelWriter();
+    //double took = .001 * (System.currentTimeMillis() - start);
+    //double rate = len / took ;
+    //System.out.println(" took = " + took + " sec; len= "+len+" Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
   }
 
 }

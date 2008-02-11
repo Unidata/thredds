@@ -50,8 +50,8 @@ public class TomcatAuthorizer implements Authorizer {
     session.setAttribute("origRequest", ServletUtil.getRequest(req));
     session.setAttribute("role", role);
 
-    String urlr = useSSL ? "https://" + req.getServerName() + ":"+ sslPort + "/thredds/restrictedAccess/" + role :
-                           "http://" + req.getServerName() + ":"+ req.getServerPort() + "/thredds/restrictedAccess/" + role;
+    String urlr = useSSL ? "https://" + req.getServerName() + ":"+ sslPort + ServletUtil.getContextPath()+"/restrictedAccess/" + role :
+                           "http://" + req.getServerName() + ":"+ req.getServerPort() +ServletUtil.getContextPath()+"/restrictedAccess/" + role;
 
 
     if (debugResourceControl) System.out.println("redirect to = " + urlr);

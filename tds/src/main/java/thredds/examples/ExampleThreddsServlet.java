@@ -58,6 +58,7 @@ public class ExampleThreddsServlet extends HttpServlet
 
   public void init() throws javax.servlet.ServletException
   {
+    ServletUtil.setContextPath( this); // context path
     ServletUtil.initDebugging( this ); // read debug flags
     rootPath = ServletUtil.getRootPath( this );
     contentPath = ServletUtil.getContentPath( this );
@@ -68,7 +69,7 @@ public class ExampleThreddsServlet extends HttpServlet
     log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
     log.info( "servlet context name= " + this.getServletContext().getServletContextName() );
-    log.info( "servlet context path= " + ServletUtil.getContextPath( this) );
+    log.info( "servlet context path= " + ServletUtil.getContextPath() );
     log.info( "rootPath= " + rootPath );
     log.info( "contentPath= " + contentPath );
 
@@ -91,9 +92,9 @@ public class ExampleThreddsServlet extends HttpServlet
     }
 
     // handles all catalogs, including ones with DatasetScan elements, ie dynamic
-    InvDatasetScan.setContext( ServletUtil.getContextPath( this) );
+    InvDatasetScan.setContext( ServletUtil.getContextPath() );
     InvDatasetScan.setCatalogServletName( "");
-    DataRootHandler.init( contentPath, ServletUtil.getContextPath( this ) );
+    DataRootHandler.init( contentPath, ServletUtil.getContextPath() );
     dataRootHandler = DataRootHandler.getInstance();
     List<String> cats = new ArrayList<String>();
     cats.add( "catalog.xml");
@@ -111,7 +112,7 @@ public class ExampleThreddsServlet extends HttpServlet
     dataRootHandler.makeDebugActions();
     DatasetHandler.makeDebugActions();
 
-    HtmlWriter.init( ServletUtil.getContextPath( this ),
+    HtmlWriter.init( ServletUtil.getContextPath(),
                       this.getServletContext().getServletContextName(),
                       this.getVersion(), this.getDocsPath(),
                       this.getUserCssPath(),

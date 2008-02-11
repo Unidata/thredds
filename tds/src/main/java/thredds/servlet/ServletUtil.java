@@ -254,14 +254,15 @@ public class ServletUtil {
    * @param servlet the HttpServlet whose context path is returned.
    * @return the context path for the given servlet.
    */
-  public static String getContextPath(HttpServlet servlet) {
-    if (contextPath == null) {
-      ServletContext servletContext = servlet.getServletContext();
-      String tmpContextPath = servletContext.getInitParameter("ContextPath");  // cannot be overridden in the ThreddsConfig file
-      if (tmpContextPath == null) tmpContextPath = "thredds";
-      contextPath = "/" + tmpContextPath;
-    }
+  public static String getContextPath() {
     return contextPath;
+  }
+
+  public static void setContextPath(HttpServlet servlet) {
+    ServletContext servletContext = servlet.getServletContext();
+    String tmpContextPath = servletContext.getInitParameter("ContextPath");  // cannot be overridden in the ThreddsConfig file
+    if (tmpContextPath == null) tmpContextPath = "thredds";
+    contextPath = "/" + tmpContextPath;
   }
 
   private static String contentPath = null;
@@ -274,7 +275,7 @@ public class ServletUtil {
    */
   public static String getContentPath(HttpServlet servlet) {
     if (contentPath == null) {
-      String tmpContentPath = "../../content" + getContextPath(servlet) + "/";
+      String tmpContentPath = "../../content" + getContextPath() + "/";
 
       File cf = new File(getRootPath(servlet) + tmpContentPath);
       try {

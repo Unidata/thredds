@@ -468,7 +468,7 @@ public class NetcdfServlet extends AbstractServlet {
     File ncFile = diskCache.getCacheFile(pathname);
     String cacheFilename = ncFile.getPath();
 
-    String url = "/thredds/ncServer/cache/" + pathname;
+    String url = ServletUtil.getContextPath()+"/ncServer/cache/" + pathname;
 
     try {
       FileWriter writer = new FileWriter(cacheFilename, true);

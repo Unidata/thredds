@@ -103,7 +103,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
     // get the URL context :  URLS must be context/catalog/...
     // cannot be overridded in ThreddsConfig
-    String contextPath = ServletUtil.getContextPath(this);
+    String contextPath = ServletUtil.getContextPath();
     InvDatasetScan.setContext(contextPath);
     InvDatasetScan.setCatalogServletName("/catalog");
 
@@ -261,7 +261,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
         System.out.println("**ThreddsDefault GET req=" + ServletUtil.showRequestDetail(this, req));
 
       if ((path == null) || path.equals("/")) {
-        String newPath = ServletUtil.getContextPath(this) + "/catalog.html";
+        String newPath = ServletUtil.getContextPath() + "/catalog.html";
         res.sendRedirect(newPath);
         return;
       }

@@ -30,7 +30,7 @@ import java.io.*;
  * Sends the contents of the message to anyone who is registered as a listener.
  */
 public class SocketMessage {
-  static private final boolean debug = false, throwAway = false;
+  static private final boolean debug = true, throwAway = true;
 
   private ServerSocket server;
   private boolean isAlreadyRunning = false;
@@ -170,8 +170,8 @@ public class SocketMessage {
 
   //////////////////////////////////////////////
   public static void main(String[] args) throws IOException {
-    new SocketMessage( 4444, "no");
-    new SocketMessage( 4444, "testing");
+    new SocketMessage( 8080, "no");
+    new SocketMessage( 8080, "testing");
   }
 
 }

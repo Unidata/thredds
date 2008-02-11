@@ -39,6 +39,7 @@ public abstract class AbstractServlet extends HttpServlet {
   protected abstract void makeDebugActions();
 
   public void init() throws javax.servlet.ServletException {
+    ServletUtil.setContextPath(this); // context path
     ServletUtil.initDebugging(this); // read debug flags
     rootPath = ServletUtil.getRootPath(this);
     contentPath = ServletUtil.getContentPath(this) + getPath();

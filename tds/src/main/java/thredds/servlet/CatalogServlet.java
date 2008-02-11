@@ -42,7 +42,7 @@ public class CatalogServlet extends HttpServlet {
     if ( path == null )
     {
       // Redirect "/thredds/catalog" request to "/thredds/catalog.html".
-      ServletUtil.sendPermanentRedirect( "/thredds/catalog.html", req, res );
+      ServletUtil.sendPermanentRedirect( ServletUtil.getContextPath()+"/catalog.html", req, res );
       return;
     }
 
@@ -56,7 +56,7 @@ public class CatalogServlet extends HttpServlet {
       else if ( path.startsWith( "/redirectTest/301/"))
       {
         // 301 "Moved Permanently"
-        ServletUtil.sendPermanentRedirect( "/thredds/catalog.xml", req, res );
+        ServletUtil.sendPermanentRedirect( ServletUtil.getContextPath()+"/catalog.xml", req, res );
         return;
       }
       else if ( path.startsWith( "/redirectTest/302/" ) )

@@ -391,7 +391,6 @@ public class DataRootHandler {
           }
 
           String path;
-          //if ( href.startsWith( "/thredds/" ) ) {
           if ( href.startsWith( this.servletContextPath + "/" ) )
           {
             path = href.substring( 9 ); // absolute starting from content root

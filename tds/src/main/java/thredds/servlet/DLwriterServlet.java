@@ -64,7 +64,7 @@ public class DLwriterServlet extends AbstractServlet {
       String type = req.getParameter("type");
       String catURL = req.getParameter("catalog");
       if ((catURL == null) || (catURL.length() == 0))
-        catURL = "/thredds/idd/models.xml";
+        catURL = ServletUtil.getContextPath()+"/idd/models.xml";
       doit(req, res, catURL, type.equals("DIF"));
 
     } catch (Throwable t) {
