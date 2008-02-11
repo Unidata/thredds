@@ -79,7 +79,7 @@
     <appender-ref ref="catalogGen"/>
   </logger>
 
-  <logger name="thredds.servlet.DataRootHandler" additivity="false">
+  <logger name="thredds.servlet.DataRootHandler.catalogInit" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="catalogErrors"/>
   </logger>

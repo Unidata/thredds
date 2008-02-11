@@ -55,6 +55,7 @@ public class DataRootHandler {
   // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
   static private DataRootHandler singleton = null;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
+  static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
 
   /**
    * Initialize the DataRootHandler singleton instance.
@@ -148,7 +149,7 @@ public class DataRootHandler {
 
     DatasetHandler.reinit(); // NcML datasets
 
-    log.info("\n**************************************\n**************************************\nCatalog reinit\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
+    logCatalogInit.info("\n**************************************\n**************************************\nCatalog reinit\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
   }
   volatile boolean isReinit = false;
 
@@ -168,7 +169,7 @@ public class DataRootHandler {
       }
       catch ( Throwable e )
       {
-        log.error( "Error initializing catalog " + catName + "; " + e.getMessage(), e );
+        logCatalogInit.error( "Error initializing catalog " + catName + "; " + e.getMessage(), e );
       }
     }
 
@@ -184,7 +185,7 @@ public class DataRootHandler {
    * @throws IOException if reading catalog fails
    */
   synchronized void initCatalog(String path) throws IOException {
-    log.info("\n**************************************\nCatalog init "+path + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
+    logCatalogInit.info("\n**************************************\nCatalog init "+path + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
     initCatalog(path, true);
   }
 
@@ -207,7 +208,7 @@ public class DataRootHandler {
     // handle it gracefully rather than throw StringIndexOutOfBoundsException.
     if ( ! catalogFullPath.startsWith( contentPath ))
     {
-      log.error( "initCatalog(): Path <" + path + "> points outside of content path <" + contentPath + "> (skip).");
+      logCatalogInit.error( "initCatalog(): Path <" + path + "> points outside of content path <" + contentPath + "> (skip).");
       return;
     }
     if ( path.matches( "\\.{1,2}/.*" ) || path.matches( ".*/\\.{1,2}/.*"))
@@ -217,14 +218,14 @@ public class DataRootHandler {
 
     // make sure we dont already have it
       if ( staticCatalogHash.containsKey(path)) { // This method only called by synchronized methods.
-        log.warn("DataRootHandler.initCatalog has already seen catalog=" + catalogFullPath + " possible loop (skip)");
+        logCatalogInit.warn("DataRootHandler.initCatalog has already seen catalog=" + catalogFullPath + " possible loop (skip)");
         return;
       }
 
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(true); // always validate the config catalogs
     InvCatalogImpl cat = readCatalog( factory, path, catalogFullPath );
     if ( cat == null ) {
-      log.warn( "initCatalog(): failed to read catalog <" + catalogFullPath + ">." );
+      logCatalogInit.warn( "initCatalog(): failed to read catalog <" + catalogFullPath + ">." );
       return;
     }
 
@@ -253,7 +254,7 @@ public class DataRootHandler {
 
     // add catalog to hash tables
     staticCatalogHash.put(path, cat); // This method only called by synchronized methods.
-    if (log.isDebugEnabled()) log.debug("  add static catalog=" + path);
+    if ( logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog=" + path);
 
     if (recurse) {
       initFollowCatrefs(dirPath, cat.getDatasets());
@@ -279,22 +280,19 @@ public class DataRootHandler {
     }
 
     // read the catalog
-    log.debug("readCatalog(): full path=" + catalogFullPath + "; path=" + path);
+    log.info("readCatalog(): full path=" + catalogFullPath + "; path=" + path);
     InvCatalogImpl cat = null;
     FileInputStream ios = null;
     try {
       ios = new FileInputStream(catalogFullPath);
       cat = factory.readXML(ios, uri);
 
-      synchronized (this) {
-        log.info("\nCatalog "+catalogFullPath);
-        StringBuffer sbuff = new StringBuffer();
-        if (!cat.check(sbuff)) {
-          log.error("readCatalog(): invalid catalog=" + catalogFullPath + "; " + sbuff.toString());
-          return null;
-        }
-        log.info(sbuff.toString());
+      StringBuffer sbuff = new StringBuffer();
+      if (!cat.check(sbuff)) {
+        log.error("readCatalog(): invalid catalog -- " + sbuff.toString());
+        return null;
       }
+      log.info("readCatalog(): valid catalog -- " + sbuff.toString());
 
     }
     catch (Throwable t) {
@@ -331,7 +329,7 @@ public class DataRootHandler {
       String id = invDataset.getUniqueID();
       if (id != null) {
         if (idHash.contains(id)) {
-          log.warn("Duplicate id on  " + invDataset.getFullName() + " id= " + id);
+          logCatalogInit.warn("Duplicate id on  " + invDataset.getFullName() + " id= " + id);
         } else {
           idHash.add(id);
         }
@@ -346,7 +344,7 @@ public class DataRootHandler {
         InvDatasetScan ds = (InvDatasetScan) invDataset;
         InvService service = ds.getServiceDefault();
         if (service == null) {
-          log.error("InvDatasetScan " + ds.getFullName() + " has no default Service - skipping");
+          logCatalogInit.error("InvDatasetScan " + ds.getFullName() + " has no default Service - skipping");
           continue;
         }
         addRoot(ds);
@@ -381,7 +379,7 @@ public class DataRootHandler {
       if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
         InvCatalogRef catref = (InvCatalogRef) invDataset;
         String href = catref.getXlinkHref();
-        if (log.isDebugEnabled()) log.debug("  catref.getXlinkHref=" + href);
+        if ( logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  catref.getXlinkHref=" + href);
 
         // Check that catRef is relative
         if (!href.startsWith("http:")) {
@@ -398,7 +396,7 @@ public class DataRootHandler {
           else if ( href.startsWith( "/" ) )
           {
             // Drop the catRef because it points to a non-TDS served catalog.
-            log.warn( "**Warning: Skipping catalogRef <xlink:href=" + href + ">. Reference is relative to the server outside the context path <" + this.servletContextPath + "/" + ">. " +
+            logCatalogInit.warn( "**Warning: Skipping catalogRef <xlink:href=" + href + ">. Reference is relative to the server outside the context path <" + this.servletContextPath + "/" + ">. " +
                       "Parent catalog info: Name=\"" + catref.getParentCatalog().getName() + "\"; Base URI=\"" + catref.getParentCatalog().getUriString() + "\"; dirPath=\"" + dirPath + "\"." );
             continue;
           }
@@ -422,16 +420,15 @@ public class DataRootHandler {
     String path = dscan.getPath();
 
     if (path == null) {
-      log.error("**Error: "+dscan.getFullName()+" missing a path attribute.");
+      logCatalogInit.error("**Error: "+dscan.getFullName()+" missing a path attribute.");
       return false;
     }
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
       if (!droot.dirLocation.equals( dscan.getScanLocation())) {
-        String message = "**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-            " wanted to map to fmrc=<" + dscan.getScanLocation() + "> in catalog "+dscan.getParentCatalog().getUriString();
-        log.error(message);
+        logCatalogInit.error( "**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+            " wanted to map to fmrc=<" + dscan.getScanLocation() + "> in catalog "+dscan.getParentCatalog().getUriString() );
       }
 
       return false;
@@ -445,7 +442,7 @@ public class DataRootHandler {
     // Check whether InvDatasetScan is valid before adding.
     if ( ! dscan.isValid() )
     {
-      log.error( dscan.getInvalidMessage());
+      logCatalogInit.error( dscan.getInvalidMessage());
       return false;
     }
 
@@ -453,7 +450,7 @@ public class DataRootHandler {
     droot = new DataRoot(dscan);
     pathMatcher.put(path, droot);
 
-    log.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanLocation() + ">");
+    logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanLocation() + ">");
     return true;
   }
 
@@ -463,13 +460,13 @@ public class DataRootHandler {
     String path = fmrc.getPath();
 
     if (path == null) {
-      log.error(fmrc.getFullName()+" missing a path attribute.");
+      logCatalogInit.error(fmrc.getFullName()+" missing a path attribute.");
       return false;
     }
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-        log.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
+      logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
             " wanted to use by FMRC Dataset =<" + fmrc.getFullName() + ">");
       return false;
     }
@@ -480,14 +477,14 @@ public class DataRootHandler {
     if (droot.dirLocation != null) {
       File file = new File(droot.dirLocation);
       if (!file.exists()) {
-        log.error("**Error: DatasetFmrc =" + droot.path + " directory= <" + droot.dirLocation + "> does not exist");
+        logCatalogInit.error("**Error: DatasetFmrc =" + droot.path + " directory= <" + droot.dirLocation + "> does not exist");
         return false;
       }
     }
 
     pathMatcher.put(path, droot);
 
-    log.debug(" added rootPath=<" + path + ">  for fmrc= <" + fmrc.getFullName() + ">");
+    logCatalogInit.debug(" added rootPath=<" + path + ">  for fmrc= <" + fmrc.getFullName() + ">");
     return true;
   }
 
@@ -496,7 +493,7 @@ public class DataRootHandler {
     // check for duplicates
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
-      if (wantErr) log.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">"+
+      if (wantErr) logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">"+
               " wanted to map to <" + dirLocation + ">");
 
       return false;
@@ -508,7 +505,7 @@ public class DataRootHandler {
 
     File file = new File(dirLocation);
     if (!file.exists()) {
-      log.error("**Error: Data Root =" + path + " directory= <" + dirLocation + "> does not exist");
+      logCatalogInit.error("**Error: Data Root =" + path + " directory= <" + dirLocation + "> does not exist");
       return false;
     }
 
@@ -516,7 +513,7 @@ public class DataRootHandler {
     droot = new DataRoot(path, dirLocation);
     pathMatcher.put(path, droot);
 
-    log.debug(" added rootPath=<" + path + ">  for directory= <" + dirLocation + ">");
+    logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dirLocation + ">");
     return true;
   }
 
@@ -1171,8 +1168,7 @@ public class DataRootHandler {
         if (expiresDateType.getDate().getTime() < System.currentTimeMillis()) {
           // If stale, re-read catalog from disk.
           String catalogFullPath = contentPath + workPath;
-          log.info( "\n********************\nRereading expired catalog: " + catalogFullPath +
-                    "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
+          log.info( "getCatalog(): Rereading expired catalog [" + catalogFullPath + "].");
           InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
           InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
 
@@ -1218,13 +1214,10 @@ public class DataRootHandler {
     if (pos >= 0)
       workPath = workPath.substring(0, pos);
 
-    // now look through the InvDatasetScans and get a maximal match
+    // now look through the InvDatasetScans for a maximal match
     DataRootMatch match = findDataRootMatch(workPath);
-    if (match == null) {
-      log.warn("makeDynamicCatalog(): No DataRoot for = " + workPath + " request path= " + path); // LOOK why should there be a messaage ?
-      match = findDataRootMatch(workPath); // debug
+    if (match == null)
       return null;
-    }
 
     // look for the fmrc
     if (match.dataRoot.fmrc != null) {
@@ -1250,11 +1243,11 @@ public class DataRootHandler {
     }
 
     InvDatasetScan dscan = match.dataRoot.scan;
-    log.debug("Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
+    log.debug("makeDynamicCatalog(): Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
     InvCatalogImpl cat = dscan.makeCatalogForDirectory( path, baseURI );
 
     if (null == cat) {
-      log.error("makeCatalogForDirectory failed = " + workPath);
+      log.error("makeDynamicCatalog(): makeCatalogForDirectory failed = " + workPath);
     }
 
     return cat;
@@ -1272,7 +1265,7 @@ public class DataRootHandler {
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false); // no validation
     InvCatalogImpl cat = readCatalog( factory, path, catalogFullPath );
     if ( cat == null ) {
-      log.warn( "initCatalog(): failed to read tdr catalog <" + catalogFullPath + ">." );
+      log.warn( "makeTDRDynamicCatalog(): failed to read tdr catalog <" + catalogFullPath + ">." );
       return null;
     }
 
@@ -1371,7 +1364,7 @@ public class DataRootHandler {
     if (path.equals("/") || path.equals("")) {
       String resMsg = "No data at root level, \"/latest.xml\" request not available.";
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
-      log.debug(resMsg);
+      if ( log.isDebugEnabled()) log.debug( "processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
     }
@@ -1381,7 +1374,7 @@ public class DataRootHandler {
     if (dataRoot == null) {
       String resMsg = "No scan root matches requested path <" + path + ">.";
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
-      log.warn(resMsg);
+      log.warn( "processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
     }
@@ -1391,7 +1384,7 @@ public class DataRootHandler {
     if (dscan == null) {
       String resMsg = "Probable conflict between datasetScan and datasetRoot for path <" + path + ">.";
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
-      log.warn(resMsg);
+      log.warn( "processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
     }
@@ -1400,7 +1393,7 @@ public class DataRootHandler {
     if (dscan.getProxyDatasetHandlers() == null) {
       String resMsg = "No \"addProxies\" or \"addLatest\" on matching scan root <" + path + ">.";
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
-      log.warn(resMsg);
+      log.warn( "processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
     }
@@ -1415,7 +1408,7 @@ public class DataRootHandler {
     {
       String resMsg = "Request base URL <" + reqBase + "> not valid URI (???): " + e.getMessage();
       ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length() );
-      log.error( resMsg );
+      log.error( "processReqForLatestDataset(): " + resMsg );
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg );
       return false;
     }
@@ -1424,7 +1417,7 @@ public class DataRootHandler {
     if (null == cat) {
       String resMsg = "Failed to build response catalog <" + path + ">.";
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, resMsg.length());
-      log.error(resMsg);
+      log.error( "processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
     }
@@ -1437,7 +1430,7 @@ public class DataRootHandler {
     res.setStatus( HttpServletResponse.SC_OK );
     out.print(catAsString);
     ServletUtil.logServerAccess(HttpServletResponse.SC_OK, catAsString.length());
-    log.debug("Finished \"" + orgPath + "\".");
+    if (log.isDebugEnabled()) log.debug( "processReqForLatestDataset(): Finished \"" + orgPath + "\".");
     return true;
   }
 
