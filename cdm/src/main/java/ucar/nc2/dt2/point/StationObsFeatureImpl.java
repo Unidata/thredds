@@ -17,13 +17,32 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2;
+package ucar.nc2.dt2.point;
+
+import ucar.nc2.dt2.*;
+import ucar.nc2.units.DateUnit;
 
 /**
- * A collection of Stations with StationObsFeature or PointObsFeature.
+ * Abstract superclass for implementations of StationObsFeature.
+ * Concrete subclass must implement getId(), getData();
  *
  * @author caron
  */
-public interface StationObsDataset extends PointObsDataset, StationCollection {
+
+
+public abstract class StationObsFeatureImpl extends ObsFeatureImpl implements StationObsFeature {
+  protected Station station;
+
+  public StationObsFeatureImpl( FeatureDataset fd, DateUnit timeUnit) {
+    super(fd, timeUnit);
+  }
+
+  public StationObsFeatureImpl( FeatureDataset fd, Station station, DateUnit timeUnit) {
+    super(fd, timeUnit);
+    this.station = station;
+  }
+
+  public Station getStation() { return station; }
+  public EarthLocation getLocation() { return station; }
 
 }

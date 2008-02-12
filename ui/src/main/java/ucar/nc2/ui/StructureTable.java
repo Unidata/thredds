@@ -1,3 +1,23 @@
+/*
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
 package ucar.nc2.ui;
 
 import ucar.ma2.*;
@@ -29,7 +49,6 @@ import ucar.util.prefs.PreferencesExt;
  * The columns are the members of the Structure.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 public class StructureTable extends JPanel {
   private PreferencesExt mainPrefs;
@@ -158,6 +177,19 @@ public class StructureTable extends JPanel {
     jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
   }
 
+  /**
+   * Set the data as a collection of PointObsDatatype.
+   *
+   * @param obsData List of type PointObsDatatype
+   * @throws IOException  on io error
+   */
+  public void setPointObsData2(List<ucar.nc2.dt2.PointObsFeature> obsData) throws IOException {
+    dataModel = new PointObsDataModel2(obsData);
+    initTable(dataModel);
+    jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
+  }
+
+
   /* private void initTable2(StructureTableModel m) {
     jtable.setModel(m);
   } */
@@ -227,15 +259,9 @@ public class StructureTable extends JPanel {
         ps.println();
       }
       ps.close();
-      try {
         JOptionPane.showMessageDialog(this, "File successfully written");
-      } catch (HeadlessException e) {
-      }
     } catch (IOException ioe) {
-      try {
         JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-      } catch (HeadlessException e) {
-      }
       ioe.printStackTrace();
     }
 
@@ -246,7 +272,7 @@ public class StructureTable extends JPanel {
     if (sd == null) return;
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-    NCdump.printStructureData(new PrintStream(bos), sd);
+    NCdumpW.printStructureData(new PrintWriter(bos), sd);
     dumpTA.setText(bos.toString());
     dumpWindow.setVisible(true);
   }
@@ -457,7 +483,7 @@ public class StructureTable extends JPanel {
 
     TrajectoryModel(TrajectoryObsDatatype traj) throws IOException {
       this.traj = traj;
-      StructureData sd = null;
+      StructureData sd;
       if (traj.getNumberPoints() > 0) {
         try {
           sd = traj.getData(0);
@@ -504,7 +530,7 @@ public class StructureTable extends JPanel {
 
       this.obsData = obsData;
       if (obsData.size() > 0) {
-        StructureData sd = null;
+        StructureData sd;
         try {
           sd = getStructureData(0);
         } catch (InvalidRangeException e) {
@@ -515,7 +541,7 @@ public class StructureTable extends JPanel {
     }
 
     public Date getDate(int row) {
-      PointObsDatatype obs = (PointObsDatatype) obsData.get(row);
+      PointObsDatatype obs = obsData.get(row);
       return obs.getObservationTimeAsDate();
     }
 
@@ -524,7 +550,7 @@ public class StructureTable extends JPanel {
     }
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      PointObsDatatype obs = (PointObsDatatype) obsData.get(row);
+      PointObsDatatype obs = obsData.get(row);
       return obs.getData();
     }
 
@@ -534,6 +560,49 @@ public class StructureTable extends JPanel {
 
     public void clear() {
       obsData = new ArrayList<PointObsDatatype>(); // empty list
+      fireTableDataChanged();
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////////
+  private class PointObsDataModel2 extends StructureTableModel {
+    private List<ucar.nc2.dt2.PointObsFeature> obsData;
+
+    PointObsDataModel2(List<ucar.nc2.dt2.PointObsFeature> obsData) throws IOException {
+      wantDate = true;
+
+      this.obsData = obsData;
+      if (obsData.size() > 0) {
+        StructureData sd;
+        try {
+          sd = getStructureData(0);
+        } catch (InvalidRangeException e) {
+          throw new IOException(e.getMessage());
+        }
+        this.members = sd.getStructureMembers();
+      }
+    }
+
+    public Date getDate(int row) {
+      ucar.nc2.dt2.PointObsFeature obs = obsData.get(row);
+      return obs.getObservationTimeAsDate();
+    }
+
+    public int getRowCount() {
+      return obsData.size();
+    }
+
+    public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
+      ucar.nc2.dt2.PointObsFeature obs = obsData.get(row);
+      return obs.getData();
+    }
+
+    public Object getRow(int row) throws InvalidRangeException, IOException {
+      return obsData.get(row); // PointObsDatatype
+    }
+
+    public void clear() {
+      obsData = new ArrayList<ucar.nc2.dt2.PointObsFeature>(); // empty list
       fireTableDataChanged();
     }
   }

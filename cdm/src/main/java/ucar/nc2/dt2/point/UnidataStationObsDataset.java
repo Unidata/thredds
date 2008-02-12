@@ -87,12 +87,13 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
   private boolean isForwardLinkedList, isBackwardLinkedList, isContiguousList;
   private RecordDatasetHelper recordHelper;
 
+  private boolean isSubset;
   private DateRange filter_date;
-  private LatLonRect filter_bb;
-  private List<Station> filter_stations;
+  // private LatLonRect filter_bb;
+  //private List<Station> filter_stations;
 
   // copy constructor
-  UnidataStationObsDataset(UnidataStationObsDataset from, LatLonRect filter_bb, DateRange filter_date) throws IOException {
+  UnidataStationObsDataset(UnidataStationObsDataset from, List<Station> filter_stations, LatLonRect filter_bb, DateRange filter_date) throws IOException {
     super(from, filter_bb, filter_date);
     this.lastVar = from.lastVar;
     this.prevVar = from.prevVar;
@@ -103,21 +104,32 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
     this.isBackwardLinkedList = from.isBackwardLinkedList;
     this.isContiguousList = from.isContiguousList;
     this.recordHelper = from.recordHelper;
+    this.isSubset = from.isSubset;
 
-    // compose bounding box filter
-    if (from.filter_bb == null)
-      this.filter_bb = filter_bb;
-    else
-      this.filter_bb = (filter_bb == null) ? from.filter_bb : from.filter_bb.intersect( filter_bb);
+    if (filter_stations != null) {
+      //this.filter_stations = filter_stations;
+      //this.filter_bb = null;
+      stationHelper = new StationHelper(this);
+      stationHelper.setStations( filter_stations);
+      setBoundingBox( stationHelper.getBoundingBox());
+      isSubset = true;
 
-    if (this.filter_bb != null)
-      filter_stations = stationHelper.getStations(this.filter_bb);
+    } else if (filter_bb != null) {
+      filter_stations = stationHelper.getStations(filter_bb);
+      stationHelper = new StationHelper(this);
+      stationHelper.setStations( filter_stations);
+      setBoundingBox( stationHelper.getBoundingBox());
+      isSubset = true;
+    }
 
     // compose date range filter
     if (from.filter_date == null)
       this.filter_date = filter_date;
     else
       this.filter_date = (filter_date == null) ? from.filter_date : from.filter_date.intersect( filter_date);
+
+    if (this.filter_date != null)
+      setDateRange( this.filter_date);
   }
 
   public UnidataStationObsDataset() {
@@ -327,25 +339,29 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
     return stationHelper.getStation(name);
   }
 
-  public TimeSeriesCollection subset(Station s) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  public StationCollection subset(Station s) throws IOException {
+    List<Station> subset = new ArrayList<Station>(1);
+    subset.add(s);
+    return new UnidataStationObsDataset(this, subset, null, null);
   }
 
-  public TimeSeriesCollection subset(Station s, DateRange dateRange) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  public StationCollection subset(Station s, DateRange dateRange) throws IOException {
+    List<Station> subset = new ArrayList<Station>(1);
+    subset.add(s);
+    return new UnidataStationObsDataset(this, subset, null, dateRange);
   }
 
   public StationCollection subset(List<Station> stations) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return new UnidataStationObsDataset(this, stations, null, null);
   }
 
   public PointCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new UnidataStationObsDataset( this, boundingBox, dateRange);
+    return new UnidataStationObsDataset( this, null, boundingBox, dateRange);
   }
 
   public DataIterator getDataIterator(int bufferSize) throws IOException {
 
-    if (filter_stations != null) {
+    if (isSubset) {
       return new StationListIterator();
 
     } else {
@@ -367,7 +383,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
 
   private class StationDatatypeIterator extends StructureDataIterator {
     protected Object makeDatatypeWithData(int recnum, StructureData sdata) {
-      return recordHelper.new RecordStationObs( recnum, sdata, true);
+      return recordHelper.new RecordStationObs( UnidataStationObsDataset.this, sdata, recnum, true);
     }
     StationDatatypeIterator(Structure struct, int bufferSize, StructureDataIterator.Filter filter) {
       super( struct, bufferSize, filter);
@@ -462,7 +478,8 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
           throw new IOException(e.getMessage());
         }
 
-        RecordDatasetHelper.RecordStationObs sobs = recordHelper.new RecordStationObs(UnidataStationImpl.this, sdata);
+        RecordDatasetHelper.RecordStationObs sobs =
+            recordHelper.new RecordStationObs(UnidataStationObsDataset.this, UnidataStationImpl.this, sdata, nextRecno);
         checkStation(sdata, nextRecno);
 
         if (isContiguousList) {

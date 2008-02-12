@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * A time series collection of features at station locations.
+ * A collection of data at named locations called Stations.
+ * User can subset by bounding box and by date range.
+ * Underlying data can be of any feature type, but all points have the same feature type.
  *
  * @author caron
  */
@@ -57,13 +59,22 @@ public interface StationCollection extends PointCollection {
   public Station getStation(String name);
 
   /**
+   * Get a subsetted StationCollection
+   *
+   * @param stations only contain these stations
+   * @return subsetted collection
+   * @throws java.io.IOException on i/o error
+   */
+  public StationCollection subset(List<Station> stations) throws IOException;
+
+  /**
    * Get the collection of data for this Station.
    *
    * @param s at this station
    * @return collection of data for this Station.
    * @throws java.io.IOException on i/o error
    */
-  public TimeSeriesCollection subset(Station s) throws IOException;
+  public StationCollection subset(Station s) throws IOException;
 
   /**
    * Get the collection of data for this Station and date range.
@@ -73,15 +84,6 @@ public interface StationCollection extends PointCollection {
    * @return collection of data for this Station and date range.
    * @throws java.io.IOException on i/o error
    */
-  public TimeSeriesCollection subset(Station s, DateRange dateRange) throws IOException;
-
-  /**
-   * Get collection of data for a list of Stations.
-   *
-   * @param stations at these stations
-   * @return Iterator over type getDataClass()
-   * @throws java.io.IOException on i/o error
-   */
-  public StationCollection subset(List<Station> stations) throws IOException;
+  public StationCollection subset(Station s, DateRange dateRange) throws IOException;
 
 }

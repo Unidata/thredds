@@ -169,9 +169,11 @@ public interface ObsFeature {
   public ucar.ma2.Array getData(String memberName) throws IOException, ucar.ma2.InvalidRangeException;
 
   /**
-   * Get an efficient iterator over all the data in the Feature in z order. You must fully process the
-   * data, or copy it out of the StructureData, as you iterate over it. DO NOT KEEP ANY REFERENCES to the
-   * dataType object or the StructureData object.
+   * Get an efficient iterator over all the data in the Feature.
+   * NOTE there is no guarenteed order, no mater what the subclass.
+   *
+   * You must fully process the data, or copy it out of the StructureData, as you iterate over it.
+   * DO NOT KEEP ANY REFERENCES to the dataType object or the StructureData object.
    * <pre>Example for point observations:
    * Iterator iter = profileDataset.getDataIterator(-1);
    * while (iter.hasNext()) {

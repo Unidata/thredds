@@ -49,6 +49,6 @@ public abstract class StationObsDatasetImpl extends FeatureDatasetImpl implement
   }
 
   public Class getFeatureClass() {
-    return StationObsFeature.class;
+    return StationObsFeature.class; // LOOK WRONG
   }
 }

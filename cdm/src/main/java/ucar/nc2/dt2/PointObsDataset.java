@@ -21,7 +21,6 @@ package ucar.nc2.dt2;
 
 /**
  * A PointCollection of PointObsFeature.
- * All getData() methods return List of PointObsDatatype.
  *
  * @author caron
  */

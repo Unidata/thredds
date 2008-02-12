@@ -117,6 +117,7 @@ public class NCdumpW {
 
     } finally {
       if (nc != null) nc.close();
+      out.flush();
     }
 
   }
@@ -190,6 +191,7 @@ public class NCdumpW {
     } catch (java.io.FileNotFoundException e) {
       out.write( "file not found= ");
       out.write( filename);
+      out.flush();
       return false;
 
     } finally {
@@ -270,15 +272,16 @@ public class NCdumpW {
         }
 
         nc.toStringEnd( ps);
-        ps.flush();
       }
 
     } catch (Exception e) {
       e.printStackTrace();
       out.write(e.getMessage());
+      out.flush();
       return false;
     }
 
+    out.flush();
     return true;
   }
 
@@ -468,6 +471,7 @@ public class NCdumpW {
    */
   static public void printArray(Array array, String name, PrintWriter out, CancelTask ct) {
     printArray( array, name, null, out, new Indent(2), ct);
+    out.flush();
   }
 
   static public String printArray(Array array, String name, CancelTask ct) {
@@ -505,6 +509,7 @@ public class NCdumpW {
       out.print(" "+units);
     out.print("\n");
     ilev.decr();
+    out.flush();
   }
 
   static private void printArray(Array ma, PrintWriter out, Indent indent, CancelTask ct) {
@@ -639,7 +644,8 @@ public class NCdumpW {
    * @param  sdata StructureData to print.
    */
   static public void printStructureData(PrintWriter out, StructureData sdata) {
-     printStructureData(out, sdata, new Indent(2), null);
+    printStructureData(out, sdata, new Indent(2), null);
+    out.flush();
   }
 
   static private void printStructureData(PrintWriter out, StructureData sdata, Indent indent, CancelTask ct) {

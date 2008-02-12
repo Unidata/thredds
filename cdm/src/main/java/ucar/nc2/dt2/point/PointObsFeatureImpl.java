@@ -19,37 +19,33 @@
  */
 package ucar.nc2.dt2.point;
 
-import ucar.nc2.dt2.EarthLocation;
-import ucar.nc2.dt2.PointObsFeature;
-import ucar.nc2.dt2.DataIterator;
-import ucar.nc2.dt2.DataCost;
+import ucar.nc2.dt2.*;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.VariableSimpleIF;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 
 import java.util.Date;
-import java.util.List;
 import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of PointObsFeature.
- * Concrete subclass must implement getData();
+ * Concrete subclass must implement getId(), getData();
  *
  * @author caron
  */
 
 
-public abstract class PointObsFeatureImpl implements PointObsFeature, Comparable<PointObsFeature> {
+public abstract class PointObsFeatureImpl extends ObsFeatureImpl implements PointObsFeature, Comparable<PointObsFeature> {
   protected EarthLocation location;
   protected double obsTime, nomTime;
-  protected DateUnit timeUnit;
 
-  public PointObsFeatureImpl() {
+  public PointObsFeatureImpl( FeatureDataset fd, DateUnit timeUnit) {
+    super(fd, timeUnit);
   }
 
-  public PointObsFeatureImpl( EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit) {
+  public PointObsFeatureImpl( FeatureDataset fd, EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit) {
+    super(fd, timeUnit);
     this.location = location;
     this.obsTime = obsTime;
     this.nomTime = nomTime;
@@ -59,14 +55,6 @@ public abstract class PointObsFeatureImpl implements PointObsFeature, Comparable
   public EarthLocation getLocation() { return location; }
   public double getNominalTime() { return nomTime; }
   public double getObservationTime() { return obsTime; }
-
-  public String getId() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public String getDescription() {
-    return null;
-  }
 
   public int getNumberPoints() {
     return 1;
@@ -79,8 +67,6 @@ public abstract class PointObsFeatureImpl implements PointObsFeature, Comparable
   public Date getObservationTimeAsDate(int pt) throws IOException, InvalidRangeException {
     return getObservationTimeAsDate();
   }
-
-  public ucar.nc2.units.DateUnit getTimeUnits() { return timeUnit; }
 
   public double getLatitude(int pt) throws IOException, InvalidRangeException {
     return location.getLatitude();
@@ -98,14 +84,6 @@ public abstract class PointObsFeatureImpl implements PointObsFeature, Comparable
     return "meters";
   }
 
-  public List<VariableSimpleIF> getDataVariables() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public VariableSimpleIF getDataVariable(String name) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
   public StructureData getData(int pt) throws IOException, InvalidRangeException {
     return getData();
   }
@@ -120,11 +98,20 @@ public abstract class PointObsFeatureImpl implements PointObsFeature, Comparable
   }
 
   public DataIterator getDataIterator(int bufferSize) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return new DegenerateIterator();
+  }
+
+  private class DegenerateIterator implements DataIterator {
+    boolean done;
+    public boolean hasNext() throws IOException { return !done; }
+    public Object nextData() {
+      done = true;
+      return PointObsFeatureImpl.this;
+    }
   }
 
   public DataCost getDataCost() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return new DataCost(1, 1);
   }
 
   public Date getObservationTimeAsDate() {

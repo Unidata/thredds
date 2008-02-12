@@ -214,7 +214,7 @@ public class RecordDatasetHelper {
     if ((timeVar.getDataType() == DataType.CHAR) || (timeVar.getDataType() == DataType.STRING)) {
       String time = sdata.getScalarString(timeVar);
       if (null == formatter) formatter = new DateFormatter();
-      Date date = null;
+      Date date;
       try {
         date = formatter.isoDateTimeFormat(time);
       } catch (ParseException e) {
@@ -352,27 +352,22 @@ public class RecordDatasetHelper {
     protected int recno;
     protected StructureData sdata;
 
-    protected RecordPointObs() {
-    }
-
-    /**
-     * Constructor for the case where you keep track of the location, time of each record, but not the data.
-     */
-    protected RecordPointObs(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
-      super(location, obsTime, nomTime, timeUnit);
+    public RecordPointObs(FeatureDataset fd, int recno) {
+      super(fd, RecordDatasetHelper.this.timeUnit);
       this.recno = recno;
     }
 
-    /**
-     * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
-     *
-     * @param recno record number
-     * @param sdata the structure data
-     */
-    public RecordPointObs(int recno, StructureData sdata) {
+    // Constructor for the case where you keep track of the location, time of each record, but not the data.
+    protected RecordPointObs(FeatureDataset fd, EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
+      super(fd, location, obsTime, nomTime, timeUnit);
       this.recno = recno;
+    }
+
+    // Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
+    public RecordPointObs(FeatureDataset fd, StructureData sdata, int recno) {
+      super(fd, RecordDatasetHelper.this.timeUnit);
       this.sdata = sdata;
-      this.timeUnit = RecordDatasetHelper.this.timeUnit;
+      this.recno = recno;
 
       StructureMembers members = sdata.getStructureMembers();
       obsTime = getTime(members.findMember(obsTimeVName), sdata);
@@ -383,6 +378,10 @@ public class RecordDatasetHelper {
       double lon = sdata.convertScalarDouble(members.findMember(lonVName));
       double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.convertScalarDouble(members.findMember(altVName));
       location = new EarthLocation(lat, lon, alt);
+    }
+
+    public String getId() {
+      return Integer.toString(recno);
     }
 
     public LatLonPoint getLatLon() {
@@ -411,7 +410,7 @@ public class RecordDatasetHelper {
 
   //////////////////////////////////////////////////////////////////////////////////////
 
-  public class RecordStationObs extends RecordPointObs implements StationObsFeature {
+  public class RecordStationObs extends RecordPointObs {
     private Station station;
 
     /**
@@ -422,20 +421,14 @@ public class RecordDatasetHelper {
      * @param nomTime nominal time (may be NaN)
      * @param recno   data is at this record number
      */
-    protected RecordStationObs(Station station, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
-      super(station, obsTime, nomTime, timeUnit, recno);
+    protected RecordStationObs(FeatureDataset fd, Station station, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
+      super(fd, station, obsTime, nomTime, timeUnit, recno);
       this.station = station;
     }
 
-    /**
-     * Constructor for when you have everything
-     *
-     * @param station data is for this Station
-     * @param obsTime observation time
-     * @param nomTime nominal time (may be NaN)
-     * @param sdata   the structure data
-     */
-    protected RecordStationObs(Station station, double obsTime, double nomTime, StructureData sdata) {
+    // Constructor for when you have everything
+    protected RecordStationObs(FeatureDataset fd, Station station, double obsTime, double nomTime, StructureData sdata, int recno) {
+      super(fd, recno);
       this.station = station;
       this.location = station;
       this.obsTime = obsTime;
@@ -443,13 +436,9 @@ public class RecordDatasetHelper {
       this.sdata = sdata;
     }
 
-    /**
-     * Constructor for when you already have the StructureData and Station, and calculate times
-     *
-     * @param station data is for this Station
-     * @param sdata   the structure data
-     */
-    protected RecordStationObs(Station station, StructureData sdata) {
+    // Constructor for when you already have the StructureData and Station, and calculate times
+    protected RecordStationObs(FeatureDataset fd, Station station, StructureData sdata, int recno) {
+      super(fd, recno);
       this.station = station;
       this.location = station;
       this.sdata = sdata;
@@ -459,13 +448,9 @@ public class RecordDatasetHelper {
       nomTime = (nomTimeVName == null) ? obsTime : getTime(members.findMember(nomTimeVName), sdata);
     }
 
-    /**
-     * Constructor for when you already have the StructureData, and need to find Station and times
-     *
-     * @param recno record number
-     * @param sdata the structure data
-     */
-    protected RecordStationObs(int recno, StructureData sdata, boolean useId) {
+    // Constructor for when you already have the StructureData, and need to find Station and times
+    protected RecordStationObs(FeatureDataset fd, StructureData sdata, int recno, boolean useId) {
+      super(fd, recno);
       this.recno = recno;
       this.sdata = sdata;
       this.timeUnit = RecordDatasetHelper.this.timeUnit;
@@ -499,9 +484,10 @@ public class RecordDatasetHelper {
       location = station;
     }
 
-    public Station getStation() {
-      return station;
+    public int getNumberPoints() {
+      return 1;
     }
+
   }
 
 }

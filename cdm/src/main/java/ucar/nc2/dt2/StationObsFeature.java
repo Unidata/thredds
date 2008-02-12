@@ -20,15 +20,28 @@
 package ucar.nc2.dt2;
 
 /**
- * A collection of observations at one time and at a named location called a Station.
+ * A collection of observations at a named location called a Station.
  *
  * @author caron
  */
-public interface StationObsFeature extends PointObsFeature {
+public interface StationObsFeature extends ObsFeature {
 
   /**
-   * Station location of the observation
-   * @return the Station for the observation
+   * The number of points in the time series.
+   * @return number of points  in the time series.
+   */
+  public int getNumberPoints();
+
+  /**
+   * Station location of the observations
+   * @return the Station for the observations
    */
   public Station getStation();
+
+  /**
+   * location of the observations
+   * @return the location for the observations
+   */
+  public EarthLocation getLocation();
+
 }

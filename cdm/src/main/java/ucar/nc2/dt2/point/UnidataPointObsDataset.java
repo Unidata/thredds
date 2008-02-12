@@ -169,7 +169,7 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
 
   private class PointDatatypeIterator extends StructureDataIterator {
     protected Object makeDatatypeWithData(int recnum, StructureData sdata) {
-      return recordHelper.new RecordPointObs( recnum, sdata);
+      return recordHelper.new RecordPointObs( UnidataPointObsDataset.this, sdata, recnum);
     }
     PointDatatypeIterator(Structure struct, int bufferSize, StructureDataIterator.Filter filter) {
       super( struct, bufferSize, filter);

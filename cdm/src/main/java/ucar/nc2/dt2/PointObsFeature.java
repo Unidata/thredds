@@ -26,7 +26,7 @@ import java.util.Date;
  *
  * @author caron
  */
-public interface PointObsFeature {
+public interface PointObsFeature extends ObsFeature {
 
   /**
    * Actual time of this observation. Units are found from getTimeUnits() in the containing dataset.

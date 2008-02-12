@@ -55,6 +55,13 @@ public class StationHelper {
     stationHash.put(s.getName(), s);
   }
 
+  public void setStations( List<Station> nstations) {
+    stations = new ArrayList<Station>();
+    stationHash = new HashMap<String, Station>();
+    for (Station s : nstations)
+      addStation(s);
+  }
+
   private LatLonRect rect;
   public LatLonRect getBoundingBox() {
     if (rect == null) {

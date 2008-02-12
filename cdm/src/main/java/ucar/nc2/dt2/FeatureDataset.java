@@ -60,7 +60,8 @@ public interface FeatureDataset {
    * @return the date range for the entire dataset, or null if unknown
    */
   public DateRange getDateRange();
-
+  public Date getStartDate();
+  public Date getEndDate();
   /**
    * The boundingBox for the entire dataset.
    * @return the lat/lon boundingBox for the entire dataset, or null.

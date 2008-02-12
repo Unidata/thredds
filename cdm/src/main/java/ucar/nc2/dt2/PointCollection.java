@@ -26,7 +26,7 @@ import java.io.IOException;
 /**
  * A collection of data at unconnected locations.
  * User can subset by bounding box and by date range.
- * Underlying data can be of any type, but all points have the same type.
+ * Underlying data can be of any feature type, but all points have the same feature type.
  *
  * @author caron
  */

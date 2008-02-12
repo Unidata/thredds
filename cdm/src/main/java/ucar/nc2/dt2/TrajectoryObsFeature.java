@@ -43,7 +43,7 @@ public interface TrajectoryObsFeature extends ObsFeature {
    *
    * @param point the point along the trajectory
    * @return corresponding PointObsDatatype
-   * @throws IOException
+   * @throws IOException on read error
    */
   public PointObsFeature getPointObsData(int point) throws IOException;
 
@@ -52,22 +52,28 @@ public interface TrajectoryObsFeature extends ObsFeature {
 
   /**
    * Start date for the trajectory.
+   * @return stating date for the trajectory.
    */
   public Date getStartDate();
 
   /**
    * End date for the trajectory.
+   * @return End date for the trajectory.
    */
   public Date getEndDate();
 
   /**
    * BoundingBox for the trajectory. May not be available.
+   * @return BoundingBox for the trajectory. May not be available.
    */
   public ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
   /**
-   * Return the elevation at the requested trajectory point in units of meters, missing values = NaN.
+   * Get the elevation at the requested trajectory point in units of meters, missing values = NaN.
+   * @param pt index of the observation.
+   * @return the elevation at the requested trajectory point in units of meters, missing values = NaN.
+   * @throws IOException on read error
    */
-  public double getElevation(int point) throws IOException;
+  public double getElevation(int pt) throws IOException;
 
 }
