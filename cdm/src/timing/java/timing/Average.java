@@ -3,7 +3,7 @@ package timing;
 import  java.util.*;
 
  /**
- * Calculates the mean and average of a series of numbers.  Not the
+ * Calculates the mean and stddev of a series of numbers.  Not the
  * most efficient algorithm, but fast enough.
  *
  * @author Heinz Kabutz

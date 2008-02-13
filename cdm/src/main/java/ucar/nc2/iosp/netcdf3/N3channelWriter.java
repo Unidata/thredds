@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
  */
 public class N3channelWriter extends N3streamWriter {
   static private int buffer_size = 1000 * 1000;
+  static private boolean debugWrite = false;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   //private ucar.nc2.NetcdfFile ncfile;
@@ -88,7 +89,7 @@ public class N3channelWriter extends N3streamWriter {
       }
       assert done == nrecs;
       bytesDone /= 1000 * 1000;
-      System.out.println("write record var; total = " + bytesDone + " Mbytes # recs=" + done);
+      if (debugWrite) System.out.println("write record var; total = " + bytesDone + " Mbytes # recs=" + done);
 
       // remove the record structure this is rather fishy, perhaps better to leave it
       ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);

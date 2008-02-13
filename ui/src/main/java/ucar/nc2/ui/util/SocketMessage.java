@@ -95,7 +95,7 @@ public class SocketMessage {
     try {
       connection = new Socket("localhost", port);
       IO.writeContents(message, connection.getOutputStream());
-      if (debug) System.out.println("sent message " + message);
+      if (debug) System.out.println(" sent message " + message);
 
     }  catch (IOException e) {
       System.err.println(e);
@@ -128,9 +128,9 @@ public class SocketMessage {
         try {
           if (debug) System.out.println("SocketMessage Connection established with " + connection);
           if (throwAway) {
-            // IO.copy2null(connection.getInputStream());
-            long count = IO.writeToFile(connection.getInputStream(), "C:/temp/save");
-            if (debug) System.out.println("SocketMessage had length " + count/(1000*1000)+" Mb");
+            IO.copy2null(connection.getInputStream());
+            /* long count = IO.writeToFile(connection.getInputStream(), "C:/temp/save");
+            if (debug) System.out.println("SocketMessage had length " + count/(1000*1000)+" Mb"); */
           } else {
             message = IO.readContents(connection.getInputStream());
             if (debug) System.out.println(" SocketMessage got message= "+message);

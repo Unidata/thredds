@@ -156,6 +156,7 @@
     <include name="ucar/nc2/*.java"/>
     <include name="ucar/nc2/iosp/netcdf3/N3iosp.java"/>
     <include name="ucar/nc2/util/DebugFlagsImpl.java"/>
+    <include name="ucar/nc2/util/TimeSocket.java"/>
   </patternset>
 
   <target name="compile-core" depends="release-settings" description="library compile">

@@ -77,6 +77,7 @@ public class NetcdfFile {
   static private ArrayList<IOServiceProvider> registeredProviders = new ArrayList<IOServiceProvider>();
   static private boolean debugSPI = false, debugCompress = false, showRequest = false;
   static boolean debugStructureIterator = false;
+  static boolean loadWarnings = false;
 
   // this is so that we can run without specialized IOServiceProviders, but they will
   // still get automatically loaded if they are present.
@@ -84,71 +85,71 @@ public class NetcdfFile {
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.hdf4.H4iosp");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib1.Grib1Input"); // only load if grib.jar is present
       registerIOProvider("ucar.nc2.iosp.grib.Grib1ServiceProvider");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib2.Grib2Input"); // only load if grib.jar is present
       registerIOProvider("ucar.nc2.iosp.grib.Grib2ServiceProvider");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib2.Grib2Input"); // only load if grib.jar is present
       registerIOProvider("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.bufr.BufrInput"); // only load if bufr.jar is present
       registerIOProvider("ucar.nc2.iosp.bufr.BufrIosp");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.gini.Giniiosp");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.nids.Nidsiosp");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.dorade.Doradeiosp");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.dmsp.DMSPiosp");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.cinrad.Cinrad2IOServiceProvider");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.misc.GtopoIosp");
     } catch (Throwable e) {
-      log.warn("Cant load class: " + e);
+      if (loadWarnings) log.warn("Cant load class: " + e);
     }
   }
 
