@@ -22,52 +22,69 @@ package ucar.nc2.util;
 import ucar.unidata.util.Format;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NCdumpW;
-import ucar.nc2.iosp.netcdf3.N3streamWriter;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.ma2.Section;
-import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.InetSocketAddress;
 import java.net.InetAddress;
 import java.nio.channels.*;
 import java.util.*;
+import java.util.zip.DeflaterOutputStream;
 
 /**
  * @author caron
  * @since Feb 1, 2008
  */
 public class TimeSocket {
+  int bufferSize = 8000;
 
-  Average fake, copyFile, copyChannel, copyChannelFromRaf, streamOutputWriter, streamChannelWriter;
+  Average sendFake, copyFake, copyFile, copyZip, copyChannel, copyChannelFromRaf, streamOutputWriter, streamChannelWriter;
 
   TimeSocket() {
-    fake = new Average();
+    sendFake = new Average();
+    copyFake = new Average();
     copyFile = new Average();
+    copyZip = new Average();
     copyChannel = new Average();
     copyChannelFromRaf = new Average();
     streamOutputWriter = new Average();
     streamChannelWriter = new Average();
   }
 
+  // len in Mbytes
   double sendFake(int len) throws IOException {
     Socket s = new Socket(host, port);
-    OutputStream out = new BufferedOutputStream(s.getOutputStream(), 8000);
-    byte[] b = new byte[1000];
-    for (int i = 0; i < len * 1000; i++)
+    OutputStream out = new BufferedOutputStream(s.getOutputStream(), bufferSize);
+    byte[] b = new byte[bufferSize];
+    for (int i = 0; i < len * 50; i++)
       out.write(b);
     out.close();
     return (double) len;
   }
 
+  double copyFake(File f) throws IOException {
+    InputStream in = new FileInputStream(f);
+    ucar.nc2.util.IO.copy2null( in);
+    in.close();
+    return f.length() / (1000 * 1000);
+  }
+
   double copyFile(File f) throws IOException {
     Socket s = new Socket(host, port);
-    OutputStream out = new BufferedOutputStream(s.getOutputStream(), 8000);
-    ucar.nc2.util.IO.copyFileB(f, out, 8000);
+    OutputStream out = new BufferedOutputStream(s.getOutputStream(), bufferSize);
+    ucar.nc2.util.IO.copyFileB(f, out, bufferSize);
+    out.close();
+    return f.length() / (1000 * 1000);
+  }
+
+  double copyFileZipped(File f) throws IOException {
+    Socket s = new Socket(host, port);
+    OutputStream out = new BufferedOutputStream( new DeflaterOutputStream( s.getOutputStream()), bufferSize);
+    ucar.nc2.util.IO.copyFileB(f, out, bufferSize);
     out.close();
     return f.length() / (1000 * 1000);
   }
@@ -100,7 +117,7 @@ public class TimeSocket {
 
   double streamOutputWriter(File f) throws IOException, InvalidRangeException {
     Socket s = new Socket(host, port);
-    DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(s.getOutputStream(), 8000));
+    DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(s.getOutputStream(), bufferSize));
 
     NetcdfFile ncfile = NetcdfFile.open(f.getPath());
     N3outputStreamWriter writer = new N3outputStreamWriter(ncfile);
@@ -151,6 +168,10 @@ public class TimeSocket {
       ft = new FileTranverser(new File(dir));
 
     File result =  ft.next();
+    if (result == null) {
+      System.out.println("Done");
+      System.exit(0);
+    }
     System.out.println("Using file="+result.getPath()+" size= "+result.length());
     return result;
   }
@@ -207,52 +228,69 @@ public class TimeSocket {
     long start = System.currentTimeMillis();
     double len = sendFake(100);
     double took = .001 * (System.currentTimeMillis() - start);
-    double rate = len / took;
-    fake.add(rate);
-    System.out.println("sendFake took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+    double rate = took / len;
+    sendFake.add(rate);
+    System.out.println("sendFake took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " sec/Mb");
+
+    start = System.currentTimeMillis();
+    len = copyFake(getFile());
+    took = .001 * (System.currentTimeMillis() - start);
+    rate = took / len;
+    copyFake.add(rate);
+    System.out.println("copyFake took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " sec/Mb");
 
     start = System.currentTimeMillis();
     len = copyFile(getFile());
     took = .001 * (System.currentTimeMillis() - start);
-    rate = len / took;
+    rate = took / len;
     copyFile.add(rate);
-    System.out.println("BufferedInputStream->BufferedOutputStream took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+    System.out.println("BufferedInputStream->BufferedOutputStream took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " sec/Mb");
+
+    start = System.currentTimeMillis();
+    len = copyFileZipped(getFile());
+    took = .001 * (System.currentTimeMillis() - start);
+    rate = took / len;
+    copyZip.add(rate);
+    System.out.println("copyZip took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " sec/Mb");
 
     start = System.currentTimeMillis();
     len = copyChannel(getFile());
     took = .001 * (System.currentTimeMillis() - start);
-    rate = len / took;
+    rate = took / len;
     copyChannel.add(rate);
-    System.out.println("FileChannel.transferTo(socketChannel) took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+    System.out.println("FileChannel.transferTo(socketChannel) took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " sec/Mb");
 
-    start = System.currentTimeMillis();
+    /* start = System.currentTimeMillis();
     len = copyChannelFromRaf(getFile());
     took = .001 * (System.currentTimeMillis() - start);
-    rate = len / took;
+    rate = took / len;
     copyChannelFromRaf.add(rate);
     System.out.println("RAF.fileChannel.transferTo(socketChannel) took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+    */
 
     start = System.currentTimeMillis();
     len = streamOutputWriter(getFile());
     took = .001 * (System.currentTimeMillis() - start);
-    rate = len / took;
+    rate = took / len;
     streamOutputWriter.add(rate);
-    System.out.println("N3outputStreamWriter(socket.outputStream) took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+    System.out.println("N3outputStreamWriter(socket.outputStream) took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " sec/Mb");
     
     start = System.currentTimeMillis();
     len = streamChannelWriter(getFile());
     took = .001 * (System.currentTimeMillis() - start);
-    rate = len / took;
+    rate = took / len;
     streamChannelWriter.add(rate);
-    System.out.println("N3channelWriter(socketChannel) took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " Mb/sec");
+    System.out.println("N3channelWriter(socketChannel) took = " + took + " sec; len= " + len + " Mbytes; rate = " + Format.d(rate, 3) + " sec/Mb");
 
     System.out.println("Run "+count);
-    System.out.println("  sendFake=           " + fake);
+    System.out.println("  sendFake=           " + sendFake);
+    System.out.println("  copyFake=           " + copyFake);
     System.out.println("  copyFile=           " + copyFile);
+    System.out.println("  copyZip=            " + copyZip);
     System.out.println("  copyChannel=        " + copyChannel);
-    System.out.println("  copyChannelFromRaf= " + copyChannelFromRaf);
+    //System.out.println("  copyChannelFromRaf= " + copyChannelFromRaf);
     System.out.println("  streamOutputWriter= " + streamOutputWriter);
-    System.out.println("  streamChannelWriter= " + streamChannelWriter);
+    System.out.println("  streamChannelWriter=" + streamChannelWriter);
     count++;
 
     System.out.println();
@@ -268,6 +306,7 @@ public class TimeSocket {
     if ((args.length == 1) && args[0].equals("help")) {
       System.out.println("ucar.nc2.TimeSocket [skip]");
       System.out.println("ucar.nc2.TimeSocket <directory> <skip>");
+      System.out.println("ucar.nc2.TimeSocket <directory> <skip> <wait secs>");
       System.exit(0);
     }
 
@@ -284,10 +323,17 @@ public class TimeSocket {
       System.exit(0);
     }
 
-    if (args.length > 1) {
+    int wait_secs = 10;
+    if (args.length > 2) {
       dir = args[0];
       int skipFiles = Integer.parseInt(args[1]);
       for (int i = 0; i < skipFiles; i++) test.getFile();
+      wait_secs = Integer.parseInt(args[2]);
+
+    } else if (args.length > 1) {
+        dir = args[0];
+        int skipFiles = Integer.parseInt(args[1]);
+        for (int i = 0; i < skipFiles; i++) test.getFile();
 
     } else if (args.length > 0) {
       int skipFiles = Integer.parseInt(args[0]);
@@ -296,11 +342,13 @@ public class TimeSocket {
 
     while (true) {
       test.run();
-      Thread.currentThread().sleep(1000 * 60 * 5);  // 5 minutes
+      Thread.currentThread().sleep(1000 * wait_secs);
     }
   }
 
   private class Average {
+    int count = -3; // throw away the first 3;
+
     /**
      * The set of values stored as doubles.  Autoboxed.
      */
@@ -314,7 +362,10 @@ public class TimeSocket {
      * @param value the new value to add to the series.
      */
     public void add(double value) {
-      if (!Double.isInfinite(value) && !Double.isNaN(value))
+      count++;
+      if (count < 1) return;
+
+      if (!Double.isInfinite(value) && !Double.isNaN(value) && (value > 0))
         values.add(new Double(value));
     }
 
