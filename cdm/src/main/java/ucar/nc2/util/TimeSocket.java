@@ -172,6 +172,9 @@ public class TimeSocket {
       System.out.println("Done");
       System.exit(0);
     }
+    if (!result.exists())
+      return getFile();
+
     System.out.println("Using file="+result.getPath()+" size= "+result.length());
     return result;
   }
