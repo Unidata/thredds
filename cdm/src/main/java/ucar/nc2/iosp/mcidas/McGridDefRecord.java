@@ -32,7 +32,7 @@ import ucar.nc2.iosp.grid.*;
 /**
  * Class to hold the grid navigation information.
  *
- * @author IDV Development Team
+ * @author Unidata Development Team
  * @version $Revision: 1.3 $
  */
 public class McGridDefRecord extends GridDefRecord {
@@ -112,14 +112,30 @@ public class McGridDefRecord extends GridDefRecord {
         return buf.toString();
     }
 
+    /**
+     * Check for equality
+     *
+     * @param o  object to compare
+     *
+     * @return true if equal
+     */
     public boolean equals(Object o) {
-       if (this == o) return true;
-       if (!(o instanceof McGridDefRecord)) return false;
-       return this.toString().equals(o.toString());
+        if (this == o) {
+            return true;
+        }
+        if ( !(o instanceof McGridDefRecord)) {
+            return false;
+        }
+        return this.toString().equals(o.toString());
     }
 
+    /**
+     * Get the hashcode
+     *
+     * @return the hashcode
+     */
     public int hashCode() {
-       return toString().hashCode();
+        return toString().hashCode();
     }
 
     /* common calculation variables

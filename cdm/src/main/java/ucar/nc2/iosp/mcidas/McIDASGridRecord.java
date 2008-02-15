@@ -37,7 +37,7 @@ import java.util.Date;
 /**
  * A class to hold McIDAS grid record information
  *
- * @author IDV Development Team
+ * @author Unidata Development Team
  * @version $Revision: 1.3 $
  */
 public class McIDASGridRecord extends GridDirectory implements GridRecord {

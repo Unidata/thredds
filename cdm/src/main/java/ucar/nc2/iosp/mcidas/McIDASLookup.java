@@ -29,7 +29,7 @@ import ucar.nc2.iosp.grid.*;
 
 /**
  * McIDASLookup
- * get all the information about a GEMPAK file.
+ * get all the information about a McIDAS file.
  */
 public final class McIDASLookup implements GridTableLookup {
 
@@ -85,7 +85,7 @@ public final class McIDASLookup implements GridTableLookup {
      * @return DisciplineName
      */
     public final String getDisciplineName(GridRecord gr) {
-        // all disciplines are the same in GEMPAK
+        // all disciplines are the same in McIDAS
         return "Meteorological Products";
     }
 
@@ -95,7 +95,7 @@ public final class McIDASLookup implements GridTableLookup {
      * @return CategoryName
      */
     public final String getCategoryName(GridRecord gr) {
-        // no categories in GEMPAK
+        // no categories in McIDAS
         return "Meteorological Parameters";
     }
 
