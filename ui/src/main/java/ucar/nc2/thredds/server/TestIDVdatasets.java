@@ -310,7 +310,7 @@ public class TestIDVdatasets {
   
   static public void main( String[] args)  throws Exception {
     TestIDVdatasets ts = new TestIDVdatasets();
-    OutputStream out = new BufferedOutputStream(new FileOutputStream("C:/temp/servertest3.txt"));
+    OutputStream out = new BufferedOutputStream(new FileOutputStream("C:/temp/servertest4.txt"));
     PrintStream pout = System.out; // new PrintStream( out);
     NetcdfFileCache.init();
 
@@ -320,7 +320,7 @@ public class TestIDVdatasets {
 
     //ts.extract(System.out, "http://lead.unidata.ucar.edu:8080/thredds/idv/latestModels.xml", false, null, 0);
 
-    ts.extract(System.out, "http://motherlode.ucar.edu:8081/thredds/idv/models.xml", false, null, 0);
+    ts.extract(System.out, "http://motherlode.ucar.edu:8080/thredds/idv/models.xml", false, null, 0);
     //ts.extract(System.out, "http://motherlode.ucar.edu:8081/thredds/idv/rt-models.1.0.xml", false, null, 0);
 
     //ts.extract( pout, "http://motherlode.ucar.edu:9080/thredds/catalog.xml", true, "NEXRAD Radar", 0);

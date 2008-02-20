@@ -35,7 +35,7 @@ import ucar.unidata.util.StringUtil;
  * @version $Revision$ $Date$
  */
 public class TestMotherlodeInventory {
-    static String server = "http://motherlode.ucar.edu:8081/";
+    static String server = "http://motherlode.ucar.edu:8080/";
     static String pathStart = "/thredds/modelInventory/fmrc/NCEP/";
     static String[] invPaths = {
       "DGEX/CONUS_12km/",

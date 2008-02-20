@@ -22,6 +22,7 @@ package ucar.nc2.dods;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.*;
 import ucar.unidata.util.StringUtil;
@@ -32,6 +33,7 @@ import opendap.dap.parser.*;
 import java.io.*;
 import java.util.*;
 import java.util.Enumeration;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * Access to DODS datasets through the Netcdf API.
@@ -1263,6 +1265,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
 
     return dataArray;
+  }
+
+  @Override
+  public long readData(ucar.nc2.Variable v, Section section, WritableByteChannel channel)
+        throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    Array result = readData(v, section);
+    return IospHelper.transferData(result, channel);
   }
 
   // this is for reading variables that are members of structures

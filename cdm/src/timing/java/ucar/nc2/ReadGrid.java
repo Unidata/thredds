@@ -13,9 +13,7 @@ import java.io.IOException;
  */
 public class ReadGrid {
 
-  public static void main( String arg[]) throws IOException {
-    String defaultFilename = "C:/data/grib/nam/conus12/NAM_CONUS_12km_20060604_1800.grib2";
-    String filename = (arg.length > 0) ? arg[0] : defaultFilename;
+  public static void read( String filename) throws IOException {
 
     GridDataset gds = GridDataset.open (filename);
     GeoGrid grid = gds.findGridByName("Temperature");
@@ -33,8 +31,13 @@ public class ReadGrid {
     endTime = System.currentTimeMillis();
     diff = endTime - startTime;
     System.out.println("convert took "+diff+ " msecs "+jdata[0]);
+  }
 
 
+  public static void main( String arg[]) throws IOException {
+    String defaultFilename = "C:/data/grib/nam/conus12/NAM_CONUS_12km_20060604_1800.grib2";
+    String filename = (arg.length > 0) ? arg[0] : defaultFilename;
+    read(filename);
   }
 
 }

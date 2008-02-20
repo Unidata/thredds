@@ -21,11 +21,12 @@ package ucar.nc2.iosp;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.PositioningDataInputStream;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.StructureMembers;
+import ucar.ma2.*;
 
 import java.nio.*;
+import java.nio.channels.WritableByteChannel;
+import java.nio.channels.Channels;
+import java.io.DataOutputStream;
 
 /**
  * Helper methods for IOSP's
@@ -504,5 +505,53 @@ public class IospHelper {
       to[i] = (byte) from[i]; // LOOK wrong, convert back to unsigned byte ???
     return to;
   }
+
+  static public long transferData(Array result, WritableByteChannel channel)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+
+    // LOOK should we buffer ??
+    DataOutputStream outStream = new DataOutputStream( Channels.newOutputStream( channel));
+
+    IndexIterator iterA = result.getIndexIterator();
+    Class classType = result.getElementType();
+
+    if (classType == double.class) {
+      while (iterA.hasNext())
+        outStream.writeDouble(iterA.getDoubleNext());
+
+    } else if (classType == float.class) {
+      while (iterA.hasNext())
+        outStream.writeFloat(iterA.getFloatNext());
+
+    } else if (classType == long.class) {
+      while (iterA.hasNext())
+        outStream.writeLong(iterA.getLongNext());
+
+    } else if (classType == int.class) {
+      while (iterA.hasNext())
+        outStream.writeInt(iterA.getIntNext());
+
+    } else if (classType == short.class) {
+      while (iterA.hasNext())
+        outStream.writeShort(iterA.getShortNext());
+
+    } else if (classType == char.class) {
+      while (iterA.hasNext())
+        outStream.writeChar(iterA.getCharNext());
+
+    } else if (classType == byte.class) {
+      while (iterA.hasNext())
+        outStream.writeByte(iterA.getByteNext());
+
+    } else if (classType == boolean.class) {
+      while (iterA.hasNext())
+        outStream.writeBoolean(iterA.getBooleanNext());
+
+    } else
+      throw new UnsupportedOperationException("Class type = " + classType.getName());
+
+    return 0;
+  }
+
 
 }
