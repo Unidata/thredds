@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2008 Unidata Program Center/University Corporation for
+ * Copyright 1997-2007 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,35 +20,51 @@
 package ucar.nc2.dt2;
 
 import ucar.unidata.geoloc.LatLonPoint;
-
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
+ * A location on the Earth.
+ *
  * @author caron
- * @since Feb 18, 2008
  */
-public interface EarthLocation {
+public class EarthLocationImpl implements EarthLocation {
+  protected double lat, lon, alt;
 
   /**
    * latitude in decimal degrees north
    * @return latitude in decimal degrees north
    */
-  public double getLatitude();
+  public double getLatitude() { return lat; }
 
   /**
    * longitude in decimal degrees east
    * @return longitude in decimal degrees east
    */
-  public double getLongitude();
+  public double getLongitude() { return lon; }
 
   /**
    * altitude in meters;  missing = NaN.
    * @return altitude in meters;  missing = NaN.
    */
-  public double getAltitude();
+  public double getAltitude() { return alt; }
 
   /**
    * Get the lat/lon location
    * @return lat/lon location
    */
-  public LatLonPoint getLatLon();
+  public LatLonPoint getLatLon() {
+    return new LatLonPointImpl( lat, lon);
+  }
+
+  public EarthLocationImpl( double lat, double lon, double alt) {
+    this.lat = lat;
+    this.lon = lon;
+    this.alt = alt;
+  }
+
+  protected void setLatitude(double lat) { this.lat = lat; }
+  protected void setLongitude(double lon) { this.lon = lon; }
+  protected void setAltitude(double alt) { this.alt = alt; }
+
+  public String toString() { return "lat="+lat+" lon="+lon+" alt="+alt; }
 }

@@ -22,50 +22,44 @@ package ucar.nc2.dt2;
 import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
- * A collection of data at unconnected locations.
- * User can subset by bounding box and by date range.
- * Underlying data can be of any feature type, but all points have the same feature type.
+ * Superclass for FeatureDataset with Obs1DFeature types.
  *
  * @author caron
  */
-public interface PointCollection {
+public interface Obs1DDataset extends FeatureDataset {
 
   /**
-   * The getData() methods return objects of this Class
-   * @return the class of the underlying data type
-   */
-  public Class getFeatureClass();
+    * Subset the collection using the specified bounding box and date range.
+    * This turns it into a PointObsDataset
+    *
+    * @param boundingBox spatial subset, may be null
+    * @param dateRange   dateRange, may be null
+    * @return subsetted collection of PointObsFeatures, ie a PointObsDataset
+    * @throws java.io.IOException on i/o error
+    */
+   public PointObsDataset subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
   /**
-   * Subset the collection using the specified bounding box and date range.
-   *
-   * @param boundingBox spatial subset, may be null
-   * @param dateRange   dateRange, may be null
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   */
-  public PointCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
-
-  /**
-   * Get an efficient iterator over all the data in the Collection. You must fully process the
+   * Get an efficient iterator over all the features in the Collection. You must fully process the
    * data, or copy it out of the StructureData, as you iterate over it. DO NOT KEEP ANY REFERENCES to the
    * dataType object or the StructureData object.
    * <pre>Example for point observations:
-   * Iterator iter = pointObsDataset.getDataIterator();
+   * Iterator iter = stationObsDataset.getFeatureIterator();
    * while (iter.hasNext()) {
-   *   PointObsFeature pobs = (PointObsFeature) iter.next();
+   *   StationObsFeature pobs = (StationObsFeature) iter.next();
    *   StructureData sdata = pobs.getData();
    *   // process fully
    * }
    * </pre>
    *
    * @param bufferSize if > 0, the internal buffer size, else use the default. 100k - 1M gives good results in all cases.
-   * @return iterator over type getDataClass(), no guarenteed order.
+   * @return iterator over type StationObsFeature, no guarenteed order.
    * @throws IOException on i/o error
    */
-  public DataIterator getDataIterator(int bufferSize) throws IOException;
+  public FeatureIterator getFeatureIterator(int bufferSize) throws IOException;
 
   /**
    * Get estimate of the cost of accessing all the data in the Collection.

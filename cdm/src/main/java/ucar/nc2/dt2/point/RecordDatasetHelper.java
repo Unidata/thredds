@@ -32,7 +32,6 @@ import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -53,7 +52,7 @@ public class RecordDatasetHelper {
 
   protected NetcdfDataset ncfile;
   protected String obsTimeVName, nomTimeVName;
-  protected String latVName, lonVName, altVName;
+  protected String latVName, lonVName, zcoordVName, zcoordUnits;
 
   protected String stnIdVName, stnIndexVName, stnDescVName;
   protected StationHelper stationHelper;
@@ -142,18 +141,18 @@ public class RecordDatasetHelper {
     }
   }
 
-  public void setLocationInfo(String latVName, String lonVName, String altVName) {
+  public void setLocationInfo(String latVName, String lonVName, String zcoordVName) {
     this.latVName = latVName;
     this.lonVName = lonVName;
-    this.altVName = altVName;
+    this.zcoordVName = zcoordVName;
 
     // check for meter conversion
-    if (altVName != null) {
-      Variable v = ncfile.findVariable(altVName);
-      String units = ncfile.findAttValueIgnoreCase(v, "units", null);
-      if (units != null)
+    if (zcoordVName != null) {
+      Variable v = ncfile.findVariable(zcoordVName);
+      zcoordUnits = ncfile.findAttValueIgnoreCase(v, "units", null);
+      if (zcoordUnits != null)
         try {
-          altScaleFactor = getMetersConversionFactor(units);
+          altScaleFactor = getMetersConversionFactor(zcoordUnits);
         } catch (Exception e) {
           if (errs != null) errs.append(e.getMessage());
         }
@@ -165,7 +164,7 @@ public class RecordDatasetHelper {
   public void setShortNames(String latVName, String lonVName, String altVName, String obsTimeVName, String nomTimeVName) {
     this.latVName = latVName;
     this.lonVName = lonVName;
-    this.altVName = altVName;
+    this.zcoordVName = altVName;
     this.obsTimeVName = obsTimeVName;
     this.nomTimeVName = nomTimeVName;
   }
@@ -201,10 +200,31 @@ public class RecordDatasetHelper {
     return new LatLonPointImpl(lat, lon);
   }
 
-  public Date getObservationDate(StructureData sdata) {
+  public double getLatitude(StructureData sdata) {
     StructureMembers members = sdata.getStructureMembers();
-    double obsTime = getTime(members.findMember(obsTimeVName), sdata);
-    return timeUnit.makeDate(obsTime);
+    return sdata.convertScalarDouble( members.findMember( latVName));
+  }
+
+  public double getLongitude(StructureData sdata) {
+    StructureMembers members = sdata.getStructureMembers();
+    return sdata.convertScalarDouble( members.findMember( lonVName));
+  }
+
+  public double getZcoordinate(StructureData sdata) {
+    StructureMembers members = sdata.getStructureMembers();
+    return (zcoordVName == null) ? Double.NaN : sdata.convertScalarDouble(members.findMember(zcoordVName));
+  }
+
+  public String getZcoordUnits() {
+    return zcoordUnits;
+  }
+
+  public Date getObservationTimeAsDate(StructureData sdata) {
+    return timeUnit.makeDate( getObservationTime(sdata));
+  }
+
+  public double getObservationTime(StructureData sdata) {
+    return getTime( sdata.findMember(obsTimeVName), sdata);
   }
 
   private DateFormatter formatter;
@@ -347,25 +367,32 @@ public class RecordDatasetHelper {
   }  */
 
   //////////////////////////////////////////////////////////////////////////////////////
+  public PointObsFeature factory(StationImpl s, StructureData sdata, int recno) {
+    if (s == null)
+      return new RecordPointObs(sdata, recno);
+    else
+      return new RecordStationObs(s, sdata, recno);
+  }
 
-  public class RecordPointObs extends PointObsFeatureImpl {
+
+  class RecordPointObs extends PointObsFeatureImpl {
     protected int recno;
     protected StructureData sdata;
 
-    public RecordPointObs(FeatureDataset fd, int recno) {
-      super(fd, RecordDatasetHelper.this.timeUnit);
+    public RecordPointObs(int recno) {
+      super(RecordDatasetHelper.this.timeUnit);
       this.recno = recno;
     }
 
     // Constructor for the case where you keep track of the location, time of each record, but not the data.
-    protected RecordPointObs(FeatureDataset fd, EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
-      super(fd, location, obsTime, nomTime, timeUnit);
+    protected RecordPointObs(EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
+      super(location, obsTime, nomTime, timeUnit);
       this.recno = recno;
     }
 
     // Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
-    public RecordPointObs(FeatureDataset fd, StructureData sdata, int recno) {
-      super(fd, RecordDatasetHelper.this.timeUnit);
+    public RecordPointObs(StructureData sdata, int recno) {
+      super(RecordDatasetHelper.this.timeUnit);
       this.sdata = sdata;
       this.recno = recno;
 
@@ -376,8 +403,8 @@ public class RecordDatasetHelper {
       // this assumes the lat/lon/alt is stored in the obs record
       double lat = sdata.convertScalarDouble(members.findMember(latVName));
       double lon = sdata.convertScalarDouble(members.findMember(lonVName));
-      double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.convertScalarDouble(members.findMember(altVName));
-      location = new EarthLocation(lat, lon, alt);
+      double alt = (zcoordVName == null) ? 0.0 : altScaleFactor * sdata.convertScalarDouble(members.findMember(zcoordVName));
+      location = new EarthLocationImpl(lat, lon, alt);
     }
 
     public String getId() {
@@ -410,7 +437,8 @@ public class RecordDatasetHelper {
 
   //////////////////////////////////////////////////////////////////////////////////////
 
-  public class RecordStationObs extends RecordPointObs {
+  // a PointObs with the location info stored as a Station
+  class RecordStationObs extends RecordPointObs {
     private Station station;
 
     /**
@@ -421,14 +449,14 @@ public class RecordDatasetHelper {
      * @param nomTime nominal time (may be NaN)
      * @param recno   data is at this record number
      */
-    protected RecordStationObs(FeatureDataset fd, Station station, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
-      super(fd, station, obsTime, nomTime, timeUnit, recno);
+    protected RecordStationObs(Station station, double obsTime, double nomTime, DateUnit timeUnit, int recno) {
+      super(station, obsTime, nomTime, timeUnit, recno);
       this.station = station;
     }
 
     // Constructor for when you have everything
-    protected RecordStationObs(FeatureDataset fd, Station station, double obsTime, double nomTime, StructureData sdata, int recno) {
-      super(fd, recno);
+    protected RecordStationObs(Station station, double obsTime, double nomTime, StructureData sdata, int recno) {
+      super(recno);
       this.station = station;
       this.location = station;
       this.obsTime = obsTime;
@@ -437,8 +465,8 @@ public class RecordDatasetHelper {
     }
 
     // Constructor for when you already have the StructureData and Station, and calculate times
-    protected RecordStationObs(FeatureDataset fd, Station station, StructureData sdata, int recno) {
-      super(fd, recno);
+    protected RecordStationObs(StationImpl station, StructureData sdata, int recno) {
+      super(recno);
       this.station = station;
       this.location = station;
       this.sdata = sdata;
@@ -449,8 +477,8 @@ public class RecordDatasetHelper {
     }
 
     // Constructor for when you already have the StructureData, and need to find Station and times
-    protected RecordStationObs(FeatureDataset fd, StructureData sdata, int recno, boolean useId) {
-      super(fd, recno);
+    protected RecordStationObs(StructureData sdata, int recno, boolean useId) {
+      super(recno);
       this.recno = recno;
       this.sdata = sdata;
       this.timeUnit = RecordDatasetHelper.this.timeUnit;
@@ -471,7 +499,7 @@ public class RecordDatasetHelper {
         log.error(" cant find station id = <"+stationId+"> when reading record "+recno);
 
       } else {
-              // find the station
+        // use a station index
         List<Station> stations = stationHelper.getStations();
         int stationIndex = sdata.getScalarInt(stnIndexVName);
         if (stationIndex < 0 || stationIndex >= stations.size()) {
@@ -482,10 +510,6 @@ public class RecordDatasetHelper {
       }
 
       location = station;
-    }
-
-    public int getNumberPoints() {
-      return 1;
     }
 
   }

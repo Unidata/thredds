@@ -77,7 +77,7 @@ public class PointObsViewer2 extends JPanel {
     chooser.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("Station")) {
-          Station selectedStation = (Station) e.getNewValue();
+          StationImpl selectedStation = (StationImpl) e.getNewValue();
           if (debugStationRegionSelect) System.out.println("selectedStation= " + selectedStation.getName());
           eventsOK = false;
           stnTable.setSelectedBean(selectedStation);
@@ -98,7 +98,7 @@ public class PointObsViewer2 extends JPanel {
         if (debugQuery) System.out.println("geoRegion=" + geoRegion);
 
         try {
-          PointCollection subset = pds.subset(geoRegion, dateRange);
+          PointObsDataset subset = pds.subset(geoRegion, dateRange);
           setObservations(subset);
 
         } catch (IOException e1) {
@@ -174,14 +174,14 @@ public class PointObsViewer2 extends JPanel {
     setObservations( null);
   }
 
-  public void setObservations(PointCollection pobsDataset) throws IOException {
+  public void setObservations(PointObsDataset pobsDataset) throws IOException {
     List<PointObsBean> pointBeans = new ArrayList<PointObsBean>();
     int count = 0;
 
     if (pobsDataset != null)  {
-      DataIterator iter = pobsDataset.getDataIterator(-1);
+      FeatureIterator iter = pobsDataset.getFeatureIterator(-1);
       while (iter.hasNext()) {
-        PointObsFeature pob = (PointObsFeature) iter.nextData();
+        PointObsFeature pob = (PointObsFeature) iter.nextFeature();
         pointBeans.add(new PointObsBean(count++, pob));
       }
     }
@@ -263,7 +263,7 @@ public class PointObsViewer2 extends JPanel {
     }
 
     public int compareTo(Object o) {
-      Station so = (Station) o;
+      StationImpl so = (StationImpl) o;
       return getName().compareTo( so.getName());
     }
   }

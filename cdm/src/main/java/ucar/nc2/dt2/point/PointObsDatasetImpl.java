@@ -34,7 +34,7 @@ import java.io.IOException;
  */
 public abstract class PointObsDatasetImpl extends FeatureDatasetImpl implements PointObsDataset {
 
-  protected PointObsDatasetImpl(PointObsDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
+  protected PointObsDatasetImpl(FeatureDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
     super(from, filter_bb, filter_date);
   }
 

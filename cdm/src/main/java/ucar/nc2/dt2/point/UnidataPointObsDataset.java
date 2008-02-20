@@ -134,25 +134,26 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
     desc = ds.findAttValueIgnoreCase(null, "description", null);
   }
 
-  public PointCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+  public PointObsDataset subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
     return new UnidataPointObsDataset( this, boundingBox, dateRange);
   }
 
-  public DataIterator getDataIterator(int bufferSize) throws IOException {
+  public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
     StructureDataIterator.Filter filter = null;
     
     if ((filter_bb != null) || (filter_date != null))
 
       filter = new StructureDataIterator.Filter() {
-        public boolean filter(StructureData sdata) {
+        public boolean filter(Feature feature) {
+          PointObsFeature pobsFeature = (PointObsFeature) feature;
           if (filter_bb != null) {
-            LatLonPoint pt = recordHelper.getLocation(sdata);
+            LatLonPoint pt = pobsFeature.getLocation().getLatLon();
             if (!filter_bb.contains(pt))
               return false;
           }
 
           if (filter_date != null) {
-            Date d = recordHelper.getObservationDate(sdata);
+            Date d = pobsFeature.getObservationTimeAsDate();
             if (!filter_date.included(d))
               return false;
           }
@@ -168,8 +169,9 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
   }
 
   private class PointDatatypeIterator extends StructureDataIterator {
-    protected Object makeDatatypeWithData(int recnum, StructureData sdata) {
-      return recordHelper.new RecordPointObs( UnidataPointObsDataset.this, sdata, recnum);
+
+    protected PointObsFeature makeDatatypeWithData(int recnum, StructureData sdata) {
+      return recordHelper.factory( null, sdata, recnum);
     }
     PointDatatypeIterator(Structure struct, int bufferSize, StructureDataIterator.Filter filter) {
       super( struct, bufferSize, filter);

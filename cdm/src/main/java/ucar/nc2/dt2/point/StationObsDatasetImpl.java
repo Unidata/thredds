@@ -19,15 +19,13 @@
  */
 package ucar.nc2.dt2.point;
 
-import ucar.nc2.dt2.StationObsFeature;
-import ucar.nc2.dt2.FeatureDatasetImpl;
-import ucar.nc2.dt2.StationObsDataset;
-import ucar.nc2.dt2.Station;
+import ucar.nc2.dt2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.List;
+import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of StationObsDataset
@@ -48,7 +46,19 @@ public abstract class StationObsDatasetImpl extends FeatureDatasetImpl implement
     this.stationHelper = from.stationHelper;
   }
 
+  public List<Station> getStations() {
+    return stationHelper.getStations();
+  }
+
+  public List<Station> getStations(LatLonRect boundingBox) throws IOException {
+    return stationHelper.getStations(boundingBox);
+  }
+
+  public Station getStation(String name) {
+    return stationHelper.getStation(name);
+  }
+
   public Class getFeatureClass() {
-    return StationObsFeature.class; // LOOK WRONG
+    return StationObsFeature.class;
   }
 }

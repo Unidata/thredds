@@ -23,10 +23,9 @@ import java.util.Date;
 
 /**
  * An observation at one time and location.
- *
  * @author caron
  */
-public interface PointObsFeature extends ObsFeature {
+public interface PointObsFeature extends Feature {
 
   /**
    * Actual time of this observation. Units are found from getTimeUnits() in the containing dataset.

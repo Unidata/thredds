@@ -30,7 +30,7 @@ import ucar.nc2.units.DateUnit;
  */
 
 
-public abstract class StationObsFeatureImpl extends ObsFeatureImpl implements StationObsFeature {
+public abstract class StationObsFeatureImpl extends ObsFeature1DImpl implements StationObsFeature {
   protected Station station;
 
   public StationObsFeatureImpl( FeatureDataset fd, DateUnit timeUnit) {
@@ -44,5 +44,6 @@ public abstract class StationObsFeatureImpl extends ObsFeatureImpl implements St
 
   public Station getStation() { return station; }
   public EarthLocation getLocation() { return station; }
+  public String getId() { return station.getName(); }
 
 }

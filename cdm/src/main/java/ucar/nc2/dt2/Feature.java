@@ -19,41 +19,17 @@
  */
 package ucar.nc2.dt2;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
- * A collection of data at named locations called Stations.
- * User can subset by bounding box and by date range.
- * Underlying data can be of any feature type, but all points have the same feature type.
- *
+ * Superclass for all Feature types.
  * @author caron
+ * @since Feb 18, 2008
  */
-public interface StationCollection {
+public interface Feature {
 
   /**
-   * Get all the Stations in the collection.
-   *
-   * @return List of Station
-   * @throws java.io.IOException on i/o error
+   * The ID of the feature, unique within the containing collection.
+   * @return ID of the feature, may not be null.
    */
-  public List<Station> getStations() throws IOException;
-
-  /**
-   * Get all the Stations within a bounding box.
-   *
-   * @param boundingBox spatial subset
-   * @return List of Station
-   * @throws java.io.IOException on i/o error
-   */
-  public List<Station> getStations(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
-
-  /**
-   * Find a Station by name.
-   *
-   * @param name name/id of the station
-   * @return Station or null if not found
-   */
-  public Station getStation(String name);
+  public Object getId();
 
 }

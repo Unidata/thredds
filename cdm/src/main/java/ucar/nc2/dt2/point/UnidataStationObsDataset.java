@@ -29,6 +29,7 @@ import ucar.nc2.constants.DataType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.LatLonPoint;
 
 import java.io.*;
 import java.util.*;
@@ -85,10 +86,10 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
   private Variable nextVar;
   private Variable stationIndexVar;
   private boolean isForwardLinkedList, isBackwardLinkedList, isContiguousList;
-  private RecordDatasetHelper recordHelper;
+  RecordDatasetHelper recordHelper;
 
   private boolean isSubset;
-  private DateRange filter_date;
+  DateRange filter_date;
   // private LatLonRect filter_bb;
   //private List<Station> filter_stations;
 
@@ -130,6 +131,10 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
 
     if (this.filter_date != null)
       setDateRange( this.filter_date);
+  }
+
+  LatLonRect getFilterBB() {
+    return stationHelper.getBoundingBox();
   }
 
   public UnidataStationObsDataset() {
@@ -267,7 +272,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
         stationDesc = (stationDescVar != null) ? (String) stationDescArray.getObject(ima) : null;
       }
 
-      UnidataStationImpl bean = new UnidataStationImpl(stationName, stationDesc,
+      UnidataStation s = new UnidataStation(stationName, stationDesc,
               latArray.getFloat(ima),
               lonArray.getFloat(ima),
               (altVar != null) ? elevArray.getFloat(ima) : Double.NaN,
@@ -275,7 +280,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
               (numChildrenVar != null) ? numChildrenArray.getInt(ima) : -1
       );
 
-      stationHelper.addStation(bean);
+      stationHelper.addStation(s);
     }
   }
 
@@ -327,125 +332,104 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
     sbuff.append("done");
   }
 
-  public List<Station> getStations() {
-    return stationHelper.getStations();
+  public StationObsFeature getFeature(Station s) throws IOException {
+    return (UnidataStation) s;
   }
 
-  public List<Station> getStations(LatLonRect boundingBox) throws IOException {
-    return stationHelper.getStations(boundingBox);
+  public StationObsFeature getFeature(Station s, DateRange dateRange) throws IOException {
+    return new UnidataStation( (UnidataStation) s, dateRange);
   }
 
-  public Station getStation(String name) {
-    return stationHelper.getStation(name);
-  }
-
-  public StationCollection subset(Station s) throws IOException {
-    List<Station> subset = new ArrayList<Station>(1);
-    subset.add(s);
-    return new UnidataStationObsDataset(this, subset, null, null);
-  }
-
-  public StationCollection subset(Station s, DateRange dateRange) throws IOException {
-    List<Station> subset = new ArrayList<Station>(1);
-    subset.add(s);
-    return new UnidataStationObsDataset(this, subset, null, dateRange);
-  }
-
-  public StationCollection subset(List<Station> stations) throws IOException {
+  public StationObsDataset subset(List<Station> stations) throws IOException {
     return new UnidataStationObsDataset(this, stations, null, null);
   }
 
-  public PointCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new UnidataStationObsDataset( this, null, boundingBox, dateRange);
+  public PointObsDataset subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    UnidataStationObsDataset subset = new UnidataStationObsDataset(this, null, boundingBox, dateRange);
+    return new PointObsDatasetAdapter( subset);
   }
 
-  public DataIterator getDataIterator(int bufferSize) throws IOException {
-
-    if (isSubset) {
-      return new StationListIterator();
-
-    } else {
-      StructureDataIterator.Filter filter = null;
-      if (filter_date != null)
-        filter = new StructureDataIterator.Filter() {
-          public boolean filter(StructureData sdata) {
-            Date d = recordHelper.getObservationDate(sdata);
-            return filter_date.included(d);
-          }
-        };
-      return new StationDatatypeIterator(recordHelper.recordVar, bufferSize, filter);
-    }
+  public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
+    return new StationListIterator();
   }
 
   public DataCost getDataCost() {
     return new DataCost(recordHelper.getRecordCount(), -1);
   }
 
-  private class StationDatatypeIterator extends StructureDataIterator {
-    protected Object makeDatatypeWithData(int recnum, StructureData sdata) {
-      return recordHelper.new RecordStationObs( UnidataStationObsDataset.this, sdata, recnum, true);
-    }
-    StationDatatypeIterator(Structure struct, int bufferSize, StructureDataIterator.Filter filter) {
-      super( struct, bufferSize, filter);
-    }
-  }
-
-  private class StationListIterator implements DataIterator {
+  private class StationListIterator implements FeatureIterator {
     Iterator<Station> stationIter;
-    DataIterator dataIterator;
 
     StationListIterator() {
       stationIter = stationHelper.getStations().iterator();
-      UnidataStationImpl stn = (UnidataStationImpl) stationIter.next();
-      dataIterator = stn.iterator(filter_date);
     }
 
     public boolean hasNext() throws IOException {
-      if (dataIterator.hasNext()) return true;
-      while (stationIter.hasNext()) {
-        UnidataStationImpl stn = (UnidataStationImpl) stationIter.next();
-        dataIterator = stn.iterator(filter_date);
-        if (dataIterator.hasNext()) return true;
-      }
-      return false;
+      return stationIter.hasNext();
     }
 
-    public Object nextData() throws IOException {
-      return dataIterator.nextData();
+    public Feature nextFeature() throws IOException {
+      return (UnidataStation) stationIter.next();
     }
   }
 
   ////////////////////////////////////////////////////////
 
   // a Station that can follow linked lists of observations
-  private class UnidataStationImpl extends Station {
+  private class UnidataStation extends StationObsFeatureImpl implements Station {
     private int firstRecord;
     private Variable next;
-    private int count;
+    private DateRange filter_date;
 
-    private UnidataStationImpl(String name, String desc, double lat, double lon, double elev, int firstRecord, int count) {
-      super(name, desc, lat, lon, elev);
+    private UnidataStation(String name, String desc, double lat, double lon, double elev, int firstRecord, int count) {
+      super(UnidataStationObsDataset.this, recordHelper.getTimeUnit());
+      station = new StationImpl(name, desc, lat, lon, elev, count);
       this.firstRecord = firstRecord;
-      this.count = count;
-
       next = (isForwardLinkedList) ? nextVar : prevVar;
     }
 
-    DataIterator iterator() {
-      return new StationIterator();
+    private UnidataStation(UnidataStation from, DateRange filter_date) {
+      super(UnidataStationObsDataset.this, recordHelper.getTimeUnit());
+      this.filter_date = filter_date;
+
+      this.firstRecord = from.firstRecord;
+      this.next = from.next;
+      this.firstRecord = from.firstRecord;
     }
 
-    DataIterator iterator(DateRange dateRange) {
-      if (dateRange == null)
+    // station stuff
+    public String getName() {
+      return station.getName();
+    }
+
+    public double getLatitude() {
+      return station.getLatitude();
+    }
+
+    public double getLongitude() {
+      return station.getLongitude();
+    }
+
+    public double getAltitude() {
+      return station.getAltitude();
+    }
+
+    public LatLonPoint getLatLon() {
+      return station.getLatLon();
+    }
+
+    // feature stuff
+    public DataIterator getDataIterator(int bufferSize) throws IOException {
+      if (filter_date == null)
         return new StationIterator();
       else
-        return new StationIterator(dateRange.getStart().getDate(), dateRange.getEnd().getDate());
+        return new StationIterator(filter_date.getStart().getDate(), filter_date.getEnd().getDate());
     }
 
     // LOOK no guarentee of time ordering
     private class StationIterator implements DataIterator {
       int nextRecno = firstRecord;
-      int last = firstRecord + count - 1; // contiguous only
+      int last = firstRecord + station.getNumberPoints() - 1; // contiguous only
       double startTime, endTime;
       boolean hasDateRange;
 
@@ -462,7 +446,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
         return (nextRecno >= 0);
       }
 
-      public Object nextData() throws IOException {
+      public StructureData nextData() throws IOException {
         // deal with files that are updating
         if (nextRecno > getDataCount()) {
           int n = getDataCount();
@@ -478,8 +462,6 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
           throw new IOException(e.getMessage());
         }
 
-        RecordDatasetHelper.RecordStationObs sobs =
-            recordHelper.new RecordStationObs(UnidataStationObsDataset.this, UnidataStationImpl.this, sdata, nextRecno);
         checkStation(sdata, nextRecno);
 
         if (isContiguousList) {
@@ -487,16 +469,16 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
           if (nextRecno > last)
             nextRecno = -1;
         } else {
-          nextRecno = sobs.sdata.getScalarInt(next.getName());
+          nextRecno = sdata.getScalarInt(next.getName());
         }
         if (hasDateRange) {
-          double timeValue = sobs.getObservationTime();
+          double timeValue = recordHelper.getObservationTime( sdata);
           if ((timeValue < startTime) || (timeValue > endTime))
             return nextData();
         }
-        return sobs;
+        return sdata;
       }
-    }
+    } // StationIterator
 
     private void checkStation(StructureData sdata, int recno) {
       List<Station> stations = stationHelper.getStations();
@@ -509,7 +491,41 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
           log.error("Obs link doesnt match Station, index = "+stationIndex+" when reading obs record "+recno);
       }
     }
-  }
+
+    public int getNumberPoints() {
+      return filter_date == null ? station.getNumberPoints() : -1;
+    }
+
+    public double getLatitude(StructureData sdata) {
+      return recordHelper.getLatitude( sdata);
+    }
+
+    public double getLongitude(StructureData sdata) {
+      return recordHelper.getLongitude( sdata);
+    }
+
+    public double getZcoordinate(StructureData sdata) {
+      return recordHelper.getZcoordinate( sdata);
+    }
+
+    public String getZcoordUnits() {
+      return recordHelper.getZcoordUnits();
+    }
+
+    public double getObservationTime(StructureData sdata) {
+      return recordHelper.getObservationTime( sdata);
+    }
+
+    public Date getObservationTimeAsDate(StructureData sdata) {
+      return recordHelper.getObservationTimeAsDate( sdata);
+    }
+
+    public DataCost getDataCost() {
+      return getNumberPoints() < 0 ? null : new DataCost(getNumberPoints(), -1);
+    }
+
+  } // UnidataStationObsFeature
+
 
   public static void main(String args[]) throws IOException {
     //String filename = "C:/data/199707010200.CHRTOUT_DOMAIN2";

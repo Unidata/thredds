@@ -19,17 +19,19 @@
  */
 package ucar.nc2.dt2;
 
+import ucar.unidata.util.Product;
 import ucar.nc2.units.DateRange;
 
-import java.io.IOException;
 import java.util.List;
+import java.io.IOException;
 
 /**
- * A collection of Stations, each with a StationObsFeature.
+ * A Station collection of radial data.
  *
  * @author caron
+ * @since Feb 18, 2008
  */
-public interface StationObsDataset extends Obs1DDataset, StationCollection {
+public interface StationRadialDataset extends StationCollection {
 
   /**
    * Get a subsetted StationCollection
@@ -38,7 +40,7 @@ public interface StationObsDataset extends Obs1DDataset, StationCollection {
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
-  public StationObsDataset subset(List<Station> stations) throws IOException;
+  public StationRadialDataset subset(List<Station> stations) throws IOException;
 
   /**
    * Get the collection of data for this Station.
@@ -47,7 +49,7 @@ public interface StationObsDataset extends Obs1DDataset, StationCollection {
    * @return collection of data for this Station.
    * @throws java.io.IOException on i/o error
    */
-  public StationObsFeature getFeature(Station s) throws IOException;
+  public RadialSweepFeature getFeature(Station s) throws IOException;
 
   /**
    * Get the collection of data for this Station and date range.
@@ -57,6 +59,31 @@ public interface StationObsDataset extends Obs1DDataset, StationCollection {
    * @return collection of data for this Station and date range.
    * @throws java.io.IOException on i/o error
    */
-  public StationObsFeature getFeature(Station s, DateRange dateRange) throws IOException;
+  public RadialSweepFeature getFeature(Station s, DateRange dateRange) throws IOException;
+
+    /**
+     * check if the product available for all stations.
+     *
+     * @param product the given Product
+     * @return true if data avaible for the given Product
+     */
+    public boolean checkStationProduct(Product product);
+
+
+    /**
+     * check if the product available for one station
+     * @param stationName which station
+     * @param product the given Product and Station
+     * @return true if data avaible for the given Product
+     */
+    public boolean checkStationProduct(String stationName, Product product);
+
+    /**
+     * How many Data Products are available for this Station?
+     *
+     * @param sName station name
+     * @return count or -1 if unknown.
+     */
+    public int getStationProductCount(String sName);
 
 }

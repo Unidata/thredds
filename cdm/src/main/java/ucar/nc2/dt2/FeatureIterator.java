@@ -17,12 +17,27 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 package ucar.nc2.dt2;
 
-/** A collection of data in a time series.
- *  Implies that the dataIterator will be time-ordered, and that all obs have the same location.
+/**
+ * Just like java.util.Iterator, but may throw IOException on nextData() call.
+ *
  * @author caron
  */
-public interface TimeSeriesCollection extends PointCollection {
+public interface FeatureIterator {
 
+  /**
+   * true if another Feature object is available
+   * @return true if another Feature object is available
+   * @throws java.io.IOException on i/o error
+   */
+  public boolean hasNext() throws java.io.IOException;
+
+  /**
+   * Returns the next Feature object
+   * @return the next Feature object
+   * @throws java.io.IOException on i/o error
+   */
+  public Feature nextFeature() throws java.io.IOException;
 }

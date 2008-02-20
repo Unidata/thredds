@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -17,15 +17,15 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 package ucar.nc2.dt2;
 
+import ucar.ma2.StructureData;
+
 /**
- * Just like java.util.Iterator, but may throw IOException on nextData() call.
- *
  * @author caron
+ * @since Feb 18, 2008
  */
-public interface DataIterator  {
+public interface DataIterator { 
 
   /**
    * true if another Feature object is available
@@ -35,10 +35,9 @@ public interface DataIterator  {
   public boolean hasNext() throws java.io.IOException;
 
   /**
-   * Returns the next Feature object
-   * @return the next Feature object  // LOOK what about a Feature superclass ??
+   * Returns the next StructureData
+   * @return the next StructureData object
    * @throws java.io.IOException on i/o error
    */
-  public Object nextData() throws java.io.IOException;
-
+  public StructureData nextData() throws java.io.IOException;
 }

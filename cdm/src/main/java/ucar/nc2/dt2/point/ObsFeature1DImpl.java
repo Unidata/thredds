@@ -17,43 +17,47 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2;
+package ucar.nc2.dt2.point;
 
-import java.io.IOException;
+import ucar.nc2.dt2.*;
+import ucar.nc2.units.DateUnit;
+import ucar.nc2.VariableSimpleIF;
+import ucar.ma2.StructureData;
+
 import java.util.List;
 
 /**
- * A collection of data at named locations called Stations.
- * User can subset by bounding box and by date range.
- * Underlying data can be of any feature type, but all points have the same feature type.
+ * Abstract superclass for implementations of ObsFeature.
  *
  * @author caron
  */
-public interface StationCollection {
 
-  /**
-   * Get all the Stations in the collection.
-   *
-   * @return List of Station
-   * @throws java.io.IOException on i/o error
-   */
-  public List<Station> getStations() throws IOException;
 
-  /**
-   * Get all the Stations within a bounding box.
-   *
-   * @param boundingBox spatial subset
-   * @return List of Station
-   * @throws java.io.IOException on i/o error
-   */
-  public List<Station> getStations(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
+public abstract class ObsFeature1DImpl implements Obs1DFeature {
+  protected FeatureDataset fd;
+  protected DateUnit timeUnit;
 
-  /**
-   * Find a Station by name.
-   *
-   * @param name name/id of the station
-   * @return Station or null if not found
-   */
-  public Station getStation(String name);
+  public ObsFeature1DImpl( FeatureDataset fd, DateUnit timeUnit) {
+    this.fd = fd;
+    this.timeUnit = timeUnit;
+  }
+
+  public String getDescription() {
+    return null;
+  }
+
+  public ucar.nc2.units.DateUnit getTimeUnits() { return timeUnit; }
+
+  public List<VariableSimpleIF> getDataVariables() {
+    return fd.getDataVariables();
+  }
+
+  public VariableSimpleIF getDataVariable(String name) {
+    return fd.getDataVariable(name);
+  }
+
+  public PointObsFeature makePointObsFeature( StructureData sdata) {
+    return new PointObsFeatureAdapter(this, sdata);
+  }
 
 }

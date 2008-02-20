@@ -247,7 +247,6 @@ public class Structure extends Variable {
             v2.getUnitsString(), v2.getDataType(), v2.getShape());
         if (v2 instanceof Structure)
           m.setStructureMembers( ((Structure)v2).makeStructureMembers());
-        smembers.addMember( m);
       }
     //}
     return smembers;

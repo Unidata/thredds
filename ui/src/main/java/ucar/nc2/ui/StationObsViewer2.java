@@ -26,6 +26,7 @@ import ucar.nc2.units.DateRange;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
+import ucar.unidata.geoloc.LatLonRect;
 import thredds.ui.*;
 
 import java.awt.BorderLayout;
@@ -77,18 +78,14 @@ public class StationObsViewer2 extends JPanel {
       }
     });
 
-    /* do the query
+    // do the query
     AbstractAction queryAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (sds == null) return;
 
         // is the date window showing ?
         DateRange dateRange = chooser.getDateRange();
-        boolean useDate = (null != dateRange);
-        if (!useDate) return;
 
-        Date startDate = dateRange.getStart().getDate();
-        Date endDate = dateRange.getEnd().getDate();
         if (debugQuery) System.out.println("date range="+dateRange);
 
         // is the geoRegion mode true ?
@@ -107,14 +104,13 @@ public class StationObsViewer2 extends JPanel {
 
         // fetch the requested dobs
         try {
-          List obsList;
-          if (useRegion)
-            obsList = useDate ? sds.getData(geoRegion, startDate, endDate) : sds.getData(geoRegion);
-          else
-            obsList = useDate ? sds.getData(selectedStation, startDate, endDate) : sds.getData(selectedStation);
+          if (useRegion) {
+            PointObsDataset subset = sds.subset(geoRegion, dateRange);
+            setObservationsAll( subset);
+          } else {
+            setObservations(sds, selectedStation, dateRange);
+          }
 
-          if (debugQuery)System.out.println("obsList="+obsList.size());
-          setObservations( obsList);
 
         } catch (IOException e1) {
           e1.printStackTrace();
@@ -122,14 +118,15 @@ public class StationObsViewer2 extends JPanel {
       }
     };
     BAMutil.setActionProperties( queryAction, "query", "query for data", false, 'Q', -1);
-    chooser.addToolbarAction( queryAction);  */
+    chooser.addToolbarAction( queryAction);  // */
 
     // get all data
     AbstractAction getallAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (sds == null) return;
         try {
-          setObservations( sds.getDataIterator(-1));
+          setObservationsAll( sds.subset((LatLonRect) null, null));
+
         } catch (IOException e1) {
           e1.printStackTrace();
         }
@@ -196,28 +193,38 @@ public class StationObsViewer2 extends JPanel {
     obsTable.clear();
   }
 
-  public void setStation(StationBean sb) {
+  private void setStation(StationBean sb) {
     try {
-      StationCollection subset = sds.subset(sb.s);
+      setObservations( sds, sb, null);
       stnTable.getJTable().repaint();
-      setObservations( subset.getDataIterator(-1));
 
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
-  /**
-   * Set the list of Obs to show in the obs table
-   * @param iter DataIterator over type PointObsFeature
-   * @throws java.io.IOException on i/o error
-   */
-  public void setObservations( DataIterator iter) throws IOException {
-    List<PointObsFeature> obsList = new ArrayList<PointObsFeature>();
-    while (iter.hasNext()) {
-      obsList.add( (PointObsFeature) iter.nextData());
-    }
+  private void setObservations( StationObsDataset sobsDataset, StationBean sb, DateRange dateRange) throws IOException {
+    StationObsFeature feature = sobsDataset.getFeature(sb.s, dateRange);
+    int npts = feature.getNumberPoints();
+    if (npts >= 0)
+      sb.setNobs( npts);
+    DataIterator iter = feature.getDataIterator(-1);
 
+    List<PointObsFeature> obsList = new ArrayList<PointObsFeature>();
+    while (iter.hasNext()) 
+      obsList.add( feature.makePointObsFeature( iter.nextData()));
+    setObservations( obsList);
+  }
+
+  private void setObservationsAll( PointObsDataset pobsDataset) throws IOException {
+    FeatureIterator iter = pobsDataset.getFeatureIterator(-1);
+    List<PointObsFeature> obsList = new ArrayList<PointObsFeature>();
+    while (iter.hasNext())
+      obsList.add( (PointObsFeature) iter.nextFeature());
+    setObservations( obsList);
+  }
+
+  private void setObservations( List<PointObsFeature> obsList) throws IOException {
     if (obsList.size() == 0) {
       obsTable.clear();
       return;
@@ -236,10 +243,12 @@ public class StationObsViewer2 extends JPanel {
   }
 
   public class StationBean implements ucar.nc2.dt.Station {
-    private ucar.nc2.dt2.Station s;
+    private Station s;
+    private int npts = -1;
 
-    public StationBean( ucar.nc2.dt2.Station s) {
+    public StationBean( Station s) {
       this.s = s;
+      this.npts = s.getNumberPoints();
     }
 
     public String getName() {
@@ -251,7 +260,11 @@ public class StationObsViewer2 extends JPanel {
     }
 
     public int getNobs() {
-      return 0;
+      return npts;
+    }
+
+    public void setNobs(int npts) {
+      this.npts = npts;
     }
 
     public String getWmoId() {
@@ -272,7 +285,7 @@ public class StationObsViewer2 extends JPanel {
 
 
     public int compareTo(Object o) {
-      Station so = (Station) o;
+      StationImpl so = (StationImpl) o;
       return getName().compareTo( so.getName());
     }
   }

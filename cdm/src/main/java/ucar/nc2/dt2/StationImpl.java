@@ -20,28 +20,66 @@
 package ucar.nc2.dt2;
 
 /**
+ * A named location on the Earth.
  * @author caron
- * @since Feb 18, 2008
  */
-public interface Station extends EarthLocation {
+public class StationImpl extends EarthLocationImpl implements Station {
+  protected String name, desc, wmoId;
+  protected int npts = -1;
+
+  public StationImpl( String name, String desc, double lat, double lon, double alt, int npts) {
+    super( lat, lon, alt);
+    this.name = name;
+    this.desc = desc;
+    this.npts = npts;
+  }
 
   /**
    * Station name or id. Must be unique within the collection
    * @return station name or id. May not be null.
    */
-  public String getName();
+  public String getName() { return name; }
 
   /**
    * Station description
    * @return station description
    */
-  public String getDescription();
+  public String getDescription() { return desc; }
 
   /**
    * The number of data points for this Station.
    *
    * @return umber of data points for this Station, or -1 if unknown
    */
-  public int getNumberPoints();
+  public int getNumberPoints() {
+    return npts;
+  }
+
+
+  /*
+   * Get the named attribute for this station
+   * @param name name of attribute, ignore case
+   * @return value of attribute
+   *
+  public String getAttributeValue(String name); */
+
+
+
+  //public String getWmoId() { return wmoId; }
+
+  /////
+
+  protected void setName(String name) { this.name = name; }
+  protected void setDescription(String desc) { this.desc = desc; }
+  // protected void setWmoId(String wmoId) { this.wmoId = wmoId; }
+
+  public int compareTo(Object o) {
+    StationImpl so = (StationImpl) o;
+    return name.compareTo( so.getName());
+  }
+
+  public String toString() {
+    return "name="+name+" desc="+desc+" "+super.toString();
+  }
 
 }

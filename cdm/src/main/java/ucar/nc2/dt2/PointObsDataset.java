@@ -19,11 +19,51 @@
  */
 package ucar.nc2.dt2;
 
+import ucar.nc2.units.DateRange;
+
+import java.io.IOException;
+
 /**
- * A PointCollection of PointObsFeature.
+ * A Collection of PointObsFeatures.
  *
  * @author caron
  */
-public interface PointObsDataset extends FeatureDataset, PointCollection {
+public interface PointObsDataset extends FeatureDataset {
+
+  /**
+   * Subset the collection using the specified bounding box and date range.
+   *
+   * @param boundingBox spatial subset, may be null
+   * @param dateRange   dateRange, may be null
+   * @return subsetted collection
+   * @throws java.io.IOException on i/o error
+   */
+  public PointObsDataset subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
+
+  /**
+   * Get an efficient iterator over all the Features in the Collection. You must fully process the
+   * data, or copy it out of the StructureData, as you iterate over it. DO NOT KEEP ANY REFERENCES to the
+   * PointObsFeature object or the StructureData object.
+   * <pre>Example for point observations:
+   * Iterator iter = pointObsDataset.getFeatureIterator();
+   * while (iter.hasNext()) {
+   *   PointObsFeature pobs = (PointObsFeature) iter.next();
+   *   StructureData sdata = pobs.getData();
+   *   // process fully
+   * }
+   * </pre>
+   *
+   * @param bufferSize if > 0, the internal buffer size, else use the default. 100k - 1M gives good results in all cases.
+   * @return iterator over type PointObsFeature, no guarenteed order.
+   * @throws IOException on i/o error
+   */
+  public FeatureIterator getFeatureIterator(int bufferSize) throws IOException;
+
+  /**
+   * Get estimate of the cost of accessing all the data in the Collection.
+   * @return DataCost or null if not able to estimate.
+   */
+  public DataCost getDataCost();
+
 
 }

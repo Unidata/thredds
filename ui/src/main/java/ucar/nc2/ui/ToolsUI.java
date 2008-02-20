@@ -2311,6 +2311,14 @@ public class ToolsUI extends JPanel {
         setSelectedItem(location);
         return true;
 
+      } catch (FileNotFoundException e) {
+        e.printStackTrace(new PrintStream(bos));
+        ta.setText(log.toString());
+        ta.appendLine(bos.toString());
+
+        JOptionPane.showMessageDialog(this, e.getMessage());
+        return false;
+
       } catch (Exception e) {
         e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));

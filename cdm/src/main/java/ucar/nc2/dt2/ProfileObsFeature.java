@@ -19,6 +19,8 @@
  */
 package ucar.nc2.dt2;
 
+import ucar.unidata.geoloc.LatLonPoint;
+
 /**
  * A Profile of observations. A set of observations along the vertical (z) axis.
  * All obs have the same lat/lon. Time is either constant, or it may vary with z.
@@ -27,7 +29,7 @@ package ucar.nc2.dt2;
  * @author caron
  * @since Feb 8, 2008
  */
-public interface ProfileObsFeature extends ObsFeature {
+public interface ProfileObsFeature extends Obs1DFeature {
 
   /**
    * The number of points along the z axis.
@@ -40,6 +42,6 @@ public interface ProfileObsFeature extends ObsFeature {
    *
    * @return the location of this observation
    */
-  public EarthLocation getLocation();
+  public LatLonPoint getLocation();
 
 }

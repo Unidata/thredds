@@ -24,7 +24,7 @@ package ucar.nc2.dt2;
  *
  * @author caron
  */
-public interface StationObsFeature extends ObsFeature {
+public interface StationObsFeature extends Obs1DFeature {
 
   /**
    * The number of points in the time series.

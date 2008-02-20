@@ -23,29 +23,20 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
- * A sequence (one-dimensional, variable-length list) of PointObsDatatype, connected in space and time.
+ * A Trajectory of observations. A set of observations along a 1D path, connected in space and time.
  * The observations are ordered in time (in other words, the time dimension must
  * increase monotonically along the trajectory).
  *
+ * @author edavis
  * @author caron
  */
-public interface TrajectoryObsFeature extends ObsFeature {
+public interface TrajectoryObsFeature extends Obs1DFeature {
 
   /**
    * The number of points along the trajectory.
    * @return number of points along the trajectory.
    */
   public int getNumberPoints();
-
-
-  /**
-   * Get a PointObsDatatype for the requested trajectory point.
-   *
-   * @param point the point along the trajectory
-   * @return corresponding PointObsDatatype
-   * @throws IOException on read error
-   */
-  public PointObsFeature getPointObsData(int point) throws IOException;
 
   /////////////////////////////////////////////////////////////
   // all below are convenience routines
@@ -64,16 +55,8 @@ public interface TrajectoryObsFeature extends ObsFeature {
 
   /**
    * BoundingBox for the trajectory. May not be available.
-   * @return BoundingBox for the trajectory. May not be available.
+   * @return BoundingBox for the trajectory, or null if not available.
    */
   public ucar.unidata.geoloc.LatLonRect getBoundingBox();
-
-  /**
-   * Get the elevation at the requested trajectory point in units of meters, missing values = NaN.
-   * @param pt index of the observation.
-   * @return the elevation at the requested trajectory point in units of meters, missing values = NaN.
-   * @throws IOException on read error
-   */
-  public double getElevation(int pt) throws IOException;
 
 }

@@ -26,7 +26,9 @@ import ucar.nc2.units.DateRange;
 import java.util.*;
 
 /**
- * Superclass for "scientific type" datasets.
+ * Superclass for "scientific type" aka "feature" datasets.
+ * These are collections of features of the same feature type.
+ *
  * <p/>
  * This interface defines general "discovery metadata".
  * Its subtypes define type-specific information.
@@ -36,6 +38,12 @@ import java.util.*;
  */
 
 public interface FeatureDataset {
+
+  /**
+   * The getFeature() methods return objects of this Class
+   * @return the class of the underlying data type
+   */
+  public Class getFeatureClass();
 
   /**
    * Title of the dataset.
@@ -64,7 +72,7 @@ public interface FeatureDataset {
   public Date getEndDate();
   /**
    * The boundingBox for the entire dataset.
-   * @return the lat/lon boundingBox for the entire dataset, or null.
+   * @return the lat/lon boundingBox for the entire dataset, or null if unknown.
    */
   public ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
@@ -83,9 +91,9 @@ public interface FeatureDataset {
 
   /**
    * The data Variables available in this dataset.
-   * Should just be data variable others might be searching for, not metadata or coordinate
+   * Should just be data variables others might be searching for, not metadata or coordinate
    * system variables, etc.
-   * The shape of this VariableSimpleIF does not necessarily match the
+   * The shape of this VariableSimpleIF does not necessarily match the Stucturedata member.
    *
    * @return List of type VariableSimpleIF, may be empty but not null
    */
