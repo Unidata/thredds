@@ -113,6 +113,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   public static JPanel main;
   public static void main(String args[]) throws IOException {
     String server = "http://motherlode.ucar.edu:8080/thredds";
+    if (args.length > 0)
+      server = args[0];
 
     String problemCat = // "/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/catalog.xml";
                         "/catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml";
