@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.1">
+  <service name="fmrcServices" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+  </service>
+  <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+  <dataset name="Unidata Real-Time Regional Model" ID="Unidata-Regional-Model">
+
+    <metadata inherited="true">
+      <serviceName>fmrcServices</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Grid</dataType>
+      <dataFormat>GRIB-1</dataFormat>
+      <documentation xlink:href="http://www.unidata.ucar.edu/software/gempak/rtmodel/" xlink:title="Unidata documentation" />
+      <documentation type="rights">Freely available</documentation>
+      <documentation type="processing_level">Read by CDM Forecast Model Run Collection.</documentation>
+      <creator>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+      </publisher>
+    </metadata>
+
+    <datasetFmrc name="NMM (Primary Domain) Runs" path="fmrc/Unidata/rtmodel/nmm" collectionType="ForecastModelRuns" harvest="true" runsOnly="true">
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunSingleCollection" timeUnitsChange="true" recheckEvery="5 min">
+          <scanFmrc location="/data/ldm/pub/rtmodel/" subdirs="false" regExp=".*nmm\.Grb.*" runDateMatcher="yyMMddHH#_nmm.GrbF#" forecastOffsetMatcher="#_nmm.GrbF#HHH" />
+        </aggregation>
+      </netcdf>
+    </datasetFmrc>
+
+    <datasetScan name="NMM (Primary Domain) individual files" ID="Unidata-Regional-Model/nmm/files" path="fmrc/Unidata/rtmodel/nmm/files" location="/data/ldm/pub/rtmodel/">
+      <metadata inherited="true">
+        <serviceName>HTTPServer</serviceName>
+      </metadata>
+      <filter>
+        <include regExp=".*nmm\.Grb.*" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addDatasetSize />
+    </datasetScan>
+
+   <datasetFmrc name="NMM (Secondary Domain) Runs" path="fmrc/Unidata/rtmodel/nmm-alt" collectionType="ForecastModelRuns" harvest="true" runsOnly="true">
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+        <aggregation dimName="run" type="forecastModelRunSingleCollection" timeUnitsChange="true" recheckEvery="5 min">
+          <scanFmrc location="/data/ldm/pub/rtmodel/" subdirs="false" regExp=".*nmm_alt1\.Grb.*" runDateMatcher="yyMMddHH#_nmm_alt1.GrbF#" forecastOffsetMatcher="#_nmm_alt1.GrbF#HHH" />
+        </aggregation>
+      </netcdf>
+    </datasetFmrc>
+
+    <datasetScan name="NMM (Secondary Domain) individual files" ID="Unidata-Regional-Model/nmm-alt/files" path="fmrc/Unidata/rtmodel/nmm-alt/files" location="/data/ldm/pub/rtmodel/">
+      <metadata inherited="true">
+        <serviceName>HTTPServer</serviceName>
+      </metadata>
+      <filter>
+        <include regExp=".*nmm_alt1\.Grb.*" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addDatasetSize />
+    </datasetScan>
+
+  </dataset>
+</catalog>
+
