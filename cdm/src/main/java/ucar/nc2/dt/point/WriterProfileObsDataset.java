@@ -561,7 +561,7 @@ public class WriterProfileObsDataset {
 
     // extract stations
     int nrecs = 0;
-    Structure.Iterator iter = record.getStructureIterator();
+    StructureDataIterator iter = record.getStructureIterator();
     while (iter.hasNext()) {
       StructureData sdata = iter.next();
       String name = sdata.getScalarString("staName");

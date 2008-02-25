@@ -367,7 +367,7 @@ public class StreamWriter {
     int nrecsPerSection = Math.max(1, (1000 * 1000)/size); // do about 1M at a time = nrecs
     int total_nrecs = (int) record.getSize();
 
-    Structure.Iterator iter = record.getStructureIterator();
+    StructureDataIterator iter = record.getStructureIterator();
     while (iter.hasNext()) {
       if (recno % nrecsPerSection == 0) {
         int need = Math.min(nrecsPerSection, total_nrecs - recno);

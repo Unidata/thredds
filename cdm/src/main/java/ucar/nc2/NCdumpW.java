@@ -432,13 +432,13 @@ public class NCdumpW {
    * @throws java.io.IOException on write error
    */
   static public String printVariableData(VariableIF v, ucar.nc2.util.CancelTask ct) throws IOException {
-    Array data;
-    try {
+    Array data = v.read();
+    /* try {
       data = v.isMemberOfStructure() ? v.readAllStructures(null, true) : v.read();
     }
     catch (InvalidRangeException ex) {
       return ex.getMessage();
-    }
+    } */
 
     StringWriter writer = new StringWriter(10000);
     printArray( data, v.getName(), new PrintWriter(writer), ct);

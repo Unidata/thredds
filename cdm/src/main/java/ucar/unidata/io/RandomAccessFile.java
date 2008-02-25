@@ -600,6 +600,19 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
+   * Read fully count bytes
+   *
+   * @param count how many bytes tp read
+   * @return a byte array of length count, fully read in
+   * @throws IOException if an I/O error occurrs.
+   */
+  public byte[] readBytes(int count) throws IOException {
+    byte[] b = new byte[count];
+    readFully(b);
+    return b;
+  }
+
+  /**
    * Reads <code>b.length</code> bytes from this file into the byte
    * array. This method reads repeatedly from the file until all the
    * bytes are read. This method blocks until all the bytes are read,

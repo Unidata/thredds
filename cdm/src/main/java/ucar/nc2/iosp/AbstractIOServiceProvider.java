@@ -24,7 +24,6 @@ import ucar.ma2.*;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
-import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 
@@ -33,6 +32,10 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
          throws java.io.IOException, ucar.ma2.InvalidRangeException {
     throw new UnsupportedOperationException("IOSP "+getClass().getName()+" does not support nested variables");
+  }
+
+  public StructureDataIterator getStructureDataIterator(ucar.nc2.Sequence v2, SequenceDataCursor c) throws java.io.IOException {
+    throw new UnsupportedOperationException("IOSP "+getClass().getName()+" does not support sequences");
   }
 
   // default implementation, reads into an Array, then writes to WritableByteChannel
@@ -86,8 +89,6 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return 0;
   }
 
-
-
   public Object sendIospMessage(Object message) {
     return null;
   }
@@ -107,129 +108,5 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   public String getDetailInfo() {
     return "";
   }
-
-
-  ////////////////// some common routines for subclasses
-
-  /**
-   * Read data subset from file for a variable, create primitive array, the size of the Indexer.
-   * @param raf read from here.
-   * @param index handles skipping around in the file.
-   * @param dataType dataType of the variable
-   * @return primitive array with data read in
-   * @throws java.io.IOException on read error
-   *
-  protected Object readData(RandomAccessFile raf, Layout index, DataType dataType) throws java.io.IOException {
-    Object arr = makePrimitiveArray((int) index.getTotalNelems(), dataType);
-    return readData(raf, index, dataType, arr);
-  }
-
-  /**
-   *  Create 1D primitive array of the given size and type
-   *
-   * @param size the size of the array to create
-   * @param dataType dataType of the variable
-   * @return primitive array with data read in
-   * @throws java.io.IOException on read error
-   *
-  protected Object makePrimitiveArray(int size, DataType dataType) throws java.io.IOException {
-    Object arr = null;
-
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
-      arr = new byte[size];
-
-    } else if (dataType == DataType.SHORT) {
-      arr = new short[size];
-
-    } else if (dataType == DataType.INT) {
-      arr = new int[size];
-
-    } else if (dataType == DataType.FLOAT) {
-      arr = new float[size];
-
-    } else if (dataType == DataType.DOUBLE) {
-      arr = new double[size];
-    }
-
-    return arr;
-  }
-
-  /**
-   * Read data subset from file for a variable, create primitive array, the size of the Indexer.
-   * @param raf read from here.
-   * @param index handles skipping around in the file.
-   * @param dataType dataType of the variable
-   * @param arr primitive array to read data into
-   * @return primitive array with data read in
-   * @throws java.io.IOException on read error
-   *
-  protected Object readData(RandomAccessFile raf, Layout index, DataType dataType, Object arr) throws java.io.IOException {
-
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
-      byte[] pa = (byte []) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
-
-    } else if (dataType == DataType.SHORT) {
-      short[] pa = (short []) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        raf.readShort(pa, (int) chunk.getDestElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.INT) {
-      int[] pa = (int[]) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        raf.readInt(pa, (int) chunk.getDestElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.FLOAT) {
-      float[] pa =(float []) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        raf.readFloat(pa, (int) chunk.getDestElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-
-    } else if (dataType == DataType.DOUBLE) {
-      double[] pa = (double []) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        raf.readDouble(pa, (int) chunk.getDestElem(), chunk.getNelems()); // copy into primitive array
-      }
-      return pa;
-    }
-
-    throw new IllegalStateException();
-  }
-
-  // convert byte array to char array
-  static public char[] convertByteToChar(byte[] byteArray) {
-    int size = byteArray.length;
-    char[] cbuff = new char[size];
-    for (int i = 0; i < size; i++)
-      cbuff[i] = (char) DataType.unsignedByteToShort(byteArray[i]); // NOTE: not Unicode !
-    return cbuff;
-  }
-
-  // convert char array to byte array
-  static public byte[] convertCharToByte(char[] from) {
-    int size = from.length;
-    byte[] to = new byte[size];
-    for (int i = 0; i < size; i++)
-      to[i] = (byte) from[i];
-    return to;
-  } */
 
 }

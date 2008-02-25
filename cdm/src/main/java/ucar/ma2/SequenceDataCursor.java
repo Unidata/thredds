@@ -17,41 +17,12 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
-
-import junit.framework.TestCase;
-
-import java.io.IOException;
-
-import ucar.ma2.*;
+package ucar.ma2;
 
 /**
+ * Opaque object for iterating throught nested sequences.
  * @author caron
- * @since Jan 25, 2008
+ * @since Feb 23, 2008
  */
-public class TestStructureIterator extends TestCase {
-
-  public TestStructureIterator(String name) {
-    super(name);
-  }
-
-  public void testStructureIterator() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestNC2.open("C:/data/metars/Surface_METAR_20070331_0000.nc");
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-
-    Structure v = (Structure) ncfile.findVariable("record");
-    assert v != null;
-    assert (v.getDataType() == DataType.STRUCTURE);
-
-    int count = 0;
-    StructureDataIterator si = v.getStructureIterator();
-    while (si.hasNext()) {
-      StructureData sd = si.next();
-      count++;
-    }
-    assert count == v.getSize();
-    
-    ncfile.close();
-  }
+public interface SequenceDataCursor {
 }
-

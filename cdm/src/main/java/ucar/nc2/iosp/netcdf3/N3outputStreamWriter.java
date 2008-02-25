@@ -66,7 +66,7 @@ public class N3outputStreamWriter extends N3streamWriter {
       int nrec = 0;
 
       Structure recordVar = (Structure) ncfile.findVariable("record");
-      Structure.Iterator ii = recordVar.getStructureIterator();
+      StructureDataIterator ii = recordVar.getStructureIterator();
       while (ii.hasNext()) {
         StructureData sdata = ii.next();
         int count = 0;

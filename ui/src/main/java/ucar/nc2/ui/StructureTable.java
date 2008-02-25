@@ -398,7 +398,7 @@ public class StructureTable extends JPanel {
           hasParent = true;
       }
 
-      if (isVariableLength) {
+      /* if (isVariableLength) {  LOOK Sequence
         // for now, we have to read entire sequence into memory !!
         try {
           Array seqDataArray = hasParent ? struct.readAllStructures(null, true) : struct.read();
@@ -412,7 +412,7 @@ public class StructureTable extends JPanel {
           ex.printStackTrace();
           throw new RuntimeException(ex.getMessage());
         }
-      }
+      } */
     }
 
     public Date getDate(int row) {

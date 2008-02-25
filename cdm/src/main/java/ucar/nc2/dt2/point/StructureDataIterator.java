@@ -36,12 +36,12 @@ public abstract class StructureDataIterator implements FeatureIterator {
   protected abstract Feature makeDatatypeWithData(int recnum, StructureData sdata) throws IOException;
 
   private Filter filter;
-  private Structure.Iterator structIter;
+  private ucar.ma2.StructureDataIterator structIter;
   private Feature feature = null;
 
   private int recnum = 0;
 
-  protected StructureDataIterator(Structure struct, int bufferSize, Filter filter) {
+  protected StructureDataIterator(Structure struct, int bufferSize, Filter filter) throws IOException {
     this.structIter = struct.getStructureIterator(bufferSize);
     this.filter = filter;
   }

@@ -31,7 +31,7 @@ public class TestStructureArray2 extends TestCase {
 
     testStructureArray( (ArrayStructure) data);
 
-    Structure.Iterator si = v.getStructureIterator();
+    StructureDataIterator si = v.getStructureIterator();
     while (si.hasNext())
       testStructureData(si.next());
 
@@ -54,7 +54,7 @@ public class TestStructureArray2 extends TestCase {
 
     testStructureArray( (ArrayStructure) data);
 
-    Structure.Iterator si = p.getStructureIterator();
+    StructureDataIterator si = p.getStructureIterator();
     while (si.hasNext())
       testStructureData(si.next());
 
@@ -85,7 +85,7 @@ public class TestStructureArray2 extends TestCase {
     if (isScalar)
       testStructureData(v.readStructure());
     else {
-      Structure.Iterator si = v.getStructureIterator();
+      StructureDataIterator si = v.getStructureIterator();
       while (si.hasNext())
         testStructureData(si.next());
 

@@ -131,7 +131,7 @@ public class TestDODSArrayOfStructure extends TestCase {
     assert v.getDataType() == DataType.STRUCTURE;
 
     DODSStructure struct = (DODSStructure) v;
-    Structure.Iterator iter = struct.getStructureIterator();
+    StructureDataIterator iter = struct.getStructureIterator();
     while (iter.hasNext()) {
       StructureData sd = iter.next();
 

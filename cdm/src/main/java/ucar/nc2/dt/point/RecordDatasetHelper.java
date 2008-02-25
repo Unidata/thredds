@@ -33,6 +33,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.ma2.StructureData;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers;
+import ucar.ma2.StructureDataIterator;
 
 import java.io.*;
 import java.util.*;
@@ -209,7 +210,7 @@ public class RecordDatasetHelper {
     StructureMembers members = null;
     ArrayList records = new ArrayList();
     int recno = 0;
-    Structure.Iterator ii = recordVar.getStructureIterator();
+    StructureDataIterator ii = recordVar.getStructureIterator();
     while (ii.hasNext()) {
       StructureData sdata = ii.next();
       if (members == null)

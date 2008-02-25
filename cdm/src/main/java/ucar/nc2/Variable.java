@@ -1101,6 +1101,23 @@ public class Variable implements VariableIF {
   }
 
   /**
+   * Create a Variable. Also must call setDataType() and setDimensions()
+   *
+   * @param ncfile    the containing NetcdfFile.
+   * @param group     the containing group; if null, use rootGroup
+   * @param parent    parent Structure, may be null
+   * @param shortName variable shortName, must be unique within the Group
+   */
+  public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
+    this.ncfile = ncfile;
+    this.group = (group == null) ? ncfile.getRootGroup() : group;
+    this.parent = parent;
+    this.shortName = shortName;
+    setDataType( dtype);
+    setDimensions( dims);
+  }
+
+  /**
    * Copy constructor.
    * The returned Variable is mutable. It shares the cache object and the iosp Object with the original.
    * Use for section, slice, "logical views" of original variable.
@@ -1537,7 +1554,7 @@ public class Variable implements VariableIF {
       result.add( v.getDimension(i));
   }
 
-  /**
+  /*
    * Read data in all structures for this Variable, using a string sectionSpec to specify the section.
    * See readAllStructures(Section section, boolean flatten) method for details.
    *
@@ -1546,12 +1563,12 @@ public class Variable implements VariableIF {
    * @return the requested data which has the shape of the request.
    * @see #readAllStructures
    * @deprecated
-   */
+   *
   public Array readAllStructuresSpec(String sectionSpec, boolean flatten) throws IOException, InvalidRangeException {
     return readAllStructures(new Section(sectionSpec), flatten);
   }
 
-  /**
+  /*
    * Read data from all structures for this Variable.
    * This is used for member variables whose parent Structure(s) is not a scalar.
    * You must specify a Range for each dimension in the enclosing parent Structure(s).
@@ -1572,7 +1589,7 @@ public class Variable implements VariableIF {
    *                   StructureData container for the returned data array. LOOK maybe always flatten = true ??
    * @return the requested data which has the shape of the request.
    * @deprecated
-   */
+   *
   public Array readAllStructures(ucar.ma2.Section sectionAll, boolean flatten) throws java.io.IOException, ucar.ma2.InvalidRangeException {
     Section resolved; // resolve all nulls
     if (sectionAll == null)
@@ -1601,7 +1618,7 @@ public class Variable implements VariableIF {
 
     // return section with this variable's sublist removed
     return section.subList(v.getRank(), section.size());
-  }
+  } */
 
   /**
    * Composes this variable's ranges with another list of ranges, adding parent ranges; resolves nulls.

@@ -6,6 +6,7 @@ import ucar.nc2.dods.DODSStructure;
 import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
 
 import java.io.IOException;
 import java.util.*;
@@ -259,7 +260,7 @@ public class JplQuikScatDodsFileServer
     ce = this.buildConstraintExpression( request );
 
     log.debug( "findMatchingCatalogEntries(): request catalog entries with DODS CE <" + ce + ">." );
-    Structure.Iterator dodsIt = this.catalogSeq.getStructureIterator();
+    StructureDataIterator dodsIt = this.catalogSeq.getStructureIterator();
     retIt = new DfsIterator( dodsIt );
 
     return( retIt);
@@ -377,7 +378,7 @@ public class JplQuikScatDodsFileServer
   private class DfsIterator implements Iterator
   {
     /** The iterator of DODSStructures to be encapsulated. **/
-    private ucar.nc2.Structure.Iterator dfsIterator = null;
+    private ucar.ma2.StructureDataIterator dfsIterator = null;
 
     /** Hold next entry. */
     private JplQuikScatEntry nextEntry = null;
@@ -391,7 +392,7 @@ public class JplQuikScatDodsFileServer
     /** The number of items returned from this iterator (used for debug/logging only). */
     private int curItemNum = 0;
 
-    protected DfsIterator( ucar.nc2.Structure.Iterator dfsIterator)
+    protected DfsIterator( ucar.ma2.StructureDataIterator dfsIterator)
     {
       // Set backing storage to the given iterator.
       this.dfsIterator = dfsIterator;
@@ -421,70 +422,76 @@ public class JplQuikScatDodsFileServer
       }
       else
       {
-        while ( this.dfsIterator.hasNext())
-        {
-          // More items in backing iterator.
-          StructureData ds = null;
-          try
+        try {
+          while ( this.dfsIterator.hasNext())
           {
-            this.curItemNumFromBackingStore++;
-            ds = this.dfsIterator.next();
-          }
-          catch( IOException e)
-          {
-            tmpMsg = "IOException accessing next item in iterator " +
-                    "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore + ">: " + e.getMessage();
-            log.debug( tmpMsg);
-            continue;
-          }
-          catch( ClassCastException e)
-          {
-            // Item from backing iterator was not DODSStructure, try next item.
-            tmpMsg = "DfsIterator.next(): item not a DODSStructure " +
-                    "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore + ">: " + e.getMessage();
-            log.debug( tmpMsg);
-            continue;
-          }
+            // More items in backing iterator.
+            StructureData ds = null;
+            try
+            {
+              this.curItemNumFromBackingStore++;
+              ds = this.dfsIterator.next();
+            }
+            catch( IOException e)
+            {
+              tmpMsg = "IOException accessing next item in iterator " +
+                      "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore + ">: " + e.getMessage();
+              log.debug( tmpMsg);
+              continue;
+            }
+            catch( ClassCastException e)
+            {
+              // Item from backing iterator was not DODSStructure, try next item.
+              tmpMsg = "DfsIterator.next(): item not a DODSStructure " +
+                      "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore + ">: " + e.getMessage();
+              log.debug( tmpMsg);
+              continue;
+            }
 
-          if ( ds == null )
-          {
-            // Item from backing iterator was null, try next item.
-            // @todo Can this happen or will catch of ClassCastException above deal w/ this situation.
-            tmpMsg = "DfsIterator.next(): entry was null " +
-                    "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore +
-                    ">.";
-            log.debug( tmpMsg);
-            continue;
-          }
-          // Construct a JplQuikScatEntry from the current entry.
-          try
-          {
-            this.nextEntry = new JplQuikScatEntry( ds);
-          }
-          catch (IllegalArgumentException e)
-          {
-            // Item from backing iterator was not a JPL QuikSCAT DFS DODSStructure catalog entry, skip to next item.
-            // @todo Is there a better way to deal with this than catch a RuntimeException?
-            tmpMsg = "DfsIterator.next(): IllegalArgumentException while reading entry (i.e., " +
-                    "entry not a JPL QuikSCAT DFS DODSStructure catalog entry)" +
-                    "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore +
-                    ">: " + e.getMessage();
-            log.debug( tmpMsg);
-            continue;
-          }
-          catch ( Exception e )
-          {
-            // Item from backing iterator could not be made into a JplQuikScatEntry, try next item.
-            tmpMsg = "DfsIterator.next(): Exception while creating entry " +
-                    "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore +
-                    ">: " + e.getMessage();
-            log.debug( tmpMsg);
-            continue;
-          }
+            if ( ds == null )
+            {
+              // Item from backing iterator was null, try next item.
+              // @todo Can this happen or will catch of ClassCastException above deal w/ this situation.
+              tmpMsg = "DfsIterator.next(): entry was null " +
+                      "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore +
+                      ">.";
+              log.debug( tmpMsg);
+              continue;
+            }
+            // Construct a JplQuikScatEntry from the current entry.
+            try
+            {
+              this.nextEntry = new JplQuikScatEntry( ds);
+            }
+            catch (IllegalArgumentException e)
+            {
+              // Item from backing iterator was not a JPL QuikSCAT DFS DODSStructure catalog entry, skip to next item.
+              // @todo Is there a better way to deal with this than catch a RuntimeException?
+              tmpMsg = "DfsIterator.next(): IllegalArgumentException while reading entry (i.e., " +
+                      "entry not a JPL QuikSCAT DFS DODSStructure catalog entry)" +
+                      "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore +
+                      ">: " + e.getMessage();
+              log.debug( tmpMsg);
+              continue;
+            }
+            catch ( Exception e )
+            {
+              // Item from backing iterator could not be made into a JplQuikScatEntry, try next item.
+              tmpMsg = "DfsIterator.next(): Exception while creating entry " +
+                      "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore +
+                      ">: " + e.getMessage();
+              log.debug( tmpMsg);
+              continue;
+            }
 
-          // Got a valid item from backing iterator, return true;
-          this.curItemNum++;
-          return( true);
+            // Got a valid item from backing iterator, return true;
+            this.curItemNum++;
+            return( true);
+          }
+        } catch (IOException e) {
+              tmpMsg = "IOException accessing next item in iterator " +
+                      "< item numbers - " + this.curItemNum + " - " + this.curItemNumFromBackingStore + ">: " + e.getMessage();
+              log.debug( tmpMsg);
         }
 
         // No more items in backing iterator, mark as done and return false.

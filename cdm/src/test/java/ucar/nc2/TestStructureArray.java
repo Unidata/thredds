@@ -61,7 +61,7 @@ public class TestStructureArray extends TestCase {
     assert (data.getRank() == 1);
   }
 
-  public void testReadNested() throws IOException, InvalidRangeException {
+  /* public void testReadNested() throws IOException, InvalidRangeException {
 
     Structure v = (Structure) ncfile.findVariable("record");
     assert v != null;
@@ -88,5 +88,5 @@ public class TestStructureArray extends TestCase {
     assert(data2.getElementType() == double.class);
     assert (data2.getSize() == 3) : data.getSize();
     assert (data2.getRank() == 1);
-  }
+  }   */
 }

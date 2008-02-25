@@ -885,16 +885,18 @@ public class NetcdfFile {
    * @return Array data read.
    * @throws IOException if error
    * @throws InvalidRangeException if variableSection is invalid
-   * @see NCdumpW#parseVariableSection for syntax of constraint expression
+   * @see Section(String) for syntax of constraint expression
    */
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
     NCdumpW.CEresult cer = NCdumpW.parseVariableSection(this, variableSection);
     Section s = new Section(cer.ranges);
-    if (cer.hasInner){
+    return cer.v.read(s);
+
+    /* if (cer.hasInner){
       return cer.v.readAllStructures(s, flatten);
     } else {
       return cer.v.read(s);
-    }
+    } */
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -1553,6 +1555,18 @@ public class NetcdfFile {
     Range outerRange = ranges.getRange(0);
     return new ArrayStructureMA(members, new int[]{outerRange.length()});
   }
+
+  /**
+   * Get a StructureDataIterator for the given Sequence.
+   *
+   * @param v2 a variable of type Sequence
+   * @return an Iterator over the Structures in the Sequence
+   * @throws java.io.IOException if read error
+   */
+  protected StructureDataIterator getStructureDataIterator(ucar.nc2.Sequence v2, SequenceDataCursor c) throws java.io.IOException {
+    return spi.getStructureDataIterator(v2, c);
+  }
+
 
   /**
    * Access to iosp debugging info.

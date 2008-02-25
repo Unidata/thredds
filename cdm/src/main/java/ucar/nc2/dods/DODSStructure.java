@@ -113,7 +113,7 @@ public class DODSStructure extends ucar.nc2.Structure {
    * @see DODSStructure
    * @throws java.io.IOException on io error
    */
-  public Structure.Iterator getStructureIterator(String CE) throws java.io.IOException {
+  public StructureDataIterator getStructureIterator(String CE) throws java.io.IOException {
     return new SequenceIterator(CE);
   }
 

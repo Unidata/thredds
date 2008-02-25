@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import ucar.nc2.Structure;
 import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
 
 /**
  * Test DODS Sequence access using DODSStructure.
@@ -50,7 +51,7 @@ public class TestDODSStructureForSequence extends TestCase
 
     //String ce = "date_time(\"alkjdf\",\"eriu\")&" + seqName + ".longitude>";
     String ce = "&" + seqName + ".longitude>359.9" + "&" + seqName + ".longitude<359.9205";
-    ucar.nc2.Structure.Iterator dodsIt;
+    StructureDataIterator dodsIt;
     try
     {
       dodsIt = struct.getStructureIterator( ce);
@@ -68,14 +69,14 @@ public class TestDODSStructureForSequence extends TestCase
                0.0001F);
   }
 
-  private void entryTest( Structure.Iterator dodsIt, BasicEntry expectedEntry, float longDelta )
+  private void entryTest( StructureDataIterator dodsIt, BasicEntry expectedEntry, float longDelta )
   {
-    if ( ! dodsIt.hasNext())
-      assertTrue( "DODS result does not contain expected entry.", false);
 
     StructureData curData;
     try
     {
+      if ( ! dodsIt.hasNext())
+        assertTrue( "DODS result does not contain expected entry.", false);
       curData = dodsIt.next();
     }
     catch ( IOException e )

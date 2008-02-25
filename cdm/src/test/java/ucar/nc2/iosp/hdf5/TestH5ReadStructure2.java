@@ -66,7 +66,7 @@ public class TestH5ReadStructure2 extends TestCase {
     Structure s = (Structure) dset;
 
     // read all with the iterator
-    Structure.Iterator iter = s.getStructureIterator();
+    StructureDataIterator iter = s.getStructureIterator();
     while (iter.hasNext()) {
       StructureData sd = (StructureData) iter.next();
       assert sd.getScalarInt("a_name") == a_name;
@@ -113,7 +113,7 @@ public class TestH5ReadStructure2 extends TestCase {
     Structure s = (Structure) dset;
 
     // read all with the iterator
-    Structure.Iterator iter = s.getStructureIterator();
+    StructureDataIterator iter = s.getStructureIterator();
     while (iter.hasNext()) {
       StructureData sd = (StructureData) iter.next();
       assert sd.getScalarInt("a_name") == a_name;
@@ -170,7 +170,7 @@ public class TestH5ReadStructure2 extends TestCase {
     Structure s = (Structure) dset;
 
     // read all with the iterator
-    Structure.Iterator iter = s.getStructureIterator();
+    StructureDataIterator iter = s.getStructureIterator();
     while (iter.hasNext()) {
       StructureData sd = (StructureData) iter.next();
 

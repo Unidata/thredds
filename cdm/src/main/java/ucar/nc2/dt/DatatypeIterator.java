@@ -33,14 +33,24 @@ public abstract class DatatypeIterator implements DataIterator {
 
   protected abstract Object makeDatatypeWithData( int recnum, StructureData sdata) throws IOException;
 
-  private Structure.Iterator structIter;
+  private StructureDataIterator structIter;
   private int recnum = 0;
 
   protected DatatypeIterator(Structure struct, int bufferSize) {
-    this.structIter = struct.getStructureIterator(bufferSize);
+    try {
+      this.structIter = struct.getStructureIterator(bufferSize);
+    } catch (IOException e) {
+      throw new IllegalStateException(e.getMessage());
+    }
   }
 
-  public boolean hasNext() { return structIter.hasNext(); }
+  public boolean hasNext() {
+    try {
+      return structIter.hasNext();
+    } catch (IOException e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
 
   public Object nextData() throws IOException {
     StructureData sdata =  structIter.next();

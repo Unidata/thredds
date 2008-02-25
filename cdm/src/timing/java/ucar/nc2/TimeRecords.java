@@ -22,6 +22,7 @@ package ucar.nc2;
 
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
 import ucar.nc2.dt.*;
 
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class TimeRecords {
       record = new StructurePseudo(ncfile, null, "precord", d);
       System.out.println("   use psuedo record");
     }
-    Structure.Iterator iter = record.getStructureIterator();
+    StructureDataIterator iter = record.getStructureIterator();
     while (iter.hasNext()) {
       StructureData sd = iter.next();
       if (first) {

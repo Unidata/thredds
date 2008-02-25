@@ -17,41 +17,28 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
-
-import junit.framework.TestCase;
+package ucar.ma2;
 
 import java.io.IOException;
 
-import ucar.ma2.*;
-
 /**
  * @author caron
- * @since Jan 25, 2008
+ * @since Feb 23, 2008
  */
-public class TestStructureIterator extends TestCase {
+public interface StructureDataIterator {
 
-  public TestStructureIterator(String name) {
-    super(name);
-  }
+  /**
+   * See if theres more StructureData in the iteration
+   * @return true if more records are available
+   * @throws java.io.IOException on read error
+   */
+  public boolean hasNext() throws IOException;
 
-  public void testStructureIterator() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = TestNC2.open("C:/data/metars/Surface_METAR_20070331_0000.nc");
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-
-    Structure v = (Structure) ncfile.findVariable("record");
-    assert v != null;
-    assert (v.getDataType() == DataType.STRUCTURE);
-
-    int count = 0;
-    StructureDataIterator si = v.getStructureIterator();
-    while (si.hasNext()) {
-      StructureData sd = si.next();
-      count++;
-    }
-    assert count == v.getSize();
-    
-    ncfile.close();
-  }
+  /**
+   * Get the next StructureData in the iteration.
+   * The StructureData may be overwritten, you must copy out if need be.
+   * @return next StructureData record.
+   * @throws java.io.IOException on read error
+   */
+  public StructureData next() throws IOException;
 }
-

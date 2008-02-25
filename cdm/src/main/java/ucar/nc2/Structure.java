@@ -128,12 +128,13 @@ public class Structure extends Variable {
   /** Add a member variable
    * @param v add this variable as a member of this structure
    */
-  public void addMemberVariable( Variable v) {
+  public Variable addMemberVariable( Variable v) {
     if (isImmutable()) throw new IllegalStateException("Cant modify");
     members.add( v);
     memberHash.put( v.getShortName(), v);
     //smembers = null;
     v.setParentStructure( this);
+    return v;
   }
 
   /** Set the list of member variables.
@@ -334,15 +335,16 @@ public class Structure extends Variable {
    * data, or copy it out of the StructureData, as you iterate over it. DO NOT KEEP ANY REFERENCES to the
    * StructureData object.
    *  <pre>
-   *  Structure.Iterator ii = structVariable.getStructureIterator();
+   *  StructureDataIterator ii = structVariable.getStructureIterator();
    *  while (ii.hasNext()) {
         StructureData sdata = ii.next();
       }
       </pre>
-   *  @return Iterator over type StructureData
+   * @return StructureDataIterator over type StructureData
+   * @throws java.io.IOException on read error
    * @see #getStructureIterator(int bufferSize)
    */
-  public Structure.Iterator getStructureIterator() {
+  public StructureDataIterator getStructureIterator()  throws java.io.IOException {
     return new Structure.Iterator(defaultBufferSize);
   }
 
@@ -357,22 +359,23 @@ public class Structure extends Variable {
    *
    * <pre>Example:
    *
-   *  Structure.Iterator ii = structVariable.getStructureIterator(100 * 1000);
+   *  StructureDataIterator ii = structVariable.getStructureIterator(100 * 1000);
    *  while (ii.hasNext()) {
    *    StructureData sdata = ii.next();
    *  }
    * </pre>
    *  @param bufferSize size in bytes to buffer, set < 0 to use default size
-   *  @return Structure.Iterator over type StructureData
+   *  @return StructureDataIterator over type StructureData
+   * @throws java.io.IOException on read error
    */
-  public Structure.Iterator getStructureIterator(int bufferSize) {
+  public StructureDataIterator getStructureIterator(int bufferSize)  throws java.io.IOException {
     return new Structure.Iterator(bufferSize);
   }
 
   /**
    * Iterator over type StructureData.
    */
-  public class Iterator {
+  protected class Iterator implements StructureDataIterator{
     private int count = 0;
     private int recnum = (int) getSize();
     private int readStart = 0;
@@ -450,6 +453,7 @@ public class Structure extends Variable {
   @Override
   public String writeCDL(String space, boolean useFullName, boolean strict) {
     StringBuffer buf = new StringBuffer();
+    buf.append("\n");
     buf.append(space);
     buf.append(dataType.toString());
     buf.append(" {\n");
@@ -476,6 +480,7 @@ public class Structure extends Variable {
         buf.append(" // ").append(att.getDataType());
       buf.append("\n");
     }
+    buf.append("\n");
 
     return buf.toString();
   }

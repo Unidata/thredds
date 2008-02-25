@@ -27,6 +27,7 @@ import ucar.nc2.Structure;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
+import ucar.ma2.StructureDataIterator;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -195,7 +196,7 @@ public class TimeStaxReading {
         new MetarField(v.getShortName());
     }
 
-    Structure.Iterator siter = record.getStructureIterator();
+    StructureDataIterator siter = record.getStructureIterator();
     int count = 0;
     while (siter.hasNext()) {
       StructureData sdata = siter.next();
