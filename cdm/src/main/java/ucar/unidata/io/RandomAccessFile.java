@@ -703,8 +703,10 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
     // If the file position is within the block of data...
     if (filePosition < dataEnd) {
-      buffer[(int) (filePosition++ - bufferStart)] = (byte) b;
+      int pos = (int) (filePosition - bufferStart);
+      buffer[pos] = (byte) b;
       bufferModified = true;
+      filePosition++;
 
       // ...or (assuming that seek will not allow the file pointer
       // to move beyond the end of the file) get the correct block of
@@ -713,8 +715,10 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
       // If there is room in the buffer, expand it...
       if (dataSize != buffer.length) {
-        buffer[(int) (filePosition++ - bufferStart)] = (byte) b;
+        int pos = (int) (filePosition - bufferStart);
+        buffer[pos] = (byte) b;
         bufferModified = true;
+        filePosition++;
         dataSize++;
         dataEnd++;
 
@@ -735,7 +739,6 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @throws IOException if an I/O error occurrs.
    */
   public void writeBytes(byte b[], int off, int len) throws IOException {
-
     // If the amount of data is small (less than a full buffer)...
     if (len < buffer.length) {
 
@@ -743,23 +746,16 @@ public class RandomAccessFile implements DataInput, DataOutput {
       int spaceInBuffer = 0;
       int copyLength = 0;
       if (filePosition >= bufferStart) {
-        spaceInBuffer = (int) ((bufferStart + buffer.length)
-            - filePosition);
+        spaceInBuffer = (int) ((bufferStart + buffer.length) - filePosition);
       }
-      if (spaceInBuffer > 0) {
 
+      if (spaceInBuffer > 0) {
         // Copy as much as possible to the buffer.
-        copyLength = (spaceInBuffer > len)
-            ? len
-            : spaceInBuffer;
-        System.arraycopy(b, off, buffer,
-            (int) (filePosition - bufferStart),
-            copyLength);
+        copyLength = (spaceInBuffer > len) ? len : spaceInBuffer;
+        System.arraycopy(b, off, buffer, (int) (filePosition - bufferStart), copyLength);
         bufferModified = true;
         long myDataEnd = filePosition + copyLength;
-        dataEnd = (myDataEnd > dataEnd)
-            ? myDataEnd
-            : dataEnd;
+        dataEnd = (myDataEnd > dataEnd) ? myDataEnd : dataEnd;
         dataSize = (int) (dataEnd - bufferStart);
         filePosition += copyLength;
         ///System.out.println("--copy to buffer "+copyLength+" "+len);
@@ -770,14 +766,10 @@ public class RandomAccessFile implements DataInput, DataOutput {
       if (copyLength < len) {
         //System.out.println("--need more "+copyLength+" "+len+" space= "+spaceInBuffer);
         seek(filePosition);   // triggers a flush
-        System.arraycopy(b, off + copyLength, buffer,
-            (int) (filePosition - bufferStart),
-            len - copyLength);
+        System.arraycopy(b, off + copyLength, buffer, (int) (filePosition - bufferStart), len - copyLength);
         bufferModified = true;
         long myDataEnd = filePosition + (len - copyLength);
-        dataEnd = (myDataEnd > dataEnd)
-            ? myDataEnd
-            : dataEnd;
+        dataEnd = (myDataEnd > dataEnd) ? myDataEnd : dataEnd;
         dataSize = (int) (dataEnd - bufferStart);
         filePosition += (len - copyLength);
       }
@@ -788,13 +780,15 @@ public class RandomAccessFile implements DataInput, DataOutput {
       // Flush the current buffer, and write this data to the file.
       if (bufferModified) {
         flush();
-        bufferStart = dataEnd = dataSize = 0;
-        // file.seek(filePosition); // JC added Oct 21, 2004
       }
       file.seek(filePosition);  // moved per Steve Cerruti; Jan 14, 2005
       file.write(b, off, len);
       //System.out.println("--write at "+filePosition+" "+len);
+
       filePosition += len;
+      bufferStart = filePosition;  // an empty buffer
+      dataSize = 0;
+      dataEnd = bufferStart + dataSize;
     }
   }
 
