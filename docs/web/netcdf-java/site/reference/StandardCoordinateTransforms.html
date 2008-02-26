@@ -58,6 +58,17 @@
   char Orthographic_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;orthographic&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = 110.0; <br>     :<strong>latitude_of_projection_origin</strong> = -25.0; <br>     :<strong>_CoordinateTransformType</strong> = &quot;Projection&quot;;
      :<strong>_CoordinateAxisTypes</strong> = &quot;GeoX GeoY&quot;;</pre>
 <p>This is not a standard CF projection. This uses a spherical earth. See Snyder, p 145. </p>
+<h3>rotated pole </h3>
+<pre> char rotated_pole;
+ 	 :<strong>grid_mapping_name</strong> = &quot;rotated_latitude_longitude&quot;;
+   :<strong>grid_north_pole_latitude</strong> = 37.0f; // float
+   :<strong>grid_north_pole_longitude</strong> = -153.0f; // float
+   :<strong>_CoordinateTransformType</strong> = &quot;Projection&quot;;
+   :<strong>_CoordinateAxisTypes</strong> = &quot;GeoX GeoY&quot;;</pre>
+<p> The rotated latitude and longitude coordinates are identified by the <code class="varname">standard_name</code> attribute values <code class="varname"><strong>grid_latitude</strong></code> and <code class="varname"><strong>grid_longitude</strong></code> respectively. Examle:</p>
+<pre> float rlat(rlat=84);<br>     :<strong>standard_name</strong> = &quot;grid_latitude&quot;;<br>     :long_name = &quot;rotated latitude&quot;;<br>     :units = &quot;degrees&quot;;<br>     :_CoordinateAxisType = &quot;GeoY&quot;;<br>   float rlon(rlon=90);<br>     :<strong>standard_name</strong> = &quot;grid_longitude&quot;;<br>     :long_name = &quot;rotated longitude&quot;;<br>     :units = &quot;degrees&quot;;<br>     :_CoordinateAxisType = &quot;GeoX&quot;;
+</pre>
+<p>Contributed by Robert Schmunk. Added in version 4.0. Have not found a standard definition to reference . </p>
 <h3>  polar_stereographic</h3>
 <pre>   char Polar_Stereographic;<br>     :<strong>grid_mapping_name</strong> = &quot;polar_stereographic&quot;;<br>     :<strong>straight_vertical_longitude_from_pole</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<strong>scale_factor_at_projection_origin</strong> = 0.9330127018922193; <br>     :<strong>_CoordinateTransformType</strong> = &quot;Projection&quot;;<br>     :<strong>_CoordinateAxisTypes</strong> = &quot;GeoX GeoY&quot;;</pre>
 <p>The Stereographic and Polar Stereographic are  the same projection.</p>
@@ -123,7 +134,7 @@
 <p>This is not part of CF, but a way to mark an existing 3D (4D if time dependent) field as the vertical coordinate.     </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 26, 2007 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jan 28, 2008 
 </address>
 <p>&nbsp;</p>
 </body>

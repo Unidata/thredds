@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>NetCDF Subset Service</title>
+<title>Configuring the NetCDF Subset Service</title>
 </head>
 
 <body>
@@ -12,11 +12,7 @@
   <hr>
   <h2>Overview</h2>
   <p>The Netcdf Subset Service is one of the ways that the TDS can serve data. It is an experimental REST protocol for returning subsets of CDM datasets. Currently, only  the service for Gridded Data is mature enough for other users to try. The service for Point Data is still under development, contact us if you are eager to try it on your datasets.</p>
-  <p>This documentation is for TDS administrators. If you are a client wanting to access data through the Netcdf Subset Service,  look at these interfaces: </p>
-  <ul>
-    <li><a href="StationDataSubsetService.html">NetCDF Subset Service for Point Data</a></li>
-    <li><a href="GridDataSubsetService.html">NetCDF Subset Service for Gridded Data</a></li>
-  </ul>
+  <p>This documentation is for TDS administrators. If you are a client wanting to access data through the Netcdf Subset Service,  look at <a href="../interfaceSpec/NetcdfSubsetService.html">NetCDF Subset Service Reference.</a></p>
   <h2>Enabling the Netcdf Subset Service in the TDS</h2>
   <p>1. In your configuration catalogs, you must define the service like this: </p>
   <pre>  &lt;service name=&quot;subsetServer&quot; serviceType=&quot;<strong>NetcdfSubset</strong>&quot; base=&quot;<strong>/thredds/ncss/grid/</strong>&quot; suffix=&quot;<strong>/dataset.html</strong>&quot;/&gt;</pre>
