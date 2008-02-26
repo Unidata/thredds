@@ -118,13 +118,5 @@ public class StructurePseudo extends Structure {
     return asma;
   }
 
-  /**
-   * Not allowed.
-   * @throws InvalidRangeException
-   */
-  @Override
-  protected Array _readMemberData(Section section, boolean flatten) throws IOException, InvalidRangeException  {
-    throw new UnsupportedOperationException();
-  }
 
 }

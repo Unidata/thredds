@@ -1534,11 +1534,11 @@ public class NetcdfFile {
   }
 
   // this is for reading variables that are members of structures
-  /**
-   * Do not call this directly, use Variable.readSection() !!
+  /*
+   * Do not call this directly, use Variable.read() !!
    * Ranges must be filled (no nulls)
    * @deprecated
-   */
+   *
   protected Array readMemberData(ucar.nc2.Variable v, Section ranges, boolean flatten) throws IOException, InvalidRangeException {
     Array result = spi.readNestedData(v, ranges);
 
@@ -1554,7 +1554,7 @@ public class NetcdfFile {
     // LOOK what about scalar, rank - 0 ??
     Range outerRange = ranges.getRange(0);
     return new ArrayStructureMA(members, new int[]{outerRange.length()});
-  }
+  } */
 
   /**
    * Get a StructureDataIterator for the given Sequence.

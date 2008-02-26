@@ -29,10 +29,10 @@ import java.nio.channels.Channels;
 
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
+  /* public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
          throws java.io.IOException, ucar.ma2.InvalidRangeException {
     throw new UnsupportedOperationException("IOSP "+getClass().getName()+" does not support nested variables");
-  }
+  } */
 
   public StructureDataIterator getStructureDataIterator(ucar.nc2.Sequence v2, SequenceDataCursor c) throws java.io.IOException {
     throw new UnsupportedOperationException("IOSP "+getClass().getName()+" does not support sequences");

@@ -850,12 +850,14 @@ public class Variable implements VariableIF {
       return preReader.read(this, null);
 
     if (isMemberOfStructure()) {
-      try {
+      throw new UnsupportedOperationException("Cannot directly read Member Variable="+getName());
+
+      /* try {
         return readMemberOfStructureFlatten(null);
       } catch (InvalidRangeException e) {
         log.error("VariableStructureMember.read got InvalidRangeException", e);
         throw new IllegalStateException("VariableStructureMember.read got InvalidRangeException");
-      }
+      } */
     }
 
     // already cached
@@ -902,7 +904,8 @@ public class Variable implements VariableIF {
       return preReader.read(this, section, null);
 
     if (isMemberOfStructure()) {
-      return readMemberOfStructureFlatten(section);
+      throw new UnsupportedOperationException("Cannot directly read Member Variable="+getName());
+      //return readMemberOfStructureFlatten(section);
     }
 
     // full read was cached
@@ -1649,7 +1652,7 @@ public class Variable implements VariableIF {
     return result;
   }
 
-  private Array readMemberOfStructureFlatten(Section section) throws InvalidRangeException, IOException {
+  /* private Array readMemberOfStructureFlatten(Section section) throws InvalidRangeException, IOException {
     // get through first parents element
     Section sectionAll = makeSectionAddParents(section, true);
     Array data = _readMemberData(sectionAll, true); // flatten
@@ -1661,11 +1664,11 @@ public class Variable implements VariableIF {
     return data;
   }
 
-  // structure-member Variable;  section has a Range for each array in the parent
+  /* structure-member Variable;  section has a Range for each array in the parent
   // stuctures(s) and for the Variable.
   protected Array _readMemberData(Section section, boolean flatten) throws IOException, InvalidRangeException {
     return ncfile.readMemberData(this, section, flatten);
-  }
+  } */
 
   ////////////////////////////////
 

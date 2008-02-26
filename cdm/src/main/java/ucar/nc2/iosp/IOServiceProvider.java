@@ -95,7 +95,7 @@ public interface IOServiceProvider {
    */
   public StructureDataIterator getStructureDataIterator(ucar.nc2.Sequence v2, SequenceDataCursor c) throws java.io.IOException;
 
-  /**
+  /*
    * LOOK Should we allow reading on member variables ??
    * Read data from a Variable that is nested in one or more Structures.
    * Return an Array of the same type as the Variable and the requested shape. The shape
@@ -111,9 +111,9 @@ public interface IOServiceProvider {
    * @return the requested data in a memory-resident Array
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
-   */
+   *
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
-         throws IOException, ucar.ma2.InvalidRangeException; 
+         throws IOException, ucar.ma2.InvalidRangeException; */
 
   /**
    * Close the file.

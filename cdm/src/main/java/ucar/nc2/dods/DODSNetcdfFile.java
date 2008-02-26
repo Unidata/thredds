@@ -1274,8 +1274,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     return IospHelper.transferData(result, channel);
   }
 
-  // this is for reading variables that are members of structures
-  @Override
+  /* this is for reading variables that are members of structures
   protected Array readMemberData(ucar.nc2.Variable v, Section section, boolean flatten) throws IOException, InvalidRangeException {
     StringBuffer buff = new StringBuffer(100);
     buff.setLength(0);
@@ -1306,7 +1305,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
 
     return dataArray;
-  }
+  }  */
 
   public Array readWithCE(ucar.nc2.Variable v, String CE) throws IOException {
 

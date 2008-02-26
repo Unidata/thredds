@@ -896,7 +896,7 @@
     <option name="GENERATE_NO_WARNINGS" value="false" />
     <option name="DEPRECATION" value="false" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
-    <option name="MAXIMUM_HEAP_SIZE" value="256" />
+    <option name="MAXIMUM_HEAP_SIZE" value="512" />
   </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
@@ -1050,7 +1050,6 @@
       </item>
     </group>
   </component>
-  <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
@@ -1061,15 +1060,8 @@
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="1.6.0_02" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="1.6.0" project-jdk-type="JavaSDK" />
   <component name="ProjectRunConfigurationManager" />
-  <component name="ResourceManagerContainer">
-    <option name="myResourceBundles">
-      <value>
-        <list size="0" />
-      </value>
-    </option>
-  </component>
   <component name="RmicSettings">
     <option name="IS_EANABLED" value="false" />
     <option name="DEBUGGING_INFO" value="true" />
@@ -1078,11 +1070,7 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
   <component name="StarteamVcsAdapter" />
-  <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="svn" />
-  </component>
   <component name="VssVcs" />
-  <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">
     <option name="USER_DEFINED_CONFIGS">
       <value>

@@ -7,14 +7,14 @@
 </head>
 
 <body>
-<h1>Unidata's Common Data Model</h1>
+<h1>Unidata's Common Data Model, version 4 </h1>
 <h3>Overview</h3>
-<p> Unidata&rsquo;s Common Data Model (CDM) is an abstract <a href="http://en.wikipedia.org/wiki/Data_model">data model</a> for scientific datasets. It merges the <a href="http://www.unidata.ucar.edu/software/netcdf/">netCDF</a>, <a href="http://www.opendap.org/">OPeNDAP</a>, and <a href="http://www.hdfgroup.org/products/hdf5/">HDF5</a> data models to create a common API for many types of scientific data. As currently implemented by the NetCDF Java library, it can read (besides OPeNDAP, netCDF, and HDF5) GRIB 1 and 2, BUFR, NEXRAD, and GINI fomatted files, among others. A pluggable framework allows other developers to add readers for their own specialized formats. </p>
+<p> Unidata&rsquo;s Common Data Model (CDM) is an abstract <a href="http://en.wikipedia.org/wiki/Data_model">data model</a> for scientific datasets. It merges the <a href="http://www.unidata.ucar.edu/software/netcdf/">netCDF</a>, <a href="http://www.opendap.org/">OPeNDAP</a>, and <a href="http://www.hdfgroup.org/products/hdf5/">HDF5</a> data models to create a common API for many types of scientific data. As currently implemented by the NetCDF Java library, it can read (besides OPeNDAP, netCDF, and HDF5) GRIB 1 and 2, BUFR, HDF4, HDF-EOS, NEXRAD,  GINI, GEMPAK fomatted files, among others. A pluggable framework allows other developers to add readers for their own specialized formats. </p>
 <p>The Common Data Model has three layers, which build on top of each other to add successively richer semantics:</p>
 <ol>
   <li>The <strong><em>data access layer</em></strong>, also know as the <strong><em>syntactic layer,</em></strong> handles data reading and writing. </li>
   <li>The <strong><em>coordinate system</em></strong> layer identifies the coordinates of the data arrays. Coordinates are a completely general concept for scientific data; we also identify specialized <strong><em>georeferencing coordinate systems</em></strong>, which are important to the Earth Science community.</li>
-  <li>The <strong><em>scientific data type</em></strong> layer identifies specific types of data, such as <em>grids</em>, <em>images</em>, and <em>point data</em>, and adds specialized methods for each kind of data.</li>
+  <li>The <strong><em>scientific feature type</em></strong> layer identifies specific types of data, such as <em>grids</em>, <em>images</em>, and <em>point data</em>, and adds specialized methods for each kind of data.</li>
 </ol>
 <hr WIDTH="100%">
 <h2>Data Access Layer Objects </h2>
@@ -22,33 +22,35 @@
 <p>&nbsp;</p>
 <p><strong>A Dataset </strong>may be a netCDF, HDF5, GRIB, etc. file, an OPeNDAP dataset, a collection of files, or anything else which can be accessed through the netCDF API. We sometimes use the term <em><strong>CDM dataset</strong></em> to mean any of these possibilities, and to emphasize that a dataset does not have to be a file in netCDF format.</p>
 <p>A <strong>Group</strong> is a logical collection of Variables. The Groups in a Dataset form a hierarchical tree, like directories on a disk. A Group has a name and optionally a set of Attributes, Dimensions, and nested Groups <strong>. </strong>There is always at least one Group in a Dataset, the <strong>root Group</strong>, whose name is the empty string.</p>
-<p><strong>A Variable</strong> is a container for data. It has a <em>DataType</em>, a set of Dimensions that define its array shape, and optionally a set of Attributes. Any shared Dimension it uses must be in the same Group or a parent Group. </p>
-<p>A <strong>Dimension</strong> has a length, and is used to define the array shape of a Variable. It may be <em>shared</em> among Variables, which provides a simple yet powerful way of associating Variables. When a Dimension is shared, it has a unique name within the Group. If <em>unlimited</em>,  a Dimension's length may increase. If <em>variableLength</em>, then the actual length is data dependent, and is used to implement the equivilent of ragged arrays.</p>
+<p>A <strong>Variable</strong> is a container for data. It has a <em>DataType</em>, a set of Dimensions that define its array shape, and optionally a set of Attributes. Any shared Dimension it uses must be in the same Group or a parent Group. </p>
+<p>A <strong>Dimension</strong> has a length, and is used to define the array shape of a Variable. It may be <em>shared</em> among Variables, which provides a simple yet powerful way of associating Variables. When a Dimension is shared, it has a unique name within the Group. If <em>unlimited</em>,  a Dimension's length may increase. If <em>variableLength</em>, then the actual length is data dependent, and can only be found by reading the data. </p>
 <p>An <strong>Attribute</strong> has a name and a value, and associates arbitrary metadata with a Variable or a Group. The value can be a one dimensional array of Strings or numeric values.</p>
-<p>A <strong>Structure</strong> is a type of Variable that contains other Variables, analogous to a <strong><em>struct</em></strong> in C. In general, the data in a Structure are physically stored close together on disk, so that it is efficient to retrieve all of the data in a Structure at the same time. A <strong>Sequence</strong> is a one dimensional Variable whose length is not known until you actually read the data. All other Variable types know what their array lengths are without having to read the data. You can have sequences of sequences, which is equivalent to ragged arrays.</p>
-<p>An <strong>object name</strong> refers to the name of a Group, Dimension, Variable, or Attribute. An object name is a String,  a variable length array of Unicode characters. There is no restriction on an object name, it can be any valid Unicode characters.</p>
-<p>An <strong>Array</strong> contains the actual data for a Variable after it is read from the disk or network. You get an Array from a Variable by calling <strong><em>read()</em></strong> or its variants. An Array is always rectangular in shape (like Fortran arrays). </p>
+<p>A <strong>Structure</strong> is a type of Variable that contains other Variables, analogous to a <strong><em>struct</em></strong> in C, or a <em><strong>row</strong></em> in a relational database. In general, the data in a Structure are physically stored close together on disk, so that it is efficient to retrieve all of the data in a Structure at the same time. A Variable contained in a Structure is a <strong>member Variable</strong>, and can only be read in the context of its containing Structure. </p>
+<p>A <strong>Sequence</strong> is a one dimensional Structure whose length is not known until you actually read the data. To access the data in a Sequence, you can only iterate through the Sequence, getting the data one Structure at a time. </p>
+<p>An <strong>Object name</strong> refers to the name of a Group, Dimension, Variable, or Attribute. An object name is a String,  a variable length array of Unicode characters. </p>
+<p>An <strong>Array</strong> contains the actual data for a Variable after it is read from the disk or network. You get an Array from a Variable by calling <strong><em>read()</em></strong> or its variants. An Array is always rectangular in shape (like Fortran arrays). There is a specialized Array type for each of the DataTypes. </p>
 <p><strong>DataType</strong> describes the possible types of data: </p>
 <blockquote>
-  <p>The <strong>primitive numeric </strong> types are <strong><em>byte, short, int, long, float</em></strong> and <strong><em>double</em></strong>. The integer types (byte, short, int, long) may be <em>signed</em> or <em>unsigned</em>.  </p>
-  <p>A <strong>String</strong> is a variable length array of <a href="http://unicode.org/">Unicode</a> characters. When reading/writing a String to a  file, the characters are <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8 encoded</a> (note that ASCII is a subset of UTF-8). Libraries may use different internal representations, for example the Java library uses UTF-16 encoding. </p>
-  <p>The <strong>char</strong> type contains ASCII characters, one character per byte. </p>
-  <p>An <strong>enum</strong> type is an enumeration of (distinct integer value, String) pairs.. A Variable with enum type stores  integer values, which are then mapped to  Strings. </p>
+  <p>The <strong>primitive numeric </strong> types are <strong><em>byte, short, int, long, float</em></strong> and <strong><em>double</em></strong>. The integer types (8-bit byte, 16-bit short, 32-bit int, 64-bit long) may be <em>signed</em> or <em>unsigned</em>. Float and double are IEEE encoded. </p>
+  <p>A <strong>String</strong> is a variable length array of <a href="http://unicode.org/">Unicode</a> characters. When reading/writing a String to a  file or other external representation, the characters are by default <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8 encoded</a> (note that ASCII is a subset of UTF-8). Libraries may use different internal representations, for example the Java library uses UTF-16 encoding. </p>
+  <p>The <strong>char</strong> type contains uninterpreted  characters, one character per byte. Typically these contain 7-bit ASCII characters. </p>
+  <p>An <strong>enum</strong> type is an enumeration of (distinct integer value, String) pairs.. A Variable with enum type stores  integer values, which are then mapped to  Strings.</p>
+  <p>A <strong>StructureData</strong> holds the data for Structures, and allows access to each of the member Variable's data. </p>
 </blockquote>
 <hr WIDTH="100%">
 <h2>Coordinate Systems</h2>
 <ul>
-  <li>see <a href="reference/CSObjectModel.html">Coordinate System Object Model</a></li>
+  <li>see <a href="../reference/CSObjectModel.html">Coordinate System Object Model</a></li>
 </ul>
 <p>It may have a <strong>coordinate Variable</strong>, which gives each index a coordinate value. </p>
 <hr WIDTH="100%">
 <h2>Scientific Feature Types<a name="ScientificFeatureTypes"></a></h2>
 <ul>
-  <li>not done yet </li>
+  <li> CDM Feature Types <em> draft Feb 20, 2008</em> <a href="http://www.unidata.ucar.edu/staff/caron/papers/CDMfeatures.doc">doc</a></li>
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 06, 2007
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 26, 2008 
 </address>
 <p>&nbsp;</p>
 </body>

@@ -48,13 +48,13 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private int nobs = 0, nstations = 0;
   private Calendar cal = null;
   private DateFormatter dateFormatter = new DateFormatter();
-  private Date refDate;
+  private Date refDate; // from the header
   private String refString; // debug
 
   private boolean showObs = false, showSkip = false, showOverflow = false, showData = false,
       showHeader = false, showTime = false;
   private boolean readData = false, summarizeData = false, showTimes = false;
-  private boolean checkType = false, checkSort = false, checkPositions = false;
+  private boolean checkType = false, checkSort = true, checkPositions = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     byte[] h = raf.readBytes(60);
@@ -217,15 +217,21 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Set<String> keys = map.keySet();
     if (showTimes || readData || checkSort) {
+      int unsorted = 0;
+
       for (String key : keys) {
         List<Report> reports = map.get(key);
         if (showTimes) System.out.print("Station " + key + ": ");
         if (summarizeData) System.out.println("Station " + key + " :");
-        Date last = null;
+        Report last = null;
         for (Report r : reports) {
-          if ((last != null) && last.after(r.date))
-            System.out.println("***BAD " + key + " last=" + dateFormatter.toDateTimeStringISO(last) + " next =" + dateFormatter.toDateTimeStringISO(r.date));
-          last = r.date;
+          if ((last != null) && last.date.after(r.date)) {
+            System.out.println("***NOT ORDERED " + key +
+                " last=" + dateFormatter.toDateTimeStringISO(last.date) + "("+last.filePos+")"+
+                " next =" + dateFormatter.toDateTimeStringISO(r.date)+ "("+r.filePos+")");
+            unsorted++;
+          }
+          last = r;
 
           if (showTimes) System.out.print(dateFormatter.toDateTimeStringISO(r.date) + " ");
           if (readData) r.readData();
@@ -239,6 +245,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         }
         if (showTimes) System.out.println();
       }
+      if (checkSort)
+        System.out.println("\nunsorted= " + unsorted);
+
     }
     nstations = keys.size();
 
@@ -294,7 +303,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
         cal.setTime(refDate);
         int hour = cal.get(Calendar.HOUR_OF_DAY);
-        if (obsTime / 100 > hour + 2) // if greater than 2 hours from reference time
+        if (obsTime / 100 > hour + 4) // if greater than 4 hours from reference time
           cal.add(Calendar.DAY_OF_MONTH, -1); // subtract a day LOOK
         cal.set(Calendar.HOUR_OF_DAY, obsTime / 100);
         cal.set(Calendar.MINUTE, 6 * (obsTime % 100));
@@ -744,12 +753,14 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     short month = Short.parseShort(new String(h, 6, 2));
     short day = Short.parseShort(new String(h, 8, 2));
 
+    int fullyear = (year > 30) ? 1900 + year : 2000 + year;
+      
     if (cal == null) {
       cal = Calendar.getInstance();
       cal.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
     cal.clear();
-    cal.set(2000 + year, month - 1, day, hour, minute);
+    cal.set(fullyear, month - 1, day, hour, minute);
     refDate = cal.getTime();
     refString = new String(h, 0, 10);
 

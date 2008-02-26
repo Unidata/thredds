@@ -235,11 +235,31 @@ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <p>To help solve this problem, you should enable Aggregation Caching in your application, by telling the ucar.nc2.ncml.Aggregation class where it can cache information, by calling the static method (see javadoc for more details): </p>
 <pre><strong>    // Enable Aggregation caching. Every hour, delete stuff older than 30 days<br>    Aggregation.setPersistenceCache( new DiskCache2(&quot;/.nj22/cachePersist&quot;, true, 60 * 24 * 30, 60));</strong></pre>
 <p>When this is enabled, <strong>joinExisting</strong> aggregations will save  information to special XML files in the specified directory, in order to avoid opening every file to obtain its coordinate values, each time the dataset is opened. Instead, the first time it is opened, the values are read, then subsequent opens will use the cached values. </p>
-<p>If using a <strong>scan</strong> element on changing directories, be sure to specify the <strong>recheckEvery</strong> attribute to make sure that the cached information gets updated. </p>
+<p>If using a <strong>scan</strong> element on changing directories, be sure to specify the <strong>recheckEvery</strong> attribute to make sure that the cached information gets updated.</p>
+<p>&nbsp; </p>
+<h2>Nested Aggregation<a name="nested"></a></h2>
+<p>One can nest netcdf elements </p>
+<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
+<pre> &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;</pre>
+<pre>  &lt;netcdf&gt;
+   &lt;aggregation type=&quot;union&quot;&gt;
+    &lt;netcdf location=&quot;file:C:/test/path/temperature_20080101.nc&quot; /&gt; 
+    &lt;netcdf location=&quot;file:C:/test/path/salinity_20080101.nc&quot; /&gt;
+   &lt;/aggregation&gt;
+  &lt;/netcdf&gt;</pre>
+<pre>  &lt;netcdf&gt;
+   &lt;aggregation type=&quot;union&quot;&gt;
+    &lt;netcdf location=&quot;file:C:/test/path/temperature_20080102.nc&quot; /&gt; 
+    &lt;netcdf location=&quot;file:C:/test/path/salinity_20080102.nc&quot; /&gt;
+   &lt;/aggregation&gt;
+  &lt;/netcdf&gt; </pre>
+<pre> &lt;/aggregation&gt; </pre>
+<pre>&lt;/netcdf&gt;</pre>
+<p></p>
 <p>Next: <a href="FmrcAggregation.html">FMRC Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 18, 2007 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 26, 2008
 </address>
 <p>&nbsp;</p>
 </body>
