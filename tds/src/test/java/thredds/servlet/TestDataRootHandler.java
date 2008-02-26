@@ -474,7 +474,7 @@ public class TestDataRootHandler extends TestCase
     }
 
     // Now test with HTML view
-    HtmlWriter.init( "/thredds", "TDS", "ver", "docs/", "upc.css", "thredds.jpg", "thredds", "unidataLogo.jpg", "Unidata", "folder.gif", "folder");
+    HtmlWriter.init( "/thredds", "TDS", "ver", "docs/", "tds.css", "tdsCat.css", "thredds.jpg", "thredds", "unidataLogo.jpg", "Unidata", "folder.gif", "folder");
     String catAsHtmlString = HtmlWriter.getInstance().convertCatalogToHtml( cat, true);
 
     // Remove temporary contentPath dir and contents

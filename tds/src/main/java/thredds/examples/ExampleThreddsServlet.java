@@ -41,10 +41,8 @@ public class ExampleThreddsServlet extends HttpServlet
     return "docs/";
   }
 
-  protected String getUserCssPath()
-  {
-    return "upc.css";
-  }
+  protected String getTdsPageCssPath() { return "tds.css"; }
+  protected String getTdsCatalogCssPath() { return "tdsCat.css"; }
 
   protected String getContextLogoPath() { return "thredds.jpg"; }
   protected String getContextLogoAlt() { return "thredds"; }
@@ -115,7 +113,7 @@ public class ExampleThreddsServlet extends HttpServlet
     HtmlWriter.init( ServletUtil.getContextPath(),
                       this.getServletContext().getServletContextName(),
                       this.getVersion(), this.getDocsPath(),
-                      this.getUserCssPath(),
+                      this.getTdsPageCssPath(), this.getTdsCatalogCssPath(),
                       this.getContextLogoPath(), this.getContextLogoAlt(),
                       this.getInstituteLogoPath(), this.getContextLogoAlt(),
                       this.getFolderIconPath(), this.getFolderIconAlt());

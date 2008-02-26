@@ -45,7 +45,7 @@ public class DebugHandler {
     pw.println("<head>");
     pw.println("<title> THREDDS Debug</title>");
     pw.println("<meta http-equiv=\"Content-Type\" content=\"text/html\">");
-    pw.println(HtmlWriter.getInstance().getUserCSS());
+    pw.println(HtmlWriter.getInstance().getTdsPageCssLink());
     pw.println("</head>");
     pw.println("<body>");
     pw.println(HtmlWriter.getInstance().getUserHead());

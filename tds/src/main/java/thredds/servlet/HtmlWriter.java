@@ -55,7 +55,8 @@ public class HtmlWriter {
   private String contextPath;
   private String contextName;
   private String contextVersion;
-  private String userCssPath; // relative to context path
+  private String tdsPageCssPath; // relative to context path
+  private String tdsCatalogCssPath; // relative to context path
   private String contextLogoPath;   // relative to context path
   private String contextLogoAlt;    // Alternate text for logo
   private String instituteLogoPath; // relative to context path
@@ -64,6 +65,8 @@ public class HtmlWriter {
   private String folderIconPath; // relative to context path
   private String folderIconAlt; // alternate text for folder icon
 
+  private final static String defaultTdsPageCssPath = "tds.css";
+  private final static String defaultTdsCatalogCssPath = "tdsCat.css";
   private ucar.nc2.units.DateFormatter formatter = new ucar.nc2.units.DateFormatter();
 
   /*
@@ -91,9 +94,42 @@ public class HtmlWriter {
    * @param instituteLogoAlt  alternate text for the institute logo (e.g., "Unidata")
    * @param folderIconPath    the path for the folder icon (e.g., "folder.gif"), try to keep small, ours is 20x22 pixels
    * @param folderIconAlt     alternate text for the folder icon (e.g., "folder")
+   *
+   * @deprecated Use the init() with two CSS paths.
+   */
+  public static void init( String contextPath, String contextName, String contextVersion,
+                           String docsPath, String userCssPath,
+                           String contextLogoPath, String contextLogoAlt,
+                           String instituteLogoPath, String instituteLogoAlt,
+                           String folderIconPath, String folderIconAlt )
+  {
+    init( contextPath, contextName, contextVersion,
+          docsPath, userCssPath, null,
+          contextLogoPath, contextLogoAlt,
+          instituteLogoPath, instituteLogoAlt,
+          folderIconPath, folderIconAlt);
+  }
+
+  /**
+   * Initialize the HtmlWriter singleton instance.
+   * <p/>
+   * Note: All paths must be relative to the context path.
+   *
+   * @param contextPath       the context path for this web app (e.g., "/thredds")
+   * @param contextName       the name of the web app (e.g., "THREDDS Data Server")
+   * @param contextVersion    the version of the web app (e.g., "3.14.00")
+   * @param docsPath          the path for the main documentation page (e.g., "docs/")
+   * @param tdsPageCssPath    the path for the CSS document used in general HTML pages (e.g., "tds.css")
+   * @param tdsCatalogCssPath the path for the CSS document used in catalog HTML pages  (e.g., "tdsCat.css")
+   * @param contextLogoPath   the path for the context logo (e.g., "thredds.jpg")
+   * @param contextLogoAlt    alternate text for the context logo (e.g., "thredds")
+   * @param instituteLogoPath the path for the institute logo (e.g., "unidataLogo.jpg")
+   * @param instituteLogoAlt  alternate text for the institute logo (e.g., "Unidata")
+   * @param folderIconPath    the path for the folder icon (e.g., "folder.gif"), try to keep small, ours is 20x22 pixels
+   * @param folderIconAlt     alternate text for the folder icon (e.g., "folder")
    */
   public static void init(String contextPath, String contextName, String contextVersion,
-                          String docsPath, String userCssPath,
+                          String docsPath, String tdsPageCssPath, String tdsCatalogCssPath,
                           String contextLogoPath, String contextLogoAlt,
                           String instituteLogoPath, String instituteLogoAlt,
                           String folderIconPath, String folderIconAlt) {
@@ -103,7 +139,8 @@ public class HtmlWriter {
       //throw new IllegalStateException( "HtmlWriter.init() has already been called.");
     }
     singleton = new HtmlWriter(contextPath, contextName, contextVersion,
-        docsPath, userCssPath,
+        docsPath, tdsPageCssPath != null ? tdsPageCssPath : defaultTdsPageCssPath,
+        tdsCatalogCssPath != null ? tdsCatalogCssPath : defaultTdsCatalogCssPath,
         contextLogoPath, contextLogoAlt,
         instituteLogoPath, instituteLogoAlt,
         folderIconPath, folderIconAlt);
@@ -125,7 +162,7 @@ public class HtmlWriter {
   }
 
   private HtmlWriter(String contextPath, String contextName, String contextVersion,
-                     String docsPath, String userCssPath,
+                     String docsPath, String tdsPageCssPath, String tdsCatalogCssPath,
                      String contextLogoPath, String contextLogoAlt,
                      String instituteLogoPath, String instituteLogoAlt,
                      String folderIconPath, String folderIconAlt) {
@@ -133,7 +170,8 @@ public class HtmlWriter {
     this.contextName = contextName;
     this.contextVersion = contextVersion;
     this.docsPath = docsPath;
-    this.userCssPath = userCssPath;
+    this.tdsPageCssPath = tdsPageCssPath;
+    this.tdsCatalogCssPath = tdsCatalogCssPath;
     this.contextLogoPath = contextLogoPath;
     this.contextLogoAlt = contextLogoAlt;
     this.instituteLogoPath = instituteLogoPath;
@@ -156,6 +194,10 @@ public class HtmlWriter {
 
   public String getContextLogoPath() {
     return contextLogoPath;
+  }
+
+  public String getContextLogoAlt() {
+    return contextLogoAlt;
   }
 
   //public String getUserCssPath() { return userCssPath; }
@@ -186,9 +228,22 @@ public class HtmlWriter {
     return new StringBuffer()
         .append("<link rel='stylesheet' href='")
         .append(this.contextPath)
-        .append("/").append(userCssPath).append("' type='text/css' >").toString();
+        .append("/").append( tdsPageCssPath).append("' type='text/css' >").toString();
   }
 
+  public String getTdsCatalogCssLink() {
+    return new StringBuffer()
+        .append("<link rel='stylesheet' href='")
+        .append(this.contextPath)
+        .append("/").append(tdsCatalogCssPath).append("' type='text/css' >").toString();
+  }
+
+  public String getTdsPageCssLink() {
+    return new StringBuffer()
+        .append("<link rel='stylesheet' href='")
+        .append(this.contextPath)
+        .append("/").append(tdsPageCssPath).append("' type='text/css' >").toString();
+  }
 
   //  public static final String UNIDATA_HEAD
   public String getUserHead() {
@@ -206,7 +261,7 @@ public class HtmlWriter {
 
   //  private static final String TOMCAT_CSS
   private String getTomcatCSS() {
-    return new StringBuffer()
+    return new StringBuffer( "<STYLE type='text/css'><!--" )
         .append("H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} ")
         .append("H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} ")
         .append("H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} ")
@@ -216,7 +271,8 @@ public class HtmlWriter {
         .append("A {color : black;}")
         .append("A.name {color : black;}")
         .append("HR {color : #525D76;}")
-        .toString();
+        .append( "--></STYLE>\r\n" )
+    .toString();
   }
 
   /**
@@ -274,9 +330,7 @@ public class HtmlWriter {
     sb.append("<title>");
     sb.append("Directory listing for ").append(path);
     sb.append("</title>\r\n");
-    sb.append("<STYLE type='text/css'><!--");
-    sb.append(this.getTomcatCSS());
-    sb.append("--></STYLE>\r\n");
+    sb.append(this.getTdsCatalogCssLink()).append( "\n");
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
     sb.append("<h1>");
@@ -435,9 +489,7 @@ public class HtmlWriter {
     sb.append("<title>");
     sb.append("Catalog ").append(catname);
     sb.append("</title>\r\n");
-    sb.append("<STYLE type='text/css'><!--");
-    sb.append(this.getTomcatCSS());
-    sb.append("--></STYLE> ");
+    sb.append(this.getTdsCatalogCssLink()).append("\n");
     sb.append("</head>\r\n");
     sb.append("<body>");
     sb.append("<h1>");
@@ -664,9 +716,7 @@ public class HtmlWriter {
     sb.append("<title>");
     sb.append("Common Data Model");
     sb.append("</title>\r\n");
-    sb.append("<STYLE type='text/css'><!--");
-    sb.append(this.getTomcatCSS());
-    sb.append("--></STYLE> ");
+    sb.append(this.getTdsPageCssLink()).append( "\n");
     sb.append("</head>\r\n");
     sb.append("<body>");
     sb.append("<h1>");

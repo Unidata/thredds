@@ -266,7 +266,7 @@ public class CatalogServicesServlet extends HttpServlet {
     sb.append("<head>\r\n");
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n");
-    sb.append(HtmlWriter.getInstance().getUserCSS());
+    sb.append(HtmlWriter.getInstance().getTdsPageCssLink());
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
     sb.append(HtmlWriter.getInstance().getUserHead());
@@ -296,7 +296,7 @@ public class CatalogServicesServlet extends HttpServlet {
     sb.append("<head>\r\n");
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n");
-    sb.append(HtmlWriter.getInstance().getUserCSS());
+    sb.append(HtmlWriter.getInstance().getTdsPageCssLink());
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
     sb.append(HtmlWriter.getInstance().getUserHead());
@@ -331,7 +331,7 @@ public class CatalogServicesServlet extends HttpServlet {
     sb.append("<head>\r\n");
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n");
-    sb.append(HtmlWriter.getInstance().getUserCSS());
+    sb.append(HtmlWriter.getInstance().getTdsPageCssLink());
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
     sb.append(HtmlWriter.getInstance().getUserHead());

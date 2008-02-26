@@ -62,9 +62,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   }
   //protected String getDocsPath() { return "docs/"; }
 
-  protected String getUserCssPath() {
-    return "upc.css";
-  }
+  protected String getTdsPageCssPath() { return "tds.css"; }
+  protected String getTdsCatalogCssPath() { return "tdsCat.css"; }
 
   protected String getContextLogoPath() {
     return "thredds.jpg";
@@ -191,7 +190,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
 
     HtmlWriter.init(contextPath, this.getContextName(), this.getVersion(), this.getDocsPath(),
-        this.getUserCssPath(),
+        this.getTdsPageCssPath(), this.getTdsCatalogCssPath(),
         this.getContextLogoPath(), this.getContextLogoAlt(),
         this.getInstituteLogoPath(), this.getInstituteLogoAlt(),
         this.getFolderIconPath(), this.getFolderIconAlt());

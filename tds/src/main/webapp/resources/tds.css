@@ -1,0 +1,211 @@
+body{
+   font-weight: normal;
+   font-size: 10pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #000000;
+   text-decoration: none;
+   margin-top: 0px;
+}
+
+td {
+   font-weight: normal;
+   font-size: 10pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #000000;
+   text-decoration: none
+}
+
+
+
+A:link {
+   font-family: Arial, Helvetica, sans-serif;
+   color: #0000FF
+
+}
+
+A:visited {
+   font-family: Arial, Helvetica, sans-serif;
+   color: #A020F0
+}
+
+A:active {
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FF0000;
+}
+
+a:hover {
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FF0000;
+   text-decoration: underline
+}
+
+
+A { text-decoration: none }
+
+
+b {
+   font-weight: bold;
+   font-family: Arial, Helvetica, sans-serif;
+}
+
+i {
+   font-style: italic;
+   font-family: Arial, Helvetica, sans-serif;
+}
+
+
+
+a.navtitle:link {
+   font-size: 10pt;
+   font-weight: bold;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FFFFFF;
+}
+
+
+a.navtitle:hover {
+   font-size: 10pt;
+   font-weight: bold;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FFFFFF;
+   text-decoration: underline
+}
+
+a.navtitle:visited {
+   font-size: 10pt;
+   font-weight: bold;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FFFFFF;
+}
+
+
+a.bnav:link {
+   font-size: 8pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FFFFFF;
+}
+
+
+a.bnav:hover {
+   font-size: 8pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FFFFFF;
+   text-decoration: underline
+}
+
+a.bnav:visited {
+   font-size: 8pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FFFFFF;
+}
+
+
+a.menu:link {
+   font-size: 10pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #000000;
+}
+
+a.menu:hover {
+   font-size: 10pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #000000;
+   text-decoration: underline
+}
+
+a.menu:visited {
+   font-size: 10pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #000000;
+}
+
+
+
+.menutitle {
+   font-size: 9pt;
+   font-weight: bold;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FFFFFF;
+   text-decoration: none;
+}
+
+.menutitle2 {
+   font-size: 9pt;
+   font-weight: normal;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FFFFFF;
+   text-decoration: none;
+}
+
+
+td.greentab {
+   background-image: url('/img/tabgreen.gif');
+   background-repeat: no-repeat;
+   background-position: center;
+}
+
+
+td.bluetab {
+   background-image: url('/img/tabblue.gif');
+   background-repeat: no-repeat;
+   background-position: center;
+}
+
+
+
+td.t {
+   background-image: url('/img/horizontal.gif');
+   background-repeat: no-repeat;
+   background-position: left;
+}
+
+.cat_title {
+   font-weight: bold;
+   font-size: 10pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #FFFFFF;
+
+}
+
+
+.sub_g {
+   font-weight: bold;
+   font-size: 12pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #000000;
+   border-bottom:4px solid #CCCCCC
+}
+
+.sub_b {
+   font-weight: bold;
+   font-size: 12pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #000000;
+   border-bottom:4px solid #006699
+}
+
+
+h2 {
+   font-size: 17pt;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #9C9C9C;
+}
+
+small {
+   font-size: 9pt;
+   font-weight: normal;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #000000;
+}
+
+
+
+small.imageinc {
+   font-size: 9pt;
+   font-weight: normal;
+   font-family: Arial, Helvetica, sans-serif;
+   color: #000000;
+   text-align: justify;
+}
+
+
