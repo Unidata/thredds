@@ -335,7 +335,7 @@ public class StringUtil {
      *
      * @return resulting string
      */
-    static private String replace(String x, char[] replaceChar,
+    static public String replace(String x, char[] replaceChar,
                                   String[] replaceWith) {
         // common case no replacement
         boolean ok = true;
@@ -372,7 +372,7 @@ public class StringUtil {
      *
      * @return resulting string
      */
-    static private String unreplace(String x, String[] orgReplace,
+    static public String unreplace(String x, String[] orgReplace,
                                     char[] orgChar) {
         // common case no replacement
         boolean ok = true;
