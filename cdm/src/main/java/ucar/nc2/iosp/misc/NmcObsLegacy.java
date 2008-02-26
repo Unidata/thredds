@@ -26,10 +26,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
-import ucar.ma2.Array;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.DataType;
+import ucar.ma2.*;
 
 import java.io.IOException;
 import java.io.EOFException;
@@ -56,6 +53,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private boolean readData = false, summarizeData = false, showTimes = false;
   private boolean checkType = false, checkSort = true, checkPositions = false;
 
+  @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     byte[] h = raf.readBytes(60);
 
@@ -68,13 +66,14 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return true;
   }
 
+  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     init();
-    make(ncfile);
+    makeNetcdfFile(ncfile);
   }
 
-  private void make(NetcdfFile ncfile) {
+  private void makeNetcdfFile(NetcdfFile ncfile) {
 
     ncfile.addDimension(null, new Dimension("station", nstations));
 
@@ -157,10 +156,27 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
   }
 
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  @Override
+  public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
+    if (v.getName().equals("stationProfiles"))
+      throw new IllegalArgumentException();
+
+    Structure s = (Structure) v;
+
+    StructureMembers members = s.makeStructureMembers();
+    StructureDataW sdata = new StructureDataW(members);
+
+    for (Variable v2 : s.getVariables()) {
+      Array dataArray = readData(v2, dataPos + vinfo.dataPos, v2.getShapeAsSection());
+      sdata.setMemberData(v2.getShortName(), dataArray);
+    }
+
+    ArrayStructureW result = new ArrayStructureW(members, new int[] {1});
+    result.setStructureData(sdata, 0);
+    return result;
   }
 
+  @Override
   public void close() throws IOException {
     raf.close();
   }
