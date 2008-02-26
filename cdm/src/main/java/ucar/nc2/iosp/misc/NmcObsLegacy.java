@@ -31,6 +31,7 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.io.EOFException;
 import java.util.*;
+import java.nio.ByteBuffer;
 
 /**
  * NMC Office Note 29
@@ -51,7 +52,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private boolean showObs = false, showSkip = false, showOverflow = false, showData = false,
       showHeader = false, showTime = false;
   private boolean readData = false, summarizeData = false, showTimes = false;
-  private boolean checkType = false, checkSort = true, checkPositions = false;
+  private boolean checkType = false, checkSort = false, checkPositions = false;
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
@@ -82,28 +83,39 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     ncfile.addVariable(null, top);
 
     try {
+      int pos = 0;
       Variable v = top.addMemberVariable(new Variable(ncfile, null, top, "stationName", DataType.STRING, ""));
       v.addAttribute(new Attribute("long_name", "name of station"));
+      v.setSPobject( new Vinfo(pos, 5));
+      pos += 5;
 
       v = top.addMemberVariable(new Variable(ncfile, null, top, "lat", DataType.FLOAT, ""));
       v.addAttribute(new Attribute("units", "degrees_north"));
       v.addAttribute(new Attribute("long_name", "geographic latitude"));
       v.addAttribute(new Attribute("accuracy", "degree/100"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+      v.setSPobject( new Vinfo(pos, 1));
+      pos += 4;
 
       v = top.addMemberVariable(new Variable(ncfile, null, top, "lon", DataType.FLOAT, ""));
       v.addAttribute(new Attribute("units", "degrees_east"));
       v.addAttribute(new Attribute("long_name", "geographic longitude"));
       v.addAttribute(new Attribute("accuracy", "degree/100"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+      v.setSPobject( new Vinfo(pos, 1));
+      pos += 4;
 
       v = top.addMemberVariable(new Variable(ncfile, null, top, "elev", DataType.FLOAT, ""));
       v.addAttribute(new Attribute("units", "meters"));
       v.addAttribute(new Attribute("long_name", "station elevation above MSL"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+      v.setSPobject( new Vinfo(pos, 1));
+      pos += 4;
 
       Sequence obs = new Sequence(ncfile, null, top, "report");
       top.addMemberVariable(obs);
+      obs.setSPobject( new Vinfo(pos, 1));
+      pos += 4;
 
       v = obs.addMemberVariable(new Variable(ncfile, null, top, "time", DataType.INT, ""));
       v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
@@ -158,22 +170,38 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   @Override
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
-    if (v.getName().equals("stationProfiles"))
+    if (!v.getName().equals("stationProfiles"))
       throw new IllegalArgumentException();
 
     Structure s = (Structure) v;
-
     StructureMembers members = s.makeStructureMembers();
-    StructureDataW sdata = new StructureDataW(members);
-
     for (Variable v2 : s.getVariables()) {
-      Array dataArray = readData(v2, dataPos + vinfo.dataPos, v2.getShapeAsSection());
-      sdata.setMemberData(v2.getShortName(), dataArray);
+      Vinfo vinfo = (Vinfo) v2.getSPobject();
+      StructureMembers.Member m = members.findMember(v2.getShortName());
+      if (vinfo != null) {
+        m.setDataParam( vinfo.offset);
+        m.setVariableInfo( vinfo.size);
+      }
     }
 
-    ArrayStructureW result = new ArrayStructureW(members, new int[] {1});
-    result.setStructureData(sdata, 0);
-    return result;
+    ArrayStructureBB abb = new ArrayStructureBB(members, new int[] {1});
+    ByteBuffer bb = abb.getByteBuffer();
+
+    bb.put(firstReport.stationId.getBytes());
+    bb.putFloat(firstReport.lat);
+    bb.putFloat(firstReport.lon);
+    bb.putFloat(firstReport.elevMeters);
+    bb.putFloat(firstReport.elevMeters);
+
+    return abb;
+  }
+
+  private class Vinfo {
+    int offset, size;
+    Vinfo(int offset, int size) {
+      this.offset = offset;
+      this.size = size;
+    }
   }
 
   @Override
@@ -181,6 +209,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     raf.close();
   }
 
+  Report firstReport = null;
   private void init() throws IOException {
     int badPos = 0;
     int badType = 0;
@@ -188,7 +217,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     readHeader(raf);
 
-    Report firstReport = null;
     while (true) {
       Report obs = new Report();
       if (!obs.readId(raf)) break;
@@ -271,7 +299,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   private class Report {
-    double lat, lon, elevMeters;
+    float lat, lon, elevMeters;
     String stationId, reserved;
     short reportType, instType, obsTime;
     int reportLen;
@@ -306,14 +334,14 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       //System.out.println("ReportId start at " + start);
       try {
-        lat = .01 * Double.parseDouble(latS);
-        lon = 360.0 - .01 * Double.parseDouble(new String(reportId, 5, 5));
+        lat = (float) (.01 * Float.parseFloat(latS));
+        lon = (float) (360.0 - .01 * Float.parseFloat(new String(reportId, 5, 5)));
 
         stationId = new String(reportId, 10, 6);
         obsTime = Short.parseShort(new String(reportId, 16, 4));
         reserved = new String(reportId, 20, 7);
         reportType = Short.parseShort(new String(reportId, 27, 3));
-        elevMeters = Double.parseDouble(new String(reportId, 30, 5));
+        elevMeters = Float.parseFloat(new String(reportId, 30, 5));
         instType = Short.parseShort(new String(reportId, 35, 2));
         reportLen = 10 * Integer.parseInt(new String(reportId, 37, 3));
 
@@ -791,18 +819,25 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   static class MyNetcdfFile extends NetcdfFile {
+    MyNetcdfFile(NmcObsLegacy iosp) {
+      this.spi = iosp;  
+    }
   }
 
   static public void main(String args[]) throws IOException {
-    String filename = "C:/data/cadis/tempting";
+    String filename = "D:/cadis/tempting";
     //String filename = "C:/data/cadis/Y94179";
     //String filename = "C:/data/cadis/Y94132";
     NmcObsLegacy iosp = new NmcObsLegacy();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    NetcdfFile ncfile = new MyNetcdfFile();
+    NetcdfFile ncfile = new MyNetcdfFile(iosp);
     ncfile.setLocation(filename);
     iosp.open(raf, ncfile, null);
     System.out.println("\n" + ncfile);
+
+    Variable v = ncfile.findVariable("stationProfiles");
+    Array data = v.read();
+    NCdumpW.printArray(data, "stationProfiles", null);
     iosp.close();
   }
 }
