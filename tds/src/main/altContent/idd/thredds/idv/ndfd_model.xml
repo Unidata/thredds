@@ -5,7 +5,7 @@
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
-    <service name="ncServer" serviceType="NetcdfServer" base="/thredds/ncServer/" />
+    <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
   </service>
   <dataset name="NWS National Digital Forecast Database">
     <metadata inherited="true">

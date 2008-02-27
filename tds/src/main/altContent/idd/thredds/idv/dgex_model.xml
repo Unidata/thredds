@@ -5,7 +5,7 @@
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
-    <service name="ncServer" serviceType="NetcdfServer" base="/thredds/ncServer/" />
+    <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
   </service>
   <dataset name="DGEX Model">
     <metadata inherited="true">
@@ -56,7 +56,7 @@
         <variables vocabulary="GRIB-2">
           <variable name="Geopotential_height" vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm" vocabulary_id="2,0,3,5">Geopotential height @ pressure</variable>
           <variable name="Geopotential_height_surface" vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm" vocabulary_id="2,0,3,5">Geopotential height @ surface</variable>
-          <variable name="MSLP__Eta_Reduction" vocabulary_name="Meteorological_products / Mass / MSLP" units="Pa" vocabulary_id="2,0,3,192">MSLP  Eta Reduction @ msl</variable>
+          <variable name="MSLP_Eta_Reduction" vocabulary_name="Meteorological_products / Mass / MSLP" units="Pa" vocabulary_id="2,0,3,192">MSLP Eta Reduction @ msl</variable>
           <variable name="Maximum_temperature" vocabulary_name="Meteorological_products / Temperature / Maximum_temperature" units="K" vocabulary_id="2,0,0,4">Maximum temperature @ height_above_ground1</variable>
           <variable name="Minimum_temperature" vocabulary_name="Meteorological_products / Temperature / Minimum_temperature" units="K" vocabulary_id="2,0,0,5">Minimum temperature @ height_above_ground1</variable>
           <variable name="Pressure" vocabulary_name="Meteorological_products / Mass / Pressure" units="Pa" vocabulary_id="2,0,3,0">Pressure @ surface</variable>

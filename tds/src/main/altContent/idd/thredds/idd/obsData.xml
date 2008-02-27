@@ -76,7 +76,7 @@
           <variable name="wind_speed" vocabulary_name="wind_speed" units="m/s">Wind Speed</variable>
         </variables>
       </metadata>
-      <access urlPath="metars" serviceName="ncss" />
+      <access urlPath="metars/dataset.html" serviceName="ncss" />
       <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" addRecords="true" />
       <filter>
         <include wildcard="*.nc" atomic="true" collection="false" />

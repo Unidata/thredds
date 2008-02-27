@@ -5,7 +5,7 @@
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
-    <service name="ncServer" serviceType="NetcdfServer" base="/thredds/ncServer/" />
+    <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
   </service>
   <dataset name="NCEP Rapid Update Cycle Model">
     <metadata inherited="true">
@@ -258,92 +258,6 @@
         <addDatasetSize />
       </datasetScan>
     </dataset>
-    <datasetScan name="NCEP RUC CONUS 40km" harvest="true" ID="NCEP/RUC/CONUS_40km" path="model/NCEP/RUC/CONUS_40km" location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_40km/">
-      <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC/CONUS_40km/" xlink:title="Available Inventory" />
-      <geospatialCoverage zpositive="down">
-        <northsouth>
-          <start>16.06395</start>
-          <size>39.52348</size>
-          <units>degrees_north</units>
-        </northsouth>
-        <eastwest>
-          <start>-126.27817</start>
-          <size>69.23501</size>
-          <units>degrees_east</units>
-        </eastwest>
-        <updown>
-          <start>1000.0</start>
-          <size>-900.0</size>
-          <resolution>-50.0</resolution>
-          <units>hPa</units>
-        </updown>
-      </geospatialCoverage>
-      <metadata inherited="true">
-        <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC). Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15, 18, and 21Z runs, there are also 4, 5, 6, 7, 8, 9, and 12 hour forecasts. Horizontal = 151 by 113 points, resolution 40.63 km, LambertConformal projection</documentation>
-        <variables vocabulary="GRIB-1">
-          <variable name="Accumulated_snow" vocabulary_name="Accumulated snow" units="kg/m^2" vocabulary_id="1,7,2,65">Accumulated snow @ surface</variable>
-          <variable name="Best_lifted_index_to_500_hPa" vocabulary_name="Best lifted index to 500 hPa" units="K" vocabulary_id="1,7,2,77">Best lifted index to 500 hPa @ surface</variable>
-          <variable name="Categorical_freezing_rain" vocabulary_name="Categorical freezing rain" units="yes=1;no=0" vocabulary_id="1,7,2,141">Categorical freezing rain @ surface</variable>
-          <variable name="Categorical_ice_pellets" vocabulary_name="Categorical ice pellets" units="yes=1;no=0" vocabulary_id="1,7,2,142">Categorical ice pellets @ surface</variable>
-          <variable name="Categorical_rain" vocabulary_name="Categorical rain" units="yes=1;no=0" vocabulary_id="1,7,2,140">Categorical rain @ surface</variable>
-          <variable name="Categorical_snow" vocabulary_name="Categorical snow" units="yes=1;no=0" vocabulary_id="1,7,2,143">Categorical snow @ surface</variable>
-          <variable name="Convective_Avail_Pot_Energy" vocabulary_name="Convective Avail Pot Energy" units="J/kg" vocabulary_id="1,7,2,157">Convective Avail Pot Energy @ surface</variable>
-          <variable name="Convective_inhibition" vocabulary_name="Convective inhibition" units="J/kg" vocabulary_id="1,7,2,156">Convective inhibition @ surface</variable>
-          <variable name="Convective_precipitation" vocabulary_name="Convective precipitation" units="kg/m^2" vocabulary_id="1,7,2,63">Convective precipitation @ surface</variable>
-          <variable name="Geometric_height" vocabulary_name="Geometric height" units="m" vocabulary_id="1,7,2,8">Geometric height @ cloud_base</variable>
-          <variable name="Geometric_height_cloud_tops" vocabulary_name="Geometric height" units="m" vocabulary_id="1,7,2,8">Geometric height @ cloud_tops</variable>
-          <variable name="Geopotential_height" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ isobaric</variable>
-          <variable name="Geopotential_height_convective_cloud_top" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ convective_cloud_top</variable>
-          <variable name="Geopotential_height_zeroDegC_isotherm" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ zeroDegC_isotherm</variable>
-          <variable name="Large_scale_precipitation" vocabulary_name="Large scale precipitation" units="kg/m^2" vocabulary_id="1,7,2,62">Large scale precipitation @ surface</variable>
-          <variable name="Mean_sea_level_pressure_MAPS" vocabulary_name="Mean sea level pressure MAPS" units="Pa" vocabulary_id="1,7,2,129">Mean sea level pressure MAPS @ msl</variable>
-          <variable name="Precipitable_water" vocabulary_name="Precipitable water" units="kg/m^2" vocabulary_id="1,7,2,54">Precipitable water @ entire_atmosphere</variable>
-          <variable name="Precipitation_rate" vocabulary_name="Precipitation rate" units="kg/m^2/s" vocabulary_id="1,7,2,59">Precipitation rate @ surface</variable>
-          <variable name="Pressure" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ maximum_wind</variable>
-          <variable name="Pressure_surface" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ surface</variable>
-          <variable name="Pressure_tropopause" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ tropopause</variable>
-          <variable name="Pressure_vertical_velocity" vocabulary_name="Pressure vertical velocity" units="Pa/s" vocabulary_id="1,7,2,39">Pressure vertical velocity @ isobaric1</variable>
-          <variable name="Pressure_zeroDegC_isotherm" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ zeroDegC_isotherm</variable>
-          <variable name="Relative_humidity" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ isobaric2</variable>
-          <variable name="Relative_humidity_height_above_ground" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ height_above_ground1</variable>
-          <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ layer_between_two_pressure_difference_from_ground</variable>
-          <variable name="Relative_humidity_zeroDegC_isotherm" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ zeroDegC_isotherm</variable>
-          <variable name="Snow_depth" vocabulary_name="Snow depth" units="m" vocabulary_id="1,7,2,66">Snow depth @ surface</variable>
-          <variable name="Storm_relative_helicity" vocabulary_name="Storm relative helicity" units="m^2/s^2" vocabulary_id="1,7,2,190">Storm relative helicity @ surface</variable>
-          <variable name="Surface_lifted_index" vocabulary_name="Surface lifted index" units="K" vocabulary_id="1,7,2,131">Surface lifted index @ surface</variable>
-          <variable name="Surface_wind_gust" vocabulary_name="Surface wind gust" units="m/s" vocabulary_id="1,7,2,180">Surface wind gust @ surface</variable>
-          <variable name="Temperature" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ isobaric</variable>
-          <variable name="Temperature_height_above_ground" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ height_above_ground1</variable>
-          <variable name="Temperature_layer_between_two_pressure_difference_from_ground" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ layer_between_two_pressure_difference_from_ground</variable>
-          <variable name="Temperature_tropopause" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ tropopause</variable>
-          <variable name="Visibility" vocabulary_name="Visibility" units="m" vocabulary_id="1,7,2,20">Visibility @ surface</variable>
-          <variable name="u_component_of_storm_motion" vocabulary_name="u-component of storm motion" units="m/s" vocabulary_id="1,7,2,196">u-component of storm motion @ surface</variable>
-          <variable name="u_wind" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ isobaric</variable>
-          <variable name="u_wind_height_above_ground" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ height_above_ground</variable>
-          <variable name="u_wind_layer_between_two_pressure_difference_from_ground" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ layer_between_two_pressure_difference_from_ground</variable>
-          <variable name="u_wind_maximum_wind" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ maximum_wind</variable>
-          <variable name="u_wind_tropopause" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ tropopause</variable>
-          <variable name="v_component_of_storm_motion" vocabulary_name="v-component of storm motion" units="m/s" vocabulary_id="1,7,2,197">v-component of storm motion @ surface</variable>
-          <variable name="v_wind" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ isobaric</variable>
-          <variable name="v_wind_height_above_ground" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ height_above_ground</variable>
-          <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ layer_between_two_pressure_difference_from_ground</variable>
-          <variable name="v_wind_maximum_wind" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ maximum_wind</variable>
-          <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
-        </variables>
-      </metadata>
-      <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
-      </filter>
-      <addID />
-      <namer>
-        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RUC CONUS 40km" />
-      </namer>
-      <sort>
-        <lexigraphicByName increasing="false" />
-      </sort>
-      <addLatest />
-      <addDatasetSize />
-    </datasetScan>
     <datasetScan name="NCEP RUC CONUS 80km" harvest="true" ID="NCEP/RUC/CONUS_80km" path="model/NCEP/RUC/CONUS_80km" location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC/CONUS_80km/" xlink:title="Available Inventory" />
       <metadata inherited="true">

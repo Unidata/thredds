@@ -5,7 +5,7 @@
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
-    <service name="ncServer" serviceType="NetcdfServer" base="/thredds/ncServer/" />
+    <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
   </service>
   <dataset name="Global Forecast System Model">
     <metadata inherited="true">
@@ -590,7 +590,7 @@
         </variables>
       </metadata>
       <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
+        <include regExp=".*\.grib2$" atomic="true" collection="false" />
       </filter>
       <addID />
       <namer>
@@ -601,7 +601,7 @@
       </sort>
       <addLatest />
       <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_Global_onedeg_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
+      <addTimeCoverage datasetNameMatchPattern="GFS_Global_onedeg_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
     </datasetScan>
     <datasetScan name="NCEP GFS Global 2.5 degree" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/Global_2p5deg" path="model/NCEP/GFS/Global_2p5deg" location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/">
       <serviceName>all</serviceName>
@@ -747,7 +747,7 @@
         </variables>
       </metadata>
       <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
+        <include regExp=".*\.grib2$" atomic="true" collection="false" />
       </filter>
       <addID />
       <namer>
@@ -758,7 +758,7 @@
       </sort>
       <addLatest />
       <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_Global_2p5deg_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
+      <addTimeCoverage datasetNameMatchPattern="GFS_Global_2p5deg_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
     </datasetScan>
     <datasetScan name="NCEP GFS Hawaii 160km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/Hawaii_160km" path="model/NCEP/GFS/Hawaii_160km" location="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/Hawaii_160km/" xlink:title="Available Inventory" />

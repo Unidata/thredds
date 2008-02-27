@@ -7,13 +7,13 @@
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
-    <service name="ncServer" serviceType="NetcdfServer" base="/thredds/ncServer/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
   </service>
 
   <service name="fmrcServices" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
-    <service name="ncServer" serviceType="NetcdfServer" base="/thredds/ncServer/" />
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
   </service>
 
   <dataset name="NCEP Model Data">
@@ -154,10 +154,10 @@
 
         <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
           <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-GFS-Global_onedeg.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan  location="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/" suffix=".grib1" dateFormatMark="GFS_Global_onedeg_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+            <scan  location="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/" suffix=".grib2" dateFormatMark="GFS_Global_onedeg_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Global_onedeg.fmrcDefinition.xml" />
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/" suffix=".grib2" fmrcDefinition="NCEP-GFS-Global_onedeg.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Global_2p5deg" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Global_2p5deg">
@@ -171,10 +171,10 @@
 
         <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
           <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-GFS-Global_2p5deg.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/" suffix=".grib1" dateFormatMark="GFS_Global_2p5deg_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+            <scan location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/" suffix=".grib2" dateFormatMark="GFS_Global_2p5deg_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Global_2p5deg.fmrcDefinition.xml" />
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/" suffix=".grib2" fmrcDefinition="NCEP-GFS-Global_2p5deg.fmrcDefinition.xml" />
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Hawaii_160km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Hawaii_160km">
@@ -302,10 +302,10 @@
 
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
             <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/" suffix=".grib1" dateFormatMark="NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+              <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/" suffix=".grib2" dateFormatMark="NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml" />
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/" suffix=".grib2" fmrcDefinition="NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml" />
          </datasetFmrc>
       </dataset>
 
@@ -375,10 +375,10 @@
           </metadata>
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
             <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/" suffix=".grib1" dateFormatMark="NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/" suffix=".grib2" dateFormatMark="NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml" />
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml" />
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-NAM-CONUS_20km-noaaport" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_20km/noaaport">
@@ -405,19 +405,6 @@
            </documentation>
         </metadata>
 
-        <datasetFmrc name="NCEP-NAM-CONUS_40km-noaaport" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_40km/noaaport">
-          <metadata inherited="true">
-            <documentation type="summary">
-              Model runs made at 12Z and 00Z have analysis and forecasts every 3 hours out to 60 hours; runs at 06Z and 18Z, every 3 hours out to 48 hours.
-            </documentation>
-          </metadata>
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/noaaport/" suffix=".grib1" dateFormatMark="NAM_CONUS_40km_noaaport_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/noaaport/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml" olderThan="5 min"/>
-        </datasetFmrc>
 
         <datasetFmrc name="NCEP-NAM-CONUS_40km-conduit" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_40km/conduit">
           <metadata inherited="true">
@@ -427,10 +414,10 @@
           </metadata>
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
             <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/" suffix=".grib1" dateFormatMark="NAM_CONUS_40km_conduit_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/" suffix=".grib2" dateFormatMark="NAM_CONUS_40km_conduit_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
             </aggregation>
           </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml" />
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml" />
         </datasetFmrc>
 
       </dataset>
@@ -464,10 +451,10 @@
 
         <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
           <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NAM-Polar_90km.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/" suffix=".grib1" dateFormatMark="NAM_Polar_90km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
+            <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/" suffix=".grib2" dateFormatMark="NAM_Polar_90km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Polar_90km.fmrcDefinition.xml" />
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-Polar_90km.fmrcDefinition.xml" />
       </datasetFmrc>
     </dataset>
 

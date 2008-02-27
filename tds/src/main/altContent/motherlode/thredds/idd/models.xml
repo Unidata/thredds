@@ -36,7 +36,7 @@
         <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
       </publisher>
       <creator>
-        <name vocabulary="ADN">National Oceanic and Atmospheric Administration (NOAA)/National Weather Service (NWS) National Center for Environmental Prediction (NCEP)</name> 
+        <name vocabulary="ADN">National Oceanic and Atmospheric Administration (NOAA)/National Weather Service (NWS) National Center for Environmental Prediction (NCEP)</name>
         <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml" />
       </creator>
       <publisher>
