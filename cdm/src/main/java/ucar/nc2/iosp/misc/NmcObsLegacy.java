@@ -180,7 +180,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       StructureMembers.Member m = members.findMember(v2.getShortName());
       if (vinfo != null) {
         m.setDataParam( vinfo.offset);
-        m.setVariableInfo( vinfo.size);
+        //m.setVariableInfo( vinfo.size);
       }
     }
 
