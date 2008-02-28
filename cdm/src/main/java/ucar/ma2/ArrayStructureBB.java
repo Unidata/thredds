@@ -283,10 +283,11 @@ public class ArrayStructureBB extends ArrayStructure {
   public String getScalarString(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarString(recnum, m);
 
+    // strings are stored on the "heap", and the index to the heap is kept in the bbuffer
     if (m.getDataType() == DataType.STRING) {
       int offset = calcOffsetSetOrder(recnum, m);
       int index = bbuffer.getInt(offset);
-      return stringHeap.get(index);
+      return (String) heap.get(index);
     }
 
     if (m.getDataType() == DataType.CHAR) {
@@ -307,13 +308,14 @@ public class ArrayStructureBB extends ArrayStructure {
   public String[] getJavaArrayString(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getJavaArrayString(recnum, m);
 
+    // strings are stored on the "heap", and the index to the heap is kept in the bbuffer
     if (m.getDataType() == DataType.STRING) {
       int n = m.getSize();
       int offset = calcOffsetSetOrder(recnum, m);
       String[] result = new String[n];
       for (int i = 0; i < n; i++) {
         int index = bbuffer.getInt(offset + i*4);
-        result[i] = stringHeap.get(index);
+        result[i] = (String) heap.get(index);
       }
       return result;
     }
@@ -348,7 +350,7 @@ public class ArrayStructureBB extends ArrayStructure {
     int count = m.getSize();
     for (int i = 0; i < count; i++) {
       int index = bbuffer.getInt(offset + i*4);
-      result.setObjectNext(  stringHeap.get(index));
+      result.setObjectNext(  heap.get(index));
     }
   }
 
@@ -363,12 +365,25 @@ public class ArrayStructureBB extends ArrayStructure {
     return new StructureDataA(subset, 0);
   }
 
+  @Override
   public ArrayStructure getArrayStructure(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.STRUCTURE) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Structure");
     if (m.getDataArray() != null) return super.getArrayStructure(recnum, m);
 
     int offset = calcOffsetSetOrder(recnum, m);
     return new ArrayStructureBB(m.getStructureMembers(), m.getShape(), this.bbuffer, offset);
+  }
+
+  @Override
+  public ArraySequence2 getArraySequence(int recnum, StructureMembers.Member m) {
+    if (m.getDataType() != DataType.SEQUENCE) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Sequence");
+    //if (m.getDataArray() != null) return super.getArrayStructure(recnum, m);
+
+    int offset = calcOffsetSetOrder(recnum, m);
+    int index = bbuffer.getInt(offset);
+    if (index > heap.size())
+      System.out.println("HEY");
+    return (ArraySequence2) heap.get(index);
   }
 
   protected void copyStructures(int recnum, StructureMembers.Member m, IndexIterator result) {
@@ -383,10 +398,15 @@ public class ArrayStructureBB extends ArrayStructure {
     return bb_offset + recnum * getStructureSize() + m.getDataParam();
   }
 
-  private List<String> stringHeap = new ArrayList<String>();
-  public int addStringToHeap(String s) {
-    stringHeap.add(s);
-    return stringHeap.size() - 1;
+  /*  int index = asbb.addObjectToHeap(s);
+      bb.order( ByteOrder.nativeOrder()); // the string index is always written in "native order"
+      bb.putInt(destPos + i * 4, index); // overwrite with the index into the StringHeap
+  */
+  private List<Object> heap;
+  public int addObjectToHeap(Object s) {
+    if (null == heap) heap = new ArrayList<Object>();
+    heap.add(s);
+    return heap.size() - 1;
   }
 
   ////////////////////////////////////////////////////////////////////////

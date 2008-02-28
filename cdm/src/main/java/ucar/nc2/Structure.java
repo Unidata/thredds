@@ -29,9 +29,11 @@ import java.io.IOException;
  *  A Structure can be scalar or multidimensional.
  *<p>
  * A call to structure.read() will read all of the data in a Structure,
- *   including nested structures, and returns an Array of StructureData, with all of the data in memory.
+ * including nested structures, and returns an Array of StructureData, with all of the data in memory.
+ * If there is a nested sequence, the sequence data may be read into memory all at once, ot it may be
+ * read in increments as the iteration proceeds.
  * <p>
- * Generally, the programmer can assume that the data in a Structure are stored together,
+ * Generally, the programmer can assume that the data in one Structure are stored together,
  *  so that it is efficient to read an entire Structure, and then access the Variable data through the
  *  Arrays in the StructureData.
  *
@@ -264,7 +266,7 @@ public class Structure extends Variable {
     return elementSize;
   }
 
-  protected void calcElementSize() {
+  public void calcElementSize() {
     int total = 0;
     for (Variable v : members) {
       total += v.getElementSize() * v.getSize();

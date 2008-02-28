@@ -272,7 +272,12 @@ public class StructureTable extends JPanel {
     if (sd == null) return;
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-    NCdumpW.printStructureData(new PrintWriter(bos), sd);
+    try {
+      NCdumpW.printStructureData(new PrintWriter(bos), sd);
+    } catch (IOException e) {
+      String mess = e.getMessage();
+      bos.write( mess.getBytes(), 0, mess.length());
+    }
     dumpTA.setText(bos.toString());
     dumpWindow.setVisible(true);
   }

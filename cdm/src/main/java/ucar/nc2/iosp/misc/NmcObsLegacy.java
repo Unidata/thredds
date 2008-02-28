@@ -41,13 +41,19 @@ import java.nio.ByteBuffer;
  */
 public class NmcObsLegacy extends AbstractIOServiceProvider {
   private RandomAccessFile raf;
+  private NetcdfFile ncfile;
+
   private Map<String, List<Report>> map = new HashMap<String, List<Report>>();
+  private List<String> stations;
 
   private int nobs = 0, nstations = 0;
   private Calendar cal = null;
   private DateFormatter dateFormatter = new DateFormatter();
   private Date refDate; // from the header
   private String refString; // debug
+
+  private Structure obs;
+  private List<StructureCode> catStructures = new ArrayList<StructureCode>(10);
 
   private boolean showObs = false, showSkip = false, showOverflow = false, showData = false,
       showHeader = false, showTime = false;
@@ -56,13 +62,29 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
+    raf.seek(0);
     byte[] h = raf.readBytes(60);
 
-    short hour = Short.parseShort(new String(h, 0, 2));
-    short minute = Short.parseShort(new String(h, 2, 2));
-    short year = Short.parseShort(new String(h, 4, 2));
-    short month = Short.parseShort(new String(h, 6, 2));
-    short day = Short.parseShort(new String(h, 8, 2));
+    // 32 - 56 are X's
+    for (int i = 32; i < 56; i++)
+      if (h[i] != (byte) 'X') return false;
+
+    try {
+      short hour = Short.parseShort(new String(h, 0, 2));
+      short minute = Short.parseShort(new String(h, 2, 2));
+      short year = Short.parseShort(new String(h, 4, 2));
+      short month = Short.parseShort(new String(h, 6, 2));
+      short day = Short.parseShort(new String(h, 8, 2));
+
+      if ((hour < 0) || (hour > 24)) return false;
+      if ((minute < 0) || (minute > 60)) return false;
+      if ((year < 0) || (year > 100)) return false;
+      if ((month < 0) || (month > 12)) return false;
+      if ((day < 0) || (day > 31)) return false;
+
+    } catch (Exception e) {
+      return false;
+    }
 
     return true;
   }
@@ -70,11 +92,14 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
+    this.ncfile = ncfile;
+
     init();
-    makeNetcdfFile(ncfile);
+
+    makeNetcdfFile();
   }
 
-  private void makeNetcdfFile(NetcdfFile ncfile) {
+  private void makeNetcdfFile() throws IOException {
 
     ncfile.addDimension(null, new Dimension("station", nstations));
 
@@ -84,17 +109,18 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     try {
       int pos = 0;
-      Variable v = top.addMemberVariable(new Variable(ncfile, null, top, "stationName", DataType.STRING, ""));
+      Variable v = top.addMemberVariable(new Variable(ncfile, null, top, "stationName", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{6});
       v.addAttribute(new Attribute("long_name", "name of station"));
-      v.setSPobject( new Vinfo(pos, 5));
-      pos += 5;
+      v.setSPobject(new Vinfo(pos, 6));
+      pos += 6;
 
       v = top.addMemberVariable(new Variable(ncfile, null, top, "lat", DataType.FLOAT, ""));
       v.addAttribute(new Attribute("units", "degrees_north"));
       v.addAttribute(new Attribute("long_name", "geographic latitude"));
       v.addAttribute(new Attribute("accuracy", "degree/100"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      v.setSPobject( new Vinfo(pos, 1));
+      v.setSPobject(new Vinfo(pos, 1));
       pos += 4;
 
       v = top.addMemberVariable(new Variable(ncfile, null, top, "lon", DataType.FLOAT, ""));
@@ -102,69 +128,70 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "geographic longitude"));
       v.addAttribute(new Attribute("accuracy", "degree/100"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-      v.setSPobject( new Vinfo(pos, 1));
+      v.setSPobject(new Vinfo(pos, 1));
       pos += 4;
 
       v = top.addMemberVariable(new Variable(ncfile, null, top, "elev", DataType.FLOAT, ""));
       v.addAttribute(new Attribute("units", "meters"));
       v.addAttribute(new Attribute("long_name", "station elevation above MSL"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-      v.setSPobject( new Vinfo(pos, 1));
+      v.setSPobject(new Vinfo(pos, 1));
       pos += 4;
 
-      Sequence obs = new Sequence(ncfile, null, top, "report");
+      obs = firstReport.makeStructure(top);
+      obs.setSPobject(new Vinfo(pos, 1));
       top.addMemberVariable(obs);
-      obs.setSPobject( new Vinfo(pos, 1));
       pos += 4;
 
-      v = obs.addMemberVariable(new Variable(ncfile, null, top, "time", DataType.INT, ""));
-      v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
-      v.addAttribute(new Attribute("long_name", "observation time"));
-      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-
-      v = obs.addMemberVariable(new Variable(ncfile, null, top, "reportType", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("long_name", "report type from Table R.1"));
-
-      // only for ON29
-      v = obs.addMemberVariable(new Variable(ncfile, null, top, "instType", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("long_name", "instrument type from Table R.2"));
-
-      v = obs.addMemberVariable(new Variable(ncfile, null, top, "reserved", DataType.BYTE, ""));
-      v.setDimensionsAnonymous(new int[]{7});
-      v.addAttribute(new Attribute("long_name", "reserved characters"));
-
-      Sequence mandl = new Sequence(ncfile, null, top, "mandatoryLevels");
-      obs.addMemberVariable(mandl);
-
-      v = mandl.addMemberVariable(new Variable(ncfile, null, top, "pressure", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "mbars"));
-      v.addAttribute(new Attribute("long_name", "pressure level"));
-      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-
-      v = mandl.addMemberVariable(new Variable(ncfile, null, top, "geopotential", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "meter"));
-      v.addAttribute(new Attribute("long_name", "geopotential"));
-
-      v = mandl.addMemberVariable(new Variable(ncfile, null, top, "temperature", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "temperature"));
-      v.addAttribute(new Attribute("accuracy", "celsius/10"));
-
-      v = mandl.addMemberVariable(new Variable(ncfile, null, top, "dewpoint", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "dewpoint depression"));
-      v.addAttribute(new Attribute("accuracy", "celsius/10"));
-
-      v = mandl.addMemberVariable(new Variable(ncfile, null, top, "windDir", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "degrees"));
-      v.addAttribute(new Attribute("long_name", "wind direction"));
-
-      v = mandl.addMemberVariable(new Variable(ncfile, null, top, "windSpeed", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "knots"));
-      v.addAttribute(new Attribute("long_name", "wind speed"));
+      int obs_pos = obs.getElementSize();
+      List<Record> records = firstReport.readData(); // for the moment, we will use the first report as the exemplar
+      obs_pos = doCode(records, 1, obs_pos);
+      obs_pos = doCode(records, 2, obs_pos);
+      obs_pos = doCode(records, 3, obs_pos);
+      obs_pos = doCode(records, 4, obs_pos);
+      obs_pos = doCode(records, 5, obs_pos);
+      obs_pos = doCode(records, 7, obs_pos);
+      obs_pos = doCode(records, 8, obs_pos);
+      obs_pos = doCode(records, 51, obs_pos);
+      obs_pos = doCode(records, 52, obs_pos);
+      obs.calcElementSize(); // recalc since we added new members
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
+    }
+  }
+
+  private int doCode(List<Record> records, int code, int obs_pos) throws InvalidRangeException {
+
+    for (Record record : records) {
+      if (record.code == code) {
+        Entry first = record.entries[0];
+        Structure s = first.makeStructure(obs);
+        s.setSPobject(new Vinfo(obs_pos, 1));
+        obs_pos += 4;
+        obs.addMemberVariable(s);
+        catStructures.add( new StructureCode(s, code));
+        break;
+      }
+    }
+    return obs_pos;
+  }
+
+  private class Vinfo {
+    int offset, size;
+
+    Vinfo(int offset, int size) {
+      this.offset = offset;
+      this.size = size;
+    }
+  }
+
+  private class StructureCode {
+    Structure s;
+    int code;
+    StructureCode(Structure s, int code) {
+      this.s = s;
+      this.code= code;
     }
   }
 
@@ -179,28 +206,62 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       Vinfo vinfo = (Vinfo) v2.getSPobject();
       StructureMembers.Member m = members.findMember(v2.getShortName());
       if (vinfo != null) {
-        m.setDataParam( vinfo.offset);
+        m.setDataParam(vinfo.offset);
         //m.setVariableInfo( vinfo.size);
       }
     }
 
-    ArrayStructureBB abb = new ArrayStructureBB(members, new int[] {1});
+    int size = (int) section.computeSize();
+    ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{size});
     ByteBuffer bb = abb.getByteBuffer();
 
-    bb.put(firstReport.stationId.getBytes());
-    bb.putFloat(firstReport.lat);
-    bb.putFloat(firstReport.lon);
-    bb.putFloat(firstReport.elevMeters);
-    bb.putFloat(firstReport.elevMeters);
+    Range r = section.getRange(0);
+    for (int i = r.first(); i <= r.last(); i += r.stride()) {
+      String station = stations.get(i);
+      List<Report> reports = map.get(station);
+      Report report0 = reports.get(0);
+
+      bb.put(report0.stationId.getBytes());
+      bb.putFloat(report0.lat);
+      bb.putFloat(report0.lon);
+      bb.putFloat(report0.elevMeters);
+
+      ArraySequence2 seq = new ArraySequence2(members, new ReportIterator(reports));
+      int index = abb.addObjectToHeap(seq);
+      bb.putInt(index); // an index into the Heap
+    }
 
     return abb;
   }
 
-  private class Vinfo {
-    int offset, size;
-    Vinfo(int offset, int size) {
-      this.offset = offset;
-      this.size = size;
+  private class ReportIterator implements StructureDataIterator {
+    Iterator<Report> iter;
+    ArrayStructureBB abb;
+    ByteBuffer bb;
+
+    ReportIterator(List<Report> reports) {
+      iter = reports.iterator();
+
+      StructureMembers members = obs.makeStructureMembers();
+      for (Variable v2 : obs.getVariables()) {
+        Vinfo vinfo = (Vinfo) v2.getSPobject();
+        StructureMembers.Member m = members.findMember(v2.getShortName());
+        m.setDataParam(vinfo.offset);
+      }
+
+      abb = new ArrayStructureBB(members, new int[]{1});
+      bb = abb.getByteBuffer();
+    }
+
+    public boolean hasNext() throws IOException {
+      return iter.hasNext();
+    }
+
+    public StructureData next() throws IOException {
+      Report r = iter.next();
+      bb.position(0);
+      r.loadStructureData(abb, bb);
+      return abb.getStructureData(0);
     }
   }
 
@@ -209,12 +270,15 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     raf.close();
   }
 
-  Report firstReport = null;
+
+  private Report firstReport = null;
+
   private void init() throws IOException {
     int badPos = 0;
     int badType = 0;
     short firstType = -1;
 
+    raf.seek(0);
     readHeader(raf);
 
     while (true) {
@@ -271,19 +335,21 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         for (Report r : reports) {
           if ((last != null) && last.date.after(r.date)) {
             System.out.println("***NOT ORDERED " + key +
-                " last=" + dateFormatter.toDateTimeStringISO(last.date) + "("+last.filePos+")"+
-                " next =" + dateFormatter.toDateTimeStringISO(r.date)+ "("+r.filePos+")");
+                " last=" + dateFormatter.toDateTimeStringISO(last.date) + "(" + last.filePos + ")" +
+                " next =" + dateFormatter.toDateTimeStringISO(r.date) + "(" + r.filePos + ")");
             unsorted++;
           }
           last = r;
 
           if (showTimes) System.out.print(dateFormatter.toDateTimeStringISO(r.date) + " ");
-          if (readData) r.readData();
-          if (summarizeData) {
-            System.out.print("  " + r.obsTime + ": (");
-            for (Category cat : r.cats)
-              System.out.print(cat.code + "/" + cat.nlevels + " ");
-            System.out.println(")");
+          if (readData || summarizeData) {
+            List<Record> cats = r.readData();
+            if (summarizeData) {
+              System.out.print("  " + r.obsTime + ": (");
+              for (Record cat : cats)
+                System.out.print(cat.code + "/" + cat.nlevels + " ");
+              System.out.println(")");
+            }
           }
 
         }
@@ -294,20 +360,22 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     }
     nstations = keys.size();
+    stations = new ArrayList<String>(nstations);
+    stations.addAll(keys);
+    Collections.sort(stations);
 
     System.out.println("\nnobs= " + nobs + " nstations= " + nstations);
   }
 
   private class Report {
     float lat, lon, elevMeters;
-    String stationId, reserved;
+    String stationId;
+    byte[] reserved = new byte[7];
     short reportType, instType, obsTime;
     int reportLen;
     long filePos;
     Date date;
-    String rString; // refString
-
-    List<Category> cats;
+    String rString; // refString, for debugging
 
     boolean readId(RandomAccessFile raf) throws IOException {
 
@@ -339,7 +407,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
         stationId = new String(reportId, 10, 6);
         obsTime = Short.parseShort(new String(reportId, 16, 4));
-        reserved = new String(reportId, 20, 7);
+        System.arraycopy(reportId, 20, reserved, 0, 7);
         reportType = Short.parseShort(new String(reportId, 27, 3));
         elevMeters = Float.parseFloat(new String(reportId, 30, 5));
         instType = Short.parseShort(new String(reportId, 35, 2));
@@ -373,12 +441,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     public String toString() {
       return "Report " + " stationId=" + stationId + " lat=" + lat + " lon=" + lon +
           " obsTime=" + obsTime + " date= " + dateFormatter.toDateTimeStringISO(date) +
-          " reportType=" + reportType + " elevMeters=" + elevMeters + " instType=" + instType + " reserved=" + reserved +
+          " reportType=" + reportType + " elevMeters=" + elevMeters + " instType=" + instType + " reserved=" + new String(reserved) +
           " start=" + filePos + " reportLen=" + reportLen;
     }
 
-    void readData() throws IOException {
-      cats = new ArrayList<Category>();
+    List<Record> readData() throws IOException {
+      List<Record> records = new ArrayList<Record>();
 
       raf.seek(filePos + 40);
       byte[] b = raf.readBytes(reportLen - 40);
@@ -387,23 +455,129 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       int offset = 0;
       while (true) {
-        Category cat = new Category();
-        offset = cat.read(b, offset);
-        cats.add(cat);
-        if (cat.next >= reportLen / 10) break;
+        Record record = new Record();
+        offset = record.read(b, offset);
+        records.add(record);
+        if (record.next >= reportLen / 10) break;
       }
+
+      return records;
     }
 
     void show(RandomAccessFile raf) throws IOException {
       raf.seek(filePos);
       byte[] b = raf.readBytes(40);
       System.out.println(new String(b));
-
     }
+
+    Structure makeStructure(Structure parent) throws InvalidRangeException {
+      Sequence obs = new Sequence(ncfile, null, parent, "report");
+      obs.addAttribute(new Attribute("long_name", ""));
+      int pos = 0;
+
+      Variable v = obs.addMemberVariable(new Variable(ncfile, null, parent, "time", DataType.INT, ""));
+      v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
+      v.addAttribute(new Attribute("long_name", "observation time"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = obs.addMemberVariable(new Variable(ncfile, null, parent, "timeISO", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{20});
+      v.addAttribute(new Attribute("long_name", "ISO formatted date/time"));
+      v.setSPobject(new Vinfo(pos, 20));
+      pos += 20;
+
+      v = obs.addMemberVariable(new Variable(ncfile, null, parent, "reportType", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("long_name", "report type from Table R.1"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      // only for ON29
+      v = obs.addMemberVariable(new Variable(ncfile, null, parent, "instType", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("long_name", "instrument type from Table R.2"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = obs.addMemberVariable(new Variable(ncfile, null, parent, "reserved", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{7});
+      v.addAttribute(new Attribute("long_name", "reserved characters"));
+      v.setSPobject(new Vinfo(pos, 7));
+      pos += 14;
+
+      return obs;
+    }
+
+    void loadStructureData(ArrayStructureBB abb, ByteBuffer bb) throws IOException {
+      bb.putInt((int) (date.getTime() / 1000));
+      bb.put(dateFormatter.toDateTimeStringISO(date).getBytes());
+      bb.putShort(reportType);
+      bb.putShort(instType);
+      bb.put(reserved);
+
+      List<Record> records = readData();
+      for (StructureCode sc : catStructures)
+        doCode(abb, bb, records, sc.s, sc.code);
+    }
+
+    private void doCode(ArrayStructureBB abb, ByteBuffer bb, List<Record> records, Structure useStructure, int code) {
+
+      for (Record record : records) {
+        if (record.code == code) {
+          CatIterator iter = new CatIterator(record.entries, useStructure);
+          ArraySequence2 seq = new ArraySequence2(iter.members, iter);
+          int index = abb.addObjectToHeap(seq);
+          bb.putInt(index);
+          return;
+        }
+      }
+
+      // need an empty one
+      CatIterator iter = new CatIterator(new Entry[0], useStructure);
+      ArraySequence2 seq = new ArraySequence2(iter.members, iter);
+      int index = abb.addObjectToHeap(seq);
+      bb.putInt(index);
+    }
+
+    private class CatIterator implements StructureDataIterator {
+      Entry[] entries;
+      int count = 0;
+      StructureMembers members;
+      ArrayStructureBB abb;
+      ByteBuffer bb;
+
+      CatIterator(Entry[] entries, Structure useStructure) {
+        this.entries = entries;
+
+        members = useStructure.makeStructureMembers();
+        for (Variable v2 : useStructure.getVariables()) {
+          Vinfo vinfo = (Vinfo) v2.getSPobject();
+          StructureMembers.Member m = members.findMember(v2.getShortName());
+          m.setDataParam(vinfo.offset);
+        }
+
+        abb = new ArrayStructureBB(members, new int[]{1});
+        bb = abb.getByteBuffer();
+      }
+
+      public boolean hasNext() throws IOException {
+        return count < entries.length;
+      }
+
+      public StructureData next() throws IOException {
+        Entry entry = entries[count++];
+        bb.position(0);
+        entry.loadStructureData(bb);
+        return abb.getStructureData(0);
+      }
+    }
+
   }
 
-  private class Category {
+  // a record has a variable number of entries, which are all of one "category" type
+  private class Record {
     int code, next, nlevels, nbytes;
+    Entry[] entries;
 
     int read(byte[] b, int offset) throws IOException {
 
@@ -417,74 +591,74 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       if (code == 1) {
         if (showData) System.out.println(catNames[1] + ":");
-        Cat01[] c1 = new Cat01[nlevels];
+        entries = new Cat01[nlevels];
         for (int i = 0; i < nlevels; i++) {
-          c1[i] = new Cat01(b, offset, i);
-          if (showData) System.out.println(" " + i + ": " + c1[i]);
+          entries[i] = new Cat01(b, offset, i);
+          if (showData) System.out.println(" " + i + ": " + entries[i]);
           offset += 22;
         }
       } else if (code == 2) {
         if (showData) System.out.println(catNames[2] + ":");
-        Cat02[] c2 = new Cat02[nlevels];
+        entries = new Cat02[nlevels];
         for (int i = 0; i < nlevels; i++) {
-          c2[i] = new Cat02(b, offset);
-          if (showData) System.out.println(" " + i + ": " + c2[i]);
+          entries[i] = new Cat02(b, offset);
+          if (showData) System.out.println(" " + i + ": " + entries[i]);
           offset += 15;
         }
       } else if (code == 3) {
         if (showData) System.out.println(catNames[3] + ":");
-        Cat03[] c3 = new Cat03[nlevels];
+        entries = new Cat03[nlevels];
         for (int i = 0; i < nlevels; i++) {
-          c3[i] = new Cat03(b, offset);
-          if (showData) System.out.println(" " + i + ": " + c3[i]);
+          entries[i] = new Cat03(b, offset);
+          if (showData) System.out.println(" " + i + ": " + entries[i]);
           offset += 13;
         }
       } else if (code == 4) {
         if (showData) System.out.println(catNames[4] + ":");
-        Cat04[] c4 = new Cat04[nlevels];
+        entries = new Cat04[nlevels];
         for (int i = 0; i < nlevels; i++) {
-          c4[i] = new Cat04(b, offset);
-          if (showData) System.out.println(" " + i + ": " + c4[i]);
+          entries[i] = new Cat04(b, offset);
+          if (showData) System.out.println(" " + i + ": " + entries[i]);
           offset += 13;
         }
       } else if (code == 5) {
         if (showData) System.out.println(catNames[5] + ":");
-        Cat05[] c5 = new Cat05[nlevels];
+        entries = new Cat05[nlevels];
         for (int i = 0; i < nlevels; i++) {
-          c5[i] = new Cat05(b, offset);
-          if (showData) System.out.println(" " + i + ": " + c5[i]);
+          entries[i] = new Cat05(b, offset);
+          if (showData) System.out.println(" " + i + ": " + entries[i]);
           offset += 22;
         }
       } else if (code == 7) {
         if (showData) System.out.println(catNames[7] + ":");
-        Cat07[] c7 = new Cat07[nlevels];
+        entries = new Cat07[nlevels];
         for (int i = 0; i < nlevels; i++) {
-          c7[i] = new Cat07(b, offset);
-          if (showData) System.out.println(" " + i + ": " + c7[i]);
+          entries[i] = new Cat07(b, offset);
+          if (showData) System.out.println(" " + i + ": " + entries[i]);
           offset += 10;
         }
       } else if (code == 8) {
         if (showData) System.out.println(catNames[8] + ":");
-        Cat08[] c8 = new Cat08[nlevels];
+        entries = new Cat08[nlevels];
         for (int i = 0; i < nlevels; i++) {
-          c8[i] = new Cat08(b, offset);
-          if (showData) System.out.println(" " + i + ": " + c8[i]);
+          entries[i] = new Cat08(b, offset);
+          if (showData) System.out.println(" " + i + ": " + entries[i]);
           offset += 10;
         }
       } else if (code == 51) {
         if (showData) System.out.println(catNames[10] + ":");
-        Cat51[] c51 = new Cat51[nlevels];
+        entries = new Cat51[nlevels];
         for (int i = 0; i < nlevels; i++) {
-          c51[i] = new Cat51(b, offset);
-          if (showData) System.out.println(" " + i + ": " + c51[i]);
+          entries[i] = new Cat51(b, offset);
+          if (showData) System.out.println(" " + i + ": " + entries[i]);
           offset += 60;
         }
       } else if (code == 52) {
         if (showData) System.out.println(catNames[10] + ":");
-        Cat52[] c52 = new Cat52[nlevels];
+        entries = new Cat52[nlevels];
         for (int i = 0; i < nlevels; i++) {
-          c52[i] = new Cat52(b, offset);
-          if (showData) System.out.println(" " + i + ": " + c52[i]);
+          entries[i] = new Cat52(b, offset);
+          if (showData) System.out.println(" " + i + ": " + entries[i]);
           offset += 40;
         }
       } else {
@@ -512,20 +686,34 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       if (showOverflow) System.out.println("OVERFLOW=" + s);
       return 0;
     }
-
   }
 
-  private String[] catNames = new String[]{"", "Mandatory constant presure data", "Variable pressure temperature/dewpoint",
-      "Variable pressure wind", "Variable height wind", "Tropopause data", "", "Cloud cover", "Additional data", "",
-      "Surface Data", "Ship surface Data"};
+  private String[] catNames = new String[]{"",
+      "Category 01: mandatory constant-pressure data",
+      "Category 02: temperature/dewpoint at variable pressure-levels ",
+      "Category 03: wind at variable pressure-levels ",
+      "Category 04: wind at variable height-levels ",
+      "Category 05: tropopause data", "",
+      "Category 07: cloud cover",
+      "Category 08: additional data", "", "",
+      "Category 51: surface Data",
+      "Category 52: ship surface Data"};
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private static float[] mandPressureLevel = new float[]{1000, 850, 700, 500, 400, 300, 250, 200, 150, 100,
       70, 50, 30, 20, 10, 7, 5, 3, 2, 1};
 
-  private class Cat01 {
+  private abstract class Entry {
+    abstract Structure makeStructure(Structure parent) throws InvalidRangeException;
+
+    abstract void loadStructureData(ByteBuffer bb);
+  }
+
+  private class Cat01 extends Entry {
     short windDir, windSpeed;
     float geopot, press, temp, dewp;
-    byte[] quality;
-    String qs;
+    byte[] quality = new byte[4];
 
     Cat01(byte[] b, int offset, int level) throws IOException {
       press = mandPressureLevel[level];
@@ -534,27 +722,93 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       dewp = .1f * Float.parseFloat(new String(b, offset + 9, 3));
       windDir = Short.parseShort(new String(b, offset + 12, 3));
       windSpeed = Short.parseShort(new String(b, offset + 15, 3));
-      quality = new byte[4];
       System.arraycopy(b, offset + 18, quality, 0, 4);
-      qs = new String(quality);
     }
 
     public String toString() {
       return "Cat01: press= " + press + " geopot=" + geopot + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
-          " windSpeed=" + windSpeed + " qs=" + qs;
+          " windSpeed=" + windSpeed + " qs=" + new String(quality);
+    }
+
+    Structure makeStructure(Structure parent) throws InvalidRangeException {
+      Sequence seq = new Sequence(ncfile, null, parent, "mandatoryLevels");
+      seq.addAttribute(new Attribute("long_name", catNames[1]));
+
+      int pos = 0;
+
+      Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "mbars"));
+      v.addAttribute(new Attribute("long_name", "pressure level"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "geopotential", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "meter"));
+      v.addAttribute(new Attribute("long_name", "geopotential"));
+      v.addAttribute(new Attribute("missing_value", 99999.0f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "temperature"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "dewpoint depression"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 99.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "degrees"));
+      v.addAttribute(new Attribute("long_name", "wind direction"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "knots"));
+      v.addAttribute(new Attribute("long_name", "wind speed"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{4});
+      v.addAttribute(new Attribute("long_name", "quality marks: 0=geopot, 1=temp, 2=dewpoint, 3=wind"));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      return seq;
+    }
+
+    void loadStructureData(ByteBuffer bb) {
+      bb.putFloat(press);
+      bb.putFloat(geopot);
+      bb.putFloat(temp);
+      bb.putFloat(dewp);
+      bb.putShort(windDir);
+      bb.putShort(windSpeed);
+      bb.put(quality);
     }
   }
 
-  private class Cat02 {
+  private class Cat02 extends Entry {
     float press, temp, dewp;
-    byte[] quality;
+    byte[] quality = new byte[3];
     String qs;
 
     Cat02(byte[] b, int offset) throws IOException {
       press = .1f * Float.parseFloat(new String(b, offset, 5));
       temp = .1f * Float.parseFloat(new String(b, offset + 5, 4));
       dewp = .1f * Float.parseFloat(new String(b, offset + 9, 3));
-      quality = new byte[3];
       System.arraycopy(b, offset + 12, quality, 0, 3);
       qs = new String(quality);
     }
@@ -562,9 +816,55 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     public String toString() {
       return "Cat02: press=" + press + " temp= " + temp + " dewp=" + dewp + " qs=" + qs;
     }
+
+    Structure makeStructure(Structure parent) throws InvalidRangeException {
+      Sequence seq = new Sequence(ncfile, null, parent, "tempPressureLevels");
+      seq.addAttribute(new Attribute("long_name", catNames[2]));
+
+      int pos = 0;
+
+      Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "mbars"));
+      v.addAttribute(new Attribute("long_name", "pressure level"));
+      v.addAttribute(new Attribute("accuracy", "mbar/10"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "temperature"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "dewpoint depression"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 99.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{3});
+      v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=temp, 2=dewpoint"));
+      v.setSPobject(new Vinfo(pos, 3));
+      pos += 3;
+
+      return seq;
+    }
+
+    void loadStructureData(ByteBuffer bb) {
+      bb.putFloat(press);
+      bb.putFloat(temp);
+      bb.putFloat(dewp);
+      bb.put(quality);
+    }
   }
 
-  private class Cat03 {
+  private class Cat03 extends Entry {
     float press;
     short windDir, windSpeed;
     byte[] quality;
@@ -582,9 +882,53 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     public String toString() {
       return "Cat03: press=" + press + " windDir=" + windDir + " windSpeed=" + windSpeed + " qs=" + qs;
     }
+
+    Structure makeStructure(Structure parent) throws InvalidRangeException {
+      Sequence seq = new Sequence(ncfile, null, parent, "windPressureLevels");
+      seq.addAttribute(new Attribute("long_name", catNames[3]));
+
+      int pos = 0;
+
+      Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "mbars"));
+      v.addAttribute(new Attribute("long_name", "pressure level"));
+      v.addAttribute(new Attribute("accuracy", "mbar/10"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "degrees"));
+      v.addAttribute(new Attribute("long_name", "wind direction"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "knots"));
+      v.addAttribute(new Attribute("long_name", "wind speed"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=wind"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      return seq;
+    }
+
+    void loadStructureData(ByteBuffer bb) {
+      bb.putFloat(press);
+      bb.putShort(windDir);
+      bb.putShort(windSpeed);
+      bb.put(quality);
+    }
   }
 
-  private class Cat04 {
+  private class Cat04 extends Entry {
     float geopot;
     short windDir, windSpeed;
     byte[] quality;
@@ -602,9 +946,52 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     public String toString() {
       return "Cat04: geopot=" + geopot + " windDir=" + windDir + " windSpeed=" + windSpeed + " qs=" + qs;
     }
+
+    Structure makeStructure(Structure parent) throws InvalidRangeException {
+      Sequence seq = new Sequence(ncfile, null, parent, "windHeightLevels");
+      seq.addAttribute(new Attribute("long_name", catNames[4]));
+
+      int pos = 0;
+
+      Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "geopotential", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "meter"));
+      v.addAttribute(new Attribute("long_name", "geopotential"));
+      v.addAttribute(new Attribute("missing_value", 99999.0f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "degrees"));
+      v.addAttribute(new Attribute("long_name", "wind direction"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "knots"));
+      v.addAttribute(new Attribute("long_name", "wind speed"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "quality marks: 0=geopot, 1=wind"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      return seq;
+    }
+
+    void loadStructureData(ByteBuffer bb) {
+      bb.putFloat(geopot);
+      bb.putShort(windDir);
+      bb.putShort(windSpeed);
+      bb.put(quality);
+    }
   }
 
-  private class Cat05 {
+  private class Cat05 extends Entry {
     float press, temp, dewp;
     short windDir, windSpeed;
     byte[] quality;
@@ -625,9 +1012,70 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       return "Cat05: press= " + press + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
           " windSpeed=" + windSpeed + " qs=" + qs;
     }
+
+    Structure makeStructure(Structure parent) throws InvalidRangeException {
+      Sequence seq = new Sequence(ncfile, null, parent, "tropopause");
+      seq.addAttribute(new Attribute("long_name", catNames[5]));
+
+      int pos = 0;
+
+      Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "mbars"));
+      v.addAttribute(new Attribute("long_name", "pressure level"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "temperature"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "dewpoint depression"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 99.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "degrees"));
+      v.addAttribute(new Attribute("long_name", "wind direction"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "knots"));
+      v.addAttribute(new Attribute("long_name", "wind speed"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{4});
+      v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=temp, 2=dewpoint, 3=wind"));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      return seq;
+    }
+
+    void loadStructureData(ByteBuffer bb) {
+      bb.putFloat(press);
+      bb.putFloat(temp);
+      bb.putFloat(dewp);
+      bb.putShort(windDir);
+      bb.putShort(windSpeed);
+      bb.put(quality);
+    }
   }
 
-  private class Cat07 {
+  private class Cat07 extends Entry {
     float press;
     short percentClouds;
     byte[] quality;
@@ -644,9 +1092,44 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     public String toString() {
       return "Cat07: press=" + press + " percentClouds=" + percentClouds + " qs=" + qs;
     }
+
+    Structure makeStructure(Structure parent) throws InvalidRangeException {
+      Sequence seq = new Sequence(ncfile, null, parent, "tropopause");
+      seq.addAttribute(new Attribute("long_name", catNames[7]));
+
+      int pos = 0;
+
+      Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "mbars"));
+      v.addAttribute(new Attribute("long_name", "pressure level"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "percentClouds", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", ""));
+      v.addAttribute(new Attribute("long_name", "amount of cloudiness (%)"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=percentClouds"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      return seq;
+    }
+
+    void loadStructureData(ByteBuffer bb) {
+      bb.putFloat(press);
+      bb.putShort(percentClouds);
+      bb.put(quality);
+    }
   }
 
-  private class Cat08 {
+  private class Cat08 extends Entry {
     int data;
     short table101code;
     byte[] quality;
@@ -663,14 +1146,46 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     public String toString() {
       return "Cat08: data=" + data + " table101code=" + table101code + " qs=" + qs;
     }
+
+    Structure makeStructure(Structure parent) throws InvalidRangeException {
+      Sequence seq = new Sequence(ncfile, null, parent, "otherData");
+      seq.addAttribute(new Attribute("long_name", catNames[8]));
+
+      int pos = 0;
+
+      Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "data", DataType.INT, ""));
+      v.addAttribute(new Attribute("long_name", "additional data specified in table 101.1"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "table101code", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("long_name", "code figure from table 101"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "indicatorFlags", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "quality marks: 0=data, 1=form"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      return seq;
+    }
+
+    void loadStructureData(ByteBuffer bb) {
+      bb.putInt(data);
+      bb.putShort(table101code);
+      bb.put(quality);
+    }
   }
 
-  private class Cat51 {
+  private class Cat51 extends Entry {
     short windDir, windSpeed;
     float pressSeaLevel, pressStation, geopot, press, temp, dewp, maxTemp, minTemp, pressureTendency;
     byte[] quality = new byte[4];
     byte pastWeatherW2, pressureTendencyChar;
-    String qs;
     byte[] horizVis = new byte[3];
     byte[] presentWeather = new byte[3];
     byte[] pastWeatherW1 = new byte[2];
@@ -691,7 +1206,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       maxTemp = .1f * Float.parseFloat(new String(b, offset + 23, 4));
       minTemp = .1f * Float.parseFloat(new String(b, offset + 27, 4));
       System.arraycopy(b, offset + 31, quality, 0, 4);
-      qs = new String(quality);
 
       pastWeatherW2 = b[offset + 35];
       System.arraycopy(b, offset + 36, horizVis, 0, 3);
@@ -709,11 +1223,187 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     public String toString() {
       return "Cat51: press= " + press + " geopot=" + geopot + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
-          " windSpeed=" + windSpeed + " qs=" + qs + " pressureTendency=" + pressureTendency;
+          " windSpeed=" + windSpeed + " qs=" + new String(quality) + " pressureTendency=" + pressureTendency;
     }
+
+    Structure makeStructure(Structure parent) throws InvalidRangeException {
+      Sequence seq = new Sequence(ncfile, null, parent, "surfaceData");
+      seq.addAttribute(new Attribute("long_name", catNames[11]));
+
+      int pos = 0;
+
+      Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressureSeaLevel", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "mbars"));
+      v.addAttribute(new Attribute("long_name", "sea level pressure"));
+      v.addAttribute(new Attribute("accuracy", "mbars/10"));
+      v.addAttribute(new Attribute("missing_value", 9999.9f));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "mbars"));
+      v.addAttribute(new Attribute("long_name", "station pressure"));
+      v.addAttribute(new Attribute("accuracy", "mbars/10"));
+      v.addAttribute(new Attribute("missing_value", 9999.9f));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "degrees"));
+      v.addAttribute(new Attribute("long_name", "wind direction"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "knots"));
+      v.addAttribute(new Attribute("long_name", "wind speed"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "air temperature"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "dewpoint depression"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 99.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperatureMax", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "maximum temperature"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperatureMin", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "minimum temperature"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{4});
+      v.addAttribute(new Attribute("long_name", "quality marks: 0=pressureSeaLevel, 1=pressure, 2=wind, 3=temperature"));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pastWeatherW2", DataType.CHAR, ""));
+      v.addAttribute(new Attribute("long_name", "past weather (W2): WMO table 4561"));
+      v.setSPobject(new Vinfo(pos, 1));
+      pos += 1;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "horizViz", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{3});
+      v.addAttribute(new Attribute("long_name", "horizontal visibility: WMO table 4300"));
+      v.setSPobject(new Vinfo(pos, 3));
+      pos += 3;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "presentWeatherWW", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{3});
+      v.addAttribute(new Attribute("long_name", "present weather (WW): WMO table 4677"));
+      v.setSPobject(new Vinfo(pos, 3));
+      pos += 3;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pastWeatherW1", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "past weather (WW): WMO table 4561"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionN", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "cloud fraction (N): WMO table 2700"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionNh", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "cloud fraction (Nh): WMO table 2700"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCL", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "cloud fraction (CL): WMO table 0513"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudHeightCL", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "cloud base height above ground (h): WMO table 1600"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCM", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "cloud fraction (CM): WMO table 0515"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCH", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "cloud fraction (CH): WMO table 0509"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressureTendencyCharacteristic", DataType.CHAR, ""));
+      v.addAttribute(new Attribute("long_name", "pressure tendency characteristic for 3 hours previous to obs time: WMO table 0200"));
+      v.setSPobject(new Vinfo(pos, 1));
+      pos += 1;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressureTendency", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "mbars"));
+      v.addAttribute(new Attribute("long_name", "pressure tendency magnitude"));
+      v.addAttribute(new Attribute("accuracy", "mbars/10"));
+      v.addAttribute(new Attribute("missing_value", 99.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      return seq;
+    }
+
+    void loadStructureData(ByteBuffer bb) {
+      bb.putFloat(pressSeaLevel);
+      bb.putFloat(pressStation);
+      bb.putShort(windDir);
+      bb.putShort(windSpeed);
+      bb.putFloat(temp);
+      bb.putFloat(dewp);
+      bb.putFloat(maxTemp);
+      bb.putFloat(minTemp);
+      bb.put(quality);
+      bb.put(pastWeatherW2);
+      bb.put(horizVis);
+      bb.put(presentWeather);
+      bb.put(pastWeatherW1);
+      bb.put(fracCloudN);
+      bb.put(fracCloudNh);
+      bb.put(cloudCl);
+      bb.put(cloudBaseHeight);
+      bb.put(cloudCm);
+      bb.put(cloudCh);
+      bb.put(pressureTendencyChar);
+      bb.putFloat(pressureTendency);
+    }
+
   }
 
-  private class Cat52 {
+  private class Cat52 extends Entry {
     short snowDepth, wavePeriod, waveHeight, waveSwellPeriod, waveSwellHeight;
     float precip6hours, precip24hours, sst, waterEquiv;
     byte precipDuration, shipCourse;
@@ -740,11 +1430,139 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       waterEquiv = .001f * Float.parseFloat(new String(b, offset + 33, 7));
     }
 
+    void loadStructureData(ByteBuffer bb) {
+      bb.putFloat(precip6hours);
+      bb.putShort(snowDepth);
+      bb.putFloat(precip24hours);
+      bb.put(precipDuration);
+      bb.putShort(wavePeriod);
+      bb.putShort(waveHeight);
+      bb.put(waveDirection);
+      bb.putShort(waveSwellPeriod);
+      bb.putShort(waveSwellHeight);
+      bb.putFloat(sst);
+      bb.put(special);
+      bb.put(special2);
+      bb.put(shipCourse);
+      bb.put(shipSpeed);
+      bb.putFloat(waterEquiv);
+    }
+
     public String toString() {
       return "Cat52: precip6hours= " + precip6hours + " precip24hours=" + precip24hours + " sst= " + sst + " waterEquiv=" + waterEquiv +
           " snowDepth=" + snowDepth + " wavePeriod=" + wavePeriod + " waveHeight=" + waveHeight +
           " waveSwellPeriod=" + waveSwellPeriod + " waveSwellHeight=" + waveSwellHeight;
     }
+
+    Structure makeStructure(Structure parent) throws InvalidRangeException {
+      Sequence seq = new Sequence(ncfile, null, parent, "surfaceData2");
+      seq.addAttribute(new Attribute("long_name", catNames[12]));
+
+      int pos = 0;
+
+      Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "precip6hours", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "inch"));
+      v.addAttribute(new Attribute("long_name", "precipitation past 6 hours"));
+      v.addAttribute(new Attribute("accuracy", "inch/100"));
+      v.addAttribute(new Attribute("missing_value", 99.99f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "snowDepth", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "inch"));
+      v.addAttribute(new Attribute("long_name", "total depth of snow on ground"));
+      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "precip24hours", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "inch"));
+      v.addAttribute(new Attribute("long_name", "precipitation past 24 hours"));
+      v.addAttribute(new Attribute("accuracy", "inch/100"));
+      v.addAttribute(new Attribute("missing_value", 99.99f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "precipDuration", DataType.BYTE, ""));
+      v.addAttribute(new Attribute("units", "6 hours"));
+      v.addAttribute(new Attribute("long_name", "duration of precipitation observation"));
+      v.addAttribute(new Attribute("missing_value", 9));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "wavePeriod", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "second"));
+      v.addAttribute(new Attribute("long_name", "period of waves"));
+      v.addAttribute(new Attribute("missing_value", (short) 99));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "waveHeight", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "meter/2"));
+      v.addAttribute(new Attribute("long_name", "height of waves"));
+      v.addAttribute(new Attribute("missing_value", (short) 99));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "swellWaveDir", DataType.CHAR, ""));
+      v.setDimensionsAnonymous(new int[]{2});
+      v.addAttribute(new Attribute("long_name", "direction from which swell waves are moving: WMO table 0877"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "swellWavePeriod", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "second"));
+      v.addAttribute(new Attribute("long_name", "period of swell waves"));
+      v.addAttribute(new Attribute("missing_value", (short) 99));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "swellWaveHeight", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "meter/2"));
+      v.addAttribute(new Attribute("long_name", "height of waves"));
+      v.addAttribute(new Attribute("missing_value", (short) 99));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "sst", DataType.FLOAT, ""));
+      v.addAttribute(new Attribute("units", "celsius"));
+      v.addAttribute(new Attribute("long_name", "sea surface temperature"));
+      v.addAttribute(new Attribute("accuracy", "celsius/10"));
+      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "special", DataType.CHAR, ""));
+      v.addAttribute(new Attribute("long_name", "special phenomena - general"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "specialDetail", DataType.CHAR, ""));
+      v.addAttribute(new Attribute("long_name", "special phenomena - detailed"));
+      v.setSPobject(new Vinfo(pos, 2));
+      pos += 2;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "shipCourse", DataType.CHAR, ""));
+      v.addAttribute(new Attribute("long_name", "ships course: WMO table 0700"));
+      v.setSPobject(new Vinfo(pos, 1));
+      pos += 1;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "shipSpeed", DataType.CHAR, ""));
+      v.addAttribute(new Attribute("long_name", "ships average speed: WMO table 4451"));
+      v.setSPobject(new Vinfo(pos, 1));
+      pos += 1;
+
+      v = seq.addMemberVariable(new Variable(ncfile, null, parent, "waterEquiv", DataType.SHORT, ""));
+      v.addAttribute(new Attribute("units", "inch"));
+      v.addAttribute(new Attribute("long_name", "water equivalent of snow and/or ice"));
+      v.addAttribute(new Attribute("accuracy", "inch/100"));
+      v.addAttribute(new Attribute("missing_value", 99999.99f));
+      v.setSPobject(new Vinfo(pos, 4));
+      pos += 4;
+
+      return seq;
+    }
+
   }
 
 
@@ -775,9 +1593,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     try {
-      int b;
-      while ((b = raf.read()) != (int) 'X') ; //find where X's start
-      while ((b = raf.read()) == (int) 'X') ; //skip X's till you run out
+      while (raf.read() != (int) 'X') ; //find where X's start
+      while (raf.read() == (int) 'X') ; //skip X's till you run out
       raf.skipBytes(-1); // go back one
       readHeader(raf);
       return true;
@@ -798,7 +1615,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     short day = Short.parseShort(new String(h, 8, 2));
 
     int fullyear = (year > 30) ? 1900 + year : 2000 + year;
-      
+
     if (cal == null) {
       cal = Calendar.getInstance();
       cal.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -820,12 +1637,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   static class MyNetcdfFile extends NetcdfFile {
     MyNetcdfFile(NmcObsLegacy iosp) {
-      this.spi = iosp;  
+      this.spi = iosp;
     }
   }
 
-  static public void main(String args[]) throws IOException {
-    String filename = "D:/cadis/tempting";
+  static public void main(String args[]) throws IOException, InvalidRangeException {
+    String filename = "C:/data/cadis/tempting";
     //String filename = "C:/data/cadis/Y94179";
     //String filename = "C:/data/cadis/Y94132";
     NmcObsLegacy iosp = new NmcObsLegacy();
@@ -836,8 +1653,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     System.out.println("\n" + ncfile);
 
     Variable v = ncfile.findVariable("stationProfiles");
-    Array data = v.read();
-    NCdumpW.printArray(data, "stationProfiles", null);
+    Array data = v.read(new Section().appendRange(0, 1));
+    System.out.println(NCdumpW.printArray(data, "stationProfiles", null));
     iosp.close();
   }
 }

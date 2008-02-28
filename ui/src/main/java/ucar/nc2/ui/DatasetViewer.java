@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -111,7 +111,7 @@ public class DatasetViewer extends JPanel {
 
   public void setDataset(NetcdfFile ds) {
     this.ds = ds;
-    NestedTable nt = (NestedTable) nestedTableList.get(0);
+    NestedTable nt = nestedTableList.get(0);
     nt.table.setBeans( getVariableBeans(ds));
     hideNestedTable( 1);
 
@@ -126,12 +126,12 @@ public class DatasetViewer extends JPanel {
 
     Variable vp = v;
     while (vp.isMemberOfStructure()) {
-      vp = (Variable) vp.getParentStructure();
+      vp = vp.getParentStructure();
       vchain.add( 0, vp); // reverse
     }
 
     for (int i=0; i<vchain.size(); i++) {
-      vp = (Variable) vchain.get(i);
+      vp = vchain.get(i);
       NestedTable ntable = setNestedTable(i, vp.getParentStructure());
       ntable.setSelected( vp);
     }
@@ -146,7 +146,7 @@ public class DatasetViewer extends JPanel {
       nestedTableList.add( ntable);
 
     } else {
-      ntable = (NestedTable) nestedTableList.get(level);
+      ntable = nestedTableList.get(level);
     }
 
     if (s != null) // variables inside of records
@@ -159,7 +159,7 @@ public class DatasetViewer extends JPanel {
   private void hideNestedTable(int level) {
     int n = nestedTableList.size();
     for (int i=n-1; i>=level; i--) {
-      NestedTable ntable = (NestedTable) nestedTableList.get(i);
+      NestedTable ntable = nestedTableList.get(i);
       ntable.hide();
     }
   }
@@ -206,9 +206,10 @@ public class DatasetViewer extends JPanel {
       table.addListSelectionListener(new ListSelectionListener() {
         public void valueChanged(ListSelectionEvent e) {
           Variable v = getCurrentVariable(table);
-          if ((v != null) && (v.getDataType() == ucar.ma2.DataType.STRUCTURE)) {
+          if ((v != null) && (v instanceof Structure)) {
             hideNestedTable(NestedTable.this.level+2);
             setNestedTable(NestedTable.this.level+1, (Structure) v);
+
           } else {
             hideNestedTable(NestedTable.this.level+1);
           }
@@ -308,7 +309,7 @@ public class DatasetViewer extends JPanel {
     if (v == null) return;
 
     dumpPane.clear();
-    String spec = null;
+    String spec;
 
     try { spec = NCdumpW.makeSectionString(v, null); }
     catch (InvalidRangeException ex) { return; }
@@ -445,7 +446,7 @@ public class DatasetViewer extends JPanel {
   public void save() {
     dumpPane.save();
     for (int i=0; i<nestedTableList.size(); i++) {
-      NestedTable nt = (NestedTable) nestedTableList.get(i);
+      NestedTable nt = nestedTableList.get(i);
       nt.saveState();
     }
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());

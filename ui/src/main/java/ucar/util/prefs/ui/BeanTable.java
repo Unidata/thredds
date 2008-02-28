@@ -1,6 +1,5 @@
-// $Id: BeanTable.java,v 1.13 2006/05/08 02:47:23 caron Exp $
 /*
- * Copyright 1997-2004 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,7 +20,6 @@
 
 package ucar.util.prefs.ui;
 
-import java.util.prefs.*;
 import ucar.util.prefs.*;
 
 import java.awt.*;
@@ -58,7 +56,6 @@ import javax.swing.table.*;
  *
  * @see ucar.util.prefs.PreferencesExt
  * @author John Caron
- * @version $Revision: 1.13 $ $Date: 2006/05/08 02:47:23 $
  */
 
 public class BeanTable extends JPanel {
@@ -68,7 +65,7 @@ public class BeanTable extends JPanel {
   protected JScrollPane scrollPane;
   protected EventListenerList listenerList = new EventListenerList();
 
-  protected List beans;
+  protected List<Object> beans;
   protected TableBeanModel model;
 
   protected boolean debug = false, debugStore = false, debugBean = false, debugSelected = false;
@@ -83,7 +80,7 @@ public class BeanTable extends JPanel {
     this.beanClass = bc;
     this.store = pstore;
 
-    beans = (store != null) ? (ArrayList) store.getBean("beanList", new ArrayList()) : new ArrayList();
+    beans = (store != null) ? (ArrayList<Object>) store.getBean("beanList", new ArrayList()) : new ArrayList<Object>();
     model = new TableBeanModel( beanClass);
     jtable = new JTable(model);
     //jtable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); default = multiple

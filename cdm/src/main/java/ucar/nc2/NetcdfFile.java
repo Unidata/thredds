@@ -79,6 +79,8 @@ public class NetcdfFile {
   static boolean debugStructureIterator = false;
   static boolean loadWarnings = false;
 
+  static private boolean userLoads = false;
+
   // this is so that we can run without specialized IOServiceProviders, but they will
   // still get automatically loaded if they are present.
   static {
@@ -151,6 +153,13 @@ public class NetcdfFile {
     } catch (Throwable e) {
       if (loadWarnings) log.warn("Cant load class: " + e);
     }
+    try {
+      registerIOProvider("ucar.nc2.iosp.misc.NmcObsLegacy");
+    } catch (Throwable e) {
+      if (loadWarnings) log.warn("Cant load class: " + e);
+    }
+
+    userLoads = true;
   }
 
   /**
@@ -200,7 +209,9 @@ public class NetcdfFile {
   static public void registerIOProvider(Class iospClass) throws IllegalAccessException, InstantiationException {
     IOServiceProvider spi;
     spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
-    registeredProviders.add(spi);
+
+    if (userLoads) registeredProviders.add(0, spi);  // put user stuff first
+    else registeredProviders.add(spi);
   }
 
   /**

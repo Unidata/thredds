@@ -235,6 +235,9 @@ public abstract class ArrayStructure extends Array {
 
     } else if (dataType == DataType.STRUCTURE) {
       return getArrayStructure(recno, m);
+
+    } else if (dataType == DataType.SEQUENCE) {
+      return getArraySequence(recno, m);
     }
 
     throw new RuntimeException("Dont have implemenation for "+dataType);
@@ -257,7 +260,7 @@ public abstract class ArrayStructure extends Array {
    */
   public Array getMemberArray(StructureMembers.Member m) {
     if (m.getDataArray() != null)
-      return (Array) m.getDataArray();
+      return m.getDataArray();
 
     DataType dataType = m.getDataType();
 
@@ -751,31 +754,15 @@ public abstract class ArrayStructure extends Array {
     return new ArrayStructureW( array.getStructureMembers(), shape, this_sdata);
   }
 
-  /*
-   * Convert to double value, with scale, offset if applicable.
-   * Underlying type must be convertible to double.
-   * @param m member Variable.
-   * @throws IllegalArgumentException if m is not legal member.
-   * @throws ForbiddenConversionException if not convertible to float.
-   *
-  public double convertScalarDouble(int recno, StructureMembers.Member m) {
-    DataType dt = m.getDataType();
-    if (dt == DataType.FLOAT)
-      return m.convertScaleOffsetMissing( (double) getScalarFloat(recno, m));
-    else if (dt == DataType.DOUBLE)
-      return m.convertScaleOffsetMissing( getScalarDouble(recno, m));
-    else if (dt == DataType.BYTE)
-      return m.convertScaleOffsetMissing( getScalarByte(recno, m));
-    else if (dt == DataType.SHORT)
-      return m.convertScaleOffsetMissing( getScalarShort(recno, m));
-    else if (dt == DataType.INT)
-      return m.convertScaleOffsetMissing( getScalarInt(recno, m));
-    else if (dt == DataType.LONG)
-      return m.convertScaleOffsetMissing( getScalarLong(recno, m));
-    else if (dt == DataType.CHAR)
-      return m.convertScaleOffsetMissing( getScalarChar(recno, m));
+ /**
+  * Get member data of type array of Structure.
+  * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
+  * @param m get data from this StructureMembers.Member. Must be of type Structure.
+  * @return nested ArrayStructure. */
+  public ArraySequence2 getArraySequence(int recnum, StructureMembers.Member m) {
+    if (m.getDataType() != DataType.SEQUENCE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be Sequence");
 
-    throw new ForbiddenConversionException();
+    throw new UnsupportedOperationException("Sequences are not supported");
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -42,7 +42,7 @@ public class DataType {
   // object types
   public final static DataType STRING = new DataType("String", 1); // LOOK sizes ?
   public final static DataType STRUCTURE = new DataType("Structure", 1);
-  public final static DataType SEQUENCE = new DataType("Sequence", 1);
+  public final static DataType SEQUENCE = new DataType("Sequence", 4);
 
   // netcdf4 types
   public final static DataType OPAQUE = new DataType("opaque", 1);

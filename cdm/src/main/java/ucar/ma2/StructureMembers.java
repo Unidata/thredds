@@ -76,7 +76,7 @@ public class StructureMembers {
     return structureSize;
   }
 
-  public void calcStructureSize() {
+  private void calcStructureSize() {
     structureSize = 0;
     for (Member member : members) {
       structureSize += member.getTotalSize();
@@ -144,12 +144,12 @@ public class StructureMembers {
     private DataType dtype;
     private int size = 1;
     private int[] shape;
-    private StructureMembers members; // only if member is type Structure
 
     // optional, use depends on ArrayStructure subclass
     private Array dataArray;
     private Object dataObject;
     private int dataParam;
+    private StructureMembers members; // only if member is type Structure
 
     public Member(String name, String desc, String units, DataType dtype, int[] shape) {
       this.name = name;
@@ -238,7 +238,10 @@ public class StructureMembers {
      * @return total size in bytes
      */
     public int getTotalSize() {
-      return size * getDataType().getSize();
+      if (getDataType() == DataType.SEQUENCE)
+        return getDataType().getSize();
+      else
+        return size * getDataType().getSize();
     }
 
     /**

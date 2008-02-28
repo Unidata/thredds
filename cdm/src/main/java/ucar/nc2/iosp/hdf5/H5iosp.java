@@ -315,7 +315,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         int destPos = pos  + m.getDataParam();
         for (int i = 0; i < size; i++)  { // 16 byte "heap ids" are in the ByteBuffer
           String s = headerParser.readHeapString(bb, destPos + i * 16);
-          int index = asbb.addStringToHeap(s);
+          int index = asbb.addObjectToHeap(s);
           bb.order( ByteOrder.nativeOrder()); // the string index is always written in "native order"
           bb.putInt(destPos + i * 4, index); // overwrite with the index into the StringHeap
         }

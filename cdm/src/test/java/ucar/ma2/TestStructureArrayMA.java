@@ -194,7 +194,7 @@ public class TestStructureArrayMA extends TestCase {
     }
   }
 
-  static public void printArrayStructure(ArrayStructure as) {
+  static public void printArrayStructure(ArrayStructure as) throws IOException {
 
     StructureMembers sms = as.getStructureMembers();
     List members = sms.getMembers();
