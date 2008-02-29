@@ -56,7 +56,8 @@ public class TestReadMetadata extends TestCase
     InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
     InvCatalogImpl cat = fac.readXML( catAsString.toString(), catURI );
 
-    double d = ((InvDatasetImpl) cat.getDatasets().get( 0 )).getDataSize();
+    InvDatasetImpl ds = (InvDatasetImpl) cat.getDatasets().get( 0 );
+    double d = ds.getDataSize();
 
     assertTrue( "Size of data <" + d + "> not as expected <" + sizeKb + ">.",
                 d > sizeKb - 0.001 && d < sizeKb + 0.001 );
