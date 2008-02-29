@@ -32,7 +32,7 @@ public class TestNC2 {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
     //suite.addTest(new TestSuite(TestHTTP.class)); // */
-    suite.addTest(new TestSuite(TestStructure.class)); //
+    //suite.addTest(new TestSuite(TestStructure.class)); //
     suite.addTest(new TestSuite(TestStructureArray.class)); //
     suite.addTest(new TestSuite(TestStructureArray2.class)); //
     suite.addTest(new TestSuite(TestCompareFileWriter.class));// */

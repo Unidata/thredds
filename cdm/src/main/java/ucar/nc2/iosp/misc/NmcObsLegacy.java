@@ -60,7 +60,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private boolean readData = false, summarizeData = false, showTimes = false;
   private boolean checkType = false, checkSort = false, checkPositions = false;
 
-  @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
     byte[] h = raf.readBytes(60);
@@ -89,7 +88,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return true;
   }
 
-  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;
@@ -195,7 +193,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
   }
 
-  @Override
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
     if (!v.getName().equals("stationProfiles"))
       throw new IllegalArgumentException();
@@ -265,11 +262,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
   }
 
-  @Override
   public void close() throws IOException {
     raf.close();
   }
-
 
   private Report firstReport = null;
 

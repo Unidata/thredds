@@ -773,6 +773,9 @@ public abstract class AggregationOuterDimension extends Aggregation {
           while (stoker.hasMoreTokens()) {
             String toke = stoker.nextToken();
 
+            // LOOK how come you dont have to check if this coordinate is contained ?
+            // if (!nestedJoinRange.contains(count))
+
             if (dtype == DataType.STRING) {
               ii.setObjectNext(toke);
             } else {

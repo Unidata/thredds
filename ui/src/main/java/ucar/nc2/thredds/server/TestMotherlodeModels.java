@@ -137,7 +137,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    TestMotherlodeModels problem = new TestMotherlodeModels("problem", server+problemCat, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    //TestMotherlodeModels problem = new TestMotherlodeModels("problem", server+problemCat, CatalogCrawler.USE_RANDOM_DIRECT, false);
     TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
     TestMotherlodeModels chiz_models = new TestMotherlodeModels("chiz_models", server+chizModels, CatalogCrawler.USE_RANDOM_DIRECT, false);
     TestMotherlodeModels nc_models = new TestMotherlodeModels("gribtonc", server+gribtonc, CatalogCrawler.USE_RANDOM_DIRECT, false);
@@ -147,10 +147,10 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     frame.setLocation(40, 300);
     frame.setVisible(true);
 
-    problem.extract();
-    //all_models.extract();
-    //chiz_models.extract();
-    //nc_models.extract();
+    //problem.extract();
+    all_models.extract();
+    chiz_models.extract();
+    nc_models.extract();
   }
 
 }

@@ -11,6 +11,7 @@ This code is ALPHA
   * DataType CHAR are uninterpreted bytes, default is to consider them ascii.
   * DataType ENUM : stored as 1,2,4 byte ints, map to Strings
   * DataType OPAQUE : byte[] cant be subsetted.
+  * DataType SEQUENCE : Structure(*) only accessible through StructureDataIterator
 
  Features:
   netcdf
@@ -22,6 +23,7 @@ This code is ALPHA
    * complete HDF4 access
    * parsing of HDF-EOS/HDF5-EOS metadata to identify dimensions.
    * GEMPAK grids
+   * NMC Office Note 29/143
   geoloc
    * Add RotatedPole projection
   dt
@@ -37,6 +39,10 @@ This code is ALPHA
  Release Details:
     12: DODS preload
         put back HttpClientManager, RuntimeConfigParsser temporarily (testing with IDV)
+        hdf4 bug fixes
+        experiment with ucar.nc2.dt2
+        iosp.NccObsLegacy
+        DataType Sequence
     11: start to fix name/shortName, ie deal with Groups systematically
         Structure/ArrayStructure/StructureData refactor
     10: hdf4 bug fix - no data tag, use missing data
@@ -57,6 +63,7 @@ Changes from Java-Netcdf version 2.2
   * DataType CHAR are uninterpreted bytes, default is to consider them ascii.
   * DataType ENUM
   * DataType OPAQUE
+  * DataType SEQUENCE
 
 API Extensive API changes. Most, but not completely backwards-compatible.
 
@@ -100,7 +107,7 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    * Variable.setIsCoordinateAxis() removed
    * Variable.set/getIOVar() removed
    * Variable can be set immutable.
-   * Variable.readAllStructures is deprecated
+   * Variable.readAllStructures is removed
 
    * NetcdfFile.addStringVariable(), addVariable() convenience methods
    * NetcdfFile.addRecordStructure removed, use sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
@@ -119,6 +126,9 @@ API Extensive API changes. Most, but not completely backwards-compatible.
      - LayoutRegular, LayoutRegularSegmented, LayoutSegmented, LayoutTIled, LayoutBBTiled
    * IOServiceProvider.readNestedData() not needed anymore. optimize readData(Structure struct),
       where struct has only a subset of member Variables
+   * IOServiceProvider.getStructureDataIterator() experimental
+   * IOServiceProvider.readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+     to allow use of nio.Channels
 
   Package ucar.nc2.iosp.netcdf3
     * netcdf3 format is now just one of the possible IOSPs
