@@ -276,6 +276,57 @@ public class InvCatalogFactory {
   }
 
   /**
+   * Create an InvCatalog by reading catalog XML from a String.
+   *
+   * Failures and exceptions are handled by causing validate() to
+   * fail. Therefore, be sure to call validate() before trying to use
+   * the InvCatalog object.
+   *
+   * @param catAsString : the String from which to read the catalog.
+   * @param baseUri : the base URI of the document, used for resolving reletive references.
+   * @return an InvCatalogImpl object
+   */
+  public InvCatalogImpl readXML( String catAsString, URI baseUri )
+  {
+    return readXML( new StringReader( catAsString ), baseUri );
+  }
+
+  /**
+   * Create an InvCatalog by reading catalog XML from a StringReader.
+   *
+   * Failures and exceptions are handled by causing validate() to
+   * fail. Therefore, be sure to call validate() before trying to use
+   * the InvCatalog object.
+   *
+   * @param catAsStringReader : the StreamReader from which to read the catalog.
+   * @param baseUri : the base URI of the document, used for resolving reletive references.
+   * @return an InvCatalogImpl object
+   */
+  public InvCatalogImpl readXML( StringReader catAsStringReader, URI baseUri )
+  {
+    XMLEntityResolver resolver = new XMLEntityResolver( false );
+    SAXBuilder builder = resolver.getSAXBuilder();
+
+    Document inDoc;
+    try
+    {
+      inDoc = builder.build( catAsStringReader );
+    }
+    catch ( Exception e )
+    {
+      InvCatalogImpl cat = new InvCatalogImpl( baseUri.toString(), null, null );
+      cat.appendErrorMessage( "**Fatal:  InvCatalogFactory.readXML(String catAsString, URI uri) failed:"
+                              + "\n  Exception= " + e.getClass().getName() + " " + e.getMessage()
+                              + "\n  fatalMessages= " + fatalMessages.toString()
+                              + "\n  errMessages= " + errMessages.toString()
+                              + "\n  warnMessages= " + warnMessages.toString() + "\n", true );
+      return cat;
+    }
+
+    return readXML( inDoc, baseUri );
+  }
+
+  /**
    * Create an InvCatalog from an InputStream.
    * Failures and exceptions are handled
    * by causing validate() to fail. Therefore, be sure to call validate() before trying

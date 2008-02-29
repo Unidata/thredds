@@ -110,6 +110,7 @@ public class TestCatalogAll extends TestCase {
     suite.addTest(new TestSuite(TestTimeCoverage.class)); // */
 
     suite.addTestSuite( thredds.catalog.parser.jdom.TestDatasetScanFilter.class );
+    suite.addTestSuite( thredds.catalog.parser.jdom.TestReadMetadata.class );
 
     return suite;
   }
