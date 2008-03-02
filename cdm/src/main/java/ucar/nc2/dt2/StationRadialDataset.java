@@ -31,7 +31,7 @@ import java.io.IOException;
  * @author caron
  * @since Feb 18, 2008
  */
-public interface StationRadialDataset extends StationCollection {
+public interface StationRadialDataset extends StationCollection, FeatureDataset {
 
   /**
    * Get a subsetted StationCollection

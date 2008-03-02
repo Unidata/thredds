@@ -17,34 +17,19 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2.point;
-
-import ucar.nc2.dt2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.units.DateRange;
-import ucar.unidata.geoloc.LatLonRect;
-
-import java.util.Date;
-import java.io.IOException;
+package ucar.nc2.dt2;
 
 /**
- * Abstract superclass for implementations of PointObsDataset
+ * Time series of PointFeature at a named location called a Station.
+ *
  * @author caron
- * @since Sep 7, 2007
  */
-public abstract class PointObsDatasetImpl extends FeatureDatasetImpl implements PointObsDataset {
+public interface StationFeature extends Station, Feature, PointFeatureCollection {
 
-  protected PointObsDatasetImpl(FeatureDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
-    super(from, filter_bb, filter_date);
-  }
-
-  public PointObsDatasetImpl() {}
-  public PointObsDatasetImpl(NetcdfDataset ds) {
-    super(ds);
-  }
-
-  public Class getFeatureClass() {
-    return PointObsFeature.class;
-  }
+  /**
+   * The number of points in the time series.
+   * @return number of points  in the time series.
+   */
+  public int getNumberPoints();
 
 }

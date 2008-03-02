@@ -25,23 +25,24 @@ import ucar.nc2.units.DateUnit;
 import java.util.Date;
 
 /**
- * Abstract superclass for implementations of PointObsFeature.
- * Concrete subclass must implement getData();
+ * Abstract superclass for implementations of PointFeature.
+ * Concrete subclass must implement getId(), getData();
  *
  * @author caron
+ * @since Feb 29, 2008
  */
 
 
-public abstract class PointObsFeatureImpl implements PointObsFeature, Comparable<PointObsFeature> {
+public abstract class PointFeatureImpl implements PointFeature, Comparable<PointFeature> {
   protected EarthLocation location;
   protected double obsTime, nomTime;
   protected DateUnit timeUnit;
 
-  public PointObsFeatureImpl( DateUnit timeUnit) {
+  public PointFeatureImpl( DateUnit timeUnit) {
     this.timeUnit = timeUnit;
   }
 
-  public PointObsFeatureImpl( EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit) {
+  public PointFeatureImpl( EarthLocation location, double obsTime, double nomTime, DateUnit timeUnit) {
     this.location = location;
     this.obsTime = obsTime;
     this.nomTime = nomTime;
@@ -57,6 +58,10 @@ public abstract class PointObsFeatureImpl implements PointObsFeature, Comparable
     return "meters";
   }
 
+  public String getDescription() {
+    return location.toString(); // ??
+  }
+
   public Date getObservationTimeAsDate() {
     return timeUnit.makeDate( getObservationTime());
   }
@@ -65,7 +70,7 @@ public abstract class PointObsFeatureImpl implements PointObsFeature, Comparable
     return timeUnit.makeDate( getNominalTime());
   }
 
-  public int compareTo(PointObsFeature other) {
+  public int compareTo(PointFeature other) {
     if (obsTime < other.getObservationTime()) return -1;
     if (obsTime > other.getObservationTime()) return 1;
     return 0;

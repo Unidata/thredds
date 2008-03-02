@@ -21,7 +21,7 @@
 package ucar.nc2.dt2;
 
 /**
- * Just like java.util.Iterator, but may throw IOException on nextData() call.
+ * An Iterator over Features.
  *
  * @author caron
  */
@@ -40,4 +40,12 @@ public interface FeatureIterator {
    * @throws java.io.IOException on i/o error
    */
   public Feature nextFeature() throws java.io.IOException;
+
+  /**
+   * Hint to use this much memory in buffering the iteration.
+   * No guarentee that it will be used by the implementation.
+   * @param bytes amount of memory in bytes
+   */
+  public void setBufferSize( int bytes);
+
 }

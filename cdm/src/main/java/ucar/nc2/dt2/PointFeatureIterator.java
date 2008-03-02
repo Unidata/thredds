@@ -20,21 +20,31 @@
 package ucar.nc2.dt2;
 
 /**
+ * An iterator over PointFeature objects
  * @author caron
  * @since Feb 18, 2008
  */
-public interface Station extends EarthLocation {
+public interface PointFeatureIterator {
 
   /**
-   * Station name or id. Must be unique within the collection
-   * @return station name or id. May not be null.
+   * true if another Feature object is available
+   * @return true if another Feature object is available
+   * @throws java.io.IOException on i/o error
    */
-  public String getName();
+  public boolean hasNext() throws java.io.IOException;
 
   /**
-   * Station description
-   * @return station description
+   * Returns the next StructureData
+   * @return the next StructureData object
+   * @throws java.io.IOException on i/o error
    */
-  public String getDescription();
+  public PointFeature nextData() throws java.io.IOException;
+
+  /**
+   * Hint to use this much memory in buffering the iteration.
+   * No guarentee that it will be used by the implementation.
+   * @param bytes amount of memory in bytes
+   */
+  public void setBufferSize( int bytes);
 
 }

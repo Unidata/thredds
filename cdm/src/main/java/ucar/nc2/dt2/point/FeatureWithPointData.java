@@ -17,26 +17,20 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2;
+package ucar.nc2.dt2.point;
+
+import ucar.nc2.dt2.PointFeatureIterator;
+import ucar.nc2.dt2.PointFeature;
+import ucar.nc2.dt2.PointData;
 
 /**
- * Superclass for all Feature types.
  * @author caron
- * @since Feb 18, 2008
+ * @since Feb 29, 2008
  */
-public interface Feature {
+public interface FeatureWithPointData {
 
-  /**
-   * The ID of the feature, unique within the containing collection.
-   * @return ID of the feature, may not be null.
-   */
-  public Object getId();
-
-  /**
-   * A description of the feature.
-   *
-   * @return description of the feature, may be null.
-   */
-  public String getDescription();
-
+  //public LatLonPoint getLatLon();
+  public PointFeatureIterator getDataIterator(int bufferSize) throws java.io.IOException;
+  public PointFeature makePointFeature( PointData pointData);
+  
 }

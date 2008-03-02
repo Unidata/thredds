@@ -24,6 +24,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateRange;
 
 import java.util.*;
+import java.io.IOException;
 
 /**
  * Superclass for "scientific type" aka "feature" datasets.
@@ -93,7 +94,7 @@ public interface FeatureDataset {
    * The data Variables available in this dataset.
    * Should just be data variables others might be searching for, not metadata or coordinate
    * system variables, etc.
-   * The shape of this VariableSimpleIF does not necessarily match the Stucturedata member.
+   * The shape of this VariableSimpleIF does not necessarily match the StuctureData member.
    *
    * @return List of type VariableSimpleIF, may be empty but not null
    */
@@ -124,4 +125,5 @@ public interface FeatureDataset {
    * @return any debug / underlying implementation details, or null
    */
   public String getDetailInfo();
+
 }

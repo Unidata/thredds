@@ -17,26 +17,30 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2;
+package ucar.nc2.dt2.point;
+
+import ucar.nc2.dt2.ProfileFeature;
+import ucar.nc2.dt2.PointFeature;
+import ucar.unidata.geoloc.LatLonPoint;
 
 /**
- * Superclass for all Feature types.
+ * Abstract superclass for implementations of ProfileFeature.
  * @author caron
- * @since Feb 18, 2008
+ * @since Feb 29, 2008
  */
-public interface Feature {
+public abstract class ProfileFeatureImpl implements ProfileFeature {
+  private LatLonPoint latlonPoint;
 
-  /**
-   * The ID of the feature, unique within the containing collection.
-   * @return ID of the feature, may not be null.
-   */
-  public Object getId();
+  public ProfileFeatureImpl( LatLonPoint latlonPoint) {
+    this.latlonPoint = latlonPoint;
+  }
 
-  /**
-   * A description of the feature.
-   *
-   * @return description of the feature, may be null.
-   */
-  public String getDescription();
+  public LatLonPoint getLatLon() {
+    return latlonPoint;
+  }
 
+  // All features in this collection have this feature type
+  public Class getCollectionFeatureType() {
+    return PointFeature.class;
+  }
 }

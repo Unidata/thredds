@@ -28,8 +28,6 @@ import ucar.nc2.dt2.*;
 import ucar.nc2.constants.DataType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPoint;
 
 import java.io.*;
 import java.util.*;
@@ -39,14 +37,15 @@ import java.util.*;
  * For "multidimensional Structures" use UnidataStationObsMultidimDataset
  *
  * @author caron
+ * @since Feb 29, 2008
  */
 
-public class UnidataStationObsDataset extends StationObsDatasetImpl {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataStationObsDataset.class);
+public class UnidataStationFeatureDataset extends PointFeatureDatasetImpl {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataStationFeatureDataset.class);
 
   static public boolean isValidFile(NetcdfFile ds) {
     if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(ucar.nc2.constants.DataType.STATION.toString()) &&
-            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(DataType.STATION.toString()))
+        !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(DataType.STATION.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
@@ -62,7 +61,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
     if (!convOk) return false;
 
     // must have this field to be a linked list
-    Variable stationIndexVar = UnidataObsDatasetHelper.findVariable(ds, "parent_index");
+    Variable stationIndexVar = UnidataPointDatasetHelper.findVariable(ds, "parent_index");
     if (stationIndexVar == null) return false;
 
     return true;
@@ -74,9 +73,8 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
   }
 
   public FeatureDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
-    return new UnidataStationObsDataset(ncd);
+    return new UnidataStationFeatureDataset(ncd);
   }
-
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -86,15 +84,16 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
   private Variable nextVar;
   private Variable stationIndexVar;
   private boolean isForwardLinkedList, isBackwardLinkedList, isContiguousList;
-  RecordDatasetHelper recordHelper;
+  private RecordDatasetHelper recordHelper;
+  private StationHelper stationHelper = new StationHelper();
 
   private boolean isSubset;
   DateRange filter_date;
   // private LatLonRect filter_bb;
   //private List<Station> filter_stations;
 
-  // copy constructor
-  UnidataStationObsDataset(UnidataStationObsDataset from, List<Station> filter_stations, LatLonRect filter_bb, DateRange filter_date) throws IOException {
+  /* copy constructor
+  UnidataStationFeatureDataset(UnidataStationFeatureDataset from, List<Station> filter_stations, LatLonRect filter_bb, DateRange filter_date) throws IOException {
     super(from, filter_bb, filter_date);
     this.lastVar = from.lastVar;
     this.prevVar = from.prevVar;
@@ -110,7 +109,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
     if (filter_stations != null) {
       //this.filter_stations = filter_stations;
       //this.filter_bb = null;
-      stationHelper = new StationHelper(this);
+      stationHelper = new StationHelper();
       stationHelper.setStations( filter_stations);
       setBoundingBox( stationHelper.getBoundingBox());
       isSubset = true;
@@ -135,19 +134,16 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
 
   LatLonRect getFilterBB() {
     return stationHelper.getBoundingBox();
-  }
+  } */
 
-  public UnidataStationObsDataset() {
-  }
-
-  public UnidataStationObsDataset(NetcdfDataset ds) throws IOException {
-    super(ds);
+  public UnidataStationFeatureDataset(NetcdfDataset ds) throws IOException {
+    super(ds, StationFeature.class);
 
     // coordinate variables
-    Variable latVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Lat);
-    Variable lonVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Lon);
-    Variable altVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Height);
-    Variable timeVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Time);
+    Variable latVar = UnidataPointDatasetHelper.getCoordinate(ds, AxisType.Lat);
+    Variable lonVar = UnidataPointDatasetHelper.getCoordinate(ds, AxisType.Lon);
+    Variable altVar = UnidataPointDatasetHelper.getCoordinate(ds, AxisType.Height);
+    Variable timeVar = UnidataPointDatasetHelper.getCoordinate(ds, AxisType.Time);
 
     if (latVar == null)
       throw new IllegalStateException("Missing latitude variable");
@@ -157,13 +153,13 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
       throw new IllegalStateException("Missing time coordinate variable");
 
     // variables that link the structures together
-    Variable timeNominalVar = UnidataObsDatasetHelper.findVariable(ds, "time_nominal");
-    lastVar = UnidataObsDatasetHelper.findVariable(ds, "lastChild");
-    prevVar = UnidataObsDatasetHelper.findVariable(ds, "prevChild");
-    firstVar = UnidataObsDatasetHelper.findVariable(ds, "firstChild");
-    nextVar = UnidataObsDatasetHelper.findVariable(ds, "nextChild");
-    Variable numChildrenVar = UnidataObsDatasetHelper.findVariable(ds, "numChildren");
-    stationIndexVar = UnidataObsDatasetHelper.findVariable(ds, "parent_index");
+    Variable timeNominalVar = UnidataPointDatasetHelper.findVariable(ds, "time_nominal");
+    lastVar = UnidataPointDatasetHelper.findVariable(ds, "lastChild");
+    prevVar = UnidataPointDatasetHelper.findVariable(ds, "prevChild");
+    firstVar = UnidataPointDatasetHelper.findVariable(ds, "firstChild");
+    nextVar = UnidataPointDatasetHelper.findVariable(ds, "nextChild");
+    Variable numChildrenVar = UnidataPointDatasetHelper.findVariable(ds, "numChildren");
+    stationIndexVar = UnidataPointDatasetHelper.findVariable(ds, "parent_index");
 
     isForwardLinkedList = (firstVar != null) && (nextVar != null);
     isBackwardLinkedList = (lastVar != null) && (prevVar != null);
@@ -181,9 +177,9 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
     }
 
     // station variables
-    Variable stationIdVar = UnidataObsDatasetHelper.findVariable(ds, "station_id");
-    Variable stationDescVar = UnidataObsDatasetHelper.findVariable(ds, "station_description");
-    Variable numStationsVar = UnidataObsDatasetHelper.findVariable(ds, "number_stations");
+    Variable stationIdVar = UnidataPointDatasetHelper.findVariable(ds, "station_id");
+    Variable stationDescVar = UnidataPointDatasetHelper.findVariable(ds, "station_description");
+    Variable numStationsVar = UnidataPointDatasetHelper.findVariable(ds, "number_stations");
 
     if (stationIdVar == null)
       throw new IllegalStateException("Missing station id variable");
@@ -192,6 +188,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
     recordHelper = new RecordDatasetHelper(ds, timeVar.getShortName(),
         timeNominalVar == null ? null : timeNominalVar.getShortName(),
         dataVariables, null, parseInfo);
+
     recordHelper.setStationInfo(stationIndexVar.getShortName(),
         stationDescVar == null ? null : stationDescVar.getShortName(),
         stationIndexVar.getShortName(),
@@ -210,8 +207,8 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
     //timeUnit = recordHelper.timeUnit;
 
     // get min, max date
-    Date startDate = UnidataObsDatasetHelper.getStartDate( ds, recordHelper.timeUnit);
-    Date endDate = UnidataObsDatasetHelper.getEndDate( ds, recordHelper.timeUnit);
+    Date startDate = UnidataPointDatasetHelper.getStartDate(ds, recordHelper.timeUnit);
+    Date endDate = UnidataPointDatasetHelper.getEndDate(ds, recordHelper.timeUnit);
 
     // kludge Robb not following spec
     if (null == startDate) {
@@ -225,8 +222,8 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
       endDate = recordHelper.timeUnit.makeDate(maxTimeValue);
     }
 
-    setDateRange( new DateRange(startDate, endDate));
-    setBoundingBox( UnidataObsDatasetHelper.getBoundingBox(ds));
+    setDateRange(new DateRange(startDate, endDate));
+    setBoundingBox(UnidataPointDatasetHelper.getBoundingBox(ds));
 
     title = ds.findAttValueIgnoreCase(null, "title", "");
     desc = ds.findAttValueIgnoreCase(null, "description", "");
@@ -249,7 +246,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
       numChildrenArray = numChildrenVar.read();
 
     // how many are valid stations ?
-    Dimension stationDim = UnidataObsDatasetHelper.findDimension(ncfile, "station");
+    Dimension stationDim = UnidataPointDatasetHelper.findDimension(ncfile, "station");
     int n;
     if (numStationsVar != null)
       n = numStationsVar.readScalarInt();
@@ -273,15 +270,20 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
       }
 
       UnidataStation s = new UnidataStation(stationName, stationDesc,
-              latArray.getFloat(ima),
-              lonArray.getFloat(ima),
-              (altVar != null) ? elevArray.getFloat(ima) : Double.NaN,
-              firstRecordArray.getInt(ima),
-              (numChildrenVar != null) ? numChildrenArray.getInt(ima) : -1
+          latArray.getFloat(ima),
+          lonArray.getFloat(ima),
+          (altVar != null) ? elevArray.getFloat(ima) : Double.NaN,
+          firstRecordArray.getInt(ima),
+          (numChildrenVar != null) ? numChildrenArray.getInt(ima) : -1
       );
 
       stationHelper.addStation(s);
     }
+
+    FeatureIterator fiter = new StationListIterator();
+    StationFeatureCollectionImpl collection = new StationFeatureCollectionImpl(dataVariables, fiter);
+    collection.setStationHelper( stationHelper);
+    setPointFeatureCollection(collection);
   }
 
   public int getDataCount() {
@@ -306,18 +308,18 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
         Set<Integer> records = new HashSet<Integer>(500);
         // for each station, follow the links
         int recNo = stnIter.getIntNext();
-        System.out.print("Station "+stnIdx);
+        System.out.print("Station " + stnIdx);
         while (recNo >= 0) {
-          System.out.print(" "+recNo);
+          System.out.print(" " + recNo);
           records.add(recNo);
-          int stnFromRecord = stnArray.getInt( stnIndex.set(recNo));
+          int stnFromRecord = stnArray.getInt(stnIndex.set(recNo));
           if (stnFromRecord != stnIdx) {
             sbuff.append("recno ").append(recNo).append(" has bad station index\n");
             countErrs++;
             if (countErrs > 10) return;
           }
           // get next one
-          recNo = prevArray.getInt( prevIndex.set(recNo));
+          recNo = prevArray.getInt(prevIndex.set(recNo));
           if (records.contains(recNo)) {
             sbuff.append("stn ").append(stnIdx).append(" has circular links\n");
             countErrs++;
@@ -332,21 +334,21 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
     sbuff.append("done");
   }
 
-  public StationObsFeature getFeature(Station s) throws IOException {
+  /* public StationFeature getStationFeature(Station s) throws IOException {
     return (UnidataStation) s;
   }
 
-  public StationObsFeature getFeature(Station s, DateRange dateRange) throws IOException {
+  public StationFeature getStationFeature(Station s, DateRange dateRange) throws IOException {
     return new UnidataStation( (UnidataStation) s, dateRange);
   }
 
-  public StationObsDataset subset(List<Station> stations) throws IOException {
-    return new UnidataStationObsDataset(this, stations, null, null);
+  public StationFeatureCollection subset(List<Station> stations) throws IOException {
+    return new UnidataStationFeatureDataset(this, stations, null, null);
   }
 
-  public PointObsDataset subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    UnidataStationObsDataset subset = new UnidataStationObsDataset(this, null, boundingBox, dateRange);
-    return new PointObsDatasetAdapter( subset);
+  public PointFeatureDataset subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    UnidataStationFeatureDataset subset = new UnidataStationFeatureDataset(this, null, boundingBox, dateRange);
+    return new PointFeatureDatasetAdapter( subset);
   }
 
   public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
@@ -355,7 +357,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
 
   public DataCost getDataCost() {
     return new DataCost(recordHelper.getRecordCount(), -1);
-  }
+  }  */
 
   private class StationListIterator implements FeatureIterator {
     Iterator<Station> stationIter;
@@ -371,82 +373,38 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
     public Feature nextFeature() throws IOException {
       return (UnidataStation) stationIter.next();
     }
+
+    public void setBufferSize(int bytes) {
+      ; // no op
+    }
   }
 
   ////////////////////////////////////////////////////////
 
   // a Station that can follow linked lists of observations
-  private class UnidataStation extends StationObsFeatureImpl implements Station {
+
+  private class UnidataStation extends StationFeatureImpl {
     private int firstRecord;
     private Variable next;
-    private DateRange filter_date;
 
     private UnidataStation(String name, String desc, double lat, double lon, double elev, int firstRecord, int count) {
-      super(UnidataStationObsDataset.this, recordHelper.getTimeUnit());
-      station = new StationImpl(name, desc, lat, lon, elev, count);
+      super(UnidataStationFeatureDataset.this.getDataVariables(), name, desc, lat, lon, elev, recordHelper.getTimeUnit(), count);
+      setIterator(new StationIterator());
       this.firstRecord = firstRecord;
       next = (isForwardLinkedList) ? nextVar : prevVar;
     }
 
-    private UnidataStation(UnidataStation from, DateRange filter_date) {
-      super(UnidataStationObsDataset.this, recordHelper.getTimeUnit());
-      this.filter_date = filter_date;
-
-      this.firstRecord = from.firstRecord;
-      this.next = from.next;
-      this.firstRecord = from.firstRecord;
-    }
-
-    // station stuff
-    public String getName() {
-      return station.getName();
-    }
-
-    public double getLatitude() {
-      return station.getLatitude();
-    }
-
-    public double getLongitude() {
-      return station.getLongitude();
-    }
-
-    public double getAltitude() {
-      return station.getAltitude();
-    }
-
-    public LatLonPoint getLatLon() {
-      return station.getLatLon();
-    }
-
     // feature stuff
-    public DataIterator getDataIterator(int bufferSize) throws IOException {
-      if (filter_date == null)
-        return new StationIterator();
-      else
-        return new StationIterator(filter_date.getStart().getDate(), filter_date.getEnd().getDate());
-    }
-
     // LOOK no guarentee of time ordering
-    private class StationIterator implements DataIterator {
+    private class StationIterator implements PointFeatureIterator {
       int nextRecno = firstRecord;
-      int last = firstRecord + station.getNumberPoints() - 1; // contiguous only
-      double startTime, endTime;
-      boolean hasDateRange;
-
-      StationIterator() {
-      }
-
-      StationIterator(Date start, Date end) {
-        startTime = recordHelper.timeUnit.makeValue(start);
-        endTime = recordHelper.timeUnit.makeValue(end);
-        hasDateRange = true;
-      }
+      int last = firstRecord + getNumberPoints() - 1; // contiguous only
 
       public boolean hasNext() {
         return (nextRecno >= 0);
       }
 
-      public StructureData nextData() throws IOException {
+      public PointFeature nextData() throws IOException {
         // deal with files that are updating
         if (nextRecno > getDataCount()) {
           int n = getDataCount();
@@ -455,14 +413,15 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
         }
 
         StructureData sdata;
+        int recno = nextRecno;
         try {
-          sdata = recordHelper.recordVar.readStructure(nextRecno);
+          sdata = recordHelper.recordVar.readStructure(recno);
         } catch (ucar.ma2.InvalidRangeException e) {
-          log.error("UnidataStationObsDataset.makeObs recno=" + nextRecno, e);
+          log.error("UnidataStationObsDataset.makeObs recno=" + recno, e);
           throw new IOException(e.getMessage());
         }
 
-        checkStation(sdata, nextRecno);
+        checkStation(sdata, recno);
 
         if (isContiguousList) {
           nextRecno++;
@@ -471,32 +430,36 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
         } else {
           nextRecno = sdata.getScalarInt(next.getName());
         }
-        if (hasDateRange) {
-          double timeValue = recordHelper.getObservationTime( sdata);
-          if ((timeValue < startTime) || (timeValue > endTime))
-            return nextData();
-        }
-        return sdata;
+
+        return recordHelper.new RecordStationObs(UnidataStation.this, sdata, recno);
+      }
+
+      public void setBufferSize(int bytes) {
+        ; // no op
       }
     } // StationIterator
+
+    public PointFeature makePointFeature(PointData pointData) {
+      return (RecordDatasetHelper.RecordStationObs) pointData;
+    }
 
     private void checkStation(StructureData sdata, int recno) {
       List<Station> stations = stationHelper.getStations();
       int stationIndex = sdata.getScalarInt(stationIndexVar.getShortName());
       if (stationIndex < 0 || stationIndex >= stations.size()) {
-        log.error("Illegal Station index = "+stationIndex+" when reading obs record "+recno);
+        log.error("Illegal Station index = " + stationIndex + " when reading obs record " + recno);
       } else {
         Station station = stations.get(stationIndex);
         if (!station.getName().equals(getName()))
-          log.error("Obs link doesnt match Station, index = "+stationIndex+" when reading obs record "+recno);
+          log.error("Obs link doesnt match Station, index = " + stationIndex + " when reading obs record " + recno);
       }
     }
 
     public int getNumberPoints() {
-      return filter_date == null ? station.getNumberPoints() : -1;
+      return -1;
     }
 
-    public double getLatitude(StructureData sdata) {
+    /* public double getLatitude(StructureData sdata) {
       return recordHelper.getLatitude( sdata);
     }
 
@@ -522,7 +485,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
 
     public DataCost getDataCost() {
       return getNumberPoints() < 0 ? null : new DataCost(getNumberPoints(), -1);
-    }
+    } */
 
   } // UnidataStationObsFeature
 
@@ -530,10 +493,10 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl {
   public static void main(String args[]) throws IOException {
     //String filename = "C:/data/199707010200.CHRTOUT_DOMAIN2";
     String filename = "C:/data/199707010000.LAKEOUT_DOMAIN2";
-    UnidataStationObsDataset ods = new UnidataStationObsDataset( NetcdfDataset.openDataset(filename));
+    UnidataStationFeatureDataset ods = new UnidataStationFeatureDataset(NetcdfDataset.openDataset(filename));
     StringBuffer sbuff = new StringBuffer(50 * 1000);
     ods.checkLinks(sbuff);
-    System.out.println("\n\n"+sbuff.toString());
+    System.out.println("\n\n" + sbuff.toString());
   }
 
 }

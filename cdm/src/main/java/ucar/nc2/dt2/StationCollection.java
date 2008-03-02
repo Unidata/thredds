@@ -19,6 +19,8 @@
  */
 package ucar.nc2.dt2;
 
+import ucar.unidata.geoloc.LatLonRect;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -55,5 +57,11 @@ public interface StationCollection {
    * @return Station or null if not found
    */
   public Station getStation(String name);
+
+  /**
+   * Get the bounding box including all the stations.
+   * @return bounding box as a LatLonRect
+   */
+  public LatLonRect getBoundingBox();  
 
 }

@@ -23,27 +23,34 @@ import ucar.nc2.dt2.*;
 import ucar.nc2.units.DateUnit;
 
 /**
- * Abstract superclass for implementations of StationObsFeature.
- * Concrete subclass must implement getId(), getData();
- *
+ * Abstract superclass for implementations of StationProfileFeature.
  * @author caron
+ * @since Feb 29, 2008
  */
+public abstract class StationProfileFeatureImpl extends StationImpl implements StationProfileFeature {
+  protected DateUnit timeUnit;
+  protected int npts;
 
-
-public abstract class StationObsFeatureImpl extends ObsFeature1DImpl implements StationObsFeature {
-  protected Station station;
-
-  public StationObsFeatureImpl( FeatureDataset fd, DateUnit timeUnit) {
-    super(fd, timeUnit);
+  public StationProfileFeatureImpl( String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
+    super(name, desc, lat, lon, alt);
+    this.timeUnit = timeUnit;
+    this.npts = npts;
   }
 
-  public StationObsFeatureImpl( FeatureDataset fd, Station station, DateUnit timeUnit) {
-    super(fd, timeUnit);
-    this.station = station;
+  // copy constructor
+  public StationProfileFeatureImpl( StationProfileFeatureImpl from) {
+    super(from.name, from.desc, from.lat, from.lon, from.alt);
+    this.timeUnit = from.timeUnit;
   }
 
-  public Station getStation() { return station; }
-  public EarthLocation getLocation() { return station; }
-  public String getId() { return station.getName(); }
+  public String getId() { return name; }
 
+    // All features in this collection have this feature type
+  public Class getCollectionFeatureType() {
+    return ProfileFeature.class;
+  }
+
+  public int getNumberPoints() {
+    return npts;
+  }
 }

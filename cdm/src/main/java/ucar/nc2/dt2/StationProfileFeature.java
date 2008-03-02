@@ -19,11 +19,19 @@
  */
 package ucar.nc2.dt2;
 
+import java.io.IOException;
+
 /**
- * A collection of ProfileObsDatatypes
+ * Time series of ProfileFeature at named locations.
  * @author caron
- * @since Feb 18, 2008
+ * @since Feb 29, 2008
  */
-public interface ProfileObsDataset extends Obs1DDataset {
+public interface StationProfileFeature extends Station, Feature, PointFeatureCollection  {
+
+  /**
+   * The number of points in the time series.
+   * @return number of points in the time series at this station.
+   */
+  public int getNumberPoints();
 
 }

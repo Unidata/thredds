@@ -19,29 +19,33 @@
  */
 package ucar.nc2.dt2;
 
-import ucar.unidata.geoloc.LatLonPoint;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.VariableSimpleIF;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
- * A Profile of observations. A set of observations along the vertical (z) axis.
- * All obs have the same lat/lon. Time is either constant, or it may vary with z.
- * The z coordinates are monotonc, but may be increasing or decreasing.
+ * A Feature that is a collection of other Features, ultimately based on PointFeature.
  *
  * @author caron
- * @since Feb 8, 2008
+ * @since Mar 1, 2008
  */
-public interface ProfileObsFeature extends Obs1DFeature {
+public interface PointFeatureCollection {
 
-  /**
-   * The number of points along the z axis.
-   * @return number of points along the z axis.
-   */
-  public int getNumberPoints();
+  // the data variables to be found in the PointFeature
+  public List<VariableSimpleIF> getDataVariables();
 
-  /**
-   * Location of this profile
-   *
-   * @return the location of this observation
-   */
-  public LatLonPoint getLocation();
+  // All features in this collection have this feature type
+  public Class getCollectionFeatureType();
+
+  // an iterator over Features of type getCollectionFeatureType
+  public FeatureIterator getFeatureIterator(int bufferSize) throws java.io.IOException;
+
+  // an iterator over Features of type PointFeature
+  public PointFeatureIterator getPointIterator(int bufferSize) throws java.io.IOException;
+
+  // create a subset
+  public PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
 }

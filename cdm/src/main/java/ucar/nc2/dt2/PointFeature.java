@@ -19,25 +19,23 @@
  */
 package ucar.nc2.dt2;
 
-import ucar.ma2.StructureData;
+import java.util.Date;
 
 /**
  * @author caron
- * @since Feb 18, 2008
+ * @since Feb 29, 2008
  */
-public interface DataIterator { 
+public interface PointFeature extends Feature, PointData {
 
   /**
-   * true if another Feature object is available
-   * @return true if another Feature object is available
-   * @throws java.io.IOException on i/o error
+   * Nominal time of this observation.
+   * @return Nominal time of this observation.
    */
-  public boolean hasNext() throws java.io.IOException;
+  public double getNominalTime();
 
   /**
-   * Returns the next StructureData
-   * @return the next StructureData object
-   * @throws java.io.IOException on i/o error
+   * Nominal time of this observation, as a Date.
+   * @return Nominal time of this observation, as a Date.
    */
-  public StructureData nextData() throws java.io.IOException;
+  public Date getNominalTimeAsDate();
 }

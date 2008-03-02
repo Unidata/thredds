@@ -442,6 +442,19 @@ abstract public class StructureData {
   }
 
   /**
+    * Get member data of type Structure.
+    * For more efficiency, use getScalarStructure(StructureMembers.Member m) if possible.
+    * @param memberName name of member Variable.
+    * @return scalar StructureData value
+    * @throws IllegalArgumentException if name is not legal member name.
+    */
+  public ArrayStructure getArrayStructure(String memberName) {
+    StructureMembers.Member m = findMember(memberName);
+    if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
+    return getArrayStructure(m);
+  }
+
+  /**
    * Get member data of type Structure.
    * @param m get data from this StructureMembers.Member. Must be of type Structure.
    * @return StructureData

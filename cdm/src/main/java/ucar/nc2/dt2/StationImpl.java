@@ -25,13 +25,11 @@ package ucar.nc2.dt2;
  */
 public class StationImpl extends EarthLocationImpl implements Station {
   protected String name, desc, wmoId;
-  protected int npts = -1;
 
-  public StationImpl( String name, String desc, double lat, double lon, double alt, int npts) {
+  public StationImpl( String name, String desc, double lat, double lon, double alt) {
     super( lat, lon, alt);
     this.name = name;
     this.desc = desc;
-    this.npts = npts;
   }
 
   /**
@@ -45,16 +43,6 @@ public class StationImpl extends EarthLocationImpl implements Station {
    * @return station description
    */
   public String getDescription() { return desc; }
-
-  /**
-   * The number of data points for this Station.
-   *
-   * @return umber of data points for this Station, or -1 if unknown
-   */
-  public int getNumberPoints() {
-    return npts;
-  }
-
 
   /*
    * Get the named attribute for this station

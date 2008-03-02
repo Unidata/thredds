@@ -29,23 +29,18 @@ import java.util.List;
 import java.io.IOException;
 
 /**
- * Helper class for StationObsDataset.
- * StationObsDataset must implement:
- *   getStations()
- *   getData( Station s)
+ * Helper class for Station Collections.
  *
  * This assumes that calling getData( Station s) is reletively cheap, ie that theres no cheaper filtering to do.
  * @author caron
  * @since Feb 5, 2008
  */
 public class StationHelper {
-  private StationObsDataset obsDataset;
   private List<Station> stations;
   private Map<String, Station> stationHash;
   private boolean debug = false;
 
-  public StationHelper( StationObsDataset obsDataset) {
-    this.obsDataset = obsDataset;
+  public StationHelper() {
     stations = new ArrayList<Station>();
     stationHash = new HashMap<String, Station>();
   }
@@ -108,63 +103,6 @@ public class StationHelper {
   public List<Station> getStations() {
     return stations;
   }
-
-  /* public List getStationObs(Station s, double startTime, double endTime, CancelTask cancel) throws IOException {
-    ArrayList result = new ArrayList();
-    List stationObs = obsDataset.getData( s, cancel);
-    for (int i = 0; i < stationObs.size(); i++) {
-      StationObsDatatype obs =  (StationObsDatatype) stationObs.get(i);
-      double timeValue = obs.getObservationTime();
-      if ((timeValue >= startTime) && (timeValue <= endTime))
-          result.add( obs);
-      if ((cancel != null) && cancel.isCancel()) return null;
-    }
-    return result;
-  }
-
-  public List getStationObs(List<Station> stations, CancelTask cancel) throws IOException {
-    ArrayList result = new ArrayList();
-    for (int i = 0; i < stations.size(); i++) {
-      Station s = stations.get(i);
-      result.addAll( obsDataset.getData( s, cancel));
-      if ((cancel != null) && cancel.isCancel()) return null;
-    }
-    return result;
-  }
-
-  public List getStationObs(List<Station> stations, double startTime, double endTime, CancelTask cancel) throws IOException {
-    ArrayList result = new ArrayList();
-    for (int i = 0; i < stations.size(); i++) {
-      Station s = stations.get(i);
-      result.addAll( getStationObs( s, startTime, endTime, cancel));
-      if ((cancel != null) && cancel.isCancel()) return null;
-    }
-    return result;
-  }
-
-  public List getStationObs(LatLonRect boundingBox, CancelTask cancel) throws IOException {
-    List stations = obsDataset.getStations( boundingBox, cancel);
-    if (stations == null) return null;
-    return getStationObs( stations, cancel);
-  }
-
-  public List getStationObs(LatLonRect boundingBox, double startTime, double endTime, CancelTask cancel) throws IOException {
-    List stations = obsDataset.getStations( boundingBox);
-    if (stations == null) return null;
-    return getStationObs( stations, startTime, endTime, cancel);
-  }
-
-  public void sortByTime(List<StationObsDatatype> stationObs) {
-    Collections.sort( stationObs, new StationObsComparator());
-  }
-
-  private class StationObsComparator implements Comparator {
-    public int compare(Object o1, Object o2) {
-      StationObsDatatype s1 = (StationObsDatatype) o1;
-      StationObsDatatype s2 = (StationObsDatatype) o2;
-      return (int) (s1.getObservationTime() - s2.getObservationTime());
-    }
-  }   */
 
 }
 

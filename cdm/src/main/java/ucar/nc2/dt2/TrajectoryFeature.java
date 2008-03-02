@@ -19,7 +19,6 @@
  */
 package ucar.nc2.dt2;
 
-import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -30,7 +29,7 @@ import java.util.Date;
  * @author edavis
  * @author caron
  */
-public interface TrajectoryObsFeature extends Obs1DFeature {
+public interface TrajectoryFeature extends Feature, PointFeatureCollection {
 
   /**
    * The number of points along the trajectory.

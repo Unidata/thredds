@@ -29,7 +29,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPoint;
 
 import java.util.*;
 import java.io.IOException;
@@ -40,9 +39,10 @@ import ucar.nc2.constants.DataType;
  * This handles point datasets in "Unidata Observation Dataset v1.0"
  *
  * @author caron
+ * @since Feb 29, 2008
  */
 
-public class UnidataPointObsDataset extends PointObsDatasetImpl implements PointObsDataset {
+public class UnidataPointFeatureDataset extends PointFeatureDatasetImpl {
 
   static public boolean isValidFile(NetcdfFile ds) {
     if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(DataType.POINT.toString()) &&
@@ -65,7 +65,7 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
   // TypedDatasetFactoryIF
   public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
   public FeatureDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
-    return new UnidataPointObsDataset( ncd);
+    return new UnidataPointFeatureDataset( ncd);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
   private DateRange filter_date;
 
   // copy constructor
-  UnidataPointObsDataset(UnidataPointObsDataset from, LatLonRect filter_bb, DateRange filter_date) {
+  UnidataPointFeatureDataset(UnidataPointFeatureDataset from, LatLonRect filter_bb, DateRange filter_date) {
     super(from, filter_bb, filter_date);
     this.recordHelper = from.recordHelper;
 
@@ -89,15 +89,13 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
       this.filter_date = (filter_date == null) ? from.filter_date : from.filter_date.intersect( filter_date);
   }
 
-  public UnidataPointObsDataset() {}
-
-  public UnidataPointObsDataset(NetcdfDataset ds) throws IOException {
-    super(ds);
+  public UnidataPointFeatureDataset(NetcdfDataset ds) throws IOException {
+    super(ds, PointFeature.class);
 
     // coordinate variables
-    Variable latVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Lat);
-    Variable lonVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Lon);
-    Variable timeVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Time);
+    Variable latVar = UnidataPointDatasetHelper.getCoordinate(ds, AxisType.Lat);
+    Variable lonVar = UnidataPointDatasetHelper.getCoordinate(ds, AxisType.Lon);
+    Variable timeVar = UnidataPointDatasetHelper.getCoordinate(ds, AxisType.Time);
 
     if (latVar == null)
       throw new IllegalStateException("Missing latitude variable");
@@ -106,8 +104,8 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
     if  (timeVar == null)
       throw new IllegalStateException("Missing time coordinate variable");
 
-    Variable altVar = UnidataObsDatasetHelper.getCoordinate(ds, AxisType.Height);
-    Variable timeNominalVar = UnidataObsDatasetHelper.findVariable(ds, "record.time_nominal");
+    Variable altVar = UnidataPointDatasetHelper.getCoordinate(ds, AxisType.Height);
+    Variable timeNominalVar = UnidataPointDatasetHelper.findVariable(ds, "record.time_nominal");
     String recDimName = ds.findAttValueIgnoreCase(null, "observationDimension", null);
 
     // fire up the record helper
@@ -125,17 +123,20 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
     if (altVar != null)
       removeDataVariable(altVar.getName());
 
-    Date startDate = UnidataObsDatasetHelper.getStartDate( ds, recordHelper.timeUnit);
-    Date endDate = UnidataObsDatasetHelper.getEndDate( ds, recordHelper.timeUnit);
+    Date startDate = UnidataPointDatasetHelper.getStartDate( ds, recordHelper.timeUnit);
+    Date endDate = UnidataPointDatasetHelper.getEndDate( ds, recordHelper.timeUnit);
     setDateRange( new DateRange(startDate, endDate));
-    setBoundingBox( UnidataObsDatasetHelper.getBoundingBox( ds));
+    setBoundingBox( UnidataPointDatasetHelper.getBoundingBox( ds));
 
     title = ds.findAttValueIgnoreCase(null, "title", null);
     desc = ds.findAttValueIgnoreCase(null, "description", null);
+
+    ucar.nc2.dt2.PointFeatureIterator pfiter = new MyPointFeatureIterator(recordHelper.recordVar, -1, null);
+    setPointFeatureCollection( new CollectionPointFeature(dataVariables, pfiter));
   }
 
-  public PointObsDataset subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new UnidataPointObsDataset( this, boundingBox, dateRange);
+  /* public PointFeatureDataset subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    return new UnidataPointFeatureDataset( this, boundingBox, dateRange);
   }
 
   public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
@@ -145,15 +146,15 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
 
       filter = new StructureDataIterator.Filter() {
         public boolean filter(Feature feature) {
-          PointObsFeature pobsFeature = (PointObsFeature) feature;
+          PointFeature pf = (PointFeature) feature;
           if (filter_bb != null) {
-            LatLonPoint pt = pobsFeature.getLocation().getLatLon();
+            LatLonPoint pt = pf.getLocation().getLatLon();
             if (!filter_bb.contains(pt))
               return false;
           }
 
           if (filter_date != null) {
-            Date d = pobsFeature.getObservationTimeAsDate();
+            Date d = pf.getObservationTimeAsDate();
             if (!filter_date.included(d))
               return false;
           }
@@ -161,27 +162,29 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Point
         }
       };
 
-    return new PointDatatypeIterator(recordHelper.recordVar, bufferSize, filter);
+    return new PointFeatureIterator(recordHelper.recordVar, bufferSize, filter);
   }
 
   public DataCost getDataCost() {
     return new DataCost(recordHelper.getRecordCount(), -1);
-  }
+  }   */
 
-  private class PointDatatypeIterator extends StructureDataIterator {
+  private class MyPointFeatureIterator extends StructureDataIterator {
 
-    protected PointObsFeature makeDatatypeWithData(int recnum, StructureData sdata) {
-      return recordHelper.factory( null, sdata, recnum);
+    protected PointFeature makeFeature(int recnum, StructureData sdata) {
+      return recordHelper.new RecordPointObs( sdata, recnum);
     }
-    PointDatatypeIterator(Structure struct, int bufferSize, StructureDataIterator.Filter filter) throws IOException {
+
+    MyPointFeatureIterator(Structure struct, int bufferSize, StructureDataIterator.Filter filter) throws IOException {
       super( struct, bufferSize, filter);
     }
+
   }
 
   public static void main(String args[]) throws IOException {
     //String filename = "C:/data/199707010200.CHRTOUT_DOMAIN2";
     String filename = "C:/data/metars/Surface_METAR_20070331_0000.nc";
-    UnidataPointObsDataset upod = new UnidataPointObsDataset( NetcdfDataset.openDataset(filename));
+    UnidataPointFeatureDataset upod = new UnidataPointFeatureDataset( NetcdfDataset.openDataset(filename));
     System.out.println("\n\n"+upod.getDetailInfo());
   }
 

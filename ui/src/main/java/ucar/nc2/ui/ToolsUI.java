@@ -21,8 +21,11 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-import ucar.nc2.dt2.point.UnidataPointObsDataset;
-import ucar.nc2.dt2.point.UnidataStationObsDataset;
+import ucar.nc2.dt2.point.UnidataPointFeatureDataset;
+import ucar.nc2.dt2.point.UnidataStationFeatureDataset;
+import ucar.nc2.dt2.PointFeatureDataset;
+import ucar.nc2.dt2.StationFeatureCollection;
+import ucar.nc2.dt2.FeatureDataset;
 import ucar.nc2.constants.DataType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
@@ -2258,7 +2261,7 @@ public class ToolsUI extends JPanel {
   private class PointObsPanel2 extends OpPanel {
     PointObsViewer2 povTable;
     JSplitPane split;
-    ucar.nc2.dt2.PointObsDataset pobsDataset = null;
+    PointFeatureDataset pobsDataset = null;
 
     PointObsPanel2(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
@@ -2301,7 +2304,7 @@ public class ToolsUI extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         //pobsDataset = (PointObsDataset) TypedDatasetFactory.open(DataType.POINT, location, null, log);
-        pobsDataset = new UnidataPointObsDataset( NetcdfDataset.openDataset(location));
+        pobsDataset = new UnidataPointFeatureDataset( NetcdfDataset.openDataset(location));
         if (pobsDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -2330,7 +2333,7 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    boolean setPointObsDataset(ucar.nc2.dt2.PointObsDataset dataset) throws IOException {
+    boolean setPointObsDataset(PointFeatureDataset dataset) throws IOException {
       if (dataset == null) return false;
 
       try {
@@ -2430,7 +2433,7 @@ public class ToolsUI extends JPanel {
   private class StationObsPanel2 extends OpPanel {
     StationObsViewer2 povTable;
     JSplitPane split;
-    ucar.nc2.dt2.StationObsDataset sobsDataset = null;
+    PointFeatureDataset sobsDataset = null;
 
     StationObsPanel2(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
@@ -2473,7 +2476,7 @@ public class ToolsUI extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         // sobsDataset = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, location, null, log);
-        sobsDataset = new UnidataStationObsDataset( NetcdfDataset.openDataset(location));
+        sobsDataset = new UnidataStationFeatureDataset( NetcdfDataset.openDataset(location));
         if (sobsDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -2494,7 +2497,7 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    boolean setStationObsDataset(ucar.nc2.dt2.StationObsDataset dataset) {
+    boolean setStationObsDataset(PointFeatureDataset dataset) {
       if (dataset == null) return false;
 
       try {

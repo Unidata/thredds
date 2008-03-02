@@ -110,7 +110,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       Variable v = top.addMemberVariable(new Variable(ncfile, null, top, "stationName", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{6});
       v.addAttribute(new Attribute("long_name", "name of station"));
-      v.setSPobject(new Vinfo(pos, 6));
+      v.setSPobject(new Vinfo(pos));
       pos += 6;
 
       v = top.addMemberVariable(new Variable(ncfile, null, top, "lat", DataType.FLOAT, ""));
@@ -118,7 +118,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "geographic latitude"));
       v.addAttribute(new Attribute("accuracy", "degree/100"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      v.setSPobject(new Vinfo(pos, 1));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = top.addMemberVariable(new Variable(ncfile, null, top, "lon", DataType.FLOAT, ""));
@@ -126,18 +126,23 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "geographic longitude"));
       v.addAttribute(new Attribute("accuracy", "degree/100"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-      v.setSPobject(new Vinfo(pos, 1));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = top.addMemberVariable(new Variable(ncfile, null, top, "elev", DataType.FLOAT, ""));
       v.addAttribute(new Attribute("units", "meters"));
       v.addAttribute(new Attribute("long_name", "station elevation above MSL"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-      v.setSPobject(new Vinfo(pos, 1));
+      v.setSPobject(new Vinfo(pos));
+      pos += 4;
+
+      v = top.addMemberVariable(new Variable(ncfile, null, top, "nrecords", DataType.INT, ""));
+      v.addAttribute(new Attribute("long_name", "number of records"));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       obs = firstReport.makeStructure(top);
-      obs.setSPobject(new Vinfo(pos, 1));
+      obs.setSPobject(new Vinfo(pos));
       top.addMemberVariable(obs);
       pos += 4;
 
@@ -165,10 +170,10 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       if (record.code == code) {
         Entry first = record.entries[0];
         Structure s = first.makeStructure(obs);
-        s.setSPobject(new Vinfo(obs_pos, 1));
+        s.setSPobject(new Vinfo(obs_pos));
         obs_pos += 4;
         obs.addMemberVariable(s);
-        catStructures.add( new StructureCode(s, code));
+        catStructures.add(new StructureCode(s, code));
         break;
       }
     }
@@ -176,20 +181,20 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   private class Vinfo {
-    int offset, size;
+    int offset;
 
-    Vinfo(int offset, int size) {
+    Vinfo(int offset) {
       this.offset = offset;
-      this.size = size;
     }
   }
 
   private class StructureCode {
     Structure s;
     int code;
+
     StructureCode(Structure s, int code) {
       this.s = s;
-      this.code= code;
+      this.code = code;
     }
   }
 
@@ -222,6 +227,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       bb.putFloat(report0.lat);
       bb.putFloat(report0.lon);
       bb.putFloat(report0.elevMeters);
+      bb.putInt(reports.size());
 
       ArraySequence2 seq = new ArraySequence2(members, new ReportIterator(reports));
       int index = abb.addObjectToHeap(seq);
@@ -259,6 +265,10 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       bb.position(0);
       r.loadStructureData(abb, bb);
       return abb.getStructureData(0);
+    }
+
+    public void setBufferSize(int bytes) {
+      ; // noop
     }
   }
 
@@ -474,30 +484,30 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
       v.addAttribute(new Attribute("long_name", "observation time"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = obs.addMemberVariable(new Variable(ncfile, null, parent, "timeISO", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{20});
       v.addAttribute(new Attribute("long_name", "ISO formatted date/time"));
-      v.setSPobject(new Vinfo(pos, 20));
+      v.setSPobject(new Vinfo(pos));
       pos += 20;
 
       v = obs.addMemberVariable(new Variable(ncfile, null, parent, "reportType", DataType.SHORT, ""));
       v.addAttribute(new Attribute("long_name", "report type from Table R.1"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       // only for ON29
       v = obs.addMemberVariable(new Variable(ncfile, null, parent, "instType", DataType.SHORT, ""));
       v.addAttribute(new Attribute("long_name", "instrument type from Table R.2"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = obs.addMemberVariable(new Variable(ncfile, null, parent, "reserved", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{7});
       v.addAttribute(new Attribute("long_name", "reserved characters"));
-      v.setSPobject(new Vinfo(pos, 7));
+      v.setSPobject(new Vinfo(pos));
       pos += 14;
 
       return obs;
@@ -564,6 +574,10 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         bb.position(0);
         entry.loadStructureData(bb);
         return abb.getStructureData(0);
+      }
+
+      public void setBufferSize(int bytes) {
+        ; // noop
       }
     }
 
@@ -735,14 +749,14 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("units", "mbars"));
       v.addAttribute(new Attribute("long_name", "pressure level"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "geopotential", DataType.FLOAT, ""));
       v.addAttribute(new Attribute("units", "meter"));
       v.addAttribute(new Attribute("long_name", "geopotential"));
       v.addAttribute(new Attribute("missing_value", 99999.0f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
@@ -750,7 +764,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 999.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
@@ -758,27 +772,27 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "dewpoint depression"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 99.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "degrees"));
       v.addAttribute(new Attribute("long_name", "wind direction"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "knots"));
       v.addAttribute(new Attribute("long_name", "wind speed"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{4});
       v.addAttribute(new Attribute("long_name", "quality marks: 0=geopot, 1=temp, 2=dewpoint, 3=wind"));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       return seq;
@@ -823,7 +837,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "pressure level"));
       v.addAttribute(new Attribute("accuracy", "mbar/10"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
@@ -831,7 +845,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 999.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
@@ -839,13 +853,13 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "dewpoint depression"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 99.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{3});
       v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=temp, 2=dewpoint"));
-      v.setSPobject(new Vinfo(pos, 3));
+      v.setSPobject(new Vinfo(pos));
       pos += 3;
 
       return seq;
@@ -889,27 +903,27 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "pressure level"));
       v.addAttribute(new Attribute("accuracy", "mbar/10"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "degrees"));
       v.addAttribute(new Attribute("long_name", "wind direction"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "knots"));
       v.addAttribute(new Attribute("long_name", "wind speed"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=wind"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       return seq;
@@ -952,27 +966,27 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("units", "meter"));
       v.addAttribute(new Attribute("long_name", "geopotential"));
       v.addAttribute(new Attribute("missing_value", 99999.0f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "degrees"));
       v.addAttribute(new Attribute("long_name", "wind direction"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "knots"));
       v.addAttribute(new Attribute("long_name", "wind speed"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "quality marks: 0=geopot, 1=wind"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       return seq;
@@ -1018,7 +1032,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("units", "mbars"));
       v.addAttribute(new Attribute("long_name", "pressure level"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
@@ -1026,7 +1040,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 999.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
@@ -1034,27 +1048,27 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "dewpoint depression"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 99.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "degrees"));
       v.addAttribute(new Attribute("long_name", "wind direction"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "knots"));
       v.addAttribute(new Attribute("long_name", "wind speed"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{4});
       v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=temp, 2=dewpoint, 3=wind"));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       return seq;
@@ -1089,7 +1103,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
-      Sequence seq = new Sequence(ncfile, null, parent, "tropopause");
+      Sequence seq = new Sequence(ncfile, null, parent, "clouds");
       seq.addAttribute(new Attribute("long_name", catNames[7]));
 
       int pos = 0;
@@ -1098,20 +1112,20 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("units", "mbars"));
       v.addAttribute(new Attribute("long_name", "pressure level"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "percentClouds", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", ""));
       v.addAttribute(new Attribute("long_name", "amount of cloudiness (%)"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=percentClouds"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       return seq;
@@ -1151,19 +1165,19 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "data", DataType.INT, ""));
       v.addAttribute(new Attribute("long_name", "additional data specified in table 101.1"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "table101code", DataType.SHORT, ""));
       v.addAttribute(new Attribute("long_name", "code figure from table 101"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "indicatorFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "quality marks: 0=data, 1=form"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       return seq;
@@ -1233,7 +1247,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("accuracy", "mbars/10"));
       v.addAttribute(new Attribute("missing_value", 9999.9f));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
@@ -1242,21 +1256,21 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("accuracy", "mbars/10"));
       v.addAttribute(new Attribute("missing_value", 9999.9f));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "degrees"));
       v.addAttribute(new Attribute("long_name", "wind direction"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "knots"));
       v.addAttribute(new Attribute("long_name", "wind speed"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
@@ -1264,7 +1278,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "air temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 999.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
@@ -1272,7 +1286,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "dewpoint depression"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 99.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperatureMax", DataType.FLOAT, ""));
@@ -1280,7 +1294,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "maximum temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 999.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperatureMin", DataType.FLOAT, ""));
@@ -1288,77 +1302,77 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "minimum temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 999.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{4});
       v.addAttribute(new Attribute("long_name", "quality marks: 0=pressureSeaLevel, 1=pressure, 2=wind, 3=temperature"));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pastWeatherW2", DataType.CHAR, ""));
       v.addAttribute(new Attribute("long_name", "past weather (W2): WMO table 4561"));
-      v.setSPobject(new Vinfo(pos, 1));
+      v.setSPobject(new Vinfo(pos));
       pos += 1;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "horizViz", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{3});
       v.addAttribute(new Attribute("long_name", "horizontal visibility: WMO table 4300"));
-      v.setSPobject(new Vinfo(pos, 3));
+      v.setSPobject(new Vinfo(pos));
       pos += 3;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "presentWeatherWW", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{3});
       v.addAttribute(new Attribute("long_name", "present weather (WW): WMO table 4677"));
-      v.setSPobject(new Vinfo(pos, 3));
+      v.setSPobject(new Vinfo(pos));
       pos += 3;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pastWeatherW1", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "past weather (WW): WMO table 4561"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionN", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "cloud fraction (N): WMO table 2700"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionNh", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "cloud fraction (Nh): WMO table 2700"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCL", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "cloud fraction (CL): WMO table 0513"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudHeightCL", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "cloud base height above ground (h): WMO table 1600"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCM", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "cloud fraction (CM): WMO table 0515"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCH", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "cloud fraction (CH): WMO table 0509"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressureTendencyCharacteristic", DataType.CHAR, ""));
       v.addAttribute(new Attribute("long_name", "pressure tendency characteristic for 3 hours previous to obs time: WMO table 0200"));
-      v.setSPobject(new Vinfo(pos, 1));
+      v.setSPobject(new Vinfo(pos));
       pos += 1;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressureTendency", DataType.FLOAT, ""));
@@ -1366,7 +1380,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "pressure tendency magnitude"));
       v.addAttribute(new Attribute("accuracy", "mbars/10"));
       v.addAttribute(new Attribute("missing_value", 99.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       return seq;
@@ -1460,14 +1474,14 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "precipitation past 6 hours"));
       v.addAttribute(new Attribute("accuracy", "inch/100"));
       v.addAttribute(new Attribute("missing_value", 99.99f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "snowDepth", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "inch"));
       v.addAttribute(new Attribute("long_name", "total depth of snow on ground"));
       v.addAttribute(new Attribute("missing_value", (short) 999));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "precip24hours", DataType.FLOAT, ""));
@@ -1475,48 +1489,48 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "precipitation past 24 hours"));
       v.addAttribute(new Attribute("accuracy", "inch/100"));
       v.addAttribute(new Attribute("missing_value", 99.99f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "precipDuration", DataType.BYTE, ""));
       v.addAttribute(new Attribute("units", "6 hours"));
       v.addAttribute(new Attribute("long_name", "duration of precipitation observation"));
       v.addAttribute(new Attribute("missing_value", 9));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "wavePeriod", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "second"));
       v.addAttribute(new Attribute("long_name", "period of waves"));
       v.addAttribute(new Attribute("missing_value", (short) 99));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "waveHeight", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "meter/2"));
       v.addAttribute(new Attribute("long_name", "height of waves"));
       v.addAttribute(new Attribute("missing_value", (short) 99));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "swellWaveDir", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
       v.addAttribute(new Attribute("long_name", "direction from which swell waves are moving: WMO table 0877"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "swellWavePeriod", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "second"));
       v.addAttribute(new Attribute("long_name", "period of swell waves"));
       v.addAttribute(new Attribute("missing_value", (short) 99));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "swellWaveHeight", DataType.SHORT, ""));
       v.addAttribute(new Attribute("units", "meter/2"));
       v.addAttribute(new Attribute("long_name", "height of waves"));
       v.addAttribute(new Attribute("missing_value", (short) 99));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "sst", DataType.FLOAT, ""));
@@ -1524,27 +1538,27 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "sea surface temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
       v.addAttribute(new Attribute("missing_value", 999.9f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "special", DataType.CHAR, ""));
       v.addAttribute(new Attribute("long_name", "special phenomena - general"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "specialDetail", DataType.CHAR, ""));
       v.addAttribute(new Attribute("long_name", "special phenomena - detailed"));
-      v.setSPobject(new Vinfo(pos, 2));
+      v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "shipCourse", DataType.CHAR, ""));
       v.addAttribute(new Attribute("long_name", "ships course: WMO table 0700"));
-      v.setSPobject(new Vinfo(pos, 1));
+      v.setSPobject(new Vinfo(pos));
       pos += 1;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "shipSpeed", DataType.CHAR, ""));
       v.addAttribute(new Attribute("long_name", "ships average speed: WMO table 4451"));
-      v.setSPobject(new Vinfo(pos, 1));
+      v.setSPobject(new Vinfo(pos));
       pos += 1;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "waterEquiv", DataType.SHORT, ""));
@@ -1552,18 +1566,12 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("long_name", "water equivalent of snow and/or ice"));
       v.addAttribute(new Attribute("accuracy", "inch/100"));
       v.addAttribute(new Attribute("missing_value", 99999.99f));
-      v.setSPobject(new Vinfo(pos, 4));
+      v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       return seq;
     }
 
-  }
-
-
-  private void showPos(String what, long start) throws IOException {
-    long rel = raf.getFilePointer() - start;
-    System.out.println(what + " has pos=" + raf.getFilePointer() + " reletive pos= " + rel);
   }
 
   private boolean endRecord(RandomAccessFile raf) throws IOException {

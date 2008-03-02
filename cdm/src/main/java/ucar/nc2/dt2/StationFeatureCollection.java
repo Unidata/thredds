@@ -19,48 +19,44 @@
  */
 package ucar.nc2.dt2;
 
-import java.util.Date;
+import ucar.nc2.units.DateRange;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
- * An observation at one time and location.
+ * A collection of StationFeatures.
+ *
  * @author caron
  */
-public interface PointObsFeature extends Feature {
+public interface StationFeatureCollection extends PointFeatureCollection, StationCollection {
 
   /**
-   * Actual time of this observation. Units are found from getTimeUnits() in the containing dataset.
-   * @return actual time of this observation.
-   */
-  public double getObservationTime();
-
-  /**
-   * Actual time of this observation, as a Date.
-   * @return actual time of this observation, as a Date.
-   */
-  public Date getObservationTimeAsDate();
-
-  /**
-   * Nominal time of this observation.
-   * @return Nominal time of this observation.
-   */
-  public double getNominalTime();
-
-  /**
-   * Nominal time of this observation, as a Date.
-   * @return Nominal time of this observation, as a Date.
-   */
-  public Date getNominalTimeAsDate();
-
-  /**
-   * Location of this observation
-   * @return the location of this observation
-   */
-  public EarthLocation getLocation();
-
-  /**
-   * The actual data of this observation.
-   * @return the actual data of this observation.
+   * Get a subsetted StationCollection
+   *
+   * @param stations only contain these stations
+   * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
-  public ucar.ma2.StructureData getData() throws java.io.IOException;
+  public StationFeatureCollection subset(List<Station> stations) throws IOException;
+
+  /**
+   * Get the collection of data for this Station.
+   *
+   * @param s at this station
+   * @return collection of data for this Station.
+   * @throws java.io.IOException on i/o error
+   */
+  public StationFeature getStationFeature(Station s) throws IOException;
+
+  /**
+   * Get the collection of data for this Station and date range.
+   *
+   * @param s at this station
+   * @param dateRange date range
+   * @return collection of data for this Station and date range.
+   * @throws java.io.IOException on i/o error
+   */
+  public StationFeature getStationFeature(Station s, DateRange dateRange) throws IOException;
+
 }

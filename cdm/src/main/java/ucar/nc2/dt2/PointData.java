@@ -19,24 +19,36 @@
  */
 package ucar.nc2.dt2;
 
+import java.util.Date;
+
 /**
- * Superclass for all Feature types.
+ * An observation at one time and location.
  * @author caron
- * @since Feb 18, 2008
  */
-public interface Feature {
+public interface PointData {
 
   /**
-   * The ID of the feature, unique within the containing collection.
-   * @return ID of the feature, may not be null.
+   * Actual time of this observation. Units are found from getTimeUnits() in the containing dataset.
+   * @return actual time of this observation.
    */
-  public Object getId();
+  public double getObservationTime();
 
   /**
-   * A description of the feature.
-   *
-   * @return description of the feature, may be null.
+   * Actual time of this observation, as a Date.
+   * @return actual time of this observation, as a Date.
    */
-  public String getDescription();
+  public Date getObservationTimeAsDate();
 
+  /**
+   * Location of this observation
+   * @return the location of this observation
+   */
+  public EarthLocation getLocation();
+
+  /**
+   * The actual data of this observation.
+   * @return the actual data of this observation.
+   * @throws java.io.IOException on i/o error
+   */
+  public ucar.ma2.StructureData getData() throws java.io.IOException;
 }

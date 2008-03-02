@@ -20,24 +20,22 @@
 package ucar.nc2.dt2.point;
 
 import ucar.nc2.Structure;
-import ucar.nc2.dt2.FeatureIterator;
-import ucar.nc2.dt2.PointObsFeature;
-import ucar.nc2.dt2.Feature;
+import ucar.nc2.dt2.*;
 import ucar.ma2.StructureData;
 
 import java.io.IOException;
 
 /**
  * @author caron
- * @since Sep 7, 2007
+ * @since Feb 29, 2008
  */
-public abstract class StructureDataIterator implements FeatureIterator {
+public abstract class StructureDataIterator implements PointFeatureIterator {
 
-  protected abstract Feature makeDatatypeWithData(int recnum, StructureData sdata) throws IOException;
+  protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
 
   private Filter filter;
   private ucar.ma2.StructureDataIterator structIter;
-  private Feature feature = null;
+  private PointFeature feature = null;
 
   private int recnum = 0;
 
@@ -49,22 +47,27 @@ public abstract class StructureDataIterator implements FeatureIterator {
   public boolean hasNext() throws IOException {
     while (structIter.hasNext()) {
       StructureData sdata = structIter.next();
-      feature = makeDatatypeWithData(recnum, sdata);
-      if (filter == null || filter.filter(feature)) return true;
+      if (filter != null && !filter.filter(sdata)) continue;
+      feature = makeFeature(recnum, sdata);
+      return true;
     }
     return false;
   }
 
-  public Feature nextFeature() throws IOException {
+  public PointFeature nextData() throws IOException {
     if (feature == null) return null;
     recnum++;
     return feature;
   }
 
+
+  public void setBufferSize(int bytes) {
+    structIter.setBufferSize( bytes);
+  }
+
   interface Filter {
-    // return true if this PointObsFeature passes the filter.
-    // boolean filter(StructureData sdata);
-    boolean filter(Feature feature);
+    // return true if this PointData passes the filter.
+    boolean filter(StructureData sdata);
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -17,25 +17,16 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2;
+package ucar.nc2.dt2.point;
+
+import ucar.nc2.dt2.FeatureIterator;
+
+import java.io.IOException;
 
 /**
- * A collection of TrajectoryObsDatatype.
- *
- * To open a data file as a TrajectoryObsDataset and access the trajectories it
- * contains use TrajectoryObsDatasetFactory.open() and TrajectoryObsDataset.getTrajectories(),
- * for example:
- *
- * <pre>
-    TrajectoryObsDataset trajDs = TrajectoryObsDatasetFactory.open (uriString);
-    for ( Iterator it = trajDs.getTrajectories().iterator(); it.hasNext(); )
-    {
-      TrajectoryObsDatatype traj = (TrajectoryObsDatatype) it.next();
-    }
-   </pre>
- *
  * @author caron
+ * @since Feb 29, 2008
  */
-public interface TrajectoryObsDataset extends Obs1DDataset {
-
+public interface FeatureWithFeatureData {
+  public FeatureIterator getFeatureIterator(int bufferSize) throws IOException;
 }

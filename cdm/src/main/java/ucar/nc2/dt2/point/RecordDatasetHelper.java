@@ -45,6 +45,7 @@ import java.text.ParseException;
  * Helper class for using the netcdf-3 record dimension. Can be used for PointObs or StationObs.
  *
  * @author caron
+ * @since Feb 29, 2008
  */
 
 public class RecordDatasetHelper {
@@ -367,15 +368,14 @@ public class RecordDatasetHelper {
   }  */
 
   //////////////////////////////////////////////////////////////////////////////////////
-  public PointObsFeature factory(StationImpl s, StructureData sdata, int recno) {
+  public Feature factory(StationImpl s, StructureData sdata, int recno) {
     if (s == null)
       return new RecordPointObs(sdata, recno);
     else
       return new RecordStationObs(s, sdata, recno);
   }
 
-
-  class RecordPointObs extends PointObsFeatureImpl {
+  class RecordPointObs extends PointFeatureImpl {
     protected int recno;
     protected StructureData sdata;
 

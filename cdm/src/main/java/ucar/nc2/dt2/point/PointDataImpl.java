@@ -19,53 +19,44 @@
  */
 package ucar.nc2.dt2.point;
 
-import ucar.nc2.dt2.PointObsFeature;
-import ucar.nc2.dt2.EarthLocationImpl;
-import ucar.nc2.dt2.Obs1DFeature;
+import ucar.nc2.dt2.PointData;
+import ucar.nc2.dt2.EarthLocation;
+import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureData;
 
 import java.util.Date;
+import java.io.IOException;
 
 /**
  * @author caron
- * @since Feb 18, 2008
+ * @since Feb 29, 2008
  */
-public class PointObsFeatureAdapter implements PointObsFeature {
-  private Obs1DFeature feature;
-  private StructureData sdata;
+public class PointDataImpl implements PointData {
+  double time;
+  EarthLocation loc;
+  DateUnit dateUnit;
+  StructureData sdata;
 
-  public PointObsFeatureAdapter( Obs1DFeature feature, StructureData sdata) {
-    this.feature = feature;
+  public PointDataImpl(EarthLocation loc, double time, DateUnit dateUnit, StructureData sdata) {
+    this.time = time;
+    this.dateUnit = dateUnit;
+    this.loc = loc;
     this.sdata = sdata;
   }
 
-  public Object getId() {
-    return sdata.hashCode();
-  }
-
   public double getObservationTime() {
-    return feature.getObservationTime(sdata);
+    return time;
   }
 
   public Date getObservationTimeAsDate() {
-    return feature.getObservationTimeAsDate(sdata);
+    return dateUnit.makeDate(time);
   }
 
-  public double getNominalTime() {
-    return getObservationTime();
+  public EarthLocation getLocation() {
+    return loc;
   }
 
-  public Date getNominalTimeAsDate() {
-    return getObservationTimeAsDate();
-  }
-
-  public EarthLocationImpl getLocation() {
-    return new EarthLocationImpl( feature.getLatitude(sdata), feature.getLongitude(sdata), feature.getZcoordinate(sdata));
-  }
-
-  public StructureData getData() {
+  public StructureData getData() throws IOException {
     return sdata;
   }
-
-
 }

@@ -17,47 +17,30 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2.point;
+package ucar.nc2.dt2;
 
-import ucar.nc2.dt2.*;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.VariableSimpleIF;
-import ucar.ma2.StructureData;
-
-import java.util.List;
+import ucar.unidata.geoloc.LatLonPoint;
 
 /**
- * Abstract superclass for implementations of ObsFeature.
+ * A Profile of observations. A set of observations along the vertical (z) axis.
+ * All obs have the same lat/lon. Time is either constant, or it may vary with z.
+ * The z coordinates are monotonc, but may be increasing or decreasing.
  *
  * @author caron
+ * @since Feb 8, 2008
  */
+public interface ProfileFeature extends Feature, PointFeatureCollection {
 
+  /**
+   * The number of points along the z axis.
+   * @return number of points along the z axis.
+   */
+  public int getNumberPoints();
 
-public abstract class ObsFeature1DImpl implements Obs1DFeature {
-  protected FeatureDataset fd;
-  protected DateUnit timeUnit;
-
-  public ObsFeature1DImpl( FeatureDataset fd, DateUnit timeUnit) {
-    this.fd = fd;
-    this.timeUnit = timeUnit;
-  }
-
-  public String getDescription() {
-    return null;
-  }
-
-  public ucar.nc2.units.DateUnit getTimeUnits() { return timeUnit; }
-
-  public List<VariableSimpleIF> getDataVariables() {
-    return fd.getDataVariables();
-  }
-
-  public VariableSimpleIF getDataVariable(String name) {
-    return fd.getDataVariable(name);
-  }
-
-  public PointObsFeature makePointObsFeature( StructureData sdata) {
-    return new PointObsFeatureAdapter(this, sdata);
-  }
+  /**
+   * Location of this profile
+   * @return the location of this observation as a lat/lon point
+   */
+  public LatLonPoint getLatLon();
 
 }

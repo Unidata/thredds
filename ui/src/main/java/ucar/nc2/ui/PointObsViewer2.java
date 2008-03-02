@@ -54,7 +54,7 @@ import javax.swing.event.*;
 public class PointObsViewer2 extends JPanel {
   private PreferencesExt prefs;
 
-  private PointObsDataset pds;
+  private PointFeatureCollection pds;
 
   private StationRegionDateChooser chooser;
   private BeanTableSorted stnTable;
@@ -98,7 +98,7 @@ public class PointObsViewer2 extends JPanel {
         if (debugQuery) System.out.println("geoRegion=" + geoRegion);
 
         try {
-          PointObsDataset subset = pds.subset(geoRegion, dateRange);
+          PointFeatureCollection subset = pds.subset(geoRegion, dateRange);
           setObservations(subset);
 
         } catch (IOException e1) {
@@ -160,8 +160,8 @@ public class PointObsViewer2 extends JPanel {
     dumpWindow.setBounds((Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle(300, 300, 300, 200)));
   }
 
-  public void setDataset(PointObsDataset dataset) throws IOException {
-    this.pds = dataset;
+  public void setDataset(PointFeatureDataset dataset) throws IOException {
+    this.pds = dataset.getPointFeatureCollectionList().get(0); // LOOK kludge
 
     if (debugStationDatsets)
       System.out.println("PointObsViewer open type " + dataset.getClass().getName());
@@ -174,14 +174,14 @@ public class PointObsViewer2 extends JPanel {
     setObservations( null);
   }
 
-  public void setObservations(PointObsDataset pobsDataset) throws IOException {
+  public void setObservations(PointFeatureCollection pobsDataset) throws IOException {
     List<PointObsBean> pointBeans = new ArrayList<PointObsBean>();
     int count = 0;
 
     if (pobsDataset != null)  {
       FeatureIterator iter = pobsDataset.getFeatureIterator(-1);
       while (iter.hasNext()) {
-        PointObsFeature pob = (PointObsFeature) iter.nextFeature();
+        PointData pob = (PointData) iter.nextFeature();
         pointBeans.add(new PointObsBean(count++, pob));
       }
     }
@@ -202,7 +202,7 @@ public class PointObsViewer2 extends JPanel {
     prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
   }
 
-  private void showData(PointObsFeature pobs) {
+  private void showData(PointData pobs) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
     try {
       StructureData sd = pobs.getData();
@@ -220,11 +220,11 @@ public class PointObsViewer2 extends JPanel {
   } // for prefs.BeanTable LOOK
 
   public class PointObsBean implements ucar.nc2.dt.Station {  // fake Station, so we can use StationRegionChooser
-    private PointObsFeature pobs;
+    private PointData pobs;
     private String timeObs;
     private int id;
 
-    public PointObsBean(int id, PointObsFeature obs) {
+    public PointObsBean(int id, PointData obs) {
       this.id = id;
       this.pobs = obs;
       setTime(obs.getObservationTimeAsDate());

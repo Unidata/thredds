@@ -386,12 +386,7 @@ public class Structure extends Variable {
     private ArrayStructure as = null;
 
     protected Iterator(int bufferSize) {
-      int structureSize = calcStructureSize();
-      if (bufferSize <= 0)
-        bufferSize = defaultBufferSize;
-      readAtaTime = Math.max( 10, bufferSize / structureSize);
-      if (NetcdfFile.debugStructureIterator)
-        System.out.println("Iterator structureSize= "+structureSize+" readAtaTime= "+readAtaTime);
+      setBufferSize( bufferSize);
     }
 
     /** @return true if more records are available */
@@ -429,6 +424,16 @@ public class Structure extends Variable {
 
     private void readNextGeneralRank() throws IOException {
       throw new UnsupportedOperationException();  // not implemented yet - need example to test
+    }
+
+    public void setBufferSize(int bytes) {
+      if (count > 0) return; // too late
+      int structureSize = calcStructureSize();
+      if (bytes <= 0)
+        bytes = defaultBufferSize;
+      readAtaTime = Math.max( 10, bytes / structureSize);
+      if (NetcdfFile.debugStructureIterator)
+        System.out.println("Iterator structureSize= "+structureSize+" readAtaTime= "+readAtaTime);
     }
 
   }

@@ -22,6 +22,7 @@ package ucar.ma2;
 import java.io.IOException;
 
 /**
+ * An iterator over StructureData
  * @author caron
  * @since Feb 23, 2008
  */
@@ -41,4 +42,6 @@ public interface StructureDataIterator {
    * @throws java.io.IOException on read error
    */
   public StructureData next() throws IOException;
+
+  public void setBufferSize(int bytes);
 }

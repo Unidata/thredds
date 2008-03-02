@@ -22,6 +22,7 @@ package ucar.nc2.ui;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dt2.PointData;
 import ucar.nc2.util.HashMapLRU;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.PointObsDatatype;
@@ -183,7 +184,7 @@ public class StructureTable extends JPanel {
    * @param obsData List of type PointObsDatatype
    * @throws IOException  on io error
    */
-  public void setPointObsData2(List<ucar.nc2.dt2.PointObsFeature> obsData) throws IOException {
+  public void setPointObsData2(List<PointData> obsData) throws IOException {
     dataModel = new PointObsDataModel2(obsData);
     initTable(dataModel);
     jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
@@ -571,9 +572,9 @@ public class StructureTable extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////
   private class PointObsDataModel2 extends StructureTableModel {
-    private List<ucar.nc2.dt2.PointObsFeature> obsData;
+    private List<PointData> obsData;
 
-    PointObsDataModel2(List<ucar.nc2.dt2.PointObsFeature> obsData) throws IOException {
+    PointObsDataModel2(List<PointData> obsData) throws IOException {
       wantDate = true;
 
       this.obsData = obsData;
@@ -589,7 +590,7 @@ public class StructureTable extends JPanel {
     }
 
     public Date getDate(int row) {
-      ucar.nc2.dt2.PointObsFeature obs = obsData.get(row);
+      PointData obs = obsData.get(row);
       return obs.getObservationTimeAsDate();
     }
 
@@ -598,7 +599,7 @@ public class StructureTable extends JPanel {
     }
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      ucar.nc2.dt2.PointObsFeature obs = obsData.get(row);
+      PointData obs = obsData.get(row);
       return obs.getData();
     }
 
@@ -607,7 +608,7 @@ public class StructureTable extends JPanel {
     }
 
     public void clear() {
-      obsData = new ArrayList<ucar.nc2.dt2.PointObsFeature>(); // empty list
+      obsData = new ArrayList<PointData>(); // empty list
       fireTableDataChanged();
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -19,29 +19,16 @@
  */
 package ucar.nc2.dt2;
 
+import ucar.nc2.units.DateRange;
+
+import java.io.IOException;
+import java.util.List;
+
 /**
- * A collection of observations at a named location called a Station.
+ * A Collection of PointFeatureCollections.
  *
  * @author caron
  */
-public interface StationObsFeature extends Obs1DFeature {
-
-  /**
-   * The number of points in the time series.
-   * @return number of points  in the time series.
-   */
-  public int getNumberPoints();
-
-  /**
-   * Station location of the observations
-   * @return the Station for the observations
-   */
-  public Station getStation();
-
-  /**
-   * location of the observations
-   * @return the location for the observations
-   */
-  public EarthLocation getLocation();
-
+public interface PointFeatureDataset extends FeatureDataset {
+  public List<PointFeatureCollection> getPointFeatureCollectionList();
 }

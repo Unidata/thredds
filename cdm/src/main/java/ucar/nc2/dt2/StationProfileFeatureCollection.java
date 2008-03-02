@@ -21,15 +21,15 @@ package ucar.nc2.dt2;
 
 import ucar.nc2.units.DateRange;
 
-import java.io.IOException;
 import java.util.List;
+import java.io.IOException;
 
 /**
- * A collection of Stations, each with a StationObsFeature.
- *
+ * A Collection of StationProfileFeatures
  * @author caron
+ * @since Feb 29, 2008
  */
-public interface StationObsDataset extends Obs1DDataset, StationCollection {
+public interface StationProfileFeatureCollection extends PointFeatureCollection, StationCollection {
 
   /**
    * Get a subsetted StationCollection
@@ -38,7 +38,7 @@ public interface StationObsDataset extends Obs1DDataset, StationCollection {
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
-  public StationObsDataset subset(List<Station> stations) throws IOException;
+  public StationProfileFeatureCollection subset(List<Station> stations) throws IOException;
 
   /**
    * Get the collection of data for this Station.
@@ -47,16 +47,16 @@ public interface StationObsDataset extends Obs1DDataset, StationCollection {
    * @return collection of data for this Station.
    * @throws java.io.IOException on i/o error
    */
-  public StationObsFeature getFeature(Station s) throws IOException;
+  public StationProfileFeature getStationProfileFeature(Station s) throws IOException;
 
   /**
    * Get the collection of data for this Station and date range.
    *
-   * @param s at this station
+   * @param s         at this station
    * @param dateRange date range
    * @return collection of data for this Station and date range.
    * @throws java.io.IOException on i/o error
    */
-  public StationObsFeature getFeature(Station s, DateRange dateRange) throws IOException;
+  public StationProfileFeature getStationProfileFeature(Station s, DateRange dateRange) throws IOException;
 
 }

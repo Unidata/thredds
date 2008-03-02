@@ -51,7 +51,7 @@ import javax.swing.event.*;
 public class StationObsViewer2 extends JPanel {
   private PreferencesExt prefs;
 
-  private StationObsDataset sds;
+  private StationFeatureCollection sds;
 
   private StationRegionDateChooser chooser;
   private BeanTableSorted stnTable;
@@ -105,7 +105,7 @@ public class StationObsViewer2 extends JPanel {
         // fetch the requested dobs
         try {
           if (useRegion) {
-            PointObsDataset subset = sds.subset(geoRegion, dateRange);
+            StationFeatureCollection subset = sds.subset( sds.getStations(geoRegion));
             setObservationsAll( subset);
           } else {
             setObservations(sds, selectedStation, dateRange);
@@ -125,7 +125,7 @@ public class StationObsViewer2 extends JPanel {
       public void actionPerformed(ActionEvent e) {
         if (sds == null) return;
         try {
-          setObservationsAll( sds.subset((LatLonRect) null, null));
+          setObservationsAll( sds);
 
         } catch (IOException e1) {
           e1.printStackTrace();
@@ -165,28 +165,28 @@ public class StationObsViewer2 extends JPanel {
     add(splitV, BorderLayout.CENTER);
   }
 
-  public void setDataset(StationObsDataset dataset) {
-    this.sds = dataset;
+  public void setDataset(PointFeatureDataset dataset) {
+    this.sds = (StationFeatureCollection) dataset.getPointFeatureCollectionList().get(0); // LOOK KLUDGE
 
     if (debugStationDatsets)
       System.out.println("PointObsViewer open type "+dataset.getClass().getName());
-    Date startDate = dataset.getStartDate();
+    /* Date startDate = dataset.getStartDate();
     Date endDate = dataset.getEndDate();
     if ((startDate != null) && (endDate != null))
-      chooser.setDateRange( new DateRange( startDate, endDate));
+      chooser.setDateRange( new DateRange( startDate, endDate));  */
 
     List<StationBean> stationBeans = new ArrayList<StationBean>();
-      try {
-        List<Station> stations = sds.getStations();
-        if (stations == null) return;
+    try {
+      List<Station> stations = sds.getStations();
+      if (stations == null) return;
 
-        for (Station station : stations)
-          stationBeans.add(new StationBean( station));
+      for (Station station : stations)
+        stationBeans.add(new StationBean( sds.getStationFeature( station)));
 
-      } catch (IOException ioe) {
-        ioe.printStackTrace();
-        return;
-      }
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+      return;
+    }
 
     stnTable.setBeans( stationBeans);
     chooser.setStations( stationBeans);
@@ -203,28 +203,28 @@ public class StationObsViewer2 extends JPanel {
     }
   }
 
-  private void setObservations( StationObsDataset sobsDataset, StationBean sb, DateRange dateRange) throws IOException {
-    StationObsFeature feature = sobsDataset.getFeature(sb.s, dateRange);
+  private void setObservations( StationFeatureCollection stationCollection, StationBean sb, DateRange dateRange) throws IOException {
+    StationFeature feature = stationCollection.getStationFeature(sb.s, dateRange);
     int npts = feature.getNumberPoints();
     if (npts >= 0)
       sb.setNobs( npts);
-    DataIterator iter = feature.getDataIterator(-1);
+    PointFeatureIterator iter = feature.getPointIterator(-1);
 
-    List<PointObsFeature> obsList = new ArrayList<PointObsFeature>();
+    List<PointData> obsList = new ArrayList<PointData>();
     while (iter.hasNext()) 
-      obsList.add( feature.makePointObsFeature( iter.nextData()));
+      obsList.add( iter.nextData());
     setObservations( obsList);
   }
 
-  private void setObservationsAll( PointObsDataset pobsDataset) throws IOException {
-    FeatureIterator iter = pobsDataset.getFeatureIterator(-1);
-    List<PointObsFeature> obsList = new ArrayList<PointObsFeature>();
+  private void setObservationsAll( StationFeatureCollection stationCollection) throws IOException {
+    FeatureIterator iter = stationCollection.getFeatureIterator(-1);
+    List<PointData> obsList = new ArrayList<PointData>();
     while (iter.hasNext())
-      obsList.add( (PointObsFeature) iter.nextFeature());
+      obsList.add( (PointData) iter.nextFeature());
     setObservations( obsList);
   }
 
-  private void setObservations( List<PointObsFeature> obsList) throws IOException {
+  private void setObservations( List<PointData> obsList) throws IOException {
     if (obsList.size() == 0) {
       obsTable.clear();
       return;
@@ -246,7 +246,7 @@ public class StationObsViewer2 extends JPanel {
     private Station s;
     private int npts = -1;
 
-    public StationBean( Station s) {
+    public StationBean( StationFeature s) {
       this.s = s;
       this.npts = s.getNumberPoints();
     }
@@ -282,7 +282,6 @@ public class StationObsViewer2 extends JPanel {
     public double getAltitude() {
       return s.getAltitude();
     }
-
 
     public int compareTo(Object o) {
       StationImpl so = (StationImpl) o;

@@ -33,11 +33,12 @@ import java.util.List;
 import java.util.Date;
 
 /**
- * Helper routines for  station/point datasets
+ * Helper routines for point feature datasets using Unidata Conventions.
  *
  * @author caron
+ * @since Feb 29, 2008
  */
-public class UnidataObsDatasetHelper {
+public class UnidataPointDatasetHelper {
 
   static public Date getStartDate(NetcdfDataset ds, DateUnit timeUnit) {
     return getDate(ds, timeUnit, "time_coverage_start");
