@@ -398,6 +398,7 @@ public class H4header {
     String name = vh.name;
     short type = vh.fld_type[0];
     int size = vh.fld_isize[0];
+    int nelems = vh.nvert;
     vh.used = true;
     data.used = true;
 
@@ -406,36 +407,78 @@ public class H4header {
     switch (type) {
       case 3:
       case 4:
-        String val = readString(size);
-        att = new Attribute(name, val);
+        if (nelems == 1)
+          att = new Attribute(name, readString(size));
+        else {
+          String[] vals = new String[nelems];
+          for (int i=0; i<nelems; i++)
+            vals[i] = readString(size);
+          att = new Attribute(name, Array.factory(DataType.STRING.getPrimitiveClassType(), new int[] { nelems}, vals));
+        }
         break;
       case 5:
-        float f = raf.readFloat();
-        att = new Attribute(name, f);
+        if (nelems == 1)
+          att = new Attribute(name, raf.readFloat());
+        else {
+          float[] vals = new float[nelems];
+          for (int i=0; i<nelems; i++)
+            vals[i] = raf.readFloat();
+          att = new Attribute(name, Array.factory(DataType.FLOAT.getPrimitiveClassType(), new int[] { nelems}, vals));
+        }
         break;
       case 6:
-        double d = raf.readDouble();
-        att = new Attribute(name, d);
+        if (nelems == 1)
+          att = new Attribute(name, raf.readDouble());
+        else {
+          double[] vals = new double[nelems];
+          for (int i=0; i<nelems; i++)
+            vals[i] = raf.readDouble();
+          att = new Attribute(name, Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] { nelems}, vals));
+        }
         break;
       case 20:
       case 21:
-        byte b = raf.readByte();
-        att = new Attribute(name, b);
+        if (nelems == 1)
+          att = new Attribute(name, raf.readByte());
+        else {
+          byte[] vals = new byte[nelems];
+          for (int i=0; i<nelems; i++)
+            vals[i] = raf.readByte();
+          att = new Attribute(name, Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] { nelems}, vals));
+        }
         break;
       case 22:
       case 23:
-        short s = raf.readShort();
-        att = new Attribute(name, s);
+       if (nelems == 1)
+          att = new Attribute(name, raf.readShort());
+        else {
+          short[] vals = new short[nelems];
+          for (int i=0; i<nelems; i++)
+            vals[i] = raf.readShort();
+          att = new Attribute(name, Array.factory(DataType.SHORT.getPrimitiveClassType(), new int[] { nelems}, vals));
+        }
         break;
       case 24:
       case 25:
-        int i = raf.readInt();
-        att = new Attribute(name, i);
+        if (nelems == 1)
+          att = new Attribute(name, raf.readInt());
+        else {
+          int[] vals = new int[nelems];
+          for (int i=0; i<nelems; i++)
+            vals[i] = raf.readInt();
+          att = new Attribute(name, Array.factory(DataType.INT.getPrimitiveClassType(), new int[] { nelems}, vals));
+        }
         break;
       case 26:
       case 27:
-        long lval = raf.readLong();
-        att = new Attribute(name, lval);
+        if (nelems == 1)
+          att = new Attribute(name, raf.readLong());
+        else {
+          long[] vals = new long[nelems];
+          for (int i=0; i<nelems; i++)
+            vals[i] = raf.readLong();
+          att = new Attribute(name, Array.factory(DataType.LONG.getPrimitiveClassType(), new int[] { nelems}, vals));
+        }
         break;
     }
 
