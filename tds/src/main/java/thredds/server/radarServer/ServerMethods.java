@@ -10,6 +10,7 @@
 package thredds.server.radarServer;
 
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import thredds.catalog.query.*;
 
 import java.io.*;
@@ -27,6 +28,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import thredds.catalog.query.Station;
 //import ucar.nc2.ncml.AggregationFmr;
+import ucar.nc2.ncml.Aggregation;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,7 +36,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+import org.jdom.Element;
 
 public class ServerMethods {
 
@@ -61,6 +65,8 @@ public class ServerMethods {
     public static final Pattern p_stn_i = Pattern.compile("stn", Pattern.CASE_INSENSITIVE);
     public static final Pattern p_value2 = Pattern.compile("value=\"([A-Z0-9]*)\"");
     public static final Pattern p_xml_i = Pattern.compile("xml", Pattern.CASE_INSENSITIVE);
+    public static final Pattern p_yyyymmdd = Pattern.compile("(\\d{8})");
+    public static final Pattern p_yymmdd_hhmm = Pattern.compile("(\\d{2})(\\d{4}_\\d{4})");
     public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("(\\d{8}_\\d{4})");
     public static final String epic = "1970-01-01T00:00:00";
 
@@ -145,14 +151,23 @@ public class ServerMethods {
   /**
    * Determine if any of the given station names are actually in the dataset.
    *
-   * @param stns List of station names
+   * @param stations List of station names
    * @return true if list is empty, ie no names are in the actual station list
    * @throws IOException if read error
    */
-  public boolean isStationListEmpty(List<String> stns, HashMap<String, Station> map) {
-    //HashMap<String, Station> map = getStationMap();
-    for (String stn : stns) {
-      if (map.get(stn) != null) return false;
+  public boolean isStationListEmpty(List<String> stations, HashMap<String, Station> stationMap) {
+
+    if( stations.get( 0 ).toUpperCase().equals( "ALL") )
+        return false;
+      
+    for (String s : stations ) {
+            Station stn;
+            if( s.length() == 3 ) { // level3 stns
+                stn = stationMap.get( "K"+ s );
+            } else {
+                stn = stationMap.get( s );
+            }
+            if( stn != null) return false;
     }
     return true;
   }
@@ -165,10 +180,10 @@ public class ServerMethods {
     return true;
   }
   */
-
-  public boolean intersect(DateRange dr, Date start, Date end ) throws IOException {
-    return dr.intersects(start, end);
-  }
+  // What happened here!!!!
+  //public boolean intersect(DateRange dr, Date start, Date end ) throws IOException {
+  //  return dr.intersect(start, end);
+  //}
 
     /*
   public List<Station> getStationList() throws IOException {
@@ -337,6 +352,13 @@ public class ServerMethods {
     return result;
   }
 
+  public List<String> convert4to3stations( List<String> stations ) {
+    ArrayList<String> result = new ArrayList<String>();
+    for (String s : stations) {
+        result.add(s.substring( 1 ));
+    }
+    return result;
+  }
   /**
    * Get the list of station names that are contained within the bounding box.
    *
@@ -555,7 +577,7 @@ public class ServerMethods {
 
     }
 
-    // returns if date is between dateStart and dateEnd
+    // returns true if date is between dateStart and dateEnd
     public boolean isValidDate( String dateReport, String dateStart, String dateEnd ) {
 
        Matcher m;
@@ -563,8 +585,17 @@ public class ServerMethods {
        String date;
        if( m.find() ) {
            date = m.group( 1 );
-       } else {
-           return false;
+       } else { // try date w/o century
+           m = p_yymmdd_hhmm.matcher( dateReport );
+           if( m.find() ) { // add century, fails 2070
+               if( Integer.parseInt(m.group( 1 )) > 69 ) {
+                   date = "19" + m.group( 1 ) + m.group( 2 );
+               } else {
+                   date = "20" + m.group( 1 ) + m.group( 2 );
+               }
+           } else {
+               return false;
+           }    
        }
        // extract hhmm from product 
        if( date.compareTo( dateStart ) >= 0 &&
@@ -587,12 +618,21 @@ public class ServerMethods {
        String date;
        if( m.find() ) {
            date = m.group( 1 );
-           return date.substring(0,4) +"-"+ date.substring(4,6)
+       } else { // try date w/o century
+           m = p_yymmdd_hhmm.matcher( product );
+           if( m.find() ) { // add century, fails 2070
+               if( Integer.parseInt(m.group( 1 )) > 69 ) {
+                   date = "19" + m.group( 1 ) + m.group( 2 );
+               } else {
+                   date = "20" + m.group( 1 ) + m.group( 2 );
+               }
+           } else {
+               return epic;
+           }
+       }
+       return date.substring(0,4) +"-"+ date.substring(4,6)
            +"-"+ date.substring(6,8) +"T"+ date.substring(9, 11)
            +":"+ date.substring(11,13) +":00";
-       } else {
-           return "0000-00-00T00:00:00";
-       }
     }
 
     public void setPW( PrintWriter pw ){

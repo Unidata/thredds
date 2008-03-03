@@ -17,6 +17,8 @@ import java.util.*;
 //import java.lang.String.*;
 //import java.net.URL;
 //import java.net.URLConnection;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.Calendar;
 //import java.util.Date;
 //import java.util.TimeZone;
@@ -32,29 +34,38 @@ import thredds.catalog.XMLEntityResolver;
 import thredds.catalog.query.Station;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.transform.XSLTransformer;
+import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import ucar.nc2.dt.StationObsDataset;
+import ucar.nc2.dt.point.StationObsDatasetInfo;
 import ucar.nc2.units.DateFormatter;
 
 public class RadarLevel2Server {
 
-    static public StringBuilder catalog = null;
-    static public HashMap<String,String> dataPath = new HashMap();
-    static public HashMap<String,String> dataLocation = new HashMap();
+    //static public StringBuilder catalog = null;
+    //static public HashMap<String,String> dataPath = new HashMap();
+    //static public HashMap<String,String> dataLocation = new HashMap();
     static public List<Station> stationList = null;
     static public HashMap<String, Station> stationMap;
-    static public String radarLevel2DQC = "RadarLevel2DQC.xml";
-    static public String radarL2Stations = "RadarL2Stations.xml";
+    //static public String radarLevel2DQC = "RadarLevel2DQC.xml";
+    static public String radarStations = "RadarNexradStations.xml";
 
-    private boolean allow = false;
-    private ServerMethods sm;
+    //private boolean allow = false;
+    protected ServerMethods sm;
     private boolean debug = false;
-    private String contentPath = null;
+    //private String contentPath = null;
     private PrintWriter pw = null;
 
+    public RadarLevel2Server( ) {}
+
     public RadarLevel2Server( String contentPath ) {
-       this.contentPath = contentPath;
+       //this.contentPath = contentPath;
        sm = new  ServerMethods();
        if( stationList == null ) {
-           stationList = sm.getStations( contentPath + getPath() + radarL2Stations );
+           stationList = sm.getStations( contentPath + getPath() + radarStations );
            stationMap = sm.getStationMap( stationList );
        }
     }
@@ -62,56 +73,8 @@ public class RadarLevel2Server {
     public Document stationsXML( Document doc, Element rootElem, String path ) {
         // station in this dataset, set by path
         String[] stations = stationsDS( path );
-
-        //Element rootElem = new Element( root );
-        //Document doc = new Document(rootElem);
-        //Document doc = makeStationDocument( element, stations );
         doc = makeStationDocument( doc, rootElem, stations );
-        //XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-        //pw.println( fmt.outputString(doc) );
         return doc;
-    }
-
-    // returns a DQC for a particular dataset
-    public void returnDQC( String path ) {
-        try {
-            //Element rootElem = new Element( "queryCapability" );
-            //Document doc = new Document(rootElem);
-            // needs redone to parse DQC, them print
-            BufferedReader br = sm.getInputStreamReader( contentPath + getPath() + radarLevel2DQC);
-            String input = "";
-            while ((input = br.readLine()) != null) {
-                //pw.println(input);
-                if( input.contains( "selectStation" ) )
-                    break;
-                pw.println(input);
-            }
-            // get/add stations for this dataset
-            //Element stnElem = new Element( "selectStation" );
-            //Document doc = new Document(rootElem);
-            //doc = stationsXML( doc, stnElem, path );
-            //printStations( doc, "selectStation");
-
-            String[] stations = stationsDS( path );
-            printStations( stations );
-
-            // skip stations section of DQC
-            while ((input = br.readLine()) != null) {
-                if( input.contains( "selectStation" ) ) 
-                    break;
-            }
-            //pw.println(input); // terminator of selectStation
-            while ((input = br.readLine()) != null) {
-                //if( input.contains( "selectStation" ) )
-                //    break;
-                pw.println(input);
-            }
-            br.close();
-        } catch (Exception e) {
-          //log.error("RadarServer internal error", e);
-          ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
-          return;
-        }
     }
 
    // must end with "/"
@@ -136,21 +99,16 @@ public class RadarLevel2Server {
   }
 
 // process level2 query get parmameters from servlet call
-public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
+public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res, String radarDir)
             throws ServletException, IOException {
 
     // servlet parameters
     //String[] PRODS;
-    //String dtime = null;
     String accept;
-    //String serviceName = null;
-    //String serviceType = null;
-    //String serviceBase = null;
     String serviceName = "OPENDAP";
     String serviceType = "OPENDAP";
     String serviceBase = "/thredds/dodsC";
     Date start = null, end = null; // never initialized ?
-    String radarLevel2Dir = null;
 
     try {
         //ServletUtil.logServerAccessSetup( req );
@@ -159,12 +117,12 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
 
         // need to extract data according to the (dataset) given
         String pathInfo = req.getPathInfo();
-        if (pathInfo != null) 
-            radarLevel2Dir = dataLocation.get( pathInfo.substring( 1 ) );
-        if ( radarLevel2Dir == null)
-            radarLevel2Dir = "nexrad/level2/IDD"; // default
+        if (pathInfo == null) pathInfo = "";
+        Boolean level2 = pathInfo.contains( "level2");
+        if ( radarDir == null)
+            radarDir = RadarServer.dataLocation.get( "nexrad/level2/IDD" ); // default
 
-        String dirStructure = "STN/DAY"; //default needs how to change
+        String dirStructure = "STN/DAY"; //default needs how to set
 
         // parse the input
         QueryParams qp = new QueryParams();
@@ -179,14 +137,6 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
             qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
             return;
           }
-        /*
-        } else { // old style
-          // bounding box min/max lat  min/max lon
-          qp.south = qp.parseLat( req, "y0");
-          qp.north = qp.parseLat( req, "y1");
-          qp.west = qp.parseLon( req, "x0");
-          qp.east = qp.parseLon( req, "x1");
-        */
         }
 
         if (qp.hasStns && sm.isStationListEmpty(qp.stns, stationMap )) {
@@ -235,8 +185,6 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
           qp.writeErr(res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
           return;
         }
-        boolean latest = ((!qp.hasTimePoint && !qp.hasDateRange) ||
-                ( qp.time != null && qp.time.isPresent() ) );
         */
         // if time in not set, return all possible times
         boolean latest = false;
@@ -253,23 +201,6 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
                 qp.time_end = qp.time;
                 qp.time_start = qp.time;
             }
-        /*
-        }
-        // old style of relative time
-        //dtime = ServletUtil.getParameterIgnoreCase(req, "dtime");
-        //latest = (dtime != null? false : latest);
-        if( latest ) {
-           try {
-               //Calendar now = Calendar.getInstance();
-               //qp.time_end = new DateType(sm.dateFormatISO.format(now.getTime()), null, null);
-               qp.time_end = new DateType( "present", null, null);
-               //now.add( Calendar.HOUR, -120 );
-               //qp.time_start = new DateType(sm.dateFormatISO.format(now.getTime()), null, null);
-               qp.time_start = new DateType(ServerMethods.epic, null, null);
-           } catch (java.text.ParseException e) {
-               qp.errs.append("Illegal param= 'time' must be valid ISO Duration\n");
-           }
-        */
         } else if( qp.hasDateRange ) {
             DateRange dr = qp.getDateRange();
             qp.time_start = dr.getStart();
@@ -286,16 +217,14 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
 
         // will need for level3 vars
         //PRODS = ServletUtil.getParameterValuesIgnoreCase(req, "PROD");
+        if( ! level2 ) {
+            //qp.vars
+
+        }
 
         accept = ServletUtil.getParameterIgnoreCase(req, "accept");
         if (accept == null )  // default
             accept = "xml";
-
-        //serviceType = ServletUtil.getParameterIgnoreCase(req, "serviceType");
-        //if (serviceType == null)
-        //    serviceType = "OPENDAP";
-
-        //serviceName = ServletUtil.getParameterIgnoreCase(req, "serviceName");
 
         // set content type default is xml
         //String contentType = qp.acceptType;
@@ -303,34 +232,22 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
             res.setContentType( "text/html");
         }
 
-        // requesting a catalog with different serviceTypes
-        /*
-        if ( ServerMethods.p_HTTPServer_i.matcher(serviceType).find() ) {
-                serviceName = configurations.get( "radarLevel2HTTPServiceName");
-                serviceType = configurations.get( "radarLevel2HTTPServiceType");
-                serviceBase = configurations.get( "radarLevel2HTTPServiceBase" +ds);
-        //  serviceType =~ /OPENDAP/i
-        } else if ( ServerMethods.p_DODS_i.matcher(serviceType).find()) {
-                serviceName = configurations.get( "radarLevel2DODSServiceName");
-                serviceType = configurations.get( "radarLevel2DODSServiceType");
-                serviceBase = configurations.get( "radarLevel2DODSServiceBase" +ds);
-        }
-        */
-        //serviceName = "OPENDAP";
-        //serviceType = "OPENDAP";
-        //serviceBase = "/thredds/dodsC";
         serviceBase += pathInfo +"/";
 
         // write out catalog with datasets
-        if ( ! serviceType.equals( "" )) {
+        if ( serviceType.equals( "OPENDAP" )) {
+            int level = 2;
+            if( ! level2 ) {
+                level = 3;
+            }
             pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             pw.print("<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\"");
-            pw.println(" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Level2 datasets in near real time\" version=\""+
+            pw.println(" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Level"+ level +" datasets in near real time\" version=\""+
                     "1.0.1\">");
             pw.println("");
             pw.print("  <service name=\""+ serviceName +"\" serviceType=\""+ serviceType +"\"");
             pw.println(" base=\"" + serviceBase + "\"/>");
-            pw.print("    <dataset name=\"RadarLevel2 datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\""+
+            pw.print("    <dataset name=\"RadarLevel"+ level +" datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\""+
  "accept=" + accept + "&amp;");
             if( useAllStations ) {
                 pw.print("stn=all&amp;");
@@ -357,7 +274,13 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
             }
             pw.println("    <metadata inherited=\"true\">");
             pw.println("      <dataType>Radial</dataType>");
-            pw.println("      <dataFormat>" + "NEXRAD2" + "</dataFormat>");
+            pw.print("      <dataFormat>" );
+            if( level2 ) {
+                pw.print( "NEXRAD2" );
+            } else {
+                pw.print( "NIDS" );
+            }
+            pw.println( "</dataFormat>");
             pw.println("      <serviceName>" + serviceName + "</serviceName>");
             pw.println("    </metadata>");
             pw.println();
@@ -403,7 +326,7 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
             for (String station : qp.stns) {
                 done = false;
                 // Obtain the days available
-                String[] DAYS = sm.getDAYS(radarLevel2Dir +"/"+ station, pw);
+                String[] DAYS = sm.getDAYS(radarDir +"/"+ station, pw);
                 if (DAYS == null || DAYS.length == 0)
                     continue;
                 for (int i = 0; i < DAYS.length && !done; i++) {
@@ -411,7 +334,7 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
                         continue;
 
                      ArrayList<String> files = new ArrayList();
-                     File dir = new File(radarLevel2Dir +"/"+ station +"/"+ DAYS[ i ]);
+                     File dir = new File(radarDir +"/"+ station +"/"+ DAYS[ i ]);
                      String[] FILES = dir.list();
                      for( int t = 0; t < FILES.length; t++ ) {
                          if( ! sm.isValidDate( FILES[ t ], dateStart, dateEnd ) )
@@ -429,7 +352,7 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
             }
         // loop on DAY STN
         } else if( dirStructure.startsWith( "DAY")) {
-            String[] DAYS = sm.getDAYS(radarLevel2Dir, pw);
+            String[] DAYS = sm.getDAYS(radarDir, pw);
                 for (int i = 0; i < DAYS.length; i++) {
                     if( ! sm.isValidDay( DAYS[ i ], yyyymmddStart, yyyymmddEnd ) )
                         continue;
@@ -437,7 +360,7 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
                     //for (int j = 0; j < qp.stns.size(); j++ ) {
                         //String station = qp.stns.get( j );
                         ArrayList<String> files = new ArrayList();
-                        File dir = new File(radarLevel2Dir +"/"+ DAYS[ i ] +"/"+ station);
+                        File dir = new File(radarDir +"/"+ DAYS[ i ] +"/"+ station);
                         if( !dir.exists() )
                             continue;
                         String[] FILES = dir.list();
@@ -467,9 +390,7 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
             pw.println("</catalog>");
         } else if ( ServerMethods.p_html_i.matcher(accept).find()) {
             pw.println("</html>");
-        //} else if ( ServerMethods.p_xml_i.matcher(accept).find()) {
-        //    pw.println("</reports>");
-        }
+         }
 
         } catch (Throwable t) {
            ServletUtil.handleException(t, res);
@@ -477,7 +398,7 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
         ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1);
     } // end radarLevel2Query
 
-    private void processDS( ArrayList files, String day, String accept, String station, Boolean latest,
+    protected void processDS( ArrayList files, String day, String accept, String station, Boolean latest,
                             PrintWriter pw ) {
 
         Collections.sort(files, new CompareKeyDescend());
@@ -615,17 +536,24 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
    * Create an XML document from this info
    */
   public Document makeStationDocument( Document doc, Element rootElem, String[] stns ) {
-      //Element rootElem = new Element("RadarLevel2Stations");
-      //Element rootElem = new Element( root );
-      //Document doc = new Document(rootElem);
 
-      //List<Station> stns = sm.getStationList();
       //System.out.println("nstns = "+stns.size());
       for (int i = 0; i < stns.length; i++) {
-      //for (Station s : stationList) {
-        Station s = stationMap.get( stns[ i ]);  
-        if( s == null ) continue;
+        if( stns[ i ].length() == 3 )
+            stns[ i ] = "K"+ stns[ i ];
+        Station s = stationMap.get( stns[ i ]);
         Element sElem = new Element("station");
+        if( s == null ) { // stn not in table
+            sElem.setAttribute("id", stns[ i ] );
+            sElem.setAttribute("state", "XXX");
+            sElem.setAttribute("country", "XX");
+            sElem.addContent(new Element("name").addContent("Unknown"));
+            sElem.addContent(new Element("longitude").addContent( "0.0" ));
+            sElem.addContent(new Element("latitude").addContent( "0.0" ));
+            sElem.addContent(new Element("elevation").addContent( "0" ));
+            rootElem.addContent(sElem);
+            continue;
+        }
         sElem.setAttribute("id",s.getValue());
         if( s.getState() != null )
             sElem.setAttribute("state",s.getState());
@@ -647,14 +575,24 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
     }
 
     public String[] stationsDS( String path ) {
-        // remove leading / first
-        if( path.startsWith( "/"))
-            path =  path.substring( 1 );
-        String dir = dataLocation.get( path );
         String[] stations = null;
-        if( dir != null ) {
-            File files = new File( dir );
+        /*
+        if( path != null ) {
+            File files = new File( path );
             stations = files.list();
+        }
+        */
+        if( path != null ) {
+            File files = new File( path );
+            stations = files.list();
+            for( int i = 0; i < stations.length; i++) {
+                if( stations[ i ].equals( "N0R")) { // not stns but products
+                    path += "/N0R";
+                    files = new File( path );
+                    stations = files.list();
+                    break;
+                }
+            }
         }
         if( stations ==  null || stations.length == 0 ) {
             stations = new String[ 1 ];
@@ -677,6 +615,8 @@ public void radarLevel2Query(HttpServletRequest req, HttpServletResponse res)
      */
     public void printStations( String[] stations ) {
         for (String s : stations ) {
+            if( s.length() == 3 )
+            s = "K"+ s;
             Station stn = stationMap.get( s );
             if(  stn == null ) {
                 pw.println( "   <station id=\""+ s +"\" state=\"XX\" country=\"XX\">");
