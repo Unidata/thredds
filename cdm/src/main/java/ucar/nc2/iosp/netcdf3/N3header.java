@@ -21,6 +21,7 @@ package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.unidata.io.RandomAccessFile;
 
 import java.util.*;
 import java.io.IOException;
@@ -94,7 +95,9 @@ public class N3header {
 
     // netcdf magic number
     long pos = 0;
+    raf.order(RandomAccessFile.BIG_ENDIAN);
     raf.seek(pos);
+
     byte[] b = new byte[4];
     raf.read(b);
     for (int i = 0; i < 3; i++)
