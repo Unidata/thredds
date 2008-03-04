@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS Radar Server" version="1.0.1">
 
-  <service name="radarServer" serviceType="DQC" base="/thredds/radarServer/" />
-  <dataset name="NEXRAD Level Radar Data">
+  <service name="radarServer" serviceType="DQC" base="/thredds/radarServer" />
+  <dataset name="NEXRAD Level2 Radar Data">
+    <service name="OPENDAP" serviceType="OPENDAP" base="/thredds/dodsC" />
 
-    <datasetScan name="NEXRAD Level II Radar WSR-88D from IDD" collectionType="TimeSeries" ID="nexrad/level2/IDD" path="nexrad/level2/IDD" location="/data/ldm/gempak/nexrad/craft">
+    <datasetScan name="NEXRAD Level II Radar WSR-88D from IDD" collectionType="TimeSeries" ID="nexrad/level2/IDD" path="nexrad/level2/IDD" location="/data/ldm/pub/native/radar/level2">
       <metadata inherited="true">
-        <serviceName>radarServer</serviceName>
         <dataType>Radial</dataType>
         <dataFormat>NEXRAD2</dataFormat>
+        <serviceName>OPENDAP</serviceName>
         <documentation type="summary">NEXRAD Level II Radar WSR-88D from IDD. Sent every 5 minutes.</documentation>
         <timeCoverage>
           <end>present</end>
@@ -20,6 +21,7 @@
           <variable name="SpectrumWidth" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Spectrum Width" units="m/s" />
         </variables>
         <documentation xlink:title="Available Stations" xlink:href="/thredds/radarServer/nexrad/level2/IDD/stations.xml"/>
+        <documentation type="path">nexrad/level2/IDD</documentation>
         <geospatialCoverage>
           <northsouth>
             <start>-90.0</start>
@@ -33,12 +35,25 @@
           </eastwest>
         </geospatialCoverage>          
       </metadata>
+  <!--
+      <access urlPath="nexrad/level2/IDD/dataset.xml" serviceName="radarServer" />
+      <filter>
+        <include regExp=".*\.ar2v$" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addLatest />
+      <addDatasetSize />
+      <addTimeCoverage datasetNameMatchPattern="Level2_([A-Z]{4})_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).ar2v$" startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="5 minutes" />
+  //-->
     </datasetScan>
-    <datasetScan name="NEXRAD Level II Radar WSR-88D for Case Study CCS039" collectionType="TimeSeries" ID="nexrad/level2/CCS039" path="nexrad/level2/CCS039" location="/home/rkambic/code/data/level2">
+    <datasetScan name="NEXRAD Level II Radar WSR-88D for Case Study CCS039" collectionType="TimeSeries" ID="nexrad/level2/CCS039" path="nexrad/level2/CCS039" location="/data/ldm/pub/casestudies/ccs039/images/radar/level2">
       <metadata inherited="true">
-        <serviceName>radarServer</serviceName>
         <dataType>Radial</dataType>
         <dataFormat>NEXRAD2</dataFormat>
+        <serviceName>OPENDAP</serviceName>
         <documentation type="summary">NEXRAD Level II Radar WSR-88D for Case Study CCS039. </documentation>
         <timeCoverage>
           <start>1998-06-29T18:01:48</start>
@@ -50,6 +65,7 @@
           <variable name="SpectrumWidth" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Spectrum Width" units="m/s" />
         </variables>
         <documentation xlink:title="Available Stations" xlink:href="/thredds/radarServer/nexrad/level2/CCS039/stations.xml"/>
+        <documentation type="path">nexrad/level2/CCS039</documentation>
         <geospatialCoverage>
           <northsouth>
             <start>-90.0</start>
@@ -63,51 +79,19 @@
           </eastwest>
         </geospatialCoverage>
       </metadata>
-    </datasetScan>
-    <datasetScan name="NEXRAD Level III Radar WSR-88D from IDD" collectionType="TimeSeries" ID="nexrad/level3/IDD" path="nexrad/level3/IDD" location="/data/ldm/gempak/nexrad/NIDS">
-      <metadata inherited="true">
-        <serviceName>radarServer</serviceName>
-        <dataType>Radial</dataType>
-        <dataFormat>NIDS</dataFormat>
-        <documentation type="summary">NEXRAD Level III Radar WSR-88D from IDD. Sent every 5 minutes.</documentation>
-        <timeCoverage>
-          <end>present</end>
-          <duration>7 days</duration>
-        </timeCoverage>
-      <variables vocabulary="DIF">
-        <variable name="NTP/PrecipAccum" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
-        <variable name="N1P/PrecipAccum" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
-        <variable name="N0R/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="N1R/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="N2R/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="N3R/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="N0Z/BaseReflecitvity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="NCR/CompReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="N0V/BaseVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
-        <variable name="N1V/BaseVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
-        <variable name="N0S/RadialVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
-        <variable name="N1S/RadialVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
-        <variable name="N2S/RadialVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
-        <variable name="NET/EchoTop" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Optical Depth/Thickness" units="1000 feet" />
-        <variable name="NVL/VertLiquid" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
-        <variable name="NVW/VadWindSpeed" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Winds &gt; Wind Profiles" units="knots" />
-        <variable name="DPA/PrecipArray_0" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
-        <variable name="DPA/PrecipArray_x" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Rate" units="dBA" />
-      </variables>
-        <documentation xlink:title="Available Stations" xlink:href="/thredds/radarServer/nexrad/level2/IDD/stations.xml"/>
-        <geospatialCoverage>
-          <northsouth>
-            <start>-90.0</start>
-            <size>180.0</size>
-            <units>degrees_north</units>
-          </northsouth>
-          <eastwest>
-            <start>0.0</start>
-            <size>360.0</size>
-            <units>degrees_east</units>
-          </eastwest>
-        </geospatialCoverage>          
-      </metadata>
+
+<!--
+      <filter>
+        <include regExp=".*" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addLatest />
+      <addDatasetSize />
+      <addTimeCoverage datasetNameMatchPattern="([A-Z]{4})([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})$" startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="5 minutes" />
+//-->
     </datasetScan>
   </dataset>
 </catalog>
