@@ -837,7 +837,9 @@
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <property name="test.src.dir" location="${root.dir}/src/test/java"/>
-  <property name="test.dir" location="${root.dir}/target/build/test"/>
+  <property name="test.dir" location="${build.dir}/build/test"/>
+  <property name="test.classes.dir" location="${test.dir}/classes"/>
+  <property name="test.reports.dir" location="${test.dir}/reports"/>
 
   <path id="test.sourcepath">
     <path refid="sourcepathUI"/>
@@ -854,7 +856,7 @@
     <fileset refid="compileUI.libraries"/>
     <fileset refid="runtime.libraries"/>
     <pathelement location="${build.classes.dir}"/>
-    <pathelement location="${test.dir}/classes"/>
+    <pathelement location="${test.classes.dir}"/>
     <pathelement location="${resources.dir}"/>
     <pathelement location="${resourcesUI.dir}"/>
     <fileset refid="test.libraries"/>
@@ -862,12 +864,12 @@
 
   <target name="test-setup" depends="compile" description="setup for running junit tests">
     <mkdir dir="${test.dir}"/>
-    <mkdir dir="${test.dir}/classes"/>
+    <mkdir dir="${test.classes.dir}"/>
 
     <!-- debugging path -->
     <property name="test.classpath" refid="test.classpath"/>
     <echo>test.classpath=${test.classpath}</echo>
-    <javac srcdir="${test.src.dir}" destdir="${test.dir}/classes"
+    <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}"
            debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false"
            source="1.5" target="1.5">
       <exclude name="examples/*.java"/>
@@ -876,30 +878,49 @@
 
   </target>
 
-  <target name="unit-test" depends="compile, test-setup" description="run junit tests">
+  <target name="unit-test" depends="compile, test-setup" description="run nc unit tests">
+    <antcall target="unit-test-nc" />
+  </target>
+
+  <target name="unit-test-nc" description="run nc unit tests">
+    <antcall target="unit-test-base">
+      <param name="unit.test.name" value="unit-test-nc" />
+      <param name="unit.test" value="ucar.nc2.TestAll" />
+    </antcall>
+  </target>
+
+  <target name="unit-test-thredds" description="run thredds unit tests">
+    <antcall target="unit-test-base">
+      <param name="unit.test.name" value="unit-test-thredds" />
+      <param name="unit.test" value="thredds.catalog.TestCatalogAll" />
+    </antcall>
+  </target>
+
+  <target name="unit-test-base" description="run junit tests">
+    <mkdir dir="${test.reports.dir}/${unit.test.name}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on" dir="${root.dir}">
       <classpath refid="test.classpath"/>
       <jvmarg value="-ea"/>
       <jvmarg value="-Xmx1024m"/>
       <formatter type="xml"/>
       <formatter type="brief" usefile="false"/>
-      <test todir="${test.dir}" name="ucar.nc2.TestAll"/>
+      <test todir="${test.reports.dir}/${unit.test.name}" name="${unit.test}"/>
     </junit>
 
     <!-- #Generate test reports -->
-    <junitreport todir="${test.dir}">
-      <fileset dir="${test.dir}">
+    <junitreport todir="${test.reports.dir}/${unit.test.name}">
+      <fileset dir="${test.reports.dir}/${unit.test.name}">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" todir="${test.dir}"/>
+      <report format="frames" todir="${test.reports.dir}/${unit.test.name}"/>
     </junitreport>
     <!-- create temporary file indicating these tests failed -->
     <!-- #Test case bypass trick -->
-    <echo message="last build failed tests" file="${test.dir}/failed"/>
-    <fail if="test.failed">FAILED! Unit tests failed. Look at ${test.dir}/index.html for details.</fail>
+    <echo message="last build failed tests" file="${test.reports.dir}/${unit.test.name}/failed"/>
+    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/${unit.test.name}/index.html for details.</fail>
     <!-- Remove test failed file, as these tests succeeded -->
-    <delete file="${test.dir}/failed"/>
-    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.dir}/index.html for details."/>
+    <delete file="${test.reports.dir}/${unit.test.name}/failed"/>
+    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/${unit.test.name}/index.html for details."/>
   </target>
 
   <!-- -->
