@@ -3,7 +3,7 @@
   <property name="release.version" value="4.0"/>
   <!-- "build.number" is already set for TeamCity builds. -->
   <property name="build.number" value="11" />
-  <property name="release.version.minor" value="${release.version}.12"/>
+  <property name="release.version.minor" value="${release.version}.13"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <tstamp>

@@ -59,7 +59,7 @@ public class InvDatasetImpl extends InvDataset {
   private List<InvAccess> accessLocal = new ArrayList<InvAccess>();
   private List<InvService> servicesLocal = new ArrayList<InvService>();
   protected ThreddsMetadata tm = new ThreddsMetadata(false); // all local metadata kept here. This may include
-  // inheritable InvMetadata
+                                                             // inheritable InvMetadata
   protected ThreddsMetadata tmi = new ThreddsMetadata(true); // local inheritable metadata (canonicalization)
   protected ThreddsMetadata tmi6 = new ThreddsMetadata(true); // local catalog 0.6 inheritable metadata
   protected org.jdom.Element ncmlElement;

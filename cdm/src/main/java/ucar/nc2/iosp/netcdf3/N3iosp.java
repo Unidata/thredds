@@ -54,7 +54,6 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   static public final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
   static public final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
   static public final String FillValue = "_FillValue";
-
   static private boolean syncExtendOnly = false;
 
   /**
@@ -123,14 +122,15 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   /////////////////////////////////////////////////
   // name pattern matching
   //static private Pattern objectNamePattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\(\\)\\+]*");
-  static private Pattern objectNamePattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_\\-]*");
+  //static private Pattern objectNamePattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_\\-]*");
+  static private Pattern objectNamePattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_@\\.\\-\\+]*");
 
   /**
    * Determine if the given name can be used for a Dimension, Attribute, or Variable name.
    * @param name test this.
    * @return  true if valid name.
    */
-  static public boolean isValidNetcdfObjectName(String name) {
+  static public boolean isValidNetcdf3ObjectName(String name) {
     Matcher m = objectNamePattern.matcher(name);
     return m.matches();
   }
@@ -139,9 +139,61 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * Valid Netcdf Object name as a regular expression.
    * @return regular expression pattern describing valid Netcdf Object names.
    */
-  static public String getValidNetcdfObjectNamePattern() {
-    return objectNamePattern.pattern();
+  static public Pattern getValidNetcdf3ObjectNamePattern() {
+    return objectNamePattern;
   }
+
+  /**
+   * Convert a name to a legal netcdf name.
+   * From the user manual:
+   * "The names of dimensions, variables and attributes consist of arbitrary sequences of
+   * alphanumeric characters (as well as underscore '_' and hyphen '-'), beginning with a letter
+   * or underscore. (However names commencing with underscore are reserved for system use.)
+   * Case is significant in netCDF names."
+   * <p/>
+   * Algorithm:
+   * <ol>
+   * <li>leading character: if alpha or underscore, ok; if digit, prepend "N"; otherwise discard
+   * <li>other characters: if space, change to underscore; other delete.
+   * </ol>
+   * @param name convert this name
+   * @return converted name
+   */
+  static public String createValidNetcdf3ObjectName(String name) {
+    StringBuffer sb = new StringBuffer(name);
+
+    //LOOK: could escape characters, as in DODS (%xx) ??
+
+    while (sb.length() > 0) {
+      char c = sb.charAt(0);
+      if (Character.isLetter(c) || (c == '_')) break;
+      if (Character.isDigit(c)) {
+        sb.insert(0, 'N');
+        break;
+      }
+      sb.deleteCharAt(0);
+    }
+
+    int i = 1;
+    while (i < sb.length()) {
+      char c = sb.charAt(i);
+      if (c == ' ')
+        sb.setCharAt(i, '_');
+      else {
+        boolean ok = Character.isLetterOrDigit(c) || (c == '-') || (c == '_') ||
+                (c == '@') || (c == ':') || (c == '(') || (c == ')') || (c == '+') || (c == '.');
+        if (!ok) {
+          sb.delete(i, i + 1);
+          i--;
+          // sb.setCharAt(i, '-');
+        }
+      }
+      i++;
+    }
+
+    return sb.toString();
+  }
+
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
