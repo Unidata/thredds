@@ -39,9 +39,57 @@ public abstract class WcsRequest
 
   public enum Format
   {
-    NONE, GeoTIFF, GeoTIFF_Float, NetCDF3
+    NONE( ""),
+    GeoTIFF("image/tiff"),
+    GeoTIFF_Float("image/tiff"),
+    NetCDF3("application/x-netcdf");
+
+    private String mimeType;
+    Format( String mimeType) { this.mimeType = mimeType; }
+
+    public String getMimeType() { return mimeType; }
+    
+    public static Format getFormat( String mimeType )
+    {
+      for ( Format curSection : Format.values() )
+      {
+        if ( curSection.mimeType.equals( mimeType ) )
+          return curSection;
+      }
+      throw new IllegalArgumentException( "No such instance <" + mimeType + ">." );
+    }
+  }
+      /*
+  All( "" ),
+
+  Service( "WCS_Capabilities/Service" ),
+
+  Capability( "WCS_Capabilities/Capability" ),
+
+  ContentMetadata( "WCS_Capabilities/ContentMetadata" );
+
+  private final String altId;
+
+  Section( String altId )
+  {
+    this.altId = altId;
   }
 
+  public String toString()
+  {
+    return altId;
+  }
+
+  public static Section getSection( String altId )
+  {
+    for ( Section curSection : Section.values() )
+    {
+      if ( curSection.altId.equals( altId ) )
+        return curSection;
+    }
+    throw new IllegalArgumentException( "No such instance <" + altId + ">." );
+  }
+     */
   WcsRequest( Operation operation, String version, WcsDataset dataset )
   {
     this.operation = operation;

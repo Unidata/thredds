@@ -6,7 +6,6 @@ import thredds.wcs.v1_1_0.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -17,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.util.IO;
 
 /**
  * _more_
@@ -45,6 +43,13 @@ public class WCS_1_1_0 implements VersionHandler
   public VersionHandler setDiskCache( DiskCache2 diskCache )
   {
     GetCoverage.setDiskCache( diskCache );
+    return this;
+  }
+
+  private boolean deleteImmediately = true;
+  public VersionHandler setDeleteImmediately( boolean deleteImmediately )
+  {
+    this.deleteImmediately = deleteImmediately;
     return this;
   }
 
@@ -92,15 +97,15 @@ public class WCS_1_1_0 implements VersionHandler
         File covFile = getCoverage.writeCoverageDataToFile();
         if ( covFile != null && covFile.exists())
         {
-          res.setContentType( "application/netcdf" );
-          res.setStatus( HttpServletResponse.SC_OK );
+          int pos = covFile.getPath().lastIndexOf( "." );
+          String suffix = covFile.getPath().substring( pos );
+          String resultFilename = request.getDatasetName(); // this is name browser will show
+          if ( !resultFilename.endsWith( suffix ) )
+            resultFilename = resultFilename + suffix;
+          res.setHeader( "Content-Disposition", "attachment; filename=" + resultFilename );
 
-          //ServletUtil.returnFile( servlet, req, res, covFile, "application/netcdf");
-          ServletOutputStream out = res.getOutputStream();
-          IO.copyFileB( covFile, out, 60000 );
-          res.flushBuffer();
-          out.close();
-          ServletUtil.logServerAccess( HttpServletResponse.SC_OK, covFile.length() );
+          ServletUtil.returnFile( servlet, "", covFile.getPath(), req, res, "application/netcdf" );
+          if ( deleteImmediately ) covFile.delete();
         }
         else
         {

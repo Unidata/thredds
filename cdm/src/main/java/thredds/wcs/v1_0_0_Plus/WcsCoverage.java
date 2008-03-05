@@ -164,8 +164,8 @@ public class WcsCoverage
         }
         String reqRangeFieldName = rangeSubset.get( 0);
 
-        //String dname = (datasetURL != null) ? datasetURL : datasetPath;
-        File tifFile = getDiskCache().getCacheFile( this.dataset.getDatasetPath() + "-" + this.getName() + ".tif" );
+        File dir = new File( getDiskCache().getRootDirectory() );
+        File tifFile = File.createTempFile( "WCS", ".tif", dir );
         if ( log.isDebugEnabled() )
           log.debug( "writeCoverageDataToFile(): tifFile=" + tifFile.getPath() );
 
@@ -183,7 +183,8 @@ public class WcsCoverage
       }
       else if ( format == WcsRequest.Format.NetCDF3 )
       {
-        File ncFile = getDiskCache().getCacheFile( this.dataset.getDatasetPath() + "-" + this.getName() + ".nc" );
+        File dir = new File( getDiskCache().getRootDirectory() );
+        File ncFile = File.createTempFile( "WCS", ".nc", dir );
         if ( log.isDebugEnabled() )
           log.debug( "writeCoverageDataToFile(): ncFile=" + ncFile.getPath() );
 

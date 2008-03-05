@@ -158,6 +158,13 @@ public class WcsDataset {
     return null;
   }
 
+  public String getDatasetName()
+  {
+    String loc = gridDataset.getLocationURI();
+    int pos = loc.lastIndexOf( "/" );
+    return ( pos > 0 ) ? loc.substring( pos + 1 ) : loc;
+  }
+
   public File getCoverage( GetCoverageRequest req) throws IOException, InvalidRangeException {
     String vname = req.getCoverage();
     GridDatatype geogrid = gridDataset.findGridDatatype(vname);
@@ -206,20 +213,20 @@ public class WcsDataset {
     Array data = subset.readDataSlice(0, 0, -1, -1);
 
     if (req.getFormat() == GetCoverageRequest.Format.GeoTIFF || req.getFormat() == GetCoverageRequest.Format.GeoTIFFfloat) {
-      //String dname = (datasetURL != null) ? datasetURL : datasetPath;
-      File tifFile = getDiskCache().getCacheFile(datasetPath+"-"+vname+".tif");
-      if (debug) System.out.println(" tifFile="+tifFile.getPath());
+      File dir = new File( getDiskCache().getRootDirectory() );
+      File tifFile = File.createTempFile( "WCS", ".tif", dir );
+      if ( debug ) System.out.println( " tifFile=" + tifFile.getPath() );
 
-      GeotiffWriter writer = new GeotiffWriter(tifFile.getPath());
-      writer.writeGrid( gridDataset, subset, data, req.getFormat() == GetCoverageRequest.Format.GeoTIFF);
+      GeotiffWriter writer = new GeotiffWriter( tifFile.getPath() );
+      writer.writeGrid( gridDataset, subset, data, req.getFormat() == GetCoverageRequest.Format.GeoTIFF );
 
       writer.close();
       return tifFile;
 
-    } else if (req.getFormat() == GetCoverageRequest.Format.NetCDF3) {
 
-      //String dname = (datasetURL != null) ? datasetURL : datasetPath;
-      File ncFile = getDiskCache().getCacheFile(datasetPath+"-"+vname+".nc");
+    } else if (req.getFormat() == GetCoverageRequest.Format.NetCDF3) {
+      File dir = new File( getDiskCache().getRootDirectory() );
+      File ncFile = File.createTempFile( "WCS", ".nc", dir );
       if (debug) System.out.println(" ncFile="+ncFile.getPath());
 
       NetcdfCFWriter writer = new NetcdfCFWriter();

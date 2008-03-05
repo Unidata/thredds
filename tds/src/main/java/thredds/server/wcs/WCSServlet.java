@@ -1,10 +1,6 @@
 package thredds.server.wcs;
 
-import thredds.wcs.WcsDataset;
-import thredds.wcs.v1_1_0.Request;
-import thredds.wcs.v1_1_0.GetCoverage;
 import thredds.servlet.*;
-import thredds.server.wcs.v1_0_0_Plus.WcsHandler;
 
 import java.io.*;
 import java.util.List;
@@ -27,6 +23,11 @@ public class WCSServlet extends AbstractServlet {
   private List<VersionHandler> versionHandlers;
   private String supportedVersionsString;
 
+  public enum Operation
+  {
+    GetCapabilities, DescribeCoverage, GetCoverage
+  }
+
   // must end with "/"
   protected String getPath() { return "wcs/"; }
   protected void makeDebugActions() {}
@@ -36,6 +37,7 @@ public class WCSServlet extends AbstractServlet {
     super.init();
 
     allow = ThreddsConfig.getBoolean("WCS.allow", false);
+    deleteImmediately = ThreddsConfig.getBoolean( "WCS.deleteImmediately", deleteImmediately);
     maxFileDownloadSize = ThreddsConfig.getBytes("WCS.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
     String cache = ThreddsConfig.get("WCS.dir", contentPath + "/wcache");
     File cacheDir = new File(cache);
@@ -51,10 +53,18 @@ public class WCSServlet extends AbstractServlet {
 
     // Make sure to add these in increasing order!
     versionHandlers = new ArrayList<VersionHandler>();
-    versionHandlers.add( new WCS_1_0_0().setDiskCache( diskCache ));
-    versionHandlers.add( new thredds.server.wcs.v1_0_0_1.WcsHandler().setDiskCache( diskCache ) );
-    versionHandlers.add( new thredds.server.wcs.v1_0_0_Plus.WcsHandler().setDiskCache( diskCache ) );
-    versionHandlers.add( new WCS_1_1_0().setDiskCache( diskCache ));
+    versionHandlers.add( new WCS_1_0_0()
+            .setDeleteImmediately( deleteImmediately )
+            .setDiskCache( diskCache ));
+    versionHandlers.add( new thredds.server.wcs.v1_0_0_1.WcsHandler()
+            .setDeleteImmediately( deleteImmediately )
+            .setDiskCache( diskCache ) );
+    versionHandlers.add( new thredds.server.wcs.v1_0_0_Plus.WcsHandler()
+            .setDeleteImmediately( deleteImmediately )
+            .setDiskCache( diskCache ) );
+    versionHandlers.add( new WCS_1_1_0()
+            .setDeleteImmediately( deleteImmediately )
+            .setDiskCache( diskCache ));
     for ( VersionHandler vh: versionHandlers)
     {
       supportedVersionsString = (supportedVersionsString == null ? "" : supportedVersionsString + ",") + vh.getVersion().getVersionString();
@@ -102,7 +112,7 @@ public class WCSServlet extends AbstractServlet {
       versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "MissingParameterValue", "Request", "" );
       return;
     }
-    else if ( requestParam.equals( Request.Operation.GetCapabilities.toString()))
+    else if ( requestParam.equals( Operation.GetCapabilities.toString()))
     {
       // Version negotiation using "acceptVersions" parameter.
       if ( acceptVersionsParam != null )
@@ -147,8 +157,8 @@ public class WCSServlet extends AbstractServlet {
     else
     {
       // Find requested version (no negotiation for "DescribeCoverage" and "GetCoverage" requests).
-      if ( ! requestParam.equals( Request.Operation.DescribeCoverage.toString()) &&
-           ! requestParam.equals( Request.Operation.GetCoverage.toString()) )
+      if ( ! requestParam.equals( Operation.DescribeCoverage.toString()) &&
+           ! requestParam.equals( Operation.GetCoverage.toString()) )
       {
         versionHandlers.get( versionHandlers.size() - 1 ).handleExceptionReport( res, "InvalidParameterValue", "Request", "Invalid \"Operation\" parameter value <" + requestParam + ">." );
         return;

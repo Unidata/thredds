@@ -8,7 +8,6 @@ import thredds.wcs.v1_0_0_1.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.File;
@@ -18,7 +17,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.util.IO;
 
 /**
  * _more_
@@ -46,6 +44,13 @@ public class WcsHandler implements VersionHandler
   public VersionHandler setDiskCache( DiskCache2 diskCache )
   {
     WcsCoverage.setDiskCache( diskCache);
+    return this;
+  }
+
+  private boolean deleteImmediately = true;
+  public VersionHandler setDeleteImmediately( boolean deleteImmediately )
+  {
+    this.deleteImmediately = deleteImmediately;
     return this;
   }
 
@@ -82,15 +87,15 @@ public class WcsHandler implements VersionHandler
         File covFile = ((GetCoverage) request).writeCoverageDataToFile();
         if ( covFile != null && covFile.exists())
         {
-          res.setContentType( "application/netcdf" );
-          res.setStatus( HttpServletResponse.SC_OK );
+          int pos = covFile.getPath().lastIndexOf( "." );
+          String suffix = covFile.getPath().substring( pos );
+          String resultFilename = request.getDataset().getDatasetName(); // this is name browser will show
+          if ( !resultFilename.endsWith( suffix ) )
+            resultFilename = resultFilename + suffix;
+          res.setHeader( "Content-Disposition", "attachment; filename=" + resultFilename );
 
-          //ServletUtil.returnFile( servlet, req, res, covFile, "application/netcdf");
-          ServletOutputStream out = res.getOutputStream();
-          IO.copyFileB( covFile, out, 60000 );
-          res.flushBuffer();
-          out.close();
-          ServletUtil.logServerAccess( HttpServletResponse.SC_OK, covFile.length() );
+          ServletUtil.returnFile( servlet, "", covFile.getPath(), req, res, ((GetCoverage) request).getFormat().getMimeType() );
+          if ( deleteImmediately ) covFile.delete();
         }
         else
         {

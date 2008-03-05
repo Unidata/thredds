@@ -49,6 +49,13 @@ public class WcsHandler implements VersionHandler
     return this;
   }
 
+  private boolean deleteImmediately = true;
+  public VersionHandler setDeleteImmediately( boolean deleteImmediately )
+  {
+    this.deleteImmediately = deleteImmediately;
+    return this;
+  }
+
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res )
           throws IOException //, ServletException
   {
@@ -82,15 +89,15 @@ public class WcsHandler implements VersionHandler
         File covFile = ((GetCoverage) request).writeCoverageDataToFile();
         if ( covFile != null && covFile.exists())
         {
-          res.setContentType( "application/netcdf" );
-          res.setStatus( HttpServletResponse.SC_OK );
+          int pos = covFile.getPath().lastIndexOf( "." );
+          String suffix = covFile.getPath().substring( pos );
+          String resultFilename = request.getDataset().getDatasetName(); // this is name browser will show
+          if ( !resultFilename.endsWith( suffix ) )
+            resultFilename = resultFilename + suffix;
+          res.setHeader( "Content-Disposition", "attachment; filename=" + resultFilename );
 
-          //ServletUtil.returnFile( servlet, req, res, covFile, "application/netcdf");
-          ServletOutputStream out = res.getOutputStream();
-          IO.copyFileB( covFile, out, 60000 );
-          res.flushBuffer();
-          out.close();
-          ServletUtil.logServerAccess( HttpServletResponse.SC_OK, covFile.length() );
+          ServletUtil.returnFile( servlet, "", covFile.getPath(), req, res, ((GetCoverage) request).getFormat().getMimeType() );
+          if ( deleteImmediately ) covFile.delete();
         }
         else
         {

@@ -188,71 +188,71 @@ public class WcsCoverage
     }
 
     /////////
-    if ( format == WcsRequest.Format.GeoTIFF || format == WcsRequest.Format.GeoTIFF_Float )
+    try
     {
-      //String dname = (datasetURL != null) ? datasetURL : datasetPath;
-      File tifFile = getDiskCache().getCacheFile( this.dataset.getDatasetPath() + "-" + this.coverage.getName() + ".tif" );
-      if ( log.isDebugEnabled() )
-        log.debug( "writeCoverageDataToFile(): tifFile=" + tifFile.getPath() );
-
-      try
+      if ( format == WcsRequest.Format.GeoTIFF || format == WcsRequest.Format.GeoTIFF_Float )
       {
-        GridDatatype subset = this.coverage.makeSubset( tRange, zRange, bboxLatLonRect, 1, 1, 1 );
-        Array data = subset.readDataSlice( 0, 0, -1, -1 );
+        File dir = new File( getDiskCache().getRootDirectory() );
+        File tifFile = File.createTempFile( "WCS", ".tif", dir );
+        if ( log.isDebugEnabled() )
+          log.debug( "writeCoverageDataToFile(): tifFile=" + tifFile.getPath() );
 
-        GeotiffWriter writer = new GeotiffWriter( tifFile.getPath() );
-        writer.writeGrid( this.dataset.getDataset(), subset, data, format == WcsRequest.Format.GeoTIFF );
+        try
+        {
+          GridDatatype subset = this.coverage.makeSubset( tRange, zRange, bboxLatLonRect, 1, 1, 1 );
+          Array data = subset.readDataSlice( 0, 0, -1, -1 );
 
-        writer.close();
+          GeotiffWriter writer = new GeotiffWriter( tifFile.getPath() );
+          writer.writeGrid( this.dataset.getDataset(), subset, data, format == WcsRequest.Format.GeoTIFF );
+
+          writer.close();
+        }
+        catch ( InvalidRangeException e )
+        {
+          log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + "> along time axis <" + timeRange + ">: " + e.getMessage() );
+          throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getName() + "]." );
+        }
+        catch ( IOException e )
+        {
+          log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
+          throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.coverage.getName() + "]." );
+        }
+  
+        return tifFile;
       }
-      catch ( InvalidRangeException e )
+      else if ( format == WcsRequest.Format.NetCDF3 )
       {
-        log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + "> along time axis <" + timeRange + ">: " + e.getMessage() );
-        throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getName() + "]." );
-      }
-      catch ( IOException e )
-      {
-        log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
-        throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.coverage.getName() + "]." );
-      }
+        File dir = new File( getDiskCache().getRootDirectory() );
+        File ncFile = File.createTempFile( "WCS", ".nc", dir );
+        if ( log.isDebugEnabled() )
+          log.debug( "writeCoverageDataToFile(): ncFile=" + ncFile.getPath() );
 
-      return tifFile;
-    }
-    else if ( format == WcsRequest.Format.NetCDF3 )
-    {
-      File ncFile = getDiskCache().getCacheFile( this.dataset.getDatasetPath() + "-" + this.coverage.getName() + ".nc" );
-      if ( log.isDebugEnabled() )
-        log.debug( "writeCoverageDataToFile(): ncFile=" + ncFile.getPath() );
+        //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
 
-      //GridDatatype gridDatatype = this.coverage.getGridDatatype().makeSubset( );
-
-      NetcdfCFWriter writer = new NetcdfCFWriter();
-      try
-      {
-        this.coordSys.getVerticalAxis().isNumeric();
+        NetcdfCFWriter writer = new NetcdfCFWriter();
         writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
                          Collections.singletonList( this.coverage.getName() ),
                          bboxLatLonRect, 1,
                          zRange,
                          timeRange, 1,
                          true );
+        return ncFile;
       }
-      catch ( InvalidRangeException e )
+      else
       {
-        log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
-        throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getName() + "]." );
+        log.error( "writeCoverageDataToFile(): Unsupported response encoding format [" + format + "]." );
+        throw new WcsException( WcsException.Code.InvalidFormat, "Format", "Unsupported response encoding format [" + format + "]." );
       }
-      catch ( IOException e )
-      {
-        log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
-        throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.coverage.getName() + "]." );
-      }
-      return ncFile;
     }
-    else
+    catch ( InvalidRangeException e )
     {
-      log.error( "writeCoverageDataToFile(): Unsupported response encoding format [" + format + "]." );
-      throw new WcsException( WcsException.Code.InvalidFormat, "Format", "Unsupported response encoding format [" + format + "]." );
+      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
+      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getName() + "]." );
+    }
+    catch ( IOException e )
+    {
+      log.error( "writeCoverageDataToFile(): Failed to create or write temporary file for requested coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
+      throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.coverage.getName() + "]." );
     }
   }
 

@@ -21,12 +21,15 @@ public class WcsDataset
 
   // Dataset specific
   private String datasetPath;
+  private String datasetName;
   private GridDataset dataset;
   private HashMap<String, WcsCoverage> availableCoverages;
 
   public WcsDataset( GridDataset dataset, String datasetPath )
   {
     this.datasetPath = datasetPath;
+    int pos = datasetPath.lastIndexOf( "/" );
+    this.datasetName = ( pos > 0 ) ? datasetPath.substring( pos + 1 ) : datasetPath;
     this.dataset = dataset;
 
     this.availableCoverages = new HashMap<String, WcsCoverage>();
@@ -53,6 +56,7 @@ public class WcsDataset
   }
 
   public String getDatasetPath() { return datasetPath; }
+  public String getDatasetName() { return datasetName; }
   public GridDataset getDataset() { return dataset; }
 
   public boolean isAvailableCoverageName( String name )

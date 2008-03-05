@@ -58,6 +58,12 @@ public class WCS_1_0_0 implements VersionHandler
     return this;
   }
 
+  private boolean deleteImmediately = true;
+  public VersionHandler setDeleteImmediately( boolean deleteImmediately )
+  {
+    this.deleteImmediately = deleteImmediately;
+    return this;
+  }
 
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException
@@ -158,10 +164,19 @@ public class WCS_1_0_0 implements VersionHandler
           return;
         }
 
-        File result = wcsDataset.getCoverage( r);
-        ServletUtil.returnFile(servlet, "", result.getPath(), req, res, null);
-       // if (deleteImmediately) result.delete();
+        File result = wcsDataset.getCoverage( r ); // this will be a randomly generated file
+        if ( result != null && result.exists())
+        {
+          int pos = result.getPath().lastIndexOf( "." );
+          String suffix = result.getPath().substring( pos );
+          String resultFilename = wcsDataset.getDatasetName(); // this is name browser will show
+          if ( !resultFilename.endsWith( suffix ) )
+            resultFilename = resultFilename + suffix;
+          res.setHeader( "Content-Disposition", "attachment; filename=" + resultFilename );
 
+          ServletUtil.returnFile( servlet, "", result.getPath(), req, res, null );
+          if ( deleteImmediately ) result.delete();
+        }
       } else {
         handleExceptionReport( res, "InvalidParameterValue", null, "Unknown request=" +request);
         return;

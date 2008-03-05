@@ -152,6 +152,8 @@ public class GetCoverage extends WcsRequest
 
   }
 
+  public Format getFormat() { return format; }
+  
   public File writeCoverageDataToFile()
           throws WcsException
   {

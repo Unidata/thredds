@@ -20,6 +20,16 @@ public interface VersionHandler
 
   public VersionHandler setDiskCache( DiskCache2 diskCache );
 
+  /**
+   * Set whether generated files are deleted immediately after sent (true) or handled by cache (false).
+   *
+   * Note: currently (2008-03-05), each request generates a unique file. So caching doesn't make much sense. 
+   *
+   * @param deleteImmediately if true, delete immediately, otherwise allow cache to handle.   
+   * @return this VersionHandler
+   */
+  public VersionHandler setDeleteImmediately( boolean deleteImmediately);
+
   public void handleKVP( HttpServlet servlet,
                          HttpServletRequest req,
                          HttpServletResponse res )

@@ -7,7 +7,6 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Collections;
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -15,10 +14,7 @@ import java.io.File;
 
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.netcdf.Netcdf;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -89,16 +85,18 @@ public class GetCoverage
   public File writeCoverageDataToFile()
           throws WcsException
   {
-    File ncFile = getDiskCache().getCacheFile( datasetPath + "-" + identifier + ".nc" );
-
-    NetcdfCFWriter writer = new NetcdfCFWriter();
     try
     {
+      File dir = new File( getDiskCache().getRootDirectory() );
+      File ncFile = File.createTempFile( "WCS", ".nc", dir );
+
+      NetcdfCFWriter writer = new NetcdfCFWriter();
       writer.makeFile( ncFile.getPath(), dataset,
                        Collections.singletonList( identifier ), null, null,
   //                     Collections.singletonList( req.getCoverage() ),
   //                     req.getBoundingBox(), dateRange,
                        true, 1, 1, 1 );
+      return ncFile;
     }
     catch ( InvalidRangeException e )
     {
@@ -110,8 +108,6 @@ public class GetCoverage
       log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + identifier + ">: " + e.getMessage());
       throw new WcsException( WcsException.Code.NoApplicableCode, "", "Problem creating coverage <" + identifier + ">." );
     }
-    return ncFile;
-
   }
 
   public Document getGetCoverageDoc()
