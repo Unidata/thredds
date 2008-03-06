@@ -300,12 +300,12 @@
 
   <target name="makeWar-ExampleThredds" depends="war-setup" description="create a war file from the distribution directory">
     <!-- Copy web.xml into war dir. -->
-    <copy file="${webapp.src.dir}/WEB-INF/web-expThredds.xml"
+    <copy file="src/main/webapp-expThredds/WEB-INF/web-expThredds.xml"
           tofile="${war.dir}/WEB-INF/web.xml"
           overwrite="true" preservelastmodified="true"/>
     <!-- Copy web.xml into war dir. -->
     <mkdir dir="${war.dir}/META-INF"/>
-    <copy file="${webapp.src.dir}/META-INF/context-expThredds.xml"
+    <copy file="src/main/webapp-expThredds/META-INF/context-expThredds.xml"
           tofile="${war.dir}/META-INF/context.xml"
           overwrite="true" preservelastmodified="true"/>
 
@@ -369,17 +369,17 @@
           overwrite="true" preservelastmodified="true"/>
 
     <!-- Copy web.xml into war dir. -->
-    <copy file="${webapp.src.dir}/WEB-INF/web-dqcServletRedirect.xml"
+    <copy file="src/main/webapp-dqcServletRedirect/WEB-INF/web-dqcServletRedirect.xml"
           tofile="${war.dir}/WEB-INF/web.xml"
           overwrite="true" preservelastmodified="true"/>
 
     <!-- Copy log4j.xml into war dir. -->
-    <copy file="${webapp.src.dir}/WEB-INF/log4j-dqcServletRedirect.xml"
+    <copy file="src/main/webapp-dqcServletRedirect/WEB-INF/log4j-dqcServletRedirect.xml"
           tofile="${war.dir}/WEB-INF/log4j.xml"
           overwrite="true" preservelastmodified="true"/>
 
     <!-- Copy context.xml into war dir. -->
-    <copy file="${webapp.src.dir}/META-INF/context-dqcServletRedirect.xml"
+    <copy file="src/main/webapp-dqcServletRedirect/META-INF/context-dqcServletRedirect.xml"
           tofile="${war.dir}/META-INF/context.xml"
           overwrite="true" preservelastmodified="true"/>
 
@@ -634,7 +634,7 @@
 
   <target name="unit-test" depends="compile, test-setup" description="run junit tests">
     <mkdir dir="${test.reports.dir}/unit-test"/>
-    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
+    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on" dir="${root.dir}">
       <classpath refid="test.classpath"/>
       <jvmarg value="-ea"/>
       <formatter type="xml"/>
