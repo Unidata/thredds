@@ -364,7 +364,7 @@
     <chmod file="${war.dir}/initialContent/logs" perm="775" type="dir"/>
 
     <!-- Copy index.html into war dir. -->
-    <copy file="${webapp.resources.dir}/index-dqcServletRedirect.html"
+    <copy file="src/main/webapp-dqcServletRedirect/resources/index-dqcServletRedirect.html"
           tofile="${war.dir}/index.html"
           overwrite="true" preservelastmodified="true"/>
 
