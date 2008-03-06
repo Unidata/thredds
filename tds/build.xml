@@ -262,7 +262,7 @@
       <fileset dir="${resources.dir}" />
     </copy>
 
-    <copy file="${webapp.src.dir}/WEB-INF/web-thredds.xml"
+    <copy file="${webapp.src.dir}/WEB-INF/web.xml"
           tofile="${war.dir}/WEB-INF/web.xml"
           overwrite="true" preservelastmodified="true"/>
 
