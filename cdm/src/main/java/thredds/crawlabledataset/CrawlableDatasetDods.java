@@ -273,10 +273,19 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 				}
 	
 				curDsUrlString = removeDodsExtension(curDsUrlString);
-				
-				curDsUrlString = forceChild(curDsUrlString);
-				
-				if (pathList.contains(curDsUrlString))
+
+        // This function goes a bit too far trying to recover from servers that drop part of URL path.
+        // However, it also converts URLs that point to external servers to be subdirectories of this CrDS.
+        //curDsUrlString = forceChild(curDsUrlString);
+
+        // Skip any URLs that aren't children of this CrDs
+        if ( !curDsUrlString.startsWith( path ) )
+        {
+          log.debug( "listDatasets(): skipping URL <" + curDsUrlString + ">, not child of this CrDs <" + path + ">." );
+          continue;
+        }
+
+        if (pathList.contains(curDsUrlString))
 					continue; // duplicate
 				else
 					pathList.add(curDsUrlString);
@@ -420,4 +429,9 @@ public class CrawlableDatasetDods implements CrawlableDataset {
 		else
 			return null;
 	}
+
+  public String toString()
+  {
+    return this.path;
+  }
 }

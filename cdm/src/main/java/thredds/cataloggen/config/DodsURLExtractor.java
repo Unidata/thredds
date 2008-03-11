@@ -10,6 +10,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -126,7 +127,7 @@ int position) {
         //System.out.println(" name= <"+name+ ">"+" value= <"+value+ ">");
         try {
           if (name == HTML.Attribute.HREF) {
-            URL u = new URL(baseURL, value);
+            URL u = baseURL.toURI().resolve( value ).toURL();
             String urlName = u.toString();
             if (urlList != null)
               urlList.add( u.toString());
@@ -136,6 +137,13 @@ int position) {
           System.err.println(ex);
           System.err.println(baseURL);
           System.err.println(value);
+          ex.printStackTrace();
+        }
+        catch( URISyntaxException ex)
+        {
+          System.err.println( ex );
+          System.err.println( baseURL );
+          System.err.println( value );
           ex.printStackTrace();
         }
       } // while
