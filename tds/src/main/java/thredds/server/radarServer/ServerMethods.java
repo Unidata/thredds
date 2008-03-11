@@ -82,13 +82,13 @@ public class ServerMethods {
 
     //private ArrayList<Aggregation.Dataset> datasetList;
     //private Date start, end;
-
+    private org.slf4j.Logger log;
     private PrintWriter pw;
-   /*
-    protected String getPath() {
-        return "idd/";
+
+    public ServerMethods( org.slf4j.Logger log ) {
+        this.log = log;
     }
-    */
+
     /*
       * gets files in a directory that are directory themselves
       * returns them in descending order
@@ -200,11 +200,12 @@ public class ServerMethods {
       factory.setValidating(false);
       factory.setNamespaceAware(true);
       SelectStation parent = new SelectStation();  //kludge to use Station
+      InputStream is = null;
 
       try {
           parser = factory.newDocumentBuilder();
           //stnLocation = stnLocation.replaceAll( " ", "%20");
-          InputStream is = new FileInputStream( stnLocation );
+          is = new FileInputStream( stnLocation );
           org.w3c.dom.Document doc = parser.parse(is);
           //System.out.println( "root=" + doc.getDocumentElement().getTagName() );
           NodeList stns = doc.getElementsByTagName("station");
@@ -251,10 +252,23 @@ public class ServerMethods {
 
       } catch (SAXException e) {
           e.printStackTrace();
+          stationList = null;
       } catch (IOException e) {
           e.printStackTrace();
+          stationList = null;
       } catch (ParserConfigurationException e) {
           e.printStackTrace();
+          stationList = null;
+      }
+      finally {
+        if (is != null) {
+          try {
+            is.close();
+          }
+          catch (IOException e) {
+            log.error("radarServer getStations(): error closing" + stnLocation);
+          }
+        }
       }
       return stationList;
   }

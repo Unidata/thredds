@@ -2,8 +2,8 @@
  *
  * Library for the RadarNexrad Server
  *
- * Finds the near realtime product files for a particular station and time.
- * Outputs either html, dqc  or catalog files.
+ * Finds the files for a particular station, product and time.
+ * Outputs either html, or xml catalog files.
  *
  * By:  Robb Kambic  09/25/2007
  *
@@ -14,40 +14,23 @@ package thredds.server.radarServer;
 import thredds.servlet.*;
 import java.io.*;
 import java.util.*;
-//import java.lang.String.*;
-//import java.net.URL;
-//import java.net.URLConnection;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.util.Calendar;
-//import java.util.Date;
-//import java.util.TimeZone;
-//import java.text.SimpleDateFormat;
 import javax.servlet.*;
 import javax.servlet.http.*;
-//import thredds.server.ncSubset.QueryParams;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
-//import thredds.datatype.TimeDuration;
 import thredds.server.ncSubset.QueryParams;
 import thredds.catalog.XMLEntityResolver;
 import thredds.catalog.query.Station;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.transform.XSLTransformer;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import ucar.nc2.dt.StationObsDataset;
-import ucar.nc2.dt.point.StationObsDatasetInfo;
 import ucar.nc2.units.DateFormatter;
 
 public class RadarNexradServer {
 
+    static public String radarStations = "RadarNexradStations.xml";
     static public List<Station> stationList = null;
     static public HashMap<String, Station> stationMap;
-    static public String radarStations = "RadarNexradStations.xml";
 
     static public ArrayList<String> allVars = new ArrayList();
 
@@ -55,13 +38,20 @@ public class RadarNexradServer {
     protected ServerMethods sm;
     private boolean debug = false;
     private PrintWriter pw = null;
+    private org.slf4j.Logger log;
 
     public RadarNexradServer( ) {}
 
-    public RadarNexradServer( String contentPath ) {
-       sm = new  ServerMethods();
+    public RadarNexradServer( String contentPath, org.slf4j.Logger log ) {
+       this.log = log;
+       sm = new  ServerMethods( log );
        if( stationList == null ) {
            stationList = sm.getStations( contentPath + getPath() + radarStations );
+           if( stationList == null ) {
+               log.error( "Station initialization problem using "+
+                       contentPath + getPath() + radarStations );
+               return;
+           }
            stationMap = sm.getStationMap( stationList );
            // should be a more efficient way
            allVars.add( "DPA");
@@ -114,7 +104,7 @@ public class RadarNexradServer {
            allVars.add( "PRET");
            allVars.add( "PREA");
            allVars.add( "VAD");
-       }
+        }
     }
 
     public Document stationsXML( Document doc, Element rootElem, String path ) {
@@ -133,22 +123,6 @@ public class RadarNexradServer {
      return "servers/";
    }
 
-  protected void makeDebugActions() {
-    DebugHandler debugHandler = DebugHandler.get("NetcdfSubsetServer");
-    DebugHandler.Action act;
-
-    act = new DebugHandler.Action("showRadarNexradFiles", "Show RadarNexrad Files") {
-      public void doAction(DebugHandler.Event e) {
-        e.pw.println("RadarNexrad Files\n");
-        //ArrayList<RadarNexradCollection.Dataset> list = rl2c.getDatasets();
-        //for (RadarNexradCollection.Dataset ds : list) {
-          //e.pw.println(" " + ds);
-        //}
-      }
-    };
-    debugHandler.addAction(act);
-  }
-
 // process Nexrad query get parmameters from servlet call
 public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
@@ -160,7 +134,6 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
     String radarDir = null;
 
     try {
-        //ServletUtil.logServerAccessSetup( req );
         if (debug) System.out.println(req.getQueryString());
         sm.setPW( pw );
 
@@ -539,6 +512,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
         return dataFound;
 
         } catch ( Exception e ) {
+            //log.error("radarServer processQuery error" );
             ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
             res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer processQuery error");
             //pw.println( "<documentation>\n" );
