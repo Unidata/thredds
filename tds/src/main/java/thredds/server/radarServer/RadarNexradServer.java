@@ -33,9 +33,11 @@ public class RadarNexradServer {
     static public HashMap<String, Station> stationMap;
 
     static public ArrayList<String> allVars = new ArrayList();
-
-    //private boolean allow = false;
-    protected ServerMethods sm;
+    private String serviceName = "OPENDAP";
+    private String serviceType = "OPENDAP";
+    private String serviceBase;
+    private ServerMethods sm;
+    private QueryParams qp;
     private boolean debug = false;
     private PrintWriter pw = null;
     private org.slf4j.Logger log;
@@ -108,7 +110,7 @@ public class RadarNexradServer {
     }
 
     public Document stationsXML( Document doc, Element rootElem, String path ) {
-        // station in this dataset, set by path
+        // stations in this dataset, set by path
         String[] stations = stationsDS( RadarServer.dataLocation.get(path ));
         if( path.contains( "level3") && stations[ 0 ].length() == 4 ) {
             for( int i = 0; i < stations.length; i++ )
@@ -127,12 +129,7 @@ public class RadarNexradServer {
 public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
 
-    String accept;
-    String serviceName = "OPENDAP";
-    String serviceType = "OPENDAP";
-    String serviceBase = "/thredds/dodsC/";
     String radarDir = null;
-
     try {
         if (debug) System.out.println(req.getQueryString());
         sm.setPW( pw );
@@ -148,8 +145,8 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
             radarDir = RadarServer.dataLocation.get( "nexrad/level2/IDD" ); // default
 
         // parse the input
-        QueryParams qp = new QueryParams();
-        if (!qp.parseQuery(req, res, new String[]{ QueryParams.XML, QueryParams.CSV, QueryParams.RAW, QueryParams.NETCDF}))
+        qp = new QueryParams();
+        if (!qp.parseQuery(req, res, new String[]{ QueryParams.XML, QueryParams.HTML, QueryParams.RAW, QueryParams.NETCDF}))
           return; // has sent the error message
 
 
@@ -237,7 +234,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
             qp.time_end = dr.getEnd();
         // return all times available
         } else {
-            try {
+           try {
                qp.time_end = new DateType( "present", null, null);
                qp.time_start = new DateType(ServerMethods.epic, null, null);
            } catch (java.text.ParseException e) {
@@ -245,24 +242,32 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
            }
         }
 
-        accept = ServletUtil.getParameterIgnoreCase(req, "accept");
-        if (accept == null )  // default
-            accept = "xml";
-
         // set content type default is xml
         //String contentType = qp.acceptType;
-        if ( ServerMethods.p_html_i.matcher(accept).find()) { // accept html
-            res.setContentType( "text/html");
+        qp.acceptType = qp.acceptType.replaceFirst( ".*/", "" );
+        if ( ServerMethods.p_html_i.matcher(qp.acceptType).find()) { // accept html
+            res.setContentType( qp.acceptType );
         }
 
-        serviceBase += pathInfo +"/";
-
-        // write out catalog with datasets
-        if ( serviceType.equals( "OPENDAP" )) {
-            int level = 2;
-            if( ! level2 ) {
-                level = 3;
+        int level = 2;
+        if(  level2 ) {
+            qp.vars = null; // level2 can't select vars
+        } else {
+            level = 3;
+            if( qp.vars != null ) { // remove desc from vars
+                ArrayList<String> tmp = new ArrayList();
+                for ( String var:  qp.vars ) {
+                    tmp.add( var.replaceFirst( "/.*", "" ) );
+                }
+                qp.vars = tmp;
+            } else if( level2 ) {
+                qp.vars = null; // level2 can't select vars
             }
+        }
+        // write out catalog with datasets
+        // accept = XML inplies OPENDAY server 
+        if ( ServerMethods.p_xml_i.matcher(qp.acceptType).find()) {
+            serviceBase = "/thredds/dodsC/"+ pathInfo +"/";
             pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             pw.print("<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\"");
             pw.println(" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Level"+ level +" datasets in near real time\" version=\""+
@@ -271,7 +276,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
             pw.print("  <service name=\""+ serviceName +"\" serviceType=\""+ serviceType +"\"");
             pw.println(" base=\"" + serviceBase + "\"/>");
             pw.print("    <dataset name=\"RadarLevel"+ level +" datasets for available stations and times\" collectionType=\"TimeSeries\" ID=\""+
- "accept=" + accept + "&amp;");
+ "accept=" + qp.acceptType + "&amp;");
 
             if( ! level2 && qp.vars != null ) { // add vars
                 pw.print("var=");
@@ -281,8 +286,6 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                         pw.print( "," );
                 }
                 pw.print("&amp;");
-            } else if( level2 ) {
-                qp.vars = null; // level2 can't select vars
             }
 
             if( useAllStations ) {
@@ -321,19 +324,18 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
             pw.println("    </metadata>");
             pw.println();
 
-        } else if ( ServerMethods.p_html_i.matcher(accept).find()) { // accept html
+        } else if ( ServerMethods.p_html_i.matcher(qp.acceptType).find()) { // accept html
             pw.println("<Head><Title>THREDDS RadarNexrad Server</Title></Head>");
-            pw.println("<body bgcolor=\"lightblue\" link=\"red\" alink=\"red\" vlink=\"red\">");
-            pw.println("<center><H1>RadarNexrad Selection Results</H1></center>");
+            pw.println("<body link=\"red\" alink=\"red\" vlink=\"red\">");
+            pw.println("<center><H1>Nexrad Level"+ level +" Radar Results</H1></center>");
+            serviceBase = pathInfo +"/";
 
-        } else if ( ServerMethods.p_ascii_i.matcher(accept).find()) {
-
-        } else if ( ServerMethods.p_xml_i.matcher(accept).find()) {
-            pw.println("<reports>");
+        } else if ( ServerMethods.p_ascii_i.matcher(qp.acceptType).find()) {
+            pw.println( "<documentation>\n" );
+            pw.println( "Request not implemented: "+ pathInfo );
+            pw.println( "</documentation>\n" );
+            return;
         }
-//
-//
-//
 //
 //
 // main code body, no configurations below this line
@@ -348,29 +350,31 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
         }
 
         // qualifies products according to stations, time, and variables
-        boolean dataFound = processQuery( radarDir, qp, res );
+        boolean dataFound = processQuery( radarDir );
 
         // add ending tags
-        if ( ServerMethods.p_xml_i.matcher(accept).find() ) {
+        if ( ServerMethods.p_xml_i.matcher(qp.acceptType).find() ) {
             if (! dataFound ) {
                 pw.println("      <documentation>No data available for station(s) "+
                     "and time range</documentation>");
             }
             pw.println("    </dataset>");
             pw.println("</catalog>");
-        } else if ( ServerMethods.p_html_i.matcher(accept).find()) {
+        } else if ( ServerMethods.p_html_i.matcher(qp.acceptType).find()) {
+            if (! dataFound )
+                pw.println("<p>No data available for station(s) and time range "+
+                        req.getQueryString() +"</p>");
             pw.println("</html>");
-         }
-
-        } catch (Throwable t) {
-           ServletUtil.handleException(t, res);
         }
-        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1);
-    } // end radarNexradQuery
+
+    } catch (Throwable t) {
+        log.error("radarServer radarNexradQuery error" );
+        ServletUtil.handleException(t, res);
+    }
+} // end radarNexradQuery
 
     // processQuery is limited by the stns, dates and vars in the query
-    protected Boolean processQuery( String tdir, QueryParams qp, HttpServletResponse res )
-        throws IOException {
+    protected Boolean processQuery( String tdir ) throws IOException {
 
         // set date info
         String yyyymmddStart = qp.time_start.toDateString();
@@ -400,8 +404,13 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
         Boolean isDates = sm.p_yyyymmdd.matcher(tdirs[ 0 ]).find();
         Boolean isVars = allVars.contains( tdirs[ 0 ].toUpperCase() );
 
-        if( ! ( isStns || isDates || isVars ) )
-            return false;  // invalid request
+        if( ! ( isStns || isDates || isVars ) ) {
+            log.error("radarServer processQuery error" );
+            pw.println( "<documentation>\n" );
+            pw.println( "Query can't be satisfied :"+ qp.toString() +"\n" );
+            pw.println( "</documentation>\n" );
+            return dataFound; // invalid query
+        }
 
         if( isStns ) {
             // limit stations to the ones in the query
@@ -414,8 +423,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                 // need to check next dirs for products, dates or vars
                 File file = new File( sDir +"/"+ sdirs[ 0 ] );
                 if( file.isFile() ) { // products in dir, process dir
-                    dataFound = sdirs.length > 0;
-                    processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
+                    dataFound = processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
                         qp.hasTimePoint, dateStart, dateEnd );
                 } else if( sm.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
                     java.util.Arrays.sort( sdirs, new CompareKeyDescend() );
@@ -428,8 +436,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                             String[] ndirs = files.list();
                             file = new File( dDir +"/"+ ndirs[ 0 ]);
                             if( file.isFile() ) { // products in dir, process dir
-                                dataFound = ndirs.length > 0;
-                                processProducts( ndirs, dDir.replaceFirst( tdir, "").substring( 1 ),
+                                dataFound = processProducts( ndirs, dDir.replaceFirst( tdir, "").substring( 1 ),
                                     qp.hasTimePoint, dateStart, dateEnd );
                                 if( qp.hasTimePoint ) // only want one product
                                     break;
@@ -449,8 +456,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                         file = new File( vDir +"/"+ vdirs[ 0 ] );
                         if( file.isFile() ) { // products in dir, return dir
                             //dirTree.add( vDir );
-                            dataFound = vdirs.length > 0;
-                            processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
+                            dataFound = processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
                                 qp.hasTimePoint, dateStart, dateEnd );
 
                         }
@@ -471,8 +477,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                 // need to check next dirs for products, dates or stations
                 File file = new File( vDir +"/"+ vdirs[ 0 ] );
                 if( file.isFile() ) { // products in dir, process dir
-                    dataFound = vdirs.length > 0;
-                    processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
+                    dataFound = processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
                         qp.hasTimePoint, dateStart, dateEnd );
                 } else if( stationMap.get( "K"+ vdirs[ 0 ] ) != null ) { // got to be level3 station
                     for (String station : qp.stns ) {
@@ -484,8 +489,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                         // need to check next dirs for products, dates
                         file = new File( sDir +"/"+ sdirs[ 0 ] );
                         if( file.isFile() ) { // products in dir, return dir
-                            dataFound = sdirs.length > 0;
-                            processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
+                            dataFound = processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
                                 qp.hasTimePoint, dateStart, dateEnd );
                         } else if( sm.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
                             java.util.Arrays.sort( sdirs, new CompareKeyDescend() );
@@ -495,8 +499,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                                     String dDir = sDir +"/"+ sdirs[ k ];
                                     files = new File( dDir );
                                     String[] ddirs = files.list();
-                                    dataFound = ddirs.length > 0;
-                                    processProducts( ddirs, dDir.replaceFirst( tdir, "").substring( 1 ),
+                                    dataFound = processProducts( ddirs, dDir.replaceFirst( tdir, "").substring( 1 ),
                                         qp.hasTimePoint, dateStart, dateEnd );
                                     if( qp.hasTimePoint ) // only want one product
                                         break;
@@ -512,141 +515,79 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
         return dataFound;
 
         } catch ( Exception e ) {
-            //log.error("radarServer processQuery error" );
+            log.error("radarServer processQuery error" );
             ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
-            res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer processQuery error");
-            //pw.println( "<documentation>\n" );
-            //pw.println( "Query can't be satisfied :"+ qp.toString() +"\n" );
-            //pw.println( "</documentation>\n" );
+            pw.println( "<documentation>\n" );
+            pw.println( "Query can't be satisfied :"+ qp.toString() +"\n" );
+            pw.println( "</documentation>\n" );
             return dataFound; // partial or invalid query
         }
 
     }
 
     // check if product has valid time then creates a dataset for product
-    protected void processProducts( String[] products, String rPath,
+    protected Boolean processProducts( String[] products, String rPath,
         Boolean latest, String dateStart, String dateEnd ) {
 
         java.util.Arrays.sort( products, new CompareKeyDescend() );
-        
+
+        Boolean dataFound = false;
+
         // write out products with latest first order
-        for( int t = 0; t < products.length; t++ ) {
-            if( products[ t ].startsWith( "." ) )
-                continue;
-            if( ! sm.isValidDate( products[ t ], dateStart, dateEnd ) )
-                continue;
-            datasetOut(  products[ t ], rPath );
-            if ( latest ) {
-                break;
+        if ( ServerMethods.p_xml_i.matcher(qp.acceptType).find() ) {
+            for( int t = 0; t < products.length; t++ ) {
+                if( products[ t ].startsWith( "." ) )
+                    continue;
+                if( ! sm.isValidDate( products[ t ], dateStart, dateEnd ) )
+                    continue;
+                dataFound = true;
+                XMLdataset(  products[ t ], rPath );
+                if ( latest ) {
+                    break;
+                }
             }
-         }
-         return;
+        } else {
+            for( int t = 0; t < products.length; t++ ) {
+                if( products[ t ].startsWith( "." ) )
+                    continue;
+                if( ! sm.isValidDate( products[ t ], dateStart, dateEnd ) )
+                    continue;
+                dataFound = true;
+                HTMLdataset(  products[ t ], rPath );
+                if ( latest ) {
+                    break;
+                }
+            }
+        }
+        return dataFound;
     }
 
-    // create a dataset entry for a catalog
-    public void datasetOut(String product, String rPath ) {
+    // create a XML dataset entry for a catalog
+    public void XMLdataset(String product, String rPath ) {
 
-           pw.println("      <dataset name=\""+ product +"\" ID=\""+
+        pw.println("      <dataset name=\""+ product +"\" ID=\""+
               product.hashCode() +"\"" );
 
-           String pDate = sm.getObTimeISO( product );
+        String pDate = sm.getObTimeISO( product );
+        pw.print("        urlPath=\"");
+        pw.println(  rPath +"/"+ product +"\">" );
+        pw.println( "        <date type=\"start of ob\">"+ pDate +"</date>" );
+        pw.println( "      </dataset>" );
 
-           pw.print("        urlPath=\"");
-           pw.println(  rPath +"/"+ product +"\">" );
-           pw.println( "        <date type=\"start of ob\">"+ pDate +"</date>" );
-           pw.println( "      </dataset>" );
+    } // end datasetOut
 
-       } // end datasetOut
+    // create a HTML dataset entry for a catalog
+    public void HTMLdataset(String product, String rPath ) {
 
-    /*   save for example sxlt process
-    private void wants(HttpServletResponse res, boolean wantXml, boolean wantStationXml,
-                       boolean wantDQC, PrintWriter pw) throws IOException {
-      String infoString = null;
+        pw.println("OPENDAP <a href=\"/thredds/dodsC/"+ serviceBase
+                + rPath +"/"+ product +".html\">"+ product +"</a></br>" );
+        pw.println("HTTPServer <a href=\"/thredds/fileServer/"+ serviceBase
+                        + rPath +"/"+ product +"\">"+ product +"</a></br>" );
 
-      if (wantXml) {
-        //Document doc = soc.getDoc();
-        //XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-        //infoString = fmt.outputString(doc);
-
-      } else if (wantStationXml) {
-        //Document doc = makeStationDocument();
-        //XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-        //infoString = fmt.outputString(doc);
-
-      } else {
-        //InputStream xslt = getXSLT("ncssRadarNexrad.xsl");
-        InputStream xslt = sm.getInputStream(contentPath + getPath() + "ncssRadarNexrad.xsl", RadarNexradServer.class);
-        Document doc = getDoc();
-
-        try {
-          XSLTransformer transformer = new XSLTransformer(xslt);
-          Document html = transformer.transform(doc);
-          XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-          infoString = fmt.outputString(html);
-
-        } catch (Exception e) {
-          //log.error("RadarServer internal error", e);
-          ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
-          res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "RadarNexradServer internal error");
-          return;
-        }
-      }
-
-      pw.println( infoString );
-
-    }
-    */
-
- public Document getDoc() throws IOException {
-
-    Element root = new Element("RadarNexrad");
-    Document doc = new Document(root);
-    //Element root = doc.getRootElement();
-
-    // fix the location
-    root.setAttribute("location", "/thredds/radarServer/nexrad/level2");
-
-    // spatial range
-    Element LatLonBox = new Element("LatLonBox");
-    LatLonBox.addContent( new Element("north").addContent( "75.0000"));
-    LatLonBox.addContent( new Element("south").addContent( "19.0000"));
-    LatLonBox.addContent( new Element("east").addContent( "-75.0000"));
-    LatLonBox.addContent( new Element("west").addContent( "-175.0000"));
-    root.addContent( LatLonBox ); 
-
-    // fix the time range
-    Element timeSpan = new Element("TimeSpan");
-    //Element timeSpan = root.getChild("TimeSpan");
-    //timeSpan.removeContent();
-    DateFormatter format = new DateFormatter();
-    Calendar now = Calendar.getInstance();
-    Date end =   now.getTime();
-    now.add( Calendar.HOUR, -120 );
-    Date startNow =   now.getTime();
-
-    timeSpan.addContent(new Element("begin").addContent(format.toDateTimeStringISO(startNow)));
-    //timeSpan.addContent(new Element("end").addContent(isRealtime ? "present" : format.toDateTimeStringISO(end)));
-    timeSpan.addContent(new Element("end").addContent( "present" ));
-    root.addContent( timeSpan );
-    // add pointer to the station list XML
-    Element stnList = new Element("stationList");
-    stnList.setAttribute("title", "Available Stations", XMLEntityResolver.xlinkNS);
-    stnList.setAttribute("href", "/thredds/idd/radarNexrad/stations.xml", XMLEntityResolver.xlinkNS);  // LOOK kludge
-    root.addContent(stnList);
-
-    // add accept list
-    Element a = new Element("AcceptList");
-    //elem.addContent(new Element("accept").addContent("raw"));
-    a.addContent(new Element("accept").addContent("xml"));
-    //elem.addContent(new Element("accept").addContent("csv"));
-    //elem.addContent(new Element("accept").addContent("netcdf"));
-    root.addContent( a );
-
-    return doc;
-  }
+    } // end HTMLdataset
 
   /**
-   * Create an XML document from this info
+   * Create an XML station document from this stationMap
    */
   public Document makeStationDocument( Document doc, Element rootElem, String[] stations ) {
 
