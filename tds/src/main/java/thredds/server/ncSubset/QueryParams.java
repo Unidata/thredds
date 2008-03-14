@@ -45,6 +45,7 @@ import ucar.nc2.units.DateType;
 public class QueryParams {
   static public final String RAW = "text/plain";
   static public final String XML = "application/xml";
+  static public final String HTML = "text/html";
   static public final String CSV = "text/csv";
   static public final String NETCDF = "application/x-netcdf";
   static public final String NETCDFS = "application/x-netcdfs";
@@ -54,7 +55,7 @@ public class QueryParams {
           {XML, "text/xml", "xml"},
           {RAW, "raw", "ascii"},
           {CSV, "csv"},
-          {"text/html", "html"},
+          {HTML, "html"},
           {NETCDF, "netcdf"},
           {NETCDFS, "netcdfStream"},
   };
@@ -469,7 +470,7 @@ public class QueryParams {
   }
 
   public DateRange getDateRange() {
-    return hasDateRange ? new DateRange(time_start, time_end, time_duration, null) : null;
+      return hasDateRange ? new DateRange(time_start, time_end, time_duration, null) : null;
   }
 
   public void writeErr(HttpServletResponse res, String s, int code) throws IOException {
