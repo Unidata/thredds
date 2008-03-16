@@ -85,10 +85,8 @@ public class TestLocal {
   }
 
   static private void checkLeaks() {
-    List openFiles = RandomAccessFile.openFiles;
-    for (int i = 0; i < openFiles.size(); i++) {
-      String o = (String) openFiles.get(i);
-      System.out.println(" RandomAccessFile still open= " + o);
+    for (String filename : RandomAccessFile.getOpenFiles()) {
+      System.out.println(" open= " + filename);
     }
   }
 

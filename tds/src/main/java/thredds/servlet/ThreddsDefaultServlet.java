@@ -21,9 +21,13 @@
 package thredds.servlet;
 
 import org.apache.log4j.*;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.io.*;
 import java.util.*;
+import java.net.URL;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -99,6 +103,12 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   public void init() throws ServletException {
     super.init();
     super.initContent(); // first time, create content directory
+
+    //URL r = getClass().getResource("spring/applic-config.xml"); 
+
+    ApplicationContext springContext =
+        new FileSystemXmlApplicationContext("C:/dev/tds/thredds/tds/src/main/resources/spring/applic-config.xml");
+    Object bean = springContext.getBean("openRAFMonitor");
 
     // get the URL context :  URLS must be context/catalog/...
     // cannot be overridded in ThreddsConfig

@@ -24,8 +24,6 @@ import ucar.nc2.*;
 import ucar.nc2.dt2.point.UnidataPointFeatureDataset;
 import ucar.nc2.dt2.point.UnidataStationFeatureDataset;
 import ucar.nc2.dt2.PointFeatureDataset;
-import ucar.nc2.dt2.StationFeatureCollection;
-import ucar.nc2.dt2.FeatureDataset;
 import ucar.nc2.constants.DataType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
@@ -71,6 +69,10 @@ import javax.swing.event.*;
 
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.HttpClient;
+
+import org.springframework.context.*;
+import org.springframework.context.support.*;
+
 import opendap.dap.DConnect2;
 
 /**
@@ -3068,6 +3070,9 @@ public class ToolsUI extends JPanel {
       });
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ApplicationContext springContext =
+        new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml");
 
     DODSNetcdfFile.setAllowCompression(true);
 

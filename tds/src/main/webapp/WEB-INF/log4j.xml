@@ -115,6 +115,10 @@
     <appender-ref ref="threddsServlet"/>
   </logger>
 
+  <logger name="org.springframework">
+    <level value="ALL"/>
+  </logger>
+
   <!-- Initialize a few loggers to make the servlet debug web interface more convenient. -->
   <logger name="thredds.catalog"/>
   <logger name="thredds.dqc"/>

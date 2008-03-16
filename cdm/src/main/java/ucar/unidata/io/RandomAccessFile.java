@@ -61,7 +61,15 @@ public class RandomAccessFile implements DataInput, DataOutput {
   // debug leaks - keep track of open files
 
   /**
-   * Debug java.io.RandomAccessFile not getting closed
+   * Debugging, do not use.
+   * @return true if debugLeaks is on
+   */
+  static public boolean getDebugLeaks() {
+    return debugLeaks;
+  }
+
+  /**
+   * Debugging, do not use.
    * @param b set true to track java.io.RandomAccessFile
    */
   static public void setDebugLeaks(boolean b) {
@@ -76,9 +84,17 @@ public class RandomAccessFile implements DataInput, DataOutput {
     debugAccess = b;
   }
 
+  /**
+   * Debugging, do not use.
+   * @return list of open files.
+   */
+  static public List<String> getOpenFiles() {
+    return openFiles;
+  }
+
   static protected boolean debugLeaks = false;
   static protected boolean debugAccess = false;
-  static public List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
+  static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
 
   /**
    * The default buffer size, in bytes.

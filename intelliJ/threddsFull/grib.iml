@@ -7,6 +7,7 @@
     <content url="file://$MODULE_DIR$/../../../grib">
       <sourceFolder url="file://$MODULE_DIR$/../../../grib/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../grib/test/src" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../grib/src/ucar/unidata" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -55,6 +56,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="common" />
     <orderEntryProperties />
   </component>
 </module>

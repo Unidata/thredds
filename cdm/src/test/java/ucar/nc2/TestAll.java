@@ -179,10 +179,8 @@ public class TestAll {
 
   static private void checkLeaks() {
     System.out.println("RandomAccessFile still open");
-    List openFiles = RandomAccessFile.openFiles;
-    for (int i = 0; i < openFiles.size(); i++) {
-      String o = (String) openFiles.get(i);
-      System.out.println(" open= " + o);
+    for (String filename : RandomAccessFile.getOpenFiles()) {
+      System.out.println(" open= " + filename);
     }
   }
 

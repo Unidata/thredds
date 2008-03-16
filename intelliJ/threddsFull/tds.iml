@@ -20,7 +20,7 @@
           <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../../tds/target/war" />
           <setting name="EXPLODED_ENABLED" value="true" />
           <setting name="JAR_URL" value="file://$MODULE_DIR$/../../tds/target/thredds.war" />
-          <setting name="JAR_ENABLED" value="true" />
+          <setting name="JAR_ENABLED" value="false" />
           <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
           <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
@@ -40,6 +40,10 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
+          <containerElement type="module" name="common">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+          </containerElement>
           <containerElement type="module" name="grib">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
@@ -51,6 +55,11 @@
           <containerElement type="module" name="tds">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="&lt;N/A&gt;" />
+            <url>jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
@@ -86,6 +95,11 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib/commons-httpclient-3.0.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.0.1.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+            <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
@@ -138,322 +152,9 @@
             <url>jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.2.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-            <url>jar://$MODULE_DIR$/../../lib/external/tomcat-5.5.20_servlet-api.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/prefsAll.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/release/prefsAll.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/visadNoDods.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-            <url>jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/</url>
-          </containerElement>
-        </packaging>
-      </configuration>
-    </facet>
-    <facet type="web" name="dqcServletRedirect">
-      <configuration>
-        <descriptors>
-          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../tds/src/main/webapp-dqcServletRedirect/WEB-INF/web.xml" optional="false" version="2.5" />
-          <deploymentDescriptor url="file://$MODULE_DIR$/../../tds/src/main/webapp-dqcServletRedirect/META-INF/context.xml">
-            <option name="DEFAULT_DIR" value="META-INF" />
-          </deploymentDescriptor>
-        </descriptors>
-        <webroots>
-          <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-dqcServletRedirect/resources" relative="/" />
-        </webroots>
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
-          <root url="file://$MODULE_DIR$/../../tds/src/test/java" />
-        </sourceRoots>
-        <building>
-          <setting name="EXPLODED_URL" value="file://" />
-          <setting name="EXPLODED_ENABLED" value="false" />
-          <setting name="JAR_URL" value="file://" />
-          <setting name="JAR_ENABLED" value="false" />
-          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
-          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
-          <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
-          <setting name="RUN_JASPER_VALIDATION" value="true" />
-          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
-        </building>
-        <packaging>
-          <containerElement type="facet" facetId="opendap/web/Web">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-          </containerElement>
-          <containerElement type="module" name="bufr">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="cdm">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="grib">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="opendap">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="tds">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../../bufr/resources</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../../grib/resources</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../cdm/src/main/resources</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/casclient-2.1.1.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-codec-1.3.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-fileupload-1.1.1.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.0.1.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.2.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.1.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/gnu-getopt-1.0.6.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/gnu-regexp-1.1.4.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/httpunit.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/jdom.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/jdom.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/jpeg2000.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/junit.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/nlog4j-1.2.25.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/nlog4j-1.2.25.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.2.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-            <url>jar://$MODULE_DIR$/../../lib/external/tomcat-5.5.20_servlet-api.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/prefsAll.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/release/prefsAll.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-            <url>jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/</url>
-          </containerElement>
-        </packaging>
-      </configuration>
-    </facet>
-    <facet type="web" name="expThredds">
-      <configuration>
-        <descriptors>
-          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/web.xml" optional="false" version="2.5" />
-          <deploymentDescriptor url="file://$MODULE_DIR$/../../tds/src/main/webapp-expThredds/META-INF/context.xml">
-            <option name="DEFAULT_DIR" value="META-INF" />
-          </deploymentDescriptor>
-        </descriptors>
-        <webroots>
-          <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-expThredds/resources" relative="/" />
-        </webroots>
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
-          <root url="file://$MODULE_DIR$/../../tds/src/test/java" />
-        </sourceRoots>
-        <building>
-          <setting name="EXPLODED_URL" value="file://" />
-          <setting name="EXPLODED_ENABLED" value="false" />
-          <setting name="JAR_URL" value="file://" />
-          <setting name="JAR_ENABLED" value="false" />
-          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
-          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
-          <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
-          <setting name="RUN_JASPER_VALIDATION" value="true" />
-          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
-        </building>
-        <packaging>
-          <containerElement type="facet" facetId="opendap/web/Web">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-          </containerElement>
-          <containerElement type="module" name="bufr">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="cdm">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="grib">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="opendap">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="module" name="tds">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../../bufr/resources</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../../grib/resources</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../cdm/src/main/resources</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/casclient-2.1.1.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/casclient-2.1.1.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/commons-codec-1.3.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-codec-1.3.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.1.1.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-fileupload-1.1.1.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/commons-httpclient-3.0.1.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.0.1.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/commons-io-1.2.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.2.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.1.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/gnu-getopt-1.0.6.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/gnu-getopt-1.0.6.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/gnu-regexp-1.1.4.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/gnu-regexp-1.1.4.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/httpunit.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/jdom.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/jdom.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/jpeg2000.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/jpeg2000.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/junit.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/nlog4j-1.2.25.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/nlog4j-1.2.25.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-            <url>jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.2.jar!/</url>
+            <attribute name="URI" value="/WEB-INF/lib/spring-2.5.jar" />
+            <url>jar://$MODULE_DIR$/../../lib/external/spring-2.5.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="0" />
@@ -470,12 +171,20 @@
             <attribute name="URI" value="/WEB-INF/lib/visadNoDods.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/</url>
           </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-            <url>jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/</url>
+          <containerElement type="library" name="tds-resources" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
         </packaging>
+      </configuration>
+    </facet>
+    <facet type="Spring" name="Spring">
+      <configuration>
+        <options>
+          <option name="enableValidation" value="true" />
+          <option name="reportErrorsAsWarnings" value="true" />
+        </options>
+        <customNs />
       </configuration>
     </facet>
   </component>
@@ -558,7 +267,16 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/spring-2.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="tds-resources">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../tds/src/main/resources" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

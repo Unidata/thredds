@@ -9,9 +9,6 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../../Java-OPeNDAP/resources" relative="/" />
         </webroots>
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/../../../Java-OPeNDAP/src" />
-        </sourceRoots>
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
