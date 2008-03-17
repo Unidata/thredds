@@ -326,8 +326,13 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
 
         } else if ( ServerMethods.p_html_i.matcher(qp.acceptType).find()) { // accept html
             pw.println("<Head><Title>THREDDS RadarNexrad Server</Title></Head>");
-            pw.println("<body link=\"red\" alink=\"red\" vlink=\"red\">");
+            pw.println("<body>"); // link=\"red\" alink=\"red\" vlink=\"red\">");
             pw.println("<center><H1>Nexrad Level"+ level +" Radar Results</H1></center>");
+            pw.println("  <table align=\"center\" border cellpadding=\"5\" width=\"90%\">");
+            pw.println("    <tr>");
+            pw.println("    <th scope=\"col\"><u>OPENDAP</u></th>");
+            pw.println("    <th scope=\"col\"><u>HTTPServer</u></th>");
+            pw.println("    </tr>");
             serviceBase = pathInfo +"/";
 
         } else if ( ServerMethods.p_ascii_i.matcher(qp.acceptType).find()) {
@@ -361,6 +366,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
             pw.println("    </dataset>");
             pw.println("</catalog>");
         } else if ( ServerMethods.p_html_i.matcher(qp.acceptType).find()) {
+            pw.println("  </table>");
             if (! dataFound )
                 pw.println("<p>No data available for station(s) and time range "+
                         req.getQueryString() +"</p>");
@@ -579,10 +585,12 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
     // create a HTML dataset entry for a catalog
     public void HTMLdataset(String product, String rPath ) {
 
-        pw.println("OPENDAP <a href=\"/thredds/dodsC/"+ serviceBase
-                + rPath +"/"+ product +".html\">"+ product +"</a></br>" );
-        pw.println("HTTPServer <a href=\"/thredds/fileServer/"+ serviceBase
-                        + rPath +"/"+ product +"\">"+ product +"</a></br>" );
+        pw.println( "  <tr>" );
+        pw.println("    <td align=center valign=center><a href=\"/thredds/dodsC/"+ 
+            serviceBase + rPath +"/"+ product +".html\">"+ product +"</a></td>" );
+        pw.println("    <td align=center valign=center><a href=\"/thredds/fileServer/"+ 
+            serviceBase + rPath +"/"+ product +"\">"+ product +"</a></td>" );
+        pw.println( "  </tr>" );
 
     } // end HTMLdataset
 
