@@ -33,15 +33,15 @@ variables:
     humidity:coordinates = &quot;time lat lon alt&quot; ;
   float temp(obs) ;
     temp:long_name = &quot;temperature&quot; ;
-    temp:units = &quot;hPa&quot; ;
+    temp:units = &quot;Celsius&quot; ;
     temp:coordinates = &quot;time lat lon alt&quot; ;
 
 attributes:
 &nbsp; :CF_datatype = &quot;point&quot;;
 </pre>
-<p> The humidity(i) and temp(i) data  are associated with the coordinate values time(i),  lat(i),  lon(i), and optionally alt(i). The obs dimension may use the unlimited dimension or not. Only if the time coordinate is ordered, can one  name the obs dimension <em>time</em> (making time a coordinate variable rather than an auxiliary variable).</p>
-<h2>2.&nbsp;Timeseries of Station Data</h2>
-<p>Point data may be  taken at a set of named locations called <em>stations</em>. The set of observations at  a particular station, if ordered by time, is a time series, and the file  is a <strong><em>collection  of time series of station data</em></strong>. </p>
+<p> In this example, the <strong>humidity(i) </strong>and<strong> temp(i)</strong> data  are associated with the coordinate values <strong>time(i),  lat(i),  lon(i), </strong>and optionally<strong> alt(i)</strong>. The obs dimension may use the unlimited dimension or not. If the time coordinate is ordered,  the obs dimension may be named <strong>time</strong> (making time a coordinate variable rather than an auxiliary variable).</p>
+<h2>2.&nbsp;Time series of Station Data</h2>
+<p>Point data may be  taken at a set of named locations called <em>stations</em>. The set of observations at  a particular station, if ordered by time, is a time series, and the file  contains a <strong><em>collection  of time series of station data</em></strong>. </p>
 <h3>2.1 Multidimensional representation </h3>
 <p>When the number of observations at each station is the same, one can use the multidimensional representation.</p>
 <pre>
@@ -63,7 +63,7 @@ variables:
   char station_name(station, name_strlen) ;
     station_name:long_name = &quot;station name&quot; ;
   int station_info(station) ;
-    station_name:long_name = &quot;some kind of station info&quot; ;
+    station_name:long_name = &quot;any kind of station info&quot; ;
 
   double time(station, obs) ;
     time:long_name = &quot;time of measurement&quot; ;
@@ -75,7 +75,7 @@ variables:
     humidity:_FillValue = -999.9;
   float temp(station, obs) ;
     temp:long_name = &quot;temperature&quot; ;
-    temp:units = &quot;hPa&quot; ;
+    temp:units = &quot;Celsius&quot; ;
     temp:coordinates = &quot;time lat lon alt&quot; ;
     temp:_FillValue = -999.9;
 
@@ -84,10 +84,10 @@ attributes:
 &nbsp; :CF_datatype = &quot;station&quot;;
 </pre>
 
-<p>The humidity(s,i) and temp(s,i) data  are associated with the coordinate values time(s,i),  lat(s),  lon(s), and optionally alt(s). The station dimension may be the unlimited dimension or not, but it must be the outer (first) dimension. All variables that have station as the outer dimension are considered to be information about that station. </p>
+<p>The <strong>humidity(s,i) </strong>and<strong> temp(s,i) </strong>data  are associated with the coordinate values<strong> time(s,i),  lat(s),  lon(s), </strong>and optionally<strong> alt(s)</strong>. The station dimension may be the unlimited dimension or not. All variables that have station as their single dimension are considered to be station information. </p>
 <p>The time coordinate may use a missing value, which indicates that data is missing for that station and obs index. This allows one to have a variable number of observations at different stations, at the cost of some wasted space. The data variables may also use missing data values. </p>
 <h3>2.2 Parent index representation </h3>
-<p>When the number of observations at each station vary, one can use the <em>parent index representation</em>. Each observation has a <em>parent index</em> variable which contains an index into the stations, to identify which station the observation belongs to. The parent index variable is identified by having a standard name attribute of <em>parent_index</em>. </p>
+<p>When the number of observations at each station vary, one can use the <em>parent index representation</em>. Each observation has a <em>parent index</em> variable which contains an index into the station dimension, to identify which station the observation belongs to. The parent index variable is identified by having a standard name attribute of <em>parent_index</em>. </p>
 <pre>
 dimensions:
   station = 23 ;
@@ -110,7 +110,7 @@ variables:
   int station_info(station) ;
     station_name:long_name = &quot;some kind of station info&quot; ;
 
-  int station_index(obs) ;
+  int <strong>station_index</strong>(obs) ;
     station_index:long_name = &quot;index of station &quot; ;
     station_index:standard_name = &quot;parent_index&quot; ;
   double time(obs) ;
@@ -122,14 +122,14 @@ variables:
     humidity:_FillValue = -999.9;
   float temp(obs) ;
     temp:long_name = &quot;temperature&quot; ;
-    temp:units = &quot;hPa&quot; ;
+    temp:units = &quot;Celsius&quot; ;
     temp:coordinates = &quot;time lat lon alt&quot; ;
     temp:_FillValue = -999.9;
 
 attributes:
 &nbsp; :CF_datatype = &quot;station&quot;;
 </pre>
-<p>The humidity(i) and temp(i) data  are associated with the coordinate values time(i),  lat(s),  lon(s), and optionally alt(s), where s = station_index(i). Again, all variables that have station as the outer dimension are considered to be information about that station. The obs dimension may use the unlimited dimension or not. It should not ne called time, since the time coordinate will then not  be ordered. </p>
+<p>The<strong> humidity(i) </strong>and<strong> temp(i)</strong> data  are associated with the coordinate values <strong>time(i),  lat(s),  lon(s), </strong>and optionally<strong> alt(s)</strong>, where s = <strong>station_index(i)</strong>. Again, all variables that have station as their only dimension are considered to be information about that station. The <strong>obs</strong> dimension may use the unlimited dimension or not. </p>
 <h3>2.3 Parent/child linked list representation </h3>
 <p>When the number of observations at each station vary, and one wants fast access to all the observations for a station, one can use the <em>parent/child linked list representation</em>. Each station has a variable that holds the index of the first observation that belongs to it, identified by having a standard name attribute of<em> child_index</em>. In addition to the parent index variable holding the index of its parent station, each observation has a variable that holds the index of the next observation for the same station, identified  by having a standard name attribute of <em>next_index. </em>The child index values are thus a linked list for each station. </p>
 <pre>
@@ -153,16 +153,16 @@ variables:
     station_name:long_name = &quot;station name&quot; ;
   int station_info(station) ;
     station_name:long_name = &quot;some kind of station info&quot; ;
-  int first_child(station) ;
-    first_child:long_name = &quot;index of observation&quot; ;
-    first_child:standard_name = &quot;child_index&quot; ;
+  int <strong>first_obs</strong>(station) ;
+    first_obs:long_name = &quot;index of observation&quot; ;
+    first_obs:standard_name = &quot;child_index&quot; ;
 
   int station_index(obs) ;
     station_index:long_name = &quot;index of station &quot; ;
     station_index:standard_name = &quot;parent_index&quot; ;
-  int next_child(obs) ;
-    next_child:long_name = &quot;index of next observation &quot; ;
-    next_child:standard_name = &quot;next_index&quot; ;
+  int <strong>next_obs</strong>(obs) ;
+    next_obs:long_name = &quot;index of next observation &quot; ;
+    next_obs:standard_name = &quot;next_index&quot; ;
   double time(obs) ;
     time:long_name = &quot;time of measurement&quot; ;
     time:units = &quot;days since 1970-01-01 00:00:00&quot; ;
@@ -172,7 +172,7 @@ variables:
     humidity:_FillValue = -999.9;
   float temp(obs) ;
     temp:long_name = &quot;temperature&quot; ;
-    temp:units = &quot;hPa&quot; ;
+    temp:units = &quot;Celsius&quot; ;
     temp:coordinates = &quot;time lat lon alt&quot; ;
     temp:_FillValue = -999.9;
 
@@ -180,7 +180,7 @@ attributes:
 &nbsp; :CF_datatype = &quot;station&quot;;
 </pre>
 <h2>3.&nbsp;Trajectory Data</h2>
-<p>Point data may be  taken along a flight path or ship path, constituting a trajectory. When a single trajectory is stored in a file, the representation is straightforward. </p>
+<p>Point data may be  taken along a flight path or ship path, constituting a trajectory. When a single trajectory is stored in a file, the representation is straightforward: </p>
 <pre>dimensions:
   time = 1000 ;
 
@@ -213,7 +213,7 @@ variables:
 attributes:
 &nbsp; :CF_datatype = &quot;trajectory&quot;;
 </pre>
-<p>The NO3(n) and O3(n) data is associated with the coordinate        values time(n), z(n),        lat(n), and lon(n). The time value should be ordered, so it is appropriate to use a coordinate variable for time. The time dimension may be unlimited or not. </p>
+<p>The <strong>NO3(n) </strong>and<strong> O3(n) </strong>data is associated with the coordinate        values<strong> time(n), z(n),        lat(n), </strong>and<strong> lon(n)</strong>. The <strong>time</strong> coordinate should be ordered, so it is appropriate to use a coordinate variable for time. The time dimension may be unlimited or not. </p>
 <h3>3.1 Multidimensional representation </h3>
 <p>When storing multiple trajectories in the same file, and the number of observations in each trajectory is the same, one can use the multidimensional representation.</p>
 <pre>dimensions:
@@ -222,6 +222,12 @@ attributes:
 
 
 variables:
+
+  char trajectory(trajectory, name_strlen) ;
+    trajectory:long_name = &quot;trajectory name&quot; ;
+  int trajectory_info(trajectory) ;
+    trajectory_name:long_name = &quot;some kind of trajectory info&quot; 
+
   double time(trajectory, obs) ;
     time:long_name = &quot;time&quot; ;
     time:units = &quot;days since 1970-01-01 00:00:00&quot; ;
@@ -250,22 +256,23 @@ attributes:
 &nbsp; :CF_datatype = &quot;trajectory&quot;;
 
 </pre>
-<p>The NO3(t,i) and O3(t,i) data  are associated with the coordinate values time(t,i),  lat(t,i),  lon(t,i), and optionally alt(t,i). The trajectory dimension may be the unlimited dimension or not, but it must be the outer (first) dimension. All variables that have trajectory as the outer dimension are considered to be information about that trajectory. </p>
-<p>The time coordinate may use a missing value, which indicates that data is missing for that trajectory and obs index. This allows one to have a variable number of observations for different trajectory, at the cost of some wasted space. The data variables may also use missing data values. </p>
+<p>The <strong>NO3(t,i) </strong>and<strong> O3(t,i)</strong> data  are associated with the coordinate values<strong> time(t,i),  lat(t,i),  lon(t,i), </strong>and<strong> alt(t,i)</strong>. The <strong>trajectory</strong> dimension may be the unlimited dimension or not. All variables that have trajectory as their only dimension are considered to be information about that trajectory. </p>
+<p>The <strong>time</strong> coordinate may use a missing value, which indicates that data is missing for that trajectory and obs index. This allows one to have a variable number of observations for different trajectories, at the cost of some wasted space. The data variables may also use missing data values. </p>
 <h3>3.2 Parent index representation </h3>
-<p>When the number of observations for each trajectory varies, one can use the <em>parent index representation</em>. Each observation has a <em>parent index</em> variable which contains an index into the stations, to identify which trajectory the observation belongs to. The parent index variable is identified by having a standard name attribute of <em>parent_index</em>. </p>
+<p>When the number of observations for each trajectory varies, one can use the <em>parent index representation</em>. Each observation has a <em>parent index</em> variable which contains an index into the trajectories, to identify which trajectory the observation belongs to. The parent index variable is identified by having a standard name attribute of <em>parent_index</em>. </p>
 <pre>dimensions:
   obs = UNLIMITED ;
   trajectory = 77 ;
 
 
 variables:
+
   char trajectory(trajectory, name_strlen) ;
-    trajectory:long_name = &quot;station name&quot; ;
+    trajectory:long_name = &quot;trajectory name&quot; ;
   int trajectory_info(trajectory) ;
     trajectory_name:long_name = &quot;some kind of trajectory info&quot; ;
 
-  int trajectory_index(obs) ;
+  int <strong>trajectory_index</strong>(obs) ;
     trajectory_index:long_name = &quot;index of trajectory &quot; ;
     trajectory_index:standard_name = &quot;parent_index&quot; ;
   double time(obs) ;
@@ -295,9 +302,9 @@ variables:
 attributes:
 &nbsp; :CF_datatype = &quot;trajectory&quot;;
 </pre>
-<p>The O3(i) and NO3(i) data  are associated with the coordinate values time(i),  lat(i),  lon(i), and  alt(i). All observations for one trajectory will have the same trajectory index value, and should be time ordered. All variables that have trajectory as the outer dimension are considered to be information about that trajectory. The obs dimension may use the unlimited dimension or not. It should not be called time unless the time coordinate is ordered. </p>
+<p>The <strong>O3(i) </strong>and<strong> NO3(i)</strong> data  are associated with the coordinate values <strong>time(i),  lat(i),  lon(i), </strong>and<strong> alt(i)</strong>. All observations for one trajectory will have the same trajectory index value, and should be time ordered. All variables that have trajectory as their single dimension are considered to be information about that trajectory. The <strong>obs</strong> dimension may use the unlimited dimension or not.  </p>
 <h3>3.3 Parent/child linked list representation </h3>
-<p>When the number of observations for each trajectory varies, and one wants fast access to all the observations for a trajectory, one can use the <em>parent/child linked list representation</em>. Each trajectory has a variable that holds the index of the first observation that belongs to it, identified by having a standard name attribute of<em> child_index</em>. In addition to the parent index variable holding the index of its parent trajectory, each observation has a variable that holds the index of the next observation for the same trajectory, identified also by having a standard name attribute of<em> child_index. </em>The child index values are thus a linked list for each station. </p>
+<p>When the number of observations for each trajectory varies, and one wants fast access to all the observations for a trajectory, one can use the <em>parent/child linked list representation</em>. Each trajectory has a variable that holds the index of the first observation that belongs to it, identified by having a standard name attribute of<em> child_index</em>. In addition to the parent index variable holding the index of its parent trajectory, each observation has a variable that holds the index of the next observation for the same trajectory, identified  by having a standard name attribute of<em> next_index. </em>The child index values are thus a linked list for each trajectory. </p>
 <pre>dimensions:
   obs = UNLIMITED ;
   trajectory = 77 ;
@@ -308,16 +315,16 @@ variables:
     trajectory:long_name = &quot;station name&quot; ;
   int trajectory_info(trajectory) ;
     trajectory_name:long_name = &quot;some kind of trajectory info&quot; ;
-  int first_child(trajectory) ;
-    first_child:long_name = &quot;index of observation&quot; ;
-    first_child:standard_name = &quot;child_index&quot; ;
+  int <strong>first_obs</strong>(trajectory) ;
+    first_obs:long_name = &quot;index of observation&quot; ;
+    first_obs:standard_name = &quot;child_index&quot; ;
 
   int trajectory_index(obs) ;
     trajectory_index:long_name = &quot;index of trajectory &quot; ;
     trajectory_index:standard_name = &quot;parent_index&quot; ;
-  int next_child(obs) ;
-    next_child:long_name = &quot;index of next observation &quot; ;
-    next_child:standard_name = &quot;next_index&quot; ;
+  int <strong>next_obs</strong>(obs) ;
+    next_obs:long_name = &quot;index of next observation &quot; ;
+    next_obs:standard_name = &quot;next_index&quot; ;
   double time(obs) ;
     time:long_name = &quot;time&quot; ;
     time:units = &quot;days since 1970-01-01 00:00:00&quot; ;
@@ -346,7 +353,7 @@ attributes:
 &nbsp; :CF_datatype = &quot;trajectory&quot;;
 </pre>
 <h2>4.&nbsp;Profile Data</h2>
-<p>A series of point observations along a vertical line, like an atmospheric or ocean sounding, is called a <em>profile</em>. When a single profile is stored in a file, the representation is  easy. </p>
+<p>A series of point observations along a vertical line, like an atmospheric or ocean sounding, is called a <em>profile</em>. When a single profile is stored in a file, the representation is  straightforward: </p>
 <pre>dimensions:
   z = 42 ;
 
@@ -385,12 +392,12 @@ variables:
 attributes:
 &nbsp; :CF_datatype = &quot;profile&quot;;
 </pre>
-<p>The pressure(i), temperature(i), and humidity(i) data is associated with the coordinate        values time, z(i),        lat, and lon. The z coordinate must be ordered. The time coordinate may depend on z also, eg may be time(z). </p>
+<p>The <strong>pressure(i), temperature(i), </strong>and<strong> humidity(i)</strong> data is associated with the coordinate        values <strong>time, z(i),        lat, </strong>and<strong> lon</strong>. The <strong>z</strong> coordinate must be ordered. The <strong>time</strong> coordinate may depend on z also, eg may be <strong>time(z)</strong>. </p>
 <h3>4.1 Multidimensional representation </h3>
-<p>When storing multiple profiles in the same file, and the vertical levels in each profile are the same, one can use the multidimensional representation.</p>
+<p>When storing multiple profiles in the same file, and the vertical levels in each profile are the same, one can use the multidimensional representation:</p>
 <pre>dimensions:
   z = 42 ;
-  profiles = 142 ;
+  profile = 142 ;
 
 
 variables:
@@ -408,7 +415,6 @@ variables:
   float lat(profile);
     lat:long_name = &quot;latitude&quot; ;
     lat:units = &quot;degrees_north&quot; ;
-
 
   float pressure(profile, z) ;
     pressure:long_name = &quot;pressure level&quot; ;
@@ -428,11 +434,9 @@ variables:
 attributes:
 &nbsp; :CF_datatype = &quot;profile&quot;;
 </pre>
-<p>The pressure(p,i), temperature(p,i), and humidity(p,i) data is associated with the coordinate        values time(p), z(p,i),        lat(p), and lon(p). The z coordinate must be ordered for each profile. The time coordinate may depend on z also, eg time(p,z). If the vertical coordinates differ for each profile, but the number of levels are the same, one can use </p>
-<pre>  float z(profile, z) ;
-</pre>
-<p>The profile dimension may be the unlimited dimension or not, but it must be the outer (first) dimension. All variables that have profile as the outer dimension are considered to be information about that trajectory. </p>
-<p>The time coordinate may use a missing value, which indicates that data is missing for that profile and obs index. This allows one to have a variable number of observations for different trajectory, at the cost of some wasted space. The data variables may also use missing data values. </p>
+<p>The <strong>pressure(p,i), temperature(p,i), </strong>and<strong> humidity(p,i)</strong> data is associated with the coordinate        values <strong>time(p), z(i),        lat(p), </strong>and<strong> lon(p)</strong>. If the vertical coordinates differ for each profile, but the number of levels are the same, one can use  <strong>z(profile, z)</strong>, but the <strong>z</strong> coordinate must be ordered for each profile. </p>
+<p>The <strong>profile</strong> dimension may be the unlimited dimension or not. All variables that have profile as their only dimension are considered to be profile information. </p>
+<p>The <strong>time</strong> coordinate may depend on z also, eg <strong>time(p,z)</strong>. The <strong>time</strong> coordinate may use a missing value, which indicates that data is missing for that profile and obs index. This allows one to have a variable number of observations for different profiles, at the cost of some wasted space. The data variables may also use missing data values. </p>
 <h3>4.2 Parent index and parent/child linked list representation </h3>
 <p>When the number of observations for each profile varies, one can use the parent index representation by adding the profile_index variable to the observations, or  use the parent/child linked list representation by adding the profile_index, next_child variable to the observations and the first_child variable to the profiles. </p>
 <pre>dimensions:
@@ -451,15 +455,15 @@ variables:
   float lat(profile);
     lat:long_name = &quot;latitude&quot; ;
     lat:units = &quot;degrees_north&quot; ;&nbsp;
-  int first_child(profile) ;
+  int <strong>first_child</strong>(profile) ;
     first_child:long_name = &quot;index of observation&quot; ;
     first_child:standard_name = &quot;child_index&quot; ;
 
-  int profile_index(obs) ;
-    trajectory_index:long_name = &quot;index of trajectory &quot; ;
-    trajectory_index:standard_name = &quot;parent_index&quot; ;
+  int <strong>profile_index</strong>(obs) ;
+    profile_index:long_name = &quot;index of trajectory &quot; ;
+    profile_index:standard_name = &quot;parent_index&quot; ;
 
-  int next_child(obs) ;
+  int <strong>next_child</strong>(obs) ;
     next_child:long_name = &quot;index of next observation &quot; ;
     next_child:standard_name = &quot;next_index&quot; ;
 
@@ -485,8 +489,9 @@ variables:
 
 attributes:
 &nbsp; :CF_datatype = &quot;profile&quot;;
-
 </pre>
+<p>The <strong>pressure(i), temperature(i), </strong>and<strong> humidity(i)</strong> data is associated with the coordinate        values <strong>time(p), z(i),        lat(p), </strong>and<strong> lon(p)</strong>, where p=<strong>profile_index</strong>(i). The <strong>time</strong> coordinate may depend on z also, eg <strong>time(p,z)</strong>.<br>
+</p>
 <h2>5.&nbsp;Station Profile Data</h2>
 <p>When profiles are taken at a set of stations, one gets a time series of profiles at each station. If there is only one station in a file, and the vertical levels are the same for each profile, one can use a multidimensional representation, actually a variant of case 4.1: </p>
 <pre>dimensions:
@@ -526,8 +531,8 @@ variables:
     temperature:coordinates = &quot;time lon lat z&quot; ;
 
 attributes:
-&nbsp; :CF_datatype = &quot;profile timeseries&quot;;</pre>
-<p>The pressure(i,j), temperature(i,j), and humidity(i,j) data is associated with the coordinate        values time(i), z(j),        lat, and lon. </p>
+&nbsp; :CF_datatype = &quot;profile time series&quot;;</pre>
+<p>The<strong> pressure(i,j), temperature(i,j), </strong>and<strong> humidity(i,j)</strong> data is associated with the coordinate        values <strong>time(i), z(j),        lat, </strong>and<strong> lon</strong>. </p>
 <h3>5.1 Multidimensional representation </h3>
 <p>When storing multiple time series of profiles in the same file, if there are the same number of time points and  vertical levels for every profile, one can use the multidimensional representation.</p>
 <pre>dimensions:
@@ -543,9 +548,6 @@ variables:
   float lat(station) ;
     lat:long_name = &quot;station latitude&quot; ;
     lat:units = &quot;degrees_north&quot; ;
-  float alt(station) ;
-    alt:long_name = &quot;altitude above MSL&quot; ;
-    alt:units = &quot;m&quot; ;
   char station_name(station, name_strlen) ;
     station_name:long_name = &quot;station name&quot; ;
   int station_info(station) ;
@@ -577,11 +579,11 @@ variables:
     temperature:coordinates = &quot;time lon lat z&quot; ;
 
 attributes:
-&nbsp; :CF_datatype = &quot;profile timeseries&quot;;
+&nbsp; :CF_datatype = &quot;profile time series&quot;;
 </pre>
-<p>The pressure(s,p,i), temperature(s,p,i), and humidity(s,p,i) data is associated with the coordinate        values time(s,p), z(i),        lat(s), and lon(s).</p>
-<h3>5.2 Parent index and parent/child linked list representation </h3>
-<p>When the number of observations for each profile is fixed, but the number of time points for each station varies, one can use linked lists to connect the profiles to the stations, and multidimensional representation for the profiles. </p>
+<p>The <strong>pressure(s,p,i), temperature(s,p,i), </strong>and<strong> humidity(s,p,i)</strong> data is associated with the coordinate        values <strong>time(s,p), z(i),        lat(s), </strong>and<strong> lon(s)</strong>.</p>
+<h3>5.2 Linked time series, multidimensional profiles </h3>
+<p>When the number of observations for each profile is fixed, but the number of time points for each station varies, one can use linked lists to connect the profiles to the stations, and use a multidimensional representation for the profiles. </p>
 <pre>dimensions:
   station = 22 ;
   profile = UNLIMITED ;
@@ -600,21 +602,21 @@ variables:
   float lat(station) ;
     lat:long_name = &quot;station latitude&quot; ;
     lat:units = &quot;degrees_north&quot; ;
-  float alt(station) ;
-    alt:long_name = &quot;altitude above MSL&quot; ;
-    alt:units = &quot;m&quot; ;
   char station_name(station, name_strlen) ;
     station_name:long_name = &quot;station name&quot; ;
   int station_info(station) ;
     station_name:long_name = &quot;some kind of station info&quot; ;
-  int first_profile(station) ;
+  int <strong>first_profile</strong>(station) ;
     first_profile:long_name = &quot;index of profile&quot; ;
     first_profile:standard_name = &quot;child_index&quot; ;
 
+  int <strong>station_index</strong>(profile) ;
+    station_index:long_name = &quot;index of station &quot; ;
+    station_index:standard_name = &quot;parent_index&quot; ;
   double time(profile);
     time:long_name = &quot;time&quot; ;
     time:units = &quot;days since 1970-01-01 00:00:00&quot; ;&nbsp;
-  int next_profile( profile) ;
+  int <strong>next_profile</strong>( profile) ;
     next_profile:long_name = &quot;index of next profile for this station &quot; ;
     next_profile:standard_name = &quot;next_index&quot; ;
 
@@ -634,9 +636,9 @@ variables:
     temperature:coordinates = &quot;time lon lat z&quot; ;
 
 attributes:
-&nbsp; :CF_datatype = &quot;profile timeseries&quot;;</pre>
-<p>The pressure(p,i), temperature(p,i), and humidity(p,i) data is associated with the coordinate        values time(p), z(i),        lat(s), and lon(s), where s = station_index(i).</p>
-<h3>5.3 Parent index and parent/child linked list representation </h3>
+&nbsp; :CF_datatype = &quot;profile time series&quot;;</pre>
+<p>The <strong>pressure(p,i), temperature(p,i), </strong>and<strong> humidity(p,i)</strong> data are associated with the coordinate        values <strong>time(p), z(i),        lat(s), </strong>and<strong> lon(s)</strong>, where s = <strong>station_index(p)</strong>.</p>
+<h3>5.3 Linked time series, linked profiles </h3>
 <p>When the number of observations for each profile varies, and the number of time points for each station varies, one can use linked lists to connect the profiles to the stations, and another list to connect observations to the profiles. </p>
 <pre>dimensions:
   obs = UNLIMITED ;
@@ -657,26 +659,26 @@ variables:
     station_name:long_name = &quot;station name&quot; ;
   int station_info(station) ;
     station_name:long_name = &quot;some kind of station info&quot; ;
-  int first_profile(station) ;
+  int <strong>first_profile</strong>(station) ;
     first_profile:long_name = &quot;index of profile&quot; ;
     first_profile:standard_name = &quot;child_index&quot; ;
 
+  int <strong>station_index</strong>(profile) ;
+    station_index:long_name = &quot;index of station &quot; ;
+    station_index:standard_name = &quot;parent_index&quot; ;
   double time(profile);
     time:long_name = &quot;time&quot; ;
     time:units = &quot;days since 1970-01-01 00:00:00&quot; ;&nbsp;
-  int next_profile(profile) ;
+  int <strong>next_profile</strong>(profile) ;
     next_profile:long_name = &quot;index of next profile for this station &quot; ;
     next_profile:standard_name = &quot;next_index&quot; ;
-  int first_child(profile) ;
-    first_child:long_name = &quot;index of observation&quot; ;
-    first_child:standard_name = &quot;child_index&quot; ;
-  int station_index(profile) ;
-    station_index:long_name = &quot;index of station &quot; ;
-    station_index:standard_name = &quot;parent_index&quot; ;
+  int <strong>first_obs</strong>(profile) ;
+    first_obs:long_name = &quot;index of observation&quot; ;
+    first_obs:standard_name = &quot;child_index&quot; ;
 
-  int profile_index(obs) ;
-    trajectory_index:long_name = &quot;index of profile &quot; ;
-    trajectory_index:standard_name = &quot;parent_index&quot; ;
+  int <strong>profile_index</strong>(obs) ;
+    profile_index:long_name = &quot;index of profile &quot; ;
+    profile_index:standard_name = &quot;parent_index&quot; ;
 
   int next_child(obs) ;
     next_child:long_name = &quot;index of next observation &quot; ;
@@ -704,7 +706,7 @@ variables:
 
 attributes:
 &nbsp; :CF_datatype = &quot;profile timeseries&quot;;</pre>
-<p>The pressure(i), temperature(i), and humidity(i) data is associated with the coordinate        values time(p), z(i),        lat(s), and lon(s), where p = profile_index(i), and s = station_index(p).</p>
+<p>The <strong>pressure(i), temperature(i), </strong>and<strong> humidity(i) </strong>data is associated with the coordinate        values <strong>time(p), z(i),        lat(s), and lon(s)</strong>, where p = <strong>profile_index(i)</strong>, and s = <strong>station_index(p)</strong>.</p>
 <br>
 <h2>6.&nbsp;Section Profile Data</h2>
 <p>When profiles are taken along a trajectory,  one gets a time series of profiles called a <em>section</em>. </p>
@@ -748,7 +750,7 @@ variables:
 
 attributes:
 &nbsp; :CF_datatype = &quot;profile section&quot;;</pre>
-<p>The pressure(i,j), temperature(i,j), and humidity(i,j) data is associated with the coordinate        values time(i), z(j),        lat(i), and lon(i). </p>
+<p>The <strong>pressure(i,j), temperature(i,j), </strong>and<strong> humidity(i,j)</strong> data is associated with the coordinate        values <strong>time(i), z(j),        lat(i), and lon(i)</strong>. </p>
 <h3>6.2 Parent index and parent/child linked list representation </h3>
 <p>When the vertical levels  vary across profiles, one can use linked lists to connect the observations to the profiles: </p>
 <pre>dimensions:
@@ -768,16 +770,15 @@ variables:
   float lat(profile);
     lat:long_name = &quot;latitude&quot; ;
     lat:units = &quot;degrees_north&quot; ;
-
-  int first_child(profile) ;
+  int <strong>first_child</strong>(profile) ;
     first_child:long_name = &quot;index of observation&quot; ;
     first_child:standard_name = &quot;child_index&quot; ;
 
-  int profile_index(obs) ;
+  int <strong>profile_index</strong>(obs) ;
     trajectory_index:long_name = &quot;index of profile &quot; ;
     trajectory_index:standard_name = &quot;parent_index&quot; ;
 
-  int next_child(obs) ;
+  int <strong>next_child</strong>(obs) ;
     next_child:long_name = &quot;index of next observation &quot; ;
     next_child:standard_name = &quot;next_index&quot; ;
 
@@ -802,8 +803,8 @@ variables:
     temperature:coordinates = &quot;time lon lat z&quot; ;
 
 attributes:
-&nbsp; :CF_datatype = &quot;profile timeseries&quot;;</pre>
-<p>The pressure(i), temperature(i), and humidity(i) data is associated with the coordinate        values time(p), z(i),        lat(p), and lon(p), where p = profile_index(i).</p>
+&nbsp; :CF_datatype = &quot;profile section&quot;;</pre>
+<p>The <strong>pressure(i), temperature(i), </strong>and<strong> humidity(i) </strong>data is associated with the coordinate        values <strong>time(p), z(i),        lat(p), </strong>and<strong> lon(p)</strong>, where p = <strong>profile_index(i)</strong>.</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 </body>
