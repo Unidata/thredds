@@ -23,7 +23,9 @@ package ucar.nc2.ui;
 import ucar.nc2.*;
 import ucar.nc2.dt2.point.UnidataPointFeatureDataset;
 import ucar.nc2.dt2.point.UnidataStationFeatureDataset;
+import ucar.nc2.dt2.point.PointDatasetDefaultHandler;
 import ucar.nc2.dt2.PointFeatureDataset;
+import ucar.nc2.dt2.FeatureDatasetFactoryManager;
 import ucar.nc2.constants.DataType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
@@ -94,11 +96,12 @@ public class ToolsUI extends JPanel {
   private ucar.util.prefs.PreferencesExt mainPrefs;
 
   // UI
+  private CoordSysPanel coordSysPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
   private ImagePanel imagePanel;
   private NCdumpPanel ncdumpPanel;
-  private OpPanel coordSysPanel, ncmlPanel, geotiffPanel;
+  private OpPanel ncmlPanel, geotiffPanel;
   private PointObsPanel pointObsPanel;
   private PointObsPanel2 pointObsPanel2;
   private StationObsPanel stationObsPanel;
@@ -728,7 +731,7 @@ public class ToolsUI extends JPanel {
       stationObsPanel.setStationObsDataset((StationObsDataset) threddsData.tds);
       tabbedPane.setSelectedComponent(stationObsPanel);
 
-    } else if (threddsData.dataType == DataType.StationRadarCollection) {
+    } else if (threddsData.dataType == DataType.STATION_RADIAL) {
       makeComponent("StationRadial");
       stationRadialPanel.setStationRadialDataset((StationRadarCollectionImpl) threddsData.tds);
       tabbedPane.setSelectedComponent(stationRadialPanel);
@@ -2305,8 +2308,8 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        //pobsDataset = (PointObsDataset) TypedDatasetFactory.open(DataType.POINT, location, null, log);
-        pobsDataset = new UnidataPointFeatureDataset( NetcdfDataset.openDataset(location));
+        pobsDataset = (PointFeatureDataset) FeatureDatasetFactoryManager.open(DataType.POINT, location, null, log);
+        //pobsDataset = new PointDatasetDefaultHandler( NetcdfDataset.openDataset(location), log);
         if (pobsDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -2559,7 +2562,7 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        radarCollectionDataset = (StationRadarCollectionImpl) TypedDatasetFactory.open(DataType.StationRadarCollection, location, null, log);
+        radarCollectionDataset = (StationRadarCollectionImpl) TypedDatasetFactory.open(DataType.STATION_RADIAL, location, null, log);
         if (radarCollectionDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -3132,7 +3135,7 @@ public class ToolsUI extends JPanel {
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
 
     // put UI in a JFrame
-    frame = new JFrame("NetCDF (2.2) Tools");
+    frame = new JFrame("NetCDF (4.0) Tools");
     ui = new ToolsUI(prefs, frame);
 
     frame.setIconImage(BAMutil.getImage("netcdfUI"));

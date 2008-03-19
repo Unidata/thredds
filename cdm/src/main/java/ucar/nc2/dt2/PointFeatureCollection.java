@@ -34,7 +34,7 @@ import java.util.List;
 public interface PointFeatureCollection {
 
   // the data variables to be found in the PointFeature
-  public List<VariableSimpleIF> getDataVariables();
+  public List<? extends VariableSimpleIF> getDataVariables();
 
   // All features in this collection have this feature type
   public Class getCollectionFeatureType();
@@ -43,9 +43,10 @@ public interface PointFeatureCollection {
   public FeatureIterator getFeatureIterator(int bufferSize) throws java.io.IOException;
 
   // an iterator over Features of type PointFeature
-  public PointFeatureIterator getPointIterator(int bufferSize) throws java.io.IOException;
+  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
 
   // create a subset
+  // if empty, return null or empty iterator ??
   public PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
 }

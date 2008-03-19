@@ -17,38 +17,35 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 package ucar.nc2.dt2;
 
-import java.util.Date;
+import java.util.List;
+import java.io.IOException;
 
 /**
- * An observation at one time and location.
+ * A collection of TrajectoryFeature.
+ *
  * @author caron
+ * @since Mar 19, 2008
  */
-public interface PointData {
+public interface ProfileFeatureCollection {
 
-  /**
-   * Actual time of this observation. Units are found from getTimeUnits() in the containing dataset.
-   * @return actual time of this observation.
-   */
-  public double getObservationTime();
-
-  /**
-   * Actual time of this observation, as a Date.
-   * @return actual time of this observation, as a Date.
-   */
-  public Date getObservationTimeAsDate();
-
-  /**
-   * Location of this observation
-   * @return the location of this observation
-   */
-  public EarthLocation getLocation();
-
-  /**
-   * The actual data of this observation.
-   * @return the actual data of this observation.
+    /**
+   * Get a subsetted TrajectoryFeatureCollection
+   *
+   * @param stations only contain these stations
+   * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
-  public ucar.ma2.StructureData getData() throws java.io.IOException;
+  public ProfileFeatureCollection subset(List<Station> stations) throws IOException;
+
+  /**
+   * Get a specific ProfileFeature.
+   *
+   * @param id ProfileFeature id
+   * @return ProfileFeature
+   * @throws java.io.IOException on i/o error
+   */
+  public ProfileFeature getProfileFeature(Object id) throws IOException;
 }

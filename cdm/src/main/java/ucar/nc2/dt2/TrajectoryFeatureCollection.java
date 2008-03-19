@@ -17,16 +17,39 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2.point;
 
-import ucar.nc2.dt2.FeatureIterator;
+package ucar.nc2.dt2;
 
+import ucar.nc2.units.DateRange;
+
+import java.util.List;
 import java.io.IOException;
 
 /**
+ * A collection of TrajectoryFeature objects
+ *
  * @author caron
- * @since Feb 29, 2008
+ * @since Mar 19, 2008
  */
-public interface FeatureWithFeatureData {
-  public FeatureIterator getFeatureIterator(int bufferSize) throws IOException;
+public interface TrajectoryFeatureCollection extends PointFeatureCollection {
+
+  /**
+   * Get a subsetted TrajectoryFeatureCollection
+   *
+   * @param stations only contain these stations
+   * @return subsetted collection
+   * @throws java.io.IOException on i/o error
+   */
+  public TrajectoryFeatureCollection subset(List<Station> stations) throws IOException;
+
+  /**
+   * Get a specific TrajectoryFeature.
+   *
+   * @param id TrajectoryFeature id
+   * @return TrajectoryFeature
+   * @throws java.io.IOException on i/o error
+   */
+  public TrajectoryFeature getTrajectoryFeature(Object id) throws IOException;
+
 }
+

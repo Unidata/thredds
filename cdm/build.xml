@@ -25,6 +25,7 @@
 
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
+  <property name="commonSrc.dir" location="${root.dir}/../common/src/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
@@ -58,6 +59,7 @@
   <property name="logging.jar" value="nlog4j-1.2.25.jar"/>
   <property name="logging-minimal.jar" value="slf4j-jdk14-1.2.jar"/>
   <property name="lucene.jar" value="lucene.jar"/>
+  <property name="spring.jar" value="spring-2.5.jar"/>
   <!-- property name="netcdf1.jar" value="netcdf1.jar"/ -->
   <!-- property name="prefs.jar" value="prefsAll.jar"/ -->
   <property name="opendap.jar" value="opendap-2.1.jar"/>
@@ -69,6 +71,7 @@
   <!-- source -->
   <path id="sourcepath">
     <pathelement location="${src.dir}"/>
+    <pathelement location="${commonSrc.dir}"/>
   </path>
 
   <!-- Libraries -->
@@ -92,6 +95,7 @@
     <include name="lib/${visadNoDods.jar}"/>
     <include name="lib/${jgoodies.jar}"/>
     <include name="lib/${lucene.jar}"/>
+    <include name="lib/${spring.jar}"/>
   </fileset>
 
   <path id="compile.classpath">
@@ -117,9 +121,9 @@
 
   <!-- LOOK can we generate with pathconvert? -->
   <property name="Class-Path"
-            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${jpeg2000.jar} ${resourcesOptional.jar} ${bufr.jar} ${visadNoDods.jar}"/>
+            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${jpeg2000.jar} ${resourcesOptional.jar} ${spring.jar} ${bufr.jar} ${visadNoDods.jar}"/>
   <property name="ClassPath-CommandLine"
-            value="lib/${bufr.jar}:lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${logging.jar}:lib/${jgoodies.jar}:lib/${resourcesOptional.jar}:lib/${visadNoDods.jar}"/>
+            value="lib/${bufr.jar}:lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${logging.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${visadNoDods.jar}"/>
 
   <target name="test-pathconvert">
     <echo>Class-Path=${Class-Path}</echo>
@@ -404,6 +408,7 @@
     <jar jarfile="${build.dir}/${ncSrcRelease.jar}" index="true" duplicate="preserve">
       <fileset dir="${root.dir}/..">
         <include name="cdm/**"/>
+        <include name="common/**"/>
         <include name="lib/**"/>
         <include name="intelliJ/**"/>
         <include name="ui/**"/>
@@ -583,6 +588,7 @@
     <include name="external/${jgoodies.jar}"/>
     <include name="external/${logging.jar}"/>
     <include name="external/${lucene.jar}"/>
+    <include name="external/${spring.jar}"/>
   </fileset>
 
   <path id="compileUI.classpath">
@@ -592,6 +598,7 @@
   <path id="sourcepathUI">
     <pathelement location="${src.dir}"/>
     <pathelement location="${srcUI.dir}"/>
+    <pathelement location="${commonSrc.dir}"/>
   </path>
 
   <target name="compileUI" depends="init, release-settings" description="toolsUI compile">
@@ -605,6 +612,7 @@
       <patternset refid="sources"/>
       <patternset>
         <include name="ucar/nc2/ui/**/*.java"/>
+        <include name="thredds/monitor/*.java"/>
       </patternset>
 
       <classpath refid="compile.classpath"/>
@@ -823,6 +831,8 @@
              signedjar="${webstart_dir}/logging.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${lucene.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/lucene.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${spring.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/spring.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${opendap.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/opendap.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${resourcesOptional.jar}" keystore="${keystore}"

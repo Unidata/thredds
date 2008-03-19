@@ -132,7 +132,7 @@ public class UnidataPointFeatureDataset extends PointFeatureDatasetImpl {
     desc = ds.findAttValueIgnoreCase(null, "description", null);
 
     ucar.nc2.dt2.PointFeatureIterator pfiter = new MyPointFeatureIterator(recordHelper.recordVar, -1, null);
-    setPointFeatureCollection( new CollectionPointFeature(dataVariables, pfiter));
+    setPointFeatureCollection( new CollectionOfPointFeatures(dataVariables, pfiter));
   }
 
   /* public PointFeatureDataset subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {

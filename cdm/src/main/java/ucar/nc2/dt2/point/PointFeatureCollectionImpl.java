@@ -31,17 +31,17 @@ import java.io.IOException;
 
 /**
  * Abstract superclass for PointFeatureCollection
- * Subclass must implement subset()
+ * Subclass must call setIterators(), and implement subset()
  * @author caron
  * @since Mar 1, 2008
  */
 public abstract class PointFeatureCollectionImpl implements PointFeatureCollection {
   protected Class featureClass;
-  protected List<VariableSimpleIF> dataVariables;
+  protected List<? extends VariableSimpleIF> dataVariables;
   protected FeatureIterator fiter;
   protected PointFeatureIterator pfiter;
 
-  public PointFeatureCollectionImpl(Class featureClass, List<VariableSimpleIF> dataVariables) {
+  protected PointFeatureCollectionImpl(Class featureClass, List<? extends VariableSimpleIF> dataVariables) {
     this.featureClass = featureClass;
     this.dataVariables = dataVariables;
   }
@@ -60,7 +60,7 @@ public abstract class PointFeatureCollectionImpl implements PointFeatureCollecti
   }
 
   // the data variables to be found in the PointFeature
-  public List<VariableSimpleIF> getDataVariables() {
+  public List<? extends VariableSimpleIF> getDataVariables() {
     return dataVariables;
   }
 
@@ -76,7 +76,7 @@ public abstract class PointFeatureCollectionImpl implements PointFeatureCollecti
   }
 
   // an iterator over Features of type PointFeature
-  public PointFeatureIterator getPointIterator(int bufferSize) throws IOException {
+  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     pfiter.setBufferSize( bufferSize);
     return pfiter;
   }

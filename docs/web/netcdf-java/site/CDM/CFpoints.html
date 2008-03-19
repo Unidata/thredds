@@ -2,10 +2,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Untitled Document</title>
+<title>CF Point Data</title>
 </head>
 
 <body>
+<h1>CF Conventions for Point Data (proposed)</h1>
+<p><em>Draft 3/18/2008  </em></p>
+<p>Section 5 of <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html">CF 1.1 Conventions</a> explains how to specify Coordinate Systems in a netCDF/CF file, and in particular the use of auxilary coordinate variables. This proposal extends that framework to specify how to create the following types of datasets: </p>
+<ol>
+  <li> <strong>Point Data </strong> : one or more parameters measured at one point in time and space </li>
+  <li><strong>Time series of Station Data</strong> : a time-series of data points all at the same location, with varying time</li>
+  <li><strong>Trajectory Data </strong> : a set of data points along a 1D curve in time and space. </li>
+  <li><strong>Profile Data </strong> : a set of data points along a vertical line. </li>
+  <li><strong>Station Profile Data</strong>: a time-series of profiles at a named location. </li>
+  <li><strong>Section Profile Data</strong>: a collection of profiles which originate along a trajectory. <strong></strong> </li>
+</ol>
 <h2>1.&nbsp;Point Data</h2>
 <p>To represent data at <em><strong>scattered, unconnected points</strong></em>, both data  and coordinates use the same, single dimension.  The <em>coordinates</em> attribute is used on the data variables to unambiguously identify the time, lat,  lon and height auxilary coordinate variables. </p>
 <pre>
@@ -37,8 +48,8 @@ variables:
     temp:coordinates = &quot;time lat lon alt&quot; ;
 
 attributes:
-&nbsp; :CF_datatype = &quot;point&quot;;
-</pre>
+&nbsp; :CF_datatype = &quot;point&quot;;<a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#id2611379">
+</a></pre>
 <p> In this example, the <strong>humidity(i) </strong>and<strong> temp(i)</strong> data  are associated with the coordinate values <strong>time(i),  lat(i),  lon(i), </strong>and optionally<strong> alt(i)</strong>. The obs dimension may use the unlimited dimension or not. If the time coordinate is ordered,  the obs dimension may be named <strong>time</strong> (making time a coordinate variable rather than an auxiliary variable).</p>
 <h2>2.&nbsp;Time series of Station Data</h2>
 <p>Point data may be  taken at a set of named locations called <em>stations</em>. The set of observations at  a particular station, if ordered by time, is a time series, and the file  contains a <strong><em>collection  of time series of station data</em></strong>. </p>

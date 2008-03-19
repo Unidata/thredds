@@ -25,7 +25,25 @@ import java.util.Date;
  * @author caron
  * @since Feb 29, 2008
  */
-public interface PointFeature extends Feature, PointData {
+public interface PointFeature extends Feature {
+
+  /**
+   * Location of this observation
+   * @return the location of this observation
+   */
+  public EarthLocation getLocation();
+
+ /**
+   * Actual time of this observation. Units are found from getTimeUnits() in the containing dataset.
+   * @return actual time of this observation.
+   */
+  public double getObservationTime();
+
+  /**
+   * Actual time of this observation, as a Date.
+   * @return actual time of this observation, as a Date.
+   */
+  public Date getObservationTimeAsDate();
 
   /**
    * Nominal time of this observation.
@@ -38,4 +56,12 @@ public interface PointFeature extends Feature, PointData {
    * @return Nominal time of this observation, as a Date.
    */
   public Date getNominalTimeAsDate();
+
+  /**
+   * The actual data of this observation.
+   * @return the actual data of this observation.
+   * @throws java.io.IOException on i/o error
+   */
+  public ucar.ma2.StructureData getData() throws java.io.IOException;
+
 }

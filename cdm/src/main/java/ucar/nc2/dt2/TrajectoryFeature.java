@@ -20,6 +20,7 @@
 package ucar.nc2.dt2;
 
 import java.util.Date;
+import ucar.nc2.units.DateRange;
 
 /**
  * A Trajectory of observations. A set of observations along a 1D path, connected in space and time.
@@ -41,16 +42,10 @@ public interface TrajectoryFeature extends Feature, PointFeatureCollection {
   // all below are convenience routines
 
   /**
-   * Start date for the trajectory.
+   * DateRange for the points along the trajectory.
    * @return stating date for the trajectory.
    */
-  public Date getStartDate();
-
-  /**
-   * End date for the trajectory.
-   * @return End date for the trajectory.
-   */
-  public Date getEndDate();
+  public DateRange getDateRange();
 
   /**
    * BoundingBox for the trajectory. May not be available.

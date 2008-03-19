@@ -165,10 +165,13 @@ public class PointObsViewer2 extends JPanel {
 
     if (debugStationDatsets)
       System.out.println("PointObsViewer open type " + dataset.getClass().getName());
-    Date startDate = dataset.getDateRange().getStart().getDate();
-    Date endDate = dataset.getDateRange().getEnd().getDate();
-    if ((startDate != null) && (endDate != null))
-      chooser.setDateRange(new DateRange(startDate, endDate));
+    
+    if (dataset.getDateRange() != null) {
+      Date startDate = dataset.getDateRange().getStart().getDate();
+      Date endDate = dataset.getDateRange().getEnd().getDate();
+      if ((startDate != null) && (endDate != null))
+        chooser.setDateRange(new DateRange(startDate, endDate));
+    }
 
     // clear
     setObservations( null);
@@ -181,7 +184,7 @@ public class PointObsViewer2 extends JPanel {
     if (pobsDataset != null)  {
       FeatureIterator iter = pobsDataset.getFeatureIterator(-1);
       while (iter.hasNext()) {
-        PointData pob = (PointData) iter.nextFeature();
+        PointFeature pob = (PointFeature) iter.nextFeature();
         pointBeans.add(new PointObsBean(count++, pob));
       }
     }
@@ -202,7 +205,7 @@ public class PointObsViewer2 extends JPanel {
     prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
   }
 
-  private void showData(PointData pobs) {
+  private void showData(PointFeature pobs) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
     try {
       StructureData sd = pobs.getData();
@@ -220,11 +223,11 @@ public class PointObsViewer2 extends JPanel {
   } // for prefs.BeanTable LOOK
 
   public class PointObsBean implements ucar.nc2.dt.Station {  // fake Station, so we can use StationRegionChooser
-    private PointData pobs;
+    private PointFeature pobs;
     private String timeObs;
     private int id;
 
-    public PointObsBean(int id, PointData obs) {
+    public PointObsBean(int id, PointFeature obs) {
       this.id = id;
       this.pobs = obs;
       setTime(obs.getObservationTimeAsDate());

@@ -28,22 +28,33 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * A PointFeatureCollection of PointFeature
+ * A PointFeatureCollection of PointFeature.
+ * Can be used as a helper class for Station, Profile and Trajectory ("1-nested collections").
+ * This provides the subsetting.
+ *
  * @author caron
  * @since Mar 1, 2008
  */
-public class CollectionPointFeature extends PointFeatureCollectionImpl {
+public class CollectionOfPointFeatures extends PointFeatureCollectionImpl {
   private LatLonRect filter_bb;
   private DateRange filter_date;
 
-  public CollectionPointFeature(List<VariableSimpleIF> dataVariables, PointFeatureIterator pfiter) {
+  public CollectionOfPointFeatures(List<? extends VariableSimpleIF> dataVariables, PointFeatureIterator pfiter) {
+    this( dataVariables, pfiter, null, null);
+  }
+
+   public CollectionOfPointFeatures(List<? extends VariableSimpleIF> dataVariables, PointFeatureIterator pfiter,
+          LatLonRect filter_bb, DateRange filter_date) {
     super( PointFeature.class, dataVariables);
-    FeatureIteratorAdapter iter = new FeatureIteratorAdapter(pfiter, null, null);
+    this.filter_bb = filter_bb;
+    this.filter_date = filter_date;
+
+    FeatureIteratorAdapter iter = new FeatureIteratorAdapter(pfiter, filter_bb, filter_date);
     setIterators(iter, iter);
   }
 
   // copy constructor
-  CollectionPointFeature(CollectionPointFeature from, LatLonRect filter_bb, DateRange filter_date) {
+  CollectionOfPointFeatures(CollectionOfPointFeatures from, LatLonRect filter_bb, DateRange filter_date) {
     super(from);
 
     if (from.filter_bb == null)
@@ -61,7 +72,7 @@ public class CollectionPointFeature extends PointFeatureCollectionImpl {
   }
 
   public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new CollectionPointFeature( this, boundingBox, dateRange);
+    return new CollectionOfPointFeatures( this, boundingBox, dateRange);
   }
 
 }

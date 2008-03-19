@@ -21,6 +21,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.dt2.point.PointDatasetDefaultHandler;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.radial.RadialCoordSys;
@@ -349,17 +350,21 @@ public class CoordSysTable extends JPanel {
       StringBuffer buff = new StringBuffer();
       List<CoordinateSystem> csList = v.getCoordinateSystems();
       for (CoordinateSystem cs : csList) {
-        buff.append(cs.getName()).append(" ");
         if (firstCoordSys == null)
           firstCoordSys = cs;
+        else
+          buff.append("; ");
+        buff.append(cs.getName());
 
-        if (GridCoordSys.isGridCoordSys(buff, cs)) {
-          GridCoordSys gcs = new GridCoordSys(cs, buff);
+        StringBuffer gridBuff = new StringBuffer();
+        if (GridCoordSys.isGridCoordSys(gridBuff, cs)) {
+          GridCoordSys gcs = new GridCoordSys(cs, gridBuff);
           if (gcs.isComplete(v))
             addDataType("grid");
-        } else {
 
-        }
+        } //else if (PointDatasetDefaultHandler.isPointFeatureDataset(ds)) {
+          //addDataType("point");
+        //} 
 
       }
       setCoordSys(buff.toString());

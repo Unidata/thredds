@@ -29,11 +29,11 @@ import java.util.ArrayList;
  *
  * @author caron
  */
-public class Enumeration {
+public class EnumTypedef {
   private String name;
   private Map<Integer, String> map;
 
-  public Enumeration(String name, Map<Integer, String> map) {
+  public EnumTypedef(String name, Map<Integer, String> map) {
     this.name = name;
     this.map = map;
   }

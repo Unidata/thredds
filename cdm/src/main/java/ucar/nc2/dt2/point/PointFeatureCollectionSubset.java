@@ -26,22 +26,24 @@ import ucar.nc2.dt2.*;
 import java.io.IOException;
 
 /**
- * Adapts a FeatureDataset to a PointFeatureDataset
+ * Subsets a PointFeatureCollection, turns it into a CollectionOfPointFeatures
  * @author caron
  * @since Feb 18, 2008
  */
-public class PointFeatureDatasetAdapter extends PointFeatureDatasetImpl {
-  private FeatureDataset from;
+public class PointFeatureCollectionSubset extends CollectionOfPointFeatures {
+  private PointFeatureCollection from;
   private LatLonRect filter_bb;
   private DateRange filter_date;
 
-  PointFeatureDatasetAdapter(FeatureDatasetImpl from) {
-    super( from, null, null);
+  PointFeatureCollectionSubset(PointFeatureCollection from, PointFeatureIterator piter, LatLonRect filter_bb, DateRange filter_date) {
+    super( from.getDataVariables(), piter);
     this.from = from;
+    this.filter_bb = filter_bb;
+    this.filter_date = filter_date;
   }
 
   // copy constructor
-  PointFeatureDatasetAdapter(PointFeatureDatasetAdapter from, LatLonRect filter_bb, DateRange filter_date) {
+  PointFeatureCollectionSubset(PointFeatureCollectionSubset from, LatLonRect filter_bb, DateRange filter_date) {
     super(from, filter_bb, filter_date);
 
     if (from.filter_bb == null)
@@ -55,24 +57,24 @@ public class PointFeatureDatasetAdapter extends PointFeatureDatasetImpl {
       this.filter_date = (filter_date == null) ? from.filter_date : from.filter_date.intersect( filter_date);
   }
 
-  public PointFeatureDataset subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new PointFeatureDatasetAdapter( this, boundingBox, dateRange);
+  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    return new PointFeatureCollectionSubset( this, boundingBox, dateRange);
   }
 
   public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
     return new FeatureIteratorAdapter();
   }
 
-  // iterate through Features, then PointData
+  // iterate through Features, then PointFeature
   private class FeatureIteratorAdapter implements FeatureIterator {
     FeatureIterator fiter;
     PointFeatureIterator diter;
-    PointData pdata;
+    PointFeature pdata;
     boolean done = false;
 
     FeatureIteratorAdapter() throws IOException {
       fiter = from.getFeatureIterator(-1);
-      FeatureWithPointData feature = nextFilteredFeature();
+      FeatureWithPointFeature feature = nextFilteredFeature();
       if (feature == null)
         done = true;
       else
@@ -85,7 +87,7 @@ public class PointFeatureDatasetAdapter extends PointFeatureDatasetImpl {
       pdata = nextFilteredDataPoint();
       if (pdata != null) return true;
 
-      FeatureWithPointData feature = nextFilteredFeature();
+      FeatureWithPointFeature feature = nextFilteredFeature();
       if (feature == null) {
         done = true;
         return false;
@@ -100,23 +102,23 @@ public class PointFeatureDatasetAdapter extends PointFeatureDatasetImpl {
       return new PointFeatureAdapter(pdata.hashCode(), null, pdata);
     }
 
-    private FeatureWithPointData nextFilteredFeature() throws IOException {
+    private FeatureWithPointFeature nextFilteredFeature() throws IOException {
       if (!fiter.hasNext()) return null;
-      FeatureWithPointData f = (FeatureWithPointData) fiter.nextFeature();
+      FeatureWithPointFeature f = (FeatureWithPointFeature) fiter.nextFeature();
 
       if (filter_bb == null)
         return f;
 
       while (!filter_bb.contains(f.getLatLon())) {
         if (!fiter.hasNext()) return null;
-        f = (FeatureWithPointData) fiter.nextFeature();
+        f = (FeatureWithPointFeature) fiter.nextFeature();
       }
       return f;
     }
 
-    private PointData nextFilteredDataPoint() throws IOException {
+    private PointFeature nextFilteredDataPoint() throws IOException {
       if (!diter.hasNext()) return null;
-      PointData pdata = diter.nextData();
+      PointFeature pdata = diter.nextData();
 
       if (filter_date == null)
         return pdata;
@@ -130,25 +132,25 @@ public class PointFeatureDatasetAdapter extends PointFeatureDatasetImpl {
 
   }
 
-  // iterate through Features, then PointData
+  // iterate through Features, then PointFeature
   private class FeatureIteratorAdapter2 implements FeatureIterator {
     FeatureDataset featureDataset;
-    boolean hasPointData;
+    boolean hasPointFeature;
 
     FeatureIterator fiter;
     PointFeatureIterator diter;
-    PointData pdata;
+    PointFeature pdata;
     boolean done = false;
 
     FeatureIteratorAdapter2(FeatureDataset featureDataset) throws IOException {
       this.featureDataset = featureDataset;
       Class featureClass = featureDataset.getClass();
-      hasPointData = featureClass.isInstance(FeatureWithPointData.class);
+      hasPointFeature = featureClass.isInstance(FeatureWithPointFeature.class);
     }
 
     void init() throws IOException {
       fiter = featureDataset.getFeatureIterator(-1);
-      FeatureWithPointData feature = nextFilteredFeature();
+      FeatureWithPointFeature feature = nextFilteredFeature();
       if (feature == null)
         done = true;
       else
@@ -161,7 +163,7 @@ public class PointFeatureDatasetAdapter extends PointFeatureDatasetImpl {
       pdata = nextFilteredDataPoint();
       if (pdata != null) return true;
 
-      FeatureWithPointData feature = nextFilteredFeature();
+      FeatureWithPointFeature feature = nextFilteredFeature();
       if (feature == null) {
         done = true;
         return false;
@@ -177,23 +179,23 @@ public class PointFeatureDatasetAdapter extends PointFeatureDatasetImpl {
       return new PointFeatureAdapter(pdata.hashCode(), null, pdata);
     }
 
-    private FeatureWithPointData nextFilteredFeature() throws IOException {
+    private FeatureWithPointFeature nextFilteredFeature() throws IOException {
       if (!fiter.hasNext()) return null;
-      FeatureWithPointData f = (FeatureWithPointData) fiter.nextFeature();
+      FeatureWithPointFeature f = (FeatureWithPointFeature) fiter.nextFeature();
 
       if (filter_bb == null)
         return f;
 
       while (!filter_bb.contains(f.getLatLon())) {
         if (!fiter.hasNext()) return null;
-        f = (FeatureWithPointData) fiter.nextFeature();
+        f = (FeatureWithPointFeature) fiter.nextFeature();
       }
       return f;
     }
 
-    private PointData nextFilteredDataPoint() throws IOException {
+    private PointFeature nextFilteredDataPoint() throws IOException {
       if (!diter.hasNext()) return null;
-      PointData pdata = diter.nextData();
+      PointFeature pdata = diter.nextData();
 
       if (filter_date == null)
         return pdata;

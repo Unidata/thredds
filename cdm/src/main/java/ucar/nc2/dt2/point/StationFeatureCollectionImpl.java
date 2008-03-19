@@ -163,7 +163,7 @@ public class StationFeatureCollectionImpl extends PointFeatureCollectionImpl imp
         return;
       }
       StationFeature sfeature = (StationFeature) fiter.nextFeature();
-      pfiter = sfeature.getPointIterator(bufferSize);
+      pfiter = sfeature.getPointFeatureIterator(bufferSize);
     }
 
     public boolean hasNext() throws IOException {
@@ -175,7 +175,7 @@ public class StationFeatureCollectionImpl extends PointFeatureCollectionImpl imp
 
       if (!fiter.hasNext()) return false;
       StationFeature sfeature = (StationFeature) fiter.nextFeature();
-      pfiter = sfeature.getPointIterator(bufferSize);
+      pfiter = sfeature.getPointFeatureIterator(bufferSize);
       pfeature = nextFilteredPointFeature();
       if (pfeature == null) return hasNext();
       return true;

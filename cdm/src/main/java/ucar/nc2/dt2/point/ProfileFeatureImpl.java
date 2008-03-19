@@ -25,6 +25,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 
 /**
  * Abstract superclass for implementations of ProfileFeature.
+ *
  * @author caron
  * @since Feb 29, 2008
  */

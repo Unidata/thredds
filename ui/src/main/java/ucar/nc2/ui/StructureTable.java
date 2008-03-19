@@ -22,7 +22,7 @@ package ucar.nc2.ui;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dt2.PointData;
+import ucar.nc2.dt2.PointFeature;
 import ucar.nc2.util.HashMapLRU;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.PointObsDatatype;
@@ -184,7 +184,7 @@ public class StructureTable extends JPanel {
    * @param obsData List of type PointObsDatatype
    * @throws IOException  on io error
    */
-  public void setPointObsData2(List<PointData> obsData) throws IOException {
+  public void setPointObsData2(List<PointFeature> obsData) throws IOException {
     dataModel = new PointObsDataModel2(obsData);
     initTable(dataModel);
     jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
@@ -572,9 +572,9 @@ public class StructureTable extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////
   private class PointObsDataModel2 extends StructureTableModel {
-    private List<PointData> obsData;
+    private List<PointFeature> obsData;
 
-    PointObsDataModel2(List<PointData> obsData) throws IOException {
+    PointObsDataModel2(List<PointFeature> obsData) throws IOException {
       wantDate = true;
 
       this.obsData = obsData;
@@ -590,7 +590,7 @@ public class StructureTable extends JPanel {
     }
 
     public Date getDate(int row) {
-      PointData obs = obsData.get(row);
+      PointFeature obs = obsData.get(row);
       return obs.getObservationTimeAsDate();
     }
 
@@ -599,7 +599,7 @@ public class StructureTable extends JPanel {
     }
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      PointData obs = obsData.get(row);
+      PointFeature obs = obsData.get(row);
       return obs.getData();
     }
 
@@ -608,7 +608,7 @@ public class StructureTable extends JPanel {
     }
 
     public void clear() {
-      obsData = new ArrayList<PointData>(); // empty list
+      obsData = new ArrayList<PointFeature>(); // empty list
       fireTableDataChanged();
     }
   }

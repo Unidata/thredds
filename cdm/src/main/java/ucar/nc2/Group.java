@@ -44,7 +44,7 @@ public class Group {
   protected List<Dimension> dimensions = new ArrayList<Dimension>();
   protected List<Group> groups = new ArrayList<Group>();
   protected List<Attribute> attributes = new ArrayList<Attribute>();
-  protected List<Enumeration> enums = new ArrayList<Enumeration>();
+  protected List<EnumTypedef> enums = new ArrayList<EnumTypedef>();
   private boolean immutable = false;
 
    /**
@@ -220,10 +220,10 @@ public class Group {
    * @param name Enumeration name.
    * @return the Enumeration, or null if not found
    */
-  public Enumeration findEnumeration(String name) {
+  public EnumTypedef findEnumeration(String name) {
     if (name == null) return null;
     name =  NetcdfFile.unescapeName(name);
-    for (Enumeration d : enums) {
+    for (EnumTypedef d : enums) {
       if (name.equals(d.getName()))
         return d;
     }
@@ -287,7 +287,7 @@ public class Group {
 
     if (hasE)
       out.print(indent+" enums:\n");
-    for (Enumeration e : enums) {
+    for (EnumTypedef e : enums) {
       out.print(indent + e.writeCDL(strict));
       out.print(indent + "\n");
     }
@@ -401,7 +401,7 @@ public class Group {
   /** Add an Enumeration
    * @param e add this Enumeration.
    */
-  public void addEnumeration( Enumeration e) {
+  public void addEnumeration( EnumTypedef e) {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (e == null) return;
 

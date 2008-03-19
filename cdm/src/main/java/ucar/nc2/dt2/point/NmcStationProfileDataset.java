@@ -23,6 +23,10 @@ import ucar.nc2.dt2.*;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.Structure;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.Variable;
+import ucar.nc2.iosp.misc.NmcObsLegacy;
+import ucar.nc2.constants.DataType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.StructureData;
@@ -34,16 +38,38 @@ import java.util.List;
 import java.util.Iterator;
 
 /**
+ * StationProfileFeatureCollection for IOSP NmcObsLegacy using NMC Office Note 29 file
+ *
  * @author caron
  * @since Feb 29, 2008
  */
-public class NmcStationProfileDataset extends FeatureDatasetImpl implements StationProfileFeatureCollection {
+public class NmcStationProfileDataset implements FeatureDatasetFactory {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetDefaultHandler.class);
+
+  // FeatureDatasetFactory
+  public boolean isMine(NetcdfDataset ds) {
+    return ds.getIosp() instanceof NmcObsLegacy;
+  }
+
+  public FeatureDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    featureDataset = new PointFeatureDatasetImpl(ncd, StationProfileFeature.class);
+    init(ncd, errlog);
+    return featureDataset;
+  }
+
+  public DataType getFeatureDataType() {
+    return DataType.POINT;
+  }
+
+  ///////////////////////////////////////////////////////////////////////
+  private PointFeatureDatasetImpl featureDataset;
   private StationHelper stationHelper = new StationHelper();
+  private Structure stationProfiles;
+  private DateUnit dateUnit;
 
-  public NmcStationProfileDataset(NetcdfDataset ncfile) throws IOException {
-    super(ncfile);
+  private void init(NetcdfDataset ncfile, StringBuffer errlog) throws IOException {
 
-    Structure stationProfiles = (Structure) ncfile.findVariable("stationProfiles");
+    stationProfiles = (Structure) ncfile.findVariable("stationProfiles");
     ucar.ma2.StructureDataIterator iter = stationProfiles.getStructureIterator();
     while (iter.hasNext()) {
       StructureData sdata = iter.next();
@@ -51,56 +77,86 @@ public class NmcStationProfileDataset extends FeatureDatasetImpl implements Stat
       float lat = sdata.getScalarFloat("lat");
       float lon = sdata.getScalarFloat("lon");
       float elev = sdata.getScalarFloat("elev");
-      int npts = sdata.getScalarInt("npts");
+      int npts = sdata.getScalarInt("nrecords");
       ArraySequence2 seq = (ArraySequence2) sdata.getArrayStructure("report");
-      stationHelper.addStation( new NmcStationProfileFeature(name, lat, lon, elev, null, seq, npts));
+      stationHelper.addStation(new NmcStation(name, lat, lon, elev, seq, npts));
+    }
+
+    Structure report = (Structure) stationProfiles.findVariable("report");
+    Variable time = report.findVariable("time");
+    try {
+      dateUnit = new DateUnit(time.getUnitsString());
+    } catch (Exception e) {
+      log.warn("Invalid date unit string= " + time.getUnitsString());
+    }
+
+    Structure mandLevels = (Structure) report.findVariable("mandatoryLevels");
+    NmcStationProfileCollection mandLevelsProfiles = new NmcStationProfileCollection(mandLevels);
+    featureDataset.setPointFeatureCollection(mandLevelsProfiles);
+  }
+
+  private class NmcStation extends StationImpl {
+    ArraySequence2 seq;
+    int npts;
+
+    NmcStation(String name, double lat, double lon, double elev, ArraySequence2 seq, int npts) {
+      super(name, name, lat, lon, elev);
+      this.seq = seq;
+      this.npts = npts;
     }
   }
 
-  public Class getFeatureClass() {
-    return StationProfileFeatureImpl.class;
-  }
+  private class NmcStationProfileCollection extends PointFeatureCollectionImpl implements StationProfileFeatureCollection {
+    private Structure struct;
 
-  public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
-    return new NmcStationProfileIterator();
-  }
+    NmcStationProfileCollection(Structure struct) throws IOException {
+      super(StationProfileFeature.class, struct.getVariables());
+      this.struct = struct;
+      setIterators( getFeatureIterator(-1), new PointFeatureIteratorAdapter( getFeatureIterator(-1), null, null));
+    }
 
-  public DataCost getDataCost() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
+    public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
+      return new NmcStationProfileIterator(struct);
+    }
 
-  public StationProfileFeatureCollection subset(List<Station> stations) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
+    public StationProfileFeatureCollection subset(List<Station> stations) throws IOException {
+      return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-  public StationProfileFeature getStationProfileFeature(Station s) throws IOException {
-    return (StationProfileFeature) stationHelper.getStation(s.getName());
-  }
+    public StationProfileFeature getStationProfileFeature(Station s) throws IOException {
+      return new NmcStationProfileFeature(struct, (NmcStation) s);
+    }
 
-  public StationProfileFeature getStationProfileFeature(Station s, DateRange dateRange) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
+    public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+      return null;
+    }
 
-  public PointFeatureDataset subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new PointFeatureDatasetAdapter(this);
-  }
+    public List<Station> getStations() throws IOException {
+      return stationHelper.getStations();
+    }
 
-  public List<Station> getStations() throws IOException {
-    return stationHelper.getStations();
-  }
+    public List<Station> getStations(LatLonRect boundingBox) throws IOException {
+      return stationHelper.getStations(boundingBox);
+    }
 
-  public List<Station> getStations(LatLonRect boundingBox) throws IOException {
-    return stationHelper.getStations(boundingBox);
-  }
+    public Station getStation(String name) {
+      return stationHelper.getStation(name);
+    }
 
-  public Station getStation(String name) {
-    return stationHelper.getStation( name);
+    public LatLonRect getBoundingBox() {
+      return stationHelper.getBoundingBox();
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////
+
+  // iterator over the StationProfiles in this entire dataset
+
   private class NmcStationProfileIterator implements ucar.nc2.dt2.FeatureIterator {
+    Structure struct;
     Iterator iter;
-    NmcStationProfileIterator() {
+
+    NmcStationProfileIterator(Structure struct) {
       iter = stationHelper.getStations().iterator();
     }
 
@@ -110,41 +166,56 @@ public class NmcStationProfileDataset extends FeatureDatasetImpl implements Stat
 
     // StationProfileFeature
     public Feature nextFeature() throws IOException {
-      return (NmcStationProfileFeature) iter.next();
+      return new NmcStationProfileFeature(struct, (NmcStation) iter.next());
+    }
+
+    public void setBufferSize(int bytes) {
+      //To change body of implemented methods use File | Settings | File Templates.
     }
   }
 
+  // a station profile - time series of profiles at one station
   private class NmcStationProfileFeature extends StationProfileFeatureImpl {
-    ArraySequence2 seq;
-    int npts;
+    Structure struct;
+    NmcStation s;
 
-    NmcStationProfileFeature(String name, double lat, double lon, double elev, DateUnit timeUnit, ArraySequence2 seq, int npts) {
-      super(NmcStationProfileDataset.this, name, null, lat, lon, elev, timeUnit);
-      this.seq = seq;
-      this.npts = npts;
+    NmcStationProfileFeature(Structure struct, NmcStation s) {
+      super(s, dateUnit, s.npts);
+      this.struct = struct;
     }
 
-    public int getNumberPoints() {
-      return npts;
+    // the data variables to be found in the PointFeature
+    public List<? extends VariableSimpleIF> getDataVariables() {
+      return struct.getVariables();
     }
 
-    // returns ProfileFeature
+    // iterator over ProfileFeatures
     public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
-      return new NmcProfileIterator(this, seq);
+      return new NmcProfileIterator(struct, this, s.seq);
     }
 
-    public DataCost getDataCost() {
-      return null;
+    // iterator over PointFeatures, collapsing the profiles
+    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+      return new PointFeatureIteratorAdapter( getFeatureIterator(bufferSize), null, null);
     }
+
+    // create a subset
+    public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+      return new CollectionOfPointFeatures(getDataVariables(), getPointFeatureIterator(-1), boundingBox, dateRange);
+    }
+
   }
 
+  // iteration over all the profiles for one station
   private class NmcProfileIterator implements ucar.nc2.dt2.FeatureIterator {
+    Structure struct;
     Station s;
     ucar.ma2.StructureDataIterator iter;
     DateUnit dateUnit;
     double time;
 
-    NmcProfileIterator(Station s, ArraySequence2 profile) throws IOException {
+    NmcProfileIterator(Structure struct, Station s, ArraySequence2 profile) throws IOException {
+      this.struct = struct;
       this.s = s;
       iter = profile.getStructureIterator();
     }
@@ -166,19 +237,26 @@ public class NmcStationProfileDataset extends FeatureDatasetImpl implements Stat
         }
       }
       time = sdata.convertScalarDouble(timeMember);
-      ArraySequence2 levels = (ArraySequence2) sdata.getArrayStructure("mandatoryLevels");
-      return new NmcProfileFeature(s, time, dateUnit, levels);
+      ArraySequence2 levels = (ArraySequence2) sdata.getArrayStructure(struct.getShortName());
+      return new NmcProfileFeature(struct, s, time, dateUnit, levels);
+    }
+
+    public void setBufferSize(int bytes) {
+      //To change body of implemented methods use File | Settings | File Templates.
     }
   }
 
+  // one profile
   private class NmcProfileFeature extends ProfileFeatureImpl {
+    Structure struct;
     Station s;
     double time;
     DateUnit dateUnit;
     ArraySequence2 levels;
 
-    NmcProfileFeature( Station s, double time, DateUnit dateUnit, ArraySequence2 levels) throws IOException {
+    NmcProfileFeature(Structure struct, Station s, double time, DateUnit dateUnit, ArraySequence2 levels) throws IOException {
       super(s.getLatLon());
+      this.struct = struct;
       this.s = s;
       this.time = time;
       this.dateUnit = dateUnit;
@@ -189,30 +267,42 @@ public class NmcStationProfileDataset extends FeatureDatasetImpl implements Stat
       return -1;
     }
 
-    public PointFeatureIterator getDataIterator(int bufferSize) throws IOException {
-      return new NmcPointDataIterator( s, time, dateUnit, levels.getStructureIterator());
-    }
-
-    public PointFeature makePointFeature(PointData pointData) {
-      return new PointFeatureAdapter(pointData.hashCode(), null, pointData);
-    }
-
     public Object getId() {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
+      return s;
     }
 
     public String getDescription() {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
+      return s.getName();
+    }
+
+    // the data variables to be found in the PointFeature
+    public List<? extends VariableSimpleIF> getDataVariables() {
+      return struct.getVariables();
+    }
+
+    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+      return new NmcPointFeatureIterator(s, time, dateUnit, levels.getStructureIterator());
+    }
+
+    // an iterator over Features of type getCollectionFeatureType
+    public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
+      return new FeatureIteratorAdapter(getPointFeatureIterator(bufferSize), null, null);
+    }
+
+    // doesnt actually make much sense, will return all or none
+    public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+      return new CollectionOfPointFeatures(getDataVariables(), getPointFeatureIterator(-1), boundingBox, dateRange);
     }
   } // NmcProfileFeature
 
-  class NmcPointDataIterator implements PointFeatureIterator {
+  // iteration over the points in one profile
+  private class NmcPointFeatureIterator implements PointFeatureIterator {
     Station s;
     double time;
     DateUnit dateUnit;
     ucar.ma2.StructureDataIterator iter;
 
-    NmcPointDataIterator(Station s, double time, DateUnit dateUnit, ucar.ma2.StructureDataIterator iter) {
+    NmcPointFeatureIterator(Station s, double time, DateUnit dateUnit, ucar.ma2.StructureDataIterator iter) {
       this.s = s;
       this.time = time;
       this.dateUnit = dateUnit;
@@ -223,9 +313,30 @@ public class NmcStationProfileDataset extends FeatureDatasetImpl implements Stat
       return iter.hasNext();
     }
 
-    public PointData nextData() throws IOException {
-      StructureData sdata = iter.next();
-      return new PointDataImpl(s, time, dateUnit, sdata);
+    public PointFeature nextData() throws IOException {
+      return new NmcPointFeature(s, time, dateUnit, iter.next());
+    }
+
+    public void setBufferSize(int bytes) {
+      //To change body of implemented methods use File | Settings | File Templates.
+    }
+  }
+
+  // a single obs
+  private class NmcPointFeature extends PointFeatureImpl {
+    private StructureData sdata;
+
+    NmcPointFeature(Station s, double time, DateUnit dateUnit, StructureData sdata) {
+      super(s, time, time, dateUnit);
+      this.sdata = sdata;
+    }
+
+    public StructureData getData() throws IOException {
+      return sdata;
+    }
+
+    public Object getId() {
+      return sdata;
     }
   }
 

@@ -29,7 +29,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 
 /**
- * Adapt a PointFeatureIterator to a FeatureAdapter, deal with possible date and bounding box filtering
+ * Adapt a PointFeatureIterator to a FeatureIterator, deals with possible date and bounding box filtering
  *
  * @author caron
  * @since Mar 1, 2008

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -34,13 +34,14 @@ import java.util.Iterator;
 
 /**
  * Abstract superclass for implementations of FeatureDataset
+ * Subclass must implement getFeatureClass(), and add specific functionality.
  * @author caron
  * @since Sep 7, 2007
  */
 public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected NetcdfDataset ncfile;
   protected String title, desc, location;
-  protected List<VariableSimpleIF> dataVariables = new ArrayList<VariableSimpleIF>(); // VariableSimpleIF
+  protected List<VariableSimpleIF> dataVariables = new ArrayList<VariableSimpleIF>();
   protected StringBuffer parseInfo = new StringBuffer();
   protected DateRange dateRange;
   protected LatLonRect boundingBox;

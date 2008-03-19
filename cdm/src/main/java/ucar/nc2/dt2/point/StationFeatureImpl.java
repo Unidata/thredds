@@ -85,7 +85,7 @@ public class StationFeatureImpl extends StationImpl implements StationFeature {
   }
 
   // an iterator over Features of type PointFeature
-  public PointFeatureIterator getPointIterator(int bufferSize) throws IOException {
+  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     iter.setBufferSize( bufferSize);
     return iter;
   }

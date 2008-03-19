@@ -28,24 +28,26 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Abstract superclass for implementations of PointObsDataset.
- * Subclass must implement getPointFeatureCollection().
+ * Implementation of PointFeatureDataset.
+ * All of the specialization is in List<PointFeatureCollection> collectionList.
+ *
  * @author caron
  * @since Feb 29, 2008
  */
 public class PointFeatureDatasetImpl extends FeatureDatasetImpl implements PointFeatureDataset {
   protected List<PointFeatureCollection> collectionList;
-  protected Class featureClass;
+  protected Class featureInterface;
 
+  // subsetting
   protected PointFeatureDatasetImpl(PointFeatureDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
     super(from, filter_bb, filter_date);
     this.collectionList = from.collectionList;
-    this.featureClass = from.featureClass;
+    this.featureInterface = from.featureInterface;
   }
 
-  public PointFeatureDatasetImpl(NetcdfDataset ds, Class featureClass) {
+  public PointFeatureDatasetImpl(NetcdfDataset ds, Class featureInterface) {
     super(ds);
-    this.featureClass = featureClass;
+    this.featureInterface = featureInterface;
   }
 
   protected void setPointFeatureCollection(List<PointFeatureCollection> collectionList) {
@@ -58,7 +60,7 @@ public class PointFeatureDatasetImpl extends FeatureDatasetImpl implements Point
   }
 
   public Class getFeatureClass() {
-    return featureClass;
+    return featureInterface;
   }
 
   public List<PointFeatureCollection> getPointFeatureCollectionList() {

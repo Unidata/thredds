@@ -17,46 +17,36 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2.point;
 
-import ucar.nc2.dt2.PointData;
-import ucar.nc2.dt2.EarthLocation;
-import ucar.nc2.units.DateUnit;
-import ucar.ma2.StructureData;
+package ucar.nc2.dt2;
 
-import java.util.Date;
+import java.util.List;
 import java.io.IOException;
 
 /**
+ * A Collection of SectionFeatures.
+ *
  * @author caron
- * @since Feb 29, 2008
+ * @since Mar 19, 2008
  */
-public class PointDataImpl implements PointData {
-  double time;
-  EarthLocation loc;
-  DateUnit dateUnit;
-  StructureData sdata;
+public interface SectionFeatureCollection extends PointFeatureCollection {
 
-  public PointDataImpl(EarthLocation loc, double time, DateUnit dateUnit, StructureData sdata) {
-    this.time = time;
-    this.dateUnit = dateUnit;
-    this.loc = loc;
-    this.sdata = sdata;
-  }
+  /**
+   * Get a subsetted TrajectoryFeatureCollection
+   *
+   * @param stations only contain these stations
+   * @return subsetted collection
+   * @throws java.io.IOException on i/o error
+   */
+  public SectionFeatureCollection subset(List<Station> stations) throws IOException;
 
-  public double getObservationTime() {
-    return time;
-  }
+  /**
+   * Get a specific SectionFeature.
+   *
+   * @param id SectionFeature id
+   * @return SectionFeature
+   * @throws java.io.IOException on i/o error
+   */
+  public SectionFeature getSectionFeature(Object id) throws IOException;
 
-  public Date getObservationTimeAsDate() {
-    return dateUnit.makeDate(time);
-  }
-
-  public EarthLocation getLocation() {
-    return loc;
-  }
-
-  public StructureData getData() throws IOException {
-    return sdata;
-  }
 }

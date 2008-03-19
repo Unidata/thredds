@@ -17,36 +17,44 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 package ucar.nc2.dt2;
 
-import ucar.nc2.units.DateRange;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.constants.DataType;
 
-import java.util.List;
 import java.io.IOException;
 
 /**
- * A Collection of StationProfileFeatures
+ * Interface for factories that wrap a NetcdfDataset with a FeatureDataset.
+ * Class must have a no-arg Constructor.
+ *
  * @author caron
- * @since Feb 29, 2008
+ * @since Mar 19, 2008
  */
-public interface StationProfileFeatureCollection extends PointFeatureCollection, StationCollection {
+public interface FeatureDatasetFactory {
+
+  /** Determine if this dataset belongs to you
+   * @param ncd examine this NetcdfDataset to see if it belongs to this class.
+   * @return true if this class knows how to create a FeatureDataset out of this NetcdfDataset.
+   */
+  public boolean isMine( NetcdfDataset ncd);
 
   /**
-   * Get a subsetted StationCollection
+   * Open a NetcdfDataset as a FeatureDataset.
    *
-   * @param stations only contain these stations
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
+   * @param ncd already opened NetcdfDataset.
+   * @param task use may cancel
+   * @param errlog place errors here
+   * @return a subclass of TypedDataset
+   * @throws java.io.IOException on error
    */
-  public StationProfileFeatureCollection subset(List<Station> stations) throws IOException;
+  public FeatureDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException;
 
   /**
-   * Get the StationProfileFeature for a specific Station.
-   *
-   * @param s at this station
-   * @return collection of data for this Station.
-   * @throws java.io.IOException on i/o error
+   * What kind of Feature data type will this return?
+   * @return data type
    */
-  public StationProfileFeature getStationProfileFeature(Station s) throws IOException;
+  public DataType getFeatureDataType();
 
 }

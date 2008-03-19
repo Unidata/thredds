@@ -37,6 +37,12 @@ public abstract class StationProfileFeatureImpl extends StationImpl implements S
     this.npts = npts;
   }
 
+  public StationProfileFeatureImpl( Station s, DateUnit timeUnit, int npts) {
+    super(s.getName(), s.getDescription(), s.getLatitude(), s.getLongitude(), s.getAltitude());
+    this.timeUnit = timeUnit;
+    this.npts = npts;
+  }
+
   // copy constructor
   public StationProfileFeatureImpl( StationProfileFeatureImpl from) {
     super(from.name, from.desc, from.lat, from.lon, from.alt);

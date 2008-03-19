@@ -27,54 +27,74 @@ package ucar.nc2.constants;
  */
 
 public final class DataType {
-    private static java.util.List<DataType> members = new java.util.ArrayList<DataType>(20);
+  private static java.util.List<DataType> members = new java.util.ArrayList<DataType>(20);
 
-    public final static DataType NONE = new DataType("");
+  public final static DataType NONE = new DataType("");
 
-    public final static DataType GRID = new DataType("Grid");
-    public final static DataType IMAGE = new DataType("Image");
-    public final static DataType POINT = new DataType("Point");
-    public final static DataType RADIAL = new DataType("Radial");
-    public final static DataType STATION = new DataType("Station");
-    public final static DataType SWATH = new DataType("Swath");
-    public final static DataType TRAJECTORY = new DataType("Trajectory");
-    public final static DataType OTHER_UNKNOWN = new DataType("other/unknown");
+  public final static DataType GRID = new DataType("Grid");
+  public final static DataType IMAGE = new DataType("Image");
+  public final static DataType POINT = new DataType("Point");
+  public final static DataType PROFILE = new DataType("Profile");
+  public final static DataType RADIAL = new DataType("Radial");
+  public final static DataType SECTION = new DataType("Section");
+  public final static DataType STATION = new DataType("Station");
+  public final static DataType SWATH = new DataType("Swath");
+  public final static DataType TRAJECTORY = new DataType("Trajectory");
+  public final static DataType OTHER_UNKNOWN = new DataType("other/unknown");
 
   // experimental
-    public final static DataType StationRadarCollection = new DataType("StationRadarCollection");
+  public final static DataType STATION_PROFILE = new DataType("StationProfile");
+  public final static DataType STATION_RADIAL = new DataType("StationRadial");
 
-    private String name;
-    public DataType(String s) {
-      this.name = s;
-      members.add(this);
+  private String name;
+
+  public DataType(String s) {
+    this.name = s;
+    members.add(this);
+  }
+
+  /**
+   * @return all DataType objects
+   */
+  public static java.util.Collection<DataType> getAllTypes() {
+    return members;
+  }
+
+  /**
+   * Find the DataType that matches this name, ignore case.
+   *
+   * @param name : match this name
+   * @return DataType or null if no match.
+   */
+  public static DataType getType(String name) {
+    if (name == null) return null;
+    for (DataType m : members) {
+      if (m.name.equalsIgnoreCase(name))
+        return m;
     }
+    return null;
+  }
 
-    /** @return all DataType objects */
-    public static java.util.Collection<DataType> getAllTypes() { return members; }
+  /**
+   * Return the DataType name.
+   */
+  public String toString() {
+    return name;
+  }
 
-    /**
-     * Find the DataType that matches this name, ignore case.
-     * @param name : match this name
-     * @return DataType or null if no match.
-     */
-    public static DataType getType(String name) {
-      if (name == null) return null;
-      for (DataType m : members) {
-        if (m.name.equalsIgnoreCase( name))
-          return m;
-      }
-      return null;
-    }
+  /**
+   * Override Object.hashCode() to be consistent with this equals.
+   */
+  public int hashCode() {
+    return name.hashCode();
+  }
 
-    /** Return the DataType name. */
-     public String toString() { return name; }
-
-     /** Override Object.hashCode() to be consistent with this equals. */
-     public int hashCode() { return name.hashCode(); }
-     /** DataType with same name are equal. */
-     public boolean equals(Object o) {
-       if (this == o) return true;
-       if (!(o instanceof DataType)) return false;
-       return o.hashCode() == this.hashCode();
-    }
+  /**
+   * DataType with same name are equal.
+   */
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof DataType)) return false;
+    return o.hashCode() == this.hashCode();
+  }
 }

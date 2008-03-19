@@ -208,9 +208,9 @@ public class StationObsViewer2 extends JPanel {
     int npts = feature.getNumberPoints();
     if (npts >= 0)
       sb.setNobs( npts);
-    PointFeatureIterator iter = feature.getPointIterator(-1);
+    PointFeatureIterator iter = feature.getPointFeatureIterator(-1);
 
-    List<PointData> obsList = new ArrayList<PointData>();
+    List<PointFeature> obsList = new ArrayList<PointFeature>();
     while (iter.hasNext()) 
       obsList.add( iter.nextData());
     setObservations( obsList);
@@ -218,13 +218,13 @@ public class StationObsViewer2 extends JPanel {
 
   private void setObservationsAll( StationFeatureCollection stationCollection) throws IOException {
     FeatureIterator iter = stationCollection.getFeatureIterator(-1);
-    List<PointData> obsList = new ArrayList<PointData>();
+    List<PointFeature> obsList = new ArrayList<PointFeature>();
     while (iter.hasNext())
-      obsList.add( (PointData) iter.nextFeature());
+      obsList.add( (PointFeature) iter.nextFeature());
     setObservations( obsList);
   }
 
-  private void setObservations( List<PointData> obsList) throws IOException {
+  private void setObservations( List<PointFeature> obsList) throws IOException {
     if (obsList.size() == 0) {
       obsTable.clear();
       return;

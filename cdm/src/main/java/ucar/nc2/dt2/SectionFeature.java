@@ -17,20 +17,21 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt2.point;
 
-import ucar.nc2.dt2.PointFeatureIterator;
-import ucar.nc2.dt2.PointFeature;
-import ucar.nc2.dt2.PointData;
+package ucar.nc2.dt2;
 
 /**
+ * A collection of profiles which originate along a trajectory.
+ *
  * @author caron
- * @since Feb 29, 2008
+ * @since Mar 18, 2008
  */
-public interface FeatureWithPointData {
+public interface SectionFeature extends Feature, PointFeatureCollection {
 
-  //public LatLonPoint getLatLon();
-  public PointFeatureIterator getDataIterator(int bufferSize) throws java.io.IOException;
-  public PointFeature makePointFeature( PointData pointData);
+  /**
+   * The number of points along the trajectory.
+   * @return number of points along the trajectory.
+   */
   
+  public int getNumberPoints();
 }

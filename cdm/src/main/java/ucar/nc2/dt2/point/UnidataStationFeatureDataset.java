@@ -439,9 +439,9 @@ public class UnidataStationFeatureDataset extends PointFeatureDatasetImpl {
       }
     } // StationIterator
 
-    public PointFeature makePointFeature(PointData pointData) {
-      return (RecordDatasetHelper.RecordStationObs) pointData;
-    }
+    //public PointFeature makePointFeature(PointData pointData) {
+    //  return (RecordDatasetHelper.RecordStationObs) pointData;
+    //}
 
     private void checkStation(StructureData sdata, int recno) {
       List<Station> stations = stationHelper.getStations();

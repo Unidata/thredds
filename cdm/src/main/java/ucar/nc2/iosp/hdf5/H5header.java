@@ -23,7 +23,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
-import ucar.nc2.Enumeration;
+import ucar.nc2.EnumTypedef;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.LayoutTiled;
 import ucar.ma2.*;
@@ -380,7 +380,7 @@ class H5header {
         if (debugReference && facadeNested.dobj.mdt.type == 7) debugOut.println(facadeNested);
 
         if (facadeNested.dobj.mdt.map != null)
-          ncGroup.addEnumeration(new Enumeration(facadeNested.name, facadeNested.dobj.mdt.map));
+          ncGroup.addEnumeration(new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map));
         if (debugV) debugOut.println("  made enumeration " + facadeNested.name);
 
       } else if (!facadeNested.isDimensionNotVariable && warnings) {
