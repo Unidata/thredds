@@ -31,22 +31,45 @@ import java.io.IOException;
 
 /**
  * Abstract superclass for PointFeatureCollection
- * Subclass must call setIterators(), and implement subset()
+ * Subclass must implement getFeatureIterator()
+ *
  * @author caron
  * @since Mar 1, 2008
  */
 public abstract class PointFeatureCollectionImpl implements PointFeatureCollection {
   protected Class featureClass;
   protected List<? extends VariableSimpleIF> dataVariables;
-  protected FeatureIterator fiter;
-  protected PointFeatureIterator pfiter;
+  protected LatLonRect boundingBox;
+  protected DateRange dateRange;
+
+  //protected FeatureIterator fiter;
+  //protected PointFeatureIterator pfiter;
 
   protected PointFeatureCollectionImpl(Class featureClass, List<? extends VariableSimpleIF> dataVariables) {
     this.featureClass = featureClass;
     this.dataVariables = dataVariables;
   }
 
-  protected void setIterators( FeatureIterator fiter, PointFeatureIterator pfiter) {
+   // subsetting
+  protected PointFeatureCollectionImpl(PointFeatureCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
+    this.featureClass = from.featureClass;
+    this.dataVariables = from.dataVariables;
+    //this.fiter = from.fiter;
+    //this.pfiter = from.pfiter;
+
+    if (filter_bb == null)
+      this.boundingBox = from.boundingBox;
+    else
+      this.boundingBox = (from.boundingBox == null) ? filter_bb : from.boundingBox.intersect( filter_bb);
+
+    if (filter_date == null) {
+      this.dateRange = from.dateRange;
+    } else {
+      this.dateRange =  (from.dateRange == null) ? filter_date : from.dateRange.intersect( filter_date);
+    }
+  }
+
+  /* protected void setIterators( FeatureIterator fiter, PointFeatureIterator pfiter) {
     this.fiter = fiter;
     this.pfiter = pfiter;
   }
@@ -57,7 +80,7 @@ public abstract class PointFeatureCollectionImpl implements PointFeatureCollecti
     this.dataVariables = from.dataVariables;
     this.fiter = from.fiter;
     this.pfiter = from.pfiter;
-  }
+  } */
 
   // the data variables to be found in the PointFeature
   public List<? extends VariableSimpleIF> getDataVariables() {
@@ -69,16 +92,19 @@ public abstract class PointFeatureCollectionImpl implements PointFeatureCollecti
     return featureClass;
   }
 
-  // an iterator over Features of type getCollectionFeatureType
+  /* an iterator over Features of type getCollectionFeatureType
   public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
     fiter.setBufferSize( bufferSize);
     return fiter;
-  }
+  } */
 
   // an iterator over Features of type PointFeature
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    pfiter.setBufferSize( bufferSize);
-    return pfiter;
+    return new PointFeatureIteratorAdapter( getFeatureIterator(bufferSize), boundingBox, dateRange);
+  }
+
+  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    return new PointFeatureCollectionSubset(this, boundingBox, dateRange);
   }
 
 }

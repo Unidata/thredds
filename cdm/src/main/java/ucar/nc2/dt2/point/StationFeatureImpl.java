@@ -24,53 +24,42 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.LatLonPoint;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Superclass for implementations of StationFeature.
- * Concrete subclass must implement getData();
+ * Superclass for implementations of StationFeature: time series of data at a point
+ * Concrete subclass must implement getPointFeatureIterator();
  *
  * @author caron
  */
 
 
-public class StationFeatureImpl extends StationImpl implements StationFeature {
-  protected List<VariableSimpleIF> dataVariables;
+public class StationFeatureImpl extends PointFeatureCollectionImpl implements StationFeature {
+  protected StationImpl s;
   protected DateUnit timeUnit;
   protected int npts;
 
   protected PointFeatureIterator pfiter;
   protected FeatureIteratorAdapter iter;
 
-  private LatLonRect filter_bb;
-  private DateRange filter_date;
-
-  public StationFeatureImpl( List<VariableSimpleIF> dataVariables, String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
-    super(name, desc, lat, lon, alt);
-    this.dataVariables = dataVariables;
+  public StationFeatureImpl( List<? extends VariableSimpleIF> dataVariables, String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
+    super(PointFeature.class, dataVariables);
+    s = new StationImpl(name, desc, lat, lon, alt);
     this.timeUnit = timeUnit;
     this.npts = npts;
   }
 
   // copy constructor
-  protected StationFeatureImpl( StationFeatureImpl from, LatLonRect boundingBox, DateRange dateRange) {
-    super(from.name, from.desc, from.lat, from.lon, from.alt);
+  protected StationFeatureImpl( StationFeatureImpl from, LatLonRect filter_bb, DateRange filter_date) {
+    super(from, filter_bb, filter_date);
+    this.s = s;
     this.timeUnit = from.timeUnit;
     this.npts = -1;
 
-    if (from.filter_bb == null)
-      this.filter_bb = boundingBox;
-    else
-      this.filter_bb = (boundingBox == null) ? from.filter_bb : from.filter_bb.intersect( boundingBox);
-
-    if (from.filter_date == null)
-      this.filter_date = dateRange;
-    else
-      this.filter_date = (dateRange == null) ? from.filter_date : from.filter_date.intersect( dateRange);
-
-    iter = new FeatureIteratorAdapter(pfiter, this.filter_bb, this.filter_date);
+    iter = new FeatureIteratorAdapter(pfiter, boundingBox, dateRange);
   }
 
   protected void setIterator( PointFeatureIterator pfiter) {
@@ -90,17 +79,7 @@ public class StationFeatureImpl extends StationImpl implements StationFeature {
     return iter;
   }
 
-  public String getId() { return name; }
-
-  // the data variables to be found in the PointFeature
-  public List<VariableSimpleIF> getDataVariables() {
-    return dataVariables;
-  }
-
-  // All features in this collection have this feature type
-  public Class getCollectionFeatureType() {
-    return PointFeature.class;
-  }
+  public String getId() { return s.getName(); }
 
   // create a subset
   public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
@@ -109,5 +88,29 @@ public class StationFeatureImpl extends StationImpl implements StationFeature {
 
   public int getNumberPoints() {
     return npts;
+  }
+
+  public String getName() {
+    return s.getName();
+  }
+
+  public String getDescription() {
+    return s.getDescription();
+  }
+
+  public double getLatitude() {
+    return s.getLatitude();
+  }
+
+  public double getLongitude() {
+    return s.getLongitude();
+  }
+
+  public double getAltitude() {
+    return s.getAltitude();
+  }
+
+  public LatLonPoint getLatLon() {
+    return s.getLatLon();
   }
 }

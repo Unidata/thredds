@@ -30,7 +30,6 @@ import java.io.IOException;
 
 /**
  * Helper class for Station Collections.
- *
  * This assumes that calling getData( Station s) is reletively cheap, ie that theres no cheaper filtering to do.
  * @author caron
  * @since Feb 5, 2008

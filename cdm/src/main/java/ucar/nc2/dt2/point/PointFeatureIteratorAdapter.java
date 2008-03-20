@@ -30,7 +30,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 
 /**
- * Adapt a FeatureIterator to a  PointFeatureIterator
+ * Adapt a FeatureIterator to a PointFeatureIterator
  *
  * @author caron
  * @since Mar 19, 2008
@@ -89,6 +89,7 @@ public class PointFeatureIteratorAdapter implements PointFeatureIterator {
   }
 
   private PointFeature nextFilteredDataPoint() throws IOException {
+    if (pfiter == null) return null;
     if (!pfiter.hasNext()) return null;
     PointFeature pdata = pfiter.nextData();
 

@@ -42,7 +42,7 @@ import java.util.*;
 import java.text.ParseException;
 
 /**
- * Helper class for using the netcdf-3 record dimension. Can be used for PointObs or StationObs.
+ * Helper class for using the netcdf-3 record dimension.
  *
  * @author caron
  * @since Feb 29, 2008

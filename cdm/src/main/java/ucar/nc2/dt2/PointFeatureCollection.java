@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * A Feature that is a collection of other Features, ultimately based on PointFeature.
+ * A Collection of Features, ultimately based on PointFeature.
  *
  * @author caron
  * @since Mar 1, 2008

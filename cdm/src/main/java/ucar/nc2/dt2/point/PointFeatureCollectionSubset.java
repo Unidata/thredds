@@ -17,199 +17,37 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 package ucar.nc2.dt2.point;
 
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.dt2.*;
+import ucar.nc2.dt2.FeatureIterator;
+import ucar.nc2.dt2.PointFeatureIterator;
 
 import java.io.IOException;
 
 /**
- * Subsets a PointFeatureCollection, turns it into a CollectionOfPointFeatures
+ * Class Description.
+ *
  * @author caron
- * @since Feb 18, 2008
+ * @since Mar 19, 2008
  */
-public class PointFeatureCollectionSubset extends CollectionOfPointFeatures {
-  private PointFeatureCollection from;
-  private LatLonRect filter_bb;
-  private DateRange filter_date;
+public class PointFeatureCollectionSubset extends PointFeatureCollectionImpl {
+  private PointFeatureCollectionImpl from;
 
-  PointFeatureCollectionSubset(PointFeatureCollection from, PointFeatureIterator piter, LatLonRect filter_bb, DateRange filter_date) {
-    super( from.getDataVariables(), piter);
+  PointFeatureCollectionSubset(PointFeatureCollectionImpl from, LatLonRect boundingBox, DateRange dateRange) {
+    super(from, boundingBox, dateRange);
     this.from = from;
-    this.filter_bb = filter_bb;
-    this.filter_date = filter_date;
   }
 
-  // copy constructor
-  PointFeatureCollectionSubset(PointFeatureCollectionSubset from, LatLonRect filter_bb, DateRange filter_date) {
-    super(from, filter_bb, filter_date);
-
-    if (from.filter_bb == null)
-      this.filter_bb = filter_bb;
-    else
-      this.filter_bb = (filter_bb == null) ? from.filter_bb : from.filter_bb.intersect( filter_bb);
-
-    if (from.filter_date == null)
-      this.filter_date = filter_date;
-    else
-      this.filter_date = (filter_date == null) ? from.filter_date : from.filter_date.intersect( filter_date);
-  }
-
-  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new PointFeatureCollectionSubset( this, boundingBox, dateRange);
-  }
-
+  // an iterator over Features of type getCollectionFeatureType
   public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
-    return new FeatureIteratorAdapter();
+    return from.getFeatureIterator(bufferSize);
   }
 
-  // iterate through Features, then PointFeature
-  private class FeatureIteratorAdapter implements FeatureIterator {
-    FeatureIterator fiter;
-    PointFeatureIterator diter;
-    PointFeature pdata;
-    boolean done = false;
-
-    FeatureIteratorAdapter() throws IOException {
-      fiter = from.getFeatureIterator(-1);
-      FeatureWithPointFeature feature = nextFilteredFeature();
-      if (feature == null)
-        done = true;
-      else
-       diter = feature.getDataIterator( -1);
-     }
-
-    public boolean hasNext() throws IOException {
-      if (done) return false;
-
-      pdata = nextFilteredDataPoint();
-      if (pdata != null) return true;
-
-      FeatureWithPointFeature feature = nextFilteredFeature();
-      if (feature == null) {
-        done = true;
-        return false;
-      }
-
-      diter = feature.getDataIterator( -1);
-      return hasNext();
-    }
-
-    public Feature nextFeature() throws IOException {
-      if (done) return null;
-      return new PointFeatureAdapter(pdata.hashCode(), null, pdata);
-    }
-
-    private FeatureWithPointFeature nextFilteredFeature() throws IOException {
-      if (!fiter.hasNext()) return null;
-      FeatureWithPointFeature f = (FeatureWithPointFeature) fiter.nextFeature();
-
-      if (filter_bb == null)
-        return f;
-
-      while (!filter_bb.contains(f.getLatLon())) {
-        if (!fiter.hasNext()) return null;
-        f = (FeatureWithPointFeature) fiter.nextFeature();
-      }
-      return f;
-    }
-
-    private PointFeature nextFilteredDataPoint() throws IOException {
-      if (!diter.hasNext()) return null;
-      PointFeature pdata = diter.nextData();
-
-      if (filter_date == null)
-        return pdata;
-
-      while (!filter_date.included(pdata.getObservationTimeAsDate())) {
-        if (!diter.hasNext()) return null;
-        pdata = diter.nextData();
-      }
-      return pdata;
-    }
-
-  }
-
-  // iterate through Features, then PointFeature
-  private class FeatureIteratorAdapter2 implements FeatureIterator {
-    FeatureDataset featureDataset;
-    boolean hasPointFeature;
-
-    FeatureIterator fiter;
-    PointFeatureIterator diter;
-    PointFeature pdata;
-    boolean done = false;
-
-    FeatureIteratorAdapter2(FeatureDataset featureDataset) throws IOException {
-      this.featureDataset = featureDataset;
-      Class featureClass = featureDataset.getClass();
-      hasPointFeature = featureClass.isInstance(FeatureWithPointFeature.class);
-    }
-
-    void init() throws IOException {
-      fiter = featureDataset.getFeatureIterator(-1);
-      FeatureWithPointFeature feature = nextFilteredFeature();
-      if (feature == null)
-        done = true;
-      else
-       diter = feature.getDataIterator( -1);
-     }
-
-    public boolean hasNext() throws IOException {
-      if (done) return false;
-
-      pdata = nextFilteredDataPoint();
-      if (pdata != null) return true;
-
-      FeatureWithPointFeature feature = nextFilteredFeature();
-      if (feature == null) {
-        done = true;
-        return false;
-      }
-
-      diter = feature.getDataIterator( -1);
-      return hasNext();
-    }
-
-    // must return a PointFeature
-    public Feature nextFeature() throws IOException {
-      if (done) return null;
-      return new PointFeatureAdapter(pdata.hashCode(), null, pdata);
-    }
-
-    private FeatureWithPointFeature nextFilteredFeature() throws IOException {
-      if (!fiter.hasNext()) return null;
-      FeatureWithPointFeature f = (FeatureWithPointFeature) fiter.nextFeature();
-
-      if (filter_bb == null)
-        return f;
-
-      while (!filter_bb.contains(f.getLatLon())) {
-        if (!fiter.hasNext()) return null;
-        f = (FeatureWithPointFeature) fiter.nextFeature();
-      }
-      return f;
-    }
-
-    private PointFeature nextFilteredDataPoint() throws IOException {
-      if (!diter.hasNext()) return null;
-      PointFeature pdata = diter.nextData();
-
-      if (filter_date == null)
-        return pdata;
-
-      while (!filter_date.included(pdata.getObservationTimeAsDate())) {
-        if (!diter.hasNext()) return null;
-        pdata = diter.nextData();
-      }
-      return pdata;
-    }
-
-  }
-
-  public DataCost getDataCost() {
-    return from.getDataCost();
+  // an iterator over Features of type PointFeature
+  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    return new PointFeatureIteratorAdapter( from.getFeatureIterator(bufferSize), null, null);
   }
 }

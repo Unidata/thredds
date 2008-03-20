@@ -47,7 +47,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected LatLonRect boundingBox;
 
   // for subsetting
-  protected FeatureDatasetImpl(FeatureDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
+  protected FeatureDatasetImpl(FeatureDatasetImpl from) {
     this.ncfile = from.ncfile;
     this.title = from.title;
     this.desc = from.desc;
@@ -55,17 +55,6 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     this.dataVariables = new ArrayList<VariableSimpleIF>( from.dataVariables);
     this.parseInfo = new StringBuffer(from.parseInfo);
     this.parseInfo.append("Subsetted from original\n");
-
-    if (filter_bb == null)
-      this.boundingBox = from.boundingBox;
-    else
-      this.boundingBox = (from.boundingBox == null) ? filter_bb : from.boundingBox.intersect( filter_bb);
-
-    if (filter_date == null) {
-      this.dateRange = from.dateRange;
-    } else {
-      this.dateRange =  (from.dateRange == null) ? filter_date : from.dateRange.intersect( filter_date);
-    }
   }
 
   /** No-arg constuctor */
