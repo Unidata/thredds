@@ -66,7 +66,7 @@
 <p> The rotated latitude and longitude coordinates are identified by the <code class="varname">standard_name</code> attribute values <code class="varname"><strong>grid_latitude</strong></code> and <code class="varname"><strong>grid_longitude</strong></code> respectively. Example:</p>
 <pre> float rlat(rlat=84);<br>     :<strong>standard_name</strong> = &quot;grid_latitude&quot;;<br>     :long_name = &quot;rotated latitude&quot;;<br>     :units = &quot;degrees&quot;;<br>     :_CoordinateAxisType = &quot;GeoY&quot;;<br>   float rlon(rlon=90);<br>     :<strong>standard_name</strong> = &quot;grid_longitude&quot;;<br>     :long_name = &quot;rotated longitude&quot;;<br>     :units = &quot;degrees&quot;;<br>     :_CoordinateAxisType = &quot;GeoX&quot;;
 </pre>
-<p>Code contributed by Robert Schmunk. Added in version 4.0. Have not found a standard definition to reference . </p>
+<p>The rotated longitude coordinate must be in the range [-180,180] (so there will be a problem when it crosses the dateline). Code contributed by Robert Schmunk. Added in version 4.0. </p>
 <h3>  polar_stereographic</h3>
 <pre>   char Polar_Stereographic;<br>     :<strong>grid_mapping_name</strong> = &quot;polar_stereographic&quot;;<br>     :<strong>straight_vertical_longitude_from_pole</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<strong>scale_factor_at_projection_origin</strong> = 0.9330127018922193; <br>     :<strong>_CoordinateTransformType</strong> = &quot;Projection&quot;;<br>     :<strong>_CoordinateAxisTypes</strong> = &quot;GeoX GeoY&quot;;</pre>
 <p>The  Polar Stereographic is the Stereographic  projection with origin at the north or south pole. </p>

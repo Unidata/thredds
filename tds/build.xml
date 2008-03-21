@@ -87,6 +87,7 @@
   <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
   <property name="logging.jar" value="external/nlog4j-1.2.25.jar"/>
+  <property name="spring.jar" value="external/spring-2.5.jar"/>
 
   <!-- Third-party libraries needed for runtime. -->
   <property name="commons-io.jar" value="external/commons-io-1.2.jar"/>
@@ -124,6 +125,7 @@
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
       <include name="${logging.jar}"/>
+      <include name="${spring.jar}"/>
     </patternset>
   </fileset>
 
