@@ -173,6 +173,25 @@ public class Level2Record {
      }
      throw new IllegalArgumentException();
    }
+    
+   public short getDatatypeSNRThreshhold(int datatype) {
+    switch (datatype) {
+        case REFLECTIVITY_HIGH : return ref_snr_threshold;
+        case VELOCITY_HIGH : return vel_snr_threshold;
+        case SPECTRUM_WIDTH_HIGH : return sw_snr_threshold;
+
+      default : throw new IllegalArgumentException();
+    }
+   }
+   public short getDatatypeRangeFoldingThreshhold(int datatype) {
+    switch (datatype) {
+        case REFLECTIVITY_HIGH : return ref_rf_threshold;
+        case VELOCITY_HIGH : return vel_rf_threshold;
+        case SPECTRUM_WIDTH_HIGH : return sw_rf_threshold;
+
+      default : throw new IllegalArgumentException();
+    }
+   }
 
    public float getDatatypeScaleFactor(int datatype) {
     switch (datatype) {
@@ -312,6 +331,12 @@ public class Level2Record {
   short nyquist_vel; // nyquist velocity
   short attenuation; // atmospheric attenuation factor
   short threshhold; // threshhold paramter for minimum difference
+  short ref_snr_threshold; // reflectivity signal to noise threshhold
+  short vel_snr_threshold;
+  short sw_snr_threshold;
+  short ref_rf_threshold; // reflectivity range folding threshhold
+  short vel_rf_threshold;
+  short sw_rf_threshold;
 
   private short reflect_offset; // reflectivity data pointer (byte number from start of message)
   private short velocity_offset; // velocity data pointer (byte number from start of message)
@@ -465,6 +490,8 @@ public class Level2Record {
         if(hasHighResREFData) {
             reflectHR_gate_count = getDataBlockValue(din, (short) dbp4, 8);
             reflectHR_first_gate = getDataBlockValue(din, (short) dbp4, 10);
+            ref_rf_threshold = getDataBlockValue(din, (short) dbp4, 14);
+            ref_snr_threshold = getDataBlockValue(din, (short) dbp4, 16);
             reflectHR_gate_size = getDataBlockValue(din, (short) dbp4, 12);
             reflectHR_scale = getDataBlockValue1(din, (short) dbp4, 20);
             reflectHR_addoffset = getDataBlockValue1(din, (short) dbp4, 24);
@@ -475,6 +502,8 @@ public class Level2Record {
             velocityHR_gate_count = getDataBlockValue(din, (short) dbp5, 8);
             velocityHR_first_gate = getDataBlockValue(din, (short) dbp5, 10);
             velocityHR_gate_size = getDataBlockValue(din, (short) dbp5, 12);
+            vel_rf_threshold = getDataBlockValue(din, (short) dbp5, 14);
+            vel_snr_threshold = getDataBlockValue(din, (short) dbp5, 16);
             velocityHR_scale = getDataBlockValue1(din, (short) dbp5, 20);
             velocityHR_addoffset = getDataBlockValue1(din, (short) dbp5, 24);
             velocityHR_offset = (short)( dbp5+ 28);
@@ -484,6 +513,8 @@ public class Level2Record {
             spectrumHR_gate_count = getDataBlockValue(din, (short) dbp6, 8);
             spectrumHR_first_gate = getDataBlockValue(din, (short) dbp6, 10);
             spectrumHR_gate_size = getDataBlockValue(din, (short) dbp6, 12);
+            sw_rf_threshold = getDataBlockValue(din, (short) dbp6, 14);
+            sw_snr_threshold = getDataBlockValue(din, (short) dbp6, 16);
             spectrumHR_scale = getDataBlockValue1(din, (short) dbp6, 20);
             spectrumHR_addoffset = getDataBlockValue1(din, (short) dbp6, 24);
             spectrumHR_offset = (short) (dbp6 + 28);

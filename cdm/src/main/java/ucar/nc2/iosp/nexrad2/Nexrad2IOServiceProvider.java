@@ -247,6 +247,10 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute( new Attribute("scale_factor", firstRecord.getDatatypeScaleFactor(datatype)));
     v.addAttribute( new Attribute("add_offset", firstRecord.getDatatypeAddOffset(datatype)));
     v.addAttribute( new Attribute("_unsigned", "true"));
+    if(rd == 1) {
+       v.addAttribute( new Attribute("SNR_threshold" ,firstRecord.getDatatypeSNRThreshhold(datatype)));
+       v.addAttribute( new Attribute("range_folding_threshold" ,firstRecord.getDatatypeRangeFoldingThreshhold(datatype)));
+    }
 
     List<Dimension> dim2 = new ArrayList<Dimension>();
     dim2.add( scanDim);
@@ -373,7 +377,10 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute( new Attribute("scale_factor", record.getDatatypeScaleFactor(datatype)));
     v.addAttribute( new Attribute("add_offset", record.getDatatypeAddOffset(datatype)));
     v.addAttribute( new Attribute("_unsigned", "true"));
-
+    if(datatype == Level2Record.SPECTRUM_WIDTH_HIGH){
+       v.addAttribute( new Attribute("SNR_threshold" ,record.getDatatypeSNRThreshhold(datatype)));
+       v.addAttribute( new Attribute("range_folding_threshold" ,record.getDatatypeRangeFoldingThreshhold(datatype)));
+    }
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
     v.addAttribute( new Attribute(_Coordinate.Axes, fromAtt));
 
