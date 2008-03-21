@@ -23,8 +23,12 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
 
 import java.util.List;
+import java.io.IOException;
 
 /**
  * @author caron
@@ -37,24 +41,71 @@ public class GeoReferencingCoordSys {
     this.cs = cs;
   }
 
-  public int[] getLatitudeIndex(List<Dimension> dims, int[] index) {
+  public double readLatitudeCoord(Variable fromVar, int[] index) throws IOException, InvalidRangeException {
     CoordinateAxis axis = cs.getLatAxis();
-    int[] result = new int[ axis.getRank()];
-    List<Dimension> axisDims = axis.getDimensions();
-    for (int i=0; i<axisDims.size(); i++) {
-      int varIndex = dims.indexOf(axisDims.get(i));
-      result[i] = index[varIndex];
-    }
-    return result;
+    if (null == axis) throw new IllegalArgumentException("There is no latitude coordinate");
+    return readValue( axis, fromVar, index);
   }
 
-  public int[] mapIndex(Variable toVar, List<Dimension> fromDims, int[] fromIndex) {
-    int[] result = new int[ toVar.getRank()];
-    List<Dimension> toDims = toVar.getDimensions();
+  public double readLongitudeCoord(Variable fromVar, int[] index) throws IOException, InvalidRangeException {
+    CoordinateAxis axis = cs.getLonAxis();
+    if (null == axis) throw new IllegalArgumentException("There is no longiude coordinate");
+    return readValue( axis, fromVar, index);
+  }
+
+  public double readPressureCoord(Variable fromVar, int[] index) throws IOException, InvalidRangeException {
+    CoordinateAxis axis = cs.getPressureAxis();
+    if (null == axis) throw new IllegalArgumentException("There is no pressure coordinate");
+    return readValue( axis, fromVar, index);
+  }
+
+  public double readHeightCoord(Variable fromVar, int[] index) throws IOException, InvalidRangeException {
+    CoordinateAxis axis = cs.getHeightAxis();
+    if (null == axis) throw new IllegalArgumentException("There is no height coordinate");
+    return readValue( axis, fromVar, index);
+  }
+
+  public double readTimeCoord(Variable fromVar, int[] index) throws IOException, InvalidRangeException {
+    CoordinateAxis axis = cs.getTaxis();
+    if (null == axis) throw new IllegalArgumentException("There is no time coordinate");
+    return readValue( axis, fromVar, index);
+  }
+
+  public double readGeoXCoord(Variable fromVar, int[] index) throws IOException, InvalidRangeException {
+    CoordinateAxis axis = cs.getXaxis();
+    if (null == axis) throw new IllegalArgumentException("There is no GeoX coordinate");
+    return readValue( axis, fromVar, index);
+  }
+
+  public double readGeoYCoord(Variable fromVar, int[] index) throws IOException, InvalidRangeException {
+    CoordinateAxis axis = cs.getYaxis();
+    if (null == axis) throw new IllegalArgumentException("There is no GeoY coordinate");
+    return readValue( axis, fromVar, index);
+  }
+
+  public double readGeoZCoord(Variable fromVar, int[] index) throws IOException, InvalidRangeException {
+    CoordinateAxis axis = cs.getZaxis();
+    if (null == axis) throw new IllegalArgumentException("There is no GeoZ coordinate");
+    return readValue( axis, fromVar, index);
+  }
+
+  public double readValue(Variable targetVar, Variable fromVar, int[] index) throws InvalidRangeException, IOException {
+    Section axisElement = mapIndex( targetVar, fromVar, index);
+    Array result = targetVar.read(axisElement);
+    return result.nextDouble();
+  }
+
+  public Section mapIndex(Variable targetVar, Variable fromVar, int[] fromIndex) throws InvalidRangeException {
+    List<Dimension> toDims = targetVar.getDimensions();
+    List<Dimension> fromDims = fromVar.getDimensions();
+    Section result = new Section();
+
+    // each dimension in the target must be present in the source
     for (int i=0; i<toDims.size(); i++) {
+      Dimension dim = toDims.get(i);
       int varIndex = fromDims.indexOf(toDims.get(i));
-      if (varIndex < 0)
-      result[i] = fromIndex[varIndex];
+      if (varIndex < 0) throw new IllegalArgumentException("Dimension "+dim+" does not exist");
+      result.appendRange(fromIndex[varIndex], fromIndex[varIndex]);
     }
     return result;
   }
