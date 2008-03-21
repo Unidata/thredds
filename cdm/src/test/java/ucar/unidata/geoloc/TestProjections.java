@@ -12,7 +12,7 @@ import ucar.nc2.TestAll;
  */
 
 public class TestProjections extends TestCase {
-  boolean show = true;
+  boolean show = false;
   int NTRIALS = 10000;
   double TOLERENCE = 1.0e-6;
   int count = 10;
@@ -67,14 +67,15 @@ public class TestProjections extends TestCase {
     LatLonPointImpl startL = new LatLonPointImpl();
 
     for (int i = 0; i < NTRIALS; i++) {
-      startL.setLatitude(latMax * (r.nextDouble() - .5)); // random latlon point
-      startL.setLongitude(lonMax * (r.nextDouble() - .5));
+      startL.setLatitude(latMax * (2*r.nextDouble() - 1)); // random latlon point
+      startL.setLongitude(lonMax * (2*r.nextDouble() - 1));
 
       ProjectionPoint p = proj.latLonToProj(startL);
       LatLonPoint endL = proj.projToLatLon(p);
 
       if (show) {
         System.out.println("start  = " + startL);
+        System.out.println("inter  = " + p);
         System.out.println("end  = " + endL);
       }
 
@@ -85,17 +86,23 @@ public class TestProjections extends TestCase {
 
     startL.setLatitude(latMax / 2);
     startL.setLongitude(lonMax / 2);
-    ProjectionPoint p = proj.latLonToProj(startL);
+    ProjectionPointImpl base = new ProjectionPointImpl();
+    proj.latLonToProj(startL, base);
     ProjectionPointImpl startP = new ProjectionPointImpl();
     for (int i = 0; i < NTRIALS; i++) {
-      startP.setLocation(p.getX() * (r.nextDouble() - .5),  // random proj point
-              p.getY() * (r.nextDouble() - .5));
+      startP.setLocation(base.getX() * (2*r.nextDouble() - 1),  // random proj point
+              base.getY() * (2*r.nextDouble() - 1));
 
       LatLonPoint ll = proj.projToLatLon(startP);
       ProjectionPoint endP = proj.latLonToProj(ll);
 
-      assert (TestAll.closeEnough(startP.getX(), endP.getX())) : " failed start= " + startP.getX() + " end = " + endP.getX();
-      assert (TestAll.closeEnough(startP.getY(), endP.getY())) : " failed start= " + startP.getY() + " end = " + endP.getY();
+       if (false) {
+        System.out.println("start  = " + startP);
+        System.out.println("end  = " + endP);
+      }
+
+      assert TestAll.closeEnough(startP.getX(), endP.getX(), 5.0e-4) : " failed start= " + startP.getX() + " end = " + endP.getX();
+      assert TestAll.closeEnough(startP.getY(), endP.getY(), 5.0e-4) : " failed start= " + startP.getY() + " end = " + endP.getY();
     }
 
     System.out.println("Tested " + NTRIALS + " pts for projection " + proj.getClassName());
@@ -132,8 +139,8 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
-  public void testOrtho() {
-    testProjectionLonMax(new Orthographic(), 180, 100);
+  public void utestOrtho() {
+    testProjectionLonMax(new Orthographic(), 180, 80);
     Orthographic p = new Orthographic();
     Orthographic p2 = (Orthographic) p.constructCopy();
     assert p.equals(p2);
@@ -160,19 +167,26 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
+  public void testRotatedPole() {
+    testProjectionLonMax(new RotatedPole(37, 177), 360, 88);
+    RotatedPole p = new RotatedPole();
+    RotatedPole p2 = (RotatedPole) p.constructCopy();
+    assert p.equals(p2);
+  }
+
   // UTM failing - no not use
   public void utestUTM() {
     // 33.75N 15.25E end = 90.0N 143.4W
     //doOne(new UtmProjection(), 33.75, 15.25);
 
-    testProjectionLonMax(new UtmProjection(), 100, 100);
+    testProjectionLonMax(new UtmProjection(), 150, 90);
     UtmProjection p = new UtmProjection();
     UtmProjection p2 = (UtmProjection) p.constructCopy();
     assert p.equals(p2);  // */
   }
 
   public void testVerticalPerspectiveView() {
-    testProjectionLonMax(new VerticalPerspectiveView(), 100, 100);
+    testProjectionLonMax(new VerticalPerspectiveView(), 66, 60);
     VerticalPerspectiveView p = new VerticalPerspectiveView();
     VerticalPerspectiveView p2 = (VerticalPerspectiveView) p.constructCopy();
     assert p.equals(p2);

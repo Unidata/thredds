@@ -228,12 +228,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static private void enhance(NetcdfDataset ds, EnhanceMode mode, CancelTask cancelTask) throws IOException {
     if (mode == EnhanceMode.None) return;
 
-    if (mode == EnhanceMode.All || mode == EnhanceMode.CoordSystems) {
-      if (!ds.coordSysWereAdded)
-        ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
-      ds.coordSysWereAdded = true;
-    }
-
+    // enhance scale/offset first, so its transferred to CoordinateAxes in next section
     if (mode == EnhanceMode.All || mode == EnhanceMode.ScaleMissing) {
       for (Variable v : ds.getVariables()) {
         VariableEnhanced ve = (VariableEnhanced) v;
@@ -243,7 +238,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       ds.scaleOffsetWasAdded = true;
     }
 
+    // now find coord systems which may add new variables, change some Variables to axes, etc
+    if (mode == EnhanceMode.All || mode == EnhanceMode.CoordSystems) {
+      if (!ds.coordSysWereAdded)
+        ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
+      ds.coordSysWereAdded = true;
+    }
+
     ds.finish(); // recalc the global lists
+
     if (ds.coordSysWereAdded && ds.scaleOffsetWasAdded)
       ds.isEnhanced = EnhanceMode.All;
     else if (ds.coordSysWereAdded)
