@@ -97,6 +97,10 @@ public class VerticalCT extends CoordinateTransform {
    */
   public CoordTransBuilderIF getBuilder() { return builder; }
 
+  public String toString() {
+    return name +" type="+type+" impl.class="+(vt == null ? "none" : vt.getClass().getName());  
+  }
+
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // inner class VerticalCT.Type

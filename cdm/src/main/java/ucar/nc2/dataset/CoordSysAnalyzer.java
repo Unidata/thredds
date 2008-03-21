@@ -39,8 +39,18 @@ public class CoordSysAnalyzer {
   public CoordSysAnalyzer(NetcdfDataset ds) {
     this.ds = ds;
 
+    analyzeCoordSys();
     analyzeCoordAxes();
   }
+
+  private void analyzeCoordSys() {
+    List<CoordinateSystem> csys = ds.getCoordinateSystems();
+    for (CoordinateSystem cs : csys) {
+      System.out.println(" " + cs);
+    }
+    System.out.println();
+  }
+
 
   private void analyzeCoordAxes() {
     List<CoordinateAxis> axes = ds.getCoordinateAxes();
@@ -218,13 +228,17 @@ public class CoordSysAnalyzer {
   }
 
 
-  static public void main(String args[]) throws IOException {
-    //String filename = "C:/data/metars/Surface_METAR_20070326_0000.nc";
-    //String filename = "C:/data/rotatedPole/eu.mn.std.fc.d00z20070820.ncml";
-    //String filename = "C:/data/dt2/station/madis2.sao.gz";
-    String filename = "C:/data/dt2/station/solrad_point_pearson.ncml";
-
+  static void doit(String filename) throws IOException {
+    System.out.println(filename);
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     new CoordSysAnalyzer(ncd);
+    System.out.println("-----------------");
+  }
+
+  static public void main(String args[]) throws IOException {
+    doit("C:/data/metars/Surface_METAR_20070326_0000.nc");
+    doit("C:/data/rotatedPole/eu.mn.std.fc.d00z20070820.ncml");
+    doit("C:/data/dt2/station/madis2.sao.gz");
+    doit("C:/data/dt2/station/solrad_point_pearson.ncml");
   }
 }

@@ -33,6 +33,7 @@ import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
+import ucar.unidata.util.Parameter;
 import thredds.ui.*;
 
 import java.awt.*;
@@ -103,6 +104,40 @@ public class CoordSysTable extends JPanel {
         if (v == null) return;
         infoTA.clear();
         infoTA.appendLine(tryGrid(v));
+        infoTA.gotoTop();
+        infoWindow.showIfNotIconified();
+      }
+    });
+
+    thredds.ui.PopupMenu csPopup = new thredds.ui.PopupMenu(csTable.getJTable(), "Options");
+    csPopup.addAction("Show CoordSys", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        CoordinateSystemBean csb = (CoordinateSystemBean) csTable.getSelectedBean();
+        CoordinateSystem coordSys = csb.coordSys;
+        infoTA.clear();
+        infoTA.appendLine("Coordinate System = " + coordSys.getName());
+        for (CoordinateAxis axis : coordSys.getCoordinateAxes()) {
+          infoTA.appendLine("  " + axis.getAxisType()+" "+axis);
+        }
+        infoTA.appendLine(" Coordinate Transforms");
+        for (CoordinateTransform ct : coordSys.getCoordinateTransforms()) {
+          infoTA.appendLine("  " + ct.getName()+" type="+ct.getTransformType());
+          for (Parameter p : ct.getParameters()) {
+            infoTA.appendLine("    " + p);
+          }
+          if (ct instanceof ProjectionCT) {
+            ProjectionCT pct = (ProjectionCT) ct;
+            if (pct.getProjection() != null) {
+              infoTA.appendLine("    impl.class= " + pct.getProjection().getClass().getName());
+              pct.getProjection();
+            }
+          }
+          if (ct instanceof VerticalCT) {
+            VerticalCT vct = (VerticalCT) ct;
+            infoTA.appendLine("  VerticalCT= " + vct);
+          }
+
+        }
         infoTA.gotoTop();
         infoWindow.showIfNotIconified();
       }
