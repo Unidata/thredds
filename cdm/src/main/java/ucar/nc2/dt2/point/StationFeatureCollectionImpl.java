@@ -21,7 +21,6 @@ package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.*;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.List;
@@ -29,42 +28,18 @@ import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of StationFeatureCollection.
+ * Subclass must supply getPointFeatureCollectionIterator().
  *
  * @author caron
  * @since Feb 5, 2008
  */
-public class StationFeatureCollectionImpl extends PointFeatureCollectionImpl implements StationFeatureCollection {
+public abstract class StationFeatureCollectionImpl extends NestedPointFeatureCollectionImpl implements StationFeatureCollection {
+
   protected StationHelper stationHelper;
-  private DateRange filter_date;
-  private boolean isStationSubset = false;
 
-  public StationFeatureCollectionImpl(List<VariableSimpleIF> dataVariables, FeatureIterator fiter) {
-    super(PointFeature.class, dataVariables);
+  public StationFeatureCollectionImpl() {
+    super(false, StationFeature.class);
     stationHelper = new StationHelper();
-
-    PointFeatureIteratorAdapter pfiter = new PointFeatureIteratorAdapter(fiter);
-    setIterators(fiter, pfiter);
-  }
-
-  protected StationFeatureCollectionImpl(StationFeatureCollectionImpl from, List<Station> stations, DateRange dateRange) {
-    super(from);
-    if (stations == null) {
-      stationHelper = from.stationHelper;
-      isStationSubset = from.isStationSubset;
-    } else {
-      stationHelper = new StationHelper();
-      stationHelper.setStations(stations);
-      isStationSubset = true;
-    }
-
-    if (from.filter_date == null)
-      this.filter_date = dateRange;
-    else
-      this.filter_date = (dateRange == null) ? from.filter_date : from.filter_date.intersect(dateRange);
-
-    FeatureIteratorAdapter ffiter = new FeatureIteratorAdapter(fiter);
-    PointFeatureIteratorAdapter fpfiter = new PointFeatureIteratorAdapter(ffiter);
-    setIterators(ffiter, fpfiter);
   }
 
   protected void setStationHelper(StationHelper stationHelper) {
@@ -87,17 +62,9 @@ public class StationFeatureCollectionImpl extends PointFeatureCollectionImpl imp
     return stationHelper.getBoundingBox();
   }
 
-  public Class getFeatureClass() {
-    return StationFeature.class;
-  }
-
-  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    List<Station> stations = (boundingBox == null) ? null : getStations(boundingBox);
-    return new StationFeatureCollectionImpl(this, stations, dateRange);
-  }
-
   public StationFeatureCollection subset(List<Station> stations) throws IOException {
-    return new StationFeatureCollectionImpl(this, stations, null);
+    if (stations == null) return this;
+    return new StationFeatureCollectionSubset(this, stations);
   }
 
   public StationFeature getStationFeature(Station s) throws IOException {
@@ -108,12 +75,39 @@ public class StationFeatureCollectionImpl extends PointFeatureCollectionImpl imp
     return (StationFeature) s;  // LOOK
   }
 
-  private class FeatureIteratorAdapter implements FeatureIterator {
-    private FeatureIterator fiter;
+  public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
+    throw new UnsupportedOperationException("StationFeatureCollection does not implement getNestedPointFeatureCollection()");
+  }
+
+  // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
+  private class StationFeatureCollectionSubset extends StationFeatureCollectionImpl {
+    StationFeatureCollectionImpl from;
+
+    StationFeatureCollectionSubset(StationFeatureCollectionImpl from, List<Station> stations) {
+      this.from = from;
+      stationHelper = new StationHelper();
+      stationHelper.setStations(stations);
+    }
+
+    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+      return new PointFeatureCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new Filter());
+    }
+
+    private class Filter implements PointFeatureCollectionIterator.Filter {
+
+      public boolean filter(PointFeatureCollection pointFeatureCollection) {
+        StationFeature stationFeature = (StationFeature) pointFeatureCollection;
+        return stationHelper.getStation(stationFeature.getName()) != null;
+      }
+    }
+  }
+
+  /* private class FeatureIteratorAdapter implements PointFeatureCollectionIterator {
+    private PointFeatureCollectionIterator fiter;
     private StationFeature sfeature;
     private int bufferSize = -1;
 
-    FeatureIteratorAdapter(FeatureIterator fiter) {
+    FeatureIteratorAdapter(PointFeatureCollectionIterator fiter) {
       this.fiter = fiter;
     }
 
@@ -146,13 +140,13 @@ public class StationFeatureCollectionImpl extends PointFeatureCollectionImpl imp
   }
 
   private class PointFeatureIteratorAdapter implements PointFeatureIterator {
-    private FeatureIterator fiter;
+    private PointFeatureCollectionIterator fiter;
     public PointFeatureIterator pfiter;
     private PointFeature pfeature;
     private boolean done = false;
     private int bufferSize = -1;
 
-    PointFeatureIteratorAdapter(FeatureIterator fiter) {
+    PointFeatureIteratorAdapter(PointFeatureCollectionIterator fiter) {
       this.fiter = fiter;
     }
 
@@ -204,5 +198,5 @@ public class StationFeatureCollectionImpl extends PointFeatureCollectionImpl imp
 
       return pointFeature;
     }
-  }
+  }  */
 }

@@ -96,9 +96,9 @@ public interface FeatureDataset {
    * system variables, etc.
    * The shape of this VariableSimpleIF does not necessarily match the StuctureData member.
    *
-   * @return List of type VariableSimpleIF, may be empty but not null
+   * @return List of subclass of VariableSimpleIF, may be empty but not null
    */
-  public List<VariableSimpleIF> getDataVariables();
+  public List<? extends VariableSimpleIF> getDataVariables();
 
   /**
    * Get the named data Variable.

@@ -29,7 +29,7 @@ import java.io.IOException;
  * @author caron
  * @since Mar 19, 2008
  */
-public interface SectionFeatureCollection extends PointFeatureCollection {
+public interface SectionFeatureCollection extends NestedPointFeatureCollection {
 
   /**
    * Get a subsetted TrajectoryFeatureCollection

@@ -34,6 +34,7 @@
     <excludeFromCompile>
       <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/xml/TestUnicode.java" />
       <file url="file://$PROJECT_DIR$/../../cdm/src/timing/java/ucar/nc2/util/xml/TimeStaxReading.java" />
+      <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/dt2/point/UnidataStationObsMultidimDataset.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
@@ -326,7 +327,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/bufr.iml" filepath="$PROJECT_DIR$/bufr.iml" />
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
-      <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common.iml" filepath="$PROJECT_DIR$/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/docs.iml" filepath="$PROJECT_DIR$/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/grib.iml" filepath="$PROJECT_DIR$/grib.iml" />
       <module fileurl="file://$PROJECT_DIR$/intelliJ.iml" filepath="$PROJECT_DIR$/intelliJ.iml" />

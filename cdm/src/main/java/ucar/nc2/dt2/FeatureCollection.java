@@ -17,35 +17,16 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 package ucar.nc2.dt2;
 
-import java.util.List;
-import java.io.IOException;
-
 /**
- * A collection of TrajectoryFeature.
- *
  * @author caron
- * @since Mar 19, 2008
+ * @since Mar 20, 2008
  */
-public interface ProfileFeatureCollection extends NestedPointFeatureCollection {
+public interface FeatureCollection {
 
-    /**
-   * Get a subsetted TrajectoryFeatureCollection
-   *
-   * @param stations only contain these stations
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   */
-  public ProfileFeatureCollection subset(List<Station> stations) throws IOException;
+  // All features in this collection have this feature type
+  public Class getCollectionFeatureType();
 
-  /**
-   * Get a specific ProfileFeature.
-   *
-   * @param id ProfileFeature id
-   * @return ProfileFeature
-   * @throws java.io.IOException on i/o error
-   */
-  public ProfileFeature getProfileFeature(Object id) throws IOException;
+
 }

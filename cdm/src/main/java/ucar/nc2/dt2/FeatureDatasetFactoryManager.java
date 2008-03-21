@@ -21,10 +21,8 @@
 package ucar.nc2.dt2;
 
 import ucar.nc2.constants.DataType;
-import ucar.nc2.dt.TypedDatasetFactoryIF;
-import ucar.nc2.dt.TypedDataset;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt2.point.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -43,9 +41,12 @@ public class FeatureDatasetFactoryManager {
 
   // search in the order added
   static {
-    registerFactory(DataType.STATION_PROFILE, ucar.nc2.dt2.point.NmcStationProfileDataset.class);
+    //registerFactory(DataType.STATION_PROFILE, ucar.nc2.dt2.point.NmcStationProfileDataset.class);
 
-    registerFactory(DataType.POINT, ucar.nc2.dt2.point.PointDatasetDefaultHandler.class);
+    registerFactory(DataType.STATION, UnidataStationFeatureDatasetFactory.class);
+
+    registerFactory(DataType.POINT, UnidataPointFeatureDatasetFactory.class);
+    registerFactory(DataType.POINT, PointDatasetDefaultFactory.class);
 
     // further calls to registerFactory are by the user
     userMode = true;

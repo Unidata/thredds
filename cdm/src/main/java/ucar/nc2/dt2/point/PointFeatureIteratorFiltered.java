@@ -19,68 +19,68 @@
  */
 package ucar.nc2.dt2.point;
 
-import ucar.nc2.dt2.FeatureIterator;
 import ucar.nc2.dt2.PointFeatureIterator;
 import ucar.nc2.dt2.PointFeature;
-import ucar.nc2.dt2.Feature;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 
 /**
- * Adapt a PointFeatureIterator to a FeatureIterator, deals with possible date and bounding box filtering
- *
  * @author caron
- * @since Mar 1, 2008
+ * @since Mar 20, 2008
  */
-public class FeatureIteratorAdapter implements FeatureIterator, PointFeatureIterator {
+public class PointFeatureIteratorFiltered implements PointFeatureIterator {
   private PointFeatureIterator pfiter;
   private LatLonRect filter_bb;
   private DateRange filter_date;
-  private PointFeature pointFeature;
 
-  FeatureIteratorAdapter(PointFeatureIterator pfiter, LatLonRect filter_bb, DateRange filter_date) {
+  private PointFeature pointFeature;
+  private boolean done = false;
+
+  PointFeatureIteratorFiltered(PointFeatureIterator pfiter, LatLonRect filter_bb, DateRange filter_date) {
     this.pfiter = pfiter;
     this.filter_bb = filter_bb;
     this.filter_date = filter_date;
   }
 
+  public void setBufferSize(int bytes) {
+    pfiter.setBufferSize(bytes);
+  }
+
   public boolean hasNext() throws IOException {
-    pointFeature = nextFilteredFeature();
+    if (done) return false;
+
+    pointFeature = nextFilteredDataPoint();
     return (pointFeature != null);
   }
 
   public PointFeature nextData() throws IOException {
-    return pointFeature;
+    return done ? null : pointFeature;
   }
 
-  public Feature nextFeature() throws IOException {
-    return pointFeature;
+  private boolean filter(PointFeature pdata) {
+    if ((filter_date != null) && !filter_date.included(pdata.getObservationTimeAsDate()))
+      return false;
+
+    if ((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatLon()))
+      return false;
+
+    return true;
   }
 
-  private PointFeature nextFilteredFeature() throws IOException {
+  private PointFeature nextFilteredDataPoint() throws IOException {
+    if ( pfiter == null) return null;
     if (!pfiter.hasNext()) return null;
-    pointFeature = pfiter.nextData();
 
-    if (filter_date != null) {
-      while (!filter_date.included(pointFeature.getObservationTimeAsDate())) {
-        if (!pfiter.hasNext()) return null;
-        pointFeature = pfiter.nextData();
-      }
+    PointFeature pdata = pfiter.nextData();
+    if (!filter(pdata)) {
+      if (!pfiter.hasNext()) return null;
+      pdata = pfiter.nextData();
     }
 
-    if (filter_bb != null) {
-      while (!filter_bb.contains(pointFeature.getLocation().getLatLon())) {
-        if (!pfiter.hasNext()) return null;
-        pointFeature = pfiter.nextData();
-      }
-    }
-
-    return pointFeature;
+    return pdata;
   }
 
-  public void setBufferSize(int bytes) {
-    pfiter.setBufferSize(bytes);
-  }
 }
+

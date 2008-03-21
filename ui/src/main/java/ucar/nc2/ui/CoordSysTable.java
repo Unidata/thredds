@@ -21,7 +21,6 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-import ucar.nc2.dt2.point.PointDatasetDefaultHandler;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.radial.RadialCoordSys;

@@ -21,9 +21,6 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-import ucar.nc2.dt2.point.UnidataPointFeatureDataset;
-import ucar.nc2.dt2.point.UnidataStationFeatureDataset;
-import ucar.nc2.dt2.point.PointDatasetDefaultHandler;
 import ucar.nc2.dt2.PointFeatureDataset;
 import ucar.nc2.dt2.FeatureDatasetFactoryManager;
 import ucar.nc2.constants.DataType;
@@ -2480,8 +2477,8 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        // sobsDataset = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, location, null, log);
-        sobsDataset = new UnidataStationFeatureDataset( NetcdfDataset.openDataset(location));
+        sobsDataset = (PointFeatureDataset) FeatureDatasetFactoryManager.open(DataType.STATION, location, null, log);
+        // sobsDataset = new UnidataStationFeatureDataset( NetcdfDataset.openDataset(location));
         if (sobsDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;

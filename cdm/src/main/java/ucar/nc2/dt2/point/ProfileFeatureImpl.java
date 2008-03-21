@@ -29,11 +29,13 @@ import ucar.unidata.geoloc.LatLonPoint;
  * @author caron
  * @since Feb 29, 2008
  */
-public abstract class ProfileFeatureImpl implements ProfileFeature {
+public abstract class ProfileFeatureImpl extends PointFeatureCollectionImpl implements ProfileFeature {
   private LatLonPoint latlonPoint;
+  private int npts;
 
-  public ProfileFeatureImpl( LatLonPoint latlonPoint) {
+  public ProfileFeatureImpl( LatLonPoint latlonPoint, int npts) {
     this.latlonPoint = latlonPoint;
+    this.npts = npts;
   }
 
   public LatLonPoint getLatLon() {
@@ -43,5 +45,13 @@ public abstract class ProfileFeatureImpl implements ProfileFeature {
   // All features in this collection have this feature type
   public Class getCollectionFeatureType() {
     return PointFeature.class;
+  }
+
+    /**
+   * The number of points along the z axis.
+   * @return number of points along the z axis.
+   */
+  public int getNumberPoints() {
+    return npts;
   }
 }

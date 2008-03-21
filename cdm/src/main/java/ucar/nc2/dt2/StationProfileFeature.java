@@ -19,14 +19,12 @@
  */
 package ucar.nc2.dt2;
 
-import java.io.IOException;
-
 /**
  * Time series of ProfileFeature at named locations.
  * @author caron
  * @since Feb 29, 2008
  */
-public interface StationProfileFeature extends Station, Feature, PointFeatureCollection  {
+public interface StationProfileFeature extends Station, Feature, NestedPointFeatureCollection {
 
   /**
    * The number of points in the time series.

@@ -22,6 +22,7 @@ package ucar.nc2.dt2;
 import java.util.Date;
 
 /**
+ * A collection of observations at one time and location.
  * @author caron
  * @since Feb 29, 2008
  */

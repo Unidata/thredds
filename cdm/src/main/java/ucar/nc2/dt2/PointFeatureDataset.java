@@ -30,5 +30,5 @@ import java.util.List;
  * @author caron
  */
 public interface PointFeatureDataset extends FeatureDataset {
-  public List<PointFeatureCollection> getPointFeatureCollectionList();
+  public List<FeatureCollection> getPointFeatureCollectionList();
 }

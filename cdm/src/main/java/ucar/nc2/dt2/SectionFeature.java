@@ -26,7 +26,7 @@ package ucar.nc2.dt2;
  * @author caron
  * @since Mar 18, 2008
  */
-public interface SectionFeature extends Feature, PointFeatureCollection {
+public interface SectionFeature extends Feature, NestedPointFeatureCollection {
 
   /**
    * The number of points along the trajectory.

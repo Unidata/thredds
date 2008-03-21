@@ -20,32 +20,39 @@
 
 package ucar.nc2.dt2;
 
-import java.util.List;
-import java.io.IOException;
-
 /**
- * A collection of TrajectoryFeature.
+ * An Iterator over PointFeatureCollections.
  *
  * @author caron
- * @since Mar 19, 2008
  */
-public interface ProfileFeatureCollection extends NestedPointFeatureCollection {
-
-    /**
-   * Get a subsetted TrajectoryFeatureCollection
-   *
-   * @param stations only contain these stations
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   */
-  public ProfileFeatureCollection subset(List<Station> stations) throws IOException;
+public interface PointFeatureCollectionIterator {
 
   /**
-   * Get a specific ProfileFeature.
-   *
-   * @param id ProfileFeature id
-   * @return ProfileFeature
+   * true if another Feature object is available
+   * @return true if another Feature object is available
    * @throws java.io.IOException on i/o error
    */
-  public ProfileFeature getProfileFeature(Object id) throws IOException;
+  public boolean hasNext() throws java.io.IOException;
+
+  /**
+   * Returns the next PointFeatureCollection object
+   * @return the next PointFeatureCollection object
+   * @throws java.io.IOException on i/o error
+   */
+  public PointFeatureCollection nextFeature() throws java.io.IOException;
+
+  /**
+   * Hint to use this much memory in buffering the iteration.
+   * No guarentee that it will be used by the implementation.
+   * @param bytes amount of memory in bytes
+   */
+  public void setBufferSize( int bytes);
+
+  /**
+   * A filter on PointFeatureCollection.
+   */
+  public interface Filter {
+    public boolean filter(PointFeatureCollection pointFeatureCollection);
+  }
+
 }

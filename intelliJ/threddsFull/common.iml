@@ -2,15 +2,15 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../../common/src/java">
-      <sourceFolder url="file://$MODULE_DIR$/../../../common/src/java/ucar/unidata/io" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/../../common/src/java">
+      <sourceFolder url="file://$MODULE_DIR$/../../common/src/java" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../lib/external/slf4j-jdk14-1.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

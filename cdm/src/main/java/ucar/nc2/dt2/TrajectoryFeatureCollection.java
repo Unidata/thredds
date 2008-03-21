@@ -20,8 +20,6 @@
 
 package ucar.nc2.dt2;
 
-import ucar.nc2.units.DateRange;
-
 import java.util.List;
 import java.io.IOException;
 
@@ -31,7 +29,7 @@ import java.io.IOException;
  * @author caron
  * @since Mar 19, 2008
  */
-public interface TrajectoryFeatureCollection extends PointFeatureCollection {
+public interface TrajectoryFeatureCollection extends NestedPointFeatureCollection {
 
   /**
    * Get a subsetted TrajectoryFeatureCollection

@@ -22,7 +22,7 @@ package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.PointFeatureIterator;
 import ucar.nc2.dt2.PointFeature;
-import ucar.nc2.dt2.FeatureIterator;
+import ucar.nc2.dt2.PointFeatureCollectionIterator;
 import ucar.nc2.dt2.PointFeatureCollection;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -36,7 +36,7 @@ import java.io.IOException;
  * @since Mar 19, 2008
  */
 public class PointFeatureIteratorAdapter implements PointFeatureIterator {
-  private FeatureIterator fiter;
+  private PointFeatureCollectionIterator fiter;
   private LatLonRect filter_bb;
   private DateRange filter_date;
 
@@ -44,7 +44,7 @@ public class PointFeatureIteratorAdapter implements PointFeatureIterator {
   private PointFeature pointFeature;
   private boolean done = false;
 
-  PointFeatureIteratorAdapter(FeatureIterator fiter, LatLonRect filter_bb, DateRange filter_date) {
+  PointFeatureIteratorAdapter(PointFeatureCollectionIterator fiter, LatLonRect filter_bb, DateRange filter_date) {
     this.fiter = fiter;
     this.filter_bb = filter_bb;
     this.filter_date = filter_date;

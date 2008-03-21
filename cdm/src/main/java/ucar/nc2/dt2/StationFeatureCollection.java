@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author caron
  */
-public interface StationFeatureCollection extends PointFeatureCollection, StationCollection {
+public interface StationFeatureCollection extends StationCollection, NestedPointFeatureCollection {
 
   /**
    * Get a subsetted StationCollection

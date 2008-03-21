@@ -161,7 +161,7 @@ public class PointObsViewer2 extends JPanel {
   }
 
   public void setDataset(PointFeatureDataset dataset) throws IOException {
-    this.pds = dataset.getPointFeatureCollectionList().get(0); // LOOK kludge
+    this.pds = (PointFeatureCollection) dataset.getPointFeatureCollectionList().get(0); // LOOK kludge
 
     if (debugStationDatsets)
       System.out.println("PointObsViewer open type " + dataset.getClass().getName());
@@ -182,9 +182,9 @@ public class PointObsViewer2 extends JPanel {
     int count = 0;
 
     if (pobsDataset != null)  {
-      FeatureIterator iter = pobsDataset.getFeatureIterator(-1);
+      PointFeatureIterator iter = pobsDataset.getPointFeatureIterator(-1);
       while (iter.hasNext()) {
-        PointFeature pob = (PointFeature) iter.nextFeature();
+        PointFeature pob = iter.nextData();
         pointBeans.add(new PointObsBean(count++, pob));
       }
     }

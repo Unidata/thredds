@@ -101,6 +101,10 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     }
   }
 
+  public void appendParseInfo( String info) {
+    parseInfo.append(info);
+  }
+
   /////////////////////////////////////////////////
 
   public NetcdfFile getNetcdfFile() { return ncfile; }
@@ -131,8 +135,10 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     sbuff.append("  range= ").append(getDateRange()).append("\n");
     sbuff.append("  start= ").append(formatter.toDateTimeString(getStartDate())).append("\n");
     sbuff.append("  end  = ").append(formatter.toDateTimeString(getEndDate())).append("\n");
-    sbuff.append("  bb   = ").append(getBoundingBox()).append("\n");
-    sbuff.append("  bb   = ").append(getBoundingBox().toString2()).append("\n");
+    LatLonRect bb = getBoundingBox();
+    sbuff.append("  bb   = ").append(bb).append("\n");
+    if (bb != null)
+      sbuff.append("  bb   = ").append(getBoundingBox().toString2()).append("\n");
 
     sbuff.append("  has netcdf = ").append(getNetcdfFile() != null).append("\n");
     List<Attribute> ga = getGlobalAttributes();
@@ -157,8 +163,8 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   }
 
   public DateRange getDateRange() { return dateRange; }
-  public Date getStartDate() { return dateRange.getStart().getDate(); }
-  public Date getEndDate() { return dateRange.getEnd().getDate(); }
+  public Date getStartDate() { return (dateRange == null) ? null : dateRange.getStart().getDate(); }
+  public Date getEndDate() { return (dateRange == null) ? null : dateRange.getEnd().getDate(); }
   public LatLonRect getBoundingBox() { return boundingBox; }
 
   public List<VariableSimpleIF> getDataVariables() {return dataVariables; }

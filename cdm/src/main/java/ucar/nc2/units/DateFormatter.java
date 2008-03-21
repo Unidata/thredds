@@ -175,6 +175,7 @@ public class DateFormatter {
    * @return date formatted as date/time
    */
   public String toDateTimeString( Date date) {
+    if (date == null) return "Unknown";
     stdDateTimeFormat();
     return stdDateTimeFormat.format( date) +"Z";
   }

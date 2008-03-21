@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * @since Feb 29, 2008
  */
 public class PointFeatureDatasetImpl extends FeatureDatasetImpl implements PointFeatureDataset {
-  protected List<PointFeatureCollection> collectionList;
+  protected List<FeatureCollection> collectionList;
   protected Class featureInterface;
 
   // subsetting
@@ -62,12 +62,12 @@ public class PointFeatureDatasetImpl extends FeatureDatasetImpl implements Point
     this.featureInterface = featureInterface;
   }
 
-  protected void setPointFeatureCollection(List<PointFeatureCollection> collectionList) {
+  protected void setPointFeatureCollection(List<FeatureCollection> collectionList) {
     this.collectionList = collectionList;
   }
 
-  protected void setPointFeatureCollection(PointFeatureCollection collection) {
-    this.collectionList = new ArrayList<PointFeatureCollection>(1);
+  protected void setPointFeatureCollection(FeatureCollection collection) {
+    this.collectionList = new ArrayList<FeatureCollection>(1);
     this.collectionList.add(collection);
   }
 
@@ -75,7 +75,7 @@ public class PointFeatureDatasetImpl extends FeatureDatasetImpl implements Point
     return featureInterface;
   }
 
-  public List<PointFeatureCollection> getPointFeatureCollectionList() {
+  public List<FeatureCollection> getPointFeatureCollectionList() {
     return collectionList;
   }
 }

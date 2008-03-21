@@ -20,91 +20,60 @@
 package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.PointFeatureCollection;
-import ucar.nc2.dt2.FeatureIterator;
 import ucar.nc2.dt2.PointFeatureIterator;
-import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.dt2.PointFeature;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
-import java.util.List;
 import java.io.IOException;
 
 /**
  * Abstract superclass for PointFeatureCollection
- * Subclass must implement getFeatureIterator()
+ * Subclass must supply getPointFeatureIterator().
  *
  * @author caron
  * @since Mar 1, 2008
  */
 public abstract class PointFeatureCollectionImpl implements PointFeatureCollection {
-  protected Class featureClass;
-  protected List<? extends VariableSimpleIF> dataVariables;
   protected LatLonRect boundingBox;
   protected DateRange dateRange;
 
-  //protected FeatureIterator fiter;
-  //protected PointFeatureIterator pfiter;
+  PointFeatureCollectionImpl() {}
 
-  protected PointFeatureCollectionImpl(Class featureClass, List<? extends VariableSimpleIF> dataVariables) {
-    this.featureClass = featureClass;
-    this.dataVariables = dataVariables;
+  PointFeatureCollectionImpl(LatLonRect boundingBox, DateRange dateRange) {
+    this.boundingBox = boundingBox;
+    this.dateRange = dateRange;
   }
 
-   // subsetting
-  protected PointFeatureCollectionImpl(PointFeatureCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
-    this.featureClass = from.featureClass;
-    this.dataVariables = from.dataVariables;
-    //this.fiter = from.fiter;
-    //this.pfiter = from.pfiter;
-
-    if (filter_bb == null)
-      this.boundingBox = from.boundingBox;
-    else
-      this.boundingBox = (from.boundingBox == null) ? filter_bb : from.boundingBox.intersect( filter_bb);
-
-    if (filter_date == null) {
-      this.dateRange = from.dateRange;
-    } else {
-      this.dateRange =  (from.dateRange == null) ? filter_date : from.dateRange.intersect( filter_date);
-    }
-  }
-
-  /* protected void setIterators( FeatureIterator fiter, PointFeatureIterator pfiter) {
-    this.fiter = fiter;
-    this.pfiter = pfiter;
-  }
-
-  // copy constructor
-  protected PointFeatureCollectionImpl(PointFeatureCollectionImpl from) {
-    this.featureClass = from.featureClass;
-    this.dataVariables = from.dataVariables;
-    this.fiter = from.fiter;
-    this.pfiter = from.pfiter;
-  } */
-
-  // the data variables to be found in the PointFeature
-  public List<? extends VariableSimpleIF> getDataVariables() {
-    return dataVariables;
-  }
-
-  // All features in this collection have this feature type
   public Class getCollectionFeatureType() {
-    return featureClass;
-  }
-
-  /* an iterator over Features of type getCollectionFeatureType
-  public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
-    fiter.setBufferSize( bufferSize);
-    return fiter;
-  } */
-
-  // an iterator over Features of type PointFeature
-  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    return new PointFeatureIteratorAdapter( getFeatureIterator(bufferSize), boundingBox, dateRange);
+    return PointFeature.class;
   }
 
   public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
     return new PointFeatureCollectionSubset(this, boundingBox, dateRange);
+  }
+
+  private class PointFeatureCollectionSubset extends PointFeatureCollectionImpl {
+    PointFeatureCollectionImpl from;
+
+    PointFeatureCollectionSubset(PointFeatureCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
+      this.from = from;
+
+      if (filter_bb == null)
+        this.boundingBox = from.boundingBox;
+      else
+        this.boundingBox = (from.boundingBox == null) ? filter_bb : from.boundingBox.intersect( filter_bb);
+
+      if (filter_date == null) {
+        this.dateRange = from.dateRange;
+      } else {
+        this.dateRange =  (from.dateRange == null) ? filter_date : from.dateRange.intersect( filter_date);
+      }
+    }
+
+    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+      return new PointFeatureIteratorFiltered( from.getPointFeatureIterator(bufferSize), this.boundingBox, this.dateRange);
+    }
   }
 
 }

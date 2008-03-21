@@ -26,27 +26,18 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * A Collection of Features, ultimately based on PointFeature.
+ * A Collection of PointFeatures.
  *
  * @author caron
  * @since Mar 1, 2008
  */
-public interface PointFeatureCollection {
-
-  // the data variables to be found in the PointFeature
-  public List<? extends VariableSimpleIF> getDataVariables();
-
-  // All features in this collection have this feature type
-  public Class getCollectionFeatureType();
-
-  // an iterator over Features of type getCollectionFeatureType
-  public FeatureIterator getFeatureIterator(int bufferSize) throws java.io.IOException;
+public interface PointFeatureCollection extends FeatureCollection {
 
   // an iterator over Features of type PointFeature
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
 
   // create a subset
-  // if empty, return null or empty iterator ??
+  // if empty, may return null
   public PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
 }

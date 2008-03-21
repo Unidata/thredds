@@ -17,35 +17,29 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 package ucar.nc2.dt2;
 
+import ucar.nc2.units.DateRange;
+
+import java.io.IOException;
+
 /**
- * An Iterator over Features.
- *
+ * A Collection of nested PointFeatures.
  * @author caron
+ * @since Mar 20, 2008
  */
-public interface FeatureIterator {
+public interface NestedPointFeatureCollection extends FeatureCollection {
 
-  /**
-   * true if another Feature object is available
-   * @return true if another Feature object is available
-   * @throws java.io.IOException on i/o error
-   */
-  public boolean hasNext() throws java.io.IOException;
+  public boolean isMultipleNested();
 
-  /**
-   * Returns the next Feature object
-   * @return the next Feature object
-   * @throws java.io.IOException on i/o error
-   */
-  public Feature nextFeature() throws java.io.IOException;
+  // use this only if its not multiply nested
+  public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
 
-  /**
-   * Hint to use this much memory in buffering the iteration.
-   * No guarentee that it will be used by the implementation.
-   * @param bytes amount of memory in bytes
-   */
-  public void setBufferSize( int bytes);
+  // use this only if it is multiply nested
+  public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
+
+  // flatten into a PointFeatureCollection
+  // if empty, may return null
+  public PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
 }

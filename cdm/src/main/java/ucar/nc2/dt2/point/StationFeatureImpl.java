@@ -22,12 +22,10 @@ package ucar.nc2.dt2.point;
 import ucar.nc2.dt2.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Superclass for implementations of StationFeature: time series of data at a point
@@ -37,54 +35,18 @@ import java.util.List;
  */
 
 
-public class StationFeatureImpl extends PointFeatureCollectionImpl implements StationFeature {
+public abstract class StationFeatureImpl extends PointFeatureCollectionImpl implements StationFeature {
   protected StationImpl s;
   protected DateUnit timeUnit;
   protected int npts;
 
-  protected PointFeatureIterator pfiter;
-  protected FeatureIteratorAdapter iter;
-
-  public StationFeatureImpl( List<? extends VariableSimpleIF> dataVariables, String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
-    super(PointFeature.class, dataVariables);
+  public StationFeatureImpl( String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
     s = new StationImpl(name, desc, lat, lon, alt);
     this.timeUnit = timeUnit;
     this.npts = npts;
   }
 
-  // copy constructor
-  protected StationFeatureImpl( StationFeatureImpl from, LatLonRect filter_bb, DateRange filter_date) {
-    super(from, filter_bb, filter_date);
-    this.s = s;
-    this.timeUnit = from.timeUnit;
-    this.npts = -1;
-
-    iter = new FeatureIteratorAdapter(pfiter, boundingBox, dateRange);
-  }
-
-  protected void setIterator( PointFeatureIterator pfiter) {
-    this.pfiter = pfiter;
-    this.iter = new FeatureIteratorAdapter(pfiter, this.filter_bb, this.filter_date);
-  }
-
-    // an iterator over Features of type getCollectionFeatureType
-  public FeatureIterator getFeatureIterator(int bufferSize) throws IOException {
-    iter.setBufferSize( bufferSize);
-    return iter;
-  }
-
-  // an iterator over Features of type PointFeature
-  public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    iter.setBufferSize( bufferSize);
-    return iter;
-  }
-
   public String getId() { return s.getName(); }
-
-  // create a subset
-  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
-    return new StationFeatureImpl( this, boundingBox, dateRange);
-  }
 
   public int getNumberPoints() {
     return npts;

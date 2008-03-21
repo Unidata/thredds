@@ -465,7 +465,7 @@ public class RecordDatasetHelper {
     }
 
     // Constructor for when you already have the StructureData and Station, and calculate times
-    protected RecordStationObs(StationImpl station, StructureData sdata, int recno) {
+    protected RecordStationObs(Station station, StructureData sdata, int recno) {
       super(recno);
       this.station = station;
       this.location = station;

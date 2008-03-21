@@ -19,8 +19,6 @@
  */
 package ucar.nc2.dt2;
 
-import ucar.nc2.units.DateRange;
-
 import java.util.List;
 import java.io.IOException;
 
@@ -29,7 +27,7 @@ import java.io.IOException;
  * @author caron
  * @since Feb 29, 2008
  */
-public interface StationProfileFeatureCollection extends PointFeatureCollection, StationCollection {
+public interface StationProfileFeatureCollection extends NestedPointFeatureCollection, StationCollection {
 
   /**
    * Get a subsetted StationCollection

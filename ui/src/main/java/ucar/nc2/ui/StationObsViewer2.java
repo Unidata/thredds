@@ -217,7 +217,7 @@ public class StationObsViewer2 extends JPanel {
   }
 
   private void setObservationsAll( StationFeatureCollection stationCollection) throws IOException {
-    FeatureIterator iter = stationCollection.getFeatureIterator(-1);
+    PointFeatureCollectionIterator iter = stationCollection.getPointFeatureCollectionIterator(-1);
     List<PointFeature> obsList = new ArrayList<PointFeature>();
     while (iter.hasNext())
       obsList.add( (PointFeature) iter.nextFeature());

@@ -47,4 +47,11 @@ public interface PointFeatureIterator {
    */
   public void setBufferSize( int bytes);
 
+  /**
+   * A filter on PointFeature
+   */
+  public interface Filter {
+    public boolean filter(PointFeature pointFeature);
+  }
+
 }
