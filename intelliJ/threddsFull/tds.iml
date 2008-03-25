@@ -470,6 +470,15 @@
         </packaging>
       </configuration>
     </facet>
+    <facet type="Spring" name="Spring" implicit="true">
+      <configuration>
+        <options>
+          <option name="enableValidation" value="false" />
+          <option name="reportErrorsAsWarnings" value="true" />
+        </options>
+        <customNs />
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../tds/target/classes" />

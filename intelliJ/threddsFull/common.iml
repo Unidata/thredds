@@ -2,7 +2,7 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../common/src/java">
+    <content url="file://$MODULE_DIR$/../../common">
       <sourceFolder url="file://$MODULE_DIR$/../../common/src/java" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
