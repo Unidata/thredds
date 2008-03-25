@@ -162,6 +162,11 @@ public class ImageViewPanel extends JPanel {
 
       try {
         BufferedImage image = imageFactory.open( location);
+        if (image == null) {
+          javax.swing.JOptionPane.showMessageDialog(null, "Cant open dataset as image = "+location+"\n"+imageFactory.getErrorMessages());
+          return false;
+        }
+
         setImage( image);
 
       } catch (Exception e2) {
