@@ -503,6 +503,12 @@ public class GempakFileReader implements GempakConstants {
                      || (kmachn == MTALPH) || (kmachn == MTLNUX)
                      || (kmachn == MTIGPH));
 
+//      Set the file values of the missing data values to the current
+//      system values so that random values will not be converted.
+            kmissd = IMISSD;
+            smissd = RMISSD;
+
+
             String label = DM_RSTR(1, 28);
             //System.out.println("label = " + label);
             if ( !label.equals(DMLABEL)) {
