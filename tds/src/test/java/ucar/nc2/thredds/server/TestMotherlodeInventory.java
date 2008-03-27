@@ -58,6 +58,7 @@ public class TestMotherlodeInventory {
       "NAM/Alaska_45km/conduit/",
       "NAM/Alaska_95km/",
       "NAM/CONUS_12km/",
+      "NAM/CONUS_12km_conduit/",
       "NAM/CONUS_20km/surface/",
       "NAM/CONUS_20km/selectsurface/",
       "NAM/CONUS_20km/noaaport/",

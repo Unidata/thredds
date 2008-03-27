@@ -28,7 +28,7 @@
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
-  <property name="initialContent.dir" location="${root.dir}/src/main/initialContent"/>
+  <property name="initialContent.dir" location="${root.dir}/src/main/altContent/"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
 
@@ -216,6 +216,7 @@
 
   <!-- build war directory -->
   <target name="war-setup" depends="compile" description="create a distribution">
+
     <!-- create README file with time and version -->
     <mkdir dir="${war.dir}"/>
     <copy file="README.TEMPLATE" tofile="${war.dir}/docs/README.txt" overwrite="true">
@@ -255,7 +256,7 @@
     </copy>
 
     <!-- Copy initialContent to WEB-INF, so they will be hidden -->
-    <copy todir="${war.dir}/WEB-INF/initialContent/" overwrite="true" preservelastmodified="true">
+    <copy todir="${war.dir}/WEB-INF/altContent/" overwrite="true" preservelastmodified="true">
       <fileset dir="${initialContent.dir}" />
     </copy>
 
@@ -276,11 +277,11 @@
       </fileset>
     </copy>
 
-    <!-- Servlet engine needs write permission on log, config, and catalog directories. -->
+    <!-- Servlet engine needs write permission on log, config, and catalog directories.
     <chmod file="${war.dir}/initialContent/logs" perm="775" type="dir"/>
     <chmod file="${war.dir}/initialContent/cataloggen/config" perm="775" type="dir"/>
     <chmod file="${war.dir}/initialContent/cataloggen/catalogs" perm="775" type="dir"/>
-    <chmod file="${war.dir}/initialContent/dqcServlet/config" perm="775" type="dir"/>
+    <chmod file="${war.dir}/initialContent/dqcServlet/config" perm="775" type="dir"/>  -->
 
   </target>
   <!-- dist target -->
@@ -361,9 +362,9 @@
       <fileset refid="runtime.libraries"/>
     </copy>
 
-    <!-- create initialContent directory with log directory -->
+    <!-- create initialContent directory with log directory
     <mkdir dir="${war.dir}/initialContent/logs"/>
-    <chmod file="${war.dir}/initialContent/logs" perm="775" type="dir"/>
+    <chmod file="${war.dir}/initialContent/logs" perm="775" type="dir"/> -->
 
     <!-- Copy index.html into war dir. -->
     <copy file="src/main/webapp-dqcServletRedirect/resources/index.html"

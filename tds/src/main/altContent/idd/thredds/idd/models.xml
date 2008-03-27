@@ -327,23 +327,45 @@
 
       </datasetFmrc>
 
-      <datasetFmrc name="NCEP-NAM-CONUS_12km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_12km">
+      <dataset name="NCEP-NAM-CONUS_12km">
+
+        <datasetFmrc name="NCEP-NAM-CONUS_12km-noaaport" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_12km">
+          <metadata inherited="true">
+            <dataFormat>GRIB-2</dataFormat>
+            <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United States.
+              Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
+              Horizontal = 614 by 428 points, resolution 12.19 km, LambertConformal projection.
+              Vertical = 1000 to 100 hPa pressure levels (29).
+            </documentation>
+          </metadata>
+
+          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
+            <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NAM-CONUS_12km-noaaport.fmrcDefinition.xml" recheckEvery="15 min">
+              <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2" dateFormatMark="NAM_CONUS_12km_#yyyyMMdd_HHmm" subdirs="false" olderThan="5 min"/>
+            </aggregation>
+          </netcdf>
+          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_12km-noaaport.fmrcDefinition.xml" />
+       </datasetFmrc>
+
+      <datasetFmrc name="NCEP-NAM-CONUS_12km-conduit" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_12km/conduit">
         <metadata inherited="true">
           <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United States.
             Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
             Horizontal = 614 by 428 points, resolution 12.19 km, LambertConformal projection.
-            Vertical = 1000 to 100 hPa pressure levels.
+            Vertical = small number of mandatory pressure levels. Mostly surface quantities, suplemental to the noaaport feed.
           </documentation>
         </metadata>
 
         <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-          <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NAM-CONUS_12km.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan  location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2" dateFormatMark="NAM_CONUS_12km_#yyyyMMdd_HHmm" subdirs="false" olderThan="5 min"/>
+          <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-NAM-CONUS_12km-conduit.fmrcDefinition.xml" recheckEvery="15 min">
+            <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/" suffix=".grib2" dateFormatMark="NAM_CONUS_12km_#yyyyMMdd_HHmm" subdirs="false" olderThan="5 min"/>
           </aggregation>
         </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_12km.fmrcDefinition.xml" />
+        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_12km-conduit.fmrcDefinition.xml" />
      </datasetFmrc>
+
+     </dataset>
 
       <dataset name="NCEP-NAM-CONUS_20km">
         <documentation type="summary">NCEP North American Model : AWIPS 215(U) grid over the continental United States - Quadruple Resolution.
@@ -368,6 +390,7 @@
 
         <datasetFmrc name="NCEP-NAM-CONUS_20km-selectsurface" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_20km/selectsurface" >
           <metadata inherited="true">
+            <dataFormat>GRIB-2</dataFormat>
             <documentation type="summary">
               Model runs are made at 00Z, and 12Z with analysis and forecasts every 3 hours out to 84 hours; and at 06Z, and 18Z with analysis and forecasts every 3 hours out to 48 hours.
               Vertical = surface, 2m, and 10m, 2D fields only.
