@@ -13,44 +13,24 @@
   <property environment="env"/>
   <property file="${user.home}/build.properties"/>
 
-  <!-- Current CDM javadoc URL. -->
-  <property name="cdmAll.javadoc.url"
-            value="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/javadocAll/"/>
-
-  <!-- Directories for releasing to FTP or WWW site, defaults are John's.
-       Override by adding to build.properties file. -->
-  <property name="uni.ftp.dir" value="O:"/>
-  <property name="uni.www.dir" value="Z:"/>
-
-  <!-- TOMCAT_HOME directory, override in build.properties file. -->
-  <property name="tomcat_root" value="C:/Program Files (x86)/Apache Software Foundation/Tomcat-5.5"/>
-
+  <!-- source dirs -->
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
-  <property name="initialContent.dir" location="src/main/webapp/WEB-INF/altContent/"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
+  <property name="webapp.dir" location="${root.dir}/src/main/webapp"/>
 
+  <!-- target dirs -->
   <property name="build.dir" location="${root.dir}/target"/>
   <property name="build.classes.dir" location="${build.dir}/classes"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
   <property name="javadoc.dir" location="${build.dir}/javadoc"/>
 
+  <property name="uni.ftp.dir" value="O:"/>
+  <property name="uni.www.dir" value="Z:"/>
   <property name="release.dir" value="${uni.ftp.dir}/pub/thredds/${release.version}/"/>
-  <!--
-  <property name="release.library.dir" value="${uni.ftp.dir}/pub/thredds/${release.version}/"/>
-  <property name="release.doc.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
-
-  <property name="release.html.dir" value="${uni.ftp.dir}/content/software/netcdf-java/v${release.version}/"/>
-  <property name="release.javadoc.dir" value="${uni.ftp.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
-  <property name="webstart_dir" location="${release.html.dir}/webstart"/>
-  -->
-
-  <!-- Webapp source locations. -->
-  <property name="webapp.src.dir" location="${root.dir}/src/main/webapp"/>
-  <property name="webapp.resources.dir" location="${webapp.src.dir}/resources"/>
 
   <!-- Information about the servlet context and such. -->
   <property name="context.name" value="thredds"/>
@@ -234,7 +214,7 @@
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
     </copy>
-
+   
     <!-- copy classes to war classes directory. -->
     <mkdir dir="${war.dir}/WEB-INF/classes"/>
     <copy todir="${war.dir}/WEB-INF/classes" preservelastmodified="true" overwrite="true">
@@ -248,33 +228,9 @@
       <fileset refid="runtime.libraries"/>
     </copy>
 
-    <!-- Copy WEB-INF contents including web.xml. -->
-    <copy todir="${war.dir}/WEB-INF" overwrite="true" preservelastmodified="true">
-      <fileset dir="${webapp.src.dir}/WEB-INF">
-        <include name="log4j.xml" />
-      </fileset>
-    </copy>
-
-    <!-- Copy initialContent to WEB-INF, so they will be hidden -->
-    <copy todir="${war.dir}/WEB-INF/altContent/" overwrite="true" preservelastmodified="true">
-      <fileset dir="${initialContent.dir}" />
-    </copy>
-
-    <!-- Copy resources to WEB-INF/classes, so they will be in the classpath -->
-    <copy todir="${war.dir}/WEB-INF/classes/resources" overwrite="true" preservelastmodified="true">
-      <fileset dir="${resources.dir}" />
-    </copy>
-
-    <copy file="${webapp.src.dir}/WEB-INF/web.xml"
-          tofile="${war.dir}/WEB-INF/web.xml"
-          overwrite="true" preservelastmodified="true"/>
-
-    <!-- copy web resources to war directory last -->
-    <copy todir="${war.dir}" preservelastmodified="true" overwrite="true">
-      <fileset dir="${webapp.resources.dir}">
-        <!--exclude name="CVS"/>
-        <exclude name=".svn"/-->
-      </fileset>
+   <!-- Copy webapps dir  -->
+    <copy todir="${war.dir}" overwrite="true" preservelastmodified="true">
+      <fileset dir="${webapp.dir}" />
     </copy>
 
     <!-- Servlet engine needs write permission on log, config, and catalog directories.
@@ -429,6 +385,10 @@
   </target>
 
   <!-- ********** Javadoc Realease ********** -->
+  <!-- Current CDM javadoc URL. -->
+  <property name="cdmAll.javadoc.url"
+            value="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/javadocAll/"/>
+
   <!-- Build the Javadocs  -->
   <target name="javadoc" description="make the javadocs">
     <mkdir dir="${javadoc.dir}"/>
@@ -465,6 +425,7 @@
   </target>
 
   <!-- ************* Create Digests ******************** -->
+  <property name="tomcat_root" value="C:/Program Files (x86)/Apache Software Foundation/Tomcat-6.0.16"/>
   <path id="tomcatClassPath">
     <fileset dir="${tomcat_root}/bin">
       <include name="*.jar"/>
