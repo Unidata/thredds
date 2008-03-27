@@ -128,15 +128,7 @@
   <!-- Setup for the CatalogGen servlet. (Allows scheduling of CatalogGen tasks) -->
   <servlet>
     <servlet-name>catalogGen</servlet-name>
-    <servlet-class>thredds.cataloggen.servlet.CatGenServlet</servlet-class>
-    <!--
-    - The "configFile" parameter allows you to specify the name of the
-    - configuration file for this CatalogGen servlet.
-      -->
-    <init-param>
-      <param-name>configFile</param-name>
-      <param-value>config.xml</param-value>
-    </init-param>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
 
