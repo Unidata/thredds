@@ -470,7 +470,7 @@
         </packaging>
       </configuration>
     </facet>
-    <facet type="Spring" name="Spring" implicit="true">
+    <facet type="Spring" name="Spring">
       <configuration>
         <options>
           <option name="enableValidation" value="false" />
@@ -490,17 +490,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/tomcat-5.5.20_servlet-api.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/" />
-        </JAVADOC>
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module" module-name="cdm" />
     <orderEntry type="module-library">
       <library>
@@ -561,7 +550,9 @@
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="http://java.sun.com/products/servlet/2.5/docs/servlet-2_5-mr2/" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
@@ -572,7 +563,9 @@
           <root url="jar://$MODULE_DIR$/../../lib/external/spring.jar!/" />
           <root url="jar://$MODULE_DIR$/../../lib/external/spring-test.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="file://$MODULE_DIR$/../../../../../../apps/spring-framework-2.5.1/docs/api" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
