@@ -15,7 +15,7 @@
 
   <!-- Current CDM javadoc URL. -->
   <property name="cdmAll.javadoc.url"
-            value="http://www.unidata.ucar.edu/software/netcdf-java/v2.2.19/javadocAll/"/>
+            value="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/javadocAll/"/>
 
   <!-- Directories for releasing to FTP or WWW site, defaults are John's.
        Override by adding to build.properties file. -->
@@ -28,7 +28,7 @@
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
-  <property name="initialContent.dir" location="${root.dir}/src/main/altContent/"/>
+  <property name="initialContent.dir" location="src/main/webapp/WEB-INF/altContent/"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
 
