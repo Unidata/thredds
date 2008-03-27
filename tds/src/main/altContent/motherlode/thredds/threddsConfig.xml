@@ -22,7 +22,6 @@
   <catalogRoot>casestudies/july18_2002cat.xml</catalogRoot>
 
   <catalogRoot>servers/radarCollections.xml</catalogRoot>
-  <catalogRoot>testCatalogs/symLinkTdsTest.xml</catalogRoot>
 
   <NetcdfFileCache>
     <minFiles>100</minFiles>
