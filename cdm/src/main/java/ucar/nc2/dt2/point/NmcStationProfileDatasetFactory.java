@@ -20,21 +20,17 @@
 package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.*;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.Structure;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.misc.NmcObsLegacy;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.StructureData;
 import ucar.ma2.ArraySequence2;
 import ucar.ma2.StructureMembers;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Iterator;
 
 /**
@@ -55,13 +51,13 @@ public class NmcStationProfileDatasetFactory implements FeatureDatasetFactory {
     return new NmcStationProfileDataset(ncd, errlog);
   }
 
-  public DataType getFeatureDataType() {
-    return DataType.POINT;
+  public FeatureType getFeatureDataType() {
+    return FeatureType.POINT;
   }
 
   ///////////////////////////////////////////////////////////////////////
 
-  private class NmcStationProfileDataset extends PointFeatureDatasetImpl {
+  private class NmcStationProfileDataset extends PointDatasetImpl {
     private StationHelper stationHelper = new StationHelper();
     private Structure stationProfiles;
     private DateUnit dateUnit;
@@ -106,10 +102,11 @@ public class NmcStationProfileDatasetFactory implements FeatureDatasetFactory {
       }
     }
 
-    private class NmcStationProfileCollection extends StationProfileFeatureCollectionImpl {
+    private class NmcStationProfileCollection extends StationProfileCollectionImpl {
       private Structure struct;
 
       NmcStationProfileCollection(Structure struct) throws IOException {
+        super( struct.getName());
         this.struct = struct;
         setStationHelper( stationHelper);
       }
@@ -214,7 +211,7 @@ public class NmcStationProfileDatasetFactory implements FeatureDatasetFactory {
       ArraySequence2 levels;
 
       NmcProfileFeature(Structure struct, Station s, double time, DateUnit dateUnit, ArraySequence2 levels) throws IOException {
-        super(s.getLatLon(), -1);
+        super(struct.getName(), s.getLatLon(), -1);
         this.struct = struct;
         this.s = s;
         this.time = time;

@@ -3,6 +3,7 @@ package ucar.nc2.dt.trajectory;
 
 import junit.framework.TestCase;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.nc2.dt.*;
@@ -47,7 +48,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -105,7 +106,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -160,7 +161,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -191,7 +192,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -243,7 +244,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {

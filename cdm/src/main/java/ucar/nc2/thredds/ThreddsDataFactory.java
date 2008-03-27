@@ -20,7 +20,7 @@
 package ucar.nc2.thredds;
 
 import ucar.nc2.*;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 
 import ucar.nc2.dt.*;
@@ -79,7 +79,7 @@ public class ThreddsDataFactory {
     public boolean fatalError;
     public StringBuffer errLog = new StringBuffer();
 
-    public DataType dataType;
+    public FeatureType dataType;
     public ucar.nc2.dt.TypedDataset tds;
     public String imageURL;
 
@@ -172,7 +172,7 @@ public class ThreddsDataFactory {
     result.dataType = invDataset.getDataType();
 
     // special handling for images
-    if (result.dataType == DataType.IMAGE) {
+    if (result.dataType == FeatureType.IMAGE) {
 
       InvAccess access = getImageAccess(invDataset, task, result);
       if (access != null) {
@@ -187,7 +187,7 @@ public class ThreddsDataFactory {
     if (qc != null) {
       String dqc_location = qc.getStandardUrlName();
 
-      if (result.dataType == DataType.STATION) {
+      if (result.dataType == FeatureType.STATION) {
 
         /* DqcFactory dqcFactory = new DqcFactory(true);
         QueryCapability dqc = dqcFactory.readXML(dqc_location);
@@ -242,7 +242,7 @@ public class ThreddsDataFactory {
     result.accessUsed = access;
 
     // special handling for IMAGE
-    if (result.dataType == DataType.IMAGE) {
+    if (result.dataType == FeatureType.IMAGE) {
       result.imageURL = access.getStandardUrlName();
       result.location = result.imageURL;
       return result;
@@ -267,17 +267,17 @@ public class ThreddsDataFactory {
     return result;
   }
 
-  private DataType assignDatatype( TypedDataset tds) {
+  private FeatureType assignDatatype( TypedDataset tds) {
     if (tds instanceof GridDataset)
-      return DataType.GRID;
+      return FeatureType.GRID;
     if (tds instanceof RadialDatasetSweep)
-      return DataType.RADIAL;
+      return FeatureType.RADIAL;
     if (tds instanceof TrajectoryObsDataset)
-      return DataType.TRAJECTORY;
+      return FeatureType.TRAJECTORY;
     if (tds instanceof StationObsDataset)
-      return DataType.STATION;
+      return FeatureType.STATION;
     if (tds instanceof PointObsDataset)
-      return DataType.POINT;
+      return FeatureType.POINT;
 
     return null;
   }

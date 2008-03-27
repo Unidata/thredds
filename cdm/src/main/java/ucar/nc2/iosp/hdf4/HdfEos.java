@@ -22,6 +22,7 @@ package ucar.nc2.iosp.hdf4;
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
@@ -103,7 +104,7 @@ public class HdfEos {
       }
       if (isSwath) {
         if (showTypes) System.out.println("***EOS SWATH");
-        rootg.addAttribute(new Attribute("cdm_data_type", ucar.nc2.constants.DataType.SWATH.toString()));
+        rootg.addAttribute(new Attribute("cdm_data_type", FeatureType.SWATH.toString()));
       }
     }
 
@@ -129,7 +130,7 @@ public class HdfEos {
       }
       if (isGrid) {
         if (showTypes) System.out.println("***EOS GRID");
-        rootg.addAttribute(new Attribute("cdm_data_type", ucar.nc2.constants.DataType.GRID.toString()));
+        rootg.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
       }
     }
 
@@ -154,7 +155,7 @@ public class HdfEos {
       }
       if (isPoint) {
         if (showTypes) System.out.println("***EOS POINT");
-        rootg.addAttribute(new Attribute("cdm_data_type", ucar.nc2.constants.DataType.POINT.toString()));
+        rootg.addAttribute(new Attribute("cdm_data_type", FeatureType.POINT.toString()));
       }
     }
 

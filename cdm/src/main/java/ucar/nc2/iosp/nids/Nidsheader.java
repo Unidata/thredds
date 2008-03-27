@@ -1390,7 +1390,7 @@ class Nidsheader{
 
         //prod_info_size = 2 * (int) (num_bin * scale + 0.5);
         //dimensions: radial, bin
-        ncfile.addAttribute(null, new Attribute("cdm_data_type", ucar.nc2.constants.DataType.RADIAL.toString()));
+        ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
         Dimension radialDim = new Dimension("azimuth", num_radials);
         ncfile.addDimension( null, radialDim);
 

@@ -9,7 +9,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NCdump;
 import ucar.nc2.util.IO;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
@@ -31,7 +31,7 @@ public class TestNcml extends TestCase {
 
     InvDataset ds = parent.findDatasetByName("NAM_CONUS_80km_20051206_0000.nc");
     assert (ds != null) : "cant find dataset 'NAM_CONUS_80km_20051206_0000.nc'";
-    assert ds.getDataType() == DataType.GRID;
+    assert ds.getDataType() == FeatureType.GRID;
 
     // ncml should not be sent to the client
     assert null == ((InvDatasetImpl)ds).getNcmlElement();

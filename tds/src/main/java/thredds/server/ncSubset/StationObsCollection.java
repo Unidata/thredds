@@ -28,7 +28,7 @@ import ucar.nc2.dt.point.StationObsDatasetInfo;
 import ucar.nc2.dt.point.WriterCFStationObsDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -348,7 +348,7 @@ public class StationObsCollection {
       if (sod == null) {
         StringBuffer sbuff = new StringBuffer();
         if (debug) System.out.println("StationObsDataset open " + filename);
-        sod = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, filename, null, sbuff);
+        sod = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, filename, null, sbuff);
         if (null == sod) {
           log.info("Cant open " + filename + "; " + sbuff);
           return null;

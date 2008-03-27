@@ -104,7 +104,7 @@ public class AggregationFmrc extends Aggregation {
     // some additional global attributes
     Group root = ncDataset.getRootGroup();
     root.addAttribute(new Attribute("Conventions", "CF-1.0, "+_Coordinate.Convention));
-    root.addAttribute(new Attribute("cdm_data_type", ucar.nc2.constants.DataType.GRID.toString()));
+    root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
 
     // create runtime aggregation dimension
     String dimName = getDimensionName();

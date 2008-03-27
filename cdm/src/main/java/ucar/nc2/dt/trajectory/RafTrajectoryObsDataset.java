@@ -4,6 +4,7 @@ package ucar.nc2.dt.trajectory;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -64,7 +65,7 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new RafTrajectoryObsDataset( ncd);
   }
-  public ucar.nc2.constants.DataType getScientificDataType() { return ucar.nc2.constants.DataType.TRAJECTORY; }
+  public FeatureType getScientificDataType() { return FeatureType.TRAJECTORY; }
 
   public RafTrajectoryObsDataset() {}
 

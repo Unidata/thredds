@@ -25,8 +25,9 @@ package ucar.nc2.dt2;
  */
 public interface FeatureCollection {
 
-  // All features in this collection have this feature type
-  public Class getCollectionFeatureType();
+  public String getName();
 
+  // All features in this collection have this feature type
+  public ucar.nc2.constants.FeatureType getCollectionFeatureType();
 
 }

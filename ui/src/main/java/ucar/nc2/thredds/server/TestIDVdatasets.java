@@ -28,7 +28,7 @@ import java.util.List;
 
 import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -120,12 +120,12 @@ public class TestIDVdatasets {
           InvAccess access = tdata.accessUsed;
           String st = (access == null) ? " UNKNOWN" : access.getService().getServiceType().toString();
 
-          if (tdata.dataType == DataType.GRID) {
+          if (tdata.dataType == FeatureType.GRID) {
             out.println(" *Opened " + countDone + " GRID " + tdata.location + " " + st + " (" + took + " msecs)");
             if (extract) extractGrid(out, (GridDataset) tdata.tds);
-          } else if (tdata.dataType == DataType.POINT) {
+          } else if (tdata.dataType == FeatureType.POINT) {
             out.println(" *Opened " + countDone + " TYPE " + ds.getDataType() + " " + tdata.location + " " + st);
-          } else if (tdata.dataType == DataType.STATION) {
+          } else if (tdata.dataType == FeatureType.STATION) {
             out.println(" *Opened " + countDone + " TYPE " + ds.getDataType() + " " + tdata.location + " " + st);
           }
 

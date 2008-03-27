@@ -22,7 +22,7 @@
 package thredds.catalog.ui.tools;
 
 import thredds.catalog.*;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateType;
 import thredds.catalog.dl.*;
 import thredds.catalog.ui.*;
@@ -330,7 +330,7 @@ public class CatalogEnhancer extends JPanel {
     pp.addEnumComboField("localMetadata.dataFormatType", "Data format", DataFormatType.getAllTypes(),
         true, 0, row, null);
 
-    pp.addEnumComboField("localMetadata.dataType", "Data type", DataType.getAllTypes(),
+    pp.addEnumComboField("localMetadata.dataType", "Data type", FeatureType.getAllTypes(),
         true, 2, row, null);
 
     pp.addEnumComboField("collectionType", "Collection type", CollectionType.getAllTypes(),
@@ -658,7 +658,7 @@ public class CatalogEnhancer extends JPanel {
 
       private thredds.catalog.InvAccess access;
       private String name, url, URLok = "";
-      private DataType dataType;
+      private FeatureType dataType;
       private DataFormatType dataFormatType;
       private ServiceType serviceType;
       private int ngrids, readTime;

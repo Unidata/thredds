@@ -23,7 +23,7 @@ package ucar.nc2.thredds.server;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.InvDataset;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 import java.io.PrintStream;
 import java.io.IOException;
@@ -92,7 +92,7 @@ public class TimeTDSfixed {
           return;
         }
         if (out != null) out.println(" *Opened TYPE " + tdata.dataType + " " + tdata.location);
-        if (tdata.dataType == DataType.GRID) {
+        if (tdata.dataType == FeatureType.GRID) {
           GridDataset gds = (GridDataset) tdata.tds;
           List grids = gds.getGrids();
           if (grids.size() > 0) {

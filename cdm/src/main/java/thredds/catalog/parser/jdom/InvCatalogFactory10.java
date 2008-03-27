@@ -42,7 +42,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import ucar.unidata.util.Format;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -217,11 +217,11 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String urlPath = dsElem.getAttributeValue("urlPath");
     String restrictAccess = dsElem.getAttributeValue("restrictAccess");
 
-    DataType dataType = null;
+    FeatureType dataType = null;
     if (dataTypeName != null) {
-      dataType = DataType.getType( dataTypeName);
+      dataType = FeatureType.getType( dataTypeName);
       if (dataType == null) {
-        dataType = new DataType( dataTypeName);
+        dataType = new FeatureType( dataTypeName);
         factory.appendWarning(" ** warning: non-standard data type = "+dataTypeName+"\n");
       }
     }
@@ -1416,9 +1416,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (dataTypeElem != null) {
       String dataTypeName = dataTypeElem.getText();
       if ((dataTypeName != null) && (dataTypeName.length() > 0)) {
-        DataType dataType = DataType.getType( dataTypeName);
+        FeatureType dataType = FeatureType.getType( dataTypeName);
         if (dataType == null) {
-          dataType = new DataType( dataTypeName);
+          dataType = new FeatureType( dataTypeName);
           factory.appendWarning(" ** warning: non-standard data type = "+dataTypeName+"\n");
         }
         tmg.setDataType( dataType);
@@ -2317,7 +2317,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       elem.addContent( authElem);
     }
 
-    if ((tmg.getDataType() != null) && (tmg.getDataType() != DataType.NONE)) {
+    if ((tmg.getDataType() != null) && (tmg.getDataType() != FeatureType.NONE)) {
       Element dataTypeElem = new Element("dataType", defNS);
       dataTypeElem.setText(tmg.getDataType().toString());
       elem.addContent( dataTypeElem);

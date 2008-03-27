@@ -28,7 +28,7 @@ import ucar.nc2.util.IO;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.Attribute;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -222,7 +222,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
       if (result.location == null)
         ok = false;
-      else if (result.dataType == DataType.GRID)
+      else if (result.dataType == FeatureType.GRID)
         extractGridDataset(out, (GridDataset) result.tds);
 
     } catch (Throwable e) {

@@ -30,7 +30,7 @@ import org.apache.lucene.document.*;
 import java.io.*;
 import java.util.*;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * Creates a lucene index for a list of datasets .
@@ -93,7 +93,7 @@ public class Indexer {
       indexMessages.append("  indexed keyword= "+k.getText()+"\n");
     }
 
-    DataType dt = ds.getDataType();
+    FeatureType dt = ds.getDataType();
     if ((null != dt) && !uq.contains(dt))
       uq.add( dt);
 

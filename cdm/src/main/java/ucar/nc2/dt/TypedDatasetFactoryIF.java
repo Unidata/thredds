@@ -21,7 +21,7 @@
 package ucar.nc2.dt;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 import java.io.IOException;
 
@@ -53,6 +53,6 @@ public interface TypedDatasetFactoryIF {
    * What kind of cientific data type will this return?
    * @return scientific data type
    */
-  public DataType getScientificDataType();
+  public FeatureType getScientificDataType();
 
 }

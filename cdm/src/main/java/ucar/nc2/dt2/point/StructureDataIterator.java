@@ -26,18 +26,24 @@ import ucar.ma2.StructureData;
 import java.io.IOException;
 
 /**
+ * Use struct.getStructureIterator to iterate over members of a Structure, with optional filtering.
+ * Subclass must implement makeFeature().
+ * 
  * @author caron
  * @since Feb 29, 2008
  */
 public abstract class StructureDataIterator implements PointFeatureIterator {
-
   protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
 
-  private Filter filter;
-  private ucar.ma2.StructureDataIterator structIter;
-  private PointFeature feature = null;
+  protected Filter filter;
+  protected PointFeature feature = null;
 
+  private ucar.ma2.StructureDataIterator structIter;
   private int recnum = 0;
+
+  protected StructureDataIterator(Filter filter) throws IOException {
+    this.filter = filter;
+  }
 
   protected StructureDataIterator(Structure struct, int bufferSize, Filter filter) throws IOException {
     this.structIter = struct.getStructureIterator(bufferSize);

@@ -37,7 +37,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.util.*;
 import java.io.IOException;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * This handles point datasets in "Unidata Observation Dataset v1.0"
@@ -49,8 +49,8 @@ import ucar.nc2.constants.DataType;
 public class UnidataPointObsDataset extends PointObsDatasetImpl implements TypedDatasetFactoryIF {
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(DataType.POINT.toString()) &&
-            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(DataType.POINT.toString()))
+    if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.POINT.toString()) &&
+            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.POINT.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);

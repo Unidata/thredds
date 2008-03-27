@@ -25,7 +25,7 @@ import ucar.nc2.units.DateType;
 
 import java.net.URI;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * A reference to a InvCatalog. The referenced catalog is not read until getDatasets() is called.
@@ -383,7 +383,7 @@ public class InvCatalogRef extends InvDatasetImpl {
     return !useProxy ? super.getDataFormatType() : proxy.getDataFormatType();
   }
 
-  public DataType getDataType() {
+  public FeatureType getDataType() {
     return !useProxy ? super.getDataType() : proxy.getDataType();
   }
 

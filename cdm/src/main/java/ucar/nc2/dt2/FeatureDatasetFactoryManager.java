@@ -20,7 +20,7 @@
 
 package ucar.nc2.dt2;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt2.point.*;
 
@@ -36,17 +36,17 @@ import java.io.IOException;
  */
 public class FeatureDatasetFactoryManager {
 
-  static private List<Factory> transformList = new ArrayList<Factory>();
+  static private List<Factory> factoryList = new ArrayList<Factory>();
   static private boolean userMode = false;
 
   // search in the order added
   static {
-    //registerFactory(DataType.STATION_PROFILE, ucar.nc2.dt2.point.NmcStationProfileDataset.class);
+    //registerFactory(FeatureType.STATION_PROFILE, ucar.nc2.dt2.point.NmcStationProfileDatasetFactory.class);
 
-    registerFactory(DataType.STATION, UnidataStationFeatureDatasetFactory.class);
+    //registerFactory(FeatureType.STATION, UnidataStationFeatureDatasetFactory.class);
 
-    registerFactory(DataType.POINT, UnidataPointFeatureDatasetFactory.class);
-    registerFactory(DataType.POINT, PointDatasetDefaultFactory.class);
+    //registerFactory(FeatureType.POINT, UnidataPointFeatureDatasetFactory.class);
+    registerFactory(FeatureType.POINT, PointDatasetDefaultFactory.class);
 
     // further calls to registerFactory are by the user
     userMode = true;
@@ -59,7 +59,7 @@ public class FeatureDatasetFactoryManager {
     * @param datatype  scientific data type
     * @throws ClassNotFoundException if loading error
     */
-   static public void registerFactory( DataType datatype, String className) throws ClassNotFoundException {
+   static public void registerFactory( FeatureType datatype, String className) throws ClassNotFoundException {
      Class c = Class.forName( className);
      registerFactory( datatype, c);
    }
@@ -69,7 +69,7 @@ public class FeatureDatasetFactoryManager {
     * @param datatype scientific data type
     * @param c class that implements TypedDatasetFactoryIF.
     */
-  static public void registerFactory( DataType datatype, Class c) {
+  static public void registerFactory( FeatureType datatype, Class c) {
     if (!(FeatureDatasetFactory.class.isAssignableFrom( c)))
       throw new IllegalArgumentException("Class "+c.getName()+" must implement FeatureDatasetFactory");
 
@@ -85,18 +85,18 @@ public class FeatureDatasetFactoryManager {
 
     // user stuff gets put at top
     if (userMode)
-      transformList.add( 0, new Factory( datatype, c, (FeatureDatasetFactory) instance));
+      factoryList.add( 0, new Factory( datatype, c, (FeatureDatasetFactory) instance));
     else
-      transformList.add( new Factory( datatype, c, (FeatureDatasetFactory)instance));
+      factoryList.add( new Factory( datatype, c, (FeatureDatasetFactory)instance));
 
   }
 
   static private class Factory {
-    DataType datatype;
+    FeatureType datatype;
     Class c;
     FeatureDatasetFactory factory;
 
-    Factory(DataType datatype, Class c, FeatureDatasetFactory factory) {
+    Factory(FeatureType datatype, Class c, FeatureDatasetFactory factory) {
       this.datatype = datatype;
       this.c = c;
       this.factory = factory;
@@ -114,7 +114,7 @@ public class FeatureDatasetFactoryManager {
    * @return a subclass of FeatureDataset
    * @throws java.io.IOException on io error
    */
-  static public FeatureDataset open( DataType datatype, String location, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  static public FeatureDataset open( FeatureType datatype, String location, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     /* special processing for thredds: datasets
     if (location.startsWith("thredds:") && (datatype != null)) {
       ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype( location, task);
@@ -137,11 +137,11 @@ public class FeatureDatasetFactoryManager {
    * @return a subclass of FeatureDataset
    * @throws java.io.IOException on io error
    */
-  static public FeatureDataset wrap( DataType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  static public FeatureDataset wrap( FeatureType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
 
     // look for a Factory that claims this dataset
     Class useClass = null;
-    for (Factory fac : transformList) {
+    for (Factory fac : factoryList) {
       if ((datatype != null) && (datatype != fac.datatype)) continue;
 
       if (fac.factory.isMine(ncd)) {

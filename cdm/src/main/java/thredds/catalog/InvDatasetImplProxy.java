@@ -21,7 +21,7 @@ package thredds.catalog;
 
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * Proxy an InvDatasetImpl to another InvDatasetImpl.
@@ -126,7 +126,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     return proxy.getDataFormatType();
   }
 
-  public DataType getDataType() {
+  public FeatureType getDataType() {
     return proxy.getDataType();
   }
 

@@ -20,7 +20,7 @@
 
 package thredds.catalog;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * Type-safe enumeration of THREDDS Service types.
@@ -112,7 +112,7 @@ public final class ServiceType {
    */
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof DataType)) return false;
+    if (!(o instanceof FeatureType)) return false;
     return o.hashCode() == this.hashCode();
   }
 }

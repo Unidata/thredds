@@ -20,6 +20,7 @@
 package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.*;
+import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.List;
@@ -31,12 +32,12 @@ import java.io.IOException;
  * @author caron
  * @since Mar 20, 2008
  */
-public abstract class StationProfileFeatureCollectionImpl extends NestedPointFeatureCollectionImpl implements StationProfileFeatureCollection {
+public abstract class StationProfileCollectionImpl extends MultipleNestedPointCollectionImpl implements StationProfileFeatureCollection {
 
   protected StationHelper stationHelper;
 
-  public StationProfileFeatureCollectionImpl() {
-    super(true, StationProfileFeature.class);
+  public StationProfileCollectionImpl(String name) {
+    super( name, FeatureType.STATION_PROFILE);
     stationHelper = new StationHelper();
   }
 
@@ -60,7 +61,7 @@ public abstract class StationProfileFeatureCollectionImpl extends NestedPointFea
     return stationHelper.getBoundingBox();
   }
 
-  public StationProfileFeatureCollectionImpl subset(List<Station> stations) throws IOException {
+  public StationProfileCollectionImpl subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
     return new StationProfileFeatureCollectionSubset(this, stations);
   }
@@ -74,10 +75,11 @@ public abstract class StationProfileFeatureCollectionImpl extends NestedPointFea
   }
 
     // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
-  private class StationProfileFeatureCollectionSubset extends StationProfileFeatureCollectionImpl {
-    StationProfileFeatureCollectionImpl from;
+  private class StationProfileFeatureCollectionSubset extends StationProfileCollectionImpl {
+    StationProfileCollectionImpl from;
 
-    StationProfileFeatureCollectionSubset(StationProfileFeatureCollectionImpl from, List<Station> stations) {
+    StationProfileFeatureCollectionSubset(StationProfileCollectionImpl from, List<Station> stations) {
+      super( from.getName());
       this.from = from;
       stationHelper = new StationHelper();
       stationHelper.setStations(stations);
@@ -85,7 +87,7 @@ public abstract class StationProfileFeatureCollectionImpl extends NestedPointFea
 
     // use this only if it is multiply nested
     public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new NestedPointFeatureCollectionIteratorFiltered( from.getNestedPointFeatureCollectionIterator(bufferSize), new Filter());
+      return new NestedPointCollectionIteratorFiltered( from.getNestedPointFeatureCollectionIterator(bufferSize), new Filter());
     }
 
     private class Filter implements NestedPointFeatureCollectionIterator.Filter {

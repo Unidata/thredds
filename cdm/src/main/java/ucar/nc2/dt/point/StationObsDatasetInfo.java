@@ -21,7 +21,7 @@
 package ucar.nc2.dt.point;
 
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.DateFormatter;
@@ -308,7 +308,7 @@ public class StationObsDatasetInfo {
 
     // String url = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NDFD/CONUS_5km/NDFD-CONUS_5km_best.ncd";
 
-    StationObsDataset ncd = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, url, null, new StringBuffer());
+    StationObsDataset ncd = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuffer());
     StationObsDatasetInfo info = new StationObsDatasetInfo(ncd, null);
     FileOutputStream fos2 = new FileOutputStream("C:/TEMP/stationCollection.xml");
     GZIPOutputStream zout =  new GZIPOutputStream( fos2);

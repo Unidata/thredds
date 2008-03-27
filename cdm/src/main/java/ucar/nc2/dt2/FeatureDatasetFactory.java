@@ -21,7 +21,7 @@
 package ucar.nc2.dt2;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 import java.io.IOException;
 
@@ -55,6 +55,6 @@ public interface FeatureDatasetFactory {
    * What kind of Feature data type will this return?
    * @return data type
    */
-  public DataType getFeatureDataType();
+  public FeatureType getFeatureDataType();
 
 }

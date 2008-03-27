@@ -35,7 +35,7 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.tree.*;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * A Swing widget for THREDDS clients to display catalogs in a JTree, and allows
@@ -619,9 +619,9 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
         } else if (leaf) {
           if (null != ds.getAccess( ServiceType.QC))
             setIcon( dqcIcon);
-          else if (ds.getDataType() == DataType.GRID)
+          else if (ds.getDataType() == FeatureType.GRID)
             setIcon( gridIcon);
-          else if (ds.getDataType() == DataType.IMAGE)
+          else if (ds.getDataType() == FeatureType.IMAGE)
             setIcon( imageIcon);
         }
       }

@@ -19,10 +19,8 @@
  */
 package ucar.nc2.dt2.point;
 
-import ucar.nc2.dt2.PointFeatureCollectionIterator;
-import ucar.nc2.dt2.PointFeatureCollection;
-import ucar.nc2.units.DateRange;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.nc2.dt2.NestedPointFeatureCollectionIterator;
+import ucar.nc2.dt2.NestedPointFeatureCollection;
 
 import java.io.IOException;
 
@@ -30,51 +28,51 @@ import java.io.IOException;
  * @author caron
  * @since Mar 20, 2008
  */
-public class PointFeatureCollectionIteratorFiltered implements PointFeatureCollectionIterator {
+public class NestedPointCollectionIteratorFiltered implements NestedPointFeatureCollectionIterator {
 
-  private PointFeatureCollectionIterator pfciter;
-  private PointFeatureCollectionIterator.Filter filter;
+  private NestedPointFeatureCollectionIterator npfciter;
+  private NestedPointFeatureCollectionIterator.Filter filter;
 
-  private PointFeatureCollection pointFeatureCollection;
+  private NestedPointFeatureCollection pointFeatureCollection;
   private boolean done = false;
 
-  PointFeatureCollectionIteratorFiltered(PointFeatureCollectionIterator pfciter, PointFeatureCollectionIterator.Filter filter) {
-    this.pfciter = pfciter;
+  NestedPointCollectionIteratorFiltered(NestedPointFeatureCollectionIterator npfciter, NestedPointFeatureCollectionIterator.Filter filter) {
+    this.npfciter = npfciter;
     this.filter = filter;
   }
 
   public void setBufferSize(int bytes) {
-    pfciter.setBufferSize(bytes);
+    npfciter.setBufferSize(bytes);
   }
 
   public boolean hasNext() throws IOException {
     if (done) return false;
-
     pointFeatureCollection = nextFilteredPointFeatureCollection();
     return (pointFeatureCollection != null);
   }
 
-  public PointFeatureCollection nextFeature() throws IOException {
+  public NestedPointFeatureCollection nextFeature() throws IOException {
     return done ? null : pointFeatureCollection;
   }
 
-  private boolean filter(PointFeatureCollection pdata) {
+  private boolean filter(NestedPointFeatureCollection pdata) {
     return (filter == null) || filter.filter(pdata);
   }
 
-  private PointFeatureCollection nextFilteredPointFeatureCollection() throws IOException {
-    if ( pfciter == null) return null;
-    if (!pfciter.hasNext()) return null;
+  private NestedPointFeatureCollection nextFilteredPointFeatureCollection() throws IOException {
+    if ( npfciter == null) return null;
+    if (!npfciter.hasNext()) return null;
 
-    PointFeatureCollection pdata = pfciter.nextFeature();
+    NestedPointFeatureCollection pdata = npfciter.nextFeature();
     if (!filter(pdata)) {
-      if (!pfciter.hasNext()) return null;
-      pdata = pfciter.nextFeature();
+      if (!npfciter.hasNext()) return null;
+      pdata = npfciter.nextFeature();
     }
 
     return pdata;
   }
 
 }
+
 
 

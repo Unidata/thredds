@@ -22,7 +22,7 @@ package ucar.nc2.dt.radial;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
@@ -67,7 +67,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         return new Dorade2Dataset(ncd);
     }
 
-    public DataType getScientificDataType() { return ucar.nc2.constants.DataType.RADIAL; }
+    public FeatureType getScientificDataType() { return FeatureType.RADIAL; }
 
 
     public Dorade2Dataset() {}
@@ -461,7 +461,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
     String fileIn = "/home/yuanho/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";
-    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( DataType.RADIAL, fileIn, null, new StringBuffer());
+    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuffer());
     String st = rds.getStartDate().toString();
     String et = rds.getEndDate().toString();
     if (rds.isStationary()) {

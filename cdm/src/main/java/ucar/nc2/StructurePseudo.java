@@ -71,6 +71,42 @@ public class StructurePseudo extends Structure {
     calcElementSize();
   }
 
+  /** Make a Structure out of named Variables, each has the same named outermost dimension.
+   *
+   * @param ncfile part of this file
+   * @param group part of this group
+   * @param shortName short name of this Structure
+   * @param dim the existing dimension
+   */
+  public StructurePseudo( NetcdfFile ncfile, Group group, String shortName,  List<Variable> vars, Dimension dim) {
+    super (ncfile, group, null, shortName); // cant do this for nested structures
+    this.dataType = DataType.STRUCTURE;
+    setDimensions( dim.getName());
+
+    if (group == null)
+      group = ncfile.getRootGroup();
+
+    // find all variables in this group that has this as the outer dimension
+    for (Variable orgV : vars) {
+      Dimension dim0 = orgV.getDimension(0);
+      if (!dim0.equals(dim)) throw new IllegalArgumentException("Variable "+orgV.getNameAndDimensions()+" must have outermost dimension="+dim);
+
+      Variable memberV = new Variable(ncfile, group, this, orgV.getShortName());
+      memberV.setDataType(orgV.getDataType());
+      memberV.setSPobject(orgV.getSPobject()); // ??
+      memberV.attributes.addAll(orgV.getAttributes());
+
+      List<Dimension> dims = new ArrayList<Dimension>(orgV.dimensions);
+      dims.remove(0); //remove outer dimension
+      memberV.setDimensions(dims);
+
+      addMemberVariable(memberV);
+      orgVariables.add(orgV);
+    }
+
+    calcElementSize();
+  }
+
   ///////////////
   // internal reads: all other calls go through these.
   // subclasses must override, so that NetcdfDataset wrapping will work.
@@ -110,7 +146,7 @@ public class StructurePseudo extends Structure {
     for (Variable v : orgVariables) {
       List<Range> vsection =  new ArrayList<Range>(v.getRanges());
       vsection.set(0, r);
-      Array data = v.read(vsection);
+      Array data = v.read(vsection);  // LOOK, do we need to reduce ?
       StructureMembers.Member m = smembers.findMember(v.getShortName());
       m.setDataArray(data);
     }

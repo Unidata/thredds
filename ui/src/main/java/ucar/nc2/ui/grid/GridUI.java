@@ -33,7 +33,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.util.NamedObject;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 import ucar.util.prefs.PreferencesExt;
 
@@ -364,7 +364,7 @@ public class GridUI extends JPanel {
 
         InvDataset invDs;
         try {
-          invDs = new InvDatasetImpl(filename, DataType.GRID, ServiceType.NETCDF);
+          invDs = new InvDatasetImpl(filename, FeatureType.GRID, ServiceType.NETCDF);
         } catch (Exception ue) {
           JOptionPane.showMessageDialog(GridUI.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
           ue.printStackTrace();

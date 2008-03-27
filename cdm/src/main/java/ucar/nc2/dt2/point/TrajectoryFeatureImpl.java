@@ -19,34 +19,24 @@
  */
 package ucar.nc2.dt2.point;
 
-import ucar.nc2.dt2.ProfileFeature;
-import ucar.nc2.dt2.PointFeature;
+import ucar.nc2.dt2.TrajectoryFeature;
 import ucar.nc2.constants.FeatureType;
-import ucar.unidata.geoloc.LatLonPoint;
 
 /**
- * Abstract superclass for implementations of ProfileFeature.
- *
  * @author caron
- * @since Feb 29, 2008
+ * @since Mar 26, 2008
  */
-public abstract class ProfileFeatureImpl extends PointCollectionImpl implements ProfileFeature {
-  private LatLonPoint latlonPoint;
+public abstract class TrajectoryFeatureImpl extends PointCollectionImpl implements TrajectoryFeature {
   private int npts;
 
-  public ProfileFeatureImpl( String name, LatLonPoint latlonPoint, int npts) {
+  public TrajectoryFeatureImpl( String name, int npts) {
     super(name);
-    this.latlonPoint = latlonPoint;
     this.npts = npts;
-  }
-
-  public LatLonPoint getLatLon() {
-    return latlonPoint;
   }
 
   @Override
   public FeatureType getCollectionFeatureType() {
-    return FeatureType.PROFILE;
+    return FeatureType.TRAJECTORY;
   }
 
   public int getNumberPoints() {

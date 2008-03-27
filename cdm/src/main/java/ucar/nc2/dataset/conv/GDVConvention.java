@@ -63,6 +63,7 @@ public class GDVConvention extends CSMConvention {
   /**
    * look for aliases.
    */
+  @Override
   protected void findCoordinateAxes(NetcdfDataset ds) {
 
     for (VarProcess vp : varList) {
@@ -80,6 +81,36 @@ public class GDVConvention extends CSMConvention {
     }
 
     super.findCoordinateAxes(ds);
+
+    // desperado
+    findCoordinateAxesForce( ds);
+  }
+
+  private void findCoordinateAxesForce(NetcdfDataset ds) {
+
+    HashMap<AxisType, VarProcess> map = new HashMap<AxisType, VarProcess>();
+
+    // find existing axes, so we dont duplicate
+    for (VarProcess vp : varList) {
+      if (vp.isCoordinateVariable) {
+        AxisType atype = getAxisType( ds, (VariableEnhanced) vp.v);
+        if (atype != null)
+          map.put(atype, vp);
+      }
+    }
+
+    // look for variables to turn into axes
+    for (VarProcess vp : varList) {
+      if (vp.isCoordinateVariable) continue;
+      Variable ncvar = vp.v;
+      if (!(ncvar instanceof VariableDS)) continue; // cant be a structure
+
+      AxisType atype = getAxisType( ds, (VariableEnhanced) vp.v);
+      if (atype != null) {
+        if (map.get(atype) == null)
+            vp.isCoordinateAxis = true;
+        }
+      }
   }
 
   /**
@@ -119,7 +150,6 @@ public class GDVConvention extends CSMConvention {
 
     if (vname.equalsIgnoreCase("lon") || vname.equalsIgnoreCase("longitude") || findAlias(ds, v).equalsIgnoreCase("lon"))
       return AxisType.Lon;
-
 
     if (vname.equalsIgnoreCase("y") || findAlias(ds, v).equalsIgnoreCase("y"))
       return AxisType.GeoY;

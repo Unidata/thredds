@@ -368,5 +368,14 @@
       </value>
     </option>
   </component>
+  <component name="com.sixrr.metrics.MetricsReloaded">
+    <option name="selectedProfile" value="Lines of code metrics" />
+    <option name="autoscroll" value="true" />
+    <option name="calculateMetrics" value="true" />
+    <option name="includeTestClasses" value="false" />
+    <option name="flattenInnerClasses" value="true" />
+    <option name="cycleTableSpecificationString" value="" />
+    <option name="shortCycleTableSpecificationString" value="" />
+  </component>
 </project>
 

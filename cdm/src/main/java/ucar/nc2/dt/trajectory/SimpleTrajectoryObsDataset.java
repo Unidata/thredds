@@ -3,7 +3,7 @@ package ucar.nc2.dt.trajectory;
 
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -112,7 +112,7 @@ public class SimpleTrajectoryObsDataset extends SingleTrajectoryObsDataset imple
   public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new SimpleTrajectoryObsDataset( ncd);
   }
-  public DataType getScientificDataType() { return DataType.TRAJECTORY; }
+  public FeatureType getScientificDataType() { return FeatureType.TRAJECTORY; }
 
   public SimpleTrajectoryObsDataset() {}
 

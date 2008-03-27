@@ -24,7 +24,7 @@ package ucar.nc2.dt;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 import java.io.*;
 import java.util.Iterator;
@@ -41,7 +41,7 @@ public class TimeStationObs {
     StationObsDataset sod = null;
     try {
       if (debug) System.out.println("scanStation open "+url);
-      sod = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, url, null, new StringBuffer());
+      sod = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuffer());
 
       Station s = sod.getStation(station);
       if (s == null) return;
@@ -70,7 +70,7 @@ public class TimeStationObs {
     PointObsDataset dataset = null;
     try {
       if (debug) System.out.println("scanAll open "+url);
-      dataset = (PointObsDataset) TypedDatasetFactory.open(DataType.POINT, url, null, new StringBuffer());
+      dataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, url, null, new StringBuffer());
 
       DataIterator iter = dataset.getDataIterator(0);
       while (iter.hasNext()) {

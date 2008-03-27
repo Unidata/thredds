@@ -20,7 +20,7 @@
 
 package thredds.catalog;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * Abstract class to filter datasets.
@@ -65,8 +65,8 @@ public abstract class DatasetFilter {
    * Filter a Catalog by the dataset data type.
    */
   static public class ByDataType extends DatasetFilter {
-    private DataType type;
-    public ByDataType( DataType type) { this.type = type; }
+    private FeatureType type;
+    public ByDataType( FeatureType type) { this.type = type; }
 
     public int accept( InvDataset d) {
       if (null == d.getDataType()) return 0;

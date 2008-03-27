@@ -25,6 +25,7 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Stereographic;
@@ -517,7 +518,7 @@ class Giniheader {
     this.ncfile.addAttribute(null, new Attribute("summary", getPhysElemSummary(phys_elem, ent_id)));
     this.ncfile.addAttribute(null, new Attribute("id", gini_GetSectorID(sec_id)));
     this.ncfile.addAttribute(null, new Attribute("keywords_vocabulary", gini_GetPhysElemID(phys_elem, ent_id)));
-    this.ncfile.addAttribute(null, new Attribute("cdm_data_type", ucar.nc2.constants.DataType.GRID.toString()));
+    this.ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
     this.ncfile.addAttribute(null, new Attribute("standard_name_vacabulary", getPhysElemLongName(phys_elem, ent_id)));
     this.ncfile.addAttribute(null, new Attribute("creator_name", "UNIDATA"));
     this.ncfile.addAttribute(null, new Attribute("creator_url", "http://my.unidata.ucar.edu/"));

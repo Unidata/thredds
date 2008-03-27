@@ -17,90 +17,70 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.PointFeatureIterator;
 import ucar.nc2.dt2.PointFeature;
-import ucar.nc2.dt2.PointFeatureCollectionIterator;
-import ucar.nc2.dt2.PointFeatureCollection;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 
 /**
- * Adapt a FeatureIterator to a PointFeatureIterator
- *
  * @author caron
- * @since Mar 19, 2008
+ * @since Mar 20, 2008
  */
-public class PointFeatureIteratorAdapter implements PointFeatureIterator {
-  private PointFeatureCollectionIterator fiter;
+public class PointIteratorFiltered implements PointFeatureIterator {
+  private PointFeatureIterator pfiter;
   private LatLonRect filter_bb;
   private DateRange filter_date;
 
-  private PointFeatureIterator pfiter;
   private PointFeature pointFeature;
   private boolean done = false;
 
-  PointFeatureIteratorAdapter(PointFeatureCollectionIterator fiter, LatLonRect filter_bb, DateRange filter_date) {
-    this.fiter = fiter;
+  PointIteratorFiltered(PointFeatureIterator pfiter, LatLonRect filter_bb, DateRange filter_date) {
+    this.pfiter = pfiter;
     this.filter_bb = filter_bb;
     this.filter_date = filter_date;
   }
 
   public void setBufferSize(int bytes) {
-    fiter.setBufferSize(bytes);
+    pfiter.setBufferSize(bytes);
   }
 
   public boolean hasNext() throws IOException {
     if (done) return false;
 
     pointFeature = nextFilteredDataPoint();
-    if (pointFeature != null) return true;
-
-    PointFeatureCollection feature = nextFilteredCollection();
-    if (feature == null) {
-      done = true;
-      return false;
-    }
-
-    pfiter = feature.getPointFeatureIterator(-1);
-    return hasNext();
+    return (pointFeature != null);
   }
 
   public PointFeature nextData() throws IOException {
     return done ? null : pointFeature;
   }
 
-  private PointFeatureCollection nextFilteredCollection() throws IOException {
-    if (!fiter.hasNext()) return null;
-    PointFeatureCollection f = (PointFeatureCollection) fiter.nextFeature();
+  private boolean filter(PointFeature pdata) {
+    if ((filter_date != null) && !filter_date.included(pdata.getObservationTimeAsDate()))
+      return false;
 
-    if (filter_bb == null)
-      return f;
+    if ((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatLon()))
+      return false;
 
-    /* while (!filter_bb.contains(f.getLatLon())) {
-      if (!fiter.hasNext()) return null;
-      f = (PointFeatureCollection) fiter.nextFeature();
-    } LOOK */
-    return f;
+    return true;
   }
 
   private PointFeature nextFilteredDataPoint() throws IOException {
-    if (pfiter == null) return null;
+    if ( pfiter == null) return null;
     if (!pfiter.hasNext()) return null;
+
     PointFeature pdata = pfiter.nextData();
-
-    if (filter_date == null)
-      return pdata;
-
-    while (!filter_date.included(pdata.getObservationTimeAsDate())) {
+    if (!filter(pdata)) {
       if (!pfiter.hasNext()) return null;
       pdata = pfiter.nextData();
     }
+
     return pdata;
   }
 
 }
+

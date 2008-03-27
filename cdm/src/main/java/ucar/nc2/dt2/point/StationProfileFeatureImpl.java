@@ -21,6 +21,7 @@ package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.*;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
 
 import java.io.IOException;
@@ -32,20 +33,20 @@ import java.io.IOException;
  * @author caron
  * @since Feb 29, 2008
  */
-public abstract class StationProfileFeatureImpl extends NestedPointFeatureCollectionImpl implements StationProfileFeature {
+public abstract class StationProfileFeatureImpl extends OneNestedPointCollectionImpl implements StationProfileFeature {
   protected DateUnit timeUnit;
   protected int npts;
   protected Station s;
 
   public StationProfileFeatureImpl(String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
-    super(false, StationProfileFeature.class);
+    super( name, FeatureType.STATION_PROFILE);
     s = new StationImpl(name, desc, lat, lon, alt);
     this.timeUnit = timeUnit;
     this.npts = npts;
   }
 
   public StationProfileFeatureImpl(Station s, DateUnit timeUnit, int npts) {
-    super(true, StationProfileFeature.class);
+    super( s.getName(), FeatureType.STATION_PROFILE);
     this.s = s;
     this.timeUnit = timeUnit;
     this.npts = npts;
@@ -83,7 +84,4 @@ public abstract class StationProfileFeatureImpl extends NestedPointFeatureCollec
     return s.getLatLon();
   }
 
-  public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    throw new UnsupportedOperationException("StationProfileFeature does not implement getNestedPointFeatureCollection()");
-  }
 }

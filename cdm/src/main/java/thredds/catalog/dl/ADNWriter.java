@@ -37,7 +37,7 @@ import java.net.URI;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.units.TimeUnit;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 public class ADNWriter {
   private static final Namespace defNS = Namespace.getNamespace("http://adn.dlese.org");
@@ -284,9 +284,9 @@ public class ADNWriter {
     Element resourceTypes = new Element("resourceTypes", defNS);
     educational.addContent( resourceTypes);
     String resourceType = "DLESE:Data:In situ dataset"; // default
-    if (ds.getDataType() == DataType.GRID)
+    if (ds.getDataType() == FeatureType.GRID)
       resourceType = "DLESE:Data:Modeled dataset"; // take a guess
-    else if (ds.getDataType() == DataType.IMAGE)
+    else if (ds.getDataType() == FeatureType.IMAGE)
       resourceType = "DLESE:Data:Remotely sensed dataset";
     resourceTypes.addContent( new Element("resourceType", defNS).addContent(resourceType));
 

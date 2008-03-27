@@ -5,6 +5,7 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.ma2.DataType;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonRect;
@@ -34,7 +35,7 @@ public class TestPointDataset extends TestCase {
 
   private void testPointMethods(String location) throws IOException {
     StringBuffer sbuff = new StringBuffer();
-    PointObsDataset pod = (PointObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.POINT, location, null, sbuff);
+    PointObsDataset pod = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, location, null, sbuff);
     assert pod != null : sbuff.toString();
 
     System.out.println("-----------");

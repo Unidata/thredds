@@ -24,7 +24,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
@@ -46,8 +46,8 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataStationObsMultidimDataset.class);
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(ucar.nc2.constants.DataType.STATION.toString()) &&
-        !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(DataType.STATION.toString()))
+    if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.STATION.toString()) &&
+        !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.STATION.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);

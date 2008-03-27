@@ -21,7 +21,7 @@
 package thredds.servlet;
 
 import ucar.unidata.util.StringUtil;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.IO;
 
 import javax.servlet.ServletException;
@@ -196,8 +196,8 @@ public class ViewServlet extends AbstractServlet {
       if (access == null) access = ds.getAccess(ServiceType.OPENDAP);
       if (access == null) return false;
 
-      DataType dt = ds.getDataType();
-      if (dt != DataType.GRID) return false;
+      FeatureType dt = ds.getDataType();
+      if (dt != FeatureType.GRID) return false;
       return true;
     }
 

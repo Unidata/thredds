@@ -32,7 +32,7 @@ import org.apache.lucene.search.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 import java.io.*;
 import java.util.*;
@@ -245,7 +245,7 @@ public class CatalogSearcher extends JPanel {
     int row = 0;
     pp.addHeading("Find Datasets that must have:", row++);
 
-    pp.addEnumComboField("DataType", "Data type", DataType.getAllTypes(),
+    pp.addEnumComboField("DataType", "Data type", FeatureType.getAllTypes(),
         true, 0, row, null);
 
     pp.addEnumComboField("ServiceType", "Service type", ServiceType.getAllTypes(),

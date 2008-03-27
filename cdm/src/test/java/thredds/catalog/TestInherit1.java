@@ -3,7 +3,7 @@ package thredds.catalog;
 import junit.framework.*;
 import java.util.*;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /** Test catalog read JUnit framework. */
 
@@ -83,7 +83,7 @@ public class TestInherit1 extends TestCase {
   public void testdataTypeInherit() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
     InvDataset ds = null;
-    DataType s = null;
+    FeatureType s = null;
     String val = null;
 
     ds = cat.findDatasetByID("top");
@@ -92,11 +92,11 @@ public class TestInherit1 extends TestCase {
 
     ds = cat.findDatasetByID("nest1");
     s = ds.getDataType();
-    assert (s == DataType.GRID) : s;
+    assert (s == FeatureType.GRID) : s;
 
     ds = cat.findDatasetByID("nest11");
     s = ds.getDataType();
-    assert (s == DataType.GRID) : s;
+    assert (s == FeatureType.GRID) : s;
 
     ds = cat.findDatasetByID("nest12");
     s = ds.getDataType();
@@ -104,7 +104,7 @@ public class TestInherit1 extends TestCase {
 
     ds = cat.findDatasetByID("nest121");
     s = ds.getDataType();
-    assert (s == DataType.GRID) : s;
+    assert (s == FeatureType.GRID) : s;
 
     ds = cat.findDatasetByID("nest2");
     s = ds.getDataType();
@@ -114,7 +114,7 @@ public class TestInherit1 extends TestCase {
   public void testAuthorityInherit() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
     InvDataset ds = null;
-    DataType s = null;
+    FeatureType s = null;
     String val = null;
 
     ds = cat.findDatasetByID("top");

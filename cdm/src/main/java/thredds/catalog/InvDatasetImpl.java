@@ -25,7 +25,7 @@ import java.net.URI;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Format;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -83,7 +83,7 @@ public class InvDatasetImpl extends InvDataset {
    * @param serviceName : default service (may be null)
    * @param urlPath     : URL = server.getURLbase() + urlPath
    */
-  public InvDatasetImpl(InvDatasetImpl parent, String name, DataType dataType, String serviceName, String urlPath) {
+  public InvDatasetImpl(InvDatasetImpl parent, String name, FeatureType dataType, String serviceName, String urlPath) {
     super(parent, name);
 
     tm.setDataType(dataType);
@@ -205,7 +205,7 @@ public class InvDatasetImpl extends InvDataset {
 
     if (authorityName == null)
       authorityName = tmd.getAuthority();
-    if (dataType == null || dataType == DataType.NONE)
+    if (dataType == null || dataType == FeatureType.NONE)
       dataType = tmd.getDataType();
     if (dataFormatType == null || dataFormatType == DataFormatType.NONE)
       dataFormatType = tmd.getDataFormatType();
@@ -369,7 +369,7 @@ public class InvDatasetImpl extends InvDataset {
    * @param dataType : data type
    * @param stype    : ServiceType
    */
-  public InvDatasetImpl(String urlPath, DataType dataType, ServiceType stype) {
+  public InvDatasetImpl(String urlPath, FeatureType dataType, ServiceType stype) {
     super(null, "local file");
     tm.setDataType(dataType);
     tm.setServiceName("anon");
@@ -534,7 +534,7 @@ public class InvDatasetImpl extends InvDataset {
     hashCode = 0;
   }
 
-  public void setDataType(DataType dataType) {
+  public void setDataType(FeatureType dataType) {
     tm.setDataType(dataType);
     hashCode = 0;
   }
@@ -957,7 +957,7 @@ public class InvDatasetImpl extends InvDataset {
     if ((ds.getDataSize() != 0.0) && !Double.isNaN(ds.getDataSize()))
       buff.append(" <li><em>Data size: </em>").append(Format.formatByteSize(ds.getDataSize())).append("</li>\n");
 
-    if ((ds.getDataType() != null) && (ds.getDataType() != DataType.NONE))
+    if ((ds.getDataType() != null) && (ds.getDataType() != FeatureType.NONE))
       buff.append(" <li><em>Data type: </em>").append(StringUtil.quoteHtmlContent(ds.getDataType().toString())).append("</li>\n");
 
     if ((ds.getCollectionType() != null) && (ds.getCollectionType() != CollectionType.NONE))
@@ -1426,7 +1426,7 @@ public class InvDatasetImpl extends InvDataset {
    * test
    */
   public static void main(String[] args) {
-    InvDatasetImpl topDs = new InvDatasetImpl(null, "topDs", DataType.getType("Grid"), "myService", "myUrlPath/");
+    InvDatasetImpl topDs = new InvDatasetImpl(null, "topDs", FeatureType.getType("Grid"), "myService", "myUrlPath/");
     InvService myS = new InvService("myService", ServiceType.DODS.toString(),
         "http://motherlode.ucar.edu/cgi-bin/dods/nph-dods", "", null);
     topDs.addService(myS);

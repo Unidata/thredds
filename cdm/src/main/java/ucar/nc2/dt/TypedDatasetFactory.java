@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * Manager of factories for TypedDatasets.
@@ -40,27 +40,27 @@ public class TypedDatasetFactory {
 
   // search in the order added
   static {
-    registerFactory(DataType.POINT, ucar.nc2.dt.point.UnidataPointObsDataset.class);
-    registerFactory(DataType.STATION, ucar.nc2.dt.point.UnidataStationObsDataset.class);
-    registerFactory(DataType.STATION, ucar.nc2.dt.point.UnidataStationObsMultidimDataset.class);
-    registerFactory(DataType.POINT, ucar.nc2.dt.point.DapperDataset.class);
-    registerFactory(DataType.STATION, ucar.nc2.dt.point.SequenceObsDataset.class);
-    registerFactory(DataType.STATION, ucar.nc2.dt.point.UnidataStationObsDataset2.class);
-    registerFactory(DataType.STATION, ucar.nc2.dt.point.NdbcDataset.class);
-    registerFactory(DataType.STATION, ucar.nc2.dt.point.MadisStationObsDataset.class);
-    registerFactory(DataType.STATION, ucar.nc2.dt.point.OldUnidataStationObsDataset.class);
-    registerFactory(DataType.POINT, ucar.nc2.dt.point.OldUnidataPointObsDataset.class);
+    registerFactory(FeatureType.POINT, ucar.nc2.dt.point.UnidataPointObsDataset.class);
+    registerFactory(FeatureType.STATION, ucar.nc2.dt.point.UnidataStationObsDataset.class);
+    registerFactory(FeatureType.STATION, ucar.nc2.dt.point.UnidataStationObsMultidimDataset.class);
+    registerFactory(FeatureType.POINT, ucar.nc2.dt.point.DapperDataset.class);
+    registerFactory(FeatureType.STATION, ucar.nc2.dt.point.SequenceObsDataset.class);
+    registerFactory(FeatureType.STATION, ucar.nc2.dt.point.UnidataStationObsDataset2.class);
+    registerFactory(FeatureType.STATION, ucar.nc2.dt.point.NdbcDataset.class);
+    registerFactory(FeatureType.STATION, ucar.nc2.dt.point.MadisStationObsDataset.class);
+    registerFactory(FeatureType.STATION, ucar.nc2.dt.point.OldUnidataStationObsDataset.class);
+    registerFactory(FeatureType.POINT, ucar.nc2.dt.point.OldUnidataPointObsDataset.class);
 
-    registerFactory(DataType.RADIAL, ucar.nc2.dt.radial.Netcdf2Dataset.class);
-    registerFactory(DataType.RADIAL, ucar.nc2.dt.radial.Dorade2Dataset.class);
-    registerFactory(DataType.RADIAL, ucar.nc2.dt.radial.LevelII2Dataset.class);
-    registerFactory(DataType.RADIAL, ucar.nc2.dt.radial.Nids2Dataset.class);
+    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.Netcdf2Dataset.class);
+    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.Dorade2Dataset.class);
+    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.LevelII2Dataset.class);
+    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.Nids2Dataset.class);
 
-    registerFactory(DataType.TRAJECTORY, ucar.nc2.dt.trajectory.RafTrajectoryObsDataset.class);
-    registerFactory(DataType.TRAJECTORY, ucar.nc2.dt.trajectory.SimpleTrajectoryObsDataset.class);
-    registerFactory(DataType.TRAJECTORY, ucar.nc2.dt.trajectory.Float10TrajectoryObsDataset.class);
-    registerFactory(DataType.TRAJECTORY, ucar.nc2.dt.trajectory.ZebraClassTrajectoryObsDataset.class);
-    registerFactory(DataType.TRAJECTORY, ucar.nc2.dt.trajectory.ARMTrajectoryObsDataset.class);
+    registerFactory(FeatureType.TRAJECTORY, ucar.nc2.dt.trajectory.RafTrajectoryObsDataset.class);
+    registerFactory(FeatureType.TRAJECTORY, ucar.nc2.dt.trajectory.SimpleTrajectoryObsDataset.class);
+    registerFactory(FeatureType.TRAJECTORY, ucar.nc2.dt.trajectory.Float10TrajectoryObsDataset.class);
+    registerFactory(FeatureType.TRAJECTORY, ucar.nc2.dt.trajectory.ZebraClassTrajectoryObsDataset.class);
+    registerFactory(FeatureType.TRAJECTORY, ucar.nc2.dt.trajectory.ARMTrajectoryObsDataset.class);
 
     // further calls to registerFactory are by the user
     userMode = true;
@@ -73,7 +73,7 @@ public class TypedDatasetFactory {
     * @param datatype  scientific data type
     * @throws ClassNotFoundException if loading error
     */
-   static public void registerFactory( DataType datatype, String className) throws ClassNotFoundException {
+   static public void registerFactory( FeatureType datatype, String className) throws ClassNotFoundException {
      Class c = Class.forName( className);
      registerFactory( datatype, c);
    }
@@ -83,7 +83,7 @@ public class TypedDatasetFactory {
     * @param datatype scientific data type
     * @param c class that implements TypedDatasetFactoryIF.
     */
-  static public void registerFactory( DataType datatype, Class c) {
+  static public void registerFactory( FeatureType datatype, Class c) {
     if (!(TypedDatasetFactoryIF.class.isAssignableFrom( c)))
       throw new IllegalArgumentException("Class "+c.getName()+" must implement TypedDatasetFactoryIF");
 
@@ -106,11 +106,11 @@ public class TypedDatasetFactory {
   }
 
   static private class Factory {
-    DataType datatype;
+    FeatureType datatype;
     Class c;
     TypedDatasetFactoryIF instance;
 
-    Factory(DataType datatype, Class c, TypedDatasetFactoryIF instance) {
+    Factory(FeatureType datatype, Class c, TypedDatasetFactoryIF instance) {
       this.datatype = datatype;
       this.c = c;
       this.instance = instance;
@@ -128,7 +128,7 @@ public class TypedDatasetFactory {
    * @return a subclass of TypedDataset
    * @throws java.io.IOException on io error
    */
-  static public TypedDataset open( DataType datatype, String location, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  static public TypedDataset open( FeatureType datatype, String location, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     // special processing for thredds: datasets
     if (location.startsWith("thredds:") && (datatype != null)) {
       ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype( location, task);
@@ -151,7 +151,7 @@ public class TypedDatasetFactory {
    * @return a subclass of TypedDataset, or null if cant find
    * @throws java.io.IOException on io error
    */
-  static public TypedDataset open( DataType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  static public TypedDataset open( FeatureType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
 
     // look for a Factory that claims this dataset
     Class useClass = null;
@@ -168,12 +168,12 @@ public class TypedDatasetFactory {
     if (null == useClass) {
 
       // POINT is also a STATION
-      if (datatype == DataType.POINT) {
-        return open( DataType.STATION, ncd, task, errlog);
+      if (datatype == FeatureType.POINT) {
+        return open( FeatureType.STATION, ncd, task, errlog);
       }
 
       // if explicitly requested, give em a GridDataset even if no Grids
-      if (datatype == DataType.GRID) {
+      if (datatype == FeatureType.GRID) {
         return new ucar.nc2.dt.grid.GridDataset( ncd);
       }
 

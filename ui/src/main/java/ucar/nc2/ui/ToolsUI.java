@@ -23,7 +23,8 @@ package ucar.nc2.ui;
 import ucar.nc2.*;
 import ucar.nc2.dt2.PointFeatureDataset;
 import ucar.nc2.dt2.FeatureDatasetFactoryManager;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.dt2.FeatureDataset;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -100,9 +101,9 @@ public class ToolsUI extends JPanel {
   private NCdumpPanel ncdumpPanel;
   private OpPanel ncmlPanel, geotiffPanel;
   private PointObsPanel pointObsPanel;
-  private PointObsPanel2 pointObsPanel2;
+  //private PointObsPanel2 pointObsPanel2;
   private StationObsPanel stationObsPanel;
-  private StationObsPanel2 stationObsPanel2;
+  private PointFeaturePanel pointFeaturePanel;
   private StationRadialPanel stationRadialPanel;
   private RadialPanel radialPanel;
   private ThreddsUI threddsUI;
@@ -154,10 +155,9 @@ public class ToolsUI extends JPanel {
     tabbedPane.addTab("Grids", new JLabel("Grids"));
     tabbedPane.addTab("Fmrc", new JLabel("Fmrc"));
     tabbedPane.addTab("Radial", new JLabel("Radial"));
+    tabbedPane.addTab("PointFeature", new JLabel("PointFeature"));
     tabbedPane.addTab("PointObs", new JLabel("PointObs"));
-    tabbedPane.addTab("PointObs2", new JLabel("PointObs2"));
     tabbedPane.addTab("StationObs", new JLabel("StationObs"));
-    tabbedPane.addTab("StationObs2", new JLabel("StationObs2"));
     tabbedPane.addTab("Trajectory", new JLabel("Trajectory"));
     tabbedPane.addTab("Images", new JLabel("Images"));
     tabbedPane.addTab("THREDDS", new JLabel("THREDDS"));
@@ -237,17 +237,13 @@ public class ToolsUI extends JPanel {
       pointObsPanel = new PointObsPanel((PreferencesExt) mainPrefs.node("points"));
       c = pointObsPanel;
 
-    } else if (title.equals("PointObs2")) {
-      pointObsPanel2 = new PointObsPanel2((PreferencesExt) mainPrefs.node("point2"));
-      c = pointObsPanel2;
-
     } else if (title.equals("StationObs")) {
       stationObsPanel = new StationObsPanel((PreferencesExt) mainPrefs.node("stations"));
       c = stationObsPanel;
 
-    } else if (title.equals("StationObs2")) {
-      stationObsPanel2 = new StationObsPanel2((PreferencesExt) mainPrefs.node("station2"));
-      c = stationObsPanel2;
+    } else if (title.equals("PointFeature")) {
+      pointFeaturePanel = new PointFeaturePanel((PreferencesExt) mainPrefs.node("pointFeature"));
+      c = pointFeaturePanel;
 
     } else if (title.equals("StationRadars")) {
       stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
@@ -623,9 +619,8 @@ public class ToolsUI extends JPanel {
     if (fmrcPanel != null) fmrcPanel.save();
     if (radialPanel != null) radialPanel.save();
     if (pointObsPanel != null) pointObsPanel.save();
-    if (pointObsPanel2 != null) pointObsPanel2.save();
     if (stationObsPanel != null) stationObsPanel.save();
-    if (stationObsPanel2 != null) stationObsPanel2.save();
+    if (pointFeaturePanel != null) pointFeaturePanel.save();
     if (stationRadialPanel != null) stationRadialPanel.save();
     if (trajTablePanel != null) trajTablePanel.save();
     if (threddsUI != null) threddsUI.storePersistentData();
@@ -703,32 +698,32 @@ public class ToolsUI extends JPanel {
       return;
     }
 
-    if (threddsData.dataType == DataType.GRID) {
+    if (threddsData.dataType == FeatureType.GRID) {
       makeComponent("Grids");
       gridPanel.setDataset((NetcdfDataset) threddsData.tds.getNetcdfFile());
       tabbedPane.setSelectedComponent(gridPanel);
 
-    } else if (threddsData.dataType == DataType.IMAGE) {
+    } else if (threddsData.dataType == FeatureType.IMAGE) {
       makeComponent("Images");
       imagePanel.setImageLocation(threddsData.imageURL);
       tabbedPane.setSelectedComponent(imagePanel);
 
-    } else if (threddsData.dataType == DataType.RADIAL) {
+    } else if (threddsData.dataType == FeatureType.RADIAL) {
       makeComponent("Radial");
       radialPanel.setDataset((RadialDatasetSweep) threddsData.tds);
       tabbedPane.setSelectedComponent(radialPanel);
 
-    } else if (threddsData.dataType == DataType.POINT) {
+    } else if (threddsData.dataType == FeatureType.POINT) {
       makeComponent("PointObs");
       pointObsPanel.setPointObsDataset((PointObsDataset) threddsData.tds);
       tabbedPane.setSelectedComponent(pointObsPanel);
 
-    } else if (threddsData.dataType == DataType.STATION) {
+    } else if (threddsData.dataType == FeatureType.STATION) {
       makeComponent("StationObs");
       stationObsPanel.setStationObsDataset((StationObsDataset) threddsData.tds);
       tabbedPane.setSelectedComponent(stationObsPanel);
 
-    } else if (threddsData.dataType == DataType.STATION_RADIAL) {
+    } else if (threddsData.dataType == FeatureType.STATION_RADIAL) {
       makeComponent("StationRadial");
       stationRadialPanel.setStationRadialDataset((StationRadarCollectionImpl) threddsData.tds);
       tabbedPane.setSelectedComponent(stationRadialPanel);
@@ -2038,7 +2033,7 @@ public class ToolsUI extends JPanel {
         //ucar.nc2.dt.radial.RadialDatasetSweepFactory fac = new ucar.nc2.dt.radial.RadialDatasetSweepFactory();
         //RadialDatasetSweep rds = fac.open(newds);
         StringBuffer errlog = new StringBuffer();
-        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(DataType.RADIAL, newds, null, errlog);
+        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL, newds, null, errlog);
         if (rds == null) {
           JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + errlog.toString());
           err = true;
@@ -2224,7 +2219,7 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        pobsDataset = (PointObsDataset) TypedDatasetFactory.open(DataType.POINT, location, null, log);
+        pobsDataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, location, null, log);
         if (pobsDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -2260,7 +2255,7 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  private class PointObsPanel2 extends OpPanel {
+  /* private class PointObsPanel2 extends OpPanel {
     PointObsViewer2 povTable;
     JSplitPane split;
     PointFeatureDataset pobsDataset = null;
@@ -2305,7 +2300,7 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        pobsDataset = (PointFeatureDataset) FeatureDatasetFactoryManager.open(DataType.POINT, location, null, log);
+        pobsDataset = (PointFeatureDataset) FeatureDatasetFactoryManager.open(FeatureType.POINT, location, null, log);
         //pobsDataset = new PointDatasetDefaultHandler( NetcdfDataset.openDataset(location), log);
         if (pobsDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
@@ -2348,7 +2343,7 @@ public class ToolsUI extends JPanel {
       setSelectedItem(pobsDataset.getLocationURI());
       return true;
     }
-  }
+  } */
 
 
   private class StationObsPanel extends OpPanel {
@@ -2396,7 +2391,7 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        sobsDataset = (StationObsDataset) TypedDatasetFactory.open(DataType.STATION, location, null, log);
+        sobsDataset = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, location, null, log);
         if (sobsDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -2432,15 +2427,15 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  private class StationObsPanel2 extends OpPanel {
-    StationObsViewer2 povTable;
+  private class PointFeaturePanel extends OpPanel {
+    PointFeatureDatasetViewer pfViewer;
     JSplitPane split;
     PointFeatureDataset sobsDataset = null;
 
-    StationObsPanel2(PreferencesExt dbPrefs) {
+    PointFeaturePanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
-      povTable = new StationObsViewer2(dbPrefs);
-      add(povTable, BorderLayout.CENTER);
+      pfViewer = new PointFeatureDatasetViewer(dbPrefs);
+      add(pfViewer, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
       infoButton.addActionListener(new ActionListener() {
@@ -2458,15 +2453,15 @@ public class ToolsUI extends JPanel {
 
     boolean process(Object o) {
       String location = (String) o;
-      return setStationObsDataset(location);
+      return setPointFeatureDataset(location);
     }
 
     void save() {
       super.save();
-      povTable.save();
+      pfViewer.save();
     }
 
-    boolean setStationObsDataset(String location) {
+    boolean setPointFeatureDataset(String location) {
       if (location == null) return false;
 
       try {
@@ -2477,14 +2472,18 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        sobsDataset = (PointFeatureDataset) FeatureDatasetFactoryManager.open(DataType.STATION, location, null, log);
-        // sobsDataset = new UnidataStationFeatureDataset( NetcdfDataset.openDataset(location));
-        if (sobsDataset == null) {
+        FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(null, location, null, log);
+        if (featureDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
         }
+        if (!(featureDataset instanceof PointFeatureDataset)) {
+          JOptionPane.showMessageDialog(null, location + " could not be opened as a PointFeatureDataset");
+          return false;
+        }
 
-        povTable.setDataset(sobsDataset);
+        sobsDataset = (PointFeatureDataset) featureDataset;
+        pfViewer.setDataset(sobsDataset);
         setSelectedItem(location);
         return true;
 
@@ -2507,7 +2506,7 @@ public class ToolsUI extends JPanel {
       } catch (IOException ioe) {
       }
 
-      povTable.setDataset(dataset);
+      pfViewer.setDataset(dataset);
       sobsDataset = dataset;
       setSelectedItem(sobsDataset.getLocationURI());
       return true;
@@ -2559,7 +2558,7 @@ public class ToolsUI extends JPanel {
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        radarCollectionDataset = (StationRadarCollectionImpl) TypedDatasetFactory.open(DataType.STATION_RADIAL, location, null, log);
+        radarCollectionDataset = (StationRadarCollectionImpl) TypedDatasetFactory.open(FeatureType.STATION_RADIAL, location, null, log);
         if (radarCollectionDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -2641,7 +2640,7 @@ public class ToolsUI extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         StringBuffer errlog = new StringBuffer();
-        ds = (TrajectoryObsDataset) TypedDatasetFactory.open(DataType.TRAJECTORY, location, null, errlog);
+        ds = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
         if (ds == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + errlog);
           return false;

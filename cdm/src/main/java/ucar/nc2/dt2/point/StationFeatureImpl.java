@@ -21,11 +21,8 @@ package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.*;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateRange;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
-
-import java.io.IOException;
 
 /**
  * Superclass for implementations of StationFeature: time series of data at a point
@@ -35,12 +32,13 @@ import java.io.IOException;
  */
 
 
-public abstract class StationFeatureImpl extends PointFeatureCollectionImpl implements StationFeature {
+public abstract class StationFeatureImpl extends PointCollectionImpl implements StationFeature {
   protected StationImpl s;
   protected DateUnit timeUnit;
   protected int npts;
 
   public StationFeatureImpl( String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
+    super(name);
     s = new StationImpl(name, desc, lat, lon, alt);
     this.timeUnit = timeUnit;
     this.npts = npts;
@@ -50,6 +48,10 @@ public abstract class StationFeatureImpl extends PointFeatureCollectionImpl impl
 
   public int getNumberPoints() {
     return npts;
+  }
+
+  public void setNumberPoints(int npts) {
+    this.npts = npts;
   }
 
   public String getName() {
@@ -74,5 +76,10 @@ public abstract class StationFeatureImpl extends PointFeatureCollectionImpl impl
 
   public LatLonPoint getLatLon() {
     return s.getLatLon();
+  }
+
+  @Override
+  public FeatureType getCollectionFeatureType() {
+    return FeatureType.STATION;
   }
 }

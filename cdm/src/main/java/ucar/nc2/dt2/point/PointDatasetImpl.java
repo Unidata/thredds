@@ -22,7 +22,6 @@ package ucar.nc2.dt2.point;
 import ucar.nc2.dt2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.List;
@@ -35,12 +34,12 @@ import java.util.ArrayList;
  * @author caron
  * @since Feb 29, 2008
  */
-public class PointFeatureDatasetImpl extends FeatureDatasetImpl implements PointFeatureDataset {
+public class PointDatasetImpl extends FeatureDatasetImpl implements PointFeatureDataset {
   protected List<FeatureCollection> collectionList;
   protected Class featureInterface;
 
   // subsetting
-  protected PointFeatureDatasetImpl(PointFeatureDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
+  protected PointDatasetImpl(PointDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
     super(from);
     this.collectionList = from.collectionList;
     this.featureInterface = from.featureInterface;
@@ -57,7 +56,7 @@ public class PointFeatureDatasetImpl extends FeatureDatasetImpl implements Point
     }
   }
 
-  public PointFeatureDatasetImpl(NetcdfDataset ds, Class featureInterface) {
+  public PointDatasetImpl(NetcdfDataset ds, Class featureInterface) {
     super(ds);
     this.featureInterface = featureInterface;
   }

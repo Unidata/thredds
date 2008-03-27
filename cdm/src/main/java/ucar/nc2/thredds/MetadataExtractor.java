@@ -20,7 +20,7 @@
 
 package ucar.nc2.thredds;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import thredds.catalog.ThreddsMetadata;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.DataFormatType;
@@ -61,12 +61,12 @@ public class MetadataExtractor {
         return null;
       }
 
-      if (result.dataType == DataType.GRID) {
+      if (result.dataType == FeatureType.GRID) {
         System.out.println(" GRID=" + result.location);
         GridDataset gridDataset = (GridDataset) result.tds;
         return extractGeospatial( gridDataset);
 
-      } else if (result.dataType == DataType.POINT) {
+      } else if (result.dataType == FeatureType.POINT) {
         PointObsDataset pobsDataset = (PointObsDataset) result.tds;
         LatLonRect llbb = pobsDataset.getBoundingBox();
         if (null != llbb) {
@@ -74,7 +74,7 @@ public class MetadataExtractor {
           gc.setBoundingBox(llbb);
           return gc;
         }
-      } else if (result.dataType == DataType.STATION) {
+      } else if (result.dataType == FeatureType.STATION) {
         StationObsDataset sobsDataset = (StationObsDataset) result.tds;
         LatLonRect llbb = sobsDataset.getBoundingBox();
         if (null != llbb) {
@@ -135,12 +135,12 @@ public class MetadataExtractor {
         return null;
       }
 
-      if (result.dataType == DataType.GRID) {
+      if (result.dataType == FeatureType.GRID) {
         // System.out.println(" extractVariables GRID=" + result.location);
         GridDataset gridDataset = (GridDataset) result.tds;
         return extractVariables(threddsDataset, gridDataset);
 
-      } else if ((result.dataType == DataType.STATION) || (result.dataType == DataType.POINT)) {
+      } else if ((result.dataType == FeatureType.STATION) || (result.dataType == FeatureType.POINT)) {
         PointObsDataset pobsDataset = (PointObsDataset) result.tds;
         ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.0");
         for (VariableSimpleIF vs  : pobsDataset.getDataVariables()) {

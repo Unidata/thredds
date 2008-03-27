@@ -20,49 +20,48 @@
 package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.NestedPointFeatureCollection;
-import ucar.nc2.dt2.PointFeatureCollectionIterator;
 import ucar.nc2.dt2.PointFeatureCollection;
 import ucar.nc2.dt2.PointFeatureIterator;
+import ucar.nc2.dt2.PointFeatureCollectionIterator;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 
 /**
- * Abstract superclass for NestedPointFeatureCollection
- * Subclass must supply getPointFeatureCollectionIterator() or getNestedPointFeatureCollection().
+ * Abstract superclass for multiply nested NestedPointFeatureCollection
+ * Subclass must supply getNestedPointFeatureCollectionIterator().
+ *
  * @author caron
- * @since Mar 20, 2008
+ * @since Mar 26, 2008
  */
-public abstract class NestedPointFeatureCollectionImpl implements NestedPointFeatureCollection {
-  private boolean isMultipleNested;
-  private Class collectionFeatureType;
+public abstract class MultipleNestedPointCollectionImpl implements NestedPointFeatureCollection {
+  protected String name;
+  private FeatureType collectionFeatureType;
 
-  NestedPointFeatureCollectionImpl(boolean isMultipleNested, Class collectionFeatureType) {
-    this.isMultipleNested = isMultipleNested;
+  MultipleNestedPointCollectionImpl(String name, FeatureType collectionFeatureType) {
+    this.name = name;
     this.collectionFeatureType = collectionFeatureType;
   }
 
+
+  public String getName() {
+    return name;
+  }
+
   public boolean isMultipleNested() {
-    return isMultipleNested;
+    return true;
   }
 
   // All features in this collection have this feature type
-  public Class getCollectionFeatureType() {
+  public FeatureType getCollectionFeatureType() {
     return collectionFeatureType;
   }
 
-  /* use this only if its not multiply nested
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    if (isMultipleNested) throw new UnsupportedOperationException("MultipleNested NestedPointFeatureCollection do not implement getPointFeatureCollectionIterator()");
-    return null;
+    throw new UnsupportedOperationException(getClass().getName() + " (multipleNested) PointFeatureCollection does not implement getPointFeatureCollectionIterator()");
   }
-
-  // use this only if it is multiply nested
-  public NestedPointFeatureCollection getNestedPointFeatureCollection(int bufferSize) throws IOException {
-    if (!isMultipleNested) throw new UnsupportedOperationException("!MultipleNested NestedPointFeatureCollection do not implement getNestedPointFeatureCollection()");
-    return null;
-  } */
 
   // flatten into a PointFeatureCollection
   // if empty, may return null
@@ -70,12 +69,13 @@ public abstract class NestedPointFeatureCollectionImpl implements NestedPointFea
     return new NestedPointFeatureCollectionFlatten(this, boundingBox, dateRange);
   }
 
-  private class NestedPointFeatureCollectionFlatten extends PointFeatureCollectionImpl {
-    protected NestedPointFeatureCollectionImpl from;
+  private class NestedPointFeatureCollectionFlatten extends PointCollectionImpl {
+    protected MultipleNestedPointCollectionImpl from;
     protected LatLonRect boundingBox;
     protected DateRange dateRange;
 
-    NestedPointFeatureCollectionFlatten(NestedPointFeatureCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
+    NestedPointFeatureCollectionFlatten(MultipleNestedPointCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
+      super(from.getName());
       this.from = from;
       this.boundingBox = filter_bb;
       this.dateRange = filter_date;
@@ -83,7 +83,8 @@ public abstract class NestedPointFeatureCollectionImpl implements NestedPointFea
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       // LOOK need the isMultipleNested case
-      return new PointFeatureIteratorAdapter( from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
+      return new PointIteratorAdapter(from.getPointFeatureCollectionIterator(bufferSize), this.boundingBox, this.dateRange);
     }
+
   }
 }

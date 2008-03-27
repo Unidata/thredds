@@ -31,7 +31,7 @@ import ucar.ma2.StructureData;
 import java.util.*;
 import java.io.IOException;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * This handles point datasets in "Unidata Observation Dataset v1.0"
@@ -50,7 +50,7 @@ public class UnidataPointFeatureDatasetFactory implements FeatureDatasetFactory 
       datatype = ds.findAttValueIgnoreCase(null, "cdm_data_type", null);
     if (datatype == null)
       return false;
-    if (!datatype.equalsIgnoreCase(DataType.POINT.toString()) && !datatype.equalsIgnoreCase(DataType.STATION.toString()))
+    if (!datatype.equalsIgnoreCase(FeatureType.POINT.toString()) && !datatype.equalsIgnoreCase(FeatureType.STATION.toString()))
       return false;
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if (conv == null) return false;
@@ -65,8 +65,8 @@ public class UnidataPointFeatureDatasetFactory implements FeatureDatasetFactory 
     return false;
   }
 
-  public DataType getFeatureDataType() {
-    return DataType.POINT;
+  public FeatureType getFeatureDataType() {
+    return FeatureType.POINT;
   }
 
   public FeatureDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
@@ -74,7 +74,7 @@ public class UnidataPointFeatureDatasetFactory implements FeatureDatasetFactory 
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private static class UnidataPointFeatureDataset extends PointFeatureDatasetImpl {
+  private static class UnidataPointFeatureDataset extends PointDatasetImpl {
     private RecordDatasetHelper recordHelper;
 
     private UnidataPointFeatureDataset(NetcdfDataset ds, StringBuffer errlog) throws IOException {
@@ -120,7 +120,7 @@ public class UnidataPointFeatureDatasetFactory implements FeatureDatasetFactory 
       title = ds.findAttValueIgnoreCase(null, "title", null);
       desc = ds.findAttValueIgnoreCase(null, "description", null);
 
-     setPointFeatureCollection(new PointFeatureCollectionImpl() {
+     setPointFeatureCollection(new PointCollectionImpl("UnidataPointFeatureDataset") {
         public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
           return  new MyPointFeatureIterator(recordHelper.recordVar, -1, null);
         }

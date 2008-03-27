@@ -14,7 +14,7 @@ import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 public class TestSubset extends TestCase {
 
@@ -116,7 +116,7 @@ public class TestSubset extends TestCase {
     ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype("thredds:resolve:"+ds, null);
     System.out.println("result errlog= "+result.errLog);
     assert !result.fatalError;
-    assert result.dataType == DataType.GRID;
+    assert result.dataType == FeatureType.GRID;
     assert result.tds != null;
 
     GridDataset dataset = (GridDataset) result.tds;

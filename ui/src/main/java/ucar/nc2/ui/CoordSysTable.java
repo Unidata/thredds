@@ -223,7 +223,7 @@ public class CoordSysTable extends JPanel {
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, varTable, csTable);

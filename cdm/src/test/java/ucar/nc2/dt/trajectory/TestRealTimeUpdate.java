@@ -6,7 +6,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.TypedDatasetFactory;
@@ -123,7 +123,7 @@ public class TestRealTimeUpdate extends TestCase
     {
       //trajDs = TrajectoryObsDatasetFactory.open( testDataFileOut );
       StringBuffer errlog = new StringBuffer();
-      trajDs = (TrajectoryObsDataset) TypedDatasetFactory.open(DataType.TRAJECTORY, testDataFileOut, null, errlog);
+      trajDs = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, testDataFileOut, null, errlog);
     }
     catch ( IOException e )
     {

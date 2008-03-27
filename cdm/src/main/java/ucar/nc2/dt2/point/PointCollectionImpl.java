@@ -23,6 +23,7 @@ import ucar.nc2.dt2.PointFeatureCollection;
 import ucar.nc2.dt2.PointFeatureIterator;
 import ucar.nc2.dt2.PointFeature;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -34,29 +35,38 @@ import java.io.IOException;
  * @author caron
  * @since Mar 1, 2008
  */
-public abstract class PointFeatureCollectionImpl implements PointFeatureCollection {
+public abstract class PointCollectionImpl implements PointFeatureCollection {
+  protected String name;
   protected LatLonRect boundingBox;
   protected DateRange dateRange;
 
-  PointFeatureCollectionImpl() {}
+  PointCollectionImpl(String name) {
+    this.name = name;
+  }
 
-  PointFeatureCollectionImpl(LatLonRect boundingBox, DateRange dateRange) {
+  PointCollectionImpl(String name, LatLonRect boundingBox, DateRange dateRange) {
+    this.name = name;
     this.boundingBox = boundingBox;
     this.dateRange = dateRange;
   }
 
-  public Class getCollectionFeatureType() {
-    return PointFeature.class;
+  public String getName() {
+    return name;
+  }
+
+  public FeatureType getCollectionFeatureType() {
+    return FeatureType.POINT;
   }
 
   public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
     return new PointFeatureCollectionSubset(this, boundingBox, dateRange);
   }
 
-  private class PointFeatureCollectionSubset extends PointFeatureCollectionImpl {
-    PointFeatureCollectionImpl from;
+  private class PointFeatureCollectionSubset extends PointCollectionImpl {
+    PointCollectionImpl from;
 
-    PointFeatureCollectionSubset(PointFeatureCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
+    PointFeatureCollectionSubset(PointCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
+      super(from.name);
       this.from = from;
 
       if (filter_bb == null)
@@ -72,7 +82,7 @@ public abstract class PointFeatureCollectionImpl implements PointFeatureCollecti
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new PointFeatureIteratorFiltered( from.getPointFeatureIterator(bufferSize), this.boundingBox, this.dateRange);
+      return new PointIteratorFiltered( from.getPointFeatureIterator(bufferSize), this.boundingBox, this.dateRange);
     }
   }
 

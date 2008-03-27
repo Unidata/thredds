@@ -22,7 +22,7 @@ package ucar.nc2.dt.point;
 
 import ucar.nc2.dt.*;
 import ucar.nc2.*;
-import ucar.nc2.iosp.netcdf3.N3streamWriter;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.DateFormatter;
@@ -502,7 +502,7 @@ public class WriterCFStationObsDataset {
 
     String location = "C:/data/metars/Surface_METAR_20070329_0000.nc";
     StringBuffer errlog = new StringBuffer();
-    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.STATION, location, null, errlog);
+    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, location, null, errlog);
 
     String fileOut = "C:/temp/Surface_METAR_20070329_0000.stream.nc";
     FileOutputStream fos = new FileOutputStream(fileOut);
@@ -545,7 +545,7 @@ public class WriterCFStationObsDataset {
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
 
     StringBuffer errlog = new StringBuffer();
-    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.STATION, ncd, null, errlog);
+    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, ncd, null, errlog);
 
     List<Station> stns = sobs.getStations();
     List<VariableSimpleIF> vars = sobs.getDataVariables();

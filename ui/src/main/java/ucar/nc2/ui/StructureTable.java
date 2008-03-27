@@ -90,7 +90,7 @@ public class StructureTable extends JPanel {
     // other widgets
     dumpTA = new TextHistoryPane(false);
     dumpWindow = new IndependentDialog(null, true, "Show Data", dumpTA);
-    dumpWindow.setBounds((Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle(300, 300, 300, 200)));
+    dumpWindow.setBounds((Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle(300, 300, 600, 1200)));
 
     PreferencesExt fcPrefs = (PreferencesExt) prefs.node("FileManager");
     fileChooser = new FileManager(null, null, "csv", "comma seperated values", fcPrefs);

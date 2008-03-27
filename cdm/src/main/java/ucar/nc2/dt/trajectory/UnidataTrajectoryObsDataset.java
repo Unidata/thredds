@@ -7,7 +7,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 import java.io.IOException;
 import java.util.*;
@@ -40,7 +40,7 @@ public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset  imp
 
     String cdmDtString = cdmDtAtt.getStringValue();
     if ( cdmDtString == null ) return false;
-    if ( ! cdmDtString.equalsIgnoreCase( DataType.TRAJECTORY.toString() ))
+    if ( ! cdmDtString.equalsIgnoreCase( FeatureType.TRAJECTORY.toString() ))
       return false;
 
     Attribute conventionsAtt = ds.findGlobalAttributeIgnoreCase( "Conventions");
@@ -66,7 +66,7 @@ public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset  imp
   {
     return new UnidataTrajectoryObsDataset( ncd);
   }
-  public DataType getScientificDataType() { return DataType.TRAJECTORY; }
+  public FeatureType getScientificDataType() { return FeatureType.TRAJECTORY; }
 
   public UnidataTrajectoryObsDataset() {}
 

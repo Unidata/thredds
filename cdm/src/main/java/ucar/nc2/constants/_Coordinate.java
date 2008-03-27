@@ -22,7 +22,7 @@ package ucar.nc2.constants;
 
 /**
  * Constants for _Coordinate Conventions.
- * Since this is used by many IOSPs, place in ucar.nc2, rather than  ucar.nc2.dataset.
+ * Since this is used by many IOSPs, place in ucar.nc2, rather than ucar.nc2.dataset.
  *
  * @author caron
  */

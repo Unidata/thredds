@@ -5,7 +5,7 @@ import junit.framework.*;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.dt.*;
 import ucar.nc2.TestAll;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -78,7 +78,7 @@ public class TestRadialDataset extends TestCase {
 
   private void testAllMethods(String location) throws IOException {
     //RadialDatasetSweep rds = datasetFactory.open( location, null);
-    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( DataType.RADIAL, location, null, new StringBuffer());
+    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, location, null, new StringBuffer());
 
     System.out.println(location+"-----------");
     if (show) System.out.println(rds.getDetailInfo());

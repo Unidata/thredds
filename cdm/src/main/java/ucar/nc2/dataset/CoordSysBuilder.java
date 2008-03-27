@@ -41,28 +41,28 @@ import java.util.*;
  * <p/>
  * Subclasses Info:
  * <pre>
- * // identify which variables are coordinate axes
- * // default: 1) coordinate variables 2) variables with _coordinateAxisType attribute 3) variables listed
- * // in a coordinates attribute on another variable.
- * findCoordinateAxes( ncDataset);
- * <p/>
- * // identify which variables are used to describe coordinate system
- * findCoordinateSystems( ncDataset);
- * // identify which variables are used to describe coordinate transforms
- * findCoordinateTransforms( ncDataset);
- * // turn Variables into CoordinateAxis objects
- * makeCoordinateAxes( ncDataset);
- * // make Coordinate Systems for all Coordinate Systems Variables
- * makeCoordinateSystems( ncDataset);
- * <p/>
- * // Assign explicit CoordinateSystem objects to variables
- * assignExplicitCoordinateSystems( ncDataset);
- * makeCoordinateSystemsImplicit( ncDataset);
- * if (useMaximalCoordSys)
- * makeCoordinateSystemsMaximal( ncDataset);
- * <p/>
- * makeCoordinateTransforms( ncDataset);
- * assignCoordinateTransforms( ncDataset);
+      // identify which variables are coordinate axes
+      // default: 1) coordinate variables 2) variables with _coordinateAxisType attribute 3) variables listed
+      // in a coordinates attribute on another variable.
+      findCoordinateAxes( ncDataset);
+
+      // identify which variables are used to describe coordinate system
+      findCoordinateSystems( ncDataset);
+      // identify which variables are used to describe coordinate transforms
+      findCoordinateTransforms( ncDataset);
+      // turn Variables into CoordinateAxis objects
+      makeCoordinateAxes( ncDataset);
+      // make Coordinate Systems for all Coordinate Systems Variables
+      makeCoordinateSystems( ncDataset);
+
+      // Assign explicit CoordinateSystem objects to variables
+      assignExplicitCoordinateSystems( ncDataset);
+      makeCoordinateSystemsImplicit( ncDataset);
+      if (useMaximalCoordSys)
+      makeCoordinateSystemsMaximal( ncDataset);
+
+      makeCoordinateTransforms( ncDataset);
+      assignCoordinateTransforms( ncDataset);
  * </pre>
  *
  * @author caron

@@ -23,20 +23,22 @@ package ucar.nc2.dt2.point;
 import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt2.*;
+import ucar.nc2.dt2.coordsys.CoordSysAnalyzer;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
+import ucar.ma2.*;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
-import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Date;
 import java.io.IOException;
 import java.text.ParseException;
 
@@ -67,73 +69,58 @@ public class PointDatasetDefaultFactory implements FeatureDatasetFactory {
   }
 
   public FeatureDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
-    return new PointDatasetDefault(ncd, errlog);
+    CoordSysAnalyzer analyser = new CoordSysAnalyzer(ncd);
+    return new PointDatasetDefault(analyser, ncd, errlog);
   }
 
-  public DataType getFeatureDataType() {
-    return DataType.POINT;
+  public FeatureType getFeatureDataType() {
+    return FeatureType.POINT;
   }
 
   /////////////////////////////////////////////////////////////////////
-  private static class PointDatasetDefault extends PointFeatureDatasetImpl {
+  private static class PointDatasetDefault extends PointDatasetImpl {
 
-    private String timeVName, latVName, lonVName, altVName;
-    private DateUnit timeUnit;
-    private Structure obsStruct;
     private DateFormatter formatter;
+    private DateUnit timeUnit;
     private boolean needBB = true;
 
-    PointDatasetDefault(NetcdfDataset ds, StringBuffer errlog) throws IOException {
+    PointDatasetDefault(CoordSysAnalyzer analyser, NetcdfDataset ds, StringBuffer errlog) throws IOException {
       super(ds, PointFeature.class);
       parseInfo.append(" PointFeatureDatasetImpl=").append(getClass().getName()).append("\n");
 
-      CoordinateAxis time = null;
-      for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-        if ((axis.getAxisType() == AxisType.Time) && (axis.getRank() == 1)) {
-          timeVName = axis.getName();
-          time = axis;
+      List<FeatureCollection> featureCollections = new ArrayList<FeatureCollection>();
+      for (CoordSysAnalyzer.FlatTable flatTable : analyser.getTables()) {
+
+        if (timeUnit == null) {
           try {
-            timeUnit = new DateUnit(axis.getUnitsString());
+            timeUnit = flatTable.getTimeUnit();
           } catch (Exception e) {
-            if (null != errlog)
-              errlog.append("Error on string = ").append(axis.getUnitsString()).append(" == ").append(e.getMessage()).append("\n");
+            if (null != errlog) errlog.append(e.getMessage()).append("\n");
             timeUnit = (DateUnit) SimpleUnit.factory("seconds since 1970-01-01");
           }
         }
-        if ((axis.getAxisType() == AxisType.Lat) && (axis.getRank() == 1))
-          latVName = axis.getName();
-        if ((axis.getAxisType() == AxisType.Lon) && (axis.getRank() == 1))
-          lonVName = axis.getName();
-        if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) && (axis.getRank() == 1))
-          altVName = axis.getName();
-      }
 
-      Dimension timeDim = time.getDimension(0);
-      if (timeDim.isUnlimited()) {
-        ds.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-        obsStruct = (Structure) ds.getRootGroup().findVariable("record");
-        timeDim = obsStruct.getDimension(0);
-      } else {
-        obsStruct = new StructurePseudo(ds, null, "obsStruct", timeDim);
-      }
-
-      // create member variables
-      List<Variable> recordMembers = ds.getVariables();
-      for (Variable v : recordMembers) {
-        if (v == obsStruct) continue;
-        if (v instanceof CoordinateAxis) continue;
-        if (v.isScalar()) continue;
-        if (v.getDimension(0) == timeDim)
-          dataVariables.add(v);
-      }
-
-      // the collection is defined by the Iterator
-      setPointFeatureCollection(new PointFeatureCollectionImpl() {
-        public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-          return new DefaultPointFeatureIterator(obsStruct);
+        Structure obsStruct;
+        Dimension obsDim = flatTable.getObsDimension();
+        if (obsDim.isUnlimited()) {
+          ds.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+          obsStruct = (Structure) ds.getRootGroup().findVariable("record");
+        } else {
+          obsStruct = new StructurePseudo(ds, null, "obs", obsDim);
         }
-      });
 
+        // create member variables
+        for (Variable v : flatTable.getDataVariables()) {
+          dataVariables.add(v);
+        }
+
+        if (flatTable.getFeatureType() == FeatureType.STATION)
+          featureCollections.add(new DefaultStationCollectionImpl(ds, flatTable, obsStruct));
+        else
+          featureCollections.add(new DefaultPointCollectionImpl(flatTable, obsStruct));
+      }
+
+      setPointFeatureCollection(featureCollections);
     }
 
     // calculate bounding box, date range when all the data is iterated
@@ -169,49 +156,106 @@ public class PointDatasetDefaultFactory implements FeatureDatasetFactory {
       needBB = false;
     }
 
-    // the iterator over the observations
-    private class DefaultPointFeatureIterator extends StructureDataIterator {
-      DefaultPointFeatureIterator(Structure struct) throws IOException {
-        super(struct, -1, null);
-        if (needBB) startCalcBB();
+    //////////////////////////////////////////////////////////////////////////////
+    // various utilities
+
+    private StructureMembers.Member timeMember, latMember, lonMember, altMember;
+    private StructureMembers.Member stnNameMember, stnDescMember;
+
+    public double getTime(CoordSysAnalyzer.FlatTable ft, StructureData obsData) {
+      if (timeMember == null) {
+        StructureMembers members = obsData.getStructureMembers();
+        timeMember = members.findMember(ft.timeAxis.getShortName());
       }
 
-      protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
-        PointFeature result = new MyPointFeature(recnum, sdata);
+      if ((timeMember.getDataType() == ucar.ma2.DataType.CHAR) || (timeMember.getDataType() == ucar.ma2.DataType.STRING)) {
+        String time = obsData.getScalarString(timeMember);
+        if (null == formatter) formatter = new DateFormatter();
+        Date date;
+        try {
+          date = formatter.isoDateTimeFormat(time);
+        } catch (ParseException e) {
+          log.error("Cant parse date - not ISO formatted, = " + time);
+          return 0.0;
+        }
+        return date.getTime() / 1000.0;
 
-        // try to calculate bounding box, date range when data is fully iterated
-        if (needBB) calcBB(result);
-
-        return result;
-      }
-
-      // decorate hasNext to know when the iteraton is complete
-      public boolean hasNext() throws IOException {
-        boolean r = super.hasNext();
-        if (needBB && !r) finishCalcBB();
-        return r;
+      } else {
+        return obsData.convertScalarDouble(timeMember);
       }
     }
 
-    // the PointFeature for the observation
+    public EarthLocation getEarthLocation(CoordSysAnalyzer.FlatTable ft, StructureData obsData) {
+      if (latMember == null) {
+        StructureMembers members = obsData.getStructureMembers();
+        latMember = members.findMember(ft.latAxis.getShortName());
+        lonMember = members.findMember(ft.lonAxis.getShortName());
+        altMember = (ft.heightAxis == null) ? null : members.findMember(ft.heightAxis.getShortName());
+      }
+
+      double lat = obsData.convertScalarDouble(latMember);
+      double lon = obsData.convertScalarDouble(lonMember);
+      double alt = (altMember == null) ? 0.0 : obsData.convertScalarDouble(altMember);
+
+      return new EarthLocationImpl(lat, lon, alt);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    // PointFeatureCollection
+
+    private class DefaultPointCollectionImpl extends PointCollectionImpl {
+      private CoordSysAnalyzer.FlatTable flatTable;
+      private Structure obsStruct;
+
+      DefaultPointCollectionImpl(CoordSysAnalyzer.FlatTable flatTable, Structure obsStruct) {
+        super("DefaultPointCollectionImpl-" + obsStruct.getName());
+        this.flatTable = flatTable;
+        this.obsStruct = obsStruct;
+      }
+
+      public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+        return new DefaultPointFeatureIterator();
+      }
+
+      // the iterator over the observations
+      private class DefaultPointFeatureIterator extends StructureDataIterator {
+        DefaultPointFeatureIterator() throws IOException {
+          super(obsStruct, -1, null);
+          if (needBB) startCalcBB();
+        }
+
+        protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
+          PointFeature result = new MyPointFeature(recnum, flatTable, sdata);
+
+          // try to calculate bounding box, date range when data is fully iterated
+          if (needBB) calcBB(result);
+
+          return result;
+        }
+
+        // decorate hasNext to know when the iteraton is complete
+        public boolean hasNext() throws IOException {
+          boolean r = super.hasNext();
+          if (needBB && !r) finishCalcBB();
+          return r;
+        }
+      }
+
+    }
+
+    // a PointFeature that can be constructed from the observation StructureData
     private class MyPointFeature extends PointFeatureImpl {
       protected int recno;
       protected StructureData sdata;
 
-      public MyPointFeature(int recnum, StructureData sdata) {
+      public MyPointFeature(int recnum, CoordSysAnalyzer.FlatTable flatTable, StructureData obsData) {
         super(PointDatasetDefault.this.timeUnit);
-        this.sdata = sdata;
+        this.sdata = obsData;
         this.recno = recnum;
 
-        StructureMembers members = sdata.getStructureMembers();
-        obsTime = getTime(members.findMember(timeVName), sdata);
+        obsTime = getTime(flatTable, obsData);
         nomTime = obsTime;
-
-        // this assumes the lat/lon/alt is stored in the obs record
-        double lat = sdata.convertScalarDouble(members.findMember(latVName));
-        double lon = sdata.convertScalarDouble(members.findMember(lonVName));
-        double alt = (altVName == null) ? 0.0 : sdata.convertScalarDouble(members.findMember(altVName));
-        location = new EarthLocationImpl(lat, lon, alt);
+        location = getEarthLocation(flatTable, obsData);
       }
 
       public String getId() {
@@ -221,28 +265,126 @@ public class PointDatasetDefaultFactory implements FeatureDatasetFactory {
       public StructureData getData() {
         return sdata;
       }
+    }
 
-      private double getTime(StructureMembers.Member timeVar, StructureData sdata) {
-        if (timeVar == null) return 0.0;
+    //////////////////////////////////////////////////////////////////////////////
+    // StationFeatureCollection
 
-        if ((timeVar.getDataType() == ucar.ma2.DataType.CHAR) || (timeVar.getDataType() == ucar.ma2.DataType.STRING)) {
-          String time = sdata.getScalarString(timeVar);
-          if (null == formatter) formatter = new DateFormatter();
-          Date date;
-          try {
-            date = formatter.isoDateTimeFormat(time);
-          } catch (ParseException e) {
-            log.error("Cant parse date - not ISO formatted, = " + time);
-            return 0.0;
-          }
-          return date.getTime() / 1000.0;
+    private class DefaultStationCollectionImpl extends StationCollectionImpl {
+      private CoordSysAnalyzer.FlatTable flatTable;
+      private Structure obsStruct, stationStruct;
 
+      DefaultStationCollectionImpl(NetcdfDataset ds, CoordSysAnalyzer.FlatTable flatTable, Structure obsStruct) throws IOException {
+        super("DefaultStationCollectionImpl-" + obsStruct.getName());
+        this.flatTable = flatTable;
+        this.obsStruct = obsStruct;
+
+        Dimension stationDim = flatTable.getStationDimension();
+        if (stationDim.isUnlimited()) {
+          ds.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+          stationStruct = (Structure) ds.getRootGroup().findVariable("record");  // ??
         } else {
-          return sdata.convertScalarDouble(timeVar);
+          stationStruct = new StructurePseudo(ds, null, "station", stationDim);
+        }
+
+        // LOOK can we defer StationHelper ?
+        ucar.ma2.StructureDataIterator siter = stationStruct.getStructureIterator();
+        while (siter.hasNext()) {
+          StructureData stationData = siter.next();
+          stationHelper.addStation(makeStation(flatTable, stationData));
+        }
+      }
+
+      public Station makeStation(CoordSysAnalyzer.FlatTable ft, StructureData stationData) {
+        if (latMember == null) {
+          StructureMembers members = stationData.getStructureMembers();
+          latMember = members.findMember(ft.latAxis.getShortName());
+          lonMember = members.findMember(ft.lonAxis.getShortName());
+          altMember = (ft.heightAxis == null) ? null : members.findMember(ft.heightAxis.getShortName());
+
+          // ha ha
+          stnNameMember = members.findMember("station_id");
+          stnDescMember = members.findMember("station_desc");
+        }
+
+        String stationName = stationData.getScalarString(stnNameMember);
+        String stationDesc = (stnDescMember == null) ? stationName : stationData.getScalarString(stnDescMember);
+        double lat = stationData.convertScalarDouble(latMember);
+        double lon = stationData.convertScalarDouble(lonMember);
+        double alt = (altMember == null) ? 0.0 : stationData.convertScalarDouble(altMember);
+
+        return new LinkedStationFeatureImpl(stationName, stationDesc, lat, lon, alt, timeUnit, ft, stationData);
+      }
+
+      public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+        return new StationListIterator();
+      }
+
+      private class StationListIterator implements PointFeatureCollectionIterator {
+        Iterator<Station> stationIter;
+
+        StationListIterator() {
+          stationIter = stationHelper.getStations().iterator();
+        }
+
+        public boolean hasNext() throws IOException {
+          return stationIter.hasNext();
+        }
+
+        public PointFeatureCollection nextFeature() throws IOException {
+          return (StationFeatureImpl) stationIter.next();
+        }
+
+        public void setBufferSize(int bytes) {
+          // no op
+        }
+      }
+
+      private class LinkedStationFeatureImpl extends StationFeatureImpl {
+        int firstRecno;
+        String linkVarName;
+
+        LinkedStationFeatureImpl(String name, String desc, double lat, double lon, double alt, DateUnit dateUnit,
+                                 CoordSysAnalyzer.FlatTable ft, StructureData stationData) {
+          super(name, desc, lat, lon, alt, dateUnit, -1);
+
+          firstRecno = stationData.getScalarInt( ft.getLinkedFirstRecVarName());
+          linkVarName = ft.getLinkedNextRecVarName();
+        }
+
+        // an iterator over Features of type PointFeature
+        public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+          return new LinkedStationFeatureIterator((getNumberPoints() < 0) ? this : null, firstRecno, linkVarName);
+        }
+      }
+
+      // the iterator over the observations
+      private class LinkedStationFeatureIterator extends StructureDataLinkedIterator {
+        StationFeatureImpl station;
+        int npts = 0;
+
+        LinkedStationFeatureIterator(StationFeatureImpl station, int firstRecord, String linkVarName) throws IOException {
+          super(obsStruct, firstRecord, -1, linkVarName, null);
+          this.station = station;
+        }
+
+        protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
+          return new MyPointFeature(recnum, flatTable, sdata);
+        }
+
+        // decorate to capture npts
+        public boolean hasNext() throws IOException {
+          boolean result = super.hasNext();
+
+          if (!result && (station != null))
+            station.setNumberPoints( npts);
+
+          npts++;
+          return result;
         }
       }
 
     }
-  }
 
+  }
 }

@@ -25,7 +25,7 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.dt2.*;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -44,8 +44,8 @@ public class UnidataStationFeatureDatasetFactory implements FeatureDatasetFactor
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataStationFeatureDatasetFactory.class);
 
   public boolean isMine(NetcdfDataset ds) {
-    if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(ucar.nc2.constants.DataType.STATION.toString()) &&
-        !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(DataType.STATION.toString()))
+    if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.STATION.toString()) &&
+        !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.STATION.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
@@ -67,8 +67,8 @@ public class UnidataStationFeatureDatasetFactory implements FeatureDatasetFactor
     return true;
   }
 
-  public DataType getFeatureDataType() {
-    return DataType.STATION;
+  public FeatureType getFeatureDataType() {
+    return FeatureType.STATION;
   }
 
 
@@ -78,7 +78,7 @@ public class UnidataStationFeatureDatasetFactory implements FeatureDatasetFactor
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private static class UnidataStationFeatureDataset extends PointFeatureDatasetImpl {
+  private static class UnidataStationFeatureDataset extends PointDatasetImpl {
 
     private Variable lastVar;
     private Variable prevVar;
@@ -283,7 +283,7 @@ public class UnidataStationFeatureDatasetFactory implements FeatureDatasetFactor
         stationHelper.addStation(s);
       }
 
-      StationFeatureCollectionImpl collection = new StationFeatureCollectionImpl() {
+      StationCollectionImpl collection = new StationCollectionImpl("UnidataStationFeatureDataset") {
         public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
           return new StationListIterator();
         }

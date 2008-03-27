@@ -27,12 +27,10 @@ package ucar.nc2.iosp.grid;
 
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
-
-import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
@@ -207,7 +205,7 @@ public class GridIndexToNC {
         */
 
         // dataset discovery
-        ncfile.addAttribute(null, new Attribute("cdm_data_type", DataType.GRID.toString()));
+        ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
         String gridType = lookup.getGridType();
         //ncfile.addAttribute(null, new Attribute("creator_name", creator));
         ncfile.addAttribute(null, new Attribute("file_format", gridType+"-"+version));

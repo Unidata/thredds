@@ -24,6 +24,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.StructureData;
@@ -85,8 +86,8 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
     return sbuff.toString();
   }
 
-  public ucar.nc2.constants.DataType getScientificDataType() {
-    return ucar.nc2.constants.DataType.POINT;
+  public FeatureType getScientificDataType() {
+    return FeatureType.POINT;
   }
 
 

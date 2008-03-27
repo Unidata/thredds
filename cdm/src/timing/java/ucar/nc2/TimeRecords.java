@@ -28,7 +28,7 @@ import ucar.nc2.dt.*;
 import java.io.IOException;
 import java.util.List;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * @author john
@@ -83,7 +83,7 @@ public class TimeRecords {
   }
 
   static private void readTrajectoryIterator(String netcdfFileURI) throws IOException {
-    TrajectoryObsDataset tob = (TrajectoryObsDataset) TypedDatasetFactory.open(DataType.TRAJECTORY, netcdfFileURI, null, new StringBuffer());
+    TrajectoryObsDataset tob = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, netcdfFileURI, null, new StringBuffer());
     List trajList = tob.getTrajectories();
     for (int i = 0; i < trajList.size(); i++) {
 
@@ -101,7 +101,7 @@ public class TimeRecords {
   }
 
   static private void readStationIterator(String netcdfFileURI) throws IOException {
-    PointObsDataset tob = (PointObsDataset) TypedDatasetFactory.open(DataType.POINT, netcdfFileURI, null, new StringBuffer());
+    PointObsDataset tob = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, netcdfFileURI, null, new StringBuffer());
 
     double count = 0;
     long start = System.currentTimeMillis();

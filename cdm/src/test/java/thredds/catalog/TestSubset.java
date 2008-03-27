@@ -1,7 +1,7 @@
 package thredds.catalog;
 
 import junit.framework.*;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 public class TestSubset extends TestCase {
 
@@ -14,7 +14,7 @@ public class TestSubset extends TestCase {
 
     InvDataset ds = cat.findDatasetByID("testSubset");
     assert (ds != null) : "cant find dataset 'testSubset'";
-    assert ds.getDataType() == DataType.GRID;
+    assert ds.getDataType() == FeatureType.GRID;
 
     cat.subset(ds);
 

@@ -15,7 +15,7 @@ import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.catalog.query.*;
 import thredds.servlet.ServletUtil;
 import thredds.dqc.server.DqcHandler;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * _more_
@@ -282,7 +282,7 @@ public class LatestDqcHandler extends DqcHandler
   /**
    * Generate a latest dataset catalog.
    */
-  protected InvCatalogImpl createCatalog( String catName, String dsName, DataType dsType,
+  protected InvCatalogImpl createCatalog( String catName, String dsName, FeatureType dsType,
                                           String serviceType, String serviceName,
                                           String serviceBaseURL, String urlPath )
   {
@@ -327,7 +327,7 @@ public class LatestDqcHandler extends DqcHandler
     {
       catalogName = mostRecentDsName;
     }
-    catalog = this.createCatalog( catalogName, mostRecentDsName, DataType.GRID, "DODS",
+    catalog = this.createCatalog( catalogName, mostRecentDsName, FeatureType.GRID, "DODS",
                                   "mlode", reqItem.getServiceBaseURL(), urlPath );
 
     // Write catalog as response

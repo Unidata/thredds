@@ -370,14 +370,14 @@ public class Structure extends Variable {
    *  @return StructureDataIterator over type StructureData
    * @throws java.io.IOException on read error
    */
-  public StructureDataIterator getStructureIterator(int bufferSize)  throws java.io.IOException {
+  public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     return new Structure.Iterator(bufferSize);
   }
 
   /**
    * Iterator over type StructureData.
    */
-  protected class Iterator implements StructureDataIterator{
+  protected class Iterator implements StructureDataIterator {
     private int count = 0;
     private int recnum = (int) getSize();
     private int readStart = 0;

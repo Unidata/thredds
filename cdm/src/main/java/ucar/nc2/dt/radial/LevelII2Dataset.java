@@ -23,7 +23,7 @@ package ucar.nc2.dt.radial;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.*;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
@@ -67,7 +67,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     return new LevelII2Dataset(ncd);
   }
 
-  public ucar.nc2.constants.DataType getScientificDataType() { return DataType.RADIAL; }
+  public FeatureType getScientificDataType() { return FeatureType.RADIAL; }
 
 
   public LevelII2Dataset() {}
@@ -963,7 +963,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
  // ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
-    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( DataType.RADIAL, fileIn, null, new StringBuffer());
+    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuffer());
  // ucar.unidata.util.Trace.call2("LevelII2Dataset:main dataset");
     String st = rds.getStartDate().toString();
     String et = rds.getEndDate().toString();

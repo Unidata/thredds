@@ -25,7 +25,7 @@ import ucar.nc2.units.DateType;
 
 import java.util.*;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * Public interface to a thredds dataset, basic abstraction for data.
@@ -51,7 +51,7 @@ public abstract class InvDataset {
 
   // inherited
   protected String authorityName;
-  protected DataType dataType;
+  protected FeatureType dataType;
   protected InvService defaultService;
   protected DataFormatType dataFormatType;
   protected String restrictAccess;
@@ -153,7 +153,7 @@ public abstract class InvDataset {
    *
    * @return the DataType or null
    */
-  public DataType getDataType() {
+  public FeatureType getDataType() {
     return dataType;
   }
 

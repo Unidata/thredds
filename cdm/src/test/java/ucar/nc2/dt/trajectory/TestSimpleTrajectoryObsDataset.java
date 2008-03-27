@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import ucar.ma2.DataType;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TypedDatasetFactory;
+import ucar.nc2.constants.FeatureType;
 
 import java.io.IOException;
 import java.io.File;
@@ -42,7 +43,7 @@ public class TestSimpleTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {
@@ -87,7 +88,7 @@ public class TestSimpleTrajectoryObsDataset extends TestCase
     try
     {
       StringBuffer errlog = new StringBuffer();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(ucar.nc2.constants.DataType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
     {

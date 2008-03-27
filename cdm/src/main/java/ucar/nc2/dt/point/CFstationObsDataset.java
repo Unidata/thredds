@@ -23,6 +23,7 @@ package ucar.nc2.dt.point;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dt.*;
@@ -42,7 +43,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataStationObsDataset.class);
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if (!ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(ucar.nc2.constants.DataType.STATION.toString()))
+    if (!ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.STATION.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);

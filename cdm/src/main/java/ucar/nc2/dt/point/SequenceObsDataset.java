@@ -28,7 +28,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.ma2.StructureData;
 
 import java.util.*;
@@ -44,8 +44,8 @@ import java.io.IOException;
 public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDatasetFactoryIF  {
 
   static public boolean isValidFile(NetcdfFile ds) {
-    if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(DataType.STATION.toString()) &&
-            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(DataType.STATION.toString()))
+    if ( !ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.STATION.toString()) &&
+            !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.STATION.toString()))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);

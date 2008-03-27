@@ -8,7 +8,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
@@ -45,7 +45,7 @@ public class TestDodsServer extends TestCase {
 
     InvDataset ds = cat.findDatasetByID("testSingleDataset");
     assert (ds != null) : "cant find dataset 'testSingleDataset'";
-    assert ds.getDataType() == DataType.GRID;
+    assert ds.getDataType() == FeatureType.GRID;
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
 

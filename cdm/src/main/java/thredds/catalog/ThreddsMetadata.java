@@ -33,7 +33,7 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.Attribute;
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Element;
@@ -62,7 +62,7 @@ public class ThreddsMetadata {
   protected GeospatialCoverage gc;
   protected DateRange timeCoverage;
   protected String authorityName, serviceName;
-  protected DataType dataType;
+  protected FeatureType dataType;
   protected DataFormatType dataFormat;
   protected double dataSize = 0.0;
 
@@ -376,7 +376,7 @@ public class ThreddsMetadata {
   /**
    * @return dataType
    */
-  public DataType getDataType() {
+  public FeatureType getDataType() {
     return dataType;
   }
 
@@ -384,7 +384,7 @@ public class ThreddsMetadata {
    * Set dataType
    * @param dataType set to this dataType
    */
-  public void setDataType(DataType dataType) {
+  public void setDataType(FeatureType dataType) {
     this.dataType = dataType;
   }
 

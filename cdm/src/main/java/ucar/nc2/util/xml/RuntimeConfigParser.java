@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import ucar.nc2.constants.DataType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * Read Runtime Configuration
@@ -101,7 +101,7 @@ public class RuntimeConfigParser {
         } else if (elem.getName().equals("typedDatasetFactory")) {
           String typeName = elem.getAttributeValue("datatype");
           String className = elem.getAttributeValue("class");
-          DataType datatype = DataType.getType(typeName);
+          FeatureType datatype = FeatureType.getType(typeName);
           if (null == datatype) {
             errlog.append("TypedDatasetFactory "+className+" unknown datatype= "+typeName+"\n");
             continue;

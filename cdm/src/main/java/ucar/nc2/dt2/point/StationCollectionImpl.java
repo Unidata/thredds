@@ -21,6 +21,7 @@ package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.*;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.List;
@@ -33,12 +34,12 @@ import java.io.IOException;
  * @author caron
  * @since Feb 5, 2008
  */
-public abstract class StationFeatureCollectionImpl extends NestedPointFeatureCollectionImpl implements StationFeatureCollection {
+public abstract class StationCollectionImpl extends OneNestedPointCollectionImpl implements StationFeatureCollection {
 
   protected StationHelper stationHelper;
 
-  public StationFeatureCollectionImpl() {
-    super(false, StationFeature.class);
+  public StationCollectionImpl(String name) {
+    super( name, FeatureType.STATION);
     stationHelper = new StationHelper();
   }
 
@@ -80,17 +81,18 @@ public abstract class StationFeatureCollectionImpl extends NestedPointFeatureCol
   }
 
   // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
-  private class StationFeatureCollectionSubset extends StationFeatureCollectionImpl {
-    StationFeatureCollectionImpl from;
+  private class StationFeatureCollectionSubset extends StationCollectionImpl {
+    StationCollectionImpl from;
 
-    StationFeatureCollectionSubset(StationFeatureCollectionImpl from, List<Station> stations) {
+    StationFeatureCollectionSubset(StationCollectionImpl from, List<Station> stations) {
+      super( from.getName());
       this.from = from;
       stationHelper = new StationHelper();
       stationHelper.setStations(stations);
     }
 
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointFeatureCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new Filter());
+      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new Filter());
     }
 
     private class Filter implements PointFeatureCollectionIterator.Filter {
