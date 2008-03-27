@@ -9,7 +9,64 @@
 <body>
 <h1 align="left"><img src="images/unidataLogo.png" width="75" height="75" align="middle"><strong>THREDDS Technical Status </strong></h1>
 <hr>
-<h3>Status update 10/22/2007</h3>
+<h3><a name="20080325"></a>Status update 03/25/2008 </h3>
+<ol>
+  <li> <strong>THREDDS Data Server (TDS)</strong>
+    <ol>
+        <li>Stable release is 3.16.35. 
+          <ol>
+            <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/RadarLevel2SubsetService.html">Level II NEXRAD radar server </a>allows user to subset by station, space, and time. Integrated with IDV chooser.</li>
+            <li>Netcdf Subset for <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/GridDataSubsetService.html">Grids as Points</a></li>
+            <li>Write any GridDataset as CF compliant netCDF file</li>
+            <li>Write UnidataStationObsDataset netCDF file</li>
+          </ol>
+      </li>
+        <li>Most work is on the 4.0 branch, still experimental:.
+            <ol>
+              <li><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/RadarLevel3SubsetService.html">Level III NEXRAD radar server</a> allows user to subset by station, space, time and product</li>
+              <li>Experimental WCS 1.0+ server</li>
+              <li>Integrating <a href="http://www.springframework.org/">Spring</a> into TDS for long term maintainability. We will incrementally move functionality over to it.</li>
+            </ol>
+        </li>
+      </ol>
+  </li>
+  <li><strong>Common Data Model</strong>
+    <ol>
+        <li>Stable  release 2.2.22.20 is in maintenence mode. </li>
+        <li>Current work is on a 4.0 release. A pre-alpha early access version is available.
+            <ol>
+              <li>HDF4 IOSP is complete. Ongoing work to decode HDF-EOS coordinate systems</li>
+              <li>GEMPAK Grid IOSP </li>
+              <li>NMC Office Note 29/143 IOSP for CADIS datasets.</li>
+              <li>  RotatedPole projection</li>
+            </ol>
+        </li>
+        <li>CDM Data Access
+          <ol>
+            <li> Structure.<em>select</em>(): create subset consisting only of selected member variables</li>
+            <li><em>            Sequences</em> allow  iteration through 1D structures (experimental) </li>
+          </ol>
+        </li>
+        <li>CDM Scientific Feature Types
+          <ol>
+            <li> CDM Feature Types <em> draft </em><a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/CDMfeatures.doc">doc</a></li>
+            <li>CDM Point Feature Types <em> draft </em><a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/CDMpoints.doc">doc</a></li>
+            <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/CFpoints.html">CF Conventions for Point Data</a> (proposed)</li>
+            <li>New pass on implementation in ucar.nc2.dt2 package (ongoing).</li>
+            <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html">CDM doc</a> updated</li>
+          </ol>
+        </li>
+      <li> NcML
+        <ol>
+          <li>Tiled aggregation</li>
+          <li> JoinExisting accepts timeUnitsChange</li>
+          <li>Union accepts scan</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ol>
+<h3><a name="20071022"></a>Status update 10/22/2007</h3>
 <ol>
   <li> <strong>THREDDS Data Server (TDS)</strong>: Current release is 3.16.
       <ol>

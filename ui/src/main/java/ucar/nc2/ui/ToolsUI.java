@@ -1675,6 +1675,11 @@ public class ToolsUI extends JPanel {
     private AbstractButton defButt;
     private JSpinner catSpinner;
 
+    private String[] catalogURLS = {
+            "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km/files/catalog.xml",
+            "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km_conduit/files/catalog.xml",
+    };
+
     FmrcPanel(PreferencesExt p) {
       super(p, "dataset:", true, false);
 
