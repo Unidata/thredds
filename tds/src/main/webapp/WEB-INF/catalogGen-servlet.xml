@@ -9,7 +9,7 @@
 
   <bean id="catGenController"
         class="thredds.server.cataloggen.CatGenController"
-          init-method="init" destroy-method="destroy">
+          init-method="init" destroy-method="destroy" >
     <property name="tdsContext" ref="tdsContext"/>
     <property name="catGenContext" ref="catGenContext"/>
   </bean>
@@ -20,7 +20,8 @@
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        *.html=catGenController
+        =catGenController
+        /=catGenController
       </value>
     </property>
   </bean>

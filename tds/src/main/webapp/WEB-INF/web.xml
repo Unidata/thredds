@@ -4,11 +4,6 @@
   <display-name>THREDDS Server</display-name>
   <description>THREDDS Server</description>
 
-  <context-param>
-    <param-name>ContextPath</param-name>
-    <param-value>thredds</param-value>
-  </context-param>
-
   <!-- Turn on some more targeted debugging. -->
   <context-param>
     <param-name>DebugOn</param-name>

@@ -74,6 +74,6 @@ public class CatGenController extends AbstractController
 
   protected ModelAndView handleRequestInternal( HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse ) throws Exception
   {
-    return null;
+    return new ModelAndView( "thredds/server/cataloggen/index" );
   }
 }
