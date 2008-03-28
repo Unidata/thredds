@@ -561,18 +561,21 @@
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="http://java.sun.com/javaee/5/docs/api/" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library name="Spring">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/spring-webmvc.jar!/" />
           <root url="jar://$MODULE_DIR$/../../lib/external/spring.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../lib/external/spring-test.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="http://static.springframework.org/spring/docs/2.5.x/api/" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
