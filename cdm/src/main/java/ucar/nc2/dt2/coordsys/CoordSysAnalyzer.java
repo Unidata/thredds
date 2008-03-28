@@ -418,7 +418,8 @@ public class CoordSysAnalyzer {
 
   static public void main(String args[]) throws IOException {
     //doit("C:/data/dt2/station/ndbc.nc");
-    doit("C:/data/dt2/station/UnidataMultidim.ncml");
+    //doit("C:/data/dt2/station/UnidataMultidim.ncml");
+    doit("R:/testdata/point/bufr/data/050391800.iupt01");
     //doit("C:/data/rotatedPole/eu.mn.std.fc.d00z20070820.ncml");
     //doit("C:/data/dt2/station/madis2.sao.gz");
     //doit("C:/data/dt2/station/solrad_point_pearson.ncml");

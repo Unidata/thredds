@@ -96,6 +96,8 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    * Group.findVariableEscaped() assumes variable name is escaped.
    * Group can be set immutable.
 
+   * IOServiceProvider -> ucar.nc2.iosp.IOServiceProvider
+
    * NCdump is deprecated, use NCdumpW which uses a java.io.Writer to do Unicode correctly
 
    * VariableSimpleIF extends Comparable<VariableSimpleIF>
@@ -120,6 +122,7 @@ API Extensive API changes. Most, but not completely backwards-compatible.
   Package ucar.nc2.dataset
    * NetcdfDataset.EnhanceMode to control enhancing
    * StructureDS correctly gets enhanced
+   * NetcdfDataset.makeArray -> Array.makeArray()
 
   Package ucar.nc2.iosp
    * Layouts and Chunkers factored out for reuse
@@ -135,7 +138,13 @@ API Extensive API changes. Most, but not completely backwards-compatible.
     * netcdf3 format is now just one of the possible IOSPs
     * N3streamWriter allows netcdf3 to be written as a stream
 
-  Refactoring to reduce depemdencies among modules (core, netcdf, ui, tds)
+  Package ucar.nc2.util
+    * RuntimeConfigParser -> ucar.nc2.util.xml
+
+  Package thredds.catalog
+    * DataType -> ucar.nc2.constants.FeatureType
+
+  Refactoring to reduce dependencies among modules (core, netcdf, ui, tds)
     * ucar.nc2.dataset.conv._Coordinate moved to ucar.nc2.constants
     * thredds.catalog.DataType moved to ucar.nc2.constants
     * ucar.nc2.dataset.AxisType moved to ucar.nc2.constants

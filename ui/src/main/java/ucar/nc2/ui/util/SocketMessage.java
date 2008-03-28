@@ -30,7 +30,7 @@ import java.io.*;
  * Sends the contents of the message to anyone who is registered as a listener.
  */
 public class SocketMessage {
-  static private final boolean debug = true, throwAway = true;
+  static private final boolean debug = false, throwAway = false;
 
   private ServerSocket server;
   private boolean isAlreadyRunning = false;
