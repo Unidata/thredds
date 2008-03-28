@@ -15,7 +15,6 @@
     <param-value></param-value>
   </context-param>
 
-
   <filter>
     <filter-name>Cache10dayFilter</filter-name>
     <filter-class>thredds.servlet.filter.ResponseHeaderFilter</filter-class>
@@ -67,10 +66,10 @@
   </filter-mapping>
 
   <!-- listeners -->
-  <!--listener>
-    <listener-class>thredds.servlet.ServletListener</listener-class>
-  </listener
   <listener>
+    <listener-class>thredds.servlet.ServletListener</listener-class>
+  </listener>
+  <!-- listener>
     <listener-class>dods.servers.netcdf.NcDODSSessionAttributeListener</listener-class>
   </listener> -->
 

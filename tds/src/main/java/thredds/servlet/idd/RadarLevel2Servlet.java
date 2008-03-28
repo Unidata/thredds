@@ -58,7 +58,7 @@ public class RadarLevel2Servlet extends AbstractServlet {
     protected long getLastModified(HttpServletRequest req) {
         //  get configurations from ThreddsIDD.cfg
         if( configurations == null ) {
-            contentPath = ServletUtil.getContentPath(this);
+            contentPath = ServletUtil.getContentPath();
             getConfigurations("synoptic", null);
             radarLevel2DQC = contentPath + im.getPath() + configurations.get( "radarLevel2DQC" );
         }
@@ -98,7 +98,7 @@ public class RadarLevel2Servlet extends AbstractServlet {
       //String ISO = im.getObTimeISO( "KDMX19980629_185623");
       if (null == im.stationList){
          if( radarLevel2Dir == null ) {
-             contentPath = ServletUtil.getContentPath(this);
+             contentPath = ServletUtil.getContentPath();
              getConfigurations("synoptic", null);
              radarLevel2DQC = contentPath + im.getPath() + configurations.get( "radarLevel2DQC" );
           }
@@ -127,7 +127,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
         if (debug) System.out.println(req.getQueryString());
         pw = res.getWriter();
         im.setPW( pw );
-        contentPath = ServletUtil.getContentPath(this);
+        contentPath = ServletUtil.getContentPath();
 
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) pathInfo = "";

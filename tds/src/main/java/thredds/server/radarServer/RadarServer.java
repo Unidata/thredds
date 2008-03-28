@@ -43,7 +43,7 @@ public class RadarServer extends AbstractServlet {
     private boolean debug = false;
 
     protected long getLastModified(HttpServletRequest req) {
-        contentPath = ServletUtil.getContentPath(this);
+        contentPath = ServletUtil.getContentPath();
         File file = new File( contentPath + getPath() +catName );
         return file.lastModified();
     }
@@ -80,7 +80,7 @@ public class RadarServer extends AbstractServlet {
 
        if( cat != null ) return;
 
-       contentPath = ServletUtil.getContentPath(this);
+       contentPath = ServletUtil.getContentPath();
        rns = new RadarNexradServer( contentPath, log );
 
        // read in radarCollections.xml catalog, creating nexrad/level2 catalog too
@@ -113,7 +113,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
 
     try {
         ServletUtil.logServerAccessSetup( req );
-        contentPath = ServletUtil.getContentPath(this);
+        contentPath = ServletUtil.getContentPath();
         if (debug) System.out.println("<documentation>\n"+ req.getQueryString() +"</documentation>\n");
         initCat();
         if( cat == null || rns.stationList == null ) { // something major wrong

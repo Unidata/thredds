@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -31,7 +31,7 @@ import javax.servlet.http.*;
  */
 public abstract class AbstractServlet extends HttpServlet {
   protected org.slf4j.Logger log;
-  protected String rootPath, contentPath;
+  protected String contentPath;
 
   // must end with "/"
   protected abstract String getPath();
@@ -39,13 +39,9 @@ public abstract class AbstractServlet extends HttpServlet {
   protected abstract void makeDebugActions();
 
   public void init() throws javax.servlet.ServletException {
-    ServletUtil.setContextPath(this); // context path
-    ServletUtil.initDebugging(this); // read debug flags
-    rootPath = ServletUtil.getRootPath(this);
-    contentPath = ServletUtil.getContentPath(this) + getPath();
+    contentPath = ServletUtil.getContentPath() + getPath();
 
     // init logging
-    ServletUtil.initLogging(this);
     log = org.slf4j.LoggerFactory.getLogger(getClass());
     ServletUtil.logServerSetup(this.getClass().getName() + ".init()");
 
@@ -58,7 +54,7 @@ public abstract class AbstractServlet extends HttpServlet {
   protected void initContent() throws javax.servlet.ServletException {
 
     // first time, create content directory
-    String initialContentPath = ServletUtil.getInitialContentPath(this) + getPath();
+    String initialContentPath = ServletUtil.getInitialContentPath() + getPath();
     File initialContentFile = new File(initialContentPath);
     if (initialContentFile.exists()) {
       try {

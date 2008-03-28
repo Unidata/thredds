@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -41,7 +41,6 @@ public class CatalogServicesServlet extends HttpServlet {
   protected static org.slf4j.Logger log;
 
   public void init() {
-    ServletUtil.initLogging(this);
     log = org.slf4j.LoggerFactory.getLogger(getClass());
     ServletUtil.logServerSetup(this.getClass().getName() + ".init()");
     log.info("--- initialized " + getClass().getName());

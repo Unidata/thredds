@@ -44,14 +44,14 @@ public class DqcServletRedirect extends HttpServlet
     throws ServletException
   {
     // Initialize logging.
-    ServletUtil.initLogging( this );
+    ServletUtil.initContext( this.getServletContext() );
 
     // Get various paths and file names.
-    this.rootPath = new File( ServletUtil.getRootPath( this ) );
+    this.rootPath = new File( ServletUtil.getRootPath( ) );
     this.dqcRootPath = new File( this.rootPath,  this.servletName);
 
     // @todo Do we want this seperate from content/thredds?
-    this.contentPath = new File( ServletUtil.getContentPath( this ) );
+    this.contentPath = new File( ServletUtil.getContentPath( ) );
     this.dqcContentPath = new File( this.contentPath, this.servletName );
 
     // Some debug info.
@@ -61,7 +61,7 @@ public class DqcServletRedirect extends HttpServlet
     log.debug( "init(): dqc content path = " + this.dqcContentPath.toString() );
 
     // Copy initial content into content directory.
-    String initialContentPath = ServletUtil.getInitialContentPath( this );
+    String initialContentPath = ServletUtil.getInitialContentPath( );
     try
     {
       ServletUtil.copyDir( initialContentPath, this.contentPath.getAbsolutePath() );

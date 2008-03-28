@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,24 +37,49 @@ import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
 
 public class ServletUtil {
+  public static final String CONTENT_TEXT = "text/plain; charset=iso-8859-1";
+
   static private org.slf4j.Logger log;
   static private boolean isDebugInit = false;
   static private boolean isLogInit = false;
 
-  public static final String CONTENT_TEXT = "text/plain; charset=iso-8859-1";
+  static private String contextPath = null;
+  static private String rootPath = null;
+  static private String contentPath = null;
 
-  /**
-   * Initialize THREDDS servlet debugging.
-   *
-   * @see thredds.servlet.Debug
-   *
-   * @param servlet the servlet on which to initialze debugging.
-   */
-  public static void initDebugging(HttpServlet servlet) {
+  static public void initContext(ServletContext context) {
+    setContextPath(context);
+    setRootPath(context);
+    setContentPath();
+    initDebugging(context);
+    initLogging( context);
+  }
+
+  static private void setContextPath(ServletContext servletContext) {
+    String tmpContextPath = servletContext.getInitParameter("ContextPath");  // cannot be overridden in the ThreddsConfig file
+    if (tmpContextPath == null) tmpContextPath = "thredds";
+    contextPath = "/" + tmpContextPath;
+  }
+
+  static private void setRootPath(ServletContext sc) {
+    rootPath = sc.getRealPath("/");
+    rootPath = rootPath.replace('\\', '/');
+  }
+
+  static private void setContentPath() {
+    String tmpContentPath = "../../content" + getContextPath() + "/";
+    File cf = new File(getRootPath() + tmpContentPath);
+    try {
+      contentPath = cf.getCanonicalPath() + "/";
+      contentPath = contentPath.replace('\\', '/');
+    } catch (IOException e) {
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+
+  static private void initDebugging(ServletContext webapp) {
     if (isDebugInit) return;
     isDebugInit = true;
-
-    ServletContext webapp = servlet.getServletContext();
 
     String debugOn = webapp.getInitParameter("DebugOn");
     if (debugOn != null) {
@@ -63,6 +88,8 @@ public class ServletUtil {
         Debug.set(toker.nextToken(), true);
     }
   }
+
+
 
   /**
    * Initialize logging for the web application context in which the given
@@ -79,16 +106,15 @@ public class ServletUtil {
    *
    * @param servlet - the servlet.
    */
-  public static void initLogging(HttpServlet servlet) {
+  static private void initLogging(ServletContext servletContext) {
     // Initialize logging if not already done.
     if (isLogInit)
       return;
 
     System.out.println("+++ServletUtil.initLogging");
-    ServletContext servletContext = servlet.getServletContext();
 
     // set up the log path
-    String logPath = getContentPath(servlet) + "logs";
+    String logPath = getContentPath() + "logs";
     File logPathFile = new File(logPath);
     if (!logPathFile.exists()) {
       if (!logPathFile.mkdirs()) {
@@ -101,7 +127,7 @@ public class ServletUtil {
     try {
       String log4Jconfig = servletContext.getInitParameter("log4j-init-file");
       if (log4Jconfig == null)
-        log4Jconfig = getRootPath(servlet) + "WEB-INF/log4j.xml";
+        log4Jconfig = getRootPath() + "WEB-INF/log4j.xml";
       DOMConfigurator.configure(log4Jconfig);
       System.out.println("+++Log4j configured from file " + log4Jconfig);
     } catch (FactoryConfigurationError t) {
@@ -214,26 +240,20 @@ public class ServletUtil {
 
   /**
    * Return the real path on the servers file system that corresponds to the root document ("/") on the given servlet.
-   *
-   * @param servlet the HttpServlet whose root path is to be mapped.
    * @return the real path on the servers file system that corresponds to the root document ("/") on the given servlet.
    */
-  public static String getRootPath(HttpServlet servlet) {
-    ServletContext sc = servlet.getServletContext();
-    String rootPath = sc.getRealPath("/");
-    rootPath = rootPath.replace('\\', '/');
+  public static String getRootPath() {
     return rootPath;
   }
 
-  /**
+  /*
    * Return the real path on the servers file system that corresponds to the given path on the given servlet.
    *
    * @param servlet the HttpServlet whose path is to be mapped.
    * @param path the virtual/URL path to map to the servers file system.
    * @return the real path on the servers file system that corresponds to the given path on the given servlet.
-   */
-  public static String getPath(HttpServlet servlet, String path) {
-    ServletContext sc = servlet.getServletContext();
+   *
+  public static String getPath(ServletContext sc, String path) {
     String spath = sc.getRealPath(path);
     spath = spath.replace('\\', '/');
     return spath;
@@ -244,8 +264,6 @@ public class ServletUtil {
     rootPath = StringUtil.replace(rootPath, ' ', "%20");
     return rootPath;
   } */
-
-  private static String contextPath = null;
 
   /**
    * Return the context path for the given servlet.
@@ -258,14 +276,6 @@ public class ServletUtil {
     return contextPath;
   }
 
-  public static void setContextPath(HttpServlet servlet) {
-    ServletContext servletContext = servlet.getServletContext();
-    String tmpContextPath = servletContext.getInitParameter("ContextPath");  // cannot be overridden in the ThreddsConfig file
-    if (tmpContextPath == null) tmpContextPath = "thredds";
-    contextPath = "/" + tmpContextPath;
-  }
-
-  private static String contentPath = null;
 
   /**
    * Return the content path for the given servlet.
@@ -273,18 +283,7 @@ public class ServletUtil {
    * @param servlet the HttpServlet whose content path is returned.
    * @return the content path for the given servlet.
    */
-  public static String getContentPath(HttpServlet servlet) {
-    if (contentPath == null) {
-      String tmpContentPath = "../../content" + getContextPath() + "/";
-
-      File cf = new File(getRootPath(servlet) + tmpContentPath);
-      try {
-        contentPath = cf.getCanonicalPath() + "/";
-        contentPath = contentPath.replace('\\', '/');
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
+  public static String getContentPath() {
     return contentPath;
   }
 
@@ -296,8 +295,8 @@ public class ServletUtil {
    * @param servlet the HttpServlet whose initial content path is returned.
    * @return the default/initial content path for the given servlet.
    */
-  public static String getInitialContentPath(HttpServlet servlet) {
-    return getRootPath(servlet) + "WEB-INF/initialContent/";
+  public static String getInitialContentPath() {
+    return getRootPath() + "WEB-INF/altContent/startup/";
   }
 
   /**
@@ -374,7 +373,7 @@ public class ServletUtil {
     // Find a regular file
     File regFile = null;
     // Look in content directory for regular file.
-    File cFile = new File(ServletUtil.formFilename(getContentPath(servlet), path));
+    File cFile = new File(ServletUtil.formFilename( getContentPath(), path));
     if (cFile.exists()) {
       if (cFile.isDirectory()) {
         if (!path.endsWith("/")) {
@@ -393,7 +392,7 @@ public class ServletUtil {
 
     if (regFile == null) {
       // Look in root directory.
-      File rFile = new File(ServletUtil.formFilename(getRootPath(servlet), path));
+      File rFile = new File( ServletUtil.formFilename(getRootPath(), path));
       if (rFile.exists()) {
         if (rFile.isDirectory()) {
           if (!path.endsWith("/")) {
@@ -498,7 +497,7 @@ public class ServletUtil {
     }
 
     // Find the requested file.
-    File file = new File(ServletUtil.formFilename(getContentPath(servlet), path.substring(pathPrefix.length() - 1)));
+    File file = new File(ServletUtil.formFilename(getContentPath(), path.substring(pathPrefix.length() - 1)));
     if (file.exists()) {
       // Do not allow request for a directory.
       if (file.isDirectory()) {
@@ -951,7 +950,7 @@ public class ServletUtil {
   static public void showServletInfo(HttpServlet servlet, PrintStream out) {
     out.println("Servlet Info");
     out.println(" getServletName(): " + servlet.getServletName());
-    out.println(" getRootPath(): " + getRootPath(servlet));
+    out.println(" getRootPath(): " + getRootPath());
     out.println(" Init Parameters:");
     Enumeration params = servlet.getInitParameterNames();
     while (params.hasMoreElements()) {
@@ -1352,8 +1351,8 @@ public class ServletUtil {
       Thread thread = tarray[i];
       ClassLoader loader = thread.getContextClassLoader();
       String loaderName = (loader == null) ? "Default" : loader.getClass().getName();
-      Thread.State state = thread.getState(); // LOOK JDK 1.5
-      long id = thread.getId(); // LOOK JDK 1.5
+      Thread.State state = thread.getState();
+      long id = thread.getId();
       pw.print("   " + id + " " + thread.getName() + " " + state + " " + loaderName);
       if (thread == current)
         pw.println(" **** CURRENT ***");
@@ -1369,12 +1368,6 @@ public class ServletUtil {
       showThreads(pw, nested, current);
     }
 
-  }
-
-  public static void main(String[] args) {
-    String s = "C:/Program Files/you";
-    System.out.println("FileURL = " + getFileURL(s));
-    System.out.println("FileURL2 = " + getFileURL2(s));
   }
 
 }

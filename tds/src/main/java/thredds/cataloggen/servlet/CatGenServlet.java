@@ -84,7 +84,7 @@ public class CatGenServlet extends AbstractServlet
     super.init();
 
     // Get various paths and file names.
-    this.catGenStaticContentPath = new File( this.rootPath, this.servletName ); // cataloggen
+    this.catGenStaticContentPath = new File( ServletUtil.getRootPath(), this.servletName ); // cataloggen
     // this.catGenDocPath = new File( this.catGenStaticContentPath, this.catGenDocDirName ); // cataloggen/doc
 
     this.catGenContentPath = new File( this.contentPath );

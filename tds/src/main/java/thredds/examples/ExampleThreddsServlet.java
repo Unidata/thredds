@@ -54,15 +54,12 @@ public class ExampleThreddsServlet extends HttpServlet
   protected String getFolderIconAlt() { return "folder"; }
 
 
-  public void init() throws javax.servlet.ServletException
-  {
-    ServletUtil.setContextPath( this); // context path
-    ServletUtil.initDebugging( this ); // read debug flags
-    rootPath = ServletUtil.getRootPath( this );
-    contentPath = ServletUtil.getContentPath( this );
+  public void init() throws javax.servlet.ServletException {
+    ServletUtil.initContext(this.getServletContext());
+    rootPath = ServletUtil.getRootPath( );
+    contentPath = ServletUtil.getContentPath( );
 
     // init logging
-    ServletUtil.initLogging( this );
     ServletUtil.logServerSetup( this.getClass().getName() + ".init()" );
     log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
@@ -72,7 +69,7 @@ public class ExampleThreddsServlet extends HttpServlet
     log.info( "contentPath= " + contentPath );
 
     // first time, create content directory
-    String initialContentPath = ServletUtil.getInitialContentPath( this );
+    String initialContentPath = ServletUtil.getInitialContentPath( );
     File initialContentFile = new File( initialContentPath );
     if ( initialContentFile.exists() )
     {

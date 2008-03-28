@@ -60,10 +60,6 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   private String latestServiceId, latestServiceTitle;
   private int maxNetcdfFilesCached = 100;
 
-  //private String contentPath;
-  //private String configFilename;
-
-  //private InvCatalogImpl rootCatalog;
   private URI baseURI = null;
 
   public void init() throws javax.servlet.ServletException {
@@ -72,10 +68,6 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
     allowDeflate = false; // LOOK: use gzip at Tomcat
 
     try {
-      ServletUtil.initDebugging(this); // read debug flags
-      ServletUtil.initLogging(this);
-      //contentPath = ServletUtil.getContentPath(this) +"dodsC/";
-
       // init logging
       log = org.slf4j.LoggerFactory.getLogger( getClass());
 
@@ -94,15 +86,6 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
       latestServiceTitle = getInitParameter("latestServiceTitle");
       if (latestServiceTitle == null) latestServiceTitle = "netCDF-OpenDAP Server 3.0a";
 
-      /* first time, create content directory
-      String initialContentPath = ServletUtil.getInitialContentPath(this)+"dodsC/";;
-      try {
-        ServletUtil.copyDir(initialContentPath, contentPath);
-        log.info("CatalogServlet copyDir "+initialContentPath+" to "+contentPath);
-      } catch (IOException ioe) {
-        log.error("CatalogServlet failed to copyDir "+initialContentPath+" to "+contentPath, ioe);
-      } */
-
       // set up the NetcdfFile cache
       String p = getInitParameter("maxNetcdfFilesCached");
       if (p != null) {
@@ -113,11 +96,6 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
           log.error(" maxNetcdfFilesCached bad number format in web.xml; use value " + maxNetcdfFilesCached);
         }
       }
-      //NcDataset.setCacheMax(maxNetcdfFilesCached);
-
-      // set up roots
-      //configFilename = contentPath + "catalog.xml";
-      //readConfig();
 
       // debugging actions
       makeDebugActions();
@@ -129,8 +107,6 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
       t.printStackTrace();
     }
 
-    // Create the HTML page once
-    //catalogPage = doTransform( configURL, "http://www.unidata.ucar.edu/projects/THREDDS/xml/AggServerConfig.0.4.xsl");
   }
 
   /**

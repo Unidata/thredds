@@ -70,7 +70,7 @@ public class DqcServlet extends AbstractServlet
     super.init();
 
     // Get various paths and file names.
-    this.dqcRootPath = new File( this.rootPath,  this.servletName);
+    this.dqcRootPath = new File( ServletUtil.getRootPath(),  this.servletName);
 
     this.dqcContentPath = new File( this.contentPath );
     this.dqcConfigPath = new File( this.dqcContentPath, this.dqcConfigDirName );

@@ -31,17 +31,19 @@ import java.util.Date;
 /**
  * Listen for lifecycle events
  */
-public class ServletListener implements ServletContextListener { //, HttpSessionListener {
+public class ServletListener implements javax.servlet.ServletContextListener {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ServletListener.class);
 
   // ServletContextListener
   public void contextInitialized(ServletContextEvent event) {
-    //System.out.println("+++ Thredds webapp contextInitialized");
+    System.out.println("+++ Thredds webapp contextInitialized");
+    javax.servlet.ServletContext context = event.getServletContext();
+    ServletUtil.initContext(context);
   }
 
   public void contextDestroyed(ServletContextEvent event) {
-    LogManager.shutdown();
-    //System.out.println("+++ Thredds webapp contextDestroyed");
+    //LogManager.shutdown();
+    System.out.println("+++ Thredds webapp contextDestroyed");
   }
 
   // HttpSessionListener

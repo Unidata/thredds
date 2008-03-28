@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -107,7 +107,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     //URL r = getClass().getResource("spring/applic-config.xml"); 
 
     ApplicationContext springContext =
-        new FileSystemXmlApplicationContext("C:/dev/tds/thredds/tds/src/main/resources/spring/applic-config.xml");
+       new ClassPathXmlApplicationContext("classpath:resources/spring/applic-config.xml");
+       // new FileSystemXmlApplicationContext("C:/dev/tds/thredds/tds/src/main/resources/spring/applic-config.xml");
     Object bean = springContext.getBean("openRAFMonitor");
 
     // get the URL context :  URLS must be context/catalog/...
@@ -118,7 +119,6 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
     // read in persistent user-defined params from threddsConfog.xml
     ThreddsConfig.init(this.getServletContext(), contentPath + "/threddsConfig.xml", log);
-
     // maybe change the logging
     // ( String datePattern, long maxFileSize, int maxFiles )
     if (ThreddsConfig.hasElement("Logging")) {
@@ -172,7 +172,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       Aggregation.setTypicalDatasetMode(typicalDataset);
 
     // some paths cant be set otherwise
-    AggregationFmrc.setDefinitionDirectory(rootPath + "idd/modelInventory/");
+    String defPath = ServletUtil.getRootPath()+"WEB-INF/altContent/idd/thredds/modelInventory";
+    AggregationFmrc.setDefinitionDirectory(defPath);
 
     // handles all catalogs, including ones with DatasetScan elements, ie dynamic
     DataRootHandler.init(contentPath, contextPath);
@@ -419,7 +420,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     if (path.startsWith("/root/")) {
       explicit = true;
       path = path.substring(5);
-      filename = ServletUtil.formFilename(rootPath, path);
+      filename = ServletUtil.formFilename(ServletUtil.getRootPath(), path);
 
     } else if (path.startsWith("/content/")) {
       explicit = true;
@@ -438,7 +439,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       }
 
       // otherwise try rootPath
-      filename = ServletUtil.formFilename(rootPath, path);
+      filename = ServletUtil.formFilename(ServletUtil.getRootPath(), path);
     }
 
     if (filename == null)
@@ -517,7 +518,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     if (version == null) {
       String readme;
       try {
-        readme = IO.readFile(rootPath + "docs/README.txt");
+        readme = IO.readFile(ServletUtil.getRootPath() + "docs/README.txt");
       } catch (IOException e) {
         return "unknown version";
       }
@@ -602,7 +603,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     act = new DebugHandler.Action("showVersion", "Show Build Version") {
       public void doAction(DebugHandler.Event e) {
         try {
-          IO.copyFile(rootPath + "docs/README.txt", e.pw);
+          IO.copyFile(ServletUtil.getRootPath() + "docs/README.txt", e.pw);
         } catch (Exception ioe) {
           e.pw.println(ioe.getMessage());
         }

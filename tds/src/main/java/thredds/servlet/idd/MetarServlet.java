@@ -51,7 +51,7 @@ public class MetarServlet extends LdmServlet {
         try { 
             //  get configurations from ThreddsIDD.cfg
             if( metarDir == null ) {
-                contentPath = ServletUtil.getContentPath(this);
+                contentPath = ServletUtil.getContentPath();
                 getConfigurations("buoy", null);
             }
             File file = new File(  metarDQC );
@@ -157,7 +157,7 @@ public class MetarServlet extends LdmServlet {
             //for( int i = 0; i < STNS.length; i++ )
                 //pw.println( "Station " + i +" = "+ STNS[ i ] );
 
-            contentPath = ServletUtil.getContentPath(this);
+            contentPath = ServletUtil.getContentPath();
             //pw.println( "rootPath =" + ServletUtil.getRootPath( this ) );
             //pw.println( "contentPath =" + contentPath );
             //pw.println( "ThreddsIDD.cfg ="+ contentPath + getPath() +"ThreddsIDD.cfg" );

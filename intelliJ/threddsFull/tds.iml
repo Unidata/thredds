@@ -10,8 +10,7 @@
           </deploymentDescriptor>
         </descriptors>
         <webroots>
-          <root url="file://$MODULE_DIR$/../../tds/src/main/webapp/resources" relative="/" />
-          <root url="file://$MODULE_DIR$/../../tds/src/main/initialContent" relative="/WEB-INF/initialContent" />
+          <root url="file://$MODULE_DIR$/../../tds/src/main/webapp" relative="/" />
         </webroots>
         <sourceRoots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
@@ -20,7 +19,7 @@
           <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../../tds/target/war" />
           <setting name="EXPLODED_ENABLED" value="true" />
           <setting name="JAR_URL" value="file://$MODULE_DIR$/../../tds/target/thredds.war" />
-          <setting name="JAR_ENABLED" value="true" />
+          <setting name="JAR_ENABLED" value="false" />
           <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
           <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
@@ -40,6 +39,10 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
+          <containerElement type="module" name="common">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+          </containerElement>
           <containerElement type="module" name="grib">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
@@ -52,20 +55,13 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../../bufr/resources</url>
+          <containerElement type="library" name="JSTL" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="/WEB-INF/lib" />
           </containerElement>
-          <containerElement type="library" level="module">
+          <containerElement type="library" name="Spring" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../../grib/resources</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../cdm/src/main/resources</url>
+            <attribute name="URI" value="/WEB-INF/lib" />
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
@@ -113,6 +109,11 @@
             <url>jar://$MODULE_DIR$/../../lib/external/httpunit.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="&lt;N/A&gt;" />
+            <url>jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib/jdom.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/jdom.jar!/</url>
@@ -133,6 +134,26 @@
             <url>jar://$MODULE_DIR$/../../lib/external/nlog4j-1.2.25.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/prefsAll.jar" />
+            <url>jar://$MODULE_DIR$/../../lib/release/prefsAll.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+            <url>file://$MODULE_DIR$/../../../bufr/resources</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+            <url>file://$MODULE_DIR$/../../../grib/resources</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="&lt;N/A&gt;" />
+            <url>file://$MODULE_DIR$/../../cdm/src/main/resources</url>
+          </containerElement>
+          <containerElement type="library" level="module">
             <attribute name="method" value="0" />
             <attribute name="URI" value="&lt;N/A&gt;" />
             <url>jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.2.jar!/</url>
@@ -144,18 +165,8 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/prefsAll.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/release/prefsAll.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib/visadNoDods.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-            <url>jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/</url>
           </containerElement>
         </packaging>
       </configuration>
@@ -556,7 +567,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library name="Spring">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/spring-webmvc.jar!/" />

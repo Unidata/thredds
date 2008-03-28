@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -44,13 +44,13 @@ import thredds.catalog.InvDatasetFmrc;
 public class FmrcInventoryServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 fmrCache = null;
   private boolean debug = false;
-  private String defPath; // defaukt path where definition files are kept
+  private String defPath; // default path where definition files are kept
   // private HashMap paramHash = new HashMap();  // key=path value=FmrcInventoryParams
 
   public void init() throws ServletException {
     super.init();
 
-    defPath = rootPath+"idd/modelInventory/";
+    defPath = ServletUtil.getRootPath()+"WEB-INF/altContent/idd/thredds/modelInventory";
 
     // remove caching in favor of creating these files when the grib indexer is run, externally as ldm user
     // cache the fmr inventory xml: keep for 10 days, scour once a day */

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -106,9 +106,9 @@ public class ViewServlet extends AbstractServlet {
     String path = req.getPathInfo();
     int pos = path.lastIndexOf("/");
     String filename = "views/" + path.substring(pos + 1);
-    log.debug("**ViewManager req= "+path+" look for "+rootPath + filename);
+    log.debug("**ViewManager req= "+path+" look for "+ServletUtil.getRootPath() + filename);
 
-    String template = getTemplate( rootPath + filename);
+    String template = getTemplate( ServletUtil.getRootPath() + filename);
     if (template == null)
       template = getTemplate( contentPath + filename);
     if (template == null) {
@@ -216,7 +216,6 @@ public class ViewServlet extends AbstractServlet {
         }
       }
 
-      // LOOK use getContextName instead of hardcodeing thredds
       return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
     }
 
