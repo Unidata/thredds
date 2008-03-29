@@ -366,4 +366,8 @@ public class StructureDataA extends StructureData {
     return sa.getArrayStructure(recno, m);
   }
 
+  public ArraySequence2 getArraySequence(StructureMembers.Member m) {
+    return sa.getArraySequence(recno, m);
+  }
+
 }

@@ -35,21 +35,21 @@ import java.io.IOException;
  */
 public abstract class StationProfileFeatureImpl extends OneNestedPointCollectionImpl implements StationProfileFeature {
   protected DateUnit timeUnit;
-  protected int npts;
+  protected int timeSeriesNpts;
   protected Station s;
 
   public StationProfileFeatureImpl(String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
     super( name, FeatureType.STATION_PROFILE);
     s = new StationImpl(name, desc, lat, lon, alt);
     this.timeUnit = timeUnit;
-    this.npts = npts;
+    this.timeSeriesNpts = npts;
   }
 
   public StationProfileFeatureImpl(Station s, DateUnit timeUnit, int npts) {
     super( s.getName(), FeatureType.STATION_PROFILE);
     this.s = s;
     this.timeUnit = timeUnit;
-    this.npts = npts;
+    this.timeSeriesNpts = npts;
   }
 
   public String getId() {
@@ -57,7 +57,7 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
   }
 
   public int getNumberPoints() {
-    return npts;
+    return timeSeriesNpts;
   }
 
   public String getName() {

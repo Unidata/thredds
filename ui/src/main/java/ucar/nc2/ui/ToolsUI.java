@@ -2445,12 +2445,12 @@ public class ToolsUI extends JPanel {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          String info;
-          if ((sobsDataset != null) && ((info = sobsDataset.getDetailInfo()) != null)) {
-            detailTA.setText(info);
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
+          if (sobsDataset == null) return;
+          Formatter f = new Formatter();
+          sobsDataset.getDetailInfo(f);
+          detailTA.setText( f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
         }
       });
       buttPanel.add(infoButton);

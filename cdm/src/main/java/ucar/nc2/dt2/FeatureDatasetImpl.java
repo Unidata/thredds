@@ -125,41 +125,35 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     if (ncfile != null) ncfile.close();
   }
 
-  public String getDetailInfo() {
+  public void getDetailInfo( java.util.Formatter sf) {
     DateFormatter formatter = new DateFormatter();
-    StringBuffer sbuff = new StringBuffer();
 
-    sbuff.append("  location= ").append(getLocationURI()).append("\n");
-    sbuff.append("  title= ").append(getTitle()).append("\n");
-    sbuff.append("  desc= ").append(getDescription()).append("\n");
-    sbuff.append("  range= ").append(getDateRange()).append("\n");
-    sbuff.append("  start= ").append(formatter.toDateTimeString(getStartDate())).append("\n");
-    sbuff.append("  end  = ").append(formatter.toDateTimeString(getEndDate())).append("\n");
+    sf.format("FeatureDataset on location= %s\n", getLocationURI());
+    sf.format("  featureType= %s\n",getFeatureType());
+    sf.format("  title= %s\n",getTitle());
+    sf.format("  desc= %s\n",getDescription());
+    sf.format("  range= %s\n",getDateRange());
+    sf.format("  start= %s\n", formatter.toDateTimeString(getStartDate()));
+    sf.format("  end  = %s\n",formatter.toDateTimeString(getEndDate()));
     LatLonRect bb = getBoundingBox();
-    sbuff.append("  bb   = ").append(bb).append("\n");
+    sf.format("  bb   = %s\n", bb);
     if (bb != null)
-      sbuff.append("  bb   = ").append(getBoundingBox().toString2()).append("\n");
+      sf.format("  bb   = %s\n",getBoundingBox().toString2());
 
-    sbuff.append("  has netcdf = ").append(getNetcdfFile() != null).append("\n");
+    sf.format("  has netcdf = %b\n", (getNetcdfFile() != null));
     List<Attribute> ga = getGlobalAttributes();
     if (ga.size() > 0) {
-      sbuff.append("  Attributes\n");
-      for (Attribute a : ga) {
-        sbuff.append("    ").append(a).append("\n");
-      }
+      sf.format("  Attributes\n");
+      for (Attribute a : ga)
+        sf.format("    %s\n",a);
     }
 
     List<VariableSimpleIF> vars = getDataVariables();
-    sbuff.append("  Data Variables (").append(vars.size()).append(")\n");
-    for (VariableSimpleIF v : vars) {
-      sbuff.append("    name='").append(v.getShortName()).append("' desc='").append(v.getDescription()).append("' units='").append(v.getUnitsString()).append("' type=").append(v.getDataType()).append("\n");
-    }
+    sf.format("  Data Variables (%d)\n",vars.size());
+    for (VariableSimpleIF v : vars)
+      sf.format("    name='%s' desc='%s' units=%s' type='%s'\n",v.getName(),v.getDescription(),v.getUnitsString(),v.getDataType());
 
-    sbuff.append("\nparseInfo=\n");
-    sbuff.append(parseInfo);
-    sbuff.append("\n");
-
-    return sbuff.toString();
+    sf.format("\nparseInfo=\n%s\n", parseInfo);
   }
 
   public DateRange getDateRange() { return dateRange; }

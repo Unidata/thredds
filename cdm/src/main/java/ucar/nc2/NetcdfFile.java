@@ -1271,7 +1271,7 @@ public class NetcdfFile {
    * This message is sent after the file is open. To affect the creation of the file, you must send into the factory method.
    * @param message iosp specific message
    * Special:<ul>
-   * <li>IOSP_MESSAGE_ADD_RECORD_STRUCTURE : tells Netcdf-3 files to make record (unlimited) variables into a structure.
+   * <li>NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE : tells Netcdf-3 files to make record (unlimited) variables into a structure.
    *  return true if it has a Nectdf-3 record structure
    * </ul>
    * @return iosp specific return, may be null

@@ -389,12 +389,15 @@ public class Structure extends Variable {
       setBufferSize( bufferSize);
     }
 
-    /** @return true if more records are available */
     public boolean hasNext() { return count < recnum; }
 
-    /** @return next StructureData record. Do not keep references to it.
-     * @throws java.io.IOException on read error
-     */
+    public StructureDataIterator reset() {
+      count = 0;
+      readStart = 0;
+      readCount = 0;
+      return this;
+    }
+
     public StructureData next() throws IOException {
       if (count >= readStart) {
         if (getRank() == 1) readNextRank1();

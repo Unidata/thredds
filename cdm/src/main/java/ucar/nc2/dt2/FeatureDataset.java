@@ -21,6 +21,7 @@
 package ucar.nc2.dt2;
 
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
 
 import java.util.*;
@@ -41,10 +42,10 @@ import java.io.IOException;
 public interface FeatureDataset {
 
   /**
-   * The getFeature() methods return objects of this Class
-   * @return the class of the underlying data type
+   * Contains collections of this FeatureType.
+   * @return FeatureType of data
    */
-  public Class getFeatureClass();
+  public FeatureType getFeatureType();
 
   /**
    * Title of the dataset.
@@ -122,8 +123,8 @@ public interface FeatureDataset {
 
   /**
    * Show debug / underlying implementation details
-   * @return any debug / underlying implementation details, or null
+   * @param sf append info here
    */
-  public String getDetailInfo();
+  public void getDetailInfo( java.util.Formatter sf);
 
 }

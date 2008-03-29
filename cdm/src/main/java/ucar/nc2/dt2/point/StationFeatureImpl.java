@@ -33,13 +33,20 @@ import ucar.unidata.geoloc.LatLonPoint;
 
 
 public abstract class StationFeatureImpl extends PointCollectionImpl implements StationFeature {
-  protected StationImpl s;
+  protected Station s;
   protected DateUnit timeUnit;
   protected int npts;
 
   public StationFeatureImpl( String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
     super(name);
     s = new StationImpl(name, desc, lat, lon, alt);
+    this.timeUnit = timeUnit;
+    this.npts = npts;
+  }
+
+  public StationFeatureImpl( Station s, DateUnit timeUnit, int npts) {
+    super(s.getName());
+    this.s = s;
     this.timeUnit = timeUnit;
     this.npts = npts;
   }

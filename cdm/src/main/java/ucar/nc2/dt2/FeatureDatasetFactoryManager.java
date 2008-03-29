@@ -22,7 +22,7 @@ package ucar.nc2.dt2;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt2.point.*;
+import ucar.nc2.dt2.point.standard.PointDatasetStandardFactory;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class FeatureDatasetFactoryManager {
     //registerFactory(FeatureType.STATION, UnidataStationFeatureDatasetFactory.class);
 
     //registerFactory(FeatureType.POINT, UnidataPointFeatureDatasetFactory.class);
-    registerFactory(FeatureType.POINT, PointDatasetDefaultFactory.class);
+    registerFactory(FeatureType.POINT, PointDatasetStandardFactory.class);
 
     // further calls to registerFactory are by the user
     userMode = true;

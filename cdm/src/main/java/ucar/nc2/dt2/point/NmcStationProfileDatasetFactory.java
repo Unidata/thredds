@@ -20,6 +20,7 @@
 package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.*;
+import ucar.nc2.dt2.point.standard.PointDatasetStandardFactory;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -40,7 +41,7 @@ import java.util.Iterator;
  * @since Feb 29, 2008
  */
 public class NmcStationProfileDatasetFactory implements FeatureDatasetFactory {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetDefaultFactory.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetStandardFactory.class);
 
   // FeatureDatasetFactory
   public boolean isMine(NetcdfDataset ds) {

@@ -40,7 +40,7 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
   protected String name;
   private FeatureType collectionFeatureType;
 
-  MultipleNestedPointCollectionImpl(String name, FeatureType collectionFeatureType) {
+  protected MultipleNestedPointCollectionImpl(String name, FeatureType collectionFeatureType) {
     this.name = name;
     this.collectionFeatureType = collectionFeatureType;
   }

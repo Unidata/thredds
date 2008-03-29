@@ -43,6 +43,10 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
   public LatLonPoint getLatLon() {
     return latlonPoint;
   }
+  
+  public Object getId() {
+    return getName();
+  }
 
   @Override
   public FeatureType getCollectionFeatureType() {

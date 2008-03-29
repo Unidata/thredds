@@ -20,12 +20,16 @@
 package ucar.nc2.dt2;
 
 /**
+ * A Collection of FeatureType.
  * @author caron
  * @since Mar 20, 2008
  */
 public interface FeatureCollection {
 
   public String getName();
+
+  // optional debugging info
+  // public String getDetailInfo();
 
   // All features in this collection have this feature type
   public ucar.nc2.constants.FeatureType getCollectionFeatureType();

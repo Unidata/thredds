@@ -25,6 +25,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 
@@ -99,6 +100,10 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   private void makeNetcdfFile() throws IOException {
 
+    ncfile.addAttribute(null, new Attribute("history", "direct read of NMC ON29 by CDM"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "Unidata"));
+    ncfile.addAttribute(null, new Attribute("cdm_datatype", FeatureType.STATION_PROFILE.toString()));
+
     ncfile.addDimension(null, new Dimension("station", nstations));
 
     Structure top = new Structure(ncfile, null, null, "stationProfiles");
@@ -110,6 +115,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       Variable v = top.addMemberVariable(new Variable(ncfile, null, top, "stationName", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{6});
       v.addAttribute(new Attribute("long_name", "name of station"));
+      v.addAttribute(new Attribute("standard_name", "station_name"));
       v.setSPobject(new Vinfo(pos));
       pos += 6;
 
@@ -138,6 +144,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       v = top.addMemberVariable(new Variable(ncfile, null, top, "nrecords", DataType.INT, ""));
       v.addAttribute(new Attribute("long_name", "number of records"));
+      v.addAttribute(new Attribute("standard_name", "npts"));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
@@ -238,11 +245,13 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   private class ReportIterator implements StructureDataIterator {
+    List<Report> reports;
     Iterator<Report> iter;
     ArrayStructureBB abb;
     ByteBuffer bb;
 
     ReportIterator(List<Report> reports) {
+      this.reports = reports;
       iter = reports.iterator();
 
       StructureMembers members = obs.makeStructureMembers();
@@ -268,7 +277,11 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     public void setBufferSize(int bytes) {
-      ; // noop
+    }
+
+    public StructureDataIterator reset() {
+      iter = reports.iterator();
+      return this;
     }
   }
 
@@ -577,7 +590,11 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       }
 
       public void setBufferSize(int bytes) {
-        ; // noop
+      }
+
+      public StructureDataIterator reset() {
+        count = 0;
+        return this;
       }
     }
 

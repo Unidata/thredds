@@ -46,14 +46,14 @@ public interface FeatureDatasetFactory {
    * @param ncd already opened NetcdfDataset.
    * @param task use may cancel
    * @param errlog place errors here
-   * @return a subclass of TypedDataset
+   * @return a subclass of FeatureDataset
    * @throws java.io.IOException on error
    */
   public FeatureDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException;
 
   /**
-   * What kind of Feature data type will this return?
-   * @return data type
+   * What kind of Feature data type will this return? LOOK
+   * @return feature type
    */
   public FeatureType getFeatureDataType();
 

@@ -21,7 +21,6 @@ package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.PointFeatureIterator;
 import ucar.nc2.dt2.PointFeature;
-import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.ma2.*;
 
@@ -29,13 +28,15 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * A StructureDataIterator using the "multidimensional representation".
+ * A PointFeatureIterator using the "multidimensional representation".
  *
  * @author caron
  * @since Mar 26, 2008
  */
-public abstract class StructureDataMultidimIterator implements PointFeatureIterator {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataMultidimIterator.class);
+public abstract class PointIteratorMultidim implements PointFeatureIterator {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointIteratorMultidim.class);
+
+  protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
 
   private List<Variable> vars;
   private StructureMembers members;
@@ -45,9 +46,8 @@ public abstract class StructureDataMultidimIterator implements PointFeatureItera
   private int count, npts;
   private PointFeature feature;
 
-  protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
 
-  public StructureDataMultidimIterator(String name, List<Variable> vars, int outerIndex, Filter filter) {
+  public PointIteratorMultidim(String name, List<Variable> vars, int outerIndex, Filter filter) {
     this.vars = vars;
     this.outerIndex = outerIndex;
     this.filter = filter;

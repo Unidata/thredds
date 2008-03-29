@@ -31,15 +31,17 @@ public class ArraySequence2 extends ArrayStructure {
     this.iter = iter;
   }
 
-  public Class getElementType() { return StructureDataIterator.class; }
-
+  public Class getElementType() {
+    return StructureDataIterator.class;
+  }
 
   public StructureDataIterator getStructureIterator() throws java.io.IOException {
+    iter = iter.reset();
     return iter;
   }
 
   protected StructureData makeStructureData(ArrayStructure as, int index) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    throw new UnsupportedOperationException("Cannot subset a Sequence");
   }
 
 }

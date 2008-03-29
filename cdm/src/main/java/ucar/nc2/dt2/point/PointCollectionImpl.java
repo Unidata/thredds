@@ -40,11 +40,11 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   protected LatLonRect boundingBox;
   protected DateRange dateRange;
 
-  PointCollectionImpl(String name) {
+  protected PointCollectionImpl(String name) {
     this.name = name;
   }
 
-  PointCollectionImpl(String name, LatLonRect boundingBox, DateRange dateRange) {
+  protected PointCollectionImpl(String name, LatLonRect boundingBox, DateRange dateRange) {
     this.name = name;
     this.boundingBox = boundingBox;
     this.dateRange = dateRange;

@@ -127,14 +127,15 @@ public class UnidataPointFeatureDatasetFactory implements FeatureDatasetFactory 
       });
     }
 
-    private class MyPointFeatureIterator extends StructureDataIterator {
+    private class MyPointFeatureIterator extends PointIteratorImpl {
 
       protected PointFeature makeFeature(int recnum, StructureData sdata) {
         return recordHelper.new RecordPointObs(sdata, recnum);
       }
 
-      MyPointFeatureIterator(Structure struct, int bufferSize, StructureDataIterator.Filter filter) throws IOException {
-        super(struct, bufferSize, filter);
+      MyPointFeatureIterator(Structure struct, int bufferSize, PointFeatureIterator.Filter filter) throws IOException {
+        super(struct.getStructureIterator(), filter, false);
+        setBufferSize( bufferSize);
       }
 
     }
@@ -144,7 +145,8 @@ public class UnidataPointFeatureDatasetFactory implements FeatureDatasetFactory 
     //String filename = "C:/data/199707010200.CHRTOUT_DOMAIN2";
     String filename = "C:/data/metars/Surface_METAR_20070331_0000.nc";
     UnidataPointFeatureDataset upod = new UnidataPointFeatureDataset(NetcdfDataset.openDataset(filename), new StringBuffer());
-    System.out.println("\n\n" + upod.getDetailInfo());
+    System.out.println("\n\n");
+    upod.getDetailInfo( new Formatter( System.out));
   }
 
 

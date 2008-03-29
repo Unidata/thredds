@@ -43,5 +43,15 @@ public interface StructureDataIterator {
    */
   public StructureData next() throws IOException;
 
+  /**
+   * Hint to use this much memory in buffering the iteration.
+   * No guarentee that it will be used by the implementation.
+   * @param bytes amount of memory in bytes
+   */
   public void setBufferSize(int bytes);
+
+  /**
+   * Start the iteration over again.
+   */
+  public StructureDataIterator reset();
 }

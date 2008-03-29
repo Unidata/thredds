@@ -723,7 +723,8 @@ public abstract class ArrayStructure extends Array {
   * @param m get data from this StructureMembers.Member. Must be of type Structure.
   * @return nested ArrayStructure. */
   public ArrayStructure getArrayStructure(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.STRUCTURE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be Structure");
+    if ((m.getDataType() != DataType.STRUCTURE) &&(m.getDataType() != DataType.SEQUENCE))
+      throw new IllegalArgumentException("Type is "+m.getDataType()+", must be Structure or Sequence");
 
     ArrayStructure array = (ArrayStructure) m.getDataArray();
 
@@ -735,13 +736,14 @@ public abstract class ArrayStructure extends Array {
     int shape[];
 
     if (array instanceof ArraySequence) {
-      ArraySequence arraySeq = (ArraySequence) array;
+      return array;
+      /* ArraySequence arraySeq = (ArraySequence) array;
       int count = arraySeq.getSequenceLength(recnum);
       int start = arraySeq.getSequenceOffset(recnum);
       this_sdata = new StructureData[count];
       for (int i=0; i<count; i++)
         this_sdata[i] = arraySeq.makeStructureData( arraySeq, start + i);
-      shape = new int[] {count};
+      shape = new int[] {count}; */
 
     } else {
       int count = m.getSize();

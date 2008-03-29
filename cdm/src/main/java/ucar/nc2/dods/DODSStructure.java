@@ -117,57 +117,33 @@ public class DODSStructure extends ucar.nc2.Structure {
     return new SequenceIterator(CE);
   }
 
-  private class SequenceIterator extends Structure.Iterator {
+  private class SequenceIterator implements StructureDataIterator {
     private int nrows, row = 0;
     private DSequence seq = null;
     private ArrayStructure structArray;
 
     SequenceIterator(String CE) throws java.io.IOException {
-      super(0);
-
       // nothin better to do for now !!
       structArray = (ArrayStructure) read();
       nrows = (int) structArray.getSize();
-
-      /* if (CE != null)
-        CE = getDODSshortName() + CE;
-      else {
-        CE = getDODSshortName();
-      }
-
-        // contact the server
-      try {
-        dods.dap.DataDDS dataDDS = dodsfile.readDataDDSfromServer(CE);
-        seq = (DSequence) dataDDS.getVariable(shortName);
-
-      } catch (Exception e) {
-        System.out.println("DODSSequence read failed on "+getDODSshortName()+"\n"+e);
-        e.printStackTrace(System.out);
-        throw new IOException( e.getMessage());
-      }
-
-      // containing struct array
-      structArray = new ArrayStructureW( makeStructureMembers(), new int[0]);  */
     }
 
     public boolean hasNext() {
-      return row < nrows; // seq.getRowCount();
+      return row < nrows;
     }
 
     public StructureData next() {
       return structArray.getStructureData(row++);
-      /* Vector v = seq.getRow(row);
-
-      // unpack all of the data that comes back
-      Enumeration enumVars = v.elements();
-      StructureData data = null; // LOOK dodsfile.convertStructureData(structArray, enumVars, DODSStructure.this);
-      structArray.setStructureData( data, 0);
-
-      row++;
-      return data; */
     }
 
-    public void remove() { throw new UnsupportedOperationException(); }
+    public void setBufferSize(int bytes) {
+    }
+
+    public StructureDataIterator reset() {
+      row = 0;
+      return this;
+    }
+
   }
 
 }

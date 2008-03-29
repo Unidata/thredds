@@ -23,6 +23,7 @@ package ucar.nc2.ui;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dt2.PointFeature;
+import ucar.nc2.dt2.PointFeatureIterator;
 import ucar.nc2.util.HashMapLRU;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.PointObsDatatype;
@@ -185,7 +186,7 @@ public class StructureTable extends JPanel {
    * @throws IOException  on io error
    */
   public void setPointObsData2(List<PointFeature> obsData) throws IOException {
-    dataModel = new PointObsDataModel2(obsData);
+    dataModel = new PointFeatureDataModel(obsData);
     initTable(dataModel);
     jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
   }
@@ -571,10 +572,10 @@ public class StructureTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////
-  private class PointObsDataModel2 extends StructureTableModel {
+  private class PointFeatureDataModel extends StructureTableModel {
     private List<PointFeature> obsData;
 
-    PointObsDataModel2(List<PointFeature> obsData) throws IOException {
+    PointFeatureDataModel(List<PointFeature> obsData) throws IOException {
       wantDate = true;
 
       this.obsData = obsData;

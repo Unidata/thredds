@@ -19,69 +19,47 @@
  */
 package ucar.nc2.dt2.point;
 
-import ucar.nc2.dt2.PointFeatureIterator;
-import ucar.nc2.dt2.PointFeature;
 import ucar.nc2.Structure;
 import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
 
 import java.io.IOException;
 
 /**
- * Use linked lists to iterate over members of a Structure, with optional filtering.
- * Subclass must implement makeFeature().
+ * Use linked lists to iterate over members of a Structure
  * @author caron
  * @since Mar 26, 2008
  */
-public abstract class StructureDataLinkedIterator implements PointFeatureIterator {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataLinkedIterator.class);
+public class StructureDataIteratorLinked implements StructureDataIterator {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataIteratorLinked.class);
 
   private Structure s;
-  private int nextRecno, lastRecord;
+  private int firstRecord, nextRecno, lastRecord;
   private String linkVarName;
-  private Filter filter;
 
-  private PointFeature feature;
-
-  protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
-
-  public StructureDataLinkedIterator(Structure s, int firstRecord, int lastRecord, String linkVarName, Filter filter) {
+  public StructureDataIteratorLinked(Structure s, int firstRecord, int lastRecord, String linkVarName) throws IOException {
     this.s = s;
+    this.firstRecord = firstRecord;
     this.nextRecno = firstRecord;
     this.lastRecord = lastRecord; // contiguous only
     this.linkVarName = linkVarName;
-    this.filter = filter;
   }
 
-  public boolean hasNext() throws IOException {
-    while (nextRecno > 0) {
-      int recno = nextRecno;
-      StructureData sdata = nextStructureData();
-      feature = makeFeature(recno, sdata);
-      if (filter != null && !filter.filter(feature)) continue;
-      return true;
-    }
-    feature = null;
-    return false;
-  }
-
-  public PointFeature nextData() throws IOException {
-    return feature;
-  }
-
-  private StructureData nextStructureData() throws IOException {
+  public StructureData next() throws IOException {
     StructureData sdata;
     int recno = nextRecno;
     try {
-      sdata = s.readStructure(recno);
+      sdata = s.readStructure( recno);
     } catch (ucar.ma2.InvalidRangeException e) {
       log.error("StructureDataLinkedIterator.nextStructureData recno=" + recno, e);
       throw new IOException(e.getMessage());
     }
 
-    if (lastRecord > 0) {
+    if (lastRecord > 0) { // contiguous case
       nextRecno++;
       if (nextRecno > lastRecord)
         nextRecno = -1;
+
     } else {
       nextRecno = sdata.getScalarInt(linkVarName);
     }
@@ -89,7 +67,14 @@ public abstract class StructureDataLinkedIterator implements PointFeatureIterato
     return sdata;
   }
 
-  public void setBufferSize(int bytes) {
-    // no op
+  public boolean hasNext() throws IOException {
+    return nextRecno >= 0;
   }
+
+  public StructureDataIterator reset() {
+    this.nextRecno = firstRecord;
+    return this;
+  }
+
+  public void setBufferSize(int bytes) {}
 }
