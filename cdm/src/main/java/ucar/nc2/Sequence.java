@@ -51,21 +51,6 @@ public class Sequence extends Structure {
   }
 
   /**
-   * Get a StructureDataIterator for this Sequence.
-   *
-   * @return an Iterator over the Structures in this Sequence
-   * @throws java.io.IOException if read error
-   */
-  @Override
-  public StructureDataIterator getStructureIterator() throws java.io.IOException {
-    return ncfile.getStructureDataIterator(this, null);
-  }
-
-  public StructureDataIterator getStructureIterator(SequenceDataCursor c) throws java.io.IOException {
-    return ncfile.getStructureDataIterator(this, c);
-  }
-
-  /**
    * UnsupportedOperation
    *
    * @throws UnsupportedOperationException

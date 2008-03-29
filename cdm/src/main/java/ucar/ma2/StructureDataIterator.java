@@ -37,7 +37,6 @@ public interface StructureDataIterator {
 
   /**
    * Get the next StructureData in the iteration.
-   * The StructureData may be overwritten, you must copy out if need be.
    * @return next StructureData record.
    * @throws java.io.IOException on read error
    */
@@ -52,6 +51,7 @@ public interface StructureDataIterator {
 
   /**
    * Start the iteration over again.
+   * @return a new or reset iterator.
    */
   public StructureDataIterator reset();
 }

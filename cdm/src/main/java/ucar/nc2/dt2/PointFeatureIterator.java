@@ -20,22 +20,22 @@
 package ucar.nc2.dt2;
 
 /**
- * An iterator over PointFeature objects
+ * An iterator over PointFeatures
  * @author caron
  * @since Feb 18, 2008
  */
 public interface PointFeatureIterator {
 
   /**
-   * true if another Feature object is available
-   * @return true if another Feature object is available
+   * true if another PointFeature is available
+   * @return true if another PointFeature is available
    * @throws java.io.IOException on i/o error
    */
   public boolean hasNext() throws java.io.IOException;
 
   /**
-   * Returns the next StructureData
-   * @return the next StructureData object
+   * Returns the next PointFeature
+   * @return the next PointFeature
    * @throws java.io.IOException on i/o error
    */
   public PointFeature nextData() throws java.io.IOException;

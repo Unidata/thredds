@@ -19,6 +19,10 @@
  */
 package ucar.nc2.dt2;
 
+import ucar.nc2.units.DateRange;
+
+import java.io.IOException;
+
 /**
  * Time series of PointFeature at a named location called a Station.
  *
@@ -31,5 +35,7 @@ public interface StationFeature extends Station, Feature, PointFeatureCollection
    * @return number of points  in the time series.
    */
   public int getNumberPoints();
+
+  public StationFeature subset(DateRange dateRange) throws IOException;
 
 }

@@ -30,7 +30,7 @@ import java.io.IOException;
 public interface StationProfileFeatureCollection extends NestedPointFeatureCollection, StationCollection {
 
   /**
-   * Get a subsetted StationCollection
+   * Get a subsetted StationProfileFeatureCollection
    *
    * @param stations only contain these stations
    * @return subsetted collection

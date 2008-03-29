@@ -24,21 +24,12 @@ import java.util.List;
 import java.io.IOException;
 
 /**
- * A collection of TrajectoryFeature.
+ * A collection of ProfileFeature.
  *
  * @author caron
  * @since Mar 19, 2008
  */
 public interface ProfileFeatureCollection extends NestedPointFeatureCollection {
-
-    /**
-   * Get a subsetted TrajectoryFeatureCollection
-   *
-   * @param stations only contain these stations
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   */
-  public ProfileFeatureCollection subset(List<Station> stations) throws IOException;
 
   /**
    * Get a specific ProfileFeature.

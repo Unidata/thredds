@@ -49,14 +49,4 @@ public interface StationFeatureCollection extends StationCollection, NestedPoint
    */
   public StationFeature getStationFeature(Station s) throws IOException;
 
-  /**
-   * Get the collection of data for this Station and date range.
-   *
-   * @param s at this station
-   * @param dateRange date range
-   * @return collection of data for this Station and date range.
-   * @throws java.io.IOException on i/o error
-   */
-  public StationFeature getStationFeature(Station s, DateRange dateRange) throws IOException;
-
 }

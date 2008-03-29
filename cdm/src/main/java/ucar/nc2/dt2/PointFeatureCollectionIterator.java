@@ -28,15 +28,15 @@ package ucar.nc2.dt2;
 public interface PointFeatureCollectionIterator {
 
   /**
-   * true if another Feature object is available
-   * @return true if another Feature object is available
+   * true if another PointFeatureCollection is available
+   * @return true if another PointFeatureCollection is available
    * @throws java.io.IOException on i/o error
    */
   public boolean hasNext() throws java.io.IOException;
 
   /**
-   * Returns the next PointFeatureCollection object
-   * @return the next PointFeatureCollection object
+   * Returns the next PointFeatureCollection
+   * @return the next PointFeatureCollection 
    * @throws java.io.IOException on i/o error
    */
   public PointFeatureCollection nextFeature() throws java.io.IOException;

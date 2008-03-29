@@ -24,6 +24,7 @@ import ucar.nc2.dt2.point.StationFeatureImpl;
 import ucar.nc2.dt2.coordsys.NestedTable;
 import ucar.nc2.dt2.*;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateRange;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
 
@@ -98,6 +99,7 @@ public class StandardStationCollectionImpl extends StationCollectionImpl {
       StructureDataIterator obsIter = ft.getStationObsDataIterator(stationData, bufferSize);
       return new StandardStationPointIterator((getNumberPoints() < 0) ? this : null, obsIter, sdataList);
     }
+
   }
 
   // the iterator over the observations

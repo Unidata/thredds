@@ -32,15 +32,6 @@ import java.io.IOException;
 public interface SectionFeatureCollection extends NestedPointFeatureCollection {
 
   /**
-   * Get a subsetted TrajectoryFeatureCollection
-   *
-   * @param stations only contain these stations
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   */
-  public SectionFeatureCollection subset(List<Station> stations) throws IOException;
-
-  /**
    * Get a specific SectionFeature.
    *
    * @param id SectionFeature id

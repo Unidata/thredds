@@ -26,8 +26,7 @@ import java.util.List;
 
 /**
  * A collection of data at named locations called Stations.
- * User can subset by bounding box and by date range.
- * Underlying data can be of any feature type, but all points have the same feature type.
+ * User can subset by bounding box .
  *
  * @author caron
  */

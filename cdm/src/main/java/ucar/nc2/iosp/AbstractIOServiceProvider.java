@@ -34,10 +34,6 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     throw new UnsupportedOperationException("IOSP "+getClass().getName()+" does not support nested variables");
   } */
 
-  public StructureDataIterator getStructureDataIterator(ucar.nc2.Sequence v2, SequenceDataCursor c) throws java.io.IOException {
-    throw new UnsupportedOperationException("IOSP "+getClass().getName()+" does not support sequences");
-  }
-
   // default implementation, reads into an Array, then writes to WritableByteChannel
   // subclasses should override if possible
   public long readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)

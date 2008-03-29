@@ -1568,18 +1568,6 @@ public class NetcdfFile {
   } */
 
   /**
-   * Get a StructureDataIterator for the given Sequence.
-   *
-   * @param v2 a variable of type Sequence
-   * @return an Iterator over the Structures in the Sequence
-   * @throws java.io.IOException if read error
-   */
-  protected StructureDataIterator getStructureDataIterator(ucar.nc2.Sequence v2, SequenceDataCursor c) throws java.io.IOException {
-    return spi.getStructureDataIterator(v2, c);
-  }
-
-
-  /**
    * Access to iosp debugging info.
    * @param o must be a Variable, Dimension, Attribute, or Group
    * @return debug info for this object.

@@ -28,6 +28,7 @@ import ucar.ma2.StructureData;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author caron
@@ -36,7 +37,7 @@ import java.util.List;
 public class StandardPointFeatureIterator extends PointIteratorImpl {
   private NestedTable ft;
   private DateUnit timeUnit;
-  List<StructureData> sdataList;
+  private List<StructureData> sdataList;
 
   StandardPointFeatureIterator(NestedTable ft, DateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, List<StructureData> sdataList, boolean calcBB) throws IOException {
     super(structIter, null, calcBB);
@@ -47,14 +48,16 @@ public class StandardPointFeatureIterator extends PointIteratorImpl {
 
   protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
     sdataList.set(0, sdata); // always in the first position
-    return new StandardPointFeatureImpl(timeUnit, recnum);
+    return new StandardPointFeatureImpl(sdataList, timeUnit, recnum);
   }
 
   private class StandardPointFeatureImpl extends PointFeatureImpl {
     protected int id;
+    protected List<StructureData> sdataList;
 
-    public StandardPointFeatureImpl(DateUnit timeUnit, int id) {
+    public StandardPointFeatureImpl(List<StructureData> sdataList, DateUnit timeUnit, int id) {
       super( timeUnit);
+      this.sdataList = new ArrayList<StructureData>( sdataList); // must keep own copy, since sdata is changing each time
       this.id = id;
 
       obsTime = ft.getTime( sdataList);

@@ -69,11 +69,7 @@ public abstract class StationCollectionImpl extends OneNestedPointCollectionImpl
   }
 
   public StationFeature getStationFeature(Station s) throws IOException {
-    return (StationFeature) s;  // LOOK
-  }
-
-  public StationFeature getStationFeature(Station s, DateRange dateRange) throws IOException {
-    return (StationFeature) s;  // LOOK
+    return (StationFeature) s;  // subclasses override if not true
   }
 
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
@@ -103,102 +99,4 @@ public abstract class StationCollectionImpl extends OneNestedPointCollectionImpl
       }
     }
   }
-
-  /* private class FeatureIteratorAdapter implements PointFeatureCollectionIterator {
-    private PointFeatureCollectionIterator fiter;
-    private StationFeature sfeature;
-    private int bufferSize = -1;
-
-    FeatureIteratorAdapter(PointFeatureCollectionIterator fiter) {
-      this.fiter = fiter;
-    }
-
-    public boolean hasNext() throws IOException {
-      sfeature = nextFilteredFeature();
-      return (sfeature != null);
-    }
-
-    public Feature nextFeature() throws IOException {
-      return sfeature;
-    }
-
-    public void setBufferSize(int bytes) {
-      fiter.setBufferSize(bytes);
-    }
-
-    private StationFeature nextFilteredFeature() throws IOException {
-      if (!fiter.hasNext()) return null;
-      StationFeature sfeature = (StationFeature) fiter.nextFeature();
-
-      if (isStationSubset) {
-        while (null == stationHelper.getStation(sfeature.getName())) {
-          if (!fiter.hasNext()) return null;
-          sfeature = (StationFeature) fiter.nextFeature();
-        }
-      }
-
-      return sfeature;
-    }
-  }
-
-  private class PointFeatureIteratorAdapter implements PointFeatureIterator {
-    private PointFeatureCollectionIterator fiter;
-    public PointFeatureIterator pfiter;
-    private PointFeature pfeature;
-    private boolean done = false;
-    private int bufferSize = -1;
-
-    PointFeatureIteratorAdapter(PointFeatureCollectionIterator fiter) {
-      this.fiter = fiter;
-    }
-
-    // dont start iteration in the constructor
-    private void init() throws IOException {
-      if (!fiter.hasNext()) {
-        done = true;
-        return;
-      }
-      StationFeature sfeature = (StationFeature) fiter.nextFeature();
-      pfiter = sfeature.getPointFeatureIterator(bufferSize);
-    }
-
-    public boolean hasNext() throws IOException {
-      if (pfiter == null) init();
-
-      if (done) return false;
-      pfeature = nextFilteredPointFeature();
-      if (pfeature != null) return true;
-
-      if (!fiter.hasNext()) return false;
-      StationFeature sfeature = (StationFeature) fiter.nextFeature();
-      pfiter = sfeature.getPointFeatureIterator(bufferSize);
-      pfeature = nextFilteredPointFeature();
-      if (pfeature == null) return hasNext();
-      return true;
-    }
-
-    public PointFeature nextData() throws IOException {
-      if (done) return null;
-      return pfeature;
-    }
-
-    public void setBufferSize(int bytes) {
-      fiter.setBufferSize(bytes / 2);
-      bufferSize = bytes / 2;
-    }
-
-    private PointFeature nextFilteredPointFeature() throws IOException {
-      if (!pfiter.hasNext()) return null;
-      PointFeature pointFeature = pfiter.nextData();
-
-      if (filter_date != null) {
-        while (!filter_date.included(pointFeature.getObservationTimeAsDate())) {
-          if (!pfiter.hasNext()) return null;
-          pointFeature = pfiter.nextData();
-        }
-      }
-
-      return pointFeature;
-    }
-  }  */
 }

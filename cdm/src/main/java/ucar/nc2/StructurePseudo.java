@@ -76,6 +76,7 @@ public class StructurePseudo extends Structure {
    * @param ncfile part of this file
    * @param group part of this group
    * @param shortName short name of this Structure
+   * @param vars limited to these variables. all must have dim as outer dimension.
    * @param dim the existing dimension
    */
   public StructurePseudo( NetcdfFile ncfile, Group group, String shortName,  List<Variable> vars, Dimension dim) {

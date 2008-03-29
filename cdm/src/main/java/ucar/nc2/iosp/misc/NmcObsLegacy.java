@@ -247,22 +247,18 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private class ReportIterator implements StructureDataIterator {
     List<Report> reports;
     Iterator<Report> iter;
-    ArrayStructureBB abb;
-    ByteBuffer bb;
+    StructureMembers members;
 
     ReportIterator(List<Report> reports) {
       this.reports = reports;
       iter = reports.iterator();
 
-      StructureMembers members = obs.makeStructureMembers();
+      members = obs.makeStructureMembers();
       for (Variable v2 : obs.getVariables()) {
         Vinfo vinfo = (Vinfo) v2.getSPobject();
         StructureMembers.Member m = members.findMember(v2.getShortName());
         m.setDataParam(vinfo.offset);
       }
-
-      abb = new ArrayStructureBB(members, new int[]{1});
-      bb = abb.getByteBuffer();
     }
 
     public boolean hasNext() throws IOException {
@@ -271,6 +267,10 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     public StructureData next() throws IOException {
       Report r = iter.next();
+
+      // LOOK should optimize - read 10 at a time or something ???
+      ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{1});
+      ByteBuffer bb = abb.getByteBuffer();
       bb.position(0);
       r.loadStructureData(abb, bb);
       return abb.getStructureData(0);
@@ -561,8 +561,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       Entry[] entries;
       int count = 0;
       StructureMembers members;
-      ArrayStructureBB abb;
-      ByteBuffer bb;
 
       CatIterator(Entry[] entries, Structure useStructure) {
         this.entries = entries;
@@ -573,9 +571,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
           StructureMembers.Member m = members.findMember(v2.getShortName());
           m.setDataParam(vinfo.offset);
         }
-
-        abb = new ArrayStructureBB(members, new int[]{1});
-        bb = abb.getByteBuffer();
       }
 
       public boolean hasNext() throws IOException {
@@ -584,6 +579,10 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       public StructureData next() throws IOException {
         Entry entry = entries[count++];
+
+        // LOOK should read 10 at a time or something ???
+        ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{1});
+        ByteBuffer bb = abb.getByteBuffer();
         bb.position(0);
         entry.loadStructureData(bb);
         return abb.getStructureData(0);

@@ -24,7 +24,7 @@ import ucar.nc2.units.DateRange;
 import java.io.IOException;
 
 /**
- * A Collection of nested PointFeatures.
+ * A Collection of nested PointFeaturesCollections.
  * @author caron
  * @since Mar 20, 2008
  */

@@ -21,8 +21,12 @@ package ucar.nc2.dt2.point;
 
 import ucar.nc2.dt2.*;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonRect;
+
+import java.io.IOException;
 
 /**
  * Superclass for implementations of StationFeature: time series of data at a point
@@ -88,5 +92,29 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
   @Override
   public FeatureType getCollectionFeatureType() {
     return FeatureType.STATION;
+  }
+
+  public StationFeature subset(DateRange dateRange) throws IOException {
+    if (dateRange == null) return this;
+    return new StationFeatureSubset(this, dateRange);
+  }
+
+  private class StationFeatureSubset extends StationFeatureImpl {
+    StationFeatureImpl from;
+
+    StationFeatureSubset(StationFeatureImpl from, DateRange filter_date) {
+      super(from.s, from.timeUnit, -1);
+      this.from = from;
+
+      if (filter_date == null) {
+        this.dateRange = from.dateRange;
+      } else {
+        this.dateRange =  (from.dateRange == null) ? filter_date : from.dateRange.intersect( filter_date);
+      }
+    }
+
+    public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+      return new PointIteratorFiltered( from.getPointFeatureIterator(bufferSize), null, this.dateRange);
+    }
   }
 }

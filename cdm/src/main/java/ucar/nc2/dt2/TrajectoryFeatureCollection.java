@@ -20,25 +20,18 @@
 
 package ucar.nc2.dt2;
 
+import ucar.nc2.units.DateRange;
+
 import java.util.List;
 import java.io.IOException;
 
 /**
- * A collection of TrajectoryFeature objects
+ * A collection of TrajectoryFeatures
  *
  * @author caron
  * @since Mar 19, 2008
  */
 public interface TrajectoryFeatureCollection extends NestedPointFeatureCollection {
-
-  /**
-   * Get a subsetted TrajectoryFeatureCollection
-   *
-   * @param stations only contain these stations
-   * @return subsetted collection
-   * @throws java.io.IOException on i/o error
-   */
-  public TrajectoryFeatureCollection subset(List<Station> stations) throws IOException;
 
   /**
    * Get a specific TrajectoryFeature.

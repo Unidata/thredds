@@ -333,9 +333,7 @@ public class Structure extends Variable {
     return (ArrayStructure) read(origin, shape);
   }
 
-  /** Iterator over all the data in a Structure. You must fully process the
-   * data, or copy it out of the StructureData, as you iterate over it. DO NOT KEEP ANY REFERENCES to the
-   * StructureData object.
+  /** Iterator over all the data in a Structure.
    *  <pre>
    *  StructureDataIterator ii = structVariable.getStructureIterator();
    *  while (ii.hasNext()) {
@@ -351,9 +349,7 @@ public class Structure extends Variable {
   }
 
   /**
-   * Get an efficient iterator over all the data in the Structure. You must fully process the
-   * data, or copy it out of the StructureData, as you iterate over it. DO NOT KEEP ANY REFERENCES to the
-   * StructureData object.
+   * Get an efficient iterator over all the data in the Structure. 
    *
    * This is the efficient way to get all the data, it can be much faster than reading one record at a time,
    *   and is optimized for large datasets.

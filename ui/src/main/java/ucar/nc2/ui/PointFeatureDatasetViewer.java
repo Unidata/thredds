@@ -324,7 +324,9 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     } else if (selectedType == FeatureType.STATION) {
       StationFeatureCollection stationCollection = (StationFeatureCollection) selectedCollection;
-      StationFeature feature = stationCollection.getStationFeature(sb.s, dr);
+      StationFeature feature = stationCollection.getStationFeature(sb.s);
+      if (dr != null)
+        feature = feature.subset(dr);
       setObservations(feature);
 
       // iterator may count points
