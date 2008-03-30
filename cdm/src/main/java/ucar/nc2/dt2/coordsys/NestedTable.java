@@ -268,13 +268,13 @@ public class NestedTable {
     if (latVE.member == null) {
       latVE.findMember(structList);
       lonVE.findMember(structList);
-      altVE.findMember(structList);
-      latVE.findMember(structList);
+      if (altVE != null)
+        altVE.findMember(structList);
     }
 
     double lat = obsData.convertScalarDouble(latVE.member);
     double lon = obsData.convertScalarDouble(lonVE.member);
-    double alt = (altVE.member == null) ? 0.0 : obsData.convertScalarDouble(altVE.member);
+    double alt = (altVE == null) ? 0.0 : obsData.convertScalarDouble(altVE.member);
 
     return new EarthLocationImpl(lat, lon, alt);
   }
@@ -287,7 +287,8 @@ public class NestedTable {
       StructureMembers members = stationData.getStructureMembers();
       latVE.member = members.findMember(latVE.axis.getShortName());
       lonVE.member = members.findMember(lonVE.axis.getShortName());
-      altVE.member = (altVE.axis == null) ? null : members.findMember(altVE.axis.getShortName());
+      if (altVE != null)
+        altVE.member = members.findMember(altVE.axis.getShortName());
 
       stnNameMember = members.findMember(cs.getParam("station_id"));
       stnDescMember = members.findMember(cs.getParam("station_desc"));

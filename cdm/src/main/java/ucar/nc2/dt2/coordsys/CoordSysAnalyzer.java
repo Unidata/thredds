@@ -236,7 +236,8 @@ public class CoordSysAnalyzer {
       Variable firstVar = UnidataPointDatasetHelper.findVariable(ds, "firstChild");
       Variable nextVar = UnidataPointDatasetHelper.findVariable(ds, "nextChild");
       Variable numChildrenVar = UnidataPointDatasetHelper.findVariable(ds, "numChildren");
-      atts.add(new Attribute("station_npts", numChildrenVar.getShortName()));
+      if (numChildrenVar != null)
+        atts.add(new Attribute("station_npts", numChildrenVar.getShortName()));
 
       // not implemented
       // Variable stationIndexVar = UnidataPointDatasetHelper.findVariable(ds, "parent_index");
