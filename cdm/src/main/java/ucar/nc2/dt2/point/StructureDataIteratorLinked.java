@@ -34,14 +34,14 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataIteratorLinked.class);
 
   private Structure s;
-  private int firstRecord, nextRecno, lastRecord;
+  private int firstRecord, nextRecno, numRecords;
   private String linkVarName;
 
-  public StructureDataIteratorLinked(Structure s, int firstRecord, int lastRecord, String linkVarName) throws IOException {
+  public StructureDataIteratorLinked(Structure s, int firstRecord, int numRecords, String linkVarName) throws IOException {
     this.s = s;
     this.firstRecord = firstRecord;
     this.nextRecno = firstRecord;
-    this.lastRecord = lastRecord; // contiguous only
+    this.numRecords = numRecords; // contiguous only
     this.linkVarName = linkVarName;
   }
 
@@ -55,9 +55,9 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
       throw new IOException(e.getMessage());
     }
 
-    if (lastRecord > 0) { // contiguous case
+    if (numRecords > 0) { // contiguous case
       nextRecno++;
-      if (nextRecno > lastRecord)
+      if (nextRecno >= firstRecord + numRecords)
         nextRecno = -1;
 
     } else {

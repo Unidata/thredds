@@ -115,7 +115,7 @@ class Index2NC {
     ncfile.addAttribute(null, new Attribute("Conventions", "Unidata Observation Dataset v1.0"));
     ncfile.addAttribute(null, new Attribute("observationDimension", "obs"));
     if (stationDS) {
-      ncfile.addAttribute(null, new Attribute("stationsDimension", "stns"));
+      ncfile.addAttribute(null, new Attribute("stationDimension", "stns"));
       ncfile.addAttribute(null, new Attribute("parent_index_coordinate", "record.parent_index"));
     } else if (trajectoryDS) {
       ncfile.addAttribute(null, new Attribute("trajectoryDimension", "trajectories"));

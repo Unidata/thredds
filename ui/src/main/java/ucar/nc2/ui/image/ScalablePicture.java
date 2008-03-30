@@ -275,7 +275,7 @@ public class ScalablePicture implements SourcePictureListener {
     sourcePicture = new SourcePicture();
     sourcePicture.addListener(this);
     setStatus(LOADING, "Loading: " + imageUrl.toString());
-    scaleAfterLoad = false;
+    scaleAfterLoad = true;
     sourcePicture.loadPicture(imageUrl, rotation);
   }
 

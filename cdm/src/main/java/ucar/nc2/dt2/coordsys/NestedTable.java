@@ -33,10 +33,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureMembers;
-import ucar.ma2.StructureData;
-import ucar.ma2.ArraySequence2;
+import ucar.ma2.*;
 
 import java.util.*;
 import java.io.IOException;
@@ -55,7 +52,7 @@ public class NestedTable {
   private boolean isOk;
   private VarExtractor timeVE, latVE, lonVE, altVE;
   private int nestedLevels;
-  private Join useJoin;
+  //private Join useJoin;
 
   private DateFormatter dateFormatter = new DateFormatter();
 
@@ -112,16 +109,6 @@ public class NestedTable {
     if (nestedLevels == 1) return FeatureType.POINT;
     if (nestedLevels == 2) return FeatureType.STATION;
     if (nestedLevels == 3) return FeatureType.STATION_PROFILE;
-
-    Table parent = leaf.parent;
-    if (parent.children.size() > 0) {
-      Collections.sort(parent.children);
-      useJoin = parent.children.get(0);
-    }
-
-    if (useJoin != null)
-      return FeatureType.STATION;
-
     return null;
   }
 
@@ -149,6 +136,7 @@ public class NestedTable {
   }
 
   private StructureDataIterator getStructureDataIterator(Table table, int bufferSize) throws IOException {
+
     switch (table.type) {
       case Structure:
         return table.struct.getStructureIterator(bufferSize);
@@ -162,14 +150,6 @@ public class NestedTable {
   }
 
   //Station
-  private String getLinkedFirstRecVarName() {
-    return useJoin.start.getName();
-  }
-
-  private String getLinkedNextRecVarName() {
-    return useJoin.next.getName();
-  }
-
   public StructureDataIterator getStationDataIterator(int bufferSize) throws IOException {
     if (getFeatureType() == FeatureType.STATION)
        return getStructureDataIterator(leaf.parent, bufferSize);
@@ -181,10 +161,7 @@ public class NestedTable {
   }
 
   public StructureDataIterator getStationObsDataIterator(StructureData stationData, int bufferSize) throws IOException {
-    // temp kludge
-    int firstRecno = stationData.getScalarInt( getLinkedFirstRecVarName());
-    String linkVarName = getLinkedNextRecVarName();
-    return new StructureDataIteratorLinked(leaf.struct, firstRecno, -1, linkVarName);
+    return getStructureDataIterator(leaf, stationData);
   }
 
   // Station Profile
@@ -192,10 +169,7 @@ public class NestedTable {
     if (getFeatureType() != FeatureType.STATION_PROFILE)
       throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
 
-    String name = leaf.parent.getName();
-    StructureMembers members = stationData.getStructureMembers();
-    ArraySequence2 seq = stationData.getArraySequence(members.findMember(name));
-    return seq.getStructureIterator();
+    return getStructureDataIterator(leaf.parent, stationData);
   }
 
   // ft.getStationProfileObsDataIterator(sdataList, bufferSize)
@@ -204,10 +178,42 @@ public class NestedTable {
       throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
 
     StructureData profileData = structList.get(1);
-    String name = leaf.getName();
-    StructureMembers members = profileData.getStructureMembers();
-    ArraySequence2 seq = profileData.getArraySequence(members.findMember(name));
-    return seq.getStructureIterator();
+    return getStructureDataIterator(leaf, profileData);
+  }
+
+  private StructureDataIterator getStructureDataIterator(Table child, StructureData parentStruct) throws IOException {
+
+    switch (child.join.joinType) {
+      case NestedStructure: {
+        String name = child.getName();
+        StructureMembers members = parentStruct.getStructureMembers();
+        StructureMembers.Member m = members.findMember(name);
+        if (m.getDataType() == DataType.SEQUENCE) {
+          ArraySequence2 seq = parentStruct.getArraySequence(m);
+          return seq.getStructureIterator();
+
+        } else if (m.getDataType() == DataType.STRUCTURE) {
+          ArrayStructure as = parentStruct.getArrayStructure(m);
+          return as.getStructureDataIterator();
+        }
+
+        return null;
+      }
+
+      case ForwardLinkedList:
+      case BackwardLinkedList: {
+        int firstRecno = parentStruct.getScalarInt( child.join.start.getName());
+        return new StructureDataIteratorLinked(child.struct, firstRecno, -1, child.join.next.getName());
+      }
+
+      case ContiguousList: {
+        int firstRecno = parentStruct.getScalarInt( child.join.start.getName());
+        int numRecords = parentStruct.getScalarInt( child.join.numRecords.getName());
+        return new StructureDataIteratorLinked(child.struct, firstRecno, numRecords, null);
+      }
+    }
+
+    return null;
   }
 
   public String getName() {
@@ -229,7 +235,6 @@ public class NestedTable {
     formatter.format("  Lat= %s\n", latVE);
     formatter.format("  Lon= %s\n", lonVE);
     formatter.format("  Height= %s\n", altVE);
-    formatter.format("  UseJoin= %s\n", useJoin);
 
     return formatter.toString();
   }
@@ -324,6 +329,7 @@ public class NestedTable {
 
     Table parent;
     List<Join> children;
+    Join join; // the join to its parent
 
     Table(Structure struct) {
       this.struct = struct;
@@ -370,11 +376,12 @@ public class NestedTable {
 
     public String toString() {
       Formatter formatter = new Formatter();
-      formatter.format(" Table on dimension %s type=%s\n", dim.getName(), type);
+      formatter.format(" Table %s on dimension %s type=%s\n", getName(), dim.getName(), type);
       formatter.format("  Coordinates=");
       for (CoordinateAxis axis : coordVars)
         formatter.format(" %s (%s)", axis.getName(), axis.getAxisType());
       formatter.format("\n  Data Variables= %d\n", cols.size());
+      formatter.format("  Parent= %s join = %s\n", ((parent == null) ? "none" : parent.getName()), join);
       return formatter.toString();
     }
 
@@ -398,7 +405,7 @@ public class NestedTable {
   public static class Join implements Comparable<Join> {
     Table fromTable, toTable;
     private JoinType joinType;
-    private Variable start, next;
+    private Variable start, next, numRecords;
 
     Join(JoinType joinType) {
       this.joinType = joinType;
@@ -411,9 +418,10 @@ public class NestedTable {
       this.toTable = toTable;
     }
 
-    void setJoinVariables(Variable start, Variable next) {
+    void setJoinVariables(Variable start, Variable next, Variable numRecords) {
       this.start = start;
       this.next = next;
+      this.numRecords = numRecords;
     }
 
     public String toString() {

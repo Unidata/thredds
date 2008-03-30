@@ -962,7 +962,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
       InstantiationException, IllegalAccessException {
 
     //String fileIn = "/home/rkambic/code/bufr/data/2005122912.bufr";
-    String fileIn = "C:/data/dt2/point/bufr/IUCN_RJTD_20060211_12.bufr";
+    //String fileIn = "C:/data/dt2/point/bufr/IUCN_RJTD_20060211_12.bufr";
+    String fileIn = "C:/data/dt2/profile/PROFILER_1.bufr";
     //String fileIn = "/home/rkambic/code/bufr/data/PROFILER_1.bufr";
     //String fileIn = "/home/rkambic/code/bufr/data/PROFILER_.bufr";
     //String fileIn = "R:/testdata/point/bufr/PROFILER_3.bufr";

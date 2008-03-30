@@ -19,6 +19,8 @@
  */
 package ucar.ma2;
 
+import java.io.IOException;
+
 /**
  * Superclass for implementations of Array of StructureData.
  *
@@ -185,6 +187,29 @@ public abstract class ArrayStructure extends Array {
    */
   public int getStructureSize() {
     return members.getStructureSize();
+  }
+
+  public StructureDataIterator getStructureDataIterator() {
+    return new StructureDataIterator() {
+      private int count = 0;
+      private int size = (int) getSize();
+
+      public boolean hasNext() throws IOException {
+        return count < size;
+      }
+
+      public StructureData next() throws IOException {
+        return getStructureData(count++);
+      }
+
+      public void setBufferSize(int bytes) {
+      }
+
+      public StructureDataIterator reset() {
+        count = 0;
+        return this;
+      }
+    };
   }
 
   ///////////////////////////////////////////////////////////////////////////////

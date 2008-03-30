@@ -56,4 +56,8 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
   public int getNumberPoints() {
     return npts;
   }
+
+  protected void setNumberPoints(int npts) {
+    this.npts = npts;
+  }
 }

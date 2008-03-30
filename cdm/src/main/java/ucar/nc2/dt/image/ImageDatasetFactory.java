@@ -193,7 +193,7 @@ public class ImageDatasetFactory {
     for (File file : dir.listFiles()) {
       if (file.isDirectory())
         addToList(file, list);
-      else if (file.getName().endsWith(".jpg"))
+      else if (file.getName().endsWith(".jpg") || file.getName().endsWith(".JPG"))
         list.add(file);
     }
   }

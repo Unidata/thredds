@@ -55,6 +55,7 @@ public class CoordSysAnalyzer {
 
       if (child.parent != null) throw new IllegalStateException("Multiple parents");
       child.parent = parent;
+      child.join = join;
 
       if (parent.children == null) parent.children = new ArrayList<NestedTable.Join>();
       parent.children.add(join);
@@ -260,21 +261,21 @@ public class CoordSysAnalyzer {
       if (isContiguousList) {
         join = new NestedTable.Join(NestedTable.JoinType.ContiguousList);
         setTables(join, firstVar.getDimension(0).getName(), obsDim.getName());
-        join.setJoinVariables(firstVar, numChildrenVar);
+        join.setJoinVariables(firstVar, null, numChildrenVar);
         joins.add(join);
       }
 
       if (isForwardLinkedList) {
         join = new NestedTable.Join(NestedTable.JoinType.ForwardLinkedList);
         setTables(join, firstVar.getDimension(0).getName(), nextVar.getDimension(0).getName());
-        join.setJoinVariables(firstVar, nextVar);
+        join.setJoinVariables(firstVar, nextVar, null);
         joins.add(join);
       }
 
       if (isBackwardLinkedList) {
         join = new NestedTable.Join(NestedTable.JoinType.BackwardLinkedList);
         setTables(join, lastVar.getDimension(0).getName(), prevVar.getDimension(0).getName());
-        join.setJoinVariables(lastVar, prevVar);
+        join.setJoinVariables(lastVar, prevVar, null);
         joins.add(join);
       }
 
@@ -351,6 +352,7 @@ public class CoordSysAnalyzer {
     //doit("R:/testdata/point/bufr/data/050391800.iupt01");
     //doit("C:/data/rotatedPole/eu.mn.std.fc.d00z20070820.ncml");
     //doit("C:/data/cadis/tempting");
-    doit("C:/data/dt2/station/Surface_METAR_20080205_0000.nc");
+    //doit("C:/data/dt2/station/Surface_METAR_20080205_0000.nc");
+    doit("C:/data/dt2/profile/PROFILER_1.bufr");
   }
 }

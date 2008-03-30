@@ -138,7 +138,25 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       StructureDataIterator structIter = ft.getStationProfileObsDataIterator(sdataList, bufferSize);
-      return new StandardPointFeatureIterator(ft, timeUnit, structIter, sdataList, false);
+      return new StandardStationProfilePointIterator(structIter, sdataList);
+    }
+
+      // the iterator over the observations
+    private class StandardStationProfilePointIterator extends StandardPointFeatureIterator {
+      StationFeatureImpl station;
+
+      StandardStationProfilePointIterator(StructureDataIterator structIter, List <StructureData> sdataList) throws IOException {
+        super(ft, timeUnit, structIter, sdataList, false);
+      }
+
+      // decorate to capture npts
+      @Override
+      public boolean hasNext() throws IOException {
+        boolean result = super.hasNext();
+        if (!result)
+          setNumberPoints( getCount());
+        return result;
+      }
     }
 
   }
