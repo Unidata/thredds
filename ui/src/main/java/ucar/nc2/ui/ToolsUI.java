@@ -800,7 +800,7 @@ public class ToolsUI extends JPanel {
       else if (setUseRecordStructure)
         ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
-    } catch (IOException ioe) {
+    } catch (Exception ioe) {
       String message = ioe.getMessage();
       if ((null == message) && (ioe instanceof EOFException))
         message = "Premature End of File";

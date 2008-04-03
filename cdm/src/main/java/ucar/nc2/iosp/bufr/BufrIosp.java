@@ -961,9 +961,30 @@ public class BufrIosp extends AbstractIOServiceProvider {
   public static void main(String args[]) throws Exception, IOException,
       InstantiationException, IllegalAccessException {
 
+    // station profiles
+    //String fileIn = "R:/testdata/point/bufr/data/PROFILER_1.bufr";
+    //String fileIn = "R:/testdata/point/bufr/data/20060442200_3600_MRRN1.wind";   // only 1 profile
+    //String fileIn = "R:/testdata/point/bufr/data/20060442200_3600_HVLK1.rass";  // only 1 profile
+    //String fileIn = "R:/testdata/point/bufr/data/20060442200_3600_VCIO2.mom";     // only 1 profile
+    // tring fileIn = "R:/testdata/point/bufr/data/050391800.iupt01";
+    //String fileIn = "R:/testdata/point/bufr/data/PROFILER_20060706_0000.bufr";
+
+    //String fileIn = "R:/testdata/point/bufr/data/IUA_EGRR_20060202_08.bufr"; // barf
+    //String fileIn = "R:/testdata/point/bufr/data/IUA_CWAO_20060202_12.bufr"; // barf
+    //String fileIn = "R:/testdata/point/bufr/data/ambn.bufr"; // barf
+    // String fileIn = "R:/testdata/point/bufr/data/PROFILER_JUTX_KNES_20060214_04.bufr";  // barf
+    // String fileIn = "R:/testdata/point/bufr/data/SoundingNAM_20060319_0200.bufr";
+
+    // category = 5 Single level upper-air data (satellite)
+    //String fileIn = "R:/testdata/point/bufr/data/IUCN_RJTD_20060211_12.bufr";
+
+    // category = 3 Vertical soundings (satellite)
+    String fileIn = "R:/testdata/point/bufr/data/SoundingVerticalSatellite_20060516_0000.bufr";
+
+
+    
     //String fileIn = "/home/rkambic/code/bufr/data/2005122912.bufr";
     //String fileIn = "C:/data/dt2/point/bufr/IUCN_RJTD_20060211_12.bufr";
-    String fileIn = "C:/data/dt2/profile/PROFILER_1.bufr";
     //String fileIn = "/home/rkambic/code/bufr/data/PROFILER_1.bufr";
     //String fileIn = "/home/rkambic/code/bufr/data/PROFILER_.bufr";
     //String fileIn = "R:/testdata/point/bufr/PROFILER_3.bufr";
@@ -976,7 +997,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     System.out.println();
     System.out.println(ncf.toString());
 
-    ucar.nc2.Variable v;
+    /* ucar.nc2.Variable v;
 
     v = ncf.findVariable("trajectory_id");
     if (v != null) {
@@ -1029,6 +1050,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
         System.out.println(ii.getFloatNext());
       }
     }
-    ncf.close();
+    ncf.close();  */
   }
 } // end BufrIosp
