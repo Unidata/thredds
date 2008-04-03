@@ -651,9 +651,9 @@ public class GeoTiff {
 
       } else { // more than one, or non short value
         IFDEntry data = findTag( Tag.get(location));
-        if (data == null)
+        if (data == null) {
           System.out.println("********ERROR parseGeoInfo: cant find Tag code = "+location);
-
+        }
         else if (data.tag == Tag.GeoDoubleParamsTag) { // double params
           double[] dvalue = new double[vcount];
           for (int k=0; k<vcount; k++)
@@ -700,10 +700,9 @@ public class GeoTiff {
   /** test */
   public static void main (String [] argv) {
     try {
-      GeoTiff geotiff = new GeoTiff("C:/data/geotiff/roland/sst0001.tif");
-      //GeoTiff geotiff = new GeoTiff("C:/data/geotiff/floatsamp2b.tif");
-      //GeoTiff geotiff = new GeoTiff("C:/dev/image/data/nc2Data.tif");
-
+      GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/ilatlon_float.tif");
+      //GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/maxtemp.tif");
+      //GeoTiff geotiff = new GeoTiff("/home/yuanho/tmp/test.tif");
       //GeoTiff geotiff = new GeoTiff("C:/data/geotiff/c41078a1.tif");
       //GeoTiff geotiff = new GeoTiff("C:/data/geotiff/L7ETMbands147.tif");
       //GeoTiff geotiff = new GeoTiff("data/blueTest.tiff");
