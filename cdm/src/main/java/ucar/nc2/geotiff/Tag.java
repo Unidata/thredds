@@ -70,6 +70,9 @@ class Tag implements Comparable {
   static public final Tag GeoDoubleParamsTag = new Tag("GeoDoubleParamsTag", 34736);
   static public final Tag GeoAsciiParamsTag = new Tag("GeoAsciiParamsTag", 34737);
 
+  // Gdal tiff tags
+  static public final Tag GDALNoData = new Tag("GDALNoDataTag", 42113);
+
   /**
    * Get the Tag by number.
    * @param code Tiff Tag number.
