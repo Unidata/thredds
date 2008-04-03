@@ -41,19 +41,23 @@ import java.nio.ByteBuffer;
  * @since Feb 22, 2008
  */
 public class NmcObsLegacy extends AbstractIOServiceProvider {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NmcObsLegacy.class);
+
   private RandomAccessFile raf;
   private NetcdfFile ncfile;
+  //private Structure reportVar;
 
-  private Map<String, List<Report>> map = new HashMap<String, List<Report>>();
-  private List<String> stations;
+  private List<Station> stations = new ArrayList<Station>();
+  private List<Report> reports  = new ArrayList<Report>();
+  //private Map<String, List<Report>> map = new HashMap<String, List<Report>>();
+  //private List<String> stations;
 
-  private int nobs = 0, nstations = 0;
+  // private int nobs = 0, nstations = 0;
   private Calendar cal = null;
   private DateFormatter dateFormatter = new DateFormatter();
   private Date refDate; // from the header
   private String refString; // debug
 
-  private Structure obs;
   private List<StructureCode> catStructures = new ArrayList<StructureCode>(10);
 
   private boolean showObs = false, showSkip = false, showOverflow = false, showData = false,
@@ -95,91 +99,176 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     init();
 
-    makeNetcdfFile();
-  }
-
-  private void makeNetcdfFile() throws IOException {
-
     ncfile.addAttribute(null, new Attribute("history", "direct read of NMC ON29 by CDM"));
     ncfile.addAttribute(null, new Attribute("Conventions", "Unidata"));
     ncfile.addAttribute(null, new Attribute("cdm_datatype", FeatureType.STATION_PROFILE.toString()));
 
-    ncfile.addDimension(null, new Dimension("station", nstations));
-
-    Structure top = new Structure(ncfile, null, null, "stationProfiles");
-    top.setDimensions("station");
-    ncfile.addVariable(null, top);
-
     try {
-      int pos = 0;
-      Variable v = top.addMemberVariable(new Variable(ncfile, null, top, "stationName", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{6});
-      v.addAttribute(new Attribute("long_name", "name of station"));
-      v.addAttribute(new Attribute("standard_name", "station_name"));
-      v.setSPobject(new Vinfo(pos));
-      pos += 6;
+      ncfile.addDimension(null, new Dimension("station", stations.size()));
+      Structure station = makeStationStructure();
+      ncfile.addVariable(null, station);
 
-      v = top.addMemberVariable(new Variable(ncfile, null, top, "lat", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "degrees_north"));
-      v.addAttribute(new Attribute("long_name", "geographic latitude"));
-      v.addAttribute(new Attribute("accuracy", "degree/100"));
-      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      v.setSPobject(new Vinfo(pos));
-      pos += 4;
+      ncfile.addDimension(null, new Dimension("report", reports.size()));
+      Structure reportIndexVar = makeReportIndexStructure();
+      ncfile.addVariable(null, reportIndexVar);
 
-      v = top.addMemberVariable(new Variable(ncfile, null, top, "lon", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "degrees_east"));
-      v.addAttribute(new Attribute("long_name", "geographic longitude"));
-      v.addAttribute(new Attribute("accuracy", "degree/100"));
-      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-      v.setSPobject(new Vinfo(pos));
-      pos += 4;
-
-      v = top.addMemberVariable(new Variable(ncfile, null, top, "elev", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "meters"));
-      v.addAttribute(new Attribute("long_name", "station elevation above MSL"));
-      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-      v.setSPobject(new Vinfo(pos));
-      pos += 4;
-
-      v = top.addMemberVariable(new Variable(ncfile, null, top, "nrecords", DataType.INT, ""));
-      v.addAttribute(new Attribute("long_name", "number of records"));
-      v.addAttribute(new Attribute("standard_name", "npts"));
-      v.setSPobject(new Vinfo(pos));
-      pos += 4;
-
-      obs = firstReport.makeStructure(top);
-      obs.setSPobject(new Vinfo(pos));
-      top.addMemberVariable(obs);
-      pos += 4;
-
-      int obs_pos = obs.getElementSize();
-      List<Record> records = firstReport.readData(); // for the moment, we will use the first report as the exemplar
-      obs_pos = doCode(records, 1, obs_pos);
-      obs_pos = doCode(records, 2, obs_pos);
-      obs_pos = doCode(records, 3, obs_pos);
-      obs_pos = doCode(records, 4, obs_pos);
-      obs_pos = doCode(records, 5, obs_pos);
-      obs_pos = doCode(records, 7, obs_pos);
-      obs_pos = doCode(records, 8, obs_pos);
-      obs_pos = doCode(records, 51, obs_pos);
-      obs_pos = doCode(records, 52, obs_pos);
-      obs.calcElementSize(); // recalc since we added new members
+      Structure reportVar = makeReportStructure();
+      ncfile.addVariable(null, reportVar);
 
     } catch (InvalidRangeException e) {
-      e.printStackTrace();
+      log.error("open ON29 File", e);
+      throw new IllegalStateException(e.getMessage());
     }
   }
 
-  private int doCode(List<Record> records, int code, int obs_pos) throws InvalidRangeException {
+  public void close() throws IOException {
+    raf.close();
+  }
+
+  public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
+    if (v.getName().equals("station"))
+      return readStation(v, section);
+
+    else if (v.getName().equals("report"))
+      return readReport(v, section);
+
+    else if (v.getName().equals("reportIndex"))
+      return readReportIndex(v, section);
+
+    throw new IllegalArgumentException("Unknown variable name= "+v.getName());
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////
+
+  private Structure makeStationStructure() throws IOException, InvalidRangeException {
+    Structure station = new Structure(ncfile, null, null, "station");
+    station.setDimensions("station");
+    station.addAttribute(new Attribute("long_name", "unique stations within this file"));
+
+    int pos = 0;
+    Variable v = station.addMemberVariable(new Variable(ncfile, null, station, "stationName", DataType.CHAR, ""));
+    v.setDimensionsAnonymous(new int[]{6});
+    v.addAttribute(new Attribute("long_name", "name of station"));
+    v.addAttribute(new Attribute("standard_name", "station_name"));
+    v.setSPobject(new Vinfo(pos));
+    pos += 6;
+
+    v = station.addMemberVariable(new Variable(ncfile, null, station, "lat", DataType.FLOAT, ""));
+    v.addAttribute(new Attribute("units", "degrees_north"));
+    v.addAttribute(new Attribute("long_name", "geographic latitude"));
+    v.addAttribute(new Attribute("accuracy", "degree/100"));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+    v.setSPobject(new Vinfo(pos));
+    pos += 4;
+
+    v = station.addMemberVariable(new Variable(ncfile, null, station, "lon", DataType.FLOAT, ""));
+    v.addAttribute(new Attribute("units", "degrees_east"));
+    v.addAttribute(new Attribute("long_name", "geographic longitude"));
+    v.addAttribute(new Attribute("accuracy", "degree/100"));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+    v.setSPobject(new Vinfo(pos));
+    pos += 4;
+
+    v = station.addMemberVariable(new Variable(ncfile, null, station, "elev", DataType.FLOAT, ""));
+    v.addAttribute(new Attribute("units", "meters"));
+    v.addAttribute(new Attribute("long_name", "station elevation above MSL"));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+    v.setSPobject(new Vinfo(pos));
+    pos += 4;
+
+    v = station.addMemberVariable(new Variable(ncfile, null, station, "nrecords", DataType.INT, ""));
+    v.addAttribute(new Attribute("long_name", "number of records"));
+    v.addAttribute(new Attribute("standard_name", "npts"));
+    v.setSPobject(new Vinfo(pos));
+    pos += 4;
+
+    return station;
+  }
+
+  private Structure makeReportIndexStructure() throws InvalidRangeException, IOException {
+    Structure reportIndex = new Structure(ncfile, null, null, "reportIndex");
+    reportIndex.setDimensions("report");
+
+    reportIndex.addAttribute(new Attribute("long_name", "index on report - in memory"));
+    int pos = 0;
+
+    Variable v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "stationName", DataType.CHAR, ""));
+    v.setDimensionsAnonymous(new int[]{6});
+    v.addAttribute(new Attribute("long_name", "name of station"));
+    v.addAttribute(new Attribute("standard_name", "station_name"));
+    v.setSPobject(new Vinfo(pos));
+    pos += 6;
+
+    v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "time", DataType.INT, ""));
+    v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
+    v.addAttribute(new Attribute("long_name", "observation time"));
+    v.setSPobject(new Vinfo(pos));                 
+    pos += 4;
+
+    return reportIndex;
+  }
+
+
+  private Structure makeReportStructure() throws InvalidRangeException, IOException {
+    Structure report = new Structure(ncfile, null, null, "report");
+    report.setDimensions("report");
+    report.addAttribute(new Attribute("long_name", "ON29 observation report"));
+    int pos = 0;
+
+    Variable v = report.addMemberVariable(new Variable(ncfile, null, report, "time", DataType.INT, ""));
+    v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
+    v.addAttribute(new Attribute("long_name", "observation time"));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
+    v.setSPobject(new Vinfo(pos));
+    pos += 4;
+
+    v = report.addMemberVariable(new Variable(ncfile, null, report, "timeISO", DataType.CHAR, ""));
+    v.setDimensionsAnonymous(new int[]{20});
+    v.addAttribute(new Attribute("long_name", "ISO formatted date/time"));
+    v.setSPobject(new Vinfo(pos));
+    pos += 20;
+
+    v = report.addMemberVariable(new Variable(ncfile, null, report, "reportType", DataType.SHORT, ""));
+    v.addAttribute(new Attribute("long_name", "report type from Table R.1"));
+    v.setSPobject(new Vinfo(pos));
+    pos += 2;
+
+    // only for ON29
+    v = report.addMemberVariable(new Variable(ncfile, null, report, "instType", DataType.SHORT, ""));
+    v.addAttribute(new Attribute("long_name", "instrument type from Table R.2"));
+    v.setSPobject(new Vinfo(pos));
+    pos += 2;
+
+    v = report.addMemberVariable(new Variable(ncfile, null, report, "reserved", DataType.CHAR, ""));
+    v.setDimensionsAnonymous(new int[]{7});
+    v.addAttribute(new Attribute("long_name", "reserved characters"));
+    v.setSPobject(new Vinfo(pos));
+    pos += 7;
+
+    List<Record> records = firstReport.readData(); // for the moment, we will use the first report as the exemplar
+    pos = makeInnerSequence(report, records, 1, pos);
+    pos = makeInnerSequence(report, records, 2, pos);
+    pos = makeInnerSequence(report, records, 3, pos);
+    pos = makeInnerSequence(report, records, 4, pos);
+    pos = makeInnerSequence(report, records, 5, pos);
+    pos = makeInnerSequence(report, records, 7, pos);
+    pos = makeInnerSequence(report, records, 8, pos);
+    pos = makeInnerSequence(report, records, 51, pos);
+    pos = makeInnerSequence(report, records, 52, pos);
+    report.calcElementSize(); // recalc since we added new members
+
+    return report;
+  }
+
+  private int makeInnerSequence( Structure reportVar, List<Record> records, int code, int obs_pos) throws InvalidRangeException {
 
     for (Record record : records) {
       if (record.code == code) {
         Entry first = record.entries[0];
-        Structure s = first.makeStructure(obs);
+        Structure s = first.makeStructure(reportVar);
         s.setSPobject(new Vinfo(obs_pos));
         obs_pos += 4;
-        obs.addMemberVariable(s);
+        reportVar.addMemberVariable(s);
         catStructures.add(new StructureCode(s, code));
         break;
       }
@@ -205,10 +294,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
   }
 
-  public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
-    if (!v.getName().equals("stationProfiles"))
-      throw new IllegalArgumentException();
+  /////////////////////////////////////////////////////////////
 
+  private Array readStation(Variable v, Section section) throws IOException, InvalidRangeException {
     Structure s = (Structure) v;
     StructureMembers members = s.makeStructureMembers();
     for (Variable v2 : s.getVariables()) {
@@ -226,25 +314,66 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Range r = section.getRange(0);
     for (int i = r.first(); i <= r.last(); i += r.stride()) {
-      String station = stations.get(i);
-      List<Report> reports = map.get(station);
-      Report report0 = reports.get(0);
+      Station station = stations.get(i);
+      bb.put(station.r.stationId.getBytes());
+      bb.putFloat(station.r.lat);
+      bb.putFloat(station.r.lon);
+      bb.putFloat(station.r.elevMeters);
+      bb.putInt(station.nreports);
 
-      bb.put(report0.stationId.getBytes());
-      bb.putFloat(report0.lat);
-      bb.putFloat(report0.lon);
-      bb.putFloat(report0.elevMeters);
-      bb.putInt(reports.size());
-
-      ArraySequence2 seq = new ArraySequence2(members, new ReportIterator(reports));
-      int index = abb.addObjectToHeap(seq);
-      bb.putInt(index); // an index into the Heap
+      //ArraySequence2 seq = new ArraySequence2(members, new ReportIterator(reports));
+      //int index = abb.addObjectToHeap(seq);
+      // bb.putInt(index); // an index into the Heap
     }
 
     return abb;
   }
 
-  private class ReportIterator implements StructureDataIterator {
+   public Array readReportIndex(Variable v, Section section) throws IOException, InvalidRangeException {
+    Structure s = (Structure) v;
+    StructureMembers members = s.makeStructureMembers();
+    for (Variable v2 : s.getVariables()) {
+      Vinfo vinfo = (Vinfo) v2.getSPobject();
+      StructureMembers.Member m = members.findMember(v2.getShortName());
+      m.setDataParam(vinfo.offset);
+    }
+
+    int size = (int) section.computeSize();
+    ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{size});
+    ByteBuffer bb = abb.getByteBuffer();
+
+    Range r = section.getRange(0);
+    for (int i = r.first(); i <= r.last(); i += r.stride()) {
+      Report report = reports.get(i);
+      report.loadIndexData(bb);
+    }
+
+    return abb;
+  }
+
+  public Array readReport(Variable v, Section section) throws IOException, InvalidRangeException {
+    Structure s = (Structure) v;
+    StructureMembers members = s.makeStructureMembers();
+    for (Variable v2 : s.getVariables()) {
+      Vinfo vinfo = (Vinfo) v2.getSPobject();
+      StructureMembers.Member m = members.findMember(v2.getShortName());
+      m.setDataParam(vinfo.offset);
+    }
+
+    int size = (int) section.computeSize();
+    ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{size});
+    ByteBuffer bb = abb.getByteBuffer();
+
+    Range r = section.getRange(0);
+    for (int i = r.first(); i <= r.last(); i += r.stride()) {
+      Report report = reports.get(i);
+      report.loadStructureData(abb, bb);
+    }
+
+    return abb;
+  }
+
+  /* private class ReportIterator implements StructureDataIterator {
     List<Report> reports;
     Iterator<Report> iter;
     StructureMembers members;
@@ -253,8 +382,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       this.reports = reports;
       iter = reports.iterator();
 
-      members = obs.makeStructureMembers();
-      for (Variable v2 : obs.getVariables()) {
+      members = reportVar.makeStructureMembers();
+      for (Variable v2 : reportVar.getVariables()) {
         Vinfo vinfo = (Vinfo) v2.getSPobject();
         StructureMembers.Member m = members.findMember(v2.getShortName());
         m.setDataParam(vinfo.offset);
@@ -283,11 +412,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       iter = reports.iterator();
       return this;
     }
-  }
+  } */
 
-  public void close() throws IOException {
-    raf.close();
-  }
+
 
   private Report firstReport = null;
 
@@ -299,38 +426,49 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     raf.seek(0);
     readHeader(raf);
 
+    // read through all the reports, construct unique stations
+    Map<String,Station> map = new HashMap<String,Station>();
     while (true) {
-      Report obs = new Report();
-      if (!obs.readId(raf)) break;
+      Report report = new Report();
+      if (!report.readId(raf)) break;
+
       if (firstReport == null) {
-        firstReport = obs;
+        firstReport = report;
         firstType = firstReport.reportType;
       }
 
-      if (checkType && (obs.reportType != firstType)) {
-        System.out.println(obs.stationId + " type: " + obs.reportType + " not " + firstType);
+      if (checkType && (report.reportType != firstType)) {
+        System.out.println(report.stationId + " type: " + report.reportType + " not " + firstType);
         badType++;
       }
 
-      List<Report> reports = map.get(obs.stationId);
-      if (reports == null) {
-        reports = new ArrayList<Report>();
-        map.put(obs.stationId, reports);
+      Station stn = map.get(report.stationId);
+      if (stn == null) {
+        stn = new Station(report);
+        map.put(report.stationId, stn);
+        stations.add( stn);
 
-      } else if (checkPositions) {
-        Report first = reports.get(0);
-        if (first.lat != obs.lat) {
-          System.out.println(obs.stationId + " lat: " + first.lat + " !=" + obs.lat);
-          badPos++;
+      } else {
+        stn.nreports++;
+
+        if (checkPositions) {
+          Report first = reports.get(0);
+          if (first.lat != report.lat) {
+            System.out.println(report.stationId + " lat: " + first.lat + " !=" + report.lat);
+            badPos++;
+          }
+          if (first.lon != report.lon)
+            System.out.println(report.stationId + " lon: " + first.lon + " !=" + report.lon);
+          if (first.elevMeters != report.elevMeters)
+            System.out.println(report.stationId + " elev: " + first.elevMeters + " !=" + report.elevMeters);
         }
-        if (first.lon != obs.lon)
-          System.out.println(obs.stationId + " lon: " + first.lon + " !=" + obs.lon);
-        if (first.elevMeters != obs.elevMeters)
-          System.out.println(obs.stationId + " elev: " + first.elevMeters + " !=" + obs.elevMeters);
       }
 
-      reports.add(obs);
+      reports.add(report);
     }
+
+    Collections.sort(stations);
+
 
     if (checkPositions)
       System.out.println("\nnon matching lats= " + badPos);
@@ -341,7 +479,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     //firstReport.show();
     //firstReport.readData();
 
-    Set<String> keys = map.keySet();
+    /* Set<String> keys = map.keySet();
     if (showTimes || readData || checkSort) {
       int unsorted = 0;
 
@@ -377,12 +515,24 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         System.out.println("\nunsorted= " + unsorted);
 
     }
-    nstations = keys.size();
-    stations = new ArrayList<String>(nstations);
-    stations.addAll(keys);
-    Collections.sort(stations);
+    nstations = keys.size(); */
 
-    System.out.println("\nnobs= " + nobs + " nstations= " + nstations);
+    System.out.println("\nnreports= " + reports.size() + " nstations= " + stations.size());
+  }
+
+  private class Station implements Comparable<Station> {
+    String name;
+    Report r;
+    int nreports;
+    Station(Report r) {
+      this.name = r.stationId;
+      this.r = r;
+      this.nreports=1;
+    }
+
+    public int compareTo(Station o) {
+      return name.compareTo(o.name);
+    }
   }
 
   private class Report {
@@ -443,7 +593,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
         if (showObs) System.out.println(this);
         else if (showTime) System.out.print("  time=" + obsTime + " date= " + dateFormatter.toDateTimeString(date));
 
-        nobs++;
+        //nobs++;
         raf.skipBytes(reportLen - 40);
         return reportLen < 30000;
 
@@ -463,6 +613,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
           " start=" + filePos + " reportLen=" + reportLen;
     }
 
+    // heres where the data for this Report is read into memory
     List<Record> readData() throws IOException {
       List<Record> records = new ArrayList<Record>();
 
@@ -488,42 +639,9 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       System.out.println(new String(b));
     }
 
-    Structure makeStructure(Structure parent) throws InvalidRangeException {
-      Sequence obs = new Sequence(ncfile, null, parent, "report");
-      obs.addAttribute(new Attribute("long_name", ""));
-      int pos = 0;
-
-      Variable v = obs.addMemberVariable(new Variable(ncfile, null, parent, "time", DataType.INT, ""));
-      v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
-      v.addAttribute(new Attribute("long_name", "observation time"));
-      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-      v.setSPobject(new Vinfo(pos));
-      pos += 4;
-
-      v = obs.addMemberVariable(new Variable(ncfile, null, parent, "timeISO", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{20});
-      v.addAttribute(new Attribute("long_name", "ISO formatted date/time"));
-      v.setSPobject(new Vinfo(pos));
-      pos += 20;
-
-      v = obs.addMemberVariable(new Variable(ncfile, null, parent, "reportType", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("long_name", "report type from Table R.1"));
-      v.setSPobject(new Vinfo(pos));
-      pos += 2;
-
-      // only for ON29
-      v = obs.addMemberVariable(new Variable(ncfile, null, parent, "instType", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("long_name", "instrument type from Table R.2"));
-      v.setSPobject(new Vinfo(pos));
-      pos += 2;
-
-      v = obs.addMemberVariable(new Variable(ncfile, null, parent, "reserved", DataType.CHAR, ""));
-      v.setDimensionsAnonymous(new int[]{7});
-      v.addAttribute(new Attribute("long_name", "reserved characters"));
-      v.setSPobject(new Vinfo(pos));
-      pos += 14;
-
-      return obs;
+    void loadIndexData(ByteBuffer bb) throws IOException {
+      bb.put(stationId.getBytes());
+      bb.putInt((int) (date.getTime() / 1000));
     }
 
     void loadStructureData(ArrayStructureBB abb, ByteBuffer bb) throws IOException {
@@ -535,10 +653,10 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       List<Record> records = readData();
       for (StructureCode sc : catStructures)
-        doCode(abb, bb, records, sc.s, sc.code);
+        loadInnerSequence(abb, bb, records, sc.s, sc.code);
     }
 
-    private void doCode(ArrayStructureBB abb, ByteBuffer bb, List<Record> records, Structure useStructure, int code) {
+    private void loadInnerSequence(ArrayStructureBB abb, ByteBuffer bb, List<Record> records, Structure useStructure, int code) {
 
       for (Record record : records) {
         if (record.code == code) {
@@ -1671,9 +1789,18 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     iosp.open(raf, ncfile, null);
     System.out.println("\n" + ncfile);
 
-    Variable v = ncfile.findVariable("stationProfiles");
+    Variable v = ncfile.findVariable("station");
     Array data = v.read(new Section().appendRange(0, 1));
-    System.out.println(NCdumpW.printArray(data, "stationProfiles", null));
+    System.out.println(NCdumpW.printArray(data, "station", null));
+
+    v = ncfile.findVariable("report");
+    data = v.read(new Section().appendRange(0, 0));
+    System.out.println(NCdumpW.printArray(data, "report", null));
+
+    v = ncfile.findVariable("reportIndex");
+    data = v.read();
+    System.out.println(NCdumpW.printArray(data, "reportIndex", null));
+
     iosp.close();
   }
 }

@@ -324,6 +324,8 @@ public class StructureMembers {
       dtype = v.getDataType();
     }
 
+    public String toString() { return name; }
+
   }
 
 }
