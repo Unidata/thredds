@@ -283,6 +283,8 @@ class GeoKey  {
     // units
     static public final TagValue ProjLinearUnits_METER = new TagValue(Tag.ProjLinearUnitsGeoKey, "Meter", 9001);
     static public final TagValue GeogAngularUnits_DEGREE = new TagValue(Tag.GeogAngularUnitsGeoKey, "Degree", 9102);
+    //add
+    static public final TagValue GeogGeodeticDatum6267 = new TagValue(Tag.GeogGeodeticDatumGeoKey, "North_American_1927", 6267);
 
     static TagValue get( Tag tag, int code) {
       if (tag == null) return null;
