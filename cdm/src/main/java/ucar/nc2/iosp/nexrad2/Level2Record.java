@@ -188,6 +188,10 @@ public class Level2Record {
         case REFLECTIVITY_HIGH : return ref_rf_threshold;
         case VELOCITY_HIGH : return vel_rf_threshold;
         case SPECTRUM_WIDTH_HIGH : return sw_rf_threshold;
+        case REFLECTIVITY :
+        case VELOCITY_LOW :
+        case VELOCITY_HI :
+        case SPECTRUM_WIDTH :  return threshhold;
 
       default : throw new IllegalArgumentException();
     }
