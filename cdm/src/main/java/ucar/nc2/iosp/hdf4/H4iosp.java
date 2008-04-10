@@ -141,7 +141,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     for (StructureMembers.Member m : members.getMembers()) {
       Variable v2 = s.findVariable(m.getName());
       H4header.Minfo minfo = (H4header.Minfo) v2.getSPobject();
-      m.setDataParam((int) (minfo.offset));
+      m.setDataParam(minfo.offset);
     }
     members.setStructureSize(recsize);
     ArrayStructureBB structureArray = new ArrayStructureBB(members, section.getShape());  // LOOK subset

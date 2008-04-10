@@ -100,8 +100,9 @@ public class Dimension implements Comparable {
     if ( !(oo instanceof Dimension)) return false;
     Dimension other = (Dimension) oo;
     if ((g != null) && !g.equals(other.getGroup())) return false;
+    if ((getName() == null) && (other.getName() != null)) return false;
+    if ((getName() != null) && !getName().equals(other.getName())) return false;
     return (getLength() == other.getLength()) &&
-           (getName().equals(other.getName())) &&
            (isUnlimited() == other.isUnlimited()) &&
            (isVariableLength() == other.isVariableLength()) &&
            (isShared() == other.isShared());

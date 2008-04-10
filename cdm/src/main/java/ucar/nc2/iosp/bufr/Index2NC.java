@@ -24,29 +24,53 @@ import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.util.CancelTask;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 
 import java.util.*;
+import java.io.IOException;
 
 /**
  * Header reading BUFR file format.
  *
  * @author rkambic
+ * @author caron
  */
 
 class Index2NC {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Index2NC.class);
 
   private Index index;
   private ucar.nc2.NetcdfFile ncfile;
+  private FeatureType ftype;
 
-  private Structure recordStructure, levelStructure;
-  private Map<String, Dimension> dimensions = new HashMap<String, Dimension>();
-  private List<Index.Parameter> parameters;
+  BufrRecord record;
+  private Map<String, String> tableA;
+  private Map<String, DescriptorTableB> tableB;
+  private Map<String, List<String>> tableD;
+  private BufrDataDescriptionSection dds;
+  List<DataDescriptor> dkeys;
 
-  private boolean setTime = true, setLat = true, setLon = true, setHgt = true;
+  //private Structure recordStructure, levelStructure;
+  //private Map<String, Dimension> dimensions = new HashMap<String, Dimension>();
+  //private List<Index.Parameter> parameters;
 
-  void open(Index index, ucar.nc2.NetcdfFile ncf, CancelTask cancelTask) {
+  Index2NC(BufrRecord record, Index index, ucar.nc2.NetcdfFile ncf) throws IOException {
+    this.record = record;
+
+    tableA = BufrTables.getTableA(record.ids.getMasterTableFilename() + "-A");
+    tableB = BufrTables.getTableB(record.ids.getMasterTableFilename() + "-B");
+    tableD = BufrTables.getTableD(record.ids.getMasterTableFilename() + "-D");
+
+    this.dds = record.dds;
+    this.dds.makeKeyTree(tableB, tableD);
+    dkeys = dds.getDescriptorKeys();
+    int nbits = dds.getTotalBits();
+    int inputBytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
+    int outputBytes = dds.getTotalBytes();
+
+    int cat = record.ids.getCategory();
+
     this.index = index;
     this.ncfile = ncf;
 
@@ -54,22 +78,21 @@ class Index2NC {
 
     // find out what type of dataset, so proper ncfile structure can be created
     //boolean pointDS = false, stationDS = false, trajectoryDS = false, satelliteDS = false;
-    FeatureType ftype;
     String category = atts.get("category");
-    if (category.startsWith("2 Vertical")) {
+    if (cat == 0) {
+      ftype = FeatureType.STATION;
+    } else if (cat == 2) {
       ftype = FeatureType.STATION_PROFILE;
-    } else if (category.startsWith("3 Vertical")) {
+    } else if (cat == 3) {
       ftype = FeatureType.PROFILE;
-    } else if (category.startsWith("4 Single level upper-air data")) {
+    } else if (cat == 4) {
       ftype = FeatureType.TRAJECTORY;
     } else {
-      throw new UnsupportedOperationException("category="+category);
+      throw new UnsupportedOperationException("category=" + category);
     }
 
     // parameters in this DS
-    parameters = index.getParameters();
-
-    recordStructure = new Structure(ncfile, ncfile.getRootGroup(), null, "record");
+    //parameters = index.getParameters();
 
     // global Attributes
     ncfile.addAttribute(null, new Attribute("history", "direct read of BUFR data by CDM version 4.0"));
@@ -91,8 +114,8 @@ class Index2NC {
     } */
 
     //ncfile.addAttribute( null, new Attribute( "time_nominal_coordinate", "record.time_nominal" ));
-    ncfile.addAttribute(null, new Attribute("time_coverage_start", (String) index.getObsTimes().get(0)));
-    ncfile.addAttribute(null, new Attribute("time_coverage_end", (String) index.getObsTimes().get(index.getObsTimes().size() - 1)));
+    ncfile.addAttribute(null, new Attribute("time_coverage_start", index.getObsTimes().get(0)));
+    ncfile.addAttribute(null, new Attribute("time_coverage_end", index.getObsTimes().get(index.getObsTimes().size() - 1)));
     //ncfile.addAttribute(null, new Attribute("geospatial_lat_max", "90"));
     //ncfile.addAttribute(null, new Attribute("geospatial_lat_min", "-90"));
     //ncfile.addAttribute(null, new Attribute("geospatial_lon_max", "360"));
@@ -138,10 +161,16 @@ class Index2NC {
       }
     } */
 
-    Dimension levelsDim = null, trajsDim = null;
+    // Dimension levelsDim = null, trajsDim = null;
 
     // create variables
-      makeStationProfile(ftype);
+    //if (ftype == FeatureType.TRAJECTORY)
+    makeObsRecord();
+    makeReportIndexStructure();
+
+    //else if ((ftype == FeatureType.STATION_PROFILE) || (ftype == FeatureType.PROFILE))
+    //  makeProfile(ftype);
+
     /*
     } else if (satelliteDS) {
       createSatVertNC(levelsDim);
@@ -181,25 +210,27 @@ class Index2NC {
 
   }
 
-  private void makeStationProfile(FeatureType ftype) {
-    boolean isStation = ftype == FeatureType.STATION_PROFILE;
+  private Structure makeReportIndexStructure() throws IOException {
+    Structure reportIndex = new Structure(ncfile, null, null, "recordIndex");
+    ncfile.addVariable(null, reportIndex);
+    reportIndex.setDimensions("record");
 
-    Structure stnStructure = null;
-    if (isStation) {
-      Dimension stnsDim = new Dimension("station", index.getLocations().size());
-      ncfile.addDimension(null, stnsDim);
+    reportIndex.addAttribute(new Attribute("long_name", "index on report"));
 
-      stnStructure = new Structure(ncfile, null, null, "station");
-      stnStructure.setDimensions("station");
-      ncfile.addVariable(null, stnStructure);
+    Variable v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "name", DataType.STRING, ""));
+    v.addAttribute(new Attribute("long_name", "name of station"));
+    v.addAttribute(new Attribute("standard_name", "station_name"));
 
-      // Dimensions
-      List<Dimension> dl = new ArrayList<Dimension>();
-      List<Dimension> ds = new ArrayList<Dimension>();
-      ds.add(stnsDim);
+    v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "time", DataType.INT, ""));
+    v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
+    v.addAttribute(new Attribute("long_name", "observation time"));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
 
-    }
+    return reportIndex;
+  }
 
+
+  private void makeObsRecord() {
     Dimension obsDim = new Dimension("record", index.getNumberObs());
     ncfile.addDimension(null, obsDim);
 
@@ -207,89 +238,237 @@ class Index2NC {
     ncfile.addVariable(null, recordStructure);
     recordStructure.setDimensions("record");
 
-    Sequence levelStructure = new Sequence(ncfile, null, recordStructure, "level");
+    for (DataDescriptor dkey : dkeys) {
+      if (!dkey.isOkForVariable()) continue;
 
-    boolean levelIncrement = false;
-    Dimension d;
-    for (Index.Parameter parm : parameters) {
-      System.out.println("Parameter= " + parm);
-
-      if (parm.key.equals("0-5-1") || parm.key.equals("0-5-2") ||
-              parm.key.equals("0-27-1") || parm.key.equals("0-27-2")) {
-        Variable v = addVariable(isStation ? stnStructure : recordStructure, parm);
-        v.addAttribute(new Attribute("units", "degrees_north"));
-        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-        continue;
-      }
-
-      if (parm.key.equals("0-6-1") || parm.key.equals("0-6-2") ||
-              parm.key.equals("0-28-1") || parm.key.equals("0-28-2")) {
-        Variable v = addVariable(isStation ? stnStructure : recordStructure, parm);
-        v.addAttribute(new Attribute("units", "degrees_east"));
-        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-        continue;
-      }
-
-      if (parm.key.equals("0-7-1") || parm.key.equals("0-7-2")) {
-        Variable v = addVariable(isStation ? stnStructure : recordStructure, parm);
-        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-        continue;
-      }
-
-      if (parm.key.equals("0-1-18")) {   // stn name
-        Variable v = addVariable(stnStructure, parm);
-        v.addAttribute(new Attribute("standard_name", "station_id"));
-        continue;
-      }
-
-      if (parm.key.equals("0-1-1") || parm.key.equals("0-1-2") || parm.key.equals("0-1-18") || parm.key.equals("0-2-1") 
-              || parm.key.equals("0-2-3")) {   // stn info
-        addVariable(stnStructure, parm);
-        continue;
-      }
-
-      if (parm.key.equals("0-4-250")) {   // time
-        Variable v = addVariable(recordStructure, parm);
-        v.setDataType(DataType.INT);
-        v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
-        continue;
-      }
-
-      if (parm.key.equals("0-7-6")) {
-        Variable v = addVariable(levelStructure, parm);
-        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-        continue;
-      }
-
-      if (parm.dimension == 1) {
-        addVariable(recordStructure, parm);
+      if (dkey.replication == 0)
+        addSequence(recordStructure, dkey);
+      
+      else if (dkey.replication > 1) {
+        List<DataDescriptor> subKeys = dkey.subKeys;
+        if (subKeys.size() == 1) {
+          DataDescriptor sub = dkey.subKeys.get(0);
+          Variable v = addVariable(recordStructure, sub, dkey.replication);
+          v.setSPobject(dkey); // set the replicating dkey as SPI object
+        } else {
+          addStructure(recordStructure, dkey, dkey.replication);
+        }
 
       } else {
-        addVariable(levelStructure, parm);
+        addVariable(recordStructure, dkey, dkey.replication);
+      }
+    }
+  }
+
+  private int structNum = 1;
+  private void addStructure(Structure parent, DataDescriptor dataDesc, int count) {
+    String structName = "struct"+structNum;
+    structNum++;
+    Structure struct = new Structure(ncfile, null, parent, structName);
+    try {
+      struct.setDimensionsAnonymous(new int[] {count}); // anon vector
+    } catch (InvalidRangeException e) {
+      log.error("illegal count= "+count+" for "+dataDesc);
+    }
+
+    for (DataDescriptor subKey : dataDesc.getSubKeys()) {
+      addVariable(struct, subKey, subKey.replication);
+    }
+
+    parent.addMemberVariable(struct);
+    struct.setSPobject(dataDesc);
+  }
+
+  private void addSequence(Structure parent, DataDescriptor dataDesc) {
+    String seqName = ftype == (FeatureType.STATION_PROFILE) ? "profile" : "seq";
+    Sequence seq = new Sequence(ncfile, null, parent, seqName);
+    seq.setDimensions(""); // scalar
+
+    for (DataDescriptor dkey : dataDesc.getSubKeys()) {
+      addVariable(seq, dkey, dkey.replication);
+    }
+
+    parent.addMemberVariable(seq);
+    seq.setSPobject(dataDesc);
+  }
+
+  private Variable addVariable(Structure struct, DataDescriptor dataDesc, int count) {
+    Variable v = new Variable(ncfile, null, struct, dataDesc.name);
+    try {
+      if (count > 1)
+        v.setDimensionsAnonymous(new int[] {count}); // anon vector
+      else
+        v.setDimensions(""); // scalar
+    } catch (InvalidRangeException e) {
+      log.error("illegal count= "+count+" for "+dataDesc);
+    }
+    v.addAttribute(new Attribute("units", dataDesc.units));
+
+    if (dataDesc.type != 1) {
+      int nbits = dataDesc.bitWidth;
+      int nbytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
+      if (nbytes == 1) {
+        v.setDataType(DataType.BYTE);
+        if (nbits == 8) {
+          v.addAttribute(new Attribute("_unsigned", "true"));
+          v.addAttribute(new Attribute("missing_value", (short) BufrDataSection.missing_value[nbits]));
+        } else
+          v.addAttribute(new Attribute("missing_value", (byte) BufrDataSection.missing_value[nbits]));
+
+      } else if (nbytes == 2) {
+        v.setDataType(DataType.SHORT);
+        if (nbits == 16) {
+          v.addAttribute(new Attribute("_unsigned", "true"));
+          v.addAttribute(new Attribute("missing_value", BufrDataSection.missing_value[nbits]));
+        } else
+          v.addAttribute(new Attribute("missing_value", (short) BufrDataSection.missing_value[nbits]));
+
+      } else {
+        v.setDataType(DataType.INT);
+        v.addAttribute(new Attribute("missing_value", BufrDataSection.missing_value[nbits]));
+      }
+
+      int scale10 = dataDesc.scale;
+      double scale = (scale10 == 0) ? 1.0 : Math.pow(10.0, -scale10);
+      if (scale10 != 0)
+        v.addAttribute(new Attribute("scale_factor", (float) scale));
+      if (dataDesc.refVal != 0)
+        v.addAttribute(new Attribute("add_offset", (float) scale * dataDesc.refVal));
+
+    } else {
+      v.setDataType(DataType.CHAR);
+      int size = dataDesc.bitWidth / 8;
+      try {
+        v.setDimensionsAnonymous(new int[]{size});
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
       }
     }
 
-    recordStructure.addMemberVariable(levelStructure);
-    ncfile.finish();    
-  }
-
-  private Variable addVariable(Structure struct, Index.Parameter parm) {
-    Variable v = new Variable(ncfile, null, struct, parm.name);
-    v.setDimensions(""); // scalar
-    v.addAttribute(new Attribute("units", parm.units));
-
-    if (parm.isNumeric) {
-      v.setDataType(DataType.FLOAT);
-      v.addAttribute(new Attribute("missing_value", "-9999"));
-
-    } else {
-      v.setDataType(DataType.STRING);
-    }
-
-    v.addAttribute(new Attribute("BUFR_TableB_desc", parm.key));
+    annotate(v, dataDesc);
+    v.addAttribute(new Attribute("BUFR_TableB_desc", dataDesc.id));
+    v.addAttribute(new Attribute("BUFR_bitWidth", dataDesc.bitWidth));
     struct.addMemberVariable(v);
+    v.setSPobject(dataDesc);
     return v;
   }
+
+  private void annotate(Variable v, DataDescriptor dkey) {
+    if (dkey.id.equals("0-5-1") || dkey.id.equals("0-5-2") || dkey.id.equals("0-27-1") || dkey.id.equals("0-27-2")) {
+      v.addAttribute(new Attribute("units", "degrees_north"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+    }
+
+    if (dkey.id.equals("0-6-1") || dkey.id.equals("0-6-2") ||
+        dkey.id.equals("0-28-1") || dkey.id.equals("0-28-2")) {
+      v.addAttribute(new Attribute("units", "degrees_east"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+    }
+
+    if (dkey.id.equals("0-7-1") || dkey.id.equals("0-7-2")) {
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+    }
+
+    if (dkey.id.equals("0-4-250")) {   // time
+      v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
+    }
+
+    if (dkey.id.equals("0-7-6")) {
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+    }
+
+  }
+
+  /* private void makeProfile(FeatureType ftype) {
+  boolean isStation = ftype == FeatureType.STATION_PROFILE;
+
+  Structure stnStructure = null;
+  if (isStation) {
+    Dimension stnsDim = new Dimension("station", index.getLocations().size());
+    ncfile.addDimension(null, stnsDim);
+
+    stnStructure = new Structure(ncfile, null, null, "station");
+    stnStructure.setDimensions("station");
+    ncfile.addVariable(null, stnStructure);
+
+    // Dimensions
+    List<Dimension> dl = new ArrayList<Dimension>();
+    List<Dimension> ds = new ArrayList<Dimension>();
+    ds.add(stnsDim);
+
+  }
+
+  Dimension obsDim = new Dimension("record", index.getNumberObs());
+  ncfile.addDimension(null, obsDim);
+
+  Structure recordStructure = new Structure(ncfile, null, null, "obsRecord");
+  ncfile.addVariable(null, recordStructure);
+  recordStructure.setDimensions("record");
+
+  Sequence levelStructure = new Sequence(ncfile, null, recordStructure, "level");
+
+  boolean levelIncrement = false;
+  Dimension d;
+  for (Index.Parameter parm : parameters) {
+    System.out.println("Parameter= " + parm);
+
+    if (dkey.id.equals("0-5-1") || dkey.id.equals("0-5-2") ||
+            dkey.id.equals("0-27-1") || dkey.id.equals("0-27-2")) {
+      Variable v = addVariable(isStation ? stnStructure : recordStructure, parm);
+      v.addAttribute(new Attribute("units", "degrees_north"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+      continue;
+    }
+
+    if (dkey.id.equals("0-6-1") || dkey.id.equals("0-6-2") ||
+            dkey.id.equals("0-28-1") || dkey.id.equals("0-28-2")) {
+      Variable v = addVariable(isStation ? stnStructure : recordStructure, parm);
+      v.addAttribute(new Attribute("units", "degrees_east"));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+      continue;
+    }
+
+    if (dkey.id.equals("0-7-1") || dkey.id.equals("0-7-2")) {
+      Variable v = addVariable(isStation ? stnStructure : recordStructure, parm);
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+      continue;
+    }
+
+    if (dkey.id.equals("0-1-18")) {   // stn name
+      Variable v = addVariable(stnStructure, parm);
+      v.addAttribute(new Attribute("standard_name", "station_id"));
+      continue;
+    }
+
+    if (dkey.id.equals("0-1-1") || dkey.id.equals("0-1-2") || dkey.id.equals("0-1-18") || dkey.id.equals("0-2-1")
+            || dkey.id.equals("0-2-3")) {   // stn info
+      addVariable(stnStructure, parm);
+      continue;
+    }
+
+    if (dkey.id.equals("0-4-250")) {   // time
+      Variable v = addVariable(recordStructure, parm);
+      v.setDataType(DataType.INT);
+      v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
+      continue;
+    }
+
+    if (dkey.id.equals("0-7-6")) {
+      Variable v = addVariable(levelStructure, parm);
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+      continue;
+    }
+
+    if (parm.dimension == 1) {
+      addVariable(recordStructure, parm);
+
+    } else {
+      addVariable(levelStructure, parm);
+    }
+  }
+
+  recordStructure.addMemberVariable(levelStructure);
+}  */
 
   /* if (p.key.equals("0-7-5")) {
 levelIncrement = true;

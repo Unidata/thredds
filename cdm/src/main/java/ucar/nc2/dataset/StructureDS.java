@@ -61,9 +61,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     this.smProxy = new EnhanceScaleMissingImpl();
 
     if (units != null)
-      addAttribute( new Attribute("units", units));
+      addAttribute(new Attribute("units", units));
     if (desc != null)
-      addAttribute( new Attribute("long_name", desc));
+      addAttribute(new Attribute("long_name", desc));
   }
 
   public StructureDS(Group g, ucar.nc2.Structure orgVar, boolean reparent) {
@@ -87,7 +87,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     List<Variable> newList = new ArrayList<Variable>(members.size());
     for (Variable v : members) {
       Variable newVar = (v instanceof Structure) ? new StructureDS(g, (Structure) v, reparent) : new VariableDS(g, v, false);
-      newVar.setParentStructure( this);
+      newVar.setParentStructure(this);
       newList.add(newVar);
     }
     setMemberVariables(newList);
@@ -99,116 +99,179 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return new StructureDS(null, this, false); // dont need to reparent, enhance
   }
 
-   /*
-   * A StructureDS may wrap another Structure.
-   * @return original Structure or null
-   */
+  /*
+  * A StructureDS may wrap another Structure.
+  * @return original Structure or null
+  */
   public ucar.nc2.Variable getOriginalVariable() {
     return orgVar;
   }
 
   /**
    * Set the Structure to wrap.
+   *
    * @param orgVar original Variable, must be a Structure
    */
   public void setOriginalVariable(ucar.nc2.Variable orgVar) {
     if (!(orgVar instanceof Structure))
-      throw new IllegalArgumentException("STructureDS must wrap a Structure; name="+orgVar.getName());
+      throw new IllegalArgumentException("STructureDS must wrap a Structure; name=" + orgVar.getName());
     this.orgVar = (Structure) orgVar;
   }
 
   /**
    * When this wraps another Variable, get the original Variable's DataType.
+   *
    * @return original Variable's DataType
    */
   public DataType getOriginalDataType() {
     return DataType.STRUCTURE;
   }
 
-  /** Set the proxy reader.
+  /**
+   * Set the proxy reader.
+   *
    * @param proxyReader set to this
    */
-  public void setProxyReader( ProxyReader proxyReader) {
+  public void setProxyReader(ProxyReader proxyReader) {
     this.postReader = proxyReader;
   }
 
-  /** Get the proxy reader, or null.
+  /**
+   * Get the proxy reader, or null.
+   *
    * @return return the proxy reader, if any
    */
-  public ProxyReader getProxyReader() { return this.postReader; }
+  public ProxyReader getProxyReader() {
+    return this.postReader;
+  }
 
-    // regular Variables.
+  // regular Variables.
   @Override
   protected Array _read() throws IOException {
     Array result;
 
-      // LOOK caching ??
+    // LOOK caching ??
 
     if (hasCachedData())
       result = super._read();
     else if (postReader != null)
-      result = postReader.read( this, null);
+      result = postReader.read(this, null);
     else if (orgVar != null)
       result = orgVar.read();
     else { // return fill value in a "constant array"; this allow NcML to act as ncgen LOOK not tested?
-      Object data = smProxy.getFillValue( getDataType());
-      return Array.factoryConstant( dataType.getPrimitiveClassType(), getShape(), data);
+      Object data = smProxy.getFillValue(getDataType());
+      return Array.factoryConstant(dataType.getPrimitiveClassType(), getShape(), data);
     }
 
-    return convert( result);
+    return convert(result);
   }
 
   // section of regular Variable
   @Override
-  protected Array _read(Section section) throws IOException, InvalidRangeException  {
+  protected Array _read(Section section) throws IOException, InvalidRangeException {
     Array result;
 
     if (hasCachedData())
       result = super._read(section);
     else if (postReader != null)
-      result = postReader.read( this, section, null);
+      result = postReader.read(this, section, null);
     else if (orgVar != null)
       result = orgVar.read(section);
-    else  { // return fill value in a "constant array" LOOK not tested?
-      Object data = smProxy.getFillValue( getDataType());
-      return Array.factoryConstant( dataType.getPrimitiveClassType(), section.getShape(), data);
+    else { // return fill value in a "constant array" LOOK not tested?
+      Object data = smProxy.getFillValue(getDataType());
+      return Array.factoryConstant(dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
-    return convert( result);
+    return convert(result);
   }
 
-  /** If this Variable has been "enhanced", ie processed for scale/offset/missing value
+  /**
+   * If this Variable has been "enhanced", ie processed for scale/offset/missing value
+   *
    * @return if enhanced
    */
-  public boolean isEnhanced() { return isEnhanced; }
+  public boolean isEnhanced() {
+    return isEnhanced;
+  }
 
   ///////////////////////////////////////
 
   // VariableEnhanced implementation
 
+
   public Array convert(Array data) {
     ArrayStructure as = (ArrayStructure) data;
+    if (!needsConverting(as)) return data;
+
     StructureMembers sm = as.getStructureMembers(); // these are from orgVar - may have been renamed
     for (StructureMembers.Member m : sm.getMembers()) {
       VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
       if ((v2 == null) && (orgVar != null))
         v2 = findVariableFromOrgName(m.getName());
       assert v2 != null;
+
       if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs())) {
         Array mdata = as.getMemberArray(m); // LOOK can we use ASBB directly?
-        mdata = v2.convert( mdata);
+        mdata = v2.convert(mdata);
         as.setMemberArray(m, mdata);
+      }
+
+      // recurse into sub-structures
+      if (v2 instanceof StructureDS) {
+        StructureDS inner = (StructureDS) v2;
+        if (inner.needsConverting(null)) {
+          for (int recno=0; recno < as.getSize(); recno++) {
+            ArrayStructure innerData = as.getArrayStructure(recno, m);
+            Array converted = v2.convert(innerData);           
+            as.setMemberArray(m, converted);
+          }
+        }
       }
       m.setVariableInfo(v2);
     }
     return as;
   }
 
+  boolean needsConverting(ArrayStructure as) {
+    if (as == null) { // check everything
+      for (Variable v : getVariables()) {
+        VariableEnhanced ve = (VariableEnhanced) v;
+
+        if (ve.hasScaleOffset() || (ve.hasMissing() && ve.getUseNaNs()))
+          return true;
+
+        if (ve instanceof StructureDS) {
+          if (((StructureDS) ve).needsConverting(null))
+            return true;
+        }
+      }
+      return false;
+    }
+
+    // only check the ones present in the ArrayStructure
+    StructureMembers sm = as.getStructureMembers();
+    for (StructureMembers.Member m : sm.getMembers()) {
+      VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
+      if ((v2 == null) && (orgVar != null)) // tricky stuff in case NcML renamed the variable
+        v2 = findVariableFromOrgName(m.getName());
+      assert v2 != null;
+
+      if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs()))
+        return true;
+
+      if (v2 instanceof StructureDS) {
+        return ((StructureDS) v2).needsConverting(null);
+      }
+
+    }
+    return false;
+  }
+
   private VariableEnhanced findVariableFromOrgName(String shortName) {
     for (Variable vTop : getVariables()) {
       Variable v = vTop;
       while (v instanceof VariableEnhanced) {
-        Variable org = ((VariableEnhanced)v).getOriginalVariable();
+        Variable org = ((VariableEnhanced) v).getOriginalVariable();
         if (org.getShortName().equals(shortName))
           return (VariableEnhanced) vTop;
         v = org;
@@ -217,7 +280,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return null;
   }
 
-    /** recalc any enhancement info */
+  /**
+   * recalc any enhancement info
+   */
   public void enhance() {
     for (Variable v : getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
@@ -307,7 +372,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   public boolean getUseNaNs() {
-    return smProxy.getUseNaNs() ;
+    return smProxy.getUseNaNs();
   }
 
   /*

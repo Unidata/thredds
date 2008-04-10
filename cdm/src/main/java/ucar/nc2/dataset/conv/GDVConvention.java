@@ -92,7 +92,7 @@ public class GDVConvention extends CSMConvention {
 
     // find existing axes, so we dont duplicate
     for (VarProcess vp : varList) {
-      if (vp.isCoordinateVariable) {
+      if (vp.isCoordinateAxis) {
         AxisType atype = getAxisType( ds, (VariableEnhanced) vp.v);
         if (atype != null)
           map.put(atype, vp);

@@ -751,7 +751,11 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @return true if all of the dimensions in the axis also appear in the variable.
    */
   protected boolean isCoordinateAxisForVariable(Variable axis, VariableEnhanced v) {
-    List varDims = v.getDimensionsAll();
+    List<Dimension> varDims = v.getDimensionsAll();
+    /* for (Dimension d : varDims) {
+      if (!d.isShared())
+        return false; // anon cant have coordinates
+    } */ // LOOK
 
     // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
     int checkDims = axis.getRank();
@@ -760,6 +764,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     for (int i = 0; i < checkDims; i++) {
       Dimension axisDim = axis.getDimension(i);
+
       if (!varDims.contains(axisDim)) {
         return false;
       }

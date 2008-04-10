@@ -80,6 +80,7 @@ public class StructureMembers {
     structureSize = 0;
     for (Member member : members) {
       structureSize += member.getTotalSize();
+      // System.out.println(member.getName()+" size="+member.getTotalSize());
     }
   }
 
@@ -240,6 +241,8 @@ public class StructureMembers {
     public int getTotalSize() {
       if (getDataType() == DataType.SEQUENCE)
         return getDataType().getSize();
+      else if (getDataType() == DataType.STRUCTURE)
+        return size * members.getStructureSize();
       else
         return size * getDataType().getSize();
     }

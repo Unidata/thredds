@@ -19,13 +19,14 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import ucar.bufr.*;
 import ucar.bufr.Index;
-import ucar.bufr.BufrDataExtractor;
-import ucar.bufr.BufrData;
 //import ucar.bufr.BufrIndexExtender;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
@@ -35,13 +36,19 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 import java.util.*;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.text.ParseException;
 
 /**
  * IOSP for BUFR data
  *
  * @author rkambic
+ * @author caron
  */
 public class BufrIosp extends AbstractIOServiceProvider {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp.class);
+
   // debugging
   static boolean debugOpen = false, debugMissing = false, debugMissingDetails = false, debugProj = false, debugTiming = false, debugVert = false;
 
@@ -66,9 +73,15 @@ public class BufrIosp extends AbstractIOServiceProvider {
     debugTiming = debugFlag.isSet("Bufr/timing");
   }
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   protected NetcdfFile ncfile;
   protected RandomAccessFile raf;
   protected StringBuffer parseInfo = new StringBuffer();
+
+  private Index2NC delegate;
+  private Index index;
+  private DateFormatter dateFormatter = new DateFormatter();
 
   // keep this info to reopen index when extending or syncing
   private Index saveIndex = null;    // the Bufr record index
@@ -90,33 +103,36 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
   }
 
-  protected void open(Index index, CancelTask cancelTask) throws IOException {
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+    this.raf = raf;
+    this.ncfile = ncfile;
 
+    index = getIndex(raf.getLocation(), cancelTask);
+    construct(index);
+  }
+
+  private void construct(Index index) throws IOException {
     long startTime = System.currentTimeMillis();
 
-    // make it into netcdf objects
-    Index2NC delegate = new Index2NC();
-    delegate.open(index, ncfile, cancelTask);
+    // read the first record
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+    BufrInput bi = new BufrInput(raf);
+    bi.scan(true, false);
+    BufrRecord record = bi.getRecords().get(0);
+
+    // populate the netcdf objects
+    delegate = new Index2NC(record, index, ncfile);
 
     ncfile.finish();
 
-    Map<String,String> atts = index.getGlobalAttributes();
+    Map<String, String> atts = index.getGlobalAttributes();
     //System.out.println( "table ="+ (String)atts.get( "table" ) );
-    dataReader = new BufrDataExtractor(raf, (String) atts.get("table"));
+    dataReader = new BufrDataExtractor(raf, atts.get("table"));
 
     if (debugTiming) {
       long took = System.currentTimeMillis() - startTime;
       System.out.println(" open " + ncfile.getLocation() + " took=" + took + " msec ");
     }
-  }
-
-  public void open(RandomAccessFile raf, NetcdfFile ncfile,
-                   CancelTask cancelTask) throws IOException {
-    this.raf = raf;
-    this.ncfile = ncfile;
-
-    Index index = getIndex(raf.getLocation(), cancelTask);
-    open(index, cancelTask);
   }
 
   /**
@@ -128,8 +144,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
    * @return ucar.bufr.Index
    * @throws IOException on read error
    */
-  protected Index getIndex(String location, CancelTask cancelTask)
-      throws IOException {
+  protected Index getIndex(String location, CancelTask cancelTask) throws IOException {
     // get an Index
     saveLocation = location;
     String indexLocation = location + ".bfx";
@@ -163,7 +178,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         // deal with possiblity that the bufr file has grown, and the index should be extended.
         // only do this if index extension is allowed.
         if (extendIndex) {
-          Map<String,String> attrHash = saveIndex.getGlobalAttributes();
+          Map<String, String> attrHash = saveIndex.getGlobalAttributes();
           String lengthS = (String) attrHash.get("length");
           long length = (lengthS == null) ? 0 : Long.parseLong(lengthS);
           if (length < raf.length()) {
@@ -189,7 +204,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     Index index = null;
     raf.seek(0);
 
-    PrintStream ps = new PrintStream( new BufferedOutputStream(new FileOutputStream(indexFile)));
+    PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
     ucar.bufr.BufrIndexer indexer = new ucar.bufr.BufrIndexer();
     index = indexer.writeFileIndex(raf, ps, true);
 
@@ -197,7 +212,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   public boolean sync() throws IOException {
-    Map<String,String> attrHash = saveIndex.getGlobalAttributes();
+    Map<String, String> attrHash = saveIndex.getGlobalAttributes();
     String lengthS = attrHash.get("length");
     long length = (lengthS == null) ? 0 : Long.parseLong(lengthS);
 
@@ -217,7 +232,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
       // reconstruct the ncfile objects
       ncfile.empty();
-      open(saveIndex, null);
+      construct(saveIndex);
       return true;
     }
 
@@ -252,73 +267,451 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  public Array readData(Variable v2, Section section)
-      throws IOException, InvalidRangeException {
+  @Override
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+
+    // LOOK
+    if (!(v2 instanceof Structure)) {
+      return readDataVariable(v2.getName(), v2.getDataType(), section.getRanges());
+    }
+    Structure s = (Structure) v2;
+
+    if (v2.getName().equals("recordIndex")) {
+      return readReportIndex(s, section);
+    }
+
+    // for the obs structure
+    int[] shape = section.getShape();
+
+    // allocate ArrayStructureBB for outer structure
+    int offset = 0;
+    StructureMembers members = s.makeStructureMembers();
+    for (StructureMembers.Member m : members.getMembers()) {
+      m.setDataParam(offset);
+      // System.out.println(m.getName()+" offset="+offset);
+
+      // set the inner offsets
+      if (m.getDataType() == DataType.STRUCTURE) {
+        int innerOffset = 0;
+        StructureMembers innerMembers = m.getStructureMembers();
+        for (StructureMembers.Member mm : innerMembers.getMembers()) {
+          mm.setDataParam(innerOffset);
+          innerOffset += mm.getSize();
+        }
+      }
+
+      Variable mv = s.findVariable(m.getName());
+      DataDescriptor dk = (DataDescriptor) mv.getSPobject();
+      if (dk.replication == 0)
+        offset += 4;
+      else
+        offset += dk.getByteWidth();
+    }
+
+    ArrayStructureBB abb = new ArrayStructureBB(members, shape);
+    ByteBuffer bb = abb.getByteBuffer();
+    bb.order(ByteOrder.BIG_ENDIAN);
+    assert offset == bb.capacity() : "total offset="+offset+ " bb_size= "+bb.capacity();
+
+    // loop through desired obs
+    List<Index.BufrObs> obsList = index.getObservations();
+    Range range = section.getRange(0);
+    for (int obsIndex = range.first(); obsIndex <= range.last(); obsIndex += range.stride()) {
+      Index.BufrObs obs = obsList.get(obsIndex);
+      raf.seek(obs.getOffset());
+      bitPos = obs.getBitPos();
+      bitBuf = obs.getStartingByte();
+      readData(delegate.dkeys, abb, bb);
+    }
+
+    return abb;
+  }
+
+  private void readData(List<DataDescriptor> dkeys, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
+
+    // LOOK : assumes we want all members
+    // transfer the bits to the ByteBuffer, aligning on byte boundaries
+    for (DataDescriptor dkey : dkeys) {
+      // misc skip
+      if (!dkey.isOkForVariable())
+        continue;
+
+      // sequence
+      if (dkey.replication == 0) {
+        int count = bits2UInt(dkey.replicationCountSize);
+        ArraySequence2 seq = makeArraySequence2(count, dkey);
+        int index = abb.addObjectToHeap(seq);
+        bb.putInt(index); // an index into the Heap
+        continue;
+      }
+
+      if (dkey.type == 3) {
+        for (int i=0; i<dkey.replication; i++)
+          readData(dkey.subKeys, abb, bb);
+        continue;
+      }
+
+      // System.out.println(dkey.name+" bbpos="+bb.position());
+
+      // char data
+      if (dkey.type == 1) {
+        for (int i = 0; i < dkey.getByteWidth(); i++) {
+          bb.put((byte) bits2UInt(8));
+        }
+        continue;
+      }
+
+      // extract from BUFR file
+      int result = bits2UInt(dkey.bitWidth);
+      //System.out.println(dkey.name+" result = " + result );
+
+      // place into byte buffer
+      if (dkey.getByteWidth() == 1) {
+        bb.put((byte) result);
+      } else if (dkey.getByteWidth() == 2) {
+        int b1 = result & 0xff;
+        int b2 = (result & 0xff00) >> 8;
+        bb.put((byte) b2);
+        bb.put((byte) b1);
+      } else {
+        int b1 = result & 0xff;
+        int b2 = (result & 0xff00) >> 8;
+        int b3 = (result & 0xff0000) >> 16;
+        int b4 = (result & 0xff000000) >> 24;
+        bb.put((byte) b4);
+        bb.put((byte) b3);
+        bb.put((byte) b2);
+        bb.put((byte) b1);
+      }
+    }
+
+    // int used = (int) (raf.getFilePointer() - obs.getOffset());
+    //System.out.println("bb pos="+bb.position()+" fileBytesUsed = "+used);
+  }
+
+  private int bitBuf = 0;
+  private int bitPos = 0;
+
+  private int bits2UInt(int nb) throws IOException {
+
+    int bitsLeft = nb;
+    int result = 0;
+
+    if (bitPos == 0) {
+      bitBuf = raf.read();
+      bitPos = 8;
+    }
+
+    while (true) {
+      int shift = bitsLeft - bitPos;
+      if (shift > 0) {
+        // Consume the entire buffer
+        result |= bitBuf << shift;
+        bitsLeft -= bitPos;
+
+        // Get the next byte from the RandomAccessFile
+        bitBuf = raf.read();
+        bitPos = 8;
+      } else {
+        // Consume a portion of the buffer
+        result |= bitBuf >> -shift;
+        bitPos -= bitsLeft;
+        bitBuf &= 0xff >> (8 - bitPos);   // mask off consumed bits
+        //System.out.println( "bitBuf = " + bitBuf );
+
+        return result;
+      }
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////
+
+  private Array readReportIndex(Structure s, Section section) {
+
+    int[] shape = section.getShape();
+    StructureMembers members = s.makeStructureMembers();
+    ArrayStructureMA ama = new ArrayStructureMA(members, shape);
+    ArrayInt.D1 timeArray = new ArrayInt.D1(shape[0]);
+    ArrayObject.D1 nameArray = new ArrayObject.D1(String.class, shape[0]);
+
+    for (StructureMembers.Member m : members.getMembers()) {
+      if (m.getName().equals("time"))
+        m.setDataArray(timeArray);
+      else
+        m.setDataArray(nameArray);
+    }
+
+    // loop through desired obs
+    int count = 0;
+    List<Index.BufrObs> obsList = index.getObservations();
+    Range range = section.getRange(0);
+    for (int obsIndex = range.first(); obsIndex <= range.last(); obsIndex += range.stride()) {
+      Index.BufrObs obs = obsList.get(obsIndex);
+      try {
+        Date date = dateFormatter.isoDateTimeFormat(obs.getIsoDate());
+        timeArray.set(count, (int) date.getTime() / 1000);
+        nameArray.set(count, obs.getName());
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+      count++;
+    }
+
+    return ama;
+  }
+
+  // read in the data into an ArrayStructureBB
+  private ArraySequence2 makeArraySequence2(int count, DataDescriptor seqdd) throws IOException {
+    // kludge
+    Structure s = find(ncfile.getRootGroup().getVariables());
+    if (s == null) {
+      log.error("Cant find sequence " + seqdd);
+      throw new IllegalStateException("Cant find sequence " + seqdd);
+    }
+
+    // for the obs structure
+    int[] shape = new int[]{count};
+
+    // allocate ArrayStructureBB for outer structure
+    int offset = 0;
+    StructureMembers members = s.makeStructureMembers();
+    for (StructureMembers.Member m : members.getMembers()) {
+      m.setDataParam(offset);
+      //System.out.println(m.getName()+" offset="+offset);
+
+      Variable mv = s.findVariable(m.getName());
+      DataDescriptor dk = (DataDescriptor) mv.getSPobject();
+      if (dk.replication == 0)
+        offset += 4;
+      else
+        offset += dk.getByteWidth();
+    }
+
+    ArrayStructureBB abb = new ArrayStructureBB(members, shape);
+    ByteBuffer bb = abb.getByteBuffer();
+    bb.order(ByteOrder.BIG_ENDIAN);
+
+    // loop through desired obs
+    for (int i = 0; i < count; i++) {
+      readData(seqdd.getSubKeys(), abb, bb);
+    }
+
+    return new ArraySequence2(members, new SequenceIterator(count, abb));
+  }
+
+  private Structure find(List<Variable> vars) {
+    Structure s;
+    for (Variable v : vars) {
+      if (v instanceof Sequence)
+        return (Structure) v;
+      if (v instanceof Structure) {
+        s = find(((Structure) v).getVariables());
+        if (s != null) return s;
+      }
+    }
+    return null;
+  }
+
+  private class SequenceIterator implements StructureDataIterator {
+    int count;
+    ArrayStructure abb;
+    StructureDataIterator siter;
+
+    SequenceIterator(int count, ArrayStructure abb) {
+      this.count = count;
+      this.abb = abb;
+    }
+
+    public boolean hasNext() throws IOException {
+      if (siter == null)
+        siter = abb.getStructureDataIterator();
+      return siter.hasNext();
+    }
+
+    public StructureData next() throws IOException {
+      return siter.next();
+    }
+
+    public void setBufferSize(int bytes) {
+      siter.setBufferSize(bytes);
+    }
+
+    public StructureDataIterator reset() {
+      siter = null;
+      return this;
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /* Map<String,Array> dataHash = new HashMap<String,Array>();
+   Map<String,IndexIterator> iiHash = new HashMap<String,IndexIterator>();
+   ArraySequence ias = null;
+   for (Variable v : s.getVariables()) {
+     Array data;
+     //Array data = Array.factory(v.getDataType().getPrimitiveClassType(), Range.getShape( section ));
+     // there should be a better way of allocating storage
+     int[] vshape = v.getShape();
+     if (vshape.length != 0 && vshape[0] != -1) {
+       vshape[0] *= shape[0];
+       data = Array.factory(v.getDataType().getPrimitiveClassType(), vshape);
+     } else {
+       data = Array.factory(v.getDataType().getPrimitiveClassType(), shape);
+     }
+
+     //System.out.println( "data.getSize ="+ data.getSize() +" rank ="+ data.getRank() );
+     IndexIterator ii = data.getIndexIterator();
+     dataHash.put(v.getShortName(), data);
+     iiHash.put(v.getShortName(), ii);
+   }
+
+   // compressed data is organized by field, not sequential obs
+   if ((atts.get("compressdata")).equals("true")) {
+     System.out.println("compressed data");
+     readDataCompressed(atts.get("table"), locations, range,
+         observations, s.getVariables(), iiHash, dataHash, members);
+     return ama;
+   }
+
+   // start of data reads for sequential obs
+   BufrDataExtractor bde = new BufrDataExtractor(raf, atts.get("table"));
+   int currOb = -1; // current ob being processed
+
+   //Variable v = null;
+   for (String loc : locations) {
+     if (currOb > range.last()) { // done
+       break;
+     }
+
+     List<Index.BufrObs> obs = observations.get(loc);
+     ucar.bufr.Index.BufrObs bo;
+     for (int j = 0; j < obs.size(); j++) {
+       currOb++;
+       if (currOb < range.first() || currOb > range.last()) {
+         continue;
+       }
+       bo = obs.get(j);
+
+       //System.out.println( bo.name +" "+ bo.DDSoffset +" "+ bo.obsOffset +" "+ bo.bitPos +" "+ bo.bitBuf );
+       if (bde.getData(bo.ddsOffset, bo.obsOffset, bo.bitPos, bo.bitBuf)) {
+         HashMap bufrdatas = (HashMap) bde.getBufrDatas();
+         String bKey = null;
+         BufrData bd;
+         IndexIterator ii;
+         for (Variable v : s.getVariables()) {
+           Attribute a = v.findAttribute("Bufr_key");
+           if (a == null)
+             continue;
+           bKey = a.getStringValue();
+
+           bd = (BufrData) bufrdatas.get(bKey);
+           if (bd.getName().equals("time_nominal") || bd.getName().equals("time_observation")) {
+             ii = (IndexIterator) iiHash.get(v.getShortName());
+             ii.setLongNext((bd.getLongData())[0]);
+           } else if (bd.isNumeric()) {
+             ii = (IndexIterator) iiHash.get(v.getShortName());
+             float[] bufrdata = bd.getFloatData();
+             for (int n = 0; n < bufrdata.length; n++) {
+               ii.setFloatNext(bufrdata[n]);
+             }
+
+           } else { // String data
+             ii = (IndexIterator) iiHash.get(v.getShortName());
+             ii.setObjectNext((bd.getStringData())[0]);
+           }
+         }
+       } else {
+         System.out.println("getData failed for loc =" + loc);
+       }
+     }
+   } // end looping over locations
+
+   // enter data into members
+   for (Variable v : s.getVariables()) {
+     Array data = (Array) dataHash.get(v.getShortName());
+     StructureMembers.Member m = members.findMember(v.getShortName());
+     if (v instanceof Structure) {
+       m.setDataArray(ias);
+       // dump ias as a check
+       //m = (StructureMembers.Member) imembers.findMember( "Hgt_above_station" );
+       // data = (Array) m.getDataObject();
+       //IndexIterator ii = data.getIndexIterator();
+       //System.out.println( "Hgt_above_station" );
+       //for( ; ii.hasNext(); ) {
+       //   System.out.print( ii.getFloatNext()  +", " );
+       //}
+     } else {
+       m.setDataArray(data);
+     }
+   }
+   return ama;
+
+ } */
+
+
+  public Array readData2(Variable v2, Section section) throws IOException, InvalidRangeException {
     long start = System.currentTimeMillis();
 
     // check if v2 is a Structure
-    //System.out.println( "v2 ="+ v2.getName() );
     if (v2 instanceof Structure) {
-      //System.out.println( "v2 is a Structure" );
-      // get the index data
-      Map<String,String> atts = saveIndex.getGlobalAttributes();
-      ArrayList locations = saveIndex.getLocations();
-      //System.out.println( "locations ="+ locations );
-      HashMap observations = saveIndex.getObservations();
-      //ArrayList times = saveIndex.getObsTimes();
-      //HashMap timeLocations = saveIndex.getObsLocations();
-      //ArrayList parameters = saveIndex.getParameters();
+      // non-structure variable read
+      //System.out.println( "non-structure variable read name ="+ v2.getName() );
+      return readDataVariable(v2.getName(), v2.getDataType(), section.getRanges());
+    }
 
-      int[] shape = section.getShape();
-      Range range = section.getRange(0);
-      //System.out.println( "range.first ="+ range.first() +" range.last ="+ range.last() );
-      //System.out.println( "shape[0]  ="+ shape[0] );
+    Map<String, String> atts = saveIndex.getGlobalAttributes();
+    List<String> locations = saveIndex.getLocations();
+    Map<String, List<Index.BufrObs>> observations = saveIndex.getObservationsMap();
 
-      // allocate ArrayStructureMA for outer structure
-      StructureMembers members = ((Structure) v2).makeStructureMembers();
-      ArrayStructureMA ama = new ArrayStructureMA(members, shape);
-      List<Variable> vars = ((Structure) v2).getVariables();
-      //System.out.println( "vars ="+ vars );
-      HashMap dataHash = new HashMap();
-      HashMap iiHash = new HashMap();
+    int[] shape = section.getShape();
+    Range range = section.getRange(0);
 
-      // inner structure variables
-      ArraySequence ias = null;
-      StructureMembers imembers;
-      ArrayList ivars = null;
-      HashMap sdataHash;
-      HashMap siiHash = null;
-      for (Variable v : vars) {
-        // inner structure
-        if (v instanceof Structure) {
-          imembers = ((Structure) v).makeStructureMembers();
-          ias = new ArraySequence(imembers, shape[0]);
-          ivars = (ArrayList) ((Structure) v).getVariables();
-          sdataHash = new HashMap();
-          siiHash = new HashMap();
-          int currOb = -1;
-          int idx = 0;
-          for (int i = 0; i < locations.size(); i++) {
-            if (currOb > range.last()) { // done
-              break;
-            }
-            String loc = (String) locations.get(i);
-            //System.out.println( "loc =" + loc );
-            ArrayList obs = (ArrayList) observations.get(loc);
-            ucar.bufr.Index.BufrObs bo;
-            for (int j = 0; j < obs.size(); j++) {
-              currOb++;
-              if (currOb < range.first() || currOb > range.last()) {
-                continue;
-              }
-              bo = (ucar.bufr.Index.BufrObs) obs.get(j);
-              //System.out.println( currOb +" "+ bo.name +" "+ bo.dim );
-              //for (int seq=0; seq < outerLength; seq++)
-              //   aseq.setSequenceLength(seq, seqLength);
-              ias.setSequenceLength(idx++, bo.dim);
-            }
+    // allocate ArrayStructureMA for outer structure
+    Structure s = (Structure) v2;
+    StructureMembers members = s.makeStructureMembers();
+    ArrayStructureMA ama = new ArrayStructureMA(members, shape);
+    List<Variable> vars = s.getVariables();
+
+    HashMap dataHash = new HashMap();
+    HashMap iiHash = new HashMap();
+
+    // inner structure variables
+    ArraySequence ias = null;
+    StructureMembers imembers;
+    ArrayList ivars = null;
+    HashMap sdataHash;
+    HashMap siiHash = null;
+    for (Variable v : s.getVariables()) {
+      // inner structure
+      if (v instanceof Structure) {
+        imembers = ((Structure) v).makeStructureMembers();
+        ias = new ArraySequence(imembers, shape[0]);
+        ivars = (ArrayList) ((Structure) v).getVariables();
+        sdataHash = new HashMap();
+        siiHash = new HashMap();
+        int currOb = -1;
+        int idx = 0;
+        for (int i = 0; i < locations.size(); i++) {
+          if (currOb > range.last()) { // done
+            break;
           }
-          ias.finish();
+          String loc = (String) locations.get(i);
+          //System.out.println( "loc =" + loc );
+          ArrayList obs = (ArrayList) observations.get(loc);
+          ucar.bufr.Index.BufrObs bo;
+          for (int j = 0; j < obs.size(); j++) {
+            currOb++;
+            if (currOb < range.first() || currOb > range.last()) {
+              continue;
+            }
+            bo = (ucar.bufr.Index.BufrObs) obs.get(j);
+            //System.out.println( currOb +" "+ bo.name +" "+ bo.dim );
+            //for (int seq=0; seq < outerLength; seq++)
+            //   aseq.setSequenceLength(seq, seqLength);
+            ias.setSequenceLength(idx++, bo.dim);
+          }
+        }
+        ias.finish();
 
 /*           sudo code
              for (int j=0; j<members.size(); j++) {
@@ -329,165 +722,162 @@ public class BufrIosp extends AbstractIOServiceProvider {
                 aseq.setDataArray(seq, m, data);
              }
 */
-          ArrayList im = (ArrayList) imembers.getMembers();
-          for (int j = 0; j < im.size(); j++) {
-            StructureMembers.Member m = (StructureMembers.Member) im.get(j);
-            Array data = (Array) m.getDataArray();
-            IndexIterator ii = data.getIndexIterator();
-            //System.out.println( "IndexIterator ii ="+ ii );
-            sdataHash.put(m.getName(), data);
-            siiHash.put(m.getName(), ii);
-            //System.out.println( "m.getName() ="+ m.getName() );
-            //ii = (IndexIterator) siiHash.get( m.getName() );
-            //System.out.println( "IndexIterator ii ="+ ii );
-          }
-        } // end inner Structure
-
-        // outer structure variables
-        Array data = null;
-        //Array data = Array.factory(v.getDataType().getPrimitiveClassType(), Range.getShape( section ));
-        // there should be a better way of allocating storage
-        int[] vshape = v.getShape();
-        if (vshape.length != 0 && vshape[0] != -1) {
-          //System.out.println( "v.sshape ="+ vshape[0] +" rank ="+ vshape.length );
-          vshape[0] *= shape[0];
-          data = Array.factory(v.getDataType().getPrimitiveClassType(), vshape);
-        } else {
-          data = Array.factory(v.getDataType().getPrimitiveClassType(), shape);
+        ArrayList im = (ArrayList) imembers.getMembers();
+        for (int j = 0; j < im.size(); j++) {
+          StructureMembers.Member m = (StructureMembers.Member) im.get(j);
+          Array data = (Array) m.getDataArray();
+          IndexIterator ii = data.getIndexIterator();
+          //System.out.println( "IndexIterator ii ="+ ii );
+          sdataHash.put(m.getName(), data);
+          siiHash.put(m.getName(), ii);
+          //System.out.println( "m.getName() ="+ m.getName() );
+          //ii = (IndexIterator) siiHash.get( m.getName() );
+          //System.out.println( "IndexIterator ii ="+ ii );
         }
-        //System.out.println( "data.getSize ="+ data.getSize() +" rank ="+ data.getRank() );
-        IndexIterator ii = data.getIndexIterator();
-        dataHash.put(v.getShortName(), data);
-        iiHash.put(v.getShortName(), ii);
-      }
-      // compressed data is organized by field, not sequential obs
-      if (((String) atts.get("compressdata")).equals("true")) {
-        System.out.println("compressed data");
-        readDataCompressed((String) atts.get("table"), locations, range,
-            observations, vars, iiHash, dataHash, members);
-        return ama;
-      }
+      } // end inner Structure
 
-      // start of data reads for sequential obs
-      BufrDataExtractor bde =
-          new BufrDataExtractor(raf, (String) atts.get("table"));
-      int currOb = -1; // current ob being processed
-      Variable v = null;
-      for (int i = 0; i < locations.size(); i++) {
-        if (currOb > range.last()) { // done
-          break;
+      // outer structure variables
+      Array data = null;
+      //Array data = Array.factory(v.getDataType().getPrimitiveClassType(), Range.getShape( section ));
+      // there should be a better way of allocating storage
+      int[] vshape = v.getShape();
+      if (vshape.length != 0 && vshape[0] != -1) {
+        //System.out.println( "v.sshape ="+ vshape[0] +" rank ="+ vshape.length );
+        vshape[0] *= shape[0];
+        data = Array.factory(v.getDataType().getPrimitiveClassType(), vshape);
+      } else {
+        data = Array.factory(v.getDataType().getPrimitiveClassType(), shape);
+      }
+      //System.out.println( "data.getSize ="+ data.getSize() +" rank ="+ data.getRank() );
+      IndexIterator ii = data.getIndexIterator();
+      dataHash.put(v.getShortName(), data);
+      iiHash.put(v.getShortName(), ii);
+    }
+    // compressed data is organized by field, not sequential obs
+    if (((String) atts.get("compressdata")).equals("true")) {
+      System.out.println("compressed data");
+      readDataCompressed((String) atts.get("table"), locations, range,
+          observations, vars, iiHash, dataHash, members);
+      return ama;
+    }
+
+    // start of data reads for sequential obs
+    BufrDataExtractor bde =
+        new BufrDataExtractor(raf, (String) atts.get("table"));
+    int currOb = -1; // current ob being processed
+    Variable v = null;
+    for (int i = 0; i < locations.size(); i++) {
+      if (currOb > range.last()) { // done
+        break;
+      }
+      String loc = (String) locations.get(i);
+      //System.out.println( "loc =" + loc );
+      ArrayList obs = (ArrayList) observations.get(loc);
+      ucar.bufr.Index.BufrObs bo;
+      for (int j = 0; j < obs.size(); j++) {
+        currOb++;
+        if (currOb < range.first() || currOb > range.last()) {
+          continue;
         }
-        String loc = (String) locations.get(i);
-        //System.out.println( "loc =" + loc );
-        ArrayList obs = (ArrayList) observations.get(loc);
-        ucar.bufr.Index.BufrObs bo;
-        for (int j = 0; j < obs.size(); j++) {
-          currOb++;
-          if (currOb < range.first() || currOb > range.last()) {
-            continue;
-          }
-          bo = (ucar.bufr.Index.BufrObs) obs.get(j);
-          //System.out.println( bo.name +" "+ bo.DDSoffset +" "+ bo.obsOffset +" "+ bo.bitPos +" "+ bo.bitBuf );
-          if (bde.getData(bo.DDSoffset, bo.obsOffset, bo.bitPos, bo.bitBuf)) {
-            HashMap bufrdatas = (HashMap) bde.getBufrDatas();
-            String bKey = null;
-            BufrData bd;
-            IndexIterator ii;
-            for (int k = 0; k < vars.size(); k++) {
-              v = (Variable) vars.get(k);
-              // inner structure
-              if (v instanceof Structure) {
-                //System.out.println( "v is a Structure name ="+ v.getShortName() );
-                for (int m = 0; m < ivars.size(); m++) {
-                  v = (Variable) ivars.get(m);
-                  Attribute a = v.findAttribute("Bufr_key");
-                  if (a == null)
-                    continue;
-                  bKey = a.getStringValue();
-                  bd = (BufrData) bufrdatas.get(bKey);
-                  if (bd.getName().equals("time_nominal") || bd.getName().equals("time_observation")) {
-                    ii = (IndexIterator) siiHash.get(v.getShortName());
-                    ii.setLongNext((bd.getLongData())[0]);
-                  } else if (bd.isNumeric()) {
-                    //System.out.println( "v.getShortName() ="+ v.getShortName() );
-                    ii = (IndexIterator) siiHash.get(v.getShortName());
-                    //System.out.println( "IndexIterator ii ="+ ii );
-                    float[] bufrdata = bd.getFloatData();
-                    for (int n = 0; n < bufrdata.length; n++) {
-                      ii.setFloatNext(bufrdata[n]);
-                      //System.out.print( bufrdata[n] + ", " );
-                    }
-                    //System.out.println();
-
-                  } else { // String data
-                    ii = (IndexIterator) siiHash.get(v.getShortName());
-                    ii.setObjectNext((bd.getStringData())[0]);
-                  }
-                }
-                continue;
-///////////////////// end inner structure
-
-              } else if (v.getShortName().equals("parent_index")) {
-                ii = (IndexIterator) iiHash.get(v.getShortName());
-                ii.setIntNext(i);
-                continue;
-              } else {
+        bo = (ucar.bufr.Index.BufrObs) obs.get(j);
+        //System.out.println( bo.name +" "+ bo.DDSoffset +" "+ bo.obsOffset +" "+ bo.bitPos +" "+ bo.bitBuf );
+        if (bde.getData(bo.ddsOffset, bo.obsOffset, bo.bitPos, bo.bitBuf)) {
+          HashMap bufrdatas = (HashMap) bde.getBufrDatas();
+          String bKey = null;
+          BufrData bd;
+          IndexIterator ii;
+          for (int k = 0; k < vars.size(); k++) {
+            v = (Variable) vars.get(k);
+            // inner structure
+            if (v instanceof Structure) {
+              //System.out.println( "v is a Structure name ="+ v.getShortName() );
+              for (int m = 0; m < ivars.size(); m++) {
+                v = (Variable) ivars.get(m);
                 Attribute a = v.findAttribute("Bufr_key");
                 if (a == null)
                   continue;
                 bKey = a.getStringValue();
-              }
-              bd = (BufrData) bufrdatas.get(bKey);
-              if (bd.getName().equals("time_nominal") || bd.getName().equals("time_observation")) {
-                ii = (IndexIterator) iiHash.get(v.getShortName());
-                ii.setLongNext((bd.getLongData())[0]);
-              } else if (bd.isNumeric()) {
-                ii = (IndexIterator) iiHash.get(v.getShortName());
-                float[] bufrdata = bd.getFloatData();
-                for (int n = 0; n < bufrdata.length; n++) {
-                  ii.setFloatNext(bufrdata[n]);
+                bd = (BufrData) bufrdatas.get(bKey);
+                if (bd.getName().equals("time_nominal") || bd.getName().equals("time_observation")) {
+                  ii = (IndexIterator) siiHash.get(v.getShortName());
+                  ii.setLongNext((bd.getLongData())[0]);
+                } else if (bd.isNumeric()) {
+                  //System.out.println( "v.getShortName() ="+ v.getShortName() );
+                  ii = (IndexIterator) siiHash.get(v.getShortName());
+                  //System.out.println( "IndexIterator ii ="+ ii );
+                  float[] bufrdata = bd.getFloatData();
+                  for (int n = 0; n < bufrdata.length; n++) {
+                    ii.setFloatNext(bufrdata[n]);
+                    //System.out.print( bufrdata[n] + ", " );
+                  }
+                  //System.out.println();
+
+                } else { // String data
+                  ii = (IndexIterator) siiHash.get(v.getShortName());
+                  ii.setObjectNext((bd.getStringData())[0]);
                 }
-
-              } else { // String data
-                ii = (IndexIterator) iiHash.get(v.getShortName());
-                ii.setObjectNext((bd.getStringData())[0]);
               }
-            }
-          } else {
-            System.out.println("getData failed for loc =" + loc);
-          }
-        }
-      } // end looping over locations
+              continue;
+///////////////////// end inner structure
 
-      // enter data into members
-      for (int k = 0; k < vars.size(); k++) {
-        v = (Variable) vars.get(k);
-        Array data = (Array) dataHash.get(v.getShortName());
-        StructureMembers.Member m = members.findMember(v.getShortName());
-        if (v instanceof Structure) {
-          m.setDataArray(ias);
-          // dump ias as a check
-          //m = (StructureMembers.Member) imembers.findMember( "Hgt_above_station" );
-          // data = (Array) m.getDataObject();
-          //IndexIterator ii = data.getIndexIterator();
-          //System.out.println( "Hgt_above_station" );
-          //for( ; ii.hasNext(); ) {
-          //   System.out.print( ii.getFloatNext()  +", " );
-          //}
+            } else if (v.getShortName().equals("parent_index")) {
+              ii = (IndexIterator) iiHash.get(v.getShortName());
+              ii.setIntNext(i);
+              continue;
+            } else {
+              Attribute a = v.findAttribute("Bufr_key");
+              if (a == null)
+                continue;
+              bKey = a.getStringValue();
+            }
+            bd = (BufrData) bufrdatas.get(bKey);
+            if (bd.getName().equals("time_nominal") || bd.getName().equals("time_observation")) {
+              ii = (IndexIterator) iiHash.get(v.getShortName());
+              ii.setLongNext((bd.getLongData())[0]);
+            } else if (bd.isNumeric()) {
+              ii = (IndexIterator) iiHash.get(v.getShortName());
+              float[] bufrdata = bd.getFloatData();
+              for (int n = 0; n < bufrdata.length; n++) {
+                ii.setFloatNext(bufrdata[n]);
+              }
+
+            } else { // String data
+              ii = (IndexIterator) iiHash.get(v.getShortName());
+              ii.setObjectNext((bd.getStringData())[0]);
+            }
+          }
         } else {
-          m.setDataArray(data);
+          System.out.println("getData failed for loc =" + loc);
         }
       }
-      return ama;
+    } // end looping over locations
+
+    // enter data into members
+    for (int k = 0; k < vars.size(); k++) {
+      v = (Variable) vars.get(k);
+      Array data = (Array) dataHash.get(v.getShortName());
+      StructureMembers.Member m = members.findMember(v.getShortName());
+      if (v instanceof Structure) {
+        m.setDataArray(ias);
+        // dump ias as a check
+        //m = (StructureMembers.Member) imembers.findMember( "Hgt_above_station" );
+        // data = (Array) m.getDataObject();
+        //IndexIterator ii = data.getIndexIterator();
+        //System.out.println( "Hgt_above_station" );
+        //for( ; ii.hasNext(); ) {
+        //   System.out.print( ii.getFloatNext()  +", " );
+        //}
+      } else {
+        m.setDataArray(data);
+      }
     }
-    // non-structure variable read
-    //System.out.println( "non-structure variable read name ="+ v2.getName() );
-    return readDataVariable(v2.getName(), v2.getDataType(), section.getRanges());
+    return ama;
+
   }
 
   private void readDataCompressed(String table, List<String> locations,
-          Range range, Map<String, List<Index.BufrObs>> obsMap, List<Variable> vars, Map<String,IndexIterator> iiMap,
-          Map<String,Array> dataHash, StructureMembers members)
+                                  Range range, Map<String, List<Index.BufrObs>> obsMap, List<Variable> vars, Map<String, IndexIterator> iiMap,
+                                  Map<String, Array> dataHash, StructureMembers members)
       throws IOException, InvalidRangeException {
 
     // start of data reads
@@ -519,8 +909,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
         // compressed data packs a number of Obs into one data block
         // bo.bitBuf is always 0 for compressed data
-        if (bde.getData(bo.DDSoffset, bo.obsOffset, bo.bitPos, 0)) {
-          Map<String,BufrData> bufrdatas = bde.getBufrDatas();
+        if (bde.getData(bo.ddsOffset, bo.obsOffset, bo.bitPos, 0)) {
+          Map<String, BufrData> bufrdatas = bde.getBufrDatas();
           for (Variable v : vars) {
             // handled specially
             if (v.getShortName().equals("parent_index")) {
@@ -540,21 +930,21 @@ public class BufrIosp extends AbstractIOServiceProvider {
               long[] bufrdata = bd.getLongData();
               for (int n = 0; n < bufrdata.length && n < maxCopy; n++)
                 ii.setLongNext(bufrdata[n]);
-                //System.out.println( "time_observation ="+ bufrdata[n] );
+              //System.out.println( "time_observation ="+ bufrdata[n] );
 
             } else if (bd.isNumeric()) {
               IndexIterator ii = iiMap.get(v.getShortName());
               float[] bufrdata = bd.getFloatData();
               if (v.getShortName().equals("Pressure")) {
-                System.out.println("Var "+v.getNameAndDimensions());
-                System.out.println("  bufrdata.length ="+ bufrdata.length +" numObs= "+ numObs+" end="+ maxCopy +" ii="+ii);
+                System.out.println("Var " + v.getNameAndDimensions());
+                System.out.println("  bufrdata.length =" + bufrdata.length + " numObs= " + numObs + " end=" + maxCopy + " ii=" + ii);
               }
               int count = 0;
               for (int m = 0; m < numObs; m++) {
                 if (count >= maxCopy) break;
                 for (int n = m; n < bufrdata.length; n += numObs) {
                   if (count >= maxCopy) break;
-                  ii.setFloatNext( bufrdata[n]);
+                  ii.setFloatNext(bufrdata[n]);
                   count++;
                 }
               }
@@ -588,9 +978,9 @@ public class BufrIosp extends AbstractIOServiceProvider {
     //System.out.println( "readDataVariable name ="+ name );
     Index.Parameter p = null;
     int[] shape = Range.getShape(section);
-    ArrayList locations = saveIndex.getLocations();
-    HashMap observations = saveIndex.getObservations();
-    ArrayList times = saveIndex.getObsTimes();
+    List<String> locations = saveIndex.getLocations();
+    Map<String, List<Index.BufrObs>> observations = saveIndex.getObservationsMap();
+    List<String> times = saveIndex.getObsTimes();
     //HashMap timeLocations = saveIndex.getObsLocations();
     //ArrayList parameters = saveIndex.getParameters();
 
@@ -635,39 +1025,39 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
 
     if (name.equals("latitude")) {
-      HashMap coordinates = saveIndex.getCoordinates();
-      ucar.bufr.Index.coordinate coord;
+      Map<String, Index.Coordinate> coordinates = saveIndex.getCoordinates();
+      Index.Coordinate coord;
       String stn;
       float[] lat = new float[locations.size()];
       for (int i = 0; i < locations.size(); i++) {
         stn = (String) locations.get(i);
-        coord = (ucar.bufr.Index.coordinate) coordinates.get(stn);
+        coord = (Index.Coordinate) coordinates.get(stn);
         lat[i] = coord.latitude;
       }
       return Array.factory(datatype.getPrimitiveClassType(), shape, lat);
     }
 
     if (name.equals("longitude")) {
-      HashMap coordinates = saveIndex.getCoordinates();
-      ucar.bufr.Index.coordinate coord;
+      Map<String, Index.Coordinate> coordinates = saveIndex.getCoordinates();
+      Index.Coordinate coord;
       String stn;
       float[] lon = new float[locations.size()];
       for (int i = 0; i < locations.size(); i++) {
         stn = (String) locations.get(i);
-        coord = (ucar.bufr.Index.coordinate) coordinates.get(stn);
+        coord = (Index.Coordinate) coordinates.get(stn);
         lon[i] = coord.longitude;
       }
       return Array.factory(datatype.getPrimitiveClassType(), shape, lon);
     }
 
     if (name.equals("altitude")) {
-      HashMap coordinates = saveIndex.getCoordinates();
-      ucar.bufr.Index.coordinate coord;
+      Map<String, Index.Coordinate> coordinates = saveIndex.getCoordinates();
+      Index.Coordinate coord;
       String stn;
       int[] alt = new int[locations.size()];
       for (int i = 0; i < locations.size(); i++) {
         stn = (String) locations.get(i);
-        coord = (ucar.bufr.Index.coordinate) coordinates.get(stn);
+        coord = (Index.Coordinate) coordinates.get(stn);
         alt[i] = coord.altitude;
       }
       return Array.factory(datatype.getPrimitiveClassType(), shape, alt);
@@ -681,10 +1071,10 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     //System.out.println( "v2 is a variable in a Structure" );
     // get the index data
-    Map<String,String> atts = saveIndex.getGlobalAttributes();
-    ArrayList locations = saveIndex.getLocations();
+    Map<String, String> atts = saveIndex.getGlobalAttributes();
+    List<String> locations = saveIndex.getLocations();
     //System.out.println( "locations ="+ locations );
-    HashMap observations = saveIndex.getObservations();
+    Map<String, List<Index.BufrObs>> observations = saveIndex.getObservationsMap();
     //ArrayList times = saveIndex.getObsTimes();
     //HashMap timeLocations = saveIndex.getObsLocations();
     //ArrayList parameters = saveIndex.getParameters();
@@ -717,7 +1107,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         }
         String loc = (String) locations.get(i);
         //System.out.println( "loc =" + loc );
-        ArrayList obs = (ArrayList) observations.get(loc);
+        List<Index.BufrObs> obs = observations.get(loc);
         ucar.bufr.Index.BufrObs bo;
         for (int j = 0; j < obs.size(); j++) {
           currOb++;
@@ -732,7 +1122,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         }
       }
       ias.finish();
-      data = (Array) member.getDataArray();
+      data = member.getDataArray();
       //ii = data.getIndexIterator();
       //System.out.println( "IndexIterator ii ="+ ii );
     } else { // end inner Structure
@@ -755,16 +1145,16 @@ public class BufrIosp extends AbstractIOServiceProvider {
     ii = data.getIndexIterator();
 
     // compressed data is organized by field, not sequential obs
-    if (((String) atts.get("compressdata")).equals("true")) {
+    if ((atts.get("compressdata")).equals("true")) {
       //System.out.println( "compressed data");
-      readDataVariableRecordCompressed((String) atts.get("table"), locations, range,
+      readDataVariableRecordCompressed(atts.get("table"), locations, range,
           observations, v2, ii, data);
       return data;
     }
 
     // start of data reads for sequential obs
     BufrDataExtractor bde =
-        new BufrDataExtractor(raf, (String) atts.get("table"));
+        new BufrDataExtractor(raf, atts.get("table"));
     int currOb = -1; // current ob being processed
     for (int i = 0; i < locations.size(); i++) {
       if (currOb > range.last()) { // done
@@ -772,7 +1162,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       }
       String loc = (String) locations.get(i);
       //System.out.println( "loc =" + loc );
-      ArrayList obs = (ArrayList) observations.get(loc);
+      List<Index.BufrObs> obs = observations.get(loc);
       ucar.bufr.Index.BufrObs bo;
       for (int j = 0; j < obs.size(); j++) {
         currOb++;
@@ -781,7 +1171,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         }
         bo = (ucar.bufr.Index.BufrObs) obs.get(j);
         //System.out.println( bo.name +" "+ bo.DDSoffset +" "+ bo.obsOffset +" "+ bo.bitPos +" "+ bo.bitBuf );
-        if (bde.getData(bo.DDSoffset, bo.obsOffset, bo.bitPos, bo.bitBuf)) {
+        if (bde.getData(bo.ddsOffset, bo.obsOffset, bo.bitPos, bo.bitBuf)) {
           HashMap bufrdatas = (HashMap) bde.getBufrDatas();
           String bKey = null;
           BufrData bd;
@@ -851,8 +1241,9 @@ public class BufrIosp extends AbstractIOServiceProvider {
     return data;
   } // end readDataVariableRecord
 
-  public void readDataVariableRecordCompressed(String table, ArrayList locations,
-                                               Range range, HashMap observations, Variable v2, IndexIterator ii,
+  public void readDataVariableRecordCompressed(String table, List<String> locations,
+                                               Range range, Map<String, List<Index.BufrObs>> observations, Variable v2,
+                                               IndexIterator ii,
                                                Array data)
       throws IOException, InvalidRangeException {
     // start of data reads
@@ -865,7 +1256,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       }
       String loc = (String) locations.get(i);
       //System.out.println( "loc =" + loc );
-      ArrayList obs = (ArrayList) observations.get(loc);
+      List<Index.BufrObs> obs = observations.get(loc);
       ucar.bufr.Index.BufrObs bo;
       int end = -1;
       for (int j = 0; j < obs.size(); j++) {
@@ -889,7 +1280,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         numObs = bo.bitBuf;
         // compressed data packs a number of Obs into one data block
         // bo.bitBuf is always 0 for compressed data
-        if (bde.getData(bo.DDSoffset, bo.obsOffset, bo.bitPos, 0)) {
+        if (bde.getData(bo.ddsOffset, bo.obsOffset, bo.bitPos, 0)) {
           HashMap bufrdatas = (HashMap) bde.getBufrDatas();
           String bKey = null;
           BufrData bd;
@@ -961,41 +1352,19 @@ public class BufrIosp extends AbstractIOServiceProvider {
   public static void main(String args[]) throws Exception, IOException,
       InstantiationException, IllegalAccessException {
 
-    // station profiles
-    //String fileIn = "R:/testdata/point/bufr/data/PROFILER_1.bufr";
-    //String fileIn = "R:/testdata/point/bufr/data/20060442200_3600_MRRN1.wind";   // only 1 profile
-    //String fileIn = "R:/testdata/point/bufr/data/20060442200_3600_HVLK1.rass";  // only 1 profile
-    //String fileIn = "R:/testdata/point/bufr/data/20060442200_3600_VCIO2.mom";     // only 1 profile
-    // tring fileIn = "R:/testdata/point/bufr/data/050391800.iupt01";
-    //String fileIn = "R:/testdata/point/bufr/data/PROFILER_20060706_0000.bufr";
-
-    //String fileIn = "R:/testdata/point/bufr/data/IUA_EGRR_20060202_08.bufr"; // barf
-    //String fileIn = "R:/testdata/point/bufr/data/IUA_CWAO_20060202_12.bufr"; // barf
-    //String fileIn = "R:/testdata/point/bufr/data/ambn.bufr"; // barf
-    // String fileIn = "R:/testdata/point/bufr/data/PROFILER_JUTX_KNES_20060214_04.bufr";  // barf
-    // String fileIn = "R:/testdata/point/bufr/data/SoundingNAM_20060319_0200.bufr";
-
-    // category = 5 Single level upper-air data (satellite)
-    //String fileIn = "R:/testdata/point/bufr/data/IUCN_RJTD_20060211_12.bufr";
-
-    // category = 3 Vertical soundings (satellite)
-    String fileIn = "R:/testdata/point/bufr/data/SoundingVerticalSatellite_20060516_0000.bufr";
-
-
-    
-    //String fileIn = "/home/rkambic/code/bufr/data/2005122912.bufr";
-    //String fileIn = "C:/data/dt2/point/bufr/IUCN_RJTD_20060211_12.bufr";
-    //String fileIn = "/home/rkambic/code/bufr/data/PROFILER_1.bufr";
-    //String fileIn = "/home/rkambic/code/bufr/data/PROFILER_.bufr";
-    //String fileIn = "R:/testdata/point/bufr/PROFILER_3.bufr";
-    //String fileIn = "/home/rkambic/code/bufr/data/ruc2.t22z.class1.bufr.tm00";
-    //ucar.nc2.NetcdfFile.registerIOProvider(ucar.nc2.iosp.bufr.BufrIosp.class);
-    //ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);
-
-    ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);
-
-    System.out.println();
+    //String fileIn = "C:/data/dt2/point/bufr/IUA_CWAO_20060202_12.bufr";
+    //String fileIn = "C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr";
+    String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
+    NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
     System.out.println(ncf.toString());
+
+    Structure s = (Structure) ncf.findVariable("obsRecord");
+    StructureData sdata = s.readStructure(0);
+    PrintWriter pw = new PrintWriter(System.out);
+    NCdumpW.printStructureData(pw, sdata);
+
+    //Variable v = ncf.findVariable("recordIndex");
+    //NCdumpW.printArray(v.read(), "recordIndex", pw, null);
 
     /* ucar.nc2.Variable v;
 
