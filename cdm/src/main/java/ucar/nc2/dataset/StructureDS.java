@@ -216,7 +216,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         as.setMemberArray(m, mdata);
       }
 
-      // recurse into sub-structures
+      /* recurse into sub-structures
       if (v2 instanceof StructureDS) {
         StructureDS inner = (StructureDS) v2;
         if (inner.needsConverting(null)) {
@@ -226,7 +226,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
             as.setMemberArray(m, converted);
           }
         }
-      }
+      } */
       m.setVariableInfo(v2);
     }
     return as;
