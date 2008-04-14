@@ -107,8 +107,13 @@ public class BufrIosp extends AbstractIOServiceProvider {
     this.raf = raf;
     this.ncfile = ncfile;
 
-    index = getIndex(raf.getLocation(), cancelTask);
-    construct(index);
+    try {
+      index = getIndex(raf.getLocation(), cancelTask);
+      construct(index);
+    } catch (Throwable t) {
+      t.printStackTrace();
+      throw new IOException(t.getMessage());
+    }
   }
 
   private void construct(Index index) throws IOException {
@@ -285,7 +290,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     // allocate ArrayStructureBB for outer structure
     StructureMembers members = s.makeStructureMembers();
-    int offset = setOffsets( members);
+    int offset = setOffsets(members);
 
     /* for (StructureMembers.Member m : members.getMembers()) {
       m.setDataParam(offset);
@@ -312,9 +317,9 @@ public class BufrIosp extends AbstractIOServiceProvider {
     ArrayStructureBB abb = new ArrayStructureBB(members, shape);
     ByteBuffer bb = abb.getByteBuffer();
     bb.order(ByteOrder.BIG_ENDIAN);
-    long total_offset = offset * v2.getSize();
-    System.out.println("offset="+offset+ " var_size= "+v2.getSize());
-    System.out.println("total offset="+total_offset+ " bb_size= "+bb.capacity());
+    long total_offset = offset * section.computeSize();
+    System.out.println("offset=" + offset + " nelems= " + section.computeSize());
+    System.out.println("total offset=" + total_offset + " bb_size= " + bb.capacity());
     // assert offset == bb.capacity() : "total offset="+offset+ " bb_size= "+bb.capacity();
 
     // loop through desired obs
@@ -365,7 +370,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       }
 
       if (dkey.type == 3) {
-        for (int i=0; i<dkey.replication; i++)
+        for (int i = 0; i < dkey.replication; i++)
           readData(dkey.subKeys, abb, bb);
         continue;
       }
