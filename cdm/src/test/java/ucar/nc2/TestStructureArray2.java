@@ -10,9 +10,11 @@ import java.util.*;
 /** Test reading record data */
 
 public class TestStructureArray2 extends TestCase {
+  ucar.ma2.TestStructureArray test;
 
   public TestStructureArray2( String name) {
     super(name);
+    test = new ucar.ma2.TestStructureArray();
   }
 
   public void testBB() throws IOException, InvalidRangeException {
@@ -29,11 +31,7 @@ public class TestStructureArray2 extends TestCase {
     assert( data instanceof ArrayStructureBB);
     assert(data.getElementType() == StructureData.class);
 
-    testStructureArray( (ArrayStructure) data);
-
-    StructureDataIterator si = v.getStructureIterator();
-    while (si.hasNext())
-      testStructureData(si.next());
+    test.testArrayStructure( (ArrayStructure) data);
 
     ncfile.close();
   }
@@ -52,48 +50,29 @@ public class TestStructureArray2 extends TestCase {
     assert( data instanceof ArrayStructureMA);
     assert(data.getElementType() == StructureData.class);
 
-    testStructureArray( (ArrayStructure) data);
-
-    StructureDataIterator si = p.getStructureIterator();
-    while (si.hasNext())
-      testStructureData(si.next());
+    test.testArrayStructure( (ArrayStructure) data);
 
     ncfile.close();
   }
 
-  public void testDODS() throws IOException, InvalidRangeException {
-   /* testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.04", "types", true);
-    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.21", "exp", true);
-    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.50", "types", false);
-    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.05", "types", true);   */
-    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.53", "types", false);
+  public void testBufr() throws IOException, InvalidRangeException {
+    String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
+    NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
+    System.out.println(ncf.toString());
+
+    Structure s = (Structure) ncf.findVariable("obsRecord");
+    Array data = s.read();
+    test.testArrayStructure( (ArrayStructure) data);
+
+    Array data2 = s.read(new Section().appendRange(1,3));
+    assert data2.getSize() == 3;
+    test.testArrayStructure( (ArrayStructure) data2);
+    System.out.println( NCdumpW.printArray(data2, "testArrayStructure", null));
+
+    // test nested 
   }
 
-  public void testW(String url, String sname, boolean isScalar) throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfDataset.openFile(url, null);
-    Structure v = (Structure) ncfile.findVariable(sname);
-    assert v != null;
-
-    assert( v.getDataType() == DataType.STRUCTURE);
-
-    Array data = v.read();
-    assert( data instanceof ArrayStructure);
-    assert(data.getElementType() == StructureData.class);
-
-    testStructureArray( (ArrayStructure) data);
-
-    if (isScalar)
-      testStructureData(v.readStructure());
-    else {
-      StructureDataIterator si = v.getStructureIterator();
-      while (si.hasNext())
-        testStructureData(si.next());
-
-    }
-    ncfile.close();
-  }
-
-  private void testStructureArray(ArrayStructure as ) {
+  /* private void testStructureArray(ArrayStructure as ) {
     StructureMembers sms = as.getStructureMembers();
     List<StructureMembers.Member> members = sms.getMembers();
 
@@ -203,7 +182,7 @@ public class TestStructureArray2 extends TestCase {
 
     if (data != null)
       ucar.ma2.TestMA2.testJarrayEquals( data, a.getStorage(), m.getSize());
-  }
+  }             */
 
 
 

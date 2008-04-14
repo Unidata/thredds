@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * Variation of ArrayStructureBB, where the offsets into the ByteBuffer are uneven and must be
+ * Variation of ArrayStructureBB, where the offsets of the records into the ByteBuffer are uneven and must be
  * passed in by the user.
  *
  * @author caron
@@ -37,40 +37,17 @@ public class ArrayStructureBBpos extends ArrayStructureBB {
    * @param members the list of structure members.
    * @param shape the shape of the structure array
    * @param bbuffer the data is stored in this ByteBuffer. bbuffer.order must already be set.
-   * @param positions offset from the start of the ByteBufffer to each record. must have length consistent with shape.
+   * @param positions offset from the start of the ByteBufffer to each record. must have length = with shape.getSize()
    */
   public ArrayStructureBBpos(StructureMembers members, int[] shape, ByteBuffer bbuffer, int[] positions) {
     super(members, shape, bbuffer, 0);
     this.positions = positions;
   }
 
-  /*
-   *    * LOOK doesnt work, because of the methods using recnum, not Index (!)
-   * create new Array with given indexImpl and the same backing store
-   *
-  public Array createView(Index index) {
-    return new ArrayStructureBBpos(members, index, nelems, sdata, bbuffer, positions);
-  }
-
-  /*
-   * Create a new Array using the given IndexArray and backing store.
-   * used for sections, and factory.
-   *
-   * @param members     a description of the structure members
-   * @param ima         use this IndexArray as the index
-   * @param nelems      the total number of StructureData elements in the backing array
-   * @param sdata       the backing StructureData array; may be null.
-   * @param bbuffer     use this for the ByteBuffer storage.
-   *
-  public ArrayStructureBBpos(StructureMembers members, Index ima, int nelems, StructureData[] sdata, ByteBuffer bbuffer, int[] positions) {
-    super(members, ima, nelems, sdata, bbuffer);
-    this.positions = positions;
-  } */
-
 
   @Override
   protected int calcOffsetSetOrder(int recnum, StructureMembers.Member m) {
-    if (null != m.getDataArray())
+    if (null != m.getDataObject())
       bbuffer.order( (ByteOrder) m.getDataObject());
     return positions[recnum] + m.getDataParam();
   }

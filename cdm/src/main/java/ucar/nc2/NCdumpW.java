@@ -501,7 +501,7 @@ public class NCdumpW {
       if (array.getSize() == 1)
         printStructureData( out, (StructureData) array.getObject( array.getIndex()), ilev, ct);
       else
-        printStructureDataArray( out, array, ilev, ct);
+        printStructureDataArray( out, (ArrayStructure) array, ilev, ct);
 
     } else if (array.getElementType() == StructureDataIterator.class) {
       printSequence( out, (ArraySequence2) array, ilev, ct);
@@ -630,16 +630,18 @@ public class NCdumpW {
     out.print("\n"+indent+ "}");
   }
 
-  static private void printStructureDataArray(PrintWriter out, Array array, Indent indent,
+  static private void printStructureDataArray(PrintWriter out, ArrayStructure array, Indent indent,
                                               ucar.nc2.util.CancelTask ct) throws IOException {
-    //int saveIndent = ilev.getIndentLevel();
-    for (IndexIterator ii = array.getIndexIterator(); ii.hasNext(); ) {
-      StructureData sdata = (StructureData) ii.next();
+    StructureDataIterator sdataIter = array.getStructureDataIterator();
+    int count = 0;
+    while (sdataIter.hasNext()) {
+      StructureData sdata = sdataIter.next();
       out.println("\n" + indent + "{");
       printStructureData( out, sdata, indent, ct);
       //ilev.setIndentLevel(saveIndent);
-      out.print(indent+ "} "+sdata.getName()+"("+ii+")");
+      out.print(indent+ "} "+sdata.getName()+"("+count+")");
       if (ct != null && ct.isCancel()) return;
+      count++;
     }
   }
 

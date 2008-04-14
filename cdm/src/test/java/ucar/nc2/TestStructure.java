@@ -143,7 +143,7 @@ public class TestStructure extends TestCase {
     System.out.println("*** testN3ReadStructureCheckValues ok");
   }
 
-  public void testN3ReadStructureWithCE() throws IOException, InvalidRangeException {
+  /* public void testN3ReadStructureWithCE() throws IOException, InvalidRangeException {
     Structure record = (Structure) ncfile.findVariable("record");
     assert record != null;
     assert record.isUnlimited();
@@ -162,7 +162,7 @@ public class TestStructure extends TestCase {
 
     data = ncfile.read("record(0).rh", true);
     assert data instanceof ArrayInt.D3;
-    checkValues( data.reduce(), 0); // check the values are right     */
+    checkValues( data.reduce(), 0); // check the values are right     
 
     data = ncfile.read("record(1).rh", true);
     assert data instanceof ArrayInt.D3;
@@ -184,10 +184,10 @@ public class TestStructure extends TestCase {
 
     data = rh.readAllStructuresSpec("1,:,:", true);
     assert data instanceof ArrayInt.D3;
-    checkValues( data.reduce(), 1); // check the values are right   */
+    checkValues( data.reduce(), 1); // check the values are right
 
     System.out.println("*** testN3ReadStructureWithCE ok");
-  }
+  }     */
 
   public void readBothWays(String filename) throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(filename);

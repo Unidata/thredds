@@ -42,8 +42,7 @@ public class TestStructureArray extends TestCase {
   }
 
   public void testReadTop() throws IOException, InvalidRangeException {
-
-    Structure v = (Structure) ncfile.findVariable("record");
+    Variable v = ncfile.findVariable("record");
     assert v != null;
 
     assert( v.getDataType() == DataType.STRUCTURE);
@@ -56,7 +55,6 @@ public class TestStructureArray extends TestCase {
     assert( data instanceof ArrayStructureBB);
 
     assert(data.getElementType() == StructureData.class);
-    assert (data instanceof ArrayStructure);
     assert (data.getSize() == 3) : data.getSize();
     assert (data.getRank() == 1);
   }
@@ -88,5 +86,5 @@ public class TestStructureArray extends TestCase {
     assert(data2.getElementType() == double.class);
     assert (data2.getSize() == 3) : data.getSize();
     assert (data2.getRank() == 1);
-  }   */
+  } */
 }

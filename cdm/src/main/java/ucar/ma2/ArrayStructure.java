@@ -75,7 +75,7 @@ public abstract class ArrayStructure extends Array {
    * @param members a description of the structure members
    * @param shape       the shape of the Array.
    */
-  public ArrayStructure(StructureMembers members, int[] shape) {
+  protected ArrayStructure(StructureMembers members, int[] shape) {
     super(shape);
     this.members = members;
     this.nelems = (int) indexCalc.getSize();
@@ -179,7 +179,7 @@ public abstract class ArrayStructure extends Array {
     return sdata;
   }
 
-  abstract protected StructureData makeStructureData( ArrayStructure as, int index);
+  abstract protected StructureData makeStructureData( ArrayStructure as, int recno);
 
   /**
    * Get the size of each StructureData object in bytes.
@@ -294,13 +294,17 @@ public abstract class ArrayStructure extends Array {
     int rrank = rank + mshape.length;
     int[] rshape = new int[rrank];
     System.arraycopy(getShape(), 0, rshape, 0, rank);
-    for (int i=0; i<mshape.length; i++)
-      rshape[i+rank] = mshape[i];
+    System.arraycopy(mshape, 0, rshape, rank, mshape.length);
 
-    // create an empty array
-    Array result = Array.factory( dataType.getPrimitiveClassType(), rshape);
+    // create an empty array to hold the result
+    Array result;
+    if (dataType == DataType.STRUCTURE) {
+      result = new ArrayStructureW( m.getStructureMembers(), rshape);
+    } else {
+      result = Array.factory( dataType.getPrimitiveClassType(), rshape);
+    }
+
     IndexIterator resultIter = result.getIndexIterator();
-
     if (dataType == DataType.DOUBLE) {
       for (int recno=0; recno<getSize(); recno++)
         copyDoubles(recno, m, resultIter);
@@ -467,7 +471,7 @@ public abstract class ArrayStructure extends Array {
    */
   public double getScalarDouble(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.DOUBLE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be double");
-    Array data = (Array) m.getDataArray();
+    Array data = m.getDataArray();
     return data.getDouble( recnum * m.getSize()); // gets first one in the array
   }
 
@@ -742,7 +746,7 @@ public abstract class ArrayStructure extends Array {
     return data.getStructureData( recnum * m.getSize());  // gets first in the array
   }
 
-  /**
+ /**
   * Get member data of type array of Structure.
   * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
   * @param m get data from this StructureMembers.Member. Must be of type Structure.

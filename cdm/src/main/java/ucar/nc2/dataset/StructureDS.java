@@ -216,21 +216,43 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         as.setMemberArray(m, mdata);
       }
 
-      /* recurse into sub-structures
+      // recurse into sub-structures
       if (v2 instanceof StructureDS) {
         StructureDS inner = (StructureDS) v2;
         if (inner.needsConverting(null)) {
-          for (int recno=0; recno < as.getSize(); recno++) {
-            ArrayStructure innerData = as.getArrayStructure(recno, m);
-            Array converted = v2.convert(innerData);           
-            as.setMemberArray(m, converted);
-          }
+          Array nested = as.getMemberArray(m);
+          convert( nested);
         }
-      } */
+      }
       m.setVariableInfo(v2);
     }
     return as;
   }
+
+  /* private void convertNested(ArrayStructure as, StructureMembers.Member outerM, StructureDS innerStruct) {
+    StructureMembers innerMembers = outerM.getStructureMembers(); // these are from orgVar - may have been renamed
+
+    for (StructureMembers.Member innerM : innerMembers.getMembers()) {
+      VariableEnhanced v2 = (VariableEnhanced) innerStruct.findVariable( innerM.getName());
+      assert v2 != null;
+
+      if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs())) {
+        Array mdata = as.getMemberArray(innerM);
+        mdata = v2.convert(mdata);
+        as.setMemberArray(innerM, mdata);
+      }
+
+      // recurse into sub-structures
+      // recurse into sub-structures
+      if (v2 instanceof StructureDS) {
+        StructureDS inner = (StructureDS) v2;
+        if (inner.needsConverting(null)) {
+          convertNested(as, innerM, inner);
+        }
+      }
+      innerM.setVariableInfo(v2);
+    }
+  } */
 
   boolean needsConverting(ArrayStructure as) {
     if (as == null) { // check everything

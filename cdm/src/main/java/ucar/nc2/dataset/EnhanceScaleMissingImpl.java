@@ -42,7 +42,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   private DataType convertedDataType = null;
 
   // defaults from NetcdfDataset modes
-  private boolean useNaNs = NetcdfDataset.useNaNs;
+  private boolean useNaNs = false;
   private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
   private boolean fillValueIsMissing = NetcdfDataset.fillValueIsMissing;
   private boolean missingDataIsMissing = NetcdfDataset.missingDataIsMissing;
@@ -92,7 +92,6 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   public EnhanceScaleMissingImpl(VariableDS forVar, boolean useNaNs, boolean fillValueIsMissing,
                                  boolean invalidDataIsMissing, boolean missingDataIsMissing) {
 
-    this.useNaNs = useNaNs;
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
     this.missingDataIsMissing = missingDataIsMissing;
@@ -272,10 +271,11 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
           if (debug) System.out.println("scale the range");
         }
       }
-
-      useNaNs = useNaNs && ((convertedDataType == DataType.DOUBLE) || (convertedDataType == DataType.FLOAT));
     }
-    if (debug) System.out.println("useNaNs = " + useNaNs);
+
+    if (hasMissing && ((convertedDataType == DataType.DOUBLE) || (convertedDataType == DataType.FLOAT)))
+      this.useNaNs = useNaNs;
+    if (debug) System.out.println("this.useNaNs = " + this.useNaNs);
   }
 
   private int rank(DataType c) {

@@ -3,6 +3,7 @@ package ucar.nc2.dods;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
 
@@ -151,5 +152,29 @@ public class TestDODSStructureArray extends TestCase {
     Index ima = a.getIndex();
     assert a.getShort( ima.set(1,1)) == (short) 768;
   }
+
+  public void testDODS() throws IOException, InvalidRangeException {
+   /* testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.04", "types", true);
+    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.21", "exp", true);
+    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.50", "types", false);
+    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.05", "types", true);   */
+    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.53", "types", false);
+  }
+
+  public void testW(String url, String sname, boolean isScalar) throws IOException, InvalidRangeException {
+    NetcdfFile ncfile = NetcdfDataset.openFile(url, null);
+    Structure v = (Structure) ncfile.findVariable(sname);
+    assert v != null;
+
+    assert( v.getDataType() == DataType.STRUCTURE);
+
+    Array data = v.read();
+    assert( data instanceof ArrayStructure);
+    assert(data.getElementType() == StructureData.class);
+
+    new ucar.ma2.TestStructureArray().testArrayStructure( (ArrayStructure) data);
+    ncfile.close();
+  }
+
 
 }

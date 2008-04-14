@@ -284,9 +284,10 @@ public class BufrIosp extends AbstractIOServiceProvider {
     int[] shape = section.getShape();
 
     // allocate ArrayStructureBB for outer structure
-    int offset = 0;
     StructureMembers members = s.makeStructureMembers();
-    for (StructureMembers.Member m : members.getMembers()) {
+    int offset = setOffsets( members);
+
+    /* for (StructureMembers.Member m : members.getMembers()) {
       m.setDataParam(offset);
       // System.out.println(m.getName()+" offset="+offset);
 
@@ -306,12 +307,15 @@ public class BufrIosp extends AbstractIOServiceProvider {
         offset += 4;
       else
         offset += dk.getByteWidth();
-    }
+    } */
 
     ArrayStructureBB abb = new ArrayStructureBB(members, shape);
     ByteBuffer bb = abb.getByteBuffer();
     bb.order(ByteOrder.BIG_ENDIAN);
-    assert offset == bb.capacity() : "total offset="+offset+ " bb_size= "+bb.capacity();
+    long total_offset = offset * v2.getSize();
+    System.out.println("offset="+offset+ " var_size= "+v2.getSize());
+    System.out.println("total offset="+total_offset+ " bb_size= "+bb.capacity());
+    // assert offset == bb.capacity() : "total offset="+offset+ " bb_size= "+bb.capacity();
 
     // loop through desired obs
     List<Index.BufrObs> obsList = index.getObservations();
@@ -325,6 +329,21 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
 
     return abb;
+  }
+
+  private int setOffsets(StructureMembers members) {
+    int offset = 0;
+    for (StructureMembers.Member m : members.getMembers()) {
+      m.setDataParam(offset);
+      offset += m.getTotalSize();
+
+      // set inner offsets
+      if (m.getDataType() == DataType.STRUCTURE) {
+        setOffsets(m.getStructureMembers());
+      }
+
+    }
+    return offset;
   }
 
   private void readData(List<DataDescriptor> dkeys, ArrayStructureBB abb, ByteBuffer bb) throws IOException {

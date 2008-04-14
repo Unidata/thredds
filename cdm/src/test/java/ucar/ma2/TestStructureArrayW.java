@@ -82,7 +82,7 @@ public class TestStructureArrayW extends TestCase {
 
     ArrayStructureW as = new ArrayStructureW(members, new int[]{4}, sdata);
     //System.out.println( NCdumpW.printArray(as, "", null));
-    testArrayStructure(as);
+    new TestStructureArray().testArrayStructure(as);
 
     // get f2 out of the 2nd "s"
     short[] f2data = as.getJavaArrayShort(1, f2);
@@ -195,7 +195,7 @@ public class TestStructureArrayW extends TestCase {
     }
   }
 
-  static public void testArrayStructure(ArrayStructure as) {
+  /* static public void testArrayStructure(ArrayStructure as) {
 
     StructureMembers sms = as.getStructureMembers();
     List members = sms.getMembers();
@@ -342,7 +342,7 @@ public class TestStructureArrayW extends TestCase {
 
     if (data != null)
       ucar.ma2.TestMA2.testJarrayEquals(data, a.getStorage(), m.getSize());
-  }
+  } */
 
 }
 

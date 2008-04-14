@@ -43,7 +43,7 @@ import java.util.ArrayList;
      members.setStructureSize( recsize);
      ArrayStructureBB asbb = new ArrayStructureBB( members, new int[] { size}, bos, pos[0]);
  * </pre>
- * String members must store the Strings in the stringHeap. An integer index into the heap is used in the ByteBuffer.
+ * For String members, you must store the Strings in the stringHeap. An integer index into the heap is used in the ByteBuffer.
  * @author caron
  * @see Array
  */

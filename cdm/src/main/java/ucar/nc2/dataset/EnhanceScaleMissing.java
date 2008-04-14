@@ -156,9 +156,9 @@ public interface EnhanceScaleMissing {
   public void setInvalidDataIsMissing( boolean b);
   /** set if missing_data is considered isMissing(); better set in constructor if possible */
   public void setMissingDataIsMissing( boolean b);
-  /** set whether to use NaNs for missing values, for efficiency */
+  /** set whether to use NaNs for missing float/double values, for efficiency */
   public void setUseNaNs(boolean useNaNs);
-  /** get whether to use NaNs for missing values (for efficiency) */
+  /** get whether to use NaNs for missing float/double values (for efficiency) */
   public boolean getUseNaNs();
 
   /** true if Variable data will be converted using scale and offet */

@@ -42,7 +42,7 @@ public class TestBufrRead extends TestCase {
   public void testReadAll() throws IOException {
     //readandCountAllInDir(testDir, null);
     int count = 0;
-    count += TestAll.readAllDir("R:/testdata/bufr/traj", new MyFileFilter());
+    count += TestAll.readAllDir("C:/data/bufr/edition3/", new MyFileFilter());
     System.out.println("***READ " + count + " files");
   }
 
@@ -53,8 +53,9 @@ public class TestBufrRead extends TestCase {
   }
 
   public void testScanOne() throws IOException {
-    readBufr("R:/testdata/bufr/edition3/prepqm97070100.unblk");
+    readBufr("C:/data/bufr/edition3/prepqm97070100.unblk");
   }
+
 
   private void readBufr(String filename) throws IOException {
     boolean oneRecord = true;

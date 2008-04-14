@@ -129,6 +129,7 @@ public class Structure extends Variable {
 
   /** Add a member variable
    * @param v add this variable as a member of this structure
+   * @return the added variable
    */
   public Variable addMemberVariable( Variable v) {
     if (isImmutable()) throw new IllegalStateException("Cant modify");
