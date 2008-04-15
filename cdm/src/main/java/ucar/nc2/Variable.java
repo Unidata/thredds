@@ -850,9 +850,16 @@ public class Variable implements VariableIF {
       return preReader.read(this, null);
 
     if (isMemberOfStructure()) {
-      throw new UnsupportedOperationException("Cannot directly read Member Variable="+getName());
+      // throw new UnsupportedOperationException("Cannot directly read Member Variable="+getName());
 
-      /* try {
+      List<Variable> memList = new ArrayList<Variable>();
+      memList.add(this);
+      Structure s = parent.select(memList);
+      ArrayStructure as = (ArrayStructure) s.read();
+      StructureMembers sm = as.getStructureMembers();
+      return as.getMemberArray( sm.findMember( shortName));
+
+    /* try {
         return readMemberOfStructureFlatten(null);
       } catch (InvalidRangeException e) {
         log.error("VariableStructureMember.read got InvalidRangeException", e);

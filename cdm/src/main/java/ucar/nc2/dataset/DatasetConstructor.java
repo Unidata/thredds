@@ -68,7 +68,7 @@ public class DatasetConstructor {
 
       if (replace || (null == targetV)) { // replace it
         if ((v instanceof Structure) && !(v instanceof StructureDS)) {
-           v = new StructureDS(target, (Structure) v, true);
+           v = new StructureDS(target, (Structure) v); // true
 
         } else if (!(v instanceof VariableDS)) {
           v = new VariableDS(target, v, false);

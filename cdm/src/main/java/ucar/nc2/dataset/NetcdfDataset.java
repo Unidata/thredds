@@ -775,7 +775,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private Variable convertVariable(Group g, Variable v) {
     Variable newVar;
     if (v instanceof Structure) {
-      newVar = new StructureDS(g, (Structure) v, true);
+      newVar = new StructureDS(g, (Structure) v);
     } else {
       newVar = new VariableDS(g, v, false); // enhancement done later
     }

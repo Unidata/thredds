@@ -221,8 +221,8 @@ class Index2NC {
     v.addAttribute(new Attribute("long_name", "name of station"));
     v.addAttribute(new Attribute("standard_name", "station_name"));
 
-    v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "time", DataType.INT, ""));
-    v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
+    v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "time", DataType.LONG, ""));
+    v.addAttribute(new Attribute("units", "msecs since 1970-01-01 00:00"));
     v.addAttribute(new Attribute("long_name", "observation time"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
 
@@ -243,7 +243,7 @@ class Index2NC {
 
       if (dkey.replication == 0)
         addSequence(recordStructure, dkey);
-      
+
       else if (dkey.replication > 1) {
         List<DataDescriptor> subKeys = dkey.subKeys;
         if (subKeys.size() == 1) {
@@ -262,47 +262,73 @@ class Index2NC {
 
   private int structNum = 1;
   private void addStructure(Structure parent, DataDescriptor dataDesc, int count) {
-    String structName = "struct"+structNum;
+    String structName = "struct" + structNum;
     structNum++;
     Structure struct = new Structure(ncfile, null, parent, structName);
     try {
-      struct.setDimensionsAnonymous(new int[] {count}); // anon vector
+      struct.setDimensionsAnonymous(new int[]{count}); // anon vector
     } catch (InvalidRangeException e) {
-      log.error("illegal count= "+count+" for "+dataDesc);
+      log.error("illegal count= " + count + " for " + dataDesc);
     }
 
-    for (DataDescriptor subKey : dataDesc.getSubKeys()) {
-      addVariable(struct, subKey, subKey.replication);
-    }
+    for (DataDescriptor subKey : dataDesc.getSubKeys())
+      addMember(struct, subKey);
 
     parent.addMemberVariable(struct);
     struct.setSPobject(dataDesc);
   }
 
+  private int seqNum = 1;
   private void addSequence(Structure parent, DataDescriptor dataDesc) {
-    String seqName = ftype == (FeatureType.STATION_PROFILE) ? "profile" : "seq";
+    //String seqName = ftype == (FeatureType.STATION_PROFILE) ? "profile" : "seq";
+    String seqName = "seq" + seqNum;
+    seqNum++;
+
     Sequence seq = new Sequence(ncfile, null, parent, seqName);
     seq.setDimensions(""); // scalar
 
-    for (DataDescriptor dkey : dataDesc.getSubKeys()) {
-      addVariable(seq, dkey, dkey.replication);
-    }
+    for (DataDescriptor dkey : dataDesc.getSubKeys())
+      addMember(seq, dkey);
 
     parent.addMemberVariable(seq);
     seq.setSPobject(dataDesc);
+    dataDesc.refersTo = seq;
+  }
+
+  private void addMember(Structure parent, DataDescriptor dkey) {
+    if (dkey.replication == 0)
+      addSequence(parent, dkey);
+
+    else if (dkey.replication > 1) {
+      List<DataDescriptor> subKeys = dkey.subKeys;
+      if (subKeys.size() == 1) {
+        DataDescriptor sub = dkey.subKeys.get(0);
+        Variable v = addVariable(parent, sub, dkey.replication);
+        v.setSPobject(dkey); // set the replicating dkey as SPI object
+
+      } else {
+        addStructure(parent, dkey, dkey.replication);
+      }
+
+    } else {
+      addVariable(parent, dkey, dkey.replication);
+    }
   }
 
   private Variable addVariable(Structure struct, DataDescriptor dataDesc, int count) {
     Variable v = new Variable(ncfile, null, struct, dataDesc.name);
     try {
       if (count > 1)
-        v.setDimensionsAnonymous(new int[] {count}); // anon vector
+        v.setDimensionsAnonymous(new int[]{count}); // anon vector
       else
         v.setDimensions(""); // scalar
     } catch (InvalidRangeException e) {
-      log.error("illegal count= "+count+" for "+dataDesc);
+      log.error("illegal count= " + count + " for " + dataDesc);
     }
-    v.addAttribute(new Attribute("units", dataDesc.units));
+    if (dataDesc.units == null)
+      System.out.println("HEY");
+    else
+      v.addAttribute(new Attribute("units", dataDesc.units));
 
     if (dataDesc.type != 1) {
       int nbits = dataDesc.bitWidth;
@@ -360,7 +386,7 @@ class Index2NC {
     }
 
     if (dkey.id.equals("0-6-1") || dkey.id.equals("0-6-2") ||
-        dkey.id.equals("0-28-1") || dkey.id.equals("0-28-2")) {
+            dkey.id.equals("0-28-1") || dkey.id.equals("0-28-2")) {
       v.addAttribute(new Attribute("units", "degrees_east"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     }

@@ -75,8 +75,8 @@ public class DODSStructure extends ucar.nc2.Structure {
    * @param from  copy from this
    * @param reparent : if true, reparent the members. if so, cant use 'from' anymore
    */
-  private DODSStructure( DODSStructure from, boolean reparent) {
-    super( from, reparent);
+  private DODSStructure( DODSStructure from) { // boolean reparent) {
+    super( from);
 
     dodsfile = from.dodsfile;
     dodsShortName = from.dodsShortName;
@@ -86,7 +86,7 @@ public class DODSStructure extends ucar.nc2.Structure {
   // for section and slice
   @Override
   protected Variable copy() {
-    return new DODSStructure(this, false); // dont need to reparent
+    return new DODSStructure(this); // dont need to reparent
   }
 
 

@@ -750,7 +750,7 @@ public class NcMLReader {
 
     } else { //explicit
       if (refv instanceof Structure) {
-        v = new StructureDS(g, (Structure) refv, true);
+        v = new StructureDS(g, (Structure) refv);
         v.setName(name);
         v.setDimensions(shape);
         //StructureDS vs = new StructureDS(ds, g, null, name, shape, null, null);
@@ -908,7 +908,7 @@ public class NcMLReader {
 
     } else { //explicit
       if (refv instanceof Structure) {
-        v = new StructureDS(parentS.getParentGroup(), (Structure) refv, true);
+        v = new StructureDS(parentS.getParentGroup(), (Structure) refv);
         v.setName(name);
         v.setParentStructure(parentS);
       } else {

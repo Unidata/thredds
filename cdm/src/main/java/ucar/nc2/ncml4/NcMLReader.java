@@ -794,7 +794,7 @@ public class NcMLReader {
 
     } else { //explicit
       if (refv instanceof Structure) {
-        v = new StructureDS(g, (Structure) refv, true);
+        v = new StructureDS(g, (Structure) refv); // true
         v.setName(name);
         if (shape != null) // LOOK check conformable
           v.setDimensions(shape);
@@ -954,7 +954,7 @@ public class NcMLReader {
 
     } else { //explicit
       if (refv instanceof Structure) {
-        v = new StructureDS(parentS.getParentGroup(), (Structure) refv, true);
+        v = new StructureDS(parentS.getParentGroup(), (Structure) refv); // true
         v.setName(name);
         v.setParentStructure(parentS);
       } else {

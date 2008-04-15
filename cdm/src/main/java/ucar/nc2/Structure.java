@@ -68,18 +68,18 @@ public class Structure extends Variable {
    * @param reparent : if true, reparent the members, which modifies the original.
    *   In effect, this says "Im not using the original Structure anywhere else".
    */
-  protected Structure( Structure from, boolean reparent) {
+  protected Structure( Structure from) { // , boolean reparent) {
     super( from);
 
     members = new ArrayList<Variable>(from.members);
     memberHash = new HashMap<String, Variable>(from.memberHash);
     isSubset = from.isSubset();
 
-    if (reparent) {
+    /* if (reparent) {
       for (Variable v : members) {
         v.setParentStructure(this);
       }
-    }
+    } */
   }
 
   /**
@@ -88,7 +88,7 @@ public class Structure extends Variable {
    * @return subsetted Structure
    */
   public Structure select( List<Variable> members) {
-    Structure result = new Structure(this, false);
+    Structure result = (Structure) copy();
     result.setMemberVariables(members);
     result.isSubset = true;
     return result;
@@ -103,7 +103,7 @@ public class Structure extends Variable {
   // for section and slice
   @Override
   protected Variable copy() {
-    return new Structure(this, false); // dont need to reparent
+    return new Structure(this);
   }
 
   protected int calcStructureSize() {

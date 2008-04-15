@@ -66,8 +66,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       addAttribute(new Attribute("long_name", desc));
   }
 
-  public StructureDS(Group g, ucar.nc2.Structure orgVar, boolean reparent) {
-    super(orgVar, reparent);
+  /**
+   * Create a StructureDS thats wraps a Structure
+   * @param g parent group
+   * @param orgVar original Structure
+   * @param reparent if true reparent the original member variable to this Structure
+   */
+  public StructureDS(Group g, ucar.nc2.Structure orgVar) { // , boolean reparent) {
+    super(orgVar);
     this.group = g;
     this.orgVar = orgVar;
     this.proxy = new EnhancementsImpl(this);
@@ -86,7 +92,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     // all member variables must be wrapped, reparented
     List<Variable> newList = new ArrayList<Variable>(members.size());
     for (Variable v : members) {
-      Variable newVar = (v instanceof Structure) ? new StructureDS(g, (Structure) v, reparent) : new VariableDS(g, v, false);
+      Variable newVar = (v instanceof Structure) ? new StructureDS(g, (Structure) v) : new VariableDS(g, v, false);
       newVar.setParentStructure(this);
       newList.add(newVar);
     }
@@ -96,7 +102,15 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   // for section and slice
   @Override
   protected Variable copy() {
-    return new StructureDS(null, this, false); // dont need to reparent, enhance
+    return new StructureDS(null, this);
+  }
+
+  @Override
+  public Structure select( List<Variable> members) {
+    StructureDS result = new StructureDS(group, orgVar);
+    result.setMemberVariables(members);
+    result.isSubset = true;
+    return result;
   }
 
   /*
@@ -208,7 +222,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
       if ((v2 == null) && (orgVar != null))
         v2 = findVariableFromOrgName(m.getName());
-      assert v2 != null;
+      if (v2 == null) continue;
 
       if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs())) {
         Array mdata = as.getMemberArray(m); // LOOK can we use ASBB directly?
@@ -270,13 +284,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       return false;
     }
 
-    // only check the ones present in the ArrayStructure
+    // only check the ones present in the ArrayStructure and the Structure
     StructureMembers sm = as.getStructureMembers();
     for (StructureMembers.Member m : sm.getMembers()) {
       VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
       if ((v2 == null) && (orgVar != null)) // tricky stuff in case NcML renamed the variable
         v2 = findVariableFromOrgName(m.getName());
-      assert v2 != null;
+      if (v2 == null) continue;
+      //assert v2 != null : m.getName() + " not in " + getName();
 
       if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs()))
         return true;

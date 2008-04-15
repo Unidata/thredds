@@ -161,6 +161,7 @@ public class CoordSysTable extends JPanel {
             }
           }
         } catch (IOException e1) {
+          e1.printStackTrace();
           infoTA.appendLine(e1.getMessage());
         }
         infoTA.gotoTop();
@@ -183,6 +184,7 @@ public class CoordSysTable extends JPanel {
             printArray("midpoint differences=", mids);
           }
         } catch (Exception e1) {
+          e1.printStackTrace();
           infoTA.appendLine(e1.getMessage());
         }
         infoTA.gotoTop();
@@ -192,7 +194,7 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Values as Date", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( NetcdfFile.escapeName( bean.getName()));
+        VariableEnhanced axis = (VariableEnhanced) ds.findVariable( bean.getName());
         String units = axis.getUnitsString();
         infoTA.clear();
 
@@ -213,6 +215,7 @@ public class CoordSysTable extends JPanel {
             }
           }
         } catch (Exception ex) {
+          ex.printStackTrace();
           infoTA.appendLine(ex.getMessage());
         }
 
@@ -604,7 +607,7 @@ public class CoordSysTable extends JPanel {
     public AxisBean(CoordinateAxis v) {
       this.axis = v;
 
-      setName(v.getName());
+      setName(v.getNameEscaped());
       setCoordVar(v.isCoordinateVariable());
       setDescription(v.getDescription());
       setUnits(v.getUnitsString());

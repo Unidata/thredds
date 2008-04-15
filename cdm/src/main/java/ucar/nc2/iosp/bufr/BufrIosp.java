@@ -120,6 +120,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     long startTime = System.currentTimeMillis();
 
     // read the first record
+    raf.seek(0);
     raf.order(RandomAccessFile.BIG_ENDIAN);
     BufrInput bi = new BufrInput(raf);
     bi.scan(true, false);
@@ -212,6 +213,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
     PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(indexFile)));
     ucar.bufr.BufrIndexer indexer = new ucar.bufr.BufrIndexer();
     index = indexer.writeFileIndex(raf, ps, true);
+    ps.flush();
+    ps.close();
 
     return index;
   }
@@ -276,9 +279,9 @@ public class BufrIosp extends AbstractIOServiceProvider {
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
 
     // LOOK
-    if (!(v2 instanceof Structure)) {
-      return readDataVariable(v2.getName(), v2.getDataType(), section.getRanges());
-    }
+    //if (!(v2 instanceof Structure)) {
+    //  return readDataVariable(v2.getName(), v2.getDataType(), section.getRanges());
+    //}
     Structure s = (Structure) v2;
 
     if (v2.getName().equals("recordIndex")) {
@@ -451,11 +454,10 @@ public class BufrIosp extends AbstractIOServiceProvider {
   ////////////////////////////////////////////////////////////////////
 
   private Array readReportIndex(Structure s, Section section) {
-
     int[] shape = section.getShape();
     StructureMembers members = s.makeStructureMembers();
     ArrayStructureMA ama = new ArrayStructureMA(members, shape);
-    ArrayInt.D1 timeArray = new ArrayInt.D1(shape[0]);
+    ArrayLong.D1 timeArray = new ArrayLong.D1(shape[0]);
     ArrayObject.D1 nameArray = new ArrayObject.D1(String.class, shape[0]);
 
     for (StructureMembers.Member m : members.getMembers()) {
@@ -473,7 +475,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       Index.BufrObs obs = obsList.get(obsIndex);
       try {
         Date date = dateFormatter.isoDateTimeFormat(obs.getIsoDate());
-        timeArray.set(count, (int) date.getTime() / 1000);
+        timeArray.set(count, date.getTime());
         nameArray.set(count, obs.getName());
       } catch (ParseException e) {
         e.printStackTrace();
@@ -487,11 +489,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
   // read in the data into an ArrayStructureBB
   private ArraySequence2 makeArraySequence2(int count, DataDescriptor seqdd) throws IOException {
     // kludge
-    Structure s = find(ncfile.getRootGroup().getVariables());
-    if (s == null) {
-      log.error("Cant find sequence " + seqdd);
-      throw new IllegalStateException("Cant find sequence " + seqdd);
-    }
+    Sequence s = (Sequence) seqdd.refersTo;
+    assert s != null;
 
     // for the obs structure
     int[] shape = new int[]{count};

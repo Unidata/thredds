@@ -21,6 +21,7 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.TestAll;
+import ucar.nc2.NetcdfFile;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.bufr.*;
 
@@ -53,7 +54,7 @@ public class TestBufrRead extends TestCase {
   }
 
   public void testScanOne() throws IOException {
-    readBufr("C:/data/bufr/edition3/prepqm97070100.unblk");
+    openNetdf("R:/testdata/bufr/edition3/idd/profiler/PROFILER_1.bufr");
   }
 
 
@@ -68,6 +69,10 @@ public class TestBufrRead extends TestCase {
     bi.scan(oneRecord, getData);
     int totalObs = bi.getTotalObs();
     System.out.println("Total number observations =" + totalObs);
+  }
+
+  private void openNetdf(String filename) throws IOException {
+    NetcdfFile.open(filename);
   }
 
 }
