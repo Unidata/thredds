@@ -9,10 +9,10 @@ import java.net.URL;
  * @author edavis
  * @since 4.0
  */
-public class CatGenTaskInfo
+public class CatGenTaskConfig
 {
   private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( CatGenTaskInfo.class );
+          org.slf4j.LoggerFactory.getLogger( CatGenTaskConfig.class );
 
   private final String name;
   private final String configDocName;
@@ -33,7 +33,7 @@ public class CatGenTaskInfo
    * @param periodInMinutes - the time in minutes between runs of the task
    * @param delayInMinutes  - the time to wait before the first run of the task
    */
-  CatGenTaskInfo( String name,
+  CatGenTaskConfig( String name,
                    String configDocName,
                    String resultFileName,
                    int periodInMinutes,
@@ -61,13 +61,13 @@ public class CatGenTaskInfo
     this.delayInMinutes = delayInMinutes;
   }
 
-  CatGenTaskInfo( CatGenTaskInfo taskInfo)
+  CatGenTaskConfig( CatGenTaskConfig taskConfig )
   {
-    this.name = taskInfo.name;
-    this.configDocName = taskInfo.configDocName;
-    this.resultFileName = taskInfo.resultFileName;
-    this.periodInMinutes = taskInfo.periodInMinutes;
-    this.delayInMinutes = taskInfo.delayInMinutes;
+    this.name = taskConfig.name;
+    this.configDocName = taskConfig.configDocName;
+    this.resultFileName = taskConfig.resultFileName;
+    this.periodInMinutes = taskConfig.periodInMinutes;
+    this.delayInMinutes = taskConfig.delayInMinutes;
   }
 
   public String getName()

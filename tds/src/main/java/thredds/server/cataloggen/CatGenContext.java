@@ -31,21 +31,37 @@ public class CatGenContext
     this.resultDirectory = new File( this.contentDirectory, catGenResultCatalogsDirName );
   }
 
+  /**
+   * Return the CatGen content directory (exists() may be false).
+   * @return the CatGen content directory (exists() may be false).
+   */
   public File getContentDirectory()
   {
     return contentDirectory;
   }
 
+  /**
+   * Return the CatGen config directory (exists() may be false).
+   * @return the CatGen config directory (exists() may be false).
+   */
   public File getConfigDirectory()
   {
     return configDirectory;
   }
 
+  /**
+   * Return the CatGen config file (exists() may be false).
+   * @return the CatGen config file (exists() may be false).
+   */
   public File getConfigFile()
   {
     return configFile;
   }
 
+  /**
+   * Return the CatGen catalog results directory (exists() may be false).
+   * @return the CatGen catalog results directory (exists() may be false). 
+   */
   public File getResultDirectory()
   {
     return resultDirectory;

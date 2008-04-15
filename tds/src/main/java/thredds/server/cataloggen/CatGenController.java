@@ -4,11 +4,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 
 import thredds.server.config.TdsContext;
@@ -29,6 +27,11 @@ public class CatGenController extends AbstractController
   private String catGenConfigFileName = "config.xml";
   private String catGenResultCatalogsDirName = "catalogs";
 
+  private CatGenConfig config;
+  private CatGenConfigParser configParser;
+
+  private CatGenTaskScheduler scheduler;
+
   private TdsContext tdsContext;
   private CatGenContext catGenContext;
 
@@ -48,28 +51,40 @@ public class CatGenController extends AbstractController
     log.debug( "init(): CatGen config file = " + this.catGenContext.getConfigFile() );
     log.debug( "init(): CatGen result path = " + this.catGenContext.getResultDirectory() );
 
+    this.configParser = new CatGenConfigParser();
+    if ( catGenContext.getConfigFile().exists())
+    {
+      try
+      {
+        this.config = configParser.parseXML( catGenContext.getConfigFile() );
+      }
+      catch ( IOException e )
+      {
+        log.error( "init(): Failed to close config file InputStream: " + e.getMessage() );
+      }
+    }
+    else
+    {
+      log.error( "init(): Config file does not exist." );
+      this.config = new CatGenConfig( "Config file does not exist." );
+    }
 
-
-    
-//    // Setup the configuration information.
-//    try
-//    {
-//      this.mainConfig = new CatGenServletConfig( this.catGenResultPath, this.catGenConfigPath, this.configFileName );
-//    }
-//    catch ( IOException e )
-//    {
-//      String tmpMsg = "Reading config file failed";
-//      log.error( "init(): " + tmpMsg, e );
-//      throw new ServletException( tmpMsg + ": " + e.getMessage(), e );
-//    }
+    if ( catGenContext.getConfigDirectory().exists()
+         && catGenContext.getResultDirectory().exists()
+         && ! this.config.getTaskInfoList().isEmpty() )
+    {
+      this.scheduler = new CatGenTaskScheduler( this.config,
+                                                catGenContext.getConfigDirectory(),
+                                                catGenContext.getResultDirectory() );
+      this.scheduler.start();
+    }
   }
 
   public void destroy()
   {
     log.debug( "destroy()" );
-//    //this.mainConfig.writeConfig();
-//    this.mainConfig.cancelTimer();
-//    super.destroy();
+    if ( this.scheduler != null)
+      this.scheduler.stop();
   }
 
   protected ModelAndView handleRequestInternal( HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse ) throws Exception

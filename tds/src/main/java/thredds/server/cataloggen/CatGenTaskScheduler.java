@@ -2,6 +2,7 @@ package thredds.server.cataloggen;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.io.File;
 
 /**
  * _more_
@@ -17,14 +18,26 @@ public class CatGenTaskScheduler
   private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
 
   private final CatGenConfig config;
-  CatGenTaskScheduler( CatGenConfig config)
+  private final File configDir;
+  private final File resultDir;
+
+  CatGenTaskScheduler( CatGenConfig config, File configDir, File resultDir)
   {
     this.config = config;
+    this.configDir = configDir;
+    this.resultDir = resultDir;
   }
   
   void start()
   {
-    //exec.
+    for ( CatGenTaskConfig curTask : config.getTaskInfoList())
+    {
+      if ( ! scheduler.isShutdown() )
+      {
+        CatGenTaskRunner catGenTaskRunner = new CatGenTaskRunner( curTask, configDir, resultDir );
+        scheduler.execute( catGenTaskRunner );
+      }
+    }
   }
 
   void stop()

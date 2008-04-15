@@ -16,30 +16,29 @@ import ucar.nc2.units.DateType;
  * @author edavis
  * @since 4.0
  */
-public class CatGenTaskRunner
+public class CatGenTaskRunner implements Runnable
 {
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( CatGenTaskRunner.class );
 
-  private final CatGenTaskInfo taskInfo;
+  private final CatGenTaskConfig taskConfig;
   private final File configFile;
   private final File resultFile;
 
 
-  private CatGenTaskRunner( CatGenTaskInfo taskInfo, File configDir, File resultDir )
+  CatGenTaskRunner( CatGenTaskConfig taskConfig, File configDir, File resultDir )
   {
-    this.taskInfo = taskInfo;
-    this.configFile = new File( configDir, taskInfo.getConfigDocName());
-    this.resultFile = new File( resultDir, taskInfo.getResultFileName());
+    this.taskConfig = taskConfig;
+    this.configFile = new File( configDir, taskConfig.getConfigDocName());
+    this.resultFile = new File( resultDir, taskConfig.getResultFileName());
   }
 
   /**
    * Runs the given task.
    */
-  public void runTask()
-          throws CatGenServerException
+  public void run()
   {
-    log.info( "run(): generating catalog <" + this.resultFile.toString() + "> from config doc, " + this.taskInfo.getConfigDocName() );
+    log.info( "run(): generating catalog <" + this.resultFile.toString() + "> from config doc, " + this.taskConfig.getConfigDocName() );
     URL configFileURL = null;
     try
     {
@@ -47,8 +46,8 @@ public class CatGenTaskRunner
     }
     catch ( MalformedURLException e )
     {
-      log.error( "runTask(): Config file path <" + this.configFile + "> gives malformed URL.");
-      throw new CatGenServerException( e);
+      log.error( "runTask(): Config file path <" + this.configFile + "> gives malformed URL: " + e.getMessage());
+      return;
     }
     CatalogGen catGen = new CatalogGen( configFileURL );
 
@@ -58,7 +57,7 @@ public class CatGenTaskRunner
       catGen.expand();
 
       // Set the catalog expires date.
-      long expireMillis = System.currentTimeMillis() + ( taskInfo.getPeriodInMinutes() * 60 * 1000 );
+      long expireMillis = System.currentTimeMillis() + ( taskConfig.getPeriodInMinutes() * 60 * 1000 );
       Date expireDate = new Date( expireMillis );
       DateType expireDateType = new DateType( false, expireDate );
       catGen.setCatalogExpiresDate( expireDateType );
@@ -79,9 +78,8 @@ public class CatGenTaskRunner
     else
     {
       // Invalid CatGen, write to log.
-      log.error( "run(): Tried running CatalogGen with invalid config doc, " + taskInfo.getConfigDocName() +
+      log.error( "run(): Tried running CatalogGen with invalid config doc, " + taskConfig.getConfigDocName() +
                     "\n" + messages.toString() );
-      //this.cancel();
     }
 
     return;
