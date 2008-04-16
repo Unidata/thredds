@@ -372,8 +372,8 @@ class Index2NC {
     }
 
     annotate(v, dataDesc);
-    v.addAttribute(new Attribute("BUFR_TableB_desc", dataDesc.id));
-    v.addAttribute(new Attribute("BUFR_bitWidth", dataDesc.bitWidth));
+    v.addAttribute(new Attribute("BUFR:TableB_desc", dataDesc.id));
+    v.addAttribute(new Attribute("BUFR:bitWidth", dataDesc.bitWidth));
     struct.addMemberVariable(v);
     v.setSPobject(dataDesc);
     return v;

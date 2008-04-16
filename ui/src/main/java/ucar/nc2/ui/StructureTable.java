@@ -250,13 +250,6 @@ public class StructureTable extends JPanel {
     SubtableAbstractAction(Structure s) {
       this.s = s;
       dataTable = new StructureTable( null);
-
-      try {
-        dataTable.setStructure(s);
-      } catch (IOException e) {
-        e.printStackTrace();
-        return;
-      }
       dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "netcdfUI"), dataTable);
     }
 
@@ -272,7 +265,6 @@ public class StructureTable extends JPanel {
         dataTable.setSequenceData( s, seq);
 
       } else throw new IllegalStateException("data type = "+m.getDataType());
-
 
       dataWindow.show();
     }

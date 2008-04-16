@@ -196,11 +196,13 @@ public class DatasetViewer extends JPanel {
           showMissingData(table);
         }
       }); */
-      csPopup.addAction("Data Table", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          dataTable(table);
-        }
-      });
+      if (level == 0) {
+        csPopup.addAction("Data Table", new AbstractAction() {
+          public void actionPerformed(ActionEvent e) {
+            dataTable(table);
+          }
+        });
+      }
 
       // get selected variable, see if its a structure
       table.addListSelectionListener(new ListSelectionListener() {

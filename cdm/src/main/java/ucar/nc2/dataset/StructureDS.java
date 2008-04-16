@@ -213,7 +213,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   public Array convert(Array data) throws IOException {
     ArrayStructure as = (ArrayStructure) data;
-    if (!needsConverting(as)) return data;
+    if (!needsConverting(this, as)) return data;
 
     StructureMembers sm = as.getStructureMembers(); // these are from orgVar - may have been renamed
     for (StructureMembers.Member m : sm.getMembers()) {
@@ -230,10 +230,11 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
       // recurse into sub-structures
       if (v2 instanceof StructureDS) {
-        StructureDS inner = (StructureDS) v2;
-        if (inner.needsConverting(null)) {
-          Array nested = as.getMemberArray(m);
-          convert( nested);
+        StructureDS innerStruct = (StructureDS) v2;
+        if (innerStruct.needsConverting(innerStruct, null)) {
+          Array innerData = as.getMemberArray(m);
+          innerStruct.convert( innerData);
+          as.setMemberArray(m, innerData);
         }
       }
       m.setVariableInfo(v2);
@@ -266,16 +267,17 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
   } */
 
-  boolean needsConverting(ArrayStructure as) {
+  boolean needsConverting(Structure s, ArrayStructure as) {
     if (as == null) { // check everything
-      for (Variable v : getVariables()) {
+      for (Variable v : s.getVariables()) {
         VariableEnhanced ve = (VariableEnhanced) v;
 
         if (ve.hasScaleOffset() || (ve.hasMissing() && ve.getUseNaNs()))
           return true;
 
         if (ve instanceof StructureDS) {
-          if (((StructureDS) ve).needsConverting(null))
+          StructureDS nested = (StructureDS) ve;
+          if (needsConverting(nested, null))
             return true;
         }
       }
@@ -285,7 +287,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     // only check the ones present in the ArrayStructure and the Structure
     StructureMembers sm = as.getStructureMembers();
     for (StructureMembers.Member m : sm.getMembers()) {
-      VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
+      VariableEnhanced v2 = (VariableEnhanced) s.findVariable(m.getName());
       if ((v2 == null) && (orgVar != null)) // tricky stuff in case NcML renamed the variable
         v2 = findVariableFromOrgName(m.getName());
       if (v2 == null) continue;
@@ -295,9 +297,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         return true;
 
       if (v2 instanceof StructureDS) {
-        return ((StructureDS) v2).needsConverting(null);
+        StructureDS nested = (StructureDS) v2;
+        if (needsConverting(nested, null))
+          return true;
       }
-
     }
     return false;
   }
