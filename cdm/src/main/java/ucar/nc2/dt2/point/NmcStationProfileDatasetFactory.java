@@ -174,7 +174,7 @@ public class NmcStationProfileDatasetFactory implements FeatureDatasetFactory {
       NmcProfileIterator(Structure struct, Station s, ArraySequence2 profile) throws IOException {
         this.struct = struct;
         this.s = s;
-        iter = profile.getStructureIterator();
+        iter = profile.getStructureDataIterator();
       }
 
       public boolean hasNext() throws IOException {
@@ -229,7 +229,7 @@ public class NmcStationProfileDatasetFactory implements FeatureDatasetFactory {
       }
 
       public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-        return new NmcPointFeatureIterator(s, time, dateUnit, levels.getStructureIterator());
+        return new NmcPointFeatureIterator(s, time, dateUnit, levels.getStructureDataIterator());
       }
 
     } // NmcProfileFeature

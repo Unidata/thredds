@@ -31,11 +31,13 @@ public class ArraySequence2 extends ArrayStructure {
     this.iter = iter;
   }
 
+  @Override
   public Class getElementType() {
     return StructureDataIterator.class;
   }
 
-  public StructureDataIterator getStructureIterator() throws java.io.IOException {
+  @Override
+  public StructureDataIterator getStructureDataIterator() throws java.io.IOException {
     iter = iter.reset();
     return iter;
   }

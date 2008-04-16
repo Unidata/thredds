@@ -190,7 +190,7 @@ public class NestedTable {
         StructureMembers.Member m = members.findMember(name);
         if (m.getDataType() == DataType.SEQUENCE) {
           ArraySequence2 seq = parentStruct.getArraySequence(m);
-          return seq.getStructureIterator();
+          return seq.getStructureDataIterator();
 
         } else if (m.getDataType() == DataType.STRUCTURE) {
           ArrayStructure as = parentStruct.getArrayStructure(m);

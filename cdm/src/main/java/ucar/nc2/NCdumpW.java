@@ -646,7 +646,7 @@ public class NCdumpW {
   }
 
   static private void printSequence(PrintWriter out, ArraySequence2 seq, Indent indent,  CancelTask ct) throws IOException {
-    StructureDataIterator iter = seq.getStructureIterator();
+    StructureDataIterator iter = seq.getStructureDataIterator();
     while (iter.hasNext()) {
       StructureData sdata = iter.next();
       out.println("\n" + indent + "{");

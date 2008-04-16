@@ -26,7 +26,6 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
 
 /**
  * An "enhanced" Structure.
@@ -70,7 +69,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    * Create a StructureDS thats wraps a Structure
    * @param g parent group
    * @param orgVar original Structure
-   * @param reparent if true reparent the original member variable to this Structure
    */
   public StructureDS(Group g, ucar.nc2.Structure orgVar) { // , boolean reparent) {
     super(orgVar);
@@ -213,7 +211,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   // VariableEnhanced implementation
 
 
-  public Array convert(Array data) {
+  public Array convert(Array data) throws IOException {
     ArrayStructure as = (ArrayStructure) data;
     if (!needsConverting(as)) return data;
 

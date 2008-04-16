@@ -1,6 +1,5 @@
-// $Id: FileManager.java 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -56,7 +55,6 @@ import javax.swing.filechooser.*;
  * </pre>
  *
  * @author John Caron
- * @version $Id: FileManager.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class FileManager {
@@ -69,7 +67,7 @@ public class FileManager {
   private IndependentDialog w;
   private ucar.util.prefs.ui.ComboBox dirComboBox;
   private javax.swing.JFileChooser chooser = null;
-  private ArrayList defaultDirs = new ArrayList();
+  private java.util.List<String> defaultDirs = new ArrayList<String>();
 
   private boolean readOk = true, selectedFile = false;
   private static boolean debug = false, test = false;
@@ -133,8 +131,7 @@ public class FileManager {
 
     // set filters
     if (filters != null) {
-      for (int i = 0; i < filters.length; i++) {
-        FileFilter filter = filters[i];
+      for (FileFilter filter : filters) {
         chooser.addChoosableFileFilter(filter);
       }
     }
@@ -143,9 +140,7 @@ public class FileManager {
     if (prefs != null) {
       String wantFilter = prefs.get(DEFAULT_FILTER, null);
       if (wantFilter != null) {
-        FileFilter[] currFilters = chooser.getChoosableFileFilters();
-        for (int i = 0; i < currFilters.length; i++) {
-          FileFilter fileFilter = currFilters[i];
+        for (FileFilter fileFilter : chooser.getChoosableFileFilters()) {
           if (fileFilter.getDescription().equals(wantFilter))
             chooser.setFileFilter(fileFilter);
         }
@@ -287,19 +282,17 @@ public class FileManager {
     chooser.setCurrentDirectory(dir);
   }
 
-  private File findDefaultDirectory(ArrayList tryDefaultDirectories) {
+  private File findDefaultDirectory(java.util.List<String> tryDefaultDirectories) {
     boolean readOK = true;
-    for (int i = 0; i < tryDefaultDirectories.size(); i++) {
+    for (String tryDefaultDirectory : tryDefaultDirectories) {
       try {
-        String dirName = (String) tryDefaultDirectories.get(i);
-        if (debug) System.out.print("FileManager try " + dirName);
-        File dir = new File(dirName);
+        if (debug) System.out.print("FileManager try " + tryDefaultDirectory);
+        File dir = new File(tryDefaultDirectory);
         if (dir.exists()) {
           if (debug) System.out.println(" = ok ");
           return dir;
         } else {
           if (debug) System.out.println(" = no ");
-          continue;
         }
       } catch (SecurityException se) {
         if (debug) System.out.println("SecurityException in FileManager: " + se);

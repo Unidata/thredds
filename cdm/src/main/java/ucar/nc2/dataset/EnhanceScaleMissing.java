@@ -21,6 +21,8 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.Array;
 
+import java.io.IOException;
+
 /**
  * A Variable decorator that handles missing data, and scale/offset packed data.
  * Specifically, this handles:
@@ -170,7 +172,7 @@ public interface EnhanceScaleMissing {
    * @param data convert this
    * @return converted data.
    */
-  public Array convert(Array data);
+  public Array convert(Array data) throws IOException;
 
   /* Convert this byte value to a double, using scale/offset/missing value if applicable *
   public double convertScaleOffsetMissing(byte value);

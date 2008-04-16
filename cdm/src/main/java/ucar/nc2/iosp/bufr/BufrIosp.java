@@ -321,8 +321,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
     ByteBuffer bb = abb.getByteBuffer();
     bb.order(ByteOrder.BIG_ENDIAN);
     long total_offset = offset * section.computeSize();
-    System.out.println("offset=" + offset + " nelems= " + section.computeSize());
-    System.out.println("total offset=" + total_offset + " bb_size= " + bb.capacity());
+    //System.out.println("offset=" + offset + " nelems= " + section.computeSize());
+    //System.out.println("total offset=" + total_offset + " bb_size= " + bb.capacity());
     // assert offset == bb.capacity() : "total offset="+offset+ " bb_size= "+bb.capacity();
 
     // loop through desired obs
@@ -1366,7 +1366,14 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   public String getDetailInfo() {
-    return parseInfo.toString();
+    Formatter ff = new Formatter();
+    try {
+      new BufrDump2().dump(ff, delegate.record);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    ff.format("%s", parseInfo.toString());
+    return ff.toString();
   }
 
   /**

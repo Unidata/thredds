@@ -20,6 +20,8 @@
 package ucar.ma2;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Superclass for implementations of Array of StructureData.
@@ -189,7 +191,7 @@ public abstract class ArrayStructure extends Array {
     return members.getStructureSize();
   }
 
-  public StructureDataIterator getStructureDataIterator() {
+  public StructureDataIterator getStructureDataIterator() throws java.io.IOException {
     return new StructureDataIterator() {
       private int count = 0;
       private int size = (int) getSize();
@@ -282,12 +284,27 @@ public abstract class ArrayStructure extends Array {
    * Extract data for one member, over all structures.
    * @param m get data from this StructureMembers.Member.
    * @return Array values.
+   * @throws java.io.IOException on read error (only happens for Sequences, otherwise data is already read)
    */
-  public Array getMemberArray(StructureMembers.Member m) {
+  public Array getMemberArray(StructureMembers.Member m) throws IOException {
     if (m.getDataArray() != null)
       return m.getDataArray();
-
     DataType dataType = m.getDataType();
+
+    // special handling for sequences
+    if (dataType == DataType.SEQUENCE) {
+      List<StructureData> sdataList = new ArrayList<StructureData>();
+      for (int recno=0; recno<getSize(); recno++) {
+        ArraySequence2 seq = getArraySequence(recno, m);
+        StructureDataIterator iter = seq.getStructureDataIterator();
+        while (iter.hasNext())
+          sdataList.add( iter.next());
+      }
+      ArraySequence2 seq = getArraySequence(0, m);
+      int size = sdataList.size();
+      StructureData[] sdataArray = sdataList.toArray( new StructureData[size]);
+      return new ArrayStructureW( seq.getStructureMembers(), new int[] {size}, sdataArray);
+   }
 
     // combine the shapes
     int[] mshape = m.getShape();
@@ -340,7 +357,8 @@ public abstract class ArrayStructure extends Array {
     } else if (dataType == DataType.STRUCTURE) {
       for (int recno=0; recno<getSize(); recno++)
         copyStructures(recno, m, resultIter);
-   }
+
+    }
 
     return result;
   }
