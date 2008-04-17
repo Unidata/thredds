@@ -2,6 +2,10 @@ package thredds.server.cataloggen;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ScheduledFuture;
+import java.util.List;
+import java.util.ArrayList;
 import java.io.File;
 
 /**
@@ -16,6 +20,7 @@ public class CatGenTaskScheduler
           org.slf4j.LoggerFactory.getLogger( CatGenTaskScheduler.class );
 
   private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
+  private final List<ScheduledFuture> scheduledTasks = new ArrayList<ScheduledFuture>();
 
   private final CatGenConfig config;
   private final File configDir;
@@ -32,10 +37,15 @@ public class CatGenTaskScheduler
   {
     for ( CatGenTaskConfig curTask : config.getTaskInfoList())
     {
-      if ( ! scheduler.isShutdown() )
+      if ( curTask.getPeriodInMinutes() > 0
+           && ! scheduler.isShutdown() )
       {
         CatGenTaskRunner catGenTaskRunner = new CatGenTaskRunner( curTask, configDir, resultDir );
-        scheduler.execute( catGenTaskRunner );
+        scheduledTasks.add(
+                scheduler.scheduleAtFixedRate( catGenTaskRunner,
+                                               curTask.getDelayInMinutes(),
+                                               curTask.getPeriodInMinutes(),
+                                               TimeUnit.MINUTES ) );
       }
     }
   }

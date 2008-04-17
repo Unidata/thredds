@@ -15,7 +15,7 @@ public class CatGenConfig
           org.slf4j.LoggerFactory.getLogger( CatGenConfig.class );
 
   private boolean isValid = true;
-  private String invalidMsg;
+  private String invalidMsg = "";
 
   private List<CatGenTaskConfig> taskConfigList;
 

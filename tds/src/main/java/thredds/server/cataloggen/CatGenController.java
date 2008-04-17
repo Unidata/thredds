@@ -78,6 +78,7 @@ public class CatGenController extends AbstractController
                                                 catGenContext.getResultDirectory() );
       this.scheduler.start();
     }
+    log.info( "init(): done." );
   }
 
   public void destroy()
@@ -87,8 +88,9 @@ public class CatGenController extends AbstractController
       this.scheduler.stop();
   }
 
-  protected ModelAndView handleRequestInternal( HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse ) throws Exception
+  protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res ) throws Exception
   {
-    return new ModelAndView( "thredds/server/cataloggen/index" );
+    return new ModelAndView( "editTask", "config", "junk" );
+    //return new ModelAndView( "thredds/server/cataloggen/index", "config", this.config );
   }
 }
