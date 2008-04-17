@@ -362,6 +362,7 @@
   <target name="makeSrc-TDS" description="create TDS source release">
     <jar jarfile="${build.dir}/${tdsSrcRelease.jar}" index="true" duplicate="preserve">
       <fileset dir="${root.dir}/..">
+        <include name="common/**" />
         <include name="cdm/**" />
         <include name="lib/**" />
         <include name="intelliJ/**" />
@@ -369,6 +370,7 @@
 
         <exclude name="cdm/doc/**" />
         <exclude name="cdm/target/**" />
+        <exclude name="tds/doc/**" />
         <exclude name="tds/target/**" />
         <exclude name="tds/content/**" />
       </fileset>

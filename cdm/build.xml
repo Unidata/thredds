@@ -4,7 +4,7 @@
   <property name="minor" value="13" />
   <!-- "build.number" is already set for TeamCity builds. -->
   <tstamp>
-    <format property="build.time.number" pattern="yyyyMMdd.HHmmss" timezone="GMT"/>
+    <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
   </tstamp>
   <condition property="release.version.minor"
              value="${release.version}.${minor}.${build.number}"
