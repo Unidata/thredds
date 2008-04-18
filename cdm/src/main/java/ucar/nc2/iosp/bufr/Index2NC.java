@@ -21,6 +21,7 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.bufr.*;
 import ucar.nc2.*;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
@@ -238,6 +239,11 @@ class Index2NC {
     ncfile.addVariable(null, recordStructure);
     recordStructure.setDimensions("record");
 
+    Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, "time", DataType.LONG, ""));
+    timev.addAttribute(new Attribute("units", "msecs since 1970-01-01 00:00"));
+    timev.addAttribute(new Attribute("long_name", "observation time"));
+    timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
+
     for (DataDescriptor dkey : dkeys) {
       if (!dkey.isOkForVariable()) continue;
 
@@ -326,7 +332,7 @@ class Index2NC {
       log.error("illegal count= " + count + " for " + dataDesc);
     }
     if (dataDesc.units == null)
-      System.out.println("HEY");
+      System.out.println("HEY dataDesc.units == null");
     else
       v.addAttribute(new Attribute("units", dataDesc.units));
 
@@ -401,6 +407,10 @@ class Index2NC {
 
     if (dkey.id.equals("0-7-6")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
+    }
+
+    if (dkey.id.equals("0-1-18")) {
+      v.addAttribute(new Attribute("standard_name", "station_name"));
     }
 
   }

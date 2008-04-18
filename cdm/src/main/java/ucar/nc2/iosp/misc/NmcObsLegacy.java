@@ -661,7 +661,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       for (Record record : records) {
         if (record.code == code) {
           CatIterator iter = new CatIterator(record.entries, useStructure);
-          ArraySequence2 seq = new ArraySequence2(iter.members, iter);
+          ArraySequence2 seq = new ArraySequence2(iter.members, iter, record.entries.length);
           int index = abb.addObjectToHeap(seq);
           bb.putInt(index);
           return;
@@ -670,7 +670,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
       // need an empty one
       CatIterator iter = new CatIterator(new Entry[0], useStructure);
-      ArraySequence2 seq = new ArraySequence2(iter.members, iter);
+      ArraySequence2 seq = new ArraySequence2(iter.members, iter, 0);
       int index = abb.addObjectToHeap(seq);
       bb.putInt(index);
     }

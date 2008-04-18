@@ -57,7 +57,7 @@ public class StandardStationCollectionImpl extends StationCollectionImpl {
     StructureDataIterator siter = ft.getStationDataIterator(-1);
     while (siter.hasNext()) {
       StructureData stationData = siter.next();
-      stationHelper.addStation(makeStation(stationData));
+      stationHelper.addStation( makeStation(stationData));
     }
   }
 

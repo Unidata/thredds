@@ -140,6 +140,8 @@ public class DataType {
       return String.class;
     if (this == DataType.STRUCTURE)
       return StructureData.class;
+    if (this == DataType.SEQUENCE)
+      return ArraySequence2.class;
     return null;
   }
 

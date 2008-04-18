@@ -19,21 +19,25 @@
  */
 package ucar.ma2;
 
+import java.io.IOException;
+
 /**
  * @author caron
  * @since Feb 27, 2008
  */
 public class ArraySequence2 extends ArrayStructure {
   private StructureDataIterator iter;
+  private int count;
 
-  public ArraySequence2(StructureMembers members, StructureDataIterator iter) {
+  public ArraySequence2(StructureMembers members, StructureDataIterator iter, int count) {
     super(members, new int[] {0});
     this.iter = iter;
+    this.count = count;
   }
 
   @Override
   public Class getElementType() {
-    return StructureDataIterator.class;
+    return ArraySequence2.class;
   }
 
   @Override
@@ -42,8 +46,124 @@ public class ArraySequence2 extends ArrayStructure {
     return iter;
   }
 
+  public int getStructureDataCount() {
+    return count;
+  }
+
+  @Override
   protected StructureData makeStructureData(ArrayStructure as, int index) {
     throw new UnsupportedOperationException("Cannot subset a Sequence");
+  }
+
+  @Override
+  public Array extractMemberArray(StructureMembers.Member m) throws IOException {
+    if (m.getDataArray() != null)
+      return m.getDataArray();
+
+    DataType dataType = m.getDataType();
+    boolean isScalar = (m.getSize() == 1) || (dataType == DataType.SEQUENCE);
+
+    // combine the shapes
+    int[] mshape = m.getShape();
+    int rrank = 1 + mshape.length;
+    int[] rshape = new int[rrank];
+    rshape[0] = count;
+    System.arraycopy(mshape, 0, rshape, 1, mshape.length);
+
+    // create an empty array to hold the result
+    Array result;
+    if (dataType == DataType.STRUCTURE) {
+      result = new ArrayStructureW(m.getStructureMembers(), rshape);
+    } else {
+      result = Array.factory(dataType.getPrimitiveClassType(), rshape);
+    }
+
+    StructureDataIterator sdataIter = getStructureDataIterator();
+    IndexIterator resultIter = result.getIndexIterator();
+
+    while (sdataIter.hasNext()) {
+      StructureData sdata = sdataIter.next();
+
+      if (isScalar) {
+        if (dataType == DataType.DOUBLE)
+          resultIter.setDoubleNext(sdata.getScalarDouble(m));
+
+        else if (dataType == DataType.FLOAT)
+          resultIter.setFloatNext(sdata.getScalarFloat(m));
+
+        else if (dataType == DataType.BYTE)
+          resultIter.setByteNext(sdata.getScalarByte(m));
+
+        else if (dataType == DataType.SHORT)
+          resultIter.setShortNext(sdata.getScalarShort(m));
+
+        else if (dataType == DataType.INT)
+          resultIter.setIntNext(sdata.getScalarInt(m));
+
+        else if (dataType == DataType.LONG)
+          resultIter.setLongNext(sdata.getScalarLong(m));
+
+        else if (dataType == DataType.CHAR)
+          resultIter.setCharNext(sdata.getScalarChar(m));
+
+        else if (dataType == DataType.STRING)
+          resultIter.setObjectNext(sdata.getScalarString(m));
+
+        else if (dataType == DataType.STRUCTURE)
+          resultIter.setObjectNext( sdata.getScalarStructure(m));
+
+        else if (dataType == DataType.SEQUENCE)
+          resultIter.setObjectNext( sdata.getArraySequence(m));
+
+    } else {
+        if (dataType == DataType.DOUBLE) {
+          double[] data = sdata.getJavaArrayDouble(m);
+          for (double aData : data) resultIter.setDoubleNext(aData);
+
+        } else if (dataType == DataType.FLOAT) {
+          float[] data = sdata.getJavaArrayFloat(m);
+          for (float aData : data) resultIter.setFloatNext(aData);
+
+        } else if (dataType == DataType.BYTE) {
+          byte[] data = sdata.getJavaArrayByte(m);
+          for (byte aData : data) resultIter.setByteNext(aData);
+
+        } else if (dataType == DataType.SHORT) {
+          short[] data = sdata.getJavaArrayShort(m);
+          for (short aData : data) resultIter.setShortNext(aData);
+
+        } else if (dataType == DataType.INT) {
+          int[] data = sdata.getJavaArrayInt(m);
+          for (int aData : data) resultIter.setIntNext(aData);
+
+        } else if (dataType == DataType.LONG) {
+          long[] data = sdata.getJavaArrayLong(m);
+          for (long aData : data) resultIter.setLongNext(aData);
+
+        } else if (dataType == DataType.CHAR) {
+          char[] data = sdata.getJavaArrayChar(m);
+          for (char aData : data) resultIter.setCharNext(aData);
+
+        } else if (dataType == DataType.STRING) {
+          String[] data = sdata.getJavaArrayString(m);
+          for (String aData : data) resultIter.setObjectNext(aData);
+
+        } else if (dataType == DataType.STRUCTURE) {
+          ArrayStructure as = sdata.getArrayStructure(m);
+          StructureDataIterator innerIter = as.getStructureDataIterator();
+          while (innerIter.hasNext())
+            resultIter.setObjectNext( innerIter.next());
+
+        }
+      }
+    }
+
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "Seq@"+hashCode();
   }
 
 }

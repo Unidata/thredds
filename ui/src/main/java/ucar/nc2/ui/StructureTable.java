@@ -35,6 +35,7 @@ import java.util.*;
 import java.util.List;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -226,7 +227,7 @@ public class StructureTable extends JPanel {
 
     // add any subtables from inner Structures
     for (Structure s : m.subtables) {
-      addActionToPopupMenu("Subtable "+s.getShortName(), new SubtableAbstractAction(s));
+      addActionToPopupMenu("Data Table for "+s.getShortName(), new SubtableAbstractAction(s));
     }
 
     //JScrollPane sp =  new JScrollPane(jtable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -242,6 +243,7 @@ public class StructureTable extends JPanel {
   }
 
   // display subtables
+  private static HashMap<String,IndependentWindow> windows = new HashMap<String,IndependentWindow>();
   private class SubtableAbstractAction extends AbstractAction {
     Structure s;
     StructureTable dataTable;
@@ -250,7 +252,11 @@ public class StructureTable extends JPanel {
     SubtableAbstractAction(Structure s) {
       this.s = s;
       dataTable = new StructureTable( null);
-      dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "netcdfUI"), dataTable);
+      dataWindow = windows.get(s.getName());
+      if (dataWindow == null) {
+        dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "netcdfUI"), dataTable);
+        windows.put(s.getName(), dataWindow);
+      }
     }
 
     public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -844,8 +850,8 @@ public class StructureTable extends JPanel {
       super( m);
     }
 
-    /* protected JTableHeader createDefaultTableHeader() {
-      return new MyJTableHeader(columnModel, (StructureTableModel) getModel());
+    protected JTableHeader createDefaultTableHeader() {
+      return new MyJTableHeader(columnModel, getModel());
     }
 
     class MyJTableHeader extends javax.swing.table.JTableHeader {
@@ -861,11 +867,11 @@ public class StructureTable extends JPanel {
         int index = columnModel.getColumnIndexAtX(p.x);
         int realIndex = columnModel.getColumn(index).getModelIndex();
         if (realIndex >= 0)
-          return tm.getColumnDesc(realIndex);
+          return tm.getColumnName(realIndex);
         else
           return null;
       }
-    } */
+    }
 
   } 
 

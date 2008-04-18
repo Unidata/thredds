@@ -20,52 +20,57 @@
 package ucar.ma2;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Superclass for implementations of Array of StructureData.
- *
+ * <p/>
  * The general way to access data in an ArrayStructure is to use
-   <pre> StructureData getStructureData(Index index).</pre>
-
+ * <pre> StructureData getStructureData(Index index).</pre>
+ * <p/>
  * For 1D arrays (or by caclulating your own recnum for nD arrays), you can also use:
-   <pre> StructureData getStructureData(int recnum).</pre>
-
+ * <pre> StructureData getStructureData(int recnum).</pre>
+ * <p/>
  * Once you have a StructureData object, you can access data in a general way by using:
-   <pre> Array StructureData.getArray(Member m) </pre>
-
+ * <pre> Array StructureData.getArray(Member m) </pre>
+ * <p/>
  * When dealing with large arrays of Structures, there can be significant overhead in using the generic interfaces.
  * A number of convenience routines may be able to avoid extra Object creation, and so are recommended for efficiency.
  * The following may avoid the overhead of creating the StructureData object:
-   <pre> Array getArray(int recno, StructureMembers.Member m) </pre>
-
- * The following can be convenient for accessing all the data in the ArrayStructure for one member, but its efficiency 
- *  depends on the implementation:
-   <pre> Array getMemberArray(StructureMembers.Member m) </pre>
-
+ * <pre> Array getArray(int recno, StructureMembers.Member m) </pre>
+ * <p/>
+ * The following can be convenient for accessing all the data in the ArrayStructure for one member, but its efficiency
+ * depends on the implementation:
+ * <pre> Array getMemberArray(StructureMembers.Member m) </pre>
+ * <p/>
  * These require that you know the data types of the member data, but they are the most efficent:
-   <pre>
-    getScalarXXX(int recnum, Member m)
-    getJavaArrayXXX(int recnum, Member m) </pre>
-  where XXX is Byte, Char, Double, Float, Int, Long, Short, or String. For members that are themselves Structures,
-   the equivilent is:
-   <pre>
-    StructureData getScalarStructure(int recnum, Member m)
-    ArrayStructure getArrayStructure(int recnum, Member m) </pre>
-
+ * <pre>
+ * getScalarXXX(int recnum, Member m)
+ * getJavaArrayXXX(int recnum, Member m) </pre>
+ * where XXX is Byte, Char, Double, Float, Int, Long, Short, or String. For members that are themselves Structures,
+ * the equivilent is:
+ * <pre>
+ * StructureData getScalarStructure(int recnum, Member m)
+ * ArrayStructure getArrayStructure(int recnum, Member m) </pre>
+ * <p/>
  * These will return any compatible type as a double or float, but will have extra overhead when the types dont match:
-   <pre>
-    convertScalarXXX(int recnum, Member m)
-    convertJavaArrayXXX(int recnum, Member m) </pre>
-  where XXX is Double or Float
-
+ * <pre>
+ * convertScalarXXX(int recnum, Member m)
+ * convertJavaArrayXXX(int recnum, Member m) </pre>
+ * where XXX is Double or Float
  *
  * @author caron
  * @see Array
  * @see StructureData
  */
 public abstract class ArrayStructure extends Array {
+
+  /* Implementation notes
+     ArrayStructure contains the default implementation of storing the data in individual member arrays.
+     ArrayStructureMA uses all of these.
+     ArrayStructureW uses some of these.
+     ArrayStructureBB override all such methods.
+   */
+
   protected StructureMembers members;
   protected int nelems;
   protected StructureData[] sdata;
@@ -75,7 +80,7 @@ public abstract class ArrayStructure extends Array {
    * dimensions.length determines the rank of the new Array.
    *
    * @param members a description of the structure members
-   * @param shape       the shape of the Array.
+   * @param shape   the shape of the Array.
    */
   protected ArrayStructure(StructureMembers members, int[] shape) {
     super(shape);
@@ -104,16 +109,22 @@ public abstract class ArrayStructure extends Array {
       ja[i] = iter.getObjectNext();
   }
 
-  public Class getElementType() { return StructureData.class; }
+  public Class getElementType() {
+    return StructureData.class;
+  }
 
   /**
    * Get the structure members.
+   *
    * @return the structure members.
    */
-  public StructureMembers getStructureMembers() { return members; }
+  public StructureMembers getStructureMembers() {
+    return members;
+  }
 
-   /**
+  /**
    * Get the index-th StructureData of this ArrayStructure.
+   *
    * @param i which one to get, specified by an Index.
    * @return object of type StructureData.
    */
@@ -123,15 +134,17 @@ public abstract class ArrayStructure extends Array {
 
   /**
    * Set one of the StructureData of this ArrayStructure.
-   * @param i which one to set, specified by an Index.
+   *
+   * @param i     which one to set, specified by an Index.
    * @param value must be type StructureData.
    */
   public void setObject(Index i, Object value) {
-    setObject(i.currentElement(),  value);
+    setObject(i.currentElement(), value);
   }
 
-   /**
+  /**
    * Get the index-th StructureData of this ArrayStructure.
+   *
    * @param index which one to get, specified by an integer.
    * @return object of type StructureData.
    */
@@ -141,6 +154,7 @@ public abstract class ArrayStructure extends Array {
 
   /**
    * Set the index-th StructureData of this ArrayStructure.
+   *
    * @param index which one to set.
    * @param value must be type StructureData.
    */
@@ -150,8 +164,9 @@ public abstract class ArrayStructure extends Array {
     sdata[index] = (StructureData) value;
   }
 
-   /**
+  /**
    * Get the index-th StructureData of this ArrayStructure.
+   *
    * @param i which one to get, specified by an Index.
    * @return object of type StructureData.
    */
@@ -161,6 +176,7 @@ public abstract class ArrayStructure extends Array {
 
   /**
    * Get the index-th StructureData of this ArrayStructure.
+   *
    * @param index which one to get, specified by an integer.
    * @return object of type StructureData.
    */
@@ -168,23 +184,24 @@ public abstract class ArrayStructure extends Array {
     if (sdata == null)
       sdata = new StructureData[nelems];
     if (index >= sdata.length)
-      throw new IllegalArgumentException(index+" > "+sdata.length);
+      throw new IllegalArgumentException(index + " > " + sdata.length);
     if (sdata[index] == null)
-      sdata[index] = makeStructureData( this, index);
+      sdata[index] = makeStructureData(this, index);
     return sdata[index];
   }
 
   public Object getStorage() {
     // this fills the sdata array
-    for (int i=0; i<nelems; i++)
+    for (int i = 0; i < nelems; i++)
       getStructureData(i);
     return sdata;
   }
 
-  abstract protected StructureData makeStructureData( ArrayStructure as, int recno);
+  abstract protected StructureData makeStructureData(ArrayStructure as, int recno);
 
   /**
    * Get the size of each StructureData object in bytes.
+   *
    * @return the size of each StructureData object in bytes.
    */
   public int getStructureSize() {
@@ -220,9 +237,9 @@ public abstract class ArrayStructure extends Array {
    * Get member data of any type for a specific record as an Array.
    * This may avoid the overhead of creating the StructureData object, but is equivilent to
    * getStructure(recno).getArray( Member m).
-
+   *
    * @param recno get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member.
+   * @param m     get data from this StructureMembers.Member.
    * @return Array values.
    */
   public Array getArray(int recno, StructureMembers.Member m) {
@@ -230,35 +247,35 @@ public abstract class ArrayStructure extends Array {
 
     if (dataType == DataType.DOUBLE) {
       double[] pa = getJavaArrayDouble(recno, m);
-      return Array.factory( double.class, m.getShape(), pa);
+      return Array.factory(double.class, m.getShape(), pa);
 
     } else if (dataType == DataType.FLOAT) {
       float[] pa = getJavaArrayFloat(recno, m);
-      return Array.factory( float.class, m.getShape(), pa);
+      return Array.factory(float.class, m.getShape(), pa);
 
     } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE)) {
       byte[] pa = getJavaArrayByte(recno, m);
-      return Array.factory( byte.class, m.getShape(), pa);
+      return Array.factory(byte.class, m.getShape(), pa);
 
     } else if (dataType == DataType.SHORT) {
       short[] pa = getJavaArrayShort(recno, m);
-      return Array.factory( short.class, m.getShape(), pa);
+      return Array.factory(short.class, m.getShape(), pa);
 
     } else if (dataType == DataType.INT) {
       int[] pa = getJavaArrayInt(recno, m);
-      return Array.factory( int.class, m.getShape(), pa);
+      return Array.factory(int.class, m.getShape(), pa);
 
     } else if (dataType == DataType.LONG) {
       long[] pa = getJavaArrayLong(recno, m);
-      return Array.factory( long.class, m.getShape(), pa);
+      return Array.factory(long.class, m.getShape(), pa);
 
     } else if (dataType == DataType.CHAR) {
       char[] pa = getJavaArrayChar(recno, m);
-      return Array.factory( char.class, m.getShape(), pa);
+      return Array.factory(char.class, m.getShape(), pa);
 
     } else if (dataType == DataType.STRING) {
       String[] pa = getJavaArrayString(recno, m);
-      return Array.factory( String.class, m.getShape(), pa);
+      return Array.factory(String.class, m.getShape(), pa);
 
     } else if (dataType == DataType.STRUCTURE) {
       return getArrayStructure(recno, m);
@@ -267,13 +284,14 @@ public abstract class ArrayStructure extends Array {
       return getArraySequence(recno, m);
     }
 
-    throw new RuntimeException("Dont have implemenation for "+dataType);
+    throw new RuntimeException("Dont have implemenation for " + dataType);
   }
 
   /**
    * Set data for one member, over all structures.
    * This is used by VariableDS to do scale/offset.
-   * @param m set data for this StructureMembers.Member.
+   *
+   * @param m           set data for this StructureMembers.Member.
    * @param memberArray Array values.
    */
   public void setMemberArray(StructureMembers.Member m, Array memberArray) {
@@ -282,16 +300,17 @@ public abstract class ArrayStructure extends Array {
 
   /**
    * Extract data for one member, over all structures.
+   *
    * @param m get data from this StructureMembers.Member.
    * @return Array values.
    * @throws java.io.IOException on read error (only happens for Sequences, otherwise data is already read)
    */
-  public Array getMemberArray(StructureMembers.Member m) throws IOException {
+  public Array extractMemberArray(StructureMembers.Member m) throws IOException {
     if (m.getDataArray() != null)
       return m.getDataArray();
     DataType dataType = m.getDataType();
 
-    // special handling for sequences
+    /* special handling for sequences
     if (dataType == DataType.SEQUENCE) {
       List<StructureData> sdataList = new ArrayList<StructureData>();
       for (int recno=0; recno<getSize(); recno++) {
@@ -304,7 +323,7 @@ public abstract class ArrayStructure extends Array {
       int size = sdataList.size();
       StructureData[] sdataArray = sdataList.toArray( new StructureData[size]);
       return new ArrayStructureW( seq.getStructureMembers(), new int[] {size}, sdataArray);
-   }
+   } */
 
     // combine the shapes
     int[] mshape = m.getShape();
@@ -316,47 +335,51 @@ public abstract class ArrayStructure extends Array {
     // create an empty array to hold the result
     Array result;
     if (dataType == DataType.STRUCTURE) {
-      result = new ArrayStructureW( m.getStructureMembers(), rshape);
+      result = new ArrayStructureW(m.getStructureMembers(), rshape);
     } else {
-      result = Array.factory( dataType.getPrimitiveClassType(), rshape);
+      result = Array.factory(dataType.getPrimitiveClassType(), rshape);
     }
 
     IndexIterator resultIter = result.getIndexIterator();
     if (dataType == DataType.DOUBLE) {
-      for (int recno=0; recno<getSize(); recno++)
+      for (int recno = 0; recno < getSize(); recno++)
         copyDoubles(recno, m, resultIter);
 
     } else if (dataType == DataType.FLOAT) {
-      for (int recno=0; recno<getSize(); recno++)
+      for (int recno = 0; recno < getSize(); recno++)
         copyFloats(recno, m, resultIter);
 
     } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE)) {
-      for (int recno=0; recno<getSize(); recno++)
+      for (int recno = 0; recno < getSize(); recno++)
         copyBytes(recno, m, resultIter);
 
     } else if (dataType == DataType.SHORT) {
-      for (int recno=0; recno<getSize(); recno++)
+      for (int recno = 0; recno < getSize(); recno++)
         copyShorts(recno, m, resultIter);
 
     } else if (dataType == DataType.INT) {
-      for (int recno=0; recno<getSize(); recno++)
+      for (int recno = 0; recno < getSize(); recno++)
         copyInts(recno, m, resultIter);
 
     } else if (dataType == DataType.LONG) {
-      for (int recno=0; recno<getSize(); recno++)
+      for (int recno = 0; recno < getSize(); recno++)
         copyLongs(recno, m, resultIter);
 
     } else if (dataType == DataType.CHAR) {
-      for (int recno=0; recno<getSize(); recno++)
+      for (int recno = 0; recno < getSize(); recno++)
         copyChars(recno, m, resultIter);
 
     } else if (dataType == DataType.STRING) {
-      for (int recno=0; recno<getSize(); recno++)
+      for (int recno = 0; recno < getSize(); recno++)
         copyStrings(recno, m, resultIter);
 
     } else if (dataType == DataType.STRUCTURE) {
-      for (int recno=0; recno<getSize(); recno++)
+      for (int recno = 0; recno < getSize(); recno++)
         copyStructures(recno, m, resultIter);
+
+    } else if (dataType == DataType.SEQUENCE) {
+      for (int recno = 0; recno < getSize(); recno++)
+        copySequences(recno, m, resultIter);
 
     }
 
@@ -366,60 +389,75 @@ public abstract class ArrayStructure extends Array {
   protected void copyChars(int recnum, StructureMembers.Member m, IndexIterator result) {
     IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
     while (dataIter.hasNext())
-      result.setCharNext( dataIter.getCharNext());
+      result.setCharNext(dataIter.getCharNext());
   }
+
   protected void copyDoubles(int recnum, StructureMembers.Member m, IndexIterator result) {
     IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
     while (dataIter.hasNext())
-      result.setDoubleNext( dataIter.getDoubleNext());
+      result.setDoubleNext(dataIter.getDoubleNext());
   }
+
   protected void copyFloats(int recnum, StructureMembers.Member m, IndexIterator result) {
     IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
     while (dataIter.hasNext())
-      result.setFloatNext( dataIter.getFloatNext());
+      result.setFloatNext(dataIter.getFloatNext());
   }
+
   protected void copyBytes(int recnum, StructureMembers.Member m, IndexIterator result) {
     IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
     while (dataIter.hasNext())
-      result.setByteNext( dataIter.getByteNext());
+      result.setByteNext(dataIter.getByteNext());
   }
+
   protected void copyShorts(int recnum, StructureMembers.Member m, IndexIterator result) {
     IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
     while (dataIter.hasNext())
-      result.setShortNext( dataIter.getShortNext());
+      result.setShortNext(dataIter.getShortNext());
   }
+
   protected void copyInts(int recnum, StructureMembers.Member m, IndexIterator result) {
     IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
     while (dataIter.hasNext())
-      result.setIntNext( dataIter.getIntNext());
+      result.setIntNext(dataIter.getIntNext());
   }
+
   protected void copyLongs(int recnum, StructureMembers.Member m, IndexIterator result) {
     IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
     while (dataIter.hasNext())
-      result.setLongNext( dataIter.getLongNext());
+      result.setLongNext(dataIter.getLongNext());
   }
+
   protected void copyStrings(int recnum, StructureMembers.Member m, IndexIterator result) {
     IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
     while (dataIter.hasNext())
-      result.setObjectNext( dataIter.getObjectNext());
+      result.setObjectNext(dataIter.getObjectNext());
   }
+
   protected void copyStructures(int recnum, StructureMembers.Member m, IndexIterator result) {
     IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
     while (dataIter.hasNext())
-      result.setObjectNext( dataIter.getObjectNext()); // LOOK ??
+      result.setObjectNext(dataIter.getObjectNext());
+  }
+
+  protected void copySequences(int recnum, StructureMembers.Member m, IndexIterator result) {
+    // there can only be one sequence, not an array; copy to an ArrayObject
+    Array data = getArray(recnum, m);
+    result.setObjectNext( data);
   }
 
   /**
    * Get member data array of any type as an Object, eg, Float, Double, String, StructureData etc.
+   *
    * @param recno get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member.
+   * @param m     get data from this StructureMembers.Member.
    * @return value as Float, Double, etc..
    */
   public Object getScalarObject(int recno, StructureMembers.Member m) {
     DataType dataType = m.getDataType();
 
     if (dataType == DataType.DOUBLE) {
-        return getScalarDouble(recno, m);
+      return getScalarDouble(recno, m);
 
     } else if (dataType == DataType.FLOAT) {
       return getScalarFloat(recno, m);
@@ -446,285 +484,317 @@ public abstract class ArrayStructure extends Array {
       return getScalarStructure(recno, m);
     }
 
-     throw new RuntimeException("Dont have implemenation for "+dataType);
+    throw new RuntimeException("Dont have implemenation for " + dataType);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Get scalar value as a float, with conversion as needed. Underlying type must be convertible to float.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m member Variable.
-   * @throws ForbiddenConversionException if not convertible to float.
+   * @param m      member Variable.
    * @return scalar float value
+   * @throws ForbiddenConversionException if not convertible to float.
    */
   public float convertScalarFloat(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() == DataType.FLOAT) return getScalarFloat( recnum, m);
+    if (m.getDataType() == DataType.FLOAT) return getScalarFloat(recnum, m);
     Object o = getScalarObject(recnum, m);
-    if (o instanceof Number) return ((Number)o).floatValue();
-    throw new ForbiddenConversionException("Type is "+m.getDataType()+", not convertible to float");
+    if (o instanceof Number) return ((Number) o).floatValue();
+    throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to float");
   }
 
   /**
    * Get scalar value as a double, with conversion as needed. Underlying type must be convertible to double.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m member Variable.
-   * @throws ForbiddenConversionException if not convertible to double.
+   * @param m      member Variable.
    * @return scalar double value
+   * @throws ForbiddenConversionException if not convertible to double.
    */
   public double convertScalarDouble(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() == DataType.DOUBLE) return getScalarDouble( recnum, m);
+    if (m.getDataType() == DataType.DOUBLE) return getScalarDouble(recnum, m);
     Object o = getScalarObject(recnum, m);
-    if (o instanceof Number) return ((Number)o).doubleValue();
-    throw new ForbiddenConversionException("Type is "+m.getDataType()+", not convertible to double");
+    if (o instanceof Number) return ((Number) o).doubleValue();
+    throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to double");
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Get scalar member data of type double.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type double.
+   * @param m      get data from this StructureMembers.Member. Must be of type double.
    * @return scalar double value
    */
   public double getScalarDouble(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.DOUBLE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be double");
+    if (m.getDataType() != DataType.DOUBLE)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be double");
     Array data = m.getDataArray();
-    return data.getDouble( recnum * m.getSize()); // gets first one in the array
+    return data.getDouble(recnum * m.getSize()); // gets first one in the array
   }
 
   /**
    * Get member data of type double as a 1D array. The member data may be any rank.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type double.
+   * @param m      get data from this StructureMembers.Member. Must be of type double.
    * @return double[]
    */
   public double[] getJavaArrayDouble(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.DOUBLE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be double");
+    if (m.getDataType() != DataType.DOUBLE)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be double");
     int count = m.getSize();
     Array data = m.getDataArray();
     double[] pa = new double[count];
-    for (int i=0; i<count; i++)
-      pa[i] = data.getDouble( recnum * count + i);
+    for (int i = 0; i < count; i++)
+      pa[i] = data.getDouble(recnum * count + i);
     return pa;
   }
 
   /**
    * Get scalar member data of type float.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type float.
+   * @param m      get data from this StructureMembers.Member. Must be of type float.
    * @return scalar double value
    */
   public float getScalarFloat(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.FLOAT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be float");
+    if (m.getDataType() != DataType.FLOAT)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be float");
     Array data = m.getDataArray();
-    return data.getFloat( recnum * m.getSize()); // gets first one in the array
+    return data.getFloat(recnum * m.getSize()); // gets first one in the array
   }
 
   /**
    * Get member data of type float as a 1D array.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type float.
+   * @param m      get data from this StructureMembers.Member. Must be of type float.
    * @return float[]
    */
   public float[] getJavaArrayFloat(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.FLOAT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be float");
+    if (m.getDataType() != DataType.FLOAT)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be float");
     int count = m.getSize();
     Array data = m.getDataArray();
     float[] pa = new float[count];
-    for (int i=0; i<count; i++)
-      pa[i] = data.getFloat( recnum * count + i);
+    for (int i = 0; i < count; i++)
+      pa[i] = data.getFloat(recnum * count + i);
     return pa;
   }
 
   /**
    * Get scalar member data of type byte.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type byte.
+   * @param m      get data from this StructureMembers.Member. Must be of type byte.
    * @return scalar double value
    */
   public byte getScalarByte(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.BYTE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be byte");
+    if (m.getDataType() != DataType.BYTE)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
     Array data = m.getDataArray();
-    return data.getByte( recnum * m.getSize()); // gets first one in the array
+    return data.getByte(recnum * m.getSize()); // gets first one in the array
   }
 
   /**
    * Get member data of type byte as a 1D array.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type byte.
+   * @param m      get data from this StructureMembers.Member. Must be of type byte.
    * @return byte[]
    */
   public byte[] getJavaArrayByte(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.BYTE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be byte");
+    if (m.getDataType() != DataType.BYTE)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
     int count = m.getSize();
     Array data = m.getDataArray();
     byte[] pa = new byte[count];
-    for (int i=0; i<count; i++)
-      pa[i] = data.getByte( recnum * count + i);
+    for (int i = 0; i < count; i++)
+      pa[i] = data.getByte(recnum * count + i);
     return pa;
   }
 
   /**
    * Get scalar member data of type short.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type short.
+   * @param m      get data from this StructureMembers.Member. Must be of type short.
    * @return scalar double value
    */
   public short getScalarShort(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.SHORT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be short");
+    if (m.getDataType() != DataType.SHORT)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
     Array data = m.getDataArray();
-    return data.getShort( recnum * m.getSize()); // gets first one in the array
+    return data.getShort(recnum * m.getSize()); // gets first one in the array
   }
 
   /**
    * Get member data of type short as a 1D array.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type float.
+   * @param m      get data from this StructureMembers.Member. Must be of type float.
    * @return short[]
    */
   public short[] getJavaArrayShort(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.SHORT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be short");
+    if (m.getDataType() != DataType.SHORT)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
     int count = m.getSize();
     Array data = m.getDataArray();
     short[] pa = new short[count];
-    for (int i=0; i<count; i++)
-      pa[i] = data.getShort( recnum * count + i);
+    for (int i = 0; i < count; i++)
+      pa[i] = data.getShort(recnum * count + i);
     return pa;
   }
 
   /**
    * Get scalar member data of type int.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type int.
+   * @param m      get data from this StructureMembers.Member. Must be of type int.
    * @return scalar double value
    */
   public int getScalarInt(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.INT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be int");
+    if (m.getDataType() != DataType.INT)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
     Array data = m.getDataArray();
-    return data.getInt( recnum * m.getSize()); // gets first one in the array
+    return data.getInt(recnum * m.getSize()); // gets first one in the array
   }
 
   /**
    * Get member data of type int as a 1D array.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type int.
+   * @param m      get data from this StructureMembers.Member. Must be of type int.
    * @return int[]
    */
   public int[] getJavaArrayInt(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.INT) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be int");
+    if (m.getDataType() != DataType.INT)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
     int count = m.getSize();
     Array data = m.getDataArray();
     int[] pa = new int[count];
-    for (int i=0; i<count; i++)
-      pa[i] = data.getInt( recnum * count + i);
+    for (int i = 0; i < count; i++)
+      pa[i] = data.getInt(recnum * count + i);
     return pa;
   }
 
   /**
    * Get scalar member data of type long.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type long.
+   * @param m      get data from this StructureMembers.Member. Must be of type long.
    * @return scalar double value
    */
   public long getScalarLong(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.LONG) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be long");
+    if (m.getDataType() != DataType.LONG)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be long");
     Array data = m.getDataArray();
-    return data.getLong( recnum * m.getSize()); // gets first one in the array
+    return data.getLong(recnum * m.getSize()); // gets first one in the array
   }
 
   /**
    * Get member data of type long as a 1D array.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type long.
+   * @param m      get data from this StructureMembers.Member. Must be of type long.
    * @return long[]
    */
   public long[] getJavaArrayLong(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.LONG) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be long");
+    if (m.getDataType() != DataType.LONG)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be long");
     int count = m.getSize();
     Array data = m.getDataArray();
     long[] pa = new long[count];
-    for (int i=0; i<count; i++)
-      pa[i] = data.getLong( recnum * count + i);
+    for (int i = 0; i < count; i++)
+      pa[i] = data.getLong(recnum * count + i);
     return pa;
   }
 
   /**
    * Get scalar member data of type char.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type char.
+   * @param m      get data from this StructureMembers.Member. Must be of type char.
    * @return scalar double value
    */
   public char getScalarChar(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.CHAR) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be char");
+    if (m.getDataType() != DataType.CHAR)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be char");
     Array data = m.getDataArray();
-    return data.getChar( recnum * m.getSize()); // gets first one in the array
+    return data.getChar(recnum * m.getSize()); // gets first one in the array
   }
 
   /**
    * Get member data of type char as a 1D array.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type char.
+   * @param m      get data from this StructureMembers.Member. Must be of type char.
    * @return char[]
    */
   public char[] getJavaArrayChar(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.CHAR) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be char");
+    if (m.getDataType() != DataType.CHAR)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be char");
     int count = m.getSize();
     Array data = m.getDataArray();
     char[] pa = new char[count];
-    for (int i=0; i<count; i++)
-      pa[i] = data.getChar( recnum * count + i);
+    for (int i = 0; i < count; i++)
+      pa[i] = data.getChar(recnum * count + i);
     return pa;
   }
 
-   /**
+  /**
    * Get member data of type String or char.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type String or char.
+   * @param m      get data from this StructureMembers.Member. Must be of type String or char.
    * @return scalar String value
    */
-   public String getScalarString(int recnum, StructureMembers.Member m) {
-     if (m.getDataType() == DataType.CHAR) {
-       ArrayChar data = (ArrayChar) m.getDataArray();
-       return data.getString( recnum);
-     }
+  public String getScalarString(int recnum, StructureMembers.Member m) {
+    if (m.getDataType() == DataType.CHAR) {
+      ArrayChar data = (ArrayChar) m.getDataArray();
+      return data.getString(recnum);
+    }
 
-     if (m.getDataType() == DataType.STRING) {
-       Array data = m.getDataArray();
-       return (String) data.getObject( recnum);
-     }
+    if (m.getDataType() == DataType.STRING) {
+      Array data = m.getDataArray();
+      return (String) data.getObject(recnum);
+    }
 
-     throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be String or char");
-   }
+    throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be String or char");
+  }
 
-   /**
+  /**
    * Get member data of type String as a 1D array.
+   *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-   * @param m get data from this StructureMembers.Member. Must be of type String.
+   * @param m      get data from this StructureMembers.Member. Must be of type String.
    * @return String[]
    */
-   public String[] getJavaArrayString(int recnum, StructureMembers.Member m) {
-     if (m.getDataType() == DataType.STRING) {
-       int n = m.getSize();
-       String[] result = new String[n];
-       Array data = m.getDataArray();
-       for (int i=0; i<n; i++)
-         result[i] = (String) data.getObject( recnum * n + i);
-       return result;
-     }
+  public String[] getJavaArrayString(int recnum, StructureMembers.Member m) {
+    if (m.getDataType() == DataType.STRING) {
+      int n = m.getSize();
+      String[] result = new String[n];
+      Array data = m.getDataArray();
+      for (int i = 0; i < n; i++)
+        result[i] = (String) data.getObject(recnum * n + i);
+      return result;
+    }
 
-     if (m.getDataType() == DataType.CHAR) {
-       int strlen = indexCalc.getShape(rank - 1);
-       int n = m.getSize() / strlen;
-       String[] result = new String[n];
-       ArrayChar data = (ArrayChar) m.getDataArray();
-       for (int i=0; i<n; i++)
-         result[i] = data.getString( (recnum * n + i) * strlen);
-       return result;
-     }
+    if (m.getDataType() == DataType.CHAR) {
+      int strlen = indexCalc.getShape(rank - 1);
+      int n = m.getSize() / strlen;
+      String[] result = new String[n];
+      ArrayChar data = (ArrayChar) m.getDataArray();
+      for (int i = 0; i < n; i++)
+        result[i] = data.getString((recnum * n + i) * strlen);
+      return result;
+    }
 
-     throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be String or char");
-   }
+    throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be String or char");
+  }
 
   /* LOOK can we optimize ??
   public String[] getJavaArrayString(StructureMembers.Member m) {
@@ -758,71 +828,66 @@ public abstract class ArrayStructure extends Array {
   * @return scalar StructureData
   */
   public StructureData getScalarStructure(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.STRUCTURE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be Structure");
+    if (m.getDataType() != DataType.STRUCTURE)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Structure");
 
     ArrayStructure data = (ArrayStructure) m.getDataArray();
-    return data.getStructureData( recnum * m.getSize());  // gets first in the array
+    return data.getStructureData(recnum * m.getSize());  // gets first in the array
   }
 
- /**
-  * Get member data of type array of Structure.
-  * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-  * @param m get data from this StructureMembers.Member. Must be of type Structure.
-  * @return nested ArrayStructure. */
+  /**
+   * Get member data of type array of Structure.
+   *
+   * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
+   * @param m      get data from this StructureMembers.Member. Must be of type Structure.
+   * @return nested ArrayStructure.
+   */
   public ArrayStructure getArrayStructure(int recnum, StructureMembers.Member m) {
-    if ((m.getDataType() != DataType.STRUCTURE) &&(m.getDataType() != DataType.SEQUENCE))
-      throw new IllegalArgumentException("Type is "+m.getDataType()+", must be Structure or Sequence");
+    if ((m.getDataType() != DataType.STRUCTURE) && (m.getDataType() != DataType.SEQUENCE))
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Structure or Sequence");
+
+    if (m.getDataType() == DataType.SEQUENCE)
+      return getArraySequence(recnum, m);
 
     ArrayStructure array = (ArrayStructure) m.getDataArray();
 
-    // LOOK
-    // we need to subset this array structure to deal with just the subset for this recno
-    // use "brute force" for now, see if we can finesse later
+    int count = m.getSize();
+    StructureData[] this_sdata = new StructureData[count];
+    for (int i = 0; i < count; i++)
+      this_sdata[i] = array.getStructureData(recnum * count + i);
 
-    StructureData[] this_sdata;
-    int shape[];
-
-    if (array instanceof ArraySequence) {
-      return array;
-      /* ArraySequence arraySeq = (ArraySequence) array;
-      int count = arraySeq.getSequenceLength(recnum);
-      int start = arraySeq.getSequenceOffset(recnum);
-      this_sdata = new StructureData[count];
-      for (int i=0; i<count; i++)
-        this_sdata[i] = arraySeq.makeStructureData( arraySeq, start + i);
-      shape = new int[] {count}; */
-
-    } else {
-      int count = m.getSize();
-      this_sdata = new StructureData[count];
-      for (int i=0; i<count; i++)
-        this_sdata[i] = array.getStructureData( recnum * count + i);
-      shape = m.getShape();
-    }
-
-    return new ArrayStructureW( array.getStructureMembers(), shape, this_sdata);
+    return new ArrayStructureW(array.getStructureMembers(), m.getShape(), this_sdata);
   }
 
- /**
-  * Get member data of type array of Structure.
-  * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
-  * @param m get data from this StructureMembers.Member. Must be of type Structure.
-  * @return nested ArrayStructure. */
+  /**
+   * Get member data of type array of Structure.
+   *
+   * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
+   * @param m      get data from this StructureMembers.Member. Must be of type Structure.
+   * @return nested ArrayStructure.
+   */
   public ArraySequence2 getArraySequence(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.SEQUENCE) throw new IllegalArgumentException("Type is "+m.getDataType()+", must be Sequence");
+    if (m.getDataType() != DataType.SEQUENCE)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Sequence");
 
-    throw new UnsupportedOperationException("Sequences are not supported");
+    // should store sequences as ArrayObject of ArraySequence2 objects
+    ArrayObject array = (ArrayObject) m.getDataArray();
+    return (ArraySequence2) array.getObject(recnum);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /** DO NOT USE, throws UnsupportedOperationException */
-  public Array createView( Index index) {
+  /**
+   * DO NOT USE, throws UnsupportedOperationException
+   */
+  public Array createView(Index index) {
     if (index.getSize() == getSize()) return this;
     throw new UnsupportedOperationException();
   }
 
- /** DO NOT USE, throws UnsupportedOperationException */
+  /**
+   * DO NOT USE, throws UnsupportedOperationException
+   */
   public Array copy() {
     throw new UnsupportedOperationException();
   }
@@ -830,100 +895,179 @@ public abstract class ArrayStructure extends Array {
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public double getDouble(Index i) { throw new ForbiddenConversionException(); }
+  public double getDouble(Index i) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public void setDouble(Index i, double value) { throw new ForbiddenConversionException(); }
+  public void setDouble(Index i, double value) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public float getFloat(Index i) { throw new ForbiddenConversionException(); }
+  public float getFloat(Index i) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public void setFloat(Index i, float value) { throw new ForbiddenConversionException(); }
+  public void setFloat(Index i, float value) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public long getLong(Index i) { throw new ForbiddenConversionException(); }
+  public long getLong(Index i) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public void setLong(Index i, long value) { throw new ForbiddenConversionException(); }
+  public void setLong(Index i, long value) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public int getInt(Index i) { throw new ForbiddenConversionException(); }
+  public int getInt(Index i) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public void setInt(Index i, int value) { throw new ForbiddenConversionException(); }
+  public void setInt(Index i, int value) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public short getShort(Index i) { throw new ForbiddenConversionException(); }
+  public short getShort(Index i) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public void setShort(Index i, short value) { throw new ForbiddenConversionException(); }
+  public void setShort(Index i, short value) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public byte getByte(Index i) { throw new ForbiddenConversionException(); }
+  public byte getByte(Index i) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public void setByte(Index i, byte value) { throw new ForbiddenConversionException(); }
+  public void setByte(Index i, byte value) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public boolean getBoolean(Index i) { throw new ForbiddenConversionException(); }
+  public boolean getBoolean(Index i) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public void setBoolean(Index i, boolean value) { throw new ForbiddenConversionException(); }
+  public void setBoolean(Index i, boolean value) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public char getChar(Index i) { throw new ForbiddenConversionException(); }
+  public char getChar(Index i) {
+    throw new ForbiddenConversionException();
+  }
 
   /**
    * DO NOT USE, throw ForbiddenConversionException
    */
-  public void setChar(Index i, char value) { throw new ForbiddenConversionException(); }
+  public void setChar(Index i, char value) {
+    throw new ForbiddenConversionException();
+  }
 
   // trusted, assumes that individual dimension lengths have been checked
   // package private : mostly for iterators
-  double getDouble(int index) {throw new ForbiddenConversionException(); }
-  void setDouble(int index, double value) { throw new ForbiddenConversionException(); }
-  float getFloat(int index) { throw new ForbiddenConversionException(); }
-  void setFloat(int index, float value) { throw new ForbiddenConversionException(); }
-  long getLong(int index) {throw new ForbiddenConversionException(); }
-  void setLong(int index, long value) { throw new ForbiddenConversionException(); }
-  int getInt(int index) { throw new ForbiddenConversionException(); }
-  void setInt(int index, int value) { throw new ForbiddenConversionException(); }
-  short getShort(int index) { throw new ForbiddenConversionException(); }
-  void setShort(int index, short value) { throw new ForbiddenConversionException(); }
-  byte getByte(int index) { throw new ForbiddenConversionException(); }
-  void setByte(int index, byte value) {throw new ForbiddenConversionException(); }
-  char getChar(int index) { throw new ForbiddenConversionException(); }
-  void setChar(int index, char value) { throw new ForbiddenConversionException(); }
-  boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
-  void setBoolean(int index, boolean value) { throw new ForbiddenConversionException(); }
+  double getDouble(int index) {
+    throw new ForbiddenConversionException();
+  }
+
+  void setDouble(int index, double value) {
+    throw new ForbiddenConversionException();
+  }
+
+  float getFloat(int index) {
+    throw new ForbiddenConversionException();
+  }
+
+  void setFloat(int index, float value) {
+    throw new ForbiddenConversionException();
+  }
+
+  long getLong(int index) {
+    throw new ForbiddenConversionException();
+  }
+
+  void setLong(int index, long value) {
+    throw new ForbiddenConversionException();
+  }
+
+  int getInt(int index) {
+    throw new ForbiddenConversionException();
+  }
+
+  void setInt(int index, int value) {
+    throw new ForbiddenConversionException();
+  }
+
+  short getShort(int index) {
+    throw new ForbiddenConversionException();
+  }
+
+  void setShort(int index, short value) {
+    throw new ForbiddenConversionException();
+  }
+
+  byte getByte(int index) {
+    throw new ForbiddenConversionException();
+  }
+
+  void setByte(int index, byte value) {
+    throw new ForbiddenConversionException();
+  }
+
+  char getChar(int index) {
+    throw new ForbiddenConversionException();
+  }
+
+  void setChar(int index, char value) {
+    throw new ForbiddenConversionException();
+  }
+
+  boolean getBoolean(int index) {
+    throw new ForbiddenConversionException();
+  }
+
+  void setBoolean(int index, boolean value) {
+    throw new ForbiddenConversionException();
+  }
 
 }

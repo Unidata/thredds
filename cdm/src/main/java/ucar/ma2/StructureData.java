@@ -187,7 +187,7 @@ abstract public class StructureData {
       return getScalarStructure( m);
 
     } else if (dataType == DataType.SEQUENCE) {
-      return "Sequence";
+      return getArraySequence(m);
     }
 
     throw new RuntimeException("Dont have implemenation for "+dataType);

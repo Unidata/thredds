@@ -60,7 +60,7 @@ public class TestStructureSubset extends TestCase {
     for(StructureMembers.Member m : sm.getMembers()) {
       Variable v = subset.findVariable(m.getName());
       assert v != null;
-      Array mdata = dataAll.getMemberArray(m);
+      Array mdata = dataAll.extractMemberArray(m);
       assert mdata.getShape()[0] == dataAll.getShape()[0];
       assert mdata.getElementType() == m.getDataType().getPrimitiveClassType();
       System.out.println(m.getName()+ " shape="+new Section(mdata.getShape()));

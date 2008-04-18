@@ -64,7 +64,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   }
 
   public FeatureDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
-    CoordSysAnalyzer analyser = new CoordSysAnalyzer(ncd);
+    CoordSysAnalyzer analyser = CoordSysAnalyzer.factory(ncd);
     return new PointDatasetDefault(analyser, ncd, errlog);
   }
 
@@ -84,7 +84,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       this.analyser = analyser;
 
       List<FeatureCollection> featureCollections = new ArrayList<FeatureCollection>();
-      for (NestedTable flatTable : analyser.getFlatTables()) {
+      for (NestedTable flatTable : analyser.getFlatTables()) { // each flat table becomes a "feature collection"
 
         if (timeUnit == null) {
           try {

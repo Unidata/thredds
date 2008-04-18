@@ -285,7 +285,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     Structure s = (Structure) v2;
 
     if (v2.getName().equals("recordIndex")) {
-      return readReportIndex(s, section);
+      return readIndex(s, section);
     }
 
     // for the obs structure
@@ -294,28 +294,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
     // allocate ArrayStructureBB for outer structure
     StructureMembers members = s.makeStructureMembers();
     int offset = setOffsets(members);
-
-    /* for (StructureMembers.Member m : members.getMembers()) {
-      m.setDataParam(offset);
-      // System.out.println(m.getName()+" offset="+offset);
-
-      // set the inner offsets
-      if (m.getDataType() == DataType.STRUCTURE) {
-        int innerOffset = 0;
-        StructureMembers innerMembers = m.getStructureMembers();
-        for (StructureMembers.Member mm : innerMembers.getMembers()) {
-          mm.setDataParam(innerOffset);
-          innerOffset += mm.getSize();
-        }
-      }
-
-      Variable mv = s.findVariable(m.getName());
-      DataDescriptor dk = (DataDescriptor) mv.getSPobject();
-      if (dk.replication == 0)
-        offset += 4;
-      else
-        offset += dk.getByteWidth();
-    } */
 
     ArrayStructureBB abb = new ArrayStructureBB(members, shape);
     ByteBuffer bb = abb.getByteBuffer();
@@ -329,10 +307,14 @@ public class BufrIosp extends AbstractIOServiceProvider {
     List<Index.BufrObs> obsList = index.getObservations();
     Range range = section.getRange(0);
     for (int obsIndex = range.first(); obsIndex <= range.last(); obsIndex += range.stride()) {
+      if (obsIndex >= obsList.size())
+        System.out.println("HEY");
       Index.BufrObs obs = obsList.get(obsIndex);
       raf.seek(obs.getOffset());
       bitPos = obs.getBitPos();
       bitBuf = obs.getStartingByte();
+
+      bb.putLong(getTime(obs));      
       readData(delegate.dkeys, abb, bb);
     }
 
@@ -453,7 +435,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   ////////////////////////////////////////////////////////////////////
 
-  private Array readReportIndex(Structure s, Section section) {
+  private Array readIndex(Structure s, Section section) {
     int[] shape = section.getShape();
     StructureMembers members = s.makeStructureMembers();
     ArrayStructureMA ama = new ArrayStructureMA(members, shape);
@@ -473,17 +455,23 @@ public class BufrIosp extends AbstractIOServiceProvider {
     Range range = section.getRange(0);
     for (int obsIndex = range.first(); obsIndex <= range.last(); obsIndex += range.stride()) {
       Index.BufrObs obs = obsList.get(obsIndex);
-      try {
-        Date date = dateFormatter.isoDateTimeFormat(obs.getIsoDate());
-        timeArray.set(count, date.getTime());
-        nameArray.set(count, obs.getName());
-      } catch (ParseException e) {
-        e.printStackTrace();
-      }
+      timeArray.set(count, getTime(obs));
+      nameArray.set(count, obs.getName());
       count++;
     }
 
     return ama;
+  }
+
+  private long getTime(Index.BufrObs obs) {
+    if (obs.time == 0)
+      try {
+        Date date = dateFormatter.isoDateTimeFormat(obs.getIsoDate());
+        obs.time = date.getTime();
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+    return obs.time;
   }
 
   // read in the data into an ArrayStructureBB
@@ -519,7 +507,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       readData(seqdd.getSubKeys(), abb, bb);
     }
 
-    return new ArraySequence2(members, new SequenceIterator(count, abb));
+    return new ArraySequence2(members, new SequenceIterator(count, abb), count);
   }
 
   private Structure find(List<Variable> vars) {

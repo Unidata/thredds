@@ -20,75 +20,228 @@
 package ucar.nc2.dt2.coordsys;
 
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dt2.point.UnidataPointDatasetHelper;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
 
 import java.util.*;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 /**
+ * Analyzes the coordinate systems of a dataset to try to identify the Feature Type.
+ *
  * @author caron
  * @since Mar 20, 2008
  */
 public class CoordSysAnalyzer {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysAnalyzer.class);
 
-  private NetcdfDataset ds;
-  private Map<String, NestedTable.Table> tableFind = new HashMap<String, NestedTable.Table>();
-  private Set<NestedTable.Table> tableSet = new HashSet<NestedTable.Table>();
-  private List<NestedTable.Join> joins = new ArrayList<NestedTable.Join>();
-  private List<NestedTable> leaves = new ArrayList<NestedTable>();
-  private List<Attribute> atts = new ArrayList<Attribute>();
+  static private Map<String, Class> conventionHash = new HashMap<String, Class>();
+  static private List<Analyzer> conventionList = new ArrayList<Analyzer>();
+  static private boolean userMode = false;
 
-  public CoordSysAnalyzer(NetcdfDataset ds) {
-    this.ds = ds;
+    // search in the order added
+  static { // wont get loaded unless explicitly called
+    registerAnalyzer("Unidata", UnidataConvention2.class);
+    registerAnalyzer("FslWindProfiler", FslWindProfiler.class);
+    registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObsConvention.class);
 
-    makeTables();
+    // further calls to registerConvention are by the user
+    userMode = true;
+  }
 
-    // link the tables together with joins
-    for (NestedTable.Join join : joins) {
-      NestedTable.Table parent = join.fromTable;
-      NestedTable.Table child = join.toTable;
+  static public void registerAnalyzer(String conventionName, Class c) {
+    if (!(CoordSysAnalyzer.class.isAssignableFrom(c)))
+      throw new IllegalArgumentException("Class " + c.getName() + " must extend CoordSysAnalyzer");
 
-      if (child.parent != null) throw new IllegalStateException("Multiple parents");
-      child.parent = parent;
-      child.join = join;
-
-      if (parent.children == null) parent.children = new ArrayList<NestedTable.Join>();
-      parent.children.add(join);
+    // fail fast - check newInstance works
+    try {
+      c.newInstance();
+    } catch (InstantiationException e) {
+      throw new IllegalArgumentException("CoordSysAnalyzer Class " + c.getName() + " cannot instantiate, probably need default Constructor");
+    } catch (IllegalAccessException e) {
+      throw new IllegalArgumentException("CoordSysAnalyzer Class " + c.getName() + " is not accessible");
     }
 
-    // find the leaves
-    for (NestedTable.Table table : tableSet) {
-      if (table.children == null) { // its a leaf
-        NestedTable flatTable = new NestedTable(this, table);
-        if (flatTable.isOk()) { // it has lat,lon,time coords
-          leaves.add(flatTable);
+    // user stuff gets put at top
+    if (userMode)
+      conventionList.add(0, new Analyzer(conventionName, c));
+    else
+      conventionList.add(new Analyzer(conventionName, c));
+
+    // user stuff will override here
+    conventionHash.put(conventionName, c);
+  }
+
+  static private class Analyzer {
+    String convName;
+    Class convClass;
+
+    Analyzer(String convName, Class convClass) {
+      this.convName = convName;
+      this.convClass = convClass;
+    }
+  }
+
+  static public CoordSysAnalyzer factory(NetcdfDataset ds) throws IOException {
+
+    // look for the Conventions attribute
+    String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    if (convName == null)
+      convName = ds.findAttValueIgnoreCase(null, "Convention", null);
+
+    // now look for Convention parsing class
+    Class convClass = null;
+    if (convName != null) {
+      convName = convName.trim();
+
+      // look for Convention parsing class
+      convClass = conventionHash.get(convName);
+
+      // now look for comma or semicolon or / delimited list
+      if (convClass == null) {
+        List<String> names = new ArrayList<String>();
+
+        if ((convName.indexOf(',') > 0) || (convName.indexOf(';') > 0)) {
+          StringTokenizer stoke = new StringTokenizer(convName, ",;");
+          while (stoke.hasMoreTokens()) {
+            String name = stoke.nextToken();
+            names.add(name.trim());
+          }
+        } else if ((convName.indexOf('/') > 0)) {
+          StringTokenizer stoke = new StringTokenizer(convName, "/");
+          while (stoke.hasMoreTokens()) {
+            String name = stoke.nextToken();
+            names.add(name.trim());
+          }
+        }
+
+        if (names.size() > 0) {
+          // search the registered conventions, in order
+          for (Analyzer conv : conventionList) {
+            for (String name : names) {
+              if (name.equalsIgnoreCase(conv.convName)) {
+                convClass = conv.convClass;
+                convName = name;
+              }
+            }
+            if (convClass != null) break;
+          }
         }
       }
     }
+
+    // look for ones that dont use Convention attribute, in order added.
+    // call static method isMine() using reflection.
+    if (convClass == null) {
+      convName = null;
+      for (Analyzer conv : conventionList) {
+        Class c = conv.convClass;
+        Method m;
+
+        try {
+          m = c.getMethod("isMine", new Class[]{NetcdfDataset.class});
+        } catch (NoSuchMethodException ex) {
+          continue;
+        }
+
+        try {
+          Boolean result = (Boolean) m.invoke(null, ds);
+          if (result) {
+            convClass = c;
+            break;
+          }
+        } catch (Exception ex) {
+          System.out.println("ERROR: Class " + c.getName() + " Exception invoking isMine method\n" + ex);
+        }
+      }
+    }
+
+    // no convention class found, use CoordSysAnalyzer as the default
+    boolean usingDefault = (convClass == null);
+    if (usingDefault)
+      convClass = CoordSysAnalyzer.class;
+
+    // get an instance of the class
+    CoordSysAnalyzer analyzer;
+    try {
+      analyzer = (CoordSysAnalyzer) convClass.newInstance();
+    } catch (InstantiationException e) {
+      log.error("CoordSysAnalyzer create failed", e);
+      return null;
+    } catch (IllegalAccessException e) {
+      log.error("CoordSysAnalyzer create failed", e);
+      return null;
+    }
+
+    if (usingDefault) {
+      analyzer.addUserAdvice("No CoordSysAnalyzer found - using default.\n");
+    }
+
+    // add the coord systems
+    if (convName != null)
+      analyzer.setConventionUsed(convName);
+    else
+      analyzer.addUserAdvice("No 'Convention' global attribute.\n");
+
+    analyzer.setDataset(ds);
+    analyzer.analyze();
+    return analyzer;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  protected NetcdfDataset ds;
+  protected Map<String, NestedTable.Table> tableFind = new HashMap<String, NestedTable.Table>();
+  protected Set<NestedTable.Table> tableSet = new HashSet<NestedTable.Table>();
+  protected List<NestedTable.Join> joins = new ArrayList<NestedTable.Join>();
+  protected List<NestedTable> leaves = new ArrayList<NestedTable>();
+  protected List<Attribute> atts = new ArrayList<Attribute>();
+
+  private void setDataset(NetcdfDataset ds) {
+    this.ds = ds;
   }
 
   public List<NestedTable> getFlatTables() {
     return leaves;
   }
 
-  public NetcdfDataset getNetcdfDataset() { return ds; }
+  public NetcdfDataset getNetcdfDataset() {
+    return ds;
+  }
 
   public String getParam(String name) {
-    for (Attribute att : atts)  {
+    for (Attribute att : atts) {
       if (att.getName().equals(name))
         return att.getStringValue();
     }
     return null;
   }
 
+  protected StringBuffer userAdvice = new StringBuffer();
+  public void addUserAdvice(String advice) {
+    userAdvice.append(advice);
+  }
+
+  protected String conventionName;
+  public void setConventionUsed(String convName) {
+    this.conventionName = convName;
+  }
+
   /////////////////////////////////////////////////////////
 
-  private void makeTables() {
+  protected void analyze() throws IOException {
+    annotateDataset();
+    makeTables();
+    annotateTables();
+    makeJoins();
+    makeNestedTables();
+  }
+
+  protected void annotateDataset() { }
+  protected void annotateTables() { }
+
+  protected void makeTables() {
 
     // for netcdf-3 files, convert record dimension to structure
     boolean structAdded = (Boolean) ds.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -115,7 +268,7 @@ public class CoordSysAnalyzer {
     for (Dimension dim : dims) {
       List<Variable> svars = getStructVars(vars, dim);
       if (vars.size() > 0) {
-        NestedTable.Table dt = new NestedTable.Table(svars, dim);
+        NestedTable.Table dt = new NestedTable.Table(ds, svars, dim);
         if ((dt.cols.size() > 0) || (dt.coordVars.size() > 0))
           addTable(dt);
       }
@@ -123,26 +276,16 @@ public class CoordSysAnalyzer {
 
     // look for nested structures
     findNestedStructures(structs);
-
-    // annotate, join using conventions
-    UnidataPointConvention up = new UnidataPointConvention();
-    if (up.isMine(ds)) {
-      up.annotate();
-
-    } else {
-      UnidataConvention u = new UnidataConvention();
-      if (u.isMine(ds))
-        u.annotate();
-    }
   }
 
-  private void addTable(NestedTable.Table t) {
+  protected void addTable(NestedTable.Table t) {
     tableFind.put(t.getName(), t);
-    tableFind.put(t.dim.getName(), t);
-    tableSet.add( t);
+    if (t.dim != null)
+      tableFind.put(t.dim.getName(), t);
+    tableSet.add(t);
   }
 
-  private void findNestedStructures(List<NestedTable.Table> structs) {
+  protected void findNestedStructures(List<NestedTable.Table> structs) {
 
     List<NestedTable.Table> nestedStructs = new ArrayList<NestedTable.Table>();
     for (NestedTable.Table structTable : structs) {
@@ -150,11 +293,11 @@ public class CoordSysAnalyzer {
       for (Variable v : s.getVariables()) {
         if (v instanceof Structure) {  // handles Sequences too
           NestedTable.Table nestedTable = new NestedTable.Table((Structure) v);
-          addTable( nestedTable);
+          addTable(nestedTable);
           nestedStructs.add(nestedTable);
 
           NestedTable.Join join = new NestedTable.Join(NestedTable.JoinType.NestedStructure);
-          join.setTables( structTable, nestedTable);
+          join.setTables(structTable, nestedTable);
           joins.add(join);
         }
       }
@@ -165,7 +308,7 @@ public class CoordSysAnalyzer {
       findNestedStructures(nestedStructs);
   }
 
-  private List<Variable> getStructVars(List<Variable> vars, Dimension dim) {
+  protected List<Variable> getStructVars(List<Variable> vars, Dimension dim) {
     List<Variable> structVars = new ArrayList<Variable>();
     for (Variable v : vars) {
       if (v.isScalar()) continue;
@@ -176,126 +319,56 @@ public class CoordSysAnalyzer {
     return structVars;
   }
 
-    private class UnidataConvention {
+  protected void makeJoins() throws IOException {
 
-      public boolean isMine(NetcdfDataset ds) {
-        // find datatype
-        String datatype = ds.findAttValueIgnoreCase(null, "cdm_datatype", null);
-        if (datatype == null)
-          return false;
-        if (!datatype.equalsIgnoreCase(FeatureType.STATION_PROFILE.toString()))
-          return false;
+  }
 
-        String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
-        if (conv == null) return false;
+  protected void makeNestedTables() {
 
-        StringTokenizer stoke = new StringTokenizer(conv, ",");
-        while (stoke.hasMoreTokens()) {
-          String toke = stoke.nextToken().trim();
-          if (toke.equalsIgnoreCase("Unidata"))
-            return true;
+    // link the tables together with joins
+    for (NestedTable.Join join : joins) {
+      NestedTable.Table parent = join.fromTable;
+      NestedTable.Table child = join.toTable;
+
+      if (child.parent != null) throw new IllegalStateException("Multiple parents");
+      child.parent = parent;
+      child.join = join;
+
+      if (parent.children == null) parent.children = new ArrayList<NestedTable.Join>();
+      parent.children.add(join);
+    }
+
+    // find the leaves
+    for (NestedTable.Table table : tableSet) {
+      if (table.children == null) { // its a leaf
+        NestedTable flatTable = new NestedTable(this, table);
+        if (flatTable.isOk()) { // it has lat,lon,time coords
+          leaves.add(flatTable);
         }
-        return false;
       }
-
-      void annotate() {
-        atts.add(new Attribute("station_id", "stationName"));
-        atts.add(new Attribute("station_npts", "nrecords"));
-      }
-    }
-
-  private class UnidataPointConvention {
-
-    public boolean isMine(NetcdfDataset ds) {
-      // find datatype
-      String datatype = ds.findAttValueIgnoreCase(null, "cdm_datatype", null);
-      if (datatype == null)
-        datatype = ds.findAttValueIgnoreCase(null, "cdm_data_type", null);
-      if (datatype == null)
-        return false;
-      if (!datatype.equalsIgnoreCase(FeatureType.POINT.toString()) && !datatype.equalsIgnoreCase(FeatureType.STATION.toString()))
-        return false;
-
-      String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
-      if (conv == null) return false;
-
-      StringTokenizer stoke = new StringTokenizer(conv, ",");
-      while (stoke.hasMoreTokens()) {
-        String toke = stoke.nextToken().trim();
-        if (toke.equalsIgnoreCase("Unidata Observation Dataset v1.0"))
-          return true;
-      }
-      return false;
-    }
-
-    void annotate() {
-      atts.add(new Attribute("station_id", "station_id"));
-      atts.add(new Attribute("station_desc", "station_description"));
-
-      Variable lastVar = UnidataPointDatasetHelper.findVariable(ds, "lastChild");
-      Variable prevVar = UnidataPointDatasetHelper.findVariable(ds, "prevChild");
-      Variable firstVar = UnidataPointDatasetHelper.findVariable(ds, "firstChild");
-      Variable nextVar = UnidataPointDatasetHelper.findVariable(ds, "nextChild");
-      Variable numChildrenVar = UnidataPointDatasetHelper.findVariable(ds, "numChildren");
-      if (numChildrenVar != null)
-        atts.add(new Attribute("station_npts", numChildrenVar.getShortName()));
-
-      // not implemented
-      // Variable stationIndexVar = UnidataPointDatasetHelper.findVariable(ds, "parent_index");
-
-      Dimension stationDim = UnidataPointDatasetHelper.findDimension(ds, "station");
-      if (stationDim == null) return;
-
-      // annotate station table
-      NestedTable.Table stnTable = tableFind.get(stationDim.getName());
-
-      Dimension obsDim = UnidataPointDatasetHelper.findDimension(ds, "obs");
-      if (obsDim == null)
-        obsDim = ds.getUnlimitedDimension();
-
-      boolean isForwardLinkedList = (firstVar != null) && (nextVar != null);
-      boolean isBackwardLinkedList = (lastVar != null) && (prevVar != null);
-      boolean isContiguousList = !isForwardLinkedList && !isBackwardLinkedList && (firstVar != null) && (numChildrenVar != null);
-
-      NestedTable.Join join;
-      if (isContiguousList) {
-        join = new NestedTable.Join(NestedTable.JoinType.ContiguousList);
-        setTables(join, firstVar.getDimension(0).getName(), obsDim.getName());
-        join.setJoinVariables(firstVar, null, numChildrenVar);
-        joins.add(join);
-      }
-
-      if (isForwardLinkedList) {
-        join = new NestedTable.Join(NestedTable.JoinType.ForwardLinkedList);
-        setTables(join, firstVar.getDimension(0).getName(), nextVar.getDimension(0).getName());
-        join.setJoinVariables(firstVar, nextVar, null);
-        joins.add(join);
-      }
-
-      if (isBackwardLinkedList) {
-        join = new NestedTable.Join(NestedTable.JoinType.BackwardLinkedList);
-        setTables(join, lastVar.getDimension(0).getName(), prevVar.getDimension(0).getName());
-        join.setJoinVariables(lastVar, prevVar, null);
-        joins.add(join);
-      }
-
-      /* if (stationIndexVar != null) {
-        join = new Join("ParentIndex", JoinType.Index);
-        join.setTables( stationIndexVar.getDimension(0).getName(), stationDim.getName());
-        join.setJoinVariables(stationIndexVar, null);
-        joins.add(join);
-      } */
-    }
-
-    void setTables(NestedTable.Join join, String fromName, String toName) {
-      NestedTable.Table fromTable = null, toTable = null;
-      fromTable = tableFind.get(fromName);
-      assert fromTable != null : "cant find "+fromName;
-      toTable = tableFind.get(toName);
-      assert toTable != null : "cant find "+toName;      
-      join.setTables(fromTable, toTable);
     }
   }
+
+  protected Variable findAttribute(List<Variable> list, String name, String value) {
+    for (Variable v : list) {
+      if (ds.findAttValueIgnoreCase(v, name, "").equals(value))
+        return v;
+      if (v instanceof Structure) {
+        Variable vv = findAttribute(((Structure) v).getVariables(), name, value);
+        if (vv != null) return vv;
+      }
+    }
+    return null;
+  }
+
+    protected void setTables(NestedTable.Join join, String fromName, String toName) {
+      NestedTable.Table fromTable = null, toTable = null;
+      fromTable = tableFind.get(fromName);
+      assert fromTable != null : "cant find " + fromName;
+      toTable = tableFind.get(toName);
+      assert toTable != null : "cant find " + toName;
+      join.setTables(fromTable, toTable);
+    }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -324,35 +397,38 @@ public class CoordSysAnalyzer {
   }
 
   public void showNestedTables(java.util.Formatter sf) {
-    sf.format("\nNestedTables");
-    for (NestedTable t : leaves)
-      sf.format(" %s\n", t);
+    for (NestedTable nt : leaves) {
+      nt.show(sf);
+    }
   }
 
   public void getDetailInfo(java.util.Formatter sf) {
     sf.format("\nCoordSysAnalyzer on Dataset %s\n", ds.getLocation());
-    showCoordSys(sf);
-    showCoordAxes(sf);
-    showTables(sf);
+    //showCoordSys(sf);
+    //showCoordAxes(sf);
+    //showTables(sf);
     showNestedTables(sf);
   }
-  
+
   static void doit(String filename) throws IOException {
     System.out.println(filename);
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    CoordSysAnalyzer csa = new CoordSysAnalyzer(ncd);
-    // System.out.println(ncd);
+    CoordSysAnalyzer csa = CoordSysAnalyzer.factory(ncd);
     csa.getDetailInfo(new Formatter(System.out));
     System.out.println("-----------------");
   }
 
   static public void main(String args[]) throws IOException {
+    doit("C:/data/dt2/station/Surface_METAR_20080205_0000.nc");
+    doit("C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr");
+    doit("C:/data/bufr/edition3/idd/profiler/PROFILER_2.bufr");
+    doit("C:/data/profile/PROFILER_wind_01hr_20080410_2300.nc");
+    doit("C:/data/profile/Sean_multidim_20070301.nc");
+
     //doit("C:/data/dt2/station/ndbc.nc");
     //doit("C:/data/dt2/station/UnidataMultidim.ncml");
     //doit("R:/testdata/point/bufr/data/050391800.iupt01");
     //doit("C:/data/rotatedPole/eu.mn.std.fc.d00z20070820.ncml");
     //doit("C:/data/cadis/tempting");
-    //doit("C:/data/dt2/station/Surface_METAR_20080205_0000.nc");
-    doit("C:/data/dt2/profile/PROFILER_1.bufr");
   }
 }

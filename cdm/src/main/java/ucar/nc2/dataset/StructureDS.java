@@ -210,7 +210,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   // VariableEnhanced implementation
 
-
   public Array convert(Array data) throws IOException {
     ArrayStructure as = (ArrayStructure) data;
     if (!needsConverting(this, as)) return data;
@@ -223,7 +222,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       if (v2 == null) continue;
 
       if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs())) {
-        Array mdata = as.getMemberArray(m); // LOOK can we use ASBB directly?
+        Array mdata = as.extractMemberArray(m);
         mdata = v2.convert(mdata);
         as.setMemberArray(m, mdata);
       }
@@ -232,9 +231,20 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       if (v2 instanceof StructureDS) {
         StructureDS innerStruct = (StructureDS) v2;
         if (innerStruct.needsConverting(innerStruct, null)) {
-          Array innerData = as.getMemberArray(m);
-          innerStruct.convert( innerData);
-          as.setMemberArray(m, innerData);
+
+          if (innerStruct.getDataType() == DataType.SEQUENCE) {
+            ArrayObject.D1 seqArray = (ArrayObject.D1) as.extractMemberArray(m);
+            for (int i=0; i<seqArray.getSize(); i++) {
+              ArraySequence2 innerSeq =  (ArraySequence2) seqArray.get(i);
+              innerStruct.convert( innerSeq); // modify each innerSequence as needed
+            }
+
+          // non-Sequence Structures
+          } else {
+            Array mdata = as.extractMemberArray(m);
+            mdata = innerStruct.convert(mdata);
+            as.setMemberArray(m, mdata);
+          }
         }
       }
       m.setVariableInfo(v2);
