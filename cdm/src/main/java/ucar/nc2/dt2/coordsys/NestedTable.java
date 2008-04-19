@@ -73,7 +73,6 @@ public class NestedTable {
     lonVE = findCoordinateAxis(AxisType.Lon, leaf, 0);
     altVE = findCoordinateAxis(AxisType.Height, leaf, 0);
 
-    // count nesting
     nestedLevels = 1;
     Table t = leaf;
     while (t.parent != null) {
@@ -120,11 +119,18 @@ public class NestedTable {
         throw new IllegalStateException("cant find "+axis.getShortName());
     }
 
+    double getCoordValue(List<StructureData> structList) {
+      StructureData struct = structList.get( nestingLevel);
+      return struct.convertScalarDouble( member);
+    }
+
     public String toString() { return axis.getName()+" tableIndex= "+ nestingLevel; }
   }
 
-  // bogus
   public FeatureType getFeatureType() {
+    if (cs.ft != null) return cs.ft;
+
+    // bogus
     if (nestedLevels == 1) return FeatureType.POINT;
     if (nestedLevels == 2) return FeatureType.STATION;
     if (nestedLevels == 3) return FeatureType.STATION_PROFILE;
@@ -180,36 +186,22 @@ public class NestedTable {
 
   // Point
   public StructureDataIterator getObsDataIterator(int bufferSize) throws IOException {
-    return getStructureDataIterator(leaf, bufferSize);
-  }
-
-  private StructureDataIterator getStructureDataIterator(Table table, int bufferSize) throws IOException {
-
-    switch (table.type) {
-      case Structure:
-        return table.getStructureDataIterator(bufferSize);
-
-      case PseudoStructure: {
-        StructurePseudo sp = new StructurePseudo(cs.getNetcdfDataset(), null, getName(), table.dim);
-        return sp.getStructureIterator(bufferSize);
-      }
-    }
-    return null;
+    return leaf.getStructureDataIterator(bufferSize);
   }
 
   //Station
   public StructureDataIterator getStationDataIterator(int bufferSize) throws IOException {
     if (getFeatureType() == FeatureType.STATION)
-       return getStructureDataIterator(leaf.parent, bufferSize);
+       return leaf.parent.getStructureDataIterator( bufferSize);
 
     if (getFeatureType() == FeatureType.STATION_PROFILE)
-       return getStructureDataIterator(leaf.parent.parent, bufferSize);
+       return leaf.parent.parent.getStructureDataIterator(bufferSize);
 
     throw new UnsupportedOperationException("Not a StationFeatureCollection or StationProfileFeatureCollection");
   }
 
   public StructureDataIterator getStationObsDataIterator(StructureData stationData, int bufferSize) throws IOException {
-    return getStructureDataIterator(leaf, stationData);
+    return join(stationData, leaf);
   }
 
   // Station Profile
@@ -217,7 +209,7 @@ public class NestedTable {
     if (getFeatureType() != FeatureType.STATION_PROFILE)
       throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
 
-    return getStructureDataIterator(leaf.parent, stationData);
+    return join(stationData, leaf.parent);
   }
 
   // ft.getStationProfileObsDataIterator(sdataList, bufferSize)
@@ -226,10 +218,11 @@ public class NestedTable {
       throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
 
     StructureData profileData = structList.get(1);
-    return getStructureDataIterator(leaf, profileData);
+    return join(profileData, leaf);
   }
 
-  private StructureDataIterator getStructureDataIterator(Table child, StructureData parentStruct) throws IOException {
+  // get the StructureDataIterator for the child table contained by the given parent
+  private StructureDataIterator join(StructureData parentStruct, Table child) throws IOException {
 
     switch (child.join.joinType) {
       case NestedStructure: {
@@ -259,9 +252,20 @@ public class NestedTable {
         int numRecords = parentStruct.getScalarInt( child.join.numRecords.getName());
         return new StructureDataIteratorLinked(child.struct, firstRecno, numRecords, null);
       }
+
+      case MultiDim: {
+        ArrayStructureMA asma = new ArrayStructureMA( child.sm, new int[] {child.dim.getLength()});
+        for (Variable v : child.cols) {
+          Array data = parentStruct.getArray( v.getShortName());
+          StructureMembers.Member childm = child.sm.findMember(v.getShortName());
+          childm.setDataArray(data);
+        }
+
+        return asma.getStructureDataIterator();
+      }
     }
 
-    return null;
+    throw new IllegalStateException("Join type = "+child.join.joinType);
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -293,7 +297,6 @@ public class NestedTable {
 
 
   public EarthLocation getEarthLocation(List<StructureData> structList) {
-    StructureData obsData = structList.get(0); // LOOK - assumes that lat, lon, alt is member of obsData
 
     if (latVE.member == null) {
       latVE.findMember(structList);
@@ -302,9 +305,9 @@ public class NestedTable {
         altVE.findMember(structList);
     }
 
-    double lat = obsData.convertScalarDouble(latVE.member);
-    double lon = obsData.convertScalarDouble(lonVE.member);
-    double alt = (altVE == null) ? 0.0 : obsData.convertScalarDouble(altVE.member);
+    double lat = latVE.getCoordValue(structList);
+    double lon = lonVE.getCoordValue(structList);
+    double alt = (altVE == null) ? 0.0 : altVE.getCoordValue(structList);
 
     return new EarthLocationImpl(lat, lon, alt);
   }
@@ -322,12 +325,21 @@ public class NestedTable {
     }
 
     if (stnNameMember == null) {
+      CoordSysAnalyzer.StationInfo info = cs.getStationInfo();
       StructureMembers members = stationData.getStructureMembers();
-      stnNameMember = members.findMember(cs.getParam("station_id"));
-      stnDescMember = members.findMember(cs.getParam("station_desc"));
+      stnNameMember = members.findMember( info.stationId.getShortName());
+      if (info.stationDesc != null)
+        stnDescMember = members.findMember( info.stationDesc.getShortName());
     }
 
-    String stationName = stationData.getScalarString(stnNameMember);
+    String stationName;
+    if (stnNameMember.getDataType() == DataType.STRING)
+      stationName = stationData.getScalarString(stnNameMember);
+    else {
+      int no = (int) stationData.convertScalarDouble(stnNameMember);
+      stationName = "#"+no;
+    }
+
     String stationDesc = (stnDescMember == null) ? stationName : stationData.getScalarString(stnDescMember);
     double lat = stationData.convertScalarDouble(latVE.member);
     double lon = stationData.convertScalarDouble(lonVE.member);
@@ -344,7 +356,7 @@ public class NestedTable {
   ///////////////////////////////////////////////////////////////////////////////////////////
 
   public enum TableType {
-    Structure, PseudoStructure, ArrayStructure
+    Structure, PseudoStructure, ArrayStructure, MultiDim
   }
 
   /**
@@ -356,17 +368,16 @@ public class NestedTable {
     Dimension dim;          // common outer dimension
     String name;
 
-    List<Variable> cols = new ArrayList<Variable>();    // data variables
-    List<CoordinateAxis> coordVars = new ArrayList<CoordinateAxis>(); // coord axes
-    Structure struct;
-    ArrayStructure as;
+    List<Variable> cols = new ArrayList<Variable>();    // all variables
+    List<CoordinateAxis> coordVars = new ArrayList<CoordinateAxis>(); // just the coord axes
+
+    Structure struct; // Structure, PseudoStructure
+    ArrayStructure as;  // ArrayStructure
+    StructureMembers sm;  // MultiDim
 
     Table parent;
     Join join; // the join to its parent
     List<Join> children;
-
-    Table() {
-    }
 
     // make a table based on a Structure
     Table(Structure struct) {
@@ -377,29 +388,44 @@ public class NestedTable {
       this.dim = struct.getDimension(0);
 
       for (Variable v : struct.getVariables()) {
-        if (v instanceof CoordinateAxis) {
+        if (v instanceof CoordinateAxis)
           coordVars.add((CoordinateAxis) v);
-        } else {
-          this.cols.add(v);
-        }
+
+        this.cols.add(v);
       }
     }
 
-    // make a table based on a variables with same outer dimension
+    // make a table based on a given list of variables with a common outer dimension
     Table(NetcdfDataset ds, List<Variable> cols, Dimension dim) {
       this.type = TableType.PseudoStructure;
       this.dim = dim;
       this.name = dim.getName();
 
       for (Variable v : cols) {
-        if (v instanceof CoordinateAxis) {
+        if (v instanceof CoordinateAxis)
           coordVars.add((CoordinateAxis) v);
-        } else {
-          this.cols.add(v);
-        }
+        this.cols.add(v);
       }
+      struct = new StructurePseudo(ds, null, getName(), cols, dim);
+    }
 
-      struct = new StructurePseudo(ds, null, getName(), dim);
+    // make a table based on a given list of variables with a common outer dimension
+    Table(NetcdfDataset ds, List<Variable> cols, Dimension outer, Dimension inner) {
+      this.type = TableType.MultiDim;
+      this.dim = inner;
+      this.name = inner.getName();
+
+      sm = new StructureMembers(name);
+      for (Variable v : cols) {
+        if (v instanceof CoordinateAxis)
+          coordVars.add((CoordinateAxis) v);
+        this.cols.add(v);
+
+        int rank = v.getRank();
+        int[] shape = new int[rank-2];
+        System.arraycopy(v.getShape(), 2, shape, 0, rank-2);
+        sm.addMember( v.getShortName(), v.getDescription(),  v.getUnitsString(), v.getDataType(), shape);
+      }
     }
 
     // make a table based on memory resident ArrayStructure
@@ -420,7 +446,7 @@ public class NestedTable {
           return as.getStructureDataIterator();
       }
 
-      return null;
+      throw new IllegalStateException("Table type = "+type);
     }
 
     public String getName() {
@@ -469,8 +495,10 @@ public class NestedTable {
       f.format("\n%sTable %s: type=%s(%s) %s\n", s, getName(),type, dimDesc, joinDesc);
       for (CoordinateAxis axis : coordVars)
         f.format("%s  %s [%s]\n", s, axis.getNameAndDimensions(), axis.getAxisType());
-      for (Variable v : cols)
-        f.format("%s  %s \n", s, v.getNameAndDimensions());
+      for (Variable v : cols) {
+        if (!(v instanceof CoordinateAxis))
+          f.format("%s  %s \n", s, v.getNameAndDimensions());
+      }
       return indent + 2;
     }
     String indent(int n) {
@@ -480,8 +508,10 @@ public class NestedTable {
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
+
   public enum JoinType {
-    ContiguousList, ForwardLinkedList, BackwardLinkedList, ParentLink, MultiDim, NestedStructure, Identity
+    ContiguousList, ForwardLinkedList, BackwardLinkedList, MultiDim, NestedStructure, Identity
   }
 
   public static class Join implements Comparable<Join> {

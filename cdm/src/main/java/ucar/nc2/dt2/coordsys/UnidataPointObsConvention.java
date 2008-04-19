@@ -20,13 +20,18 @@
 package ucar.nc2.dt2.coordsys;
 
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 import ucar.nc2.dt2.point.UnidataPointDatasetHelper;
+import ucar.ma2.StructureMembers;
 
 import java.util.StringTokenizer;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.IOException;
 
 /**
@@ -37,55 +42,52 @@ import java.io.IOException;
  */
 public class UnidataPointObsConvention extends CoordSysAnalyzer {
 
-  static public boolean isMine(NetcdfDataset ds) {
-    // find datatype
+  private FeatureType getFeatureType() {
     String datatype = ds.findAttValueIgnoreCase(null, "cdm_datatype", null);
     if (datatype == null)
       datatype = ds.findAttValueIgnoreCase(null, "cdm_data_type", null);
-    if (datatype == null)
-      return false;
-    if (!datatype.equalsIgnoreCase(FeatureType.POINT.toString()) && !datatype.equalsIgnoreCase(FeatureType.STATION.toString()))
-      return false;
-
-    String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
-    if (conv == null) return false;
-
-    StringTokenizer stoke = new StringTokenizer(conv, ",");
-    while (stoke.hasMoreTokens()) {
-      String toke = stoke.nextToken().trim();
-      if (toke.equalsIgnoreCase("Unidata Observation Dataset v1.0"))
-        return true;
-    }
-    return false;
+    return (datatype == null) ? null : FeatureType.getType(datatype);
   }
 
   @Override
   public void makeJoins() throws IOException {
     super.makeJoins();
 
-    atts.add(new Attribute("station_id", "station_id"));
-    atts.add(new Attribute("station_desc", "station_description"));
+    Dimension obsDim = UnidataPointDatasetHelper.findObsDimension(ds);
+    if (obsDim == null) {
+      userAdvice.format("Must have an Observation dimension: named by global attribute 'observationDimension', or unlimited dimension");
+      return;
+    }
+
+    FeatureType ft = getFeatureType();
+    if (ft == FeatureType.POINT) return;
 
     Variable lastVar = UnidataPointDatasetHelper.findVariable(ds, "lastChild");
     Variable prevVar = UnidataPointDatasetHelper.findVariable(ds, "prevChild");
     Variable firstVar = UnidataPointDatasetHelper.findVariable(ds, "firstChild");
     Variable nextVar = UnidataPointDatasetHelper.findVariable(ds, "nextChild");
     Variable numChildrenVar = UnidataPointDatasetHelper.findVariable(ds, "numChildren");
-    if (numChildrenVar != null)
-      atts.add(new Attribute("station_npts", numChildrenVar.getShortName()));
+
+    Dimension stationDim = UnidataPointDatasetHelper.findDimension(ds, "station");
+    if (stationDim == null) {
+      userAdvice.format("Must have a dimension named station, or named by global attribute 'stationDimension'");
+      return;
+    }
+
+    stationInfo.stationId = UnidataPointDatasetHelper.findVariable(ds, "station_id");
+    stationInfo.stationDesc = UnidataPointDatasetHelper.findVariable(ds, "station_description");
+    stationInfo.stationNpts = numChildrenVar;
+    Variable stationMax = UnidataPointDatasetHelper.findVariable(ds, "number_station");
+    if (stationMax != null)
+      stationInfo.nstations = stationMax.readScalarInt();
+
+    // annotate station table
+    NestedTable.Table obsTable = tableFind.get( obsDim.getName());
+    NestedTable.Table stnTable = tableFind.get( stationDim.getName());
 
     // not implemented
     // Variable stationIndexVar = UnidataPointDatasetHelper.findVariable(ds, "parent_index");
 
-    Dimension stationDim = UnidataPointDatasetHelper.findDimension(ds, "station");
-    if (stationDim == null) return;
-
-    // annotate station table
-    // NestedTable.Table stnTable = tableFind.get(stationDim.getName());
-
-    Dimension obsDim = UnidataPointDatasetHelper.findDimension(ds, "obs");
-    if (obsDim == null)
-      obsDim = ds.getUnlimitedDimension();
 
     boolean isForwardLinkedList = (firstVar != null) && (nextVar != null);
     boolean isBackwardLinkedList = (lastVar != null) && (prevVar != null);
@@ -94,22 +96,43 @@ public class UnidataPointObsConvention extends CoordSysAnalyzer {
     NestedTable.Join join;
     if (isContiguousList) {
       join = new NestedTable.Join(NestedTable.JoinType.ContiguousList);
-      setTables(join, firstVar.getDimension(0).getName(), obsDim.getName());
+      join.setTables(stnTable, obsTable);
       join.setJoinVariables(firstVar, null, numChildrenVar);
       joins.add(join);
-    }
 
-    if (isForwardLinkedList) {
+    } else if (isForwardLinkedList) {
       join = new NestedTable.Join(NestedTable.JoinType.ForwardLinkedList);
-      setTables(join, firstVar.getDimension(0).getName(), nextVar.getDimension(0).getName());
+      join.setTables(stnTable, obsTable);
       join.setJoinVariables(firstVar, nextVar, null);
       joins.add(join);
-    }
 
-    if (isBackwardLinkedList) {
+    } else if (isBackwardLinkedList) {
       join = new NestedTable.Join(NestedTable.JoinType.BackwardLinkedList);
-      setTables(join, lastVar.getDimension(0).getName(), prevVar.getDimension(0).getName());
+      join.setTables(stnTable, obsTable);
       join.setJoinVariables(lastVar, prevVar, null);
+      joins.add(join);
+
+    } else if (obsTable == null) {  // multidim
+
+      // create the obsTable - all variables with (stationDim,obsDim,...)
+      List<Variable> obsVariables = new ArrayList<Variable>();
+      StructureMembers structureMembers = new StructureMembers("obs");
+      for (Variable v : ds.getVariables()) {
+        if (v.getRank() < 2) continue;
+        if (v.getDimension(0).equals( stationDim) && v.getDimension(1).equals( obsDim)) {
+          obsVariables.add(v);
+          int[] shape = v.getShape();
+          shape[0] = 1;
+          shape[1] = 1;
+          structureMembers.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
+        }
+      }
+      obsTable = new NestedTable.Table(ds, obsVariables, stationDim, obsDim);
+      addTable( obsTable);
+
+      // make join
+      join = new NestedTable.Join(NestedTable.JoinType.MultiDim);
+      join.setTables(stnTable, obsTable);
       joins.add(join);
     }
 
@@ -120,4 +143,5 @@ public class UnidataPointObsConvention extends CoordSysAnalyzer {
      joins.add(join);
    } */
   }
+
 }

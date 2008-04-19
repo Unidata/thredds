@@ -22,6 +22,7 @@ package ucar.nc2.dt2.coordsys;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
+import ucar.nc2.dt2.point.UnidataPointDatasetHelper;
 import ucar.nc2.constants.FeatureType;
 
 import java.util.StringTokenizer;
@@ -54,14 +55,9 @@ public class UnidataConvention2 extends CoordSysAnalyzer {
 
   @Override
   public void annotateDataset() {
-
-    Variable stnVar = findAttribute(ds.getVariables(), "standard_name", "station_name");
-    if (stnVar != null) {
-      atts.add(new Attribute("station_id", stnVar.getShortName()));
-    } else {
-      atts.add(new Attribute("station_id", "stationName"));
-      atts.add(new Attribute("station_npts", "nrecords"));
-    }
+    stationInfo.stationId = findVariableWithAttribute(ds.getVariables(), "standard_name", "station_name");
+    stationInfo.stationDesc = ds.findVariable("station_description");
+    stationInfo.stationNpts = ds.findVariable("nrecords");
   }
 
 }

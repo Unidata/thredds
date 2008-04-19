@@ -176,14 +176,14 @@ public class CoordSysAnalyzer {
     }
 
     if (usingDefault) {
-      analyzer.addUserAdvice("No CoordSysAnalyzer found - using default.\n");
+      analyzer.userAdvice.format("No CoordSysAnalyzer found - using default.\n");
     }
 
     // add the coord systems
     if (convName != null)
       analyzer.setConventionUsed(convName);
     else
-      analyzer.addUserAdvice("No 'Convention' global attribute.\n");
+      analyzer.userAdvice.format("No 'Convention' global attribute.\n");
 
     analyzer.setDataset(ds);
     analyzer.analyze();
@@ -196,7 +196,7 @@ public class CoordSysAnalyzer {
   protected Set<NestedTable.Table> tableSet = new HashSet<NestedTable.Table>();
   protected List<NestedTable.Join> joins = new ArrayList<NestedTable.Join>();
   protected List<NestedTable> leaves = new ArrayList<NestedTable>();
-  protected List<Attribute> atts = new ArrayList<Attribute>();
+  protected FeatureType ft;
 
   private void setDataset(NetcdfDataset ds) {
     this.ds = ds;
@@ -210,21 +210,13 @@ public class CoordSysAnalyzer {
     return ds;
   }
 
-  public String getParam(String name) {
-    for (Attribute att : atts) {
-      if (att.getName().equals(name))
-        return att.getStringValue();
-    }
-    return null;
-  }
-
-  protected StringBuffer userAdvice = new StringBuffer();
-  public void addUserAdvice(String advice) {
-    userAdvice.append(advice);
+  protected Formatter userAdvice = new Formatter();
+  public String getUserAdvice() {
+    return userAdvice.toString();
   }
 
   protected String conventionName;
-  public void setConventionUsed(String convName) {
+  protected void setConventionUsed(String convName) {
     this.conventionName = convName;
   }
 
@@ -239,7 +231,6 @@ public class CoordSysAnalyzer {
   }
 
   protected void annotateDataset() { }
-  protected void annotateTables() { }
 
   protected void makeTables() {
 
@@ -267,15 +258,13 @@ public class CoordSysAnalyzer {
     List<Dimension> dims = ds.getDimensions();
     for (Dimension dim : dims) {
       List<Variable> svars = getStructVars(vars, dim);
-      if (vars.size() > 0) {
-        NestedTable.Table dt = new NestedTable.Table(ds, svars, dim);
-        if ((dt.cols.size() > 0) || (dt.coordVars.size() > 0))
-          addTable(dt);
+      if (svars.size() > 0) {
+        addTable( new NestedTable.Table(ds, svars, dim)); // candidate
       }
     }
 
     // look for nested structures
-    findNestedStructures(structs);
+    findNestedStructures( structs);
   }
 
   protected void addTable(NestedTable.Table t) {
@@ -319,9 +308,9 @@ public class CoordSysAnalyzer {
     return structVars;
   }
 
-  protected void makeJoins() throws IOException {
+  protected void annotateTables() { }
 
-  }
+  protected void makeJoins() throws IOException { }
 
   protected void makeNestedTables() {
 
@@ -349,26 +338,32 @@ public class CoordSysAnalyzer {
     }
   }
 
-  protected Variable findAttribute(List<Variable> list, String name, String value) {
+  /////////////////////////////////////////////////////
+  // utilities
+
+  protected Variable findVariableWithAttribute(List<Variable> list, String name, String value) {
     for (Variable v : list) {
       if (ds.findAttValueIgnoreCase(v, name, "").equals(value))
         return v;
       if (v instanceof Structure) {
-        Variable vv = findAttribute(((Structure) v).getVariables(), name, value);
+        Variable vv = findVariableWithAttribute(((Structure) v).getVariables(), name, value);
         if (vv != null) return vv;
       }
     }
     return null;
   }
 
-    protected void setTables(NestedTable.Join join, String fromName, String toName) {
-      NestedTable.Table fromTable = null, toTable = null;
-      fromTable = tableFind.get(fromName);
-      assert fromTable != null : "cant find " + fromName;
-      toTable = tableFind.get(toName);
-      assert toTable != null : "cant find " + toName;
-      join.setTables(fromTable, toTable);
-    }
+  /////////////////////////////////////////////////////
+  // track station info
+
+  protected StationInfo stationInfo = new StationInfo();
+  StationInfo getStationInfo() {
+    return stationInfo;
+  }  
+  public class StationInfo {
+    Variable stationId, stationDesc, stationNpts;
+    int nstations;
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -419,11 +414,11 @@ public class CoordSysAnalyzer {
   }
 
   static public void main(String args[]) throws IOException {
-    doit("C:/data/dt2/station/Surface_METAR_20080205_0000.nc");
+    /* doit("C:/data/dt2/station/Surface_METAR_20080205_0000.nc");
     doit("C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr");
     doit("C:/data/bufr/edition3/idd/profiler/PROFILER_2.bufr");
-    doit("C:/data/profile/PROFILER_wind_01hr_20080410_2300.nc");
-    doit("C:/data/profile/Sean_multidim_20070301.nc");
+    doit("C:/data/profile/PROFILER_wind_01hr_20080410_2300.nc"); */
+    doit("C:/data/test/20070301.nc");
 
     //doit("C:/data/dt2/station/ndbc.nc");
     //doit("C:/data/dt2/station/UnidataMultidim.ncml");

@@ -28,6 +28,18 @@ import java.io.IOException;
 /**
  * Make a collection of variables with the same outer dimension into a fake Structure.
  * Its fake because the variables are not stored contiguously.
+ * <pre>
+ *  so
+ *   var1(dim, other);
+ *   var2(dim, other);
+ *   var3(dim, other);
+ * becomes
+ *   struct {
+ *     var1(other);
+ *     var2(other);
+ *     var3(other);
+ *   } name(dim);
+ * </pre>
  * @author caron
  */
 public class StructurePseudo extends Structure {
@@ -108,10 +120,6 @@ public class StructurePseudo extends Structure {
     calcElementSize();
   }
 
-  ///////////////
-  // internal reads: all other calls go through these.
-  // subclasses must override, so that NetcdfDataset wrapping will work.
-
   @Override
   protected Array _read() throws IOException {
     if (debugRecord) System.out.println(" read all psuedo records ");
@@ -127,7 +135,6 @@ public class StructurePseudo extends Structure {
     return asma;
   }
 
-  // section of non-structure-member Variable
   @Override
   protected Array _read(Section section) throws IOException, InvalidRangeException  {
     if (null == section)

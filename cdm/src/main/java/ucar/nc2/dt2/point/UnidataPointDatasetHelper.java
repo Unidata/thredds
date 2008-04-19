@@ -160,4 +160,14 @@ public class UnidataPointDatasetHelper {
     }
     return result;
   }
+
+  static public Dimension findObsDimension(NetcdfFile ds) {
+    Dimension result = null;
+    String aname = ds.findAttValueIgnoreCase(null, "observationDimension", null);
+    if (aname != null)
+      result = ds.findDimension(aname);
+    if (result == null)
+      result = ds.getUnlimitedDimension();
+    return result;
+  }
 }
