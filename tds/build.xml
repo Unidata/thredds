@@ -67,7 +67,10 @@
   <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
   <property name="logging.jar" value="external/nlog4j-1.2.25.jar"/>
-  <property name="spring.jar" value="external/spring-2.5.jar"/>
+  <property name="spring.jar" value="external/spring.jar"/>
+  <property name="spring-webmvc.jar" value="external/spring-webmvc.jar"/>
+  <property name="jstl.jar" value="external/jstl.jar"/>
+  <property name="jstl-standard.jar" value="external/standard.jar"/>
 
   <!-- Third-party libraries needed for runtime. -->
   <property name="commons-io.jar" value="external/commons-io-1.2.jar"/>
@@ -106,6 +109,7 @@
       <include name="${jdom.jar}"/>
       <include name="${logging.jar}"/>
       <include name="${spring.jar}"/>
+      <include name="${spring-webmvc.jar}"/>
     </patternset>
   </fileset>
 
@@ -117,6 +121,8 @@
       <include name="${jpeg2000.jar}"/>
       <!-- include name="${xml-apis.jar}"/>
       <include name="${xercesImpl.jar}"/ -->
+      <include name="${jstl.jar}"/>
+      <include name="${jstl-standard.jar}"/>
     </patternset>
   </fileset>
 
@@ -167,7 +173,7 @@
   <target name="dist" depends="compile, makeWar, makeJar-TSF, makeSrc-TDS, makeJavadocZip"/>
 
   <target name="compile" depends="init, release-settings" description="TDS compile">
-    <javac destdir="${build.classes.dir}" source="1.5" target="1.5" debug="${build.debug}"
+    <javac destdir="${build.classes.dir}" source="1.6" target="1.6" debug="${build.debug}"
            debuglevel="${build.debuglevel}" includeAntRuntime="false">
       <src refid="sourcepath"/>
       <patternset refid="sources"/>
@@ -285,7 +291,7 @@
           description="create a war file from the distribution directory">
 
     <!-- build thredds.dqc.DqcServletRedirect -->
-    <javac destdir="${build.classes.dir}" source="1.5" target="1.5" debug="${build.debug}"
+    <javac destdir="${build.classes.dir}" source="1.6" target="1.6" debug="${build.debug}"
            debuglevel="${build.debuglevel}"
            includeAntRuntime="false">
       <src refid="sourcepath"/>
@@ -395,7 +401,7 @@
   <target name="javadoc" description="make the javadocs">
     <mkdir dir="${javadoc.dir}"/>
     <javadoc Doctitle="THREDDS" Windowtitle="THREDDS" maxmemory="256m" Use="true"
-             sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.5">
+             sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.6">
 
       <classpath refid="compile.classpath"/>
 
@@ -587,7 +593,7 @@
     <echo>test.classpath=${test.classpath}</echo>
 
     <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}"
-           source="1.5" target="1.5" debug="${build.debug}">
+           source="1.6" target="1.6" debug="${build.debug}">
       <classpath refid="test.classpath"/>
     </javac>
 
