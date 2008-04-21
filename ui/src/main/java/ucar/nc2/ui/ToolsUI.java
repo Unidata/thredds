@@ -2473,11 +2473,12 @@ public class ToolsUI extends JPanel {
         if (sobsDataset != null) sobsDataset.close();
       } catch (IOException ioe) {
       }
+      detailTA.clear();
 
       StringBuffer log = new StringBuffer();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(null, location, null, log);
+        FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, location, null, log);
         if (featureDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
@@ -2510,6 +2511,7 @@ public class ToolsUI extends JPanel {
         if (sobsDataset != null) sobsDataset.close();
       } catch (IOException ioe) {
       }
+      detailTA.clear();
 
       pfViewer.setDataset(dataset);
       sobsDataset = dataset;

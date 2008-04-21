@@ -34,27 +34,27 @@ import java.io.IOException;
  */
 public interface FeatureDatasetFactory {
 
-  /** Determine if this dataset belongs to you
-   * @param ncd examine this NetcdfDataset to see if it belongs to this class.
+  /** Determine if the factory can open this dataset as an instance of the given feature type
+   * @param ftype can open as this feature type? If null, can open as any feature type?
+   * @param ncd examine this NetcdfDataset.
    * @return true if this class knows how to create a FeatureDataset out of this NetcdfDataset.
    */
-  public boolean isMine( NetcdfDataset ncd);
+  public boolean isMine( FeatureType ftype, NetcdfDataset ncd) throws IOException;
+
+  // since isMine can be expensive, make copy instead of reanalyze
+  public FeatureDatasetFactory copy();
 
   /**
    * Open a NetcdfDataset as a FeatureDataset.
+   * Should only be called if isMine() return true.
    *
-   * @param ncd already opened NetcdfDataset.
+   * @param ftype open as this feature type. If null, open as any feature type.
+   * @param ncd an already opened NetcdfDataset.
    * @param task use may cancel
    * @param errlog place errors here
    * @return a subclass of FeatureDataset
    * @throws java.io.IOException on error
    */
-  public FeatureDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException;
-
-  /**
-   * What kind of Feature data type will this return? LOOK
-   * @return feature type
-   */
-  public FeatureType getFeatureDataType();
+  public FeatureDataset open( FeatureType ftype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException;
 
 }

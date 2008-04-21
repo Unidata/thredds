@@ -1,0 +1,78 @@
+<example>
+
+  <!-- C:/data/dt2/station/ndbc.nc -->
+  <stationFeature>
+    <stationId>":station"</stationId>
+    <stationDesc>":description"</stationDesc>
+    <coordAxis type="lat">lat</coordAxis>
+    <coordAxis type="lon">lon</coordAxis>
+    <coordAxis type="height">0</coordAxis>
+    <table dim="time">
+      <coordAxis type="time">time</coordAxis>
+    </table>
+  </stationFeature>
+
+  <!-- C:/data/dt2/station/madis2.sao -->
+  <stationCollection>
+    <table dim="maxStaticIds" limit="nStatidIds">
+      <lastLink>lastRecord</lastLink>
+
+      <table dim="recNum">
+        <stationId>:stationIdVariable</stationId>
+        <stationWmoId>wmoId</stationWmoId>
+        <coordAxis type="time">timeObs</coordAxis>
+        <coordAxis type="lat">latitude</coordAxis>
+        <coordAxis type="lon">longitude</coordAxis>
+        <coordAxis type="height">elevation</coordAxis>
+        <prevLink>prevRecord</prevLink>
+      </table>
+
+    </table>
+
+    <cdmDataType>:thredds_data_type</cdmDataType>
+  </stationCollection>
+
+  <!-- C:/data/dt2/station/solrad_point_pearson.nc -->
+  <stationCollection>
+    <table dim="stations">
+      <variable name="StationId" dimsRename="stations idcl"/>
+      <variable name="SolarRadiation" dimsPermute="stations time"/>
+      <stationId>StationId</stationId>
+      <coordAxis type="lat">lat</coordAxis>
+      <coordAxis type="lon">lon</coordAxis>
+
+      <table dim="Time">
+        <coordAxis type="time">time</coordAxis>
+      </table>
+
+    </table>
+
+  </stationCollection>
+
+  <!-- C:/data/dt2/station/Surface_METAR_20080205_0000. -->
+  <stationCollection>
+    <table dim="station" limit="number_stations">
+      <lastLink>lastChild</lastLink>
+      <numChildren>numChildren</numChildren>
+
+      <stationId>station_id</stationId>
+      <stationDesc>station_description</stationDesc>
+      <stationWmoId>wmo_id</stationWmoId>
+      <coordAxis type="lat">latitude</coordAxis>
+      <coordAxis type="lon">longitude</coordAxis>
+      <coordAxis type="height">altitude</coordAxis>
+
+      <table dim="recNum">
+        <coordAxis type="time">time_observation</coordAxis>
+        <coordAxis type="timeNominal">time_nominal</coordAxis>
+        <parentIndex>parentIndex</parentIndex>
+        <prevLink>prevChild</prevLink>
+      </table>
+
+    </table>
+
+    <cdmDataType>:cdm_datatype</cdmDataType>
+  </stationCollection>
+
+
+</example>

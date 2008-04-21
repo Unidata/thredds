@@ -154,7 +154,7 @@ public class StructurePseudo extends Structure {
     for (Variable v : orgVariables) {
       List<Range> vsection =  new ArrayList<Range>(v.getRanges());
       vsection.set(0, r);
-      Array data = v.read(vsection);  // LOOK, do we need to reduce ?
+      Array data = v.read(vsection);
       StructureMembers.Member m = smembers.findMember(v.getShortName());
       m.setDataArray(data);
     }

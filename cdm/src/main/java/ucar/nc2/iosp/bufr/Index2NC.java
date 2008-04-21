@@ -21,7 +21,6 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.bufr.*;
 import ucar.nc2.*;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
@@ -51,10 +50,6 @@ class Index2NC {
   private Map<String, List<String>> tableD;
   private BufrDataDescriptionSection dds;
   List<DataDescriptor> dkeys;
-
-  //private Structure recordStructure, levelStructure;
-  //private Map<String, Dimension> dimensions = new HashMap<String, Dimension>();
-  //private List<Index.Parameter> parameters;
 
   Index2NC(BufrRecord record, Index index, ucar.nc2.NetcdfFile ncf) throws IOException {
     this.record = record;
@@ -89,7 +84,7 @@ class Index2NC {
     } else if (cat == 4) {
       ftype = FeatureType.TRAJECTORY;
     } else {
-      throw new UnsupportedOperationException("category=" + category);
+      log.warn("unknown category=" + category);
     }
 
     // parameters in this DS
@@ -98,121 +93,29 @@ class Index2NC {
     // global Attributes
     ncfile.addAttribute(null, new Attribute("history", "direct read of BUFR data by CDM version 4.0"));
     addGlobalAttribute(atts, "location", "original_location");
-    addGlobalAttribute(atts, "bufr_edition", "BUFR_edition");
+    addGlobalAttribute(atts, "bufr_edition", "BUFR:edition");
     addGlobalAttribute(atts, "category", null);
     addGlobalAttribute(atts, "center_id", null);
     addGlobalAttribute(atts, "sub_center_id", null);
     addGlobalAttribute(atts, "table", null);
     addGlobalAttribute(atts, "header", null);
 
-    ncfile.addAttribute(null, new Attribute("Conventions", "Unidata"));
-    /* ncfile.addAttribute(null, new Attribute("observationDimension", "obs"));
-    if (stationDS) {
-      ncfile.addAttribute(null, new Attribute("stationDimension", "stns"));
-      ncfile.addAttribute(null, new Attribute("parent_index_coordinate", "record.parent_index"));
-    } else if (trajectoryDS) {
-      ncfile.addAttribute(null, new Attribute("trajectoryDimension", "trajectories"));
-    } */
+    ncfile.addAttribute(null, new Attribute("Conventions", "Unidata Point Feature v1.0"));
 
-    //ncfile.addAttribute( null, new Attribute( "time_nominal_coordinate", "record.time_nominal" ));
     ncfile.addAttribute(null, new Attribute("time_coverage_start", index.getObsTimes().get(0)));
     ncfile.addAttribute(null, new Attribute("time_coverage_end", index.getObsTimes().get(index.getObsTimes().size() - 1)));
-    //ncfile.addAttribute(null, new Attribute("geospatial_lat_max", "90"));
-    //ncfile.addAttribute(null, new Attribute("geospatial_lat_min", "-90"));
-    //ncfile.addAttribute(null, new Attribute("geospatial_lon_max", "360"));
-    //ncfile.addAttribute(null, new Attribute("geospatial_lon_min", "0"));
 
-    ncfile.addAttribute(null, new Attribute("cdm_datatype", ftype.toString()));
+    if (ftype != null)
+      ncfile.addAttribute(null, new Attribute("cdm_datatype", ftype.toString()));
 
-    /* global Dimensions / Attributes
-    Dimension stnsDim = null, levelsDim = null, trajsDim = null;
-    if (stationDS) {
-      // stnsDim = new Dimension("stns", index.getLocations().size(), true, false, false);
-      ncfile.addDimension(null, stnsDim);
-      //levelsDim = new Dimension("levels", Dimension.UNKNOWN.getLength(), true, false, true);
-      //ncfile.addDimension( null, levelsDim );
-
-    } else if (trajectoryDS) {
-      trajsDim = new Dimension("trajectories", index.getLocations().size(), true, false, false);
-      ncfile.addDimension(null, trajsDim);
-
-    } else if (satelliteDS) {
-      levelsDim = new Dimension("levels", 41, true, false, false);
-      ncfile.addDimension(null, levelsDim);
-    }
-
-    Dimension obsDim = new Dimension("obs", index.getNumberObs(), true, true, false);
-    ncfile.addDimension(null, obsDim);
-    recordStructure.setDimensions(obsDim.getName());
-
-    // create/add variable dimensions
-    for (Index.Parameter p : parameters) {
-      //System.out.println( "p.dim ="+ p.dim );
-      if (p.dimension != 1) { // 1 = obsDim
-        String dim = "dim" + Integer.toString(p.dimension);
-        if (!dimensions.containsKey(dim)) {
-          if (p.dimension > 10) {
-            dimensions.put(dim, levelsDim);
-          } else {
-            Dimension d = new Dimension(dim, p.dimension, true, false, false);
-            ncfile.addDimension(null, d);
-            dimensions.put(dim, d);
-          }
-        }
-      }
-    } */
-
-    // Dimension levelsDim = null, trajsDim = null;
-
-    // create variables
-    //if (ftype == FeatureType.TRAJECTORY)
     makeObsRecord();
     makeReportIndexStructure();
 
-    //else if ((ftype == FeatureType.STATION_PROFILE) || (ftype == FeatureType.PROFILE))
-    //  makeProfile(ftype);
-
-    /*
-    } else if (satelliteDS) {
-      createSatVertNC(levelsDim);
-
-    } /* else {
-      // Dimension for variables
-      //System.out.println("parameters.size() =" + parameters.size() );
-      for (Index.Parameter p : parameters) {
-        List<Dimension> dl = new ArrayList<Dimension>();
-
-        if (p.dimension != 1) {
-          String dimName = "levels" + p.dimension;
-          Dimension d = dimensions.get(dimName);
-          if (d == null) {
-            d = new Dimension(dimName, p.dimension);
-            dimensions.put(dimName, d);
-            ncfile.addDimension(null, d);
-          }
-          dl.add(d);
-
-          addVariable(recordStructure, dl, p);
-
-        } else {
-          addVariable(recordStructure, dl, p);
-        }
-      }
-      ncfile.addVariable(null, recordStructure);
-    } */
-/*
-    if( levelStructure != null ) {
-       levelStructure.setDimensions( levelsDim.getName());
-       ncfile.addVariable(null, levelStructure);
-    }
-*/
-    // finish
     ncfile.finish();
-
   }
 
   private Structure makeReportIndexStructure() throws IOException {
-    Structure reportIndex = new Structure(ncfile, null, null, "recordIndex");
+    Structure reportIndex = new Structure(ncfile, null, null, BufrIosp.obsIndex);
     ncfile.addVariable(null, reportIndex);
     reportIndex.setDimensions("record");
 
@@ -235,7 +138,7 @@ class Index2NC {
     Dimension obsDim = new Dimension("record", index.getNumberObs());
     ncfile.addDimension(null, obsDim);
 
-    Structure recordStructure = new Structure(ncfile, null, null, "obsRecord");
+    Structure recordStructure = new Structure(ncfile, null, null, BufrIosp.obsRecord);
     ncfile.addVariable(null, recordStructure);
     recordStructure.setDimensions("record");
 
@@ -378,7 +281,7 @@ class Index2NC {
     }
 
     annotate(v, dataDesc);
-    v.addAttribute(new Attribute("BUFR:TableB_desc", dataDesc.id));
+    v.addAttribute(new Attribute("BUFR:TableB_descriptor", dataDesc.id));
     v.addAttribute(new Attribute("BUFR:bitWidth", dataDesc.bitWidth));
     struct.addMemberVariable(v);
     v.setSPobject(dataDesc);
@@ -648,7 +551,7 @@ for (Index.Parameter p : parameters) {
   private void addGlobalAttribute(Map<String, String> atts, String key, String attName) {
     String value = atts.get(key);
     if (value != null) {
-      if (attName == null) attName = "BUFR_" + key;
+      if (attName == null) attName = "BUFR:" + key;
       ncfile.addAttribute(null, new Attribute(attName, value));
     }
   }

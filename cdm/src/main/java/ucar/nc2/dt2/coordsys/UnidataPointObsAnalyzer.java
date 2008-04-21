@@ -40,7 +40,7 @@ import java.io.IOException;
  * @author caron
  * @since Apr 18, 2008
  */
-public class UnidataPointObsConvention extends CoordSysAnalyzer {
+public class UnidataPointObsAnalyzer extends CoordSysAnalyzer {
 
   private FeatureType getFeatureType() {
     String datatype = ds.findAttValueIgnoreCase(null, "cdm_datatype", null);
@@ -74,9 +74,9 @@ public class UnidataPointObsConvention extends CoordSysAnalyzer {
       return;
     }
 
-    stationInfo.stationId = UnidataPointDatasetHelper.findVariable(ds, "station_id");
-    stationInfo.stationDesc = UnidataPointDatasetHelper.findVariable(ds, "station_description");
-    stationInfo.stationNpts = numChildrenVar;
+    stationInfo.stationId = getMemberName( "station_id");
+    stationInfo.stationDesc = getMemberName( "station_description");
+    stationInfo.stationNpts = numChildrenVar == null ? null : numChildrenVar.getShortName();
     Variable stationMax = UnidataPointDatasetHelper.findVariable(ds, "number_station");
     if (stationMax != null)
       stationInfo.nstations = stationMax.readScalarInt();
@@ -127,7 +127,7 @@ public class UnidataPointObsConvention extends CoordSysAnalyzer {
           structureMembers.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
         }
       }
-      obsTable = new NestedTable.Table(ds, obsVariables, stationDim, obsDim);
+      obsTable = new NestedTable.Table(obsVariables, stationDim, obsDim);
       addTable( obsTable);
 
       // make join
@@ -142,6 +142,11 @@ public class UnidataPointObsConvention extends CoordSysAnalyzer {
      join.setJoinVariables(stationIndexVar, null);
      joins.add(join);
    } */
+  }
+
+  private String getMemberName( String name) {
+    Variable v = UnidataPointDatasetHelper.findVariable(ds, name);
+    return (v != null) ? v.getShortName() : null;
   }
 
 }

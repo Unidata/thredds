@@ -45,6 +45,7 @@ public final class FeatureType {
   // experimental
   public final static FeatureType STATION_PROFILE = new FeatureType("StationProfile");
   public final static FeatureType STATION_RADIAL = new FeatureType("StationRadial");
+  public final static FeatureType ANY_POINT = new FeatureType("AnyPointFeatureCollection");
 
   private String name;
 

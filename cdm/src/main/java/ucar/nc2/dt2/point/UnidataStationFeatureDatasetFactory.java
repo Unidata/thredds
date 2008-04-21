@@ -43,7 +43,7 @@ import java.util.*;
 public class UnidataStationFeatureDatasetFactory implements FeatureDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataStationFeatureDatasetFactory.class);
 
-  public boolean isMine(NetcdfDataset ds) {
+  public boolean isMine(FeatureType ftype, NetcdfDataset ds) {
     if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.STATION.toString()) &&
         !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.STATION.toString()))
       return false;
@@ -67,12 +67,11 @@ public class UnidataStationFeatureDatasetFactory implements FeatureDatasetFactor
     return true;
   }
 
-  public FeatureType getFeatureDataType() {
-    return FeatureType.STATION;
+  public FeatureDatasetFactory copy() {
+    return new UnidataStationFeatureDatasetFactory();
   }
 
-
-  public FeatureDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new UnidataStationFeatureDataset(ncd, errlog);
   }
 
@@ -139,7 +138,7 @@ public class UnidataStationFeatureDatasetFactory implements FeatureDatasetFactor
    } */
 
     public UnidataStationFeatureDataset(NetcdfDataset ds, StringBuffer errlog) throws IOException {
-      super(ds, StationFeature.class);
+      super(ds, FeatureType.STATION);
       parseInfo.append(" PointFeatureDatasetImpl=").append(getClass().getName()).append("\n");
 
       // coordinate variables

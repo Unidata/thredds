@@ -32,10 +32,10 @@ import java.util.List;
  * @author caron
  */
 
-public class VariableSimpleAdapter implements VariableSimpleIF {
+public class VariableSimpleSubclass implements VariableSimpleIF {
   protected VariableSimpleIF v;
 
-  public VariableSimpleAdapter( VariableSimpleIF v) {
+  public VariableSimpleSubclass( VariableSimpleIF v) {
     this.v = v;
   }
 
@@ -53,22 +53,6 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
   public ucar.nc2.Attribute findAttributeIgnoreCase(String attName){
     return v.findAttributeIgnoreCase(attName);
   }
-
- /* public double convertScaleOffsetMissing(byte value) {
-    return v.convertScaleOffsetMissing( value);
-  }
-  public double convertScaleOffsetMissing(short value) {
-    return v.convertScaleOffsetMissing( value);
-  }
-  public double convertScaleOffsetMissing(int value) {
-    return v.convertScaleOffsetMissing( value);
-  }
-  public double convertScaleOffsetMissing(long value) {
-    return v.convertScaleOffsetMissing( value);
-  }
-  public double convertScaleOffsetMissing(double value) {
-    return v.convertScaleOffsetMissing( value);
-  }  */
 
   public String toString() {
     return v.toString();

@@ -46,7 +46,7 @@ public class FeatureDatasetFactoryManager {
     //registerFactory(FeatureType.STATION, UnidataStationFeatureDatasetFactory.class);
 
     //registerFactory(FeatureType.POINT, UnidataPointFeatureDatasetFactory.class);
-    registerFactory(FeatureType.POINT, PointDatasetStandardFactory.class);
+    registerFactory(FeatureType.ANY_POINT, PointDatasetStandardFactory.class);
 
     // further calls to registerFactory are by the user
     userMode = true;
@@ -73,7 +73,7 @@ public class FeatureDatasetFactoryManager {
     if (!(FeatureDatasetFactory.class.isAssignableFrom( c)))
       throw new IllegalArgumentException("Class "+c.getName()+" must implement FeatureDatasetFactory");
 
-    // fail fast - check newInstance works
+    // fail fast - get Instance
     Object instance;
     try {
       instance = c.newInstance();
@@ -92,12 +92,12 @@ public class FeatureDatasetFactoryManager {
   }
 
   static private class Factory {
-    FeatureType datatype;
+    FeatureType featureType;
     Class c;
     FeatureDatasetFactory factory;
 
-    Factory(FeatureType datatype, Class c, FeatureDatasetFactory factory) {
-      this.datatype = datatype;
+    Factory(FeatureType featureType, Class c, FeatureDatasetFactory factory) {
+      this.featureType = featureType;
       this.c = c;
       this.factory = factory;
     }
@@ -129,23 +129,23 @@ public class FeatureDatasetFactoryManager {
   /**
    * Wrap a NetcdfDataset as a FeatureDataset.
    *
-   * @param datatype open this kind of FeatureDataset; may be null, which means search all factories.
-   *   If datatype is not null, only return correct FeatureDataset (eg PointFeatureDataset for DataType.POINT).
-   * @param ncd  the NetcdfDataset to wrap in a TypedDataset
+   * @param featureType open this kind of FeatureDataset; may be null, which means search all factories.
+   *   If datatype is not null, only return FeatureDataset with objects of that type
+   * @param ncd  the NetcdfDataset to wrap as a FeatureDataset
    * @param task user may cancel
    * @param errlog place errors here, may not be null
    * @return a subclass of FeatureDataset
    * @throws java.io.IOException on io error
    */
-  static public FeatureDataset wrap( FeatureType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  static public FeatureDataset wrap( FeatureType featureType, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
 
     // look for a Factory that claims this dataset
-    Class useClass = null;
+    FeatureDatasetFactory useFactory = null;
     for (Factory fac : factoryList) {
-      if ((datatype != null) && (datatype != fac.datatype)) continue;
+      if (!featureTypeOk(featureType, fac.featureType)) continue;
 
-      if (fac.factory.isMine(ncd)) {
-        useClass = fac.c;
+      if (fac.factory.isMine(featureType, ncd)) {
+        useFactory = fac.factory;
         break;
       }
     }
@@ -170,26 +170,27 @@ public class FeatureDatasetFactoryManager {
           return gds;
       } */
 
-   if (null == useClass) {
-      errlog.append("**Failed to find Datatype Factory for= ").append(ncd.getLocation()).append(" datatype= ").append(datatype).append("\n");
+   if (null == useFactory) {
+      errlog.append("**Failed to find Datatype Factory for= ").append(ncd.getLocation()).append(" datatype= ").append(featureType).append("\n");
       return null;
     }
 
     // get a new instance of the Factory class, for thread safety
-    FeatureDatasetFactory builder = null;
-    try {
-      builder = (FeatureDatasetFactory) useClass.newInstance();
-    } catch (InstantiationException e) {
-      errlog.append(e.getMessage()).append("\n");
-    } catch (IllegalAccessException e) {
-      errlog.append(e.getMessage()).append("\n");
-    }
-    if (null == builder) {
-      errlog.append("**Error on FeatureDatasetFactory object from class= ").append(useClass.getName()).append("\n");
-      return null;
+    FeatureDatasetFactory builder = useFactory.copy();
+    return builder.open( featureType, ncd, task, errlog);
+  }
+
+  static public boolean featureTypeOk( FeatureType want, FeatureType facType) {
+    if (want == null) return true;
+    if (want == facType) return true;
+
+    // bit of a kludge I guess
+    if (want == FeatureType.ANY_POINT) {
+      return ((facType == FeatureType.POINT) || (facType == FeatureType.STATION) || (facType == FeatureType.TRAJECTORY) ||
+          (facType == FeatureType.PROFILE) || (facType == FeatureType.STATION_PROFILE) && (facType == FeatureType.SECTION));
     }
 
-    return builder.open( ncd, task, errlog);
+    return false;
   }
 
 }

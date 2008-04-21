@@ -139,7 +139,7 @@ abstract public class StructureData {
 
   /**
    * Get  member data array of any type as an Array.
-   * For more efficiency, use getArray(StructureMembers.Member m).
+   * For more efficiency, use getScalarXXX(Member) or getJavaArrayXXX(Member) is possible.
    * @param memberName name of member Variable.
    * @return member data array of any type as an Array.
    * @throws IllegalArgumentException if name is not legal member name.
@@ -297,7 +297,7 @@ abstract public class StructureData {
   /////
   /**
    * Get int value. Underlying type must be convertible to int.
-   * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
+   * For more efficiency, use getScalarInt(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
    * @return scalar int value
    * @throws IllegalArgumentException if name is not legal member name.
@@ -324,7 +324,7 @@ abstract public class StructureData {
   /////
   /**
    * Get short value. Underlying type must be convertible to short.
-   * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
+   * For more efficiency, use getScalarShort(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
    * @return scalar short value
    * @throws IllegalArgumentException if name is not legal member name.
@@ -351,7 +351,7 @@ abstract public class StructureData {
   /////
   /**
    * Get long value. Underlying type must be convertible to long.
-   * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
+   * For more efficiency, use getScalarLong(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
    * @return scalar long value
    * @throws IllegalArgumentException if name is not legal member name.
@@ -378,7 +378,7 @@ abstract public class StructureData {
 /////
   /**
    * Get char value. Underlying type must be convertible to char.
-   * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
+   * For more efficiency, use getScalarChar(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
    * @return scalar char value
    * @throws IllegalArgumentException if name is not legal member name.
@@ -406,7 +406,6 @@ abstract public class StructureData {
 
   /**
    * Get String value, from rank 0 String or rank 1 char member array.
-   * For more efficiency, use getScalarString(StructureMembers.Member m) if possible.
    * @param memberName name of member Variable.
    * @return scalar String value
    * @throws IllegalArgumentException if name is not legal member name.
@@ -433,7 +432,6 @@ abstract public class StructureData {
 
   /**
     * Get member data of type Structure.
-    * For more efficiency, use getScalarStructure(StructureMembers.Member m) if possible.
     * @param memberName name of member Variable.
     * @return scalar StructureData value
     * @throws IllegalArgumentException if name is not legal member name.
@@ -446,9 +444,8 @@ abstract public class StructureData {
 
   /**
     * Get member data of type Structure.
-    * For more efficiency, use getScalarStructure(StructureMembers.Member m) if possible.
     * @param memberName name of member Variable.
-    * @return scalar StructureData value
+    * @return array of StructureData
     * @throws IllegalArgumentException if name is not legal member name.
     */
   public ArrayStructure getArrayStructure(String memberName) {

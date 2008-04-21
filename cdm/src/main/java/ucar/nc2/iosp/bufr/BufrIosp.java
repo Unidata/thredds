@@ -48,6 +48,8 @@ import java.text.ParseException;
  */
 public class BufrIosp extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp.class);
+  static final String obsRecord = "obsRecord";
+  static final String obsIndex = "obsRecordIndex";
 
   // debugging
   static boolean debugOpen = false, debugMissing = false, debugMissingDetails = false, debugProj = false, debugTiming = false, debugVert = false;
@@ -284,7 +286,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     //}
     Structure s = (Structure) v2;
 
-    if (v2.getName().equals("recordIndex")) {
+    if (v2.getName().equals(obsIndex)) {
       return readIndex(s, section);
     }
 
@@ -491,6 +493,9 @@ public class BufrIosp extends AbstractIOServiceProvider {
       //System.out.println(m.getName()+" offset="+offset);
 
       Variable mv = s.findVariable(m.getName());
+      if (mv == null)
+        System.out.println("HEY");
+
       DataDescriptor dk = (DataDescriptor) mv.getSPobject();
       if (dk.replication == 0)
         offset += 4;
@@ -1376,7 +1381,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
     System.out.println(ncf.toString());
 
-    Structure s = (Structure) ncf.findVariable("obsRecord");
+    Structure s = (Structure) ncf.findVariable(obsRecord);
     StructureData sdata = s.readStructure(0);
     PrintWriter pw = new PrintWriter(System.out);
     NCdumpW.printStructureData(pw, sdata);

@@ -20,7 +20,6 @@
 package ucar.nc2.dt2.coordsys;
 
 import ucar.nc2.*;
-import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
 
@@ -42,10 +41,10 @@ public class CoordSysAnalyzer {
   static private boolean userMode = false;
 
     // search in the order added
-  static { // wont get loaded unless explicitly called
-    registerAnalyzer("Unidata", UnidataConvention2.class);
+  static {
+    registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeatureAnalyzer.class);
     registerAnalyzer("FslWindProfiler", FslWindProfiler.class);
-    registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObsConvention.class);
+    registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObsAnalyzer.class);
 
     // further calls to registerConvention are by the user
     userMode = true;
@@ -84,7 +83,7 @@ public class CoordSysAnalyzer {
     }
   }
 
-  static public CoordSysAnalyzer factory(NetcdfDataset ds) throws IOException {
+  static public CoordSysAnalyzer factory(FeatureType ftype, NetcdfDataset ds) throws IOException {
 
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
@@ -225,14 +224,13 @@ public class CoordSysAnalyzer {
   protected void analyze() throws IOException {
     annotateDataset();
     makeTables();
-    annotateTables();
     makeJoins();
     makeNestedTables();
   }
 
   protected void annotateDataset() { }
 
-  protected void makeTables() {
+  protected void makeTables() throws IOException {
 
     // for netcdf-3 files, convert record dimension to structure
     boolean structAdded = (Boolean) ds.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -308,8 +306,6 @@ public class CoordSysAnalyzer {
     return structVars;
   }
 
-  protected void annotateTables() { }
-
   protected void makeJoins() throws IOException { }
 
   protected void makeNestedTables() {
@@ -361,7 +357,7 @@ public class CoordSysAnalyzer {
     return stationInfo;
   }  
   public class StationInfo {
-    Variable stationId, stationDesc, stationNpts;
+    String stationId, stationDesc, stationNpts;
     int nstations;
   }
 
@@ -408,7 +404,7 @@ public class CoordSysAnalyzer {
   static void doit(String filename) throws IOException {
     System.out.println(filename);
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    CoordSysAnalyzer csa = CoordSysAnalyzer.factory(ncd);
+    CoordSysAnalyzer csa = CoordSysAnalyzer.factory(null, ncd);
     csa.getDetailInfo(new Formatter(System.out));
     System.out.println("-----------------");
   }
@@ -418,7 +414,8 @@ public class CoordSysAnalyzer {
     doit("C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr");
     doit("C:/data/bufr/edition3/idd/profiler/PROFILER_2.bufr");
     doit("C:/data/profile/PROFILER_wind_01hr_20080410_2300.nc"); */
-    doit("C:/data/test/20070301.nc");
+    //doit("C:/data/test/20070301.nc");
+    doit("C:/data/dt2/profile/PROFILER_3.bufr");
 
     //doit("C:/data/dt2/station/ndbc.nc");
     //doit("C:/data/dt2/station/UnidataMultidim.ncml");

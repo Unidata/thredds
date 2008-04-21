@@ -44,16 +44,16 @@ public class NmcStationProfileDatasetFactory implements FeatureDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetStandardFactory.class);
 
   // FeatureDatasetFactory
-  public boolean isMine(NetcdfDataset ds) {
+  public boolean isMine(FeatureType ftype, NetcdfDataset ds) {
     return ds.getIosp() instanceof NmcObsLegacy;
   }
 
-  public FeatureDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new NmcStationProfileDataset(ncd, errlog);
   }
 
-  public FeatureType getFeatureDataType() {
-    return FeatureType.POINT;
+  public FeatureDatasetFactory copy() {
+    return new NmcStationProfileDatasetFactory();
   }
 
   ///////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ public class NmcStationProfileDatasetFactory implements FeatureDatasetFactory {
     private DateUnit dateUnit;
 
     NmcStationProfileDataset(NetcdfDataset ncfile, StringBuffer errlog) throws IOException {
-      super( ncfile, StationProfileFeature.class);
+      super( ncfile, FeatureType.POINT);
 
       stationProfiles = (Structure) ncfile.findVariable("stationProfiles");
       ucar.ma2.StructureDataIterator iter = stationProfiles.getStructureIterator();

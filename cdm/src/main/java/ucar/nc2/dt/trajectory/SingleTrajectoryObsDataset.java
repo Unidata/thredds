@@ -6,7 +6,7 @@ import ucar.nc2.*;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.dt.VariableSimpleAdapter;
+import ucar.nc2.dt.VariableSimpleSubclass;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
@@ -811,7 +811,7 @@ public abstract class SingleTrajectoryObsDataset
     }
   }
 
-  private class MyTypedDataVariable extends VariableSimpleAdapter
+  private class MyTypedDataVariable extends VariableSimpleSubclass
   {
     private int rank;
     private int[] shape;

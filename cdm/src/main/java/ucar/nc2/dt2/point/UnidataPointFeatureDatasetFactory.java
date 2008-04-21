@@ -43,7 +43,7 @@ import ucar.nc2.constants.FeatureType;
 public class UnidataPointFeatureDatasetFactory implements FeatureDatasetFactory {
 
   // FeatureDatasetFactory
-  public boolean isMine(NetcdfDataset ds) {
+  public boolean isMine(FeatureType ftype, NetcdfDataset ds) {
     // find datatype
     String datatype = ds.findAttValueIgnoreCase(null, "cdm_datatype", null);
     if (datatype == null)
@@ -65,11 +65,12 @@ public class UnidataPointFeatureDatasetFactory implements FeatureDatasetFactory 
     return false;
   }
 
-  public FeatureType getFeatureDataType() {
-    return FeatureType.POINT;
+  // since isMine can be expensive, make copy instead of reanalyze
+  public FeatureDatasetFactory copy() {
+    return new UnidataPointFeatureDatasetFactory();
   }
 
-  public FeatureDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
     return new UnidataPointFeatureDataset(ncd, errlog);
   }
 
@@ -78,7 +79,7 @@ public class UnidataPointFeatureDatasetFactory implements FeatureDatasetFactory 
     private RecordDatasetHelper recordHelper;
 
     private UnidataPointFeatureDataset(NetcdfDataset ds, StringBuffer errlog) throws IOException {
-      super(ds, PointFeature.class);
+      super(ds, FeatureType.POINT);
       parseInfo.append(" PointFeatureDatasetImpl=").append(getClass().getName()).append("\n");
  
       // coordinate variables

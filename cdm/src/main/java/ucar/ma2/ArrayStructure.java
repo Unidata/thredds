@@ -499,6 +499,7 @@ public abstract class ArrayStructure extends Array {
    */
   public float convertScalarFloat(int recnum, StructureMembers.Member m) {
     if (m.getDataType() == DataType.FLOAT) return getScalarFloat(recnum, m);
+    if (m.getDataType() == DataType.DOUBLE) return (float) getScalarDouble(recnum, m);
     Object o = getScalarObject(recnum, m);
     if (o instanceof Number) return ((Number) o).floatValue();
     throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to float");
@@ -514,6 +515,7 @@ public abstract class ArrayStructure extends Array {
    */
   public double convertScalarDouble(int recnum, StructureMembers.Member m) {
     if (m.getDataType() == DataType.DOUBLE) return getScalarDouble(recnum, m);
+    if (m.getDataType() == DataType.FLOAT) return (double) getScalarFloat(recnum, m);
     Object o = getScalarObject(recnum, m);
     if (o instanceof Number) return ((Number) o).doubleValue();
     throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to double");
@@ -564,6 +566,13 @@ public abstract class ArrayStructure extends Array {
     if (m.getDataType() != DataType.FLOAT)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be float");
     Array data = m.getDataArray();
+
+    /* debug
+    long len = data.getSize();
+    float[] fa = (float []) data.getStorage();
+    if (recnum * m.getSize() >= fa.length)
+      System.out.println("HEY"); */
+
     return data.getFloat(recnum * m.getSize()); // gets first one in the array
   }
 

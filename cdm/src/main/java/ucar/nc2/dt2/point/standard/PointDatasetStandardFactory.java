@@ -38,15 +38,23 @@ import java.io.IOException;
 
 /**
  * Standard handler for PointFeatureDataset.
- * Can handle POINT, STATION, STATION_PROFILE
+ * Can handle ANY_POINT
  *
  * @author caron
  */
 public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetStandardFactory.class);
 
+  private CoordSysAnalyzer analyser;
+
   // FeatureDatasetFactory
-  public boolean isMine(NetcdfDataset ds) {
+  public boolean isMine(FeatureType ftype, NetcdfDataset ds) throws IOException {
+
+    if ((ftype != null) && (ftype != FeatureType.ANY_POINT)) {
+      if ((ftype != FeatureType.POINT) && (ftype != FeatureType.STATION) && (ftype != FeatureType.TRAJECTORY) &&
+          (ftype != FeatureType.PROFILE) && (ftype != FeatureType.STATION_PROFILE) && (ftype != FeatureType.SECTION))
+      return false;
+    }
 
     boolean hasTime = false;
     boolean hasLat = false;
@@ -60,26 +68,41 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         hasLon = true;
     }
 
-    return hasTime && hasLon && hasLat;
+    // minimum we need
+    if (!(hasTime && hasLon && hasLat))
+      return false;
+
+    // gotta do some work
+    analyser = CoordSysAnalyzer.factory(ftype, ds);
+    for ( NestedTable nt : analyser.getFlatTables()) {
+      if (FeatureDatasetFactoryManager.featureTypeOk(ftype, nt.getFeatureType()))
+        return true;
+    }
+    return false;
   }
 
-  public FeatureDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
-    CoordSysAnalyzer analyser = CoordSysAnalyzer.factory(ncd);
-    return new PointDatasetDefault(analyser, ncd, errlog);
+  public FeatureDatasetFactory copy() {
+    PointDatasetStandardFactory copy = new PointDatasetStandardFactory();
+    copy.analyser = this.analyser;
+    return copy;
   }
 
-  public FeatureType getFeatureDataType() {
-    return FeatureType.POINT;
+  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    if (analyser == null)
+      analyser = CoordSysAnalyzer.factory(ftype, ncd);
+
+    return new PointDatasetDefault(ftype, analyser, ncd, errlog);
   }
 
   /////////////////////////////////////////////////////////////////////
+
   private static class PointDatasetDefault extends PointDatasetImpl {
     private CoordSysAnalyzer analyser;
     private DateUnit timeUnit;
     private FeatureType featureType = FeatureType.POINT; // default
 
-    PointDatasetDefault(CoordSysAnalyzer analyser, NetcdfDataset ds, StringBuffer errlog) throws IOException {
-      super(ds, PointFeature.class);
+    PointDatasetDefault(FeatureType ftype, CoordSysAnalyzer analyser, NetcdfDataset ds, StringBuffer errlog) throws IOException {
+      super(ds, null);
       parseInfo.append(" PointFeatureDatasetImpl=").append(getClass().getName()).append("\n");
       this.analyser = analyser;
 
@@ -96,9 +119,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         }
 
         // create member variables
-        for (Variable v : flatTable.getDataVariables()) {
-          dataVariables.add(v);
-        }
+        dataVariables.addAll(flatTable.getDataVariables());
 
         featureType = flatTable.getFeatureType(); // hope they're all the same
         if (flatTable.getFeatureType() == FeatureType.STATION)

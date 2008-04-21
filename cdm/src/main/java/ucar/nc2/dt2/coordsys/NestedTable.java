@@ -19,10 +19,7 @@
  */
 package ucar.nc2.dt2.coordsys;
 
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.Structure;
-import ucar.nc2.StructurePseudo;
+import ucar.nc2.*;
 import ucar.nc2.dt2.EarthLocation;
 import ucar.nc2.dt2.EarthLocationImpl;
 import ucar.nc2.dt2.Station;
@@ -107,21 +104,19 @@ public class NestedTable {
   private class CoordVarExtractor {
     CoordinateAxis axis;
     int nestingLevel;       // leaf == 0, each parent adds one
-    StructureMembers.Member member;
-
-    void findMember(List<StructureData> structList) {
-      if (axis == null) return;
-
-      StructureData sdata = structList.get(nestingLevel);
-      StructureMembers members = sdata.getStructureMembers();
-      member = members.findMember(axis.getShortName());
-      if (member == null)
-        throw new IllegalStateException("cant find "+axis.getShortName());
-    }
 
     double getCoordValue(List<StructureData> structList) {
       StructureData struct = structList.get( nestingLevel);
-      return struct.convertScalarDouble( member);
+      StructureMembers members = struct.getStructureMembers();
+      StructureMembers.Member m = members.findMember(axis.getShortName());
+      return struct.convertScalarDouble( m);
+    }
+
+    String getCoordValueString(List<StructureData> structList) {
+      StructureData struct = structList.get( nestingLevel);
+      StructureMembers members = struct.getStructureMembers();
+      StructureMembers.Member m = members.findMember(axis.getShortName());
+      return struct.getScalarString( m);
     }
 
     public String toString() { return axis.getName()+" tableIndex= "+ nestingLevel; }
@@ -149,9 +144,17 @@ public class NestedTable {
     }
   }
 
-  public List<Variable> getDataVariables() {
-    return leaf.cols;
-  } // LOOK not right - can be at any level
+  public List<VariableSimpleIF> getDataVariables() {
+    List<VariableSimpleIF> data = new ArrayList<VariableSimpleIF>();
+    addDataVariables(data, leaf);
+    return data;
+  }
+
+  // use recursion so that parent variables come first
+  private void addDataVariables(List<VariableSimpleIF> list, Table t) {
+    if (t.parent != null) addDataVariables( list, t.parent);
+    list.addAll(t.cols);
+  }
 
   public String getName() {
     Formatter formatter = new Formatter();
@@ -255,7 +258,7 @@ public class NestedTable {
 
       case MultiDim: {
         ArrayStructureMA asma = new ArrayStructureMA( child.sm, new int[] {child.dim.getLength()});
-        for (Variable v : child.cols) {
+        for (VariableSimpleIF v : child.cols) {
           Array data = parentStruct.getArray( v.getShortName());
           StructureMembers.Member childm = child.sm.findMember(v.getShortName());
           childm.setDataArray(data);
@@ -270,17 +273,10 @@ public class NestedTable {
 
   ///////////////////////////////////////////////////////////////////////////////
 
-  //private StructureMembers.Member timeMember, latMember, lonMember, altMember;
-
   public double getTime(List<StructureData> structList) {
 
-    if (timeVE.member == null)
-      timeVE.findMember(structList);
-
-    StructureData obsData = structList.get( timeVE.nestingLevel);
-
-    if ((timeVE.member.getDataType() == ucar.ma2.DataType.CHAR) || (timeVE.member.getDataType() == ucar.ma2.DataType.STRING)) {
-      String timeString = obsData.getScalarString(timeVE.member);
+    if ((timeVE.axis.getDataType() == ucar.ma2.DataType.CHAR) || (timeVE.axis.getDataType() == ucar.ma2.DataType.STRING)) {
+      String timeString = timeVE.getCoordValueString(structList);
       Date date;
       try {
         date = dateFormatter.isoDateTimeFormat(timeString);
@@ -291,61 +287,47 @@ public class NestedTable {
       return date.getTime() / 1000.0;
 
     } else {
-      return obsData.convertScalarDouble(timeVE.member);
+      return timeVE.getCoordValue(structList);
     }
   }
 
-
   public EarthLocation getEarthLocation(List<StructureData> structList) {
-
-    if (latVE.member == null) {
-      latVE.findMember(structList);
-      lonVE.findMember(structList);
-      if (altVE != null)
-        altVE.findMember(structList);
-    }
-
     double lat = latVE.getCoordValue(structList);
     double lon = lonVE.getCoordValue(structList);
     double alt = (altVE == null) ? 0.0 : altVE.getCoordValue(structList);
-
     return new EarthLocationImpl(lat, lon, alt);
   }
 
-  private StructureMembers.Member stnNameMember, stnDescMember;
   public Station makeStation(StructureData stationData) {
-    // LOOK - assumes that lat, lon, alt, stnid, stddesc is member of stationData
+    // LOOK this assumes that the data is in the Station structure - one may have to read an obs to get it
+    CoordSysAnalyzer.StationInfo info = cs.getStationInfo();
 
-    if (latVE.member == null) {
-      StructureMembers members = stationData.getStructureMembers();
-      latVE.member = members.findMember(latVE.axis.getShortName());
-      lonVE.member = members.findMember(lonVE.axis.getShortName());
-      if (altVE != null)
-        altVE.member = members.findMember(altVE.axis.getShortName());
-    }
-
-    if (stnNameMember == null) {
-      CoordSysAnalyzer.StationInfo info = cs.getStationInfo();
-      StructureMembers members = stationData.getStructureMembers();
-      stnNameMember = members.findMember( info.stationId.getShortName());
-      if (info.stationDesc != null)
-        stnDescMember = members.findMember( info.stationDesc.getShortName());
-    }
-
-    String stationName;
-    if (stnNameMember.getDataType() == DataType.STRING)
-      stationName = stationData.getScalarString(stnNameMember);
-    else {
-      int no = (int) stationData.convertScalarDouble(stnNameMember);
-      stationName = "#"+no;
-    }
-
-    String stationDesc = (stnDescMember == null) ? stationName : stationData.getScalarString(stnDescMember);
-    double lat = stationData.convertScalarDouble(latVE.member);
-    double lon = stationData.convertScalarDouble(lonVE.member);
-    double alt = (altVE.member == null) ? 0.0 : stationData.convertScalarDouble(altVE.member);
+    String stationName = getCoordValueString(stationData, info.stationId);
+    String stationDesc = (info.stationDesc == null) ? stationName : getCoordValueString(stationData, info.stationDesc);
+    double lat = getCoordValue(stationData, latVE.axis.getShortName());
+    double lon = getCoordValue(stationData, lonVE.axis.getShortName());
+    double alt = (altVE == null) ? 0.0 : getCoordValue(stationData, altVE.axis.getShortName());
 
     return new StationImpl(stationName, stationDesc, lat, lon, alt);
+  }
+
+  double getCoordValue(StructureData struct, String memberName) {
+    StructureMembers members = struct.getStructureMembers();
+    StructureMembers.Member m = members.findMember( memberName);
+    if (m == null)
+      System.out.println("HEY");
+    return struct.convertScalarDouble( m);
+  }
+
+  String getCoordValueString(StructureData struct, String memberName) {
+    StructureMembers members = struct.getStructureMembers();
+    StructureMembers.Member m = members.findMember(memberName);
+    if ((m.getDataType() == DataType.CHAR) || (m.getDataType() == DataType.STRING))
+      return struct.getScalarString( m);
+    else {
+      int no = (int) struct.convertScalarDouble( m);
+      return "#"+no;
+    }
   }
 
   public StructureData makeObsStructureData(List<StructureData> structList) {
@@ -361,19 +343,19 @@ public class NestedTable {
 
   /**
    * A generalization of a Structure. We search among all the possible Tables in a dataset for joins, and coordinate
-   * variables. Based on those we form "interesting" sets and make them into NestedTables.
+   * variables. Based on those, we form "interesting" sets and make them into NestedTables.
    */
   public static class Table {
     TableType type;
-    Dimension dim;          // common outer dimension
     String name;
+    Dimension dim;       // common dimension
 
-    List<Variable> cols = new ArrayList<Variable>();    // all variables
+    List<VariableSimpleIF> cols = new ArrayList<VariableSimpleIF>();    // all variables
     List<CoordinateAxis> coordVars = new ArrayList<CoordinateAxis>(); // just the coord axes
 
-    Structure struct; // Structure, PseudoStructure
-    ArrayStructure as;  // ArrayStructure
-    StructureMembers sm;  // MultiDim
+    Structure struct;    // Structure, PseudoStructure
+    ArrayStructure as;   // ArrayStructure
+    StructureMembers sm; // MultiDim
 
     Table parent;
     Join join; // the join to its parent
@@ -409,8 +391,8 @@ public class NestedTable {
       struct = new StructurePseudo(ds, null, getName(), cols, dim);
     }
 
-    // make a table based on a given list of variables with a common outer dimension
-    Table(NetcdfDataset ds, List<Variable> cols, Dimension outer, Dimension inner) {
+    // make a table based on a given list of variables with 2 common dimensions
+    Table(List<Variable> cols, Dimension outer, Dimension inner) {
       this.type = TableType.MultiDim;
       this.dim = inner;
       this.name = inner.getName();
@@ -433,6 +415,10 @@ public class NestedTable {
       this.type = TableType.ArrayStructure;
       this.as = as;
       this.name = name;
+      this.dim = new Dimension(name, (int) as.getSize(), false);
+      for (StructureMembers.Member m : as.getStructureMembers().getMembers()) {
+        cols.add( new VariableSimpleAdapter(m)); 
+      }
     }
 
     StructureDataIterator getStructureDataIterator(int bufferSize) throws IOException {
@@ -478,8 +464,8 @@ public class NestedTable {
       for (CoordinateAxis axis : coordVars) {
         sbuff.append(" Coordinate= ").append(axis.getAxisType()).append(": ").append(axis.getNameAndDimensions()).append("\n");
       }
-      for (Variable v : cols) {
-        sbuff.append("  ").append(v.getNameAndDimensions()).append("\n");
+      for (VariableSimpleIF v : cols) {
+        sbuff.append("  ").append(v.getName()).append("\n");
       }
       return sbuff.toString();
     }
@@ -495,9 +481,9 @@ public class NestedTable {
       f.format("\n%sTable %s: type=%s(%s) %s\n", s, getName(),type, dimDesc, joinDesc);
       for (CoordinateAxis axis : coordVars)
         f.format("%s  %s [%s]\n", s, axis.getNameAndDimensions(), axis.getAxisType());
-      for (Variable v : cols) {
+      for (VariableSimpleIF v : cols) {
         if (!(v instanceof CoordinateAxis))
-          f.format("%s  %s \n", s, v.getNameAndDimensions());
+          f.format("%s  %s \n", s, v.getName());
       }
       return indent + 2;
     }
@@ -511,7 +497,7 @@ public class NestedTable {
   //////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public enum JoinType {
-    ContiguousList, ForwardLinkedList, BackwardLinkedList, MultiDim, NestedStructure, Identity
+    ContiguousList, ForwardLinkedList, BackwardLinkedList, MultiDim, NestedStructure, Identity, Index
   }
 
   public static class Join implements Comparable<Join> {

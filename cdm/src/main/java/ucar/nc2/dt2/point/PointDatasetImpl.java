@@ -37,13 +37,13 @@ import java.util.ArrayList;
  */
 public class PointDatasetImpl extends FeatureDatasetImpl implements PointFeatureDataset {
   protected List<FeatureCollection> collectionList;
-  protected Class featureInterface;
+  protected FeatureType featureType;
 
   // subsetting
   protected PointDatasetImpl(PointDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
     super(from);
     this.collectionList = from.collectionList;
-    this.featureInterface = from.featureInterface;
+    this.featureType = from.featureType;
 
     if (filter_bb == null)
       this.boundingBox = from.boundingBox;
@@ -57,9 +57,9 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements PointFeature
     }
   }
 
-  public PointDatasetImpl(NetcdfDataset ds, Class featureInterface) {
+  public PointDatasetImpl(NetcdfDataset ds, FeatureType featureType) {
     super(ds);
-    this.featureInterface = featureInterface;
+    this.featureType = featureType;
   }
 
   protected void setPointFeatureCollection(List<FeatureCollection> collectionList) {
@@ -72,7 +72,11 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements PointFeature
   }
 
   public FeatureType getFeatureType() {
-    return FeatureType.POINT;
+    return featureType;
+  }
+
+  protected void setFeatureType(FeatureType ftype) {
+    this.featureType = ftype;
   }
 
   public List<FeatureCollection> getPointFeatureCollectionList() {
