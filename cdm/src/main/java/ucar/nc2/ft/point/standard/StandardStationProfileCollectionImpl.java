@@ -100,7 +100,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
         public boolean hasNext() throws IOException {
           boolean r = iter.hasNext();
-          if (!r) timeSeriesNpts = count; // field in StationProfileFeatureImpl
+          if (!r)
+            timeSeriesNpts = count; // field in StationProfileFeatureImpl
           count++;
           return r;
         }

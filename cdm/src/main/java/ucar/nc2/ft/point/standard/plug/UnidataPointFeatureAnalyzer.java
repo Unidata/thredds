@@ -167,7 +167,9 @@ public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
     @Override
     public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
       String stnName = parentStruct.getScalarString("name"); // which station is this ?
-      return stnMap.get(stnName);  // return iterator for it LOOK make a new one for thread safety ??
+      MyStructureDataIterator iter = stnMap.get(stnName);  // return iterator for it
+      iter.reset();
+      return iter;
     }
 
     Structure getObsStructure() {

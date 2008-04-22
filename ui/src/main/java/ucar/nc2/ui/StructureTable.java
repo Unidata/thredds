@@ -256,6 +256,8 @@ public class StructureTable extends JPanel {
       if (dataWindow == null) {
         dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "netcdfUI"), dataTable);
         windows.put(s.getName(), dataWindow);
+      } else {
+        dataWindow.setComponent(dataTable);
       }
     }
 

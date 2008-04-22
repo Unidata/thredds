@@ -57,7 +57,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private FeatureType selectedType;
 
   private BeanTableSorted fcTable, stnTable, profileTable;
-  private JPanel extra = new JPanel();
+  private JPanel blank = new JPanel();
   private StationRegionDateChooser stationMap;
   private StructureTable obsTable;
   private JSplitPane splitFeatures, splitExtra, splitMap, splitObs;
@@ -192,7 +192,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     splitFeatures = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, fcTable, stnTable);
     splitFeatures.setDividerLocation(prefs.getInt("splitPosF", 50));
 
-    splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitFeatures, extra);
+    splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitFeatures, blank);
     splitExtra.setDividerLocation(prefs.getInt("splitPosX", 50));
 
     splitMap = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, splitExtra, stationMap);
@@ -232,7 +232,6 @@ public class PointFeatureDatasetViewer extends JPanel {
       }
     }
 
-
     if (fcBeans.size() == 0) {
       JOptionPane.showMessageDialog(null, "No PointFeatureCollections found that could be displayed");
     }
@@ -254,11 +253,10 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
 
     if (ftype == FeatureType.STATION_PROFILE) {
-      extra.add(profileTable);
+      splitExtra.setBottomComponent(profileTable);
     } else {
-      extra.removeAll();      
+      splitExtra.setBottomComponent(blank);      
     }
-
 
     this.selectedCollection = fcb.fc;
     this.selectedType = ftype;

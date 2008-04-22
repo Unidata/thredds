@@ -640,7 +640,7 @@ public class BeanTable extends JPanel {
       return type.isPrimitive() || (type == String.class);
     }
 
-    public void setValueAt(Object value,  int row, int col) {
+    public void setValueAt(Object value, int row, int col) {
       Object bean =  beans.get( row);
       try {
         Object[] params = new Object[1];
