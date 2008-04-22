@@ -24,6 +24,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.ft.StationImpl;
 import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.ft.point.standard.TableAnalyzer;
+import ucar.nc2.ft.point.standard.Join;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.*;
 
@@ -81,40 +82,48 @@ public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
     ArrayStructure as = (ArrayStructure) s.read();
     StructureMembers.Member timeMember = as.getStructureMembers().findMember("time");
     StructureMembers.Member nameMember = as.getStructureMembers().findMember("name");
-    int name_len = nameMember.getSize();
 
     // make Index, sort by name and time
     int n = (int) as.getSize();
     index = new ArrayList<Index>(n);
-    for (int i=0; i<n; i++) {
+    for (int i = 0; i < n; i++) {
       long time = as.getScalarLong(i, timeMember);
       String name = as.getScalarString(i, nameMember);
-      Index indy =  new Index(i, time, name);
+      Index indy = new Index(i, time, name);
       index.add(indy);
     }
-    Collections.sort( index);
+    Collections.sort(index);
 
     // make stations : unique names for station
     Structure obs = (Structure) ds.findVariable("obsRecord");
-    List<MyStation> stations = new ArrayList<MyStation>();
+    List<StationImpl> stations = new ArrayList<StationImpl>();
     String name = null;
-    for (int i=0; i<n; i++) {
+    int count = 0;
+    MyStructureDataIterator last = null;
+    for (int i = 0; i < n; i++) {
       Index indy = index.get(i);
       if (!indy.name.equals(name)) {
+        if (last != null) last.setCount(count);
+        count = 0;
         // read in that obs, make a station
         try {
           StructureData sdata = obs.readStructure(i);
           double lat = sdata.getScalarDouble("Latitude");
           double lon = sdata.getScalarDouble("Longitude");
           double elev = sdata.getScalarDouble("Height_of_station");
-          stations.add(new MyStation(indy.name, null, lat, lon, elev, i));
+          stations.add(new StationImpl(indy.name, null, lat, lon, elev));
+
+          last = new MyStructureDataIterator(i);
+          stnMap.put(indy.name, last);
 
         } catch (InvalidRangeException e) {
           throw new IllegalStateException();
         }
         name = indy.name;
       }
+      count++;
     }
+    if (last != null) last.setCount(count);
 
     // make an ArrayStructure for the station table
     StructureMembers sm = new StructureMembers("station");
@@ -125,11 +134,11 @@ public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
     sm.setStructureSize(28);
 
     int nstations = stations.size();
-    ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[] {nstations});
+    ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[]{nstations});
     ByteBuffer bb = asbb.getByteBuffer();
-    for (MyStation stn : stations) {
+    for (StationImpl stn : stations) {
       asbb.addObjectToHeap(stn.getName());
-      bb.putInt( asbb.addObjectToHeap(stn.getName()));
+      bb.putInt(asbb.addObjectToHeap(stn.getName()));
       bb.putDouble(stn.getLatitude());
       bb.putDouble(stn.getLongitude());
       bb.putDouble(stn.getAltitude());
@@ -137,19 +146,37 @@ public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
 
     // add the station table
     NestedTable.Table stnTable = new NestedTable.Table("stations", asbb);
-    addTable( stnTable);
+    addTable(stnTable);
   }
 
   public void makeJoins() throws IOException {
     super.makeJoins();
 
-    NestedTable.Join join = new NestedTable.Join(NestedTable.JoinType.Index);
+    indexJoin = new IndexJoin();
     NestedTable.Table stnTable = tableFind.get("stations");
     NestedTable.Table obsTable = tableFind.get("obsRecord");
-    join.setTables(stnTable, obsTable);
-    joins.add(join);
+    indexJoin.setTables(stnTable, obsTable);
+    joins.add(indexJoin);
   }
 
+  private class IndexJoin extends Join {
+    IndexJoin() {
+      super(Join.Type.Index);
+    }
+
+    @Override
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      String stnName = parentStruct.getScalarString("name"); // which station is this ?
+      return stnMap.get(stnName);  // return iterator for it LOOK make a new one for thread safety ??
+    }
+
+    Structure getObsStructure() {
+      return child.getStruct();
+    }
+  }
+
+  private IndexJoin indexJoin;
+  private Map<String, MyStructureDataIterator> stnMap = new HashMap<String, MyStructureDataIterator>();
   private List<Index> index;
 
   private class Index implements Comparable<Index> {
@@ -170,14 +197,40 @@ public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
     }
   }
 
-  private class MyStation extends StationImpl {
-    int startIndex;
+  private class MyStructureDataIterator implements StructureDataIterator {
+    int startIndex, count;
+    int current;
 
-    MyStation( String name, String desc, double lat, double lon, double alt, int startIndex) {
-      super(name, desc, lat, lon, alt);
+    MyStructureDataIterator(int startIndex) {
       this.startIndex = startIndex;
+      this.current = startIndex;
     }
 
+    void setCount(int count) { this.count = count; }
+
+    public boolean hasNext() throws IOException {
+      return (current - startIndex) < count;
+    }
+
+    public StructureData next() throws IOException {
+      Structure struct = indexJoin.getObsStructure();
+      try {
+        Index indy = index.get(current++);
+        return struct.readStructure(indy.recno);
+
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+        return null;
+      }
+    }
+
+    public void setBufferSize(int bytes) {
+    }
+
+    public StructureDataIterator reset() {
+      this.current = startIndex;
+      return this;
+    }
   }
 
 }

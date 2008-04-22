@@ -197,7 +197,7 @@ public class TableAnalyzer {
   protected NetcdfDataset ds;
   protected Map<String, NestedTable.Table> tableFind = new HashMap<String, NestedTable.Table>();
   protected Set<NestedTable.Table> tableSet = new HashSet<NestedTable.Table>();
-  protected List<NestedTable.Join> joins = new ArrayList<NestedTable.Join>();
+  protected List<Join> joins = new ArrayList<Join>();
   protected List<NestedTable> leaves = new ArrayList<NestedTable>();
   protected FeatureType ft;
 
@@ -295,7 +295,7 @@ public class TableAnalyzer {
           addTable(nestedTable);
           nestedStructs.add(nestedTable);
 
-          NestedTable.Join join = new NestedTable.Join(NestedTable.JoinType.NestedStructure);
+          Join join = new Join(Join.Type.NestedStructure);
           join.setTables(structTable, nestedTable);
           joins.add(join);
         }
@@ -323,15 +323,15 @@ public class TableAnalyzer {
   protected void makeNestedTables() {
 
     // link the tables together with joins
-    for (NestedTable.Join join : joins) {
-      NestedTable.Table parent = join.fromTable;
-      NestedTable.Table child = join.toTable;
+    for (Join join : joins) {
+      NestedTable.Table parent = join.parent;
+      NestedTable.Table child = join.child;
 
       if (child.parent != null) throw new IllegalStateException("Multiple parents");
       child.parent = parent;
       child.join = join;
 
-      if (parent.children == null) parent.children = new ArrayList<NestedTable.Join>();
+      if (parent.children == null) parent.children = new ArrayList<Join>();
       parent.children.add(join);
     }
 
@@ -396,7 +396,7 @@ public class TableAnalyzer {
       sf.format(" %s\n", t);
 
     sf.format("\nJoins\n");
-    for (NestedTable.Join j : joins)
+    for (Join j : joins)
       sf.format(" %s\n", j);
   }
 

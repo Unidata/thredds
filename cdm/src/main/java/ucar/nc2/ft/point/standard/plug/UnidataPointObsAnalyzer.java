@@ -25,6 +25,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.ft.point.UnidataPointDatasetHelper;
 import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.ft.point.standard.TableAnalyzer;
+import ucar.nc2.ft.point.standard.Join;
 import ucar.ma2.StructureMembers;
 
 import java.util.List;
@@ -90,21 +91,21 @@ public class UnidataPointObsAnalyzer extends TableAnalyzer {
     boolean isBackwardLinkedList = (lastVar != null) && (prevVar != null);
     boolean isContiguousList = !isForwardLinkedList && !isBackwardLinkedList && (firstVar != null) && (numChildrenVar != null);
 
-    NestedTable.Join join;
+    Join join;
     if (isContiguousList) {
-      join = new NestedTable.Join(NestedTable.JoinType.ContiguousList);
+      join = new Join(Join.Type.ContiguousList);
       join.setTables(stnTable, obsTable);
       join.setJoinVariables(firstVar, null, numChildrenVar);
       joins.add(join);
 
     } else if (isForwardLinkedList) {
-      join = new NestedTable.Join(NestedTable.JoinType.ForwardLinkedList);
+      join = new Join(Join.Type.ForwardLinkedList);
       join.setTables(stnTable, obsTable);
       join.setJoinVariables(firstVar, nextVar, null);
       joins.add(join);
 
     } else if (isBackwardLinkedList) {
-      join = new NestedTable.Join(NestedTable.JoinType.BackwardLinkedList);
+      join = new Join(Join.Type.BackwardLinkedList);
       join.setTables(stnTable, obsTable);
       join.setJoinVariables(lastVar, prevVar, null);
       joins.add(join);
@@ -128,7 +129,7 @@ public class UnidataPointObsAnalyzer extends TableAnalyzer {
       addTable( obsTable);
 
       // make join
-      join = new NestedTable.Join(NestedTable.JoinType.MultiDim);
+      join = new Join(Join.Type.MultiDim);
       join.setTables(stnTable, obsTable);
       joins.add(join);
     }

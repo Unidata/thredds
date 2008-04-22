@@ -23,6 +23,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
 import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.ft.point.standard.TableAnalyzer;
+import ucar.nc2.ft.point.standard.Join;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.ArrayStructureMA;
 
@@ -65,7 +66,7 @@ public class FslWindProfiler extends TableAnalyzer {
     stnTable.getDataVariables().addAll(vars);
 
     NestedTable.Table obsTable = tableFind.get("recNum");
-    NestedTable.Join join = new NestedTable.Join(NestedTable.JoinType.Identity);
+    Join join = new Join(Join.Type.Identity);
     join.setTables(stnTable, obsTable);
     joins.add(join);
   }

@@ -24,8 +24,6 @@ import ucar.nc2.ft.EarthLocation;
 import ucar.nc2.ft.EarthLocationImpl;
 import ucar.nc2.ft.Station;
 import ucar.nc2.ft.StationImpl;
-import ucar.nc2.ft.point.standard.TableAnalyzer;
-import ucar.nc2.ft.point.StructureDataIteratorLinked;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants.AxisType;
@@ -207,7 +205,7 @@ public class NestedTable {
   }
 
   public StructureDataIterator getStationObsDataIterator(StructureData stationData, int bufferSize) throws IOException {
-    return join(stationData, leaf);
+    return leaf.join.getStructureDataIterator(stationData, bufferSize);
   }
 
   // Station Profile
@@ -215,7 +213,7 @@ public class NestedTable {
     if (getFeatureType() != FeatureType.STATION_PROFILE)
       throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
 
-    return join(stationData, leaf.parent);
+    return leaf.parent.join.getStructureDataIterator(stationData, bufferSize);
   }
 
   // ft.getStationProfileObsDataIterator(sdataList, bufferSize)
@@ -224,10 +222,10 @@ public class NestedTable {
       throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
 
     StructureData profileData = structList.get(1);
-    return join(profileData, leaf);
+    return leaf.join.getStructureDataIterator(profileData, bufferSize);
   }
 
-  // get the StructureDataIterator for the child table contained by the given parent
+  /* get the StructureDataIterator for the child table contained by the given parent
   private StructureDataIterator join(StructureData parentStruct, Table child) throws IOException {
 
     switch (child.join.joinType) {
@@ -277,7 +275,7 @@ public class NestedTable {
     }
 
     throw new IllegalStateException("Join type = "+child.join.joinType);
-  }
+  } */
 
   ///////////////////////////////////////////////////////////////////////////////
 
@@ -447,6 +445,10 @@ public class NestedTable {
       return name;
     }
 
+    public Structure getStruct() {
+      return struct;
+    }
+
     public CoordinateAxis findCoordinateAxis(AxisType axisType) {
       for (CoordinateAxis axis : coordVars) {
         if (axis.getAxisType() == axisType)
@@ -506,46 +508,5 @@ public class NestedTable {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public enum JoinType {
-    ContiguousList, ForwardLinkedList, BackwardLinkedList, MultiDim, NestedStructure, Identity, Index
-  }
 
-  public static class Join implements Comparable<Join> {
-    Table fromTable, toTable;
-    JoinType joinType;
-    Variable start, next, numRecords;  // for linked and contiguous lists
-
-    public Join(JoinType joinType) {
-      this.joinType = joinType;
-    }
-
-    public void setTables(Table parent, Table child) {
-      assert parent != null;
-      assert child != null;
-      this.fromTable = parent;
-      this.toTable = child;
-    }
-
-    // for linked/contiguous lists
-    public void setJoinVariables(Variable start, Variable next, Variable numRecords) {
-      this.start = start;
-      this.next = next;
-      this.numRecords = numRecords;
-    }
-
-    public String toString() {
-      StringBuffer sbuff = new StringBuffer();
-      sbuff.append(joinType);
-      if (fromTable != null)
-        sbuff.append(" from ").append(fromTable.getName());
-      if (toTable != null)
-        sbuff.append(" to ").append(toTable.getName());
-
-      return sbuff.toString();
-    }
-
-    public int compareTo(Join o) {
-      return joinType.compareTo(o.joinType);
-    }
-  }
 }
