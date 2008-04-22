@@ -21,7 +21,7 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.coordsys.NestedTable;
+import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.StructureData;

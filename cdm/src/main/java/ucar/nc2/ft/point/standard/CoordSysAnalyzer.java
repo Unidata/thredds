@@ -17,10 +17,14 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.ft.coordsys;
+package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.point.standard.plug.UnidataPointFeatureAnalyzer;
+import ucar.nc2.ft.point.standard.plug.FslWindProfiler;
+import ucar.nc2.ft.point.standard.plug.UnidataPointObsAnalyzer;
+import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
 
@@ -364,10 +368,11 @@ public class CoordSysAnalyzer {
   protected StationInfo stationInfo = new StationInfo();
   StationInfo getStationInfo() {
     return stationInfo;
-  }  
+  }
   public class StationInfo {
     String stationId, stationDesc, stationNpts;
     int nstations;
+    String latName, lonName, elevName;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////

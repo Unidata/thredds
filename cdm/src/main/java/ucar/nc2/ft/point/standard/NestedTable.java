@@ -17,13 +17,14 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.ft.coordsys;
+package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
 import ucar.nc2.ft.EarthLocation;
 import ucar.nc2.ft.EarthLocationImpl;
 import ucar.nc2.ft.Station;
 import ucar.nc2.ft.StationImpl;
+import ucar.nc2.ft.point.standard.CoordSysAnalyzer;
 import ucar.nc2.ft.point.StructureDataIteratorLinked;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
@@ -61,10 +62,12 @@ public class NestedTable {
 
   private DateFormatter dateFormatter = new DateFormatter();
 
+  // A Nested Table is created after the Tables have been joined, and the leaves identified.
   NestedTable(CoordSysAnalyzer cs, Table leaf) {
     this.cs = cs;
     this.leaf = leaf;
 
+    // will find the first one, starting at the leaf and going up
     timeVE = findCoordinateAxis(AxisType.Time, leaf, 0);
     latVE = findCoordinateAxis(AxisType.Lat, leaf, 0);
     lonVE = findCoordinateAxis(AxisType.Lon, leaf, 0);
@@ -266,6 +269,11 @@ public class NestedTable {
 
         return asma.getStructureDataIterator();
       }
+
+      case Index: {
+        
+      }
+
     }
 
     throw new IllegalStateException("Join type = "+child.join.joinType);
@@ -304,9 +312,9 @@ public class NestedTable {
 
     String stationName = getCoordValueString(stationData, info.stationId);
     String stationDesc = (info.stationDesc == null) ? stationName : getCoordValueString(stationData, info.stationDesc);
-    double lat = getCoordValue(stationData, latVE.axis.getShortName());
-    double lon = getCoordValue(stationData, lonVE.axis.getShortName());
-    double alt = (altVE == null) ? 0.0 : getCoordValue(stationData, altVE.axis.getShortName());
+    double lat = getCoordValue(stationData, info.latName);
+    double lon = getCoordValue(stationData, info.lonName);
+    double alt = (info.elevName == null) ? Double.NaN : getCoordValue(stationData, info.elevName);
 
     return new StationImpl(stationName, stationDesc, lat, lon, alt);
   }

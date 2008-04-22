@@ -188,7 +188,7 @@ public class FeatureDatasetFactoryManager {
     // bit of a kludge I guess
     if (want == FeatureType.ANY_POINT) {
       return ((facType == FeatureType.POINT) || (facType == FeatureType.STATION) || (facType == FeatureType.TRAJECTORY) ||
-          (facType == FeatureType.PROFILE) || (facType == FeatureType.STATION_PROFILE) && (facType == FeatureType.SECTION));
+          (facType == FeatureType.PROFILE) || (facType == FeatureType.STATION_PROFILE) || (facType == FeatureType.SECTION));
     }
 
     return false;

@@ -20,7 +20,7 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.PointCollectionImpl;
-import ucar.nc2.ft.coordsys.NestedTable;
+import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureData;

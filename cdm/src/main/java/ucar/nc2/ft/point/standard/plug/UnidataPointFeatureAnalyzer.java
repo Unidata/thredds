@@ -17,11 +17,13 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.ft.coordsys;
+package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Structure;
 import ucar.nc2.ft.StationImpl;
+import ucar.nc2.ft.point.standard.NestedTable;
+import ucar.nc2.ft.point.standard.CoordSysAnalyzer;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.*;
 
@@ -60,11 +62,19 @@ public class UnidataPointFeatureAnalyzer extends CoordSysAnalyzer {
     stationInfo.stationId = "name"; // findVariableWithAttribute(ds.getVariables(), "standard_name", "station_name");
     stationInfo.stationDesc = null; // ds.findVariable("station_description");
     stationInfo.stationNpts = null; // ds.findVariable("nrecords");
+
+    stationInfo.latName = "Latitude";
+    stationInfo.lonName = "Longitude";
+    stationInfo.elevName = "Height_of_station";
   }
 
   @Override
   protected void makeTables() throws IOException {
     super.makeTables();
+    makeIndex();
+  }
+
+  private void makeIndex() throws IOException {
 
     // read in the index structure data
     Structure s = (Structure) ds.findVariable("obsRecordIndex");

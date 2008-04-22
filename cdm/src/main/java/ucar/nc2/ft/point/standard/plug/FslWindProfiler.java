@@ -17,10 +17,12 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.ft.coordsys;
+package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
+import ucar.nc2.ft.point.standard.NestedTable;
+import ucar.nc2.ft.point.standard.CoordSysAnalyzer;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.ArrayStructureMA;
 

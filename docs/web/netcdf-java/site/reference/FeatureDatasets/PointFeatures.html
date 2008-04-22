@@ -63,7 +63,7 @@
 <p>  To access the data, you may get a StationTimeSeriesFeature for a specified Station, or you can iterate over all StationTimeSeriesFeatures in the collection with the <strong>PointFeatureCollectionIterator</strong>. The <em>PointFeature<strong>Collection</strong>Iterator</em> is identical to a <em>PointFeatureIterator</em>, except that it returns <em>PointFeatureCollections</em> instead of <em>PointFeature</em>:</p>
 <pre>  public interface <strong>ucar.nc2.ft.PointFeatureCollectionIterator </strong>{<br />    boolean <strong>hasNext</strong>();<br />    ucar.nc2.ft.PointFeatureCollection <strong>nextFeature</strong>();<br />    void <strong>setBufferSize</strong>(int bufferSize);<br />  }
 </pre>
-<p>To run through all the data, you iterate through each <strong>StationTimeSeriesFeature</strong> in the collection, then through each PointFeature of the StationTimeSeriesFeature:</p>
+<p>To run through all the data,  iterate through each <strong>StationTimeSeriesFeature</strong> in the collection, then through each PointFeature of the StationTimeSeriesFeature:</p>
 <pre>
   ucar.nc2.ft.PointFeatureCollectionIterator iterStations = stationTimeSeriesCollection<strong>.getPointFeatureCollectionIterator</strong>(-1);
   while(iterStations.hasNext() { 
@@ -74,7 +74,28 @@
       ucar.nc2.ft.PointFeature pointFeature = iterPoint.<strong>nextData</strong>()
       ...
     }
-  }</pre>
+  }
+</pre>
+<p>To get a time series at a particular station: </p>
+<pre>
+  Station stn = stationTimeSeriesCollection<strong>.getStation</strong>(&quot;FXOW&quot;);
+  StationTimeSeriesFeature timeSeries = stationTimeSeriesCollection<strong>.getStationFeature</strong>(stn);
+  PointFeatureIterator iterPoint = timeSeries<strong>.getPointFeatureIterator</strong>(-1);
+  while(iterPoint.<strong>hasNext</strong>()) {
+    ucar.nc2.ft.PointFeature pointFeature = iterPoint.<strong>nextData</strong>()
+    ...
+  }
+</pre>
+<p>To get all data in a specific area and time range: </p>
+<pre>
+  LatLonRect bb = new LatLonRect( new LatLonPointImpl(40.0, -105.0), new LatLonPointImpl(42.0, -100.0));
+  ucar.nc2.ft.PointFeatureCollection points = <strong>stationTimeSeriesCollection.flatten</strong>(bb, new DateRange(start, end))
+  PointFeatureIterator iterPoint = points<strong>.getPointFeatureIterator</strong>(-1);
+  while(iterPoint.<strong>hasNext</strong>()) {
+    ucar.nc2.ft.PointFeature pointFeature = iterPoint.<strong>nextData</strong>()
+    ...
+  }
+</pre>
 <h3><strong>ProfileFeature</strong></h3>
 <p>A<strong> ProfileFeature </strong>is a set of PointFeatures along a vertical line.</p>
 <pre>  public interface <strong>ucar.nc2.ft.ProfileFeature</strong> extends ucar.nc2.ft.<strong>PointFeatureCollection</strong> {<br />    String <strong>getName</strong>();<br />    ucar.unidata.geoloc.LatLonPoint <strong>getLatLon</strong>();
@@ -116,7 +137,7 @@
 <p> To access the data, you may get a StationProfileFeature for a specified Station, or you can iterate over all StationTimeSeriesFeatures in the collection with the <strong>NestedPointFeatureCollectionIterator</strong>. The<strong>NestedPointFeatureCollectionIterator</strong><em> </em> returns <em>a NestedPointFeatureCollection </em> instead of<em> a PointFeatureCollection</em>. </p>
 <pre>  public interface <strong>ucar.nc2.ft.NestedPointFeatureCollectionIterator </strong>{<br />    boolean <strong>hasNext</strong>();<br />    ucar.nc2.ft.NestedPointFeatureCollection <strong>nextFeature</strong>();<br />    void <strong>setBufferSize</strong>(int bufferSize);<br />  }
 </pre>
-<p>So we now have 3 levels of iteration. To run through all the data, you iterate through each <strong>StationProfileFeature</strong> in the collection, then through each ProfileFeature in the StationProfileFeature, then through each PointFeature of the ProfileFeatures:</p>
+<p>So  now there are three levels of iteration. To run through all the data,  iterate through each <strong>StationProfileFeature</strong> in the collection, then through each ProfileFeature in the StationProfileFeature, then through each PointFeature of the ProfileFeatures:</p>
 <pre>
   ucar.nc2.ft.NestedPointFeatureCollectionIterator iterStations = stationProfileFeatureCollection<strong>.getNestedPointFeatureCollectionIterator</strong>(-1);
   while(iterStations.hasNext() { 
