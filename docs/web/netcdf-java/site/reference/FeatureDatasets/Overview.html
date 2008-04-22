@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1>Scientific Feature Types</h1>
+<p>&nbsp;</p>
+<p>A <strong>FeatureDataset</strong> is a container for FeatureType objects. It is a generalization of a NetcdfDataset, and the common case is that it wraps a NetcdfDataset. </p>
+<pre>  public interface <strong>ucar.nc2.ft.FeatureDataset</strong>{<br />    ucar.nc2.constants.FeatureType <strong>getFeatureType</strong>();
+<br />    String <strong>getTitle</strong>();<br />    String <strong>getDescription</strong>();<br />    String <strong>getLocationURI</strong>();
+<br />    ucar.nc2.units.DateRange <strong>getDateRange</strong>();<br />    Date <strong>getStartDate</strong>();<br />    Date <strong>getEndDate</strong>();<br />    ucar.unidata.geoloc.LatLonRect <strong>getBoundingBox</strong>();
+<br />    List&lt;Attribute&gt; <strong>getGlobalAttributes</strong>();<br />    ucar.nc2.Attribute <strong>findGlobalAttributeIgnoreCase</strong>(String attName);
+<br />    List&lt;VariableSimpleIF&gt; <strong>getDataVariables</strong>();<br />    ucar.nc2.VariableSimpleIF <strong>getDataVariable</strong>(String name);
+<br />    void <strong>close</strong>() throws java.io.IOException;
+  }
+</pre>
+<p>  The data variables  are simple versions of Variables, in particular they have no read methods: </p>
+<pre>
+  public interface <strong>ucar.nc2.VariableSimpleIF</strong> {<br />    String <strong>getName</strong>();<br />    String <strong>getShortName</strong>();<br />    String <strong>getDescription</strong>();<br />    String <strong>getUnitsString</strong>();
+<br />    int <strong>getRank</strong>();<br />    int[] <strong>getShape</strong>();<br />    List&lt;Dimension&gt; <strong>getDimensions</strong>();<br />    ucar.ma2.DataType <strong>getDataType</strong>();
+<br />    List&lt;Attribute&gt; <strong>getAttributes</strong>();<br />    ucar.nc2.Attribute <strong>findAttributeIgnoreCase</strong>(java.lang.String);<br />  }
+</pre>
+<p>The information in the FeatureDataset interface constitutes a simple kind of discovery metadata for the dataset. </p>
+<h3>Opening a FeatureDataset </h3>
+<p>One gets a FeatureDataset by calling </p>
+<pre>  FeatureDataset <strong>FeatureDatasetFactoryManager.open</strong>( FeatureType type, String location, ucar.nc2.util.CancelTask task, java.util.Formatter errlog);
+</pre>
+<p>  or if you already have an opened NetcdfDataset:</p>
+<pre>  FeatureDataset <strong>FeatureDatasetFactoryManager.wrap</strong>( FeatureType type, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, java.util.Formatter errlog);
+</pre>
+<p>Specifying the FeatureType means that you only want a FeatureDataset of that FeatureType. If you want the dataset opened as any FeatureType, leave the type null. You may also leave the task null if you do not need to allow user cancelling. The errlog is an instance of java.util.Formatter, and must not be null. If the open() or wrap() is not successful, a null FeatureDataset will be returned, and the errlog will usually have an explanatory message. </p>
+<p>The returned object will be a subclass of FeatureDataset, depending on the FeatureType. All of the Point Types will return an instance of <strong>PointFeatureDataset</strong>, which simply contains a list of <strong>FeatureCollections</strong>: </p>
+<pre>  public interface <strong>ucar.nc2.ft.PointFeatureDataset</strong> extends FeatureDataset {<br />     List&lt;FeatureCollection&gt; <strong>getPointFeatureCollectionList</strong>();<br />  }</pre>
+<p>All of the specialization is in the <strong>FeatureCollection</strong><br>
+</p>
+<hr width="100%" />
+<address>
+<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 20, 2008 
+</address>
+</body>
+</html>

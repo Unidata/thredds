@@ -57,8 +57,8 @@
 <pre>    public java.lang.Object <strong>getObject</strong>(ucar.ma2.Index);<br />    public void <strong>setObject</strong>(ucar.ma2.Index, java.lang.Object);
 
 </pre>
-<h2>StructureData API</h2>
-<p>StructureData encapsolates all the data in a single record. It is normally contained within an ArrayStructure, and uts methods colesly parellel the methods available on its parent ArrayStructure.</p>
+<h2>StructureData<a name="StructureData" id="StructureData"></a> API</h2>
+<p>StructureData encapsolates all the data in a single record. It is normally contained within an ArrayStructure, and its methods closely parellel the methods of its parent ArrayStructure.</p>
 <pre>public abstract class ucar.ma2.StructureData extends java.lang.Object{
 <br />    public static ucar.ma2.StructureData copy(ucar.ma2.StructureData);<br />    public ucar.ma2.StructureData(ucar.ma2.StructureMembers);<br />    public java.lang.String getName();<br />    public ucar.ma2.StructureMembers getStructureMembers();<br />    public java.util.List getMembers();<br />    public ucar.ma2.StructureMembers$Member getMember(int);<br />    public ucar.ma2.StructureMembers$Member findMember(java.lang.String);</pre>
 <p>The most general ways to access data in an StructureData are:</p>

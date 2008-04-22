@@ -22,7 +22,7 @@ package ucar.nc2.ui;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dt2.PointFeature;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.util.HashMapLRU;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.PointObsDatatype;

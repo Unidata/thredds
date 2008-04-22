@@ -20,7 +20,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.dt2.*;
+import ucar.nc2.ft.*;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;

@@ -21,9 +21,9 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-import ucar.nc2.dt2.PointFeatureDataset;
-import ucar.nc2.dt2.FeatureDatasetFactoryManager;
-import ucar.nc2.dt2.FeatureDataset;
+import ucar.nc2.ft.PointFeatureDataset;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
@@ -2475,7 +2475,7 @@ public class ToolsUI extends JPanel {
       }
       detailTA.clear();
 
-      StringBuffer log = new StringBuffer();
+      Formatter log = new Formatter();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, location, null, log);

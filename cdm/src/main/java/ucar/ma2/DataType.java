@@ -45,7 +45,7 @@ public class DataType {
   public final static DataType SEQUENCE = new DataType("Sequence", 4);
 
   // netcdf4 types
-  public final static DataType OPAQUE = new DataType("opaque", 1);
+  public final static DataType OPAQUE = new DataType("opaque", 1); // ??
   public final static DataType ENUM = new DataType("enum", 1);
 
   static { // accept lower case for lookup also

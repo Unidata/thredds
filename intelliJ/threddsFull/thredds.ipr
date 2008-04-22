@@ -34,9 +34,10 @@
     <excludeFromCompile>
       <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/xml/TestUnicode.java" />
       <file url="file://$PROJECT_DIR$/../../cdm/src/timing/java/ucar/nc2/util/xml/TimeStaxReading.java" />
-      <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/dt2/point/UnidataStationObsMultidimDataset.java" />
+      <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/ft/point/UnidataStationObsMultidimDataset.java" />
       <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/dt2/point/PointFeatureDatasetAdapter.java" />
       <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/dt2/point/NmcStationProfileDataset.java" />
+      <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />

@@ -20,7 +20,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.dt2.*;
+import ucar.nc2.ft.*;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateFormatter;
@@ -302,7 +302,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     PointFeatureCollection pc = null;
 
     if (selectedType == FeatureType.STATION) {
-      StationFeatureCollection stationCollection = (StationFeatureCollection) selectedCollection;
+      StationTimeSeriesCollection stationCollection = (StationTimeSeriesCollection) selectedCollection;
       pc = stationCollection.flatten(geoRegion, dateRange);
     }
 
@@ -323,8 +323,8 @@ public class PointFeatureDatasetViewer extends JPanel {
       setObservations(obsList);
 
     } else if (selectedType == FeatureType.STATION) {
-      StationFeatureCollection stationCollection = (StationFeatureCollection) selectedCollection;
-      StationFeature feature = stationCollection.getStationFeature(sb.s);
+      StationTimeSeriesCollection stationCollection = (StationTimeSeriesCollection) selectedCollection;
+      StationTimeSeriesFeature feature = stationCollection.getStationFeature(sb.s);
       if (dr != null)
         feature = feature.subset(dr);
       setObservations(feature);
@@ -375,7 +375,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       setObservations(pointCollection);
 
     } else if (selectedType == FeatureType.STATION) {
-      StationFeatureCollection stationCollection = (StationFeatureCollection) selectedCollection;
+      StationTimeSeriesCollection stationCollection = (StationTimeSeriesCollection) selectedCollection;
       PointFeatureCollectionIterator iter = stationCollection.getPointFeatureCollectionIterator(-1);
       List<PointFeature> obsList = new ArrayList<PointFeature>();
       while (iter.hasNext())
