@@ -22,7 +22,7 @@ package ucar.nc2.ft.point.standard.plug;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
 import ucar.nc2.ft.point.standard.NestedTable;
-import ucar.nc2.ft.point.standard.CoordSysAnalyzer;
+import ucar.nc2.ft.point.standard.TableAnalyzer;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.ArrayStructureMA;
 
@@ -34,7 +34,7 @@ import java.util.ArrayList;
  * @author caron
  * @since Apr 18, 2008
  */
-public class FslWindProfiler extends CoordSysAnalyzer {
+public class FslWindProfiler extends TableAnalyzer {
 
   // :title = "WPDN data : selected by ob time : time range from 1207951200 to 1207954800";
   static public boolean isMine(NetcdfDataset ds) {
@@ -62,7 +62,7 @@ public class FslWindProfiler extends CoordSysAnalyzer {
     ArrayStructureMA as = new ArrayStructureMA(members, new int[]{n});
     NestedTable.Table stnTable = new NestedTable.Table("station", as);
     addTable(stnTable);
-    stnTable.cols.addAll(vars);
+    stnTable.getDataVariables().addAll(vars);
 
     NestedTable.Table obsTable = tableFind.get("recNum");
     NestedTable.Join join = new NestedTable.Join(NestedTable.JoinType.Identity);

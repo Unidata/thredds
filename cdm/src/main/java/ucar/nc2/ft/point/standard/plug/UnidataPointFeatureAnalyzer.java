@@ -23,7 +23,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Structure;
 import ucar.nc2.ft.StationImpl;
 import ucar.nc2.ft.point.standard.NestedTable;
-import ucar.nc2.ft.point.standard.CoordSysAnalyzer;
+import ucar.nc2.ft.point.standard.TableAnalyzer;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.*;
 
@@ -35,7 +35,7 @@ import java.nio.ByteBuffer;
  * @author caron
  * @since Apr 18, 2008
  */
-public class UnidataPointFeatureAnalyzer extends CoordSysAnalyzer {
+public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
 
   public boolean isMine(NetcdfDataset ds) {
     // find datatype

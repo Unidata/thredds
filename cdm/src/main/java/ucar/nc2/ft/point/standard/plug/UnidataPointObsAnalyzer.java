@@ -24,7 +24,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 import ucar.nc2.ft.point.UnidataPointDatasetHelper;
 import ucar.nc2.ft.point.standard.NestedTable;
-import ucar.nc2.ft.point.standard.CoordSysAnalyzer;
+import ucar.nc2.ft.point.standard.TableAnalyzer;
 import ucar.ma2.StructureMembers;
 
 import java.util.List;
@@ -37,7 +37,7 @@ import java.io.IOException;
  * @author caron
  * @since Apr 18, 2008
  */
-public class UnidataPointObsAnalyzer extends CoordSysAnalyzer {
+public class UnidataPointObsAnalyzer extends TableAnalyzer {
 
   private FeatureType getFeatureType() {
     String datatype = ds.findAttValueIgnoreCase(null, "cdm_datatype", null);

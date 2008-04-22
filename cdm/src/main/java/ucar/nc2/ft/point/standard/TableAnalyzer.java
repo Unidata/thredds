@@ -24,7 +24,6 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.point.standard.plug.UnidataPointFeatureAnalyzer;
 import ucar.nc2.ft.point.standard.plug.FslWindProfiler;
 import ucar.nc2.ft.point.standard.plug.UnidataPointObsAnalyzer;
-import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
 
@@ -38,8 +37,8 @@ import java.lang.reflect.Method;
  * @author caron
  * @since Mar 20, 2008
  */
-public class CoordSysAnalyzer {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysAnalyzer.class);
+public class TableAnalyzer {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableAnalyzer.class);
 
   static private Map<String, Class> conventionHash = new HashMap<String, Class>();
   static private List<Analyzer> conventionList = new ArrayList<Analyzer>();
@@ -56,7 +55,7 @@ public class CoordSysAnalyzer {
   }
 
   static public void registerAnalyzer(String conventionName, Class c) {
-    if (!(CoordSysAnalyzer.class.isAssignableFrom(c)))
+    if (!(TableAnalyzer.class.isAssignableFrom(c)))
       throw new IllegalArgumentException("Class " + c.getName() + " must extend CoordSysAnalyzer");
 
     // fail fast - check newInstance works
@@ -88,7 +87,7 @@ public class CoordSysAnalyzer {
     }
   }
 
-  static public CoordSysAnalyzer factory(FeatureType ftype, NetcdfDataset ds) throws IOException {
+  static public TableAnalyzer factory(FeatureType ftype, NetcdfDataset ds) throws IOException {
 
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
@@ -165,12 +164,12 @@ public class CoordSysAnalyzer {
     // no convention class found, use CoordSysAnalyzer as the default
     boolean usingDefault = (convClass == null);
     if (usingDefault)
-      convClass = CoordSysAnalyzer.class;
+      convClass = TableAnalyzer.class;
 
     // get an instance of the class
-    CoordSysAnalyzer analyzer;
+    TableAnalyzer analyzer;
     try {
-      analyzer = (CoordSysAnalyzer) convClass.newInstance();
+      analyzer = (TableAnalyzer) convClass.newInstance();
     } catch (InstantiationException e) {
       log.error("CoordSysAnalyzer create failed", e);
       return null;
@@ -370,9 +369,9 @@ public class CoordSysAnalyzer {
     return stationInfo;
   }
   public class StationInfo {
-    String stationId, stationDesc, stationNpts;
-    int nstations;
-    String latName, lonName, elevName;
+    public String stationId, stationDesc, stationNpts;
+    public int nstations;
+    public String latName, lonName, elevName;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -418,7 +417,7 @@ public class CoordSysAnalyzer {
   static void doit(String filename) throws IOException {
     System.out.println(filename);
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    CoordSysAnalyzer csa = CoordSysAnalyzer.factory(null, ncd);
+    TableAnalyzer csa = TableAnalyzer.factory(null, ncd);
     csa.getDetailInfo(new Formatter(System.out));
     System.out.println("-----------------");
   }

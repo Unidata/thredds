@@ -24,7 +24,7 @@ import ucar.nc2.ft.EarthLocation;
 import ucar.nc2.ft.EarthLocationImpl;
 import ucar.nc2.ft.Station;
 import ucar.nc2.ft.StationImpl;
-import ucar.nc2.ft.point.standard.CoordSysAnalyzer;
+import ucar.nc2.ft.point.standard.TableAnalyzer;
 import ucar.nc2.ft.point.StructureDataIteratorLinked;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
@@ -54,7 +54,7 @@ import java.text.ParseException;
 public class NestedTable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NestedTable.class);
 
-  private CoordSysAnalyzer cs;
+  private TableAnalyzer cs;
   private Table leaf;
 
   private CoordVarExtractor timeVE, latVE, lonVE, altVE;
@@ -63,7 +63,7 @@ public class NestedTable {
   private DateFormatter dateFormatter = new DateFormatter();
 
   // A Nested Table is created after the Tables have been joined, and the leaves identified.
-  NestedTable(CoordSysAnalyzer cs, Table leaf) {
+  NestedTable(TableAnalyzer cs, Table leaf) {
     this.cs = cs;
     this.leaf = leaf;
 
@@ -308,7 +308,7 @@ public class NestedTable {
 
   public Station makeStation(StructureData stationData) {
     // LOOK this assumes that the data is in the Station structure - one may have to read an obs to get it
-    CoordSysAnalyzer.StationInfo info = cs.getStationInfo();
+    TableAnalyzer.StationInfo info = cs.getStationInfo();
 
     String stationName = getCoordValueString(stationData, info.stationId);
     String stationDesc = (info.stationDesc == null) ? stationName : getCoordValueString(stationData, info.stationDesc);
@@ -370,7 +370,7 @@ public class NestedTable {
     List<Join> children;
 
     // make a table based on a Structure
-    Table(Structure struct) {
+    public Table(Structure struct) {
       this.struct = struct;
       this.type = TableType.Structure;
       this.name = struct.getShortName();
@@ -386,7 +386,7 @@ public class NestedTable {
     }
 
     // make a table based on a given list of variables with a common outer dimension
-    Table(NetcdfDataset ds, List<Variable> cols, Dimension dim) {
+    public Table(NetcdfDataset ds, List<Variable> cols, Dimension dim) {
       this.type = TableType.PseudoStructure;
       this.dim = dim;
       this.name = dim.getName();
@@ -400,7 +400,7 @@ public class NestedTable {
     }
 
     // make a table based on a given list of variables with 2 common dimensions
-    Table(List<Variable> cols, Dimension outer, Dimension inner) {
+    public Table(List<Variable> cols, Dimension outer, Dimension inner) {
       this.type = TableType.MultiDim;
       this.dim = inner;
       this.name = inner.getName();
@@ -419,7 +419,7 @@ public class NestedTable {
     }
 
     // make a table based on memory resident ArrayStructure
-    Table(String name, ArrayStructure as) {
+    public Table(String name, ArrayStructure as) {
       this.type = TableType.ArrayStructure;
       this.as = as;
       this.name = name;
@@ -454,6 +454,8 @@ public class NestedTable {
       }
       return null;
     }
+
+    public List<VariableSimpleIF> getDataVariables() { return cols; }
 
     public String toString() {
       Formatter formatter = new Formatter();
@@ -513,11 +515,11 @@ public class NestedTable {
     JoinType joinType;
     Variable start, next, numRecords;  // for linked and contiguous lists
 
-    Join(JoinType joinType) {
+    public Join(JoinType joinType) {
       this.joinType = joinType;
     }
 
-    void setTables(Table parent, Table child) {
+    public void setTables(Table parent, Table child) {
       assert parent != null;
       assert child != null;
       this.fromTable = parent;
@@ -525,7 +527,7 @@ public class NestedTable {
     }
 
     // for linked/contiguous lists
-    void setJoinVariables(Variable start, Variable next, Variable numRecords) {
+    public void setJoinVariables(Variable start, Variable next, Variable numRecords) {
       this.start = start;
       this.next = next;
       this.numRecords = numRecords;

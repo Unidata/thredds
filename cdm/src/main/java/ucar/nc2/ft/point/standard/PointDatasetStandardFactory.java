@@ -24,8 +24,6 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.*;
-import ucar.nc2.ft.point.standard.CoordSysAnalyzer;
-import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.FeatureType;
@@ -45,7 +43,7 @@ import java.io.IOException;
 public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetStandardFactory.class);
 
-  private CoordSysAnalyzer analyser;
+  private TableAnalyzer analyser;
 
   // FeatureDatasetFactory
   public boolean isMine(FeatureType ftype, NetcdfDataset ds) throws IOException {
@@ -73,7 +71,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       return false;
 
     // gotta do some work
-    analyser = CoordSysAnalyzer.factory(ftype, ds);
+    analyser = TableAnalyzer.factory(ftype, ds);
     return analyser.featureTypeOk( ftype);
   }
 
@@ -85,7 +83,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
 
   public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
     if (analyser == null)
-      analyser = CoordSysAnalyzer.factory(ftype, ncd);
+      analyser = TableAnalyzer.factory(ftype, ncd);
 
     return new PointDatasetDefault(ftype, analyser, ncd, errlog);
   }
@@ -93,11 +91,11 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   /////////////////////////////////////////////////////////////////////
 
   private static class PointDatasetDefault extends PointDatasetImpl {
-    private CoordSysAnalyzer analyser;
+    private TableAnalyzer analyser;
     private DateUnit timeUnit;
     private FeatureType featureType = FeatureType.POINT; // default
 
-    PointDatasetDefault(FeatureType ftype, CoordSysAnalyzer analyser, NetcdfDataset ds, Formatter errlog) throws IOException {
+    PointDatasetDefault(FeatureType ftype, TableAnalyzer analyser, NetcdfDataset ds, Formatter errlog) throws IOException {
       super(ds, null);
       parseInfo.format(" PointFeatureDatasetImpl=%s\n", getClass().getName());
       this.analyser = analyser;
