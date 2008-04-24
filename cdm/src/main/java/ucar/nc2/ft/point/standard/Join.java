@@ -19,7 +19,6 @@
  */
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.point.StructureDataIteratorLinked;
 import ucar.ma2.*;
@@ -33,15 +32,14 @@ import java.io.IOException;
 public class Join implements Comparable<Join> {
 
   public enum Type {
-    ContiguousList, ForwardLinkedList, BackwardLinkedList, MultiDim, NestedStructure, Identity, Index
+    ContiguousList, ForwardLinkedList, BackwardLinkedList, MultiDim, NestedStructure, Identity, Index, Singleton
   }
 
+  protected TableConfig.JoinConfig config;
   protected NestedTable.Table parent, child;
-  protected Join.Type joinType;
-  protected Variable start, next, numRecords;  // for linked and contiguous lists
 
-  public Join(Join.Type joinType) {
-    this.joinType = joinType;
+  public Join(TableConfig.JoinConfig config) {
+    this.config = config;
   }
 
   public void setTables(NestedTable.Table parent, NestedTable.Table child) {
@@ -51,16 +49,9 @@ public class Join implements Comparable<Join> {
     this.child = child;
   }
 
-  // for linked/contiguous lists
-  public void setJoinVariables(Variable start, Variable next, Variable numRecords) {
-    this.start = start;
-    this.next = next;
-    this.numRecords = numRecords;
-  }
-
   public String toString() {
     StringBuffer sbuff = new StringBuffer();
-    sbuff.append(joinType);
+    sbuff.append( config.joinType);
     if (parent != null)
       sbuff.append(" from ").append(parent.getName());
     if (child != null)
@@ -70,13 +61,13 @@ public class Join implements Comparable<Join> {
   }
 
   public int compareTo(Join o) {
-    return joinType.compareTo(o.joinType);
+    return config.joinType.compareTo(o.config.joinType);
   }
 
   // get the StructureDataIterator for the child table contained by the given parent
   public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
 
-    switch (joinType) {
+    switch (config.joinType) {
       case NestedStructure: {
         String name = child.getName();
         StructureMembers members = parentStruct.getStructureMembers();
@@ -95,18 +86,18 @@ public class Join implements Comparable<Join> {
 
       case ForwardLinkedList:
       case BackwardLinkedList: {
-        int firstRecno = parentStruct.getScalarInt( start.getName());
-        return new StructureDataIteratorLinked(child.struct, firstRecno, -1, next.getName());
+        int firstRecno = parentStruct.getScalarInt( config.start);
+        return new StructureDataIteratorLinked(child.struct, firstRecno, -1, config.next);
       }
 
       case ContiguousList: {
-        int firstRecno = parentStruct.getScalarInt( start.getName());
-        int n = parentStruct.getScalarInt( numRecords.getName());
+        int firstRecno = parentStruct.getScalarInt( config.start);
+        int n = parentStruct.getScalarInt( config.numRecords);
         return new StructureDataIteratorLinked(child.struct, firstRecno, n, null);
       }
 
       case MultiDim: {
-        ArrayStructureMA asma = new ArrayStructureMA( child.sm, new int[] {child.dim.getLength()});
+        ArrayStructureMA asma = new ArrayStructureMA( child.sm, new int[] {child.config.dim.getLength()});
         for (VariableSimpleIF v : child.cols) {
           Array data = parentStruct.getArray( v.getShortName());
           StructureMembers.Member childm = child.sm.findMember(v.getShortName());
@@ -118,7 +109,7 @@ public class Join implements Comparable<Join> {
 
     }
 
-    throw new IllegalStateException("Join type = "+joinType);
+    throw new IllegalStateException("Join type = "+config.joinType);
   }
 
 }

@@ -21,9 +21,7 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.point.standard.plug.UnidataPointFeatureAnalyzer;
-import ucar.nc2.ft.point.standard.plug.FslWindProfiler;
-import ucar.nc2.ft.point.standard.plug.UnidataPointObsAnalyzer;
+import ucar.nc2.ft.point.standard.plug.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
 
@@ -40,50 +38,56 @@ import java.lang.reflect.Method;
 public class TableAnalyzer {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableAnalyzer.class);
 
-  static private Map<String, Class> conventionHash = new HashMap<String, Class>();
+  static private Map<String, Analyzer> conventionHash = new HashMap<String, Analyzer>();
   static private List<Analyzer> conventionList = new ArrayList<Analyzer>();
   static private boolean userMode = false;
 
-    // search in the order added
+  // search in the order added
   static {
-    registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeatureAnalyzer.class);
     registerAnalyzer("FslWindProfiler", FslWindProfiler.class);
-    registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObsAnalyzer.class);
+    registerAnalyzer("Madis", Madis.class);
+    registerAnalyzer("Ndbc", Ndbc.class);
+    registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class);
+    registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeature.class);
 
     // further calls to registerConvention are by the user
     userMode = true;
   }
 
   static public void registerAnalyzer(String conventionName, Class c) {
-    if (!(TableAnalyzer.class.isAssignableFrom(c)))
-      throw new IllegalArgumentException("Class " + c.getName() + " must extend CoordSysAnalyzer");
+    if (!(TableConfigurer.class.isAssignableFrom(c)))
+      throw new IllegalArgumentException("Class " + c.getName() + " must implement TableConfigurer");
 
     // fail fast - check newInstance works
+    TableConfigurer tc;
     try {
-      c.newInstance();
+      tc = (TableConfigurer) c.newInstance();
     } catch (InstantiationException e) {
-      throw new IllegalArgumentException("CoordSysAnalyzer Class " + c.getName() + " cannot instantiate, probably need default Constructor");
+      throw new IllegalArgumentException("TableConfigurer Class " + c.getName() + " cannot instantiate, probably need default Constructor");
     } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException("CoordSysAnalyzer Class " + c.getName() + " is not accessible");
+      throw new IllegalArgumentException("TableConfigurer Class " + c.getName() + " is not accessible");
     }
 
     // user stuff gets put at top
+    Analyzer anal = new Analyzer(conventionName, c, tc);
     if (userMode)
-      conventionList.add(0, new Analyzer(conventionName, c));
+      conventionList.add(0, anal);
     else
-      conventionList.add(new Analyzer(conventionName, c));
+      conventionList.add(anal);
 
     // user stuff will override here
-    conventionHash.put(conventionName, c);
+    conventionHash.put(conventionName, anal);
   }
 
   static private class Analyzer {
     String convName;
     Class convClass;
+    TableConfigurer testObject;
 
-    Analyzer(String convName, Class convClass) {
+    Analyzer(String convName, Class convClass, TableConfigurer testObject) {
       this.convName = convName;
       this.convClass = convClass;
+      this.testObject = testObject;
     }
   }
 
@@ -95,15 +99,15 @@ public class TableAnalyzer {
       convName = ds.findAttValueIgnoreCase(null, "Convention", null);
 
     // now look for Convention parsing class
-    Class convClass = null;
+    Analyzer anal = null;
     if (convName != null) {
       convName = convName.trim();
 
       // look for Convention parsing class
-      convClass = conventionHash.get(convName);
+      anal = conventionHash.get(convName);
 
       // now look for comma or semicolon or / delimited list
-      if (convClass == null) {
+      if (anal == null) {
         List<String> names = new ArrayList<String>();
 
         if ((convName.indexOf(',') > 0) || (convName.indexOf(';') > 0)) {
@@ -125,19 +129,19 @@ public class TableAnalyzer {
           for (Analyzer conv : conventionList) {
             for (String name : names) {
               if (name.equalsIgnoreCase(conv.convName)) {
-                convClass = conv.convClass;
+                anal = conv;
                 convName = name;
               }
             }
-            if (convClass != null) break;
+            if (anal != null) break;
           }
         }
       }
     }
 
     // look for ones that dont use Convention attribute, in order added.
-    // call static method isMine() using reflection.
-    if (convClass == null) {
+    // call method isMine() using reflection.
+    if (anal == null) {
       convName = null;
       for (Analyzer conv : conventionList) {
         Class c = conv.convClass;
@@ -150,9 +154,9 @@ public class TableAnalyzer {
         }
 
         try {
-          Boolean result = (Boolean) m.invoke(null, ds);
+          Boolean result = (Boolean) m.invoke(conv.testObject, ds);
           if (result) {
-            convClass = c;
+            anal = conv;
             break;
           }
         } catch (Exception ex) {
@@ -161,48 +165,46 @@ public class TableAnalyzer {
       }
     }
 
-    // no convention class found, use CoordSysAnalyzer as the default
-    boolean usingDefault = (convClass == null);
-    if (usingDefault)
-      convClass = TableAnalyzer.class;
-
-    // get an instance of the class
-    TableAnalyzer analyzer;
-    try {
-      analyzer = (TableAnalyzer) convClass.newInstance();
-    } catch (InstantiationException e) {
-      log.error("CoordSysAnalyzer create failed", e);
-      return null;
-    } catch (IllegalAccessException e) {
-      log.error("CoordSysAnalyzer create failed", e);
-      return null;
+    TableConfigurer tc = null;
+    if (anal != null) {
+      try {
+        tc = (TableConfigurer) anal.convClass.newInstance();
+      } catch (InstantiationException e) {
+        log.error("TableConfigurer create failed", e);
+        return null;
+      } catch (IllegalAccessException e) {
+        log.error("TableConfigurer create failed", e);
+        return null;
+      }
     }
 
-    if (usingDefault) {
-      analyzer.userAdvice.format("No CoordSysAnalyzer found - using default.\n");
-    }
+    TableAnalyzer analyzer = new TableAnalyzer(ds, tc);
 
     // add the coord systems
     if (convName != null)
       analyzer.setConventionUsed(convName);
     else
-      analyzer.userAdvice.format("No 'Convention' global attribute.\n");
+      analyzer.userAdvice.format(" No 'Convention' global attribute.\n");
 
-    analyzer.setDataset(ds);
     analyzer.analyze();
     return analyzer;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
+  protected TableConfigurer tc;
   protected NetcdfDataset ds;
-  protected Map<String, NestedTable.Table> tableFind = new HashMap<String, NestedTable.Table>();
-  protected Set<NestedTable.Table> tableSet = new HashSet<NestedTable.Table>();
-  protected List<Join> joins = new ArrayList<Join>();
+  protected Map<String, TableConfig> tableFind = new HashMap<String, TableConfig>();
+  protected Set<TableConfig> tableSet = new HashSet<TableConfig>();
+  protected List<TableConfig.JoinConfig> joins = new ArrayList<TableConfig.JoinConfig>();
   protected List<NestedTable> leaves = new ArrayList<NestedTable>();
   protected FeatureType ft;
 
-  private void setDataset(NetcdfDataset ds) {
+  protected TableAnalyzer(NetcdfDataset ds, TableConfigurer tc) {
+    this.tc = tc;
     this.ds = ds;
+
+    if (tc == null)
+      userAdvice.format("Using default TableConfigurer.\n");
   }
 
   public List<NestedTable> getFlatTables() {
@@ -222,11 +224,14 @@ public class TableAnalyzer {
   }
 
   protected Formatter userAdvice = new Formatter();
+  protected Formatter errlog = new Formatter();
+
   public String getUserAdvice() {
     return userAdvice.toString();
   }
 
   protected String conventionName;
+
   protected void setConventionUsed(String convName) {
     this.conventionName = convName;
   }
@@ -234,77 +239,83 @@ public class TableAnalyzer {
   /////////////////////////////////////////////////////////
 
   protected void analyze() throws IOException {
-    annotateDataset();
-    makeTables();
-    makeJoins();
-    makeNestedTables();
-  }
-
-  protected void annotateDataset() { }
-
-  protected void makeTables() throws IOException {
-
     // for netcdf-3 files, convert record dimension to structure
+    // LOOK may be problems when served via opendap
     boolean structAdded = (Boolean) ds.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
+    if (tc == null) {
+      makeTables(structAdded);
+    } else {
+      TableConfig config = tc.getConfig(ds, errlog);
+      if (config != null)
+        addTableRecurse( config); // kinda stupid
+    }
+
+    makeNestedTables();
+
+  }
+
+  protected void makeTables(boolean structAdded) throws IOException {
+
     // make Structures into a table
-    List<NestedTable.Table> structs = new ArrayList<NestedTable.Table>();
     List<Variable> vars = new ArrayList<Variable>(ds.getVariables());
     Iterator<Variable> iter = vars.iterator();
     while (iter.hasNext()) {
       Variable v = iter.next();
       if (v instanceof Structure) {  // handles Sequences too
-        NestedTable.Table st = new NestedTable.Table((Structure) v);
+        TableConfig st = new TableConfig(NestedTable.TableType.Structure, v.getName());
         addTable(st);
         iter.remove();
-        structs.add(st);
+        findNestedStructures((Structure) v, st); // look for nested structures
 
       } else if (structAdded && v.isUnlimited()) {
         iter.remove();
       }
     }
 
-    // look for top level "psuedo structures"
+    /* look for top level "pseudo structures"
     List<Dimension> dims = ds.getDimensions();
     for (Dimension dim : dims) {
       List<Variable> svars = getStructVars(vars, dim);
       if (svars.size() > 0) {
-        addTable( new NestedTable.Table(ds, svars, dim)); // candidate
+        TableConfig st = new TableConfig(NestedTable.TableType.PseudoStructure, dim.getName()); // candidate
+        st.dim = dim;
+        addTable( st);
       }
-    }
+    } */
 
-    // look for nested structures
-    findNestedStructures( structs);
+
   }
 
-  protected void addTable(NestedTable.Table t) {
-    tableFind.put(t.getName(), t);
+  protected void findNestedStructures(Structure s, TableConfig structTable) {
+    for (Variable v : s.getVariables()) {
+      if (v instanceof Structure) {  // handles Sequences too
+        TableConfig nestedTable = new TableConfig(NestedTable.TableType.Structure, v.getName());
+        addTable(nestedTable);
+        structTable.addChild(nestedTable);
+
+        nestedTable.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
+        joins.add(nestedTable.join);
+
+        findNestedStructures((Structure) v, nestedTable); // look for nested structures
+      }
+    }
+  }
+
+
+  protected void addTable(TableConfig t) {
+    tableFind.put(t.name, t);
     if (t.dim != null)
       tableFind.put(t.dim.getName(), t);
     tableSet.add(t);
   }
 
-  protected void findNestedStructures(List<NestedTable.Table> structs) {
-
-    List<NestedTable.Table> nestedStructs = new ArrayList<NestedTable.Table>();
-    for (NestedTable.Table structTable : structs) {
-      Structure s = structTable.struct;
-      for (Variable v : s.getVariables()) {
-        if (v instanceof Structure) {  // handles Sequences too
-          NestedTable.Table nestedTable = new NestedTable.Table((Structure) v);
-          addTable(nestedTable);
-          nestedStructs.add(nestedTable);
-
-          Join join = new Join(Join.Type.NestedStructure);
-          join.setTables(structTable, nestedTable);
-          joins.add(join);
-        }
-      }
+  protected void addTableRecurse(TableConfig t) {
+    addTable(t);
+    if (t.children != null) {
+      for (TableConfig child : t.children)
+        addTableRecurse(child);
     }
-
-    // recurse
-    if (nestedStructs.size() > 0)
-      findNestedStructures(nestedStructs);
   }
 
   protected List<Variable> getStructVars(List<Variable> vars, Dimension dim) {
@@ -318,12 +329,12 @@ public class TableAnalyzer {
     return structVars;
   }
 
-  protected void makeJoins() throws IOException { }
-
   protected void makeNestedTables() {
+    // We search among all the possible Tables in a dataset for joins, and coordinate
+    // variables. Based on those, we form "interesting" sets and make them into NestedTables.
 
-    // link the tables together with joins
-    for (Join join : joins) {
+    /* link the tables together with joins
+    for (TableConfig.JoinConfig join : joins) {
       NestedTable.Table parent = join.parent;
       NestedTable.Table child = join.child;
 
@@ -333,12 +344,12 @@ public class TableAnalyzer {
 
       if (parent.children == null) parent.children = new ArrayList<Join>();
       parent.children.add(join);
-    }
+    } */
 
     // find the leaves
-    for (NestedTable.Table table : tableSet) {
-      if (table.children == null) { // its a leaf
-        NestedTable flatTable = new NestedTable(this, table);
+    for (TableConfig config : tableSet) {
+      if (config.children == null) { // its a leaf
+        NestedTable flatTable = new NestedTable(ds, config, errlog);
         if (flatTable.isOk()) { // it has lat,lon,time coords
           leaves.add(flatTable);
         }
@@ -365,9 +376,11 @@ public class TableAnalyzer {
   // track station info
 
   protected StationInfo stationInfo = new StationInfo();
+
   StationInfo getStationInfo() {
     return stationInfo;
   }
+
   public class StationInfo {
     public String stationId, stationDesc, stationNpts;
     public int nstations;
@@ -390,7 +403,7 @@ public class TableAnalyzer {
     }
   }
 
-  public void showTables(java.util.Formatter sf) {
+  /* public void showTables(java.util.Formatter sf) {
     sf.format("\nTables\n");
     for (NestedTable.Table t : tableSet)
       sf.format(" %s\n", t);
@@ -398,7 +411,7 @@ public class TableAnalyzer {
     sf.format("\nJoins\n");
     for (Join j : joins)
       sf.format(" %s\n", j);
-  }
+  } */
 
   public void showNestedTables(java.util.Formatter sf) {
     for (NestedTable nt : leaves) {
@@ -407,11 +420,18 @@ public class TableAnalyzer {
   }
 
   public void getDetailInfo(java.util.Formatter sf) {
-    sf.format("\nCoordSysAnalyzer on Dataset %s\n", ds.getLocation());
+    sf.format("\nTableAnalyzer on Dataset %s\n", ds.getLocation());
+    if (tc != null) sf.format(" TableConfigurer = %s\n", tc.getClass().getName());
     //showCoordSys(sf);
     //showCoordAxes(sf);
     //showTables(sf);
     showNestedTables(sf);
+    String errlogS = errlog.toString();
+    if (errlogS.length() > 0)
+      sf.format("\n Errlog=\n%s",errlogS);
+    String userAdviceS = userAdvice.toString();
+    if (userAdviceS.length() > 0)
+      sf.format("\n userAdvice=\n%s",userAdviceS);
   }
 
   static void doit(String filename) throws IOException {
@@ -419,7 +439,7 @@ public class TableAnalyzer {
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     TableAnalyzer csa = TableAnalyzer.factory(null, ncd);
     csa.getDetailInfo(new Formatter(System.out));
-    System.out.println("-----------------");
+    System.out.println("\n-----------------");
   }
 
   static public void main(String args[]) throws IOException {
@@ -428,12 +448,15 @@ public class TableAnalyzer {
     doit("C:/data/bufr/edition3/idd/profiler/PROFILER_2.bufr");
     doit("C:/data/profile/PROFILER_wind_01hr_20080410_2300.nc"); */
     //doit("C:/data/test/20070301.nc");
-    doit("C:/data/dt2/profile/PROFILER_3.bufr");
+    //doit("C:/data/dt2/profile/PROFILER_3.bufr");
 
     //doit("C:/data/dt2/station/ndbc.nc");
-    //doit("C:/data/dt2/station/UnidataMultidim.ncml");
-    //doit("R:/testdata/point/bufr/data/050391800.iupt01");
-    //doit("C:/data/rotatedPole/eu.mn.std.fc.d00z20070820.ncml");
+    //doit("C:/data/dt2/station/madis2.sao");
+    // doit("C:/data/metars/Surface_METAR_20070326_0000.nc");  // ok
+    //doit("C:/data/dt2/station/Sean_multidim_20070301.nc"); // ok
+    doit("C:/data/dt2/profile/PROFILER_3.bufr");
+
+    //doit("C:/data/profile/PROFILER_wind_01hr_20080410_2300.nc");
     //doit("C:/data/cadis/tempting");
   }
 }

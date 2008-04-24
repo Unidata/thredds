@@ -98,6 +98,50 @@ public class UnidataPointDatasetHelper {
    * @param a AxisType.LAT, LON, HEIGHT, or TIME
    * @return coordinate variable, or null if not found.
    */
+  static public String getCoordinateName(NetcdfDataset ds, AxisType a) {
+    List<Variable> varList = ds.getVariables();
+    for (Variable v : varList) {
+      if (v instanceof Structure) {
+        //System.out.println( "v is a Structure" );
+        List<Variable> vars = ((Structure) v).getVariables();
+        for (Variable vs : vars) {
+          //System.out.println( "vs =" + vs.getShortName() );
+          String axisType = ds.findAttValueIgnoreCase(vs, _Coordinate.AxisType, null);
+          if ((axisType != null) && axisType.equals(a.toString()))
+            return vs.getShortName();
+        }
+      } else {
+        String axisType = ds.findAttValueIgnoreCase(v, _Coordinate.AxisType, null);
+        if ((axisType != null) && axisType.equals(a.toString()))
+          return v.getShortName();
+      }
+    }
+
+    if (a == AxisType.Lat)
+      return findVariableName( ds, "latitude");
+
+    if (a == AxisType.Lon)
+      return findVariableName( ds, "longitude");
+
+    if (a == AxisType.Time)
+      return findVariableName( ds, "time");
+
+    if (a == AxisType.Height) {
+      Variable v = findVariable( ds, "altitude");
+      if (null == v) v = findVariable( ds, "depth");
+      if (v != null) return v.getShortName();
+    }
+
+    // I think the CF part is done by the CoordSysBuilder adding the _CoordinateAxisType attrinutes.
+    return null;
+  }
+
+  /**
+   * Tries to find the coordinate variable of the specified type.
+   * @param ds look in this dataset
+   * @param a AxisType.LAT, LON, HEIGHT, or TIME
+   * @return coordinate variable, or null if not found.
+   */
   static public Variable getCoordinate(NetcdfDataset ds, AxisType a) {
     List<Variable> varList = ds.getVariables();
     for (Variable v : varList) {
@@ -129,11 +173,16 @@ public class UnidataPointDatasetHelper {
     if (a == AxisType.Height) {
       Variable v = findVariable( ds, "altitude");
       if (null == v) v = findVariable( ds, "depth");
-      return v;
+      if (v != null) return v;
     }
 
     // I think the CF part is done by the CoordSysBuilder adding the _CoordinateAxisType attrinutes.
     return null;
+  }
+
+  static public String findVariableName(NetcdfFile ds, String name) {
+    Variable result = findVariable(ds, name);
+    return result == null ? null : result.getShortName();
   }
 
   static public Variable findVariable(NetcdfFile ds, String name) {
@@ -150,6 +199,7 @@ public class UnidataPointDatasetHelper {
     }
     return result;
   }
+
 
   static public Dimension findDimension(NetcdfFile ds, String name) {
     Dimension result = ds.findDimension(name);

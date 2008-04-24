@@ -20,55 +20,51 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.Variable;
-import ucar.nc2.ft.point.standard.NestedTable;
-import ucar.nc2.ft.point.standard.TableAnalyzer;
-import ucar.nc2.ft.point.standard.Join;
-import ucar.ma2.StructureMembers;
-import ucar.ma2.ArrayStructureMA;
+import ucar.nc2.ft.point.standard.*;
+import ucar.nc2.constants.FeatureType;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Formatter;
 
 /**
  * @author caron
- * @since Apr 18, 2008
+ * @since Apr 23, 2008
  */
-public class FslWindProfiler extends TableAnalyzer {
+public class FslWindProfiler implements TableConfigurer {
 
-  // :title = "WPDN data : selected by ob time : time range from 1207951200 to 1207954800";
-  static public boolean isMine(NetcdfDataset ds) {
+    // :title = "WPDN data : selected by ob time : time range from 1207951200 to 1207954800";
+  @Override
+  public boolean isMine(NetcdfDataset ds) {
     String title = ds.findAttValueIgnoreCase(null, "title", null);
     return title != null && (title.startsWith("WPDN data"));
   }
 
   @Override
-  public void makeJoins() throws IOException {
-    super.makeJoins();
+  public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
+    TableConfig nt = new TableConfig(NestedTable.TableType.Construct, "station");
+    nt.featureType = FeatureType.STATION_PROFILE;
 
-    List<Variable> vars = new ArrayList<Variable>();
-    vars.add(ds.findVariable("staName"));
-    vars.add(ds.findVariable("staLat"));
-    vars.add(ds.findVariable("staLon"));
-    vars.add(ds.findVariable("staElev"));
+    TableConfig obs = new TableConfig(NestedTable.TableType.Structure, "record");
+    obs.dim = Evaluator.getDimension(ds, "recNum", errlog);
+    obs.time = Evaluator.getVariableName(ds, "timeObs", errlog);
 
-    StructureMembers members = new StructureMembers("station");
-    for (Variable v : vars) {
-      StructureMembers.Member m = members.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), new int[0]);
-      m.setDataArray(v.read());
-    }
+    obs.stnId = Evaluator.getVariableName(ds, "staName", errlog);
+    obs.stnWmoId = Evaluator.getVariableName(ds, "wmoStaNum", errlog);
+    obs.lat = Evaluator.getVariableName(ds, "staLat", errlog);
+    obs.lon = Evaluator.getVariableName(ds, "staLon", errlog);
+    obs.elev = Evaluator.getVariableName(ds, "staElev", errlog);
 
-    int n = ds.getUnlimitedDimension().getLength();
-    ArrayStructureMA as = new ArrayStructureMA(members, new int[]{n});
-    NestedTable.Table stnTable = new NestedTable.Table("station", as);
-    addTable(stnTable);
-    stnTable.getDataVariables().addAll(vars);
+    obs.join = new TableConfig.JoinConfig(Join.Type.Identity);
+    nt.addChild(obs);
 
-    NestedTable.Table obsTable = tableFind.get("recNum");
-    Join join = new Join(Join.Type.Identity);
-    join.setTables(stnTable, obsTable);
-    joins.add(join);
+    TableConfig levels = new TableConfig(NestedTable.TableType.MultiDim, "levels");
+    levels.outer = Evaluator.getDimension(ds, "recNum", errlog);
+    levels.dim = Evaluator.getDimension(ds, "level", errlog);
+    levels.elev = Evaluator.getVariableName(ds, "levels", errlog);
+
+    levels.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
+
+    obs.addChild(levels);
+    return nt;
   }
 
 }

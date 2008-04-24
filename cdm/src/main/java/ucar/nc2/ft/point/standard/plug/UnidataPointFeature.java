@@ -19,13 +19,13 @@
  */
 package ucar.nc2.ft.point.standard.plug;
 
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.Structure;
+import ucar.nc2.ft.point.standard.*;
+import ucar.nc2.ft.point.UnidataPointDatasetHelper;
 import ucar.nc2.ft.StationImpl;
-import ucar.nc2.ft.point.standard.NestedTable;
-import ucar.nc2.ft.point.standard.TableAnalyzer;
-import ucar.nc2.ft.point.standard.Join;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.Structure;
 import ucar.ma2.*;
 
 import java.util.*;
@@ -34,9 +34,9 @@ import java.nio.ByteBuffer;
 
 /**
  * @author caron
- * @since Apr 18, 2008
+ * @since Apr 23, 2008
  */
-public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
+public class UnidataPointFeature implements TableConfigurer {
 
   public boolean isMine(NetcdfDataset ds) {
     // find datatype
@@ -52,30 +52,52 @@ public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
     StringTokenizer stoke = new StringTokenizer(conv, ",");
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken().trim();
-      if (toke.equalsIgnoreCase("Unidata"))
+      if (toke.equalsIgnoreCase("Unidata Point Feature v1.0"))
         return true;
     }
     return false;
   }
 
-  @Override
-  public void annotateDataset() {
-    stationInfo.stationId = "name"; // findVariableWithAttribute(ds.getVariables(), "standard_name", "station_name");
-    stationInfo.stationDesc = null; // ds.findVariable("station_description");
-    stationInfo.stationNpts = null; // ds.findVariable("nrecords");
+  private static final String STN_NAME = "name";
+  private static final String STN_LAT = "Latitude";
+  private static final String STN_LON = "Longitude";
+  private static final String STN_ELEV = "Height_of_station";
 
-    stationInfo.latName = "Latitude";
-    stationInfo.lonName = "Longitude";
-    stationInfo.elevName = "Height_of_station";
+  public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+    TableConfig nt = new TableConfig(NestedTable.TableType.ArrayStructure, "station");
+    nt.featureType = FeatureType.STATION_PROFILE;
+
+    nt.stnId = STN_NAME;
+    nt.lat = STN_LAT;
+    nt.lon = STN_LON;
+    nt.elev = STN_ELEV;
+
+    // make the station array structure in memory
+    nt.as = makeIndex(ds);
+
+    TableConfig obs = new TableConfig(NestedTable.TableType.Structure, "obsRecord");
+    obs.dim = Evaluator.getDimension(ds, "record", errlog);
+
+    obs.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
+    obs.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon);
+    obs.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
+    obs.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);
+
+    obs.stnId = Evaluator.getVariableName(ds, "name", errlog);
+    obs.join = new TableConfig.JoinConfig(Join.Type.Index);
+    // create an IndexJoin and attach to the obs.join
+    indexJoin = new IndexJoin(obs.join);
+    nt.addChild(obs);
+
+    TableConfig levels = new TableConfig(NestedTable.TableType.Structure, "seq1");
+    levels.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
+    levels.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
+
+    obs.addChild(levels);
+    return nt;
   }
 
-  @Override
-  protected void makeTables() throws IOException {
-    super.makeTables();
-    makeIndex();
-  }
-
-  private void makeIndex() throws IOException {
+  private ArrayStructure makeIndex(NetcdfDataset ds) throws IOException {
 
     // read in the index structure data
     Structure s = (Structure) ds.findVariable("obsRecordIndex");
@@ -108,9 +130,9 @@ public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
         // read in that obs, make a station
         try {
           StructureData sdata = obs.readStructure(i);
-          double lat = sdata.getScalarDouble("Latitude");
-          double lon = sdata.getScalarDouble("Longitude");
-          double elev = sdata.getScalarDouble("Height_of_station");
+          double lat = sdata.getScalarDouble(STN_LAT);
+          double lon = sdata.getScalarDouble(STN_LON);
+          double elev = sdata.getScalarDouble(STN_ELEV);
           stations.add(new StationImpl(indy.name, null, lat, lon, elev));
 
           last = new MyStructureDataIterator(i);
@@ -127,17 +149,16 @@ public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
 
     // make an ArrayStructure for the station table
     StructureMembers sm = new StructureMembers("station");
-    sm.addMember("name", null, null, DataType.STRING, new int[0]).setDataParam(0);
-    sm.addMember("Latitude", null, "degrees_north", DataType.DOUBLE, new int[0]).setDataParam(4);
-    sm.addMember("Longitude", null, "degrees_east", DataType.DOUBLE, new int[0]).setDataParam(12);
-    sm.addMember("Height_of_station", null, "m", DataType.DOUBLE, new int[0]).setDataParam(20);
+    sm.addMember(STN_NAME, null, null, DataType.STRING, new int[0]).setDataParam(0);
+    sm.addMember(STN_LAT, null, "degrees_north", DataType.DOUBLE, new int[0]).setDataParam(4);
+    sm.addMember(STN_LON, null, "degrees_east", DataType.DOUBLE, new int[0]).setDataParam(12);
+    sm.addMember(STN_ELEV, null, "m", DataType.DOUBLE, new int[0]).setDataParam(20);
     sm.setStructureSize(28);
 
     int nstations = stations.size();
     ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[]{nstations});
     ByteBuffer bb = asbb.getByteBuffer();
     for (StationImpl stn : stations) {
-      asbb.addObjectToHeap(stn.getName());
       bb.putInt(asbb.addObjectToHeap(stn.getName()));
       bb.putDouble(stn.getLatitude());
       bb.putDouble(stn.getLongitude());
@@ -145,23 +166,13 @@ public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
     }
 
     // add the station table
-    NestedTable.Table stnTable = new NestedTable.Table("stations", asbb);
-    addTable(stnTable);
-  }
-
-  public void makeJoins() throws IOException {
-    super.makeJoins();
-
-    indexJoin = new IndexJoin();
-    NestedTable.Table stnTable = tableFind.get("stations");
-    NestedTable.Table obsTable = tableFind.get("obsRecord");
-    indexJoin.setTables(stnTable, obsTable);
-    joins.add(indexJoin);
+    return asbb;
   }
 
   private class IndexJoin extends Join {
-    IndexJoin() {
-      super(Join.Type.Index);
+    IndexJoin(TableConfig.JoinConfig config) {
+      super( config);
+      config.override = this;
     }
 
     @Override
@@ -236,3 +247,4 @@ public class UnidataPointFeatureAnalyzer extends TableAnalyzer {
   }
 
 }
+
