@@ -7,7 +7,6 @@
     <content url="file://$MODULE_DIR$/../../../bufr">
       <sourceFolder url="file://$MODULE_DIR$/../../../bufr/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../bufr/test/src" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/../../../bufr/src/ucar/unidata" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

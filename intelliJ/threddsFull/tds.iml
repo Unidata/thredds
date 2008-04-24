@@ -56,7 +56,7 @@
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
           <containerElement type="library" name="JSTL" level="module">
-            <attribute name="method" value="0" />
+            <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib" />
           </containerElement>
           <containerElement type="library" name="Spring" level="module">
@@ -82,6 +82,11 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib/commons-httpclient-3.0.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.0.1.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+            <url>jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
@@ -154,19 +159,19 @@
             <url>file://$MODULE_DIR$/../../cdm/src/main/resources</url>
           </containerElement>
           <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/slf4j-jdk14-1.2.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.2.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-            <url>jar://$MODULE_DIR$/../../lib/external/tomcat-5.5.20_servlet-api.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib/visadNoDods.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="&lt;N/A&gt;" />
+            <url>jar://$MODULE_DIR$/../../lib/external/tomcat-5.5.20_servlet-api.jar!/</url>
           </containerElement>
         </packaging>
       </configuration>
@@ -576,10 +581,13 @@
         <JAVADOC>
           <root url="http://static.springframework.org/spring/docs/2.5.x/api/" />
         </JAVADOC>
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../../../../../apps/spring-framework-2.5.1/dist/spring-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../../../apps/spring-framework-2.5.1/dist/module-sources/spring-webmvc-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library name="JSTL">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/standard.jar!/" />
