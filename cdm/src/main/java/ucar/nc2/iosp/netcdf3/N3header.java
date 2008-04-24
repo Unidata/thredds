@@ -421,13 +421,14 @@ public class N3header {
     if (debugString) printBytes(nelems);
     byte[] b = new byte[nelems];
     raf.read(b);
-    skip(nelems);
-    return new String(b, "UTF-8"); // all strings are considered to be UTF-8 unicode.
+    skip(nelems); // pad to 4 byte boundary
 
-    /* LOOK remove trailing zeroes from update ??
-    int count = nelems;
-    while ((b[count] == 0) && (count > 0)) count--;
-    return new String(b, 0, count); */
+    // null terminates
+    int count = 0;
+    while (count < nelems)
+      if (b[count++] == 0) break;
+
+    return new String(b, 0, count, "UTF-8"); // all strings are considered to be UTF-8 unicode.
   }
 
   // skip to a 4 byte boundary in the file

@@ -800,7 +800,7 @@ public class ToolsUI extends JPanel {
       else if (setUseRecordStructure)
         ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
-    } catch (Exception ioe) {
+    } catch (IOException ioe) {
       String message = ioe.getMessage();
       if ((null == message) && (ioe instanceof EOFException))
         message = "Premature End of File";
@@ -808,9 +808,16 @@ public class ToolsUI extends JPanel {
 
       try {
         if (ncfile != null) ncfile.close();
-      } catch (IOException e) {
-      }
+      } catch (IOException ee) { }
+      ncfile = null;
 
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location + "\n" + e.getMessage());
+      e.printStackTrace();
+
+      try {
+        if (ncfile != null) ncfile.close();
+      } catch (IOException ee) { }
       ncfile = null;
     }
 

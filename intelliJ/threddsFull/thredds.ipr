@@ -32,8 +32,6 @@
     <option name="DEFAULT_COMPILER" value="Javac" />
     <option name="DEPLOY_AFTER_MAKE" value="2" />
     <excludeFromCompile>
-      <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/xml/TestUnicode.java" />
-      <file url="file://$PROJECT_DIR$/../../cdm/src/timing/java/ucar/nc2/util/xml/TimeStaxReading.java" />
       <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml" />
     </excludeFromCompile>
     <resourceExtensions>

@@ -224,13 +224,14 @@ public class TimeStaxReading {
     //myFactory.setXMLReporter(myXMLReporter);
     //myFactory.setXMLResolver(myXMLResolver);
     myFactory.setProperty("javax.xml.stream.isCoalescing", Boolean.TRUE);
+    new TimeStaxReading(myFactory, "C:/TEMP/thredds.xml");
 
-    String dir = "C:/doc/metarEncoding/save/";
+    /* String dir = "C:/doc/metarEncoding/save/";
     new TimeStaxReading(myFactory, dir+"xmlC.xml");
 
     readFromNetcdf(dir+"netcdfC.nc");
 
-    readFromNetcdf(dir+"netcdfStreamC.nc");
+    readFromNetcdf(dir+"netcdfStreamC.nc"); */
   }
 
 }

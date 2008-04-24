@@ -23,7 +23,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 
 /**
- * Implementation of EnhanceScaleMissing for missing data and scale/offset packed data.
+ * Implementation of EnhanceScaleMissing for missing data, unsigned, and scale/offset packed data.
  *
  * @author caron
  * @see EnhanceScaleMissing
@@ -104,6 +104,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     }
 
     this.isUnsigned = forVar.isUnsigned();
+    this.hasScaleOffset = this.isUnsigned; // unsigned must be converted
 
     DataType scaleType = null, missType = null, validType = null, fillType = null;
     if (debug) System.out.println("EnhancementsImpl for Variable = " + forVar.getName());
