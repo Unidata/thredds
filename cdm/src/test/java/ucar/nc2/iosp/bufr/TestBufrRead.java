@@ -43,7 +43,7 @@ public class TestBufrRead extends TestCase {
   public void testReadAll() throws IOException {
     //readandCountAllInDir(testDir, null);
     int count = 0;
-    count += TestAll.readAllDir("C:/data/bufr/edition3/", new MyFileFilter());
+    count += TestAll.readAllDir("R:/testdata/bufr/edition3/", new MyFileFilter());
     System.out.println("***READ " + count + " files");
   }
 

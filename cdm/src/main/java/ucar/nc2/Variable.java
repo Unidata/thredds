@@ -56,13 +56,13 @@ public class Variable implements VariableIF {
   protected boolean isVariableLength = false;
   protected boolean isMetadata = false;
   private boolean immutable = false; // cache can change
-  // private boolean isUnsigned = false;
 
   protected Cache cache = new Cache();
   protected int sizeToCache = defaultSizeToCache; // bytes
 
-  protected Structure parent = null; // for variables inside Structure
-  protected ProxyReader preReader, postReader;
+  protected Structure parent = null; // for variables inside a Structure, aka "structure members"
+  protected ProxyReader preReader;  // section, slice use this
+  protected ProxyReader postReader; // only used by VariableDS, StructureDS; put here because this is the common superclass
 
 
   /**

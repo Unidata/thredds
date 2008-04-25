@@ -464,7 +464,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   ////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////
   private NetcdfFile orgFile = null;
-  private EnhanceMode isEnhanced = EnhanceMode.None;
+  private EnhanceMode isEnhanced = EnhanceMode.None; // the current state of enhancement
 
   private List<CoordinateSystem> coordSys = new ArrayList<CoordinateSystem>();
   private List<CoordinateAxis> coordAxes = new ArrayList<CoordinateAxis>();

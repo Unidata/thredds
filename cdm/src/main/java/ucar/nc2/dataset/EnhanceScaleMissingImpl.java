@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -104,7 +104,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     }
 
     this.isUnsigned = forVar.isUnsigned();
-    this.hasScaleOffset = this.isUnsigned; // unsigned must be converted
+    //this.hasScaleOffset = this.isUnsigned; // unsigned must be converted
 
     DataType scaleType = null, missType = null, validType = null, fillType = null;
     if (debug) System.out.println("EnhancementsImpl for Variable = " + forVar.getName());

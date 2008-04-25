@@ -309,6 +309,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
    * @param proxyReader set to this
    */
   public void setProxyReader( ProxyReader proxyReader) {
+    // LOOK: interactions with smProxy ??
     this.postReader = proxyReader;
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,7 +20,6 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.*;
-
 import java.util.*;
 
 /**

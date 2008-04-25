@@ -129,7 +129,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
       List<CoordinateAxis> axes = ds.getCoordinateAxes();
       for (CoordinateAxis axis : axes) {
         if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
-          Variable v = axis.getOriginalVariable();
+          Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
           units = v.getUnitsString();
           break;
         }

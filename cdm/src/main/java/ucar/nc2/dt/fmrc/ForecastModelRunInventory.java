@@ -129,7 +129,7 @@ public class ForecastModelRunInventory {
       GridCoordSystem gcs = gg.getCoordinateSystem();
       Grid grid = new Grid(gg.getName());
       VariableEnhanced ve = gg.getVariable();
-      Variable v = ve.getOriginalVariable();
+      Variable v = ve.getOriginalVariable();   // LOOK why original variable ??
       addMissing(v, gcs, grid);
 
       // LOOK: Note this assumes a dense coordinate system
