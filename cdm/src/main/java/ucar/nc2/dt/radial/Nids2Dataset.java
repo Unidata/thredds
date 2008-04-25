@@ -281,26 +281,27 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
             double meanAzimuth = Double.NaN;
             int sweepno, nrays, ngates;
             Variable sweepVar;
+            NetcdfDataset ds;
 
             Nids2Sweep(NetcdfDataset nds, Variable v, int sweepno, int rays, int gates){
                 this.sweepVar = v;
                 this.nrays = rays;
                 this.ngates = gates;
                 this.sweepno = sweepno;
-
-                setMeanElevation(nds);
-                setMeanAzimuth(nds);
+                this.ds = nds;
+                //setMeanElevation(nds);
+                //setMeanAzimuth(nds);
             }
 
             public Variable getsweepVar(){
                 return (Variable)sweepVar;
             }
 
-            private void setMeanElevation(NetcdfDataset nds) {
+            private void setMeanElevation() {
                 Array spData = null;
                 if (Double.isNaN(meanElevation)) {
                     try{
-                        Variable sp = nds.findVariable("elevation");
+                        Variable sp = ds.findVariable("elevation");
                         spData = sp.read();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -312,15 +313,16 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
             }
 
             public float getMeanElevation() {
-            //setMeanElevation();
+                if(Double.isNaN(meanElevation))
+                    setMeanElevation();
                 return (float) meanElevation;
             }
 
-            private void setMeanAzimuth(NetcdfDataset nds) {
+            private void setMeanAzimuth() {
                 if (getType() != null) {
                   Array spData = null;
                   try{
-                        Variable sp = nds.findVariable("azimuth");
+                        Variable sp = ds.findVariable("azimuth");
                         spData = sp.read();
 
                   } catch (IOException e) {
@@ -334,7 +336,8 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
             }
 
             public float getMeanAzimuth() {
-               // setMeanAzimuth();
+               if(Double.isNaN(meanAzimuth))
+                    setMeanAzimuth();
                 return (float) meanAzimuth;
             }
 
