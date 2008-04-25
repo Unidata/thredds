@@ -53,12 +53,22 @@ public class TestBufrRead extends TestCase {
     }
   }
 
+  public void testReadOneBufrMessage() throws IOException {
+    //readandCountAllInDir(testDir, null);
+    int count = 0;
+    count += TestAll.actOnAll("R:/testdata/bufr/edition3/", new MyFileFilter(), new TestAll.Act() {
+      public int doAct(String filename) throws IOException {
+        return readBufr(filename);
+      }
+    });
+    System.out.println("***READ " + count + " files");
+  }
+
   public void testScanOne() throws IOException {
     openNetdf("R:/testdata/bufr/edition3/idd/profiler/PROFILER_1.bufr");
   }
 
-
-  private void readBufr(String filename) throws IOException {
+  private int readBufr(String filename) throws IOException {
     boolean oneRecord = true;
     boolean getData = false;
 
@@ -69,6 +79,7 @@ public class TestBufrRead extends TestCase {
     bi.scan(oneRecord, getData);
     int totalObs = bi.getTotalObs();
     System.out.println("Total number observations =" + totalObs);
+    return 1;
   }
 
   private void openNetdf(String filename) throws IOException {

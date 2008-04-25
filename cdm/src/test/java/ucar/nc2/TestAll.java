@@ -293,6 +293,41 @@ public class TestAll {
     return 1;
   }
 
+  ////////////////////////////////////////////////
+
+  public interface Act {
+    int doAct( String filename) throws IOException;
+  }
+
+  public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
+    int count = 0;
+
+    System.out.println("---------------Reading directory "+dirName);
+    File allDir = new File( dirName);
+    File[] allFiles = allDir.listFiles();
+    if (null == allFiles) {
+      System.out.println("---------------INVALID "+dirName);
+      return count;
+    }
+
+    for (File f : allFiles) {
+      String name = f.getAbsolutePath();
+      if (f.isDirectory())
+        continue;
+      if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude"))
+        count += act.doAct(name);
+    }
+
+    for (File f : allFiles) {
+      if (f.isDirectory() && !f.getName().equals("exclude"))
+        count += actOnAll(f.getAbsolutePath(), ff, act);
+    }
+
+    return count;
+  }
+
+  ////////////////////////////////////////////////
+
   static int max_size = 1000 * 1000 * 10;
   static Section makeSubset(Variable v) throws InvalidRangeException {
     int[] shape = v.getShape();
