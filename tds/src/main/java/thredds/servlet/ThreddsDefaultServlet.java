@@ -58,7 +58,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   }
 
   protected String getContextName() {
-    return "THREDDS Data Server";
+    return this.getServletContext().getServletContextName();
   }
 
   protected String getDocsPath() {
@@ -450,9 +450,9 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       if (path.endsWith("catalog.html") || path.endsWith("catalog.xml"))
         return null;
 
-      String upper = filename.toUpperCase();
-      if (upper.indexOf("WEB-INF") != -1 || upper.indexOf("META-INF") != -1)
-        return null;
+//      String upper = filename.toUpperCase();
+//      if (upper.indexOf("WEB-INF") != -1 || upper.indexOf("META-INF") != -1)
+//        return null;
     }
 
     File file = new File(filename);

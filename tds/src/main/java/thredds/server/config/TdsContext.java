@@ -21,6 +21,8 @@ public class TdsContext
   private File rootDirectory;
   private File contentDirectory;
 
+  private File initialContentDirectory;
+
   public TdsContext() { }
 
   public void init( ServletContext servletContext )
@@ -40,6 +42,8 @@ public class TdsContext
 //        throw new IOException( tmpMsg );
       }
     }
+
+    this.initialContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/startup");
   }
 
   /**
@@ -72,4 +76,15 @@ public class TdsContext
     return contentDirectory;
   }
 
+  /**
+   * Return File for the initial content directory. I.e., the directory
+   * that contains default content for the content directory, copied
+   * there when TDS is first installed.
+   *
+   * @return a File to the initial content directory.
+   */
+  public File getInitialContentDirectory()
+  {
+    return initialContentDirectory;
+  }
 }

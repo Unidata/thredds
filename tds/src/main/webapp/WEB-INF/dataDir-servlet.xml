@@ -22,7 +22,6 @@
       <value>
         =catGenController
         /=catGenController
-        /*=catGenController
       </value>
     </property>
   </bean>
