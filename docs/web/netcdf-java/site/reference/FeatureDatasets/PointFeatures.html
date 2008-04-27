@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Untitled Document</title>
+<title>Point Feature Types</title>
 <style type="text/css">
 <!--
 .style1 {color: #CC0000}
@@ -13,7 +13,26 @@
 
 <body>
 <h1>Point Feature Types</h1>
-<h3>PointFeature</h3>
+<p>Point Feature Datasets contain one or more FeatureCollections:</p>
+<pre>  public interface <strong>ucar.nc2.ft.PointFeatureDataset</strong> extends ucar.nc2.ft.<strong>FeatureDataset </strong>{<br />    List&lt;<strong>FeatureCollection</strong>&gt; <strong>getPointFeatureCollectionList</strong>();<br />  }</pre>
+<p>Point Feature Datasets will contain <strong>PointFeatureCollections</strong> or <strong>NestedPointFeatureCollections</strong>, described below. We take the approach that all point feature types are arrangements of collections of <em>PointFeatures</em> (a set of measurements at the same point in space and time), distinguished by the geometry and topology of the collections. The <strong><em>Point Feature Types</em></strong> that we implement are: </p>
+<ol>
+  <li><strong>Point feature</strong> : one or more parameters measured at one point in time and space. </li>
+  <li><strong>Station feature</strong> : a time-series of data points all at the same location, with varying time.</li>
+  <li><strong>Profile feature</strong> : a set of data points along a vertical line.</li>
+  <li> <strong> Station Profile feature</strong> : a time-series of profile<strong></strong>features at a named location. </li>
+  <li><strong>Trajectory feature</strong> : a set of data points along a 1D curve in time and space. </li>
+  <li><strong>Section feature</strong> : a collection of profile<strong></strong>features which originate along a trajectory. </li>
+</ol>
+<h3>Related documents:</h3>
+<ul>
+  <li> CDM Feature Types <em> draft </em><a href="CDMfeatures.doc">doc</a></li>
+  <li>CDM Point Feature Types <em> draft </em><a href="CDMpoints.doc">doc</a></li>
+  <li>Complete <a href="PointUML.html">Point Feature UML</a></li>
+</ul>
+<p>&nbsp;</p>
+<h2>Point Features</h2>
+<p><img src="PF1.png" width="412" height="210" /></p>
 <p>A <strong>PointFeature </strong>is a collection of data (usually observational) taken at a single time and a single place:</p>
 <pre>  public interface <strong>ucar.nc2.ft.PointFeature</strong> {<br />    ucar.nc2.ft.EarthLocation <strong>getLocation</strong>();
 <br />    double <strong>getObservationTime</strong>();<br />    Date <strong>getObservationTimeAsDate</strong>();<br />    double <strong>getNominalTime</strong>();<br />    Date <strong>getNominalTimeAsDate</strong>();
@@ -38,7 +57,10 @@
     ...
   }</pre>
 <p>You may also subset a PointFeatureCollection with a lat/lon bounding box, and/or a dateRange. </p>
+<h2><strong>Station Time Series Features </strong></h2>
 <h3><strong>StationTimeSeriesFeature</strong></h3>
+<p><img src="StationTimeSeries.png" width="732" height="435" /></p>
+<p>&nbsp;</p>
 <p>A <strong>StationTimeSeriesFeature</strong> is a time series of PointFeatures at a single, named location.</p>
 <pre>  public interface <strong>ucar.nc2.ft.StationTimeSeriesFeature</strong> extends ucar.nc2.ft.<strong>Station</strong>,<strong> </strong>ucar.nc2.ft.<strong>PointFeatureCollection</strong> {<br />    //Station
     String <strong>getName</strong>();
@@ -96,13 +118,21 @@
     ...
   }
 </pre>
-<h3><strong>ProfileFeature</strong></h3>
+<h2><strong>Profile Features</strong></h2>
+<p><img src="ProfileFeature.png" width="725" height="351" /></p>
 <p>A<strong> ProfileFeature </strong>is a set of PointFeatures along a vertical line.</p>
 <pre>  public interface <strong>ucar.nc2.ft.ProfileFeature</strong> extends ucar.nc2.ft.<strong>PointFeatureCollection</strong> {<br />    String <strong>getName</strong>();<br />    ucar.unidata.geoloc.LatLonPoint <strong>getLatLon</strong>();
 
     // PointFeatureCollection<br />    int <strong>getNumberPoints</strong>();<br />    ucar.nc2.ft.PointFeatureIterator <strong>getPointFeatureIterator</strong>(int buffersize);<br />    ucar.nc2.ft.PointFeatureCollection <strong>subset</strong>(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);
   }</pre>
 <p>Note that a <strong>ProfileFeature</strong>  is a collection of PointFeatures, extending <strong>PointFeatureCollection</strong>, and  the data is accessed through a<strong> PointFeatureIterator</strong>. In this case, the iterator will return PointFeatures that all belong to the same profile, with the same lat/lon point and varying heights.<span class="style2"> (and be returned in height order ??) </span>The number of points in the collection may be available through the <em>getNumberPoints</em>() method. When that number can only be determined by reading through the data, a -1 is returned. </p>
+<h3>ProfileFeatureCollection</h3>
+<h2>Trajectory Features</h2>
+<p><img src="TrajectoryFeature.png" width="725" height="345" /></p>
+<h3>TrajectoryFeature</h3>
+<h3>TrajectoryFeatureCollection</h3>
+<h2>Station Profile Features </h2>
+<p><img src="StationProfile.png" width="663" height="484" /></p>
 <h3><strong>StationProfileFeature</strong></h3>
 <p>A<strong> StationProfileFeature </strong>is a time series of ProfileFeatures at a single, named location.</p>
 <pre>  public interface <strong>ucar.nc2.ft.StationProfileFeature</strong> extends ucar.nc2.ft.<strong>NestedPointFeatureCollection</strong> {<br />
@@ -158,7 +188,7 @@
 
 <hr width="100%" />
 <address>
-<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 21, 2008
+<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 27, 2008
 </address>
 </body>
 </html>

@@ -7,7 +7,6 @@
 
 <body>
 <h1>Scientific Feature Types</h1>
-<p>&nbsp;</p>
 <p>A <strong>FeatureDataset</strong> is a container for FeatureType objects. It is a generalization of a NetcdfDataset, and the common case is that it wraps a NetcdfDataset. </p>
 <pre>  public interface <strong>ucar.nc2.ft.FeatureDataset</strong>{<br />    ucar.nc2.constants.FeatureType <strong>getFeatureType</strong>();
 <br />    String <strong>getTitle</strong>();<br />    String <strong>getDescription</strong>();<br />    String <strong>getLocationURI</strong>();
@@ -34,11 +33,15 @@
 <p>Specifying the FeatureType means that you only want a FeatureDataset of that FeatureType. If you want the dataset opened as any FeatureType, leave the type null. You may also leave the task null if you do not need to allow user cancelling. The errlog is an instance of java.util.Formatter, and must not be null. If the open() or wrap() is not successful, a null FeatureDataset will be returned, and the errlog will usually have an explanatory message. </p>
 <p>The returned object will be a subclass of FeatureDataset, depending on the FeatureType. All of the Point Types will return an instance of <strong>PointFeatureDataset</strong>, which simply contains a list of <strong>FeatureCollections</strong>: </p>
 <pre>  public interface <strong>ucar.nc2.ft.PointFeatureDataset</strong> extends FeatureDataset {<br />     List&lt;FeatureCollection&gt; <strong>getPointFeatureCollectionList</strong>();<br />  }</pre>
-<p>All of the specialization is in the <strong>FeatureCollection</strong><br>
-</p>
+<p>All of the specialization is in the <strong>FeatureCollection</strong></p>
+<h2>Kinds of Feature Datasets</h2>
+<ul>
+  <li><a href="PointFeatures.html">Point Features</a>: Points, Station Time Series, Profiles, Trajectories and Sections <br>
+  </li>
+</ul>
 <hr width="100%" />
 <address>
-<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 20, 2008 
+<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 27, 2008 
 </address>
 </body>
 </html>
