@@ -638,7 +638,7 @@ public class InvCatalogFactory {
 
     // 1.1
     //doOne(catFactory, "file:C:/data/catalog/obsData.xml", false);
-    doOne(catFactory, "http://www.unidata.ucar.edu/staff/edavis/work/testTDSConfig2.xml", false);
+    doOne(catFactory, "file:C:/temp/colaCatalog.xml", false);
     /* InvCatalogImpl cat = doOne(catFactory, "file:///C:/dev/thredds/resourceswar/initialContent/dodsC/catalog3.xml");
 InvDatasetScan dsScan = (InvDatasetScan) cat.findDatasetByID("testScan");
 InvCatalogImpl catScan = dsScan.makeCatalogForDirectory("reqURL", "model/test/", "serviceId", "latestServiceId");

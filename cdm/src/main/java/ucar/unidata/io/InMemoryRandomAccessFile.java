@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.io.IOException;
 
 /**
+ * A RandomAccessFile stored entirely in memory as a byte array.
  * @author john
  */
 public class InMemoryRandomAccessFile extends RandomAccessFile {

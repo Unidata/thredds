@@ -896,7 +896,7 @@ public class NetcdfFile {
    * @return Array data read.
    * @throws IOException if error
    * @throws InvalidRangeException if variableSection is invalid
-   * @see Section(String) for syntax of constraint expression
+   * @see ucar.ma2.Section(String sectionSpec)for syntax of constraint expression
    */
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
     NCdumpW.CEresult cer = NCdumpW.parseVariableSection(this, variableSection);

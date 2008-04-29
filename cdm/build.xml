@@ -512,10 +512,12 @@
       <package name="thredds.catalog"/>
       <package name="ucar.ma2"/>
       <package name="ucar.nc2"/>
+      <package name="ucar.nc2.constants"/>
       <package name="ucar.nc2.dataset"/>
       <package name="ucar.nc2.dataset.conv"/>
       <package name="ucar.nc2.dataset.transform"/>
       <package name="ucar.nc2.dt"/>
+      <package name="ucar.nc2.ft"/>
       <!-- package name="ucar.nc2.dt.grid"/ -->
       <!-- package name="ucar.nc2.dt.image"/ -->
       <!-- package name="ucar.nc2.dt.radial"/-->
@@ -523,7 +525,7 @@
       <!--package name="ucar.nc2.dt.trajectory"/ -->
       <!-- package name="ucar.nc2.geotiff"/ -->
       <!-- package name="ucar.nc2.ncml"/ -->
-      <package name="ucar.nc2.thredds"/>
+      <!--package name="ucar.nc2.thredds"/-->
       <package name="ucar.nc2.units"/>
       <package name="ucar.nc2.util"/>
       <package name="ucar.unidata.geoloc"/>
