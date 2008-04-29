@@ -330,8 +330,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       File staticFile = getStaticFile(req);
 
       if (staticFile == null) {
-        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
-        res.sendError(HttpServletResponse.SC_NOT_FOUND);
+        RequestDispatcher defaultRD = this.getServletContext().getNamedDispatcher( "default" );
+        defaultRD.forward( req, res );
         return;
       }
 

@@ -9,9 +9,20 @@
 
   <bean id="rootController"
         class="thredds.server.root.RootController"
-          init-method="init" destroy-method="destroy" >
+        init-method="init" destroy-method="destroy" >
     <property name="tdsContext" ref="tdsContext"/>
-    <property name="catGenContext" ref="catGenContext"/>
+  </bean>
+
+  <bean id="dataDirController"
+        class="thredds.server.root.DataDirController"
+        init-method="init" destroy-method="destroy" >
+    <property name="tdsContext" ref="tdsContext"/>
+  </bean>
+
+  <bean id="contentController"
+        class="thredds.server.root.ContentController"
+        init-method="init" destroy-method="destroy" >
+    <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
   <bean id="tdsContext" class="thredds.server.config.TdsContext"/>

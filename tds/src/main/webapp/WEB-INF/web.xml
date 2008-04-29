@@ -7,6 +7,13 @@
   <display-name>THREDDS Data Server</display-name>
   <description>THREDDS Data Server</description>
 
+  <!-- Provide the context path at init time (otherwise, not available till a request is made). -->
+  <!-- Servlet 2.5 spec provides ServletContext.getContextPath().-->
+  <context-param>
+    <param-name>ContextPath</param-name>
+    <param-value>thredds</param-value>
+  </context-param>
+
   <!-- Turn on some more targeted debugging. -->
   <context-param>
     <param-name>DebugOn</param-name>
@@ -308,8 +315,9 @@
   <!-- default servlet -->
 
   <servlet-mapping>
-    <!--servlet-name>root</servlet-name-->
     <servlet-name>ThreddsDefaultServlet</servlet-name>
+    <!--servlet-name>root</servlet-name-->
+    <!--servlet-name>ThreddsDefaultServlet</servlet-name-->
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
   <!--servlet-mapping>

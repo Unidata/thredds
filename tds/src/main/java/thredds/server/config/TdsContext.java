@@ -30,7 +30,13 @@ public class TdsContext
     if ( servletContext == null )
       throw new IllegalArgumentException( "ServletContext must not be null.");
 
-    this.contextPath = servletContext.getContextPath();
+    // Set the context path.
+    // Servlet 2.5 allows the following.
+    //contextPath = servletContext.getContextPath();
+    String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
+    if ( tmpContextPath == null ) tmpContextPath = "thredds";
+    contextPath = "/" + tmpContextPath;
+    
     this.rootDirectory = new File( servletContext.getRealPath( "/" ) );
     this.contentDirectory = new File( this.rootDirectory, "../../content" + this.contextPath );
     if ( ! this.contentDirectory.exists() )

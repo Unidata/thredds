@@ -56,7 +56,11 @@ public class ServletUtil {
   }
 
   static private void setContextPath(ServletContext servletContext) {
-    contextPath = servletContext.getContextPath();
+    // Servlet 2.5 allows the following.
+    //contextPath = servletContext.getContextPath();
+    String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
+    if ( tmpContextPath == null ) tmpContextPath = "thredds";
+    contextPath = "/" + tmpContextPath;
   }
 
   static private void setRootPath(ServletContext sc) {
