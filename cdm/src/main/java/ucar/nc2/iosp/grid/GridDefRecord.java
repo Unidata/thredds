@@ -148,9 +148,8 @@ public abstract class GridDefRecord {
     public abstract String getGroupName();
 
     /**
-     * adds a param and value.
-     * @param key name of the param
-     * @return the value or null
+     * get the keySet
+     * @return the set of keys
      */
     public final java.util.Set getKeys() {
         return params.keySet();

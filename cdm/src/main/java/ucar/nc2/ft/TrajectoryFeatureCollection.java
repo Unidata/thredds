@@ -33,11 +33,11 @@ public interface TrajectoryFeatureCollection extends NestedPointFeatureCollectio
   /**
    * Get a specific TrajectoryFeature.
    *
-   * @param id TrajectoryFeature id
+   * @param name TrajectoryFeature id
    * @return TrajectoryFeature
    * @throws java.io.IOException on i/o error
    */
-  public TrajectoryFeature getTrajectoryFeature(Object id) throws IOException;
+  public TrajectoryFeature getTrajectoryFeature(String name) throws IOException;
 
 }
 

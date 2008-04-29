@@ -18,11 +18,11 @@
 <p>Point Feature Datasets will contain <strong>PointFeatureCollections</strong> or <strong>NestedPointFeatureCollections</strong>, described below. We take the approach that all point feature types are arrangements of collections of <em>PointFeatures</em> (a set of measurements at the same point in space and time), distinguished by the geometry and topology of the collections. The <strong><em>Point Feature Types</em></strong> that we implement are: </p>
 <ol>
   <li><strong>Point feature</strong> : one or more parameters measured at one point in time and space. </li>
-  <li><strong>Station feature</strong> : a time-series of data points all at the same location, with varying time.</li>
+  <li><strong>Station time series feature</strong> : a time-series of data points all at the same location, with varying time.</li>
   <li><strong>Profile feature</strong> : a set of data points along a vertical line.</li>
-  <li> <strong> Station Profile feature</strong> : a time-series of profile<strong></strong>features at a named location. </li>
+  <li> <strong> Station Profile feature</strong> : a time-series of profile <strong></strong>features at a named location. </li>
   <li><strong>Trajectory feature</strong> : a set of data points along a 1D curve in time and space. </li>
-  <li><strong>Section feature</strong> : a collection of profile<strong></strong>features which originate along a trajectory. </li>
+  <li><strong>Section feature</strong> : a collection of profile<strong></strong> features which originate along a trajectory. </li>
 </ol>
 <h3>Related documents:</h3>
 <ul>
@@ -56,7 +56,78 @@
     ucar.nc2.ft.PointFeature pf = iter.<strong>nextData</strong>()
     ...
   }</pre>
-<p>You may also subset a PointFeatureCollection with a lat/lon bounding box, and/or a dateRange. </p>
+<p>You may also subset a PointFeatureCollection with a lat/lon bounding box, and/or a dateRange:</p>
+<pre>  ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
+  PointFeatureCollection subset<strong> = pointFeatureCollection.subset</strong>(new LatLonRect(&quot;40,-105,2,2&quot;), 
+		new DateRange( dformat.getISODate(&quot;1999-09-31T12:00:00&quot;), null, new TimeDuration(&quot;3 days&quot;), null); 
+
+  // get all the points in that subset
+  PointFeatureIterator iter = subset<strong>.getPointFeatureIterator</strong>(-1);
+  while(iter.<strong>hasNext</strong>()) {
+    ucar.nc2.ft.PointFeature pf = iter.<strong>nextData</strong>()
+    ...
+  } </pre>
+<h2><strong>Profile Features</strong></h2>
+<p><img src="ProfileFeature.png" width="725" height="351" /></p>
+<p>A<strong> ProfileFeature </strong>is a set of PointFeatures along a vertical line.</p>
+<pre>  public interface <strong>ucar.nc2.ft.ProfileFeature</strong> extends ucar.nc2.ft.<strong>PointFeatureCollection</strong> {<br />    String <strong>getName</strong>();<br />    ucar.unidata.geoloc.LatLonPoint <strong>getLatLon</strong>();
+
+    // PointFeatureCollection<br />    int <strong>getNumberPoints</strong>();<br />    ucar.nc2.ft.PointFeatureIterator <strong>getPointFeatureIterator</strong>(int buffersize);<br />    ucar.nc2.ft.PointFeatureCollection <strong>subset</strong>(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);
+  }</pre>
+<p>Note that a <strong>ProfileFeature</strong> is a collection of PointFeatures, extending <strong>PointFeatureCollection</strong>, and the data is accessed through a<strong> PointFeatureIterator</strong>. In this case, the iterator will return PointFeatures that all belong to the same profile, with the same lat/lon point and varying heights.<span class="style2"> </span>The number of points in the collection may be available through the <em>getNumberPoints</em>() method. When that number can only be determined by reading through the data, a -1 is returned. </p>
+<p>Note that the <strong>subset</strong> method, inherited from the <em>PointFeatureCollection</em> interface, is not normally useful here, since the lat/lon values are identical. The time values are also often identical, although that is not required. </p>
+<h3>ProfileFeatureCollection</h3>
+<p>A ProfileFeature is a <em>PointFeatureCollection</em>, and a collection of ProfileFeatures is a <strong>ProfileFeatureCollection</strong>, which extends NestedPointFeatureCollection:</p>
+<pre>  public interface <strong>ucar.nc2.ft.ProfileFeatureCollection</strong> extends ucar.nc2.ft.<strong>NestedPointFeatureCollection</strong> {<br />    ucar.nc2.ft.PointFeatureCollectionIterator <strong>getPointFeatureCollectionIterator</strong>(int buffersize);<br />    ucar.nc2.ft.ProfileFeatureCollection <strong>subset</strong>(ucar.unidata.geoloc.LatLonRect);
+    ucar.nc2.ft.PointFeatureCollection <strong>flatten</strong>(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);<br />  }</pre>
+<p>To access the data,  iterate over all ProfileFeatures in the collection with the <strong>PointFeatureCollectionIterator</strong>. The <em>PointFeature<strong>Collection</strong>Iterator</em> is identical to a <em>PointFeatureIterator</em>, except that it returns <em>PointFeatureCollections</em> instead of <em>PointFeature</em>s:</p>
+<pre>  public interface <strong>ucar.nc2.ft.PointFeatureCollectionIterator </strong>{<br />    boolean <strong>hasNext</strong>();<br />    ucar.nc2.ft.PointFeatureCollection <strong>nextFeature</strong>();<br />    void <strong>setBufferSize</strong>(int bufferSize);<br />  }
+</pre>
+<p>To run through all the data, iterate through each <strong>ProfileFeature</strong> in the collection, then through each <strong>PointFeature</strong> of the ProfileFeature:</p>
+<pre>
+  ucar.nc2.ft.PointFeatureCollectionIterator iterProfiles = profileFeatureCollection<strong>.getPointFeatureCollectionIterator</strong>(-1);
+  while(iterProfiles.hasNext() { 
+    ucar.nc2.ft.<strong>ProfileFeature</strong> profile = (<strong>ProfileFeature</strong>) iterProfiles.<strong>nextFeature</strong>()
+
+    ucar.nc2.ft.PointFeatureIterator iterPoint = <strong>profile.getPointFeatureIterator</strong>(-1);
+    while(iterPoint.<strong>hasNext</strong>()) {
+      ucar.nc2.ft.PointFeature pointFeature = iterPoint.<strong>nextData</strong>()
+      ...
+    }
+  }</pre>
+<p>You may  <strong>subset</strong> a ProfileFeatureCollection with a lat/lon bounding box, getting back another <strong>ProfileFeatureCollection</strong>:</p>
+<pre>  ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
+  <strong>ProfileFeatureCollection</strong> subset<strong> = </strong>profileFeatureCollection<strong>.subset</strong>(new LatLonRect(&quot;-60,120,12,20&quot;));
+
+  // get all the profiles
+  ucar.nc2.ft.PointFeatureCollectionIterator iterProfiles = subset<strong>.getPointFeatureCollectionIterator</strong>(-1);
+  while(iterProfiles.hasNext() { 
+    ucar.nc2.ft.<strong>ProfileFeature</strong> profile = (<strong>ProfileFeature</strong>) iterProfiles.<strong>nextFeature</strong>()
+
+    // get all the points
+    ucar.nc2.ft.PointFeatureIterator iterPoint = <strong>profile.getPointFeatureIterator</strong>(-1);
+    while(iterPoint.<strong>hasNext</strong>()) {
+      ucar.nc2.ft.PointFeature pointFeature = iterPoint.<strong>nextData</strong>()
+      ...
+    }
+  }
+</pre>
+<p>You may <strong>flatten</strong> a ProfileFeatureCollection with a lat/lon bounding box, and/or a dateRange, which throws away all the connectedness information of the profile, and treats the data as a collection of points. In this case, you get back a <strong>PointFeatureCollection</strong>:</p>
+<pre>  ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
+  <strong>PointFeatureCollection</strong> subset<strong> = </strong>profileFeatureCollection<strong>.flatten</strong>(new LatLonRect(&quot;-60,120,12,20&quot;), 
+		new DateRange( dformat.getISODate(&quot;1999-09-30T00:00:00&quot;), dformat.getISODate(&quot;1999-09-31T00:00:00&quot;));</pre>
+<pre>
+  // get all the points in that subset
+  PointFeatureIterator iter = subset<strong>.getPointFeatureIterator</strong>(-1);
+  while(iter.<strong>hasNext</strong>()) {
+    ucar.nc2.ft.PointFeature pf = iter.<strong>nextData</strong>()
+    ...
+  }  </pre>
+<h2>Trajectory Features</h2>
+<p><img src="TrajectoryFeature.png" width="725" height="345" /></p>
+<h3>TrajectoryFeature</h3>
+<h3>TrajectoryFeatureCollection</h3>
+<p>&nbsp;</p>
 <h2><strong>Station Time Series Features </strong></h2>
 <h3><strong>StationTimeSeriesFeature</strong></h3>
 <p><img src="StationTimeSeries.png" width="732" height="435" /></p>
@@ -118,19 +189,6 @@
     ...
   }
 </pre>
-<h2><strong>Profile Features</strong></h2>
-<p><img src="ProfileFeature.png" width="725" height="351" /></p>
-<p>A<strong> ProfileFeature </strong>is a set of PointFeatures along a vertical line.</p>
-<pre>  public interface <strong>ucar.nc2.ft.ProfileFeature</strong> extends ucar.nc2.ft.<strong>PointFeatureCollection</strong> {<br />    String <strong>getName</strong>();<br />    ucar.unidata.geoloc.LatLonPoint <strong>getLatLon</strong>();
-
-    // PointFeatureCollection<br />    int <strong>getNumberPoints</strong>();<br />    ucar.nc2.ft.PointFeatureIterator <strong>getPointFeatureIterator</strong>(int buffersize);<br />    ucar.nc2.ft.PointFeatureCollection <strong>subset</strong>(ucar.unidata.geoloc.LatLonRect, ucar.nc2.units.DateRange);
-  }</pre>
-<p>Note that a <strong>ProfileFeature</strong>  is a collection of PointFeatures, extending <strong>PointFeatureCollection</strong>, and  the data is accessed through a<strong> PointFeatureIterator</strong>. In this case, the iterator will return PointFeatures that all belong to the same profile, with the same lat/lon point and varying heights.<span class="style2"> (and be returned in height order ??) </span>The number of points in the collection may be available through the <em>getNumberPoints</em>() method. When that number can only be determined by reading through the data, a -1 is returned. </p>
-<h3>ProfileFeatureCollection</h3>
-<h2>Trajectory Features</h2>
-<p><img src="TrajectoryFeature.png" width="725" height="345" /></p>
-<h3>TrajectoryFeature</h3>
-<h3>TrajectoryFeatureCollection</h3>
 <h2>Station Profile Features </h2>
 <p><img src="StationProfile.png" width="663" height="484" /></p>
 <h3><strong>StationProfileFeature</strong></h3>

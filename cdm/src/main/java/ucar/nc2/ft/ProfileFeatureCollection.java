@@ -31,11 +31,10 @@ import java.io.IOException;
 public interface ProfileFeatureCollection extends NestedPointFeatureCollection {
 
   /**
-   * Get a specific ProfileFeature.
-   *
-   * @param id ProfileFeature id
-   * @return ProfileFeature
-   * @throws java.io.IOException on i/o error
+   * Subset this collection by boundingBox
+   * @param boundingBox only profiles in this lat/lon bounding box.
+   * @return subsetted collection, may be null if empty
+   * @throws IOException on read error
    */
-  public ProfileFeature getProfileFeature(Object id) throws IOException;
+  public ucar.nc2.ft.ProfileFeatureCollection subset(ucar.unidata.geoloc.LatLonRect bb);
 }

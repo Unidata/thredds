@@ -34,8 +34,8 @@ public interface PointFeatureCollection extends FeatureCollection {
   /**
    * Get an iterator over the PointFeatures of this collection
    * @param bufferSize
-   * @return
-   * @throws java.io.IOException
+   * @return iterator over the PointFeatures of this collection
+   * @throws IOException on read error
    */
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws java.io.IOException;
 
@@ -44,8 +44,7 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @param boundingBox only points in this lat/lon bounding box. may be null.
    * @param dateRange only points in this date range. may be null.
    * @return subsetted collection, may be null if empty
-   * @throws IOException or read error
+   * @throws IOException on read error
    */
   public PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
-
 }

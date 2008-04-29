@@ -65,8 +65,6 @@ public class Structure extends Variable {
 
   /** Copy constructor.
    * @param from  copy from this
-   * @param reparent : if true, reparent the members, which modifies the original.
-   *   In effect, this says "Im not using the original Structure anywhere else".
    */
   protected Structure( Structure from) { // , boolean reparent) {
     super( from);
