@@ -22,7 +22,7 @@ package ucar.nc2.ft;
 import ucar.unidata.geoloc.LatLonPoint;
 
 /**
- * A Profile of observations. A set of observations along the vertical (z) axis.
+ * A set of observations along the vertical (z) axis.
  * All obs have the same lat/lon. Time is either constant, or it may vary with z.
  * The z coordinates are monotonc, but may be increasing or decreasing.
  *
@@ -32,10 +32,10 @@ import ucar.unidata.geoloc.LatLonPoint;
 public interface ProfileFeature extends PointFeatureCollection {
 
   /**
-   * The number of points along the z axis.
-   * @return number of points along the z axis.
+   * The number of points along the z axis. May not be known until after iterating through the collection.
+   * @return number of points along the z axis, or -1 if not known.
    */
-  public int getNumberPoints();
+  public int size();
 
   /**
    * Location of this profile

@@ -70,6 +70,10 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
     return timeUnit.makeDate( getNominalTime());
   }
 
+  public DateUnit getTimeUnit() {
+    return timeUnit;
+  }
+
   public int compareTo(PointFeature other) {
     if (obsTime < other.getObservationTime()) return -1;
     if (obsTime > other.getObservationTime()) return 1;

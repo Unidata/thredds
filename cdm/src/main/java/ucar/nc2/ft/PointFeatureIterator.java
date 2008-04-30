@@ -35,11 +35,11 @@ public interface PointFeatureIterator {
 
   /**
    * Returns the next PointFeature.
-   * You must call hasNext() before calling nextData(), even if you know it will return true.
+   * You must call hasNext() before calling next(), even if you know it will return true.
    * @return the next PointFeature
    * @throws java.io.IOException on i/o error
    */
-  public PointFeature nextData() throws java.io.IOException;
+  public PointFeature next() throws java.io.IOException;
 
   /**
    * Hint to use this much memory in buffering the iteration.
@@ -49,9 +49,14 @@ public interface PointFeatureIterator {
   public void setBufferSize( int bytes);
 
   /**
-   * A filter on PointFeature
+   * A filter on PointFeatures
    */
   public interface Filter {
+    /**
+     * test if a PointFeature passes this filter
+     * @param pointFeature the PointFeature to test
+     * @return true if given pointFeature passes the filter
+     */
     public boolean filter(PointFeature pointFeature);
   }
 

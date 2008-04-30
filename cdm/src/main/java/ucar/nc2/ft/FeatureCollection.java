@@ -19,16 +19,25 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.units.DateUnit;
+
 /**
- * A Collection of FeatureType.
+ * A collection of FeatureTypes.
  * @author caron
  * @since Mar 20, 2008
  */
 public interface FeatureCollection {
 
+  /**
+   * Get the name of this feature collection.
+   * @return the name of this feature collection
+   */
   public String getName();
 
-  // All features in this collection have this feature type
+  /**
+   * All features in this collection have this feature type
+   * @return the feature type
+   */
   public ucar.nc2.constants.FeatureType getCollectionFeatureType();
 
 }

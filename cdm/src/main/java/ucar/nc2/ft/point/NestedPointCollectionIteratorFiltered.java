@@ -51,7 +51,7 @@ public class NestedPointCollectionIteratorFiltered implements NestedPointFeature
     return (pointFeatureCollection != null);
   }
 
-  public NestedPointFeatureCollection nextFeature() throws IOException {
+  public NestedPointFeatureCollection next() throws IOException {
     return done ? null : pointFeatureCollection;
   }
 
@@ -63,10 +63,10 @@ public class NestedPointCollectionIteratorFiltered implements NestedPointFeature
     if ( npfciter == null) return null;
     if (!npfciter.hasNext()) return null;
 
-    NestedPointFeatureCollection pdata = npfciter.nextFeature();
+    NestedPointFeatureCollection pdata = npfciter.next();
     if (!filter(pdata)) {
       if (!npfciter.hasNext()) return null;
-      pdata = npfciter.nextFeature();
+      pdata = npfciter.next();
     }
 
     return pdata;

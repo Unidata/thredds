@@ -38,14 +38,24 @@ import java.io.IOException;
 public abstract class OneNestedPointCollectionImpl implements NestedPointFeatureCollection {
   private String name;
   private FeatureType collectionFeatureType;
+  private int npts;
 
   OneNestedPointCollectionImpl(String name, FeatureType collectionFeatureType) {
     this.name = name;
     this.collectionFeatureType = collectionFeatureType;
+    this.npts = -1;
   }
 
-    public String getName() {
+  public String getName() {
     return name;
+  }
+
+  public int size() {
+    return npts;
+  }
+
+  protected void setSize( int npts) {
+    this.npts = npts;
   }
 
   public boolean isMultipleNested() {

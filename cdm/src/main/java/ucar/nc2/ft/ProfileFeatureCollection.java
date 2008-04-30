@@ -32,9 +32,9 @@ public interface ProfileFeatureCollection extends NestedPointFeatureCollection {
 
   /**
    * Subset this collection by boundingBox
-   * @param boundingBox only profiles in this lat/lon bounding box.
+   * @param boundingBox want only profiles in this lat/lon bounding box.
    * @return subsetted collection, may be null if empty
    * @throws IOException on read error
    */
-  public ucar.nc2.ft.ProfileFeatureCollection subset(ucar.unidata.geoloc.LatLonRect bb);
+  public ucar.nc2.ft.ProfileFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox) throws IOException;
 }

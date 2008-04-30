@@ -22,7 +22,7 @@ package ucar.nc2.ft;
 import java.util.List;
 
 /**
- * A Collection of PointFeatureCollections.
+ * A FeatureDataset, composed of one or more PointFeatureCollections.
  *
  * @author caron
  */

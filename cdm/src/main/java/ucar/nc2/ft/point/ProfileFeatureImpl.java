@@ -52,7 +52,7 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
     return FeatureType.PROFILE;
   }
 
-  public int getNumberPoints() {
+  public int size() {
     return npts;
   }
 

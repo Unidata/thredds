@@ -42,7 +42,11 @@ public interface FeatureDatasetFactory {
    */
   public boolean isMine( FeatureType ftype, NetcdfDataset ncd) throws IOException;
 
-  // since isMine can be expensive, make copy instead of reanalyze
+  /**
+   * Copy constructor.
+   * since isMine can be expensive, make copy instead of reanalyze
+   * @return copy of this factory.
+   */
   public FeatureDatasetFactory copy();
 
   /**

@@ -55,8 +55,8 @@ public class FeatureDatasetFactoryManager {
 
 
    /**
-    * Register a class that implements a TypedDatasetFactoryIF.
-    * @param className name of class that implements TypedDatasetFactoryIF.
+    * Register a class that implements a FeatureDatasetFactory.
+    * @param className name of class that implements FeatureDatasetFactory.
     * @param datatype  scientific data type
     * @throws ClassNotFoundException if loading error
     */
@@ -66,9 +66,9 @@ public class FeatureDatasetFactoryManager {
    }
 
    /**
-    * Register a class that implements a TypedDatasetFactoryIF.
+    * Register a class that implements a FeatureDatasetFactory.
     * @param datatype scientific data type
-    * @param c class that implements TypedDatasetFactoryIF.
+    * @param c class that implements FeatureDatasetFactory.
     */
   static public void registerFactory( FeatureType datatype, Class c) {
     if (!(FeatureDatasetFactory.class.isAssignableFrom( c)))
@@ -105,14 +105,14 @@ public class FeatureDatasetFactoryManager {
   }
 
   /**
-   * Open a dataset location as a FeatureDataset.
+   * Open a dataset as a FeatureDataset.
    *
    * @param datatype open this kind of FeatureDataset; may be null, which means search all factories.
    *   If datatype is not null, only return correct FeatureDataset (eg PointFeatureDataset for DataType.POINT).
    * @param location URL or file location of the dataset
    * @param task user may cancel
    * @param errlog place errors here, may not be null
-   * @return a subclass of FeatureDataset
+   * @return a subclass of FeatureDataset, or null if no factory was found
    * @throws java.io.IOException on io error
    */
   static public FeatureDataset open( FeatureType datatype, String location, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
@@ -135,7 +135,7 @@ public class FeatureDatasetFactoryManager {
    * @param ncd  the NetcdfDataset to wrap as a FeatureDataset
    * @param task user may cancel
    * @param errlog place errors here, may not be null
-   * @return a subclass of FeatureDataset
+   * @return a subclass of FeatureDataset, or null if no factory was found
    * @throws java.io.IOException on io error
    */
   static public FeatureDataset wrap( FeatureType featureType, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
@@ -181,6 +181,12 @@ public class FeatureDatasetFactoryManager {
     return builder.open( featureType, ncd, task, errlog);
   }
 
+  /**
+   * Determine if factory type matches wanted feature type.
+   * @param want looking for this FeatureType
+   * @param facType factory is of this type
+   * @return true if match
+   */
   static public boolean featureTypeOk( FeatureType want, FeatureType facType) {
     if (want == null) return true;
     if (want == facType) return true;

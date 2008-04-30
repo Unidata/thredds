@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.ft.point;
+package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;

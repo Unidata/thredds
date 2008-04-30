@@ -23,7 +23,7 @@ package ucar.nc2.ft;
 import java.io.IOException;
 
 /**
- * A Collection of SectionFeatures.
+ * A collection of SectionFeatures.
  *
  * @author caron
  * @since Mar 19, 2008

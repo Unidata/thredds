@@ -76,7 +76,7 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
     return false;
   }
 
-  public PointFeature nextData() throws IOException {
+  public PointFeature next() throws IOException {
     return feature;
   }
 

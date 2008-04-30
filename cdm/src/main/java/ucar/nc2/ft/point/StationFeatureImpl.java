@@ -54,9 +54,11 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
     this.npts = npts;
   }
 
-  public String getId() { return s.getName(); }
+  public String getWmoId() {
+    return s.getWmoId();
+  }
 
-  public int getNumberPoints() {
+  public int size() {
     return npts;
   }
 

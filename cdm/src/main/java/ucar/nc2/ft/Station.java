@@ -20,6 +20,7 @@
 package ucar.nc2.ft;
 
 /**
+ * A named location on the earth.
  * @author caron
  * @since Feb 18, 2008
  */
@@ -30,6 +31,12 @@ public interface Station extends EarthLocation {
    * @return station name or id. May not be null.
    */
   public String getName();
+
+  /**
+   * WMO station id.
+   * @return WMO station id, or null.
+   */
+  public String getWmoId();
 
   /**
    * Station description

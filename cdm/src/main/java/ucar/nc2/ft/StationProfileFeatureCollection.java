@@ -23,7 +23,7 @@ import java.util.List;
 import java.io.IOException;
 
 /**
- * A Collection of StationProfileFeatures
+ * A collection of StationProfileFeatures
  * @author caron
  * @since Feb 29, 2008
  */

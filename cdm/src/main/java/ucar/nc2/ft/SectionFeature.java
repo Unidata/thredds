@@ -29,9 +29,9 @@ package ucar.nc2.ft;
 public interface SectionFeature extends NestedPointFeatureCollection {
 
   /**
-   * The number of points along the trajectory.
-   * @return number of points along the trajectory.
+   * The number of profiles along the trajectory.
+   * @return number of profiles along the trajectory.
    */
   
-  public int getNumberPoints();
+  public int size();
 }

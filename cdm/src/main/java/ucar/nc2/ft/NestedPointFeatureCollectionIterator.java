@@ -20,7 +20,7 @@
 package ucar.nc2.ft;
 
 /**
- * An Iterator over NestedPointFeatureCollection.
+ * An iterator over NestedPointFeatureCollection.
  * @author caron
  * @since Mar 20, 2008
  */
@@ -35,10 +35,11 @@ public interface NestedPointFeatureCollectionIterator {
 
   /**
    * Returns the next NestedPointFeatureCollection object
+   * You must call hasNext() before calling next(), even if you know it will return true.
    * @return the next NestedPointFeatureCollection object
    * @throws java.io.IOException on i/o error
    */
-  public NestedPointFeatureCollection nextFeature() throws java.io.IOException;
+  public NestedPointFeatureCollection next() throws java.io.IOException;
 
   /**
    * Hint to use this much memory in buffering the iteration.

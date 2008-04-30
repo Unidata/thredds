@@ -20,13 +20,11 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.ft.point.standard.*;
-import ucar.nc2.ft.point.UnidataPointDatasetHelper;
+import ucar.nc2.ft.point.standard.plug.UnidataPointDatasetHelper;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
 
 import java.util.Formatter;
 import java.util.StringTokenizer;

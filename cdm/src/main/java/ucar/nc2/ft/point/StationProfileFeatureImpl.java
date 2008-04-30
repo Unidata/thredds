@@ -21,8 +21,11 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
+
+import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of StationProfileFeature.
@@ -50,11 +53,11 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
     this.timeSeriesNpts = npts;
   }
 
-  public String getId() {
-    return s.getName();
+  public String getWmoId() {
+    return s.getWmoId();
   }
 
-  public int getNumberPoints() {
+  public int size() {
     return timeSeriesNpts;
   }
 
@@ -80,6 +83,10 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
 
   public LatLonPoint getLatLon() {
     return s.getLatLon();
+  }
+
+  public StationProfileFeature subset(DateRange dateRange) throws IOException {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
 }

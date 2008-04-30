@@ -39,7 +39,8 @@ public abstract class TrajectoryFeatureImpl extends PointCollectionImpl implemen
     return FeatureType.TRAJECTORY;
   }
 
-  public int getNumberPoints() {
+  @Override
+  public int size() {
     return npts;
   }
 }

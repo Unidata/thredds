@@ -38,19 +38,30 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   protected String name;
   protected LatLonRect boundingBox;
   protected DateRange dateRange;
+  protected int npts;
 
   protected PointCollectionImpl(String name) {
     this.name = name;
+    this.npts = -1;
   }
 
-  protected PointCollectionImpl(String name, LatLonRect boundingBox, DateRange dateRange) {
+  protected PointCollectionImpl(String name, LatLonRect boundingBox, DateRange dateRange, int npts) {
     this.name = name;
     this.boundingBox = boundingBox;
     this.dateRange = dateRange;
+    this.npts = npts;
   }
 
   public String getName() {
     return name;
+  }
+
+  public int size() {
+    return npts;
+  }
+
+  protected void setSize( int npts) {
+    this.npts = npts;
   }
 
   public FeatureType getCollectionFeatureType() {

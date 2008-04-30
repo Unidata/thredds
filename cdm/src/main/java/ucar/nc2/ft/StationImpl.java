@@ -20,7 +20,7 @@
 package ucar.nc2.ft;
 
 /**
- * A named location on the Earth.
+ * Implementation of Station
  * @author caron
  */
 public class StationImpl extends EarthLocationImpl implements Station {
@@ -44,22 +44,13 @@ public class StationImpl extends EarthLocationImpl implements Station {
    */
   public String getDescription() { return desc; }
 
-  /*
-   * Get the named attribute for this station
-   * @param name name of attribute, ignore case
-   * @return value of attribute
-   *
-  public String getAttributeValue(String name); */
-
-
-
-  //public String getWmoId() { return wmoId; }
+  public String getWmoId() { return wmoId; }
 
   /////
 
   protected void setName(String name) { this.name = name; }
   protected void setDescription(String desc) { this.desc = desc; }
-  // protected void setWmoId(String wmoId) { this.wmoId = wmoId; }
+  protected void setWmoId(String wmoId) { this.wmoId = wmoId; }
 
   public int compareTo(Object o) {
     StationImpl so = (StationImpl) o;

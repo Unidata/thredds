@@ -20,8 +20,6 @@
 
 package ucar.nc2.ft;
 
-import java.io.IOException;
-
 /**
  * A collection of TrajectoryFeatures
  *
@@ -29,15 +27,6 @@ import java.io.IOException;
  * @since Mar 19, 2008
  */
 public interface TrajectoryFeatureCollection extends NestedPointFeatureCollection {
-
-  /**
-   * Get a specific TrajectoryFeature.
-   *
-   * @param name TrajectoryFeature id
-   * @return TrajectoryFeature
-   * @throws java.io.IOException on i/o error
-   */
-  public TrajectoryFeature getTrajectoryFeature(String name) throws IOException;
 
 }
 

@@ -79,7 +79,7 @@ public abstract class PointIteratorImpl implements PointFeatureIterator {
     return false;
   }
 
-  public PointFeature nextData() throws IOException {
+  public PointFeature next() throws IOException {
     if (feature == null) return null;
     if (calcBB) doCalc(feature);
     count++;

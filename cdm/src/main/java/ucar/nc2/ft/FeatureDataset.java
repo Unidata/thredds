@@ -23,13 +23,14 @@ package ucar.nc2.ft;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateUnit;
 
 import java.util.*;
 
 /**
- * Superclass for "scientific type" aka "feature" datasets.
+ * Superclass for "scientific feature type" datasets.
  * These are collections of features of the same feature type.
- *
+ * <p/>
  * <p/>
  * This interface defines general "discovery metadata".
  * Its subtypes define type-specific information.
@@ -42,49 +43,70 @@ public interface FeatureDataset {
 
   /**
    * Contains collections of this FeatureType.
+   *
    * @return FeatureType of data
    */
   public FeatureType getFeatureType();
 
   /**
    * Title of the dataset.
+   *
    * @return the title of the dataset, or null
    */
   public String getTitle();
 
   /**
    * Text information about this dataset.
+   *
    * @return any text information about this dataset, or null.
    */
   public String getDescription();
 
   /**
    * The URI location of the dataset
+   *
    * @return the URI location of the dataset, or null
    */
   public String getLocationURI();
 
   /**
    * Date range for the entire dataset.
+   *
    * @return the date range for the entire dataset, or null if unknown
    */
   public DateRange getDateRange();
+
+  /**
+   * Starting date for the entire dataset.
+   *
+   * @return the starting date for the entire dataset, or null if unknown
+   */
   public Date getStartDate();
+
+  /**
+   * Ending date for the entire dataset.
+   *
+   * @return the ending date for the entire dataset, or null if unknown
+   */
   public Date getEndDate();
+
   /**
    * The boundingBox for the entire dataset.
+   *
    * @return the lat/lon boundingBox for the entire dataset, or null if unknown.
    */
   public ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
   /**
    * List of global attributes.
+   *
    * @return List of type ucar.nc2.Attribute, may be empty but not null
    */
   public List getGlobalAttributes();
 
   /**
    * Return the global attribute with the given name, ignoring case.
+   *
    * @param name attribute name
    * @return the global attribute, or null
    */
@@ -110,20 +132,23 @@ public interface FeatureDataset {
 
   /**
    * Return underlying NetcdfFile, or null if none.
+   *
    * @return the underlying NetcdfFile, or null if none.
    */
   public ucar.nc2.NetcdfFile getNetcdfFile();
 
   /**
    * Close all resources associated with this dataset.
+   *
    * @throws java.io.IOException on i/o error
    */
   public void close() throws java.io.IOException;
 
   /**
    * Show debug / underlying implementation details
+   *
    * @param sf append info here
    */
-  public void getDetailInfo( java.util.Formatter sf);
+  public void getDetailInfo(java.util.Formatter sf);
 
 }

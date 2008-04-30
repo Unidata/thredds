@@ -55,7 +55,7 @@ public class PointIteratorFiltered implements PointFeatureIterator {
     return (pointFeature != null);
   }
 
-  public PointFeature nextData() throws IOException {
+  public PointFeature next() throws IOException {
     return done ? null : pointFeature;
   }
 
@@ -73,10 +73,10 @@ public class PointIteratorFiltered implements PointFeatureIterator {
     if ( pfiter == null) return null;
     if (!pfiter.hasNext()) return null;
 
-    PointFeature pdata = pfiter.nextData();
+    PointFeature pdata = pfiter.next();
     if (!filter(pdata)) {
       if (!pfiter.hasNext()) return null;
-      pdata = pfiter.nextData();
+      pdata = pfiter.next();
     }
 
     return pdata;

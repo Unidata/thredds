@@ -73,7 +73,7 @@ public class StandardStationCollectionImpl extends StationCollectionImpl {
         return stationIter.hasNext();
       }
 
-      public PointFeatureCollection nextFeature() throws IOException {
+      public PointFeatureCollection next() throws IOException {
         return (StationFeatureImpl) stationIter.next();
       }
 
@@ -96,7 +96,7 @@ public class StandardStationCollectionImpl extends StationCollectionImpl {
     // an iterator over Features of type PointFeature
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       StructureDataIterator obsIter = ft.getStationObsDataIterator(stationData, bufferSize);
-      return new StandardStationPointIterator((getNumberPoints() < 0) ? this : null, obsIter, sdataList);
+      return new StandardStationPointIterator((size() < 0) ? this : null, obsIter, sdataList);
     }
 
   }

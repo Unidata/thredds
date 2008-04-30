@@ -184,7 +184,7 @@ public class PointObsViewer2 extends JPanel {
     if (pobsDataset != null)  {
       PointFeatureIterator iter = pobsDataset.getPointFeatureIterator(-1);
       while (iter.hasNext()) {
-        PointFeature pob = iter.nextData();
+        PointFeature pob = iter.next();
         pointBeans.add(new PointObsBean(count++, pob));
       }
     }

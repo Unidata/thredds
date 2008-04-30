@@ -23,6 +23,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 
 
 /**
+ * A location on the earth, specified by lat, lon and optionally altitude.
  * @author caron
  * @since Feb 18, 2008
  */

@@ -25,6 +25,7 @@ import ucar.nc2.ft.PointFeatureCollection;
 import java.io.IOException;
 
 /**
+ * Filter a PointFeatureCollectionIterator
  * @author caron
  * @since Mar 20, 2008
  */
@@ -52,7 +53,7 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
     return (pointFeatureCollection != null);
   }
 
-  public PointFeatureCollection nextFeature() throws IOException {
+  public PointFeatureCollection next() throws IOException {
     return done ? null : pointFeatureCollection;
   }
 
@@ -64,10 +65,10 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
     if ( pfciter == null) return null;
     if (!pfciter.hasNext()) return null;
 
-    PointFeatureCollection pdata = pfciter.nextFeature();
+    PointFeatureCollection pdata = pfciter.next();
     if (!filter(pdata)) {
       if (!pfciter.hasNext()) return null;
-      pdata = pfciter.nextFeature();
+      pdata = pfciter.next();
     }
 
     return pdata;

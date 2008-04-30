@@ -39,15 +39,24 @@ import java.io.IOException;
 public abstract class MultipleNestedPointCollectionImpl implements NestedPointFeatureCollection {
   protected String name;
   private FeatureType collectionFeatureType;
+  private int npts;
 
   protected MultipleNestedPointCollectionImpl(String name, FeatureType collectionFeatureType) {
     this.name = name;
     this.collectionFeatureType = collectionFeatureType;
+    this.npts = -1;
   }
-
 
   public String getName() {
     return name;
+  }
+
+  public int size() {
+    return npts;
+  }
+
+  protected void setSize( int npts) {
+    this.npts = npts;
   }
 
   public boolean isMultipleNested() {

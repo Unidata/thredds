@@ -24,7 +24,7 @@ import ucar.nc2.units.DateRange;
 import java.io.IOException;
 
 /**
- * A Collection of PointFeatures.
+ * A collection of PointFeatures.
  *
  * @author caron
  * @since Mar 1, 2008
@@ -32,8 +32,14 @@ import java.io.IOException;
 public interface PointFeatureCollection extends FeatureCollection {
 
   /**
+   * The number of points in the collection. May not be known until after iterating through the collection.
+   * @return number of points in the collection, or -1 if not known.
+   */
+  public int size();
+
+  /**
    * Get an iterator over the PointFeatures of this collection
-   * @param bufferSize
+   * @param bufferSize how many bytes can be used to buffer data, use -1 to use default.
    * @return iterator over the PointFeatures of this collection
    * @throws IOException on read error
    */

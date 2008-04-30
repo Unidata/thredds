@@ -17,7 +17,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.ft;
+package ucar.nc2.ft.radial;
 
 import ucar.nc2.Variable;
 
@@ -30,13 +30,15 @@ import java.util.Date;
  */
 public interface RadialSweepFeature {
 
+  public enum Type { NONE }
+
   /**
    * @return the type of the Sweep
    */
   public RadialSweepFeature.Type getType();
 
 
-  public Variable getsweepVar();
+  public Variable getSweepVar();
 
   /**
    * @return the number of radials for this Sweep
@@ -157,48 +159,5 @@ public interface RadialSweepFeature {
    * deallocated memory of sweep
    */
   public void clearSweepMemory();
-
-
-  /**
-   * A Type of RadialSweep.
-   */
-  public final class Type {
-    public final static Type NONE = new Type("");
-
-    private static java.util.List<Type> members = new java.util.ArrayList<Type>(20);
-    private String name;
-
-    private Type(String s) {
-      this.name = s;
-      members.add(this);
-    }
-
-    public static java.util.Collection getAllTypes() {
-      return members;
-    }
-
-    /**
-     * Find the DataType that matches this name, ignore case.
-     *
-     * @param name : match this name
-     * @return DataType or null if no match.
-     */
-    public static Type getType(String name) {
-      if (name == null) return null;
-      for (Type m : members) {
-        if (m.name.equalsIgnoreCase(name))
-          return m;
-      }
-      return null;
-    }
-
-    /**
-     * @return the type name.
-     */
-    public String toString() {
-      return name;
-    }
-
-  }
 
 }

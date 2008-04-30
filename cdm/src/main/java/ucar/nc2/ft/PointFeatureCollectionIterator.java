@@ -21,7 +21,7 @@
 package ucar.nc2.ft;
 
 /**
- * An Iterator over PointFeatureCollections.
+ * An iterator over PointFeatureCollections.
  *
  * @author caron
  */
@@ -36,10 +36,11 @@ public interface PointFeatureCollectionIterator {
 
   /**
    * Returns the next PointFeatureCollection
+   * You must call hasNext() before calling next(), even if you know it will return true.
    * @return the next PointFeatureCollection 
    * @throws java.io.IOException on i/o error
    */
-  public PointFeatureCollection nextFeature() throws java.io.IOException;
+  public PointFeatureCollection next() throws java.io.IOException;
 
   /**
    * Hint to use this much memory in buffering the iteration.

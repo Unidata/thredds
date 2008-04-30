@@ -19,6 +19,10 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.units.DateRange;
+
+import java.io.IOException;
+
 /**
  * Time series of ProfileFeature at named locations.
  * @author caron
@@ -27,9 +31,17 @@ package ucar.nc2.ft;
 public interface StationProfileFeature extends Station, NestedPointFeatureCollection {
 
   /**
-   * The number of points in the time series.
-   * @return number of points in the time series at this station.
+   * The number of profiles in the time series. May not be known until after iterating through the collection.
+   * @return number of profiles in the time series, or -1 if not known.
    */
-  public int getNumberPoints();
+  public int size();
+
+  /**
+   * Subset this collection by dateRange
+   * @param dateRange only points in this date range. may be null.
+   * @return subsetted collection, may be null if empty
+   * @throws java.io.IOException on read error
+   */
+  public StationProfileFeature subset(DateRange dateRange) throws IOException;
 
 }

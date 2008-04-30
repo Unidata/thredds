@@ -20,7 +20,7 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.ft.point.standard.*;
-import ucar.nc2.ft.point.UnidataPointDatasetHelper;
+import ucar.nc2.ft.point.standard.plug.UnidataPointDatasetHelper;
 import ucar.nc2.ft.StationImpl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;

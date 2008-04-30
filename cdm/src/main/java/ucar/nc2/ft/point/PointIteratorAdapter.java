@@ -70,13 +70,13 @@ public class PointIteratorAdapter implements PointFeatureIterator {
     return hasNext();
   }
 
-  public PointFeature nextData() throws IOException {
+  public PointFeature next() throws IOException {
     return done ? null : pointFeature;
   }
 
   private PointFeatureCollection nextFilteredCollection() throws IOException {
     if (!fiter.hasNext()) return null;
-    PointFeatureCollection f = (PointFeatureCollection) fiter.nextFeature();
+    PointFeatureCollection f = (PointFeatureCollection) fiter.next();
 
     if (filter_bb == null)
       return f;
@@ -91,14 +91,14 @@ public class PointIteratorAdapter implements PointFeatureIterator {
   private PointFeature nextFilteredDataPoint() throws IOException {
     if (pfiter == null) return null;
     if (!pfiter.hasNext()) return null;
-    PointFeature pdata = pfiter.nextData();
+    PointFeature pdata = pfiter.next();
 
     if (filter_date == null)
       return pdata;
 
     while (!filter_date.included(pdata.getObservationTimeAsDate())) {
       if (!pfiter.hasNext()) return null;
-      pdata = pfiter.nextData();
+      pdata = pfiter.next();
     }
     return pdata;
   }

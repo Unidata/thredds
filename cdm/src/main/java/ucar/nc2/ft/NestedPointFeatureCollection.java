@@ -24,22 +24,47 @@ import ucar.nc2.units.DateRange;
 import java.io.IOException;
 
 /**
- * A Collection of nested PointFeaturesCollections.
+ * A collection of PointFeatures nested inside one or more PointFeatureCollection.
  * @author caron
  * @since Mar 20, 2008
  */
 public interface NestedPointFeatureCollection extends FeatureCollection {
 
+  /**
+   * The number of elements in the collection. May not be known until after iterating through the collection.
+   * @return number of elements in the collection, or -1 if not known.
+   */
+  public int size();
+
+  /**
+   * If true, use getNestedPointFeatureCollectionIterator, otherwise use getPointFeatureCollectionIterator.
+   * @return if multiple nested
+   */
   public boolean isMultipleNested();
 
-  // use this only if its not multiply nested
+  /**
+   * Iterate through the collection, composed of PointFeatureCollection.  Use this only if isMultipleNested() = false.
+   * @param bufferSize how many bytes can be used to buffer data, use -1 to use default.
+   * @return an iterator through PointFeatureCollection objects.
+   * @throws java.io.IOException on read error
+   */
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
 
-  // use this only if it is multiply nested
+  /**
+   * Iterate through the collection, composed of NestedPointFeatureCollection.  Use this only if isMultipleNested() = true.
+   * @param bufferSize how many bytes can be used to buffer data, use -1 to use default.
+   * @return an iterator through NestedPointFeatureCollection objects.
+   * @throws java.io.IOException on read error
+   */
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws java.io.IOException;
 
-  // flatten into a PointFeatureCollection
-  // if empty, may return null
+  /**
+   *  Flatten into a PointFeatureCollection, discarding connectedness information. Optionally subset.
+   * @param boundingBox only points in this lat/lon bounding box. may be null.
+   * @param dateRange only points in this date range. may be null.
+   * @return a PointFeatureCollection, may be null if its empty.
+   * @throws IOException on read error
+   */
   public PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 
 }

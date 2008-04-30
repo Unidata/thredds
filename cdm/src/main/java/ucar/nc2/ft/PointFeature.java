@@ -19,6 +19,8 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.units.DateUnit;
+
 import java.util.Date;
 
 /**
@@ -35,7 +37,7 @@ public interface PointFeature {
   public EarthLocation getLocation();
 
  /**
-   * Actual time of this observation. Units are found from getTimeUnits() in the containing dataset.
+   * Actual time of this observation. Units are found from getTimeUnit().
    * @return actual time of this observation.
    */
   public double getObservationTime();
@@ -47,7 +49,7 @@ public interface PointFeature {
   public Date getObservationTimeAsDate();
 
   /**
-   * Nominal time of this observation.
+   * Nominal time of this observation. Units are found from getTimeUnit().
    * @return Nominal time of this observation.
    */
   public double getNominalTime();
@@ -57,6 +59,13 @@ public interface PointFeature {
    * @return Nominal time of this observation, as a Date.
    */
   public Date getNominalTimeAsDate();
+
+
+  /**
+   * Get the time unit of the time coordinate.
+   * @return time unit of the time coordinate
+   */
+  public DateUnit getTimeUnit();
 
   /**
    * The actual data of this observation.

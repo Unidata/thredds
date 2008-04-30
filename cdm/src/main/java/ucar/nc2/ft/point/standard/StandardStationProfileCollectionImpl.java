@@ -24,6 +24,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateRange;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 
@@ -73,7 +74,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       public boolean hasNext() throws IOException { return iter.hasNext(); }
 
-      public NestedPointFeatureCollection nextFeature() throws IOException {
+      public NestedPointFeatureCollection next() throws IOException {
         return (StandardStationProfileFeature) iter.next();
       }
 
@@ -106,7 +107,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
           return r;
         }
 
-        public PointFeatureCollection nextFeature() throws IOException {
+        public PointFeatureCollection next() throws IOException {
           List<StructureData> sdataList = new ArrayList<StructureData>(2);
           sdataList.add(null);
           sdataList.add(iter.next());
@@ -119,7 +120,6 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         public void setBufferSize(int bytes) { iter.setBufferSize(bytes); }
       };
     }
-
   }
 
   // one profile

@@ -31,11 +31,16 @@ import java.io.IOException;
 public interface StationTimeSeriesFeature extends Station, PointFeatureCollection {
 
   /**
-   * The number of points in the time series.
+   * The number of points in the time series. May not be known until after iterating through the collection.
    * @return number of points in the time series, or -1 if not known.
    */
-  public int getNumberPoints();
+  public int size();
 
+  /**
+   * Subset this collection by dateRange
+   * @param dateRange only points in this date range. may be null.
+   * @return subsetted collection, may be null if empty
+   * @throws IOException on read error
+   */
   public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException;
-
 }
