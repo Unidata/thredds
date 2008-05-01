@@ -277,7 +277,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  @Override
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
 
     // LOOK

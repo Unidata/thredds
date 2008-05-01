@@ -35,7 +35,6 @@ import java.util.StringTokenizer;
  */
 public class UnidataPointObs implements TableConfigurer {
 
-  @Override
   public boolean isMine(NetcdfDataset ds) {
     if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.POINT.toString()) &&
         !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.POINT.toString()))
@@ -54,7 +53,6 @@ public class UnidataPointObs implements TableConfigurer {
     return false;
   }
 
-  @Override
   public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
 
     Dimension obsDim = UnidataPointDatasetHelper.findObsDimension(ds);

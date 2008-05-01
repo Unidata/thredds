@@ -31,7 +31,6 @@ import java.util.Formatter;
  */
 public class Madis implements TableConfigurer {
 
-  @Override
   public boolean isMine(NetcdfDataset ds) {
     if (ds.findVariable("staticIds") == null) return false;
     if (ds.findVariable("nStaticIds") == null) return false;
@@ -72,7 +71,6 @@ public class Madis implements TableConfigurer {
   </stationCollection>
    */
 
-  @Override
   public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(NestedTable.TableType.PseudoStructure, "station");
     nt.featureType = Evaluator.getFeatureType(ds, ":thredds_data_type", errlog);

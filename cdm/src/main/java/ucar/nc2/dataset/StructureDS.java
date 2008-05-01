@@ -90,7 +90,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     // all member variables must be wrapped, reparented
     List<Variable> newList = new ArrayList<Variable>(members.size());
     for (Variable v : members) {
-      Variable newVar = (v instanceof Structure) ? new StructureDS(g, (Structure) v) : new VariableDS(g, v, false);
+      Variable newVar = (v instanceof Structure) ? (Variable) new StructureDS(g, (Structure) v) : (Variable) new VariableDS(g, v, false);
       newVar.setParentStructure(this);
       newList.add(newVar);
     }

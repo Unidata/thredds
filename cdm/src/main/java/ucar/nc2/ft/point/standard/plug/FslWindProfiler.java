@@ -32,13 +32,11 @@ import java.util.Formatter;
 public class FslWindProfiler implements TableConfigurer {
 
     // :title = "WPDN data : selected by ob time : time range from 1207951200 to 1207954800";
-  @Override
   public boolean isMine(NetcdfDataset ds) {
     String title = ds.findAttValueIgnoreCase(null, "title", null);
     return title != null && (title.startsWith("WPDN data"));
   }
 
-  @Override
   public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(NestedTable.TableType.Construct, "station");
     nt.featureType = FeatureType.STATION_PROFILE;

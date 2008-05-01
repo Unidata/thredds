@@ -32,7 +32,6 @@ import java.util.Formatter;
  */
 public class Ndbc implements TableConfigurer {
 
-  @Override
   public boolean isMine(NetcdfDataset ds) {
     if (!ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("COARDS")) return false;
     if (!ds.findAttValueIgnoreCase(null, "data_provider", "").equalsIgnoreCase("National Data Buoy Center"))
@@ -64,7 +63,6 @@ public class Ndbc implements TableConfigurer {
   </stationFeature>
    */
 
-  @Override
   public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(NestedTable.TableType.Singleton, "station");
     nt.featureType = FeatureType.STATION;
