@@ -31,6 +31,17 @@ import java.nio.channels.WritableByteChannel;
  * This is the service provider interface for the low-level I/O access classes (read only).
  * This is only used by service implementors.
  *
+ * The NetcdfFile class manages all registered IOServiceProvider classes.
+ * When NetcdfFile.open() is called:
+ * <ol>
+ * <li> the file is opened as a ucar.unidata.io.RandomAccessFile;</li>
+ * <li> the file is handed to the isValidFile() method of each registered
+ * IOServiceProvider class (until one returns true, which means it can read the file).</li>
+ * <li> the open() method on the resulting IOServiceProvider class is handed the file.</li>
+ *
+ * @see ucar.nc2.NetcdfFile#registerIOProvider(Class) ;
+ * @see ucar.nc2.iosp.IOServiceProviderWriter;
+ *
  * @author caron
  */
 public interface IOServiceProvider {
@@ -46,9 +57,13 @@ public interface IOServiceProvider {
   public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) throws IOException;
 
   /**
-   * Open existing file, and populate ncfile with it.
+   * Open existing file, and populate ncfile with it. This method is only called by the
+   * NetcdfFile constructor on itself. The provided NetcdfFile object will be empty
+   * except for the location String and the IOServiceProvider associated with this
+   * NetcdfFile object.
+   *
    * @param raf the file to work on, it has already passed the isValidFile() test.
-   * @param ncfile add objects to this NetcdfFile
+   * @param ncfile add objects to this empty NetcdfFile 
    * @param cancelTask used to monitor user cancellation; may be null.
    * @throws IOException if read error
    */
