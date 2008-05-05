@@ -1057,7 +1057,19 @@ public class Variable implements VariableIF {
   public boolean equals(Object oo) {
     if (this == oo) return true;
     if (!(oo instanceof Variable)) return false;
-    return hashCode() == oo.hashCode();
+    Variable o = (Variable) oo;
+
+    if (!getShortName().equals(o.getShortName())) return false;
+    if (isScalar() != o.isScalar()) return false;
+    if (getDataType() != o.getDataType()) return false;
+    if (!getParentGroup().equals(o.getParentGroup())) return false;
+    if ((getParentStructure() != null) && !getParentStructure().equals(o.getParentStructure())) return false;
+    if (isVariableLength() != o.isVariableLength()) return false;
+    if (dimensions.size() != o.getDimensions().size()) return false;
+    for (int i=0; i<dimensions.size(); i++)
+      if (!getDimension(i).equals(o.getDimension(i))) return false;
+
+    return true;
   }
 
   /**
@@ -1066,16 +1078,14 @@ public class Variable implements VariableIF {
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
-      result = 37 * result + getName().hashCode();
+      result = 37 * result + getShortName().hashCode();
       if (isScalar()) result++;
       result = 37 * result + getDataType().hashCode();
-      //if (isMetadata()) result++;
-      result = 37 * result + dimensions.hashCode();
       result = 37 * result + getParentGroup().hashCode();
       if (parent != null)
         result = 37 * result + parent.hashCode();
-
       if (isVariableLength) result++;
+      result = 37 * result + dimensions.hashCode();
       hashCode = result;
     }
     return hashCode;

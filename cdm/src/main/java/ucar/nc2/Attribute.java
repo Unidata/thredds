@@ -200,10 +200,13 @@ public class Attribute {
     if (hashCode == 0) {
       int result = 17;
       result = 37 * result + getName().hashCode();
+      result = 37 * result + nelems;
       result = 37 * result + getDataType().hashCode();
-      for (int i = 0; i < getLength(); i++) {
-        int h = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
-        result = 37 * result + h;
+      if (values != null) {
+        for (int i = 0; i < getLength(); i++) {
+          int h = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
+          result = 37 * result + h;
+        }
       }
       hashCode = result;
     }

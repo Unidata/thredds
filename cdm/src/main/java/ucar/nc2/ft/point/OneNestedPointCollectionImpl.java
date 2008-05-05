@@ -30,7 +30,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 
 /**
- * Abstract superclass for singley nested NestedPointFeatureCollection
+ * Abstract superclass for singly nested NestedPointFeatureCollection
  * Subclass must supply getPointFeatureCollectionIterator()
  * @author caron
  * @since Mar 20, 2008

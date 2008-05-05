@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,8 +20,7 @@
 package ucar.nc2.util;
 
 /**
- * Allows long tasks to be cancelled. Use this when you are making a call that could take a long time,
- *  and you want to allow the user to cancel it.
+ * Allows long tasks to be cancelled. Used in potentially long method calls which the user may want the option to cancel.
  *
  * @author jcaron
  */

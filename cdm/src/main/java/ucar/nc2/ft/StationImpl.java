@@ -26,10 +26,11 @@ package ucar.nc2.ft;
 public class StationImpl extends EarthLocationImpl implements Station {
   protected String name, desc, wmoId;
 
-  public StationImpl( String name, String desc, double lat, double lon, double alt) {
+  public StationImpl( String name, String desc, String wmoId, double lat, double lon, double alt) {
     super( lat, lon, alt);
     this.name = name;
     this.desc = desc;
+    this.wmoId = wmoId;
   }
 
   /**
@@ -44,6 +45,10 @@ public class StationImpl extends EarthLocationImpl implements Station {
    */
   public String getDescription() { return desc; }
 
+  /**
+   * WMO station id
+   * @return WMO station id, or null
+   */
   public String getWmoId() { return wmoId; }
 
   /////
@@ -52,8 +57,7 @@ public class StationImpl extends EarthLocationImpl implements Station {
   protected void setDescription(String desc) { this.desc = desc; }
   protected void setWmoId(String wmoId) { this.wmoId = wmoId; }
 
-  public int compareTo(Object o) {
-    StationImpl so = (StationImpl) o;
+  public int compareTo(Station so) {
     return name.compareTo( so.getName());
   }
 

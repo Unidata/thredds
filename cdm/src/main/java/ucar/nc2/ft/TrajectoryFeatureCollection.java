@@ -20,6 +20,8 @@
 
 package ucar.nc2.ft;
 
+import java.io.IOException;
+
 /**
  * A collection of TrajectoryFeatures
  *
@@ -28,5 +30,26 @@ package ucar.nc2.ft;
  */
 public interface TrajectoryFeatureCollection extends NestedPointFeatureCollection {
 
+  /**
+   * Use the internal iterator to check if there is another TrajectoryFeature in the iteration.
+   * @return true is there is another TrajectoryFeature in the iteration.
+   * @throws java.io.IOException on read error
+   */
+  public boolean hasNext() throws java.io.IOException;
+
+  /**
+   * Use the internal iterator to get the next TrajectoryFeature in the iteration.
+   * You must call hasNext() before you call this.
+   * @return the next TrajectoryFeature in the iteration
+   * @throws java.io.IOException on read error
+   */
+  public TrajectoryFeature next() throws java.io.IOException;
+
+  /**
+   * Reset the internal iterator for another iteration over the TrajectoryFeatures in this Collection.
+   * @throws java.io.IOException on read error
+   */
+  public void resetIteration() throws IOException;
+ 
 }
 

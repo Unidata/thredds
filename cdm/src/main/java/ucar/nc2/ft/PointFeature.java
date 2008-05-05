@@ -37,7 +37,8 @@ public interface PointFeature {
   public EarthLocation getLocation();
 
  /**
-   * Actual time of this observation. Units are found from getTimeUnit().
+   * Actual time of this observation.
+   * Convert to Date with getTimeUnit().makeDate()
    * @return actual time of this observation.
    */
   public double getObservationTime();
@@ -49,7 +50,9 @@ public interface PointFeature {
   public Date getObservationTimeAsDate();
 
   /**
-   * Nominal time of this observation. Units are found from getTimeUnit().
+   * Nominal time of this observation.
+   * Convert to Date with getTimeUnit().makeDate().
+   * When the nominal time is not given in the data, it is usually set to the observational time.
    * @return Nominal time of this observation.
    */
   public double getNominalTime();
@@ -59,7 +62,6 @@ public interface PointFeature {
    * @return Nominal time of this observation, as a Date.
    */
   public Date getNominalTimeAsDate();
-
 
   /**
    * Get the time unit of the time coordinate.

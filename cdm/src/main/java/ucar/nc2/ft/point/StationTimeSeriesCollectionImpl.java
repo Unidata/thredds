@@ -33,11 +33,12 @@ import java.io.IOException;
  * @author caron
  * @since Feb 5, 2008
  */
-public abstract class StationCollectionImpl extends OneNestedPointCollectionImpl implements StationTimeSeriesCollection {
+public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointCollectionImpl implements StationTimeSeriesFeatureCollection {
 
   protected StationHelper stationHelper;
+  protected PointFeatureCollectionIterator localIterator;
 
-  public StationCollectionImpl(String name) {
+  public StationTimeSeriesCollectionImpl(String name) {
     super( name, FeatureType.STATION);
     stationHelper = new StationHelper();
   }
@@ -62,7 +63,7 @@ public abstract class StationCollectionImpl extends OneNestedPointCollectionImpl
     return stationHelper.getBoundingBox();
   }
 
-  public StationTimeSeriesCollection subset(List<Station> stations) throws IOException {
+  public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException {
     if (stations == null) return this;
     return new StationFeatureCollectionSubset(this, stations);
   }
@@ -75,11 +76,24 @@ public abstract class StationCollectionImpl extends OneNestedPointCollectionImpl
     throw new UnsupportedOperationException("StationFeatureCollection does not implement getNestedPointFeatureCollection()");
   }
 
-  // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
-  private class StationFeatureCollectionSubset extends StationCollectionImpl {
-    StationCollectionImpl from;
+  public boolean hasNext() throws IOException {
+    if (localIterator == null) resetIteration();
+    return localIterator.hasNext();
+  }
 
-    StationFeatureCollectionSubset(StationCollectionImpl from, List<Station> stations) {
+  public StationTimeSeriesFeature next() throws IOException {
+    return (StationTimeSeriesFeature) localIterator.next();
+  }
+
+  public void resetIteration() throws IOException {
+    localIterator = getPointFeatureCollectionIterator(-1);
+  }
+
+  // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
+  private class StationFeatureCollectionSubset extends StationTimeSeriesCollectionImpl {
+    StationTimeSeriesCollectionImpl from;
+
+    StationFeatureCollectionSubset(StationTimeSeriesCollectionImpl from, List<Station> stations) {
       super( from.getName());
       this.from = from;
       stationHelper = new StationHelper();

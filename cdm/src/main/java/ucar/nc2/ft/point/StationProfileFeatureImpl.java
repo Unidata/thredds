@@ -29,7 +29,7 @@ import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of StationProfileFeature.
- * Subclass must implement getNestedPointFeatureCollection();
+ * Subclass must implement getNestedPointFeatureCollectionIterator();
  *
  * @author caron
  * @since Feb 29, 2008
@@ -38,10 +38,11 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
   protected DateUnit timeUnit;
   protected int timeSeriesNpts;
   protected Station s;
+  protected NestedPointFeatureCollectionIterator localIterator;
 
-  public StationProfileFeatureImpl(String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
+  public StationProfileFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
     super( name, FeatureType.STATION_PROFILE);
-    s = new StationImpl(name, desc, lat, lon, alt);
+    s = new StationImpl(name, desc, wmoId, lat, lon, alt);
     this.timeUnit = timeUnit;
     this.timeSeriesNpts = npts;
   }
@@ -83,6 +84,23 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
 
   public LatLonPoint getLatLon() {
     return s.getLatLon();
+  }
+
+  public boolean hasNext() throws IOException {
+    if (localIterator == null) resetIteration();
+    return localIterator.hasNext();
+  }
+
+  public ProfileFeature next() throws IOException {
+    return (ProfileFeature) localIterator.next();
+  }
+
+  public void resetIteration() throws IOException {
+    localIterator = getNestedPointFeatureCollectionIterator(-1);
+  }
+
+  public int compareTo(Station so) {
+    return s.getName().compareTo( so.getName());
   }
 
   public StationProfileFeature subset(DateRange dateRange) throws IOException {

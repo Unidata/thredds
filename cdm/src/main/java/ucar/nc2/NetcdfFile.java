@@ -41,7 +41,7 @@ import java.nio.channels.WritableByteChannel;
 
 /**
  * Read-only scientific datasets that are accessible through the netCDF API.
- * Immutable after setImmutable is called.
+ * Immutable after setImmutable() is called.
  * <p> Be sure to close the file when done, best practice is to enclose in a try/finally block:
  * <pre>
  * NetcdfFile ncfile = null;

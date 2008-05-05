@@ -24,10 +24,10 @@ import ucar.ma2.DataType;
 import java.util.List;
 
 /**
- * A "Simple" Variable, that allows non-netcdf implementations of typed datasets.
+ * A lightweight abstractions of a Variable.
  *
  * @author caron
- * @see ucar.nc2.dt.TypedDataset
+ * @see ucar.nc2.ft.FeatureDataset
  */
 public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
   /**

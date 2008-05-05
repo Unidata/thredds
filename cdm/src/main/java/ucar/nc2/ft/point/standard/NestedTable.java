@@ -353,11 +353,12 @@ public class NestedTable {
 
     String stationName = getCoordValueString(stationData, info.stnId);
     String stationDesc = (info.stnDesc == null) ? stationName : getCoordValueString(stationData, info.stnDesc);
+    String stnWmoId = (info.stnWmoId == null) ? null : getCoordValueString(stationData, info.stnWmoId);
     double lat = getCoordValue(stationData, info.lat);
     double lon = getCoordValue(stationData, info.lon);
     double alt = (info.elev == null) ? Double.NaN : getCoordValue(stationData, info.elev);
 
-    return new StationImpl(stationName, stationDesc, lat, lon, alt);
+    return new StationImpl(stationName, stationDesc, stnWmoId, lat, lon, alt);
   }
 
   double getCoordValue(StructureData struct, String memberName) {

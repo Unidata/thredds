@@ -40,14 +40,14 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
   protected DateUnit timeUnit;
   protected int npts;
 
-  public StationFeatureImpl( String name, String desc, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
+  public StationFeatureImpl(String name, String desc, String wmoId, double lat, double lon, double alt, DateUnit timeUnit, int npts) {
     super(name);
-    s = new StationImpl(name, desc, lat, lon, alt);
+    s = new StationImpl(name, desc, wmoId, lat, lon, alt);
     this.timeUnit = timeUnit;
     this.npts = npts;
   }
 
-  public StationFeatureImpl( Station s, DateUnit timeUnit, int npts) {
+  public StationFeatureImpl(Station s, DateUnit timeUnit, int npts) {
     super(s.getName());
     this.s = s;
     this.timeUnit = timeUnit;
@@ -100,6 +100,10 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
     return new StationFeatureSubset(this, dateRange);
   }
 
+  public int compareTo(Station so) {
+    return name.compareTo( so.getName());
+  }
+
   private class StationFeatureSubset extends StationFeatureImpl {
     StationFeatureImpl from;
 
@@ -110,12 +114,13 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
       if (filter_date == null) {
         this.dateRange = from.dateRange;
       } else {
-        this.dateRange =  (from.dateRange == null) ? filter_date : from.dateRange.intersect( filter_date);
+        this.dateRange = (from.dateRange == null) ? filter_date : from.dateRange.intersect(filter_date);
       }
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      return new PointIteratorFiltered( from.getPointFeatureIterator(bufferSize), null, this.dateRange);
+      return new PointIteratorFiltered(from.getPointFeatureIterator(bufferSize), null, this.dateRange);
     }
+
   }
 }

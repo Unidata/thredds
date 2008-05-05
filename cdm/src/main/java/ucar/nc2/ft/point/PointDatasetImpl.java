@@ -35,7 +35,7 @@ import java.util.ArrayList;
  * @author caron
  * @since Feb 29, 2008
  */
-public class PointDatasetImpl extends FeatureDatasetImpl implements PointFeatureDataset {
+public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatasetPoint {
   protected List<FeatureCollection> collectionList;
   protected FeatureType featureType;
 

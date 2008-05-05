@@ -24,7 +24,7 @@ package ucar.nc2.ft;
  * @author caron
  * @since Feb 18, 2008
  */
-public interface Station extends EarthLocation {
+public interface Station extends EarthLocation, Comparable<Station> {
 
   /**
    * Station name or id. Must be unique within the collection

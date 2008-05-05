@@ -19,7 +19,7 @@
  */
 package ucar.nc2.ft.point.standard;
 
-import ucar.nc2.ft.point.StationCollectionImpl;
+import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.ft.point.StationFeatureImpl;
 import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.ft.*;
@@ -43,7 +43,7 @@ import java.util.ArrayList;
  * @author caron
  * @since Mar 28, 2008
  */
-public class StandardStationCollectionImpl extends StationCollectionImpl {
+public class StandardStationCollectionImpl extends StationTimeSeriesCollectionImpl {
   private DateUnit timeUnit;
   private NestedTable ft;
 

@@ -27,7 +27,7 @@ package ucar.nc2.ft;
 public interface PointFeatureIterator {
 
   /**
-   * true if another PointFeature is available
+   * Check if another PointFeature is available
    * @return true if another PointFeature is available
    * @throws java.io.IOException on i/o error
    */

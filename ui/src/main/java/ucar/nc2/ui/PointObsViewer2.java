@@ -160,7 +160,7 @@ public class PointObsViewer2 extends JPanel {
     dumpWindow.setBounds((Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle(300, 300, 300, 200)));
   }
 
-  public void setDataset(PointFeatureDataset dataset) throws IOException {
+  public void setDataset(FeatureDatasetPoint dataset) throws IOException {
     this.pds = (PointFeatureCollection) dataset.getPointFeatureCollectionList().get(0); // LOOK kludge
 
     if (debugStationDatsets)

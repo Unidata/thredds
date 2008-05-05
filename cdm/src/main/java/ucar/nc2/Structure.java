@@ -265,6 +265,10 @@ public class Structure extends Variable {
     return elementSize;
   }
 
+  /**
+   * Force recalculation of size of one element of this structure - equals the sum of sizes of its members.
+   * This is used only by low level classes like IOSPs.
+   */
   public void calcElementSize() {
     int total = 0;
     for (Variable v : members) {

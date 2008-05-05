@@ -217,7 +217,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     obsTable.saveState();
   }
 
-  public void setDataset(PointFeatureDataset dataset) {
+  public void setDataset(FeatureDatasetPoint dataset) {
     infoTA.clear();
     stnTable.setBeans(new ArrayList());
     stationMap.setStations(new ArrayList());
@@ -300,7 +300,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     PointFeatureCollection pc = null;
 
     if (selectedType == FeatureType.STATION) {
-      StationTimeSeriesCollection stationCollection = (StationTimeSeriesCollection) selectedCollection;
+      StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
       pc = stationCollection.flatten(geoRegion, dateRange);
     }
 
@@ -321,7 +321,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       setObservations(obsList);
 
     } else if (selectedType == FeatureType.STATION) {
-      StationTimeSeriesCollection stationCollection = (StationTimeSeriesCollection) selectedCollection;
+      StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
       StationTimeSeriesFeature feature = stationCollection.getStationFeature(sb.s);
       if (dr != null)
         feature = feature.subset(dr);
@@ -373,7 +373,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       setObservations(pointCollection);
 
     } else if (selectedType == FeatureType.STATION) {
-      StationTimeSeriesCollection stationCollection = (StationTimeSeriesCollection) selectedCollection;
+      StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
       PointFeatureCollectionIterator iter = stationCollection.getPointFeatureCollectionIterator(-1);
       List<PointFeature> obsList = new ArrayList<PointFeature>();
       while (iter.hasNext())

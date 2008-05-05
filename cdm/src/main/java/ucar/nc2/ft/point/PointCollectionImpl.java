@@ -21,6 +21,7 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
@@ -39,6 +40,7 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
   protected LatLonRect boundingBox;
   protected DateRange dateRange;
   protected int npts;
+  protected PointFeatureIterator localIterator;
 
   protected PointCollectionImpl(String name) {
     this.name = name;
@@ -54,6 +56,19 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
 
   public String getName() {
     return name;
+  }
+
+  public boolean hasNext() throws IOException {
+    if (localIterator == null) resetIteration();
+    return localIterator.hasNext();
+  }
+
+  public PointFeature next() throws IOException {
+    return localIterator.next();
+  }
+
+  public void resetIteration() throws IOException {
+    localIterator = getPointFeatureIterator(-1);
   }
 
   public int size() {

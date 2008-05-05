@@ -31,6 +31,27 @@ import java.io.IOException;
 public interface StationProfileFeature extends Station, NestedPointFeatureCollection {
 
   /**
+   * Use the internal iterator to check if there is another ProfileFeature in the iteration.
+   * @return true is there is another ProfileFeature in the iteration.
+   * @throws java.io.IOException on read error
+   */
+  public boolean hasNext() throws java.io.IOException;
+
+  /**
+   * Use the internal iterator to get the next ProfileFeature in the iteration.
+   * You must call hasNext() before you call this.
+   * @return the next ProfileFeature in the iteration
+   * @throws java.io.IOException on read error
+   */
+  public ProfileFeature next() throws java.io.IOException;
+
+  /**
+   * Reset the internal iterator for another iteration over the ProfileFeature in this Collection.
+   * @throws java.io.IOException on read error
+   */
+  public void resetIteration() throws IOException;
+
+  /**
    * The number of profiles in the time series. May not be known until after iterating through the collection.
    * @return number of profiles in the time series, or -1 if not known.
    */

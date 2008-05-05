@@ -32,6 +32,27 @@ import java.io.IOException;
 public interface PointFeatureCollection extends FeatureCollection {
 
   /**
+   * Use the internal iterator to check if there is another PointFeature in the iteration.
+   * @return true is there is another PointFeature in the iteration.
+   * @throws java.io.IOException on read error
+   */
+  public boolean hasNext() throws java.io.IOException;
+
+  /**
+   * Use the internal iterator to get the next PointFeature in the iteration.
+   * You must call hasNext() before you call this.
+   * @return the next PointFeature in the iteration
+   * @throws java.io.IOException on read error
+   */
+  public PointFeature next() throws java.io.IOException;
+
+  /**
+   * Reset the internal iterator for another iteration over the PointFeatures in this Collection.
+   * @throws java.io.IOException on read error
+   */
+  public void resetIteration() throws IOException;
+
+  /**
    * The number of points in the collection. May not be known until after iterating through the collection.
    * @return number of points in the collection, or -1 if not known.
    */

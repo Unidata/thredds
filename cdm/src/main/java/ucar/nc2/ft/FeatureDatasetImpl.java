@@ -30,7 +30,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.util.*;
 
 /**
- * Abstract superclass for implementations of FeatureDataset
+ * Abstract superclass for implementations of FeatureDataset.
  * Subclass must implement getFeatureClass(), and add specific functionality.
  * @author caron
  * @since Sep 7, 2007

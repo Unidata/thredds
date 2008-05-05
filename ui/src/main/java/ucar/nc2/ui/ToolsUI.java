@@ -21,7 +21,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-import ucar.nc2.ft.PointFeatureDataset;
+import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.constants.FeatureType;
@@ -2442,7 +2442,7 @@ public class ToolsUI extends JPanel {
   private class PointFeaturePanel extends OpPanel {
     PointFeatureDatasetViewer pfViewer;
     JSplitPane split;
-    PointFeatureDataset sobsDataset = null;
+    FeatureDatasetPoint sobsDataset = null;
 
     PointFeaturePanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
@@ -2490,12 +2490,12 @@ public class ToolsUI extends JPanel {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
         }
-        if (!(featureDataset instanceof PointFeatureDataset)) {
+        if (!(featureDataset instanceof FeatureDatasetPoint)) {
           JOptionPane.showMessageDialog(null, location + " could not be opened as a PointFeatureDataset");
           return false;
         }
 
-        sobsDataset = (PointFeatureDataset) featureDataset;
+        sobsDataset = (FeatureDatasetPoint) featureDataset;
         pfViewer.setDataset(sobsDataset);
         setSelectedItem(location);
         return true;
@@ -2511,7 +2511,7 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    boolean setStationObsDataset(PointFeatureDataset dataset) {
+    boolean setStationObsDataset(FeatureDatasetPoint dataset) {
       if (dataset == null) return false;
 
       try {

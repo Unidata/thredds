@@ -35,6 +35,7 @@ import java.io.IOException;
 public abstract class StationProfileCollectionImpl extends MultipleNestedPointCollectionImpl implements StationProfileFeatureCollection {
 
   protected StationHelper stationHelper;
+  protected PointFeatureCollectionIterator localIterator;
 
   public StationProfileCollectionImpl(String name) {
     super( name, FeatureType.STATION_PROFILE);
@@ -72,6 +73,23 @@ public abstract class StationProfileCollectionImpl extends MultipleNestedPointCo
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
     throw new UnsupportedOperationException("StationProfileFeatureCollection does not implement getPointFeatureCollectionIterator()");
+  }
+
+  public boolean hasNext() throws IOException {
+    if (localIterator == null) resetIteration();
+    return localIterator.hasNext();
+  }
+
+  public StationProfileFeature next() throws IOException {
+    return (StationProfileFeature) localIterator.next();
+  }
+
+  public void resetIteration() throws IOException {
+    localIterator = getPointFeatureCollectionIterator(-1);
+  }
+
+  public int compareTo(Station so) {
+    return name.compareTo( so.getName());
   }
 
     // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station

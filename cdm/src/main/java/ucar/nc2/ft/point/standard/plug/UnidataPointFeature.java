@@ -133,7 +133,7 @@ public class UnidataPointFeature implements TableConfigurer {
           double lat = sdata.getScalarDouble(STN_LAT);
           double lon = sdata.getScalarDouble(STN_LON);
           double elev = sdata.getScalarDouble(STN_ELEV);
-          stations.add(new StationImpl(indy.name, null, lat, lon, elev));
+          stations.add(new StationImpl(indy.name, null, null, lat, lon, elev));
 
           last = new MyStructureDataIterator(i);
           stnMap.put(indy.name, last);

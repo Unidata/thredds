@@ -21,7 +21,7 @@
 package ucar.nc2.util;
 
 /**
- * Miscellaneous statis routines.
+ * Miscellaneous static routines.
  *
  * @author caron
  */

@@ -27,7 +27,28 @@ import java.util.List;
  *
  * @author caron
  */
-public interface StationTimeSeriesCollection extends StationCollection, NestedPointFeatureCollection {
+public interface StationTimeSeriesFeatureCollection extends StationCollection, NestedPointFeatureCollection {
+
+  /**
+   * Use the internal iterator to check if there is another StationTimeSeriesFeature in the iteration.
+   * @return true is there is another StationTimeSeriesFeature in the iteration.
+   * @throws java.io.IOException on read error
+   */
+  public boolean hasNext() throws java.io.IOException;
+
+  /**
+   * Use the internal iterator to get the next StationTimeSeriesFeature in the iteration.
+   * You must call hasNext() before you call this.
+   * @return the next StationTimeSeriesFeature in the iteration
+   * @throws java.io.IOException on read error
+   */
+  public StationTimeSeriesFeature next() throws java.io.IOException;
+
+  /**
+   * Reset the internal iterator for another iteration over the StationTimeSeriesFeatures in this Collection.
+   * @throws java.io.IOException on read error
+   */
+  public void resetIteration() throws IOException;
 
   /**
    * Get a subsetted StationCollection
@@ -36,7 +57,7 @@ public interface StationTimeSeriesCollection extends StationCollection, NestedPo
    * @return subsetted collection
    * @throws java.io.IOException on i/o error
    */
-  public StationTimeSeriesCollection subset(List<Station> stations) throws IOException;
+  public StationTimeSeriesFeatureCollection subset(List<Station> stations) throws IOException;
 
   /**
    * Get the collection of data for this Station.
