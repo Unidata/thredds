@@ -7,8 +7,8 @@
 
 <body>
 <h1>ArrayStructures</h1>
-<p>In the netCDF-3 data model, all data is represented by multidimensional arrays, stored on disk or in memory in one-dimensional arrays, linearized in row-order. The netcdf-4/CDM data model adds a data type called a <em><strong>Structure</strong></em>, akin to a struct in C or a row in a relarional database, which contains constituent data variables that are stored together on disk. A Structure can be multidimensional, and in the CDM the data is represented as ArrayStructure objects, which are logically arrays of StructureData objects, where a StructureData contains the data for a single instance of the Structure.</p>
-<p>Because Structures can be nested inside of each other, the data representation and procesing of ArrayStricures can be complex. This document explains the API, the use, and how to create ArrayStructure objects.</p>
+<p>In the netCDF-3 data model, all data is represented by multidimensional arrays, stored on disk or in memory in one-dimensional arrays, linearized in row-order. The netcdf-4/CDM data model adds a data type called a <em><strong>Structure</strong></em>, akin to a struct in C or a row in a relational database, which contains constituent data variables that are stored together on disk. A Structure can be multidimensional, and in the CDM the data is represented as ArrayStructure objects, which are logically arrays of StructureData objects, where a StructureData contains the data for a single instance of the Structure.</p>
+<p>Because Structures can be nested inside of each other, the data representation and procesing of ArrayStrucures can be complex. This document explains the API, it's use, and how to create ArrayStructure objects.</p>
 <h2>ArrayStructure API</h2>
 <p>The public API of ArrayStructure objects is in the abstract class <strong>ucar.ma2.ArrayStructure</strong>. </p>
 <pre>public abstract class ucar.ma2.<strong>ArrayStructure</strong> extends ucar.ma2.<strong>Array</strong> {
@@ -25,26 +25,26 @@
 <p>Once you have a StructureData object, you can access data in a general way by using: </p>
 <pre>    public ucar.ma2.Array <strong>StructureData.getArray</strong>(Member m) 
 </pre>
-<p>Often you are not actually interested in the StructureData object, only in the member data. This method may avoid the overhead of creating the StructureData object:</p>
-<pre>   public ucar.ma2.Array <strong>getArray</strong>(int recno, ucar.ma2.StructureMembers$Member); </pre>
+<p>Often you are not actually interested in the StructureData object, only in the member data. The following method may avoid the overhead of creating the StructureData object:</p>
+<pre>   public ucar.ma2.Array <strong>getArray</strong>(int recno, ucar.ma2.StructureMembers.Member); </pre>
 <p>An Array handles data of all data types and ranks in a uniform way. However, you may want to avoid the overhead of of creating an Array object when you simply want to extract the data as a Java primitive or primitive array, and you are willing to handle the data type and rank explicitly: The following methods are likely (but not guarenteed) to be more efficient, by avoiding unneeded Object creation. These methods must match the member type exactly: </p>
-<pre>    public double <strong>getScalarDouble</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public double[] <strong>getJavaArrayDouble</strong>(int, ucar.ma2.StructureMembers$Member);
-<br />    public float <strong>getScalarFloat</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public float[] <strong>getJavaArrayFloat</strong>(int, ucar.ma2.StructureMembers$Member);
-<br />    public byte <strong>getScalarByte</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public byte[] <strong>getJavaArrayByte</strong>(int, ucar.ma2.StructureMembers$Member);
-<br />    public short <strong>getScalarShort</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public short[] <strong>getJavaArrayShort</strong>(int, ucar.ma2.StructureMembers$Member);
-<br />    public int <strong>getScalarInt</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public int[] <strong>getJavaArrayInt</strong>(int, ucar.ma2.StructureMembers$Member);
-<br />    public long <strong>getScalarLong</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public long[] <strong>getJavaArrayLong</strong>(int, ucar.ma2.StructureMembers$Member);
-<br />    public char <strong>getScalarChar</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public char[] <strong>getJavaArrayChar</strong>(int, ucar.ma2.StructureMembers$Member);
-<br />    public java.lang.String <strong>getScalarString</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public java.lang.String[] <strong>getJavaArrayString</strong>(int, ucar.ma2.StructureMembers$Member);
-<br />    public ucar.ma2.StructureData <strong>getScalarStructure</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public ucar.ma2.ArrayStructure <strong>getArrayStructure</strong>(int, ucar.ma2.StructureMembers$Member);
-<br />    public ucar.ma2.ArraySequence <strong>getArraySequence</strong>(int, ucar.ma2.StructureMembers$Member);
+<pre>    public double <strong>getScalarDouble</strong>(int, ucar.ma2.StructureMembers.Member);<br />    public double[] <strong>getJavaArrayDouble</strong>(int, ucar.ma2.StructureMembers.Member);
+<br />    public float <strong>getScalarFloat</strong>(int, ucar.ma2.StructureMembers.Member);<br />    public float[] <strong>getJavaArrayFloat</strong>(int, ucar.ma2.StructureMembers.Member);
+<br />    public byte <strong>getScalarByte</strong>(int, ucar.ma2.StructureMembers.Member);<br />    public byte[] <strong>getJavaArrayByte</strong>(int, ucar.ma2.StructureMembers.Member);
+<br />    public short <strong>getScalarShort</strong>(int, ucar.ma2.StructureMembers.Member);<br />    public short[] <strong>getJavaArrayShort</strong>(int, ucar.ma2.StructureMembers.Member);
+<br />    public int <strong>getScalarInt</strong>(int, ucar.ma2.StructureMembers.Member);<br />    public int[] <strong>getJavaArrayInt</strong>(int, ucar.ma2.StructureMembers.Member);
+<br />    public long <strong>getScalarLong</strong>(int, ucar.ma2.StructureMembers.Member);<br />    public long[] <strong>getJavaArrayLong</strong>(int, ucar.ma2.StructureMembers.Member);
+<br />    public char <strong>getScalarChar</strong>(int, ucar.ma2.StructureMembers.Member);<br />    public char[] <strong>getJavaArrayChar</strong>(int, ucar.ma2.StructureMembers.Member);
+<br />    public java.lang.String <strong>getScalarString</strong>(int, ucar.ma2.StructureMembers.Member);<br />    public java.lang.String[] <strong>getJavaArrayString</strong>(int, ucar.ma2.StructureMembers.Member);
+<br />    public ucar.ma2.StructureData <strong>getScalarStructure</strong>(int, ucar.ma2.StructureMembers.Member);<br />    public ucar.ma2.ArrayStructure <strong>getArrayStructure</strong>(int, ucar.ma2.StructureMembers.Member);
+<br />    public ucar.ma2.ArraySequence <strong>getArraySequence</strong>(int, ucar.ma2.StructureMembers.Member);
 </pre>
 <p>This method can be used on any type. It converts primitives to their corresponding object types (eg float to Float): </p>
-<pre>    public java.lang.Object <strong>getScalarObject</strong>(int, ucar.ma2.StructureMembers$Member);
+<pre>    public java.lang.Object <strong>getScalarObject</strong>(int, ucar.ma2.StructureMembers.Member);
 </pre>
 <p>These two methods convert any numeric type to a float or double: </p>
 <pre>
-    public float <strong>convertScalarFloat</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public double <strong>convertScalarDouble</strong>(int, ucar.ma2.StructureMembers$Member);</pre>
+    public float <strong>convertScalarFloat</strong>(int, ucar.ma2.StructureMembers.Member);<br />    public double <strong>convertScalarDouble</strong>(int, ucar.ma2.StructureMembers.Member);</pre>
 <h4>Unsupported methods </h4>
 <p>Because ArrayStructure is a subclass of Array, there are  getter/setter methods for each primitive type. These are not useable, since primitive types cannot be cast to StructureData: </p>
 <pre>    public double <strong>getDouble</strong>(ucar.ma2.Index);<br />    public void <strong>setDouble</strong>(ucar.ma2.Index, double);<br />    public float <strong>getFloat</strong>(ucar.ma2.Index);<br />    public void <strong>setFloat</strong>(ucar.ma2.Index, float);<br />    public long <strong>getLong</strong>(ucar.ma2.Index);<br />    public void <strong>setLong</strong>(ucar.ma2.Index, long);<br />    public int <strong>getInt</strong>(ucar.ma2.Index);<br />    public void <strong>setInt</strong>(ucar.ma2.Index, int);<br />    public short <strong>getShort</strong>(ucar.ma2.Index);<br />    public void <strong>setShort</strong>(ucar.ma2.Index, short);<br />    public byte <strong>getByte</strong>(ucar.ma2.Index);<br />    public void <strong>setByte</strong>(ucar.ma2.Index, byte);<br />    public boolean <strong>getBoolean</strong>(ucar.ma2.Index);<br />    public void <strong>setBoolean</strong>(ucar.ma2.Index, boolean);<br />    public char <strong>getChar</strong>(ucar.ma2.Index);<br />    public void <strong>setChar</strong>(ucar.ma2.Index, char);
@@ -59,30 +59,30 @@
 </pre>
 <h2>StructureData<a name="StructureData" id="StructureData"></a> API</h2>
 <p>StructureData encapsolates all the data in a single record. It is normally contained within an ArrayStructure, and its methods closely parellel the methods of its parent ArrayStructure.</p>
-<pre>public abstract class ucar.ma2.StructureData extends java.lang.Object{
-<br />    public static ucar.ma2.StructureData copy(ucar.ma2.StructureData);<br />    public ucar.ma2.StructureData(ucar.ma2.StructureMembers);<br />    public java.lang.String getName();<br />    public ucar.ma2.StructureMembers getStructureMembers();<br />    public java.util.List getMembers();<br />    public ucar.ma2.StructureMembers$Member getMember(int);<br />    public ucar.ma2.StructureMembers$Member findMember(java.lang.String);</pre>
-<p>The most general ways to access data in an StructureData are:</p>
-<pre>    public ucar.ma2.Array <strong>getArray</strong>(ucar.ma2.StructureMembers$Member m);<br />    public ucar.ma2.Array <strong>getArray</strong>(String memberName);</pre>
+<pre>public abstract class ucar.ma2.<strong>StructureData</strong> {
+<br />    public ucar.ma2.StructureData(ucar.ma2.StructureMembers members);<br />    public String <strong>getName</strong>();<br />    public ucar.ma2.StructureMembers <strong>getStructureMembers</strong>();<br />    public List&lt;StructureMembers.Member&gt; <strong>getMembers</strong>();<br />    public ucar.ma2.StructureMembers.Member <strong>getMember</strong>(int);<br />    public ucar.ma2.StructureMembers.Member <strong>findMember</strong>(java.lang.String);</pre>
+<p>The most general ways to access data in a StructureData are:</p>
+<pre>    public ucar.ma2.Array <strong>getArray</strong>(ucar.ma2.StructureMembers.Member m);<br />    public ucar.ma2.Array <strong>getArray</strong>(String memberName);</pre>
 <p>The following method will handle a scalar object of any type, by converting primitives to their Object type (eg int to Integer): </p>
-<pre>    public java.lang.Object <strong>getScalarObject</strong>(ucar.ma2.StructureMembers$Member m);</pre>
+<pre>    public java.lang.Object <strong>getScalarObject</strong>(ucar.ma2.StructureMembers.Member m);</pre>
 The following  routines may be able to avoid extra Object creation, and so are recommended when efficiency is paramount.
- These require that you know the data types of the member data, but they are the most efficent:
-<pre>    public double <strong>getScalarDouble</strong>(String memberName);<br />    public double <em><strong>getScalarDouble</strong></em>(ucar.ma2.StructureMembers$Member);<br />    public double[] <em><strong>getJavaArrayDouble</strong></em>(ucar.ma2.StructureMembers$Member);
-<br />    public float <strong>getScalarFloat</strong>(String memberName);<br />    public float <em><strong>getScalarFloat</strong></em>(ucar.ma2.StructureMembers$Member);<br />    public float[] <em><strong>getJavaArrayFloat</strong></em>(ucar.ma2.StructureMembers$Member);
-<br />    public byte <strong>getScalarByte</strong>(String memberName);<br />    public byte <em><strong>getScalarByte</strong></em>(ucar.ma2.StructureMembers$Member);<br />    public byte[] <em><strong>getJavaArrayByte</strong></em>(ucar.ma2.StructureMembers$Member);
-<br />    public int <strong>getScalarInt</strong>(String memberName);<br />    public int <em><strong>getScalarInt</strong></em>(ucar.ma2.StructureMembers$Member);<br />    public int[] <em><strong>getJavaArrayInt</strong></em>(ucar.ma2.StructureMembers$Member);
-<br />    public short <strong>getScalarShort</strong>(String memberName);<br />    public short <em><strong>getScalarShort</strong></em>(ucar.ma2.StructureMembers$Member);<br />    public short[] <em><strong>getJavaArrayShort</strong></em>(ucar.ma2.StructureMembers$Member);
-<br />    public long <strong>getScalarLong</strong>(String memberName);<br />    public long <em><strong>getScalarLong</strong></em>(ucar.ma2.StructureMembers$Member);<br />    public long[] <em><strong>getJavaArrayLong</strong></em>(ucar.ma2.StructureMembers$Member);
-<br />    public char <strong>getScalarChar</strong>(String memberName);<br />    public char <em><strong>getScalarChar</strong></em>(ucar.ma2.StructureMembers$Member);<br />    public char[] <em><strong>getJavaArrayChar</strong></em>(ucar.ma2.StructureMembers$Member);
-<br />    public String <strong>getScalarString</strong>(String memberName);<br />    public String <em><strong>getScalarString</strong></em>(ucar.ma2.StructureMembers$Member);<br />    public String[] <em><strong>getJavaArrayString</strong></em>(ucar.ma2.StructureMembers$Member);</pre>
+ These require that you know the data types of the member data:
+<pre>    public double <strong>getScalarDouble</strong>(String memberName);<br />    public double <em><strong>getScalarDouble</strong></em>(ucar.ma2.StructureMembers.Member);<br />    public double[] <em><strong>getJavaArrayDouble</strong></em>(ucar.ma2.StructureMembers.Member);
+<br />    public float <strong>getScalarFloat</strong>(String memberName);<br />    public float <em><strong>getScalarFloat</strong></em>(ucar.ma2.StructureMembers.Member);<br />    public float[] <em><strong>getJavaArrayFloat</strong></em>(ucar.ma2.StructureMembers.Member);
+<br />    public byte <strong>getScalarByte</strong>(String memberName);<br />    public byte <em><strong>getScalarByte</strong></em>(ucar.ma2.StructureMembers.Member);<br />    public byte[] <em><strong>getJavaArrayByte</strong></em>(ucar.ma2.StructureMembers.Member);
+<br />    public int <strong>getScalarInt</strong>(String memberName);<br />    public int <em><strong>getScalarInt</strong></em>(ucar.ma2.StructureMembers.Member);<br />    public int[] <em><strong>getJavaArrayInt</strong></em>(ucar.ma2.StructureMembers.Member);
+<br />    public short <strong>getScalarShort</strong>(String memberName);<br />    public short <em><strong>getScalarShort</strong></em>(ucar.ma2.StructureMembers.Member);<br />    public short[] <em><strong>getJavaArrayShort</strong></em>(ucar.ma2.StructureMembers.Member);
+<br />    public long <strong>getScalarLong</strong>(String memberName);<br />    public long <em><strong>getScalarLong</strong></em>(ucar.ma2.StructureMembers.Member);<br />    public long[] <em><strong>getJavaArrayLong</strong></em>(ucar.ma2.StructureMembers.Member);
+<br />    public char <strong>getScalarChar</strong>(String memberName);<br />    public char <em><strong>getScalarChar</strong></em>(ucar.ma2.StructureMembers.Member);<br />    public char[] <em><strong>getJavaArrayChar</strong></em>(ucar.ma2.StructureMembers.Member);
+<br />    public String <strong>getScalarString</strong>(String memberName);<br />    public String <em><strong>getScalarString</strong></em>(ucar.ma2.StructureMembers.Member);<br />    public String[] <em><strong>getJavaArrayString</strong></em>(ucar.ma2.StructureMembers.Member);</pre>
 For members that are themselves Structures,
    the equivalent is:
-<pre>    public ucar.ma2.StructureData <strong>getScalarStructure</strong>(String memberName);<br />    public ucar.ma2.StructureData <em><strong>getScalarStructure</strong></em>(ucar.ma2.StructureMembers$Member);<br />
-    public ucar.ma2.ArrayStructure <strong>getArrayStructure</strong>(String memberName);<br />    public ucar.ma2.ArrayStructure <em><strong>getArrayStructure</strong></em>(ucar.ma2.StructureMembers$Member);
+<pre>    public ucar.ma2.StructureData <strong>getScalarStructure</strong>(String memberName);<br />    public ucar.ma2.StructureData <em><strong>getScalarStructure</strong></em>(ucar.ma2.StructureMembers.Member);<br />
+    public ucar.ma2.ArrayStructure <strong>getArrayStructure</strong>(String memberName);<br />    public ucar.ma2.ArrayStructure <em><strong>getArrayStructure</strong></em>(ucar.ma2.StructureMembers.Member);
 
-    public ucar.ma2.ArraySequence <em><strong>getArraySequence</strong></em>(ucar.ma2.StructureMembers$Member); </pre>
+    public ucar.ma2.ArraySequence <em><strong>getArraySequence</strong></em>(ucar.ma2.StructureMembers.Member); </pre>
 These will return any compatible type as a double or float, but will have extra overhead when the types dont match:
-<pre>    public float <em><strong>convertScalarFloat</strong></em>(ucar.ma2.StructureMembers$Member);<br />    public double <em><strong>convertScalarDouble</strong></em>(ucar.ma2.StructureMembers$Member);<br />
+<pre>    public float <em><strong>convertScalarFloat</strong></em>(ucar.ma2.StructureMembers.Member);<br />    public double <em><strong>convertScalarDouble</strong></em>(ucar.ma2.StructureMembers.Member);<br />
 </pre>
 <h2>Creating ArrayStructures </h2>
 <p>IOSP writers need to create ArrayStructure objects for any Structure variables in their files.</p>
@@ -92,7 +92,7 @@ These will return any compatible type as a double or float, but will have extra 
 <p>However, ArrayStructure has a number of default method implementations that may need to be overriden.</p>
 <p>An ArrayStructure uses one of two strategies for StructureData implementations. It either uses a <strong>StructureDataW</strong>, in which each StructureData contains its own data, or it uses a <strong>StructureDataA</strong>, which defers data access back to the ArrayStructure itself. </p>
 <p>This method puts the data in column store format </p>
-<pre>  public ucar.ma2.Array getMemberArray(ucar.ma2.StructureMembers$Member);</pre>
+<pre>  public ucar.ma2.Array <strong>getMemberArray</strong>(ucar.ma2.StructureMembers.Member);</pre>
 <h3><br>
 ArrayStructureBB</h3>
 <p>ArrayStructureBB uses a <strong>java.nio.ByteBuffer</strong> for data storage and converts  member data only on demand. The member data must be at constant offsets from the start of each record. This offset is stored into each StructureMembers.Member using <strong>StructureMembers.Member.setDataParam</strong>().</p>
@@ -146,7 +146,7 @@ ArrayStructureBB</h3>
 <p>This only works when the nested structures are all of the same, known length. For variable length nested Structures, use ArraySequence. //????? LOOK</p>
 <h4>Member data overridding</h4>
 <p>NetcdfDataset may widen the type of a variable when implementing scale/offset attributes. Typically this will cause a byte or short to become a float or double. A StructureDS will post-process the data it gets from the IOSP to implement this. When the IOSP returns an ArrayStructureBB, it is convenient to rewrite just the member data that needs to be widened. This can be done by calculating the new data and calling ArrayStructure.setMemberData(Array).</p>
-<pre>  public void <strong>setMemberArray</strong>(ucar.ma2.StructureMembers$Member, ucar.ma2.Array memberArray);</pre>
+<pre>  public void <strong>setMemberArray</strong>(ucar.ma2.StructureMembers.Member, ucar.ma2.Array memberArray);</pre>
 <p>Requests for data will be satisfied from the  memberArray instead of the ByteBuffer. In order to make this work, the methods in ArrayStructureBB typically check if the member data array exists, and if so defers to the superclass. For example: </p>
 <pre>  public double getScalarDouble(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarDouble(recnum, m);
@@ -156,11 +156,10 @@ ArrayStructureBB</h3>
 <h3>ArrayStructureMA</h3>
 <p>ArrayStructureMA stores its member data in <em>column-store form</em>, where each member's data is stored in a single Array across all rows. The member Arrays are stored with <strong>StructureMembers.Member.setDataArray()</strong>, for example: </p>
 <pre>
-    StructureMembers members = s.makeStructureMembers();
-    ArrayStructureMA ama = new ArrayStructureMA(members, shape);
+    StructureMembers members = structure.<strong>makeStructureMembers</strong>();
+    ArrayStructureMA ama = new <strong>ArrayStructureMA</strong>(members, shape);
     ArrayInt.D1 timeArray = new ArrayInt.D1(shape[0]);
     ArrayObject.D1 nameArray = new ArrayObject.D1(String.class, shape[0]);
-
 
     for (StructureMembers.Member m : members.getMembers()) {
       if (m.getName().equals("time"))
@@ -173,13 +172,13 @@ ArrayStructureBB</h3>
 <p>A nested Structure inside of an ArrayStructureMA would be represented by another ArrayStructureMA,  when the nested structures are all of the same, known length. This inner ArrayStructureMA would represent all of the inner Structures across all rows of the outer Structure. </p>
 <h3>ArrayStructureW</h3>
 <p>ArrayStructureW defers data reading to the StructureData objects. To use it, one  constructs all of the StructureData objects and passes them to the ArrayStructureW, for example: </p>
-<pre>  public ArrayStructureW(StructureMembers members, int[] shape, StructureData[] sdata);
+<pre>  public <strong>ArrayStructureW</strong>(StructureMembers members, int[] shape, StructureData[] sdata);
 </pre>
 <p>All of the work is  in constructing the StructureData objects. </p>
 <hr />
 <p>&nbsp;</p>
 <pre><br />
-    public void setMemberArray(ucar.ma2.StructureMembers$Member, ucar.ma2.Array);<br />    public ucar.ma2.Array getMemberArray(ucar.ma2.StructureMembers$Member);</pre>
+    public void setMemberArray(ucar.ma2.StructureMembers.Member, ucar.ma2.Array);<br />    public ucar.ma2.Array getMemberArray(ucar.ma2.StructureMembers.Member);</pre>
 <p>&nbsp;</p>
 <pre>&nbsp;</pre>
 <pre> Array getArray(int recno, StructureMembers.Member m) </pre>
