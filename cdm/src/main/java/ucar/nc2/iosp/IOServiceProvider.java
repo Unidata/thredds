@@ -20,9 +20,6 @@
 package ucar.nc2.iosp;
 
 import ucar.ma2.Section;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.SequenceDataCursor;
-import ucar.nc2.Structure;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;

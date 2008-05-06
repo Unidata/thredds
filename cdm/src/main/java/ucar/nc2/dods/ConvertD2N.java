@@ -96,9 +96,9 @@ public class ConvertD2N {
 
       StructureMembers.Member m = findNested(as, names, v.getShortName());
       Array mdata = (Array) m.getDataArray();
-      if (mdata instanceof ArraySequence) {
+      if (mdata instanceof ArraySequenceNested) {
         // gotta unroll
-        ArraySequence arraySeq = (ArraySequence) mdata;
+        ArraySequenceNested arraySeq = (ArraySequenceNested) mdata;
         return arraySeq.flatten();
       }
       return mdata;
@@ -261,7 +261,7 @@ public class ConvertD2N {
     // LOOK single nested
     DSequence outerSeq = (DSequence) dataV.parent.bt;
     int outerLength = outerSeq.getRowCount();
-    ArraySequence aseq = new ArraySequence( members, outerLength);
+    ArraySequenceNested aseq = new ArraySequenceNested( members, outerLength);
 
     // tell it how long each one is
     String name = dataV.getName();

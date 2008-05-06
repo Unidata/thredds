@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Indexes for Multidimensional arrays. An Index refers to a particular element of an array.
  * <p/>
- * This is a generalization of index as int []. Its main function is
+ * This is a generalization of index as int[]. Its main function is
  * to do the index arithmetic to translate an n-dim index into a 1-dim index.
  * The user obtains this by calling getIndex() on a Array.
  * The set() and seti() routines are convenience routines for 1-7 dim arrays.
@@ -36,48 +36,25 @@ import java.util.List;
 public class Index implements Cloneable {
   public static final Index scalarIndex = new Index0D( new int[0]); // immutable, so can be shared
 
-  /**
-   * array shape
-   */
   protected int[] shape;
-  /**
-   * array rank
-   */
-  protected int rank;
-  /**
-   * total number of elements
-   */
-  protected long size;
-  /**
-   * array stride
-   */
   protected int[] stride;
-  /**
-   * element = offset + stride[0]*current[0] + ...
-   */
-  protected int offset;
+  protected int rank;
 
-  /**
-   * current element's index, used only for the general case
-   */
-  protected int[] current;
+  protected long size; //total number of elements
+  protected int offset; // element = offset + stride[0]*current[0] + ...
+  protected boolean fastIterator = true; // use faste iterator if in canonical order
 
-  /**
-   * index names (optional)
-   */
-  protected String[] name;
-
-  /**
-   * Iterator implementation
-   */
-  protected boolean fastIterator = true;
+  // LOOK: can we eliminate for the common case?
+  protected int[] current; // current element's index, used only for the general case
+  protected String[] name; // index names (optional)
 
   /**
    * General case Index - use when you want to manipulate current elements yourself
+   * @param rank rank of the Index
    */
   protected Index(int rank) {
-    shape = new int[rank];
     this.rank = rank;
+    shape = new int[rank];
     current = new int[rank];
     stride = new int[rank];
   }
@@ -101,6 +78,8 @@ public class Index implements Cloneable {
   /**
    * Constructor that lets you set the strides yourself.
    * This is used as a counter, not a desccription of an index section.
+   * @param _shape Index shape
+   * @param _stride Index stride
    */
   public Index(int[] _shape, int[] _stride) {
     this.shape = new int[_shape.length];  // optimization over clone
@@ -157,7 +136,7 @@ public class Index implements Cloneable {
     if (ranges.size() != rank)
       throw new InvalidRangeException("Bad ranges [] length");
     for (int ii = 0; ii < rank; ii++) {
-      Range r = (Range) ranges.get(ii);
+      Range r = ranges.get(ii);
       if (r == null)
         continue;
       if ((r.first() < 0) || (r.first() >= shape[ii]))
@@ -215,7 +194,7 @@ public class Index implements Cloneable {
     if (ranges.size() != rank)
       throw new InvalidRangeException("Bad ranges [] length");
     for (int ii = 0; ii < rank; ii++) {
-      Range r = (Range) ranges.get(ii);
+      Range r = ranges.get(ii);
       if (r == null)
         continue;
       if ((r.first() < 0) || (r.first() >= shape[ii]))
@@ -334,8 +313,8 @@ public class Index implements Cloneable {
   Index permute(int[] dims) {
     if (dims.length != shape.length)
       throw new IllegalArgumentException();
-    for (int i = 0; i < dims.length; i++)
-      if ((dims[i] < 0) || (dims[i] >= rank))
+    for (int dim : dims)
+      if ((dim < 0) || (dim >= rank))
         throw new IllegalArgumentException();
 
     boolean isPermuted = false;
@@ -474,8 +453,7 @@ public class Index implements Cloneable {
     if (index.length != rank)
       throw new ArrayIndexOutOfBoundsException();
 
-    for (int ii = 0; ii < rank; ii++)
-      current[ii] = index[ii];
+    System.arraycopy(index, 0, current, 0, rank);
     return this;
   }
 
@@ -494,6 +472,7 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 0 to v
    *
+   * @param v set 0th dimension index to this value
    * @return this, so you can use A.get(i.set(i))
    */
   public Index set0(int v) {
@@ -504,6 +483,7 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 1 to v
    *
+   * @param v set dimension 1 index to this value
    * @return this, so you can use A.get(i.set(i))
    */
   public Index set1(int v) {
@@ -514,6 +494,7 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 2 to v
    *
+   * @param v set dimension 2 index to this value
    * @return this, so you can use A.get(i.set(i))
    */
   public Index set2(int v) {
@@ -524,6 +505,7 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 3 to v
    *
+   * @param v set dimension 3 index to this value
    * @return this, so you can use A.get(i.set(i))
    */
   public Index set3(int v) {
@@ -534,6 +516,7 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 4 to v
    *
+   * @param v set dimension 4 index to this value
    * @return this, so you can use A.get(i.set(i))
    */
   public Index set4(int v) {
@@ -544,6 +527,7 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 5 to v
    *
+   * @param v set dimension 5 index to this value
    * @return this, so you can use A.get(i.set(i))
    */
   public Index set5(int v) {
@@ -554,6 +538,7 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 6 to v
    *
+   * @param v set dimension 6 index to this value
    * @return this, so you can use A.get(i.set(i))
    */
   public Index set6(int v) {
@@ -564,6 +549,7 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 0 to v0
    *
+   * @param v0 set dimension 0 index to this value
    * @return this, so you can use A.get(i.set(i))
    */
   public Index set(int v0) {
@@ -574,6 +560,8 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 0,1 to v0,v1
    *
+   * @param v0 set dimension 0 index to this value
+   * @param v1 set dimension 1 index to this value
    * @return this, so you can use A.get(i.set(i,j))
    */
   public Index set(int v0, int v1) {
@@ -585,6 +573,9 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 0,1,2 to v0,v1,v2
    *
+   * @param v0 set dimension 0 index to this value
+   * @param v1 set dimension 1 index to this value
+   * @param v2 set dimension 2 index to this value
    * @return this, so you can use A.get(i.set(i,j,k))
    */
   public Index set(int v0, int v1, int v2) {
@@ -597,6 +588,10 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 0,1,2,3 to v0,v1,v2,v3
    *
+   * @param v0 set dimension 0 index to this value
+   * @param v1 set dimension 1 index to this value
+   * @param v2 set dimension 2 index to this value
+   * @param v3 set dimension 3 index to this value
    * @return this, so you can use A.get(i.set(i,j,k,l))
    */
   public Index set(int v0, int v1, int v2, int v3) {
@@ -610,6 +605,11 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 0,1,2,3,4 to v0,v1,v2,v3,v4
    *
+   * @param v0 set dimension 0 index to this value
+   * @param v1 set dimension 1 index to this value
+   * @param v2 set dimension 2 index to this value
+   * @param v3 set dimension 3 index to this value
+   * @param v4 set dimension 4 index to this value
    * @return this, so you can use A.get(i.set(i,j,k,l,m))
    */
   public Index set(int v0, int v1, int v2, int v3, int v4) {
@@ -624,6 +624,12 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 0,1,2,3,4,5 to v0,v1,v2,v3,v4,v5
    *
+   * @param v0 set dimension 0 index to this value
+   * @param v1 set dimension 1 index to this value
+   * @param v2 set dimension 2 index to this value
+   * @param v3 set dimension 3 index to this value
+   * @param v4 set dimension 4 index to this value
+   * @param v5 set dimension 5 index to this value
    * @return this, so you can use A.get(i.set(i,j,k,l,m,n))
    */
   public Index set(int v0, int v1, int v2, int v3, int v4, int v5) {
@@ -639,6 +645,13 @@ public class Index implements Cloneable {
   /**
    * set current element at dimension 0,1,2,3,4,5,6 to v0,v1,v2,v3,v4,v5,v6
    *
+   * @param v0 set dimension 0 index to this value
+   * @param v1 set dimension 1 index to this value
+   * @param v2 set dimension 2 index to this value
+   * @param v3 set dimension 3 index to this value
+   * @param v4 set dimension 4 index to this value
+   * @param v5 set dimension 5 index to this value
+   * @param v6 set dimension 6 index to this value
    * @return this, so you can use A.get(i.set(i,j,k,l,m,n,p))
    */
   public Index set(int v0, int v1, int v2, int v3, int v4, int v5, int v6) {

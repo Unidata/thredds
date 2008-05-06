@@ -25,7 +25,7 @@ import java.util.*;
 /**
  * A section of multidimensional array indices.
  * Represented as List<Range>.
- * Immutable if finish() was called.
+ * Immutable if makeImmutable() was called.
  *
  * @author caron
  */
@@ -552,7 +552,7 @@ public class Section {
    *
    * @return this Section
    */
-  public Section setImmutable() {
+  public Section makeImmutable() {
     immutable = true;
     list = Collections.unmodifiableList(list);
     return this;

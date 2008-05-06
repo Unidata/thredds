@@ -73,7 +73,7 @@ public class Join implements Comparable<Join> {
         StructureMembers members = parentStruct.getStructureMembers();
         StructureMembers.Member m = members.findMember(name);
         if (m.getDataType() == DataType.SEQUENCE) {
-          ArraySequence2 seq = parentStruct.getArraySequence(m);
+          ArraySequence seq = parentStruct.getArraySequence(m);
           return seq.getStructureDataIterator();
 
         } else if (m.getDataType() == DataType.STRUCTURE) {

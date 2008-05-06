@@ -375,7 +375,7 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   @Override
-  public ArraySequence2 getArraySequence(int recnum, StructureMembers.Member m) {
+  public ArraySequence getArraySequence(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.SEQUENCE) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Sequence");
     //if (m.getDataArray() != null) return super.getArrayStructure(recnum, m);
 
@@ -383,7 +383,7 @@ public class ArrayStructureBB extends ArrayStructure {
     int index = bbuffer.getInt(offset);
     if (index > heap.size())
       System.out.println("HEY index");
-    return (ArraySequence2) heap.get(index);
+    return (ArraySequence) heap.get(index);
   }
 
   protected void copyStructures(int recnum, StructureMembers.Member m, IndexIterator result) {

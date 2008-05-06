@@ -182,7 +182,7 @@ public class ArrayStructureW extends ArrayStructure {
     return sd.getArrayStructure(m);
   }
 
-  public ArraySequence2 getArraySequence(int recnum, StructureMembers.Member m) {
+  public ArraySequence getArraySequence(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getArraySequence(recnum, m);
     StructureData sd = getStructureData(recnum);
     return sd.getArraySequence(m);

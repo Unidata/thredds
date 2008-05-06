@@ -76,55 +76,62 @@ Changes from Java-Netcdf version 2.2
 API Extensive API changes. Most, but not completely backwards-compatible.
 
  Package ucar.ma2
-   * Array local iterator: hasNext() nextXXXX() methods.
-   * ucar.ma2.Section used instead of List<Range>
-   * Section.appendRange() idioms for constructing
-   * StructureData.convertScalarDouble() removed, use StructureDS.convertScalarDouble()
+   + Array local iterator: hasNext() nextXXXX() methods.
+   + ucar.ma2.Section used instead of List<Range>
+   + Section.appendRange() idioms for constructing
+   - StructureData.convertScalarDouble() removed, use StructureDS.convertScalarDouble()
+   + ArraySequence handles Sequence with StructureDataIterator.
+   * Old ArraySequence now called ArraySequenceNested
 
-   * StructureData.getArrayXXX removed - use getJavaArrayXXX
-   * StructureData.findMemberArray removed - use getArray
-   * ArrayStructure.getArrayXXX removed - use getJavaArrayXXX
-   * ArrayStructure.getMemberArray() to extract individual member data as Arrays
-   * ArrayStructure.convertScalarDouble, Float
-   * StructureData.convertScalarDouble, Float
+   - StructureData.getArrayXXX removed - use getJavaArrayXXX
+   - StructureData.findMemberArray removed - use getArray
+   - ArrayStructure.getArrayXXX removed - use getJavaArrayXXX
+   + ArrayStructure.getMemberArray() to extract individual member data as Arrays
+   + ArrayStructure.convertScalarDouble, Float
+   + StructureData.convertScalarDouble, Float
 
  Package ucar.nc2
    * Attribute mutable methods no longer public, so Attribute is immutable
 
-   * Dimension.getCoordinateVariables(), addCoordinateVariable() removed
-   * Dimensions know what Group they belong to
+   - Dimension.getCoordinateVariables(), addCoordinateVariable() removed
+   + Dimensions know what Group they belong to
    * Dimension.UNKNOWN now DIMENSION.VLEN
-   * Dimension.UNLIMITED removed
+   - Dimension.UNLIMITED removed
    * Dimension can be set immutable.
 
-   * Enumeration class added for DataType.ENUM
+   + EnumTypedef class added for DataType.ENUM
 
-   * Group tracks Enumeration types.
-   * Group.findVariableEscaped() assumes variable name is escaped.
-   * Group can be set immutable.
+   + Group tracks EnumTypedef
+   + Group.findVariableEscaped() assumes variable name is escaped.
+   + Group can be set immutable.
 
    * IOServiceProvider -> ucar.nc2.iosp.IOServiceProvider
 
-   * NCdump is deprecated, use NCdumpW which uses a java.io.Writer to do Unicode correctly
+   + NetcdfFile.addStringVariable(), addVariable() convenience methods
+   - NetcdfFile.addRecordStructure removed, use sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
+   - NetcdfFile.readMemberData() removed: use Structure.select()
 
-   * VariableSimpleIF extends Comparable<VariableSimpleIF>
-   * VariableSimpleIF.convertScaleOffsetMissing removed
+   + NetcdfFileWriteable has new convenience methods
+
+   - NCdump is deprecated, use NCdumpW which uses a java.io.Writer to do Unicode correctly
+
+   - VariableSimpleIF.convertScaleOffsetMissing removed
    * VariableIF extends VariableSimpleIF
 
-   * Variable.getCoordinateDimension() removed
-   * Variable.calcIsCoordinateVariable() removed
-   * Variable.isCoordinateVariable() added
-   * Variable.setIsCoordinateAxis() removed
-   * Variable.set/getIOVar() removed
+   - Variable.getCoordinateDimension() removed
+   - Variable.calcIsCoordinateVariable() removed
+   + Variable.isCoordinateVariable() added
+   - Variable.setIsCoordinateAxis() removed
+   - Variable.set/getIOVar() removed
    * Variable can be set immutable.
-   * Variable.readAllStructures is removed
+   - Variable.readAllStructures is removed
 
-   * NetcdfFile.addStringVariable(), addVariable() convenience methods
-   * NetcdfFile.addRecordStructure removed, use sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
-   * NetcdfFile.readMemberData() deprecated: use Structure.select()
+   + Sequence is a one-dimensional Structure with indeterminate length
 
    * Structure.select() create subset consisting only of given member variables
-   * Structure.convertXXX removed
+   - Structure.convertXXX removed
+
+   + VariableSimpleAdapter adapts a StructureMembers.Member into a VariableSimpleIF
 
   Package ucar.nc2.dataset
    * NetcdfDataset.EnhanceMode to control enhancing

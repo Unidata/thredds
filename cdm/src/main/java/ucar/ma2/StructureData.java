@@ -469,9 +469,9 @@ abstract public class StructureData {
   abstract public ArrayStructure getArrayStructure(StructureMembers.Member m);
 
   /**
-   * Get ArraySequence2 for a member of type Sequence.
-   * @param m get data from this StructureMembers.Member. Must be of type Structure.
+   * Get ArraySequence for a member of type Sequence.
+   * @param m get data from this StructureMembers.Member. Must be of type Sequence.
    * @return ArrayStructure
    */
-  abstract public ArraySequence2 getArraySequence(StructureMembers.Member m);
+  abstract public ArraySequence getArraySequence(StructureMembers.Member m);
 }

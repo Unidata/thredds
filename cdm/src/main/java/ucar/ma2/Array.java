@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -245,9 +245,8 @@ public abstract class Array {
   }
 
   /**
-   * Cover for System.arraycopy(). Works with the underlying data arrays. Exposed for efficiency; use at your
-   *  own risk.
-   *  LOOK: not sure this works for reference types.
+   * Cover for System.arraycopy(). Works with the underlying data arrays.
+   * Exposed for efficiency; use at your own risk.
    * @param arraySrc copy from here
    * @param srcPos starting at
    * @param arrayDst copy to here

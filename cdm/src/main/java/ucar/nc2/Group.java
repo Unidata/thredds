@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -38,7 +38,6 @@ import java.io.PrintWriter;
 public class Group {
   protected NetcdfFile ncfile;
   protected Group parent;
-  //protected String name;
   protected String shortName;
   protected List<Variable> variables = new ArrayList<Variable>();
   protected List<Dimension> dimensions = new ArrayList<Dimension>();

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -36,7 +36,7 @@ import java.util.List;
  */
 
 public class Attribute {
-  protected String name;
+  protected final String name;
   protected DataType dataType;
   protected int nelems;
   protected Array values;
@@ -213,7 +213,7 @@ public class Attribute {
     return hashCode;
   }
 
-  private volatile int hashCode = 0;
+  private int hashCode = 0;
 
   /**
    * CDL representation, not strict
@@ -424,15 +424,14 @@ public class Attribute {
 
     this.values = arr;
     this.nelems = (int) arr.getSize();
-    this.dataType = DataType.getType(arr.getElementType());
-    //ima = values.getIndex();
+    this.dataType = DataType.getType( arr.getElementType());
     hashCode = 0;
   }
 
-  protected Index ima;
+  /*protected Index ima;
   private Index ima() {
     if (ima == null) ima = values.getIndex();
     return ima;
-  }
+  } */
 
 }

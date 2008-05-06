@@ -53,15 +53,19 @@ import java.util.StringTokenizer;
 public final class Range {
   public static final Range EMPTY = new Range();
 
-  private int n; // number of elements
-  private int first; // first value in range
-  private int stride = 1; // stride, must be >= 1
-  private String name; // optional name
+  private final int n; // number of elements
+  private final int first; // first value in range
+  private final int stride; // stride, must be >= 1
+  private final String name; // optional name
 
   /**
    * Used for EMPTY
    */
   private Range() {
+    this.n = 0;
+    this.first = 0;
+    this.stride = 1;
+    this.name = null;
   }
 
   /**
@@ -349,7 +353,7 @@ public final class Range {
    * Get the index for this element: inverse of element
    * @param elem the element of the range
    * @return index
-   * @throws InvalidRangeException
+   * @throws InvalidRangeException if illegal elem
    */
   public int index(int elem) throws InvalidRangeException {
     if (elem < first)
@@ -489,14 +493,14 @@ public final class Range {
   public int hashCode() {
     if (hashCode == 0) {
       int result = first();
-      result = 3700 * result + last();
-      result = 370 * result + stride();
+      result = 37 * result + last();
+      result = 37 * result + stride();
       hashCode = result;
     }
     return hashCode;
   }
 
-  private volatile int hashCode = 0;
+  private int hashCode = 0;
 
 
   //////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -504,7 +504,7 @@ public class NCdumpW {
         printStructureDataArray( out, (ArrayStructure) array, ilev, ct);
 
     } else if (array.getElementType() == StructureDataIterator.class) {
-      printSequence( out, (ArraySequence2) array, ilev, ct);
+      printSequence( out, (ArraySequence) array, ilev, ct);
 
      } else {
       printArray(array, out, ilev, ct);
@@ -645,7 +645,7 @@ public class NCdumpW {
     }
   }
 
-  static private void printSequence(PrintWriter out, ArraySequence2 seq, Indent indent,  CancelTask ct) throws IOException {
+  static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent,  CancelTask ct) throws IOException {
     StructureDataIterator iter = seq.getStructureDataIterator();
     while (iter.hasNext()) {
       StructureData sdata = iter.next();

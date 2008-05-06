@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -45,7 +45,7 @@ public class DataType {
   public final static DataType SEQUENCE = new DataType("Sequence", 4);
 
   // netcdf4 types
-  public final static DataType OPAQUE = new DataType("opaque", 1); // ??
+  public final static DataType OPAQUE = new DataType("opaque", 1); // LOOK KEEP??
   public final static DataType ENUM = new DataType("enum", 1);
 
   static { // accept lower case for lookup also
@@ -141,7 +141,7 @@ public class DataType {
     if (this == DataType.STRUCTURE)
       return StructureData.class;
     if (this == DataType.SEQUENCE)
-      return ArraySequence2.class;
+      return ArraySequence.class;
     return null;
   }
 

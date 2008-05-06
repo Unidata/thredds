@@ -354,7 +354,7 @@ public class Variable implements VariableIF {
           int len = d.getLength();
           list.add(len > 0 ? new Range(d.getName(), 0, len - 1) : Range.EMPTY); // LOOK empty not named
         }
-        shapeAsSection = new Section(list).setImmutable();
+        shapeAsSection = new Section(list).makeImmutable();
       } catch (InvalidRangeException e) {
         log.error("Bad shape in variable " + getName(), e);
         throw new IllegalStateException(e.getMessage());
@@ -558,7 +558,7 @@ public class Variable implements VariableIF {
    * @throws InvalidRangeException
    */
   public Variable section(List<Range> ranges) throws InvalidRangeException {
-    return section(new Section(ranges, shape).setImmutable());
+    return section(new Section(ranges, shape).makeImmutable());
   }
 
   /**
@@ -616,7 +616,7 @@ public class Variable implements VariableIF {
     // create a copy of this variable with a proxy reader
     Variable sliceV = copy(); // subclasses must override
     Section slice = new Section( getShapeAsSection());
-    slice.replaceRange(dim, new Range(value, value)).setImmutable();
+    slice.replaceRange(dim, new Range(value, value)).makeImmutable();
     sliceV.preReader = new SliceReader(this, dim, slice);
 
     // remove that dimension - reduce rank

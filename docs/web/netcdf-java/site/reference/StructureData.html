@@ -37,7 +37,7 @@
 <br />    public char <strong>getScalarChar</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public char[] <strong>getJavaArrayChar</strong>(int, ucar.ma2.StructureMembers$Member);
 <br />    public java.lang.String <strong>getScalarString</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public java.lang.String[] <strong>getJavaArrayString</strong>(int, ucar.ma2.StructureMembers$Member);
 <br />    public ucar.ma2.StructureData <strong>getScalarStructure</strong>(int, ucar.ma2.StructureMembers$Member);<br />    public ucar.ma2.ArrayStructure <strong>getArrayStructure</strong>(int, ucar.ma2.StructureMembers$Member);
-<br />    public ucar.ma2.ArraySequence2 <strong>getArraySequence</strong>(int, ucar.ma2.StructureMembers$Member);
+<br />    public ucar.ma2.ArraySequence <strong>getArraySequence</strong>(int, ucar.ma2.StructureMembers$Member);
 </pre>
 <p>This method can be used on any type. It converts primitives to their corresponding object types (eg float to Float): </p>
 <pre>    public java.lang.Object <strong>getScalarObject</strong>(int, ucar.ma2.StructureMembers$Member);
@@ -80,7 +80,7 @@ For members that are themselves Structures,
 <pre>    public ucar.ma2.StructureData <strong>getScalarStructure</strong>(String memberName);<br />    public ucar.ma2.StructureData <em><strong>getScalarStructure</strong></em>(ucar.ma2.StructureMembers$Member);<br />
     public ucar.ma2.ArrayStructure <strong>getArrayStructure</strong>(String memberName);<br />    public ucar.ma2.ArrayStructure <em><strong>getArrayStructure</strong></em>(ucar.ma2.StructureMembers$Member);
 
-    public ucar.ma2.ArraySequence2 <em><strong>getArraySequence</strong></em>(ucar.ma2.StructureMembers$Member); </pre>
+    public ucar.ma2.ArraySequence <em><strong>getArraySequence</strong></em>(ucar.ma2.StructureMembers$Member); </pre>
 These will return any compatible type as a double or float, but will have extra overhead when the types dont match:
 <pre>    public float <em><strong>convertScalarFloat</strong></em>(ucar.ma2.StructureMembers$Member);<br />    public double <em><strong>convertScalarDouble</strong></em>(ucar.ma2.StructureMembers$Member);<br />
 </pre>

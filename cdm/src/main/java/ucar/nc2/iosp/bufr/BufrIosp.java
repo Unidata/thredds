@@ -349,7 +349,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       // sequence
       if (dkey.replication == 0) {
         int count = bits2UInt(dkey.replicationCountSize);
-        ArraySequence2 seq = makeArraySequence2(count, dkey);
+        ArraySequence seq = makeArraySequence(count, dkey);
         int index = abb.addObjectToHeap(seq);
         bb.putInt(index); // an index into the Heap
         continue;
@@ -476,7 +476,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   // read in the data into an ArrayStructureBB
-  private ArraySequence2 makeArraySequence2(int count, DataDescriptor seqdd) throws IOException {
+  private ArraySequence makeArraySequence(int count, DataDescriptor seqdd) throws IOException {
     // kludge
     Sequence s = (Sequence) seqdd.refersTo;
     assert s != null;
@@ -511,7 +511,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       readData(seqdd.getSubKeys(), abb, bb);
     }
 
-    return new ArraySequence2(members, new SequenceIterator(count, abb), count);
+    return new ArraySequence(members, new SequenceIterator(count, abb), count);
   }
 
   private Structure find(List<Variable> vars) {
@@ -691,7 +691,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     HashMap iiHash = new HashMap();
 
     // inner structure variables
-    ArraySequence ias = null;
+    ArraySequenceNested ias = null;
     StructureMembers imembers;
     ArrayList ivars = null;
     HashMap sdataHash;
@@ -700,7 +700,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       // inner structure
       if (v instanceof Structure) {
         imembers = ((Structure) v).makeStructureMembers();
-        ias = new ArraySequence(imembers, shape[0]);
+        ias = new ArraySequenceNested(imembers, shape[0]);
         ivars = (ArrayList) ((Structure) v).getVariables();
         sdataHash = new HashMap();
         siiHash = new HashMap();
@@ -1103,7 +1103,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     IndexIterator ii = null;
 
     // inner structure variables if needed
-    ArraySequence ias = null;
+    ArraySequenceNested ias = null;
     StructureMembers imembers = null;
     StructureMembers.Member member = null;
 
@@ -1113,7 +1113,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
           v2.getUnitsString(), v2.getDataType(), v2.getShape());
       imembers = new StructureMembers("level");
       imembers.addMember(member);
-      ias = new ArraySequence(imembers, shape[0]);
+      ias = new ArraySequenceNested(imembers, shape[0]);
       int currOb = -1;
       int idx = 0;
       for (int i = 0; i < locations.size(); i++) {

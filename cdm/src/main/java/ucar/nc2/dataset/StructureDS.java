@@ -235,7 +235,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
           if (innerStruct.getDataType() == DataType.SEQUENCE) {
             ArrayObject.D1 seqArray = (ArrayObject.D1) as.extractMemberArray(m);
             for (int i=0; i<seqArray.getSize(); i++) {
-              ArraySequence2 innerSeq =  (ArraySequence2) seqArray.get(i);
+              ArraySequence innerSeq =  (ArraySequence) seqArray.get(i);
               innerStruct.convert( innerSeq); // modify each innerSequence as needed
             }
 

@@ -401,7 +401,7 @@ public class StructureDataW extends StructureData {
     return (ArrayStructure) getArray(m);
   }
 
-  public ArraySequence2 getArraySequence(StructureMembers.Member m) {
+  public ArraySequence getArraySequence(StructureMembers.Member m) {
     throw new UnsupportedOperationException("getArraySequence");
   }
 

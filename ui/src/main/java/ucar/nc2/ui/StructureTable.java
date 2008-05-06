@@ -153,7 +153,7 @@ public class StructureTable extends JPanel {
     initTable(dataModel);
   }
 
-  public void setSequenceData(Structure s, ArraySequence2 seq) {
+  public void setSequenceData(Structure s, ArraySequence seq) {
     dataModel = new ArraySequenceModel( s, seq);
     initTable(dataModel);
   }
@@ -269,7 +269,7 @@ public class StructureTable extends JPanel {
         dataTable.setStructureData( as);
 
       } else if (m.getDataType() == DataType.SEQUENCE) {
-        ArraySequence2 seq = sd.getArraySequence( m);
+        ArraySequence seq = sd.getArraySequence( m);
         dataTable.setSequenceData( s, seq);
 
       } else throw new IllegalStateException("data type = "+m.getDataType());
@@ -502,7 +502,7 @@ public class StructureTable extends JPanel {
 
   private class ArraySequenceModel extends SequenceModel {
 
-    ArraySequenceModel(Structure s, ArraySequence2 seq) {
+    ArraySequenceModel(Structure s, ArraySequence seq) {
       super(s, false);
 
       this.members = seq.getStructureMembers();

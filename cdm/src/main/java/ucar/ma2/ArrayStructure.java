@@ -875,13 +875,13 @@ public abstract class ArrayStructure extends Array {
    * @param m      get data from this StructureMembers.Member. Must be of type Structure.
    * @return nested ArrayStructure.
    */
-  public ArraySequence2 getArraySequence(int recnum, StructureMembers.Member m) {
+  public ArraySequence getArraySequence(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.SEQUENCE)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Sequence");
 
-    // should store sequences as ArrayObject of ArraySequence2 objects
+    // should store sequences as ArrayObject of ArraySequence objects
     ArrayObject array = (ArrayObject) m.getDataArray();
-    return (ArraySequence2) array.getObject(recnum);
+    return (ArraySequence) array.getObject(recnum);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -30,7 +30,6 @@ import java.util.*;
  */
 
 public class StructureMembers {
-  ///////////////////////////////////////////////////////////////////////////
   protected String name;
   protected Map<String, Member> memberHash = new HashMap<String, Member>(); // Hash of Members
   protected List<Member> members = new ArrayList<Member>(); // List of Members
@@ -140,7 +139,7 @@ public class StructureMembers {
   /**
    * A member of a StructureData.
    */
-  public class Member { // implements ucar.nc2.VariableSimpleIF {
+  public class Member { 
     private String name, desc, units;
     private DataType dtype;
     private int size = 1;

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -20,7 +20,7 @@
 package ucar.ma2;
 
   /**
-    Iteration through each element of a Array in "canonical order".
+    Iteration through each element of an Array in "canonical order".
     The user obtains this by calling getIndexIterator() on an Array.
 
     Canonical order for A[i][j][k] has k varying fastest, then j, then i.<br>
