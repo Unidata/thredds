@@ -77,7 +77,7 @@ public class ThreddsDataFactory {
    */
   public static class Result {
     public boolean fatalError;
-    public StringBuffer errLog = new StringBuffer();
+    public StringBuilder errLog = new StringBuilder();
 
     public FeatureType dataType;
     public ucar.nc2.dt.TypedDataset tds;
@@ -300,7 +300,7 @@ public class ThreddsDataFactory {
    * @return NetcdfDataset
    * @throws java.io.IOException on read error
    */
-  public NetcdfDataset openDataset(String location, boolean acquire, ucar.nc2.util.CancelTask task, StringBuffer log) throws java.io.IOException {
+  public NetcdfDataset openDataset(String location, boolean acquire, ucar.nc2.util.CancelTask task, StringBuilder log) throws java.io.IOException {
     Result result = new Result();
     InvDataset invDataset = processLocation(location, task, result);
     if (result.fatalError) {
@@ -321,7 +321,7 @@ public class ThreddsDataFactory {
    * @return NetcdfDataset or null if failure
    * @throws IOException on read error
    */
-  public NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task, StringBuffer log) throws java.io.IOException {
+  public NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task, StringBuilder log) throws java.io.IOException {
     Result result = new Result();
     NetcdfDataset ncd = openDataset(invDataset, acquire, task, result);
     if (log != null) log.append(result.errLog);
@@ -520,7 +520,7 @@ public class ThreddsDataFactory {
       result.errLog.append("Couldnt open Resolver  ").append(urlString).append("\n");
       return null;
     }
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     if (!catalog.check(buff)) {
       result.errLog.append("Invalid catalog from Resolver <").append(urlString).append(">\n");
       result.errLog.append(buff.toString());

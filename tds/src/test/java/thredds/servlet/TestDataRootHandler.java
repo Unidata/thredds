@@ -317,7 +317,7 @@ public class TestDataRootHandler extends TestCase
       return;
     }
     boolean ok = true;
-    StringBuffer buf = new StringBuffer( "Generated catalog does not contain all the expected datasets (");
+    StringBuilder buf = new StringBuilder( "Generated catalog does not contain all the expected datasets (");
     for ( String curName : dataFileNames )
     {
       if ( topDs.findDatasetByName( curName) == null )
@@ -456,7 +456,7 @@ public class TestDataRootHandler extends TestCase
       return;
     }
     boolean ok = true;
-    StringBuffer buf = new StringBuffer( "Generated catalog does not contain all the expected datasets (");
+    StringBuilder buf = new StringBuilder( "Generated catalog does not contain all the expected datasets (");
     for ( String curName : dataFileNames )
     {
       if ( topDs.findDatasetByName( curName) == null )
@@ -650,7 +650,7 @@ public class TestDataRootHandler extends TestCase
     }
 
 
-    StringBuffer checkMsg = new StringBuffer();
+    StringBuilder checkMsg = new StringBuilder();
 
     // Make sure DRH has "catalog1.xml".
     InvCatalogImpl cat1 = (InvCatalogImpl) drh.getCatalog( path1, new File( "" ).toURI() );
@@ -664,7 +664,7 @@ public class TestDataRootHandler extends TestCase
     if ( checkMsg.length() > 0 )
     {
       System.out.println( "Catalog1 <" + path1 + "> valid but had message: " + checkMsg.toString() );
-      checkMsg = new StringBuffer();
+      checkMsg = new StringBuilder();
     }
 
     // Make sure DRH does not have "aSubDir/../catalog2.xml".
@@ -687,7 +687,7 @@ public class TestDataRootHandler extends TestCase
     if ( checkMsg.length() > 0 )
     {
       System.out.println( "Catalog2 with good-path <" + cat2Filename + "> valid but had message: " + checkMsg.toString() );
-      checkMsg = new StringBuffer();
+      checkMsg = new StringBuilder();
     }
 
     // Remove temporary contentPath dir and contents

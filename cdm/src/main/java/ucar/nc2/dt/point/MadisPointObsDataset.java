@@ -66,7 +66,7 @@ public class MadisPointObsDataset extends PointObsDatasetImpl  implements TypedD
     /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
   public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
-  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
     return new MadisStationObsDataset( ncd);
   }
 

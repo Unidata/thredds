@@ -45,7 +45,7 @@ public class TestResultService extends TestCase
 
   private ResultService me = null;
 
-  private StringBuffer out = null;
+  private StringBuilder out = null;
 
   public TestResultService( String name )
   {
@@ -65,7 +65,7 @@ public class TestResultService extends TestCase
 
     me = new ResultService( name, type, base, suffix, accessPointHeader1 );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
   }
 
 //  protected void tearDown()
@@ -108,13 +108,13 @@ public class TestResultService extends TestCase
     assertTrue( out.toString(), bool);
 
     // Test ResultService.validate() where accessPointHeader is empty string
-    out = new StringBuffer();
+    out = new StringBuilder();
     me.setAccessPointHeader( "");
     bool = me.validate( out);
     assertTrue( out.toString(), bool);
 
     // Test ResultService.validate() where accessPointHeader is null.
-    out = new StringBuffer();
+    out = new StringBuilder();
     me.setAccessPointHeader( null);
     bool = me.validate( out);
     assertFalse( out.toString(), bool);

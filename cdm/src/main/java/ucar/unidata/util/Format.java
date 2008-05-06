@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -26,7 +26,6 @@ package ucar.unidata.util;
 /**
  * static formatting utilities. Replace with standard java library when possible.
  * @author John Caron
- * @version $Id: Format.java 64 2006-07-12 22:30:50Z edavis $
  */
 public class Format {
 
@@ -36,7 +35,26 @@ public class Format {
      * @param tabStop pad out to here
      * @param alwaysOne true if you want to guarentee at least one space.
      */
-    public static void tab(StringBuffer sbuff, int tabStop,
+    public static void tab(StringBuffer sbuff, int tabStop, boolean alwaysOne) {
+        int len = sbuff.length();
+        if (tabStop > len) {
+            sbuff.setLength(tabStop);
+            for (int i = len; i < tabStop; i++) {
+                sbuff.setCharAt(i, ' ');
+            }
+        } else if (alwaysOne) {
+            sbuff.setLength(len + 1);
+            sbuff.setCharAt(len, ' ');
+        }
+    }
+
+      /**
+     * Blank fill sbuff with blanks, until position tabStop.
+     * @param sbuff StringBuilder to manipulate
+     * @param tabStop pad out to here
+     * @param alwaysOne true if you want to guarentee at least one space.
+     */
+    public static void tab(StringBuilder sbuff, int tabStop,
                            boolean alwaysOne) {
         int len = sbuff.length();
         if (tabStop > len) {
@@ -75,7 +93,7 @@ public class Format {
         if (s.length() >= width) {
             return s;
         }
-        StringBuffer sbuff = new StringBuffer(width);
+        StringBuilder sbuff = new StringBuilder(width);
         int          need  = width - s.length();
         sbuff.setLength(need);
         for (int i = 0; i < need; i++) {
@@ -220,14 +238,14 @@ public class Format {
         }
 
         // deal with decimal point
-        StringBuffer number, fraction;
+        StringBuilder number, fraction;
         int          dotInd = mantissa.indexOf('.');
         if (dotInd == -1) {
-            number   = new StringBuffer(mantissa);
-            fraction = new StringBuffer("");
+            number   = new StringBuilder(mantissa);
+            fraction = new StringBuilder("");
         } else {
-            number   = new StringBuffer(mantissa.substring(0, dotInd));
-            fraction = new StringBuffer(mantissa.substring(dotInd + 1));
+            number   = new StringBuilder(mantissa.substring(0, dotInd));
+            fraction = new StringBuilder(mantissa.substring(dotInd + 1));
         }
 
         // number of significant figures
@@ -254,7 +272,7 @@ public class Format {
             if (((numFigs == 0) || number.toString().equals("0"))
                     && (fracFigs > 0)) {
                 numFigs = 0;
-                number  = new StringBuffer("");
+                number  = new StringBuilder("");
                 for (int i = 0; i < fraction.length(); ++i) {
                     if (fraction.charAt(i) != '0') {
                         break;

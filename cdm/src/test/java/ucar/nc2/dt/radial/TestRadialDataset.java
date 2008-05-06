@@ -78,7 +78,7 @@ public class TestRadialDataset extends TestCase {
 
   private void testAllMethods(String location) throws IOException {
     //RadialDatasetSweep rds = datasetFactory.open( location, null);
-    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, location, null, new StringBuffer());
+    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, location, null, new StringBuilder());
 
     System.out.println(location+"-----------");
     if (show) System.out.println(rds.getDetailInfo());

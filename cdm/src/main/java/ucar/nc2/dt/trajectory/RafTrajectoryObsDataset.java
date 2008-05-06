@@ -62,7 +62,7 @@ public class RafTrajectoryObsDataset extends SingleTrajectoryObsDataset  impleme
     /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
   public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
-  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
     return new RafTrajectoryObsDataset( ncd);
   }
   public FeatureType getScientificDataType() { return FeatureType.TRAJECTORY; }

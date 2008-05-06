@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -41,9 +41,9 @@ import java.util.List;
  */
 public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.CoordTransBuilderIF {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractCoordTransBuilder.class);
-  protected StringBuffer errBuffer = null;
+  protected StringBuilder errBuffer = null;
 
-  public void setErrorBuffer(StringBuffer errBuffer) {
+  public void setErrorBuffer(StringBuilder errBuffer) {
     this.errBuffer = errBuffer;
   }
 

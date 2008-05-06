@@ -65,7 +65,7 @@ public class InvDatasetImpl extends InvDataset {
   protected org.jdom.Element ncmlElement;
 
   // validation
-  protected StringBuffer log = new StringBuffer();
+  protected StringBuilder log = new StringBuilder();
   // filter
   protected boolean mark = false;
 
@@ -935,7 +935,7 @@ public class InvDatasetImpl extends InvDataset {
    * @param catrefEvents  if true, prepend "catref:" to any catref URLS
    */
 
-  static public void writeHtmlDescription(StringBuffer buff, InvDatasetImpl ds,
+  static public void writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds,
                      boolean complete, boolean isServer, boolean datasetEvents, boolean catrefEvents) {
 
     if (ds == null) return;
@@ -1248,7 +1248,7 @@ public class InvDatasetImpl extends InvDataset {
   }
 
   String dump(int n) {
-    StringBuffer buff = new StringBuffer(100);
+    StringBuilder buff = new StringBuilder(100);
 
     buff.append(indent(n));
     buff.append("Dataset name:<").append(getName());
@@ -1305,13 +1305,13 @@ public class InvDatasetImpl extends InvDataset {
   }
 
   static String indent(int n) {
-    StringBuffer blanks = new StringBuffer(n);
+    StringBuilder blanks = new StringBuilder(n);
     for (int i = 0; i < n; i++)
       blanks.append(" ");
     return blanks.toString();
   }
 
-  boolean check(StringBuffer out, boolean show) {
+  boolean check(StringBuilder out, boolean show) {
     boolean isValid = true;
 
     if (log.length() > 0) {

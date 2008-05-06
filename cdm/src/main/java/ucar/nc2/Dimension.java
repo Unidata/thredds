@@ -146,7 +146,7 @@ public class Dimension implements Comparable {
    * @return CDL representation.
    */
   public String writeCDL(boolean strict) {
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     String name = strict ? NetcdfFile.escapeName(getName()) : getName();
     buff.append("   ").append(name);
     if (isUnlimited())

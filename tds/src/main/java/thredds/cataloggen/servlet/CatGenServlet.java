@@ -333,7 +333,7 @@ public class CatGenServlet extends AbstractServlet
         newTask.init( this.catGenResultPath, this.catGenConfigPath);
 
         // Check validity of the new task.
-        StringBuffer messages = new StringBuffer();
+        StringBuilder messages = new StringBuilder();
         if ( newTask.isValid( messages))
         {
           log.debug( "doPost():     task is valid - " + messages.toString());
@@ -401,7 +401,7 @@ public class CatGenServlet extends AbstractServlet
         newTask.init( this.catGenResultPath, this.catGenConfigPath);
 
         // Check validity of the new task.
-        StringBuffer messages = new StringBuffer();
+        StringBuilder messages = new StringBuilder();
         if ( newTask.isValid( messages))
         {
           // Add task to servlet config.
@@ -670,7 +670,7 @@ public class CatGenServlet extends AbstractServlet
 
   public String getHtmlDoctypeAndOpenTag()
   {
-    return new StringBuffer()
+    return new StringBuilder()
             .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" )
             .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" )
             .append( "<html>\n" )
@@ -679,7 +679,7 @@ public class CatGenServlet extends AbstractServlet
 
   public String getXHtmlDoctypeAndOpenTag()
   {
-    return new StringBuffer()
+    return new StringBuilder()
             // .append( "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
             .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n" )
             .append( "        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n" )
@@ -695,7 +695,7 @@ public class CatGenServlet extends AbstractServlet
     private String getHtmlRootRequest( HttpServletRequest req)
     {
       log.debug( "htmlRootRequest(): start" );
-      StringBuffer retValue = new StringBuffer();
+      StringBuilder retValue = new StringBuilder();
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet</title></head>\n" );
@@ -722,7 +722,7 @@ public class CatGenServlet extends AbstractServlet
     private String getHtmlReturnMessage( HttpServletRequest req, String message )
     {
       log.debug( "getHtmlReturnMessage(): start (" + message + ")" );
-      StringBuffer retValue = new StringBuffer();
+      StringBuilder retValue = new StringBuilder();
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet</title></head>\n" );
@@ -751,7 +751,7 @@ public class CatGenServlet extends AbstractServlet
     {
       log.debug( "htmlListTasks(): starting" );
 
-      StringBuffer retVal = new StringBuffer();
+      StringBuilder retVal = new StringBuilder();
 
       retVal.append( getHtmlDoctypeAndOpenTag() );
       retVal.append( "<head><title>Catalog Generator Servlet Config</title></head>\n" );
@@ -807,7 +807,7 @@ public class CatGenServlet extends AbstractServlet
     {
       log.debug( "htmlEditTask(): start" );
 
-      StringBuffer retValue = new StringBuffer( );
+      StringBuilder retValue = new StringBuilder( );
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Edit Task</title></head>\n" );
@@ -830,7 +830,7 @@ public class CatGenServlet extends AbstractServlet
     {
       log.debug( "htmlAddTask(): start" );
 
-      StringBuffer retValue = new StringBuffer( );
+      StringBuilder retValue = new StringBuilder( );
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Add Task</title></head>\n" );
@@ -853,7 +853,7 @@ public class CatGenServlet extends AbstractServlet
     {
       log.debug( "getHtmlDeleteTask(): start" );
 
-      StringBuffer retValue = new StringBuffer( );
+      StringBuilder retValue = new StringBuilder( );
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Delete Task</title></head>\n" );
@@ -895,11 +895,11 @@ public class CatGenServlet extends AbstractServlet
     private String getHtmlEditTaskResultDuplicate( HttpServletRequest req,
                                                    CatGenTimerTask oldTask,
                                                    CatGenTimerTask newTask,
-                                                   StringBuffer messages )
+                                                   StringBuilder messages )
     {
       log.debug( "htmlEditTaskResultDuplicate(): start" );
 
-      StringBuffer retValue = new StringBuffer();
+      StringBuilder retValue = new StringBuilder();
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Edit Results</title></head>\n" );
@@ -931,11 +931,11 @@ public class CatGenServlet extends AbstractServlet
     private String getHtmlEditTaskResultInvalid( HttpServletRequest req,
                                                  CatGenTimerTask oldTask,
                                                  CatGenTimerTask newTask,
-                                                 StringBuffer messages )
+                                                 StringBuilder messages )
     {
       log.debug( "htmlEditTaskResultInvalid(): start" );
 
-      StringBuffer retValue = new StringBuffer();
+      StringBuilder retValue = new StringBuilder();
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Edit Results</title></head>\n" );
@@ -969,11 +969,11 @@ public class CatGenServlet extends AbstractServlet
     private String getHtmlEditTaskResultSuccess( HttpServletRequest req,
                                                  CatGenTimerTask oldTask,
                                                  CatGenTimerTask newTask,
-                                                 StringBuffer messages )
+                                                 StringBuilder messages )
     {
       log.debug( "htmlEditTaskResultSuccess(): start" );
 
-      StringBuffer retValue = new StringBuffer();
+      StringBuilder retValue = new StringBuilder();
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Edit Results</title></head>\n" );
@@ -1003,11 +1003,11 @@ public class CatGenServlet extends AbstractServlet
      */
     private String getHtmlAddTaskResultDuplicate( HttpServletRequest req,
                                                   CatGenTimerTask newTask,
-                                                  StringBuffer messages )
+                                                  StringBuilder messages )
     {
       log.debug( "htmlAddTaskResultDuplicate(): start" );
 
-      StringBuffer retValue = new StringBuffer();
+      StringBuilder retValue = new StringBuilder();
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Add Results</title></head>\n" );
@@ -1037,11 +1037,11 @@ public class CatGenServlet extends AbstractServlet
      */
     private String getHtmlAddTaskResultInvalid( HttpServletRequest req,
                                                 CatGenTimerTask newTask,
-                                                StringBuffer messages )
+                                                StringBuilder messages )
     {
       log.debug( "htmlAddTaskResultInvalid(): start" );
 
-      StringBuffer retValue = new StringBuffer();
+      StringBuilder retValue = new StringBuilder();
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Add Results</title></head>\n" );
@@ -1074,11 +1074,11 @@ public class CatGenServlet extends AbstractServlet
      */
     private String getHtmlAddTaskResultSuccess( HttpServletRequest req,
                                                 CatGenTimerTask newTask,
-                                                StringBuffer messages )
+                                                StringBuilder messages )
     {
       log.debug( "htmlAddTaskResultSuccess(): start" );
 
-      StringBuffer retValue = new StringBuffer();
+      StringBuilder retValue = new StringBuilder();
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Add Results</title></head>\n" );
@@ -1109,7 +1109,7 @@ public class CatGenServlet extends AbstractServlet
     {
       log.debug( "htmlDeleteTaskResultFail(): start" );
 
-      StringBuffer retValue = new StringBuffer();
+      StringBuilder retValue = new StringBuilder();
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Delete Results</title></head>\n" );
@@ -1141,7 +1141,7 @@ public class CatGenServlet extends AbstractServlet
     {
       log.debug( "htmlDeleteTaskResultSuccess(): start" );
 
-      StringBuffer retValue = new StringBuffer();
+      StringBuilder retValue = new StringBuilder();
 
       retValue.append( getHtmlDoctypeAndOpenTag() );
       retValue.append( "<head><title>Catalog Generator Servlet - Task Delete Results</title></head>\n" );
@@ -1170,7 +1170,7 @@ public class CatGenServlet extends AbstractServlet
      */
     private String getHtmlAddForm( HttpServletRequest req, CatGenTimerTask task )
     {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       log.debug( "getHtmlAddForm(): start" );
 
       String taskName = "";
@@ -1229,7 +1229,7 @@ public class CatGenServlet extends AbstractServlet
      */
     private String getHtmlEditForm( HttpServletRequest req, CatGenTimerTask task )
     {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       log.debug( "getHtmlEditForm(): start" );
 
       buf.append( "<form method=\"POST\" action=\"" )
@@ -1279,7 +1279,7 @@ public class CatGenServlet extends AbstractServlet
      */
     private String getHtmlListTable( CatGenTimerTask task )
     {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       log.debug( "getHtmlListTable(): start" );
 
       buf.append( "<table border=\"1\">" ).append( "\n" );

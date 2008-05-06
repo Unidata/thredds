@@ -39,6 +39,12 @@ public class StructureMembers {
     this.name = name;
   }
 
+  public StructureMembers(StructureMembers from) {
+    this.name = from.name;
+    for (Member m : from.members)
+      addMember( new Member(m)); // make copy - without the data info
+  }
+
   /**
    * Get the name.
    *
@@ -158,6 +164,16 @@ public class StructureMembers {
       this.dtype = dtype;
       this.shape = shape;
       this.size = (int) Index.computeSize(shape);
+    }
+
+    public Member(Member from) {
+      this.name = from.name;
+      this.desc = from.desc;
+      this.units = from.units;
+      this.dtype = from.dtype;
+      this.shape = from.shape;
+      this.size = (int) Index.computeSize(shape);
+      this.members = from.members;
     }
 
     /*

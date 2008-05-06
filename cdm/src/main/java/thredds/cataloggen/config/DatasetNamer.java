@@ -253,7 +253,7 @@ public class DatasetNamer {
    * @param out StringBuffer with validation messages.
    * @return boolean true if valid, false if invalid
    */
-  boolean validate(StringBuffer out) {
+  boolean validate(StringBuilder out) {
     this.isValid = true;
 
     // If log from construction has content, append to validation output msg.

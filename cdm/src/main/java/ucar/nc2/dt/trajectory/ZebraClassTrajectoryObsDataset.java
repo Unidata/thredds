@@ -133,7 +133,7 @@ public class ZebraClassTrajectoryObsDataset extends SingleTrajectoryObsDataset i
     /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
   public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
-  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
     return new ZebraClassTrajectoryObsDataset( ncd);
   }
   public FeatureType getScientificDataType() { return FeatureType.TRAJECTORY; }

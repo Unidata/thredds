@@ -670,7 +670,7 @@ public class InvDatasetScan extends InvCatalogRef {
    public boolean isRead() { return false; }
 
 
-  boolean check(StringBuffer out, boolean show) {
+  boolean check(StringBuilder out, boolean show) {
     boolean isValid = true;
 
     if (getPath() == null) {

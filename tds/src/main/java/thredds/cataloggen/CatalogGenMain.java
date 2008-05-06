@@ -44,7 +44,7 @@ public class CatalogGenMain
     String outFileName = null;
 
 
-    StringBuffer msgLog = new StringBuffer();
+    StringBuilder msgLog = new StringBuilder();
 
     {
       // Deal with command line arguments.

@@ -20,7 +20,7 @@ public class StationDatasetCollection {
 
   private ArrayList sobsList = new ArrayList();
   private StationObsDataset typical = null;
-  private StringBuffer log = new StringBuffer();
+  private StringBuilder log = new StringBuilder();
 
   public void add(String location) throws IOException {
     StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, location, null, log);

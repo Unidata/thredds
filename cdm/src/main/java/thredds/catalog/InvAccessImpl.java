@@ -29,7 +29,7 @@ package thredds.catalog;
 
 public class InvAccessImpl extends InvAccess {
 
-  private StringBuffer log = new StringBuffer();
+  private StringBuilder log = new StringBuilder();
 
   protected String serviceName;
   private String serviceTypeName, dataFormatName;
@@ -143,7 +143,7 @@ public class InvAccessImpl extends InvAccess {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  boolean check(StringBuffer out, boolean show) {
+  boolean check(StringBuilder out, boolean show) {
     boolean isValid = true;
 
     if (log.length() > 0) {

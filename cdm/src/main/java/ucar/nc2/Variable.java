@@ -224,7 +224,7 @@ public class Variable implements VariableIF {
    * @return Dimension names, space delineated
    */
   public String getDimensionsString() {
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension dim = dimensions.get(i);
       if (i > 0) buff.append(" ");
@@ -945,17 +945,28 @@ public class Variable implements VariableIF {
    * @return display name plus the dimensions
    */
   public String getNameAndDimensions() {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     getNameAndDimensions(buf);
     return buf.toString();
   }
 
   /**
    * Get the display name plus the dimensions, eg 'name(dim1, dim2)'
-   * @param buf add info to this
+   * @param buf add info to this StringBuilder
+   */
+  public void getNameAndDimensions(StringBuilder buf) {
+    getNameAndDimensions(buf, true, false);
+  }
+
+  /**
+   * Get the display name plus the dimensions, eg 'name(dim1, dim2)'
+   * @param buf add info to this StringBuffer
+   * @deprecated use getNameAndDimensions(StringBuilder buf)
    */
   public void getNameAndDimensions(StringBuffer buf) {
-    getNameAndDimensions(buf, true, false);
+    StringBuilder proxy = new StringBuilder();
+    getNameAndDimensions(proxy, true, false);
+    buf.append(proxy.toString());
   }
 
 
@@ -965,7 +976,7 @@ public class Variable implements VariableIF {
    * @param useFullName use full name else short name. strict = true implies short name
    * @param strict strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
    */
-  public void getNameAndDimensions(StringBuffer buf, boolean useFullName, boolean strict) {
+  public void getNameAndDimensions(StringBuilder buf, boolean useFullName, boolean strict) {
     useFullName = useFullName && !strict;
     String name = useFullName ? getName() : getShortName();
     if (strict) name = NetcdfFile.escapeName( name);
@@ -1013,7 +1024,7 @@ public class Variable implements VariableIF {
    * @return CDL representation of the Variable.
    */
   public String writeCDL(String indent, boolean useFullName, boolean strict) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.setLength(0);
     buf.append(indent);
     buf.append(dataType.toString());

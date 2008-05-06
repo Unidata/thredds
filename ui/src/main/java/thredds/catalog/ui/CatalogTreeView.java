@@ -406,7 +406,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
   public void setCatalog(InvCatalogImpl catalog) {
     if (catalog == null) return;
     String catalogName = catalog.getBaseURI().toString();
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     if (!catalog.check( buff)) {
       javax.swing.JOptionPane.showMessageDialog(this, "Invalid catalog <"+ catalogName+">\n"+
         buff.toString());

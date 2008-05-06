@@ -47,7 +47,7 @@ public interface TypedDatasetFactoryIF {
    * @return a subclass of TypedDataset
    * @throws java.io.IOException on error
    */
-  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException;
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException;
 
   /**
    * What kind of cientific data type will this return?

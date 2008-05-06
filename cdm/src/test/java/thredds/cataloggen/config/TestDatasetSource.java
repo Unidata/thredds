@@ -60,7 +60,7 @@ public class TestDatasetSource extends TestCase
   private String accessPoint1 = null;
   private String accessPoint2 = null;
 
-  private StringBuffer out = null;
+  private StringBuilder out = null;
 
 
   public TestDatasetSource( String name )
@@ -90,7 +90,7 @@ public class TestDatasetSource extends TestCase
     accessPoint1 = "access point 1";
     accessPoint2 = "access point 2";
 
-    out = new StringBuffer();
+    out = new StringBuilder();
 
     ResultService rService = new ResultService( "fred", ServiceType.DODS, "http://server/dods", null, "access point header 1");
 

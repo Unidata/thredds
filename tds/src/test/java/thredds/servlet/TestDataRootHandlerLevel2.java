@@ -103,7 +103,7 @@ public class TestDataRootHandlerLevel2 extends TestCase
     }
 
     // Make sure that DRH has the main, regular, and symLink catalogs.
-    StringBuffer checkMsg = new StringBuffer();
+    StringBuilder checkMsg = new StringBuilder();
     InvCatalogImpl testConfigCat = (InvCatalogImpl) drh.getCatalog( testConfigCatName, testConfigCatFile.toURI() );
     InvCatalogImpl regularCat = (InvCatalogImpl) drh.getCatalog( regularCatName, regularCatFile.toURI() );
     InvCatalogImpl symLinkToRegCat = (InvCatalogImpl) drh.getCatalog( symLinkToRegCatName, symLinkToRegCatFile.toURI());
@@ -118,7 +118,7 @@ public class TestDataRootHandlerLevel2 extends TestCase
     if ( checkMsg.length() > 0 )
     {
       System.out.println( "Main test catalog <" + testConfigCatName + "> valid but had message: " + checkMsg.toString() );
-      checkMsg = new StringBuffer();
+      checkMsg = new StringBuilder();
     }
 
     if ( regularCat == null )
@@ -131,7 +131,7 @@ public class TestDataRootHandlerLevel2 extends TestCase
     if ( checkMsg.length() > 0 )
     {
       System.out.println( "Regular catalog <" + regularCatName + "> valid but had message: " + checkMsg.toString() );
-      checkMsg = new StringBuffer();
+      checkMsg = new StringBuilder();
     }
 
     if ( symLinkToRegCat == null )

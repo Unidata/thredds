@@ -64,7 +64,7 @@ public class Parameter implements java.io.Serializable {
      */
     public String getStringValue() {
         if (valueS == null) {
-            StringBuffer sbuff = new StringBuffer();
+            StringBuilder sbuff = new StringBuilder();
             for (int i = 0; i < valueD.length; i++) {
                 double v = valueD[i];
                 sbuff.append(v + " ");
@@ -152,7 +152,7 @@ public class Parameter implements java.io.Serializable {
      * @return nice String
      */
     public String toString() {
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         buff.append(getName());
         if (isString()) {
             buff.append(" = ");

@@ -136,7 +136,7 @@ abstract public class DatasetSource
     // Test validity and append messages to log.
 
     logger.debug( "DatasetSource(): constructor done.");
-    StringBuffer log = new StringBuffer();
+    StringBuilder log = new StringBuilder();
     if ( tmpDsSource.validate( log))
     {
       logger.debug( "DatasetSource(): new DatasetSource is valid: {}", log.toString());
@@ -224,7 +224,7 @@ abstract public class DatasetSource
   public void setAddDatasetSize( boolean addDatasetSize )
   { this.addDatasetSize = addDatasetSize; }
 
-  public boolean validate( StringBuffer out)
+  public boolean validate( StringBuilder out)
   {
     this.isValid = true;
 

@@ -47,7 +47,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
                 new File( location ).exists() );
     try
     {
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
       me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
@@ -105,7 +105,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
                 new File( location ).exists() );
     try
     {
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
       me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
@@ -160,7 +160,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     location = testFilePath + "/" + test_Raf_1_3_NoRecvar_FileName;
     try
     {
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
       me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
@@ -191,7 +191,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
                 new File( location ).exists() );
     try
     {
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
       me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )
@@ -243,7 +243,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
                 new File( location ).exists() );
     try
     {
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
       me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )

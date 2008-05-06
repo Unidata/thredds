@@ -95,6 +95,14 @@
 <p>This is not a standard CF projection. This uses a spherical earth. See Snyder, p 176.</p>
 <h2>Standard Vertical Transforms</h2>
 <p>These are examples of placing the Coordinate Transform parameters on the corresponding vertical coordinate (required by CF). If you are using CF Conventions, you do not have to add the <strong>_Coordinate</strong> attributes, as they will be added automatically in the CoordSysBuilder.</p>
+<h3>atmosphere_hybrid_height_coordinate</h3>
+<pre>
+  double lev(lev=26);<br>     :long_name = &quot;hybrid hybrid height coordinate&quot;;
+     :units = &quot;m&quot;;<br>     :positive = &quot;up&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;down;
+
+     :<strong>standard_name</strong> = &quot;atmosphere_hybrid_height_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;a: varA b: varB orog: orography&quot;;<br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;lev&quot;;
+
+</pre>
 <h3>atmosphere_hybrid_sigma_pressure_coordinate</h3>
 <pre>
   double lev(lev=26);<br>     :long_name = &quot;hybrid level at midpoints (1000*(A+B))&quot;;
@@ -131,7 +139,7 @@
 <p>This is not part of CF, but a way to mark an existing 3D (4D if time dependent) field as the vertical coordinate.     </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Mar 09, 2008 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 05, 2008 
 </address>
 <p>&nbsp;</p>
 </body>

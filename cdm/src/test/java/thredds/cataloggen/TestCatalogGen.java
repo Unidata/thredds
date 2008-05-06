@@ -250,7 +250,7 @@ public class TestCatalogGen extends TestCase
     }
 
     // Check that CatalogGen is valid.
-    StringBuffer validationMsg = new StringBuffer( );
+    StringBuilder validationMsg = new StringBuilder( );
     assertTrue( "CatalogGen did not validate: " + validationMsg.toString(),
                 me.isValid( validationMsg) );
 
@@ -343,7 +343,7 @@ public class TestCatalogGen extends TestCase
     }
 
     // Check that CatalogGen is valid.
-    StringBuffer validationMsg = new StringBuffer( );
+    StringBuilder validationMsg = new StringBuilder( );
     assertTrue( "CatalogGen did not validate: " + validationMsg.toString(),
                 me.isValid( validationMsg) );
 

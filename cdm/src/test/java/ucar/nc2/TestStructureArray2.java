@@ -56,7 +56,7 @@ public class TestStructureArray2 extends TestCase {
   }
 
   public void testBufr() throws IOException, InvalidRangeException {
-    String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
+    String fileIn = TestAll.upcShareTestDataDir+"bufr/edition3/ecmwf/synop.bufr";
     NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
     System.out.println(ncf.toString());
 

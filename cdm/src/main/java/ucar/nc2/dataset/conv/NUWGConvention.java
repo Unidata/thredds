@@ -301,7 +301,7 @@ public class NUWGConvention extends CoordSysBuilder {
     return vars;
   }
 
-  private StringBuffer buf = new StringBuffer(2000);
+  private StringBuilder buf = new StringBuilder(2000);
   public String extraInfo() {
     buf.setLength(0);
     buf.append(navInfo).append("\n");
@@ -428,7 +428,7 @@ public class NUWGConvention extends CoordSysBuilder {
         return Double.toString(dvalue);
     }
 
-    private StringBuffer buf = new StringBuffer(200);
+    private StringBuilder buf = new StringBuilder(200);
     public String toString() {
       buf.setLength(0);
       buf.append(getName());
@@ -491,7 +491,7 @@ public class NUWGConvention extends CoordSysBuilder {
       return nav.svalue;
     }
 
-    private StringBuffer buf = new StringBuffer(2000);
+    private StringBuilder buf = new StringBuilder(2000);
     public String toString() {
       buf.setLength(0);
       buf.append("\nNav Info\n");

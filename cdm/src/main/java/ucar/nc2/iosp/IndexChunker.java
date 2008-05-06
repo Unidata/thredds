@@ -299,7 +299,7 @@ public class IndexChunker {
 
   // debugging
   protected String printa(int[] a) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < a.length; i++) sbuff.append(a[i] + " ");
     return sbuff.toString();
   }
@@ -311,7 +311,7 @@ public class IndexChunker {
   }
 
   public String toString() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("wantSize=");
     for (int i = 0; i < dimList.size(); i++) {
       Dim elem = dimList.get(i);

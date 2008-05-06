@@ -498,14 +498,13 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     int llen;
     int ipage = 0;
     int icnt = 4;
-    StringBuffer sbuf = new StringBuffer();
-
+    StringBuilder sbuf = new StringBuilder();
 
     while (ipage < plen && (tablen > 128 + icnt)) {
       llen = bos.getShort();
       if (llen == -1) {
         pdata[ipage] = new String(sbuf);
-        sbuf = new StringBuffer();
+        sbuf = new StringBuilder();
         ipage++;
         icnt = icnt + 2;
         continue;

@@ -34,7 +34,7 @@ public class TestPointDataset extends TestCase {
   }
 
   private void testPointMethods(String location) throws IOException {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     PointObsDataset pod = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, location, null, sbuff);
     assert pod != null : sbuff.toString();
 

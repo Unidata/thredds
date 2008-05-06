@@ -302,9 +302,9 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
     return buf.toString();
   }
 
-  private StringBuffer parseInfo = new StringBuffer(); // debugging
+  private StringBuilder parseInfo = new StringBuilder(); // debugging
 
-  public StringBuffer getParseInfo() {
+  public StringBuilder getParseInfo() {
     return parseInfo;
   }
 
@@ -312,7 +312,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
    * Get Details about the dataset.
    */
   public String getDetailInfo() {
-    StringBuffer buff = new StringBuffer(5000);
+    StringBuilder buff = new StringBuilder(5000);
     buff.append(getInfo());
     buff.append("\n\n----------------------------------------------------\n");
     buff.append(ds.getInfo().getParseInfo());

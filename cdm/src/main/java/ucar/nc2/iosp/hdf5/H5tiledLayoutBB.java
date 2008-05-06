@@ -114,7 +114,7 @@ class H5tiledLayoutBB implements LayoutBB {
   }
 
   public String toString() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("want=").append(want).append("; ");
     sbuff.append("chunkSize=[");
     for (int i = 0; i < chunkSize.length; i++) {

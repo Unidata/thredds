@@ -1148,7 +1148,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     if (reqDodsVlist.size() > 0) {
 
       // Create the request
-      StringBuffer requestString = new StringBuffer();
+      StringBuilder requestString = new StringBuilder();
       for (int i = 0; i < reqDodsVlist.size(); i++) {
         DodsV dodsV = reqDodsVlist.get(i);
         requestString.append(i == 0 ? "?" : ",");
@@ -1230,7 +1230,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     // LOOK: what if theres already a CE !!!!
     // create the constraint expression
-    StringBuffer buff = new StringBuffer(100);
+    StringBuilder buff = new StringBuilder(100);
     buff.setLength(0);
     buff.append(getDODSshortName(v));
 
@@ -1333,7 +1333,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     return dataArray;
   }
 
-  private int addParents(StringBuffer buff, Variable s, List<Range> section, int start) {
+  private int addParents(StringBuilder buff, Variable s, List<Range> section, int start) {
     Structure parent = s.getParentStructure();
     if (parent != null) {
       start = addParents(buff, parent, section, start);
@@ -1350,7 +1350,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     return start + s.getRank();
   }
 
-  private void makeSelector(StringBuffer buff, List<Range> section) {
+  private void makeSelector(StringBuilder buff, List<Range> section) {
     for (Range r : section) {
       buff.append("[");
       buff.append(r.first());
@@ -1897,7 +1897,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @return the underlying dods info for debugging
    */
   public String toStringDebug() {
-    StringBuffer buff = new StringBuffer(2000);
+    StringBuilder buff = new StringBuilder(2000);
     buff.setLength(0);
     buff.append("=======================================\nNETCDF DODS file ").append(getLocation()).append("\n");
 

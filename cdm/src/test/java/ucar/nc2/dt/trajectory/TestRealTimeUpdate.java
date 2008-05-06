@@ -122,7 +122,7 @@ public class TestRealTimeUpdate extends TestCase
     try
     {
       //trajDs = TrajectoryObsDatasetFactory.open( testDataFileOut );
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
       trajDs = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, testDataFileOut, null, errlog);
     }
     catch ( IOException e )

@@ -571,7 +571,7 @@ public class ThreddsMetadata {
 
 
   String dump(int n) {
-    StringBuffer buff = new StringBuffer(100);
+    StringBuilder buff = new StringBuilder(100);
 
     if (docs.size() > 0) {
       String indent = InvDatasetImpl.indent(n + 2);
@@ -1539,7 +1539,7 @@ public class ThreddsMetadata {
 
     public void setVocabularyId(Attribute id) {
       if (id == null) return;
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < id.getLength(); i++) {
         if (i > 0) sbuff.append(",");
         sbuff.append(id.getNumericValue(i));

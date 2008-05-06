@@ -865,7 +865,9 @@ public abstract class ArrayStructure extends Array {
     for (int i = 0; i < count; i++)
       this_sdata[i] = array.getStructureData(recnum * count + i);
 
-    return new ArrayStructureW(array.getStructureMembers(), m.getShape(), this_sdata);
+    // make a copy of the members, but remove the data arrays, since the structureData must be used instead
+    StructureMembers membersw = new StructureMembers(array.getStructureMembers());
+    return new ArrayStructureW(membersw, m.getShape(), this_sdata);
   }
 
   /**

@@ -174,7 +174,7 @@ class CatGenTimerTask
    * @param messages - StringBuffer for appending error and warning messages.
    * @return - true if task is valid, false if invalid (errors)
    */
-  synchronized boolean isValid( StringBuffer messages)
+  synchronized boolean isValid( StringBuilder messages)
   {
     if ( this.timerTask == null )
     {
@@ -259,7 +259,7 @@ class CatGenTimerTask
     {
       logger.info( "run(): generating catalog <" + this.resultFile.toString() + "> from config doc, " + this.configDocURL.toString() );
       CatalogGen catGen = new CatalogGen( this.configDocURL );
-      StringBuffer messages = new StringBuffer();
+      StringBuilder messages = new StringBuilder();
       if ( catGen.isValid( messages ) )
       {
         catGen.expand();

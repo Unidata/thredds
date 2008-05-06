@@ -106,7 +106,7 @@ public class URLencode {
    * @return The encoded string
    */
   public static String escape(String s) {
-    StringBuffer sbuf = new StringBuffer();
+    StringBuilder sbuf = new StringBuilder();
     int len = s.length();
     for (int i = 0; i < len; i++) {
       int ch = s.charAt(i);
@@ -139,7 +139,7 @@ public class URLencode {
   }
 
   public static String unescape(String s) {
-    StringBuffer sbuf = new StringBuffer();
+    StringBuilder sbuf = new StringBuilder();
     int l = s.length();
     int ch = -1;
     int b, sumb = 0;

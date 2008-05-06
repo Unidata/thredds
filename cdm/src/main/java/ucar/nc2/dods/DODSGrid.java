@@ -50,7 +50,7 @@ public class DODSGrid extends DODSVariable {
     this.dodsShortName = shortName + "." + array.bt.getName(); */
 
     List<Dimension> dims = new ArrayList<Dimension>();
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 1; i < dodsV.children.size(); i++) {
       DodsV map = dodsV.children.get(i);
       String name = DODSNetcdfFile.makeNetcdfName( map.bt.getName());

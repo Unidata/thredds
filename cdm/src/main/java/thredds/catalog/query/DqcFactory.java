@@ -69,7 +69,7 @@ public class DqcFactory {
 
   private HashMap versionToNamespaceHash = new HashMap(10);
   private HashMap namespaceToDqcConverterHash = new HashMap(10);   // HashMap<String, DqcConvertIF>
-  private StringBuffer warnMessages, errMessages, fatalMessages;
+  private StringBuilder warnMessages, errMessages, fatalMessages;
 
 
   /**

@@ -199,7 +199,7 @@ public class CoordinateAxis extends VariableDS {
   //////////////////////
   /** @return formatted string representation */
   public String getInfo() {
-    StringBuffer buf = new StringBuffer(200);
+    StringBuilder buf = new StringBuilder(200);
     buf.append(getName());
     Format.tab(buf, 15, true);
     buf.append(getSize()).append("");

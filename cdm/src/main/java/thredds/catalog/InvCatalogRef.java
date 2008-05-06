@@ -180,7 +180,7 @@ public class InvCatalogRef extends InvDatasetImpl {
     if (cat.hasFatalError()) {
       // this is to display an error message
       proxy = new InvDatasetImpl(null, "ERROR OPENING");
-      StringBuffer out = new StringBuffer();
+      StringBuilder out = new StringBuilder();
       cat.check(out);
       if (debug) System.out.println("PARSE ERROR =\n  " + out.toString());
       proxy.addProperty(new InvProperty("ERROR OPENING", out.toString()));
@@ -311,7 +311,7 @@ public class InvCatalogRef extends InvDatasetImpl {
     }
   }
 
-  boolean check(StringBuffer out, boolean show) {
+  boolean check(StringBuilder out, boolean show) {
     return isRead() ? proxy.check(out, show) : super.check(out, show);
   }
 

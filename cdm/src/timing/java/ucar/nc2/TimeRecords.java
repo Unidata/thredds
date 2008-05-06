@@ -83,7 +83,7 @@ public class TimeRecords {
   }
 
   static private void readTrajectoryIterator(String netcdfFileURI) throws IOException {
-    TrajectoryObsDataset tob = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, netcdfFileURI, null, new StringBuffer());
+    TrajectoryObsDataset tob = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, netcdfFileURI, null, new StringBuilder());
     List trajList = tob.getTrajectories();
     for (int i = 0; i < trajList.size(); i++) {
 
@@ -101,7 +101,7 @@ public class TimeRecords {
   }
 
   static private void readStationIterator(String netcdfFileURI) throws IOException {
-    PointObsDataset tob = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, netcdfFileURI, null, new StringBuffer());
+    PointObsDataset tob = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, netcdfFileURI, null, new StringBuilder());
 
     double count = 0;
     long start = System.currentTimeMillis();

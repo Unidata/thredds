@@ -74,7 +74,7 @@ public class TestDatasetNamer extends TestCase
   private DatasetNamer me2 = null;
   private DatasetNamer me3 = null;
 
-  private StringBuffer out = null;
+  private StringBuilder out = null;
   private boolean bool;
 
   public TestDatasetNamer( String name )
@@ -145,7 +145,7 @@ public class TestDatasetNamer extends TestCase
             null, null,
             null, null);
 
-    out = new StringBuffer();
+    out = new StringBuilder();
   }
 
 //  protected void tearDown()
@@ -171,16 +171,16 @@ public class TestDatasetNamer extends TestCase
     me1.setName( name2);
     assertTrue( me1.getName().equals( name2));
 
-    // Test DatasetNamer.validate( StringBuffer) for rules on name.
+    // Test DatasetNamer.validate( StringBuilder) for rules on name.
     bool = me1.validate( out);
     assertTrue( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setName( "");
     bool = me1.validate( out);
     assertTrue( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setName( null);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
@@ -214,7 +214,7 @@ public class TestDatasetNamer extends TestCase
     me1.setType( "invalid type name");
     assertTrue( me1.getType() == null );
 
-    // Test DatasetNamer.validate( StringBuffer) for rules on the type.
+    // Test DatasetNamer.validate( StringBuilder) for rules on the type.
     // 1) Null type is invalid
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
@@ -223,177 +223,177 @@ public class TestDatasetNamer extends TestCase
     //   matchPattern non-null, substitutePattern non-null,
     //   attribContainer null, attribName null =
     //     RegExp is valid, DodsAttrib is invalid
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type1);
     bool = me1.validate( out);
     assertTrue( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type2);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp1/sp1/ac1+/an0 = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setAttribContainer( "not null");
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type1);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp1/sp1/ac1/an1+ = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setAttribName( "not null");
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type2);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp1/sp1/ac0-/an1 = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setAttribContainer(  null);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type1);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp0-/sp1/ac0/an1 = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setMatchPattern(  null);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type2);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp0/sp1/ac0/an0- = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setAttribName( null);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type1);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp0/sp0-/ac0/an0 = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setSubstitutePattern( null);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type2);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp0/sp0/ac1+/an0 = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setAttribContainer( "not null");
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type1);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp0/sp1+/ac1/an0 = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setSubstitutePattern( "not null");
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type2);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp0/sp1/ac1/an1+ = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setAttribName( "not null");
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type1);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp0/sp0-/ac1/an1 = R0/D1
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setSubstitutePattern( null);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type2);
     bool = me1.validate( out);
     assertTrue( out.toString(), bool );
 
     // mp0/sp0/ac0-/an1 = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setAttribContainer( null);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type1);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp1+/sp0/ac0/an1 = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setMatchPattern( "not null");
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type2);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp1/sp0/ac1+/an1 = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setAttribContainer( "not null");
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type1);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp1/sp0/ac1/an0- = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setAttribName( null);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type1);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
     // mp1/sp0/ac0-/an0 = R0/D0
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setAttribContainer( null);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
     me1.setType( type2);
     bool = me1.validate( out);
     assertFalse( out.toString(), bool );
@@ -418,7 +418,7 @@ public class TestDatasetNamer extends TestCase
     me1.setMatchPattern( matchPattern2);
     assertTrue( me1.getMatchPattern().equals( matchPattern2));
 
-    // Testing of DatasetNamer.validate( StringBuffer) dealing
+    // Testing of DatasetNamer.validate( StringBuilder) dealing
     // with matchPattern, substitutePattern, attribContainer, and
     // attribName are handled in testTyp().
   }
@@ -432,7 +432,7 @@ public class TestDatasetNamer extends TestCase
     me1.setSubstitutePattern( substitutePattern2);
     assertTrue( me1.getSubstitutePattern().equals( substitutePattern2));
 
-    // Testing of DatasetNamer.validate( StringBuffer) dealing
+    // Testing of DatasetNamer.validate( StringBuilder) dealing
     // with matchPattern, substitutePattern, attribContainer, and
     // attribName are handled in testTyp().
   }
@@ -446,7 +446,7 @@ public class TestDatasetNamer extends TestCase
     me2.setAttribContainer( attribContainer1);
     assertTrue( me2.getAttribContainer().equals( attribContainer1));
 
-    // Testing of DatasetNamer.validate( StringBuffer) dealing
+    // Testing of DatasetNamer.validate( StringBuilder) dealing
     // with matchPattern, substitutePattern, attribContainer, and
     // attribName are handled in testTyp().
   }
@@ -460,7 +460,7 @@ public class TestDatasetNamer extends TestCase
     me2.setAttribName( attribName1);
     assertTrue( me2.getAttribName().equals( attribName1));
 
-    // Testing of DatasetNamer.validate( StringBuffer) dealing
+    // Testing of DatasetNamer.validate( StringBuilder) dealing
     // with matchPattern, substitutePattern, attribContainer, and
     // attribName are handled in testTyp().
   }

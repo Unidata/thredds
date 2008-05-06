@@ -209,7 +209,7 @@ public abstract class InvCatalog {
    * @param show : print messages for each object (debug)
    * @return true if no fatal consistency errors.
    */
-  abstract public boolean check(StringBuffer out, boolean show);
+  abstract public boolean check(StringBuilder out, boolean show);
 
   /**
    * Check internal data structures.
@@ -217,7 +217,7 @@ public abstract class InvCatalog {
    * @param out : print errors here
    * @return true if no fatal consistency errors.
    */
-  public boolean check(StringBuffer out) {
+  public boolean check(StringBuilder out) {
     return check(out, false);
   }
 

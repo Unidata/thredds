@@ -42,7 +42,7 @@ public class InvCatalogImpl extends InvCatalog {
   private List<InvProperty> roots = new ArrayList<InvProperty>(); // InvProperty
 
   // validation
-  private StringBuffer log = new StringBuffer();
+  private StringBuilder log = new StringBuilder();
   private boolean hasError = false;
 
   /**
@@ -444,7 +444,7 @@ public class InvCatalogImpl extends InvCatalog {
    * @param show : print messages for each object (debug)
    * @return true if no fatal consistency errors.
    */
-  public boolean check(StringBuffer out, boolean show) {
+  public boolean check(StringBuilder out, boolean show) {
     boolean isValid = !hasError;
     out.append("----Catalog Validation version 1.0.01\n");
 
@@ -474,7 +474,7 @@ public class InvCatalogImpl extends InvCatalog {
    * @return String representation.
    */
   public String dump() {
-    StringBuffer buff = new StringBuffer(1000);
+    StringBuilder buff = new StringBuilder(1000);
     buff.setLength(0);
 
     buff.append("Catalog <").append(getName())

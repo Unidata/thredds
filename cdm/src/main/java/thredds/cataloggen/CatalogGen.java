@@ -105,7 +105,7 @@ public class CatalogGen
    * @param out - a StringBuffer with validity error and warning messages.
    * @return - true if no errors, false if errors exist
    */
-  public boolean isValid( StringBuffer out)
+  public boolean isValid( StringBuilder out)
   {
     log.debug( "isValid(): start");
     return( this.catalog.check( out));

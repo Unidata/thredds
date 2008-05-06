@@ -98,7 +98,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
   public File getFile(String remaining) {
     if( null == params) return null;
     int pos = remaining.indexOf(SCAN);
-    StringBuffer fname = new StringBuffer( params.location);
+    StringBuilder fname = new StringBuilder( params.location);
     if ( ! params.location.endsWith( "/"))
       fname.append( "/");
     fname.append( ( pos > -1 ) ? remaining.substring( pos + SCAN.length() + 1 ) : remaining);
@@ -532,7 +532,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
     // check SCAN type before we have to do makeFmrc()
     if (type.equals(SCAN) && (params != null)) {
-      String filename = new StringBuffer( params.location )
+      String filename = new StringBuilder( params.location )
               .append( params.location.endsWith( "/" ) ? "" : "/" )
               .append( name ).toString();
       return NetcdfDataset.acquireDataset( filename, null);

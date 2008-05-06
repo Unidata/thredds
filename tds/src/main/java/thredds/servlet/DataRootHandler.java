@@ -287,7 +287,7 @@ public class DataRootHandler {
       ios = new FileInputStream(catalogFullPath);
       cat = factory.readXML(ios, uri);
 
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       if (!cat.check(sbuff)) {
         log.error("readCatalog(): invalid catalog -- " + sbuff.toString());
         return null;

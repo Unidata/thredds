@@ -91,7 +91,7 @@ public class DLwriterServlet extends AbstractServlet {
     }
 
     // validate the catalog
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     if (!catalog.check(sb, false)) {
       ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, -1);
 

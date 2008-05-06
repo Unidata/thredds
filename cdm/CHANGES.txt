@@ -38,6 +38,7 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
+    15: change StringBuffer to StringBuilder for efficiency
     14: NetcdfDataset: unsigned always gets converted
         Netcdf-3 files: truncate Strings at first null byte.
         complete rework of point datatypes, now in package ucar.nc2.ft (feature types)
@@ -74,7 +75,8 @@ Changes from Java-Netcdf version 2.2
   * DataType SEQUENCE
 
 API Extensive API changes. Most, but not completely backwards-compatible.
-
+  * change StringBuffer to StringBuilder for efficiency
+  
  Package ucar.ma2
    + Array local iterator: hasNext() nextXXXX() methods.
    + ucar.ma2.Section used instead of List<Range>

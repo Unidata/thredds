@@ -60,7 +60,7 @@ public class CoordSysTable extends JPanel {
   private JSplitPane split, split2;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
-  private StringBuffer parseInfo = new StringBuffer();
+  private StringBuilder parseInfo = new StringBuilder();
 
   public CoordSysTable(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -240,7 +240,7 @@ public class CoordSysTable extends JPanel {
   }
 
   private void printArray(String title, double vals[]) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append(" ").append(title);
     for (int i = 0; i < vals.length; i++) {
       sbuff.append(" ").append(vals[i]);
@@ -331,7 +331,7 @@ public class CoordSysTable extends JPanel {
   }
 
   private String tryGrid(VariableEnhanced v) {
-    StringBuffer buff = new StringBuffer(v.getName()).append(": ");
+    StringBuilder buff = new StringBuilder(v.getName()).append(": ");
     List<CoordinateSystem> csList = v.getCoordinateSystems();
     for (CoordinateSystem cs : csList) {
       buff.append(cs.getName()).append(":");
@@ -368,8 +368,8 @@ public class CoordSysTable extends JPanel {
       setUnits(v.getUnitsString());
 
       // collect dimensions
-      StringBuffer lens = new StringBuffer();
-      StringBuffer names = new StringBuffer();
+      StringBuilder lens = new StringBuilder();
+      StringBuilder names = new StringBuilder();
       java.util.List dims = v.getDimensions();
       for (int j = 0; j < dims.size(); j++) {
         ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
@@ -384,7 +384,7 @@ public class CoordSysTable extends JPanel {
       setDims(names.toString());
       setShape(lens.toString());
 
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       List<CoordinateSystem> csList = v.getCoordinateSystems();
       for (CoordinateSystem cs : csList) {
         if (firstCoordSys == null)
@@ -393,7 +393,7 @@ public class CoordSysTable extends JPanel {
           buff.append("; ");
         buff.append(cs.getName());
 
-        StringBuffer gridBuff = new StringBuffer();
+        StringBuilder gridBuff = new StringBuilder();
         if (GridCoordSys.isGridCoordSys(gridBuff, cs)) {
           GridCoordSys gcs = new GridCoordSys(cs, gridBuff);
           if (gcs.isComplete(v))
@@ -495,7 +495,7 @@ public class CoordSysTable extends JPanel {
         addDataType("radial");
       }
 
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       List ctList = cs.getCoordinateTransforms();
       for (int i = 0; i < ctList.size(); i++) {
         CoordinateTransform ct = (CoordinateTransform) ctList.get(i);
@@ -613,8 +613,8 @@ public class CoordSysTable extends JPanel {
       setUnits(v.getUnitsString());
 
       // collect dimensions
-      StringBuffer lens = new StringBuffer();
-      StringBuffer names = new StringBuffer();
+      StringBuilder lens = new StringBuilder();
+      StringBuilder names = new StringBuilder();
       java.util.List dims = v.getDimensions();
       for (int j = 0; j < dims.size(); j++) {
         ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);

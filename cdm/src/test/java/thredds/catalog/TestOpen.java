@@ -15,7 +15,7 @@ public class TestOpen extends TestCase {
 
   public String open(String catalogName, boolean shouldValidate) {
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
 
     try {
       InvCatalog cat = catFactory.readXML(catalogName);

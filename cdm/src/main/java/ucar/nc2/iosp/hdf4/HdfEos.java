@@ -46,7 +46,7 @@ public class HdfEos {
   static private boolean showTypes = false, debug = true;
 
   static public void amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
-    StringBuffer sbuff = null;
+    StringBuilder sbuff = null;
     String structMetadata = null;
 
     int n = 0;
@@ -54,7 +54,7 @@ public class HdfEos {
       Variable structMetadataVar = eosGroup.findVariable("StructMetadata." + n);
       if (structMetadataVar == null) break;
       if ((structMetadata != null) && (sbuff == null)) { // more than 1 StructMetadata
-        sbuff = new StringBuffer(64000);
+        sbuff = new StringBuilder(64000);
         sbuff.append(structMetadata);
       }
 
@@ -218,7 +218,7 @@ public class HdfEos {
         assert v != null : varname;
         addAxisType(v);
 
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims);
@@ -241,7 +241,7 @@ public class HdfEos {
           continue;
         }
 
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims);
@@ -311,7 +311,7 @@ public class HdfEos {
         Variable v = geoFieldsG.findVariable(varname);
         assert v != null : varname;
 
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims);
@@ -329,7 +329,7 @@ public class HdfEos {
         Variable v = dataG.findVariable(varname);
         assert v != null : varname;
 
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
         setSharedDimensions( v, values, unknownDims);

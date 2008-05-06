@@ -191,7 +191,7 @@ public class DatasetFilter
    * @param out StringBuffer with validation messages.
    * @return boolean true if valid, false if invalid
    */
-  boolean validate( StringBuffer out)
+  boolean validate( StringBuilder out)
   {
     this.isValid = true;
 

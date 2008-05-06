@@ -346,7 +346,7 @@ public class StationObsCollection {
 
     StationObsDataset get() throws IOException {
       if (sod == null) {
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         if (debug) System.out.println("StationObsDataset open " + filename);
         sod = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, filename, null, sbuff);
         if (null == sod) {
@@ -510,7 +510,7 @@ public class StationObsCollection {
   // scan all data in the file, records that pass the dateRange and predicate match are acted on
 
   private void scanAll(Dataset ds, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     StationObsDataset sod = ds.get();
     if (debug) System.out.println("scanAll open " + ds.filename);
     if (null == sod) {
@@ -545,7 +545,7 @@ public class StationObsCollection {
   // scan data for the list of stations, in order
   // records that pass the dateRange and predicate match are acted on
   private void scanStations(Dataset ds, List<String> stns, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
 
     StationObsDataset sod = ds.get();
     if (debug) System.out.println("scanStations open " + ds.filename);
@@ -592,7 +592,7 @@ public class StationObsCollection {
   // for each station, track the closest record to the given time
   // then act on those
   private void scanAll(Dataset ds, DateType time, Predicate p, Action a, Limit limit) throws IOException {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
 
     HashMap<Station, StationDataTracker> map = new HashMap<Station, StationDataTracker>();
     long wantTime = time.getDate().getTime();
@@ -657,7 +657,7 @@ public class StationObsCollection {
   // eliminate records  that dont pass the predicate
   // for each station, track the closest record to the given time, then act on those
   private void scanStations(Dataset ds, List<String> stns, DateType time, Predicate p, Action a, Limit limit) throws IOException {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
 
     StationObsDataset sod = ds.get();
     if (null == sod) {

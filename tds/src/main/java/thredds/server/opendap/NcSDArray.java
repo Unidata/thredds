@@ -131,7 +131,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
 
   private String getRequestedRange() {
     try {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("NcSDArray read " + ncVar.getName());
       for (int i = 0; i < numDimensions(); i++) {
         DArrayDimension d = getDimension(i);

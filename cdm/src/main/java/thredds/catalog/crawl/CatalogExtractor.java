@@ -70,7 +70,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     this.copyDir = copyToDir;
 
     InvCatalogImpl cat = catFactory.readXML(catUrl);
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     if (!cat.check(buff, false))
       return;
 
@@ -112,7 +112,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     out.println("***read " + catUrl);
 
     InvCatalogImpl cat = catFactory.readXML(catUrl);
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     boolean isValid = cat.check(buff, false);
     if (!isValid) {
       System.out.println("***Catalog invalid= " + catUrl + " validation output=\n" + buff);

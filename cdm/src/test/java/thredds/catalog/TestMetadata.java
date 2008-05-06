@@ -16,7 +16,7 @@ public class TestMetadata extends TestCase {
   public void testXLink() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     boolean isValid = cat.check(buff, false);
     System.out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
     System.out.println(" validation output=\n" + buff);
@@ -81,7 +81,7 @@ public class TestMetadata extends TestCase {
   public void testNamespaces() {
     InvCatalogImpl cat = TestCatalogAll.open("testMetadata.xml", true);
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     boolean isValid = cat.check(buff, false);
     System.out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
     System.out.println(" validation output=\n" + buff);

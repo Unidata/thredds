@@ -21,7 +21,7 @@ public class TestTDSAll extends TestCase {
     if (catalogName == null) catalogName = "/catalog.xml";
     String catalogPath = topCatalog + catalogName;
     System.out.println("\n open= "+catalogPath);
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false);
 
     try {

@@ -40,7 +40,7 @@ public class InvService {
   private List<InvProperty> properties = new ArrayList<InvProperty>();
   private List<InvProperty> roots = new ArrayList<InvProperty>(); // deprecated
 
-  private StringBuffer log = new StringBuffer();
+  private StringBuilder log = new StringBuilder();
 
   /**
    * Constructor, use when serviceTypeName alreaddy converted to ServiceType.
@@ -258,7 +258,7 @@ public class InvService {
     return name;
   }
 
-  protected boolean check(StringBuffer out) {
+  protected boolean check(StringBuilder out) {
     boolean isValid = true;
     if (log.length() > 0) {
       out.append(log);

@@ -235,7 +235,7 @@ public class TDServerConfigurator extends JPanel {
         InvDatasetImpl ds = (InvDatasetImpl) catTree.getSelectedDataset();
         if (ds == null) return;
 
-        StringBuffer sbuff = new StringBuffer( 20000);
+        StringBuilder sbuff = new StringBuilder( 20000);
         InvDatasetImpl.writeHtmlDescription(sbuff, ds, true, false, false, false);
         htmlViewer.setContent( ds.getName(), sbuff.toString());
         htmlWindow.show();

@@ -58,7 +58,7 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     proxy.addService( p0);
   }
 
-   boolean check(java.lang.StringBuffer p0, boolean p1) {
+   boolean check(java.lang.StringBuilder p0, boolean p1) {
     return proxy.check( p0, p1);
   }
 

@@ -85,11 +85,11 @@ public class QueryParams {
   public int time_latest;
 
   // track errors
-  public StringBuffer errs = new StringBuffer();
+  public StringBuilder errs = new StringBuilder();
   public boolean fatal;
 
   public String toString() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("queryString= " + queryString + "\n\n");
     sbuff.append("parsed=\n ");
     if (hasBB)

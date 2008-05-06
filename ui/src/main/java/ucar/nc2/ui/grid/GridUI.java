@@ -881,7 +881,7 @@ public class GridUI extends JPanel {
     public void run() {
       NetcdfDataset dataset = null;
       GridDataset gridDataset = null;
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
 
       try {
         dataset = factory.openDataset( invds, true, this, errlog);

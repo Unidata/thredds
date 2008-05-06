@@ -225,7 +225,7 @@ public class TestGribAgg implements CatalogCrawler.Listener {
   private static void findDatasetScan( String catUrl, PrintStream out) throws IOException {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     InvCatalogImpl cat = catFactory.readXML(catUrl);
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     boolean isValid = cat.check(buff, false);
     out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
     out.println(" validation output=\n" + buff);

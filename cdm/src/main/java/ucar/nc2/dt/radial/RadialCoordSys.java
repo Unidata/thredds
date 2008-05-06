@@ -48,7 +48,7 @@ public class RadialCoordSys {
    * @param cs the CoordinateSystem to test
    * @return true if it can be made into a RadialCoordSys.
    */
-  public static boolean isRadialCoordSys( StringBuffer parseInfo, CoordinateSystem cs) {
+  public static boolean isRadialCoordSys( StringBuilder parseInfo, CoordinateSystem cs) {
     return (cs.getAzimuthAxis() != null) && (cs.getRadialAxis() != null) && (cs.getElevationAxis() != null);
   }
 
@@ -59,7 +59,7 @@ public class RadialCoordSys {
    * @param v Variable to check.
    * @return the RadialCoordSys made from cs, else null.
    */
-  public static RadialCoordSys makeRadialCoordSys( StringBuffer parseInfo, CoordinateSystem cs, VariableEnhanced v) {
+  public static RadialCoordSys makeRadialCoordSys( StringBuilder parseInfo, CoordinateSystem cs, VariableEnhanced v) {
     if (parseInfo != null) {
       parseInfo.append(" ");
       v.getNameAndDimensions(parseInfo, false, true);

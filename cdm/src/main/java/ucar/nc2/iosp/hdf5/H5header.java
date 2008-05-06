@@ -413,7 +413,7 @@ class H5header {
       // find the dimensions - set length to maximum
       if (matt.name.equals("DIMENSION_LIST")) {
         Attribute att = makeAttribute(facade.name, matt.name, matt.mdt, matt.mds, matt.dataPos);
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         for (int i = 0; i < att.getLength(); i++) {
           String name = att.getStringValue(i);
           String dimName = addDimension(g, h5group, name, facade.dobj.mds.dimLength[i], facade.dobj.mds.maxLength[i] == -1);
@@ -1098,7 +1098,7 @@ class H5header {
     }
 
     public String toString() {
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       buff.append("dataPos=").append(dataPos).append(" datatype=").append(typeInfo);
       if (isChunked) {
         buff.append(" isChunked (");
@@ -1114,7 +1114,7 @@ class H5header {
     }
 
     public String extraInfo() {
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       if ((typeInfo.dataType != DataType.CHAR) && (typeInfo.dataType != DataType.STRING))
         buff.append(typeInfo.unsigned ? " unsigned" : " signed");
       if (typeInfo.byteOrder >= 0)
@@ -1199,7 +1199,7 @@ class H5header {
     }
 
     public String toString() {
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       buff.append("hdfType=").append(hdfType).append(" byteSize=").append(byteSize).append(" dataType=").append(dataType);
       buff.append(" unsigned=").append(unsigned).append(" isVString=").append(isVString).append(" vpad=").append(vpad).append(" byteOrder=").append(byteOrder);
       if (base != null)
@@ -1302,7 +1302,7 @@ class H5header {
     }
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append(getName());
       if (dobj == null) {
         sbuff.append(" dobj is NULL! ");
@@ -1886,7 +1886,7 @@ class H5header {
     boolean isPermuted;
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append(" length=(");
       for (int size : dimLength) sbuff.append(size).append(",");
       sbuff.append(") max=(");
@@ -1963,7 +1963,7 @@ class H5header {
     long maxCreationIndex = -2, fractalHeapAddress, v2BtreeAddress, v2BtreeAddressCreationOrder = -2;
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("   GroupNew fractalHeapAddress=").append(fractalHeapAddress).append(" v2BtreeAddress=").append(v2BtreeAddress);
       if (v2BtreeAddressCreationOrder > -2)
         sbuff.append(" v2BtreeAddressCreationOrder=").append(v2BtreeAddressCreationOrder);
@@ -1997,7 +1997,7 @@ class H5header {
     short maxCompactValue = -1, minDenseValue = -1, estNumEntries = -1, estLengthEntryName = -1;
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("   MessageGroupInfo ");
       if ((flags & 1) != 0)
         sbuff.append(" maxCompactValue=").append(maxCompactValue).append(" minDenseValue=").append(minDenseValue);
@@ -2034,7 +2034,7 @@ class H5header {
     long linkAddress;
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("   MessageLink ");
       sbuff.append(" name=").append(linkName).append(" type=").append(linkType);
       if (linkType == 0)
@@ -2114,7 +2114,7 @@ class H5header {
     int[] dim;
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append(" datatype= ").append(type);
       if ((type == 0) || (type == 1))
         sbuff.append(" byteSize= ").append(byteSize);
@@ -2343,7 +2343,7 @@ class H5header {
     }
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("   FillValueOld size= ").append(size).append(" value=");
       for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
       return sbuff.toString();
@@ -2391,7 +2391,7 @@ class H5header {
     }
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("   FillValue version= ").append(version).append(" spaceAllocateTime = ").append(spaceAllocateTime).append(" fillWriteTime=").append(fillWriteTime).append(" hasFillValue= ").append(hasFillValue);
       sbuff.append("\n size = ").append(size).append(" value=");
       for (int i = 0; i < size; i++) sbuff.append(" ").append(value[i]);
@@ -2409,7 +2409,7 @@ class H5header {
     int dataSize;
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append(" type= ").append(+type).append(" (");
       switch (type) {
         case 0:
@@ -2505,7 +2505,7 @@ class H5header {
     }
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("   MessageFilter filters=\n");
       for (Filter f : filters)
         sbuff.append(" ").append(f).append("\n");
@@ -2541,7 +2541,7 @@ class H5header {
 
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("   Filter id= ").append(id).append(" flags = ").append(flags).append(" nValues=").append(nValues).append(" name= ").append(name).append(" data = ");
       for (int i = 0; i < nValues; i++)
         sbuff.append(data[i]).append(" ");
@@ -2628,7 +2628,7 @@ class H5header {
     long fractalHeapAddress = -2, v2BtreeAddress = -2, v2BtreeAddressCreationOrder = -2;
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("   MessageAttributeInfo ");
       if ((flags & 1) != 0)
         sbuff.append(" maxCreationIndex=" + maxCreationIndex);
@@ -3602,7 +3602,7 @@ class H5header {
       }
 
       public String toString() {
-        StringBuffer sbuff = new StringBuffer();
+        StringBuilder sbuff = new StringBuilder();
         sbuff.append("  ChunkedDataNode size=").append(size).append(" filterMask=").append(filterMask).append(" filePos=").append(filePos).append(" offsets= ");
         for (long anOffset : offset) sbuff.append(anOffset).append(" ");
         return sbuff.toString();
@@ -4377,7 +4377,7 @@ There is _no_ datatype information stored for these sort of selections currently
   }
 
   static public String showBytes(byte[] buff) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < buff.length; i++) {
       byte b = buff[i];
       int ub = (b < 0) ? b + 256 : b;
@@ -4421,7 +4421,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
   private class MemTracker {
     private List<Mem> memList = new ArrayList<Mem>();
-    private StringBuffer sbuff = new StringBuffer();
+    private StringBuilder sbuff = new StringBuilder();
 
     private long fileSize;
 

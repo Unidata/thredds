@@ -67,7 +67,7 @@ public class CoordinateSystem {
   static public String makeName( List<CoordinateAxis> axes) {
     List<CoordinateAxis> axesSorted = new ArrayList<CoordinateAxis>( axes);
     Collections.sort( axesSorted, new CoordinateAxis.AxisComparator());
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     for (int i=0; i<axesSorted.size(); i++) {
       CoordinateAxis axis = axesSorted.get(i);
       if (i>0) buff.append(" ");

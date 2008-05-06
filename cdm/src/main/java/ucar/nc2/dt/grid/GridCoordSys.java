@@ -78,7 +78,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @return true if it can be made into a GridCoordSys.
    * @see CoordinateSystem#isGeoReferencing
    */
-  public static boolean isGridCoordSys(StringBuffer sbuff, CoordinateSystem cs) {
+  public static boolean isGridCoordSys(StringBuilder sbuff, CoordinateSystem cs) {
     if (cs.getRankDomain() < 2) {
       if (sbuff != null) {
         sbuff.append(cs.getName()).append(": domain rank < 2\n");
@@ -199,7 +199,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param v     Variable to check.
    * @return the GridCoordSys made from cs, else null.
    */
-  public static GridCoordSys makeGridCoordSys(StringBuffer sbuff, CoordinateSystem cs, VariableEnhanced v) {
+  public static GridCoordSys makeGridCoordSys(StringBuilder sbuff, CoordinateSystem cs, VariableEnhanced v) {
     if (sbuff != null) {
       sbuff.append(" ");
       v.getNameAndDimensions(sbuff, false, true);
@@ -242,7 +242,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param cs    create from this Coordinate System
    * @param sbuff place information messages here, may be null
    */
-  public GridCoordSys(CoordinateSystem cs, StringBuffer sbuff) {
+  public GridCoordSys(CoordinateSystem cs, StringBuilder sbuff) {
     super();
     this.ds = cs.getNetcdfDataset();
 
@@ -504,7 +504,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   }
 
   // we have to delay making these, since we dont identify the dimensions specifically until now
-  void makeVerticalTransform(GridDataset gds, StringBuffer parseInfo) {
+  void makeVerticalTransform(GridDataset gds, StringBuilder parseInfo) {
     if (vCT == null) return;
     if (vCT.getVerticalTransform() != null) return; // already done
 

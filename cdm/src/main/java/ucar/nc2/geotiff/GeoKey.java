@@ -131,7 +131,7 @@ class GeoKey  {
   }
 
   public String toString() {
-    StringBuffer sbuf  = new StringBuffer();
+    StringBuilder sbuf  = new StringBuilder();
     if (tag != null)
       sbuf.append(" geoKey = "+tag);
     else

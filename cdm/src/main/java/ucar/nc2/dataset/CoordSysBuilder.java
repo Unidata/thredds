@@ -349,8 +349,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   protected String conventionName = _Coordinate.Convention; // name of Convention
   protected List<VarProcess> varList = new ArrayList<VarProcess>(); // varProcess objects
   protected Map<Dimension,List<VarProcess>> coordVarMap = new HashMap<Dimension,List<VarProcess>>();
-  protected StringBuffer parseInfo = new StringBuffer();
-  protected StringBuffer userAdvice = new StringBuffer();
+  protected StringBuilder parseInfo = new StringBuilder();
+  protected StringBuilder userAdvice = new StringBuilder();
 
   protected boolean debug = false, showRejects = false;
 

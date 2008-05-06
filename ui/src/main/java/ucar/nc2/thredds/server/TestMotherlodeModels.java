@@ -56,7 +56,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     out.println("Read " + catUrl);
 
     InvCatalogImpl cat = catFactory.readXML(catUrl);
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     boolean isValid = cat.check(buff, false);
     if (!isValid) {
       System.out.println("***Catalog invalid= " + catUrl + " validation output=\n" + buff);
@@ -91,7 +91,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
 
     NetcdfDataset ncd = null;
     try {
-      StringBuffer log = new StringBuffer();
+      StringBuilder log = new StringBuilder();
       ncd = tdataFactory.openDataset( ds,  false, null, log);
 
       if (ncd == null)

@@ -273,7 +273,7 @@ public class RegularSectionLayout extends Indexer {
   ////////////////////
 
   public String toString() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < dimList.size(); i++) {
       Dim elem = dimList.get(i);
       sbuff.append("\n");

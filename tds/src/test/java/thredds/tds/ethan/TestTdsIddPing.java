@@ -33,7 +33,7 @@ public class TestTdsIddPing extends TestCase
     String catUrl = targetTdsUrl + "catalog.xml";
     System.out.println( "validate catalog: " + catUrl );
 
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
     if ( catalog == null )
     {
@@ -46,7 +46,7 @@ public class TestTdsIddPing extends TestCase
     String catUrl = targetTdsUrl + "idd/models.xml";
     System.out.println( "validate catalog: " + catUrl );
 
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
     if ( catalog == null )
     {

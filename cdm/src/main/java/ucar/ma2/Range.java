@@ -624,7 +624,7 @@ public final class Range {
    */
   public static String toString(List ranges) {
     if (ranges == null) return "";
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < ranges.size(); i++) {
       if (i > 0) sbuff.append(",");
       sbuff.append(((Range) ranges.get(i)).length());
@@ -699,7 +699,7 @@ public final class Range {
    * @deprecated use Section.toString()
    */
   public static String makeSectionSpec(List ranges) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < ranges.size(); i++) {
       Range r = (Range) ranges.get(i);
       if (i > 0) sbuff.append(",");

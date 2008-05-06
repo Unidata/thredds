@@ -52,7 +52,7 @@ public class TestCatGenTimerTask extends TestCase
     assertTrue( "Task delay in minutes <" + task.getDelayInMinutes() + "> doesn't match expected <" + taskDelayInMinutes + ">.",
                 task.getDelayInMinutes() == taskDelayInMinutes );
 
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     boolean valid = task.isValid( msg );
     assertTrue( "Task <" + task.getName() + " - " + task.getConfigDocName() + "> is not valid: " + msg,
                 valid );
@@ -75,7 +75,7 @@ public class TestCatGenTimerTask extends TestCase
     assertTrue( "Task delay in minutes <" + task.getDelayInMinutes() + "> doesn't match expected <" + taskDelayInMinutes + ">.",
                 task.getDelayInMinutes() == taskDelayInMinutes );
 
-    msg = new StringBuffer();
+    msg = new StringBuilder();
     valid = task.isValid( msg );
     assertTrue( "Task <" + task.getName() + " - " + task.getConfigDocName() + "> is not valid: " + msg,
                 valid );

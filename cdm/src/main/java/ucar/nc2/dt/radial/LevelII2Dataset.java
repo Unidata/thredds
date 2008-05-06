@@ -63,7 +63,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     return false;
   }
 
-  public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
     return new LevelII2Dataset(ncd);
   }
 
@@ -963,7 +963,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
  // ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
-    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuffer());
+    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuilder());
  // ucar.unidata.util.Trace.call2("LevelII2Dataset:main dataset");
     String st = rds.getStartDate().toString();
     String et = rds.getEndDate().toString();

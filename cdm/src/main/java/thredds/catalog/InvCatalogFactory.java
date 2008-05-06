@@ -113,7 +113,7 @@ public class InvCatalogFactory {
   private String name;
   private InvCatalogConvertIF defaultConverter;
   private SAXBuilder saxBuilder;
-  private StringBuffer warnMessages, errMessages, fatalMessages;
+  private StringBuilder warnMessages, errMessages, fatalMessages;
 
   private Map<String, InvCatalogConvertIF> converters = new HashMap<String, InvCatalogConvertIF>(10);
   private Map<String, MetadataConverterIF> metadataConverters = new HashMap<String, MetadataConverterIF>(10);
@@ -602,7 +602,7 @@ public class InvCatalogFactory {
     if (show) System.out.println(" original catalog=\n" + IO.readURLcontents(urlString));
     try {
       InvCatalogImpl cat = fac.readXML(new URI(urlString));
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       boolean isValid = cat.check(buff, false);
       System.out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
       System.out.println(" validation output=\n" + buff);

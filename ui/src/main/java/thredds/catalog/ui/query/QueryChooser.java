@@ -540,7 +540,7 @@ public class QueryChooser extends JPanel {
     // fetch the catalog
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(true); // use default factory
     InvCatalog catalog = factory.readXML(queryString);
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     if (!catalog.check(buff)) {
       javax.swing.JOptionPane.showMessageDialog(this, "Invalid catalog " + buff.toString());
       System.out.println("Invalid catalog " + buff.toString());

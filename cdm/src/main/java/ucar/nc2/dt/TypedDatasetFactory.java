@@ -128,7 +128,7 @@ public class TypedDatasetFactory {
    * @return a subclass of TypedDataset
    * @throws java.io.IOException on io error
    */
-  static public TypedDataset open( FeatureType datatype, String location, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  static public TypedDataset open( FeatureType datatype, String location, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
     // special processing for thredds: datasets
     if (location.startsWith("thredds:") && (datatype != null)) {
       ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype( location, task);
@@ -151,7 +151,7 @@ public class TypedDatasetFactory {
    * @return a subclass of TypedDataset, or null if cant find
    * @throws java.io.IOException on io error
    */
-  static public TypedDataset open( FeatureType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  static public TypedDataset open( FeatureType datatype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
 
     // look for a Factory that claims this dataset
     Class useClass = null;

@@ -47,7 +47,7 @@ public class UnidataStationObsDataset2 extends StationObsDatasetImpl implements 
     /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
   public boolean isMine(NetcdfDataset ds) { return isValidFile(ds); }
-  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+  public TypedDataset open( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
     return new UnidataStationObsDataset2( ncd);
   }
 

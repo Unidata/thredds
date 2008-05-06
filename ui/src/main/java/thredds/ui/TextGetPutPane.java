@@ -226,7 +226,7 @@ public class TextGetPutPane extends TextHistoryPane {
       if (isCatalog) {
         if (catFactory == null) catFactory = InvCatalogFactory.getDefaultFactory(true);
         InvCatalogImpl catalog = catFactory.readXML(is, uri);
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         boolean check = catalog.check(buff);
         javax.swing.JOptionPane.showMessageDialog(this,
            "Catalog Validation = " + check + "\n" +  buff.toString());

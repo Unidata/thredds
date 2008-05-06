@@ -48,7 +48,7 @@ public class TestARMTrajectoryObsDataset extends TestCase
     try
     {
       //me = TrajectoryObsDatasetFactory.open( location);
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
       me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )

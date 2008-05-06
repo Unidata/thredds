@@ -383,7 +383,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       ncfile = openDODS(location, cancelTask);
 
     } else if (location.startsWith("thredds:")) {
-      StringBuffer log = new StringBuffer();
+      StringBuilder log = new StringBuilder();
       ThreddsDataFactory tdf = new ThreddsDataFactory();
       ncfile = tdf.openDataset(location, false, cancelTask, log); // dont acquire
       if (ncfile == null)
@@ -1050,7 +1050,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Show debug / underlying implementation details
    */
   public String getDetailInfo() {
-    StringBuffer sbuff = new StringBuffer(5000);
+    StringBuilder sbuff = new StringBuilder(5000);
     sbuff.append("NetcdfDataset location= ").append(getLocation()).append("\n");
     sbuff.append("  title= ").append(getTitle()).append("\n");
     sbuff.append("  id= ").append(getId()).append("\n");

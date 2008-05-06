@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -62,8 +62,8 @@ public interface CoordTransBuilderIF {
   public TransformType getTransformType();
 
   /***
-   * Pass in a StringBuffer where error messages can be appended.
-   * @param sb use this StringBuffer to record parse and error info
+   * Pass in a StringBuilder where error messages can be appended.
+   * @param sb use this StringBuilder to record parse and error info
    */
-  public void setErrorBuffer( StringBuffer sb);
+  public void setErrorBuffer( StringBuilder sb);
 }

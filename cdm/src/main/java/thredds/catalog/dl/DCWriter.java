@@ -207,7 +207,7 @@ public class DCWriter {
     System.out.println("***read "+url);
     try {
         InvCatalogImpl cat = (InvCatalogImpl) fac.readXML(url);
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         boolean isValid = cat.check( buff, false);
         System.out.println("catalog <" + cat.getName()+ "> "+ (isValid ? "is" : "is not") + " valid");
         System.out.println(" validation output=\n" + buff);

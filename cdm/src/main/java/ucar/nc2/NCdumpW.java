@@ -389,13 +389,13 @@ public class NCdumpW {
    * @return section specification String.
    * @throws InvalidRangeException is specified section doesnt match variable shape
    */
-  public static String makeSectionString(VariableIF v, List<Range> ranges) throws InvalidRangeException {
-    StringBuffer sb = new StringBuffer();
+  public static String makeSectionString(Variable v, List<Range> ranges) throws InvalidRangeException {
+    StringBuilder sb = new StringBuilder();
     makeSpec(sb, v, ranges);
     return sb.toString();
   }
 
-  private static List<Range> makeSpec(StringBuffer sb, VariableIF v, List<Range> orgRanges) throws InvalidRangeException {
+  private static List<Range> makeSpec(StringBuilder sb, Variable v, List<Range> orgRanges) throws InvalidRangeException {
     if (v.isMemberOfStructure()) {
       orgRanges = makeSpec(sb, v.getParentStructure(), orgRanges);
       sb.append('.');
@@ -454,7 +454,7 @@ public class NCdumpW {
    * @throws IOException on write error
    * @throws InvalidRangeException is specified section doesnt match variable shape
    */
-  static public String printVariableDataSection(VariableIF v, String sectionSpec, ucar.nc2.util.CancelTask ct) throws IOException, InvalidRangeException {
+  static public String printVariableDataSection(Variable v, String sectionSpec, ucar.nc2.util.CancelTask ct) throws IOException, InvalidRangeException {
     Array data = v.read(sectionSpec);
 
     StringWriter writer = new StringWriter(20000);
@@ -685,14 +685,14 @@ public class NCdumpW {
   private static class Indent {
     private int nspaces = 0;
     private int level = 0;
-    private StringBuffer blanks;
+    private StringBuilder blanks;
     private String indent = "";
 
     // nspaces = how many spaces each level adds.
     // max 100 levels
     public Indent(int nspaces) {
       this.nspaces = nspaces;
-      blanks = new StringBuffer();
+      blanks = new StringBuilder();
       for (int i=0; i < 100*nspaces; i++)
         blanks.append(" ");
     }
@@ -970,7 +970,7 @@ public class NCdumpW {
       return;
     }
 
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (String arg : args) {
       sbuff.append(arg);
       sbuff.append(" ");

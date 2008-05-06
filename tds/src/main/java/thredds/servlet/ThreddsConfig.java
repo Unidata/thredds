@@ -115,7 +115,7 @@ public class ThreddsConfig {
     // nj22 runtime loading
     Element elem = rootElem.getChild("nj22Config");
     if (elem != null) {
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
       RuntimeConfigParser.read( elem, errlog);
       if (errlog.length() > 0)
         log.warn(errlog.toString());

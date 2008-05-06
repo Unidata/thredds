@@ -336,7 +336,7 @@ public class ThreddsDatasetChooser extends JPanel {
         InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( true);
         InvCatalog catalog = factory.readXML( urlName); //should be asynch ?
         if (catalog == null) return;
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         if (!catalog.check( buff)) {
           javax.swing.JOptionPane.showMessageDialog(this, "Invalid catalog <"+ urlName+">\n"+
             buff.toString());

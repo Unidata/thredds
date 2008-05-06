@@ -507,7 +507,7 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
 
         InvCatalogImpl catalog = (InvCatalogImpl) factory.readXML(catalogURI);
 
-        StringBuffer      buff    = new StringBuffer();
+        StringBuilder      buff    = new StringBuilder();
         if ( !catalog.check(buff)) {
             throw new IOException("Invalid catalog <" + catalogURI + ">\n"
                                   + buff.toString());
@@ -561,7 +561,7 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
         InvCatalogFactory factory = new InvCatalogFactory("default", false);
 
         InvCatalogImpl catalog = (InvCatalogImpl) factory.readXML(catalogURI);
-        StringBuffer      buff    = new StringBuffer();
+        StringBuilder      buff    = new StringBuilder();
         if ( !catalog.check(buff)) {
             throw new IOException("Invalid catalog <" + catalogURI + ">\n"
                                   + buff.toString());

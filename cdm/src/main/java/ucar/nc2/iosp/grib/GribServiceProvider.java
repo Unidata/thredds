@@ -44,7 +44,7 @@ import java.net.URL;
 public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   protected NetcdfFile ncfile;
   protected RandomAccessFile raf;
-  protected StringBuffer parseInfo = new StringBuffer();
+  protected StringBuilder parseInfo = new StringBuilder();
   protected FmrcCoordSys fmrcCoordSys;
 
   // keep this info to reopen index when extending or syncing

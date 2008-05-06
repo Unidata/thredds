@@ -797,7 +797,7 @@ public class ArrayChar extends Array {
   }
 
   public String toString() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     StringIterator ii = getStringIterator();
     int count = 0;
     while (ii.hasNext()) {

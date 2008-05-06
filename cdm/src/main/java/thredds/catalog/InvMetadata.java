@@ -39,7 +39,7 @@ public class InvMetadata {
   private Object contentObject = null;
   private ThreddsMetadata tm = null;
 
-  private StringBuffer log = new StringBuffer();
+  private StringBuilder log = new StringBuilder();
 
   /**
    * Constructor for elements with Xlinks.
@@ -280,7 +280,7 @@ public class InvMetadata {
 
   private boolean init = false;
 
-  boolean check(StringBuffer out) {
+  boolean check(StringBuilder out) {
     boolean isValid = true;
 
     if (log.length() > 0) {

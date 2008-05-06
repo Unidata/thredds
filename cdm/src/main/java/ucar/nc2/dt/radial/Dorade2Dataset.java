@@ -63,7 +63,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
     return false;
     }
 
-    public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
         return new Dorade2Dataset(ncd);
     }
 
@@ -461,7 +461,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
     String fileIn = "/home/yuanho/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";
-    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuffer());
+    RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuilder());
     String st = rds.getStartDate().toString();
     String et = rds.getEndDate().toString();
     if (rds.isStationary()) {

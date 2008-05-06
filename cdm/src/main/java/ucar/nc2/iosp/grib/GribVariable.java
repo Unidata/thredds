@@ -281,7 +281,7 @@ public class GribVariable {
 
   public String dump() {
    DateFormatter formatter = new DateFormatter();
-   StringBuffer sbuff = new StringBuffer();
+   StringBuilder sbuff = new StringBuilder();
     sbuff.append(name).append(" ").append(records.size()).append("\n");
     for (Index.GribRecord record : records) {
       sbuff.append(" level = ").append(record.levelType1).append(" ").append(record.levelValue1);

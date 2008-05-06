@@ -73,7 +73,7 @@ public class CatalogGenConfig
   public void setDatasetSource( DatasetSource dsSource)
   { this.datasetSource = dsSource; }
 
-  public boolean validate( StringBuffer out)
+  public boolean validate( StringBuilder out)
   {
     log.debug( "validate(): checking if valid");
     this.isValid = true;

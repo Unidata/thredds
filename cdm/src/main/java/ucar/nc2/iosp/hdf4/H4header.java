@@ -1016,7 +1016,7 @@ public class H4header {
     }
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("refno=");
       sbuff.append(refno);
       sbuff.append(" variable=");
@@ -1275,7 +1275,7 @@ public class H4header {
     }
 
     public String detail() {
-      StringBuffer sbuff = new StringBuffer("SPECIAL_CHUNKED ");
+      StringBuilder sbuff = new StringBuilder("SPECIAL_CHUNKED ");
       sbuff.append(" head_len=").append(head_len).append(" version=").append(version).append(" special =").append(flag).append(" elem_tot_length=").append(elem_tot_length);
       sbuff.append(" chunk_size=").append(chunk_size).append(" nt_size=").append(nt_size).append(" chunk_tbl_tag=").append(chunk_tbl_tag).append(" chunk_tbl_ref=").append(chunk_tbl_ref);
       sbuff.append("\n flag  dim  chunk\n");
@@ -1289,7 +1289,7 @@ public class H4header {
   }
 
   private String printa(int[] array) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < array.length; i++)
       sbuff.append(" ").append(array[i]);
     return sbuff.toString();
@@ -1359,7 +1359,7 @@ public class H4header {
     }
 
     public String detail() {
-      StringBuffer sbuff = new StringBuffer("SPECIAL_COMP ");
+      StringBuilder sbuff = new StringBuilder("SPECIAL_COMP ");
       sbuff.append(" version=").append(version).append(" uncompressed length =").append(uncomp_length).append(" link_ref=").append(data_ref);
       sbuff.append(" model_type=").append(model_type).append(" compress_type=").append(compress_type);
       if (compress_type == TagEnum.COMP_CODE_NBIT) {
@@ -1441,7 +1441,7 @@ public class H4header {
     public String detail() {
       if (block_ref == null) return super.detail();
 
-      StringBuffer sbuff = new StringBuffer(super.detail());
+      StringBuilder sbuff = new StringBuilder(super.detail());
       sbuff.append(" next_ref= ").append(next_ref);
       sbuff.append(" dataBlks= ");
       for (int i = 0; i < n; i++) {
@@ -1621,7 +1621,7 @@ public class H4header {
     }
 
     public String detail() {
-      StringBuffer sbuff = new StringBuffer(super.detail());
+      StringBuilder sbuff = new StringBuilder(super.detail());
       sbuff.append("   dims= ");
       for (int i = 0; i < rank; i++)
         sbuff.append(shape[i]).append(" ");
@@ -1632,7 +1632,7 @@ public class H4header {
     }
 
     public String toString() {
-      StringBuffer sbuff = new StringBuffer(super.toString());
+      StringBuilder sbuff = new StringBuilder(super.toString());
       sbuff.append("   dims= ");
       for (int i = 0; i < rank; i++)
         sbuff.append(shape[i]).append(" ");
@@ -1722,7 +1722,7 @@ public class H4header {
     }
 
     public String detail() {
-      StringBuffer sbuff = new StringBuffer(super.detail());
+      StringBuilder sbuff = new StringBuilder(super.detail());
       sbuff.append("   min= ").append(getMin(dt));
       sbuff.append("   max= ").append(getMax(dt));
       return sbuff.toString();
@@ -1751,7 +1751,7 @@ public class H4header {
     }
 
     public String detail() {
-      StringBuffer sbuff = new StringBuffer(super.detail());
+      StringBuilder sbuff = new StringBuilder(super.detail());
       sbuff.append("\n");
       sbuff.append("   tag ref\n   ");
       for (int i = 0; i < nelems; i++) {
@@ -1801,7 +1801,7 @@ public class H4header {
     }
 
     public String detail() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append(used ? " " : "*").append("refno=").append(refno).append(" tag= ").append(t).append(extended ? " EXTENDED" : "")
           .append(" offset=").append(offset).append(" length=").append(length)
           .append(((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.getName() : "");
@@ -1884,7 +1884,7 @@ public class H4header {
     }
 
     public String detail() {
-      StringBuffer sbuff = new StringBuffer(super.detail());
+      StringBuilder sbuff = new StringBuilder(super.detail());
       sbuff.append(" class= ").append(className);
       sbuff.append(" interlace= ").append(interlace);
       sbuff.append(" nvert= ").append(nvert);
@@ -1924,7 +1924,7 @@ public class H4header {
 
   private class MemTracker {
     private List<Mem> memList = new ArrayList<Mem>();
-    private StringBuffer sbuff = new StringBuffer();
+    private StringBuilder sbuff = new StringBuilder();
 
     private long fileSize;
 

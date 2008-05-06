@@ -79,7 +79,7 @@ public class GridCoordSys extends CoordinateSystem {
    * @return true if it can be made into a GridCoordSys.
    * @see CoordinateSystem#isGeoReferencing
    */
-  public static boolean isGridCoordSys(StringBuffer sbuff, CoordinateSystem cs) {
+  public static boolean isGridCoordSys(StringBuilder sbuff, CoordinateSystem cs) {
     if (cs.getRankDomain() < 2) {
       if (sbuff != null) sbuff.append(cs.getName()+" domain rank < 2\n");
       return false;
@@ -159,7 +159,7 @@ public class GridCoordSys extends CoordinateSystem {
    * @param v     Variable to check.
    * @return the GridCoordSys made from cs, else null.
    */
-  public static GridCoordSys makeGridCoordSys(StringBuffer sbuff, CoordinateSystem cs, VariableEnhanced v) {
+  public static GridCoordSys makeGridCoordSys(StringBuilder sbuff, CoordinateSystem cs, VariableEnhanced v) {
     if (sbuff != null) {
       sbuff.append(" ");
       v.getNameAndDimensions(sbuff, false, true);
@@ -416,7 +416,7 @@ public class GridCoordSys extends CoordinateSystem {
   }
 
   // we have to delay making these, since we dont identify the dimensions specifically until now
-  void makeVerticalTransform(GridDataset gds, StringBuffer parseInfo) {
+  void makeVerticalTransform(GridDataset gds, StringBuilder parseInfo) {
     if (vCT == null) return;
     if (vCT.getVerticalTransform() != null) return; // already done
 

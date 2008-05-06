@@ -671,7 +671,7 @@ public class Index implements Cloneable {
    * @return String representation
    */
   public String toStringDebug() {
-    StringBuffer sbuff = new StringBuffer(100);
+    StringBuilder sbuff = new StringBuilder(100);
     sbuff.setLength(0);
 
     sbuff.append(" shape= ");
@@ -708,7 +708,7 @@ public class Index implements Cloneable {
   }
 
   public String toString() {
-    StringBuffer sbuff = new StringBuffer(100);
+    StringBuilder sbuff = new StringBuilder(100);
     sbuff.setLength(0);
     for (int ii = 0; ii < rank; ii++) {
       if (ii > 0) sbuff.append(",");

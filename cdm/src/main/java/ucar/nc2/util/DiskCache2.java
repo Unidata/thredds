@@ -232,7 +232,7 @@ public class DiskCache2 {
    * @param sbuff status messages here, may be null
    * @param isRoot delete empty directories, bit not root directory
    */
-  public void cleanCache(File dir, StringBuffer sbuff, boolean isRoot) {
+  public void cleanCache(File dir, StringBuilder sbuff, boolean isRoot) {
     long now = System.currentTimeMillis();
     File[] files = dir.listFiles();
     if (files == null) {
@@ -271,7 +271,7 @@ public class DiskCache2 {
     CacheScourTask( ) { }
 
     public void run() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("CacheScourTask on").append(root).append("\n");
       cleanCache( new File(root), sbuff, true);
       sbuff.append("----------------------\n");
@@ -305,7 +305,7 @@ public class DiskCache2 {
     make(dc, "http://www.unidata.ucar.edu/some/enc hanted/eve'ning/nowrite.gibberish");
 
     dc.showCache( System.out);
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     dc.cleanCache(new File( dc.getRootDirectory()), sbuff, true);
     System.out.println(sbuff);
   }

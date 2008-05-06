@@ -156,15 +156,15 @@ public class CF1Convention extends CSMConvention {
     try { // p(k) = p0 * exp(-lev(k))
       double p0 = p0Var.readScalarDouble();
       Array levelData = levelVar.read();
-      Array pressureData = Array.factory(double.class, levelData.getShape() );
+      Array pressureData = Array.factory(double.class, levelData.getShape());
       IndexIterator ii = levelData.getIndexIterator();
       IndexIterator iip = pressureData.getIndexIterator();
-      while (ii.hasNext())  {
-        double val = p0 * Math.exp( -1.0 * ii.getDoubleNext());
+      while (ii.hasNext()) {
+        double val = p0 * Math.exp(-1.0 * ii.getDoubleNext());
         iip.setDoubleNext(val);
       }
 
-      CoordinateAxis1D p = new CoordinateAxis1D( ds, null, v.getShortName()+"_pressure", DataType.DOUBLE,
+      CoordinateAxis1D p = new CoordinateAxis1D(ds, null, v.getShortName() + "_pressure", DataType.DOUBLE,
               levelVar.getDimensionsString(), units,
               "Vertical Pressure coordinate synthesized from atmosphere_ln_pressure_coordinate formula");
       p.setCachedData(pressureData, false);
@@ -210,22 +210,31 @@ public class CF1Convention extends CSMConvention {
 
     AxisType at = super.getAxisType(ncDataset, v);
 
-    // last choice is using axis attribute - only for Z
+    // last choice is using axis attribute - only for X, Y, Z
     if (at == null) {
       String axis = ncDataset.findAttValueIgnoreCase((Variable) v, "axis", null);
-       if (axis != null) {
-         axis = axis.trim();
-         if (axis.equalsIgnoreCase("Z")) {
-           String unit = ncDataset.findAttValueIgnoreCase((Variable) v, "unit", null);
-           if (unit == null ) return AxisType.GeoZ;
-           if (SimpleUnit.isCompatible("m", unit))
-             return AxisType.Height;
-           else if (SimpleUnit.isCompatible("mbar", unit))
-             return AxisType.Pressure;
-           else
-             return AxisType.GeoZ;
-          }
-       }
+      if (axis != null) {
+        axis = axis.trim();
+        String unit = v.getUnitsString();
+
+        if (axis.equalsIgnoreCase("X")) {
+          if (SimpleUnit.isCompatible("m", unit))
+            return AxisType.GeoX;
+
+        } else if (axis.equalsIgnoreCase("Y")) {
+          if (SimpleUnit.isCompatible("m", unit))
+            return AxisType.GeoY;
+
+        } else if (axis.equalsIgnoreCase("Z")) {
+          if (unit == null) return AxisType.GeoZ;
+          if (SimpleUnit.isCompatible("m", unit))
+            return AxisType.Height;
+          else if (SimpleUnit.isCompatible("mbar", unit))
+            return AxisType.Pressure;
+          else
+            return AxisType.GeoZ;
+        }
+      }
     }
 
     return at;
@@ -233,29 +242,30 @@ public class CF1Convention extends CSMConvention {
 
   /**
    * Assign CoordinateTransform objects to Coordinate Systems.
-   *
-  protected void assignCoordinateTransforms(NetcdfDataset ncDataset) {
-    super.assignCoordinateTransforms(ncDataset);
-
-    // need to explicitly assign vertical transforms
-    for (int i = 0; i < varList.size(); i++) {
-      VarProcess vp = (VarProcess) varList.get(i);
-      if (vp.isCoordinateTransform && (vp.ct != null) && (vp.ct.getTransformType() == TransformType.Vertical)) {
-        List domain = getFormulaDomain(ncDataset, vp.v);
-        if (null == domain) continue;
-
-        List csList = ncDataset.getCoordinateSystems();
-        for (int j = 0; j < csList.size(); j++) {
-          CoordinateSystem cs = (CoordinateSystem) csList.get(j);
-          if (!cs.containsAxis(vp.v.getShortName())) continue; // cs must contain the vertical axis
-          if (cs.containsDomain(domain)) { // cs must contain the formula domain
-            cs.addCoordinateTransform(vp.ct);
-            parseInfo.append(" assign (CF) coordTransform " + vp.ct + " to CoordSys= " + cs + "\n");
-          }
-        }
-      }
-    }
-  }   */
+   * <p/>
+   * protected void assignCoordinateTransforms(NetcdfDataset ncDataset) {
+   * super.assignCoordinateTransforms(ncDataset);
+   * <p/>
+   * // need to explicitly assign vertical transforms
+   * for (int i = 0; i < varList.size(); i++) {
+   * VarProcess vp = (VarProcess) varList.get(i);
+   * if (vp.isCoordinateTransform && (vp.ct != null) && (vp.ct.getTransformType() == TransformType.Vertical)) {
+   * List domain = getFormulaDomain(ncDataset, vp.v);
+   * if (null == domain) continue;
+   * <p/>
+   * List csList = ncDataset.getCoordinateSystems();
+   * for (int j = 0; j < csList.size(); j++) {
+   * CoordinateSystem cs = (CoordinateSystem) csList.get(j);
+   * if (!cs.containsAxis(vp.v.getShortName())) continue; // cs must contain the vertical axis
+   * if (cs.containsDomain(domain)) { // cs must contain the formula domain
+   * cs.addCoordinateTransform(vp.ct);
+   * parseInfo.append(" assign (CF) coordTransform " + vp.ct + " to CoordSys= " + cs + "\n");
+   * }
+   * }
+   * }
+   * }
+   * }
+   */
 
   // run through all the variables in the formula, and get their domain (list of dimensions)
   private List getFormulaDomain(NetcdfDataset ds, Variable v) {

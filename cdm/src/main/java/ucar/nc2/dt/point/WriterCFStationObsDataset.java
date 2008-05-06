@@ -501,7 +501,7 @@ public class WriterCFStationObsDataset {
     long start = System.currentTimeMillis();
 
     String location = "C:/data/metars/Surface_METAR_20070329_0000.nc";
-    StringBuffer errlog = new StringBuffer();
+    StringBuilder errlog = new StringBuilder();
     StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, location, null, errlog);
 
     String fileOut = "C:/temp/Surface_METAR_20070329_0000.stream.nc";
@@ -544,7 +544,7 @@ public class WriterCFStationObsDataset {
     NetcdfFile ncfile = inMemory ? NetcdfFile.openInMemory(fileIn) : NetcdfFile.open(fileIn);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
 
-    StringBuffer errlog = new StringBuffer();
+    StringBuilder errlog = new StringBuilder();
     StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, ncd, null, errlog);
 
     List<Station> stns = sobs.getStations();

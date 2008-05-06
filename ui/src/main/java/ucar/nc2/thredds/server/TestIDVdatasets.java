@@ -68,7 +68,7 @@ public class TestIDVdatasets {
     InvCatalogImpl cat;
     try {
       cat = catFactory.readXML(catName);
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       boolean isValid = cat.check( buff, false);
       out.println("catalog <" + cat.getName()+ "> "+ (isValid ? "is" : "is not") + " valid");
       out.println(" validation output=\n" + buff);

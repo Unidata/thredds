@@ -76,7 +76,7 @@ public class TestServerSite extends TestCase
   /** Test that top Tomcat page is OK. */
   public void testServerSiteTomcat()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = getResponseToAGetRequest( wc, targetUrlTomcat, curLog );
     assertTrue( curLog.toString(), resp != null );
 
@@ -93,7 +93,7 @@ public class TestServerSite extends TestCase
    */
   public void testServerSiteTopCatalog()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "catalog.xml", curLog );
     assertTrue( curLog.toString(), resp != null );
 
@@ -112,7 +112,7 @@ public class TestServerSite extends TestCase
   /** Crawl /thredds/catalog.html tree. */
   public void testServerSiteTop()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = getResponseToAGetRequest( wc, targetUrl, curLog );
     assertTrue( curLog.toString(), resp != null );
 
@@ -129,7 +129,7 @@ public class TestServerSite extends TestCase
   /** Crawl TDS Docs pages. */
   public void testServerSiteDocsTop()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "docs/", curLog );
     assertTrue( curLog.toString(), resp != null );
 
@@ -145,7 +145,7 @@ public class TestServerSite extends TestCase
 
   public void testServerSiteValidateTopCatalog()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "catalog?cmd=validate", curLog );
     assertTrue( curLog.toString(), resp != null );
 
@@ -179,7 +179,7 @@ public class TestServerSite extends TestCase
       return;
     }
 
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
 
     // Test with tdsConfig authentication
     //wc.setAuthorization( tdsConfigUser, tdsConfigWord );
@@ -337,7 +337,7 @@ public class TestServerSite extends TestCase
     // Test with tdsConfig authentication
     wc.setAuthorization( tdsConfigUser, tdsConfigWord );
 
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "content/", curLog );
     assertTrue( curLog.toString(), resp != null );
     String respUrlString = resp.getURL().toString();
@@ -387,7 +387,7 @@ public class TestServerSite extends TestCase
     // Test with tdsConfig authentication
     wc.setAuthorization( tdsConfigUser, tdsConfigWord );
 
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "cataloggen/admin/", curLog );
     assertTrue( curLog.toString(), resp != null );
     String respUrlString = resp.getURL().toString();
@@ -439,7 +439,7 @@ public class TestServerSite extends TestCase
 
   public void testServerSiteDqcServletHtml()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "dqc/", curLog );
     assertTrue( curLog.toString(), resp != null );
     String respUrlString = resp.getURL().toString();
@@ -492,7 +492,7 @@ public class TestServerSite extends TestCase
 
   public void testServerSiteDqcServletXml()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = getResponseToAGetRequest( wc, targetUrl + "dqc/catalog.xml", curLog );
     assertTrue( curLog.toString(), resp != null );
 
@@ -508,7 +508,7 @@ public class TestServerSite extends TestCase
     }
   }
 
-  protected static boolean checkInvCatalog( WebResponse resp, StringBuffer curLog )
+  protected static boolean checkInvCatalog( WebResponse resp, StringBuilder curLog )
   {
     String respUrlString = resp.getURL().toString();
 
@@ -538,7 +538,7 @@ public class TestServerSite extends TestCase
     return checkInvCatalog( catDoc, respUrlString, curLog );
   }
 
-  protected static boolean checkInvCatalog( Document catDoc, String respUrlString, StringBuffer curLog )
+  protected static boolean checkInvCatalog( Document catDoc, String respUrlString, StringBuilder curLog )
   {
     // Get InvCatalogImp of this response.
     InvCatalogImpl cat = null;
@@ -562,7 +562,7 @@ public class TestServerSite extends TestCase
     return true;
   }
 
-  protected static boolean crawlCatalogTree( WebConversation wc, WebResponse resp, StringBuffer curLog, int curCrawlDepth, int maxCrawlDepth )
+  protected static boolean crawlCatalogTree( WebConversation wc, WebResponse resp, StringBuilder curLog, int curCrawlDepth, int maxCrawlDepth )
   {
     if ( curCrawlDepth + 1 > maxCrawlDepth ) return true;
     curCrawlDepth++;
@@ -636,7 +636,7 @@ public class TestServerSite extends TestCase
     return( success );
   }
 
-  protected static boolean crawlHtmlTree( WebConversation wc, WebResponse resp, StringBuffer curLog, int curCrawlDepth, int maxCrawlDepth )
+  protected static boolean crawlHtmlTree( WebConversation wc, WebResponse resp, StringBuilder curLog, int curCrawlDepth, int maxCrawlDepth )
   {
     if ( curCrawlDepth + 1 > maxCrawlDepth ) return true;
     curCrawlDepth++;
@@ -696,7 +696,7 @@ public class TestServerSite extends TestCase
     return( success);
   }
 
-  protected static boolean checkResponseCodeOk( WebResponse resp, StringBuffer log )
+  protected static boolean checkResponseCodeOk( WebResponse resp, StringBuilder log )
   {
     String respUrlString = resp.getURL().toString();
     int respCode = resp.getResponseCode();
@@ -708,7 +708,7 @@ public class TestServerSite extends TestCase
     return true;
   }
 
-  protected static WebResponse getResponseToAGetRequest( WebConversation wc, String reqUrl, StringBuffer curLog )
+  protected static WebResponse getResponseToAGetRequest( WebConversation wc, String reqUrl, StringBuilder curLog )
   {
     WebRequest req = new GetMethodWebRequest( reqUrl );
     WebResponse resp;
@@ -734,7 +734,7 @@ public class TestServerSite extends TestCase
     return resp;
   }
 
-  protected static boolean checkTitle( WebResponse resp, String title, StringBuffer curLog )
+  protected static boolean checkTitle( WebResponse resp, String title, StringBuilder curLog )
   {
     String respUrlString = resp.getURL().toString();
     String pageTitle = null;
@@ -761,7 +761,7 @@ public class TestServerSite extends TestCase
     return true;
   }
 
-  protected static boolean checkLinkExistence( WebResponse resp, String linkText, StringBuffer curLog )
+  protected static boolean checkLinkExistence( WebResponse resp, String linkText, StringBuilder curLog )
   {
     String respUrlString = resp.getURL().toString();
     WebLink link = null;
@@ -782,7 +782,7 @@ public class TestServerSite extends TestCase
     return true;
   }
 
-  protected boolean checkTableCellText( WebResponse resp, WebTable table, int headerRow, int headerCol, String headerText, StringBuffer curLog )
+  protected boolean checkTableCellText( WebResponse resp, WebTable table, int headerRow, int headerCol, String headerText, StringBuilder curLog )
   {
     String respUrlString = resp.getURL().toString();
     String headerCellAsText = table.getCellAsText( headerRow, headerCol );

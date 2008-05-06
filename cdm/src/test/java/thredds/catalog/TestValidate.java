@@ -14,7 +14,7 @@ public class TestValidate extends TestCase {
   public String open(String catalogName, boolean shouldValidate) {
     catalogName = "file:///"+TestCatalogAll.dataDir +"/"+ catalogName;
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
 
     try {
       InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( showValidation);

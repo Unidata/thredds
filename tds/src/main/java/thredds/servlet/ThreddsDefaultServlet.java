@@ -865,7 +865,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     }
 
     public void run() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       DiskCache.cleanCache(maxBytes, sbuff); // 1 Gbyte
       sbuff.append("----------------------\n");
       cacheLog.info(sbuff.toString());

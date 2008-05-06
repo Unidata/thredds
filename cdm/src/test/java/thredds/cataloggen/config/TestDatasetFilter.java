@@ -36,7 +36,7 @@ public class TestDatasetFilter extends TestCase
 
   private DatasetSource dsSource = null;
 
-  private StringBuffer out = null;
+  private StringBuilder out = null;
 
   private DatasetFilter me = null;
 
@@ -72,7 +72,7 @@ public class TestDatasetFilter extends TestCase
 
     dsSource = DatasetSource.newDatasetSource( "dsSource", DatasetSourceType.LOCAL, DatasetSourceStructure.DIRECTORY_TREE, "access point 1", null );
 
-    out = new StringBuffer();
+    out = new StringBuilder();
 
     me = new DatasetFilter( dsSource, name1, type1, matchPattern1);
 
@@ -127,21 +127,21 @@ public class TestDatasetFilter extends TestCase
     assertTrue( out.toString(), bool );
 
     // Test DatasetFilter.validate() when name is null
-    out = new StringBuffer();
+    out = new StringBuilder();
     me.setName( null);
     bool = me.validate( out);
     assertFalse( out.toString(), bool );
     me.setName( name1);
 
     // Test DatasetFilter.validate() when name is ""
-    out = new StringBuffer();
+    out = new StringBuilder();
     me.setName( "");
     bool = me.validate( out);
     assertTrue( out.toString(), bool );
     me.setName( name1);
 
     // Test DatasetFilter.validate() when type is null
-    out = new StringBuffer();
+    out = new StringBuilder();
     me.setType( null);
     bool = me.validate( out);
     assertFalse( out.toString(), bool );
@@ -149,7 +149,7 @@ public class TestDatasetFilter extends TestCase
 
     // Test DatasetFilter.validate():
     //   if type is RegEx, matchPattern can't be null
-    out = new StringBuffer();
+    out = new StringBuilder();
     me.setType( type1);
     me.setMatchPattern( null);
     bool = me.validate( out);

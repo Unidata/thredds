@@ -308,7 +308,7 @@ public class StationObsDatasetInfo {
 
     // String url = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NDFD/CONUS_5km/NDFD-CONUS_5km_best.ncd";
 
-    StationObsDataset ncd = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuffer());
+    StationObsDataset ncd = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuilder());
     StationObsDatasetInfo info = new StationObsDatasetInfo(ncd, null);
     FileOutputStream fos2 = new FileOutputStream("C:/TEMP/stationCollection.xml");
     GZIPOutputStream zout =  new GZIPOutputStream( fos2);

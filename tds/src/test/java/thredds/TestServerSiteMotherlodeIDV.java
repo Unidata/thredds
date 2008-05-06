@@ -54,7 +54,7 @@ public class TestServerSiteMotherlodeIDV extends TestCase
 
   public void testIdvCatalog()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = TestServerSite.getResponseToAGetRequest( wc, targetUrl + "idv/rt-models.1.0.xml", curLog );
     assertTrue( curLog.toString(), resp != null );
 
@@ -79,7 +79,7 @@ public class TestServerSiteMotherlodeIDV extends TestCase
 
   public void testIdvCatalogOld()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = TestServerSite.getResponseToAGetRequest( wc, targetUrl + "idv/rt-models.xml", curLog );
     assertTrue( curLog.toString(), resp != null );
 
@@ -111,7 +111,7 @@ public class TestServerSiteMotherlodeIDV extends TestCase
 
   public void testIdvLatestDatasets()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp;
 
     for ( int i = 0; i < queryStrings.length; i++ )
@@ -134,7 +134,7 @@ public class TestServerSiteMotherlodeIDV extends TestCase
 
   public void testIdvLatestDatasetsOld()
   {
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp;
 
     for ( int i = 0; i < queryStrings.length; i++ )
@@ -162,7 +162,7 @@ public class TestServerSiteMotherlodeIDV extends TestCase
     }
   }
 
-  protected static boolean checkCatalogResolverDatasets( WebConversation wc, WebResponse resp, StringBuffer curLog )
+  protected static boolean checkCatalogResolverDatasets( WebConversation wc, WebResponse resp, StringBuilder curLog )
   {
     String respUrlString = resp.getURL().toString();
 

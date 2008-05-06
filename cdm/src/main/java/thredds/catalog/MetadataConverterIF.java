@@ -65,7 +65,7 @@ public interface MetadataConverterIF {
    * @param out : print errors here
    * @return true if no fatal validation errors.
    */
-  public boolean validateMetadataContent(Object contentObject, StringBuffer out);
+  public boolean validateMetadataContent(Object contentObject, StringBuilder out);
 
 
 }

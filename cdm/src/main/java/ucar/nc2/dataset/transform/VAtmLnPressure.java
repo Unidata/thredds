@@ -20,24 +20,29 @@
 
 package ucar.nc2.dataset.transform;
 
-import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.TransformType;
+import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
-import ucar.unidata.geoloc.vertical.AtmosSigma;
 import ucar.unidata.util.Parameter;
+import ucar.unidata.geoloc.vertical.AtmosSigma;
+import ucar.unidata.geoloc.vertical.AtmosLnPressure;
 
 import java.util.StringTokenizer;
 
 /**
- * Create a atmosphere_sigma_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
- *  *
+ * Class Description.
+ *
  * @author caron
+ * @since May 6, 2008
  */
-public class VAtmSigma extends AbstractCoordTransBuilder {
-  private String sigma="", ps="", ptop="";
+public class VAtmLnPressure extends AbstractCoordTransBuilder {
+  private String p0, lev;
 
   public String getTransformName() {
-    return "atmosphere_sigma_coordinate";
+    return "atmosphere_ln_pressure_coordinate";
   }
 
   public TransformType getTransformType() {
@@ -52,34 +57,31 @@ public class VAtmSigma extends AbstractCoordTransBuilder {
     StringTokenizer stoke = new StringTokenizer(formula_terms);
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken();
-      if (toke.equalsIgnoreCase("sigma:"))
-        sigma = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("ps:"))
-        ps = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("ptop:"))
-        ptop = stoke.nextToken();
+      if (toke.equalsIgnoreCase("p0:"))
+        p0 = stoke.nextToken();
+      else if (toke.equalsIgnoreCase("lev:"))
+        lev = stoke.nextToken();
     }
 
     CoordinateTransform rs = new VerticalCT("AtmSigma_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.Sigma, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
+    rs.addParameter(new Parameter("formula", "pressure(z) = p0 * exp(-lev(k))"));
 
-    rs.addParameter(new Parameter("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
-
-    if (!addParameter( rs, AtmosSigma.PS, ds, ps)) return null;
-    if (!addParameter( rs, AtmosSigma.SIGMA, ds, sigma)) return null;
-    if (!addParameter( rs, AtmosSigma.PTOP, ds, ptop)) return null;
+    if (!addParameter( rs, AtmosLnPressure.P0, ds, p0)) return null;
+    if (!addParameter( rs, AtmosLnPressure.LEV, ds, lev)) return null;
 
     return rs;
   }
 
-  public String toString() { 
-    return "Sigma:" + "sigma:"+sigma + " ps:"+ps + " ptop:"+ptop;
+  public String toString() {
+    return "AtmLnPressure:" + "p0:"+p0 + " lev:"+lev;
   }
 
 
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return new AtmosSigma(ds, timeDim, vCT.getParameters());
+    return new AtmosLnPressure(ds, timeDim, vCT.getParameters());
   }
 }
+
 

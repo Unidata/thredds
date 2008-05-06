@@ -245,7 +245,7 @@ public class DiskCache {
    * @param cutoff earliest date to allow
    * @param sbuff write results here, null is ok.
    */
-  static public void cleanCache(Date cutoff, StringBuffer sbuff) {
+  static public void cleanCache(Date cutoff, StringBuilder sbuff) {
     if (sbuff != null) sbuff.append("CleanCache files before ").append(cutoff).append("\n");
     File dir = new File(root);
     for (File file : dir.listFiles()) {
@@ -263,7 +263,7 @@ public class DiskCache {
    * @param maxBytes max number of bytes in cache.
    * @param sbuff write results here, null is ok.
    */
-  static public void cleanCache(long maxBytes, StringBuffer sbuff) {
+  static public void cleanCache(long maxBytes, StringBuilder sbuff) {
     cleanCache( maxBytes, new FileLengthComparator(), sbuff);
   }
 
@@ -274,7 +274,7 @@ public class DiskCache {
    * @param fileComparator sort files first with this
    * @param sbuff write results here, null is ok.
    */
-  static public void cleanCache(long maxBytes, Comparator fileComparator, StringBuffer sbuff) {
+  static public void cleanCache(long maxBytes, Comparator fileComparator, StringBuilder sbuff) {
     if (sbuff != null) sbuff.append("CleanCache maxBytes= ").append(maxBytes).append("\n");
 
     File dir = new File(root);
@@ -332,7 +332,7 @@ public class DiskCache {
     make("http://www.unidata.ucar.edu/some/enc hanted/eve'ning/nowrite.gibberish");
 
     showCache( System.out);
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     cleanCache(1000*1000*10, sbuff);
     System.out.println(sbuff);
   }

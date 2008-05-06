@@ -371,7 +371,7 @@ public class Section {
    * @return index section String specification
    */
   public String toString() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < list.size(); i++) {
       Range r = list.get(i);
       if (i > 0) sbuff.append(",");

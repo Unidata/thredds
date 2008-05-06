@@ -381,9 +381,9 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   } */
 
   private SAXBuilder saxBuilder;
-  private StringBuffer warnMessages = new StringBuffer();
-  private StringBuffer errMessages = new StringBuffer();
-  private StringBuffer fatalMessages = new StringBuffer();
+  private StringBuilder warnMessages = new StringBuilder();
+  private StringBuilder errMessages = new StringBuilder();
+  private StringBuilder fatalMessages = new StringBuilder();
 
   public XMLEntityResolver(boolean validate) {
     saxBuilder = hasXerces ? new SAXBuilder( validate) : new SAXBuilder("org.apache.xerces.parsers.SAXParser", validate);
@@ -397,9 +397,9 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   }
 
   public SAXBuilder getSAXBuilder() { return saxBuilder; }
-  public StringBuffer getWarningMessages() { return warnMessages; }
-  public StringBuffer getErrorMessages() { return errMessages; }
-  public StringBuffer getFatalMessages() { return fatalMessages; }
+  public StringBuilder getWarningMessages() { return warnMessages; }
+  public StringBuilder getErrorMessages() { return errMessages; }
+  public StringBuilder getFatalMessages() { return fatalMessages; }
   // public String getVersion() { return version; }
 
   // we read the DTD/schema locally if we can.

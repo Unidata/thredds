@@ -107,7 +107,7 @@ public class CatalogCrawler {
   public int crawl(String catUrl, CancelTask task, PrintStream out) {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     InvCatalogImpl cat = catFactory.readXML(catUrl);
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     boolean isValid = cat.check(buff, false);
 
     if (out != null) {

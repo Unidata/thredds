@@ -33,6 +33,7 @@
     <option name="DEPLOY_AFTER_MAKE" value="2" />
     <excludeFromCompile>
       <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml" />
+      <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/xml/TestUnicode.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
@@ -335,7 +336,7 @@
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/../../../target/classes" />
   </component>
   <component name="ResourceManagerContainer">

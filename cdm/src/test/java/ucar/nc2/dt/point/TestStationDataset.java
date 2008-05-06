@@ -28,7 +28,7 @@ public class TestStationDataset extends TestCase {
 
   public void testMadis() throws IOException {
     String filename = ucar.nc2.TestAll.upcShareTestDataDir+"point/netcdf/madis.nc";
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     long start = System.currentTimeMillis();
     PointObsDataset pods = (PointObsDataset) TypedDatasetFactory.open( FeatureType.POINT, filename, null, sbuff);
     long took = System.currentTimeMillis() - start;
@@ -123,7 +123,7 @@ public class TestStationDataset extends TestCase {
       else {
         System.out.println("\ndoOneFromEach="+file.getPath());
         try {
-          PointObsDataset pod = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, file.getPath(), null, new StringBuffer());
+          PointObsDataset pod = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, file.getPath(), null, new StringBuilder());
           //if (null != pobs) testAllMethods(pobs);
         } catch (Exception e) {
           e.printStackTrace();
@@ -146,7 +146,7 @@ public class TestStationDataset extends TestCase {
   }
 
   private void testAllMethods(String location) throws IOException {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     StationObsDataset sod = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, location, null, sbuff);
     assert sod != null : sbuff.toString();
 

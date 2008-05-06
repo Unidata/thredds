@@ -44,8 +44,8 @@ import java.io.OutputStream;
  */
 public class NetcdfDatasetInfo {
   private NetcdfDataset ds;
-  private StringBuffer parseInfo = new StringBuffer();
-  private StringBuffer userAdvice = new StringBuffer();
+  private StringBuilder parseInfo = new StringBuilder();
+  private StringBuilder userAdvice = new StringBuilder();
   private String coordSysBuilderName;
 
   NetcdfDatasetInfo( NetcdfDataset ds) {
@@ -54,16 +54,16 @@ public class NetcdfDatasetInfo {
 
   /**
    * Detailed information when the coordinate systems were parsed
-   * @return StringBuffer containing parsing info
+   * @return StringBuilder containing parsing info
    */
-  public StringBuffer getParseInfo( ) {
+  public StringBuilder getParseInfo( ) {
     return parseInfo;
   }
   /**
    * Specific advice to a user about problems with the coordinate information in the file.
-   * @return StringBuffer containing advice to a user about problems with the coordinate information in the file.
+   * @return StringBuilder containing advice to a user about problems with the coordinate information in the file.
    */
-  public StringBuffer getUserAdvice( ) {
+  public StringBuilder getUserAdvice( ) {
     return userAdvice;
   }
 
@@ -245,7 +245,7 @@ public class NetcdfDatasetInfo {
   }
 
   private String getDecl( VariableEnhanced ve) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(ve.getDataType().toString());
     sb.append(" ");
     ve.getNameAndDimensions(sb, true, true);
@@ -258,7 +258,7 @@ public class NetcdfDatasetInfo {
       CoordinateSystem cs = (CoordinateSystem) csList.get(0);
       return cs.getName();
     } else if (csList.size() > 1) {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for (int i = 0; i < csList.size(); i++) {
         CoordinateSystem cs = (CoordinateSystem) csList.get(i);
         if (i > 0) sb.append(";");

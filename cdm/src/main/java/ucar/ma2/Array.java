@@ -777,7 +777,7 @@ public abstract class Array {
   abstract void setObject(int elem, Object value);  
 
   public String toString() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     IndexIterator ii = getIndexIterator();
     while (ii.hasNext()) {
       Object data = ii.getObjectNext();
@@ -794,7 +794,7 @@ public abstract class Array {
   public String shapeToString() {
     int[] shape = getShape();
     if (shape.length == 0) return "";
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append('(');
     for (int i = 0; i < shape.length; i++) {
       int s = shape[i];

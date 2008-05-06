@@ -41,7 +41,7 @@ public class TimeStationObs {
     StationObsDataset sod = null;
     try {
       if (debug) System.out.println("scanStation open "+url);
-      sod = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuffer());
+      sod = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuilder());
 
       Station s = sod.getStation(station);
       if (s == null) return;
@@ -70,7 +70,7 @@ public class TimeStationObs {
     PointObsDataset dataset = null;
     try {
       if (debug) System.out.println("scanAll open "+url);
-      dataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, url, null, new StringBuffer());
+      dataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, url, null, new StringBuilder());
 
       DataIterator iter = dataset.getDataIterator(0);
       while (iter.hasNext()) {

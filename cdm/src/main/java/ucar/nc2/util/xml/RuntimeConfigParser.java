@@ -45,7 +45,7 @@ import ucar.nc2.constants.FeatureType;
  */
 public class RuntimeConfigParser {
 
-    public static void read(InputStream is, StringBuffer errlog) throws IOException {
+    public static void read(InputStream is, StringBuilder errlog) throws IOException {
 
       Document doc;
       SAXBuilder saxBuilder = new SAXBuilder();
@@ -58,7 +58,7 @@ public class RuntimeConfigParser {
       read( doc.getRootElement(), errlog);
     }
 
-    public static void read(org.jdom.Element root, StringBuffer errlog) {
+    public static void read(org.jdom.Element root, StringBuilder errlog) {
 
       List children = root.getChildren();
       for (int i = 0; i < children.size(); i++) {

@@ -264,7 +264,7 @@ public class Group {
    * @return name and attributes String.
    */
   public String getNameAndAttributes() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("Group ");
     sbuff.append(getShortName());
     sbuff.append("\n");

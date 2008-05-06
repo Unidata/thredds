@@ -1235,7 +1235,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
  return contentObject;  */
 
   // dummy LOOK
-  public boolean validateMetadataContent(Object contentObject, StringBuffer out) { return true; }
+  public boolean validateMetadataContent(Object contentObject, StringBuilder out) { return true; }
 
   public void addMetadataContent( org.jdom.Element mdataElement, Object contentObject) { }
 

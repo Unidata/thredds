@@ -275,7 +275,7 @@ public class ServerMethods {
 
   public List<Station> getStationsOld( String dqcLocation ) {
 
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
       try {
 
       DqcFactory dqcFactory = new DqcFactory(true);

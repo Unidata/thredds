@@ -17,7 +17,7 @@ public class TestResolve1 extends TestCase {
   public void testResolve() {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     boolean isValid = cat.check(buff, false);
     System.out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
     System.out.println(" validation output=\n" + buff);

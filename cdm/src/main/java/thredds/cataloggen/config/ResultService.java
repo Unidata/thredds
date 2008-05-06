@@ -89,7 +89,7 @@ public class ResultService extends InvService
    * @param out StringBuffer with validation messages.
    * @return boolean true if valid, false if invalid
    */
-  protected boolean validate( StringBuffer out)
+  protected boolean validate( StringBuilder out)
   {
     this.isValid = true;
 

@@ -79,7 +79,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   protected NetcdfFile ncfile;
   protected RandomAccessFile raf;
-  protected StringBuffer parseInfo = new StringBuffer();
+  protected StringBuilder parseInfo = new StringBuilder();
 
   private Index2NC delegate;
   private Index index;
@@ -1109,10 +1109,9 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     // inner structure
     if (v2.getName().startsWith("record.level")) {
+      imembers = new StructureMembers("level");
       member = imembers.addMember(v2.getShortName(), v2.getDescription(),
           v2.getUnitsString(), v2.getDataType(), v2.getShape());
-      imembers = new StructureMembers("level");
-      imembers.addMember(member);
       ias = new ArraySequenceNested(imembers, shape[0]);
       int currOb = -1;
       int idx = 0;

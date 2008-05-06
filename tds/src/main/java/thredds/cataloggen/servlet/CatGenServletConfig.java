@@ -107,7 +107,7 @@ class CatGenServletConfig
         this.configTaskHashByConfigDocName.put( curTask.getConfigDocName(), curTask);
         log.debug( "CatGenServletConfig(): task name = " + curTask.getName());
 
-        StringBuffer msg = new StringBuffer();
+        StringBuilder msg = new StringBuilder();
         if ( ! curTask.isValid( msg ))
         {
           log.warn( "ctor(): not scheduling invalid task <" + curTask.getName() + ">: " + msg.toString());
@@ -190,7 +190,7 @@ class CatGenServletConfig
     this.writeConfig();
 
     log.debug( "addTask(): added task <" + task.getName() + "> to config." );
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     if ( ! task.isValid( msg ) )
     {
       log.warn( "addTask(): invalid task <" + task.getName() + ">, not scheduling: " + msg.toString() );
@@ -255,7 +255,7 @@ class CatGenServletConfig
 
       CatGenTimerTask newTask = new CatGenTimerTask( task );
       newTask.init( this.resultPath, this.configPath );
-      StringBuffer msg = new StringBuffer();
+      StringBuilder msg = new StringBuilder();
       if ( ! newTask.isValid( msg ) )
       {
         log.warn( "notifyNewConfigDoc(): invalid task <" + newTask.getName() + ">, not scheduling: " + msg.toString() );

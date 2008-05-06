@@ -154,7 +154,7 @@ public class CatalogServicesServlet extends HttpServlet {
                                                  HttpServletRequest req, HttpServletResponse res)
       throws IOException {
     // check for fatal errors
-    StringBuffer validateMess = new StringBuffer();
+    StringBuilder validateMess = new StringBuilder();
     boolean debug = "true".equals(req.getParameter("debug"));
     catalog.check(validateMess, debug);
     boolean isFatal = catalog.hasFatalError();
@@ -259,7 +259,7 @@ public class CatalogServicesServlet extends HttpServlet {
   static private void sendMesssage(String catURL, String mess, HttpServletResponse res, int status) throws IOException {
     res.setStatus(status);
     res.setContentType("text/html");
-    StringBuffer sb = new StringBuffer(10000);
+    StringBuilder sb = new StringBuilder(10000);
 
     sb.append(HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag());
     sb.append("<head>\r\n");
@@ -289,7 +289,7 @@ public class CatalogServicesServlet extends HttpServlet {
   static private void sendValidationError(String catURL, String mess, HttpServletResponse res, int status) throws IOException {
     res.setStatus(status);
     res.setContentType("text/html");
-    StringBuffer sb = new StringBuffer(10000);
+    StringBuilder sb = new StringBuilder(10000);
 
     sb.append(HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag());
     sb.append("<head>\r\n");
@@ -324,7 +324,7 @@ public class CatalogServicesServlet extends HttpServlet {
 
   static private void showDataset(String catURL, InvDatasetImpl dataset, HttpServletRequest req, HttpServletResponse res) throws IOException {
     res.setContentType("text/html");
-    StringBuffer sb = new StringBuffer(10000);
+    StringBuilder sb = new StringBuilder(10000);
 
     sb.append(HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag());
     sb.append("<head>\r\n");

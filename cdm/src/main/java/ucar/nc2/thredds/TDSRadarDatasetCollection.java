@@ -671,7 +671,7 @@ import thredds.catalog.*;
 
             InvCatalogImpl catalog = (InvCatalogImpl) factory.readXML(catalogURI);
 
-            StringBuffer      buff    = new StringBuffer();
+            StringBuilder      buff    = new StringBuilder();
             if ( !catalog.check(buff)) {
                 throw new IOException("Invalid catalog <" + catalogURI + ">\n"
                                       + buff.toString());
@@ -743,7 +743,7 @@ import thredds.catalog.*;
             InvCatalogFactory factory = new InvCatalogFactory("default", false);
 
             InvCatalogImpl catalog = (InvCatalogImpl) factory.readXML(catalogURI);
-            StringBuffer      buff    = new StringBuffer();
+            StringBuilder      buff    = new StringBuilder();
             if ( !catalog.check(buff)) {
                 throw new IOException("Invalid catalog <" + catalogURI + ">\n"
                                       + buff.toString());

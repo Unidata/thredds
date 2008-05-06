@@ -58,7 +58,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         return false;
     }
 
-    public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
         return new Nids2Dataset(ncd);
     }
 
@@ -547,7 +547,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         //String fileIn = "/home/yuanho/NIDS/Level3_BYX_N1V_20051012_0000.nids";
         //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
         //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
-        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuffer());
+        RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuilder());
         String st = rds.getStartDate().toString();
         String et = rds.getEndDate().toString();
         String id = rds.getRadarID();
@@ -561,7 +561,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         String fileIn1 = "/home/yuanho/NIDS/Level3_BYX_N0V_20051013_0908.nids";
         //RadialDatasetSweepFactory datasetFactory1 = new RadialDatasetSweepFactory();
         //RadialDatasetSweep rds1 = datasetFactory1.open(fileIn1, null);
-        RadialDatasetSweep rds1 = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn1, null, new StringBuffer());
+        RadialDatasetSweep rds1 = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn1, null, new StringBuilder());
 
         //List rvars1 = rds1.getDataVariables();
         RadialDatasetSweep.RadialVariable rf1 = (RadialDatasetSweep.RadialVariable) rds1.getDataVariable("RadialVelocity");

@@ -94,7 +94,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
 
 
   private void checkFailure() {
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     openTask.catalog.check( buff);
 
     if (openTask.catalog.hasFatalError()) {

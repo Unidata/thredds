@@ -123,7 +123,7 @@ public class TestAll extends TestCase
   public void testPingCatalogs()
   {
     boolean pass = true;
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
 
     for ( int i = 0; i < catalogList.length; i++ )
     {
@@ -141,7 +141,7 @@ public class TestAll extends TestCase
   public void testCrawlCatalogs()
   {
     boolean pass = true;
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
 
     for ( int i = 0; i < catalogList.length; i++ )
     {
@@ -159,7 +159,7 @@ public class TestAll extends TestCase
   public void testCrawlCatalogsOneLevelDeep()
   {
     boolean pass = true;
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
 
     for ( int i = 0; i < catalogList.length; i++ )
     {
@@ -178,7 +178,7 @@ public class TestAll extends TestCase
   public void testCrawlCatalogsOpenOneDatasetInEachCollection()
   {
     boolean pass = true;
-    StringBuffer log = new StringBuffer();
+    StringBuilder log = new StringBuilder();
 
     try
     {
@@ -233,11 +233,11 @@ public class TestAll extends TestCase
     return dqc;
   }
 
-  public static InvCatalogImpl openAndValidateCatalog( String catUrl, StringBuffer log, boolean logToStdOut )
+  public static InvCatalogImpl openAndValidateCatalog( String catUrl, StringBuilder log, boolean logToStdOut )
   {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
-    StringBuffer validationMsg = new StringBuffer();
-    StringBuffer tmpMsg = new StringBuffer();
+    StringBuilder validationMsg = new StringBuilder();
+    StringBuilder tmpMsg = new StringBuilder();
     String curSysTimeAsString = null;
     try
     {
@@ -269,7 +269,7 @@ public class TestAll extends TestCase
     }
   }
 
-  public static boolean openAndValidateCatalogTree( String catUrl, StringBuffer log, boolean onlyRelativeUrls )
+  public static boolean openAndValidateCatalogTree( String catUrl, StringBuilder log, boolean onlyRelativeUrls )
   {
     InvCatalogImpl cat = openAndValidateCatalog( catUrl, log, true );
     if ( cat == null )
@@ -304,7 +304,7 @@ public class TestAll extends TestCase
     return ok;
   }
 
-  public static boolean openAndValidateCatalogOneLevelDeep( String catUrl, StringBuffer log, boolean onlyRelativeUrls )
+  public static boolean openAndValidateCatalogOneLevelDeep( String catUrl, StringBuilder log, boolean onlyRelativeUrls )
   {
     InvCatalogImpl cat = openAndValidateCatalog( catUrl, log, true );
     if ( cat == null )
@@ -321,7 +321,7 @@ public class TestAll extends TestCase
     return ok;
   }
 
-  public static InvCatalogImpl openValidateAndCheckExpires( String catalogUrl, StringBuffer log )
+  public static InvCatalogImpl openValidateAndCheckExpires( String catalogUrl, StringBuilder log )
   {
     InvCatalogImpl catalog = openAndValidateCatalog( catalogUrl, log, false );
     if ( catalog == null )
@@ -365,7 +365,7 @@ public class TestAll extends TestCase
 
     if ( !failureMsgs.isEmpty() )
     {
-      StringBuffer failMsg = new StringBuffer( "Failed to open some datasets:" );
+      StringBuilder failMsg = new StringBuilder( "Failed to open some datasets:" );
       for ( String curPath : failureMsgs.keySet() )
       {
         String curMsg = failureMsgs.get( curPath );
@@ -384,7 +384,7 @@ public class TestAll extends TestCase
     // Resolve the resolver dataset.
     InvAccess curAccess = ds.getAccess( ServiceType.RESOLVER );
     String curResDsPath = curAccess.getStandardUri().toString();
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     InvCatalogImpl curResolvedCat = openAndValidateCatalog( curResDsPath, buf, false );
     if ( curResolvedCat == null )
     {
@@ -433,7 +433,7 @@ public class TestAll extends TestCase
     }
 
     // Open the dataset as a CDM Scientific Datatype.
-    buf = new StringBuffer();
+    buf = new StringBuilder();
     TypedDataset typedDs;
     try
     {
@@ -466,7 +466,7 @@ public class TestAll extends TestCase
     return true;
   }
 
-  public static boolean crawlCatalogOpenRandomDataset( String catalogUrl, StringBuffer log, boolean verbose )
+  public static boolean crawlCatalogOpenRandomDataset( String catalogUrl, StringBuilder log, boolean verbose )
   {
     final ThreddsDataFactory threddsDataFactory = new ThreddsDataFactory();
     final Map<String, String> failureMsgs = new HashMap<String, String>();
@@ -475,7 +475,7 @@ public class TestAll extends TestCase
     {
       public void getDataset( InvDataset ds )
       {
-        StringBuffer localLog = new StringBuffer();
+        StringBuilder localLog = new StringBuilder();
         NetcdfDataset ncd;
         try
         {
@@ -545,8 +545,8 @@ public class TestAll extends TestCase
   {
     final ThreddsDataFactory threddsDataFactory = new ThreddsDataFactory();
     final Map<String, String> failureMsgs = new HashMap<String, String>();
-    final StringBuffer gcsMsg = new StringBuffer();
-    final StringBuffer otherMsg = new StringBuffer();
+    final StringBuilder gcsMsg = new StringBuilder();
+    final StringBuilder otherMsg = new StringBuilder();
 
     List<String> catList = new ArrayList<String>();
 //    catList.add( "fmrc/NCEP/GFS/Alaska_191km");
@@ -584,7 +584,7 @@ public class TestAll extends TestCase
     {
       public void getDataset( InvDataset ds )
       {
-        StringBuffer localLog = new StringBuffer();
+        StringBuilder localLog = new StringBuilder();
 
         gcsMsg.append( ds.getFullName()).append("\n");
         NetcdfDataset ncd;
@@ -743,11 +743,11 @@ public class TestAll extends TestCase
    * Find all catalogRef elements in a dataset list.
    *
    * @param datasets the list of datasets from which to find all the catalogRefs
-   * @param log StringBuffer into which any messages will be written
+   * @param log StringBuilder into which any messages will be written
    * @param onlyRelativeUrls only include catalogRefs with relative HREF URLs if true, otherwise include all catalogRef datasets
    * @return the list of catalogRef datasets
    */
-  private static List<InvCatalogRef> findAllCatRefs( List<InvDataset> datasets, StringBuffer log, boolean onlyRelativeUrls )
+  private static List<InvCatalogRef> findAllCatRefs( List<InvDataset> datasets, StringBuilder log, boolean onlyRelativeUrls )
   {
     List<InvCatalogRef> catRefList = new ArrayList<InvCatalogRef>();
     for ( InvDataset invds : datasets )

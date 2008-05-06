@@ -51,7 +51,7 @@ public class EnumTypedef {
    * @return CDL representation.
    */
   public String writeCDL(boolean strict) {
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     String name = strict ? NetcdfFile.escapeName(getName()) : getName();    
     buff.append("   ").append(name).append(" = ");
     int count = 0;

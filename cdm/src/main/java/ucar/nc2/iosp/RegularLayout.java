@@ -225,7 +225,7 @@ public class RegularLayout extends Indexer {
   ////////////////////
 
   public String toString() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("wantSize=");
     for (int i = 0; i < dimList.size(); i++) {
       Dim elem = dimList.get(i);

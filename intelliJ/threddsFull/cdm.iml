@@ -90,6 +90,16 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="common" exported="" />
+    <orderEntry type="module-library" exported="">
+      <library name="stax">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/wstx-lgpl-3.2.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/stax-api-1.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
 </module>

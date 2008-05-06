@@ -119,7 +119,7 @@ public class CatGenConfigMetadataFactory
   }
 
   /** Validate the content object. */
-  public boolean validateMetadataContent( Object contentObject, StringBuffer out)
+  public boolean validateMetadataContent( Object contentObject, StringBuilder out)
   {
     boolean ok = true;
     ArrayList catGenConfigList = (ArrayList) contentObject;

@@ -1227,7 +1227,7 @@ public class ToolsUI extends JPanel {
         for (Iterator iter = ncfile.getVariables().iterator(); iter.hasNext();) {
           VariableEnhanced vs = (VariableEnhanced) iter.next();
           String units = vs.getUnitsString();
-          StringBuffer sb = new StringBuffer();
+          StringBuilder sb = new StringBuilder();
           sb.append("   ").append(vs.getName()).append(" has unit= <").append(units).append(">");
           if (units != null)
 
@@ -2044,7 +2044,7 @@ public class ToolsUI extends JPanel {
 
         //ucar.nc2.dt.radial.RadialDatasetSweepFactory fac = new ucar.nc2.dt.radial.RadialDatasetSweepFactory();
         //RadialDatasetSweep rds = fac.open(newds);
-        StringBuffer errlog = new StringBuffer();
+        StringBuilder errlog = new StringBuilder();
         RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL, newds, null, errlog);
         if (rds == null) {
           JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + errlog.toString());
@@ -2228,7 +2228,7 @@ public class ToolsUI extends JPanel {
       } catch (IOException ioe) {
       }
 
-      StringBuffer log = new StringBuffer();
+      StringBuilder log = new StringBuilder();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         pobsDataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, location, null, log);
@@ -2309,7 +2309,7 @@ public class ToolsUI extends JPanel {
       } catch (IOException ioe) {
       }
 
-      StringBuffer log = new StringBuffer();
+      StringBuilder log = new StringBuilder();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         pobsDataset = (PointFeatureDataset) FeatureDatasetFactoryManager.open(FeatureType.POINT, location, null, log);
@@ -2400,7 +2400,7 @@ public class ToolsUI extends JPanel {
       } catch (IOException ioe) {
       }
 
-      StringBuffer log = new StringBuffer();
+      StringBuilder log = new StringBuilder();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         sobsDataset = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, location, null, log);
@@ -2569,7 +2569,7 @@ public class ToolsUI extends JPanel {
       } catch (IOException ioe) {
       }
 
-      StringBuffer log = new StringBuffer();
+      StringBuilder log = new StringBuilder();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
         radarCollectionDataset = (StationRadarCollectionImpl) TypedDatasetFactory.open(FeatureType.STATION_RADIAL, location, null, log);
@@ -2653,7 +2653,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        StringBuffer errlog = new StringBuffer();
+        StringBuilder errlog = new StringBuilder();
         ds = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
         if (ds == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + errlog);
@@ -2951,7 +2951,7 @@ public class ToolsUI extends JPanel {
       if (is == null) return "N/A";
       // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < 3; i++) {
         sbuff.append(dataIS.readLine());
         sbuff.append("<br>");
@@ -3050,7 +3050,7 @@ public class ToolsUI extends JPanel {
     SocketMessage sm;
     if (args.length > 0) {
       // munge arguments into a single string
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < args.length; i++) {
         sbuff.append(args[i]);
         sbuff.append(" ");
@@ -3098,7 +3098,7 @@ public class ToolsUI extends JPanel {
         String runtimeConfig = args[i + 1];
         i++;
         try {
-          StringBuffer errlog = new StringBuffer();
+          StringBuilder errlog = new StringBuilder();
           FileInputStream fis = new FileInputStream(runtimeConfig);
           RuntimeConfigParser.read(fis, errlog);
           configRead = true;
@@ -3114,7 +3114,7 @@ public class ToolsUI extends JPanel {
       File f = new File(filename);
       if (f.exists()) {
         try {
-          StringBuffer errlog = new StringBuffer();
+          StringBuilder errlog = new StringBuilder();
           FileInputStream fis = new FileInputStream(filename);
           RuntimeConfigParser.read(fis, errlog);
           configRead = true;

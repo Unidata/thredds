@@ -143,7 +143,7 @@ public class ViewServlet extends AbstractServlet {
     }
   }
 
-  static public void showViewers( StringBuffer sbuff, InvDatasetImpl dataset, HttpServletRequest req) {
+  static public void showViewers( StringBuilder sbuff, InvDatasetImpl dataset, HttpServletRequest req) {
     int count = 0;
     for (Viewer viewer : viewerList) {
       if (viewer.isViewable(dataset)) count++;

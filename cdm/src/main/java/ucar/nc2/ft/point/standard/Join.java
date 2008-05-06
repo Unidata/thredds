@@ -50,7 +50,7 @@ public class Join implements Comparable<Join> {
   }
 
   public String toString() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append( config.joinType);
     if (parent != null)
       sbuff.append(" from ").append(parent.getName());

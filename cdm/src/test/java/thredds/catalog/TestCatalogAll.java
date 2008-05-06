@@ -25,7 +25,7 @@ public class TestCatalogAll extends TestCase {
   public static InvCatalogImpl open(String catalogName, boolean validate) {
     catalogName = makeFilepath( catalogName);
     System.out.println("\nTestAll open= "+catalogName);
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(validate);
 
     try {
@@ -47,7 +47,7 @@ public class TestCatalogAll extends TestCase {
 
   public static InvCatalogImpl openAbsolute(String catalogName, boolean validate) {
     System.out.println("\nTestAll openAbsolute= "+catalogName);
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(validate);
 
     try {

@@ -42,7 +42,7 @@ public class TestFloat10TrajectoryObsDataset extends TestCase
                 new File( location ).exists() );
     try
     {
-      StringBuffer errlog = new StringBuffer();
+      StringBuilder errlog = new StringBuilder();
       me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
     }
     catch ( IOException e )

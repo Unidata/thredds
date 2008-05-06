@@ -137,7 +137,7 @@ public class CoordTransBuilder {
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
    */
-  static public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, Variable ctv, StringBuffer parseInfo, StringBuffer errInfo) {
+  static public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, Variable ctv, StringBuilder parseInfo, StringBuilder errInfo) {
     // standard name
     String transform_name = ds.findAttValueIgnoreCase(ctv, "transform_name", null);
     if (null == transform_name)

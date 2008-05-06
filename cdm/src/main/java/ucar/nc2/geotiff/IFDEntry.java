@@ -105,7 +105,7 @@ class IFDEntry implements Comparable {
   }
 
   public String toString() {
-    StringBuffer sbuf  = new StringBuffer();
+    StringBuilder sbuf  = new StringBuilder();
     sbuf.append(" tag = "+tag);
     sbuf.append(" type = "+type);
     sbuf.append(" count = "+count);

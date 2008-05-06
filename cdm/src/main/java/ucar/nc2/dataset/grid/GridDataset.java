@@ -207,12 +207,12 @@ public class GridDataset {
     return buf.toString();
   }
 
-  private StringBuffer parseInfo = new StringBuffer(); // debugging
-  public StringBuffer getParseInfo() { return parseInfo; }
+  private StringBuilder parseInfo = new StringBuilder(); // debugging
+  public StringBuilder getParseInfo() { return parseInfo; }
 
     /** Get Details about the dataset. */
   public String getDetailInfo() {
-    StringBuffer buff = new StringBuffer(5000);
+    StringBuilder buff = new StringBuilder(5000);
     buff.append( ds.toString());
     buff.append( "\n\n----------------------------------------------------\n");
     buff.append( getInfo());

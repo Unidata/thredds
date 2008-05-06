@@ -48,7 +48,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         return false;
     }
 
-    public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer errlog) throws IOException {
+    public TypedDataset open(NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuilder errlog) throws IOException {
         return new Netcdf2Dataset(ncd);
     }
     public FeatureType getScientificDataType() { return FeatureType.RADIAL; }
@@ -658,7 +658,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
       //String fileIn = "/home/yuanho/NIDS/Reflectivity_0.50_20070329-204156.netcdf";
       String fileIn ="/home/yuanho/nssl/netcdf.ncml";
 
-      RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuffer());
+      RadialDatasetSweep rds = (RadialDatasetSweep) TypedDatasetFactory.open( FeatureType.RADIAL, fileIn, null, new StringBuilder());
       //String st = rds.getStartDate().toString();
       //String et = rds.getEndDate().toString();
       //String id = rds.getRadarID();

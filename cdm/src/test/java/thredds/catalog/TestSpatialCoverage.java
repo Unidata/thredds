@@ -17,7 +17,7 @@ public class TestSpatialCoverage  extends TestCase {
   public void testGC() throws Exception {
     InvCatalogImpl cat = TestCatalogAll.open(urlString, true);
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     boolean isValid = cat.check(buff, false);
     System.out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
     if (showValidation) {

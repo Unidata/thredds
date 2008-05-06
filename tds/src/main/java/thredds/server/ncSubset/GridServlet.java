@@ -178,7 +178,7 @@ public class GridServlet extends AbstractServlet {
       // make sure all requested variables exist
       if (qp.vars != null) {
         int count = 0;
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         for (String varName : qp.vars) {
           if (null == gds.findGridDatatype(varName)) {
             buff.append(varName);
@@ -320,7 +320,7 @@ public class GridServlet extends AbstractServlet {
       // make sure all requested variables exist
       if (qp.vars != null) {
         int count = 0;
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         for (String varName : qp.vars) {
           if (null == gds.findGridDatatype(varName)) {
             buff.append(varName);

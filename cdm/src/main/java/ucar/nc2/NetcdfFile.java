@@ -1447,20 +1447,20 @@ public class NetcdfFile {
   }
 
   protected String makeFullNameWithString(Group parent, String name) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent);
     sbuff.append(name);
     return sbuff.toString();
   }
 
   static protected String makeFullName(Group parent, Variable v) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent);
     appendStructureName(sbuff, v);
     return sbuff.toString();
   }
 
-  static private void appendGroupName(StringBuffer sbuff, Group g) {
+  static private void appendGroupName(StringBuilder sbuff, Group g) {
     boolean isRoot = g.getParentGroup() == null;
     if (isRoot) return;
 
@@ -1470,7 +1470,7 @@ public class NetcdfFile {
     sbuff.append("/");
   }
 
-  static private void appendStructureName(StringBuffer sbuff, Variable v) {
+  static private void appendStructureName(StringBuilder sbuff, Variable v) {
     if (v.isMemberOfStructure()) {
       appendStructureName(sbuff, v.getParentStructure());
       sbuff.append(".");
@@ -1479,13 +1479,13 @@ public class NetcdfFile {
   }
 
   static protected String makeFullNameEscaped(Group parent, Variable v) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     appendGroupNameEscaped(sbuff, parent);
     appendStructureNameEscaped(sbuff, v);
     return sbuff.toString();
   }
 
-  static private void appendGroupNameEscaped(StringBuffer sbuff, Group g) {
+  static private void appendGroupNameEscaped(StringBuilder sbuff, Group g) {
     boolean isRoot = g.getParentGroup() == null;
     if (isRoot) return;
 
@@ -1495,7 +1495,7 @@ public class NetcdfFile {
     sbuff.append("/");
   }
 
-  static private void appendStructureNameEscaped(StringBuffer sbuff, Variable v) {
+  static private void appendStructureNameEscaped(StringBuilder sbuff, Variable v) {
     if (v.isMemberOfStructure()) {
       appendStructureNameEscaped(sbuff, v.getParentStructure());
       sbuff.append(".");
@@ -1581,7 +1581,7 @@ public class NetcdfFile {
    * @return debug / underlying implementation details
    */
   public String getDetailInfo() {
-    StringBuffer sbuff = new StringBuffer(5000);
+    StringBuilder sbuff = new StringBuilder(5000);
     sbuff.append("NetcdfFile location= ").append(getLocation()).append("\n");
     sbuff.append("  title= ").append(getTitle()).append("\n");
     sbuff.append("  id= ").append(getId()).append("\n");

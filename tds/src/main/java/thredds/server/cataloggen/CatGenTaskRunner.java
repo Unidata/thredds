@@ -51,7 +51,7 @@ public class CatGenTaskRunner implements Runnable
     }
     CatalogGen catGen = new CatalogGen( configFileURL );
 
-    StringBuffer messages = new StringBuffer();
+    StringBuilder messages = new StringBuilder();
     if ( catGen.isValid( messages ) )
     {
       catGen.expand();

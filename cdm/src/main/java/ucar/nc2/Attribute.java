@@ -230,7 +230,7 @@ public class Attribute {
    * @return CDL representation
    */
   public String toString(boolean strict) {
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     buff.append(  strict ? NetcdfFile.escapeName(getName()) : getName());
     if (isString()) {
       buff.append(" = ");
@@ -428,10 +428,10 @@ public class Attribute {
     hashCode = 0;
   }
 
-  /*protected Index ima;
+  protected Index ima;
   private Index ima() {
     if (ima == null) ima = values.getIndex();
     return ima;
-  } */
+  } 
 
 }

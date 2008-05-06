@@ -446,7 +446,7 @@ public class Structure extends Variable {
    * @return  name and attributes String
    */
   public String getNameAndAttributes() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("Structure ");
     getNameAndDimensions(sbuff, false, true);
     sbuff.append("\n");
@@ -461,7 +461,7 @@ public class Structure extends Variable {
 
   @Override
   public String writeCDL(String space, boolean useFullName, boolean strict) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append("\n");
     buf.append(space);
     buf.append(dataType.toString());

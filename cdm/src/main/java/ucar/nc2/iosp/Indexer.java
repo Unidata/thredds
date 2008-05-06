@@ -109,7 +109,7 @@ public abstract class Indexer {
 
   // debugging
   protected String printa(int[] a) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     for (int i = 0; i < a.length; i++) sbuff.append(a[i] + " ");
     return sbuff.toString();
   }

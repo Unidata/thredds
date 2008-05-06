@@ -47,11 +47,11 @@ import thredds.catalog.query.*;
 
 public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImpl {
 
-  static public DqcStationObsDataset factory(InvDataset ds, String dqc_location, StringBuffer errlog) throws IOException {
+  static public DqcStationObsDataset factory(InvDataset ds, String dqc_location, StringBuilder errlog) throws IOException {
     return factory(ds.getDocumentation("summary"), dqc_location, errlog);
   }
 
-  static public DqcStationObsDataset factory(String desc, String dqc_location, StringBuffer errlog) throws IOException {
+  static public DqcStationObsDataset factory(String desc, String dqc_location, StringBuilder errlog) throws IOException {
 
     DqcFactory dqcFactory = new DqcFactory(true);
     QueryCapability dqc = dqcFactory.readXML(dqc_location);
@@ -354,7 +354,7 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
   }
 
   public static void main(String args[]) throws IOException {
-    StringBuffer errlog = new StringBuffer();
+    StringBuilder errlog = new StringBuilder();
     String dqc_location = "file:///C:/data/dqc/metarNew.xml";
     DqcStationObsDataset ds = factory("test", dqc_location, errlog);
     System.out.println(" errs= "+errlog);

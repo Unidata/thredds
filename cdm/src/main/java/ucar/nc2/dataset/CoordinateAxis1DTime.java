@@ -50,7 +50,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private Date[] timeDates;
   private DateUnit dateUnit;
 
-  static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, StringBuffer errMessages) throws IOException {
+  static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, StringBuilder errMessages) throws IOException {
     if (org.getDataType() == DataType.CHAR) {
       return new CoordinateAxis1DTime( ncd, org, errMessages, org.getDimension(0).getName());
     }
@@ -68,7 +68,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @throws IOException on read error
    * @throws IllegalArgumentException if cant convert coordinate values to a Date
    */
-  private CoordinateAxis1DTime( NetcdfDataset ncd, VariableDS org, StringBuffer errMessages, String dims) throws IOException {
+  private CoordinateAxis1DTime( NetcdfDataset ncd, VariableDS org, StringBuilder errMessages, String dims) throws IOException {
     // NetcdfDataset ds, Group group, String shortName,  DataType dataType, String dims, String units, String desc
     super( ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription() );
     this.ncd = ncd;
@@ -111,7 +111,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     setCachedData( sdata, true);
   }
 
-  private CoordinateAxis1DTime( NetcdfDataset ncd, VariableDS org, StringBuffer errMessages) throws IOException {
+  private CoordinateAxis1DTime( NetcdfDataset ncd, VariableDS org, StringBuilder errMessages) throws IOException {
     super( ncd, org);
 
     named = new ArrayList<NamedObject>(); // declared in CoordinateAxis1D superclass
