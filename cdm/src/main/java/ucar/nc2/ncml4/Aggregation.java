@@ -22,7 +22,6 @@ package ucar.nc2.ncml4;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.ncml.AggregationIF;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache2;
@@ -74,7 +73,11 @@ import org.jdom.Element;
  * </ol>
 
  */
-public abstract class Aggregation implements AggregationIF, ProxyReader {
+public abstract class Aggregation implements ProxyReader {
+
+  static public enum Type { FORECAST_MODEL_COLLECTION,  FORECAST_MODEL_SINGLE, JOIN_EXISTING, JOIN_EXISTING_ONE,
+      JOIN_NEW, TILED, UNION }
+
   static protected int TYPICAL_DATASET_RANDOM = 0;
   static protected int TYPICAL_DATASET_LATEST = 1;
   static protected int TYPICAL_DATASET_PENULTIMATE = 2;

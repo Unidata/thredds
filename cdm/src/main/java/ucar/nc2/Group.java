@@ -531,5 +531,5 @@ public class Group {
     }
     return hashCode;
   }
-  private volatile int hashCode = 0;
+  private int hashCode = 0;
 }

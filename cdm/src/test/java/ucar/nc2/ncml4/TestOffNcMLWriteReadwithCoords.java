@@ -5,7 +5,6 @@ import junit.framework.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 import ucar.nc2.dataset.*;
-import ucar.nc2.ncml.NcMLWriter;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;

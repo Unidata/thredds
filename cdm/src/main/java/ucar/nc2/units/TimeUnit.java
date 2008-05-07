@@ -182,6 +182,6 @@ public class TimeUnit extends SimpleUnit {
     }
     return hashCode;
   }
-  private volatile int hashCode = 0;
+  private int hashCode = 0;
 
 }

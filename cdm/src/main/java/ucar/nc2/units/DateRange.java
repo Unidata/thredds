@@ -324,6 +324,6 @@ public class DateRange {
     }
     return hashCode;
   }
-  private volatile int hashCode = 0; // Bloch, item 8
+  private int hashCode = 0; // Bloch, item 8
 
 }

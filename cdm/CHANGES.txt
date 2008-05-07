@@ -42,6 +42,7 @@ This code is ALPHA
         clean up ArrayStructure/StructureData API, clarify Member use
         StructureData.getScalarXXX(name) must be correct type
         cleanup javadoc, improve reference docs
+        NetcdfFileWriteable - redefine mode, isLargeFile support
     14: NetcdfDataset: unsigned always gets converted
         Netcdf-3 files: truncate Strings at first null byte.
         complete rework of point datatypes, now in package ucar.nc2.ft (feature types)
@@ -121,6 +122,7 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    - NetcdfFile.readMemberData() removed: use Structure.select()
 
    + NetcdfFileWriteable has new convenience methods
+   + NetcdfFileWriteable redefine mode, large file support
 
    - NCdump is deprecated, use NCdumpW which uses a java.io.Writer to do Unicode correctly
 

@@ -28,13 +28,14 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Create/Write netCDF-3 format files. <p>
+ * Create/Write netCDF-3 formatted files. <p>
  * Because of the limitations of the underlying implementation, netcdf-3
  * files can only have Dimensions, Attributes and Variables added to it
  * at creation time. Thus, when a file is first opened, it in is "define mode"
  * where these may added. Once create() is called, you can no longer add, delete, or modify
  * the Dimensions, Attributes or Variables. <p>
- * After create has been called you can then write the Variables' data values.
+ *
+ * After create has been called you can then write data values.
  *
  * @author caron
  * @see NetcdfFile
@@ -42,7 +43,7 @@ import java.io.IOException;
 
 public class NetcdfFileWriteable extends NetcdfFile {
   private HashMap<String,Variable> varHash = new HashMap<String,Variable>(50);
-  private boolean defineMode;
+  private boolean defineMode, redefineMode, isExisting, isLargeFile;
   private boolean fill = true;
   private long size = -1;
   private IOServiceProviderWriter spiw;
@@ -374,7 +375,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
 
   /**
    * After you have added all of the Dimensions, Variables, and Attributes,
-   * call create() to actually create the file. You must be in define mode.
+   *   call create() to actually create the file. You must be in define mode.
    * After this call, you are no longer in define mode, and cannot return to it.
    * @throws java.io.IOException if I/O error
    */
@@ -387,9 +388,57 @@ public class NetcdfFileWriteable extends NetcdfFile {
     spiw.create(location, this, fill, size);
 
     defineMode = false;
+    redefineMode = false;
+    isExisting = true;
   }
 
   public boolean isDefineMode() { return defineMode; }
+  public boolean isLargeFile() { return isLargeFile; }
+  public boolean isRedefineMode() { return redefineMode; }
+
+  public void setLargeFile(boolean isLargeFile) {
+    this.isLargeFile = isLargeFile;
+  }
+
+  /**
+   * Set the redefine mode.
+   * Designed to emulate nc_redef (redefineMode = true) and
+   * nc_enddef (redefineMode = false)
+   * @param redefineMode start or end define mode
+   */
+  public void setRedefineMode(boolean redefineMode) throws IOException {
+    if (redefineMode && !defineMode) {
+      this.redefineMode = true;
+      defineMode = true;
+
+    } else if (!redefineMode && defineMode) {
+      if (isExisting)
+        rewrite();
+      else
+        create();
+
+      this.redefineMode = false;
+      defineMode = false;
+    }
+  }
+
+  // for now, assume we have to rewrite
+  // should check if we can keep header (eg attributes only added)
+  private void rewrite() throws IOException {
+    close();
+    NetcdfFile prev = NetcdfFile.open(location);
+
+    //temp file in same directory
+
+    // create new file
+
+    // copy old file to new
+
+    // delete old
+
+    // rename the new
+
+  }
 
   ////////////////////////////////////////////
   //// use these calls to write to the file
@@ -495,6 +544,8 @@ public class NetcdfFileWriteable extends NetcdfFile {
   /**
    * Create a new Netcdf file, put it into define mode.
    *
+   * @param location open a new file at this location
+   * @param fill set fill mode
    * @deprecated use createNew(String filename, boolean fill)
    */
   public NetcdfFileWriteable(String location, boolean fill) {
@@ -517,7 +568,9 @@ public class NetcdfFileWriteable extends NetcdfFile {
   /**
    * Open an existing Netcdf file for writing data.
    *
+   * @param location open an existing file at this location
    * @deprecated use openExisting(String filename, boolean fill)
+   * @throws java.io.IOException on read error
    */
   public NetcdfFileWriteable(String location) throws IOException {
     super();
@@ -526,14 +579,13 @@ public class NetcdfFileWriteable extends NetcdfFile {
     spi = SPFactory.getServiceProvider();
     spiw = (IOServiceProviderWriter) spi;
     spiw.open(raf, this, null);
-    defineMode = false;
+    isExisting = true;
   }
-
 
   /**
    * Set the filename of a new file to be created: call before calling create().
    * @param filename name of new file to create.
-   * @deprecated use NetcdfFileWriteable(String filename);
+   * @deprecated use NetcdfFileWriteable.createNew(String filename);
    */
   public void setName(String filename) {
     this.location = filename;

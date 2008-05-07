@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.ncml4.NcMLWriter;
 import ucar.nc2.dataset.NetcdfDataset;
 
 /**

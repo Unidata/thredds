@@ -9,8 +9,6 @@
 
 package thredds.server.radarServer;
 
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
 import thredds.catalog.query.*;
 
 import java.io.*;
@@ -27,8 +25,6 @@ import java.text.SimpleDateFormat;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import thredds.catalog.query.Station;
-//import ucar.nc2.ncml.AggregationFmr;
-import ucar.nc2.ncml.Aggregation;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,9 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
-import org.jdom.Element;
 
 public class ServerMethods {
 

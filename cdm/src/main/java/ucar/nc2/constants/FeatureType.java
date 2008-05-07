@@ -96,6 +96,7 @@ public final class FeatureType {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof FeatureType)) return false;
-    return o.hashCode() == this.hashCode();
+    FeatureType so = (FeatureType) o;
+    return name.equals(so.name);
   }
 }

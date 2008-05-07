@@ -19,7 +19,6 @@
  */
 package ucar.nc2.ncml4;
 
-import ucar.nc2.ncml.AggregationIF;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
@@ -52,7 +51,7 @@ public class DirectoryScan implements Scanner {
   private DateFormatter formatter = new DateFormatter();
   private boolean debugScan = false;
 
-  DirectoryScan(AggregationIF.Type type, String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirsS, String olderS) {
+  DirectoryScan(Aggregation.Type type, String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirsS, String olderS) {
     this.dirName = dirName;
     this.suffix = suffix;
     if (null != regexpPatternString)
@@ -63,7 +62,7 @@ public class DirectoryScan implements Scanner {
       enhance = true;
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
-    if (type == AggregationIF.Type.FORECAST_MODEL_COLLECTION)
+    if (type == Aggregation.Type.FORECAST_MODEL_COLLECTION)
       enhance = true;
 
     if (olderS != null) {
@@ -79,7 +78,7 @@ public class DirectoryScan implements Scanner {
       isDate = true;
   }
 
-  DirectoryScan(AggregationIF.Type type, String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS,
+  DirectoryScan(Aggregation.Type type, String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS,
                 String runMatcher, String forecastMatcher, String offsetMatcher) {
     this(type, dirName, suffix, regexpPatternString, null, "true", subdirsS, olderS);
 

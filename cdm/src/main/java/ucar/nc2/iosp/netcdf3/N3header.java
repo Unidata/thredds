@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -39,6 +39,7 @@ public class N3header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
 
   static final byte[] MAGIC = new byte[]{0x43, 0x44, 0x46, 0x01};
+  static final byte[] MAGIC_LONG = new byte[]{0x43, 0x44, 0x46, 0x02}; // 64-bit offset format : only affects the variable offset value
   static final int MAGIC_DIM = 10;
   static final int MAGIC_VAR = 11;
   static final int MAGIC_ATT = 12;
@@ -69,6 +70,8 @@ public class N3header {
   boolean isStreaming = false;
   int numrecs = 0; // number of records written
   int recsize = 0; // size of each record (padded)
+
+  private boolean useLongOffset;
   long dataStart = Long.MAX_VALUE; // where the data starts
   long recStart = Integer.MAX_VALUE; // where the record data starts
   private long nonRecordData = 0; // length of non-record data
@@ -105,7 +108,7 @@ public class N3header {
         throw new IOException("Not a netCDF file");
     if ((b[3] != 1) && (b[3] != 2))
       throw new IOException("Not a netCDF file");
-    boolean useLongOffset = (b[3] == 2);
+    useLongOffset = (b[3] == 2);
 
     // number of records
     numrecs = raf.readInt();
@@ -298,7 +301,7 @@ public class N3header {
       Structure recordStructure = new Structure(ncfile, ncfile.getRootGroup(), null, "record");
       recordStructure.setDimensions(udim.getName());
       for (Variable v : uvars) {
-        Variable memberV = null;
+        Variable memberV;
         try {
           memberV = v.slice(0,0); // set unlimited dimension to 0
         } catch (InvalidRangeException e) {
@@ -502,7 +505,7 @@ public class N3header {
   /**
    * Write the header out, based on ncfile structures.
    *
-   * @param raf    write to this <Dimension>
+   * @param raf    write to this file
    * @param ncfile the header of this NetcdfFile
    * @param fill   use fill or not
    * @param out    debugging output
@@ -518,7 +521,7 @@ public class N3header {
 
     // magic number
     raf.seek(0);
-    raf.write(N3header.MAGIC);
+    raf.write(useLongOffset ? N3header.MAGIC_LONG : N3header.MAGIC);
 
     // numrecs
     raf.writeInt(0);
@@ -558,7 +561,12 @@ public class N3header {
       Vinfo vinfo = (Vinfo) var.getSPobject();
       if (!vinfo.isRecord) {
         raf.seek(vinfo.begin);
-        raf.writeInt((int) pos); // LOOK int not long
+
+        if (useLongOffset)
+          raf.writeLong(pos);
+        else
+          raf.writeInt((int) pos);
+
         vinfo.begin = pos;
         if (debugVariablePos)
           System.out.println(var.getName() + " begin at = " + vinfo.begin + " end=" + (vinfo.begin + vinfo.vsize));
@@ -573,7 +581,12 @@ public class N3header {
       Vinfo vinfo = (Vinfo) var.getSPobject();
       if (vinfo.isRecord) {
         raf.seek(vinfo.begin);
-        raf.writeInt((int) pos);   // LOOK int not long
+
+        if (useLongOffset)
+          raf.writeLong(pos);
+        else
+          raf.writeInt((int) pos);
+
         vinfo.begin = pos;
         if (debug) System.out.println(var.getName() + " record begin at = " + dataStart);
         pos += vinfo.vsize;
@@ -583,6 +596,7 @@ public class N3header {
 
   }
 
+  // tricky
   void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
     long pos;
     if (v2 == null)

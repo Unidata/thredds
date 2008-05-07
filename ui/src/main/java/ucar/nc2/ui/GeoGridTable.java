@@ -417,9 +417,6 @@ public class GeoGridTable extends JPanel {
 
     public String getRegular() { return incr; }
     public void setRegular(String incr) { this.incr = incr; }
-
-    public int hashCode() { return axis.hashCode(); }
-    public boolean equals( Object o)  { return hashCode() == o.hashCode(); }
   }
 
 

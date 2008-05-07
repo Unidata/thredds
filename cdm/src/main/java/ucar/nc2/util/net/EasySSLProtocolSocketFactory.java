@@ -208,12 +208,4 @@ public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory {
     );
   }
 
-  public boolean equals(Object obj) {
-    return ((obj != null) && obj.getClass().equals(EasySSLProtocolSocketFactory.class));
-  }
-
-  public int hashCode() {
-    return EasySSLProtocolSocketFactory.class.hashCode();
-  }
-
 }

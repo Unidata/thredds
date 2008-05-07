@@ -26,7 +26,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.ncml4.NcMLWriter;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.thredds.DqcRadarDatasetCollection;
 import ucar.nc2.ncml4.NcMLReader;

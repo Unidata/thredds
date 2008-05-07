@@ -34,6 +34,7 @@ import java.util.List;
 
 /**
  * A Variable for a Grib dataset.
+ *
  * @author caron
  */
 public class GribVariable {
@@ -56,7 +57,7 @@ public class GribVariable {
   private boolean hasVert = false;
   private boolean showRecords = false, showGen = false;
 
-  GribVariable (String name, String desc,  GribHorizCoordSys hcs, TableLookup lookup) {
+  GribVariable(String name, String desc, GribHorizCoordSys hcs, TableLookup lookup) {
     this.name = name; // used to get unique grouping of products
     this.desc = desc;
     this.hcs = hcs;
@@ -64,23 +65,50 @@ public class GribVariable {
     isGrib1 = (lookup instanceof Grib1Lookup);
   }
 
-  void addProduct( Index.GribRecord record) {
-    records.add( record);
+  void addProduct(Index.GribRecord record) {
+    records.add(record);
     if (firstRecord == null) firstRecord = record;
   }
 
-  List<Index.GribRecord> getRecords() { return records; }
-  Index.GribRecord getFirstRecord() { return records.get(0); }
+  List<Index.GribRecord> getRecords() {
+    return records;
+  }
 
-  GribHorizCoordSys getHorizCoordSys() { return hcs; }
-  GribCoordSys getVertCoordSys() { return vcs; }
-  GribVertCoord getVertCoord() { return vc; }
-  boolean hasVert() { return hasVert; }
+  Index.GribRecord getFirstRecord() {
+    return records.get(0);
+  }
 
-  void setVarName(String vname) { this.vname = vname; }
-  void setVertCoordSys(GribCoordSys vcs) { this.vcs = vcs; }
-  void setVertCoord( GribVertCoord vc) {  this.vc = vc; }
-  void setTimeCoord( GribTimeCoord tcs) {  this.tcs = tcs; }
+  GribHorizCoordSys getHorizCoordSys() {
+    return hcs;
+  }
+
+  GribCoordSys getVertCoordSys() {
+    return vcs;
+  }
+
+  GribVertCoord getVertCoord() {
+    return vc;
+  }
+
+  boolean hasVert() {
+    return hasVert;
+  }
+
+  void setVarName(String vname) {
+    this.vname = vname;
+  }
+
+  void setVertCoordSys(GribCoordSys vcs) {
+    this.vcs = vcs;
+  }
+
+  void setVertCoord(GribVertCoord vc) {
+    this.vc = vc;
+  }
+
+  void setTimeCoord(GribTimeCoord tcs) {
+    this.tcs = tcs;
+  }
 
   int getVertNlevels() {
     return (vcs == null) ? vc.getNLevels() : vcs.getNLevels();
@@ -98,8 +126,8 @@ public class GribVariable {
     return (vcs == null) ? !vc.dontUseVertical : !vcs.dontUseVertical;
   }
 
-   int getVertIndex(Index.GribRecord p) {
-    return (vcs == null) ? vc.getIndex( p) : vcs.getIndex( p);
+  int getVertIndex(Index.GribRecord p) {
+    return (vcs == null) ? vc.getIndex(p) : vcs.getIndex(p);
   }
 
   int getNTimes() {
@@ -121,8 +149,8 @@ public class GribVariable {
       vname = useDesc ? desc : name;
     vname = StringUtil.replace(vname, ' ', "_");
 
-    Variable v = new Variable( ncfile, g, null, vname);
-    v.setDataType( DataType.FLOAT);
+    Variable v = new Variable(ncfile, g, null, vname);
+    v.setDataType(DataType.FLOAT);
 
     String dims = tcs.getName();
     if (getVertIsUsed()) {
@@ -135,8 +163,8 @@ public class GribVariable {
     else
       dims = dims + " y x";
 
-    v.setDimensions( dims);
-    Parameter param = lookup.getParameter( firstRecord);
+    v.setDimensions(dims);
+    Parameter param = lookup.getParameter(firstRecord);
 
     v.addAttribute(new Attribute("units", param.getUnit()));
     v.addAttribute(new Attribute("long_name", Index2NC.makeLongName(firstRecord, lookup)));
@@ -162,16 +190,16 @@ public class GribVariable {
     v.addAttribute(new Attribute("GRIB_level_type", firstRecord.levelType1));
 
     //if (pds.getTypeSecondFixedSurface() != 255 )
-   //  v.addAttribute( new Attribute("GRIB2_type_of_second_fixed_surface", pds.getTypeSecondFixedSurfaceName()));
+    //  v.addAttribute( new Attribute("GRIB2_type_of_second_fixed_surface", pds.getTypeSecondFixedSurfaceName()));
 
     /* String coordSysName = getVertIsUsed() ? getVertName() :
         (hcs.isLatLon() ? "latLonCoordSys" : "projectionCoordSys");
     v.addAttribute( new Attribute(_Coordinate.Systems", coordSysName)); */
 
-    v.setSPobject( this);
+    v.setSPobject(this);
 
     if (showRecords)
-      System.out.println("Variable "+getName());
+      System.out.println("Variable " + getName());
 
     recordTracker = new Index.GribRecord[ntimes * nlevels];
     for (Index.GribRecord p : records) {
@@ -227,7 +255,7 @@ public class GribVariable {
 
   void dumpMissing() {
     //System.out.println("  " +name+" ntimes (across)= "+ ntimes+" nlevs (down)= "+ nlevels+":");
-    System.out.println("  " +name);
+    System.out.println("  " + name);
     for (int j = 0; j < nlevels; j++) {
       System.out.print("   ");
       for (int i = 0; i < ntimes; i++) {
@@ -242,46 +270,63 @@ public class GribVariable {
     if (nlevels == 1) return 0;
 
     int count = 0;
-    int total = nlevels*ntimes;
+    int total = nlevels * ntimes;
 
     for (int i = 0; i < total; i++)
       if (recordTracker[i] == null) count++;
 
-    System.out.println("  MISSING= "+count+"/"+total+" "+name);
+    System.out.println("  MISSING= " + count + "/" + total + " " + name);
     return count;
   }
 
   public Index.GribRecord findRecord(int time, int level) {
-    return recordTracker[time*nlevels + level];
+    return recordTracker[time * nlevels + level];
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getParamName() {
+    return desc;
+  }
+
+  public int getDecimalScale() {
+    return decimalScale;
   }
 
   public boolean equals(Object oo) {
-   if (this == oo) return true;
-   if ( !(oo instanceof GribVariable)) return false;
-   return hashCode() == oo.hashCode();
+    if (this == oo) return true;
+    if (!(oo instanceof GribVariable)) return false;
+    GribVariable that = (GribVariable) oo;
+
+    if (!getName().equals(that.getName())) return false;
+    if (!hcs.getID().equals(that.hcs.getID())) return false;
+    if (firstRecord.levelType1 != that.firstRecord.levelType1) return false;
+
+    return true;
   }
 
-  public String getName() { return name; }
-  public String getParamName() { return desc; }
-  public int getDecimalScale() { return decimalScale; }
-
-  /** Override Object.hashCode() to implement equals. */
+  /**
+   * Override Object.hashCode() to implement equals.
+   */
   public int hashCode() {
-   if (hashCode == 0) {
-     int result = 17;
-     result = 37*result + name.hashCode();
-     result += 37*result + firstRecord.levelType1;
-     result += 37*result + hcs.getID().hashCode();
-     hashCode = result;
-   }
-   return hashCode;
+    if (hashCode == 0) {
+      int result = 17;
+      result = 37 * result + name.hashCode();
+      result += 37 * result + firstRecord.levelType1;
+      result += 37 * result + hcs.getID().hashCode();
+      hashCode = result;
+    }
+    return hashCode;
   }
-  private volatile int hashCode = 0;
+
+  private int hashCode = 0;
 
 
   public String dump() {
-   DateFormatter formatter = new DateFormatter();
-   StringBuilder sbuff = new StringBuilder();
+    DateFormatter formatter = new DateFormatter();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append(name).append(" ").append(records.size()).append("\n");
     for (Index.GribRecord record : records) {
       sbuff.append(" level = ").append(record.levelType1).append(" ").append(record.levelValue1);

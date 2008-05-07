@@ -1102,7 +1102,7 @@ public class Variable implements VariableIF {
     return hashCode;
   }
 
-  protected volatile int hashCode = 0;
+  protected int hashCode = 0;
 
   /**
    * Sort by name

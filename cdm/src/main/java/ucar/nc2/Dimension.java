@@ -123,7 +123,7 @@ public class Dimension implements Comparable {
     }
     return hashCode;
   }
-  private volatile int hashCode = 0;
+  private int hashCode = 0;
 
   /** CDL representation, not strict. */
   @Override

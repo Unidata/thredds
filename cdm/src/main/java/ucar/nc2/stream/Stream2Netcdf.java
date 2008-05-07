@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -46,6 +46,7 @@ public class Stream2Netcdf {
    * @param ncfile write to this NetcdfFileWriteable
    * @param in     read from this stream
    * @throws IOException on i/o error
+   * @throws ucar.ma2.InvalidRangeException if youve been bad
    */
   public Stream2Netcdf(NetcdfFileWriteable ncfile, DataInputStream in) throws IOException, InvalidRangeException {
     this.ncfile = ncfile;

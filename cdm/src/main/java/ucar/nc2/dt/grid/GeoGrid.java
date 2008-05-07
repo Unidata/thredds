@@ -799,10 +799,10 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
       return false;
 
     GeoGrid d = (GeoGrid) oo;
-    // if (!dataset.getName().equals(d.getDataset().getName())) return false;
     if (!getName().equals(d.getName())) return false;
+    if (!getCoordinateSystem().equals(d.getCoordinateSystem())) return false;
 
-    return getCoordinateSystem().equals(d.getCoordinateSystem());
+    return true;
   }
 
   /**
@@ -819,7 +819,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return hashCode;
   }
 
-  private volatile int hashCode = 0; // Bloch, item 8
+  private int hashCode = 0; // Bloch, item 8
 
   /**
    * string representation
