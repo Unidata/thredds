@@ -165,6 +165,7 @@
   <patternset id="sources-core">
     <include name="ucar/ma2/*.java"/>
     <include name="ucar/nc2/*.java"/>
+    <exclude name="ucar/nc2/ncml_old/**"/>
     <include name="ucar/nc2/iosp/netcdf3/N3iosp.java"/>
     <include name="ucar/nc2/util/DebugFlagsImpl.java"/>
     <include name="ucar/nc2/util/TimeSocket.java"/>
@@ -264,8 +265,8 @@
     <include name="thredds/wcs/**/*.java"/>
     <!-- *** -->
     <include name="ucar/**/*.java"/>
+    <exclude name="ucar/nc2/ncml_old/**"/>
     <exclude name="ucar/nc2/dataset/grid/*"/>
-    <exclude name="ucar/nc2/dt2/**/*.java"/>
     <exclude name="ucar/nc2/util/reflect/*"/>
     <exclude name="ucar/unidata/geoloc/ogc/*"/> <!-- Also needed by TDS. -->
     <!-- include name="dods/**/*.java"/ -->

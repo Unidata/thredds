@@ -50,6 +50,7 @@
     <include name="thredds/server/**/*.java"/>
     <include name="thredds/servlet/*.java"/>
     <include name="thredds/servlet/**/*.java"/>
+    <exclude name="thredds/servlet/idd/**"/>
     <include name="thredds/wcs/servlet/*.java"/>
   </patternset>
 

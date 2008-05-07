@@ -1,4 +1,4 @@
-package ucar.nc2.ncml4;
+package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
 
