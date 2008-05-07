@@ -60,7 +60,7 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
     assert null != m;
     assert m.getUnitsString().equals("meters");
 
-    double dval = sdata.getScalarDouble( m.getName());
+    double dval = sdata.convertScalarDouble( m.getName());
     assert dval == -999.0;
 
     int count = 0;
@@ -71,7 +71,7 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
       assert m.getUnitsString().equals("meters");
 
       assert null != m;
-      dval = sdata.getScalarDouble( m.getName());
+      dval = sdata.convertScalarDouble( m.getName());
       double expect = (count == 0) ? -999.0 : 13.0;
       assert dval == expect : dval + "!="+ expect ;
       count++;

@@ -71,120 +71,120 @@ public class ArrayStructureW extends ArrayStructure {
   public Array getArray(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getArray(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getArray( sd.findMember( m.getName()));
+    return sd.getArray( m.getName());
   }
 
   public double getScalarDouble(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarDouble(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getScalarDouble( sd.findMember( m.getName()));
+    return sd.getScalarDouble( m.getName());
   }
 
   public double[] getJavaArrayDouble(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getJavaArrayDouble(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getJavaArrayDouble( sd.findMember( m.getName()));
+    return sd.getJavaArrayDouble( m.getName());
   }
 
   public float getScalarFloat(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarFloat(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getScalarFloat( sd.findMember( m.getName()));
+    return sd.getScalarFloat( m.getName());
   }
 
   public float[] getJavaArrayFloat(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getJavaArrayFloat(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getJavaArrayFloat( sd.findMember( m.getName()));
+    return sd.getJavaArrayFloat( m.getName());
   }
 
   public byte getScalarByte(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarByte(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getScalarByte( sd.findMember( m.getName()));
+    return sd.getScalarByte( m.getName());
   }
 
   public byte[] getJavaArrayByte(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getJavaArrayByte(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getJavaArrayByte( sd.findMember( m.getName()));
+    return sd.getJavaArrayByte( m.getName());
   }
 
   public short getScalarShort(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarShort(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getScalarShort( sd.findMember( m.getName()));
+    return sd.getScalarShort( m.getName());
   }
 
   public short[] getJavaArrayShort(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getJavaArrayShort(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getJavaArrayShort( sd.findMember( m.getName()));
+    return sd.getJavaArrayShort( m.getName());
   }
 
   public int getScalarInt(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarInt(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getScalarInt( sd.findMember( m.getName()));
+    return sd.getScalarInt( m.getName());
   }
 
   public int[] getJavaArrayInt(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getJavaArrayInt(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getJavaArrayInt( sd.findMember( m.getName()));
+    return sd.getJavaArrayInt( m.getName());
   }
 
   public long getScalarLong(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarLong(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getScalarLong( sd.findMember( m.getName()));
+    return sd.getScalarLong( m.getName());
   }
 
   public long[] getJavaArrayLong(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getJavaArrayLong(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getJavaArrayLong( sd.findMember( m.getName()));
+    return sd.getJavaArrayLong( m.getName());
   }
 
   public char getScalarChar(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarChar(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getScalarChar( sd.findMember( m.getName()));
+    return sd.getScalarChar( m.getName());
   }
 
   public char[] getJavaArrayChar(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getJavaArrayChar(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getJavaArrayChar( sd.findMember( m.getName()));
+    return sd.getJavaArrayChar( m.getName());
   }
 
   public String getScalarString(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarString(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getScalarString( sd.findMember( m.getName()));
+    return sd.getScalarString( m.getName());
   }
 
   public String[] getJavaArrayString(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getJavaArrayString(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getJavaArrayString( sd.findMember( m.getName()));
+    return sd.getJavaArrayString( m.getName());
   }
 
   public StructureData getScalarStructure(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getScalarStructure(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getScalarStructure( sd.findMember( m.getName()));
+    return sd.getScalarStructure( m.getName());
   }
 
   public ArrayStructure getArrayStructure(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getArrayStructure(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getArrayStructure( sd.findMember( m.getName()));
+    return sd.getArrayStructure( m.getName());
   }
 
   public ArraySequence getArraySequence(int recnum, StructureMembers.Member m) {
     if (m.getDataArray() != null) return super.getArraySequence(recnum, m);
     StructureData sd = getStructureData(recnum);
-    return sd.getArraySequence( sd.findMember( m.getName()));
+    return sd.getArraySequence( m.getName());
   }
 }

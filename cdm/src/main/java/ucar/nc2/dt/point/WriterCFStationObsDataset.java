@@ -360,8 +360,6 @@ public class WriterCFStationObsDataset {
   public void writeRecord(StationObsDatatype sobs, StructureData sdata) throws IOException {
     if (debug) System.out.println("sobs= " + sobs + "; station = " + sobs.getStation());
 
-    StructureMembers sm = sdata.getStructureMembers();
-
     for (Variable v : recordVars) {
       if (timeName.equals(v.getShortName())) {
         Date d = sobs.getObservationTimeAsDate();
@@ -371,8 +369,7 @@ public class WriterCFStationObsDataset {
         int stationIndex = stnList.indexOf(sobs.getStation());
         parentArray.set(0, stationIndex);
       } else {
-        StructureMembers.Member m = sm.findMember(v.getShortName());
-        v.setCachedData(sdata.getArray(m), false);
+        v.setCachedData(sdata.getArray(v.getShortName()), false);
       }
     }
 

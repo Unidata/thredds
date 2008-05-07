@@ -79,18 +79,22 @@ API Extensive API changes. Most, but not completely backwards-compatible.
   
  Package ucar.ma2
    + Array local iterator: hasNext() nextXXXX() methods.
-   + ucar.ma2.Section used instead of List<Range>
-   + Section.appendRange() idioms for constructing
-   - StructureData.convertScalarDouble() removed, use StructureDS.convertScalarDouble()
+
    + ArraySequence handles Sequence with StructureDataIterator.
    * Old ArraySequence now called ArraySequenceNested
 
-   - StructureData.getArrayXXX removed - use getJavaArrayXXX
-   - StructureData.findMemberArray removed - use getArray
    - ArrayStructure.getArrayXXX removed - use getJavaArrayXXX
    + ArrayStructure.getMemberArray() to extract individual member data as Arrays
    + ArrayStructure.convertScalarDouble, Float
+
+   + Section used instead of List<Range>
+   + Section.appendRange() idioms for constructing
+
+   - StructureData.convertScalarDouble() removed, use StructureDS.convertScalarDouble()
+   - StructureData.getArrayXXX removed - use getJavaArrayXXX
+   - StructureData.findMemberArray removed - use getArray
    + StructureData.convertScalarDouble, Float
+   * StructureData.getScalarXXX(String memberName), getJavaArrayXXX(String memberName) must match type exactly
 
  Package ucar.nc2
    * Attribute mutable methods no longer public, so Attribute is immutable

@@ -20,6 +20,7 @@
 package ucar.ma2;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Superclass for implementations of Array of StructureData.
@@ -114,12 +115,37 @@ public abstract class ArrayStructure extends Array {
   }
 
   /**
-   * Get the structure members.
-   *
-   * @return the structure members.
+   * Get the StructureMembers object.
+   * @return the StructureMembers object.
    */
   public StructureMembers getStructureMembers() {
     return members;
+  }
+
+  /**
+   * Get a list of structure members.
+   * @return the structure members.
+   */
+  public List<StructureMembers.Member> getMembers() {
+    return members.getMembers();
+  }
+
+  /**
+   * Get a list structure member names.
+   * @return the structure members.
+   */
+  public List<String> getStructureMemberNames() {
+    return members.getMemberNames();
+  }
+
+  /**
+   * Find a member by its name.
+   *
+   * @param memberName find member with this name
+   * @return StructureMembers.Member matching the name, or null if not found
+   */
+  public StructureMembers.Member findMember(String memberName) {
+    return members.findMember(memberName);
   }
 
   /**

@@ -84,7 +84,7 @@ public class StructureMembers {
   private void calcStructureSize() {
     structureSize = 0;
     for (Member member : members) {
-      structureSize += member.getTotalSize();
+      structureSize += member.getSizeBytes();
       // System.out.println(member.getName()+" size="+member.getTotalSize());
     }
   }
@@ -240,9 +240,10 @@ public class StructureMembers {
     }
 
     /**
-     * Get the total array length. This does not have to match the VariableSimpleIF.
+     * Get the total number of elements.
+     * This does not have to match the VariableSimpleIF.
      *
-     * @return the total array length.
+     * @return the total number of elements.
      */
     public int getSize() {
       return size;
@@ -250,10 +251,10 @@ public class StructureMembers {
 
     /**
      * Get the total size in bytes. This does not have to match the VariableSimpleIF.
-     *
+     * Note that this will not be correct for type Sequence
      * @return total size in bytes
      */
-    public int getTotalSize() {
+    public int getSizeBytes() {
       if (getDataType() == DataType.SEQUENCE)
         return getDataType().getSize();
       else if (getDataType() == DataType.STRUCTURE)
@@ -271,10 +272,6 @@ public class StructureMembers {
     public boolean isScalar() {
       return size == 1;
     }
-
-    /* public double convertScaleOffsetMissing(double value) {
-    return (v == null) ? value : v.convertScaleOffsetMissing( value);
-  }  */
 
     ////////////////////////////////////////////////
 
@@ -329,6 +326,7 @@ public class StructureMembers {
       this.dataObject = o;
     }
 
+    // LOOK ma2 depends on nc2
     public void setVariableInfo(VariableIF v) {
       if (!name.equals(v.getShortName())) {
         memberHash.remove(name);

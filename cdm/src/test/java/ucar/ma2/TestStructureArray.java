@@ -19,11 +19,8 @@
  */
 package ucar.ma2;
 
-import ucar.nc2.NCdumpW;
-
 import java.util.List;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * @author caron
@@ -32,26 +29,43 @@ import java.io.PrintWriter;
 public class TestStructureArray {
 
   public void testArrayStructure(ArrayStructure as) {
-    testArrayStructureByRecno(as);
-    
     try {
+      testArrayStructureByRecno(as);
       testArrayStructureByIterator(as);
+      testArrayStructureByMemberArray(as);
+
     } catch (IOException e) {
       assert false;
     }
+  }
 
+  private void testArrayStructureByMemberArray(ArrayStructure as) throws IOException {
+    List<StructureMembers.Member> members = as.getMembers();
+
+    for (StructureMembers.Member m : members) {
+      Array memberArray = as.extractMemberArray(m);
+      assert (memberArray.getElementType() == m.getDataType().getPrimitiveClassType());
+
+      // random tests
+      if (m.getDataType().isNumeric()) {
+        double sum = 0.0;
+        while (memberArray.hasNext())
+          sum += memberArray.nextDouble();
+        System.out.println(m.getName()+" sum= "+sum);
+      } else if (m.getDataType().isString()) {
+        while (memberArray.hasNext())
+          System.out.println(" "+memberArray.next());
+      }
+    }
   }
 
   private void testArrayStructureByIterator(ArrayStructure as) throws IOException {
-
-    StructureMembers sms = as.getStructureMembers();
-    List<StructureMembers.Member> members = sms.getMembers();
-
     StructureDataIterator si = as.getStructureDataIterator();
     while (si.hasNext()) {
       StructureData sdata = si.next();
 
       // run through each member on the StructureData
+      List<StructureMembers.Member> members = sdata.getMembers();
       for (StructureMembers.Member m : members) {
         Array sdataArray = sdata.getArray(m);
         assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
@@ -62,10 +76,6 @@ public class TestStructureArray {
   }
 
   private void testArrayStructureByRecno(ArrayStructure as) {
-
-    StructureMembers sms = as.getStructureMembers();
-    List<StructureMembers.Member> members = sms.getMembers();
-
     // run through each StructureData
     for (int recno = 0; recno < as.getSize(); recno++) {
       Object o = as.getObject(recno);
@@ -74,6 +84,7 @@ public class TestStructureArray {
       assert (o == sdata);
 
       // run through each member on the StructureData
+      List<StructureMembers.Member> members = sdata.getMembers();
       for (StructureMembers.Member m : members) {
         Array sdataArray = sdata.getArray(m);
         assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
@@ -139,8 +150,7 @@ public class TestStructureArray {
 
   private void testStructureData(StructureData sdata) {
 
-    StructureMembers sms = sdata.getStructureMembers();
-    List<StructureMembers.Member> members = sms.getMembers();
+    List<StructureMembers.Member> members = sdata.getMembers();
     for (StructureMembers.Member m : members) {
       Array sdataArray = sdata.getArray(m);
       assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());

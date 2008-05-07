@@ -66,7 +66,7 @@ public class LayoutRegularSegmented implements Layout {
 
     chunker = new IndexChunker(srcShape, wantSection);
     this.total = chunker.getTotalNelems();
-    this.innerNelems = Index.computeSize(srcShape) / srcShape[0];
+    this.innerNelems = (srcShape[0] == 0) ? 0 : Index.computeSize(srcShape) / srcShape[0];
     this.done = 0;
   }
 

@@ -62,23 +62,6 @@ public class StructureDataA extends StructureData {
   }
 
   /**
-   * Get double value. Underlying type must be convertible to double.
-   * For more efficiency, use getScalarDouble(StructureMembers.Member m) if possible.
-   *
-   * @param memberName name of member Variable.
-   * @throws IllegalArgumentException if name is not legal member name.
-   */
-  public double getScalarDouble(String memberName) {
-    StructureMembers.Member m = findMember(memberName);
-    if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
-    if (m.getDataType() == DataType.DOUBLE)
-      return sa.getScalarDouble(recno, m);
-
-    Array data = getArray(m); // LOOK: might be able to use sa.getScalarObject()
-    return data.getDouble(Index.scalarIndex);
-  }
-
-  /**
    * Get member data of type float.
    *
    * @param m get data from this StructureMembers.Member. Must be of type float.
@@ -96,24 +79,6 @@ public class StructureDataA extends StructureData {
    */
   public float[] getJavaArrayFloat(StructureMembers.Member m) {
     return sa.getJavaArrayFloat(recno, m);
-  }
-
-  /**
-   * Get float value. Underlying type must be convertible to float.
-   * For more efficiency, use getScalarFloat(StructureMembers.Member m) if possible, or
-   * convertScalarFloat(StructureMembers.Member m).
-   *
-   * @param memberName name of member Variable.
-   * @throws IllegalArgumentException if name is not legal member name.
-   */
-  public float getScalarFloat(String memberName) {
-    StructureMembers.Member m = findMember(memberName);
-    if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
-    if (m.getDataType() == DataType.FLOAT)
-      return sa.getScalarFloat(recno, m);
-
-    Array data = getArray(m);
-    return data.getFloat(Index.scalarIndex);
   }
 
   /**
@@ -137,23 +102,6 @@ public class StructureDataA extends StructureData {
   }
 
   /**
-   * Get byte value. Underlying type must be convertible to byte.
-   * For more efficiency, use getScalarByte(StructureMembers.Member m) if possible.
-   *
-   * @param memberName name of member Variable.
-   * @throws IllegalArgumentException if name is not legal member name.
-   */
-  public byte getScalarByte(String memberName) {
-    StructureMembers.Member m = findMember(memberName);
-    if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
-    if (m.getDataType() == DataType.BYTE)
-      return sa.getScalarByte(recno, m);
-
-    Array data = getArray(m);
-    return data.getByte(Index.scalarIndex);
-  }
-
-  /**
    * Get member data of type short.
    *
    * @param m get data from this StructureMembers.Member. Must be of type short.
@@ -171,23 +119,6 @@ public class StructureDataA extends StructureData {
    */
   public short[] getJavaArrayShort(StructureMembers.Member m) {
     return sa.getJavaArrayShort(recno, m);
-  }
-
-  /**
-   * Get short value. Underlying type must be convertible to short.
-   * For more efficiency, use getScalarShort(StructureMembers.Member m) if possible.
-   *
-   * @param memberName name of member Variable.
-   * @throws IllegalArgumentException if name is not legal member name.
-   */
-  public short getScalarShort(String memberName) {
-    StructureMembers.Member m = findMember(memberName);
-    if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
-    if (m.getDataType() == DataType.SHORT)
-      return sa.getScalarShort(recno, m);
-
-    Array data = getArray(m);
-    return data.getShort(Index.scalarIndex);
   }
 
   /**
@@ -211,23 +142,6 @@ public class StructureDataA extends StructureData {
   }
 
   /**
-   * Get int value. Underlying type must be convertible to int.
-   * For more efficiency, use getScalarInt(StructureMembers.Member m) if possible.
-   *
-   * @param memberName name of member Variable.
-   * @throws IllegalArgumentException if name is not legal member name.
-   */
-  public int getScalarInt(String memberName) {
-    StructureMembers.Member m = findMember(memberName);
-    if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
-    if (m.getDataType() == DataType.INT)
-      return sa.getScalarInt(recno, m);
-
-    Array data = getArray(m);
-    return data.getInt(Index.scalarIndex);
-  }
-
-  /**
    * Get member data of type long.
    *
    * @param m get data from this StructureMembers.Member. Must be of type long.
@@ -245,23 +159,6 @@ public class StructureDataA extends StructureData {
    */
   public long[] getJavaArrayLong(StructureMembers.Member m) {
     return sa.getJavaArrayLong(recno, m);
-  }
-
-  /**
-   * Get long value. Underlying type must be convertible to long.
-   * For more efficiency, use getScalarLong(StructureMembers.Member m) if possible.
-   *
-   * @param memberName name of member Variable.
-   * @throws IllegalArgumentException if name is not legal member name.
-   */
-  public long getScalarLong(String memberName) {
-    StructureMembers.Member m = findMember(memberName);
-    if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
-    if (m.getDataType() == DataType.LONG)
-      return sa.getScalarLong(recno, m);
-
-    Array data = getArray(m);
-    return data.getLong(Index.scalarIndex);
   }
 
   /**
@@ -285,23 +182,6 @@ public class StructureDataA extends StructureData {
   }
 
   /**
-   * Get char value. Underlying type must be convertible to char.
-   * For more efficiency, use getScalarChar(StructureMembers.Member m) if possible.
-   *
-   * @param memberName name of member Variable.
-   * @throws IllegalArgumentException if name is not legal member name.
-   */
-  public char getScalarChar(String memberName) {
-    StructureMembers.Member m = findMember(memberName);
-    if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
-    if (m.getDataType() == DataType.CHAR)
-      return sa.getScalarChar(recno, m);
-
-    Array data = getArray(m);
-    return data.getChar(Index.scalarIndex);
-  }
-
-  /**
    * Get member data of type String or 1D char.
    *
    * @param m get data from this StructureMembers.Member. Must be of type char.
@@ -311,13 +191,13 @@ public class StructureDataA extends StructureData {
     return sa.getScalarString(recno, m);
   }
 
-  /**
+  /*
    * Get String value, from rank 0 String or rank 1 char member array.
    * For more efficiency, use getScalarString(StructureMembers.Member m) if possible.
    *
    * @param memberName name of member Variable.
    * @throws IllegalArgumentException if name is not legal member name.
-   */
+   *
   public String getScalarString(String memberName) {
     StructureMembers.Member m = findMember(memberName);
     if (null == m) throw new IllegalArgumentException("Member not found= " + memberName);
@@ -333,7 +213,7 @@ public class StructureDataA extends StructureData {
     Object data = ((ArrayObject.D0) a).get();
     assert (data instanceof String) : data.getClass().getName();
     return (String) data;
-  }
+  }  */
 
   // LOOK can we optimize ??
   public String[] getJavaArrayString(StructureMembers.Member m) {

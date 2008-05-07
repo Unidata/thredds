@@ -340,11 +340,10 @@ public class StreamWriter {
     } else if (dataType == DataType.STRUCTURE) {
       int count = 0;
       ArrayStructure as = (ArrayStructure) values;
-      StructureMembers sm = as.getStructureMembers();
       IndexIterator ii = values.getIndexIterator();
       while (ii.hasNext()) {
         StructureData sdata = (StructureData) ii.getObjectNext();
-        for (StructureMembers.Member m : sm.getMembers()) {
+        for (StructureMembers.Member m : sdata.getMembers()) {
           Array data = sdata.getArray(m);
           count += writeData(m.getDataType(), data); // recursive
         }

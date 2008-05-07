@@ -173,6 +173,20 @@ public class DataType {
     return null;
   }
 
+  /**
+   * Is STRING or CHAR
+   * @return true if STRING or CHAR
+   */
+  public boolean isString() {
+    return (this == DataType.STRING) || (this == DataType.CHAR);
+  }
+
+  public boolean isNumeric() {
+    return (this == DataType.BYTE) || (this == DataType.FLOAT) || (this == DataType.DOUBLE) || (this == DataType.INT) ||
+        (this == DataType.SHORT) || (this == DataType.LONG);  
+  }
+
+
   /** widen an unsigned int to a long
    * @param i unsigned int
    * @return equivilent long value

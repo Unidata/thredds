@@ -326,7 +326,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     int offset = 0;
     for (StructureMembers.Member m : members.getMembers()) {
       m.setDataParam(offset);
-      offset += m.getTotalSize();
+      offset += m.getSizeBytes();
 
       // set inner offsets
       if (m.getDataType() == DataType.STRUCTURE) {

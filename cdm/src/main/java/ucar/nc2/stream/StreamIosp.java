@@ -255,7 +255,7 @@ public class StreamIosp extends AbstractIOServiceProvider {
     int offset = 0;
     for (StructureMembers.Member m : sm.getMembers()) {
       m.setDataParam(offset);
-      offset += m.getTotalSize();
+      offset += m.getSizeBytes();
     }
     sm.setStructureSize(offset);
 

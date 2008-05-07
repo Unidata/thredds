@@ -277,6 +277,10 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section) :
       new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), recsize, v2.getShape(), section);
 
+    if (layout.getTotalNelems() == 0) {
+      return Array.factory(dataType.getPrimitiveClassType(), section.getShape());
+    }
+
     Object data = readData(layout, dataType);
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), data);
   }
