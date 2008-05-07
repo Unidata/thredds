@@ -28,7 +28,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import thredds.catalog.query.Station;
 //import ucar.nc2.ncml.AggregationFmr;
-import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.ncml_old.Aggregation;
 
 public class IddMethods {
 
