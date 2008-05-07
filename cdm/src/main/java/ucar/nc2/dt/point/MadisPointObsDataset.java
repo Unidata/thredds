@@ -178,12 +178,12 @@ public class MadisPointObsDataset extends PointObsDatasetImpl  implements TypedD
   protected PointObsDatatype makeObs(int recno) throws IOException {
     try {
       StructureData sdata = recordVar.readStructure(recno);
-      float obsTime = sdata.getScalarFloat(obsTimeVName);
-      float nomTime = (nomTimeVName == null) ? obsTime : sdata.getScalarFloat(nomTimeVName);
+      float obsTime = sdata.convertScalarFloat(obsTimeVName);
+      float nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarFloat(nomTimeVName);
 
-      float lat = sdata.getScalarFloat("latitude");
-      float lon = sdata.getScalarFloat("longitude");
-      float alt = sdata.getScalarFloat(altVName);
+      float lat = sdata.convertScalarFloat("latitude");
+      float lon = sdata.convertScalarFloat("longitude");
+      float alt = sdata.convertScalarFloat(altVName);
 
       return recordHelper.new RecordPointObs( new EarthLocationImpl(lat, lon, alt), obsTime, nomTime, recno);
 

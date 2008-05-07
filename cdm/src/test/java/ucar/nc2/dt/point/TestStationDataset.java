@@ -84,7 +84,7 @@ public class TestStationDataset extends TestCase {
     while (iter.hasNext()) {
       PointObsDatatype obs = (PointObsDatatype) iter.nextData();
       StructureData sdata = obs.getData();
-      sum += sdata.getScalarDouble("wind_speed");
+      sum += sdata.convertScalarDouble("wind_speed");
       count++;
     }
     took = System.currentTimeMillis() - start;
@@ -293,42 +293,40 @@ public class TestStationDataset extends TestCase {
   }
 
   private void testData( StructureData sdata) {
-      List dataMembers = sdata.getMembers();
 
-      for (int i = 0; i < dataMembers.size(); i++) {
-        StructureMembers.Member member = (StructureMembers.Member) dataMembers.get(i);
-        DataType dt = member.getDataType();
-        if (dt == DataType.FLOAT) {
-          sdata.getScalarFloat(member);
-          sdata.getJavaArrayFloat(member);
-        } else if (dt == DataType.DOUBLE) {
-          sdata.getScalarDouble(member);
-          sdata.getJavaArrayDouble(member);
-        } else if (dt == DataType.BYTE) {
-          sdata.getScalarByte(member);
-          sdata.getJavaArrayByte(member);
-        } else if (dt == DataType.SHORT) {
-          sdata.getScalarShort(member);
-          sdata.getJavaArrayShort(member);
-        } else if (dt == DataType.INT) {
-          sdata.getScalarInt(member);
-          sdata.getJavaArrayInt(member);
-        } else if (dt == DataType.LONG) {
-          sdata.getScalarLong(member);
-          sdata.getJavaArrayLong(member);
-        } else if (dt == DataType.CHAR) {
-          sdata.getScalarChar(member);
-          sdata.getJavaArrayChar(member);
-          sdata.getScalarString(member);
-        } else if (dt == DataType.STRING) {
-          sdata.getScalarString(member);
-        }
-
-         if (dt != DataType.STRING) {
-           sdata.getScalarDouble(member.getName());
-         }
-
+    for (StructureMembers.Member member : sdata.getMembers()) {
+      DataType dt = member.getDataType();
+      if (dt == DataType.FLOAT) {
+        sdata.getScalarFloat(member);
+        sdata.getJavaArrayFloat(member);
+      } else if (dt == DataType.DOUBLE) {
+        sdata.getScalarDouble(member);
+        sdata.getJavaArrayDouble(member);
+      } else if (dt == DataType.BYTE) {
+        sdata.getScalarByte(member);
+        sdata.getJavaArrayByte(member);
+      } else if (dt == DataType.SHORT) {
+        sdata.getScalarShort(member);
+        sdata.getJavaArrayShort(member);
+      } else if (dt == DataType.INT) {
+        sdata.getScalarInt(member);
+        sdata.getJavaArrayInt(member);
+      } else if (dt == DataType.LONG) {
+        sdata.getScalarLong(member);
+        sdata.getJavaArrayLong(member);
+      } else if (dt == DataType.CHAR) {
+        sdata.getScalarChar(member);
+        sdata.getJavaArrayChar(member);
+        sdata.getScalarString(member);
+      } else if (dt == DataType.STRING) {
+        sdata.getScalarString(member);
       }
+
+      if (dt.isNumeric()) {
+        sdata.convertScalarDouble(member.getName());
+      }
+
+    }
   }
 
 

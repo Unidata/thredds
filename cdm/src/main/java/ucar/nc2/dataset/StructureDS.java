@@ -295,8 +295,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
 
     // only check the ones present in the ArrayStructure and the Structure
-    StructureMembers sm = as.getStructureMembers();
-    for (StructureMembers.Member m : sm.getMembers()) {
+    for (StructureMembers.Member m : as.getMembers()) {
       VariableEnhanced v2 = (VariableEnhanced) s.findVariable(m.getName());
       if ((v2 == null) && (orgVar != null)) // tricky stuff in case NcML renamed the variable
         v2 = findVariableFromOrgName(m.getName());

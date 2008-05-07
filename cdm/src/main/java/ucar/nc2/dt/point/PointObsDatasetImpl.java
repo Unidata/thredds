@@ -122,7 +122,7 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
       Date date = formatter.isoDateTimeFormat(time);
       return date.getTime() / 1000.0;
     } else {
-      return sdata.getScalarFloat(timeVar.getShortName());
+      return sdata.convertScalarFloat(timeVar.getShortName());
     }
   }
   

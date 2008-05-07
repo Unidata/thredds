@@ -56,6 +56,25 @@ public class TestStructureArray2 extends TestCase {
   }
 
   public void testBufr() throws IOException, InvalidRangeException {
+    //String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
+    String fileIn = TestAll.upcShareTestDataDir+"bufr/edition3/ecmwf/synop.bufr";
+    NetcdfFile ncf = NetcdfFile.open(fileIn);
+    System.out.println(ncf.toString());
+
+    Structure s = (Structure) ncf.findVariable("obsRecord");
+    Array data = s.read();
+    test.testArrayStructure( (ArrayStructure) data);
+
+    Array data2 = s.read(new Section().appendRange(1,3));
+    assert data2.getSize() == 3;
+    test.testArrayStructure( (ArrayStructure) data2);
+    System.out.println( NCdumpW.printArray(data2, "testArrayStructure", null));
+
+    // test nested
+  }
+
+  public void testBufrEnhanced() throws IOException, InvalidRangeException {
+    //String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
     String fileIn = TestAll.upcShareTestDataDir+"bufr/edition3/ecmwf/synop.bufr";
     NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
     System.out.println(ncf.toString());

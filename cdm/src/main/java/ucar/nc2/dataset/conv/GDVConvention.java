@@ -142,6 +142,9 @@ public class GDVConvention extends CSMConvention {
   }
 
   protected AxisType getAxisType(NetcdfDataset ds, VariableEnhanced ve) {
+    AxisType result = super.getAxisType(ds, ve);
+    if (result != null) return result;
+
     Variable v = (Variable) ve;
     String vname = v.getName();
 
@@ -168,7 +171,7 @@ public class GDVConvention extends CSMConvention {
     if (vname.equalsIgnoreCase("time") || findAlias(ds, v).equalsIgnoreCase("time"))
       return AxisType.Time;
 
-    return super.getAxisType(ds, ve);
+    return null;
   }
 
   // look for an coord_axis or coord_alias attribute

@@ -159,8 +159,8 @@ public class UnidataStationObsDataset2 extends StationObsDatasetImpl implements 
           if (debugRead) System.out.println(name + " try to read at record "+recno);
           StructureData sdata = recordVar.readStructure(recno);
           int prevRecord = sdata.getScalarInt("previousReport");
-          float obsTime = sdata.getScalarFloat("time_observation");
-          float nomTime = sdata.getScalarFloat("time_nominal");
+          float obsTime = sdata.convertScalarFloat("time_observation");
+          float nomTime = sdata.convertScalarFloat("time_nominal");
 
           obs.add( 0, recordHelper.new RecordStationObs( this, obsTime, nomTime, recno));
           recno = prevRecord;
@@ -184,8 +184,8 @@ public class UnidataStationObsDataset2 extends StationObsDatasetImpl implements 
       if (station == null)
         parseInfo.append("cant find station at index = "+stationIndex+"\n");
 
-      float obsTime = sdata.getScalarFloat("time_observation");
-      float nomTime = sdata.getScalarFloat("time_nominal");
+      float obsTime = sdata.convertScalarFloat("time_observation");
+      float nomTime = sdata.convertScalarFloat("time_nominal");
 
       return recordHelper.new RecordStationObs( station, obsTime, nomTime, recno);
 

@@ -158,9 +158,9 @@ public class MadisStationObsDataset extends StationObsDatasetImpl  implements Ty
 
       String stationId = sdata.getScalarString( stnIdVName).trim();
       String stationDesc = (stnDescVName == null) ? null : sdata.getScalarString( stnDescVName);
-      float lat = sdata.getScalarFloat("latitude");
-      float lon = sdata.getScalarFloat("longitude");
-      float alt = sdata.getScalarFloat(altVName);
+      float lat = sdata.convertScalarFloat("latitude");
+      float lon = sdata.convertScalarFloat("longitude");
+      float alt = sdata.convertScalarFloat(altVName);
 
       MadisStationImpl stn = (MadisStationImpl) recordHelper.stnHash.get(stationId);
       if (stn != null) {
@@ -212,10 +212,10 @@ public class MadisStationObsDataset extends StationObsDatasetImpl  implements Ty
       StructureData sdata = recordVar.readStructure(recno);
 
       String stationId = sdata.getScalarString(stnIdVName);
-      Station s = (Station) recordHelper.stnHash.get(stationId);
+      Station s = recordHelper.stnHash.get(stationId);
 
-      float obsTime = sdata.getScalarFloat(obsTimeVName);
-      float nomTime = (nomTimeVName == null) ? obsTime : sdata.getScalarFloat(nomTimeVName);
+      float obsTime = sdata.convertScalarFloat(obsTimeVName);
+      float nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarFloat(nomTimeVName);
 
       return recordHelper.new RecordStationObs( s, obsTime, nomTime, recno);
 
@@ -285,8 +285,8 @@ public class MadisStationObsDataset extends StationObsDatasetImpl  implements Ty
         try {
           StructureData sdata = recordVar.readStructure(recnum);
           int prevRecord = sdata.getScalarInt("prevRecord");
-          float obsTime = sdata.getScalarFloat(obsTimeVName);
-          float nomTime = (nomTimeVName == null) ? obsTime : sdata.getScalarFloat(nomTimeVName);
+          float obsTime = sdata.convertScalarFloat(obsTimeVName);
+          float nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarFloat(nomTimeVName);
           result.add( 0, recordHelper.new RecordStationObs(s, obsTime, nomTime, recnum));
           recnum = prevRecord;
         } catch (ucar.ma2.InvalidRangeException e) {

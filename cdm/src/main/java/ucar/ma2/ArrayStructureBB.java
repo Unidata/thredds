@@ -354,7 +354,8 @@ public class ArrayStructureBB extends ArrayStructure {
     }
   }
 
-  // LOOK - has not been tested !!!
+  // LOOK not tested ??
+  @Override
   public StructureData getScalarStructure(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.STRUCTURE) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Structure");
     if (m.getDataArray() != null) return super.getScalarStructure(recnum, m);
@@ -386,11 +387,20 @@ public class ArrayStructureBB extends ArrayStructure {
     return (ArraySequence) heap.get(index);
   }
 
+  /* from the recnum-th structure, copy the member data into result. 
+  // member data is itself a structure, and may be an array of structures.
+  @Override
   protected void copyStructures(int recnum, StructureMembers.Member m, IndexIterator result) {
+    ArrayStructure data = getArrayStructure( recnum, m);
+    Array data = getArray(recnum, m);
+    IndexIterator dataIter = data.getIndexIterator();
+    while (dataIter.hasNext())
+      result.setObjectNext( dataIter.getObjectNext());
+
     int count = m.getSize();
     for (int i = 0; i < count; i++)
       result.setObjectNext(  makeStructureData(this, recnum));
-  }
+  } */
 
   protected int calcOffsetSetOrder(int recnum, StructureMembers.Member m) {
     if (null != m.getDataObject())

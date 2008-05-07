@@ -76,7 +76,8 @@ public class ArraySequence extends ArrayStructure {
     // create an empty array to hold the result
     Array result;
     if (dataType == DataType.STRUCTURE) {
-      result = new ArrayStructureW(m.getStructureMembers(), rshape);
+      StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
+      result = new ArrayStructureW(membersw, rshape);
     } else {
       result = Array.factory(dataType.getPrimitiveClassType(), rshape);
     }

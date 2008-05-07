@@ -130,9 +130,9 @@ public class UnidataPointFeature implements TableConfigurer {
         // read in that obs, make a station
         try {
           StructureData sdata = obs.readStructure(i);
-          double lat = sdata.getScalarDouble(STN_LAT);
-          double lon = sdata.getScalarDouble(STN_LON);
-          double elev = sdata.getScalarDouble(STN_ELEV);
+          double lat = sdata.convertScalarDouble(STN_LAT);
+          double lon = sdata.convertScalarDouble(STN_LON);
+          double elev = sdata.convertScalarDouble(STN_ELEV);
           stations.add(new StationImpl(indy.name, null, null, lat, lon, elev));
 
           last = new MyStructureDataIterator(i);

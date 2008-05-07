@@ -226,9 +226,9 @@ public class RecordDatasetHelper {
       }
 
       String desc = (stnDescVName == null) ? null : sdata.getScalarString(stnDescVName);
-      double lat = sdata.getScalarDouble(latVName);
-      double lon = sdata.getScalarDouble(lonVName);
-      double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.getScalarDouble(altVName);
+      double lat = sdata.convertScalarDouble(latVName);
+      double lon = sdata.convertScalarDouble(lonVName);
+      double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.convertScalarDouble(altVName);
       double obsTime = sdata.convertScalarDouble(members.findMember( obsTimeVName));
       double nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember( nomTimeVName));
 
@@ -342,9 +342,9 @@ public class RecordDatasetHelper {
       // obsTime = sdata.convertScalarDouble( members.findMember(obsTimeVName) );
       //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
 
-      double lat = sdata.getScalarDouble(latVName);
-      double lon = sdata.getScalarDouble(lonVName);
-      double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.getScalarDouble(altVName);
+      double lat = sdata.convertScalarDouble(latVName);
+      double lon = sdata.convertScalarDouble(lonVName);
+      double alt = (altVName == null) ? 0.0 : altScaleFactor * sdata.convertScalarDouble(altVName);
       location = new EarthLocationImpl( lat, lon, alt);
     }
 

@@ -732,7 +732,7 @@ public abstract class SingleTrajectoryObsDataset
       {
         this.point = point;
         this.sdata = sdata;
-        this.time = sdata.getScalarDouble( SingleTrajectory.this.timeVar.getName());
+        this.time = sdata.convertScalarDouble( SingleTrajectory.this.timeVar.getName());
         this.earthLoc = new MyEarthLocation( sdata);
       }
 
@@ -788,9 +788,9 @@ public abstract class SingleTrajectoryObsDataset
 
       private MyEarthLocation( StructureData sdata )
       {
-        this.latitude = sdata.getScalarDouble( SingleTrajectory.this.latVar.getName() );
-        this.longitude = sdata.getScalarDouble( SingleTrajectory.this.lonVar.getName() );
-        this.elevation = sdata.getScalarDouble( SingleTrajectory.this.elevVar.getName() );
+        this.latitude = sdata.convertScalarDouble( SingleTrajectory.this.latVar.getName() );
+        this.longitude = sdata.convertScalarDouble( SingleTrajectory.this.lonVar.getName() );
+        this.elevation = sdata.convertScalarDouble( SingleTrajectory.this.elevVar.getName() );
         if ( elevVarUnitsConversionFactor != 1.0 ) this.elevation *= elevVarUnitsConversionFactor;
       }
 

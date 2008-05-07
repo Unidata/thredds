@@ -361,7 +361,8 @@ public abstract class ArrayStructure extends Array {
     // create an empty array to hold the result
     Array result;
     if (dataType == DataType.STRUCTURE) {
-      result = new ArrayStructureW(m.getStructureMembers(), rshape);
+      StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated     
+      result = new ArrayStructureW(membersw, rshape);
     } else {
       result = Array.factory(dataType.getPrimitiveClassType(), rshape);
     }
@@ -460,10 +461,13 @@ public abstract class ArrayStructure extends Array {
       result.setObjectNext(dataIter.getObjectNext());
   }
 
+  // from the recnum-th structure, copy the member data into result.
+  // member data is itself a structure, and may be an array of structures.
   protected void copyStructures(int recnum, StructureMembers.Member m, IndexIterator result) {
-    IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
+    Array data = getArray(recnum, m);
+    IndexIterator dataIter = data.getIndexIterator();
     while (dataIter.hasNext())
-      result.setObjectNext(dataIter.getObjectNext());
+      result.setObjectNext( dataIter.getObjectNext());
   }
 
   protected void copySequences(int recnum, StructureMembers.Member m, IndexIterator result) {

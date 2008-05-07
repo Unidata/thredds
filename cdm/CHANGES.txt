@@ -39,6 +39,9 @@ This code is ALPHA
 
  Release Details:
     15: change StringBuffer to StringBuilder for efficiency
+        clean up ArrayStructure/StructureData API, clarify Member use
+        StructureData.getScalarXXX(name) must be correct type
+        cleanup javadoc, improve reference docs
     14: NetcdfDataset: unsigned always gets converted
         Netcdf-3 files: truncate Strings at first null byte.
         complete rework of point datatypes, now in package ucar.nc2.ft (feature types)

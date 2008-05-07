@@ -13,40 +13,24 @@ public class TestDODSRead extends TestCase {
   public static String testServer = TestDODS.server;
   public static boolean showFile = false, showFileDebug= false;
 
-  static DODSNetcdfFile open(String name) {
+  static DODSNetcdfFile open(String name) throws IOException {
     String filename = testServer+name;
     return openAbs( filename);
   }
 
-  static DODSNetcdfFile openAbs(String filename) {
+  static DODSNetcdfFile openAbs(String filename) throws IOException {
     System.out.println("TestDODSRead = "+filename);
-    try {
       DODSNetcdfFile dodsfile = new DODSNetcdfFile(filename);
       if (showFileDebug) System.out.println(dodsfile.toStringDebug());
       if (showFile) System.out.println(dodsfile.toString());
       return dodsfile;
-      
-    } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = "+e);
-      assert(false);
-    } catch (IOException e) {
-      System.out.println("IO error = "+e);
-      e.printStackTrace();
-      assert(false);
-    } catch (RuntimeException e) {
-      System.out.println("Runtime error = "+e);
-      e.printStackTrace();
-      assert(false);
-     }
-
-     return null;
   }
 
   public TestDODSRead( String name) {
     super(name);
   }
 
-  public void testRead() {
+  public void testRead() throws IOException {
     // simple
     open( "test.01");
     open( "test.02");
@@ -71,7 +55,7 @@ public class TestDODSRead extends TestCase {
 
   }
 
-  public static void main( String arg[]){
+  public static void main( String arg[]) throws IOException {
     showFile = true;
     open("test.07");
 

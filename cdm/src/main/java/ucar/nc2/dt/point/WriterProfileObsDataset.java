@@ -567,9 +567,9 @@ public class WriterProfileObsDataset {
       String name = sdata.getScalarString("staName");
       Station s = staHash.get(name);
       if (s == null) {
-        float lat = sdata.getScalarFloat("staLat");
-        float lon = sdata.getScalarFloat("staLon");
-        float elev = sdata.getScalarFloat("staElev");
+        float lat = sdata.convertScalarFloat("staLat");
+        float lon = sdata.convertScalarFloat("staLon");
+        float elev = sdata.convertScalarFloat("staElev");
         s = new StationImpl(name, "", lat, lon, elev);
         staHash.put(name, s);
       }
@@ -587,7 +587,7 @@ public class WriterProfileObsDataset {
     while (iter.hasNext()) {
       StructureData sdata = iter.next();
       String name = sdata.getScalarString("staName");
-      double timeValue =  sdata.getScalarDouble("synTime");
+      double timeValue =  sdata.convertScalarDouble("synTime");
       Date date = timeUnit.makeDate(timeValue);
 
       // transfer to the ArrayStructure

@@ -161,13 +161,13 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
       CFStationImpl bean = new CFStationImpl(
               sdata.getScalarString(stationIdVar.getName()),
               sdata.getScalarString(stationDescVar.getName()),
-              sdata.getScalarDouble(latVar.getName()),
-              sdata.getScalarDouble(lonVar.getName()),
-              sdata.getScalarDouble(altVar.getName())
+              sdata.convertScalarDouble(latVar.getName()),
+              sdata.convertScalarDouble(lonVar.getName()),
+              sdata.convertScalarDouble(altVar.getName())
       );
 
       stations.add(bean);
-      recordHelper.stnHash.put(new Integer(i), bean);
+      recordHelper.stnHash.put(i, bean);
     }
   }
 
@@ -193,13 +193,13 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
       CFStationImpl bean = new CFStationImpl(
               sdata.getScalarString(stationIdVar.getName()),
               sdata.getScalarString(stationDescVar.getName()),
-              sdata.getScalarDouble(latVar.getName()),
-              sdata.getScalarDouble(lonVar.getName()),
-              sdata.getScalarDouble(altVar.getName())
+              sdata.convertScalarDouble(latVar.getName()),
+              sdata.convertScalarDouble(lonVar.getName()),
+              sdata.convertScalarDouble(altVar.getName())
       );
 
       stations.add(bean);
-      recordHelper.stnHash.put(new Integer(i), bean);
+      recordHelper.stnHash.put(i, bean);
     }
   }
 
