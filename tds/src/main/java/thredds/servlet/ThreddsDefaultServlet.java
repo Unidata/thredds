@@ -23,11 +23,9 @@ package thredds.servlet;
 import org.apache.log4j.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.io.*;
 import java.util.*;
-import java.net.URL;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -36,8 +34,8 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.FileCache;
 import ucar.nc2.NetcdfFileCache;
-import ucar.nc2.ncml4.Aggregation;
-import ucar.nc2.ncml4.AggregationFmrc;
+import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.ncml.AggregationFmrc;
 import ucar.nc2.dataset.NetcdfDatasetCache;
 import thredds.catalog.InvDatasetScan;
 import thredds.catalog.InvCatalog;

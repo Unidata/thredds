@@ -23,9 +23,9 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFileCache;
-import ucar.nc2.ncml4.NcMLReader;
-import ucar.nc2.ncml4.NcMLWriter;
-import ucar.nc2.ncml4.NcMLGWriter;
+import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.ncml.NcMLWriter;
+import ucar.nc2.ncml.NcMLGWriter;
 
 // factories for remote access
 import ucar.nc2.dods.DODSNetcdfFile;
@@ -473,7 +473,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private boolean scaleOffsetWasAdded = false;
 
   // If its an aggregation
-  private ucar.nc2.ncml4.Aggregation agg = null; // used to close underlying files
+  private ucar.nc2.ncml.Aggregation agg = null; // used to close underlying files
 
   /**
    * If its an NcML aggregation, it has an Aggregation object associated.
@@ -481,7 +481,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return Aggregation or null
    */
-  public ucar.nc2.ncml4.Aggregation getAggregation() {
+  public ucar.nc2.ncml.Aggregation getAggregation() {
     return agg;
   }
 
@@ -490,7 +490,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param agg the Aggregation object
    */
-  public void setAggregation(ucar.nc2.ncml4.Aggregation agg) {
+  public void setAggregation(ucar.nc2.ncml.Aggregation agg) {
     this.agg = agg;
   }
 

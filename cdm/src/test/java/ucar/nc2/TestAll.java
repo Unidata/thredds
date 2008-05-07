@@ -3,7 +3,6 @@ package ucar.nc2;
 import junit.framework.*;
 import junit.extensions.TestSetup;
 
-import java.util.List;
 import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.io.FileFilter;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.iosp.hdf5.TestH5;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 
@@ -139,8 +137,8 @@ public class TestAll {
 
     suite.addTest( ucar.nc2.TestNC2.suite());
     suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
-    //suite.addTest( ucar.nc2.ncml4.TestNcML.suite());  // leave off for now
-    //suite.addTest( ucar.nc2.ncml4.TestNcMLoffsite.suite());
+    //suite.addTest( ucar.nc2.ncml.TestNcML.suite());  // leave off for now
+    //suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());
 
     suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
     suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite());

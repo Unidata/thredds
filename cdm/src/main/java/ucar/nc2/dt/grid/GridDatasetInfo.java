@@ -264,9 +264,9 @@ public class GridDatasetInfo {
 
     // attributes
     for (Attribute att : axis.getAttributes())
-      varElem.addContent(ucar.nc2.ncml4.NcMLWriter.writeAttribute(att, "attribute", null));
+      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
 
-    Element values = ucar.nc2.ncml4.NcMLWriter.writeValues(axis, null, false);
+    Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, false);
     values.setAttribute("npts", Long.toString(axis.getSize()));
     varElem.addContent(values);
 
@@ -375,11 +375,11 @@ public class GridDatasetInfo {
 
     // attributes
     for (Attribute att : axis.getAttributes()) {
-      varElem.addContent(ucar.nc2.ncml4.NcMLWriter.writeAttribute(att, "attribute", null));
+      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
     }
 
     if (axis.getRank() == 1) {
-      Element values = ucar.nc2.ncml4.NcMLWriter.writeValues(axis, null, true);
+      Element values = ucar.nc2.ncml.NcMLWriter.writeValues(axis, null, true);
       //values.setAttribute("npts", Long.toString(axis.getSize()));
       varElem.addContent(values);
     }
@@ -495,7 +495,7 @@ public class GridDatasetInfo {
 
     // attributes
     for (ucar.nc2.Attribute att : grid.getAttributes()) {
-      varElem.addContent(ucar.nc2.ncml4.NcMLWriter.writeAttribute(att, "attribute", null));
+      varElem.addContent(ucar.nc2.ncml.NcMLWriter.writeAttribute(att, "attribute", null));
     }
 
     return varElem;

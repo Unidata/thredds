@@ -33,7 +33,7 @@ import thredds.viewer.ui.geoloc.*;
 import thredds.ui.BAMutil;
 
 import ucar.nc2.util.NamedObject;
-import ucar.nc2.ncml4.NcMLWriter;
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 

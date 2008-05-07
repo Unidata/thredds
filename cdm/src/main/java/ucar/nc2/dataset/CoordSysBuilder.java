@@ -23,7 +23,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.ncml4.NcMLReader;
+import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dataset.conv.*;
 import ucar.ma2.DataType;
 
@@ -141,7 +141,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    *
    * @param conventionName name of Convention, must be in the "Conventions" global attribute.
    * @param ncmlLocation   location of NcML file, may be local file or URL.
-   * @see ucar.nc2.ncml4.NcMLReader#wrapNcML
+   * @see ucar.nc2.ncml.NcMLReader#wrapNcML
    */
   static public void registerNcML(String conventionName, String ncmlLocation) {
     ncmlHash.put(conventionName, ncmlLocation);
