@@ -52,7 +52,7 @@ public class TestServerSiteOutOfBox extends TestCase
     String dsIdString = "test/eta/latest.xml";
     String theTestUrl = targetUrl + "view/nj22UI.jnlp?catalog=" + catUrlString + "&dataset=" + dsIdString;
 
-    StringBuffer curLog = new StringBuffer();
+    StringBuilder curLog = new StringBuilder();
     WebResponse resp = TestServerSite.getResponseToAGetRequest( wc, theTestUrl, curLog );
     assertTrue( curLog.toString(), resp != null );
 

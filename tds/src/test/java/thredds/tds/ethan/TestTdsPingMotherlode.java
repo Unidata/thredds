@@ -37,7 +37,7 @@ public class TestTdsPingMotherlode extends TestCase
   {
     String catUrl = targetTdsUrl + "/catalog.xml";
 
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
     if ( catalog == null )
     {
@@ -49,7 +49,7 @@ public class TestTdsPingMotherlode extends TestCase
   {
     String catUrl = targetTdsUrl + "/topcatalog.xml";
 
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
     if ( catalog == null )
     {
@@ -61,7 +61,7 @@ public class TestTdsPingMotherlode extends TestCase
   {
     String catUrl = targetTdsUrl + "/idv/models.xml";
 
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
     if ( catalog == null )
     {
@@ -78,7 +78,7 @@ public class TestTdsPingMotherlode extends TestCase
   {
     String catUrl = targetTdsUrl + "/idv/rt-models.1.0.xml";
 
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     InvCatalogImpl catalog = TestAll.openValidateAndCheckExpires( catUrl, msg );
     if ( catalog == null )
     {
@@ -92,7 +92,7 @@ public class TestTdsPingMotherlode extends TestCase
   {
     String catUrl = targetTdsUrl + "/idv/rt-models.xml";
 
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     InvCatalogImpl catalog = TestAll.openValidateAndCheckExpires( catUrl, msg );
     if ( catalog == null )
     {
@@ -106,7 +106,7 @@ public class TestTdsPingMotherlode extends TestCase
   {
     String catUrl = targetTdsUrl + "/cataloggen/catalogs/uniModelsInvCat1.0en.xml";
 
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     InvCatalogImpl catalog = TestAll.openValidateAndCheckExpires( catUrl, msg );
     if ( catalog == null )
     {
@@ -129,7 +129,7 @@ public class TestTdsPingMotherlode extends TestCase
     };
 
     boolean pass = true;
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
 
     for ( int i = 0; i < catUrls.length; i++ )
     {
@@ -148,7 +148,7 @@ public class TestTdsPingMotherlode extends TestCase
   {
     String catUrl = targetTdsUrl + "/idd/allModels.TDS-nc.xml";
 
-    StringBuffer msg = new StringBuffer();
+    StringBuilder msg = new StringBuilder();
     InvCatalogImpl catalog = TestAll.openAndValidateCatalog( catUrl, msg, false );
     if ( catalog == null )
     {
