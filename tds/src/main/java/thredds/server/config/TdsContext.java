@@ -18,12 +18,38 @@ public class TdsContext
           org.slf4j.LoggerFactory.getLogger( TdsContext.class );
 
   private String contextPath;
+
+  private String initialContentPath;
+  private String iddContentPath;
+  private String motherlodeContentPath;
+
   private File rootDirectory;
   private File contentDirectory;
 
   private File initialContentDirectory;
+  private File iddContentDirectory;
+  private File motherlodeContentDirectory;
 
-  public TdsContext() { }
+  public TdsContext() {}
+//  /**
+//   * Constructor.
+//   *
+//   * @param initialContentPath initial content path (relative to the web app root directory).
+//   * @param iddContentPath
+//   * @param motherlodeContentPath
+//   */
+//  public TdsContext( String initialContentPath,
+//                     String iddContentPath, String motherlodeContentPath )
+//  {
+//    if ( initialContentPath == null
+//         || iddContentPath == null
+//         || motherlodeContentPath == null )
+//      throw new IllegalArgumentException( "Null values not allowed.");
+//
+//    this.initialContentPath = initialContentPath;
+//    this.iddContentPath = iddContentPath;
+//    this.motherlodeContentPath = motherlodeContentPath;
+//  }
 
   public void init( ServletContext servletContext )
   {
@@ -36,8 +62,10 @@ public class TdsContext
     String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
     if ( tmpContextPath == null ) tmpContextPath = "thredds";
     contextPath = "/" + tmpContextPath;
-    
+
+    // Set the root directory
     this.rootDirectory = new File( servletContext.getRealPath( "/" ) );
+
     this.contentDirectory = new File( this.rootDirectory, "../../content" + this.contextPath );
     if ( ! this.contentDirectory.exists() )
     {
@@ -49,7 +77,9 @@ public class TdsContext
       }
     }
 
-    this.initialContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/startup");
+    this.initialContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/startup"); //this.initialContentPath);
+    this.iddContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/idd/thredds"); //this.iddContentPath);
+    this.motherlodeContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/motherlode/thredds"); //this.motherlodeContentPath);
   }
 
   /**
@@ -92,5 +122,15 @@ public class TdsContext
   public File getInitialContentDirectory()
   {
     return initialContentDirectory;
+  }
+
+  public File getIddContentDirectory()
+  {
+    return iddContentDirectory;
+  }
+
+  public File getMotherlodeContentDirectory()
+  {
+    return motherlodeContentDirectory;
   }
 }

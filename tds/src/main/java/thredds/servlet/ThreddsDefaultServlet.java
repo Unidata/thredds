@@ -293,7 +293,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
           return;
         }
 
-        if (path.endsWith("/") && (getStaticFile(req) == null)) {
+        if (path.endsWith("/") && (getStaticFile(req, true) == null)) {
           ServletUtil.forwardToCatalogServices(req, res);
           return;
         }
@@ -325,7 +325,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       }
 
       // see if its a static file
-      File staticFile = getStaticFile(req);
+      File staticFile = getStaticFile(req, false);
 
       if (staticFile == null) {
         RequestDispatcher defaultRD = this.getServletContext().getNamedDispatcher( "default" );
@@ -384,7 +384,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   // server and network resources.
 
   protected long getLastModified(HttpServletRequest req) {
-    File staticFile = getStaticFile(req);
+    File staticFile = getStaticFile(req, true);
     if (staticFile == null)
       return -1;
 
@@ -403,7 +403,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
    * @param req the request
    * @return File is found, else null
    */
-  private File getStaticFile(HttpServletRequest req) {
+  private File getStaticFile(HttpServletRequest req, boolean allowRoot) {
     String path = req.getPathInfo();
     if (path == null) return null;
 
@@ -437,7 +437,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       }
 
       // otherwise try rootPath
-      filename = ServletUtil.formFilename(ServletUtil.getRootPath(), path);
+      if ( allowRoot )
+        filename = ServletUtil.formFilename(ServletUtil.getRootPath(), path);
     }
 
     if (filename == null)
