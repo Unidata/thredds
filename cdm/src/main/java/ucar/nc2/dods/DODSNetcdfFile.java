@@ -1268,7 +1268,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   @Override
-  public long readData(ucar.nc2.Variable v, Section section, WritableByteChannel channel)
+  public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel channel)
         throws java.io.IOException, ucar.ma2.InvalidRangeException {
     Array result = readData(v, section);
     return IospHelper.transferData(result, channel);

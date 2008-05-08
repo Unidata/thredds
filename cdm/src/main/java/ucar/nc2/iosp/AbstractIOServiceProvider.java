@@ -21,6 +21,8 @@
 package ucar.nc2.iosp;
 
 import ucar.ma2.*;
+import ucar.nc2.CEresult;
+import ucar.nc2.Variable;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -29,14 +31,9 @@ import java.nio.channels.Channels;
 
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
-  /* public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
-         throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    throw new UnsupportedOperationException("IOSP "+getClass().getName()+" does not support nested variables");
-  } */
-
   // default implementation, reads into an Array, then writes to WritableByteChannel
   // subclasses should override if possible
-  public long readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+  public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     Array result = readData(v2, section);
@@ -84,6 +81,62 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
     return 0;
   }
+
+  public ucar.ma2.Array readSection(Variable inner, Section total, CEresult cer) throws IOException, InvalidRangeException {
+    Array result = Array.factory(inner.getDataType(), total.getShape());
+    Array outerData = cer.v.read(cer.section);
+    if (cer.child == null)
+      return outerData;
+
+    ArrayStructure as = (ArrayStructure) outerData;
+    extractSection( cer.child, as, result.getIndexIterator());
+    return result;
+  }
+
+  private void extractSection(CEresult child, ArrayStructure outerData, IndexIterator to) throws IOException, InvalidRangeException {
+    long wantNelems = child.section.computeSize();
+
+    StructureMembers.Member m = outerData.findMember( child.v.getShortName());
+    for (int recno = 0; recno < outerData.getSize(); recno++) {
+      Array innerData = outerData.getArray(recno, m);
+
+      if (child.child == null) {  // inner variable
+
+        if (wantNelems == innerData.getSize()) { // no sectioning needed
+          MAMath.copy(child.v.getDataType(), innerData.getIndexIterator(), to);
+        } else {
+          innerData = innerData.section(child.section.getRanges());
+          MAMath.copy(child.v.getDataType(), innerData.getIndexIterator(), to);
+        }
+
+      } else { // not an inner variable - must be an ArrayStructure
+
+        if (wantNelems == innerData.getSize()) { // no sectioning needed
+          extractSection(child.child, (ArrayStructure) innerData, to);
+        } else {
+          innerData = sectionArrayStructure(child, (ArrayStructure) innerData, m);
+          extractSection(child.child, (ArrayStructure) innerData, to);
+        }
+
+      }
+    }
+  }
+
+  private ArrayStructure sectionArrayStructure(CEresult child, ArrayStructure innerData, StructureMembers.Member m) throws IOException, InvalidRangeException {
+    StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
+    ArrayStructureW result = new ArrayStructureW(membersw, child.section.getShape());
+
+    int count =0;
+    Section.Iterator iter = child.section.getIterator( child.v.getShape());
+    while (iter.hasNext()) {
+      int recno = iter.next();
+      StructureData sd = innerData.getStructureData(recno);
+      result.setStructureData(sd, count++);
+    }
+
+    return result;
+  }
+
 
   public Object sendIospMessage(Object message) {
     return null;

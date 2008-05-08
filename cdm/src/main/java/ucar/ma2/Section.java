@@ -65,8 +65,8 @@ public class Section {
    * Create Section from a shape, origin, and stride arrays.
    *
    * @param origin array of start for each Range
-   * @param size array of lengths for each Range (last = origin + size -1)
-   * @param stride	stride between consecutive elements, must be > 0
+   * @param size   array of lengths for each Range (last = origin + size -1)
+   * @param stride stride between consecutive elements, must be > 0
    * @throws InvalidRangeException if origin < 0, shape < 1.
    */
   public Section(int[] origin, int[] size, int[] stride) throws InvalidRangeException {
@@ -288,10 +288,10 @@ public class Section {
 
     int result = 0;
     int stride = 1;
-    for (int j = list.size()-1; j >= 0; j--) {
+    for (int j = list.size() - 1; j >= 0; j--) {
       Range base = list.get(j);
       Range r = intersect.getRange(j);
-      int offset = base.index( r.first());
+      int offset = base.index(r.first());
       result += offset * stride;
       stride *= base.length();
     }
@@ -323,6 +323,7 @@ public class Section {
   /**
    * Create a new Section by shifting each range by newOrigin.first()
    * The result is then a reletive offset from the newOrigin.
+   *
    * @param newOrigin this becomes the origin of the result
    * @return new Section, shifted
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank()
@@ -765,6 +766,58 @@ public class Section {
     for (Range r : list)
       if (r != null) result += 37 * result + r.hashCode();
     return result;
+  }
+
+  public Iterator getIterator(int[] shape) {
+    return new Iterator(shape);
+  }
+
+  public class Iterator {
+    private int[] odo = new int[getRank()];
+    private int[] stride = new int[getRank()];
+    private long done, total;
+
+    Iterator(int[] shape) {
+      int ss = 1;
+      for (int i = getRank() - 1; i >= 0; i--) {
+        odo[i] = getRange(i).first();
+        stride[i] = ss;
+        ss *= shape[i];
+      }
+      done = 0;
+      total = Index.computeSize(getShape()); // total in the section
+    }
+
+    public boolean hasNext() {
+      return done < total;
+    }
+
+    public int next() {
+      int next = currentElement();
+      done++;
+      if (done < total) incr(); // increment for next call
+      return next;
+    }
+
+    private void incr() {
+      int digit = getRank() - 1;
+      while (digit >= 0) {
+        Range r = getRange(digit);
+        odo[digit] += r.stride();
+        if (odo[digit] <= r.last())
+          break;  // normal exit
+        odo[digit] = r.first(); // else, carry
+        digit--;
+        assert digit >= 0; // catch screw-ups
+      }
+    }
+
+    private int currentElement() {
+      int value = 0;
+      for (int ii = 0; ii < getRank(); ii++)
+        value += odo[ii] * stride[ii];
+      return value;
+    }
   }
 
 }

@@ -400,7 +400,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     return Array.factory(dataType.getPrimitiveClassType(), section.getShape(), dataObject);
   }
 
-  public long readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+  public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
       throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     if (v2 instanceof Structure)

@@ -33,6 +33,9 @@ import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
+import java.io.PrintStream;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -313,10 +316,16 @@ public class DatasetViewer extends JPanel {
     dumpPane.clear();
     String spec;
 
-    try { spec = NCdumpW.makeSectionString(v, null); }
-    catch (InvalidRangeException ex) { return; }
+    try {
+      spec = CEresult.makeSectionString(v, null);
+      dumpPane.setContext(ds, spec);
 
-    dumpPane.setContext(ds, spec);
+    } catch (Exception ex) {
+      StringWriter s = new StringWriter();
+      ex.printStackTrace( new PrintWriter(s));
+      dumpPane.setText( s.toString());
+    }
+
     dumpWindow.show();
   }
 

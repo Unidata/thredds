@@ -70,7 +70,7 @@ This code is ALPHA
     09: hdf5 byteOrder must be set when chunked (tiledLayout)
 
 ========================================
-Changes from Java-Netcdf version 2.2
+API Changes from Java-Netcdf version 2.2
 
  Data Model
   * Object names are Unicode Strings. No Restrictions on characters used.
@@ -122,11 +122,15 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    + NetcdfFile.addStringVariable(), addVariable() convenience methods
    - NetcdfFile.addRecordStructure removed, use sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
    - NetcdfFile.readMemberData() removed: use Structure.select()
+   + NetcdfFile.readToByteChannel experimental, for maximum performance
+   - NetcdfFile.read(String variableSection, boolean flatten) -> readSection(secSpec); flatten= false not supported
 
    + NetcdfFileWriteable has new convenience methods
    + NetcdfFileWriteable redefine mode, large file support
 
    - NCdump is deprecated, use NCdumpW which uses a java.io.Writer to do Unicode correctly
+   * NCdumpW.CEresult put in sepetat class
+   * NCdumpW.makeSectionString moved to CEresult
 
    - VariableSimpleIF.convertScaleOffsetMissing removed
    * VariableIF extends VariableSimpleIF

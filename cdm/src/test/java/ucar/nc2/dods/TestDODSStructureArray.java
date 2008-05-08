@@ -42,7 +42,7 @@ public class TestDODSStructureArray extends TestCase {
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D0;
     vali = ((ArrayInt.D0)a).get();
-    assert vali == 1 : vali;    //?? LOOK ? CHANGES depending on how its read. POTTER!!!!
+    assert vali == 2 : vali;    //?? LOOK ? CHANGES depending on how its read. POTTER!!!!
 
     // int16 array
     assert null != (v = dodsfile.findVariable("exp.g"));

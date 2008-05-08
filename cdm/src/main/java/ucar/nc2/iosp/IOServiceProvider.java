@@ -20,9 +20,15 @@
 package ucar.nc2.iosp;
 
 import ucar.ma2.Section;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.nc2.Variable;
+import ucar.nc2.CEresult;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
+import java.util.List;
 
 /**
  * This is the service provider interface for the low-level I/O access classes (read only).
@@ -96,8 +102,11 @@ public interface IOServiceProvider {
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  public long readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+  public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
+
+  public ucar.ma2.Array readSection(Variable inner, Section total, CEresult cer) throws IOException, InvalidRangeException;
+
   
   /*
    * LOOK Should we allow reading on member variables ??

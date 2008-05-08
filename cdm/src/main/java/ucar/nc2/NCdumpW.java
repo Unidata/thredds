@@ -41,7 +41,6 @@ import java.nio.charset.Charset;
  */
 
 public class NCdumpW {
-  private static boolean debugSelector = false;
   private static String usage = "usage: NCdumpW <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
   /**
@@ -254,7 +253,7 @@ public class NCdumpW {
             String varSubset = stoke.nextToken(); // variable name and optionally a subset
 
             if (varSubset.indexOf('(') >= 0) { // has a selector
-              Array data = nc.read(varSubset, false);
+              Array data = nc.readSection(varSubset);
               printArray(data, varSubset, ps, ct);
 
             } else {   // do entire variable
@@ -283,144 +282,6 @@ public class NCdumpW {
 
     out.flush();
     return true;
-  }
-
-  /**
-   * Parse a section specification String. These have the form:
-   * <pre>
-   *  section specification := selector | selector '.' selector
-   *  selector := varName ['(' dims ')']
-   *  varName := ESCAPED_STRING
-   *
-   *   dims := dim | dim, dims
-   *   dim := ':' | slice | start ':' end | start ':' end ':' stride
-   *   slice := INTEGER
-   *   start := INTEGER
-   *   stride := INTEGER
-   *   end := INTEGER
-   * </pre>
-   *
-   * Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.
-   * Optional components are enclosed between square braces '[' and ']'.
-   *
-   * @param ncfile look for variable in here
-   * @param variableSection the string to parse, eg "record(12).wind(1:20,:,3)"
-   * @return return CEresult which has the equivilent Variable
-   * @throws IllegalArgumentException when token is misformed, or variable name doesnt exist in ncfile
-   * @throws ucar.ma2.InvalidRangeException if section does not match variable shape
-   *
-   * @see ucar.ma2.Range#parseSpec(String sectionSpec)
-   */
-  public static CEresult parseVariableSection( NetcdfFile ncfile, String variableSection) throws InvalidRangeException {
-    StringTokenizer stoke = new StringTokenizer(variableSection, ".");
-    String selector = stoke.nextToken();
-    if (selector == null)
-      throw new IllegalArgumentException("empty sectionSpec = " + variableSection);
-
-    // parse each selector, find the inner variable
-    boolean hasInner = false;
-    List<Range> fullSelection = new ArrayList<Range>();
-    Variable innerV = parseVariableSelector(ncfile, selector, fullSelection);
-    while (stoke.hasMoreTokens()) {
-      selector = stoke.nextToken();
-      innerV = parseVariableSelector(innerV, selector, fullSelection);
-      hasInner = true;
-    }
-    return new CEresult( innerV, fullSelection, hasInner);
-  }
-
-  /** public by accident */
-  static public class CEresult {
-    public Variable v; // the variable
-    public List<Range> ranges; // list of ranges for this variable
-    public boolean hasInner;
-    CEresult( Variable v, List<Range> ranges, boolean hasInner) {
-      this.v = v;
-      this.ranges = ranges;
-      this.hasInner = hasInner;
-    }
-  }
-
-  // parse variable name and index selector out of the selector String. variable name must be escaped
-  private static Variable parseVariableSelector( Object parent, String selector, List<Range> fullSelection)
-          throws InvalidRangeException {
-    String varName, indexSelect = null;
-    int pos1 = selector.indexOf('(');
-
-    if (pos1 < 0) { // no selector
-      varName = selector;
-    } else {
-      varName = selector.substring(0, pos1);
-      indexSelect = selector.substring(pos1);
-    }
-    if (debugSelector)
-      System.out.println(" parseVariableSection <"+selector+"> = <"+varName+">, <"+indexSelect+">");
-
-    Variable v = null;
-    if (parent instanceof NetcdfFile) {
-      NetcdfFile ncfile = (NetcdfFile) parent;
-      v = ncfile.findVariable(varName);
-
-    } else if (parent instanceof Structure) {
-      Structure s = (Structure) parent;
-      v = s.findVariable(varName); // LOOK
-    }
-    if (v == null)
-      throw new IllegalArgumentException(" cant find variable: "+varName+" in selector="+selector);
-
-    // get the selected Ranges, or all, and add to the list
-    Section section;
-    if (indexSelect != null) {
-      section = new Section(indexSelect);
-      section.setDefaults(v.getShape()); // Check section has no nulls, set from shape array.
-    } else
-      section = new Section(v.getShape()); // all
-
-    fullSelection.addAll(section.getRanges());
-
-    return v;
-  }
-
-
-  /** Make section specification String from a range list for a Variable.
-   * @param v for this Variable.
-   * @param ranges list of Range. Must includes all parent structures. The list be null, meaning use all.
-   *   Individual ranges may be null, meaning all for that dimension.
-   * @return section specification String.
-   * @throws InvalidRangeException is specified section doesnt match variable shape
-   */
-  public static String makeSectionString(Variable v, List<Range> ranges) throws InvalidRangeException {
-    StringBuilder sb = new StringBuilder();
-    makeSpec(sb, v, ranges);
-    return sb.toString();
-  }
-
-  private static List<Range> makeSpec(StringBuilder sb, Variable v, List<Range> orgRanges) throws InvalidRangeException {
-    if (v.isMemberOfStructure()) {
-      orgRanges = makeSpec(sb, v.getParentStructure(), orgRanges);
-      sb.append('.');
-    }
-    List<Range> ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
-
-    sb.append( v.isMemberOfStructure() ? v.getShortName() : v.getNameEscaped());
-
-    if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
-      sb.append('(');
-      for (int count=0; count<v.getRank(); count++) {
-        Range r = ranges.get(count);
-        if (r == null)
-          r = new Range( 0, v.getDimension(count).getLength());
-        if (count>0) sb.append(", ");
-        sb.append(r.first());
-        sb.append(':');
-        sb.append(r.last());
-        sb.append(':');
-        sb.append(r.stride());
-      }
-      sb.append(')');
-    }
-
-    return (orgRanges == null) ? null : ranges.subList(v.getRank(), ranges.size());
   }
 
 

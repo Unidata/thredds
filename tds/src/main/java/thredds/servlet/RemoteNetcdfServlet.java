@@ -31,10 +31,8 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NCdumpW;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
-import ucar.ma2.Section;
 
 /**
  * Experimental testing.
@@ -104,10 +102,10 @@ public class RemoteNetcdfServlet extends AbstractServlet {
           }
 
         } else if (wbc != null) {
-          NCdumpW.CEresult cer = NCdumpW.parseVariableSection(ncfile, stoke.nextToken());
-          ncfile.readData(cer.v, new Section(cer.ranges), wbc);
+          ncfile.readToByteChannel(stoke.nextToken(), wbc);
+          
         } else {
-          Array result = ncfile.read(stoke.nextToken(), false);
+          Array result = ncfile.readSection(stoke.nextToken());
           length += copy2stream(result, out, false);
         }
       }

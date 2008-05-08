@@ -311,7 +311,7 @@ public class NCdump {
    *
    * @see ucar.ma2.Range#parseSpec(String sectionSpec)
    */
-  public static CEresult parseVariableSection( NetcdfFile ncfile, String variableSection) throws InvalidRangeException {
+  static private CEresult parseVariableSection( NetcdfFile ncfile, String variableSection) throws InvalidRangeException {
     StringTokenizer stoke = new StringTokenizer(variableSection, ".");
     String selector = stoke.nextToken();
     if (selector == null)
@@ -330,7 +330,7 @@ public class NCdump {
   }
 
   /** public by accident */
-  static public class CEresult {
+  static private class CEresult {
     public Variable v; // the variable
     public List<Range> ranges; // list of ranges for this variable
     public boolean hasInner;

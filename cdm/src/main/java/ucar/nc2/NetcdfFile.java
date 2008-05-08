@@ -888,26 +888,47 @@ public class NetcdfFile {
   }
 
   /**
-   * Read a variable using the given section specification, equivilent to readAllStructures() if
-   * its a member of a Structure, or read() otherwise.
-   *
-   * @param variableSection the constraint expression. This must start with a top variable.
-   * @param flatten         if true and its a member of a Structure, remove the surrounding StructureData.
+   * Read a variable using the given section specification.
+   * @param variableSection the constraint expression.
+   * @param flatten  MUST BE TRUE
    * @return Array data read.
    * @throws IOException if error
    * @throws InvalidRangeException if variableSection is invalid
    * @see ucar.ma2.Section#Section(String sectionSpec)for syntax of constraint expression
+   * @deprecated use readSection(), flatten=false no longer supported
    */
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
-    NCdumpW.CEresult cer = NCdumpW.parseVariableSection(this, variableSection);
-    Section s = new Section(cer.ranges);
-    return cer.v.read(s);
+    if (!flatten)
+      throw new UnsupportedOperationException("NetdfFile.read(String variableSection, boolean flatten=false)");
+    return readSection(variableSection);
+  }
 
-    /* if (cer.hasInner){
-      return cer.v.readAllStructures(s, flatten);
-    } else {
-      return cer.v.read(s);
-    } */
+  /**
+   * Read a variable using the given section specification.
+   * The result is always an array of the type of the innermost variable.
+   * Its shape is the accumulation of all the shapes of its parent structures.
+   *
+   * @param variableSection the constraint expression.
+   * @return Array data read.
+   * @throws IOException if error
+   * @throws InvalidRangeException if variableSection is invalid
+   * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html"
+   */
+  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
+    CEresult cer = CEresult.parseVariableSection(this, variableSection);
+    if (cer.child == null)
+      return cer.v.read(cer.section);
+    else {
+      Variable inner = null;
+      List<Range> totalRanges = new ArrayList<Range>();
+      CEresult current = cer;
+      while (current != null) {
+        totalRanges.addAll( current.section.getRanges());
+        inner = current.v;
+        current = current.child;
+      }
+      return spi.readSection(inner, new Section(totalRanges), cer);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -1531,17 +1552,22 @@ public class NetcdfFile {
    * @param section the section of data to read.
    *   There must be a Range for each Dimension in the variable, in order.
    *   Note: no nulls allowed. IOSP may not modify.
-   * @param out write data to this WritableByteChannel
+   * @param wbc write data to this WritableByteChannel
    * @return the number of bytes written to the channel
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
 
-  public long readData(ucar.nc2.Variable v, Section section, WritableByteChannel out)
+  public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc)
        throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     // LOOK: should go through Variable for caching ??
-    return spi.readData(v, section, out);
+    return spi.readToByteChannel(v, section, wbc);
+  }
+
+  public long readToByteChannel(String variableSection, WritableByteChannel wbc) throws IOException, InvalidRangeException {
+    CEresult cer = CEresult.parseVariableSection(this, variableSection);
+    return spi.readToByteChannel(cer.v, cer.section, wbc);
   }
 
   // this is for reading variables that are members of structures
@@ -1620,6 +1646,11 @@ public class NetcdfFile {
       super.finalize();
     }
   }
+
+  //////////////////////////////////////////////////////////
+
+
+  //////////////////////////////////////////////////////////
 
   public static void main(String[] arg) throws Exception {
     //NetcdfFile.registerIOProvider( ucar.nc2.grib.GribServiceProvider.class);

@@ -430,7 +430,7 @@ public class TestSubset extends TestCase {
 
   // x,y in meters
   public void testBBSubsetUnits() throws Exception {
-    GridDataset dataset = GridDataset.open("C:/data/cdp/test_for_jc.ncml");
+    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir+"ncml/testBBSubsetUnits.ncml");
     GeoGrid grid = dataset.findGridByName("pr");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();

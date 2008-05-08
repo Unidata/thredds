@@ -36,7 +36,7 @@ import java.io.*;
 import javax.swing.*;
 
 /**
- * A text widget that does get and put to a web URL.
+ * dump data using NetcdfFile.readSection()
  *
  * @author caron
  */
@@ -174,10 +174,12 @@ public class NCdumpPane extends thredds.ui.TextHistoryPane {
 
     CommonTask(String command) {
       this.command = command;
-      NCdumpW.CEresult cer = null;
       try {
-        cer = NCdumpW.parseVariableSection(ds, command);
-        v = cer.v;
+        CEresult cer = CEresult.parseVariableSection(ds, command);
+        while (cer != null) {  // get inner variable
+          v = cer.v;
+          cer = cer.child;
+        }
       } catch (Exception e) {
         ta.setText(e.getMessage());
       }
@@ -193,7 +195,7 @@ public class NCdumpPane extends thredds.ui.TextHistoryPane {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(100000);
       PrintStream ps = new PrintStream(bos);
       try {
-        data = ds.read(command, true);
+        data = ds.readSection(command);
 
         if (data != null) {
           imageView.setImage(ImageArrayAdapter.makeGrayscaleImage( task.data));
@@ -227,7 +229,7 @@ public class NCdumpPane extends thredds.ui.TextHistoryPane {
 
     public void run() {
       try {
-        data = ds.read(command, true);
+        data = ds.readSection(command);
         contents = NCdumpW.printArray( data, null, this);
 
       } catch (Exception e) {
