@@ -5,6 +5,9 @@ Build Date = @BUILDTIME@
 Changes in version 4.0
  Features
   * Use Stax for metars ncss xml writing - for now rely on using 1.6
+ Libraries
+  * commons-fileUpload 1.2.1
+  * commons-io 1.4
 
 Changes in version 3.16
  Features

@@ -35,6 +35,7 @@ This code is ALPHA
    * Union accepts scan
 
  Libraries
+  * JDOM 1.1
   * use new visad library 12/04/07
 
  Release Details:
@@ -43,6 +44,7 @@ This code is ALPHA
         StructureData.getScalarXXX(name) must be correct type
         cleanup javadoc, improve reference docs
         NetcdfFileWriteable - redefine mode, isLargeFile support
+        library upgrades : JDOM 1.1
     14: NetcdfDataset: unsigned always gets converted
         Netcdf-3 files: truncate Strings at first null byte.
         complete rework of point datatypes, now in package ucar.nc2.ft (feature types)
