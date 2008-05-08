@@ -463,6 +463,45 @@ public class CoordinateSystem {
     return false;
    }
 
+
+  ////////////////////////////////////////////////////////////////////////////
+  /**
+   * Instances which have same name are equal.
+   */
+  public boolean equals(Object oo) {
+    if (this == oo) return true;
+    if ( !(oo instanceof CoordinateSystem))
+      return false;
+    CoordinateSystem o = (CoordinateSystem) oo;
+
+    if (!getName().equals(o.getName())) return false;
+
+    List<CoordinateAxis> oaxes = o.getCoordinateAxes();
+    for (CoordinateAxis axis : getCoordinateAxes()) {
+      if (!oaxes.contains(axis)) return  false;
+    }
+
+    List<CoordinateTransform> otrans = o.getCoordinateTransforms();
+    for (CoordinateTransform tran : getCoordinateTransforms()) {
+      if (!otrans.contains(tran)) return  false;
+    }
+
+    return true;
+  }
+
+  /** Override Object.hashCode() to implement equals. */
+  public int hashCode() {
+    if (hashCode == 0) {
+      int result = 17;
+      result = 37*result + getName().hashCode();
+      result = 37*result + getCoordinateAxes().hashCode();
+      result = 37*result + getCoordinateTransforms().hashCode();
+      hashCode = result;
+    }
+    return hashCode;
+  }
+  private volatile int hashCode = 0;
+
   public String toString() { return name; }
 
 }

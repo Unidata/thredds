@@ -109,7 +109,10 @@ class EnhancementsImpl implements Enhancements {
   /** Set the Unit String for this Variable. Default is to use the "units" attribute.
    * @param units  unit string
    */
-  public void setUnitsString( String units) { this.units = units; }
+  public void setUnitsString( String units) {
+    this.units = units;
+    forVar.addAttribute( new Attribute("units", units));
+  }
 
   /**
    * Get the Unit String for the Variable. May be set explicitly, else look for attribute "units".

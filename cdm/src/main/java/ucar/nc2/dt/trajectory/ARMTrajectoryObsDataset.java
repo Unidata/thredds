@@ -8,6 +8,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.TypedDataset;
 import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 
@@ -136,7 +137,7 @@ public class ARMTrajectoryObsDataset extends SingleTrajectoryObsDataset implemen
     if ( units.indexOf( "meters" ) == -1 ) return null; // "meters above Mean Sea Level" not udunits convertible
     // if ( ! SimpleUnit.isCompatible( units, "m")) return( false);
 
-    var.addAttribute( new Attribute( "units", "meters" ) );
+    ((VariableEnhanced)var).setUnitsString("meters" );
 
     trajConfig.setElevVar( var );
     trajConfig.setTrajectoryId( trajId);

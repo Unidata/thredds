@@ -287,7 +287,7 @@ public abstract class ArrayStructure extends Array {
       short[] pa = getJavaArrayShort(recno, m);
       return Array.factory(short.class, m.getShape(), pa);
 
-    } else if (dataType == DataType.INT) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM)) {
       int[] pa = getJavaArrayInt(recno, m);
       return Array.factory(int.class, m.getShape(), pa);
 

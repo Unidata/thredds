@@ -154,11 +154,7 @@ public class TestDODSStructureArray extends TestCase {
   }
 
   public void testDODS() throws IOException, InvalidRangeException {
-   /* testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.04", "types", true);
-    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.21", "exp", true);
-    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.50", "types", false);
-    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.05", "types", true);   */
-    testW("http://dods.coas.oregonstate.edu:8080/dods/dts/test.53", "types", false);
+    testW(TestDODS.server+"test.53", "types", false);
   }
 
   public void testW(String url, String sname, boolean isScalar) throws IOException, InvalidRangeException {

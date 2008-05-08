@@ -34,6 +34,7 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements, Enh
   public ProxyReader getProxyReader();
   public void setProxyReader( ProxyReader proxyReader);
 
+  public void setUnitsString( String units);  
   /**
    * Process scale/offset/missing value
    */

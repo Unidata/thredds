@@ -1919,10 +1919,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     //String url = "http://eosdata.gsfc.nasa.gov/daac-bin/nph-hdf/DODS/catalog/health/modis/L3ocean/hdf/MO1DMWD2.sst4.ADD2000297.002.2000366024147.hdf";
     //String url = (arg.length > 1) ? arg[0] : "http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2003020200_sst-t.nc";
     //String url = "http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/example.nc";
-    //String url = "http://dods.coas.oregonstate.edu:8080/dods/dts/test.21";
-    //String url = "http://dods.coas.oregonstate.edu:8080/dods/dts/test.06a";
-    //String url = "http://dods.coas.oregonstate.edu:8080/dods/dts/test.53";
-
     String url = "http://localhost:8080/thredds/dodsC/testContent/testData.nc.ascii?reftime[0:1:0]";
 
     // "http://ingrid.ldeo.columbia.edu/expert/SOURCES/.LEVITUS94/dods";

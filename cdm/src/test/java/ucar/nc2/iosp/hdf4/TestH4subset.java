@@ -99,8 +99,6 @@ public class TestH4subset extends TestCase {
     TestIosp.testVariableSubset(TestH4readAndCount.testDir + "eos/misr/MISR_AM1_GP_GMP_P040_O003734_05", "GeometricParameters/Data Fields/CaZenith", ntrials);
     TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ncidc/MOD02HKM.A2007016.0245.005.2007312120020.hdf", "MODIS_SWATH_Type_L1B/Data Fields/EV_500_RefSB_Uncert_Indexes", ntrials);
 
-    // all missing data
-    TestIosp.testVariableSubset(TestH4readAndCount.testDir + "ssec/MYD04_L2.A2006188.1830.005.2006194121515.hdf", "mod04/Data Fields/Aerosol_Cldmask_Byproducts_Land", ntrials);
  }
 
   public void problemSubset() throws IOException, InvalidRangeException {

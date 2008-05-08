@@ -461,7 +461,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testAggByteGiniSubsetStride() throws Exception {
-    GridDataset dataset = GridDataset.open("C:/data/test/giniAggByte.ncml");
+    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir+"satellite/gini/giniAggByte.ncml"); // R:\testdata\satellite\gini
     GeoGrid grid = dataset.findGridByName("IR");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();

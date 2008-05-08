@@ -340,6 +340,11 @@ public class StructureMembers {
       dtype = v.getDataType();
     }
 
+    public void setVariableInfo(String unitString, String desc) {
+      this.units = unitString;
+      this.desc = desc;
+    }
+
     public String toString() { return name; }
 
   }

@@ -7,10 +7,8 @@ import junit.framework.*;
  *
  */
 public class TestDODS {
-
-
-  public static String server = "http://dods.coas.oregonstate.edu:8080/dods/dts/";
-  //public static String server = "http://localhost:8080/dts/";
+  //public static String server = "http://dods.coas.oregonstate.edu:8080/dods/dts/";
+  public static String server = "http://test.opendap.org:8080/dods/dts/";
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();

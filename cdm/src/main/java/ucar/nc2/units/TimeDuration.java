@@ -67,7 +67,7 @@ public class TimeDuration {
   private TimeUnit timeUnit;
   private boolean isBlank;
 
-  private boolean debug = false;
+  static private boolean debug = false;
 
   private TimeDuration() {
   }

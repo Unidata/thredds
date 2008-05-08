@@ -194,6 +194,15 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       return Array.factoryConstant(dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
+    // correct the member info
+    ArrayStructure as = (ArrayStructure) result;
+    StructureMembers sm = as.getStructureMembers();
+    for (StructureMembers.Member m : sm.getMembers()) {
+      Variable v = findVariable(m.getName());
+      if (v != null)
+        m.setVariableInfo(v.getUnitsString(), v.getDescription());
+    }
+
     return convert(result);
   }
 
@@ -356,6 +365,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   public java.lang.String getUnitsString() {
     return proxy.getUnitsString();
+  }
+
+  public void setUnitsString( String units) {
+    proxy.setUnitsString(units);
   }
 
   public double getValidMax() {

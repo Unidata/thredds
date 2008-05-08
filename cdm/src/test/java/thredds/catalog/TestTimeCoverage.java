@@ -22,9 +22,9 @@ package thredds.catalog;
 
 import junit.framework.TestCase;
 
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.TimeDuration;
-import ucar.nc2.units.TimeUnit;
+import ucar.nc2.units.*;
+
+import java.util.Date;
 
 /**
  * @author john
@@ -61,9 +61,13 @@ public class TestTimeCoverage  extends TestCase {
     tc = ds.getTimeCoverage();
     assert null != tc;
     System.out.println(" tc = "+tc);
-    assert tc.getStart().isPresent();
+    Date got = tc.getStart().getDate();
+    Date want = new DateFormatter().getISODate("1999-11-16T12:00:00");
+    assert got.equals( want);
     assert tc.getResolution() == null;
-    assert tc.getDuration().equals( new TimeDuration("10 days") );
+    TimeDuration gott = tc.getDuration();
+    TimeDuration wantt = new TimeDuration("P3M");
+    assert gott.equals( wantt);
 
     ds = cat.findDatasetByID("test3");
     tc = ds.getTimeCoverage();

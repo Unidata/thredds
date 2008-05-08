@@ -181,7 +181,7 @@ public class URLnaming {
   }
 
   public static void main5(String args[]) throws URISyntaxException {
-    String uriString = "http://dods.coas.oregonstate.edu:8080/dods/dts/test.53.dods?types[0:1:9]";
+    String uriString = "http://test.opendap.org:8080/dods/dts/test.53.dods?types[0:1:9]";
     URI uri = new URI(uriString);
   }
 

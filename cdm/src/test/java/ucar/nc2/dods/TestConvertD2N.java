@@ -267,7 +267,6 @@ public class TestConvertD2N {
   }
 
   static public void main( String[] args) throws IOException, ParseException, DAP2Exception, InvalidRangeException {
-    String server = "http://dods.coas.oregonstate.edu:8080/dods/dts/";
 
     /* test(server+"test.01"); // scalars
     test(server+"test.02");  // 1D arrays
@@ -293,7 +292,7 @@ public class TestConvertD2N {
     //test(server+"NestedSeq"); // nested Seq
     //test(server+"NestedSeq2"); // nested Seq   */
 
-    testDataDDSfromServer(server+"NestedSeq2", "person1.age,person1.stuff&person1.age=3"); // nested Seq
+    testDataDDSfromServer(TestDODS.server+"NestedSeq2", "person1.age,person1.stuff&person1.age=3"); // nested Seq
    // testDataDDSfromServer("http://dapper.pmel.noaa.gov/dapper/epic/woce_sl_time_monthly.cdp","location.profile&location._id=3"); // nested Seq
 
     // testDataDDSfromServer("http://dapper.pmel.noaa.gov/dapper/argo/argo_all.cdp", ""); // Sequence

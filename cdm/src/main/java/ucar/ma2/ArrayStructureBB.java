@@ -208,7 +208,7 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   public int[] getJavaArrayInt(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.INT) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
+    if ((m.getDataType() != DataType.INT) && (m.getDataType() != DataType.ENUM)) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
     if (m.getDataArray() != null) return super.getJavaArrayInt(recnum, m);
 
     int offset = calcOffsetSetOrder(recnum, m);
