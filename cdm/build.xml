@@ -893,7 +893,8 @@
     <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}"
            debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false"
            source="1.5" target="1.5">
-      <exclude name="examples/*.java"/>
+      <exclude name="examples/**"/>
+      <exclude name="ucar/nc2/ncml_old/**"/>
       <classpath refid="test.classpath"/>
     </javac>
 
