@@ -26,27 +26,34 @@ import ucar.nc2.iosp.IOServiceProviderWriter;
 
 import java.util.*;
 import java.io.IOException;
+import java.io.File;
 
 /**
  * Create/Write netCDF-3 formatted files. <p>
- * Because of the limitations of the underlying implementation, netcdf-3
- * files can only have Dimensions, Attributes and Variables added to it
- * at creation time. Thus, when a file is first opened, it in is "define mode"
- * where these may added. Once create() is called, you can no longer add, delete, or modify
- * the Dimensions, Attributes or Variables. <p>
+ * When a file is first created, it is in is "define mode", where the header objects (Dimensions, Attributes and Variables)
+ *  may be added, deleted and modified, but no data may be written.
+ * Once create() is called, you can no longer modify the header, but you can now write data.
+ * An existing file is opened in write mode.<p>
  *
- * After create has been called you can then write data values.
+ * If setRedefine(true) is called, the file goes into define mode, and header objects can be changed.
+ * When setRedefine(false) is called, the new header is written, and the old file data is copied to the new file.
+ * This can be quite costly. 
  *
  * @author caron
  * @see NetcdfFile
  */
 
 public class NetcdfFileWriteable extends NetcdfFile {
-  private HashMap<String,Variable> varHash = new HashMap<String,Variable>(50);
-  private boolean defineMode, redefineMode, isExisting, isLargeFile;
-  private boolean fill = true;
-  private long size = -1;
   private IOServiceProviderWriter spiw;
+
+  // modes
+  private boolean defineMode;
+
+  // state
+  private boolean isLargeFile;
+  private boolean fill;
+  private int extraHeader;
+  private long preallocateSize;
 
   /**
    * Open an existing Netcdf file for writing data. Fill mode is true.
@@ -57,22 +64,21 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @throws java.io.IOException on I/O error
    */
   static public NetcdfFileWriteable openExisting(String location) throws IOException {
-    return openExisting(location, true);
+    return new NetcdfFileWriteable(location, true, true);
   }
 
   /**
    * Open an existing Netcdf file for writing data.
    * Cannot add new objects, you can only read/write data to existing Variables.
+   * Setting fill = false is more efficient, use when you know you will write all data.
    *
    * @param location name of existing file to open.
    * @param fill     if true, the data is first written with fill values.
    * @return existing file that can be written to
-   * @throws java.io.IOException on I/O error
+   * @throws IOException on I/O error
    */
   static public NetcdfFileWriteable openExisting(String location, boolean fill) throws IOException {
-    NetcdfFileWriteable result = new NetcdfFileWriteable(location);
-    result.setFill(fill);
-    return result;
+    return new NetcdfFileWriteable(location, fill, true);
   }
 
   /**
@@ -80,23 +86,51 @@ public class NetcdfFileWriteable extends NetcdfFile {
    *
    * @param location name of new file to open; if it exists, will overwrite it.
    * @return new file that can be written to
+   * @throws IOException on I/O error
    */
-  static public NetcdfFileWriteable createNew(String location) {
-    return createNew(location, true);
+  static public NetcdfFileWriteable createNew(String location) throws IOException {
+    return new NetcdfFileWriteable(location, true, false);
   }
 
   /**
    * Create a new Netcdf file, put it into define mode. Make calls to addXXX(), then
    * when all objects are added, call create(). You cannot read or write data until create() is called.
+   * Setting fill = false is more efficient, use when you know you will write all data.
    *
    * @param location name of new file to open; if it exists, will overwrite it.
    * @param fill     if true, the data is first written with fill values.
    *                 Leave false if you expect to write all data values, set to true if you want to be
    *                 sure that unwritten data values have the fill value in it. (default is false)
    * @return new file that can be written to
+   * @throws IOException on I/O error
    */
-  static public NetcdfFileWriteable createNew(String location, boolean fill) {
-    return new NetcdfFileWriteable(location, fill);
+  static public NetcdfFileWriteable createNew(String location, boolean fill) throws IOException {
+    return new NetcdfFileWriteable(location, fill, false);
+  }
+
+  /**
+   * Create a new Netcdf file, put it into define mode.
+   *
+   * @param location open a new file at this location
+   * @param fill set fill mode
+   * @param isExisting true if file already exists
+   * @throws IOException on I/O error
+   */
+  private NetcdfFileWriteable(String location, boolean fill, boolean isExisting) throws IOException {
+    super();
+    this.location = location;
+    this.fill = fill;
+
+    if (isExisting) {
+      ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
+      spi = SPFactory.getServiceProvider();
+      spiw = (IOServiceProviderWriter) spi;
+      spiw.open(raf, this, null);
+      spiw.setFill( fill);
+
+    } else {
+      defineMode = true;
+    }
   }
 
   /**
@@ -116,12 +150,38 @@ public class NetcdfFileWriteable extends NetcdfFile {
 
   /**
    * Preallocate the file size, for efficiency.
+   * Must be in define mode
    * Must call before create() to have any affect.
-   * @param size size of file in bytes
+   * @param size if set to > 0, set length of file to this upon creation - this (usually) pre-allocates contiguous storage.
    */
   public void setLength(long size) {
-    this.size = size;
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    this.preallocateSize = size;
   }
+
+
+  /**
+   * Set if this should be a "large file" (64-bit offset) format.
+   * Must be in define mode
+   * @param isLargeFile true if large file
+   */
+  public void setLargeFile(boolean isLargeFile) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    this.isLargeFile = isLargeFile;
+  }
+
+  /**
+   * Set extra bytes to reserve in the header.
+   * This can prevent rewriting the entire file on redefine.
+   * Must be in define mode
+   * @param extraHeaderBytes # bytes extra for the header
+   */
+  public void setExtraHeaderBytes(int extraHeaderBytes) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    this.extraHeader = extraHeaderBytes;
+  }
+
+  public boolean isDefineMode() { return defineMode; }
 
   ////////////////////////////////////////////
   //// use these calls in define mode
@@ -171,6 +231,19 @@ public class NetcdfFileWriteable extends NetcdfFile {
   }
 
   /**
+   * Rename a Dimension. Must be in define mode.
+   * @param oldName existing dimension has this name
+   * @param newName rename to this
+   * @return renamed dimension, or null if not found
+   */
+  public Dimension renameDimension(String oldName, String newName) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    Dimension dim = findDimension(oldName);
+    if (null != dim) dim.setName(newName);
+    return dim;
+  }
+
+  /**
    * Add a Global attribute to the file. Must be in define mode.
    * @param att the attribute.
    * @return the created attribute
@@ -214,6 +287,37 @@ public class NetcdfFileWriteable extends NetcdfFile {
   public Attribute addGlobalAttribute(String name, Array values) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
     return super.addAttribute(null, new Attribute(name, values));
+  }
+
+  /**
+   * Delete a global Attribute. Must be in define mode.
+   * @param attName existing Attribute has this name
+   * @return deleted Attribute, or null if not found
+   */
+  public Attribute deleteGlobalAttribute(String attName) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    Attribute att = findGlobalAttribute(attName);
+    if (null == att) return null;
+
+    rootGroup.remove(att);
+    return att;
+  }
+
+  /**
+   * Rename a global Attribute. Must be in define mode.
+   * @param oldName existing Attribute has this name
+   * @param newName rename to this
+   * @return renamed Attribute, or null if not found
+   */
+  public Attribute renameGlobalAttribute(String oldName, String newName) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    Attribute att = findGlobalAttribute(oldName);
+    if (null == att) return null;
+
+    rootGroup.remove(att);
+    att = new Attribute( newName, att.getValues());
+    rootGroup.addAttribute( att);
+    return att;
   }
 
   /**
@@ -272,7 +376,6 @@ public class NetcdfFileWriteable extends NetcdfFile {
     Variable v = new Variable(this, rootGroup, null, varName);
     v.setDataType(dataType);
     v.setDimensions(dims);
-    varHash.put(varName, v);
 
     super.addVariable(null, v);
     return v;
@@ -301,9 +404,21 @@ public class NetcdfFileWriteable extends NetcdfFile {
     ArrayList<Dimension> sdims = new ArrayList<Dimension>(dims);
     sdims.add(d);
     v.setDimensions(sdims);
-    varHash.put(varName, v);
 
     super.addVariable(null, v);
+    return v;
+  }
+
+  /**
+   * Rename a Variable. Must be in define mode.
+   * @param oldName existing Variable has this name
+   * @param newName rename to this
+   * @return renamed Variable, or null if not found
+   */
+  public Variable renameVariable(String oldName, String newName) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    Variable v = findVariable(oldName);
+    if (null != v) v.setName(newName);
     return v;
   }
 
@@ -318,7 +433,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
       throw new UnsupportedOperationException("not in define mode");
     if (!N3iosp.isValidNetcdf3ObjectName(att.getName())) throw new IllegalArgumentException("illegal netCDF-3 object name");
 
-    Variable v = varHash.get(varName);
+    Variable v = rootGroup.findVariable(varName);
     if (null == v)
       throw new IllegalArgumentException("addVariableAttribute variable name not found = <" + varName + ">");
     v.addAttribute(att);
@@ -360,6 +475,46 @@ public class NetcdfFileWriteable extends NetcdfFile {
   }
 
   /**
+   * Delete a variable Attribute. Must be in define mode.
+   * @param varName existing Variable name
+   * @param attName existing Attribute has this name
+   * @return deleted Attribute, or null if not found
+   */
+  public Attribute deleteVariableAttribute(String varName, String attName) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    Variable v = findVariable(varName);
+    if (v == null) return null;
+
+    Attribute att = v.findAttribute(attName);
+    if (null == att) return null;
+
+    v.remove(att);
+    return att;
+  }
+
+
+  /**
+   * Rename a variable Attribute. Must be in define mode.
+   * @param varName existing Variable name
+   * @param attName existing Attribute has this name
+   * @param newName rename to this
+   * @return renamed Attribute, or null if not found
+   */
+  public Attribute renameVariableAttribute(String varName, String attName, String newName) {
+    if (!defineMode) throw new UnsupportedOperationException("not in define mode");
+    Variable v = findVariable(varName);
+    if (v == null) return null;
+
+    Attribute att = v.findAttribute(attName);
+    if (null == att) return null;
+
+    v.remove(att);
+    att = new Attribute( newName, att.getValues());
+    v.addAttribute( att);
+    return att;
+  }
+
+  /**
    * Update the value of an existing attribute. Attribute is found by name, which must match exactly.
    * You cannot make an attribute longer, or change the number of values.
    * For strings: truncate if longer, zero fill if shorter.  Strings are padded to 4 byte boundaries, ok to use padding if it exists.
@@ -370,13 +525,15 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @throws IOException if I/O error
    */
   public void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
+    if (defineMode)
+      throw new UnsupportedOperationException("in define mode");
     spiw.updateAttribute(v2, att);
   }
 
   /**
    * After you have added all of the Dimensions, Variables, and Attributes,
    *   call create() to actually create the file. You must be in define mode.
-   * After this call, you are no longer in define mode, and cannot return to it.
+   * After this call, you are no longer in define mode.
    * @throws java.io.IOException if I/O error
    */
   public void create() throws java.io.IOException {
@@ -385,63 +542,82 @@ public class NetcdfFileWriteable extends NetcdfFile {
 
     spi = SPFactory.getServiceProvider();
     spiw = (IOServiceProviderWriter) spi;
-    spiw.create(location, this, fill, size);
+    spiw.create(location, this, extraHeader, preallocateSize, isLargeFile);
+    spiw.setFill( fill);
 
     defineMode = false;
-    redefineMode = false;
-    isExisting = true;
   }
 
-  public boolean isDefineMode() { return defineMode; }
-  public boolean isLargeFile() { return isLargeFile; }
-  public boolean isRedefineMode() { return redefineMode; }
-
-  public void setLargeFile(boolean isLargeFile) {
-    this.isLargeFile = isLargeFile;
-  }
+  ////////////////////////////////////////////
+  // redefine
 
   /**
    * Set the redefine mode.
    * Designed to emulate nc_redef (redefineMode = true) and
    * nc_enddef (redefineMode = false)
    * @param redefineMode start or end define mode
+   * @return true if it had to rewrite the entire file, false if it wrote the header in place
+   * @throws java.io.IOException on read/write error
    */
-  public void setRedefineMode(boolean redefineMode) throws IOException {
+  public boolean setRedefineMode(boolean redefineMode) throws IOException {
     if (redefineMode && !defineMode) {
-      this.redefineMode = true;
       defineMode = true;
 
     } else if (!redefineMode && defineMode) {
-      if (isExisting)
-        rewrite();
-      else
-        create();
-
-      this.redefineMode = false;
       defineMode = false;
+      finish();
+
+      // try to rewrite header, if it fails, then we have to rewrite entire file
+      boolean ok = spiw.rewriteHeader( isLargeFile);
+      if (!ok)
+        rewrite();
+      return !ok;
     }
+    return false;
   }
 
   // for now, assume we have to rewrite
   // should check if we can keep header (eg attributes only added)
   private void rewrite() throws IOException {
+    // close existing file, rename and open as read-only
     close();
-    NetcdfFile prev = NetcdfFile.open(location);
+    File prevFile = new File(location);
+    File tmpFile = new File(location + ".tmp");
+    if (!prevFile.renameTo(tmpFile))
+      throw new RuntimeException("Cant rename "+prevFile+" to "+ tmpFile);
 
-    //temp file in same directory
+    NetcdfFile oldFile = NetcdfFile.open(tmpFile.getPath());
 
-    // create new file
+    // use record dimension if it has one
+    Structure recordVar = null;
+    if (oldFile.hasUnlimitedDimension()) {
+      oldFile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      recordVar = (Structure) oldFile.findVariable("record");
+    }
+
+    // create new file with current set of objects
+    spiw.create(location, this, extraHeader, preallocateSize, isLargeFile);
+    spiw.setFill( fill);
+    isClosed = false;
 
     // copy old file to new
+    List<Variable> oldList = new ArrayList<Variable>(getVariables().size());
+    for (Variable v : getVariables()) {
+      Variable oldVar = oldFile.findVariable(v.getName());
+      if (oldVar != null)
+        oldList.add(oldVar);
+    }
+    FileWriter.copyVarData(this, oldList, recordVar, 0);
+    flush();
 
     // delete old
-
-    // rename the new
-
+    oldFile.close();
+    if (!tmpFile.delete())
+      throw new RuntimeException("Cant delete "+location);
   }
 
   ////////////////////////////////////////////
-  //// use these calls to write to the file
+  //// use these calls to write data to the file
 
   /**
    * Write data to the named variable, origin assumed to be 0. Must not be in define mode.
@@ -579,7 +755,6 @@ public class NetcdfFileWriteable extends NetcdfFile {
     spi = SPFactory.getServiceProvider();
     spiw = (IOServiceProviderWriter) spi;
     spiw.open(raf, this, null);
-    isExisting = true;
   }
 
   /**

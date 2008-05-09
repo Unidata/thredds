@@ -76,8 +76,8 @@ public class WriterStationObsDataset {
 
   private boolean debug = false;
 
-  public WriterStationObsDataset(String fileOut, String title) {
-    ncfile = NetcdfFileWriteable.createNew(fileOut);
+  public WriterStationObsDataset(String fileOut, String title) throws IOException {
+    ncfile = NetcdfFileWriteable.createNew(fileOut, false);
     ncfile.setFill( false);
     this.title = title;
   }

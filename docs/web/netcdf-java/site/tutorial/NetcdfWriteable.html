@@ -53,7 +53,7 @@
    }
 </pre>
 <ol>
-  <li>Create new netcdf-3 file with the given filename, with no <em>fill</em>. Fill = true causes everything to be written twice: first with the fill value, then with the data values. If you know you will write all the data, you dont need to use fill. If you don't know if all the data will be written, turning fill on ensures that any values not written will have the fill value. Otherwise those values will be undefined: possible zero, or possibly garbage. </li>
+  <li>Create new netcdf-3 file with the given filename, with  <em>fill = false</em>. Seting <em>fill = true</em> causes everything to be written twice: first with the fill value, then with the data values. If you know you will write all the data, you dont need to use fill. If you don't know if all the data will be written, turning fill on ensures that any values not written will have the fill value. Otherwise those values will be undefined: possibly zero, or possibly garbage. </li>
   <li>Create two <strong>Dimensions</strong>, named <em>lat</em> and <em>lon</em>, of lengths 64 and 128 respectively, and add them to the file. </li>
   <li>Create a list consisting of the two Dimension, and create a <strong>Variable</strong> named <em>temperature</em>, of type <strong>double</strong>, with shape (lat, lon)  .</li>
   <li>Add an <strong>Attribute</strong> to the <em>temperature</em> Variable, with name <em>units</em> and value <em>K</em>.  </li>

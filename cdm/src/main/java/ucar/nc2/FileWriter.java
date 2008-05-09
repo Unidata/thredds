@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -206,16 +206,16 @@ public class FileWriter {
 
   /**
    * Write data from varList into new file. Read/Write a maximum of  maxSize bytes at a time.
-   * When theres a record variable, mush more efficient to use it.
+   * When theres a record variable, its much more efficient to use it.
    *
    * @param ncfile write tot this file
-   * @param varlist list of varibles, with data in them
+   * @param varlist list of varibles from the original file, with data in them
    * @param recordVar the record variable from the original file, or null means dont use record variables
    * @param delay delay between writing records, for testing
    * @return total number of bytes written
    * @throws IOException if I/O error
    */
-  private static double copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar, long delay) throws IOException {
+  public static double copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar, long delay) throws IOException {
     boolean useRecordDimension = (recordVar != null);
 
     // write non-record data
@@ -349,7 +349,7 @@ public class FileWriter {
    * @param fileOutName file name to write to.
    * @param fill        use fill mode or not
    */
-  public FileWriter(String fileOutName, boolean fill) {
+  public FileWriter(String fileOutName, boolean fill) throws IOException {
     ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
   }
 

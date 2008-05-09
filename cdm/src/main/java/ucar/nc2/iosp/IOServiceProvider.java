@@ -43,7 +43,6 @@ import java.util.List;
  * <li> the open() method on the resulting IOServiceProvider class is handed the file.</li>
  *
  * @see ucar.nc2.NetcdfFile#registerIOProvider(Class) ;
- * @see ucar.nc2.iosp.IOServiceProviderWriter;
  *
  * @author caron
  */

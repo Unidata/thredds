@@ -88,8 +88,8 @@ public class WriterProfileObsDataset {
 
   private boolean debug = false;
 
-  public WriterProfileObsDataset(String fileOut, String title) {
-    ncfile = NetcdfFileWriteable.createNew(fileOut);
+  public WriterProfileObsDataset(String fileOut, String title) throws IOException {
+    ncfile = NetcdfFileWriteable.createNew(fileOut, false);
     ncfile.setFill( false);
     this.title = title;
   }

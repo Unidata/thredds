@@ -257,6 +257,8 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     recStart = headerParser.recStart;
 
     _open(raf);
+
+    ncfile.finish();
   }
 
 
@@ -465,13 +467,8 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   protected boolean fill = true;
   protected HashMap dimHash = new HashMap(50);
 
-  public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill) throws IOException {
-    create(filename, ncfile, fill, 0);
-  }
-
-  public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill, long size) throws IOException {
+  public void create(String filename, ucar.nc2.NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile) throws IOException {
     this.ncfile = ncfile;
-    this.fill = fill;
     this.readonly = false;
 
     // finish any structures
@@ -480,13 +477,13 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     raf = new ucar.unidata.io.RandomAccessFile(filename, "rw");
     raf.order(RandomAccessFile.BIG_ENDIAN);
 
-    if (size > 0) {
+    if (preallocateSize > 0) {
       java.io.RandomAccessFile myRaf = raf.getRandomAccessFile();
-      myRaf.setLength(size);
+      myRaf.setLength(preallocateSize);
     }
 
     headerParser = new N3header();
-    headerParser.create(raf, ncfile, fill, null);
+    headerParser.create(raf, ncfile, extra, largeFile, null);
 
     recsize = headerParser.recsize;   // record size
     recStart = headerParser.recStart; // record variables start here
@@ -499,6 +496,11 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     else
       raf.setMinLength(recStart); // make sure file length is long enough, even if not written to.
   }
+
+  public boolean rewriteHeader(boolean largeFile) throws IOException {
+    return headerParser.rewriteHeader(largeFile);
+  }
+
 
   //////////////////////////////////////////////////////////////////////////////////////
   // write

@@ -65,6 +65,7 @@ public class TestLocalNC2 {
     suite.addTest(new TestSuite(TestWriteFill.class)); //
     suite.addTest(new TestSuite(TestReadRecord.class));
     suite.addTest(new TestSuite(TestDump.class)); //
+    suite.addTest(new TestSuite(TestRedefine.class));
 
     suite.addTest(new TestSuite(TestLongOffset.class)); //
     suite.addTest(new TestSuite(TestReadSection.class)); //

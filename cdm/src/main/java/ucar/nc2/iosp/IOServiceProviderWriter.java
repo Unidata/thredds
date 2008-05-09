@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,8 +27,9 @@ import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 
 /**
- * This is the service provider interface for the low-level I/O writing.
- * This is only used by service implementors.
+ * This is really just an interface to Netcdf-3 file writing.
+ * However, we will probably add Netcf-4 writing, exen if its only through a JNI interface.
+ * For now, other parties are discourages from using this, as it will likely be refactored in 4.1.
  *
  * @author caron
  */
@@ -36,13 +37,15 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
 
   /**
    * Create new file, populate it from the objects in ncfile.
+   *
    * @param filename name of file to create.
    * @param ncfile get dimensions, attributes, and variables from here.
-   * @param fill if true, write fill value into all variables.
-   * @param size if set to > 0, set length of file to this upon creation - this (usually) pre-allocates contiguous storage.
+   * @param extra  if > 0, pad header with extra bytes
+   * @param preallocateSize if > 0, set length of file to this upon creation - this (usually) pre-allocates contiguous storage.
+   * @param largeFile  if want large file format
    * @throws java.io.IOException if I/O error
    */
-  public void create(String filename, ucar.nc2.NetcdfFile ncfile, boolean fill, long size) throws IOException;
+  public void create(String filename, ucar.nc2.NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile) throws IOException;
 
   /**
    * Set the fill flag.
@@ -68,6 +71,8 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    */
   public void writeData(ucar.nc2.Variable v2, Section section, ucar.ma2.Array values)
       throws IOException, ucar.ma2.InvalidRangeException;
+
+  public boolean rewriteHeader(boolean largeFile) throws IOException;  
 
   /**
    * Update the value of an existing attribute. Attribute is found by name, which must match exactly.
