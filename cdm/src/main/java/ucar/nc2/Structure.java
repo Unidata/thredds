@@ -93,6 +93,20 @@ public class Structure extends Variable {
   }
 
   /**
+   * Create a subset of the Structure consisting only of the one member variable
+   * @param v Variable
+   * @return subsetted Structure
+   */
+  public Structure select( Variable v) {
+    Structure result = (Structure) copy();
+    List<Variable> members = new ArrayList<Variable>(1);
+    members.add(v);
+    result.setMemberVariables(members);
+    result.isSubset = true;
+    return result;
+  }
+
+  /**
    * Find if this was created from a subset() method.
    * @return true if this is a subset
    */

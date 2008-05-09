@@ -23,11 +23,14 @@ package ucar.nc2.iosp;
 import ucar.ma2.*;
 import ucar.nc2.CEresult;
 import ucar.nc2.Variable;
+import ucar.nc2.Structure;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
+import java.util.List;
+import java.util.ArrayList;
 
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
@@ -82,14 +85,27 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return 0;
   }
 
-  public ucar.ma2.Array readSection(Variable inner, Section total, CEresult cer) throws IOException, InvalidRangeException {
-    Array result = Array.factory(inner.getDataType(), total.getShape());
-    Array outerData = cer.v.read(cer.section);
+  public ucar.ma2.Array readSection(CEresult cer) throws IOException, InvalidRangeException {    
     if (cer.child == null)
-      return outerData;
+      return cer.v.read(cer.section);
 
-    ArrayStructure as = (ArrayStructure) outerData;
-    extractSection( cer.child, as, result.getIndexIterator());
+    Variable inner = null;
+    List<Range> totalRanges = new ArrayList<Range>();
+    CEresult current = cer;
+    while (current != null) {
+      totalRanges.addAll( current.section.getRanges());
+      inner = current.v;
+      current = current.child;
+    }
+
+    Section total = new Section( totalRanges);
+    Array result = Array.factory(inner.getDataType(), total.getShape());
+
+    // must be a Structure
+    Structure outer = (Structure) cer.v;
+    Structure outerSubset = outer.select( cer.child.v); // allows IOSPs to optimize for  this case
+    ArrayStructure outerData = (ArrayStructure) outerSubset.read(cer.section);
+    extractSection( cer.child, outerData, result.getIndexIterator());
     return result;
   }
 
@@ -102,26 +118,19 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
       if (child.child == null) {  // inner variable
 
-        if (wantNelems == innerData.getSize()) { // no sectioning needed
-          MAMath.copy(child.v.getDataType(), innerData.getIndexIterator(), to);
-        } else {
+        if (wantNelems != innerData.getSize())
           innerData = innerData.section(child.section.getRanges());
-          MAMath.copy(child.v.getDataType(), innerData.getIndexIterator(), to);
-        }
+        MAMath.copy(child.v.getDataType(), innerData.getIndexIterator(), to);
 
-      } else { // not an inner variable - must be an ArrayStructure
-
-        if (wantNelems == innerData.getSize()) { // no sectioning needed
-          extractSection(child.child, (ArrayStructure) innerData, to);
-        } else {
+      } else {                   // not an inner variable - must be an ArrayStructure
+        if (wantNelems != innerData.getSize())
           innerData = sectionArrayStructure(child, (ArrayStructure) innerData, m);
-          extractSection(child.child, (ArrayStructure) innerData, to);
-        }
-
+        extractSection(child.child, (ArrayStructure) innerData, to);
       }
     }
   }
 
+  // LOOK could be used in createView ??
   private ArrayStructure sectionArrayStructure(CEresult child, ArrayStructure innerData, StructureMembers.Member m) throws IOException, InvalidRangeException {
     StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
     ArrayStructureW result = new ArrayStructureW(membersw, child.section.getShape());

@@ -105,7 +105,7 @@ public interface IOServiceProvider {
   public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
-  public ucar.ma2.Array readSection(Variable inner, Section total, CEresult cer) throws IOException, InvalidRangeException;
+  public ucar.ma2.Array readSection(CEresult cer) throws IOException, InvalidRangeException;
 
   
   /*

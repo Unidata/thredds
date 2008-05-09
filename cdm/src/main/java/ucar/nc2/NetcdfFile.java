@@ -916,19 +916,7 @@ public class NetcdfFile {
    */
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
     CEresult cer = CEresult.parseVariableSection(this, variableSection);
-    if (cer.child == null)
-      return cer.v.read(cer.section);
-    else {
-      Variable inner = null;
-      List<Range> totalRanges = new ArrayList<Range>();
-      CEresult current = cer;
-      while (current != null) {
-        totalRanges.addAll( current.section.getRanges());
-        inner = current.v;
-        current = current.child;
-      }
-      return spi.readSection(inner, new Section(totalRanges), cer);
-    }
+    return spi.readSection(cer);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
