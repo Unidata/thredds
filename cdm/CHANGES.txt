@@ -45,6 +45,7 @@ This code is ALPHA
         cleanup javadoc, improve reference docs
         NetcdfFileWriteable - redefine mode, large file support, extra header bytes
         library upgrades : JDOM 1.1
+        NetcdfFile.readSection(secSpec) used in NcDumpPanel, replaces old readNestedData.
     14: NetcdfDataset: unsigned always gets converted
         Netcdf-3 files: truncate Strings at first null byte.
         complete rework of point datatypes, now in package ucar.nc2.ft (feature types)
@@ -53,7 +54,7 @@ This code is ALPHA
         make sure compiles under 1.5
     13: hdf4 attribute arrays
     12: DODS preload
-        put back HttpClientManager, RuntimeConfigParsser temporarily (testing with IDV)
+        put back HttpClientManager, RuntimeConfigParser temporarily (testing with IDV)
         hdf4 bug fixes
         experiment with ucar.nc2.dt2
         iosp.NmcObsLegacy
@@ -121,7 +122,7 @@ API Extensive API changes. Most, but not completely backwards-compatible.
 
    + NetcdfFile.addStringVariable(), addVariable() convenience methods
    - NetcdfFile.addRecordStructure removed, use sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
-   - NetcdfFile.readMemberData() removed: use Structure.select()
+   - NetcdfFile.readMemberData() removed: use Structure.select() or readSection()
    + NetcdfFile.readToByteChannel experimental, for maximum performance
    - NetcdfFile.read(String variableSection, boolean flatten) -> readSection(secSpec); flatten= false not supported
 
@@ -161,8 +162,8 @@ API Extensive API changes. Most, but not completely backwards-compatible.
      - LayoutRegular, LayoutRegularSegmented, LayoutSegmented, LayoutTIled, LayoutBBTiled
    * IOServiceProvider.readNestedData() not needed anymore. optimize readData(Structure struct),
       where struct has only a subset of member Variables
-   * IOServiceProvider.getStructureDataIterator() experimental
-   * IOServiceProvider.readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+   + IOServiceProvider.readSection(secSpec) with default implementation in AbstractIOServiceProvider
+   + IOServiceProvider.readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
      to allow use of nio.Channels
 
   Package ucar.nc2.iosp.netcdf3

@@ -221,7 +221,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       // sequence
       if (dkey.replication == 0) {
         int count = bits2UInt(dkey.replicationCountSize);
-        ReplicationCounter nested = rc.makeNested(dkey, count, index);
+        ReplicationCounter nested = rc.makeNested(dkey, count, index, dkey.replicationCountSize);
 
         for (int i = 0; i < count; i++)
           countData(dkey.subKeys, nested, i);
@@ -231,7 +231,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
       // compound
       if (dkey.type == 3) {
-        ReplicationCounter nested = rc.makeNested(dkey, dkey.replication, index);
+        ReplicationCounter nested = rc.makeNested(dkey, dkey.replication, index, 0);
         for (int i = 0; i < dkey.replication; i++)
           countData(dkey.subKeys, nested, i);
         continue;
