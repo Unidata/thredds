@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -316,16 +316,21 @@ public class RandomAccessFile implements DataInput, DataOutput {
       return;
     }
 
+    // need new buffer, starting at pos
+    readBuffer(pos);
+  }
+
+  protected void readBuffer(long pos) throws IOException {
     // If the current buffer is modified, write it to disk.
     if (bufferModified) {
       flush();
     }
 
-    // need new buffer
     bufferStart = pos;
     filePosition = pos;
 
     dataSize = read_(pos, buffer, 0, buffer.length);
+
     if (dataSize <= 0) {
       dataSize = 0;
       endOfFile = true;
@@ -1641,6 +1646,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
         + ", readonly=" + readonly + ", bm=" + bufferModified;
   }
 
+  /////////////////////////////////////////////////
   /**
    * Support for ucar.unidata.io.FileCache.
    */
@@ -1657,7 +1663,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * Find whether this fie is in the cache.
+   * Find whether this file is in the cache.
    *
    * @return true if in the cache.
    * @see ucar.unidata.io.FileCache
@@ -1674,480 +1680,55 @@ public class RandomAccessFile implements DataInput, DataOutput {
   public void synch() throws IOException {
   }
 
+  /////////////////////////////////////////////////
+
   /**
-   * Test the byte operations of the RandomAccessFile class. These are
-   * the methods that read/write on a byte-by-byte basis. The following checks
-   * are made:
-   * <ul>
-   * <li>Writing random bytes to a file.
-   * <li>Checking the size of the file is correct.
-   * <li>Checking that EOF is correctly raised.
-   * <li>Reading the file back in and verifying its contents.
-   * </ul>
-   * The test file is 4.5 times the size of the buffer, in order to test
-   * paging between buffers, and using files that end in the middle of a
-   * buffer. A constant seed value is used for the random number generator,
-   * to ensure any bugs are reproduceable.
+   * Search forward from the current pos, looking for a match.
    *
-   * @param filename    the name of the test file to generate.
-   * @param bufferSize  the size of the buffer to use.
-   *
-   * public static void testBytes( String filename, int bufferSize ) {
-   *
-   *  System.out.println( "\nTesting byte operations..." );
-   *  int newFileSize = (int)(bufferSize * 4.5 );
-   *
-   *  try {
-   *
-   *     // Create a test file.
-   *     RandomAccessFile outFile = new RandomAccessFile( filename,
-   *        RandomAccessFile.WRITE |
-   *        RandomAccessFile.CREATE, bufferSize );
-   *     try {
-   *        Random random = new Random( 0 );
-   *        byte b = 0;
-   *        for( int i = 0; i < newFileSize; i++ ) {
-   *           b = (byte)(random.nextInt( ) % 256);
-   *           outFile.writeByte( b );
-   *        }
-   *     } finally {
-   *        outFile.close( );
-   *     }
-   *
-   *     // Check that the file length is correct.
-   *     if( (new File( filename )).length( ) == newFileSize )
-   *        System.out.println( ". File size correct (" + newFileSize + ")." );
-   *     else
-   *        System.out.println( "X New file size incorrect (should be " + newFileSize +
-   *                            ", but is " + (new File( filename )).length( ) + ")." );
-   *
-   *     // Read the file, verify and modify its contents.
-   *     RandomAccessFile inoutFile = new RandomAccessFile( filename,
-   *        RandomAccessFile.READ |
-   *        RandomAccessFile.WRITE, bufferSize );
-   *
-   *     boolean verified = true;
-   *     int byteNo = 0;
-   *     try {
-   *
-   *        // Read each byte in the file.
-   *        Random random = new Random( 0 );
-   *        byte b = 0;
-   *        for( byteNo = 0; byteNo < newFileSize; byteNo++ ) {
-   *           b = (byte)(random.nextInt( ) % 256);
-   *           byte currentByte = inoutFile.readByte( );
-   *
-   *           // Check the value is correct.
-   *           if( currentByte != b )
-   *              verified = false;
-   *
-   *           // Modify selected values.
-   *           if( currentByte >=128 ) {
-   *              inoutFile.seek( inoutFile.getFilePointer( ) - 1 );
-   *              inoutFile.writeByte( 0 );
-   *           }
-   *        }
-   *
-   *        // Check the EOF is correctly trapped.
-   *        boolean foundEOF = false;
-   *        try {
-   *           inoutFile.readByte( );
-   *        } catch( EOFException e ) {
-   *           foundEOF = true;
-   *        }
-   *        if( foundEOF )
-   *           System.err.println( ". EOF found correctly" );
-   *        else
-   *           System.err.println( "X No EOF found." );
-   *
-   *     // Trace a premature EOF.
-   *     } catch( EOFException e ) {
-   *        e.printStackTrace( );
-   *        System.err.println( "    At byte " + byteNo );
-   *     } finally {
-   *        inoutFile.close( );
-   *     }
-   *
-   *     // Check that the read was verified.
-   *     if( verified )
-   *        System.out.println( ". Read/Write verified" );
-   *     else
-   *        System.out.println( "X Read/Write verification failed" );
-   *
-   *     // Read the file and verify contents.
-   *     RandomAccessFile inFile = new RandomAccessFile( filename,
-   *        RandomAccessFile.READ, bufferSize );
-   *
-   *     verified = true;
-   *     byteNo = 0;
-   *     try {
-   *
-   *        // Read each byte in the file.
-   *        Random random = new Random( 0 );
-   *        byte b = 0;
-   *        for( byteNo = 0; byteNo < newFileSize; byteNo++ ) {
-   *           b = (byte)(random.nextInt( ) % 256);
-   *           byte currentByte = inFile.readByte( );
-   *
-   *           // Account for the modification.
-   *           if( currentByte >= 128 )
-   *              currentByte = 0;
-   *
-   *           // Check the byte's value.
-   *           if( currentByte != b )
-   *              verified = false;
-   *        }
-   *
-   *     // Trap a premature EOF.
-   *     } catch( EOFException e ) {
-   *        e.printStackTrace( );
-   *        System.err.println( "    At byte " + byteNo );
-   *     } finally {
-   *        inFile.close( );
-   *     }
-   *
-   *     // Check that the read was verified.
-   *     if( verified )
-   *        System.out.println( ". Update verified" );
-   *     else
-   *        System.out.println( "X Update verification failed" );
-   *
-   *  } catch( Exception e ) {
-   *     e.printStackTrace( );
-   *  }
-   * }
-   *
-   *
-   * Test the block operations of the RandomAccessFile class. These
-   * are the methods that read/write blocks of data. The following checks
-   * are made:
-   * <ul>
-   * <li>Writing blocks of data that are smaller than the buffer size.
-   * <li>Writing blocks of data that are larger than the buffer size.
-   * <li>Checking the size of the file is correct.
-   * <li>Reading small blocks of the file back in and verifying its contents.
-   * <li>Reading large blocks of the file back in and verifying its contents.
-   * </ul>
-   *
-   * @param filename    the name of the test file to generate.
-   *
-   * public static void testBlocks( String filename ) {
-   *
-   *  System.err.println( "\nTesting block operations..." );
-   *
-   *  // Generate the data.
-   *  int bufferSize = 10;
-   *  byte data[] = new byte[256];
-   *  for( int i = 0; i < data.length; i++ )
-   *     data[i] = (byte)(i % 256);
-   *
-   *  try {
-   *
-   *     // Write the data in small and large blocks.
-   *     RandomAccessFile outFile = new RandomAccessFile(
-   *                           filename, RandomAccessFile.WRITE |
-   *                           RandomAccessFile.CREATE, bufferSize );
-   *     for( int i = 0; i < data.length; ) {
-   *        int blockSize = (i < data.length / 2) ? 3 :
-   *                                                13 ;
-   *        blockSize = (i + blockSize >= data.length) ? (data.length - i) :
-   *                                                     blockSize;
-   *        outFile.write( data, i, blockSize );
-   *        i += blockSize;
-   *     }
-   *
-   *     outFile.close( );
-   *
-   *     // Check that the file length is correct.
-   *     if( (new File( filename )).length( ) != data.length )
-   *        System.out.println( "X New file size incorrect (should be " + data.length +
-   *                            ", but is " + (new File( filename )).length( ) + ")." );
-   *     else
-   *        System.out.println( ". File size correct (" + data.length + ")." );
-   *
-   *     // Reopen the file for reading.
-   *     RandomAccessFile inFile = new RandomAccessFile(
-   *                    filename, RandomAccessFile.READ, bufferSize );
-   *
-   *     // Read and check random small blocks of data.
-   *     boolean verified = true;
-   *     int firstFailure = 256;
-   *     Random random = new Random( 0 );
-   *     byte block[] = new byte[(int)(bufferSize * 0.5)];
-   *     for( int i = 0; i < 100; i++ ) {
-   *        int index = Math.abs( random.nextInt( ) ) % (data.length - block.length);
-   *        inFile.seek( index );
-   *        inFile.read( block );
-   *
-   *        // Verify the block of data.
-   *        for( int j = 0; j < block.length; j++ ) {
-   *           if( block[j] != data[index + j] ) {
-   *              verified = false;
-   *              if( index + j < firstFailure )
-   *                 firstFailure = index + j;
-   *           }
-   *        }
-   *     }
-   *     if( verified )
-   *        System.err.println( ". Reading small blocks verified." );
-   *     else
-   *        System.err.println( "X Reading small blocks failed (byte " + firstFailure + ")." );
-   *
-   *     // Read and check random large (bigger than the bufferSize) blocks
-   *     // of data.
-   *     verified = true;
-   *     random = new Random( 0 );
-   *     block = new byte[(int)(bufferSize * 1.5)];
-   *     for( int i = 0; i < 100; i++ ) {
-   *        int index = Math.abs( random.nextInt( ) ) % (data.length - block.length);
-   *        inFile.seek( index );
-   *        inFile.read( block );
-   *
-   *        // Verify the block of data.
-   *        for( int j = 0; j < block.length; j++ ) {
-   *           if( block[j] != data[j + index] )
-   *              verified = false;
-   *        }
-   *     }
-   *     if( verified )
-   *        System.err.println( ". Reading large blocks verified." );
-   *     else
-   *        System.err.println( "X Reading large blocks failed." );
-   *
-   *     // Close the input file.
-   *     inFile.close( );
-   *
-   *  } catch( Exception e ) {
-   *     e.printStackTrace( );
-   *  }
-   *
-   * }
-   *
-   *
-   * Benchmark the performance of the new RandomAccessFile
-   * class. Its speed is compared to that of a
-   * java.io.RandomAccessFile, based on reading and writing a test
-   * file, byte by byte.
-   *
-   * @param filename    the name of the test file.
-   * @param bufferSize the buffer size to use.
-   * public static void benchmark( String filename, int bufferSize ) {
-   *  System.out.println( "\nBenchmarking..." );
-   *
-   *  // Start the clock, and open a file for reading and a file for writing.
-   *  long time = (new Date( )).getTime( );
-   *  try {
-   *     RandomAccessFile inFile = new RandomAccessFile( filename,
-   *        RandomAccessFile.READ, bufferSize );
-   *     RandomAccessFile outFile = new RandomAccessFile( "temp.data",
-   *        RandomAccessFile.WRITE |
-   *        RandomAccessFile.CREATE, bufferSize );
-   *
-   *     // Copy one file to the other.
-   *     try {
-   *
-   *        while( true ) {
-   *           outFile.writeByte( inFile.readByte( ) );
-   *        }
-   *
-   *     } catch( EOFException e ) {
-   *     } catch( IOException e ) {
-   *        e.printStackTrace( );
-   *     } finally {
-   *        inFile.close( );
-   *        outFile.close( );
-   *     }
-   *     System.out.println( ". RandomAccessFile elapsed time=" +
-   *                         ((new Date( )).getTime( ) - time) );
-   *
-   *     // Restart the clock, and open RandomAccessFiles for reading and writing.
-   *     time = (new Date( )).getTime( );
-   *     java.io.RandomAccessFile inFile2 = new java.io.RandomAccessFile( filename, "r" );
-   *     java.io.RandomAccessFile outFile2 = new java.io.RandomAccessFile( "temp.data", "rw" );
-   *
-   *     // Copy one file to the other.
-   *     try {
-   *
-   *        while( true ) {
-   *           outFile2.writeByte( inFile2.readByte( ) );
-   *        }
-   *
-   *     } catch( EOFException e ) {
-   *     } catch( IOException e ) {
-   *        e.printStackTrace( );
-   *     } finally {
-   *        inFile2.close( );
-   *        outFile2.close( );
-   *     }
-   *
-   *  } catch( Exception e ) {
-   *     e.printStackTrace( );
-   *  }
-   *  System.out.println( ". java.io.RandomAccessFile elapsed time=" + ((new Date( )).getTime( ) - time) );
-   * }
-   *
-   *
-   * Test the RandomAccessFile class. This involves testing the byte
-   * methods, the block methods, and benchmarking the performance. By appending
-   * 'test' or 'benchmark' to the command-line, it can be limited to the tests
-   * or benchmarking alone. The test filename is only used for the benchmarking,
-   * the other tests create a file called "temp.data" in the current directory.
-   * Note that the size of the buffer determines the size of the test file
-   * (which is 4.5 times the size of the buffer).
-   *
-   * @param argv  Usage: <testFilename> [bufferSize] [test | benchmark]
-   * @see #testBytes(Stringfilename,intbufferSize)
-   * @see #testBlocks(Stringfilename)
-   * @see #benchmark(Stringfilename,intbufferSize)
-   *
-   * public static void main( String argv[] ) {
-   *
-   *  int defaultPageSize = 4096;
-   *
-   *  // Parse the command-line arguments.
-   *  String filename = null;
-   *  int bufferSize = 0;
-   *  boolean test = true;
-   *  boolean benchmark = true;
-   *  if( argv.length < 1 ) {
-   *     System.err.println( "Usage: RandomAccessFile <filename> [buffer.length] [benchmark | test]" );
-   *     System.exit( -1 );
-   *  } else if( argv.length < 2 ) {
-   *     filename = argv[0];
-   *     bufferSize = defaultPageSize;
-   *  } else if( argv.length < 3 ) {
-   *     filename = argv[0];
-   *     bufferSize = Integer.parseInt( argv[1] );
-   *  } else {
-   *     filename = argv[0];
-   *     bufferSize = Integer.parseInt( argv[1] );
-   *     if( argv[2].equals( "benchmark" ) )
-   *        test = false;
-   *     else if( argv[2].equals( "test" ) )
-   *        benchmark = false;
-   *  }
-   *
-   *  System.out.println( "\nRandomAccessFile\n" +
-   *                        "========================" );
-   *  System.out.println( "filename=" + filename +
-   *                      ", bufferSize=" + bufferSize );
-   *  System.out.println( "totalMemory=" +
-   *     (Runtime.getRuntime( ).totalMemory( ) / 1000) + "k" +
-   *     " freeMemory=" + (Runtime.getRuntime( ).freeMemory( ) / 1000) + "k" );
-   *
-   *  if( test ) {
-   *     RandomAccessFile.testBytes( "temp.data", bufferSize );
-   *     RandomAccessFile.testBlocks( "temp.data" );
-   *  }
-   *  if( benchmark ) {
-   *     RandomAccessFile.benchmark( filename, bufferSize );
-   *  }
-   *
-   *  System.out.println( "\nEND" );
-   * }
+   * @param match the match youre looking for.
+   * @param maxBytes maximum number of bytes to search.
+   * @return true if found, file position will be at the start of the match.
+   * @throws IOException on read error
    */
+  public boolean searchForward(KMPMatch match, int maxBytes) throws IOException {
+    long start = getFilePointer();
+    long last = (maxBytes < 0) ? length() : Math.min( length(), start + maxBytes);
+    long needToScan = last - start;
+
+    // check what ever is now in the buffer
+    int bytesAvailable = (int) (dataEnd - filePosition);
+    if (bytesAvailable < 1) {
+      seek(filePosition); // read a new buffer
+      bytesAvailable = (int) (dataEnd - filePosition);
+    }
+    int bufStart = (int) (filePosition - bufferStart);
+    int scanBytes = (int) Math.min(bytesAvailable, needToScan);
+    int pos = match.indexOf(buffer, bufStart, scanBytes);
+    if (pos >= 0) {
+      seek(bufferStart+pos);
+      return true;
+    }
+
+    int matchLen = match.getMatchLength();
+    needToScan -= scanBytes - matchLen;
+
+    while (needToScan > matchLen) {
+      readBuffer(dataEnd-matchLen); // force new buffer
+
+      scanBytes = (int) Math.min(buffer.length, needToScan);
+      pos = match.indexOf(buffer, 0, scanBytes);
+      if (pos > 0) {
+        seek(bufferStart+pos);
+        return true;
+      }
+
+      needToScan -= scanBytes - matchLen;
+    }
+
+    // failure
+    seek(last);
+    return false;
+  }
 
 }
-
-/* Change History:
-   $Log: RandomAccessFile.java,v $
-   Revision 1.33  2006/03/25 00:20:13  caron
-   *** empty log message ***
-
-   Revision 1.32  2006/03/09 22:18:47  caron
-   bug fixes for sync, dods.
-
-   Revision 1.31  2006/01/13 18:55:22  jeffmc
-   fix javadoc errors
-
-   Revision 1.30  2006/01/11 16:15:47  caron
-   syncExtend
-   N3iosp, FileWriter writes by record
-
-   Revision 1.29  2005/10/16 20:46:39  caron
-   remove debugging messages
-
-   Revision 1.28  2005/10/15 23:59:50  caron
-   fix bug in truncating non-netcdf3 files
-
-   Revision 1.27  2005/10/11 19:39:52  caron
-   RAF can be optionally cached
-   HttpRAF detects if server supports range bytes
-
-   Revision 1.26  2005/08/26 00:32:41  caron
-   deal with NetCDF "non-canonical length" files
-
-   Revision 1.25  2005/08/09 23:35:33  caron
-   *** empty log message ***
-
-   Revision 1.24  2005/07/29 00:30:54  caron
-   null file when closing to help gc
-
-   Revision 1.23  2005/07/25 00:07:06  caron
-   cache debugging
-
-   Revision 1.22  2005/04/18 23:45:57  caron
-   _unsigned
-   FileCache
-   minFileLength
-
-   Revision 1.21  2005/03/21 22:07:18  caron
-   add setMinLength() method
-
-   Revision 1.20  2005/01/14 23:20:48  caron
-   seek to filePosition before write
-
-   Revision 1.19  2005/01/14 21:41:37  caron
-   *** empty log message ***
-
-   Revision 1.18  2004/12/08 18:09:23  caron
-   add isAtEndOfFile()
-
-   Revision 1.17  2004/10/23 21:36:12  caron
-   no message
-
-   Revision 1.16  2004/10/22 00:50:46  caron
-   fix long-standing bug in writeBytes()
-
-   Revision 1.15  2004/10/20 23:23:15  caron
-   add nexrad2 iosp
-
-   Revision 1.14  2004/10/12 22:03:46  rkambic
-   added   readInt3Bytes and readUint3Bytes
-
-   Revision 1.13  2004/10/12 14:12:04  rkambic
-   added getInt3Bytes()
-
-   Revision 1.12  2004/10/12 02:57:06  caron
-   refactor for grib1/grib2: move common functionality up to ucar.grib
-   split GribServiceProvider
-
-   Revision 1.11  2004/10/06 19:03:45  caron
-   clean up javadoc
-   change useV3 -> useRecordsAsStructure
-   remove id, title, from NetcdfFile constructors
-   add "in memory" NetcdfFile
-
-   Revision 1.10  2004/10/02 20:56:03  caron
-   keep track of location URL
-
-   Revision 1.9  2004/09/24 02:32:02  caron
-   grib2 reading
-
-   Revision 1.8  2004/09/22 21:24:08  caron
-   common io for nc22, grib, etc
-
-   Revision 1.5  2004/08/16 21:41:36  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/07/12 23:40:17  caron
-   2.2 alpha 1.0 checkin
-
-   Revision 1.2  2004/07/06 19:28:10  caron
-   pre-alpha checkin
-
-   Revision 1.1.1.1  2003/12/04 21:05:27  caron
-   checkin 2.2
-
- */
 

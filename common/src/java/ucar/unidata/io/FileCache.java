@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -27,19 +27,19 @@ import java.io.IOException;
 /**
  * Keep cache of open RandomAccessFile, for performance.
  * Used by TDS to optimize serving netCDF files over HTTP.
- *
+ * <p/>
  * <pre>
-  RandomAccessFile raf = null;
-  try {
-    RandomAccessFile raf = FileCache.acquire(location, cancelTask);
-    ...
-  } finally {
-    FileCache.release( raf)
-  }
- </pre>
- *
- *
- * <p>
+ * RandomAccessFile raf = null;
+ * try {
+ * RandomAccessFile raf = FileCache.acquire(location, cancelTask);
+ * ...
+ * } finally {
+ * FileCache.release( raf)
+ * }
+ * </pre>
+ * <p/>
+ * <p/>
+ * <p/>
  * Library ships with cache disabled.
  * If you want to use, call init() and make sure you call exit() when exiting program.
  * All methods are thread safe.
@@ -55,9 +55,11 @@ public class FileCache {
   static private boolean disabled = true;
   static private Timer timer;
 
-  /** Default 10 minimum, 20 maximum files, cleanup every 20 minutes */
+  /**
+   * Default 10 minimum, 20 maximum files, cleanup every 20 minutes
+   */
   static public void init() {
-    init( 10, 20, 20*60 );
+    init(10, 20, 20 * 60);
   }
 
   /**
@@ -65,12 +67,12 @@ public class FileCache {
    *
    * @param minElementsInMemory keep this number in the cache
    * @param maxElementsInMemory trigger a cleanup if it goes over this number.
-   * @param period (secs) do periodic cleanups every this number of seconds.
+   * @param period              (secs) do periodic cleanups every this number of seconds.
    */
-  static public void init( int minElementsInMemory, int maxElementsInMemory, long period) {
+  static public void init(int minElementsInMemory, int maxElementsInMemory, long period) {
     minElements = minElementsInMemory;
     maxElements = maxElementsInMemory;
-    cache = new ArrayList<CacheElement>(2*maxElements-minElements);
+    cache = new ArrayList<CacheElement>(2 * maxElements - minElements);
     disabled = false;
 
     // in case its called more than once
@@ -82,28 +84,32 @@ public class FileCache {
     timer.schedule(new CleanupTask(), 1000 * period, 1000 * period);
   }
 
-  /** Disable use of the cache. Call init() to start again.
-   *  Generally call this before any possible use.
+  /**
+   * Disable use of the cache. Call init() to start again.
+   * Generally call this before any possible use.
    */
   static public void disable() {
     disabled = true;
     if (timer != null) timer.cancel();
     timer = null;
     if ((cache != null) && cache.size() > 0)
-      clearCache( false);
+      clearCache(false);
   }
 
-  /** You must call exit() to shut down the background timer in order to get a clean process shutdpwn. */
+  /**
+   * You must call exit() to shut down the background timer in order to get a clean process shutdpwn.
+   */
   static public void exit() {
     disabled = true;
     if (timer != null) timer.cancel();
     timer = null;
     if ((cache != null) && cache.size() > 0)
-      clearCache( true);
+      clearCache(true);
   }
 
   /**
    * Try to find a file in the cache.
+   *
    * @param location file location is used as the key.
    * @return file if its in the cache, null otherwise.
    */
@@ -128,7 +134,7 @@ public class FileCache {
       try {
         raf.synch();
       } catch (IOException e) {
-	  log.error("FileCache.synch failed on "+location+" "+e.getMessage());
+        log.error("FileCache.synch failed on " + location + " " + e.getMessage());
       }
     }
 
@@ -137,7 +143,7 @@ public class FileCache {
 
   static public RandomAccessFile acquire(String location) throws IOException {
     // see if its in the cache
-    RandomAccessFile raf = acquireCacheOnly( location);
+    RandomAccessFile raf = acquireCacheOnly(location);
     if (raf != null) return raf;
 
     // open the file
@@ -147,7 +153,7 @@ public class FileCache {
     // keep in cache
     boolean needCleanup;
     synchronized (lock) {
-      cache.add( new CacheElement( raf));
+      cache.add(new CacheElement(raf));
       needCleanup = (cache.size() > maxElements);
     }
     if (needCleanup)
@@ -158,6 +164,7 @@ public class FileCache {
 
   /**
    * Release the file. This unlocks it, updates its lastAccessed date.
+   *
    * @param raf release this file.
    * @throws IOException if file not in cache.
    */
@@ -181,7 +188,7 @@ public class FileCache {
         }
       }
     }
-    throw new IOException("FileCache.release does not have in cache = "+ location);
+    throw new IOException("FileCache.release does not have in cache = " + location);
   }
 
   /**
@@ -198,10 +205,10 @@ public class FileCache {
     List<CacheElement> deleteList = new ArrayList<CacheElement>();
 
     synchronized (lock) {
-      Collections.sort( cache); //sort so oldest are on top
+      Collections.sort(cache); //sort so oldest are on top
       Iterator iter = cache.iterator();
       while (iter.hasNext()) {
-        CacheElement elem =  (CacheElement) iter.next();
+        CacheElement elem = (CacheElement) iter.next();
         if (!elem.isLocked) {
           iter.remove();
           deleteList.add(elem);
@@ -226,13 +233,15 @@ public class FileCache {
     }
 
     long took = System.currentTimeMillis() - start;
-    if (log.isDebugEnabled()) log.debug("FileCache.cleanup had= "+ size+" deleted= "+count+" took="+took+" msec");
+    if (log.isDebugEnabled())
+      log.debug("FileCache.cleanup had= " + size + " deleted= " + count + " took=" + took + " msec");
     if (count < need2delete)
-      log.warn("FileCache.cleanup couldnt delete enough for minimum= "+ minElements+" actual= "+cache.size());
+      log.warn("FileCache.cleanup couldnt delete enough for minimum= " + minElements + " actual= " + cache.size());
   }
 
   /**
    * Get the files in the cache. For debugging/status only, do not change!
+   *
    * @return List of FileCache.CacheElement
    */
   static public List<CacheElement> getCache() {
@@ -249,7 +258,7 @@ public class FileCache {
         oldcache = new ArrayList<CacheElement>(cache);
         cache.clear();
 
-      } else  {
+      } else {
         // usual case is to respect locks
         oldcache = new ArrayList<CacheElement>(cache.size());
         Iterator iter = cache.iterator();
@@ -296,11 +305,11 @@ public class FileCache {
     CacheElement(RandomAccessFile raf) {
       this.location = raf.getLocation();
       this.raf = raf;
-      raf.setCached( true);
+      raf.setCached(true);
     }
 
     public String toString() {
-      return location+" "+isLocked+" "+countAccessed+" "+new Date(lastAccessed);
+      return location + " " + isLocked + " " + countAccessed + " " + new Date(lastAccessed);
     }
 
     public int compareTo(Object o) {
@@ -309,8 +318,10 @@ public class FileCache {
     }
   }
 
-  static private class CleanupTask extends TimerTask  {
-    public void run() { cleanup(); }
+  static private class CleanupTask extends TimerTask {
+    public void run() {
+      cleanup();
+    }
   }
 
 }
