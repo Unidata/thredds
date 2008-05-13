@@ -25,6 +25,9 @@
                   xlink:title="NCDC NOMADS Data Server 2" name="" />
     </dataset>
 
+    <catalogRef xlink:href="http://coast-enviro.er.usgs.gov/thredds/bathy_catalog.xml"
+                xlink:title="Global and Regional Topography/Bathymetry Grids" name="" />
+
     <catalogRef xlink:href="http://oceanwatch.pfeg.noaa.gov/thredds/catalog.xml"
                 xlink:title="Ocean Watch SWFSC/Environmental Research Division)" name="" />
     <catalogRef xlink:href="http://dodsdev.gso.uri.edu:8080/thredds/catalog.xml"
