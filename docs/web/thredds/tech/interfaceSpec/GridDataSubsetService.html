@@ -1,10 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>NetCDF Grid Subset Service</title>
-</head>
+<title>NetCDF Grid Subset Service</title></head>
 
 <body>
 <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service for Gridded Data (version 0.2)</h1>
@@ -16,19 +13,23 @@
   <h2>NetCDF Subset Service for Gridded Datasets </h2>
   <p>Gridded Datasets may be subset by Lat/Lon bounding box, Time,  and Variable, and  a netCDF file using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF-1.0 Conventions</a> is returned. Example HTML form: </p>
   <ul>
-    <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/dataset.html">http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/dataset.html</a></li>
+    <li><a href="http://motherlode.ucar.edu:8080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/dataset.html">http://motherlode.ucar.edu:8080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/dataset.html</a></li>
   </ul>
   <p>Currently vertical coordinate selection is not supported; all vertical levels are returned. </p>
   <h2>NetCDF Subset Service for Grid as Point Datasets </h2>
-  <p>Gridded Datasets may be thought of as a collection of point data, with location at the center of each grid cell. The <em><strong>Grid as Point</strong></em> service requires selection of a single cell using lat/lon coordinates, then subsetting by Time,  Variable, and vertical level is possible. Either an XML, CSV (Comma Seperated Values in ASCII) document or a NetCDF files in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Point Observation</a> format is returned. Example HTML form: </p>
+  <p>Gridded Datasets may be thought of as a collection of point data, with location at the center of each grid cell. The <em><strong>Grid as Point</strong></em>
+service requires selection of a single cell using lat/lon coordinates,
+then subsetting by Time, Variable, and vertical level is possible.
+Either an XML, CSV (Comma Seperated Values in ASCII) document or a
+NetCDF files in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Point Observation</a> format is returned. Example HTML form: </p>
   <ul>
-    <li><a href="http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/pointDataset.html">http://motherlode.ucar.edu:9080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/pointDataset.html</a></li>
+    <li><a href="http://motherlode.ucar.edu:8080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/pointDataset.html">http://motherlode.ucar.edu:8080/thredds/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/pointDataset.html</a></li>
   </ul>
   <p>&nbsp;</p>
   <h2><strong><a name="Common"></a>Subsetting Parameters </strong></h2>
   <h3><strong>A. Specify subset type</strong></h3>
   <ul>
-    <li><strong>point=&quot;true&quot; </strong>indicates the <em><strong>Grid as Point</strong></em> subset service </li>
+    <li><strong>point="true" </strong>indicates the <em><strong>Grid as Point</strong></em> subset service </li>
     <li>otherwise, you are using the <em><strong>Grid</strong></em> subset service </li>
   </ul>
   <h3><strong>B. Specify variables<a name="variables"></a></strong></h3>
@@ -55,7 +56,13 @@
       <li><strong>west</strong>: longitude west (decimal degrees) </li>
     </ul>
   </ol>
-  <p>The bounding box has <strong>west</strong> as its west edge, includes all points going <strong>east</strong> until the east edge. Units must be degrees east, may be positive or negative, and will be taken modulo 360. Therefore, when crossing the dateline, the west edge may be greater than the east edge. If the grid is on a projection, the 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used</p>
+  <p>The bounding box has <strong>west</strong> as its west edge, includes all points going <strong>east</strong>
+until the east edge. Units must be degrees east, may be positive or
+negative, and will be taken modulo 360. Therefore, when crossing the
+dateline, the west edge may be greater than the east edge. If the grid
+is on a projection, the 4 corners of the lat/lon bounding box are
+converted into projection coordinates, then the smallest rectangle
+including those 4 points is used</p>
   <p>Example:</p>
   <ul>
     <li><strong> </strong><strong>north=17.3&amp;south=12.088&amp;west=140.2&amp;east=160.0</strong></li>
@@ -81,8 +88,8 @@
   <h4><strong>1. Time range</strong></h4>
   <p>Specify 2 of these 3 parameters (order does not matter): </p>
   <ul>
-    <li><strong>time_start</strong>: starting time as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
-    <li><strong>time_end</strong>: ending time  as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
+    <li><strong>time_start</strong>: starting time as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or "present" </li>
+    <li><strong>time_end</strong>: ending time  as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or "present" </li>
     <li><strong>time_duration</strong>: length of time as an <a href="NetcdfSubsetService.html#W3Cduration">W3C time duration</a> </li>
   </ul>
   <p>The intersection of the requested time range with the dataset time range will be returned. </p>
@@ -94,16 +101,22 @@
   </ul>
   <h4><strong>2. Time point</strong></h4>
   <ul>
-    <li><strong>time: </strong>time as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
+    <li><strong>time: </strong>time as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or "present" </li>
   </ul>
-  <p>The  requested time point must lie within the dataset time range. The time slice closest to the requested time will be returned. </p>
+  <p>The
+requested time point must lie within the dataset time range. The time
+slice closest to the requested time will be returned. </p>
   <p>Examples:</p>
   <ul>
     <li><strong> time=2007-03-29T12:00:00Z</strong></li>
     <li><strong>time=present</strong></li>
   </ul>
   <h3><strong>E. Specify the vertical coordinate</strong></h3>
-  <p>For <em>Grid as Point</em> only (for now), you may specify the vertical coordinate. The vertical slice closest to the requested coordinate will be returned. The possible vertical coordinates are shown in the Dataset Descriptor document, and on the HTML form. The following indicates that variables <em>Geopotential_height, Geopotential_height, Temperature, u_wind </em>and<em> v_wind</em> all have a vertical coordinate named <em>isobaric</em>, with possible values 1000.0 850.0 700.0 500.0 400.0 300.0 250.0 200.0 150.0 100.0 <em>hPa</em>:</p>
+  <p>For <em>Grid as Point</em>
+only (for now), you may specify the vertical coordinate. The vertical
+slice closest to the requested coordinate will be returned. The
+possible vertical coordinates are shown in the Dataset Descriptor
+document, and on the HTML form. The following indicates that variables <em>Geopotential_height, Geopotential_height, Temperature, u_wind </em>and<em> v_wind</em> all have a vertical coordinate named <em>isobaric</em>, with possible values 1000.0 850.0 700.0 500.0 400.0 300.0 250.0 200.0 150.0 100.0 <em>hPa</em>:</p>
   <blockquote>
     <p><strong>with Vertical Levels (isobaric) :</strong> 1000.0 850.0 700.0 500.0 400.0 300.0 250.0 200.0 150.0 100.0 <em>hPa</em> <br>
       <input name="var" value="Geopotential_height" type="checkbox">
@@ -118,34 +131,37 @@
   v_wind </p>
   </blockquote>
   <h4>Variable with different vertical<a name="vertical"></a> coordinates</h4>
-  <p>If  you specify multiple variables with different vertical coordinates, ambiguous results are possible, and  you are advised not to use the service in this way. If you do, the following rules are used:</p>
+  <p>If
+you specify multiple variables with different vertical coordinates,
+ambiguous results are possible, and you are advised not to use the
+service in this way. If you do, the following rules are used:</p>
   <ol>
-    <li>Variables are examined in order they appear in the query, and the vertical coordinate for the first variable that has one is used.</li>
+    <li>Variables
+are examined in order they appear in the query, and the vertical
+coordinate for the first variable that has one is used.</li>
     <li>The service loops through the levels of that vertical coordinate, and for each variable looks for the closest value <em><strong>(ignoring units!!)</strong></em> </li>
     <li>If the value is outside the range for that variable, a missing value (NaN) is used. </li>
   </ol>
   <p>For example, when choosing these two variables: </p>
   <blockquote>
     <p><strong>with Vertical Levels (isobaric1) :</strong> 850.0 700.0 500.0 250.0 <em>hPa</em> <br>
-      <input name="var" type="checkbox" value="Absolute_vorticity" checked>
+      <input name="var" value="Absolute_vorticity" checked="checked" type="checkbox">
   Absolute_vorticity <br>
   <br>
   <strong>with Vertical Levels (isobaric2) :</strong> 1000.0 850.0 700.0 500.0 400.0 300.0 <em>hPa</em> <br>
-  <input name="var" type="checkbox" value="Relative_humidity" checked>
+  <input name="var" value="Relative_humidity" checked="checked" type="checkbox">
   Relative_humidity </p>
   </blockquote>
   <p>The  vertical coordinate from the first variable is used, giving this result: </p>
   <blockquote>
-    <pre>time,lat[unit="degrees_north"],lon[unit="degrees_east"],vertCoord[unit="hPa"],Absolute_vorticity[unit="1/s"],Relative_humidity[unit="%"]
-2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,850.0,1.0700001E-4,87.0
-2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,700.0,1.1100001E-4,84.0
-2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,500.0,1.09000015E-4,54.0
-2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,250.0,1.4799999E-4,38.0</pre>
+    <pre>time,lat[unit="degrees_north"],lon[unit="degrees_east"],vertCoord[unit="hPa"],Absolute_vorticity[unit="1/s"],Relative_humidity[unit="%"]<br>2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,850.0,1.0700001E-4,87.0<br>2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,700.0,1.1100001E-4,84.0<br>2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,500.0,1.09000015E-4,54.0<br>2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,250.0,1.4799999E-4,38.0</pre>
   </blockquote>
-  <p>Noice that for the second variable, the 1000 and 400 levels are not returned, and the 300 level is misrepresented as being at 250. Restricting the level to a common coordinate value is sensible though:</p>
+  <p>Noice
+that for the second variable, the 1000 and 400 levels are not returned,
+and the 300 level is misrepresented as being at 250. Restricting the
+level to a common coordinate value is sensible though:</p>
   <blockquote>
-    <pre>time,lat[unit="degrees_north"],lon[unit="degrees_east"],vertCoord[unit="hPa"],Absolute_vorticity[unit="1/s"],Relative_humidity[unit="%"]
-2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,850.0,1.0700001E-4,87.0  </pre>
+    <pre>time,lat[unit="degrees_north"],lon[unit="degrees_east"],vertCoord[unit="hPa"],Absolute_vorticity[unit="1/s"],Relative_humidity[unit="%"]<br>2007-05-31T18:00:00Z,32.66617895383808,-49.853769375356826,850.0,1.0700001E-4,87.0  </pre>
   </blockquote>
   <p>Examples:</p>
   <ul>
@@ -158,7 +174,11 @@
     <li>For <em>Grid as Point</em> subsetting, <strong>accept=xml</strong> or <strong>accept=csv</strong> or <strong>accept=netcdf </strong>are  supported. </li>
   </ul>
   <h3><strong>G. Adding Lat/Lon arrays to the file </strong></h3>
-  <p>For <em>Grid</em> Subsetting: If the grid is a lat/lon grid, the lat and lon coordinates will be automatically included (as 1D coordinate variables). When the grid is on a projection, the lat/lon information will not be included unless the query parameter <strong>addLatLon</strong> is present. In that case, the lat, lon coordinates will be calculated and included into the file (as 2D variables). </p>
+  <p>For <em>Grid</em>
+Subsetting: If the grid is a lat/lon grid, the lat and lon coordinates
+will be automatically included (as 1D coordinate variables). When the
+grid is on a projection, the lat/lon information will not be included
+unless the query parameter <strong>addLatLon</strong> is present. In that case, the lat, lon coordinates will be calculated and included into the file (as 2D variables). </p>
   <p>&nbsp;</p>
   <h2>NetCDF File Writing Rules</h2>
   <ul>
@@ -170,11 +190,10 @@
   </ul>
 </div>
 <p> </p>
-<hr WIDTH="100%">
+<hr width="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 18, 2007 
+<img src="../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 18, 2007 
 </address>
 <p>&nbsp;
 </p>
-</body>
-</html>
+</body></html>
