@@ -111,6 +111,7 @@ public class ThreddsMetadata {
     if (timeCoverage == null) timeCoverage = tmd.getTimeCoverage();
     if (serviceName == null) serviceName = tmd.getServiceName();
     if (dataType == null) dataType = tmd.getDataType();
+    if (dataSize == 0.0) dataSize = tmd.getDataSize();
     if (dataFormat == null) dataFormat = tmd.getDataFormatType();
     if (authorityName == null) authorityName = tmd.getAuthority();
   }

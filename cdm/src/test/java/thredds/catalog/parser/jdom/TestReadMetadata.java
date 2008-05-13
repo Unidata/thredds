@@ -7,6 +7,9 @@ import thredds.catalog.InvDatasetImpl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.io.IOException;
+
+import ucar.nc2.util.Misc;
 
 /**
  * _more_
@@ -25,9 +28,9 @@ public class TestReadMetadata extends TestCase
   /**
    * Test ...
    */
-  public void testReadDatasetWithDataSize()
-  {
+  public void testReadDatasetWithDataSize() throws IOException {
     double sizeKb = 439.78;
+    double sizeBytes = 439780;
     StringBuilder catAsString = new StringBuilder()
             .append( "<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\"\n" )
             .append( "         xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n" )
@@ -59,7 +62,7 @@ public class TestReadMetadata extends TestCase
     InvDatasetImpl ds = (InvDatasetImpl) cat.getDatasets().get( 0 );
     double d = ds.getDataSize();
 
-    assertTrue( "Size of data <" + d + "> not as expected <" + sizeKb + ">.",
-                d > sizeKb - 0.001 && d < sizeKb + 0.001 );
+    fac.writeXML(cat, System.out);
+    assertTrue( "Size of data <" + d + "> not as expected <" + sizeBytes + ">.", Misc.closeEnough(d, sizeBytes));
   }
 }

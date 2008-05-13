@@ -28,8 +28,8 @@ public class TestDODS {
     suite.addTest(new TestSuite(TestDODSStructureArray.class)); // test.21
 
     // arrays of structure
-    suite.addTest(new TestSuite(TestDODSArrayOfStructure.class)); // test.50
-    suite.addTest(new TestSuite(TestDODSArrayOfStructureNested.class)); // test.53
+    //suite.addTest(new TestSuite(TestDODSArrayOfStructure.class)); // test.50
+    //suite.addTest(new TestSuite(TestDODSArrayOfStructureNested.class)); // test.53
 
     // grids
     suite.addTest(new TestSuite(TestDODSGrid.class));           // test.06a
