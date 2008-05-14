@@ -53,6 +53,49 @@ public class TestDate extends TestCase {
     System.out.println(" d="+formatter.toDateTimeStringISO(d));
   }
 
+  /**
+   * Test the precision of udunits date string conversion. Example from email
+   * dated 2008-05-13 from Rich Signell to the netcdf-java email list:
+   *
+   * <p>Subject: Re: [netcdf-java] Data precision while aggregating data</p>
+   *
+   * <p>http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2008-May/000631.html
+   *
+   * <p>[snip]
+   *
+   * <pre>
+   * &lt;variable name="time" shape="time" type="double"&gt;
+   *   &lt;attribute name="units" value="days since 1858-11-17 00:00:00 UTC"/&gt;
+   *   &lt;attribute name="long_name" value="Modified Julian Day"/&gt;
+   *   &lt;values start="47865.7916666665110000" increment="0.0416666666666667"/&gt;
+   * &lt;/variable&gt;
+   * </pre>
+   *
+   * <p>As Sachin mentioned, the start time for this file is  "05-Dec-1989
+   * 19:00:00", and as proof that we have sufficient precision, when we
+   * simply load the time vector in NetCDF-java and do the double precision
+   * math in Matlab, we get the right start time:
+   *
+   * <p>datestr(datenum([1858 11 17 0 0 0]) + 47865.791666666511)
+   *
+   * <p>ans =  05-Dec-1989 19:00:00
+   *
+   * <p>but when we use the NetCDF-Java time routines to convert to Gregorian, we get
+   *
+   * <p>05-Dec-1989 18:59:59 GMT
+   *
+   * <p>[snip]
+   *
+   */
+  public void testStandardDatePrecision() {
+    Date d = DateUnit.getStandardDate("47865.7916666665110000 days since 1858-11-17 00:00:00 UTC");
+    String isoDateTimeString = formatter.toDateTimeStringISO( d );
+
+    String expectedValue = "1989-12-05T19:00:00Z";
+    assertEquals( "Calculated date string [" + isoDateTimeString + "] not as expected [" + expectedValue + "].",
+                  expectedValue, isoDateTimeString );
+  }
+
   public void testTime() {
     doTime2(1.0, "years since 1985", true);
     doTime2(1.0, "year since 1985", true);
