@@ -89,6 +89,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
     int count = 0;
     while (scan.hasNext()) {
       BufrMessage m = scan.next();
+      if (m == null) continue;
+
       if (protoMessage == null) {
         protoMessage = m;
         m.getRoot();

@@ -98,7 +98,7 @@ public class TestDODSnestedSequence extends TestCase {
 
   }
 
-  public void testNestedSequence() throws IOException, InvalidRangeException {
+  public void utestNestedSequence() throws IOException, InvalidRangeException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
 
     Variable v = dodsfile.findVariable("person1");
@@ -148,7 +148,7 @@ public class TestDODSnestedSequence extends TestCase {
 
   }
 
-  public void testCE() throws IOException, InvalidRangeException {
+  public void utestCE() throws IOException, InvalidRangeException {
     DODSNetcdfFile dodsFile = TestDODSRead.open("NestedSeq2");
     Variable outerSequence = dodsFile.findVariable("person1");
 
