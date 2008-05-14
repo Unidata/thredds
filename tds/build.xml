@@ -47,6 +47,7 @@
     <include name="thredds/cataloggen/servlet/*.java"/>
     <include name="thredds/dqc/server/**/*.java"/>
     <include name="thredds/examples/*.java"/>
+    <include name="thredds/monitor/**/*.java"/>
     <include name="thredds/server/**/*.java"/>
     <include name="thredds/servlet/*.java"/>
     <include name="thredds/servlet/**/*.java"/>

@@ -23,6 +23,7 @@ package thredds.servlet;
 import org.apache.log4j.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.web.util.WebUtils;
 
 import java.io.*;
 import java.util.*;
@@ -104,10 +105,12 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
     //URL r = getClass().getResource("spring/applic-config.xml"); 
 
-    ApplicationContext springContext =
-       new ClassPathXmlApplicationContext("classpath:resources/spring/applic-config.xml");
-       // new FileSystemXmlApplicationContext("C:/dev/tds/thredds/tds/src/main/resources/spring/applic-config.xml");
-    Object bean = springContext.getBean("openRAFMonitor");
+    // Removed because causes this to fail with the following exception:
+    //      org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mbeanExporter' defined in class path resource [resources/spring/applic-config.xml]: Invocation of init method failed; nested exception is org.springframework.jmx.export.UnableToRegisterMBeanException: Unable to register MBean [thredds.monitor.OpenRAFMonitorImpl@1c6f48c] with key 'thredds:name=OpenRAF'; nested exception is javax.management.InstanceAlreadyExistsException: thredds:name=OpenRAF
+//    ApplicationContext springContext =
+//       new ClassPathXmlApplicationContext("classpath:resources/spring/applic-config.xml");
+//       // new FileSystemXmlApplicationContext("C:/dev/tds/thredds/tds/src/main/resources/spring/applic-config.xml");
+//    Object bean = springContext.getBean("openRAFMonitor");
 
     // get the URL context :  URLS must be context/catalog/...
     // cannot be overridded in ThreddsConfig
@@ -328,7 +331,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
       File staticFile = getStaticFile(req, false);
 
       if (staticFile == null) {
-        RequestDispatcher defaultRD = this.getServletContext().getNamedDispatcher( "default" );
+        // TODO LOOK Yikes!!! Very dependent on servlet/jsp container implementation. 
+        RequestDispatcher defaultRD = this.getServletContext().getNamedDispatcher( "jsp" );
         defaultRD.forward( req, res );
         return;
       }
