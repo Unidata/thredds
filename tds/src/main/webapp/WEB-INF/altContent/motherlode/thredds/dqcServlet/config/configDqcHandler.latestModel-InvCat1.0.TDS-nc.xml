@@ -7,7 +7,7 @@
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/GFS/CONUS_80km"
               datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
               datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/GFS/CONUS_80km/"
+              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/GFS/CONUS_80km/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="gfs_211" refid="GFS_CONUS_80km"/>
 
@@ -16,7 +16,7 @@
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/GFS/Global_5x2p5deg"
               datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
               datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/GFS/Global_5x2p5deg/"
+              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/GFS/Global_5x2p5deg/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="gfs_37-44" refid="GFS_Global_5x2p5deg"/>
 
@@ -25,7 +25,7 @@
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/GFS/Extended_Global_5p0deg"
               datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
               datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/GFS/Extended_Global_5p0deg/"
+              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/GFS/Extended_Global_5p0deg/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="gfs_25-26" refid="GFS_Extended_Global_5p0deg"/>
 
@@ -38,7 +38,7 @@
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/NAM/CONUS_80km"
               datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
               datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/NAM/CONUS_80km/"
+              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/NAM/CONUS_80km/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="nam_211" refid="NAM_CONUS_80km"/>
   <latestItem id="eta_211" refid="NAM_CONUS_80km"/>
@@ -48,7 +48,7 @@
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/NGM/CONUS_80km"
               datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
               datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/NGM/CONUS_80km/"
+              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/NGM/CONUS_80km/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="ngm_211" refid="NGM_CONUS_80km"/-->
 
@@ -57,7 +57,7 @@
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/RUC/CONUS_80km"
               datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
               datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/RUC/CONUS_80km/"
+              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/RUC/CONUS_80km/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="ruc_211" refid="RUC_CONUS_80km"/>
 
@@ -66,7 +66,7 @@
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/RUC2/CONUS_40km"
               datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
               datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/RUC2/CONUS_40km/"
+              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/RUC2/CONUS_40km/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="ruc2_236" refid="RUC2_CONUS_40km"/>
 
@@ -75,7 +75,7 @@
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/SST/Global_5x2p5deg"
               datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
               datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/SST/Global_5x2p5deg/"
+              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/SST/Global_5x2p5deg/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="sst_21-24" refid="SST_Global_5x2p5deg"/>
 
@@ -84,7 +84,7 @@
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/SST/Global_2x2deg"
               datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
               datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/SST/Global_2x2deg/"
+              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/SST/Global_2x2deg/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="sst_61-64" refid="SST_Global_2x2deg"/>
 
@@ -93,7 +93,7 @@
               dirLocation="/data/ldm/pub/decoded/netcdf/grid/NCEP/OCEAN/Global_5x2p5deg"
               datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
               datasetTimeSubstitutionPattern="$1-$2-$3T$4:$5:00"
-              serviceBaseURL="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/NCEP/OCEAN/Global_5x2p5deg/"
+              serviceBaseURL="/thredds/dodsC/modelsNc/NCEP/OCEAN/Global_5x2p5deg/"
               invCatSpecVersion="1.0" dqcSpecVersion="0.3"/>
   <latestItem id="ocean_21-24" refid="OCEAN_Global_5x2p5deg"/>
 
