@@ -57,6 +57,7 @@ public class TestNexrad2HiResolution extends TestCase {
           if (file.isDirectory())
             doDirectory(path, alwaysUncompress);
           else {
+            System.out.println(path);
             NetcdfFile ncfile = NetcdfDataset.openFile(path, null);
             testRead(ncfile);
             testCoordSystem(ncfile);
@@ -66,8 +67,6 @@ public class TestNexrad2HiResolution extends TestCase {
       }
 
       private void testRead( NetcdfFile nexrad2) throws IOException {
-        System.out.println(nexrad2.getLocation());
-
         Dimension scanR = nexrad2.findDimension("scanR");
         assert null != scanR;
         Dimension scanR_HI = nexrad2.findDimension("scanR_HI");

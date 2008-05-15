@@ -87,7 +87,7 @@ public class TestDate extends TestCase {
    * <p>[snip]
    *
    */
-  public void testStandardDatePrecision() {
+  public void utestStandardDatePrecision() {
     Date d = DateUnit.getStandardDate("47865.7916666665110000 days since 1858-11-17 00:00:00 UTC");
     String isoDateTimeString = formatter.toDateTimeStringISO( d );
 
@@ -100,5 +100,36 @@ public class TestDate extends TestCase {
     doTime2(1.0, "years since 1985", true);
     doTime2(1.0, "year since 1985", true);
   }
+
+  public void testDoublePrecision() {
+    double dval = 47865.7916666665110000;
+    double eval = 47865.791666666664;
+    System.out.println(" dval= "+dval);
+    System.out.println(" eval= "+eval);
+    System.out.println(" diff= "+(eval-dval));
+    System.out.println(" rdiff= "+(eval-dval)/eval);
+    System.out.println(" rdiff= "+(1.0-dval/eval));
+    double rdiff= (eval-dval);
+    System.out.println(" add= "+(rdiff+dval));
+    rdiff= 1.0-dval/eval;
+    System.out.println(" add= "+(rdiff+eval));
+  }
+
+  public void testStandardDatePrecision2() throws Exception {
+    DateUnit du = new DateUnit("days since 1858-11-17 00:00:00 UTC");
+    System.out.println(" date= "+formatter.toDateTimeStringISO(du.getDate()));
+    System.out.println(" dateOrigin= "+formatter.toDateTimeStringISO(du.getDateOrigin()));
+
+    Date isoDate = formatter.getISODate( "1989-12-05T19:00:00Z" );
+    System.out.println(" dateWant= "+formatter.toDateTimeStringISO(isoDate));
+
+    double val = du.makeValue(isoDate);
+    System.out.println(" days since= "+val);
+
+    Date roundTrip = du.makeDate(val);
+    System.out.println(" roundTrip= "+formatter.toDateTimeStringISO(roundTrip));
+
+  }
+
 
 }
