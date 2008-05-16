@@ -48,17 +48,13 @@ public class VAtmSigma extends AbstractCoordTransBuilder {
     String formula_terms = getFormula(ds, ctv);
     if (null == formula_terms) return null;
 
-    // parse the formula string
-    StringTokenizer stoke = new StringTokenizer(formula_terms);
-    while (stoke.hasMoreTokens()) {
-      String toke = stoke.nextToken();
-      if (toke.equalsIgnoreCase("sigma:"))
-        sigma = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("ps:"))
-        ps = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("ptop:"))
-        ptop = stoke.nextToken();
-    }
+     // parse the formula string
+    String[] values = parseFormula(formula_terms, "sigma ps ptop");
+    if (values == null) return null;
+
+    sigma = values[0];
+    ps = values[1];
+    ptop = values[2];
 
     CoordinateTransform rs = new VerticalCT("AtmSigma_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.Sigma, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));

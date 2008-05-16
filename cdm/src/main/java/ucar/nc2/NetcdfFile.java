@@ -721,6 +721,8 @@ public class NetcdfFile {
    * @see NetcdfFile#unescapeName
    */
   public Variable findVariable(String fullNameEscaped) {
+    if (fullNameEscaped == null || fullNameEscaped.length ( ) == 0) { return null; } 
+
     Group g = rootGroup;
     String vars = fullNameEscaped;
 
@@ -738,6 +740,8 @@ public class NetcdfFile {
     }
 
     StringTokenizer stoke = new StringTokenizer(vars, ".");
+    if (!stoke.hasMoreTokens()) return null;
+    
     String varShortName = NetcdfFile.unescapeName(stoke.nextToken());
     Variable v = g.findVariable( varShortName);
     if (v == null) return null;

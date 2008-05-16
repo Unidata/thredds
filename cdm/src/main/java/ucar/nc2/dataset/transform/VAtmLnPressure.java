@@ -33,8 +33,7 @@ import ucar.unidata.geoloc.vertical.AtmosLnPressure;
 import java.util.StringTokenizer;
 
 /**
- * Class Description.
- *
+ * implementation for CF vertical coordinate "atmosphere_ln_pressure_coordinate".
  * @author caron
  * @since May 6, 2008
  */
@@ -53,15 +52,12 @@ public class VAtmLnPressure extends AbstractCoordTransBuilder {
     String formula_terms = getFormula(ds, ctv);
     if (null == formula_terms) return null;
 
-    // parse the formula string
-    StringTokenizer stoke = new StringTokenizer(formula_terms);
-    while (stoke.hasMoreTokens()) {
-      String toke = stoke.nextToken();
-      if (toke.equalsIgnoreCase("p0:"))
-        p0 = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("lev:"))
-        lev = stoke.nextToken();
-    }
+     // parse the formula string
+    String[] values = parseFormula(formula_terms, "p0 lev");
+    if (values == null) return null;
+
+    p0 = values[0];
+    lev = values[1];
 
     CoordinateTransform rs = new VerticalCT("AtmSigma_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.Sigma, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));

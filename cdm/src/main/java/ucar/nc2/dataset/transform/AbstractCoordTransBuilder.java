@@ -33,6 +33,7 @@ import ucar.units.Unit;
 
 import java.util.StringTokenizer;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Abstract superclass for implementations of CoordTransBuilderIF.
@@ -93,10 +94,10 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
    * Make sure that the variable exists. If readData is true, read the data and use it as the value of the
    * parameter, otherwise use the variable name as the value of the parameter.
    *
-   * @param rs        the CoordinateTransform
-   * @param paramName the parameter name
-   * @param ds        dataset
-   * @param varNameEscaped   escaped variable name
+   * @param rs             the CoordinateTransform
+   * @param paramName      the parameter name
+   * @param ds             dataset
+   * @param varNameEscaped escaped variable name
    * @return true if success, false is failed
    */
   protected boolean addParameter(CoordinateTransform rs, String paramName, NetcdfFile ds, String varNameEscaped) {
@@ -119,6 +120,49 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     }
     return formula;
   }
+
+  public String[] parseFormula(String formula_terms, String termString) {
+    String[] formulaTerms = formula_terms.split("[\\s:]+");  // split on 1 or more whitespace or ':'
+    String[] terms = termString.split("[\\s]+");             // split on 1 or more whitespace 
+    String[] values = new String[terms.length];
+
+    for (int i=0; i<terms.length; i++) {
+      for (int j=0; j<formulaTerms.length; j+=2) {  // look at every other formula term
+        if (terms[i].equals(formulaTerms[j])) {     // if it matches
+          values[i] = formulaTerms[j+1];            // next term is the value
+          break;
+        }
+      }
+    }
+
+    boolean ok = true;
+    for (int i=0; i<values.length; i++) {
+      if (values[i] == null) {
+        log.warn("Missing term="+terms[i]+" in the formula '"+formula_terms+
+              "' for the vertical transform= "+getTransformName());
+        ok = false;
+      }
+    }
+
+    return ok ? values : null;
+  }
+
+  /* public static void test(String s, String regexp) {
+    String[] result = s.split(regexp);
+    for (String r : result) System.out.println(" <"+r+">");
+  }
+
+  public static void test2(String f, String t) {
+    String[] result = parseFormula(f, t);
+    for (String r : result) System.out.println(" <"+r+">");
+  }
+
+  public static void main(String args[]) {
+    test("ac:b blah:c dah: d dow dee","[\\s:]+");
+    //test("ac:b blah:c dah d","\\s");
+    //test2("ac:b blah:c dah: d dow dee","ac blah dah dow");
+  }    */
+
 
 
   //////////////////////////////////////////

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
  * @author caron
  */
 public class VOceanSigma extends AbstractCoordTransBuilder {
-  private String s = "", eta = "", depth = "";
+  private String sigma,eta,depth;
 
   public String getTransformName() {
     return "ocean_sigma_coordinate";
@@ -48,25 +48,20 @@ public class VOceanSigma extends AbstractCoordTransBuilder {
     String formula_terms = getFormula(ds, ctv);
     if (null == formula_terms) return null;
 
-    // parse the formula string
-    StringTokenizer stoke = new StringTokenizer(formula_terms);
-    while (stoke.hasMoreTokens()) {
-      String toke = stoke.nextToken();
-      if (toke.equalsIgnoreCase("sigma:"))
-        s = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("eta:"))
-        eta = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("depth:"))
-        depth = stoke.nextToken();
-    }
+    String[] values = parseFormula(formula_terms, "sigma eta depth");
+    if (values == null) return null;
+    
+    sigma = values[0];
+    eta = values[1];
+    depth = values[2];
 
     CoordinateTransform rs = new VerticalCT("OceanSigma_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.OceanSigma, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
     rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y) + sigma(k)*(depth(x,y) + eta(x,y))")));
 
+    if (!addParameter(rs, OceanSigma.SIGMA, ds, sigma)) return null;
     if (!addParameter(rs, OceanSigma.ETA, ds, eta)) return null;
-    if (!addParameter(rs, OceanSigma.SIGMA, ds, s)) return null;
     if (!addParameter(rs, OceanSigma.DEPTH, ds, depth)) return null;
 
     return rs;
@@ -74,7 +69,7 @@ public class VOceanSigma extends AbstractCoordTransBuilder {
 
 
   public String toString() {
-    return "OceanS:" + " sigma:"+s + " eta:"+eta + " depth:"+depth;
+    return "OceanS:" + " sigma:"+ sigma + " eta:"+eta + " depth:"+depth;
   }
 
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {

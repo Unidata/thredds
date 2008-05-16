@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -48,23 +48,16 @@ public class VOceanS extends AbstractCoordTransBuilder {
     String formula_terms = getFormula(ds, ctv);
     if (null == formula_terms) return null;
 
-    // :formula_terms = "s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc";
-    StringTokenizer stoke = new StringTokenizer(formula_terms);
-    while (stoke.hasMoreTokens()) {
-      String toke = stoke.nextToken();
-      if (toke.equalsIgnoreCase("s:"))
-        s = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("eta:"))
-        eta = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("depth:"))
-        depth = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("a:"))
-        a = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("b:"))
-        b = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("depth_c:"))
-        depth_c = stoke.nextToken();
-    }
+     // parse the formula string
+    String[] values = parseFormula(formula_terms, "s eta depth a b depth_c");
+    if (values == null) return null;
+
+    s = values[0];
+    eta = values[1];
+    depth = values[2];
+    a = values[3];
+    b = values[4];
+    depth_c = values[5];
 
     CoordinateTransform rs = new VerticalCT("OceanS_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.OceanS, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));

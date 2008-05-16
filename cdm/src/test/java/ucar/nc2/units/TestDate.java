@@ -128,6 +128,7 @@ public class TestDate extends TestCase {
 
     Date roundTrip = du.makeDate(val);
     System.out.println(" roundTrip= "+formatter.toDateTimeStringISO(roundTrip));
+    assert roundTrip.equals(isoDate);
 
   }
 

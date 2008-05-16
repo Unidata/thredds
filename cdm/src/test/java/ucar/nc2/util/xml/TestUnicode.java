@@ -84,8 +84,6 @@ public class TestUnicode extends TestCase {
     if (debug) System.out.println(" orgBytes= "+showBytes(b));
     String s = new String(b, "UTF-8");
     if (debug) System.out.println("convBytes= "+showString( s));
-    //s =  Normalizer.normalize(s, Normalizer.Form.NFC);
-    //if (debug) System.out.println("normBytes= "+showBytes( s.getBytes()));
     return s;
   }
 
@@ -98,7 +96,7 @@ public class TestUnicode extends TestCase {
     String s2 = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
 
     //String lineb = new String( b, "UTF-8");
-    System.out.println(helloGreek);
+    System.out.println(" helloGreek= "+helloGreek);
     System.out.println("char values= "+showString(helloGreek));
     System.out.println("      UTF-8= "+showBytes(helloGreek.getBytes("UTF-8")));
     System.out.println("     UTF-16= "+showBytes(helloGreek.getBytes("UTF-16")));
@@ -256,9 +254,11 @@ public class TestUnicode extends TestCase {
 
 
   public static void main(String args[]) throws IOException {
+    String helloGreek = new TestUnicode("dumm").makeString(helloGreekCode, true);
+
     //String filename = "C:/data/unicode/UTF-8-demo.html";
-    String filename = "C:/data/unicode/russian.txt";
-    testRAF(filename);
+    //String filename = "C:/data/unicode/russian.txt";
+    //testRAF(filename);
     //testUnicodeRead(filename);
     //testRead(filename);
   }

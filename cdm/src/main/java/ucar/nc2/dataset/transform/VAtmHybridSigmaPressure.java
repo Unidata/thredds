@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -48,19 +48,14 @@ public class VAtmHybridSigmaPressure extends AbstractCoordTransBuilder {
     String formula_terms = getFormula(ds, ctv);
     if (null == formula_terms) return null;
 
-    // parse the formula string
-    StringTokenizer stoke = new StringTokenizer(formula_terms);
-    while (stoke.hasMoreTokens()) {
-      String toke = stoke.nextToken();
-      if (toke.equalsIgnoreCase("a:"))
-        a = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("b:"))
-        b = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("ps:"))
-        ps = stoke.nextToken();
-      else if (toke.equalsIgnoreCase("p0:"))
-        p0 = stoke.nextToken();
-    }
+     // parse the formula string
+    String[] values = parseFormula(formula_terms, "a b ps p0");
+    if (values == null) return null;
+
+    a = values[0];
+    b = values[1];
+    ps = values[2];
+    p0 = values[3];
 
     CoordinateTransform rs = new VerticalCT("AtmHybridSigmaPressure_Transform_"+ctv.getShortName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
