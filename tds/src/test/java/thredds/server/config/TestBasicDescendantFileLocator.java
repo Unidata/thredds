@@ -7,6 +7,8 @@ import thredds.TestAll;
 import java.io.File;
 import java.io.IOException;
 
+import ucar.unidata.util.TestUtil;
+
 /**
  * _more_
  *
@@ -69,17 +71,19 @@ public class TestBasicDescendantFileLocator extends TestCase
 
   public void testNewGivenNondirectoryFile()
   {
-    File tmpDir = new File( TestAll.temporaryDataDir );
+    File dir = new File( TestAll.temporaryDataDir );
     File notDirFile = null;
     try
     {
-      notDirFile = File.createTempFile( "TestBasicDescendantFileLocator", "tmp", tmpDir );
+      notDirFile = File.createTempFile( "TestBasicDescendantFileLocator", "tmp", dir );
     }
     catch ( IOException e )
     {
       fail( "Could not create temporary file.");
     }
 
+    assertTrue( "The temporary non-directory file does not exist.",
+                notDirFile.exists());
     assertFalse( "The temporary non-directory file is a directory.",
                  notDirFile.isDirectory());
     try
@@ -102,7 +106,26 @@ public class TestBasicDescendantFileLocator extends TestCase
 
   public void testNormalizedPath()
   {
-    File tmpDir = new File( TestAll.temporaryDataDir );
+    // Create a data directory and some data files.
+    File tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicDescendantFileLocator" );
+
+    String startPath = "dataDir";
+    File dataDir = TestUtil.addDirectory( tmpDir, startPath );
+
+    File eta211Dir = TestUtil.addDirectory( dataDir, "eta_211" );
+    TestUtil.addFile( eta211Dir, "2004050300_eta_211.nc" );
+    TestUtil.addFile( eta211Dir, "2004050312_eta_211.nc" );
+    TestUtil.addFile( eta211Dir, "2004050400_eta_211.nc" );
+    TestUtil.addFile( eta211Dir, "2004050412_eta_211.nc" );
+
+    File gfs211Dir = TestUtil.addDirectory( dataDir, "gfs_211" );
+    TestUtil.addFile( gfs211Dir, "2004050300_gfs_211.nc" );
+    TestUtil.addFile( gfs211Dir, "2004050306_gfs_211.nc" );
+    TestUtil.addFile( gfs211Dir, "2004050312_gfs_211.nc" );
+    TestUtil.addFile( gfs211Dir, "2004050318_gfs_211.nc" );
+
+//    File tmpDir = new File( TestAll.temporaryDataDir );
+//    TestAll.
 
     DescendantFileSource bfl = new BasicDescendantFileSource( tmpDir);
     assertEquals( "Root directory path not clean.",
@@ -114,6 +137,9 @@ public class TestBasicDescendantFileLocator extends TestCase
     assertEquals( "Root directory path not clean.",
                   StringUtils.cleanPath( bfl.getRootDirectoryPath() ),
                   bfl.getRootDirectoryPath() );
+
+    // Delete temp directory.
+    TestUtil.deleteDirectoryAndContent( tmpDir );
 
   }
 }
