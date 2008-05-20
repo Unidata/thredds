@@ -17,9 +17,23 @@ import ucar.unidata.util.TestUtil;
  */
 public class TestBasicDescendantFileLocator extends TestCase
 {
+  private File tmpDir;
+
   public TestBasicDescendantFileLocator( String name )
   {
     super( name );
+  }
+
+  protected void setUp()
+  {
+    // Create a data directory and some data files.
+    tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicDescendantFileLocator" );
+  }
+
+  protected void tearDown()
+  {
+    // Delete temp directory.
+    TestUtil.deleteDirectoryAndContent( tmpDir );
   }
 
   /**
@@ -49,33 +63,31 @@ public class TestBasicDescendantFileLocator extends TestCase
 
   public void testNewGivenNonexistentDirectory()
   {
-    String path = TestAll.temporaryDataDir + "nonExistDir";
+    File nonExistDir = new File( tmpDir, "nonExistDir");
     try
     {
-      new BasicDescendantFileSource( path );
+      new BasicDescendantFileSource( nonExistDir.getPath() );
     }
     catch ( IllegalArgumentException e )
     {
-      File file = new File( path);
       try
       {
-        new BasicDescendantFileSource( file);
+        new BasicDescendantFileSource( nonExistDir);
       }
       catch ( IllegalArgumentException e2 )
       {
         return;
       }
     }
-    fail( "Did not throw IllegalArgumentException for null path." );
+    fail( "Did not throw IllegalArgumentException for non-existent directory." );
   }
 
   public void testNewGivenNondirectoryFile()
   {
-    File dir = new File( TestAll.temporaryDataDir );
     File notDirFile = null;
     try
     {
-      notDirFile = File.createTempFile( "TestBasicDescendantFileLocator", "tmp", dir );
+      notDirFile = File.createTempFile( "TestBasicDescendantFileLocator", "tmp", tmpDir );
     }
     catch ( IOException e )
     {
@@ -106,40 +118,20 @@ public class TestBasicDescendantFileLocator extends TestCase
 
   public void testNormalizedPath()
   {
-    // Create a data directory and some data files.
-    File tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicDescendantFileLocator" );
-
-    String startPath = "dataDir";
-    File dataDir = TestUtil.addDirectory( tmpDir, startPath );
-
-    File eta211Dir = TestUtil.addDirectory( dataDir, "eta_211" );
-    TestUtil.addFile( eta211Dir, "2004050300_eta_211.nc" );
-    TestUtil.addFile( eta211Dir, "2004050312_eta_211.nc" );
-    TestUtil.addFile( eta211Dir, "2004050400_eta_211.nc" );
-    TestUtil.addFile( eta211Dir, "2004050412_eta_211.nc" );
-
-    File gfs211Dir = TestUtil.addDirectory( dataDir, "gfs_211" );
-    TestUtil.addFile( gfs211Dir, "2004050300_gfs_211.nc" );
-    TestUtil.addFile( gfs211Dir, "2004050306_gfs_211.nc" );
-    TestUtil.addFile( gfs211Dir, "2004050312_gfs_211.nc" );
-    TestUtil.addFile( gfs211Dir, "2004050318_gfs_211.nc" );
-
-//    File tmpDir = new File( TestAll.temporaryDataDir );
-//    TestAll.
-
-    DescendantFileSource bfl = new BasicDescendantFileSource( tmpDir);
-    assertEquals( "Root directory path not clean.",
-                  StringUtils.cleanPath( bfl.getRootDirectoryPath()),
-                  bfl.getRootDirectoryPath());
-
-    File tmp2 = new File( tmpDir, "../fred/./../julie/marge/../franky");
-    bfl = new BasicDescendantFileSource( tmp2 );
+    DescendantFileSource bfl = new BasicDescendantFileSource( tmpDir );
     assertEquals( "Root directory path not clean.",
                   StringUtils.cleanPath( bfl.getRootDirectoryPath() ),
                   bfl.getRootDirectoryPath() );
 
-    // Delete temp directory.
-    TestUtil.deleteDirectoryAndContent( tmpDir );
+    File newDir1 = TestUtil.addDirectory( tmpDir, "fred1" );
+    File newDir2 = TestUtil.addDirectory( newDir1, "fred2" );
+    TestUtil.addDirectory( newDir2, "fred3" );
 
+
+    File tmp2 = new File( tmpDir, "./fred1/./fred2/../fred2/../../fred1");
+    bfl = new BasicDescendantFileSource( tmp2 );
+    assertEquals( "Root directory path not clean.",
+                  StringUtils.cleanPath( bfl.getRootDirectoryPath() ),
+                  bfl.getRootDirectoryPath() );
   }
 }

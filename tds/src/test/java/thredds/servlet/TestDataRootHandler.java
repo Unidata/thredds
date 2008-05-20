@@ -17,6 +17,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import ucar.unidata.util.TestUtil;
+import org.springframework.util.StringUtils;
 
 /**
  * _more_
@@ -27,12 +28,28 @@ import ucar.unidata.util.TestUtil;
 public class TestDataRootHandler extends TestCase
 {
 
-  private String tmpDirPath = TestAll.temporaryDataDir + "TestDataRootHandler/";
-  private String contentPath = tmpDirPath + "contentPath/";
+//  private String tmpDirPath = TestAll.temporaryDataDir + "TestDataRootHandler/";
+//  private String contentPath = tmpDirPath + "contentPath/";
+
+  private File tmpDir;
+  private File contentDir;
 
   public TestDataRootHandler( String name )
   {
     super( name );
+  }
+
+  protected void setUp()
+  {
+    // Create a data directory and some data files.
+    tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestDataRootHandler" );
+    contentDir = TestUtil.addDirectory( tmpDir, "contentPath" );
+
+  }
+  protected void tearDown()
+  {
+    // Delete temp directory.
+    TestUtil.deleteDirectoryAndContent( tmpDir );
   }
 
   /**
@@ -41,19 +58,19 @@ public class TestDataRootHandler extends TestCase
    */
   public void testNonexistentScanLocation()
   {
-    // Create a temporary contentPath directory for this test.
-    File contentPathFile = TestUtil.createDirectory( contentPath );
+    File canonicalContentDir;
     try
     {
-      contentPathFile = contentPathFile.getCanonicalFile();
+      canonicalContentDir = contentDir.getCanonicalFile();
     }
     catch ( IOException e )
     {
-      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage());
+      fail( "I/O error getting canonical file for content path [" + contentDir.getPath() + "]: " + e.getMessage());
       return;
     }
-    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
-    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/' );
+    String fullCanonicalContentPath = canonicalContentDir.getAbsolutePath() + "/";
+    fullCanonicalContentPath = StringUtils.cleanPath( fullCanonicalContentPath);
+    //fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/' );
 
     // Create a catalog with a datasetScan that points to a non-existent location
     // and write it to contentPath/catFilename.
@@ -65,7 +82,7 @@ public class TestDataRootHandler extends TestCase
 
     InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
                                                   dsScanLocation, null, null, null );
-    writeConfigCatalog( catalog, new File( contentPathFile, catFilename) );
+    writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
     DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
@@ -99,9 +116,6 @@ public class TestDataRootHandler extends TestCase
       fail( "DataRootHandler has path match for DatasetScan <" + dsScanPath + ">." );
       return;
     }
-
-    // Remove temporary contentPath dir and contents
-    TestUtil.deleteDirectoryAndContent( contentPathFile );
   }
 
   /**
@@ -110,22 +124,21 @@ public class TestDataRootHandler extends TestCase
    */
   public void testNondirectoryScanLocation()
   {
-    // Create a temporary contentPath directory for this test.
-    File contentPathFile = TestUtil.createDirectory( contentPath );
+    File canonicalContentDir;
     try
     {
-      contentPathFile = contentPathFile.getCanonicalFile();
+      canonicalContentDir = contentDir.getCanonicalFile();
     }
     catch ( IOException e )
     {
-      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage() );
+      fail( "I/O error getting canonical file for content path <" + contentDir.getPath() + ">: " + e.getMessage() );
       return;
     }
-    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
-    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/' );
+    String fullCanonicalContentPath = canonicalContentDir.getAbsolutePath() + "/";
+    fullCanonicalContentPath = StringUtils.cleanPath( fullCanonicalContentPath );
 
     // Create public directory in content path.
-    File publicDirectoryFile = new File( contentPathFile, "public");
+    File publicDirectoryFile = new File( canonicalContentDir, "public");
     if ( !publicDirectoryFile.mkdirs() )
     {
       fail( "Failed to make content path \"public\" directory <" + publicDirectoryFile.getAbsolutePath() + ">." );
@@ -158,7 +171,7 @@ public class TestDataRootHandler extends TestCase
 
     InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
                                                   dsScanLocation, null, null, null );
-    writeConfigCatalog( catalog, new File( contentPathFile, catFilename) );
+    writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
     DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
@@ -193,9 +206,6 @@ public class TestDataRootHandler extends TestCase
       fail( "DataRootHandler has path match for DatasetScan <" + dsScanPath + ">." );
       return;
     }
-
-    // Remove temporary contentPath dir and contents
-    TestUtil.deleteDirectoryAndContent( contentPathFile );
   }
 
   /**
@@ -206,21 +216,21 @@ public class TestDataRootHandler extends TestCase
   public void testScanLocationContainOnlyAtomicDatasets()
   {
     // Create a temporary contentPath directory for this test.
-    File contentPathFile = TestUtil.createDirectory( contentPath );
+    File canonicalContentDir;
     try
     {
-      contentPathFile = contentPathFile.getCanonicalFile();
+      canonicalContentDir = contentDir.getCanonicalFile();
     }
     catch ( IOException e )
     {
-      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage() );
+      fail( "I/O error getting canonical file for content path <" + contentDir.getPath() + ">: " + e.getMessage() );
       return;
     }
-    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
-    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/' );
+    String fullCanonicalContentPath = canonicalContentDir.getAbsolutePath() + "/";
+    fullCanonicalContentPath = StringUtils.cleanPath( fullCanonicalContentPath );
 
     // Create public data directory in content path.
-    File publicDataDir = new File( contentPathFile, "public/dataDir");
+    File publicDataDir = new File( contentDir, "public/dataDir");
     if ( ! publicDataDir.mkdirs() )
     {
       fail( "Failed to make content path public data directory <" + publicDataDir.getAbsolutePath() + ">." );
@@ -262,7 +272,7 @@ public class TestDataRootHandler extends TestCase
 
     InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
                                                   dsScanLocation, null, null, null );
-    writeConfigCatalog( catalog, new File( contentPathFile, catFilename) );
+    writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
     DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
@@ -333,9 +343,6 @@ public class TestDataRootHandler extends TestCase
       fail( buf.toString() );
       return;
     }
-
-    // Remove temporary contentPath dir and contents
-    TestUtil.deleteDirectoryAndContent( contentPathFile );
   }
   /**
    * Test behavior when dataset with name containing a plus sign ("+") is
@@ -344,21 +351,21 @@ public class TestDataRootHandler extends TestCase
   public void testScanLocationContainsDatasetWithPlusSignInName()
   {
     // Create a temporary contentPath directory for this test.
-    File contentPathFile = TestUtil.createDirectory( contentPath );
+    File canonicalContentDir;
     try
     {
-      contentPathFile = contentPathFile.getCanonicalFile();
+      canonicalContentDir = contentDir.getCanonicalFile();
     }
     catch ( IOException e )
     {
-      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage() );
+      fail( "I/O error getting canonical file for content path <" + contentDir.getPath() + ">: " + e.getMessage() );
       return;
     }
-    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
-    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/' );
+    String fullCanonicalContentPath = canonicalContentDir.getAbsolutePath() + "/";
+    fullCanonicalContentPath = StringUtils.cleanPath( fullCanonicalContentPath );
 
     // Create public data directory in content path.
-    File publicDataDir = new File( contentPathFile, "public/dataDir");
+    File publicDataDir = new File( contentDir, "public/dataDir");
     if ( ! publicDataDir.mkdirs() )
     {
       fail( "Failed to make content path public data directory <" + publicDataDir.getAbsolutePath() + ">." );
@@ -401,7 +408,7 @@ public class TestDataRootHandler extends TestCase
 
     InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
                                                   dsScanLocation, null, null, null );
-    writeConfigCatalog( catalog, new File( contentPathFile, catFilename) );
+    writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
     DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
@@ -476,9 +483,6 @@ public class TestDataRootHandler extends TestCase
     // Now test with HTML view
     HtmlWriter.init( "/thredds", "TDS", "ver", "docs/", "tds.css", "tdsCat.css", "thredds.jpg", "thredds", "unidataLogo.jpg", "Unidata", "folder.gif", "folder");
     String catAsHtmlString = HtmlWriter.getInstance().convertCatalogToHtml( cat, true);
-
-    // Remove temporary contentPath dir and contents
-    TestUtil.deleteDirectoryAndContent( contentPathFile );
   }
 
   /**
@@ -487,23 +491,21 @@ public class TestDataRootHandler extends TestCase
    */
   public void testCatRefOutOfContentDirUsingDotDotDirs()
   {
-    // Create a temporary directory and a child content directory for this test.
-    File tmpDir = TestUtil.createDirectory( tmpDirPath );
-    File contentPathFile = TestUtil.createDirectory( contentPath ); // child of tmpDir
+    // Create a temporary contentPath directory for this test.
+    File canonicalContentDir;
     try
     {
-      contentPathFile = contentPathFile.getCanonicalFile();
+      canonicalContentDir = contentDir.getCanonicalFile();
     }
     catch ( IOException e )
     {
-      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage() );
+      fail( "I/O error getting canonical file for content path <" + contentDir.getPath() + ">: " + e.getMessage() );
       return;
     }
-    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
-    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/');
+    String fullCanonicalContentPath = canonicalContentDir.getAbsolutePath() + "/";
+    fullCanonicalContentPath = StringUtils.cleanPath( fullCanonicalContentPath );
 
-
-    File publicDataDir = TestUtil.addDirectory( contentPathFile, "public/dataDir" );
+    File publicDataDir = TestUtil.addDirectory( contentDir, "public/dataDir" );
     File dataFileNc = TestUtil.addFile( publicDataDir, "data.nc");
     File dataFileGrib1 = TestUtil.addFile( publicDataDir, "data.grib1");
     File dataFileGrib2 = TestUtil.addFile( publicDataDir, "data.grib2");
@@ -515,7 +517,7 @@ public class TestDataRootHandler extends TestCase
     InvCatalogImpl mainCat = createConfigCatalog( "Main catalog", "netCDF Data", "ncData",
                                                    publicDataDir.getAbsolutePath(),
                                                    "*.nc", "mine", "mine.xml" );
-    writeConfigCatalog( mainCat, new File( contentPathFile, mainCatFilename) );
+    writeConfigCatalog( mainCat, new File( contentDir, mainCatFilename) );
 
     // Write <tmp>/content/mine.xml which contains a datasetScan to the grib1 data
     // and a catalogRef to "../catalog.xml (i.e., <tmp>/catalog.xml).
@@ -523,7 +525,7 @@ public class TestDataRootHandler extends TestCase
                                                            "GRIB1 Data", "grib1Data",
                                                            publicDataDir.getAbsolutePath(),
                                                            "*.grib1", "noGoodCat", "../catalog.xml" );
-    writeConfigCatalog( notAllowedRefCat, new File( contentPathFile, "mine.xml") );
+    writeConfigCatalog( notAllowedRefCat, new File( contentDir, "mine.xml") );
 
     // Write <tmp>/catalog.xml which contains a datasetScan to the grib2 data.
     InvCatalogImpl outsideContentDirCat = createConfigCatalog( "Catalog outside of content directory",
@@ -574,9 +576,6 @@ public class TestDataRootHandler extends TestCase
 //      fail( "DataRootHandler has match for \"../catalog.xml\" which is outside content directory.");
 //      return;
 //    }
-
-    // Remove temporary contentPath dir and contents
-    TestUtil.deleteDirectoryAndContent( contentPathFile );
   }
 
   /**
@@ -584,23 +583,22 @@ public class TestDataRootHandler extends TestCase
    */
   public void testInitCatalogWithDotDotInPath()
   {
-    // Create a temporary directory and in that a content directory and in that a subdirectory.
-    File tmpDir = TestUtil.createDirectory( tmpDirPath );
-    File contentPathFile = TestUtil.createDirectory( contentPath ); // child of tmpDir
-    String subDirName = "aSubDir";
-    File subDir = TestUtil.addDirectory( contentPathFile, subDirName );
+    // Create a temporary contentPath directory for this test.
+    File canonicalContentDir;
     try
     {
-      contentPathFile = contentPathFile.getCanonicalFile();
+      canonicalContentDir = contentDir.getCanonicalFile();
     }
     catch ( IOException e )
     {
-      fail( "I/O error getting canonical file for content path <" + contentPath + ">: " + e.getMessage() );
+      fail( "I/O error getting canonical file for content path <" + contentDir.getPath() + ">: " + e.getMessage() );
       return;
     }
-    String fullCanonicalContentPath = contentPathFile.getAbsolutePath() + "/";
-    fullCanonicalContentPath = fullCanonicalContentPath.replace( '\\', '/');
+    String fullCanonicalContentPath = canonicalContentDir.getAbsolutePath() + "/";
+    fullCanonicalContentPath = StringUtils.cleanPath( fullCanonicalContentPath );
 
+    String subDirName = "aSubDir";
+    File subDir = TestUtil.addDirectory( contentDir, subDirName );
 
     String cat1Filename = "catalog1.xml";
     String path1 = cat1Filename;
@@ -610,12 +608,12 @@ public class TestDataRootHandler extends TestCase
     // Write <tmp>/content/catalog1.xml, just an empty dataset.
     InvCatalogImpl catalog1 = createConfigCatalog( "catalog 1", null, null, null,
                                                    null, null, null );
-    writeConfigCatalog( catalog1, new File( contentPathFile, cat1Filename) );
+    writeConfigCatalog( catalog1, new File( contentDir, cat1Filename) );
 
     // Write <tmp>/content/catalog1.xml, just an empty dataset.
     InvCatalogImpl catalog2 = createConfigCatalog( "catalog 2", null, null, null,
                                                    null, null, null );
-    writeConfigCatalog( catalog2, new File( contentPathFile, cat2Filename) );
+    writeConfigCatalog( catalog2, new File( contentDir, cat2Filename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
     DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
@@ -689,9 +687,6 @@ public class TestDataRootHandler extends TestCase
       System.out.println( "Catalog2 with good-path <" + cat2Filename + "> valid but had message: " + checkMsg.toString() );
       checkMsg = new StringBuilder();
     }
-
-    // Remove temporary contentPath dir and contents
-    TestUtil.deleteDirectoryAndContent( contentPathFile );
   }
 
   private InvCatalogImpl createConfigCatalog( String catalogName,

@@ -22,6 +22,8 @@ import ucar.unidata.util.TestUtil;
  */
 public class TestCatGenAndWrite extends TestCase
 {
+  private File tmpDir;
+
   public TestCatGenAndWrite( String name )
   {
     super( name );
@@ -29,6 +31,14 @@ public class TestCatGenAndWrite extends TestCase
 
   protected void setUp()
   {
+    // Create a data directory and some data files.
+    tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestCatGenAndWrite" );
+  }
+
+  protected void tearDown()
+  {
+    // Delete temp directory.
+    TestUtil.deleteDirectoryAndContent( tmpDir );
   }
 
   /**
@@ -36,9 +46,6 @@ public class TestCatGenAndWrite extends TestCase
    */
   public void testLocalDataFiles()
   {
-    // Create a data directory and some data files.
-    File tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestCatGenAndWrite" );
-
     String startPath = "dataDir";
     File dataDir = TestUtil.addDirectory( tmpDir, startPath );
 
@@ -84,16 +91,10 @@ public class TestCatGenAndWrite extends TestCase
     }
 
     crawlCatalogs( new File( new File( catWriteDir, startPath), "catalog.xml") );
-
-    // Delete temp directory.
-    TestUtil.deleteDirectoryAndContent( tmpDir );
   }
 
   public void testLocalDataFilesOnTds()
   {
-    // Create a data directory and some data files.
-    File tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestCatGenAndWrite" );
-
     String startPath = "dataDir";
     File dataDir = TestUtil.addDirectory( tmpDir, startPath );
 
@@ -140,9 +141,6 @@ public class TestCatGenAndWrite extends TestCase
     }
 
     crawlCatalogs( new File( new File( catWriteDir, startPath), "catalog.xml") );
-
-    // Delete temp directory.
-    TestUtil.deleteDirectoryAndContent( tmpDir );
   }
 
   private void crawlCatalogs( File topCatalogFile)
@@ -152,7 +150,5 @@ public class TestCatGenAndWrite extends TestCase
 
     //topCatalog.g
     // TODO actually test something
-
-    
   }
 }

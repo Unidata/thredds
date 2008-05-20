@@ -14,8 +14,8 @@ import java.io.IOException;
 public class TestUtil
 {
   /**
-   * Create a new directory for the given path. If the directory already
-   * exists, it and all its content will be removed.
+   * Create a new directory for the given path. Fails if the directory already
+   * exists or can't be created.
    *
    * @param dirPath the path of the directory to create.
    * @return the java.io.File which represents the newly created directory.
@@ -23,22 +23,19 @@ public class TestUtil
   public static File createDirectory( String dirPath )
   {
     File dirFile = new File( dirPath );
-    if ( dirFile.exists() )
-    {
-      System.out.println( "**WARN: Deleting existing directory <" + dirPath + "> from previous run." );
-      Assert.assertTrue( "Unable to delete already existing directory <" + dirFile.getAbsolutePath() + ">.",
-                         deleteDirectoryAndContent( dirFile ) );
-    }
+    Assert.assertFalse( "Directory [" + dirFile.getAbsolutePath() + "] already exists.",
+                        dirFile.exists());
 
-    Assert.assertTrue( "Failed to make directory <" + dirFile.getAbsolutePath() + ">.",
+    Assert.assertTrue( "Failed to make directory [" + dirFile.getAbsolutePath() + "].",
                        dirFile.mkdirs() );
 
     return dirFile;
   }
 
   /**
-   * In the given parent directory, add a directory. If the new directory
-   * already exists, it and all contents are deleted.
+   * In the given parent directory, add a subdirectory. Fail if the parent
+   * directory doesn't exist or isn't a directory or the new directory
+   * already exists.
    *
    * @param parentDir the already existing parent directory.
    * @param dirName the directory path to create
@@ -54,33 +51,20 @@ public class TestUtil
 
     File newDir = new File( parentDir, dirName );
 
-    // If new directory already exists, delete it and all content.
-    if ( newDir.exists())
-    {
-      if ( newDir.isDirectory() )
-      {
-        System.out.println( "**WARN: Deleting already existing directory <" + newDir.getPath() + "> from previous run." );
-        Assert.assertTrue( "Unable to delete already existing directory <" + newDir.getAbsolutePath() + ">.",
-                           deleteDirectoryAndContent( newDir ) );
-      }
-      else
-      {
-        System.out.println( "**WARN: Target directory already exists as file, deleting <" + newDir.getPath() + ">." );
-        Assert.assertTrue( "Unable to delete already existing file <" + newDir.getAbsolutePath() + ">.",
-                           newDir.delete() );
-      }
-    }
+    Assert.assertFalse( "New directory already exists [" + newDir.getPath() + "].",
+                        newDir.exists() );
 
     // Create the new directory (including any necessary but nonexistent parent directories).
-    Assert.assertTrue( "Failed to create the new directory <" + newDir.getAbsolutePath() + ">.",
+    Assert.assertTrue( "Failed to create the new directory [" + newDir.getAbsolutePath() + "].",
                        newDir.mkdirs() );
 
     return newDir;
   }
 
   /**
-   * Add a file directly in the given parent directory. If the new file
-   * already exists, it is deleted.
+   * Add a file directly in the given parent directory. Fail if the parent
+   * directory doesn't exist or isn't a directory or if the new file
+   * already exists.
    *
    * @param parentDir the already existing parent directory.
    * @param fileName the name of the file to create (may not contain multiple path segments).
@@ -96,40 +80,23 @@ public class TestUtil
 
     File newFile = new File( parentDir, fileName );
 
-    // If target file exists as a directory, delete it and all content.
-    if ( newFile.exists())
-    {
-      if ( newFile.isDirectory() )
-      {
-        System.out.println( "**WARN: Target file already exists as a directory, deleting <" + newFile.getPath() + ">." );
-        Assert.assertTrue( "Unable to delete already existing directory <" + newFile.getAbsolutePath() + ">.",
-                           deleteDirectoryAndContent( newFile ) );
-      }
-      else
-      {
-        // ??????? Or should I remove it?
-        return newFile;
-      }
-    }
+    Assert.assertFalse( "New file [" + newFile.getAbsolutePath() + "] already exists.",
+                        newFile.exists());
 
     // Make sure the new file is directly contained in the parent directory, not a subdirectory.
     Assert.assertTrue( "Multiple levels not allowed in file name <" + fileName + ">.",
                        newFile.getParentFile().equals( parentDir ) );
 
-    // Create the new file.
-    boolean created = false;
     try
     {
-      created = newFile.createNewFile();
+      Assert.assertTrue( "Failed to create new file [" + newFile.getAbsolutePath() + "].",
+                         newFile.createNewFile());
     }
     catch ( IOException e )
     {
       Assert.assertTrue( "Failed to create new file <" + newFile.getAbsolutePath() + ">: " + e.getMessage(),
                          false );
     }
-
-    Assert.assertTrue( "Failed to create new file <" + newFile.getAbsolutePath() + ">.",
-                       created);
 
     return newFile;
   }
