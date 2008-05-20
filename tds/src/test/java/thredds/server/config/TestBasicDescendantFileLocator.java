@@ -7,7 +7,7 @@ import thredds.TestAll;
 import java.io.File;
 import java.io.IOException;
 
-import ucar.unidata.util.TestUtil;
+import ucar.unidata.util.TestUtils;
 
 /**
  * _more_
@@ -27,13 +27,13 @@ public class TestBasicDescendantFileLocator extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicDescendantFileLocator" );
+    tmpDir = TestUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicDescendantFileLocator" );
   }
 
   protected void tearDown()
   {
     // Delete temp directory.
-    TestUtil.deleteDirectoryAndContent( tmpDir );
+    TestUtils.deleteDirectoryAndContent( tmpDir );
   }
 
   /**
@@ -123,9 +123,9 @@ public class TestBasicDescendantFileLocator extends TestCase
                   StringUtils.cleanPath( bfl.getRootDirectoryPath() ),
                   bfl.getRootDirectoryPath() );
 
-    File newDir1 = TestUtil.addDirectory( tmpDir, "fred1" );
-    File newDir2 = TestUtil.addDirectory( newDir1, "fred2" );
-    TestUtil.addDirectory( newDir2, "fred3" );
+    File newDir1 = TestUtils.addDirectory( tmpDir, "fred1" );
+    File newDir2 = TestUtils.addDirectory( newDir1, "fred2" );
+    TestUtils.addDirectory( newDir2, "fred3" );
 
 
     File tmp2 = new File( tmpDir, "./fred1/./fred2/../fred2/../../fred1");

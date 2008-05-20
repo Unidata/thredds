@@ -11,7 +11,7 @@ import java.io.IOException;
  * @author edavis
  * @since Apr 19, 2007 10:11:24 PM
  */
-public class TestUtil
+public class TestUtils
 {
   /**
    * Create a new directory for the given path. Fails if the directory already

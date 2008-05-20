@@ -2,21 +2,11 @@ package thredds.servlet;
 
 import junit.framework.TestCase;
 import thredds.TestAll;
-import thredds.crawlabledataset.CrawlableDatasetFilter;
-import thredds.crawlabledataset.filter.MultiSelectorFilter;
-import thredds.crawlabledataset.filter.WildcardMatchOnNameFilter;
 import thredds.catalog.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.List;
-import java.util.ArrayList;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import ucar.unidata.util.TestUtil;
 
 /**
  * _more_

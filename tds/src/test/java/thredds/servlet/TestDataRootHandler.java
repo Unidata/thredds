@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import ucar.unidata.util.TestUtil;
+import ucar.unidata.util.TestUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -42,14 +42,14 @@ public class TestDataRootHandler extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestUtil.addDirectory( new File( TestAll.temporaryDataDir ), "TestDataRootHandler" );
-    contentDir = TestUtil.addDirectory( tmpDir, "contentPath" );
+    tmpDir = TestUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestDataRootHandler" );
+    contentDir = TestUtils.addDirectory( tmpDir, "contentPath" );
 
   }
   protected void tearDown()
   {
     // Delete temp directory.
-    TestUtil.deleteDirectoryAndContent( tmpDir );
+    TestUtils.deleteDirectoryAndContent( tmpDir );
   }
 
   /**
@@ -505,10 +505,10 @@ public class TestDataRootHandler extends TestCase
     String fullCanonicalContentPath = canonicalContentDir.getAbsolutePath() + "/";
     fullCanonicalContentPath = StringUtils.cleanPath( fullCanonicalContentPath );
 
-    File publicDataDir = TestUtil.addDirectory( contentDir, "public/dataDir" );
-    File dataFileNc = TestUtil.addFile( publicDataDir, "data.nc");
-    File dataFileGrib1 = TestUtil.addFile( publicDataDir, "data.grib1");
-    File dataFileGrib2 = TestUtil.addFile( publicDataDir, "data.grib2");
+    File publicDataDir = TestUtils.addDirectory( contentDir, "public/dataDir" );
+    File dataFileNc = TestUtils.addFile( publicDataDir, "data.nc");
+    File dataFileGrib1 = TestUtils.addFile( publicDataDir, "data.grib1");
+    File dataFileGrib2 = TestUtils.addFile( publicDataDir, "data.grib2");
 
     String mainCatFilename = "catalog.xml";
 
@@ -598,7 +598,7 @@ public class TestDataRootHandler extends TestCase
     fullCanonicalContentPath = StringUtils.cleanPath( fullCanonicalContentPath );
 
     String subDirName = "aSubDir";
-    File subDir = TestUtil.addDirectory( contentDir, subDirName );
+    File subDir = TestUtils.addDirectory( contentDir, subDirName );
 
     String cat1Filename = "catalog1.xml";
     String path1 = cat1Filename;
