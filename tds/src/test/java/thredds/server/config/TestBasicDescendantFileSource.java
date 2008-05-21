@@ -15,11 +15,11 @@ import ucar.unidata.util.TestUtils;
  * @author edavis
  * @since 4.0
  */
-public class TestBasicDescendantFileLocator extends TestCase
+public class TestBasicDescendantFileSource extends TestCase
 {
   private File tmpDir;
 
-  public TestBasicDescendantFileLocator( String name )
+  public TestBasicDescendantFileSource( String name )
   {
     super( name );
   }
@@ -27,7 +27,7 @@ public class TestBasicDescendantFileLocator extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicDescendantFileLocator" );
+    tmpDir = TestUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicDescendantFileSource" );
 
     File dir1 = TestUtils.addDirectory( tmpDir, "dir1" );
     TestUtils.addFile( dir1, "file1_1" );
@@ -98,7 +98,7 @@ public class TestBasicDescendantFileLocator extends TestCase
     File notDirFile = null;
     try
     {
-      notDirFile = File.createTempFile( "TestBasicDescendantFileLocator", "tmp", tmpDir );
+      notDirFile = File.createTempFile( "TestBasicDescendantFileSource", "tmp", tmpDir );
     }
     catch ( IOException e )
     {

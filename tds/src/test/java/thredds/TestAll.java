@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import junit.framework.TestSuite;
+import thredds.server.config.TestBasicDescendantFileSource;
 
 /**
  * TestSuite that runs all TDS unit tests.
@@ -18,7 +19,7 @@ public class TestAll
 
     TestSuite suite = new TestSuite();
     suite.addTestSuite( thredds.servlet.TestDataRootHandler.class );
-    suite.addTestSuite( thredds.server.config.TestBasicDescendantFileLocator.class );
+    suite.addTestSuite( TestBasicDescendantFileSource.class );
     suite.addTestSuite( thredds.server.config.TestBasicWithExclusionsDescendantFileSource.class );
 
     return suite;

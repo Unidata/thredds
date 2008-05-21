@@ -29,7 +29,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicDescendantFileLocator" );
+    tmpDir = TestUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicWithExclusionsDescendantFileSource" );
 
     File dir1 = TestUtils.addDirectory( tmpDir, "dir1" );
     TestUtils.addFile( dir1, "file1_1" );
@@ -104,7 +104,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
     List<String> exclusions = Collections.singletonList( "dir2" );
     try
     {
-      notDirFile = File.createTempFile( "TestBasicDescendantFileLocator", "tmp", tmpDir );
+      notDirFile = File.createTempFile( "TestBasicWithExclusionsDescendantFileSource", "tmp", tmpDir );
     }
     catch ( IOException e )
     {
