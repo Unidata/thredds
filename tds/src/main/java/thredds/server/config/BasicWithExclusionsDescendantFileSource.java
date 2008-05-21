@@ -1,5 +1,7 @@
 package thredds.server.config;
 
+import org.springframework.util.StringUtils;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
@@ -22,28 +24,39 @@ public class BasicWithExclusionsDescendantFileSource
   public BasicWithExclusionsDescendantFileSource( String rootDirectoryPath,
                                                   List<String> exclusions)
   {
-    this.root = new BasicDescendantFileSource( rootDirectoryPath );
     if ( exclusions == null )
       throw new IllegalArgumentException( "Exclusion list must not be null.");
     if ( exclusions.isEmpty())
       throw new IllegalArgumentException( "Exclusion list must not be empty." );
 
+    this.root = new BasicDescendantFileSource( rootDirectoryPath );
+    this.exclusions = initExclusions( exclusions );
+  }
+  public BasicWithExclusionsDescendantFileSource( File rootDirectory,
+                                                  List<String> exclusions)
+  {
+    if ( exclusions == null )
+      throw new IllegalArgumentException( "Exclusion list must not be null." );
+    if ( exclusions.isEmpty() )
+      throw new IllegalArgumentException( "Exclusion list must not be empty." );
+
+    this.root = new BasicDescendantFileSource( rootDirectory );
+    this.exclusions = initExclusions( exclusions );
+  }
+
+  private List<BasicDescendantFileSource> initExclusions( List<String> exclusions )
+  {
     List<BasicDescendantFileSource> list = new ArrayList<BasicDescendantFileSource>();
     BasicDescendantFileSource bdfs;
     for ( String curDfsRdp : exclusions )
     {
       bdfs = (BasicDescendantFileSource) this.root.getDescendant( curDfsRdp );
       if ( bdfs == null )
-        throw new IllegalArgumentException( "Exclusion [" + curDfsRdp + "] was null, not relative, or not descendant of root.");
+        throw new IllegalArgumentException( "Exclusion [" + curDfsRdp + "] was null, not relative, or not descendant of root." );
 
       list.add( bdfs );
     }
-    this.exclusions = list;
-  }
-  public BasicWithExclusionsDescendantFileSource( File rootDirectory,
-                                                  List<String> exclusions)
-  {
-    this( rootDirectory.getPath(), exclusions);
+    return list;
   }
 
   public File getFile( String path )
@@ -51,7 +64,8 @@ public class BasicWithExclusionsDescendantFileSource
     File file = this.root.getFile( path );
     for ( BasicDescendantFileSource curBdfs : this.exclusions )
     {
-      if ( curBdfs.isDescendant( file ) )
+      if ( curBdfs.getRootDirectory().equals( file)
+           || curBdfs.isDescendant( file ) )
         return null;
     }
     return file;
@@ -59,37 +73,65 @@ public class BasicWithExclusionsDescendantFileSource
 
   public DescendantFileSource getDescendant( String relativePath )
   {
-    return null;
+    DescendantFileSource dfs = this.root.getDescendant( relativePath );
+    for ( BasicDescendantFileSource curBdfs : this.exclusions )
+    {
+      if ( curBdfs.getRootDirectory().equals( dfs.getRootDirectory())
+           || curBdfs.isDescendant( dfs.getRootDirectory() ) )
+        return null;
+    }
+    return dfs;
   }
 
   public File getRootDirectory()
   {
-    return null;
+    return this.root.getRootDirectory();
   }
 
   public String getRootDirectoryPath()
   {
-    return null;
+    return this.root.getRootDirectoryPath();
   }
 
   public boolean isDescendant( File file )
   {
-    return false;
+    if ( ! this.root.isDescendant( file ) )
+      return false;
+
+    for ( BasicDescendantFileSource curBdfs : this.exclusions )
+    {
+      if ( curBdfs.getRootDirectory().equals( getCleanAbsoluteFile( file ) )
+           || curBdfs.isDescendant( file ) )
+        return false;
+    }
+    return true;
   }
 
   public boolean isDescendant( String filePath )
   {
-    return false;
+    return filePath == null ? false : isDescendant( new File( filePath ) );
   }
 
   public String getRelativePath( File file )
   {
-    return null;
+    for ( BasicDescendantFileSource curBdfs : this.exclusions )
+    {
+      if ( curBdfs.getRootDirectory().equals( getCleanAbsoluteFile( file ))
+           || curBdfs.isDescendant( file ) )
+        return null;
+    }
+    return this.root.getRelativePath( file );
   }
 
   public String getRelativePath( String filePath )
   {
-    return null;
+    if ( filePath == null)
+      return null;
+    return getRelativePath( new File( filePath) );
   }
 
+  private File getCleanAbsoluteFile( File file)
+  {
+    return new File( StringUtils.cleanPath( file.getAbsolutePath() ).trim() );
+  }
 }

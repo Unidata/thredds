@@ -10,7 +10,8 @@ import java.io.File;
  * @author edavis
  * @since 4.0
  */
-public class BasicDescendantFileSource implements DescendantFileSource
+public class BasicDescendantFileSource
+        implements DescendantFileSource
 {
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( BasicDescendantFileSource.class );
@@ -46,7 +47,7 @@ public class BasicDescendantFileSource implements DescendantFileSource
 
   /**
    * This implementation requires the path to be relative to the root
-   * directory and a descendant of the root directory.
+   * directory and a descendant of the root directory (and can't start with "../").
    *
    * @param path the relative path to the descendant File.
    * @return the descendant File represented by the given relative path or null if the path is null, not relative to the root, or not a descendant.
@@ -106,7 +107,7 @@ public class BasicDescendantFileSource implements DescendantFileSource
   {
     if ( file == null )
       return null;
-    String cleanPath = StringUtils.cleanPath( file.getAbsolutePath() );
+    String cleanPath = StringUtils.cleanPath( file.getAbsolutePath() ).trim();
     if ( cleanPath.startsWith( this.rootDirectoryPath + "/" )
          && cleanPath.length() > this.rootDirectoryPath.length() + 1 )
     {
