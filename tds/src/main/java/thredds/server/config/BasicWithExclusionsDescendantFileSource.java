@@ -50,6 +50,8 @@ public class BasicWithExclusionsDescendantFileSource
     BasicDescendantFileSource bdfs;
     for ( String curDfsRdp : exclusions )
     {
+      if ( curDfsRdp == null )
+        throw new IllegalArgumentException( "Exclusion list may not contain null items.");
       bdfs = (BasicDescendantFileSource) this.root.getDescendant( curDfsRdp );
       if ( bdfs == null )
         throw new IllegalArgumentException( "Exclusion [" + curDfsRdp + "] was null, not relative, or not descendant of root." );

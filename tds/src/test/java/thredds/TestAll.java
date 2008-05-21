@@ -19,8 +19,7 @@ public class TestAll
 
     TestSuite suite = new TestSuite();
     suite.addTestSuite( thredds.servlet.TestDataRootHandler.class );
-    suite.addTestSuite( TestBasicDescendantFileSource.class );
-    suite.addTestSuite( thredds.server.config.TestBasicWithExclusionsDescendantFileSource.class );
+    suite.addTestSuite( thredds.server.config.TestAll.class );
 
     return suite;
   }

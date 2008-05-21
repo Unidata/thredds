@@ -47,10 +47,14 @@ public class BasicDescendantFileSource
 
   /**
    * This implementation requires the path to be relative to the root
-   * directory and a descendant of the root directory (and can't start with "../").
+   * directory and a descendant of the root directory. It also requires the
+   * relative path at each path segment to be a descendant of the root
+   * directory, i.e., it cannot start with "../" or contain "../" path
+   * segments such that once "normalized" it would start with "../"
+   * (e.g., "dir1/../../dir2" once normalized would be "../dir2").
    *
    * @param path the relative path to the descendant File.
-   * @return the descendant File represented by the given relative path or null if the path is null, not relative to the root, or not a descendant.
+   * @return the descendant File represented by the given relative path or null if the path is null, not relative to the root, not a descendant, or the File doesn't exist.
    */
   public File getFile( String path )
   {
