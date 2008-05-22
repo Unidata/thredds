@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import junit.framework.TestSuite;
-import thredds.server.config.TestBasicDescendantFileSource;
 
 /**
  * TestSuite that runs all TDS unit tests.
@@ -16,10 +15,9 @@ public class TestAll
 {
   public static junit.framework.Test suite()
   {
-
     TestSuite suite = new TestSuite();
     suite.addTestSuite( thredds.servlet.TestDataRootHandler.class );
-    suite.addTestSuite( thredds.server.config.TestAll.class );
+    suite.addTest( thredds.server.config.TestAll.suite() );
 
     return suite;
   }

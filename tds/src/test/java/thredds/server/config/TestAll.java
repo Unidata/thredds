@@ -1,18 +1,16 @@
 package thredds.server.config;
 
 import junit.framework.TestSuite;
+import junit.framework.TestCase;
 
 /**
- * _more_
+ * Run all tests in thredds.server.config.
  *
  * @author edavis
  * @since 4.0
  */
-public class TestAll
+public class TestAll extends TestCase
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( TestAll.class );
-
   public static junit.framework.Test suite()
   {
 
@@ -23,5 +21,4 @@ public class TestAll
 
     return suite;
   }
-
 }
