@@ -5,6 +5,16 @@
   <!-- see http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/ThreddsConfigXMLFile.html -->
 
   <!--
+  The <catConfigChain> element:
+  <catConfigSource>
+    <source ref="content" />
+    <source ref="idd" />
+    <source ref="motherlode" />
+  </catConfigSource>
+  -->
+
+
+  <!--
   The <catalogRoot> element:
   For catalogs you don't want visible from the /thredds/catalog.xml chain
   of catalogs, you can use catalogRoot elements. Each catalog root config

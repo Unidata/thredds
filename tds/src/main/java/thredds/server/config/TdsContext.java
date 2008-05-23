@@ -1,10 +1,12 @@
 package thredds.server.config;
 
-import thredds.servlet.ServletUtil;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletContext;
 import java.io.File;
-import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * _more_
@@ -25,10 +27,21 @@ public class TdsContext
 
   private File rootDirectory;
   private File contentDirectory;
+  private File publicContentDirectory;
 
   private File initialContentDirectory;
   private File iddContentDirectory;
   private File motherlodeContentDirectory;
+
+  private DescendantFileSource rootDirSource;
+  private DescendantFileSource contentDirSource;
+  private DescendantFileSource publicContentDirSource;
+  private DescendantFileSource initialContentPublicDirSource;
+  private DescendantFileSource iddContentPublicDirSource;
+  private DescendantFileSource motherlodeContentPublicDirSource;
+
+  private FileSource configSource;
+  private FileSource publicDocSource;
 
   public TdsContext() {}
 //  /**
@@ -65,6 +78,7 @@ public class TdsContext
 
     // Set the root directory
     this.rootDirectory = new File( servletContext.getRealPath( "/" ) );
+    this.rootDirSource = new BasicDescendantFileSource( this.rootDirectory);
 
     this.contentDirectory = new File( this.rootDirectory, "../../content" + this.contextPath );
     if ( ! this.contentDirectory.exists() )
@@ -76,10 +90,35 @@ public class TdsContext
 //        throw new IOException( tmpMsg );
       }
     }
+    this.contentDirSource = new BasicDescendantFileSource( StringUtils.cleanPath( this.contentDirectory.getAbsolutePath()) );
+    this.contentDirectory = this.contentDirSource.getRootDirectory();
+
+    this.publicContentDirectory = new File( this.contentDirectory, "public");
+    this.publicContentDirSource = new BasicDescendantFileSource( this.publicContentDirectory);
 
     this.initialContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/startup"); //this.initialContentPath);
+    this.initialContentPublicDirSource = new BasicDescendantFileSource( this.initialContentDirectory);
+
     this.iddContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/idd/thredds"); //this.iddContentPath);
+    this.iddContentPublicDirSource = new BasicDescendantFileSource( this.iddContentDirectory );
+
     this.motherlodeContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/motherlode/thredds"); //this.motherlodeContentPath);
+    this.motherlodeContentPublicDirSource = new BasicDescendantFileSource( this.motherlodeContentDirectory );
+
+    List<DescendantFileSource> chain = new ArrayList<DescendantFileSource>();
+    DescendantFileSource contentMinusPublicSource =
+            new BasicWithExclusionsDescendantFileSource( this.contentDirectory,
+                                                         Collections.singletonList( "public" ) );
+    chain.add( contentMinusPublicSource );
+    if ( false )
+    {
+      chain.add( this.iddContentPublicDirSource );
+      chain.add( this.motherlodeContentPublicDirSource );
+    }
+    this.configSource = new ChainedFileSource( chain );
+    this.publicDocSource = this.publicContentDirSource; // allow for chain?
+
+
   }
 
   /**

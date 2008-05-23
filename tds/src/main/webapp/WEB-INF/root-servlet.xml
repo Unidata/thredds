@@ -38,8 +38,9 @@
       <value>
         =rootController
         /=rootController
-        /dataDir/*=dataDirController
-        /content/*=contentController
+        *.jsp=jspController
+        *.html=htmlController
+        *.xml=xmlController
       </value>
     </property>
   </bean>
