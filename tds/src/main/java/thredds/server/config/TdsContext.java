@@ -172,4 +172,14 @@ public class TdsContext
   {
     return motherlodeContentDirectory;
   }
+
+  public FileSource getConfigFileSource()
+  {
+    return this.configSource;
+  }
+
+  public FileSource getPublicDocFileSource()
+  {
+    return this.publicDocSource;
+  }
 }
