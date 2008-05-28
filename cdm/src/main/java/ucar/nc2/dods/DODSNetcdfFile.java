@@ -1222,8 +1222,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     return result;
   }
 
-  // this is for reading top variables
-  // Array readData(ucar.nc2.Variable v, List<Range> ranges) throws IOException, InvalidRangeException {
+  @Override
+  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
+    CEresult cer = CEresult.parseVariableSection(this, variableSection);
+    return spi.readSection(cer);
+  }
 
   @Override
   protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {

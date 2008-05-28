@@ -1104,7 +1104,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       cs = new CoordinateSystem(ds, axesList, null);
       ds.addCoordinateSystem(cs);
 
-      parseInfo.append(" Made Coordinate System ").append(cs.getName()).append("\n");
+      parseInfo.append(" Made Coordinate System ").append(cs.getName()).append(" for ");
+      v.getNameAndDimensions(parseInfo);
+      parseInfo.append(" from ").append(coordAxes).append("\n");
     }
 
     /**
