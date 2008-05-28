@@ -374,6 +374,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
         }
 
     } catch (Throwable t) {
+        log.error(req.getQueryString());
         log.error("radarServer radarNexradQuery error" );
         ServletUtil.handleException(t, res);
     }
