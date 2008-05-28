@@ -1,18 +1,14 @@
 package thredds.server.views;
 
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
-import java.io.PrintWriter;
 import java.io.OutputStream;
 
-import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
-import thredds.servlet.ServletUtil;
 
 /**
  * _more_
@@ -20,10 +16,10 @@ import thredds.servlet.ServletUtil;
  * @author edavis
  * @since 4.0
  */
-public class InvCatalogView extends AbstractView
+public class InvCatalogXmlView extends AbstractView
 {
   private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( InvCatalogView.class );
+          org.slf4j.LoggerFactory.getLogger( InvCatalogXmlView.class );
 
   protected void renderMergedOutputModel( Map model, HttpServletRequest req, HttpServletResponse res )
           throws Exception

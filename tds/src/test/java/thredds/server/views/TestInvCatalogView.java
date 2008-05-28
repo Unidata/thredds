@@ -2,18 +2,13 @@ package thredds.server.views;
 
 import org.springframework.test.web.AbstractModelAndViewTests;
 import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import thredds.catalog.*;
-import thredds.crawlabledataset.CrawlableDatasetFilter;
-import thredds.crawlabledataset.filter.MultiSelectorFilter;
-import thredds.crawlabledataset.filter.WildcardMatchOnNameFilter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Collections;
 
 /**
@@ -60,7 +55,7 @@ public class TestInvCatalogView extends AbstractModelAndViewTests
 
     Map model = Collections.singletonMap( "catalog", cat );
 
-    View view = new InvCatalogView();
+    View view = new InvCatalogXmlView();
     try
     {
       view.render( model, new MockHttpServletRequest(), new MockHttpServletResponse() );

@@ -2,26 +2,14 @@ package thredds.server.root;
 
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletContext;
 
-import ucar.nc2.NetcdfFileCache;
-import ucar.nc2.dataset.NetcdfDatasetCache;
-import ucar.unidata.io.FileCache;
-import thredds.servlet.ServletUtil;
 import thredds.servlet.DataRootHandler;
 import thredds.server.config.TdsContext;
-import thredds.server.views.InvCatalogView;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvCatalogFactory;
+import thredds.server.views.InvCatalogXmlView;
 import thredds.catalog.InvCatalog;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * _more_
@@ -53,6 +41,6 @@ public class XmlController extends AbstractController
       tdsContext.getDefaultRequestDispatcher().forward( req, res);
     }
 
-    return new ModelAndView( new InvCatalogView(), "catalog", cat);
+    return new ModelAndView( new InvCatalogXmlView(), "catalog", cat);
   }
 }
