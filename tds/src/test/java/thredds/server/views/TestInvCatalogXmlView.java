@@ -17,10 +17,10 @@ import java.util.Collections;
  * @author edavis
  * @since 4.0
  */
-public class TestInvCatalogView extends AbstractModelAndViewTests
+public class TestInvCatalogXmlView extends AbstractModelAndViewTests
 {
   private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( TestInvCatalogView.class );
+          org.slf4j.LoggerFactory.getLogger( TestInvCatalogXmlView.class );
 
   public void testUnknownEncoding()
   {
@@ -37,7 +37,7 @@ public class TestInvCatalogView extends AbstractModelAndViewTests
             .append( "     <dataset name=\"data two\" id=\"data2\" urlPath=\"some/data/two.nc\" />")
             .append( "  </dataset>\n" )
             .append( "</catalog>" );
-    String catUri = "Cat.TestInvCatalogView.testNoDeclaredEncoding";
+    String catUri = "Cat.TestInvCatalogXmlView.testNoDeclaredEncoding";
 
     URI catURI = null;
     try
