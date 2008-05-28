@@ -36,7 +36,7 @@ public class TdsContext
   private DescendantFileSource rootDirSource;
   private DescendantFileSource contentDirSource;
   private DescendantFileSource publicContentDirSource;
-  private DescendantFileSource initialContentPublicDirSource;
+  private DescendantFileSource initialContentDirSource;
   private DescendantFileSource iddContentPublicDirSource;
   private DescendantFileSource motherlodeContentPublicDirSource;
 
@@ -97,7 +97,7 @@ public class TdsContext
     this.publicContentDirSource = new BasicDescendantFileSource( this.publicContentDirectory);
 
     this.initialContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/startup"); //this.initialContentPath);
-    this.initialContentPublicDirSource = new BasicDescendantFileSource( this.initialContentDirectory);
+    this.initialContentDirSource = new BasicDescendantFileSource( this.initialContentDirectory);
 
     this.iddContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/idd/thredds"); //this.iddContentPath);
     this.iddContentPublicDirSource = new BasicDescendantFileSource( this.iddContentDirectory );
