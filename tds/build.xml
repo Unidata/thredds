@@ -69,8 +69,8 @@
   <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
   <property name="logging.jar" value="external/nlog4j-1.2.25.jar"/>
-  <property name="spring.jar" value="external/spring.jar"/>
-  <property name="spring-webmvc.jar" value="external/spring-webmvc.jar"/>
+  <property name="spring.jar" value="external/spring-2.5.jar"/>
+  <property name="spring-webmvc.jar" value="external/spring-webmvc-2.5.jar"/>
   <property name="jstl.jar" value="external/jstl.jar"/>
   <property name="jstl-standard.jar" value="external/standard.jar"/>
 

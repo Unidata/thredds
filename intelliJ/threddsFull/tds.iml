@@ -558,15 +558,26 @@
     <orderEntry type="module-library" exported="">
       <library name="Spring">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/spring-webmvc.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../lib/external/spring.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/spring-webmvc-2.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/spring-2.5.jar!/" />
         </CLASSES>
         <JAVADOC>
           <root url="http://static.springframework.org/spring/docs/2.5.x/api/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../../../../apps/spring-framework-2.5.2/dist/spring-sources.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../../../../apps/spring-framework-2.5.2/dist/module-sources/spring-webmvc-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/source/spring-sources-2.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/source/spring-webmvc-sources-2.5.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/spring-test-2.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/source/spring-test-sources-2.5.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
