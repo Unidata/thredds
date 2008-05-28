@@ -3,6 +3,7 @@ package thredds.server.config;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletContext;
+import javax.servlet.RequestDispatcher;
 import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class TdsContext
 
   private String contextPath;
 
+  private String contentPath;
   private String initialContentPath;
   private String iddContentPath;
   private String motherlodeContentPath;
@@ -42,6 +44,9 @@ public class TdsContext
 
   private FileSource configSource;
   private FileSource publicDocSource;
+
+  private RequestDispatcher defaultRequestDispatcher;
+  private RequestDispatcher jspRequestDispatcher;
 
   public TdsContext() {}
 //  /**
@@ -76,11 +81,16 @@ public class TdsContext
     if ( tmpContextPath == null ) tmpContextPath = "thredds";
     contextPath = "/" + tmpContextPath;
 
+    this.contentPath = "../../content" + this.contextPath; // if not absolute, relative to root directory.
+    this.initialContentPath = "WEB-INF/altContent/startup";
+    this.iddContentPath = "WEB-INF/altContent/idd/thredds";
+    this.motherlodeContentPath = "WEB-INF/altContent/motherlode/thredds";
+
     // Set the root directory
     this.rootDirectory = new File( servletContext.getRealPath( "/" ) );
     this.rootDirSource = new BasicDescendantFileSource( this.rootDirectory);
 
-    this.contentDirectory = new File( this.rootDirectory, "../../content" + this.contextPath );
+    this.contentDirectory = new File( this.rootDirectory, this.contentPath );
     if ( ! this.contentDirectory.exists() )
     {
       if ( ! this.contentDirectory.mkdirs() )
@@ -96,13 +106,13 @@ public class TdsContext
     this.publicContentDirectory = new File( this.contentDirectory, "public");
     this.publicContentDirSource = new BasicDescendantFileSource( this.publicContentDirectory);
 
-    this.initialContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/startup"); //this.initialContentPath);
+    this.initialContentDirectory = new File( this.rootDirectory, this.initialContentPath );
     this.initialContentDirSource = new BasicDescendantFileSource( this.initialContentDirectory);
 
-    this.iddContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/idd/thredds"); //this.iddContentPath);
+    this.iddContentDirectory = new File( this.rootDirectory, this.iddContentPath);
     this.iddContentPublicDirSource = new BasicDescendantFileSource( this.iddContentDirectory );
 
-    this.motherlodeContentDirectory = new File( this.rootDirectory, "WEB-INF/altContent/motherlode/thredds"); //this.motherlodeContentPath);
+    this.motherlodeContentDirectory = new File( this.rootDirectory, this.motherlodeContentPath);
     this.motherlodeContentPublicDirSource = new BasicDescendantFileSource( this.motherlodeContentDirectory );
 
     List<DescendantFileSource> chain = new ArrayList<DescendantFileSource>();
@@ -118,6 +128,8 @@ public class TdsContext
     this.configSource = new ChainedFileSource( chain );
     this.publicDocSource = this.publicContentDirSource; // allow for chain?
 
+    jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
+    defaultRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
 
   }
 
@@ -181,5 +193,14 @@ public class TdsContext
   public FileSource getPublicDocFileSource()
   {
     return this.publicDocSource;
+  }
+
+  public RequestDispatcher getDefaultRequestDispatcher()
+  {
+    return this.defaultRequestDispatcher;
+  }
+  public RequestDispatcher getJspRequestDispatcher()
+  {
+    return this.jspRequestDispatcher;
   }
 }

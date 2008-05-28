@@ -13,6 +13,10 @@
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
+  <bean id="xmlController" class="thredds.server.root.XmlController" >
+    <property name="tdsContext" ref="tdsContext"/>
+  </bean>
+
   <bean id="dataDirController"
         class="thredds.server.root.DataDirController"
         init-method="init" destroy-method="destroy" >
@@ -31,7 +35,6 @@
     <property name="iddPath" value="WEB-INF/altContent/idd/thredds" />
     <property name="motherlodePath" value="WEB-INF/altContent/motherlode/thredds" /-->
   </bean>
-  <bean id="catGenContext" class="thredds.server.cataloggen.CatGenContext"/>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
