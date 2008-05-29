@@ -156,6 +156,9 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    * StructureDS correctly gets enhanced
    * NetcdfDataset.makeArray -> Array.makeArray()
 
+  Package ucar.nc2.dt
+   * TypedDatasetFactory.open() uses StringBuilder
+
   Package ucar.nc2.iosp
    * Layouts and Chunkers factored out for reuse
      - IndexChunker, IndexChunkerTiled

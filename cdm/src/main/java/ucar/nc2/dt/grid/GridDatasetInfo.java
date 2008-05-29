@@ -389,7 +389,7 @@ public class GridDatasetInfo {
 
   // display name plus the dimensions
   private String getShapeString(int[] shape) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     for (int i = 0; i < shape.length; i++) {
       if (i != 0) buf.append(" ");
       buf.append(shape[i]);
@@ -473,7 +473,7 @@ public class GridDatasetInfo {
     Element varElem = new Element("grid");
     varElem.setAttribute("name", grid.getName());
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     List dims = grid.getDimensions();
     for (int i = 0; i < dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);

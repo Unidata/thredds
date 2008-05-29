@@ -832,7 +832,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * nicely formatted information
    */
   public String getInfo() {
-    StringBuffer buf = new StringBuffer(200);
+    StringBuilder buf = new StringBuilder(200);
     buf.setLength(0);
     buf.append(getName());
     Format.tab(buf, 15, true);

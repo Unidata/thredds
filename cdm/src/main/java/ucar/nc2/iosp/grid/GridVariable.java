@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -35,7 +35,6 @@ import java.util.List;
 /**
  * A Variable for a Grid dataset.
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class GridVariable {
 
@@ -58,7 +57,7 @@ public class GridVariable {
     /** lookup table */
     private GridTableLookup lookup;
 
-    /** flag for grib1, TODO: */
+    /** flag for grib1*/
     private boolean isGrib1;
 
     /** horizontal coord system */
@@ -581,7 +580,7 @@ public class GridVariable {
      */
     public String dump() {
         DateFormatter formatter = new DateFormatter();
-        StringBuffer  sbuff     = new StringBuffer();
+        StringBuilder  sbuff     = new StringBuilder();
         sbuff.append(name + " " + records.size() + "\n");
         for (int i = 0; i < records.size(); i++) {
             GridRecord record = (GridRecord) records.get(i);

@@ -260,7 +260,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     }
 
     String makeDimensions(List<Dimension> dims) {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append(timeDimName);
       for (Dimension d : dims) {
         if (d.getName().equals(runtimeDimName) || d.getName().equals(timeDimName)) continue;

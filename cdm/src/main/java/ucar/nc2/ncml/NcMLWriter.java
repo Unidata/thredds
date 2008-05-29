@@ -231,7 +231,7 @@ public class NcMLWriter {
       attElem.setAttribute("value", value);
     } else {
 
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       for (int i = 0; i < att.getLength(); i++) {
         Number val = att.getNumericValue(i);
         if (i > 0) buff.append(" ");
@@ -362,7 +362,7 @@ public class NcMLWriter {
       attElem.setAttribute("value", value);
     } else {
 
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       for (int i=0; i<p.getLength(); i++) {
         double val = p.getNumericValue(i);
         if (i > 0) buff.append( " ");
@@ -395,7 +395,7 @@ public class NcMLWriter {
     Element varElem = new Element("variable", ncNS);
     varElem.setAttribute("name", var.getShortName());
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     List dims = var.getDimensions();
     for (int i = 0; i < dims.size(); i++) {
       Dimension dim = (Dimension) dims.get(i);
@@ -444,7 +444,7 @@ public class NcMLWriter {
   public static Element writeValues(VariableEnhanced v, Namespace ns, boolean allowRegular) {
     Element elem = new Element("values", ns);
 
-    StringBuffer buff = new StringBuffer();
+    StringBuilder buff = new StringBuilder();
     Array a;
     try {
       a = v.read();

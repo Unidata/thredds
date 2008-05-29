@@ -56,7 +56,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     protected RandomAccessFile raf;
 
     /** place to store debug stuff */
-    protected StringBuffer parseInfo = new StringBuffer();
+    protected StringBuilder parseInfo = new StringBuilder();
 
     /** debug flags */
     protected static boolean debugOpen           = false,

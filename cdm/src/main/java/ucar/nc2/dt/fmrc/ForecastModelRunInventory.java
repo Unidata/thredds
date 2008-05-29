@@ -713,7 +713,7 @@ public class ForecastModelRunInventory {
       if (vc.units != null)
         vcElem.setAttribute("units", vc.units);
 
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       for (int j = 0; j < vc.values1.length; j++) {
         if (j > 0) sbuff.append(" ");
         sbuff.append(Double.toString(vc.values1[j]));
@@ -731,7 +731,7 @@ public class ForecastModelRunInventory {
       rootElem.addContent(offsetElem);
       offsetElem.setAttribute("id", tc.id);
 
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       for (int j = 0; j < tc.offset.length; j++) {
         if (j > 0) sbuff.append(" ");
         sbuff.append(Double.toString(tc.offset[j]));

@@ -37,10 +37,10 @@ import ucar.nc2.util.IO;
  * <pre>
  * InvCatalogFactory factory = new InvCatalogFactory("default", validate);
  * InvCatalogImpl catalog = (InvCatalogImpl) factory.readXML( catalogURI);
- * StringBuffer buff = new StringBuffer();
+ * StringBuilder buff = new StringBuilder();
  * if (!catalog.check( buff)) {
- * javax.swing.JOptionPane.showMessageDialog(this, "Invalid catalog <"+ catalogURI+">\n"+
- * buff.toString());
+ *   javax.swing.JOptionPane.showMessageDialog(this, "Invalid catalog <"+ catalogURI+">\n"+
+ *   buff.toString());
  * }
  * </pre>
  * <p/>
@@ -49,9 +49,9 @@ import ucar.nc2.util.IO;
  * <pre>
  * // write out catalog to String
  * try {
- * System.out.println("\Catalog in XML=\n" + factory.writeXML( catalog));
+ *   System.out.println("\Catalog in XML=\n" + factory.writeXML( catalog));
  * } catch (IOException e) {
- * e.printStackTrace();
+ *   e.printStackTrace();
  * }
  * <p/>
  * // write out catalog to a file

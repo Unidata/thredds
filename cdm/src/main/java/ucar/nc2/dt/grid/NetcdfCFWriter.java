@@ -160,7 +160,7 @@ public class NetcdfCFWriter {
       Variable newV = root.findVariable(gridName);
 
       // annotate Variable for CF
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       GridCoordSystem gcs = grid.getCoordinateSystem();
       for (Variable axis : gcs.getCoordinateAxes()) {
         sbuff.append(axis.getName()).append(" ");

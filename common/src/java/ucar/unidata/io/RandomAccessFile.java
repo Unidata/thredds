@@ -1269,7 +1269,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @throws IOException if an I/O error occurs.
    */
   public final String readLine() throws IOException {
-    StringBuffer input = new StringBuffer();
+    StringBuilder input = new StringBuilder();
     int c;
 
     while (((c = read()) != -1) && (c != '\n')) {

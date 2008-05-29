@@ -51,23 +51,4 @@ public interface InvCatalogConvertIF {
    */
   public void writeXML(InvCatalogImpl catalog, java.io.OutputStream os) throws java.io.IOException;
   public void writeXML(InvCatalogImpl catalog, OutputStream os, boolean raw) throws IOException;
-
-
-
-  /**
-   * Error messages are written to this StringBuffer. These are considered non-fatal.
-   *
-  public void setErrMessageBuffers( StringBuffer errMessages, StringBuffer warnMessages);
-
-
-  public void setMetadataHash( java.util.HashMap metadataConverters);
-
-  /**
-   * Register factory for reading metadata objects of a given type.
-   *
-   * @param type : use Factory for this MetadataType
-   * @param factory : use this factory for this type
-   *
-  public void registerMetadataConverter(MetadataType type, MetadataConverterIF factory);
-  */
 }

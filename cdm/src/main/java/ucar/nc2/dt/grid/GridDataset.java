@@ -272,7 +272,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
    * @return info about this GridDataset
    */
   public String getInfo() {
-    StringBuffer buf = new StringBuffer(20000);
+    StringBuilder buf = new StringBuilder(20000);
     int countGridset = 0;
     buf.setLength(0);
 

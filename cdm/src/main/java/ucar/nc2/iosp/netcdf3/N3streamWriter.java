@@ -242,7 +242,7 @@ public abstract class N3streamWriter {
     if (n == 1)
       return writeString(stream, att.getStringValue());
     else {
-      StringBuffer values = new StringBuffer();
+      StringBuilder values = new StringBuilder();
       for (int i = 0; i < n; i++)
         values.append(att.getStringValue(i));
       return writeString(stream, values.toString());

@@ -476,7 +476,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       if (null != vc.getUnits())
         vcElem.setAttribute("units", vc.getUnits());
 
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       double[] values1 = vc.getValues1();
       double[] values2 = vc.getValues2();
 
@@ -497,7 +497,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       rootElem.addContent(offsetElem);
       offsetElem.setAttribute("id", tc.getId());
 
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       double[] offset = tc.getOffsetHours();
       for (int j = 0; j < offset.length; j++) {
         if (j > 0) sbuff.append(" ");

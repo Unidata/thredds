@@ -1216,7 +1216,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * String representation.
    */
   public String toString() {
-    StringBuffer buff = new StringBuffer(200);
+    StringBuilder buff = new StringBuilder(200);
     buff.setLength(0);
     buff.append("(").append(getName()).append(") ");
 

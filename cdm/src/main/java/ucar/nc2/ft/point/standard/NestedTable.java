@@ -498,7 +498,7 @@ public class NestedTable {
     }
 
     public String showAll() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("Table on dimension ").append(config.dim.getName()).append("\n");
       for (VariableSimpleIF v : cols) {
         sbuff.append("  ").append(v.getName()).append("\n");
@@ -523,7 +523,7 @@ public class NestedTable {
     }
 
     String indent(int n) {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < n; i++) sbuff.append(' ');
       return sbuff.toString();
     }

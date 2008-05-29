@@ -87,7 +87,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * @return converted name
    */
   static public String makeValidNetcdfObjectName(String name) {
-    StringBuffer sb = new StringBuffer(name);
+    StringBuilder sb = new StringBuilder(name);
 
     while (sb.length() > 0) {
       char c = sb.charAt(0);
@@ -160,7 +160,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
    * @return converted name
    */
   static public String createValidNetcdf3ObjectName(String name) {
-    StringBuffer sb = new StringBuffer(name);
+    StringBuilder sb = new StringBuilder(name);
 
     //LOOK: could escape characters, as in DODS (%xx) ??
 

@@ -189,7 +189,7 @@ public class InvService {
   }
 
   String dump(int n) {
-    StringBuffer buff = new StringBuffer(200);
+    StringBuilder buff = new StringBuilder(200);
     buff.setLength(0);
 
     buff.append(InvDatasetImpl.indent(n)).append("Service ").append(this).append("\n");

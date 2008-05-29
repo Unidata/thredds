@@ -1167,7 +1167,7 @@ public class FmrcInventory {
 
     double hour = Double.parseDouble( offsetHour);
 
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("Inventory for ").append(varName).append(" for offset hour= ").append(offsetHour).append("\n");
 
     for (RunExpected rune : uv.runs) {

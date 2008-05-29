@@ -126,7 +126,7 @@ public class TestCDL extends TestCase {
 
   class StreamCapture extends Thread {
     InputStream is;
-    StringBuffer result = new StringBuffer(10000);
+    StringBuilder result = new StringBuilder(10000);
 
     StreamCapture(InputStream is) {
       this.is = is;

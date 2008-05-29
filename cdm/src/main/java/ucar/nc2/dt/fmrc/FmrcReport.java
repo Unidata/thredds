@@ -47,7 +47,7 @@ public class FmrcReport {
       return;
     }
 
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     List<ErrMessage> errs = new ArrayList<ErrMessage>();
 
     for (FmrcInventory.RunSeq haveSeq : fmrc.getRunSequences()) {
@@ -162,7 +162,7 @@ public class FmrcReport {
   }
 
   // make sure that everything in "standard" also exists in "test"
-  boolean findMissing(double[] test, double[] standard, StringBuffer sbuff) {
+  boolean findMissing(double[] test, double[] standard, StringBuilder sbuff) {
     int countTest = 0;
     int countStandard = 0;
     boolean errs = false;

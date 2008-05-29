@@ -86,7 +86,7 @@ public class InvDatasetScan extends InvCatalogRef {
   private CatalogRefExpander catalogRefExpander;
 
   private boolean isValid;
-  private StringBuffer invalidMessage;
+  private StringBuilder invalidMessage;
 
   public InvDatasetScan( InvDatasetImpl parent, String name, String path, String scanLocation, String id, InvDatasetScan from )  {
     this(parent, name, path , scanLocation,
@@ -139,21 +139,21 @@ public class InvDatasetScan extends InvCatalogRef {
     if ( this.scanLocationCrDs == null )
     {
       isValid = false;
-      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=").append( path)
+      invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=").append( path)
               .append( "; scanLocation=" ).append( scanLocation )
               .append(">: could not create CrawlableDataset for scanLocation." );
     }
     else if ( ! this.scanLocationCrDs.exists() )
     {
       isValid = false;
-      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( path )
+      invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=" ).append( path )
               .append( "; scanLocation=").append( scanLocation )
               .append(">: CrawlableDataset for scanLocation does not exist." );
     }
     else if ( ! this.scanLocationCrDs.isCollection() )
     {
       isValid = false;
-      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( path )
+      invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=" ).append( path )
               .append( "; scanLocation=" ).append( scanLocation )
               .append( ">: CrawlableDataset for scanLocation not a collection." );
     }
@@ -225,21 +225,21 @@ public class InvDatasetScan extends InvCatalogRef {
     if ( this.scanLocationCrDs == null )
     {
       isValid = false;
-      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( path )
+      invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=" ).append( path )
               .append( "; scanLocation=" ).append( scanLocation )
               .append( ">: could not create CrawlableDataset for scanLocation." );
     }
     else if ( ! this.scanLocationCrDs.exists() )
     {
       isValid = false;
-      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( path )
+      invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=" ).append( path )
               .append( "; scanLocation=" ).append( scanLocation )
               .append( ">: CrawlableDataset for scanLocation does not exist." );
     }
     else if ( ! this.scanLocationCrDs.isCollection() )
     {
       isValid = false;
-      invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( path )
+      invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=" ).append( path )
               .append( "; scanLocation=" ).append( scanLocation )
               .append( ">: CrawlableDataset for scanLocation not a collection." );
     }
@@ -280,21 +280,21 @@ public class InvDatasetScan extends InvCatalogRef {
       if ( this.scanLocationCrDs == null )
       {
         isValid = false;
-        invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( rootPath )
+        invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=" ).append( rootPath )
                 .append( "; scanLocation=" ).append( scanLocation )
                 .append( ">: could not create CrawlableDataset for scanLocation." );
       }
       else if ( !this.scanLocationCrDs.exists() )
       {
         isValid = false;
-        invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( rootPath )
+        invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=" ).append( rootPath )
                 .append( "; scanLocation=" ).append( scanLocation )
                 .append( ">: CrawlableDataset for scanLocation does not exist." );
       }
       else if ( !this.scanLocationCrDs.isCollection() )
       {
         isValid = false;
-        invalidMessage = new StringBuffer( "Invalid InvDatasetScan <path=" ).append( rootPath )
+        invalidMessage = new StringBuilder( "Invalid InvDatasetScan <path=" ).append( rootPath )
                 .append( "; scanLocation=" ).append( scanLocation )
                 .append( ">: CrawlableDataset for scanLocation not a collection." );
       }

@@ -709,7 +709,7 @@ public class N3header {
     if (n == 1)
       writeString(att.getStringValue());
     else {
-      StringBuffer values = new StringBuffer();
+      StringBuilder values = new StringBuilder();
       for (int i = 0; i < n; i++)
         values.append(att.getStringValue(i));
       writeString(values.toString());
@@ -722,7 +722,7 @@ public class N3header {
     if (n == 1)
       size += sizeString(att.getStringValue());
     else {
-      StringBuffer values = new StringBuffer();
+      StringBuilder values = new StringBuilder();
       for (int i = 0; i < n; i++)
         values.append(att.getStringValue(i));
       size += sizeString(values.toString());

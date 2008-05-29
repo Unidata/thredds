@@ -151,7 +151,7 @@ public class GridParameter {
      * @return a String representation of this object
      */
     public String toString() {
-        StringBuffer buf = new StringBuffer("GridParameter: ");
+        StringBuilder buf = new StringBuilder("GridParameter: ");
         buf.append(StringUtil.padLeft(String.valueOf(getNumber()), 4));
         buf.append(" ");
         String param = getName() + " (" + getDescription() + ")";
