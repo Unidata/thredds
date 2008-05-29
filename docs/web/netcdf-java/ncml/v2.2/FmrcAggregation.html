@@ -163,7 +163,7 @@
 
 <strong>1)</strong>&lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;
 
-<strong>2)</strong>&lt;<strong>datasetFmrc</strong> name=&quot;NCEP-RUC-CONUS_80km&quot; path=&quot;<strong>fmrc/NCEP/RUC/CONUS_80km</strong>&quot; &gt;<br><strong>3)</strong>  &lt;metadata inherited=&quot;true&quot;&gt;<br>      &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;<br>      &lt;documentation type=&quot;summary&quot;&gt;NCEP Model output Rapid Update Cycle (RUC). &lt;/documentation<br>    &lt;/metadata&gt;<br>    &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; enhance=&quot;true&quot;&gt;<br><strong>4)</strong>    &lt;aggregation dimName=&quot;<strong>run</strong>&quot; type=&quot;<strong>forecastModelRunCollection</strong>&quot; recheckEvery=&quot;<strong>10 min</strong>&quot;&gt;<br><strong>5)</strong>      &lt;scan location=&quot;<strong>/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/</strong>&quot; suffix=&quot;<strong>.grib1</strong>&quot; subdirs=&quot;true&quot; 
+<strong>2)</strong>&lt;<strong>datasetFmrc</strong> name=&quot;NCEP-RUC-CONUS_80km&quot; path=&quot;<strong>fmrc/NCEP/RUC/CONUS_80km</strong>&quot; serviceName=&quot;ncdods&quot;&gt;<br><strong>3)</strong>  &lt;metadata inherited=&quot;true&quot;&gt;<br>      &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;<br>      &lt;documentation type=&quot;summary&quot;&gt;NCEP Model output Rapid Update Cycle (RUC). &lt;/documentation<br>    &lt;/metadata&gt;<br>    &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; enhance=&quot;true&quot;&gt;<br><strong>4)</strong>    &lt;aggregation dimName=&quot;<strong>run</strong>&quot; type=&quot;<strong>forecastModelRunCollection</strong>&quot; recheckEvery=&quot;<strong>10 min</strong>&quot;&gt;<br><strong>5)</strong>      &lt;scan location=&quot;<strong>/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/</strong>&quot; suffix=&quot;<strong>.grib1</strong>&quot; subdirs=&quot;true&quot; 
 <strong>6)</strong>            dateFormatMark=&quot;RUC_CONUS_80km_#yyyyMMdd_HHmm&quot; olderThan=&quot;5 min&quot; /&gt;<br>      &lt;/aggregation&gt;<br>    &lt;/netcdf&gt;<br>  &lt;/datasetFmrc&gt;
 &lt;/catalog&gt;</pre>
 <ol>
@@ -176,13 +176,14 @@
 </ol>
 <p>The contained datasets include the resulting 2D time dimension dataset, as well as the 1D time  views of the <em>ucar.nc2.dt.fmrc.ForecastModelRunCollection</em> dataset described in section 4 above, as seen in the resulting TDS' HTML page for that dataset: </p>
 <p><img src="fmrcWeb.jpg" width="804" height="392"></p>
-<h2>&nbsp;</h2>
 <h2>Examples</h2>
-<p><a href="mlodeExample.txt">Motherlode</a> </p>
-<pre>&nbsp; </pre>
+<ul>
+  <li><a href="datasetFmrc.txt">datasetFmrc fragment</a></li>
+  <li><a href="models.xml.txt">motherlode production catalog</a></li>
+</ul>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by John Caron and was last updated on July 31, 2007 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by John Caron and was last updated on May 29, 2008 
 </address>
 </body>
 </html>

@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Subset Service</title>
+</head>
+
+<body>
+<h1><img src="../images/THREDDSlogo.jpg" height="54" width="67"> Subset Service for Radar Level2 Data (version 1.0)</h1>
+<hr>
+<div class="head">
+  <h3>Please note that the interface described here is still a prototype, and subject to change. </h3>
+  <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a> (preferred) or to <a href="mailto:rkambic@unidata.ucar.edu">Robb Kambic</a></em>Overview</p>
+  <p>See <a href="NetcdfSubsetService.html">Subset Service</a> for an overview.</p>
+  <h2>RadarLevel2 Subset Service </h2>
+
+  <h3><strong>A. Example urls<a name="urls"></a></strong></h3>
+<!--
+  <p>We  have a prototype service for IDD RadarLevel2 data at <strong><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2/dataset.html">http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2/dataset.html</a></strong>. Sample URLS look like:</p>
+  <ul>
+    <li>Current radarLevel2 reading for station KFTG, in XML fomat:
+      <ul>
+        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=xml&stn=KFTG&time=present">http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=xml&amp;stn=KFTG&amp;time=present</a></strong></li>
+      </ul>
+    </li>
+//-->
+
+<!--
+    <li>All data in last 24 hours for station KFTG, in CSV fomat:
+      <ul>
+        <li><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=csv&stn=KFTG&time_end=present&time_duration=PT24H"><strong>http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=csv&amp;stn=KFTG&amp;time_end=present&amp;time_duration=<strong>PT24H </strong></strong></a></li>
+      </ul>
+    </li>
+    <li>All available data at the station KFTG, in raw format:
+          <ul>
+            <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=raw&stn=KFTG">http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=raw&amp;stn=KFTG</a></strong> </li>
+          </ul>
+    </li>
+
+
+    <li>Current radarLevel2 reading from the station closest to lat, lon = (40, -105) in XML:
+      <ul>
+        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=xml&latitude=40&longitude=-105&time=present">http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=xml&amp;latitude=40&amp;longitude=-105</a><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=xml&stn=KFTG&time=present">&amp;time=present</a></strong></li>
+      </ul>
+    </li>
+
+
+    <li>All data within latitude [40,43] and longitude [-105, -103], in CSV format: 
+      <ul>
+        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=csv&south=40&west=-105&north=43&east=-103">http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=csv&amp;south=40&amp;west=-105&amp;north=43&amp;east=-103</a></strong></li>
+      </ul>
+    </li>
+    <li>Only return the fields named <em>wind_speed</em> and <em>wind_from_direction</em> in XML:
+      <ul>
+        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=xml&stn=KFTG&var=wind_speed,wind_from_direction&time=present">http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=xml&amp;stn=KFTG&amp;var=wind_speed,wind_from_direction</a><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=xml&stn=KFTG&time=present">&amp;time=present</a> </strong></li>
+      </ul>
+    </li>
+    <li>Get data in the last 12 hours, for a list of stations:
+      <ul>
+        <li><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=csv&stn=KFTG,KGLD,KPUX&time_end=present&time_duration=PT12H"><strong>http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=csv&amp;stn=KFTG,KGLD,KPUX&amp;time_end=present&amp;time_duration=PT12H </strong></a></li>
+      </ul>
+    </li>
+    <li>Get latest data for all stations, return as netcCDF file
+      <ul>
+        <li><strong><a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=netcdf&time=present">http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?accept=netcdf&amp;time=present</a></strong></li>
+      </ul>
+    </li>
+
+//-->
+
+  </ul>
+  <p>Some interesting URLs for the radarServer service: </p>
+  <ul>
+
+<!--
+    <li>All Radar Collections <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/catalog.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/catalog.xml</a></strong></li>
+//-->
+
+
+<!--
+    <li>DQC <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/DQC.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/DQC.xml</a></strong></li>
+//-->
+
+    <li>Level2 Radar Collections <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/catalog.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/catalog.xml</a></strong></li>
+
+    <li>Level2 Stations <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/stations.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/stations.xml</a></strong></li>
+
+    <li>Level2 Stations for IDD dataset <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD/stations.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD/stations.xml</a></strong></li>
+
+    <li>Level2 Stations for CCS039 dataset <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/stations.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/stations.xml</a></strong></li>
+    <li>Level2 Datasets <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/dataset.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/dataset.xml</a></strong></li>
+    <li>Level2 CCS039 Dataset <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/dataset.xml"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039/dataset.xml</a></strong></li>
+<!--
+    <li>Level2 IDD dataset and station KFTG <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present</a></strong></li>
+
+    <li>Level2 Station KDMX for CCS039 dataset <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-01-01T00:00:00&time_end=2007-12-15T00:00:00"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-01-01T00:00:00&time_end=2007-12-15T00:00:00</a></strong></li>
+    <li><strong>Level2 Radar Collections <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/catalog.xml">http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/catalog.xml</a></strong></li>
+    <li>An <a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2/dataset.html">HTML form</a> for interactive input</li>
+    <li>The <a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2/dataset.xml">dataset XML</a> document </li>
+    <li>The <a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2/stations.xml">station List XML</a> document </li>
+    <li>The <a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2?ds=CCS039&returns=stn">station List CSS039</a> document </li>
+//-->
+
+  </ul>
+  <h2><strong><a name="Common"></a>Subsetting Parameters </strong></h2>
+  <p>Some interesting URLs for the radarServer query service: </p>
+  <ul>
+    <li>IDD dataset with Bounding Box and latest time <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?north=40.00&south=39.00&west=-105.2&east=-100.0&time=present"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?north=40.00&south=39.00&west=-105.0&east=-100.0&time=present</a></strong></li>
+    <li>IDD dataset and station KFTG latest time <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time=present</a></strong></li>
+    <li>IDD dataset and station KFTG one day <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time_end=present&time_duration=PT24H"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG&time_end=present&time_duration=PT24H</a></strong></li>
+    <li>IDD dataset and station KFTG all times <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/IDD?stn=KFTG</a></strong></li>
+
+    <li>CCS039 dataset Station KDMX  all times <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX</a></strong></li>
+    <li>CCS039 dataset Station KDMX  2 hour time range <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00</a></strong></li>
+<!--
+    <li>CCS039 dataset all stations all times <a href="http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=ALL"><strong>http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level2/CCS039?stn=ALL</a></strong></li>
+// -->
+  </ul>
+
+<!--
+
+  <h3><strong>A. Specify variables<a name="variables"></a></strong></h3>
+  <p> Currently we don't offer any variables options, so this parameter is ignored.
+</p>
+  <ul>
+    <li><strong>var=</strong>name of variables, separated by ',' (comma).</li>
+  </ul>
+  <p>The list of valid variables is available from the Dataset Description. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> </strong><strong>var=QCSurface</strong></li>
+    <li><strong>var=QC,LZT,PQ</strong></li>
+    <li><strong>var=T&amp;var=Pressure&amp;var=RH </strong>(allowed, but comma seperated names are preferred) </li>
+  </ul>
+  <p>Variable names with spaces or other illegal characters must be escaped. </p>
+
+//-->
+
+  <h3><strong>B. Specify spatial<a name="spatial"></a> extent</strong></h3>
+  <p>Latitude, longitude values are specified  in decimal degrees north and east, respectively. </p>
+  <p>Use one of the following methods: </p>
+  <h4><strong>1. Specify lat/lon bounding box</strong></h4>
+  <p>Specify all of these parameters  (order does not matter): </p>
+  <ol>
+    <ul>
+      <li><strong>north</strong>: latitude north (decimal degrees) </li>
+      <li><strong>south</strong>: latitude south (decimal degrees) </li>
+      <li><strong>east</strong>: longitude east (decimal degrees) </li>
+      <li><strong>west</strong>: longitude west (decimal degrees) </li>
+    </ul>
+  </ol>
+  <p>The bounding box has <strong>west</strong> as its west edge, includes all points going <strong>east</strong> until the east edge. Units must be degrees east, may be positive or negative, and will be taken modulo 360. Therefore, when crossing the dateline, the west edge may be greater than the east edge. Examples:</p>
+  <ul>
+    <li><strong> </strong><strong>north=17.3&amp;south=12.088&amp;west=140.2&amp;east=160.0</strong></li>
+  </ul>
+  <h4><strong>2. Specify lat/lon point</strong></h4>
+  <ul>
+    <li><strong>latitude: </strong>latitude of point, decimal degrees north </li>
+    <li><strong>longitude: </strong>longitude of point, decimal degrees east </li>
+  </ul>
+  <p>The requested  point must lie within the dataset spatial range. The station closest to the requested point will be used. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> latitude</strong><strong>=17.3&amp;longitude=140.2</strong></li>
+  </ul>
+  <h4><strong>3. Specify station(s)</strong></h4>
+  <p><strong>You may specify a list of stations instead of the lat/lon point or bounding box </strong></p>
+  <ul>
+    <li><strong>stn=</strong>name of stations, separated by ',' (comma) </li>
+  </ul>
+  <p>The list of valid stations is available from the Dataset Description. Station names with spaces or other illegal characters must be escaped. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> </strong><strong>stn=KFTG</strong></li>
+    <li><strong>stn=KFTG,KGLD,KPUX</strong></li>
+    <li><strong>stn=KFTG&amp;stn=KGLD&amp;stn=KPUX</strong></li>
+  </ul>
+  <h3>C. Specify time<a name="temporal"></a> </h3>
+ 
+  <p>Use one of the following methods:</p>
+  <h4><strong>1. Time range</strong></h4>
+  <p>Specify 2 of these 3 parameters (order does not matter): </p>
+  <ul>
+    <li><strong>time_start</strong>: starting time as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
+    <li><strong>time_end</strong>: ending time  as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
+    <li><strong>time_duration</strong>: length of time as an <a href="NetcdfSubsetService.html#W3Cduration">W3C time duration</a> </li>
+  </ul>
+  <p>The intersection of the requested time range with the dataset time range will be returned. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> time_start=2007-03-29T12:00:00Z&amp;time_end=2007-03-29T13:00:00Z</strong> (between 12 and 1 pm Greenwich time)</li>
+    <li><strong>time_start=present&amp;time_duration=P3D</strong> (get 3 day forecast starting from the present) </li>
+    <li><strong>time_end=present&amp;time_duration=PT3H</strong> (get last 3 hours) </li>
+  </ul>
+  <h4><strong>2. Time point</strong></h4>
+  <ul>
+    <li><strong>time: </strong>time as an <a href="NetcdfSubsetService.html#W3Cdate">W3C date string</a> or &quot;present&quot; </li>
+  </ul>
+  <p> The 'latest' data retrieval is obtained by 'time=present'.  
+  The  requested time point must lie within the dataset time range. The time slice/point closest to the requested time will be returned. </p>
+  <p>Examples:</p>
+  <ul>
+    <li><strong> time=2007-03-29T12:00:00Z</strong></li>
+    <li><strong>time=present</strong></li>
+  </ul>
+  <h3>D. Specify the return format<a name="accept"></a></h3>
+<p>
+The accept parameter default is xml and it is the only legal one at this time.
+</p>
+
+<!--
+. This does not exclude a user from asking for other return types by using
+the accept parameter, such as: raw, ascii, csv, and netcdf but the code doesn't not act 
+on these settings. We really don't want to support these options for radar data.
+</p>
+  <p>Specify the return format(s) that you want by using the <strong>accept</strong> parameter: </p>
+  <blockquote>
+    <p><strong>accept=mime_type[,mime-type][,mime-type]</strong></p>
+  </blockquote>
+  <p>The list of possible return formats varies depending on the dataset, and can be found in the Dataset Description Document. Your request specifies the list of acceptable types, if none are valid a 400 &quot;Bad Request&quot; HTTP status is returned. If you specify multiple mime-types, the server will choose one of them.</p>
+  <p>The server returns the actual return format in the Content-Type header, examples: </p>
+  <ul>
+    <li><strong>Content-Type: text/plain;charset=ISO-8859-1</strong></li>
+    <li><strong>Content-Type: application/x-netcdf</strong></li>
+  </ul>
+  <p>Query examples:</p>
+  <ul>
+    <li><strong>accept=application/x-netcdf </strong>requests a netcdf file </li>
+    <li><strong>accept=netcdf </strong>requests a netcdf file </li>
+    <li><strong>accept=ascii,csv</strong> requests either an ascii or csv document back </li>
+  </ul>
+  <p>The possible mime-types and aliases: </p>
+  <table width="600" border="1">
+    <tr>
+      <th width="227" scope="col">Mime Type </th>
+      <th width="357" scope="col">Synonyms</th>
+    </tr>
+    <tr>
+      <td>text/plain</td>
+      <td>raw, ascii </td>
+    </tr>
+    <tr>
+      <td>application/xml</td>
+      <td>xml</td>
+    </tr>
+    <tr>
+      <td>text/csv</td>
+      <td>csv</td>
+    </tr>
+    <tr>
+      <td>text/html</td>
+      <td>html</td>
+    </tr>
+    <tr>
+      <td>application/x-netcdf</td>
+      <td>netcdf</td>
+    </tr>
+  </table>
+  <p>The list of actual return formats  depends on the dataset, and can be found in the Dataset Description Document.</p>
+  <p>&nbsp;</p>
+//-->
+
+
+<!--
+
+  <h2>NetCDF File Writing Rules</h2>
+  <ul>
+    <li>A valid NetCDF file is returned in <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html">Unidata Station Observation format</a>. </li>
+    <li>The specified variables(s) and their attributes are included.</li>
+  </ul>
+  <h3>Notes</h3>
+  <ul>
+    <li>When writing raw format, the <strong>var</strong> parameter is ignored, and the entire text report is returned</li>
+  </ul>
+  <p>&nbsp;</p>
+  <h2>Dataset Descriptions<a name="DatasetDescription"></a> </h2>
+  <p>Each dataset has an XML document called the <em><strong>Dataset Description Document</strong></em>. These are intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is, <em>provide clients with the necessary information to formulate a valid request and send it to the serve</em>r. <strong>The content of these documents is still evolving.</strong> </p>
+
+//-->
+
+<!--
+  <h3>Station Observation Dataset</h3>
+  <p>A Station Observation Dataset is a collection of time series of observations at named locations called <em>stations</em>. </p>
+  <p>The dataset is described by a <em><strong>stationObsDataset</strong></em> document, which in turn points to the list of valid stations   in a seperate <em><strong>stationCollection</strong></em> document. The stationCollection document can be quite large, and caching on the client (eg using the <em>If-Modified-Since</em> header) is an important optimization. </p>
+  <ul>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2/dataset.xml"><em><strong>stationObsDataset</strong></em></a> document (<a href="metars/stationObsDataset.xml">offline</a> example) </li>
+    <li>Example <a href="http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2/stations.xml"><strong>stationCollection</strong></a> document (<a href="metars/stations.xml">offline</a> example) </li>
+  </ul>
+//-->
+
+  <h3>&nbsp;</h3>
+</div>
+<p> </p>
+<hr WIDTH="100%">
+<address>
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:rkambic@unidata.ucar.edu">Robb Kambic</a> and was last updated on Feb 5, 2008 
+</address>
+<p>&nbsp;
+</p>
+</body>
+</html>

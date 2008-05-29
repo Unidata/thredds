@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>TDS Logging</title>
+</head>
+
+<body>
+<table width="100%">
+  <tbody>
+    <tr>
+      <td align="left" height="95" width="95"><img src="../../unidataLogo.gif" height="93" width="95"> </td>
+      <td align="left" valign="top" width="701"><table width="303">
+          <tbody>
+            <tr>
+              <td align="left" height="22" valign="top" width="295"><h3><strong>Thredds Data Server</strong></h3></td>
+            </tr>
+          </tbody>
+      </table></td>
+    </tr>
+  </tbody>
+</table>
+
+
+<p><em>last updated May 30, 2006 </em>
+</p>
+<h2>TDS Logging</h2>
+<p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">log4j</a> library embedded in the <a href="http://www.slf4j.org/nlog4j/">NLOG4J</a> library. The NLOG4J library also implements the SLF4J logging facade, which the nj22 library needs. Users of the TDS can ignore the SLF4J facade, and need only deal with  log4j. </p>
+<p>The default log4j configuration file  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You can modify this if you want and restart the TDS to have it take efffect. However, it will be overwritten when you install an updated thredds.war file.</p>
+<p>You can change the location of the  log4j configuration file with the <em>log4j-init-file</em> context parameter in the thredds configuration file <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml.</strong> file. For example:</p>
+<pre> &lt;context-param&gt;
+   &lt;param-name&gt;<strong>log4j-init-file</strong>&lt;/param-name&gt;
+   &lt;param-value&gt;<strong>/data/mylog4j.xml</strong>&lt;/param-value&gt;
+ &lt;/context-param&gt; 
+</pre>
+<p>The value should be the absolute path to the log4j configuration file. Note that web.xml also gets overwritten when the thredds.war file is updated.<br>
+</p>
+<h2>ThreddsAccess logfile</h2>
+<p>Supposed to roll over once a month. </p>
+<pre>  &lt;appender name=&quot;threddsAccess&quot; class=&quot;org.apache.log4j.DailyRollingFileAppender&quot;&gt;<br>    &lt;param name=&quot;File&quot; value=&quot;${logdir}/threddsAccess.log&quot;/&gt;<br>    &lt;param name=&quot;DatePattern&quot; value=&quot;.yyyy-MM&quot;/&gt;<br>    &lt;layout class=&quot;org.apache.log4j.PatternLayout&quot;&gt;<br>      &lt;param name=&quot;ConversionPattern&quot; value=&quot;%X{host} %X{ident} %X{userid} [%d{dd/MMM/yyyy:HH:mm:ss}] %X{request} %m%n<br>    &lt;/layout&gt;<br>  &lt;/appender&gt;
+
+&quot;%X{host} %X{ident} %X{userid} [%d{dd/MMM/yyyy:HH:mm:ss}] %X{request} %m%n&quot;
+
+128.117.140.172 - caron [17/Feb/2006:15:32:57] "GET /thredds/content/logs/threddsAccess.log HTTP/1.1" 200 6191584 1278</pre>
+<table width="802" border="1">
+  <tr>
+    <td width="157"><strong>Field</strong></td>
+    <td width="253"><strong>log4j pattern </strong></td>
+    <td width="370"><strong>example</strong></td>
+  </tr>
+  <tr>
+    <td>host</td>
+    <td>%X{host}</td>
+    <td>128.117.140.172</td>
+  </tr>
+  <tr>
+    <td>session id </td>
+    <td>%X{ident}</td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <td>userid</td>
+    <td>%X{userid}</td>
+    <td>caron</td>
+  </tr>
+  <tr>
+    <td>Date</td>
+    <td>[%d{dd/MMM/yyyy:HH:mm:ss}]</td>
+    <td>[17/Feb/2006:15:31:01]</td>
+  </tr>
+  <tr>
+    <td>Request</td>
+    <td>%X{request}</td>
+    <td>GET /thredds/fileServer/model/GFS/Global_0p5deg/GFS_Global_0p5deg_20060216_1800.grib2 HTTP/1.1"</td>
+  </tr>
+  <tr>
+    <td>message</td>
+    <td>%m: status, size, msec </td>
+    <td>200 6191584 1278</td>
+  </tr>
+</table>
+<p>&nbsp;</p><h2>ThreddsServlet logfile</h2>
+<p>Supposed to roll over every 20MB, keep 5 files.</p>
+<pre>  &lt;appender name=&quot;threddsServlet&quot; class=&quot;org.apache.log4j.RollingFileAppender&quot;&gt;<br>    &lt;param name=&quot;File&quot; value=&quot;${logdir}/threddsServlet.log&quot;/&gt;<br>    &lt;param name=&quot;MaxFileSize&quot; value=&quot;20MB&quot;/&gt;<br>    &lt;param name=&quot;MaxBackupIndex&quot; value=&quot;5&quot;/&gt;<br>    &lt;layout class=&quot;org.apache.log4j.PatternLayout&quot;&gt;<br>      &lt;param name=&quot;ConversionPattern&quot; value=&quot;%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n&quot;/&gt;<br>      &lt;!--param name=&quot;ConversionPattern&quot; value=&quot;%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n&quot;/--&gt;<br>    &lt;/layout&gt;<br>  &lt;/appender&gt;
+
+
+
+&quot;%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n&quot;
+</pre>
+<pre>2006-01-24T17:31:41.452 -0700 [   2025609][      44] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.172 - Request: "GET /thredds/idd/radars.xml HTTP/1.1"
+ </pre>
+<table width="802" border="1">
+  <tr>
+    <td width="157"><strong>Field</strong></td>
+    <td width="253"><strong>log4j pattern </strong></td>
+    <td width="370"><strong>example</strong></td>
+  </tr>
+  <tr>
+    <td>Date</td>
+    <td>%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z}</td>
+    <td>2006-01-24T17:31:41.452 -0700</td>
+  </tr>
+  <tr>
+    <td>msec since tomcat startup</td>
+    <td>[%10r] </td>
+    <td>[ 2025609]</td>
+  </tr>
+  <tr>
+    <td>MDC ID </td>
+    <td>[%8X{ID}] </td>
+    <td>[ 44]</td>
+  </tr>
+  <tr>
+    <td>Logging level</td>
+    <td>%-5p</td>
+    <td>INFO</td>
+  </tr>
+  <tr>
+    <td>Logger name </td>
+    <td>%c</td>
+    <td>thredds.servlet.ServletUtil</td>
+  </tr>
+  <tr>
+    <td>message</td>
+    <td>%m</td>
+    <td>Remote host: 128.117.140.172</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>Request: "GET /thredds/idd/radars.xml HTTP/1.1"</td>
+  </tr>
+</table>
+<h2>MDC fields </h2>
+<table width="722" border="1">
+  <tr>
+    <td width="139">ID</td>
+    <td width="459">sequential id , for duration of transaction </td>
+    <td width="102">&nbsp;</td>
+  </tr>
+  <tr>
+    <td>host</td>
+    <td>req.getRemoteHost()</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>ident</td>
+    <td>session.getId()</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>userid</td>
+    <td>req.getRemoteUser()</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>startTime</td>
+    <td>System.currentTimeMillis()</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>request</td>
+    <td>URL request </td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<p><strong>Start Transaction</strong></p>
+<pre>log.info( &quot;Remote host: &quot; + req.getRemoteHost() + &quot; - Request: &quot; + request);</pre>
+<p><strong>End Transaction </strong></p>
+<pre>logStats.info( resCode + &quot; &quot; + ( ( resSizeInBytes != -1 ) ? String.valueOf( resSizeInBytes ) : &quot;-&quot; ) + &quot; &quot; + duration );
+log.info( &quot;Request Completed - &quot; + resCode + &quot; - &quot; + resSizeInBytes + &quot; - &quot; + duration);
+ </pre>
+</body>
+</html>

@@ -117,6 +117,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
         if (debug) System.out.println("<documentation>\n"+ req.getQueryString() +"</documentation>\n");
         initCat();
         if( cat == null || rns.stationList == null ) { // something major wrong
+            ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1);
             res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "radarServer Nexrad Radar Station/Catalog initialization problem");
             return;
@@ -151,7 +152,6 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
 
         // nexrad level2 and level3 choices
         if( pathInfo.startsWith("/nexrad" )) {
-
 
             // nexrad level2 and level3 catalog/dataset
             if( pathInfo.contains("level2/catalog.") || pathInfo.contains("level3/catalog.")
