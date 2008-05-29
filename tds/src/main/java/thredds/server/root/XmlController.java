@@ -9,7 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import thredds.servlet.DataRootHandler;
 import thredds.server.config.TdsContext;
 import thredds.server.views.InvCatalogXmlView;
+import thredds.server.views.FileView;
 import thredds.catalog.InvCatalog;
+
+import java.io.File;
 
 /**
  * _more_
@@ -38,7 +41,13 @@ public class XmlController extends AbstractController
 
     if ( cat == null )
     {
-      tdsContext.getDefaultRequestDispatcher().forward( req, res);
+      File publicFile = tdsContext.getPublicDocFileSource().getFile( path );
+      if ( publicFile == null )
+      {
+        tdsContext.getDefaultRequestDispatcher().forward( req, res);
+        return null;
+      }
+      return new ModelAndView( new FileView(), "file", publicFile);
     }
 
     return new ModelAndView( new InvCatalogXmlView(), "catalog", cat);
