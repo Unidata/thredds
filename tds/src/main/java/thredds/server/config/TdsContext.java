@@ -129,7 +129,7 @@ public class TdsContext
     this.publicDocSource = this.publicContentDirSource; // allow for chain?
 
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
-    defaultRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
+    defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
 
   }
 
