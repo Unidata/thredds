@@ -35,6 +35,9 @@ import ucar.units.*;
  */
 
 public class SimpleUnit {
+  public static SimpleUnit kmUnit = SimpleUnit.factory("km");
+  public static SimpleUnit meterUnit = SimpleUnit.factory("m");
+
   static protected UnitFormat format;
   static protected Unit secsUnit, dateUnit;
   static protected boolean debugParse = false;
@@ -83,8 +86,8 @@ public class SimpleUnit {
    */
   static public SimpleUnit factoryWithExceptions(String name) throws Exception {
     Unit uu = format.parse(name);
-    if (isDateUnit(uu)) return new DateUnit(name);
-    if (isTimeUnit(uu)) return new TimeUnit(name);
+    //if (isDateUnit(uu)) return new DateUnit(name);
+    //if (isTimeUnit(uu)) return new TimeUnit(name);
     return new SimpleUnit(uu);
   }
 
@@ -192,9 +195,9 @@ public class SimpleUnit {
    * @param inputUnitString  inputUnit in string form
    * @param outputUnitString outputUnit in string form
    * @return conversion factor
-   * @throws ConversionException if not convertible
+   * @throws IllegalArgumentException if not convertible
    */
-  static public double getConversionFactor(String inputUnitString, String outputUnitString) throws ConversionException {
+  static public double getConversionFactor(String inputUnitString, String outputUnitString) throws IllegalArgumentException {
     SimpleUnit inputUnit = SimpleUnit.factory(inputUnitString);
     SimpleUnit outputUnit = SimpleUnit.factory(outputUnitString);
     return inputUnit.convertTo(1.0, outputUnit);
@@ -240,10 +243,14 @@ public class SimpleUnit {
    * @param value  value in this unit
    * @param outputUnit convert to this unit
    * @return  value in outputUnit
-   * @throws ucar.units.ConversionException if outputUnit not convertible from this unit
+   * @throws IllegalArgumentException if outputUnit not convertible from this unit
    */
-  public double convertTo(double value, SimpleUnit outputUnit) throws ConversionException {
-    return uu.convertTo(value, outputUnit.getUnit());
+  public double convertTo(double value, SimpleUnit outputUnit) throws IllegalArgumentException {
+    try {
+      return uu.convertTo(value, outputUnit.getUnit());
+    } catch (ConversionException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
   }
 
   /** Divide this unit by given unit, creat a new unit to hold result.
@@ -305,6 +312,14 @@ public class SimpleUnit {
    */
   public String getUnitString() {
     return uu.getDerivedUnit().toString();
+  }
+
+  public String getCanonicalString() {
+    return uu.getCanonicalString();
+  }
+
+  public String getImplementingClass() {
+    return uu.getClass().getName();
   }
 
 }

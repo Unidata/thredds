@@ -33,23 +33,20 @@ public class TestSimpleUnits extends TestCase  {
   public void testUnits() throws Exception {
     SimpleUnit su = SimpleUnit.factory( "11 hPa");
     assert !(su instanceof TimeUnit);
-    assert !(su instanceof DateUnit);
     assert su.getValue() == 1100.0 : su;
     assert su.getUnitString().equals("Pa") : su;
 
     su = SimpleUnit.factory( "11 km");
     assert !(su instanceof TimeUnit);
-    assert !(su instanceof DateUnit);
     assert su.getValue() == 11000.0 : su;
     assert su.getUnitString().equals("m") : su;
 
     SimpleUnit tu = SimpleUnit.factory("3 days");
     assert tu instanceof TimeUnit;
-    assert !(tu instanceof DateUnit);
     assert tu.getUnitString().equals("days");
     assert tu.getValue() == 3.0 : su;
 
-    String text = "3 days since 1930-07-27 12:00:00-05:00";
+   /* String text = "3 days since 1930-07-27 12:00:00-05:00";
     SimpleUnit du = SimpleUnit.factory( text);
     System.out.println(text+" == standard format "+du);
     assert !(du instanceof TimeUnit);
@@ -65,7 +62,7 @@ public class TestSimpleUnits extends TestCase  {
     du = SimpleUnit.factory( text);
     System.out.println(text+" == standard format "+du);
     assert !(du instanceof TimeUnit);
-    assert du instanceof DateUnit;
+    assert du instanceof DateUnit;  */
 
     //tryDivide();
     tryConvert();

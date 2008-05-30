@@ -21,6 +21,7 @@
 package ucar.nc2.units;
 
 import ucar.units.ConversionException;
+import ucar.units.Unit;
 import ucar.unidata.util.Format;
 
 import java.util.StringTokenizer;
@@ -41,6 +42,7 @@ public class TimeUnit extends SimpleUnit {
   private double value;
   private double factor = 1.0;
   private String unitString;
+  //private Unit uu;
 
   /**
    * Constructor from a String.
@@ -70,7 +72,7 @@ public class TimeUnit extends SimpleUnit {
       throw new IllegalArgumentException("Not TimeUnit = "+text);
 
     uu = SimpleUnit.makeUnit( unitString); // always a base unit
-    factor = uu.convertTo( 1.0, secsUnit);
+    factor = uu.convertTo( 1.0, SimpleUnit.secsUnit);
   }
 
   /**
@@ -83,7 +85,7 @@ public class TimeUnit extends SimpleUnit {
     this.value = value;
     this.unitString = unitString;
     uu = SimpleUnit.makeUnit( unitString);
-    factor = uu.convertTo( 1.0, secsUnit);
+    factor = uu.convertTo( 1.0, SimpleUnit.secsUnit);
   }
 
   /**
@@ -93,7 +95,7 @@ public class TimeUnit extends SimpleUnit {
   public TimeUnit( TimeUnit src) {
     this.value = src.getValue();
     this.unitString = src.getUnitString();
-    uu = src.getUnit();
+    uu = src.uu;
     factor = src.getFactor();
   }
 
@@ -154,8 +156,8 @@ public class TimeUnit extends SimpleUnit {
    * @return new value in the units of the "outputUnit
    * @throws ConversionException
    */
-  public double convertTo(double value, SimpleUnit outputUnit) throws ConversionException {
-    return uu.convertTo( value, outputUnit.getUnit());
+  public double convertTo(double value, TimeUnit outputUnit) throws ConversionException {
+    return uu.convertTo( value, outputUnit.uu);
   }
 
   public Date add( Date d) {

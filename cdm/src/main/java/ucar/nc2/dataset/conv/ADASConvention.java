@@ -31,7 +31,7 @@ import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
-import ucar.units.ConversionException;
+//import ucar.units.ConversionException;
 
 import java.io.IOException;
 import java.util.*;
@@ -93,7 +93,7 @@ public class ADASConvention extends CoordSysBuilder {
       double scalef = 1.0;
       try {
         scalef = SimpleUnit.getConversionFactor(units, "km");
-      } catch (ConversionException e) {
+      } catch (IllegalArgumentException e) {
         log.error(units + " not convertible to km");
       }
       false_easting *= scalef;

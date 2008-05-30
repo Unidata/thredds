@@ -67,8 +67,12 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         desc = "Netcdf/NCML 2 radar dataset";
 
         setEarthLocation();
+      try {
         setTimeUnits();
-        setStartDate();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+      setStartDate();
         setEndDate();
         setBoundingBox();
 
@@ -197,13 +201,13 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
   }
 
 
-    protected void setTimeUnits() {
+    protected void setTimeUnits() throws Exception {
       List axes = ds.getCoordinateAxes();
       for (int i = 0; i < axes.size(); i++) {
         CoordinateAxis axis = (CoordinateAxis) axes.get(i);
         if (axis.getAxisType() == AxisType.Time) {
           String units = axis.getUnitsString();
-          dateUnits = (DateUnit) SimpleUnit.factory(units);
+          dateUnits =  new DateUnit(units);
           return;
         }
       }

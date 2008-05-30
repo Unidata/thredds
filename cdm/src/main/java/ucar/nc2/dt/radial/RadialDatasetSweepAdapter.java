@@ -62,7 +62,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
 
   protected abstract RadialVariable makeRadialVariable(NetcdfDataset nds, VariableSimpleIF v, Variable v0);
 
-  protected abstract void setTimeUnits(); // reminder for subclasses to set this
+  protected abstract void setTimeUnits() throws Exception; // reminder for subclasses to set this
 
   public String getDetailInfo() {
     StringBuffer sbuff = new StringBuffer();

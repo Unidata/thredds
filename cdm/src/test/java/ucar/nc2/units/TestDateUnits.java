@@ -17,10 +17,7 @@ public class TestDateUnits extends TestCase  {
 
   private DateFormatter formatter = new DateFormatter();
 
-  public void doit(SimpleUnit su ) {
-    assert su instanceof DateUnit;
-
-    DateUnit du = (DateUnit) su;
+  public void doit(DateUnit du ) {
     Date d = du.makeDate( 0.0);
 
     Date d2 = du.getDateOrigin();
@@ -34,49 +31,32 @@ public class TestDateUnits extends TestCase  {
     assert d4.equals(d3) :  d4+"!="+ d3;
   }
 
-   public void testDate() {
+   public void testDate() throws Exception {
     System.out.println();
-    SimpleUnit su = SimpleUnit.factory( "0 secs since 1972-01-01T00:00:00Z");
-    doit(su);
+    doit( new DateUnit("0 secs since 1972-01-01T00:00:00Z"));
 
-    su = SimpleUnit.factory( "3600 secs since 1972-01-01T00:00:00Z");
-    doit(su);
-
-    su = SimpleUnit.factory( "24 hours since 1972-01-01T00:00:00Z");
-    doit(su);
-
-    su = SimpleUnit.factory( "22 years since 2000-01-01T00:00:00Z");
-    doit(su);
+    doit( new DateUnit( "3600 secs since 1972-01-01T00:00:00Z"));
+    doit( new DateUnit( "24 hours since 1972-01-01T00:00:00Z"));
+    doit( new DateUnit( "22 years since 2000-01-01T00:00:00Z"));
 
      //  Not all of these were being parsed properly by ucar.units.
-     su = SimpleUnit.factory( "22 years since 2000-01-01T00:00:00 -06:00" );
-     doit( su );
-
-     su = SimpleUnit.factory( "22 years since 2000-01-01T00:00:00 +06:00" );
-     doit( su );
-
-     su = SimpleUnit.factory( "22 years since 2000-01-01T00:00:00 +06" );
-     doit( su );
-
-     su = SimpleUnit.factory( "22 years since 2000-01-01T00:00:00 -06" );
-     doit( su );
-
-     su = SimpleUnit.factory( "22 years since 2000-01-01T00:00:00 +0600" );
-     doit( su );
-
-     su = SimpleUnit.factory( "22 years since 2000-01-01T00:00:00 -0600" );
-     doit( su );
+     doit( new DateUnit( "22 years since 2000-01-01T00:00:00 -06:00" ));
+     doit( new DateUnit( "22 years since 2000-01-01T00:00:00 +06:00" ));
+     doit( new DateUnit( "22 years since 2000-01-01T00:00:00 +06" ));
+     doit( new DateUnit( "22 years since 2000-01-01T00:00:00 -06" ));
+     doit( new DateUnit( "22 years since 2000-01-01T00:00:00 +0600" ));
+     doit( new DateUnit( "22 years since 2000-01-01T00:00:00 -0600" ));
   }
 
-   public void testMakeDate() {
+   public void testMakeDate() throws Exception {
     System.out.println("\ntestStandardDate");
-    DateUnit du = (DateUnit) SimpleUnit.factory( "secs since 1972-01-01T00:00:00Z");
+    DateUnit du = new DateUnit( "secs since 1972-01-01T00:00:00Z");
     Date d = du.makeDate( 36000);
     System.out.println(" "+du.toString()+" == "+formatter.toDateTimeStringISO(d));
     assert du.getTimeUnitString().equals("secs");
     //showUnitInfo( du.getUnit());
 
-    du = (DateUnit) SimpleUnit.factory( "hours since 1972-01-01T00:00:00Z");
+    du = new DateUnit( "hours since 1972-01-01T00:00:00Z");
     Date d2 = du.makeDate( 10);
     System.out.println(" "+du.toString()+" == "+formatter.toDateTimeStringISO(d));
     assert du.getTimeUnitString().equals("hours");
@@ -86,7 +66,7 @@ public class TestDateUnits extends TestCase  {
 
     // value
      // doesnt matter
-    du = (DateUnit) SimpleUnit.factory( "36 hours since 1972-01-01T00:00:00Z");
+    du = new DateUnit( "36 hours since 1972-01-01T00:00:00Z");
     d2 = du.makeDate( 10);
     System.out.println(" "+du.toString()+" == "+formatter.toDateTimeStringISO(d));
     assert du.getTimeUnitString().equals("hours");
@@ -96,7 +76,7 @@ public class TestDateUnits extends TestCase  {
   }
 
   private void tryMakeValue(String unit, double value) throws Exception {
-    DateUnit du = (DateUnit) SimpleUnit.factory( unit);
+    DateUnit du = new DateUnit( unit);
     Date d = du.makeDate( value);
 
     double value2 = du.makeValue( d);
@@ -114,21 +94,21 @@ public class TestDateUnits extends TestCase  {
   }
 
   public void testDateValue() throws Exception {
-    DateUnit du = (DateUnit) SimpleUnit.factory( "hours since 1970-01-01T00:00:00Z");
+    DateUnit du = new DateUnit( "hours since 1970-01-01T00:00:00Z");
     Date d = new Date(1000L * 3600 * 24);
 
     double value = du.makeValue( d);
     System.out.println("testDateValue "+value+" == "+formatter.toDateTimeStringISO(d));
     assert value == 24 : value;
 
-    du = (DateUnit) SimpleUnit.factory( "hours since 1971-01-01T00:00:00Z");
+    du = new DateUnit( "hours since 1971-01-01T00:00:00Z");
     d = new Date(1000L * 3600 * 24 * 375);
 
     value = du.makeValue( d);
     System.out.println("testDateValue "+value+" == "+formatter.toDateTimeStringISO(d));
     assert value == 240 : value;
 
-    du = (DateUnit) SimpleUnit.factory( "days since 1965-01-01T00:00:00Z");
+    du = new DateUnit( "days since 1965-01-01T00:00:00Z");
     d = DateUnit.getStandardDate("days since 1966-01-01T00:00:00Z");
 
     value = du.makeValue( d);

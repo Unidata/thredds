@@ -270,11 +270,23 @@ public class NetcdfDatasetInfo {
   }
 
  private String isUdunits(String unit) {
+    try {
+      new DateUnit(unit);
+      return "date";
+    } catch (Exception e) {
+      // ok
+    }
+
+    try {
+      new TimeUnit(unit);
+      return "time";
+    } catch (Exception e) {
+      // ok
+    }
+
     SimpleUnit su = SimpleUnit.factory(unit);
     if (null == su) return "false";
-    if (su instanceof DateUnit) return "date";
-    if (su instanceof TimeUnit) return "time";
-    return su.getUnit().getCanonicalString();
+    return su.getCanonicalString();
   }
 
   /** debug */

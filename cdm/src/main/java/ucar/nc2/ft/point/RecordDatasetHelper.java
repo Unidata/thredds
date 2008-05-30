@@ -120,7 +120,11 @@ public class RecordDatasetHelper {
     } catch (Exception e) {
       if (null != errs)
         errs.format("Error on string = %s == %s\n", timeUnitString, e.getMessage());
-      timeUnit = (DateUnit) SimpleUnit.factory("seconds since 1970-01-01");
+      try {
+        timeUnit = new DateUnit("seconds since 1970-01-01");
+      } catch (Exception e1) {
+        // cant happen
+      }
     }
   }
 
@@ -170,11 +174,9 @@ public class RecordDatasetHelper {
     this.nomTimeVName = nomTimeVName;
   }
 
-  protected static SimpleUnit meterUnit = SimpleUnit.factory("m");
-
   protected static double getMetersConversionFactor(String unitsString) throws Exception {
     SimpleUnit unit = SimpleUnit.factoryWithExceptions(unitsString);
-    return unit.convertTo(1.0, meterUnit);
+    return unit.convertTo(1.0, SimpleUnit.meterUnit);
   }
 
   public Structure getRecordVar() {

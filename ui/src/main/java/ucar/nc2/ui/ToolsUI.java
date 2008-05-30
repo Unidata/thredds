@@ -580,7 +580,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use _FillValue attribute for missing values",
-            NetcdfDataset.getFillValueIsMissing(), 'F', -1);
+        NetcdfDataset.getFillValueIsMissing(), 'F', -1);
     BAMutil.addActionToMenu(dsMenu, a);
 
     a = new AbstractAction() {
@@ -590,7 +590,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use valid_range attribute for missing values",
-            NetcdfDataset.getInvalidDataIsMissing(), 'V', -1);
+        NetcdfDataset.getInvalidDataIsMissing(), 'V', -1);
     BAMutil.addActionToMenu(dsMenu, a);
 
     a = new AbstractAction() {
@@ -600,7 +600,7 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "use mssing_value attribute for missing values",
-            NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
+        NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
     BAMutil.addActionToMenu(dsMenu, a);
   }
 
@@ -691,6 +691,7 @@ public class ToolsUI extends JPanel {
   }  */
 
   // jump to the appropriate tab based on datatype of threddsData
+
   private void setThreddsDatatype(ThreddsDataFactory.Result threddsData) {
 
     if (threddsData.fatalError) {
@@ -808,7 +809,8 @@ public class ToolsUI extends JPanel {
 
       try {
         if (ncfile != null) ncfile.close();
-      } catch (IOException ee) { }
+      } catch (IOException ee) {
+      }
       ncfile = null;
 
     } catch (Exception e) {
@@ -817,7 +819,8 @@ public class ToolsUI extends JPanel {
 
       try {
         if (ncfile != null) ncfile.close();
-      } catch (IOException ee) { }
+      } catch (IOException ee) {
+      }
       ncfile = null;
     }
 
@@ -1106,8 +1109,8 @@ public class ToolsUI extends JPanel {
       GetDataRunnable runner = new GetDataRunnable() {
         public void run(Object o) throws IOException {
           StringWriter writer = new StringWriter(50000);
-           NCdumpW.print(ncfile, command, writer, task);
-           result = writer.toString();
+          NCdumpW.print(ncfile, command, writer, task);
+          result = writer.toString();
         }
       };
       task = new GetDataTask(runner, filename, null);
@@ -1149,40 +1152,39 @@ public class ToolsUI extends JPanel {
     } */
   }
 
-
   /* private class WcsPanel extends OpPanel {
-    private boolean ready = true;
-    private StopButton stopButton;
-    NetcdfFile ncfile = null;
+   private boolean ready = true;
+   private StopButton stopButton;
+   NetcdfFile ncfile = null;
 
-    WcsPanel(PreferencesExt prefs) {
-      super(prefs, "WCS server", "WCS server:");
-    }
+   WcsPanel(PreferencesExt prefs) {
+     super(prefs, "WCS server", "WCS server:");
+   }
 
-    boolean process(Object o) {
-      String name = (String) o;
+   boolean process(Object o) {
+     String name = (String) o;
 
-      boolean err = false;
-      try {
-        GridDataset gd = GridDataset.open( name);
-        WcsDataset wcs = new WcsDataset( gd);
-        ta.setText( wcs.getCapabilities());
+     boolean err = false;
+     try {
+       GridDataset gd = GridDataset.open( name);
+       WcsDataset wcs = new WcsDataset( gd);
+       ta.setText( wcs.getCapabilities());
 
-      } catch (IOException ioe) {
-        ta.setText("Cant open " + name);
-        err = true;
+     } catch (IOException ioe) {
+       ta.setText("Cant open " + name);
+       err = true;
 
-      } catch (Exception ioe) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        ioe.printStackTrace();
-        ioe.printStackTrace(new PrintStream(bos));
-        ta.setText(bos.toString());
-        err = true;
-      }
+     } catch (Exception ioe) {
+       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+       ioe.printStackTrace();
+       ioe.printStackTrace(new PrintStream(bos));
+       ta.setText(bos.toString());
+       err = true;
+     }
 
-      return !err;
-    }
-  } */
+     return !err;
+   }
+ } */
 
 
   private class UnitsPanel extends JPanel {
@@ -1291,8 +1293,8 @@ public class ToolsUI extends JPanel {
       try {
         SimpleUnit su = SimpleUnit.factoryWithExceptions(command);
         ta.setText("toString()=" + su.toString() + "\n");
-        ta.appendLine("getCanonicalString()=" + su.getUnit().getCanonicalString());
-        ta.appendLine("class = " + su.getUnit().getClass().getName());
+        ta.appendLine("getCanonicalString()=" + su.getCanonicalString());
+        ta.appendLine("class = " + su.getImplementingClass());
         if (su.isUnknownUnit())
           ta.appendLine("UNKNOWN UNIT");
 
@@ -1319,12 +1321,12 @@ public class ToolsUI extends JPanel {
         list.add(stoke.nextToken());
 
       try {
-        String unitS1 = (String) list.get(0);
-        String unitS2 = (String) list.get(1);
+        String unitS1 = list.get(0);
+        String unitS2 = list.get(1);
         SimpleUnit su1 = SimpleUnit.factoryWithExceptions(unitS1);
         SimpleUnit su2 = SimpleUnit.factoryWithExceptions(unitS2);
         ta.setText("<" + su1.toString() + "> isConvertable to <" + su2.toString() + ">=" +
-                SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2));
+            SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2));
 
       } catch (Exception e) {
 
@@ -1342,32 +1344,36 @@ public class ToolsUI extends JPanel {
     void checkDate(Object o) {
       String command = (String) o;
 
+      boolean isDate = false;
       try {
-        SimpleUnit su = SimpleUnit.factory(command);
-        boolean isDate = su instanceof DateUnit;
-        boolean isTime = su instanceof TimeUnit;
-        ta.setText("<" + command + "> isDateUnit= " + isDate + " isTimeUnit= " + isTime);
-        if (isDate) {
-          DateUnit du = (DateUnit) su;
-          ta.appendLine("\nDateUnit = " + du);
-          ta.appendLine("Unit = " + du.getUnit());
-          Date d = du.getDate();
-          ta.appendLine("getStandardDateString = " + formatter.toDateTimeString(d));
-          ta.appendLine("getDateOrigin = " + formatter.toDateTimeString(du.getDateOrigin()));
-        }
-        if (isTime) {
-          TimeUnit du = (TimeUnit) su;
-          ta.appendLine("\nTimeUnit = " + du);
-          ta.appendLine("Unit = " + du.getUnit());
-        }
-
+        DateUnit du = new DateUnit(command);
+        ta.appendLine("\n<" + command + "> isDateUnit = " + du);
+        Date d = du.getDate();
+        ta.appendLine("getStandardDateString = " + formatter.toDateTimeString(d));
+        ta.appendLine("getDateOrigin = " + formatter.toDateTimeString(du.getDateOrigin()));
+        isDate = true;
       } catch (Exception e) {
-        if (Debug.isSet("Xdeveloper")) {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-          e.printStackTrace(new PrintStream(bos));
-          ta.setText(bos.toString());
-        } else {
-          ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
+        // ok to fall through
+      }
+
+      if (!isDate) {
+        try {
+          SimpleUnit su = SimpleUnit.factory(command);
+          boolean isTime = su instanceof TimeUnit;
+          ta.setText("<" + command + "> isDateUnit= " + isDate + " isTimeUnit= " + isTime);
+          if (isTime) {
+            TimeUnit du = (TimeUnit) su;
+            ta.appendLine("\nTimeUnit = " + du);
+          }
+
+        } catch (Exception e) {
+          if (Debug.isSet("Xdeveloper")) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            e.printStackTrace(new PrintStream(bos));
+            ta.setText(bos.toString());
+          } else {
+            ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
+          }
         }
       }
 
@@ -1600,7 +1606,7 @@ public class ToolsUI extends JPanel {
             ds.writeNcMLG(bos, showCoords, null);
             result = bos.toString();
           } else {
-            result = new NcMLWriter().writeXML( ds);
+            result = new NcMLWriter().writeXML(ds);
           }
           ta.setText(result);
           ta.gotoTop();
@@ -1639,7 +1645,7 @@ public class ToolsUI extends JPanel {
     // then write it back out via resulting dataset
     void doTransform(String text) {
       try {
-        StringReader reader = new StringReader( text);
+        StringReader reader = new StringReader(text);
         NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
         ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
         ncd.writeNcML(bos, null);
@@ -1683,8 +1689,8 @@ public class ToolsUI extends JPanel {
     private JSpinner catSpinner;
 
     private String[] catalogURLS = {
-            "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km/files/catalog.xml",
-            "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km_conduit/files/catalog.xml",
+        "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km/files/catalog.xml",
+        "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NAM/CONUS_12km_conduit/files/catalog.xml",
     };
 
     FmrcPanel(PreferencesExt p) {
@@ -1901,7 +1907,7 @@ public class ToolsUI extends JPanel {
           if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
             ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
             detailTA.clear();
-            detailTA.appendLine(gdsImpl.getDetailInfo());            
+            detailTA.appendLine(gdsImpl.getDetailInfo());
             detailTA.gotoTop();
             detailWindow.show();
           }
@@ -2455,7 +2461,7 @@ public class ToolsUI extends JPanel {
           if (sobsDataset == null) return;
           Formatter f = new Formatter();
           sobsDataset.getDetailInfo(f);
-          detailTA.setText( f.toString());
+          detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
         }
@@ -2578,7 +2584,7 @@ public class ToolsUI extends JPanel {
           return false;
         }
 
-        radialViewer.setDataset( (DqcRadarDatasetCollection) radarCollectionDataset);
+        radialViewer.setDataset((DqcRadarDatasetCollection) radarCollectionDataset);
         setSelectedItem(location);
         return true;
 
@@ -2602,7 +2608,7 @@ public class ToolsUI extends JPanel {
       }
 
       radarCollectionDataset = dataset;
-      radialViewer.setDataset( (DqcRadarDatasetCollection) radarCollectionDataset);
+      radialViewer.setDataset((DqcRadarDatasetCollection) radarCollectionDataset);
       setSelectedItem(radarCollectionDataset.getLocationURI());
       return true;
     }
@@ -2761,7 +2767,7 @@ public class ToolsUI extends JPanel {
         writer.writeGrid(gridDs, grid, data, false);
 
         read(fileOut);
-        JOptionPane.showMessageDialog(null, "File written to "+fileOut);
+        JOptionPane.showMessageDialog(null, "File written to " + fileOut);
 
 
       } catch (IOException ioe) {
@@ -2892,24 +2898,24 @@ public class ToolsUI extends JPanel {
       super(parentFrame);
 
       JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>" +
-              "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
-              "<b>" + getVersion() + "</b>" +
-              "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
-              "<br><b><i>Developers:</b>John Caron, Ethan Davis, Robb Kambic, Yuan Ho</i></b>" +
-              "</center>" +
-              "<br><br>With thanks to these <b>Open Source</b> contributers:" +
-              "<ul>" +
-              "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
-              "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
-              "<li><b>Apache Log4J</b> library: (http://logging.apache.org/log4j/) </li>" +
-              "<li><b>IDV:</b> Don Murray, Jeff McWhirter (http://www.unidata.ucar.edu/software/IDV/)</li>" +
-              "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
-              "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
-              "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
-              "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
-              "<li><b>OPeNDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
-              " </ul><center>Special thanks to <b>Sun Microsystems</b> (java.sun.com) for the platform on which we stand." +
-              " </center></body></html> ");
+          "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
+          "<b>" + getVersion() + "</b>" +
+          "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
+          "<br><b><i>Developers:</b>John Caron, Ethan Davis, Robb Kambic, Yuan Ho</i></b>" +
+          "</center>" +
+          "<br><br>With thanks to these <b>Open Source</b> contributers:" +
+          "<ul>" +
+          "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
+          "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
+          "<li><b>Apache Log4J</b> library: (http://logging.apache.org/log4j/) </li>" +
+          "<li><b>IDV:</b> Don Murray, Jeff McWhirter (http://www.unidata.ucar.edu/software/IDV/)</li>" +
+          "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
+          "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
+          "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
+          "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
+          "<li><b>OPeNDAP Java</b> library: Nathan Potter, James Gallagher, Don Denbo, et. al.(http://opendap.org)</li>" +
+          " </ul><center>Special thanks to <b>Sun Microsystems</b> (java.sun.com) for the platform on which we stand." +
+          " </center></body></html> ");
 
       JPanel main = new JPanel(new BorderLayout());
       main.setBorder(new javax.swing.border.LineBorder(Color.BLACK));

@@ -128,7 +128,11 @@ public class RecordDatasetHelper {
       timeUnit = new DateUnit(timeUnitString);
     } catch (Exception e) {
       if (null != errs) errs.append("Error on string = " + timeUnitString + " == " + e.getMessage()+"\n");
-      timeUnit = (DateUnit) SimpleUnit.factory("seconds since 1970-01-01");
+      try {
+        timeUnit = new DateUnit("seconds since 1970-01-01");
+      } catch (Exception e1) {
+        // cant happen
+      }
     }
   }
 

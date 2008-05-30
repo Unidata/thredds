@@ -30,7 +30,6 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.ma2.*;
-import ucar.units.ConversionException;
 
 import java.util.*;
 import java.io.IOException;
@@ -63,7 +62,6 @@ import ucar.nc2.units.DateRange;
  */
 
 public class GridCoordSys extends CoordinateSystem {
-  private static SimpleUnit kmUnit = SimpleUnit.factory("km");
 
   /**
    * Determine if this CoordinateSystem can be made into a GridCoordSys.
@@ -104,11 +102,11 @@ public class GridCoordSys extends CoordinateSystem {
 
       ProjectionImpl p = cs.getProjection();     
       if (!( p instanceof RotatedPole)) {
-        if (!kmUnit.isCompatible(xaxis.getUnitsString())) {
+        if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
           sbuff.append(cs.getName()+" X axis units must be convertible to km\n");
           return false;
         }
-        if (!kmUnit.isCompatible(yaxis.getUnitsString())) {
+        if (!SimpleUnit.kmUnit.isCompatible(yaxis.getUnitsString())) {
           sbuff.append(cs.getName()+" Y axis units must be convertible to km\n");
           return false;
         }
@@ -380,8 +378,8 @@ public class GridCoordSys extends CoordinateSystem {
     SimpleUnit axisUnit = SimpleUnit.factory(units);
     double factor;
     try {
-      factor =  axisUnit.convertTo(1.0, kmUnit);
-    } catch (ConversionException e) {
+      factor =  axisUnit.convertTo(1.0, SimpleUnit.kmUnit);
+    } catch (IllegalArgumentException e) {
       e.printStackTrace();
       return;
     }
@@ -665,7 +663,7 @@ public class GridCoordSys extends CoordinateSystem {
 
   public DateUnit getDateUnit() throws Exception {
     String tUnits = getTimeAxis().getUnitsString();
-    return (DateUnit) SimpleUnit.factory(tUnits);
+    return new DateUnit(tUnits);
   }
 
   /** only if isRegular() */
@@ -957,23 +955,24 @@ public class GridCoordSys extends CoordinateSystem {
     timeDates = new Date[n];
 
     // see if it has a valid udunits unit
-    SimpleUnit su = null;
-    String units = timeTaxis.getUnitsString();
-    if (units != null)
-      su = SimpleUnit.factory( units);
-    if ((su != null) && (su instanceof DateUnit)) {
+    try {
+      DateUnit du = null;
+      String units = timeTaxis.getUnitsString();
+      if (units != null)
+        du = new DateUnit(units);
       DateFormatter formatter = new DateFormatter();
-      DateUnit du = (DateUnit) su;
       for (int i = 0; i < n; i++) {
         Date d = du.makeDate(timeTaxis.getCoordValue(i));
         String name = formatter.toDateTimeString(d);
-        if (name == null)  // LOOK bug in udunits ??
+        if (name == null)
           name = Double.toString(timeTaxis.getCoordValue(i));
         times.add(new NamedAnything(name, "date/time"));
         timeDates[i] = d;
       }
       isDate = true;
       return;
+    } catch (Exception e) {
+      // ok to fall through
     }
 
     // otherwise, see if its a String, and if we can parse the values as an ISO date

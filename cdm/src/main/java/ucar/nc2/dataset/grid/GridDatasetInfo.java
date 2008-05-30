@@ -233,14 +233,6 @@ public class GridDatasetInfo {
     return StringUtil.quoteXmlAttribute(s);
   } */
 
-  private String isUdunits(String unit) {
-    SimpleUnit su = SimpleUnit.factory(unit);
-    if (null == su) return "false";
-    if (su instanceof DateUnit) return "date";
-    if (su instanceof TimeUnit) return "time";
-    return su.getUnit().getCanonicalString();
-  }
-
   /** debug */
   public static void main(String args[]) throws IOException {
     String url = "C:/data/grib/ruc/c20s/RUC2_CONUS_20km_surface_20060327_0900.grib1";

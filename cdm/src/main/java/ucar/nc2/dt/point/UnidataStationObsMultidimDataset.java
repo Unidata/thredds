@@ -234,7 +234,11 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
       timeUnit = new DateUnit(timeUnitString);
     } catch (Exception e) {
       parseInfo.append("Error on units = ").append(timeUnitString).append(" == ").append(e.getMessage()).append("\n");
-      timeUnit = (DateUnit) SimpleUnit.factory("seconds since 1970-01-01");
+      try {
+        timeUnit = new DateUnit("seconds since 1970-01-01");
+      } catch (Exception e1) {
+        // cant happen
+      }
     }
   }
 

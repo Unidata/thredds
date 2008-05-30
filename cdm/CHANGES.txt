@@ -39,6 +39,7 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
+    16: remove direct use of ucar.units, except from ucar.nc2.units
     15: change StringBuffer to StringBuilder for efficiency
         clean up ArrayStructure/StructureData API, clarify Member use
         StructureData.getScalarXXX(name) must be correct type

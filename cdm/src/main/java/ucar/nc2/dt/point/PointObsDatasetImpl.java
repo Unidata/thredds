@@ -43,7 +43,6 @@ import java.text.ParseException;
  */
 
 abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements PointObsDataset {
-  protected static SimpleUnit meterUnit = SimpleUnit.factory("m");
 
   /**
    * Get conversion factor for this unit into meters.
@@ -53,7 +52,7 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
    */
   protected static double getMetersConversionFactor( String unitsString) throws Exception {
     SimpleUnit unit = SimpleUnit.factoryWithExceptions(unitsString);
-    return unit.convertTo(1.0, meterUnit);
+    return unit.convertTo(1.0, SimpleUnit.meterUnit);
   }
 
   protected DateUnit timeUnit;

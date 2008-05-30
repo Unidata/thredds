@@ -24,16 +24,13 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
+import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.Parameter;
-import ucar.units.UnitFormat;
-import ucar.units.UnitFormatManager;
-import ucar.units.Unit;
 
 import java.util.StringTokenizer;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Abstract superclass for implementations of CoordTransBuilderIF.
@@ -179,12 +176,11 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
         }
       }
     }
+
     if (units != null) {
       try {
-        UnitFormat format = UnitFormatManager.instance();
-        Unit uuInput = format.parse(units);
-        Unit uuOutput = format.parse("km");
-        return uuInput.convertTo(1.0, uuOutput);
+        SimpleUnit unit = SimpleUnit.factoryWithExceptions(units);
+        return unit.convertTo(1.0, SimpleUnit.meterUnit);
       } catch (Exception e) {
         log.error(units + " not convertible to km");
       }

@@ -28,7 +28,6 @@ import ucar.ma2.MAMath;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.units.ConversionException;
 
 import java.util.*;
 import java.io.IOException;
@@ -77,8 +76,6 @@ public class RadialCoordSys {
 
     return null;
   }
-
-  private static SimpleUnit kmUnit = SimpleUnit.factory("km");
 
   /////////////////////////////////////////////////////////////////////////////
   private CoordinateAxis aziAxis, elevAxis, radialAxis, timeAxis;
@@ -171,11 +168,11 @@ public class RadialCoordSys {
 
         String units = getRadialAxis().getUnitsString();
         SimpleUnit radialUnit = SimpleUnit.factory(units);
-        maxRadial =  radialUnit.convertTo(maxRadial, kmUnit); // convert to km
+        maxRadial = radialUnit.convertTo(maxRadial, SimpleUnit.kmUnit); // convert to km
 
       } catch (IOException e) {
         e.printStackTrace();
-      } catch (ConversionException e) {
+      } catch (IllegalArgumentException e) {
         e.printStackTrace();
       }
     }
@@ -204,9 +201,9 @@ public class RadialCoordSys {
    *  To get a Date, from a time value, call DateUnit.getStandardDate(double value).
    *  To get units as a String, call DateUnit.getUnitsString().
    */
-  public ucar.nc2.units.DateUnit getTimeUnits() {
+  public ucar.nc2.units.DateUnit getTimeUnits() throws Exception {
     if (null == dateUnit) {
-      dateUnit = (DateUnit) SimpleUnit.factory( timeAxis.getUnitsString());
+      dateUnit = new DateUnit( timeAxis.getUnitsString());
     }
     return dateUnit;
   }

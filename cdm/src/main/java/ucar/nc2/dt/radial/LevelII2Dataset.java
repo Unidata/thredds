@@ -83,7 +83,11 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     desc = "Nexrad 2 radar dataset";
 
     setEarthLocation();
-    setTimeUnits();
+    try {
+      setTimeUnits();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
     setStartDate();
     setEndDate();
     setBoundingBox();
@@ -188,13 +192,13 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     return true;
   }
 
-  protected void setTimeUnits() {
+  protected void setTimeUnits() throws Exception {
     List axes = ds.getCoordinateAxes();
     for (int i = 0; i < axes.size(); i++) {
       CoordinateAxis axis = (CoordinateAxis) axes.get(i);
       if (axis.getAxisType() == AxisType.Time) {
         String units = axis.getUnitsString();
-        dateUnits = (DateUnit) SimpleUnit.factory(units);
+        dateUnits =  new DateUnit(units);
         return;
       }
     }

@@ -170,12 +170,10 @@ public abstract class SingleTrajectoryObsDataset
     ( (SingleTrajectory) trajectory).setEndDate( endDate );
   }
 
-  protected static SimpleUnit meterUnit = SimpleUnit.factory( "meters" );
-
   protected static double getMetersConversionFactor( String unitsString ) throws Exception
   {
     SimpleUnit unit = SimpleUnit.factoryWithExceptions( unitsString );
-    return unit.convertTo( 1.0, meterUnit );
+    return unit.convertTo( 1.0, SimpleUnit.meterUnit );
   }
 
   protected void setStartDate() {}

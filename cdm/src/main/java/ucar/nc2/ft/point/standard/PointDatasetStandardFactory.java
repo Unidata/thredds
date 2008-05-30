@@ -21,7 +21,6 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -108,7 +107,11 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
             timeUnit = flatTable.getTimeUnit();
           } catch (Exception e) {
             if (null != errlog) errlog.format("%s\n", e.getMessage());
-            timeUnit = (DateUnit) SimpleUnit.factory("seconds since 1970-01-01");
+            try {
+              timeUnit = new DateUnit("seconds since 1970-01-01");
+            } catch (Exception e1) {
+              log.error("Illegal time units", e1); // cant happen i hope
+            }
           }
         }
 

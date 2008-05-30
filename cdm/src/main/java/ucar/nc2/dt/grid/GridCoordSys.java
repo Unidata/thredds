@@ -30,7 +30,6 @@ import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.ma2.*;
-import ucar.units.ConversionException;
 
 import java.util.*;
 import java.io.IOException;
@@ -61,7 +60,6 @@ import ucar.nc2.units.DateRange;
  */
 
 public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCoordSystem {
-  private static SimpleUnit kmUnit = SimpleUnit.factory("km");
 
   /**
    * Determine if this CoordinateSystem can be made into a GridCoordSys.
@@ -109,13 +107,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       ProjectionImpl p = cs.getProjection();
       if (!(p instanceof RotatedPole)) {
-        if (!kmUnit.isCompatible(xaxis.getUnitsString())) {
+        if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
           if (sbuff != null) {
             sbuff.append(cs.getName()).append(": X axis units must be convertible to km\n");
           }
           return false;
         }
-        if (!kmUnit.isCompatible(yaxis.getUnitsString())) {
+        if (!SimpleUnit.kmUnit.isCompatible(yaxis.getUnitsString())) {
           if (sbuff != null) {
             sbuff.append(cs.getName()).append(": Y axis units must be convertible to km\n");
           }
@@ -468,8 +466,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     SimpleUnit axisUnit = SimpleUnit.factory(units);
     double factor;
     try {
-      factor = axisUnit.convertTo(1.0, kmUnit);
-    } catch (ConversionException e) {
+      factor = axisUnit.convertTo(1.0, SimpleUnit.kmUnit);
+    } catch (IllegalArgumentException e) {
       e.printStackTrace();
       return;
     }
@@ -864,7 +862,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   public DateUnit getDateUnit() throws Exception {
     String tUnits = getTimeAxis().getUnitsString();
-    return (DateUnit) SimpleUnit.factory(tUnits);
+    return new DateUnit(tUnits);
   }
 
   /**
@@ -984,55 +982,50 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         ProjectionRect bb = getBoundingBox();
 
         // look at all 4 corners of the bounding box
-        LatLonPointImpl llpt = (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerLeftPoint(), new LatLonPointImpl() );
-        LatLonPointImpl lrpt = (LatLonPointImpl) dataProjection.projToLatLon( bb.getLowerRightPoint(), new LatLonPointImpl() );
-        LatLonPointImpl urpt = (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperRightPoint(), new LatLonPointImpl() );
-        LatLonPointImpl ulpt = (LatLonPointImpl) dataProjection.projToLatLon( bb.getUpperLeftPoint(), new LatLonPointImpl() );
+        LatLonPointImpl llpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
+        LatLonPointImpl lrpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
+        LatLonPointImpl urpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
+        LatLonPointImpl ulpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
 
         // Check if grid contains poles.
         boolean includesNorthPole = false;
         int[] resultNP = new int[2];
-        resultNP = findXYindexFromLatLon( 90.0, 0, null );
-        if ( resultNP[0] != -1 && resultNP[1] != -1 )
+        resultNP = findXYindexFromLatLon(90.0, 0, null);
+        if (resultNP[0] != -1 && resultNP[1] != -1)
           includesNorthPole = true;
         boolean includesSouthPole = false;
         int[] resultSP = new int[2];
-        resultSP = findXYindexFromLatLon( -90.0, 0, null );
-        if ( resultSP[0] != -1 && resultSP[1] != -1 )
+        resultSP = findXYindexFromLatLon(-90.0, 0, null);
+        if (resultSP[0] != -1 && resultSP[1] != -1)
           includesSouthPole = true;
 
-        if ( includesNorthPole && ! includesSouthPole )
-        {
-          llbb = new LatLonRect( llpt, new LatLonPointImpl( 90.0, 0.0)); // ??? lon=???
-          llbb.extend( lrpt);
-          llbb.extend( urpt);
-          llbb.extend( ulpt);
+        if (includesNorthPole && !includesSouthPole) {
+          llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
+          llbb.extend(lrpt);
+          llbb.extend(urpt);
+          llbb.extend(ulpt);
           // OR
           //llbb.extend( new LatLonRect( llpt, lrpt ));
           //llbb.extend( new LatLonRect( lrpt, urpt ) );
           //llbb.extend( new LatLonRect( urpt, ulpt ) );
           //llbb.extend( new LatLonRect( ulpt, llpt ) );
-        }
-        else if ( includesSouthPole && ! includesNorthPole )
-        {
-          llbb = new LatLonRect( llpt, new LatLonPointImpl( -90.0, -180.0 ) ); // ??? lon=???
-          llbb.extend( lrpt );
-          llbb.extend( urpt );
-          llbb.extend( ulpt );
-        }
-        else
-        {
-          double latMin = Math.min( llpt.getLatitude(), lrpt.getLatitude() );
-          double latMax = Math.max( ulpt.getLatitude(), urpt.getLatitude() );
+        } else if (includesSouthPole && !includesNorthPole) {
+          llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
+          llbb.extend(lrpt);
+          llbb.extend(urpt);
+          llbb.extend(ulpt);
+        } else {
+          double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
+          double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
 
           // longitude is a bit tricky as usual
-          double lonMin = getMinOrMaxLon( llpt.getLongitude(), ulpt.getLongitude(), true );
-          double lonMax = getMinOrMaxLon( lrpt.getLongitude(), urpt.getLongitude(), false );
+          double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
+          double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
 
-          llpt.set( latMin, lonMin );
-          urpt.set( latMax, lonMax );
+          llpt.set(latMin, lonMin);
+          urpt.set(latMax, lonMax);
 
-          llbb = new LatLonRect( llpt, urpt );
+          llbb = new LatLonRect(llpt, urpt);
         }
       }
     }
@@ -1250,13 +1243,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     timeDates = new Date[n];
 
     // see if it has a valid udunits unit
-    SimpleUnit su = null;
-    String units = timeTaxis.getUnitsString();
-    if (units != null)
-      su = SimpleUnit.factory(units);
-    if ((su != null) && (su instanceof DateUnit)) {
+    try {
+      DateUnit du = null;
+      String units = timeTaxis.getUnitsString();
+      if (units != null)
+        du = new DateUnit(units);
       DateFormatter formatter = new DateFormatter();
-      DateUnit du = (DateUnit) su;
       for (int i = 0; i < n; i++) {
         Date d = du.makeDate(timeTaxis.getCoordValue(i));
         String name = formatter.toDateTimeString(d);
@@ -1267,6 +1259,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       }
       isDate = true;
       return;
+    } catch (Exception e) {
+      // ok to fall through
     }
 
     // otherwise, see if its a String, and if we can parse the values as an ISO date

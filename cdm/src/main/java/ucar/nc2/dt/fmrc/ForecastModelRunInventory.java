@@ -324,7 +324,12 @@ public class ForecastModelRunInventory {
     TimeCoord(Date runDate, CoordinateAxis1D axis) {
       this.axis = axis;
 
-      DateUnit unit = (DateUnit) DateUnit.factory(axis.getUnitsString());
+      DateUnit unit = null;
+      try {
+        unit = new DateUnit(axis.getUnitsString());
+      } catch (Exception e) {
+        throw new IllegalArgumentException("Not a unit of time "+axis.getUnitsString());
+      }
 
       int n = (int) axis.getSize();
       offset = new double[n];

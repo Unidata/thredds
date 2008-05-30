@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
  * @author caron
  */
 
-public class DateUnit extends SimpleUnit {
+public class DateUnit { // extends SimpleUnit {
 
   /**
    * Create a java.util.Date from this udunits String.
@@ -87,6 +87,7 @@ public class DateUnit extends SimpleUnit {
   private String timeUnitString, udunitString;
   private TimeUnit timeUnit = null;
   private DateFormatter formatter;
+  private Unit uu;
 
   /**
    * Constructor.
