@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="4" relativePaths="true">
+<project relativePaths="true" version="4">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
     <buildFile url="file://$PROJECT_DIR$/../cdm/build.xml">
@@ -52,11 +52,12 @@
       <entry name="?*.tld" />
     </wildcardResourcePatterns>
   </component>
-  <component name="DataSourceManagerImpl" />
   <component name="DependenciesAnalyzeManager">
     <option name="myForwardDirection" value="false" />
   </component>
-  <component name="DependencyValidationManager" />
+  <component name="DependencyValidationManager">
+    <option name="SKIP_IMPORT_STATEMENTS" value="false" />
+  </component>
   <component name="EclipseCompilerSettings">
     <option name="DEBUGGING_INFO" value="true" />
     <option name="GENERATE_NO_WARNINGS" value="true" />
@@ -72,14 +73,13 @@
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
   <component name="EntryPointsManager">
-    <entry_points />
+    <entry_points version="2.0" />
   </component>
   <component name="ExportToHTMLSettings">
     <option name="PRINT_LINE_NUMBERS" value="false" />
     <option name="OPEN_IN_BROWSER" value="false" />
     <option name="OUTPUT_DIRECTORY" />
   </component>
-  <component name="GUI Designer component loader factory" />
   <component name="IdProvider" IDEtalkID="5AD64D7EBB1ECC501FC54DB64F2AD80E" />
   <component name="InspectionProjectProfileManager">
     <option name="PROJECT_PROFILE" value="Project Default" />
@@ -89,24 +89,6 @@
       <profile version="1.0" is_locked="false">
         <option name="myName" value="Bugs" />
         <option name="myLocal" value="false" />
-        <used_levels>
-          <error>
-            <option name="myName" value="ERROR" />
-            <option name="myVal" value="400" />
-          </error>
-          <warning>
-            <option name="myName" value="WARNING" />
-            <option name="myVal" value="300" />
-          </warning>
-          <information>
-            <option name="myName" value="INFO" />
-            <option name="myVal" value="200" />
-          </information>
-          <server>
-            <option name="myName" value="SERVER PROBLEM" />
-            <option name="myVal" value="100" />
-          </server>
-        </used_levels>
         <inspection_tool class="CheckEmptyScriptTag" level="WARNING" enabled="false" />
         <inspection_tool class="FunctionWithInconsistentReturnsJS" level="WARNING" enabled="false" />
         <inspection_tool class="UnusedMessageFormatParameter" level="WARNING" enabled="false" />
@@ -182,6 +164,7 @@
           <option name="METHOD" value="true" />
           <option name="CLASS" value="true" />
           <option name="PARAMETER" value="true" />
+          <option name="REPORT_PARAMETER_FOR_PUBLIC_METHODS" value="true" />
           <option name="INJECTION_ANNOS">
             <value>
               <list size="0" />
@@ -250,7 +233,9 @@
           <option name="m_reportEmptyBlocks" value="false" />
         </inspection_tool>
         <inspection_tool class="ThrowFromFinallyBlockJS" level="WARNING" enabled="false" />
-        <inspection_tool class="ForCanBeForeach" level="WARNING" enabled="false" />
+        <inspection_tool class="ForCanBeForeach" level="WARNING" enabled="false">
+          <option name="REPORT_INDEXED_LOOP" value="true" />
+        </inspection_tool>
         <inspection_tool class="TypeParameterExtendsObject" level="WARNING" enabled="false" />
         <inspection_tool class="FieldCanBeLocal" level="WARNING" enabled="false" />
         <inspection_tool class="UNCHECKED_WARNING" level="WARNING" enabled="false" />
@@ -269,13 +254,7 @@
         <inspection_tool class="RedundantArrayCreation" level="WARNING" enabled="false" />
         <inspection_tool class="UnnecessaryLabelOnContinueStatementJS" level="WARNING" enabled="false" />
         <inspection_tool class="CheckImageSize" level="WARNING" enabled="false" />
-        <inspection_tool class="EmptyMethod" level="WARNING" enabled="false">
-          <option name="EXCLUDE_ANNOS">
-            <value>
-              <list size="0" />
-            </value>
-          </option>
-        </inspection_tool>
+        <inspection_tool class="EmptyMethod" level="WARNING" enabled="false" />
         <inspection_tool class="ComponentRegistrationProblems" level="ERROR" enabled="false">
           <option name="CHECK_PLUGIN_XML" value="true" />
           <option name="CHECK_JAVA_CODE" value="true" />
@@ -305,11 +284,17 @@
         <inspection_tool class="JBoss" level="ERROR" enabled="false" />
         <inspection_tool class="UnusedDeclaration" level="WARNING" enabled="false">
           <option name="ADD_MAINS_TO_ENTRIES" value="true" />
-          <option name="ADD_JUNIT_TO_ENTRIES" value="true" />
-          <option name="ADD_EJB_TO_ENTRIES" value="true" />
           <option name="ADD_APPLET_TO_ENTRIES" value="true" />
           <option name="ADD_SERVLET_TO_ENTRIES" value="true" />
           <option name="ADD_NONJAVA_TO_ENTRIES" value="true" />
+          <option name="ADDITIONAL_ANNOTATIONS">
+            <value>
+              <list size="0" />
+            </value>
+          </option>
+          <option name="ADD_EJB_TO_ENTRIES" value="true" />
+          <option name="ADD_JUNIT_TO_ENTRIES" value="true" />
+          <option name="ADD_TESTNG_TO_ENTRIES" value="true" />
         </inspection_tool>
         <inspection_tool class="Deprecation" level="WARNING" enabled="false" />
         <inspection_tool class="StrutsInspection" level="ERROR" enabled="false" />
@@ -373,7 +358,9 @@
         <inspection_tool class="ThreadYield" level="WARNING" enabled="true" />
         <inspection_tool class="CallToNativeMethodWhileLocked" level="WARNING" enabled="true" />
         <inspection_tool class="ExtendsThread" level="WARNING" enabled="true" />
-        <inspection_tool class="DoubleCheckedLocking" level="WARNING" enabled="true" />
+        <inspection_tool class="DoubleCheckedLocking" level="WARNING" enabled="true">
+          <option name="ignoreOnVolatileVariables" value="false" />
+        </inspection_tool>
         <inspection_tool class="EmptySynchronizedStatement" level="WARNING" enabled="true" />
         <inspection_tool class="FieldAccessedSynchronizedAndUnsynchronized" level="WARNING" enabled="true">
           <option name="countGettersAndSetters" value="false" />
@@ -402,7 +389,9 @@
         <inspection_tool class="WaitWhileHoldingTwoLocks" level="WARNING" enabled="true" />
         <inspection_tool class="WaitNotInSynchronizedContext" level="WARNING" enabled="true" />
         <inspection_tool class="WaitWithoutCorrespondingNotify" level="WARNING" enabled="true" />
-        <inspection_tool class="WhileLoopSpinsOnField" level="WARNING" enabled="true" />
+        <inspection_tool class="WhileLoopSpinsOnField" level="WARNING" enabled="true">
+          <option name="ignoreNonEmtpyLoops" value="false" />
+        </inspection_tool>
         <inspection_tool class="SystemProperties" level="WARNING" enabled="true" />
         <inspection_tool class="JDBCPrepareStatementWithNonConstantString" level="WARNING" enabled="true" />
         <inspection_tool class="RuntimeExecWithNonConstantString" level="WARNING" enabled="true" />
@@ -457,14 +446,18 @@
           <option name="m_onlyPrivateOrFinal" value="false" />
           <option name="m_ignoreEmptyMethods" value="true" />
         </inspection_tool>
-        <inspection_tool class="MultiplyOrDivideByPowerOfTwo" level="WARNING" enabled="true" />
+        <inspection_tool class="MultiplyOrDivideByPowerOfTwo" level="WARNING" enabled="true">
+          <option name="checkDivision" value="false" />
+        </inspection_tool>
         <inspection_tool class="StringReplaceableByStringBuffer" level="WARNING" enabled="true" />
         <inspection_tool class="ObjectAllocationInLoop" level="WARNING" enabled="true" />
         <inspection_tool class="SubstringZero" level="WARNING" enabled="true" />
         <inspection_tool class="SetReplaceableByEnumSet" level="WARNING" enabled="true" />
         <inspection_tool class="LengthOneStringsInConcatenation" level="WARNING" enabled="true" />
         <inspection_tool class="LengthOneStringInIndexOf" level="WARNING" enabled="true" />
-        <inspection_tool class="SizeReplaceableByIsEmpty" level="WARNING" enabled="true" />
+        <inspection_tool class="SizeReplaceableByIsEmpty" level="WARNING" enabled="true">
+          <option name="ignoreNegations" value="false" />
+        </inspection_tool>
         <inspection_tool class="StringConcatenationInLoops" level="WARNING" enabled="true">
           <option name="m_ignoreUnlessAssigned" value="false" />
         </inspection_tool>
@@ -503,7 +496,7 @@
           <option name="m_maxLength" value="64" />
         </inspection_tool>
         <inspection_tool class="BooleanMethodNameMustStartWithQuestion" level="WARNING" enabled="true">
-          <option name="nameCheckString" value="is,can,has,should,could,will,shall,check,contains,equals,add,put,remove,startsWith,endsWith" />
+          <option name="questionString" value="is,can,has,should,could,will,shall,check,contains,equals,add,put,remove,startsWith,endsWith" />
         </inspection_tool>
         <inspection_tool class="ClassNamePrefixedWithPackageName" level="WARNING" enabled="true" />
         <inspection_tool class="ClassNameSameAsAncestorName" level="WARNING" enabled="true" />
@@ -560,7 +553,7 @@
           <option name="m_maxLength" value="20" />
         </inspection_tool>
         <inspection_tool class="NonBooleanMethodNameMayNotStartWithQuestion" level="WARNING" enabled="true">
-          <option name="nameCheckString" value="is,can,has,should,could,will,shall,check,contains,equals,startsWith,endsWith" />
+          <option name="questionString" value="is,can,has,should,could,will,shall,check,contains,equals,startsWith,endsWith" />
         </inspection_tool>
         <inspection_tool class="UpperCaseFieldNameNotConstant" level="WARNING" enabled="true" />
         <inspection_tool class="NonExceptionNameEndsWithException" level="WARNING" enabled="true" />
@@ -571,7 +564,7 @@
           <option name="m_ignoreOverridesOfLibraryMethods" value="false" />
         </inspection_tool>
         <inspection_tool class="QuestionableName" level="WARNING" enabled="true">
-          <option name="nameCheckString" value="foo,bar,baz" />
+          <option name="nameString" value="aa,abc,bad,bar,bar2,baz,baz1,baz2,baz3,bb,blah,bogus,bool,cc,dd,defau1t,dummy,dummy2,ee,fa1se,ff,foo,foo1,foo2,foo3,foobar,four,fred,fred1,fred2,gg,hh,hello,hello1,hello2,hello3,ii,nu11,one,silly,silly2,string,two,that,then,three,whi1e,var" />
         </inspection_tool>
         <inspection_tool class="StandardVariableNames" level="WARNING" enabled="true" />
         <inspection_tool class="StaticMethodNamingConvention" level="WARNING" enabled="true">
@@ -611,7 +604,9 @@
           <option name="m_minLength" value="12" />
           <option name="m_maxLength" value="64" />
         </inspection_tool>
-        <inspection_tool class="TestCaseWithNoTestMethods" level="WARNING" enabled="true" />
+        <inspection_tool class="TestCaseWithNoTestMethods" level="WARNING" enabled="true">
+          <option name="ignoreSupers" value="false" />
+        </inspection_tool>
         <inspection_tool class="JUnitTestClassNamingConvention" level="WARNING" enabled="true">
           <option name="m_regex" value="[A-Z][A-Za-z\d]*Test" />
           <option name="m_minLength" value="8" />
@@ -688,14 +683,14 @@
         <inspection_tool class="NonFinalFieldOfException" level="WARNING" enabled="true" />
         <inspection_tool class="TooBroadCatch" level="WARNING" enabled="true" />
         <inspection_tool class="BadExceptionCaught" level="WARNING" enabled="true">
-          <option name="exceptionCheckString" value="java.lang.NullPointerException,java.lang.IllegalMonitorStateException,java.lang.ArrayIndexOutOfBoundsException" />
+          <option name="exceptionsString" value="java.lang.NullPointerException,java.lang.IllegalMonitorStateException,java.lang.ArrayIndexOutOfBoundsException" />
         </inspection_tool>
         <inspection_tool class="BadExceptionDeclared" level="WARNING" enabled="true">
-          <option name="exceptionCheckString" value="java.lang.Throwable,java.lang.Exception,java.lang.Error,java.lang.RuntimeException,java.lang.NullPointerException,java.lang.ClassCastException,java.lang.ArrayIndexOutOfBoundsException" />
+          <option name="exceptionsString" value="java.lang.Throwable,java.lang.Exception,java.lang.Error,java.lang.RuntimeException,java.lang.NullPointerException,java.lang.ClassCastException,java.lang.ArrayIndexOutOfBoundsException" />
           <option name="ignoreTestCases" value="false" />
         </inspection_tool>
         <inspection_tool class="BadExceptionThrown" level="WARNING" enabled="true">
-          <option name="exceptionCheckString" value="java.lang.Throwable,java.lang.Exception,java.lang.Error,java.lang.RuntimeException,java.lang.NullPointerException,java.lang.ClassCastException,java.lang.ArrayIndexOutOfBoundsException" />
+          <option name="exceptionsString" value="java.lang.Throwable,java.lang.Exception,java.lang.Error,java.lang.RuntimeException,java.lang.NullPointerException,java.lang.ClassCastException,java.lang.ArrayIndexOutOfBoundsException" />
         </inspection_tool>
         <inspection_tool class="ThrowCaughtLocally" level="WARNING" enabled="true">
           <option name="ignoreRethrownExceptions" value="false" />
@@ -707,6 +702,7 @@
         <inspection_tool class="UnusedCatchParameter" level="WARNING" enabled="true">
           <option name="m_ignoreCatchBlocksWithComments" value="false" />
           <option name="m_ignoreTestCases" value="false" />
+          <option name="m_ignoreIgnoreParameter" value="true" />
         </inspection_tool>
         <inspection_tool class="UseOfAnotherObjectsPrivateField" level="WARNING" enabled="true" />
         <inspection_tool class="AssignmentToCollectionFieldFromParameter" level="WARNING" enabled="true">
@@ -719,8 +715,12 @@
         <inspection_tool class="PackageVisibleInnerClass" level="WARNING" enabled="true" />
         <inspection_tool class="ProtectedField" level="WARNING" enabled="true" />
         <inspection_tool class="ProtectedInnerClass" level="WARNING" enabled="true" />
-        <inspection_tool class="PublicField" level="WARNING" enabled="true" />
-        <inspection_tool class="PublicInnerClass" level="WARNING" enabled="true" />
+        <inspection_tool class="PublicField" level="WARNING" enabled="true">
+          <option name="ignoreEnums" value="false" />
+        </inspection_tool>
+        <inspection_tool class="PublicInnerClass" level="WARNING" enabled="true">
+          <option name="ignoreEnums" value="false" />
+        </inspection_tool>
         <inspection_tool class="ReturnOfCollectionField" level="WARNING" enabled="true">
           <option name="ignorePrivateMethods" value="true" />
         </inspection_tool>
@@ -765,7 +765,9 @@
         </inspection_tool>
         <inspection_tool class="LabeledStatement" level="WARNING" enabled="true" />
         <inspection_tool class="SwitchStatementWithConfusingDeclaration" level="WARNING" enabled="true" />
-        <inspection_tool class="LoopConditionNotUpdatedInsideLoop" level="WARNING" enabled="true" />
+        <inspection_tool class="LoopConditionNotUpdatedInsideLoop" level="WARNING" enabled="true">
+          <option name="ignoreIterators" value="false" />
+        </inspection_tool>
         <inspection_tool class="NestedSwitchStatement" level="WARNING" enabled="true" />
         <inspection_tool class="NestedConditionalExpression" level="WARNING" enabled="true" />
         <inspection_tool class="OverlyComplexBooleanExpression" level="WARNING" enabled="true">
@@ -794,7 +796,9 @@
           <option name="ignoreLocalVariables" value="false" />
           <option name="ignorePrivateMethodsAndFields" value="false" />
         </inspection_tool>
-        <inspection_tool class="FeatureEnvy" level="WARNING" enabled="true" />
+        <inspection_tool class="FeatureEnvy" level="WARNING" enabled="true">
+          <option name="ignoreTestCases" value="false" />
+        </inspection_tool>
         <inspection_tool class="InstanceVariableOfConcreteClass" level="WARNING" enabled="true" />
         <inspection_tool class="InstanceofInterfaces" level="WARNING" enabled="true" />
         <inspection_tool class="InstanceofThis" level="WARNING" enabled="true" />
@@ -804,7 +808,9 @@
         </inspection_tool>
         <inspection_tool class="ParameterOfConcreteClass" level="WARNING" enabled="true" />
         <inspection_tool class="MethodReturnOfConcreteClass" level="WARNING" enabled="true" />
-        <inspection_tool class="OverlyStrongTypeCast" level="WARNING" enabled="true" />
+        <inspection_tool class="OverlyStrongTypeCast" level="WARNING" enabled="true">
+          <option name="ignoreInMatchingInstanceof" value="false" />
+        </inspection_tool>
         <inspection_tool class="MethodOnlyUsedFromInnerClass" level="WARNING" enabled="true">
           <option name="ignoreMethodsAccessedFromAnonymousClass" value="false" />
         </inspection_tool>
@@ -815,24 +821,6 @@
       <profile version="1.0" is_locked="false">
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
-        <used_levels>
-          <error>
-            <option name="myName" value="ERROR" />
-            <option name="myVal" value="400" />
-          </error>
-          <warning>
-            <option name="myName" value="WARNING" />
-            <option name="myVal" value="300" />
-          </warning>
-          <information>
-            <option name="myName" value="INFO" />
-            <option name="myVal" value="200" />
-          </information>
-          <server>
-            <option name="myName" value="SERVER PROBLEM" />
-            <option name="myVal" value="100" />
-          </server>
-        </used_levels>
         <inspection_tool class="InfiniteLoopStatement" level="WARNING" enabled="false" />
         <inspection_tool class="TrivialIf" level="WARNING" enabled="false" />
         <inspection_tool class="EmptyFinallyBlock" level="WARNING" enabled="false" />
@@ -845,10 +833,12 @@
         <inspection_tool class="InfiniteRecursion" level="WARNING" enabled="false" />
         <inspection_tool class="ConstantConditions" level="WARNING" enabled="false">
           <option name="SUGGEST_NULLABLE_ANNOTATIONS" value="false" />
+          <option name="DONT_REPORT_TRUE_ASSERT_STATEMENTS" value="false" />
         </inspection_tool>
         <inspection_tool class="EmptyCatchBlock" level="WARNING" enabled="false">
           <option name="m_includeComments" value="true" />
           <option name="m_ignoreTestCases" value="true" />
+          <option name="m_ignoreIgnoreParameter" value="true" />
         </inspection_tool>
         <inspection_tool class="UnnecessaryTemporaryOnConversionFromString" level="WARNING" enabled="false" />
         <inspection_tool class="UnusedAssignment" level="WARNING" enabled="false">
@@ -890,6 +880,7 @@
         </inspection_tool>
       </profile>
     </profiles>
+    <list size="0" />
   </component>
   <component name="JavacSettings">
     <option name="DEBUGGING_INFO" value="true" />
@@ -1050,6 +1041,7 @@
       </item>
     </group>
   </component>
+  <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
@@ -1061,7 +1053,13 @@
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="1.6.0" project-jdk-type="JavaSDK" />
-  <component name="ProjectRunConfigurationManager" />
+  <component name="ResourceManagerContainer">
+    <option name="myResourceBundles">
+      <value>
+        <list size="0" />
+      </value>
+    </option>
+  </component>
   <component name="RmicSettings">
     <option name="IS_EANABLED" value="false" />
     <option name="DEBUGGING_INFO" value="true" />
@@ -1069,8 +1067,10 @@
     <option name="GENERATE_IIOP_STUBS" value="false" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
-  <component name="StarteamVcsAdapter" />
-  <component name="VssVcs" />
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="svn" />
+  </component>
+  <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">
     <option name="USER_DEFINED_CONFIGS">
       <value>
@@ -1078,12 +1078,19 @@
       </value>
     </option>
   </component>
-  <component name="libraryTable" />
+  <component name="com.sixrr.metrics.MetricsReloaded">
+    <option name="selectedProfile" value="Default" />
+    <option name="autoscroll" value="false" />
+    <option name="calculateMetrics" value="true" />
+    <option name="includeTestClasses" value="false" />
+    <option name="flattenInnerClasses" value="true" />
+    <option name="cycleTableSpecificationString" value="" />
+    <option name="shortCycleTableSpecificationString" value="" />
+  </component>
   <component name="uidesigner-configuration">
     <option name="INSTRUMENT_CLASSES" value="true" />
     <option name="COPY_FORMS_RUNTIME_TO_OUTPUT" value="true" />
     <option name="DEFAULT_LAYOUT_MANAGER" value="GridLayoutManager" />
   </component>
-  <UsedPathMacros />
 </project>
 

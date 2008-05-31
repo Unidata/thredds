@@ -34,15 +34,15 @@ import java.util.List;
  */
 
 public class Index implements Cloneable {
-  public static final Index scalarIndex = new Index0D( new int[0]); // immutable, so can be shared
+  public static final Index0D scalarIndex = new Index0D(); // immutable, so can be shared
 
   protected int[] shape;
   protected int[] stride;
   protected int rank;
 
-  protected long size; //total number of elements
+  protected long size; // total number of elements
   protected int offset; // element = offset + stride[0]*current[0] + ...
-  protected boolean fastIterator = true; // use faste iterator if in canonical order
+  protected boolean fastIterator = true; // use fast iterator if in canonical order
 
   // LOOK: can we eliminate for the common case?
   protected int[] current; // current element's index, used only for the general case
@@ -1046,7 +1046,7 @@ public class Index implements Cloneable {
     int rank = shape.length;
     switch (rank) {
       case 0:
-        return new Index0D(shape);
+        return scalarIndex;
       case 1:
         return new Index1D(shape);
       case 2:
@@ -1069,7 +1069,7 @@ public class Index implements Cloneable {
   private static Index factory(int rank) {
     switch (rank) {
       case 0:
-        return new Index0D();
+        return scalarIndex;
       case 1:
         return new Index1D();
       case 2:

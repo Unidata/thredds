@@ -28,9 +28,6 @@ package ucar.ma2;
 public class Index0D extends Index {
 
   Index0D() { super(0); }
-  public Index0D( int[] shape) {
-    super(shape);
-  }
 
   public int currentElement() {
     return offset;
@@ -38,10 +35,6 @@ public class Index0D extends Index {
 
   public int incr() {
     return offset;
-  }
-
-
-  public void setDim(int dim, int value) {
   }
 
   public Object clone() {
