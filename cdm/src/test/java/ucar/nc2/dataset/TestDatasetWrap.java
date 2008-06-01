@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestCompare;
-import ucar.nc2.dataset.NetcdfDatasetCache;
 
 import java.io.File;
 
@@ -42,7 +41,7 @@ public class TestDatasetWrap extends TestCase {
     NetcdfFile ncfile = NetcdfDataset.acquireFile(filename, null);
     NetcdfDataset ncWrap = new NetcdfDataset( ncfile, true);
 
-    NetcdfDataset ncd = NetcdfDatasetCache.acquire(filename, null);
+    NetcdfDataset ncd = NetcdfDataset.acquireDataset(filename, null);
     System.out.println(" dataset wraps= "+filename);
 
     TestCompare.compareFiles(ncd, ncWrap);

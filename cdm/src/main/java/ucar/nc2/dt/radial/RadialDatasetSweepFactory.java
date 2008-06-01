@@ -1,6 +1,5 @@
 package ucar.nc2.dt.radial;
 
-import ucar.nc2.dataset.NetcdfDatasetCache;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants._Coordinate;
@@ -20,7 +19,7 @@ public class RadialDatasetSweepFactory {
 
   public RadialDatasetSweep open( String location, ucar.nc2.util.CancelTask cancelTask) throws java.io.IOException {
     log = new StringBuffer();
-    NetcdfDataset ncd = NetcdfDatasetCache.acquire( location, cancelTask);
+    NetcdfDataset ncd = NetcdfDataset.acquireDataset( location, cancelTask);
     return open( ncd);
   }
 

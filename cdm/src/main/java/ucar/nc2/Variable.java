@@ -355,6 +355,7 @@ public class Variable implements VariableIF {
           list.add(len > 0 ? new Range(d.getName(), 0, len - 1) : Range.EMPTY); // LOOK empty not named
         }
         shapeAsSection = new Section(list).makeImmutable();
+        
       } catch (InvalidRangeException e) {
         log.error("Bad shape in variable " + getName(), e);
         throw new IllegalStateException(e.getMessage());
@@ -829,7 +830,7 @@ public class Variable implements VariableIF {
   }
 
   protected Array getScalarData() throws IOException {
-    Array scalarData = (cache.data != null) ? cache.data : read();
+    Array scalarData = (cache != null && cache.data != null) ? cache.data : read();
     scalarData = scalarData.reduce();
 
     // LOOK isMember case
@@ -868,7 +869,7 @@ public class Variable implements VariableIF {
     }
 
     // already cached
-    if (cache.data != null) {
+    if (cache != null && cache.data != null) {
       if (debugCaching) System.out.println("got data from cache " + getName());
       return cache.data.copy();
     }
@@ -1276,7 +1277,7 @@ public class Variable implements VariableIF {
   }
 
   /**
-   * Use when dimensions have changed to recalculate the shape. 
+   * Use when dimensions have changed, to recalculate the shape.
    */
   public void resetShape() {
     // if (immutable) throw new IllegalStateException("Cant modify");  LOOK allow this for unlimited dimension updating
@@ -1431,21 +1432,6 @@ public class Variable implements VariableIF {
     this.spiObject = spiObject;
   }
 
-  /*
-   * should not be public.
-   *
-  protected Variable getIOVar() {
-    return this;
-  }
-
-  /*
-   * should not be public.
-   *
-   public void setIOVar(Variable ioVar) { // use this variable for IO
-   this.ncfileIO = ioVar.ncfileIO;
-   this.ioVar = ioVar;
-   } */
-
   ////////////////////////////////////////////////////////////////////////////////////
   // caching
 
@@ -1486,9 +1472,7 @@ public class Variable implements VariableIF {
    */
   public boolean isCaching() {
     if (!this.cache.cachingSet) {
-      if (isVariableLength) cache.isCaching = false;
-      else cache.isCaching = getSize() * getElementSize() < sizeToCache;
-
+      cache.isCaching = !isVariableLength && (getSize() * getElementSize() < sizeToCache);
       this.cache.cachingSet = true;
     }
     return cache.isCaching;

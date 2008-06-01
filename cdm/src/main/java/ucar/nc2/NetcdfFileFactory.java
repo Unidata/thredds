@@ -19,6 +19,8 @@
  */
 package ucar.nc2;
 
+import ucar.nc2.dataset.NetcdfDataset;
+
 /**
  * A factory for opening a NetcdfFile.
  * Used by NetcdfFileCache, NCML, etc. 

@@ -51,8 +51,8 @@ import ucar.nc2.NetcdfFile;
  *
  * @author john caron
  */
-public class NetcdfDatasetCache {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NetcdfDatasetCache.class);
+public class NetcdfDatasetCacheOld {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NetcdfDatasetCacheOld.class);
   static private List<CacheElement> cache; // CacheElement
   static private final Object lock = new Object(); // for synchronizing
   static private int maxElements, minElements;

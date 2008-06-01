@@ -21,9 +21,6 @@
 package thredds.servlet;
 
 import org.apache.log4j.*;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.web.util.WebUtils;
 
 import java.io.*;
 import java.util.*;
@@ -37,7 +34,7 @@ import ucar.unidata.io.FileCache;
 import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.ncml.AggregationFmrc;
-import ucar.nc2.dataset.NetcdfDatasetCache;
+import ucar.nc2.dataset.NetcdfDataset;
 import thredds.catalog.InvDatasetScan;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvDataset;
@@ -133,15 +130,17 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     int min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 200);
     int max = ThreddsConfig.getInt("NetcdfFileCache.maxFiles", 400);
     int secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 10 * 60);
-    if (max > 0)
-      NetcdfFileCache.init(min, max, secs);
+    if (max > 0) {
+      NetcdfDataset.initNetcdfFileCache(min, max, secs);
+    }
 
-    // NetcdfDatasetCache: // allow 100 - 200 open datasets, cleanup every 10 minutes
+    /* NetcdfDatasetCache: // allow 100 - 200 open datasets, cleanup every 10 minutes
     min = ThreddsConfig.getInt("NetcdfDatasetCache.minFiles", 100);
     max = ThreddsConfig.getInt("NetcdfDatasetCache.maxFiles", 200);
     secs = ThreddsConfig.getSeconds("NetcdfDatasetCache.scour", 10 * 60);
-    if (max > 0)
-      NetcdfDatasetCache.init(min, max, secs);
+    if (max > 0) {
+      NetcdfDataset.initDatasetCache(min, max, secs);
+    } */
 
     // HTTP file access : // allow 20 - 40 open datasets, cleanup every 10 minutes
     min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 25);
@@ -215,7 +214,6 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   public void destroy() {
     timer.cancel();
     NetcdfFileCache.exit();
-    NetcdfDatasetCache.exit();
     FileCache.exit();
     aggCache.exit();
   }
@@ -544,29 +542,25 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
     act = new DebugHandler.Action("showCaches", "Show All Caches") {
       public void doAction(DebugHandler.Event e) {
-        e.pw.println("NetcdfFileCache contents\n");
-        java.util.List cacheList = NetcdfFileCache.getCache();
+        Formatter f = new Formatter(e.pw);
+        f.format("NetcdfFileCache contents\n");
+        NetcdfDataset.getNetcdfFileCache().showCache(f);
+        //f.format("\nNetcdfDatasetCache contents\n");
+        //NetcdfDataset.getDatasetCache().showCache(f);
+        f.format("\nRAF Cache contents\n");
+        List cacheList = ucar.unidata.io.FileCache.getCache();
         for (Object cacheElement : cacheList) {
-          e.pw.println(" " + cacheElement);
+          f.format(" %s\n",cacheElement);
         }
-        e.pw.println("\nNetcdfDatasetCache contents");
-        cacheList = NetcdfDatasetCache.getCache();
-        for (Object cacheElement : cacheList) {
-          e.pw.println(" " + cacheElement);
-        }
-        e.pw.println("\nRAF Cache contents");
-        cacheList = ucar.unidata.io.FileCache.getCache();
-        for (Object cacheElement : cacheList) {
-          e.pw.println(" " + cacheElement);
-        }
+        e.pw.flush();
       }
     };
     debugHandler.addAction(act);
 
     act = new DebugHandler.Action("clearCache", "Clear Caches") {
       public void doAction(DebugHandler.Event e) {
-        NetcdfFileCache.clearCache(false);
-        NetcdfDatasetCache.clearCache(false);
+        NetcdfDataset.getNetcdfFileCache().clearCache(false);
+        //NetcdfDataset.getDatasetCache().clearCache(false);
         ucar.unidata.io.FileCache.clearCache(false);
         e.pw.println("  ClearCache ok");
       }
@@ -575,19 +569,19 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
     act = new DebugHandler.Action("forceNCCache", "Force clear NetcdfFileCache Cache") {
       public void doAction(DebugHandler.Event e) {
-        NetcdfFileCache.clearCache(true);
+        NetcdfDataset.getNetcdfFileCache().clearCache(true);
         e.pw.println("  NetcdfFileCache force clearCache done");
       }
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("forceDSCache", "Force clear NetcdfDatasetCache Cache") {
+    /* act = new DebugHandler.Action("forceDSCache", "Force clear NetcdfDatasetCache Cache") {
       public void doAction(DebugHandler.Event e) {
-        NetcdfDatasetCache.clearCache(true);
+        NetcdfDataset.getDatasetCache().clearCache(true);
         e.pw.println("  NetcdfDatasetCache force clearCache done");
       }
     };
-    debugHandler.addAction(act);
+    debugHandler.addAction(act);  */
 
     act = new DebugHandler.Action("forceRAFCache", "Force clear RAF FileCache Cache") {
       public void doAction(DebugHandler.Event e) {

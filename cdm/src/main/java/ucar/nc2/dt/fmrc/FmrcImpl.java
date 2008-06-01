@@ -70,7 +70,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
   private boolean debugSync = false;
 
   public FmrcImpl(String filename) throws IOException {
-    this(ucar.nc2.dataset.NetcdfDatasetCache.acquire(filename, null));
+    this( ucar.nc2.dataset.NetcdfDataset.acquireDataset(filename, null));
   }
 
   public FmrcImpl(NetcdfDataset ncd) throws IOException {

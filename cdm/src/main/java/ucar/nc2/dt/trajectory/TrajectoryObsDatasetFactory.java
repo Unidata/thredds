@@ -2,7 +2,6 @@
 package ucar.nc2.dt.trajectory;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasetCache;
 import ucar.nc2.dt.TrajectoryObsDataset;
 
 /**
@@ -22,7 +21,7 @@ public class TrajectoryObsDatasetFactory
   static public TrajectoryObsDataset open( String netcdfFileURI, ucar.nc2.util.CancelTask cancelTask)
           throws java.io.IOException
   {
-    NetcdfDataset ds = NetcdfDatasetCache.acquire( netcdfFileURI, cancelTask);
+    NetcdfDataset ds = NetcdfDataset.acquireDataset( netcdfFileURI, cancelTask);
     if ( RafTrajectoryObsDataset.isValidFile( ds) )
       return new RafTrajectoryObsDataset( ds);
     else if ( SimpleTrajectoryObsDataset.isValidFile( ds))

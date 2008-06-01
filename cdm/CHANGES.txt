@@ -177,6 +177,9 @@ API Extensive API changes. Most, but not completely backwards-compatible.
   Package ucar.nc2.util
     * RuntimeConfigParser -> ucar.nc2.util.xml
 
+  Package ucar.nc2.units
+    * DateUnit is not a superclass of SimpleUnit
+
   Package thredds.catalog
     * DataType -> ucar.nc2.constants.FeatureType
 

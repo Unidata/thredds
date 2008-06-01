@@ -583,7 +583,8 @@ public class NetcdfFile {
   protected boolean isClosed = false;
   private boolean immutable = false;
 
-  protected int cacheState = 0; // 0 = not cached, 1 = NetcdfFileCache, 2 = NetcdfDatasetCache, 3 = Fmrc
+  protected NetcdfFileCache cache;
+  protected Object cacheKey;
   protected IOServiceProvider spi;
 
   // "global view" is derived from the group information.
@@ -605,8 +606,11 @@ public class NetcdfFile {
    * @throws java.io.IOException if error closing
    */
   public synchronized void close() throws java.io.IOException {
-    if (getCacheState() == 1) {
-      NetcdfFileCache.release(this);
+    if (isClosed) return;
+
+    if (cache != null) {
+      cache.release(this, cacheKey);
+
     } else {
       try {
         if ((null != spi) && !isClosed) spi.close();
@@ -617,19 +621,11 @@ public class NetcdfFile {
   }
 
   /**
-   * Get the cache state.
-   * @return 0 = not cached, 1 = NetcdfFileCache, 2 = NetcdfDatasetCache, 3 = Fmrc
+   * Optional file caching
    */
-  public int getCacheState() {
-    return cacheState;
-  }
-
-  /**
-   * Used by NetcdfFileCache.
-   * @param cacheState 0 = not cached, 1 = NetcdfFileCache, 2 = NetcdfDatasetCache, 3 = Fmrc
-   */
-  protected void setCacheState(int cacheState) {
-    this.cacheState = cacheState;
+  protected void setFileCache(NetcdfFileCache cache, Object cacheKey) {
+    this.cache = cache;
+    this.cacheKey = cacheKey;
   }
 
   /**

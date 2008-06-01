@@ -68,7 +68,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
    * @see ucar.nc2.dataset.NetcdfDataset#open
    */
   static public GridDataset open(String netcdfFileURI) throws java.io.IOException {
-    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasetCache.acquire(netcdfFileURI, null);
+    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(netcdfFileURI, null);
     return new GridDataset(ds);
   }
 

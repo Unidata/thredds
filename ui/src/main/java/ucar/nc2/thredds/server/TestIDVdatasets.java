@@ -26,8 +26,8 @@ import ucar.nc2.units.DateRange;
 import java.io.*;
 import java.util.List;
 
-import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -316,7 +316,6 @@ public class TestIDVdatasets {
     TestIDVdatasets ts = new TestIDVdatasets();
     OutputStream out = new BufferedOutputStream(new FileOutputStream("C:/temp/servertest4.txt"));
     PrintStream pout = System.out; // new PrintStream( out);
-    NetcdfFileCache.init();
 
     //ts.extract(System.out, "http://whoopee:8080/thredds/dodsC/model/catalog.xml", false);
     //ts.extract(System.out, "http://whoopee:8080/thredds/dodsC/radars.xml", false);

@@ -1,3 +1,4 @@
+package examples;
 
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Dimension;

@@ -87,7 +87,7 @@ public class SimpleUnit {
   static public SimpleUnit factoryWithExceptions(String name) throws Exception {
     Unit uu = format.parse(name);
     //if (isDateUnit(uu)) return new DateUnit(name);
-    //if (isTimeUnit(uu)) return new TimeUnit(name);
+    if (isTimeUnit(uu)) return new TimeUnit(name);
     return new SimpleUnit(uu);
   }
 

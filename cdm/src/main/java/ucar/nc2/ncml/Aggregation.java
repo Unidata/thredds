@@ -489,10 +489,13 @@ public abstract class Aggregation implements ProxyReader {
       NetcdfFile ncfile;
       long start = System.currentTimeMillis();
       if (debugOpenFile) System.out.println(" try to acquire " + cacheName);
-      if (enhance)
-        ncfile = NetcdfDatasetCache.acquire(cacheName, -1, cancelTask, spiObject, (NetcdfDatasetFactory) reader);
-      else
-        ncfile = NetcdfFileCache.acquire(cacheName, -1, cancelTask, spiObject, reader);
+      if (enhance) {
+        ncfile = NetcdfDataset.acquireDataset(reader, cacheName, NetcdfDataset.EnhanceMode.All, -1, cancelTask, spiObject);
+        
+      } else {
+        ncfile = NetcdfDataset.openOrAcquireFile(NetcdfDataset.getNetcdfFileCache(), reader, null,
+                      cacheName, -1, cancelTask, spiObject);
+      }
 
       if (debugOpenFile) System.out.println(" acquire " + cacheName + " took " + (System.currentTimeMillis() - start));
       //if (type == Type.JOIN_EXISTING) // LOOK should others use this?

@@ -1,6 +1,6 @@
+package examples;
 
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.Variable;
 import ucar.ma2.ArrayFloat;
 
@@ -42,7 +42,7 @@ public class Sfc_pres_temp_rd {
 
         try {
 
-            dataFile = NetcdfFileCache.acquire(filename, null);
+            dataFile = NetcdfFile.open(filename, null);
 
             Variable latVar = dataFile.findVariable("latitude");
             if (latVar == null) {

@@ -2,8 +2,6 @@ package ucar.nc2.dt.grid;
 
 import junit.framework.*;
 import ucar.nc2.TestAll;
-import ucar.nc2.NetcdfFileCache;
-import ucar.nc2.dt.grid.TestReadandCount;
 
 /** Count geogrid objects - sanity check when anything changes. */
 
@@ -42,8 +40,6 @@ public class TestReadandCountGrib extends TestCase {
     //doOne("grib2/data/","LMPEF_CLM_050518_1200.grb", 1, 1, 5, 1);
     doOne("grib2/data/","AVOR_000.grb", 1, 2, 4, 1);
     doOne("grib2/data/","AVN.5deg.wmo", 117, 15, 16, 12);
-
-    NetcdfFileCache.clearCache( true);
   }
 
   private void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {

@@ -21,20 +21,16 @@
 package ucar.nc2.dt.point;
 
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasetCache;
 import ucar.nc2.dt.PointObsDataset;
 import ucar.nc2.adde.AddeStationObsDataset;
 import ucar.nc2.NetcdfFile;
 import thredds.catalog.InvAccess;
 import thredds.catalog.ServiceType;
-import thredds.catalog.query.DqcFactory;
-import thredds.catalog.query.QueryCapability;
 
 /**
  * A factory for both PointObsDataset and StationObsDataset.
  *
  * @author caron
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  * @deprecated use ucar.nc2.dt.TypedDatasetFactory
  */
 public class PointObsDatasetFactory {
@@ -76,7 +72,7 @@ public class PointObsDatasetFactory {
     } */
 
     // otherwise open as netcdf and have a look. use NetcdfDataset in order to deal with scale/enhance, etc.
-    NetcdfDataset ncfile = NetcdfDatasetCache.acquire( location, task);
+    NetcdfDataset ncfile = NetcdfDataset.acquireDataset( location, task);
 
     // add record variable if there is one.
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);

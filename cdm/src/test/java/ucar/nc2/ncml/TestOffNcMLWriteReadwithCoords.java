@@ -3,7 +3,6 @@ package ucar.nc2.ncml;
 import junit.framework.*;
 
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDatasetCache;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.StringUtil;
 
@@ -64,7 +63,7 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
   private void convertAsNcdataset(String location) throws IOException {
     location = StringUtil.replace(location, '\\', "/");
 
-    NetcdfDataset org_ncd = NetcdfDatasetCache.acquire(location, null);
+    NetcdfDataset org_ncd = NetcdfDataset.acquireDataset(location, null);
     NcMLWriter writer = new NcMLWriter();
     if (showFiles) {
       System.out.println("-----------");

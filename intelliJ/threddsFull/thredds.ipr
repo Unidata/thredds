@@ -33,6 +33,8 @@
     <option name="DEPLOY_AFTER_MAKE" value="2" />
     <excludeFromCompile>
       <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml" />
+      <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/NetcdfFileCacheOld.java" />
+      <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/dataset/NetcdfDatasetCacheOld.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />

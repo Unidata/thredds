@@ -64,7 +64,6 @@ public class Index implements Cloneable {
    * @param _shape describes an index section: slowest varying comes first (row major)
    */
   protected Index(int[] _shape) {
-
     this.shape = new int[_shape.length];  // optimization over clone
     System.arraycopy(_shape, 0, this.shape, 0, _shape.length);
 

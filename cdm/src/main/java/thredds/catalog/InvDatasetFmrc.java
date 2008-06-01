@@ -444,7 +444,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
     Element ncml = getNcmlElement();
     NetcdfDataset ncd = NcMLReader.readNcML(path, ncml, null);
-    ncd.setCacheState(3); // LOOK: this dataset never gets closed
+    // ncd.setCacheState(3); // LOOK: this dataset never gets closed
 
     fmrc = new FmrcImpl( ncd);
     madeFmrc = true;

@@ -25,7 +25,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileFactory;
-import ucar.nc2.NetcdfFileCache;
 
 import java.io.*;
 import java.util.HashMap;
@@ -139,7 +138,8 @@ public class DatasetHandler {
     if (ds != null) {
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found NcmlDataset= " + ds);
       //String cacheName = ds.getUniqueID(); // LOOK use reqPath !!
-      NetcdfFile ncfile = NetcdfFileCache.acquire(reqPath, -1, null, null, new NcmlFileFactory(ds));
+
+      NetcdfFile ncfile = NetcdfDataset.openOrAcquireFile(NetcdfDataset.getNetcdfFileCache(), new NcmlFileFactory(ds), null, reqPath, -1, null, null);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
       return ncfile;
     }

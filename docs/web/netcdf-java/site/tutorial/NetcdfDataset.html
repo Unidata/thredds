@@ -9,7 +9,8 @@
 <body>
 <h1><span style=""><span style=""><span style=""><span style=""><span style=""><a>Tutorial: Working with NetcdfDataset</a></span></span></span></span></span><span style=""><span style=""><span style=""><o:p></o:p></span></span></span></h1>
 <p class="MsoBodyTextIndent" style="text-indent: 0in;"><span style=""><span style=""><span style="">The <b>ucar.nc2.dataset</b> package and related packages are an extension to the NetCDF API which recognize standard attributes, provides support for general and georeferencing coordinate systems, provide support for the NetCDF Markup Language (NcML), and provides remote access to OpenDAP, ADDE and THREDDS datasets. <b><i>NetcdfDataset.openFile</i></b> is the recommended way to open any dataset as a <b><i>NetcdfFile</i></b>.<span style="">&nbsp; </span></span></span></span></p>
-<p class="MsoBodyTextIndent" style="text-indent: 0in;"><span style=""><span style=""><span style=""><o:p></o:p></span></span></span><span style=""><span style=""><span style="">NcML is an XML document format that allows you to create "virtual" netCDF datasets, including combining multiple netCDF files into one dataset. This section focuses on the extension of the netCDF API to include coordinate systems. Section 4 below explains NcML and how to create virtual datasets.</span></span></span></p>
+<p class="MsoBodyTextIndent" style="text-indent: 0in;"><span style=""><span style=""><span style=""><o:p></o:p>
+</span></span></span><span style=""><span style=""><span style="">NcML is an XML document format that allows you to create "virtual" netCDF datasets, including combining multiple netCDF files into one dataset. This section focuses on the extension of the netCDF API to include coordinate systems. A later section of the tutorial explains NcML and how to create virtual datasets.</span></span></span></p>
 <h3 class="MsoNormal">Using <span class="MsoBodyTextIndent"><span style=""><span style=""><span style=""><b><i>NetcdfDataset.openFile</i></b> </span></span></span></span>to open a <span style=""><span style=""><span style=""><span style=""><span style=""><a>NetcdfFile</a></span></span></span></span></span> </h3>
 <p><span class="MsoNormal">The preferred way to  open a NetcdfFile is through the <strong>NetcdfDataset.openFile</strong></span> factory method: </p>
 <pre class="MsoNormal">  String filename = &quot;http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_20061019_0000.grib1&quot;;
@@ -50,9 +51,8 @@
 <h3>Packed data variables and missing values </h3>
 <p>When you open a NetcdfDataset in <em><strong>enhanced mode</strong></em> (the default), any Variables that have the attributes <strong>scale_factor</strong> and/or <strong>add_offset </strong>are considered to be <em><strong>packed data Variables</strong></em>, whose data should be converted with the formula:</p>
 <blockquote>
-  <pre><b>unpacked_data_value = packed_data_value * scale_factor + add_offset</b> </pre>
-</blockquote>
-<p>usually the packed data type is byte or short, and the unpacked type is float or double, so the data type of the packed data Variable is promoted to float or double.</p>
+  <pre><b>unpacked_data_value = packed_data_value * scale_factor + add_offset</b></pre></blockquote>
+usually the packed data type is byte or short, and the unpacked type is float or double, so the data type of the packed data Variable is promoted to float or double.
 <p>Missing data is indicated by the <strong>valid_min</strong>, <strong>valid_max</strong>, <strong>valid_range</strong>, <strong>missing_value</strong> or <strong>_FillValue</strong> attributes. When a Variable has any of these attributes, the <strong>VariableDS.hasMissing()</strong> method returns true. You can test for missing values with the <strong>VariableDS.isMissing( value) </strong>method. </p>
 <p>To open a NetcdfDataset in enhanced mode, toggle the enhance button <img src="enhanceButton.jpg" width="31" height="32"> on the ToolsUI Viewer tab to ON. </p>
 <h3> Coordinate Systems </h3>

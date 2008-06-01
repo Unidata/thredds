@@ -37,14 +37,14 @@ public class TestLocalNC2 {
   public static NetcdfFile open( String filename) {
     try {
       System.out.println("**** Open "+filename);
-      NetcdfFile ncfile = NetcdfFileCache.acquire(filename, null);
+      NetcdfFile ncfile = NetcdfFile.open(filename, null);
       if (dumpFile) System.out.println("open "+ncfile);
       return ncfile;
 
     } catch (java.io.IOException e) {
       System.out.println(" fail = "+e);
       e.printStackTrace();
-      assert(false);
+      assert false;
       return null;
     }
   }

@@ -27,7 +27,11 @@ package ucar.ma2;
  */
 public class Index0D extends Index {
 
-  Index0D() { super(0); }
+  Index0D() {
+    super(0);
+    this.size = 1;
+    this.offset = 0;
+  }
 
   public int currentElement() {
     return offset;

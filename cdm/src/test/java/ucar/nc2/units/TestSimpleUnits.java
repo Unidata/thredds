@@ -42,7 +42,7 @@ public class TestSimpleUnits extends TestCase  {
     assert su.getUnitString().equals("m") : su;
 
     SimpleUnit tu = SimpleUnit.factory("3 days");
-    assert tu instanceof TimeUnit;
+    assert tu instanceof TimeUnit : tu.getClass().getName();
     assert tu.getUnitString().equals("days");
     assert tu.getValue() == 3.0 : su;
 

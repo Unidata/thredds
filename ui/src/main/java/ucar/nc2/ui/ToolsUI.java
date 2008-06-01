@@ -320,25 +320,17 @@ public class ToolsUI extends JPanel {
 
     AbstractAction showCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        viewerPanel.detailTA.setText("NetcdfFileCache contents\n");
-        java.util.List cacheList = NetcdfFileCache.getCache();
-        for (int i = 0; i < cacheList.size(); i++) {
-          Object o = cacheList.get(i);
-          viewerPanel.detailTA.appendLine(" " + o);
+        Formatter f = new Formatter();
+        f.format("NetcdfFileCache contents\n");
+        NetcdfDataset.getNetcdfFileCache().showCache(f);
+        //f.format("\nNetcdfDatasetCache contents\n");
+        //NetcdfDataset.getDatasetCache().showCache(f);
+        f.format("\nRAF Cache contents\n");
+        List cacheList = ucar.unidata.io.FileCache.getCache();
+        for (Object cacheElement : cacheList) {
+          f.format(" %s\n",cacheElement);
         }
-        viewerPanel.detailTA.appendLine("\nNetcdfDatasetCache contents");
-        cacheList = NetcdfDatasetCache.getCache();
-        for (int i = 0; i < cacheList.size(); i++) {
-          Object o = cacheList.get(i);
-          viewerPanel.detailTA.appendLine(" " + o);
-        }
-        viewerPanel.detailWindow.show();
-        viewerPanel.detailTA.appendLine("\nRAF Cache contents");
-        cacheList = ucar.unidata.io.FileCache.getCache();
-        for (int i = 0; i < cacheList.size(); i++) {
-          Object o = cacheList.get(i);
-          viewerPanel.detailTA.appendLine(" " + o);
-        }
+        viewerPanel.detailTA.setText(f.toString());
         viewerPanel.detailWindow.show();
       }
     };
@@ -347,31 +339,31 @@ public class ToolsUI extends JPanel {
 
     AbstractAction clearCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        NetcdfFileCache.clearCache(true);
+        NetcdfDataset.getNetcdfFileCache().clearCache(true);
       }
     };
     BAMutil.setActionProperties(clearCacheAction, null, "Clear NetcdfFileCache", false, 'C', -1);
     BAMutil.addActionToMenu(sysMenu, clearCacheAction);
 
-    AbstractAction clearCacheDSAction = new AbstractAction() {
+    /* AbstractAction clearCacheDSAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        NetcdfDatasetCache.clearCache(true);
+        NetcdfDataset.getDatasetCache().clearCache(true);
       }
     };
     BAMutil.setActionProperties(clearCacheDSAction, null, "Clear NetcdfDatasetCache", false, 'D', -1);
-    BAMutil.addActionToMenu(sysMenu, clearCacheDSAction);
+    BAMutil.addActionToMenu(sysMenu, clearCacheDSAction); */
 
     AbstractAction enableCache = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        boolean stateB = state.booleanValue();
-        if (stateB == isCacheInit) return;
-        isCacheInit = stateB;
+        if (state == isCacheInit) return;
+        isCacheInit = state;
         if (isCacheInit) {
-          initCaches();
+          NetcdfDataset.getNetcdfFileCache().enable();
+          // NetcdfDataset.getDatasetCache().enable();
         } else {
-          NetcdfFileCache.disable();
-          NetcdfDatasetCache.disable();
+          NetcdfDataset.getNetcdfFileCache().disable();
+          // NetcdfDataset.getDatasetCache().disable();
         }
       }
     };
@@ -386,8 +378,8 @@ public class ToolsUI extends JPanel {
         ArrayList list = Collections.list(eprops);
         Collections.sort(list);
 
-        for (int i = 0; i < list.size(); i++) {
-          String name = (String) list.get(i);
+        for (Object aList : list) {
+          String name = (String) aList;
           String value = System.getProperty(name);
           viewerPanel.detailTA.appendLine("  " + name + " = " + value);
         }
@@ -792,7 +784,7 @@ public class ToolsUI extends JPanel {
     NetcdfFile ncfile = null;
     try {
       if (addCoords)
-        ncfile = NetcdfDatasetCache.acquire(location, task);
+        ncfile = NetcdfDataset.acquireDataset(location, task);
       else
         ncfile = NetcdfDataset.acquireFile(location, task);
 
@@ -3007,7 +2999,6 @@ public class ToolsUI extends JPanel {
 
     done = true; // on some systems, still get a window close event
     NetcdfFileCache.exit(); // kill the timer thread
-    NetcdfDatasetCache.exit(); // kill the timer thread
     System.exit(0);
   }
 
@@ -3032,12 +3023,6 @@ public class ToolsUI extends JPanel {
   }
 
   static boolean isCacheInit = false;
-
-  static private void initCaches() {
-    NetcdfFileCache.init(50, 70, 20 * 60);
-    NetcdfDatasetCache.init(20, 40, 20 * 60);
-    isCacheInit = true;
-  }
 
   public static void main(String args[]) {
 

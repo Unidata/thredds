@@ -21,7 +21,6 @@ package ucar.nc2.thredds;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.NetcdfDatasetCache;
 
 import ucar.nc2.dt.*;
 
@@ -423,7 +422,7 @@ public class ThreddsDataFactory {
 // open DODS type
     if ((serviceType == ServiceType.OPENDAP) || (serviceType == ServiceType.DODS)) {
       String curl = DODSNetcdfFile.canonicalURL(datasetLocation);
-      ds = acquire ? NetcdfDatasetCache.acquire(curl, task) : NetcdfDataset.openDataset(curl, true, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(curl, task) : NetcdfDataset.openDataset(curl, true, task);
     }
 
     /* open ADDE type
@@ -440,7 +439,7 @@ public class ThreddsDataFactory {
 
     else {
       // open through NetcdfDataset API
-      ds = acquire ? NetcdfDatasetCache.acquire(datasetLocation, task) : NetcdfDataset.openDataset(datasetLocation, true, task);
+      ds = acquire ?  NetcdfDataset.acquireDataset(datasetLocation, task) : NetcdfDataset.openDataset(datasetLocation, true, task);
     }
 
     if (ds != null) {

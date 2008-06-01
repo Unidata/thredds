@@ -1653,7 +1653,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
   protected boolean cached;
 
   /**
-   * Set whether this fie is in the cache.
+   * Set whether this file is in the cache.
    *
    * @param cached in the cache or not.
    * @see ucar.unidata.io.FileCache

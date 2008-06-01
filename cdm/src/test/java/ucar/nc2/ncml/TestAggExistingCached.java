@@ -1,4 +1,3 @@
-
 package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
@@ -24,7 +23,6 @@ public class TestAggExistingCached extends TestCase {
 
   public void setUp() {
     Aggregation.setPersistenceCache( new DiskCache2("/.unidata/cachePersist", true, 60 * 24 * 30, 60));
-    NetcdfFileCache.init(50, 70, 20 * 60);
   }
 
       // String filename = "file:"+TestNcML.topDir + "aggExisting4.ncml";
@@ -63,7 +61,7 @@ public class TestAggExistingCached extends TestCase {
     testAggCoordVar( ncfile);
     ncfile.close();
 
-    NetcdfFileCache.clearCache(false);
+    NetcdfDataset.getNetcdfFileCache().clearCache(false);
     System.out.println("\n TestNcmlAggExistingCached.acquire after flushing cache "+ new Date());
     ncfile = NetcdfDataset.acquireDataset(filename, null);
     testAggCoordVar( ncfile);

@@ -167,7 +167,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @throws java.net.MalformedURLException
    */
   public DODSNetcdfFile(String datasetURL, CancelTask cancelTask) throws IOException {
-
     super();
 
     // canonicalize name
@@ -294,9 +293,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     if (showNCfile) System.out.println("DODS nc file = " + this);
   }
 
+  @Override
   public synchronized void close() throws java.io.IOException {
-    if (getCacheState() == 1) {
-      NetcdfFileCache.release(this);
+    if (cache != null) {
+      cache.release(this, cacheKey);
+
     } else {
       // if (!isClosed) dodsConnection.closeSession();
       isClosed = true;

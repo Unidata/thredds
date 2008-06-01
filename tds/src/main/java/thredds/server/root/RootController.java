@@ -8,9 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContext;
 
-import ucar.nc2.NetcdfFileCache;
-import ucar.nc2.dataset.NetcdfDatasetCache;
-import ucar.unidata.io.FileCache;
 import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
 
