@@ -584,7 +584,6 @@ public class NetcdfFile {
   private boolean immutable = false;
 
   protected NetcdfFileCache cache;
-  protected Object cacheKey;
   protected IOServiceProvider spi;
 
   // "global view" is derived from the group information.
@@ -609,7 +608,7 @@ public class NetcdfFile {
     if (isClosed) return;
 
     if (cache != null) {
-      cache.release(this, cacheKey);
+      cache.release(this);
 
     } else {
       try {
@@ -623,9 +622,8 @@ public class NetcdfFile {
   /**
    * Optional file caching
    */
-  protected void setFileCache(NetcdfFileCache cache, Object cacheKey) {
+  protected void setFileCache(NetcdfFileCache cache) {
     this.cache = cache;
-    this.cacheKey = cacheKey;
   }
 
   /**

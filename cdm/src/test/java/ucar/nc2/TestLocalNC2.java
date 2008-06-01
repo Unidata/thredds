@@ -57,6 +57,8 @@ public class TestLocalNC2 {
     TestSuite suite= new TestSuite();
     suite.addTest(new TestSuite(TestIndexer.class));
     suite.addTest(new TestSuite(TestRegularLayout.class));
+    suite.addTest(new TestSuite(TestNetcdfFileCache.class));
+    
     suite.addTest(new TestSuite(TestWrite.class));
     suite.addTest(new TestSuite(TestRead.class));
     suite.addTest(new TestSuite(TestOpenInMemory.class));

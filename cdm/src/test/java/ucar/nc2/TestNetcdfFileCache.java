@@ -116,7 +116,7 @@ public class TestNetcdfFileCache extends TestCase {
       assert elem.list.size() == 2;
       NetcdfFileCache.CacheElement.CacheFile first = elem.list.get(0);
       first.ncfile.close();
-      assert !first.isLocked;
+      assert !first.isLocked.get();
       assert elem.list.size() == 2;
     }
 
@@ -136,7 +136,7 @@ public class TestNetcdfFileCache extends TestCase {
   void checkAllSame(List<NetcdfFileCache.CacheElement.CacheFile> list) {
     NetcdfFileCache.CacheElement.CacheFile first = null;
     for (NetcdfFileCache.CacheElement.CacheFile file : list) {
-      assert file.isLocked;
+      assert file.isLocked.get();
       assert file.countAccessed == 1;
       assert file.lastAccessed != 0;
 
@@ -171,7 +171,7 @@ public class TestNetcdfFileCache extends TestCase {
 
   int N = 10000;
   int PROD_THREAD = 10;
-  int CONS_THREAD = 1;
+  int CONS_THREAD = 10;
  // int QSIZE = 10;
   int SKIP = 100;
 
@@ -222,7 +222,7 @@ public class TestNetcdfFileCache extends TestCase {
       NetcdfFileCache.CacheElement elem = map.get(key);
       int locks = 0;
       for (NetcdfFileCache.CacheElement.CacheFile file : elem.list)
-        if (file.isLocked) locks++;
+        if (file.isLocked.get()) locks++;
       //System.out.println(" key= "+key+ " size= "+elem.list.size()+" locks="+locks);
       total_locks += locks;
       total += elem.list.size();

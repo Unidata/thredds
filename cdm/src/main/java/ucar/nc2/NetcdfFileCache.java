@@ -74,7 +74,9 @@ public class NetcdfFileCache {
   private final int maxElements, minElements;
 
   private final ConcurrentHashMap<Object, CacheElement> cache;
+  private final ConcurrentHashMap<Object, CacheElement.CacheFile> files;
   private final AtomicInteger counter = new AtomicInteger();
+  private final AtomicInteger cleanups = new AtomicInteger();
   private final AtomicBoolean hasScheduled = new AtomicBoolean(false);
 
   private boolean disabled = false;
@@ -97,6 +99,7 @@ public class NetcdfFileCache {
     this.defaultFactory = defaultFactory;
 
     cache = new ConcurrentHashMap<Object, CacheElement>(2 * maxElements, 0.75f, 8);
+    files = new ConcurrentHashMap<Object, CacheElement.CacheFile>(4 * maxElements, 0.75f, 8);
     disabled = false;
 
     if (exec == null)
@@ -213,10 +216,9 @@ public class NetcdfFileCache {
     // see if its in the cache
     CacheElement elem = cache.get(hashKey);
     if (elem != null) {
-      synchronized (elem) {
+      synchronized (elem) { // synch in order to travers the list
         for (CacheElement.CacheFile file : elem.list) {
-          if (!file.isLocked) {
-            file.isLocked = true;
+          if (file.isLocked.compareAndSet(false, true)) {
             ncfile = file.ncfile;
             break;
           }
@@ -245,31 +247,25 @@ public class NetcdfFileCache {
    * @param cacheKey the file was stored with this hash key
    * @throws IOException if file not in cache.
    */
-  public void release(NetcdfFile ncfile, Object cacheKey) throws IOException {
+  public void release(NetcdfFile ncfile) throws IOException {
     if (ncfile == null) return;
 
     if (disabled) {
-      ncfile.setFileCache( null, null); // prevent infinite loops
+      ncfile.setFileCache( null); // prevent infinite loops
       ncfile.close();
       return;
     }
 
-    // see if its in the cache
-    CacheElement elem = cache.get(cacheKey);
-    if (elem != null) {
-      synchronized (elem) {
-        for (CacheElement.CacheFile file : elem.list) {
-          if (file.ncfile == ncfile) {
-            if (!file.isLocked)
-              log.warn("NetcdfFileCache.release " + ncfile.getLocation() + " not locked");
-            file.isLocked = false;
-            file.lastAccessed = System.currentTimeMillis();
-            file.countAccessed++;
-            if (log.isDebugEnabled()) log.debug("NetcdfFileCache.release " + ncfile.getLocation());
-            return;
-          }
-        }
-      }
+    // find it in the file cache
+    CacheElement.CacheFile file = files.get(ncfile);
+    if (file != null) {
+      if (!file.isLocked.get())
+        log.warn("NetcdfFileCache.release " + ncfile.getLocation() + " not locked");
+      file.lastAccessed = System.currentTimeMillis();
+      file.countAccessed++;
+      file.isLocked.set(false);
+      if (log.isDebugEnabled()) log.debug("NetcdfFileCache.release " + ncfile.getLocation());
+      return;
     }
     throw new IOException("NetcdfFileCache.release does not have file in cache = " + ncfile.getLocation());
   }
@@ -285,58 +281,46 @@ public class NetcdfFileCache {
    * @param force if true, remove them even if they are currently locked.
    */
   public void clearCache(boolean force) {
-    ArrayList<CacheElement.CacheFile> deleteList;
+    List<CacheElement.CacheFile> deleteList = new ArrayList<CacheElement.CacheFile>(2*cache.size());
 
-    synchronized (cache) {
-      Collection<CacheElement> all = cache.values();
-      deleteList = new ArrayList<CacheElement.CacheFile>(2 * all.size());
+    if (force) {
+      cache.clear(); // deletes everything from the cache
+      deleteList.addAll(files.values());  // add everything to the delete list
+      files.clear();
+      counter.set(0);
 
-      if (force) {
-        cache.clear(); // deletes everything from the cache
-        counter.set(0);
-        for (CacheElement elem : all) {
-          synchronized (elem) {
-            for (CacheElement.CacheFile file : elem.list)
-              deleteList.add(file);  // add everything to the delete list
-          }
+    } else {
+
+      // add unlocked files to the delete list, remove from files hash
+      Iterator<CacheElement.CacheFile> iter = files.values().iterator();
+      while (iter.hasNext()) {
+        CacheElement.CacheFile file = iter.next();
+        if (file.isLocked.compareAndSet(false, true)) {
+          file.remove(); // remove from the containing CacheElement
+          deleteList.add(file);
+          iter.remove();
         }
+      }
 
-      } else {
-
-        for (CacheElement elem : all) {
-          boolean keep = false; // keep if there are any locked files
+      // remove empty cache elements
+      synchronized (cache) {
+        for (CacheElement elem : cache.values()) {
           synchronized (elem) {
-            for (CacheElement.CacheFile file : elem.list) {
-              if (file.isLocked)
-                keep = true;
-              else
-                deleteList.add(file); // add all unlocked files to the delete list
-            }
-
-            if (keep) {
-              Iterator<CacheElement.CacheFile> iter = elem.list.iterator();
-              while (iter.hasNext()) {
-                CacheElement.CacheFile file = iter.next();
-                if (!file.isLocked)
-                  iter.remove();
-              }
-
-            } else {
-              cache.remove( elem.hashKey); // remove entire cache element
-            }
+            if (elem.list.size() == 0)
+              cache.remove(elem.hashKey);
           }
         }
       }
-    }
+  }
 
-    // close all files in oldcache
+    // close all files in deleteList
     for (CacheElement.CacheFile file : deleteList) {
-      if (file.isLocked)
-        log.warn("NetcdfFileCache close locked file= " + file);
+      if (force && file.isLocked.get())
+        log.warn("NetcdfFileCache force close locked file= " + file);
       counter.decrementAndGet();
 
       try {
-        file.ncfile.setFileCache( null, null);
+        file.ncfile.setFileCache( null);
         file.ncfile.close();
         file.ncfile = null; // help the gc
       } catch (IOException e) {
@@ -344,7 +328,7 @@ public class NetcdfFileCache {
       }
     }
     log.debug("*NetcdfFileCache.clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
-    System.out.println("\n*NetcdfFileCache.clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
+    //System.out.println("\n*NetcdfFileCache.clearCache force= " + force + " deleted= " + deleteList.size() + " left=" + counter.get());
   }
 
   public void showCache(Formatter format) {
@@ -376,37 +360,35 @@ public class NetcdfFileCache {
     int size = counter.get();
     if (size <= minElements) return;
 
-    ArrayList<CacheElement.CacheFile> deleteList;
+    cleanups.incrementAndGet();
 
-    synchronized (cache) {
-      // add unlocked files to the all list
-      ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(counter.get());
-      for (CacheElement elem : cache.values()) {
-        synchronized (elem) {
-          for (CacheElement.CacheFile file : elem.list)
-            if (!file.isLocked) allFiles.add(file);
-        }
-      }
-      Collections.sort(allFiles); // sort so oldest are on top
+    // add unlocked files to the all list
+    ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(counter.get());
+    for (CacheElement.CacheFile file : files.values()) {
+      if (!file.isLocked.get()) allFiles.add(file);
+    }
+    Collections.sort(allFiles); // sort so oldest are on top
 
-      // take oldest ones and put on delete list
+    // take oldest ones and put on delete list
+    int need2delete = size - minElements;
+    int minDelete = size - maxElements;
+    ArrayList<CacheElement.CacheFile> deleteList = new ArrayList<CacheElement.CacheFile>(need2delete);
 
-      int need2delete = size - minElements;
-      int minDelete = size - maxElements;
-      deleteList = new ArrayList<CacheElement.CacheFile>(need2delete);
-
-      int count = 0;
-      Iterator<CacheElement.CacheFile> iter = allFiles.iterator();
-      while (iter.hasNext() && (count < need2delete)) {
-        CacheElement.CacheFile file = iter.next();
+    int count = 0;
+    Iterator<CacheElement.CacheFile> iter = allFiles.iterator();
+    while (iter.hasNext() && (count < need2delete)) {
+      CacheElement.CacheFile file = iter.next();
+      if (file.isLocked.compareAndSet(false, true)) { // lock it so it isnt used anywhere else
         file.remove(); // remove from the containing element
         deleteList.add(file);
         count++;
       }
-      if (count < minDelete)
-        log.warn("NetcdfFileCache.cleanup couldnt delete enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
+    }
+    if (count < minDelete)
+      log.warn("NetcdfFileCache.cleanup couldnt delete enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
 
-      //  remove empty cache elements
+    // remove empty cache elements
+    synchronized (cache) {
       for (CacheElement elem : cache.values()) {
         synchronized (elem) {
           if (elem.list.size() == 0)
@@ -419,9 +401,9 @@ public class NetcdfFileCache {
     long start = System.currentTimeMillis();
     for (CacheElement.CacheFile file : deleteList) {
       counter.decrementAndGet();
-
+      files.remove(file.ncfile);
       try {
-        file.ncfile.setFileCache( null, null);
+        file.ncfile.setFileCache( null);
         file.ncfile.close();
         file.ncfile = null; // help the gc
       } catch (IOException e) {
@@ -431,7 +413,7 @@ public class NetcdfFileCache {
 
     long took = System.currentTimeMillis() - start;
     log.debug("NetcdfFileCache.cleanup had= " + size + " deleted= " + deleteList.size() + " took=" + took + " msec");
-    System.out.println("\n*NetcdfFileCache.cleanup started with= " + size + " deleted= " + deleteList.size() + " took=" + took + " msec");
+    //System.out.println("\n*NetcdfFileCache.cleanup started with= " + size + " deleted= " + deleteList.size() + " took=" + took + " msec");
   }
 
   class CacheElement {
@@ -440,7 +422,9 @@ public class NetcdfFileCache {
                                                         //  guarded by CacheElement object lock
     CacheElement(NetcdfFile ncfile, Object hashKey) {
       this.hashKey = hashKey;
-      list.add(new CacheFile(ncfile));
+      CacheFile file = new CacheFile(ncfile);
+      list.add(file);
+      files.put(ncfile, file);
       if (log.isDebugEnabled()) log.debug("NetcdfFileCache add to cache " + ncfile.getLocation());
     }
 
@@ -449,6 +433,7 @@ public class NetcdfFileCache {
       synchronized (this) {
         list.add( file);
       }
+      files.put(ncfile, file);
       return file;
     }
 
@@ -458,15 +443,16 @@ public class NetcdfFileCache {
     
     class CacheFile implements Comparable<CacheFile> {
       NetcdfFile ncfile;
-      boolean isLocked = true;
+      AtomicBoolean isLocked = new AtomicBoolean(true);
       int countAccessed = 1;
       long lastAccessed = 0;
 
-      CacheFile(NetcdfFile ncfile) {
+      private CacheFile(NetcdfFile ncfile) {
         this.ncfile = ncfile;
         this.lastAccessed = System.currentTimeMillis();
 
-        ncfile.setFileCache( NetcdfFileCache.this, hashKey);
+        ncfile.setFileCache( NetcdfFileCache.this);
+
         if (log.isDebugEnabled()) log.debug("NetcdfFileCache add to cache " + ncfile.getLocation());
       }
 

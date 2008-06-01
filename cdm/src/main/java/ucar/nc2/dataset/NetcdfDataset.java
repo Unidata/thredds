@@ -663,7 +663,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public synchronized void close() throws java.io.IOException {
     if (agg != null) agg.persist(); // LOOK
     if (cache != null) {
-      cache.release(this, cacheKey);
+      cache.release(this);
 
     /* if (getCacheState() == 3)
       return;
