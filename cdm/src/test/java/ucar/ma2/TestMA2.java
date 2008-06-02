@@ -24,7 +24,6 @@ public class TestMA2 {
     suite.addTest(new TestSuite(TestTxCompose.class));
 
     suite.addTest(new TestSuite(TestMAMath.class));
-    // suite.addTest(new TestSuite(TestDgemm.class)); needs ibm array
 
     suite.addTest(new TestSuite(TestMAVector.class));
     suite.addTest(new TestSuite(TestMAMatrix.class));

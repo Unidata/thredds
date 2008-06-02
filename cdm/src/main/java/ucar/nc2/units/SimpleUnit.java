@@ -35,8 +35,8 @@ import ucar.units.*;
  */
 
 public class SimpleUnit {
-  public static SimpleUnit kmUnit = SimpleUnit.factory("km");
-  public static SimpleUnit meterUnit = SimpleUnit.factory("m");
+  public static SimpleUnit kmUnit;
+  public static SimpleUnit meterUnit;
 
   static protected UnitFormat format;
   static protected Unit secsUnit, dateUnit;
@@ -53,6 +53,9 @@ public class SimpleUnit {
       Unit u = format.parse("millibar");
       Unit alias = u.clone(UnitName.newUnitName("mb"));
       unitDB.addUnit(alias);
+
+      kmUnit = SimpleUnit.factoryWithExceptions("km");
+      meterUnit = SimpleUnit.factoryWithExceptions("m");
 
     } catch (Exception e) {
       System.out.println("SimpleUnit initialization failed " + e);

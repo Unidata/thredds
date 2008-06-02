@@ -20,7 +20,7 @@ public class TestReadAndCountDods extends TestCase {
       doOne("dods://usgodae2.usgodae.org:80/dods/GDS/coamps_cent_am/COAMPS_cent_am_0001_000000-000000ltnt_heat_flux", "", 1, 1, 3, 0);
     } catch (Exception e) {
       System.out.println(" -- barf");
-    }
+    }  // */
 
     // IDV netcdf files, one from each model
     String base = "thredds:resolve:http://motherlode.ucar.edu:8080/thredds/";

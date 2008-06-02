@@ -3,10 +3,13 @@ package ucar.nc2.dt.grid;
 import junit.framework.*;
 import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.TestAll;
+import ucar.nc2.NetcdfFileCache;
+import ucar.unidata.io.RandomAccessFile;
 
 import java.util.List;
 import java.util.Iterator;
@@ -22,13 +25,22 @@ public class TestReadandCount extends TestCase {
 
   private String griddir = TestAll.upcShareTestDataDir+"grid/netcdf/";
 
+   protected void setUp() {
+    NetcdfDataset.initNetcdfFileCache(10, 20, 60*60);
+  }
+
+  protected void tearDown() {
+    NetcdfDataset.getNetcdfFileCache().clearCache(true); // give messages on files not closed
+    NetcdfFileCache.exit();
+  }
+
   public void testRead1() throws Exception {
     doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44,-1, -1, -1);    
   }
 
   public void testRead() throws Exception {
 
-    doOne(griddir+"atd-radar/","rgg.20020411.000000.lel.ll.nc", 5, 1, 4, 1);
+    /* doOne(griddir+"atd-radar/","rgg.20020411.000000.lel.ll.nc", 5, 1, 4, 1);
     doOne(griddir+"atd-radar/","SPOL_3Volumes.nc", 3, 1, 4, 1);
 
     doOne(griddir+"gief/","coamps.wind_uv.nc", 2, 1, 4, 1);
@@ -36,6 +48,7 @@ public class TestReadandCount extends TestCase {
     //// coards derived
     doOne(griddir+"coards/", "cldc.mean.nc", 1, 1, 3, 0);
     doOne(griddir+"coards/","inittest24.QRIDV07200.nc", -1, -1, -1, -1); // no "positive" att on level
+    */
     doOne(griddir+"coards/","inittest24.QRIDV07200.ncml", 1, 1, 3, 1);
 
     doOne(griddir+"csm/","o3monthly.nc", 4, 1, 7, 2);

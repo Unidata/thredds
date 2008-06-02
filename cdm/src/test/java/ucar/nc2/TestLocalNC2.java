@@ -60,23 +60,22 @@ public class TestLocalNC2 {
     suite.addTest(new TestSuite(TestNetcdfFileCache.class));
     
     suite.addTest(new TestSuite(TestWrite.class));
-    suite.addTest(new TestSuite(TestRead.class));
+    suite.addTest(new TestSuite(TestRead.class)); //
     suite.addTest(new TestSuite(TestOpenInMemory.class));
-    suite.addTest(new TestSuite(TestAttributes.class)); //
+    suite.addTest(new TestSuite(TestAttributes.class)); // */
     suite.addTest(new TestSuite(TestWriteRecord.class)); //
     suite.addTest(new TestSuite(TestWriteFill.class)); //
     suite.addTest(new TestSuite(TestReadRecord.class));
     suite.addTest(new TestSuite(TestDump.class)); //
-    suite.addTest(new TestSuite(TestRedefine.class));
+    suite.addTest(new TestSuite(TestRedefine.class)); // */
 
     suite.addTest(new TestSuite(TestLongOffset.class)); //
     suite.addTest(new TestSuite(TestReadSection.class)); //
     suite.addTest(new TestSuite(TestStructure.class)); //
     suite.addTest(new TestSuite(TestStructureArray.class)); //
 
-    suite.addTest(new TestSuite(TestReadStrides.class));// */
-
-    suite.addTestSuite( TestScaleOffsetMissingForStructure.class);
+    suite.addTest(new TestSuite(TestReadStrides.class));
+    suite.addTestSuite( TestScaleOffsetMissingForStructure.class); // */
 
     return suite;
   }

@@ -9,7 +9,7 @@ import java.io.File;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
- * TestSuite that runs all nj22 unit tests.
+ * TestSuite that runs all nj22 unit tests uing only local (to svn tree) files.
  *
  */
 public class TestLocal {
@@ -47,24 +47,9 @@ public class TestLocal {
     suite.addTest( ucar.nc2.TestLocalNC2.suite());
     suite.addTest( ucar.nc2.units.TestUnitsAll.suite());
 
-    // suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); //
-    // suite.addTest( ucar.nc2.TestIosp.suite());   //
-
-    /* suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
-    suite.addTest( ucar.nc2.ncml.TestNcML.suite());  //
-
-    suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
-    suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite());
-
-    suite.addTest( ucar.unidata.geoloc.TestGeoloc.suite());  //
-    suite.addTest( ucar.nc2.dods.TestDODS.suite()); //
-
-    suite.addTest( thredds.catalog.TestCatalogAll.suite()); // */
-
     TestSetup wrapper = new TestSetup(suite) {
 
       protected void setUp() {
-        //NetcdfFileCache.init();
         //NetcdfDatasetCache.init();
         RandomAccessFile.setDebugLeaks(true);
         startTime = System.currentTimeMillis();

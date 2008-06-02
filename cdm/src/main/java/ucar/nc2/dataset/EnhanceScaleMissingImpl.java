@@ -372,7 +372,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     if (!hasMissingValue)
       return false;
     for (int i = 0; i < missingValue.length; i++)
-      if (val == missingValue[i])
+      if (ucar.nc2.util.Misc.closeEnough(val, missingValue[i]))
         return true;
     return false;
   }

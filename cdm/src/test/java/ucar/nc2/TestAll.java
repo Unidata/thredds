@@ -12,6 +12,7 @@ import java.io.FileFilter;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.dataset.NetcdfDataset;
 
 /**
  * TestSuite that runs all nj22 unit tests.
@@ -146,16 +147,16 @@ public class TestAll {
     suite.addTest( ucar.unidata.geoloc.TestGeoloc.suite());  //
     suite.addTest( ucar.nc2.dods.TestDODS.suite()); // 
 
-    suite.addTest( thredds.catalog.TestCatalogAll.suite()); // */
+    suite.addTest( thredds.catalog.TestCatalogAll.suite()); //
 
     suite.addTest( ucar.nc2.TestIosp.suite());   //
     suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite()); //
-    suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); //
+    suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); // */
 
     TestSetup wrapper = new TestSetup(suite) {
 
       protected void setUp() {
-        //NetcdfFileCache.init();
+        //NetcdfDataset.initNetcdfFileCache(10, 20, 60*60);
         //NetcdfDatasetCache.init();
         RandomAccessFile.setDebugLeaks(true);
         startTime = System.currentTimeMillis();
@@ -163,7 +164,8 @@ public class TestAll {
 
       protected void tearDown() {
         checkLeaks();
-        //NetcdfFileCache.clearCache( true);
+        NetcdfDataset.getNetcdfFileCache().clearCache(true); // give messages on files not closed
+        NetcdfFileCache.exit();
         //NetcdfDatasetCache.clearCache( true);
         checkLeaks();
 

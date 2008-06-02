@@ -50,6 +50,11 @@ public class TestStandardVar extends TestCase {
     ncfile.addVariableAttribute("t5", "scale_factor", new Short( (short) 2));
     ncfile.addVariableAttribute("t5", "add_offset", new Short( (short) 77));
 
+    // case 1
+    ncfile.addVariable("m1", DataType.DOUBLE, dims);
+    ncfile.addVariableAttribute("m1", "missing_value", -999.99);
+
+
     // create the file
     ncfile.create();
 
@@ -72,7 +77,6 @@ public class TestStandardVar extends TestCase {
         Ab.setByte(ima.set(i,j), (byte) (i*10+j));
     ncfile.write("t2", origin, Ab);
 
-
     // write t3
     ncfile.write("t3", origin, Ab);
 
@@ -87,6 +91,14 @@ public class TestStandardVar extends TestCase {
 
     As.setShort(ima.set(0, 0), (short) -9999);
     ncfile.write("t5", origin, As);
+
+    // write m1
+    ArrayDouble.D2 Ad = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
+    for (i=0; i<latDim.getLength(); i++)
+      for (j=0; j<lonDim.getLength(); j++)
+        Ad.setDouble(ima.set(i,j), (double) (i*10.0+j));
+    Ad.set(1,1,-999.99);
+    ncfile.write("m1", new int[2], Ad);
 
     // all done
     ncfile.close();
@@ -105,6 +117,8 @@ public class TestStandardVar extends TestCase {
     readByte();
     readShortMissing();
     readShort2FloatMissing();
+
+    readDoubleMissing();
 
     ncfileRead.close();
     dsRead.close();
@@ -340,6 +354,20 @@ public class TestStandardVar extends TestCase {
     assert( null == vs.findAttribute("missing_value"));
 
     System.out.println( "**************TestStandardVar Read readShort2FloatMissing");
+  }
+
+  public void readDoubleMissing() throws Exception {
+    VariableDS v = null;
+    assert(null != (v = (VariableDS) dsRead.findVariable("m1")));
+    assert( v.getDataType() == DataType.DOUBLE);
+
+    Array A = v.read();
+    Index ima = A.getIndex();
+    int[] shape = A.getShape();
+
+    double val = A.getFloat(ima.set(1,1));
+    assert TestAll.closeEnough(val, -999.99);
+    assert v.isMissing(val);
   }
 
 }

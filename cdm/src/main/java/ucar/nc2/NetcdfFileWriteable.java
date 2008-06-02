@@ -582,9 +582,13 @@ public class NetcdfFileWriteable extends NetcdfFile {
     // close existing file, rename and open as read-only
     close();
     File prevFile = new File(location);
-    File tmpFile = new File(location + ".tmp");
-    if (!prevFile.renameTo(tmpFile))
+    File tmpFile = new File(location+".tmp");
+    if (tmpFile.exists()) tmpFile.delete();
+    if (!prevFile.renameTo(tmpFile)) {
+      System.out.println("prevFile.canRead "+prevFile.canRead()+" to "+ tmpFile);
+      System.out.println("tmpFile.exists "+tmpFile.exists()+" canWrite "+ tmpFile.canWrite());
       throw new RuntimeException("Cant rename "+prevFile+" to "+ tmpFile);
+    }
 
     NetcdfFile oldFile = NetcdfFile.open(tmpFile.getPath());
 
