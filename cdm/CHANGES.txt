@@ -43,6 +43,7 @@ This code is ALPHA
         rewrite NetcdfFileCache, remove NetcdfDatasetCache
         EnhanceScaleMissingImpl uses Misc.closeEnough for missing value comparisions.
         default VariableDS.useNaNs = true
+        util.cache.FileCache with FileCacheable interface, implement NetcdfFileCache, HTTP file cache with it.
     15: change StringBuffer to StringBuilder for efficiency
         clean up ArrayStructure/StructureData API, clarify Member use
         StructureData.getScalarXXX(name) must be correct type
@@ -179,6 +180,9 @@ API Extensive API changes. Most, but not completely backwards-compatible.
 
   Package ucar.nc2.util
     * RuntimeConfigParser -> ucar.nc2.util.xml
+
+  Package ucar.nc2.util.cache
+    * FileCache uses FileCacheable and FileFactory, replaces NetcdfFileCache, NetcdfDatasetCache, HTTPFileCache
 
   Package ucar.nc2.units
     * DateUnit is not a superclass of SimpleUnit
