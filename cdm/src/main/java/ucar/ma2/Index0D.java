@@ -33,6 +33,10 @@ public class Index0D extends Index {
     this.offset = 0;
   }
 
+  public Index0D( int[] shape) {
+    super(shape);
+  }
+
   public int currentElement() {
     return offset;
   }

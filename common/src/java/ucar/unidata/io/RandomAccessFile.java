@@ -21,6 +21,8 @@
 package ucar.unidata.io;
 
 
+import net.jcip.annotations.NotThreadSafe;
+
 import java.io.*;
 
 import java.util.ArrayList;
@@ -53,6 +55,7 @@ import java.nio.channels.WritableByteChannel;
  * @see java.io.RandomAccessFile
  */
 
+@NotThreadSafe
 public class RandomAccessFile implements DataInput, DataOutput {
 
   static public final int BIG_ENDIAN = 0;

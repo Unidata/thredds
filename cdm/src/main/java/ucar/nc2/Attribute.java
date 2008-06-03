@@ -26,6 +26,8 @@ import ucar.ma2.Index;
 
 import java.util.List;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
  * The value can be a one dimensional array of Strings or numeric values.
@@ -35,11 +37,12 @@ import java.util.List;
  * @author caron
  */
 
+@Immutable
 public class Attribute {
-  protected final String name;
-  protected DataType dataType;
-  protected int nelems;
-  protected Array values;
+  private final String name;
+  private DataType dataType;
+  private int nelems;
+  private Array values;
 
   /**
    * Get the name of this Attribute.
@@ -428,7 +431,7 @@ public class Attribute {
     hashCode = 0;
   }
 
-  protected Index ima;
+  private Index ima;
   private Index ima() {
     if (ima == null) ima = values.getIndex();
     return ima;

@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -24,8 +24,10 @@ import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 
+import net.jcip.annotations.Immutable;
+
 /**
- * Adapter for dods.dap.Atribute into a ucar.nc2.Attribute.
+ * Adapter for dods.dap.Attribute into a ucar.nc2.Attribute.
  * Byte attributes are widened to short because DODS has Bytes as unsigned,
  *  but in Java they are signed.
  *
@@ -33,9 +35,8 @@ import java.util.*;
  * @author caron
  */
 
-
+@Immutable
 public class DODSAttribute extends ucar.nc2.Attribute {
-  //private dods.dap.Attribute att;
 
   /** constructor: adapter around dods.dap.Attribute
    *
@@ -84,7 +85,7 @@ public class DODSAttribute extends ucar.nc2.Attribute {
         }
       }
       catch (NumberFormatException e) {
-        System.out.println("ILLEGAL NUMERIC VALUE");
+        throw new IllegalArgumentException("Illegal Numeric Value for Attribute Value for " + dodsName);
       }
     }
     setValues( data);

@@ -43,7 +43,9 @@ This code is ALPHA
         rewrite NetcdfFileCache, remove NetcdfDatasetCache
         EnhanceScaleMissingImpl uses Misc.closeEnough for missing value comparisions.
         default VariableDS.useNaNs = true
-        util.cache.FileCache with FileCacheable interface, implement NetcdfFileCache, HTTP file cache with it.
+        ucar.nc2.util.cache.FileCache uses FileCacheable, FileFactory interfaces;
+            implement NetcdfFileCache, HTTP file cache with FileCache.
+        start adding net.jcip.annotations to document thread safety
     15: change StringBuffer to StringBuilder for efficiency
         clean up ArrayStructure/StructureData API, clarify Member use
         StructureData.getScalarXXX(name) must be correct type
@@ -130,6 +132,8 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    - NetcdfFile.readMemberData() removed: use Structure.select() or readSection()
    + NetcdfFile.readToByteChannel experimental, for maximum performance
    - NetcdfFile.read(String variableSection, boolean flatten) -> readSection(secSpec); flatten= false not supported
+   + NetcdfFile implements FileCacheable
+   * NetcdfFile.setFileCache() replaced old setCacheState().
 
    + NetcdfFileWriteable has new convenience methods
    + NetcdfFileWriteable redefine mode, large file support, extra header bytes
@@ -160,6 +164,8 @@ API Extensive API changes. Most, but not completely backwards-compatible.
    * NetcdfDataset.EnhanceMode to control enhancing
    * StructureDS correctly gets enhanced
    * NetcdfDataset.makeArray -> Array.makeArray()
+   + both NetcdfFile and NetcdfDataset are in the same FileCache, using acquireXXX().
+   + FileCache configuration done though NetcdfDataset.
 
   Package ucar.nc2.dt
    * TypedDatasetFactory.open() uses StringBuilder
@@ -183,6 +189,8 @@ API Extensive API changes. Most, but not completely backwards-compatible.
 
   Package ucar.nc2.util.cache
     * FileCache uses FileCacheable and FileFactory, replaces NetcdfFileCache, NetcdfDatasetCache, HTTPFileCache
+    + FileCache no longer static, allows any number of caches. uses java.util.concurrent
+    * FileCacheRaf handles RandomAccessFile caching for TDS HTTP file serving.
 
   Package ucar.nc2.units
     * DateUnit is not a superclass of SimpleUnit

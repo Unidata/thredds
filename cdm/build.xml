@@ -519,14 +519,6 @@
       <package name="ucar.nc2.dataset.transform"/>
       <package name="ucar.nc2.dt"/>
       <package name="ucar.nc2.ft"/>
-      <!-- package name="ucar.nc2.dt.grid"/ -->
-      <!-- package name="ucar.nc2.dt.image"/ -->
-      <!-- package name="ucar.nc2.dt.radial"/-->
-      <!-- package name="ucar.nc2.dt.point"/-->
-      <!--package name="ucar.nc2.dt.trajectory"/ -->
-      <!-- package name="ucar.nc2.geotiff"/ -->
-      <!-- package name="ucar.nc2.ncml"/ -->
-      <!--package name="ucar.nc2.thredds"/-->
       <package name="ucar.nc2.units"/>
       <package name="ucar.nc2.util"/>
       <package name="ucar.unidata.geoloc"/>
@@ -765,9 +757,10 @@
           description="create a full distribution"/>
 
   <!-- release library -->
-  <target name="releaseInternal" depends="makeMain" description="internal release to lib">
+  <target name="releaseInternal" depends="makeMain, makeIDVjar" description="internal release to lib">
     <copy todir="${lib.dir}/release" overwrite="true">
       <fileset dir="${build.dir}" includes="${jarMain}"/>
+      <fileset dir="${build.dir}" includes="${jarIdv}"/>
     </copy>
   </target>
 
