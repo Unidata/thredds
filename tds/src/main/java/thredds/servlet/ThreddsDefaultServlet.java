@@ -30,8 +30,7 @@ import javax.servlet.http.*;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
-import ucar.unidata.io.FileCache;
-import ucar.nc2.NetcdfFileCache;
+import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.ncml.AggregationFmrc;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -95,6 +94,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   private Timer timer;
   private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   private DiskCache2 aggCache;
+  private FileCacheRaf fileCacheRaf;
 
   public void init() throws ServletException {
     super.init();
@@ -146,8 +146,10 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 25);
     max = ThreddsConfig.getInt("HTTPFileCache.maxFiles", 40);
     secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 10 * 60);
-    if (max > 0)
-      FileCache.init(min, max, secs);
+    if (max > 0) {
+      fileCacheRaf = new FileCacheRaf(min, max, secs);
+      ServletUtil.setFileCache( fileCacheRaf);
+    }
 
     // turn off Grib extend indexing; indexes are automatically done every 10 minutes externally
     boolean extendIndex = ThreddsConfig.getBoolean("GribIndexing.setExtendIndex", false);
@@ -213,8 +215,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
 
   public void destroy() {
     timer.cancel();
-    NetcdfFileCache.exit();
-    FileCache.exit();
+    NetcdfDataset.shutdown();
     aggCache.exit();
   }
 
@@ -545,12 +546,11 @@ public class ThreddsDefaultServlet extends AbstractServlet {
         Formatter f = new Formatter(e.pw);
         f.format("NetcdfFileCache contents\n");
         NetcdfDataset.getNetcdfFileCache().showCache(f);
-        //f.format("\nNetcdfDatasetCache contents\n");
-        //NetcdfDataset.getDatasetCache().showCache(f);
-        f.format("\nRAF Cache contents\n");
-        List cacheList = ucar.unidata.io.FileCache.getCache();
-        for (Object cacheElement : cacheList) {
-          f.format(" %s\n",cacheElement);
+        
+        if (fileCacheRaf != null) {
+          f.format("\nRAF Cache contents\n");
+          for (Object cacheElement : fileCacheRaf.getCache())
+            f.format(" %s\n",cacheElement);
         }
         e.pw.flush();
       }
@@ -560,8 +560,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     act = new DebugHandler.Action("clearCache", "Clear Caches") {
       public void doAction(DebugHandler.Event e) {
         NetcdfDataset.getNetcdfFileCache().clearCache(false);
-        //NetcdfDataset.getDatasetCache().clearCache(false);
-        ucar.unidata.io.FileCache.clearCache(false);
+        if (fileCacheRaf != null) fileCacheRaf.clearCache(false);
         e.pw.println("  ClearCache ok");
       }
     };
@@ -575,17 +574,9 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     };
     debugHandler.addAction(act);
 
-    /* act = new DebugHandler.Action("forceDSCache", "Force clear NetcdfDatasetCache Cache") {
-      public void doAction(DebugHandler.Event e) {
-        NetcdfDataset.getDatasetCache().clearCache(true);
-        e.pw.println("  NetcdfDatasetCache force clearCache done");
-      }
-    };
-    debugHandler.addAction(act);  */
-
     act = new DebugHandler.Action("forceRAFCache", "Force clear RAF FileCache Cache") {
       public void doAction(DebugHandler.Event e) {
-        ucar.unidata.io.FileCache.clearCache(true);
+        fileCacheRaf.clearCache(true);
         e.pw.println("  RAF FileCache force clearCache done ");
       }
     };

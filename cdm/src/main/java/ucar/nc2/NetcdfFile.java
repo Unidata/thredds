@@ -67,7 +67,7 @@ import java.nio.channels.WritableByteChannel;
  * @author caron
  */
 
-public class NetcdfFile {
+public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   static public final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
   static public final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
 
@@ -583,7 +583,7 @@ public class NetcdfFile {
   protected boolean isClosed = false;
   private boolean immutable = false;
 
-  protected NetcdfFileCache cache;
+  protected ucar.nc2.util.cache.FileCache cache;
   protected IOServiceProvider spi;
 
   // "global view" is derived from the group information.
@@ -620,9 +620,10 @@ public class NetcdfFile {
   }
 
   /**
-   * Optional file caching
+   * Public by accident.
+   * Optional file caching. 
    */
-  protected void setFileCache(NetcdfFileCache cache) {
+  public void setFileCache(ucar.nc2.util.cache.FileCache cache) {
     this.cache = cache;
   }
 

@@ -8,8 +8,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.TestAll;
-import ucar.nc2.NetcdfFileCache;
-import ucar.unidata.io.RandomAccessFile;
 
 import java.util.List;
 import java.util.Iterator;
@@ -25,14 +23,14 @@ public class TestReadandCount extends TestCase {
 
   private String griddir = TestAll.upcShareTestDataDir+"grid/netcdf/";
 
-   protected void setUp() {
+  /* protected void setUp() {
     NetcdfDataset.initNetcdfFileCache(10, 20, 60*60);
   }
 
   protected void tearDown() {
     NetcdfDataset.getNetcdfFileCache().clearCache(true); // give messages on files not closed
-    NetcdfFileCache.exit();
-  }
+    NetcdfDataset.shutdown();
+  } */
 
   public void testRead1() throws Exception {
     doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44,-1, -1, -1);    

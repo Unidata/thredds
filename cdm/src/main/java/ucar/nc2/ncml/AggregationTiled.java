@@ -316,7 +316,8 @@ public class AggregationTiled extends Aggregation {
   }
 
   @Override
-  protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec, boolean enhance, NetcdfFileFactory reader) {
+  protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
+          boolean enhance, ucar.nc2.util.cache.FileFactory reader) {
     return new DatasetTiled(cacheName, location, sectionSpec, enhance, reader);
   }
 
@@ -338,7 +339,8 @@ public class AggregationTiled extends Aggregation {
      * @param enhance     open dataset in enhance mode
      * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
-    protected DatasetTiled(String cacheName, String location, String sectionSpec, boolean enhance, NetcdfFileFactory reader) {
+    protected DatasetTiled(String cacheName, String location, String sectionSpec, boolean enhance,
+            ucar.nc2.util.cache.FileFactory reader) {
       super(cacheName, location, enhance, reader);
       this.sectionSpec = sectionSpec;
 

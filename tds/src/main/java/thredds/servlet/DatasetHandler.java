@@ -24,7 +24,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileFactory;
+import ucar.nc2.util.cache.FileFactory;
 
 import java.io.*;
 import java.util.HashMap;
@@ -139,7 +139,7 @@ public class DatasetHandler {
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found NcmlDataset= " + ds);
       //String cacheName = ds.getUniqueID(); // LOOK use reqPath !!
 
-      NetcdfFile ncfile = NetcdfDataset.openOrAcquireFile(NetcdfDataset.getNetcdfFileCache(), new NcmlFileFactory(ds), null, reqPath, -1, null, null);
+      NetcdfFile ncfile = NetcdfDataset.acquireFile(new NcmlFileFactory(ds), null, reqPath, -1, null, null);
       if (ncfile == null) throw new FileNotFoundException(reqPath);
       return ncfile;
     }
@@ -190,7 +190,7 @@ public class DatasetHandler {
 
   // used only for the case of Dataset (not DatasetScan) that have an NcML element inside.
   // This makes the NcML dataset the target of the server.
-  static private class NcmlFileFactory implements NetcdfFileFactory {
+  static private class NcmlFileFactory implements FileFactory {
     private InvDatasetImpl ds;
 
     NcmlFileFactory(InvDatasetImpl ds) {

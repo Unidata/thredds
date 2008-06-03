@@ -165,7 +165,7 @@ public class TestAll {
       protected void tearDown() {
         checkLeaks();
         NetcdfDataset.getNetcdfFileCache().clearCache(true); // give messages on files not closed
-        NetcdfFileCache.exit();
+        NetcdfDataset.shutdown();
         //NetcdfDatasetCache.clearCache( true);
         checkLeaks();
 

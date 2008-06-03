@@ -363,9 +363,17 @@ public class TestStandardVar extends TestCase {
 
     Array A = v.read();
     Index ima = A.getIndex();
-    int[] shape = A.getShape();
 
     double val = A.getFloat(ima.set(1,1));
+    assert Double.isNaN(val);
+    assert v.isMissing(val);
+
+    // reread with useNans off
+    v.setUseNaNs(false);
+    A = v.read();
+    ima = A.getIndex();
+
+    val = A.getFloat(ima.set(1,1));
     assert TestAll.closeEnough(val, -999.99);
     assert v.isMissing(val);
   }

@@ -100,7 +100,7 @@ public class PublicInterfaceGenerator {
 
 
   public static void main(String[] args)  throws SecurityException {
-    generate( ucar.nc2.dataset.grid.GeoGrid.class, false, System.out);
+    generate( ucar.nc2.dt.grid.GeoGrid.class, false, System.out);
   }
 
 }

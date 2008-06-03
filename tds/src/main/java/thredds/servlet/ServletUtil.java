@@ -32,7 +32,7 @@ import org.apache.log4j.*;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import ucar.unidata.util.StringUtil;
-import ucar.unidata.io.FileCache;
+import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
 
@@ -622,6 +622,9 @@ public class ServletUtil {
     returnFile(servlet, req, res, new File(filename), contentType);
   }
 
+  static private FileCacheRaf fileCacheRaf;
+  static void setFileCache( FileCacheRaf fileCache) { fileCacheRaf = fileCache; }
+
   /**
    * Write a file to the response stream.
    *
@@ -722,14 +725,14 @@ public class ServletUtil {
         res.addHeader("Content-Range", "bytes " + startPos + "-" + (endPos - 1) + "/" + fileSize);
         res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
-        ucar.unidata.io.RandomAccessFile raf = null;
+        FileCacheRaf.Raf craf = null;
         try {
-          raf = FileCache.acquire(filename);
-          IO.copyRafB(raf, startPos, contentLength, res.getOutputStream(), new byte[60000]);
+          craf = fileCacheRaf.acquire(filename);
+          IO.copyRafB(craf.getRaf(), startPos, contentLength, res.getOutputStream(), new byte[60000]);
           ServletUtil.logServerAccess(HttpServletResponse.SC_PARTIAL_CONTENT, contentLength);
           return;
         } finally {
-          if (raf != null) FileCache.release(raf);
+          if (craf != null) fileCacheRaf.release(craf);
         }
       }
 

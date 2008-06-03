@@ -1190,7 +1190,7 @@ public class NcMLReader {
     return agg;
   }
 
-  private class NcmlElementReader implements NetcdfFileFactory {
+  private class NcmlElementReader implements ucar.nc2.util.cache.FileFactory {
     private Element netcdfElem;
     private String ncmlLocation, location;
 

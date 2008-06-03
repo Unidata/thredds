@@ -23,6 +23,7 @@ import junit.framework.*;
 import ucar.nc2.iosp.TestIndexer;
 import ucar.nc2.iosp.TestRegularLayout;
 import ucar.nc2.dataset.TestScaleOffsetMissingForStructure;
+import ucar.nc2.util.cache.TestNetcdfFileCache;
 
 /**
  * ucar.nc2 core testing, using only local files (part of release)
@@ -56,17 +57,17 @@ public class TestLocalNC2 {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
     suite.addTest(new TestSuite(TestIndexer.class));
-    suite.addTest(new TestSuite(TestRegularLayout.class));
+    suite.addTest(new TestSuite(TestRegularLayout.class)); // */
     suite.addTest(new TestSuite(TestNetcdfFileCache.class));
     
     suite.addTest(new TestSuite(TestWrite.class));
     suite.addTest(new TestSuite(TestRead.class)); //
     suite.addTest(new TestSuite(TestOpenInMemory.class));
-    suite.addTest(new TestSuite(TestAttributes.class)); // */
+    suite.addTest(new TestSuite(TestAttributes.class)); // 
     suite.addTest(new TestSuite(TestWriteRecord.class)); //
     suite.addTest(new TestSuite(TestWriteFill.class)); //
     suite.addTest(new TestSuite(TestReadRecord.class));
-    suite.addTest(new TestSuite(TestDump.class)); //
+    suite.addTest(new TestSuite(TestDump.class)); // */
     suite.addTest(new TestSuite(TestRedefine.class)); // */
 
     suite.addTest(new TestSuite(TestLongOffset.class)); //

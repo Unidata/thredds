@@ -17,11 +17,13 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.util.cache;
 
 import junit.framework.TestCase;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.TestLocal;
 import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
@@ -39,14 +41,18 @@ public class TestNetcdfFileCache extends TestCase {
     super(name);
   }
 
-  NetcdfFileCache cache;
+  FileCache cache;
+  FileFactory factory = new MyFileFactory();
   protected void setUp() throws java.lang.Exception {
-    cache = new NetcdfFileCache(5, 100, 60 * 60, new NetcdfFileFactory() {
-      public NetcdfFile open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-        return NetcdfDataset.openFile(location, buffer_size, cancelTask, iospMessage);
-      }
-    });
+    cache = new FileCache(5, 100, 60 * 60);
   }
+
+  class MyFileFactory implements FileFactory {
+    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+      return NetcdfDataset.openFile(location, buffer_size, cancelTask, iospMessage);
+    }
+  }
+
 
   public void testNetcdfFileCache() throws IOException {
     loadFiles( new File(TestLocal.cdmTestDataDir), cache);
@@ -57,11 +63,11 @@ public class TestNetcdfFileCache extends TestCase {
     System.out.println(format);
 
     // count cache size
-    Map<Object, NetcdfFileCache.CacheElement> map = cache.getCache();
+    Map<Object, FileCache.CacheElement> map = cache.getCache();
     assert map.values().size() == count;
 
     for (Object key : map.keySet()) {
-      NetcdfFileCache.CacheElement elem = map.get(key);
+      FileCache.CacheElement elem = map.get(key);
       //System.out.println(" "+key+" == "+elem);
       assert elem.list.size() == 1;
     }
@@ -73,7 +79,7 @@ public class TestNetcdfFileCache extends TestCase {
     assert map.values().size() == saveCount;
 
     for (Object key : map.keySet()) {
-      NetcdfFileCache.CacheElement elem = map.get(key);
+      FileCache.CacheElement elem = map.get(key);
       //System.out.println(" "+key+" == "+elem);
       assert elem.list.size() == 2;
       checkAllSame( elem.list);
@@ -89,15 +95,15 @@ public class TestNetcdfFileCache extends TestCase {
     assert map.values().size() == saveCount;
 
     // close all
-    List<NetcdfFile> files = new ArrayList<NetcdfFile>();
+    List<FileCacheable> files = new ArrayList<FileCacheable>();
     for (Object key : map.keySet()) {
-      NetcdfFileCache.CacheElement elem = map.get(key);
+      FileCache.CacheElement elem = map.get(key);
       assert elem.list.size() == 1;
-      for (NetcdfFileCache.CacheElement.CacheFile file : elem.list) {
+      for (FileCache.CacheElement.CacheFile file : elem.list) {
         files.add( file.ncfile);
       }
     }
-    for (NetcdfFile ncfile : files) {
+    for (FileCacheable ncfile : files) {
       ncfile.close();
     }
     cache.clearCache( false);
@@ -112,9 +118,9 @@ public class TestNetcdfFileCache extends TestCase {
 
     // close 1 of 2
     for (Object key : map.keySet()) {
-      NetcdfFileCache.CacheElement elem = map.get(key);
+      FileCache.CacheElement elem = map.get(key);
       assert elem.list.size() == 2;
-      NetcdfFileCache.CacheElement.CacheFile first = elem.list.get(0);
+      FileCache.CacheElement.CacheFile first = elem.list.get(0);
       first.ncfile.close();
       assert !first.isLocked.get();
       assert elem.list.size() == 2;
@@ -128,14 +134,16 @@ public class TestNetcdfFileCache extends TestCase {
     assert map.values().size() == saveCount;
 
     for (Object key : map.keySet()) {
-      NetcdfFileCache.CacheElement elem = map.get(key);
+      FileCache.CacheElement elem = map.get(key);
       assert elem.list.size() == 1;
     }
+
+    cache.clearCache(true);
   }
 
-  void checkAllSame(List<NetcdfFileCache.CacheElement.CacheFile> list) {
-    NetcdfFileCache.CacheElement.CacheFile first = null;
-    for (NetcdfFileCache.CacheElement.CacheFile file : list) {
+  void checkAllSame(List<FileCache.CacheElement.CacheFile> list) {
+    FileCache.CacheElement.CacheFile first = null;
+    for (FileCache.CacheElement.CacheFile file : list) {
       assert file.isLocked.get();
       assert file.countAccessed == 1;
       assert file.lastAccessed != 0;
@@ -150,7 +158,7 @@ public class TestNetcdfFileCache extends TestCase {
   }
 
   int count = 0;
-  void loadFiles(File dir, NetcdfFileCache cache) {
+  void loadFiles(File dir, FileCache cache) {
     for (File f : dir.listFiles()) {
       if (f.isDirectory())
         loadFiles(f, cache);
@@ -159,7 +167,7 @@ public class TestNetcdfFileCache extends TestCase {
         //System.out.println(" open "+f.getPath());
         try {
           String want = StringUtil.replace(f.getPath(), '\\', "/");
-          cache.acquire(want, null);
+          cache.acquire(want, null, factory);
           count++;
         } catch (IOException e) {
           // e.printStackTrace();
@@ -177,11 +185,11 @@ public class TestNetcdfFileCache extends TestCase {
 
   public void testConcurrentAccess() throws InterruptedException {
     loadFiles( new File(TestLocal.cdmTestDataDir), cache);
-    Map<Object, NetcdfFileCache.CacheElement> map = cache.getCache();
+    Map<Object, FileCache.CacheElement> map = cache.getCache();
     List<String> files = new ArrayList<String>();
     for (Object key : map.keySet()) {
-      NetcdfFileCache.CacheElement elem = map.get(key);
-      for (NetcdfFileCache.CacheElement.CacheFile file : elem.list)
+      FileCache.CacheElement elem = map.get(key);
+      for (FileCache.CacheElement.CacheFile file : elem.list)
         files.add( file.ncfile.getLocation());
     }
 
@@ -219,9 +227,9 @@ public class TestNetcdfFileCache extends TestCase {
     for (Object key : map.keySet()) {
       assert !checkUnique.contains(key);
       checkUnique.add(key);
-      NetcdfFileCache.CacheElement elem = map.get(key);
+      FileCache.CacheElement elem = map.get(key);
       int locks = 0;
-      for (NetcdfFileCache.CacheElement.CacheFile file : elem.list)
+      for (FileCache.CacheElement.CacheFile file : elem.list)
         if (file.isLocked.get()) locks++;
       //System.out.println(" key= "+key+ " size= "+elem.list.size()+" locks="+locks);
       total_locks += locks;
@@ -233,6 +241,8 @@ public class TestNetcdfFileCache extends TestCase {
     cache.clearCache( false);
     format.format("after cleanup qsize= %4d\n", q.size());
     cache.showStats(format);
+
+    cache.clearCache(true);
   }
 
  class Consumer implements Runnable {
@@ -270,11 +280,11 @@ public class TestNetcdfFileCache extends TestCase {
    }
  }
 
-  class CallAcquire implements Callable<NetcdfFile> {
+  class CallAcquire implements Callable<FileCacheable> {
     String location;
     CallAcquire(String location) { this.location = location; }
-    public NetcdfFile call() throws Exception {
-      return cache.acquire(location, null);
+    public FileCacheable call() throws Exception {
+      return cache.acquire(location, null, factory);
     }
   }
 

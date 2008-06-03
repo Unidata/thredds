@@ -180,7 +180,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     if (units != null) {
       try {
         SimpleUnit unit = SimpleUnit.factoryWithExceptions(units);
-        return unit.convertTo(1.0, SimpleUnit.meterUnit);
+        return unit.convertTo(1.0, SimpleUnit.kmUnit);
       } catch (Exception e) {
         log.error(units + " not convertible to km");
       }

@@ -17,7 +17,7 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2;
+package ucar.nc2.util.cache;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -58,8 +58,8 @@ import java.io.IOException;
  * @author caron
  * @since May 30, 2008
  */
-public class NetcdfFileCache {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileCache.class);
+public class FileCache {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static private ScheduledExecutorService exec;
 
   /**
@@ -95,7 +95,7 @@ public class NetcdfFileCache {
    * @param maxElementsInMemory trigger a cleanup if it goes over this number.
    * @param period              (secs) do periodic cleanups every this number of seconds.
    */
-  public NetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
+  public FileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     this.minElements = minElementsInMemory;
     this.maxElements = maxElementsInMemory;
     //this.defaultFactory = defaultFactory;
@@ -132,11 +132,12 @@ public class NetcdfFileCache {
    *
    * @param location   file location, also used as the cache name, will be passed to the NetcdfFileFactory
    * @param cancelTask user can cancel, ok to be null.
+   * @param factory     use this factory to open the file; may not be null
    * @return NetcdfFile corresponding to location.
    * @throws IOException on error
    */
-  public NetcdfFile acquire(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    return acquire(location, location, -1, cancelTask, null, null);
+  public FileCacheable acquire(String location, ucar.nc2.util.CancelTask cancelTask, FileFactory factory) throws IOException {
+    return acquire(location, location, -1, cancelTask, null, factory);
   }
 
   /**
@@ -154,13 +155,15 @@ public class NetcdfFileCache {
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  user can cancel, ok to be null.
    * @param spiObject   sent to iosp.setSpecial() if not null
-   * @param factory     use this factory to open the file; if null, use NetcdfFile.open
+   * @param factory     use this factory to open the file; may not be null
    * @return NetcdfFile corresponding to location.
    * @throws IOException on error
    */
-  public NetcdfFile acquire(String location, Object hashKey, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject, NetcdfFileFactory factory) throws IOException {
+  public FileCacheable acquire(String location, Object hashKey, int buffer_size,
+          ucar.nc2.util.CancelTask cancelTask, Object spiObject, FileFactory factory) throws IOException {
+
     if (null == hashKey) hashKey = location;
-    NetcdfFile ncfile = acquireCacheOnly(hashKey);
+    FileCacheable ncfile = acquireCacheOnly(hashKey);
     if (ncfile != null) {
       hits.incrementAndGet();
       return ncfile;
@@ -211,9 +214,9 @@ public class NetcdfFileCache {
    * @param hashKey used as the key.
    * @return file if its in the cache, null otherwise.
    */
-  private NetcdfFile acquireCacheOnly(Object hashKey) {
+  private FileCacheable acquireCacheOnly(Object hashKey) {
     if (disabled) return null;
-    NetcdfFile ncfile = null;
+    FileCacheable ncfile = null;
 
     // see if its in the cache
     CacheElement elem = cache.get(hashKey);
@@ -249,7 +252,7 @@ public class NetcdfFileCache {
    * @param cacheKey the file was stored with this hash key
    * @throws IOException if file not in cache.
    */
-  public void release(NetcdfFile ncfile) throws IOException {
+  public void release(FileCacheable ncfile) throws IOException {
     if (ncfile == null) return;
 
     if (disabled) {
@@ -422,7 +425,7 @@ public class NetcdfFileCache {
     Object hashKey;
     List<CacheFile> list = new LinkedList<CacheFile>(); // may have multiple copies of the same file opened
                                                         //  guarded by CacheElement object lock
-    CacheElement(NetcdfFile ncfile, Object hashKey) {
+    CacheElement(FileCacheable ncfile, Object hashKey) {
       this.hashKey = hashKey;
       CacheFile file = new CacheFile(ncfile);
       list.add(file);
@@ -430,7 +433,7 @@ public class NetcdfFileCache {
       if (log.isDebugEnabled()) log.debug("NetcdfFileCache add to cache " + ncfile.getLocation());
     }
 
-    CacheFile addFile(NetcdfFile ncfile) {
+    CacheFile addFile(FileCacheable ncfile) {
       CacheFile file = new CacheFile(ncfile);
       synchronized (this) {
         list.add( file);
@@ -442,18 +445,18 @@ public class NetcdfFileCache {
     public String toString() {
       return hashKey + " count=" + list.size();
     }
-    
+
     class CacheFile implements Comparable<CacheFile> {
-      NetcdfFile ncfile;
+      FileCacheable ncfile;
       AtomicBoolean isLocked = new AtomicBoolean(true);
       int countAccessed = 1;
       long lastAccessed = 0;
 
-      private CacheFile(NetcdfFile ncfile) {
+      private CacheFile(FileCacheable ncfile) {
         this.ncfile = ncfile;
         this.lastAccessed = System.currentTimeMillis();
 
-        ncfile.setFileCache( NetcdfFileCache.this);
+        ncfile.setFileCache( FileCache.this);
 
         if (log.isDebugEnabled()) log.debug("NetcdfFileCache add to cache " + ncfile.getLocation());
       }

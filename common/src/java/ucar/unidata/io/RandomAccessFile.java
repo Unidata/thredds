@@ -1647,40 +1647,6 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /////////////////////////////////////////////////
-  /**
-   * Support for ucar.unidata.io.FileCache.
-   */
-  protected boolean cached;
-
-  /**
-   * Set whether this file is in the cache.
-   *
-   * @param cached in the cache or not.
-   * @see ucar.unidata.io.FileCache
-   */
-  public void setCached(boolean cached) {
-    this.cached = cached;
-  }
-
-  /**
-   * Find whether this file is in the cache.
-   *
-   * @return true if in the cache.
-   * @see ucar.unidata.io.FileCache
-   */
-  public boolean isCached() {
-    return cached;
-  }
-
-  /**
-   * _more_
-   *
-   * @throws IOException _more_
-   */
-  public void synch() throws IOException {
-  }
-
-  /////////////////////////////////////////////////
 
   /**
    * Search forward from the current pos, looking for a match.

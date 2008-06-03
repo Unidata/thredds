@@ -325,11 +325,6 @@ public class ToolsUI extends JPanel {
         NetcdfDataset.getNetcdfFileCache().showCache(f);
         //f.format("\nNetcdfDatasetCache contents\n");
         //NetcdfDataset.getDatasetCache().showCache(f);
-        f.format("\nRAF Cache contents\n");
-        List cacheList = ucar.unidata.io.FileCache.getCache();
-        for (Object cacheElement : cacheList) {
-          f.format(" %s\n",cacheElement);
-        }
         viewerPanel.detailTA.setText(f.toString());
         viewerPanel.detailWindow.show();
       }
@@ -2998,7 +2993,7 @@ public class ToolsUI extends JPanel {
     }
 
     done = true; // on some systems, still get a window close event
-    NetcdfFileCache.exit(); // kill the timer thread
+    NetcdfDataset.shutdown(); // shutdown threads
     System.exit(0);
   }
 

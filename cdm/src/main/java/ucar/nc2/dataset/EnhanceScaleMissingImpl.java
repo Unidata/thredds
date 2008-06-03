@@ -42,7 +42,8 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   private DataType convertedDataType = null;
 
   // defaults from NetcdfDataset modes
-  private boolean useNaNs = false;
+  private boolean useNaNs = NetcdfDataset.useNaNs;
+  //private boolean useNaNs = false;
   private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
   private boolean fillValueIsMissing = NetcdfDataset.fillValueIsMissing;
   private boolean missingDataIsMissing = NetcdfDataset.missingDataIsMissing;

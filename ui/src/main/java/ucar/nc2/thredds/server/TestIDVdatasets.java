@@ -27,7 +27,6 @@ import java.io.*;
 import java.util.List;
 
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -35,6 +34,7 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -329,7 +329,6 @@ public class TestIDVdatasets {
     //ts.extract( pout, "http://motherlode.ucar.edu:9080/thredds/catalog.xml", true, "NEXRAD Radar", 0);
     //ts.extract( pout, "http://motherlode.ucar.edu:8088/thredds/dodsC/radars.xml", true, null, 0);
 
-    NetcdfFileCache.exit();
     //ts.extract(System.out, "http://motherlode.ucar.edu:8088/thredds/dodsC/radars.xml", true);
     // ts.extract(System.out, "http://whoopee:8080/thredds/dodsC/shared/testdata/radar/nexrad/level3/catalog.xml", false);
   }

@@ -152,7 +152,7 @@ public abstract class Aggregation implements ProxyReader {
    * @param cancelTask  user may cancel, may be null
    */
   public void addExplicitDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
-                                 NetcdfFileFactory reader, CancelTask cancelTask) {
+                                 ucar.nc2.util.cache.FileFactory reader, CancelTask cancelTask) {
     Dataset nested = makeDataset(cacheName, location, ncoordS, coordValueS, sectionSpec, false, reader);
     explicitDatasets.add(nested);
   }
@@ -431,7 +431,8 @@ public abstract class Aggregation implements ProxyReader {
    * @param reader      factory for reading this netcdf dataset
    * @return a Aggregation.Dataset
    */
-  protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec, boolean enhance, NetcdfFileFactory reader) {
+  protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
+          boolean enhance, ucar.nc2.util.cache.FileFactory reader) {
     //return new Dataset(cacheName, location, ncoordS, coordValueS, sectionSpec, enhance, reader);
     return new Dataset(cacheName, location, enhance, reader);
   }
@@ -447,7 +448,7 @@ public abstract class Aggregation implements ProxyReader {
 
     // deferred opening
     protected String cacheName;
-    protected NetcdfFileFactory reader;
+    protected ucar.nc2.util.cache.FileFactory reader;
     protected boolean enhance;
 
     /**
@@ -469,7 +470,7 @@ public abstract class Aggregation implements ProxyReader {
      * @param enhance   open dataset in enhance mode
      * @param reader    factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
-    protected Dataset(String cacheName, String location, boolean enhance, NetcdfFileFactory reader) {
+    protected Dataset(String cacheName, String location, boolean enhance, ucar.nc2.util.cache.FileFactory reader) {
       this(location);
       this.cacheName = cacheName;
       this.enhance = enhance;
@@ -493,8 +494,7 @@ public abstract class Aggregation implements ProxyReader {
         ncfile = NetcdfDataset.acquireDataset(reader, cacheName, NetcdfDataset.EnhanceMode.All, -1, cancelTask, spiObject);
         
       } else {
-        ncfile = NetcdfDataset.openOrAcquireFile(NetcdfDataset.getNetcdfFileCache(), reader, null,
-                      cacheName, -1, cancelTask, spiObject);
+        ncfile = NetcdfDataset.acquireFile(reader, null, cacheName, -1, cancelTask, spiObject);
       }
 
       if (debugOpenFile) System.out.println(" acquire " + cacheName + " took " + (System.currentTimeMillis() - start));
@@ -576,7 +576,7 @@ public abstract class Aggregation implements ProxyReader {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    class PolymorphicReader implements NetcdfFileFactory, NetcdfDatasetFactory {
+    class PolymorphicReader implements ucar.nc2.util.cache.FileFactory { // LOOK
 
       public NetcdfDataset openDataset(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws java.io.IOException {
         return NetcdfDataset.openDataset(location, true, buffer_size, cancelTask, spiObject);
