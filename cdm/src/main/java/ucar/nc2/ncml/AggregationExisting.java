@@ -137,6 +137,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     List<Date> dateList = new ArrayList<Date>();
     String units = null;
 
+    // make concurrent
     for (Dataset dataset : getDatasets()) {
       NetcdfDataset ncfile = null;
       try {

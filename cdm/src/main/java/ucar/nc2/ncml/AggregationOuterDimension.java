@@ -225,6 +225,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     Array allData = Array.factory(dtype, mainv.getShape());
     int destPos = 0;
 
+    // make concurrent
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
       Array varData = vnested.read(mainv, cancelTask);
@@ -299,6 +300,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
     if (debug) System.out.println("   agg wants range=" + mainv.getName() + "(" + joinRange + ")");
 
+    // make concurrent
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset nested : nestedDatasets) {
       DatasetOuterDimension dod = (DatasetOuterDimension) nested;
@@ -680,6 +682,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       if (section.getRank() > 1)
         innerSection = new Section(ranges.subList(1, ranges.size()));
 
+      // make concurrent      
       int resultPos = 0;
       List<Dataset> nestedDatasets = getDatasets();
       for (Dataset vnested : nestedDatasets) {

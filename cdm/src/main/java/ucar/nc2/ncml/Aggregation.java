@@ -305,8 +305,6 @@ public abstract class Aggregation implements ProxyReader {
     for (Aggregation.Dataset dataset : explicitDatasets) {
       datasets.add(dataset);
     }
-
-
   }
 
   /**
@@ -440,14 +438,13 @@ public abstract class Aggregation implements ProxyReader {
 
   /**
    * Encapsolates a NetcdfFile that is a component of the aggregation.
-   * public for NcMLWriter
    */
   class Dataset {
     protected String location; // location attribute on the netcdf element
     protected MyCrawlableDataset cd;
 
     // deferred opening
-    protected String cacheName;
+    protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
     protected boolean enhance;
 
@@ -465,16 +462,16 @@ public abstract class Aggregation implements ProxyReader {
      * With this constructor, the actual opening of the dataset is deferred, and done by the reader.
      * Used with explicit netcdf elements, and scanned files.
      *
-     * @param cacheName a unique name to use for caching
+     * @param cacheLocation a unique name to use for caching
      * @param location  attribute "location" on the netcdf element
      * @param enhance   open dataset in enhance mode
      * @param reader    factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
-    protected Dataset(String cacheName, String location, boolean enhance, ucar.nc2.util.cache.FileFactory reader) {
+    protected Dataset(String cacheLocation, String location, boolean enhance, ucar.nc2.util.cache.FileFactory reader) {
       this(location);
-      this.cacheName = cacheName;
+      this.cacheLocation = cacheLocation;
       this.enhance = enhance;
-      this.reader = (reader != null) ? reader : new PolymorphicReader();
+      this.reader = reader;
     }
 
     /**
@@ -489,15 +486,15 @@ public abstract class Aggregation implements ProxyReader {
     protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
       NetcdfFile ncfile;
       long start = System.currentTimeMillis();
-      if (debugOpenFile) System.out.println(" try to acquire " + cacheName);
+      if (debugOpenFile) System.out.println(" try to acquire " + cacheLocation);
       if (enhance) {
-        ncfile = NetcdfDataset.acquireDataset(reader, cacheName, NetcdfDataset.EnhanceMode.All, -1, cancelTask, spiObject);
+        ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, NetcdfDataset.EnhanceMode.All, -1, cancelTask, spiObject);
         
       } else {
-        ncfile = NetcdfDataset.acquireFile(reader, null, cacheName, -1, cancelTask, spiObject);
+        ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
       }
 
-      if (debugOpenFile) System.out.println(" acquire " + cacheName + " took " + (System.currentTimeMillis() - start));
+      if (debugOpenFile) System.out.println(" acquire " + cacheLocation + " took " + (System.currentTimeMillis() - start));
       //if (type == Type.JOIN_EXISTING) // LOOK should others use this?
       //  cacheCoordValues(ncfile);
       // cacheVariables(ncfile); infinite loop
@@ -527,6 +524,7 @@ public abstract class Aggregation implements ProxyReader {
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
 
+        // LOOK what if variable name has been changed in NcML ?
         Variable v = ncd.findVariable(mainv.getName());
         return v.read();
 
@@ -555,6 +553,7 @@ public abstract class Aggregation implements ProxyReader {
         if (debugRead)
           System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation() + " " + new Section(section));
 
+        // LOOK what if variable name has been changed in NcML ?
         Variable v = ncd.findVariable(mainv.getName());
         return v.read(section);
 
@@ -576,7 +575,7 @@ public abstract class Aggregation implements ProxyReader {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    class PolymorphicReader implements ucar.nc2.util.cache.FileFactory { // LOOK
+    /* class PolymorphicReader implements ucar.nc2.util.cache.FileFactory {
 
       public NetcdfDataset openDataset(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws java.io.IOException {
         return NetcdfDataset.openDataset(location, true, buffer_size, cancelTask, spiObject);
@@ -585,7 +584,7 @@ public abstract class Aggregation implements ProxyReader {
       public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
         return NetcdfDataset.openFile(location, buffer_size, cancelTask, spiObject);
       }
-    }
+    }  */
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -593,6 +592,7 @@ public abstract class Aggregation implements ProxyReader {
   /**
    * All non-agg variables use a proxy to acquire the file before reading.
    * If the variable is caching, read data into cache now.
+   * If not caching, VariableEnhanced.setProxyReader() is called.
    *
    * @param typicalDataset read from a "typical dataset"
    * @param newds          containing dataset
@@ -604,7 +604,7 @@ public abstract class Aggregation implements ProxyReader {
     DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
     List<Variable> allVars = newds.getRootGroup().getVariables();
     for (Variable v : allVars) {
-      VariableEnhanced ve = (VariableEnhanced) v; // need this for getProxyReader2()
+      VariableEnhanced ve = (VariableEnhanced) v;
 
       if (ve.getProxyReader() != null) {
         if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + ve.getName());
@@ -621,7 +621,7 @@ public abstract class Aggregation implements ProxyReader {
 
       } else if (null == ve.getProxyReader()) { // put proxy on the rest
         ve.setProxyReader(proxy);
-        if (debugProxy) System.out.println(" debugProxy: proxy on " + ve.getName());
+        if (debugProxy) System.out.println(" debugProxy: set proxy on " + ve.getName());
       }
     }
   }
@@ -649,7 +649,7 @@ public abstract class Aggregation implements ProxyReader {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile(cancelTask);
-        Variable proxyV = ncfile.findVariable(mainV.getName());
+        Variable proxyV = ncfile.findVariable(mainV.getName()); // LOOK assumes they have the same name - may have been renamed in NcML!
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
         return proxyV.read(section);
       } finally {

@@ -145,6 +145,7 @@ public class AggregationTiled extends Aggregation {
     Section wantSection = mainv.getShapeAsSection();
     if (debug) System.out.println("wantSection: " + wantSection+" for var "+mainv.getName());
 
+    // make concurrent
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
       DatasetTiled dtiled = (DatasetTiled) vnested;
@@ -196,12 +197,14 @@ public class AggregationTiled extends Aggregation {
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, wantSection.getShape()); // LOOK need fill
     if (debug) {
-    try {
-      System.out.println(dtype + " allData allocated: " + new Section(allData.getShape()));
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
+      try {
+        System.out.println(dtype + " allData allocated: " + new Section(allData.getShape()));
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+      }
     }
-    }
+
+    // make concurrent
 
     // run through all the datasets
     List<Dataset> nestedDatasets = getDatasets();

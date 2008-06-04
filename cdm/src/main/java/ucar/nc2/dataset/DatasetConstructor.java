@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -21,7 +21,6 @@ package ucar.nc2.dataset;
 
 import ucar.nc2.*;
 
-import java.util.StringTokenizer;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -34,7 +33,7 @@ public class DatasetConstructor {
 
   /**
    * Copy contents of "src" to "target". skip ones that already exist (by name).
-   * Dimensions and Variables are replaced with equivalent elements, but unlimited dimensions are not allowed.
+   * Dimensions and Variables are replaced with equivalent elements, but unlimited dimensions are turned into regular dimensions.
    * Attribute doesnt have to be replaced because its immutable, so its copied by reference.
    *
    * @param src copy from here
@@ -47,7 +46,7 @@ public class DatasetConstructor {
   }
 
   static private void transferGroup(NetcdfFile ds, Group src, Group target, ReplaceVariableCheck replaceCheck) {
-    boolean unlimitedOK = false; // LOOK why?
+    boolean unlimitedOK = false; // LOOK why not allowed?
 
     // group attributes
     transferGroupAttributes(src, target);
@@ -64,20 +63,19 @@ public class DatasetConstructor {
     for (Variable v : src.getVariables()) {
       Variable targetV = target.findVariable(v.getShortName());
       VariableEnhanced targetVe = (VariableEnhanced) targetV;
-      boolean replace = (replaceCheck != null) && replaceCheck.replace(v);
+      boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replace not currently used
 
       if (replace || (null == targetV)) { // replace it
         if ((v instanceof Structure) && !(v instanceof StructureDS)) {
-           v = new StructureDS(target, (Structure) v); // true
+           v = new StructureDS(target, (Structure) v);
 
         } else if (!(v instanceof VariableDS)) {
-          v = new VariableDS(target, v, false);
+          v = new VariableDS(target, v, false);  // LOOK : what aboout enhance option ?
         }
 
         if (null != targetV) target.remove(targetV);
-        target.addVariable(v); // reparent
-        //v.setDimensions(v.getDimensionsString()); // rediscover dimensions
-        v.resetShape();
+        target.addVariable(v); // reparent group
+        v.resetShape(); // dimensions may be different
 
       } else if (!targetV.hasCachedData() && (targetVe.getOriginalVariable() == null)) {
         // this is the case where we defined the variable, but didnt set its data. we now set it with the first nested

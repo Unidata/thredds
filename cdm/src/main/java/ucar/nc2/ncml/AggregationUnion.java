@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -45,7 +45,7 @@ public class AggregationUnion extends Aggregation {
 
   @Override
   protected void buildDataset(CancelTask cancelTask) throws IOException {
-    // each Dataset just gets "transferred" into the resulting NetcdfDataset
+    // each Dataset just gets "transfered" into the resulting NetcdfDataset
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
       NetcdfFile ncfile = vnested.acquireFile(cancelTask);

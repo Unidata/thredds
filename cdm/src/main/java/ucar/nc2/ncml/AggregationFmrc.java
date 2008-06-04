@@ -407,6 +407,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     Array allData = Array.factory(dtype, mainv.getShape());
     int destPos = 0;
 
+    // make concurrent
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
       Array varData = vnested.read(mainv, cancelTask);
@@ -461,6 +462,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     long fullSize = Range.computeSize(innerSection); // may not be the same as the data returned !!
     if (debug) System.out.println("   agg wants range=" + mainv.getName() + "(" + joinRange + ")");
 
+    // make concurrent
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset nested : nestedDatasets) {
       DatasetOuterDimension dod = (DatasetOuterDimension) nested;
@@ -511,6 +513,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     int maxTimes = 0;
     String units = null;
 
+    // make concurrent
     List<Dataset> nestedDatasets = getDatasets();
     for (int i = 0; i < nestedDatasets.size(); i++) {
       Dataset dataset = nestedDatasets.get(i);

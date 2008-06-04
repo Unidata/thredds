@@ -304,7 +304,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * You still close with NetcdfDataset.close(), the release is handled automatically.
    * You must first call initNetcdfFileCache() for caching to actually take place.
    *
-   * @param location    location of file
+    * @param location    location of file, passed to FileFactory
    * @param cancelTask  allow task to be cancelled; may be null.
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
@@ -319,8 +319,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * You must first call initNetcdfFileCache() for caching to actually take place.
    * You still close with NetcdfDataset.close(), the release is handled automatically.
    *
-   * @param fac          if not null, use this factory if the file is not in the cache. If null, use the default factory.
-   * @param location    location of file
+   * @param fac         if not null, use this factory if the file is not in the cache. If null, use the default factory.
+   * @param location    location of file, passed to FileFactory
    * @param enhanceMode how to enhance
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  allow task to be cancelled; may be null.
@@ -406,7 +406,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * You still close with NetcdfFile.close(), the release is handled automatically.
    * You must first call initNetcdfFileCache() for caching to actually take place.
    *
-   * @param location   location of file
+   * @param location    location of file, passed to FileFactory
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfFile object
    * @throws java.io.IOException on read error
@@ -422,7 +422,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param factory if not null, use this factory to read the file. If null, use the default factory.
    * @param hashKey if not null, use as the cache key, else use the location
-   * @param location   location of file
+   * @param location    location of file, passed to FileFactory
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  allow task to be cancelled; may be null.
    * @param spiObject   sent to iosp.setSpecial(); may be null
