@@ -21,6 +21,7 @@ public class TdsContext
           org.slf4j.LoggerFactory.getLogger( TdsContext.class );
 
   private String contextPath;
+  private String webappVersion;
 
   private String contentPath;
   private String initialContentPath;
@@ -141,6 +142,16 @@ public class TdsContext
   public String getContextPath()
   {
     return contextPath;
+  }
+
+  /**
+   * Return the version string for this web application.
+   *
+   * @return the context path.
+   */
+  public String getWebappVersion()
+  {
+    return this.webappVersion;
   }
 
   /**

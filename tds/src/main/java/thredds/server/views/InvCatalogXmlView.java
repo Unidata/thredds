@@ -24,8 +24,8 @@ public class InvCatalogXmlView extends AbstractView
   protected void renderMergedOutputModel( Map model, HttpServletRequest req, HttpServletResponse res )
           throws Exception
   {
-    if ( model == null || model.isEmpty() || model.size() > 1 )
-      throw new IllegalArgumentException( "Model must not be null and must contain only one entry.");
+    if ( model == null || model.isEmpty() )
+      throw new IllegalArgumentException( "Model must not be null or empty.");
     if ( ! model.containsKey( "catalog" ))
       throw new IllegalArgumentException( "Model must contain \"catalog\" key.");
     Object o = model.get("catalog");

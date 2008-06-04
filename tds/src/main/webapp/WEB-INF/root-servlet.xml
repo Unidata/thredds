@@ -17,23 +17,12 @@
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
-  <bean id="dataDirController"
-        class="thredds.server.root.DataDirController"
-        init-method="init" destroy-method="destroy" >
+  <bean id="htmlController" class="thredds.server.root.HtmlController" >
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
-  <bean id="contentController"
-        class="thredds.server.root.ContentController"
-        init-method="init" destroy-method="destroy" >
+  <bean id="jspController" class="thredds.server.root.JspController" >
     <property name="tdsContext" ref="tdsContext"/>
-  </bean>
-
-  <bean id="tdsContext" class="thredds.server.config.TdsContext">
-    <!--property name="contentPath" value="../../content" />
-    <property name="initialContentPath" value="WEB-INF/altContent/startup" />
-    <property name="iddPath" value="WEB-INF/altContent/idd/thredds" />
-    <property name="motherlodePath" value="WEB-INF/altContent/motherlode/thredds" /-->
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
@@ -41,9 +30,9 @@
       <value>
         =rootController
         /=rootController
-        *.jsp=jspController
-        *.html=htmlController
-        *.xml=xmlController
+        **/*.jsp=jspController
+        **/*.html=htmlController
+        **/*.xml=xmlController
       </value>
     </property>
   </bean>

@@ -23,10 +23,10 @@ import java.util.HashMap;
  * @author edavis
  * @since 4.0
  */
-public class XmlController extends AbstractController
+public class HtmlController extends AbstractController
 {
 //  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( XmlController.class );
+//          org.slf4j.LoggerFactory.getLogger( HtmlController.class );
 
   private TdsContext tdsContext;
 
@@ -40,7 +40,8 @@ public class XmlController extends AbstractController
   {
     String path = req.getPathInfo();
     DataRootHandler drh = DataRootHandler.getInstance();
-    InvCatalog cat = drh.getCatalog( path, null );
+    String catPath = path.replaceAll( ".html$", ".xml" );
+    InvCatalog cat = drh.getCatalog( catPath, null );
 
     if ( cat == null )
     {
@@ -53,6 +54,11 @@ public class XmlController extends AbstractController
       return new ModelAndView( new FileView(), "file", publicFile);
     }
 
-    return new ModelAndView( new InvCatalogXmlView(), "catalog", cat);
+    Map<String,Object> model = new HashMap<String,Object>();
+    model.put( "catalog", cat);
+    model.put( "webappVersion", tdsContext.getWebappVersion());
+    model.put( "webappName", this.getServletContext().getServletContextName());
+    model.put( "docsPath", "http://someserver/thredds/");
+    return new ModelAndView( "thredds/server/catalog/catalog", model);
   }
 }
