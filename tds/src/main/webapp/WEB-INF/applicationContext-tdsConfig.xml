@@ -14,8 +14,8 @@
     <property name="motherlodePath" value="WEB-INF/altContent/motherlode/thredds" /-->
   </bean>
 
-  <bean id="tdsCatConfig" class="thredds.servlet.DataRootHandler">
-    <property name="tdsContext" ref="tdsContext"/>
+  <bean id="tdsCatConfig" class="thredds.server.config.TdsCatConfig">
+    <constructor-arg ref="tdsContext" />
   </bean>
 
 </beans>

@@ -7,6 +7,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
+  <bean id="tdsContext" class="thredds.server.config.TdsContext">
+    <!--property name="contentPath" value="../../content" />
+    <property name="initialContentPath" value="WEB-INF/altContent/startup" />
+    <property name="iddPath" value="WEB-INF/altContent/idd/thredds" />
+    <property name="motherlodePath" value="WEB-INF/altContent/motherlode/thredds" /-->
+  </bean>
+
   <bean id="rootController"
         class="thredds.server.root.RootController"
         init-method="init" destroy-method="destroy" >
