@@ -29,12 +29,12 @@ body {
   page</a>. Also you might want to <a href="http://www.unidata.ucar.edu/search.jsp?netcdf-java">search</a> 
 or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">browse</a> previous netCDF-Java support questions. 
 <hr>
-<h2><a name="v22"></a>Version 2.2 <b> (alpha)</b></h2>
-<p><strong>The latest version of Java 1.6 is recommended. </strong></p>
+<h2>Overview<b></b></h2>
 <p>The NetCDF-Java library  implements a <a href="CDM/index.html">Common Data Model </a>(CDM),  a generalization of the NetCDF, OpenDAP and HDF5 data models. The   library is  a prototype for the <a href="http://www.unidata.ucar.edu/content/software/netcdf/netcdf-4/index.html">NetCDF-4 project</a>, which provides a C language  API for the &quot;data access layer&quot; of the CDM, on top of the <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html">HDF5 file format</a>. The NetCDF-Java  library is a 100% Java framework for  <em>reading</em>  netCDF and other file formats into the CDM, as well as <em>writing</em> to the netCDF-3 file format. The NetCDF-Java  library also implements  <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add  metadata to CDM datasets, as well as to create virtual datasets through aggregation.</p>
-<p><strong>Which jar files do I need?</strong> All libraries (except toolsUI.jar) require an <a href="http://www.slf4j.org/">SLF4J</a> library such as <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/slf4j-jdk14.jar">slf4j-jdk14.jar</a> (14k) or <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/nlog4j-1.2.21.jar">nlog4j.jar</a> (202k). We need to keep logging unbundled so your application has a choice of logging. All but the minimal library also need (at least) the JDOM library. There are a number of optional jars that you might want to use, see the <a href="v2.2.22/README">README</a> for information. The toolsUI jar has everything, use it if you arent worried about size. </p>
-<p><strong>Why do we designate this alpha? </strong>The stability and code quality is moderately good. However, until we implement the <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/">NetCDF-4</a> reader, we are not sure if the API might need some (probably minor) changes. A stable NetCDF-4 format was released April 2007, and we expect that the next stable version will incorporate this format and the APIs will be final. </p>
-<h3><strong>Current Stable version 2.2.22 (requires Java 1.5+) </strong></h3>
+<p><strong>Which jar files do I need?</strong> All libraries (except toolsUI.jar) require an <a href="http://www.slf4j.org/">SLF4J</a> library such as <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/slf4j-jdk14.jar">slf4j-jdk14.jar</a> (14k) or <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/nlog4j-1.2.21.jar">nlog4j.jar</a> (202k). We need to keep logging unbundled so your application has a choice of logging. All but the minimal library also need (at least) the JDOM library. There are a number of optional jars that you might want to use, see the <a href="v2.2.22/README">README</a> for information. The toolsUI jar has everything, use it if you aren't concerned about size. </p>
+<p><strong>Why do we designate this alpha? </strong>The stability and code quality is moderately good. However, until we completely implement the <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/">NetCDF-4</a> reader, we are not sure if the API might need some (probably minor) changes. A stable NetCDF-4 format was released April 2007, and we expect that the next stable version will incorporate this format and the APIs will be final. </p>
+<p><strong>Which version of Java? </strong>All active versions (2.2.22 and 4.0) require Java 5 or above. Performance and stability is improved in version 6, and so<strong> the  latest version of Java 6 is recommended. </strong>NetCDF-Java version 4.1 will likely require Java 1.6. If you are stuck with Java 1.4, you can use the NetCDF-Java 2.2.20 release, but no support or bug fixes are done on that version. </p>
+<h3><strong><a name="v22"></a>Current Stable version 2.2.22 (requires Java 1.5+). Bug fixes only, no new development. </strong></h3>
 <ul>
   <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/ncCore-2.2.22.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/ncCore-2.2.22.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/netcdf-2.2.22.jar">netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/netcdf-2.2.22.jar.MD5">MD5</a>) implements the full CDM model. </li>
@@ -50,7 +50,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li> <a href="v2.2.22/javadoc/index.html">Public javadoc</a>: This is the public interface. </li>
   <li><a href="v2.2.22/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. CAREFUL, some of this may change.</li>
 </ul>
-<h3><strong>Development version 4.0 (requires Java 1.5+) </strong></h3>
+<h3><strong><a name="v4"></a>Development version 4.0 (requires Java 1.5+) </strong></h3>
 <p><strong>This version is ALPHA, do not rely on its API until announced as BETA. </strong></p>
 <ul>
   <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
@@ -86,7 +86,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li> User's documentation (incomplete): <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.doc">doc</a> <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.pdf">pdf</a>  </li>
 </ul>
 <h3>File types</h3>
-<p>The NetCDF-Java library (version 2.2)  can read the following file types and remote access protocols:</p>
+<p>The NetCDF-Java library version 2.2  can read the following file types and remote access protocols:</p>
 <ul>
   <li><a href="http://www.unidata.ucar.edu/content/software/netcdf/index.html">NetCDF-3</a> (classic and large format) </li>
   <li><a href="http://hdf.ncsa.uiuc.edu/products/hdf5/index.html">HDF5</a> (partial) </li>
@@ -99,7 +99,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li>ATD's <a href="http://www.atd.ucar.edu/rsf/UserGuides/ELDORA/DataAnalysis/DataAnalysis.html#DORADE">DORADE</a> radar file <a href="http://www.atd.ucar.edu/rsf/UserGuides/ELDORA/DoradeFormat/DoradeFormat.html">format</a> </li>
   <li><a href="http://www.ssec.wisc.edu/mcidas/">ADDE</a> client/server protocol (limited) </li>
 </ul>
-<p>NetCDF-Java library (version 4.0) adds</p>
+<p>NetCDF-Java library version 4.0 adds</p>
 <ul>
   <li> <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/">NetCDF-4</a> and <a href="http://hdf.ncsa.uiuc.edu/products/hdf5/index.html">HDF5</a> (complete) </li>
   <li> <a href="http://hdf.ncsa.uiuc.edu/products/hdf4/index.html">HDF4</a> (complete)</li>
@@ -124,7 +124,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li><a href="formats/RecordsInNetcdf3.html">Using Records in NetCDF-3 files</a> </li>
 </ul>
 <h3>Coordinate Systems<a name="CoordSys"></a></h3>
-<p>Working notes and documentation on <strong><em>coordinate system</em></strong> layer of the CDM</p>
+<p>Working notes and documentation on the <strong><em>coordinate system</em></strong> layer of the CDM</p>
 <ul>
   <li><a href="CoordinateSystemsNeeded.htm">Why we need Coordinate Systems</a> </li>
   <li>Coordinate System <a href="reference/CSObjectModel.html">Object Model Primer </a></li>
@@ -168,7 +168,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated on May 29, 2008 
+and was last updated on June 5, 2008 
 </address>
 
 </body>

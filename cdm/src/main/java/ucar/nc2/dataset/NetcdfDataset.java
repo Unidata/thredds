@@ -161,13 +161,20 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * Set the default EnhanceMode
    *
-   * @param b true if want to replace missing values with NaNs (default true)
+   * @param mode the default EnhanceMode for open and acquire factory methods
    */
-  static public void setDefaultEnhanceMode(NetcdfDataset.EnhanceMode b) {
-    defaultEnhanceMode = b;
+  static public void setDefaultEnhanceMode(NetcdfDataset.EnhanceMode mode) {
+    defaultEnhanceMode = mode;
   }
 
-
+  /**
+   * Get the default EnhanceMode
+   *
+   * @return the default EnhanceMode for open and acquire factory methods
+   */
+  static public NetcdfDataset.EnhanceMode getDefaultEnhanceMode() {
+    return defaultEnhanceMode;
+  }
 
   /**
    * Get whether to use NaNs for missing values, for efficiency
