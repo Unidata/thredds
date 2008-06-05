@@ -315,6 +315,50 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
   }
 
+  /**
+   * Open an existing file (read only), specifying which IOSP is to be used.
+   *
+   * @param location    location of file
+   * @param iospClassName fully qualified class name of the IOSP class to handle this file
+   * @param bufferSize RandomAccessFile buffer size, if <= 0, use default size
+   * @param cancelTask  allow task to be cancelled; may be null.
+   * @param iospMessage  special iosp tweaking (sent before open is called), may be null
+   * @return NetcdfFile object, or null if cant find IOServiceProver
+   * @throws IOException if error
+   */
+  static public NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask, Object iospMessage)
+          throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
+
+    Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
+    IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
+
+    // send before iosp is opened
+    if (iospMessage != null)
+      spi.sendIospMessage(iospMessage);
+
+    // get rid of file prefix, if any
+    String uriString = location.trim();
+    if (uriString.startsWith("file://"))
+      uriString = uriString.substring(7);
+    else if (uriString.startsWith("file:"))
+      uriString = uriString.substring(5);
+
+    // get rid of crappy microsnot \ replace with happy /
+    uriString = StringUtil.replace(uriString, '\\', "/");
+
+    if (bufferSize <= 0)
+      bufferSize = default_buffersize;
+    ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(uriString, "r", bufferSize);
+
+    NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
+
+    // send after iosp is opened
+    if (iospMessage != null)
+      spi.sendIospMessage(iospMessage);
+
+    return result;
+  }
+
   static private ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
 
     String uriString = location.trim();
@@ -482,7 +526,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return openInMemory(uri.toString(), contents);
   }
 
-
   private static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask,
           Object iospMessage) throws IOException {
 
@@ -527,40 +570,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     if (log.isDebugEnabled())
       log.debug("Using IOSP " + spi.getClass().getName());
-
-    NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
-
-    // send after iosp is opened
-    if (iospMessage != null)
-      spi.sendIospMessage(iospMessage);
-
-    return result;
-  }
-
-  // experimental - pass in the iosp
-  static public NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask, Object iospMessage)
-          throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
-
-    Class iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
-    IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
-
-    // send before iosp is opened
-    if (iospMessage != null)
-      spi.sendIospMessage(iospMessage);
-
-    // get rid of file prefix, if any
-    String uriString = location.trim();
-    if (uriString.startsWith("file://"))
-      uriString = uriString.substring(7);
-    else if (uriString.startsWith("file:"))
-      uriString = uriString.substring(5);
-
-    // get rid of crappy microsnot \ replace with happy /
-    uriString = StringUtil.replace(uriString, '\\', "/");
-
-    if (bufferSize <= 0)
-      bufferSize = default_buffersize;
-    ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(uriString, "r", bufferSize);
 
     NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
 

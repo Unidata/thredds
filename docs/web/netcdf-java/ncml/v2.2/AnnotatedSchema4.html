@@ -30,7 +30,7 @@ files.</p>
       <I><strong>netcdf element</strong> </I>  represents a generic netCDF dataset, i.e. a container for 
     data conforming to the netCDF data model. For instance, a <I>netcdf</I> element might 
     represent an existing <em>netCDF</em> file, a  netCDF file not yet written, a <em>GRIB</em> file read through the netCDF-Java library, a subset of a netCDF file, an aggregation of netCDF files, or a self-contained dataset (i.e. all the 
-    data is  included in the NcML document and there is no seperate netCDF file 
+    data is  included in the NcML document and there is no separate netCDF file 
     holding the data). An NcML document  therefore 
     should not necessarily be thought of as a physical netCDF file, but rather the "public interface" or API to a set of data, which may or may not be implemented 
   with a physical netCDF file. </FONT></P>
@@ -46,11 +46,14 @@ files.</p>
 <pre> <font color="#0000FF">(4)</font>&lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:anyURI&quot;/&gt;
  <font color="#0000FF">(5)</font>&lt;xsd:attribute name=&quot;id&quot; type=&quot;xsd:string&quot;/&gt;
  <font color="#0000FF">(6)</font>&lt;xsd:attribute name=&quot;title&quot; type=&quot;xsd:string&quot;/&gt;
- <font color="#0000FF">(7)</font>&lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:boolean&quot;/&gt;
- <font color="#0000FF">(8)</font>&lt;xsd:attribute name=&quot;addRecords&quot; type=&quot;xsd:boolean&quot;/&gt;</pre>
+ <font color="#0000FF">(7)</font>&lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:string&quot;/&gt;
+ <font color="#0000FF">(8)</font>&lt;xsd:attribute name=&quot;addRecords&quot; type=&quot;xsd:boolean&quot;/&gt;
+
+ (9)&lt;xsd:attribute name=&quot;iosp&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;xsd:attribute name=&quot;iospParam&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;xsd:attribute name=&quot;bufferSize&quot; type=&quot;xsd:int&quot;/&gt;</pre>
 <pre>    <font color="#AA0000">&lt;!-- for aggregations --&gt;
- (9)&lt;xsd:attribute name=&quot;ncoords&quot; type=&quot;xsd:string&quot;/&gt;
-(10)&lt;xsd:attribute name=&quot;coordValue&quot; type=&quot;xsd:string&quot;/&gt;
+(10)&lt;xsd:attribute name=&quot;ncoords&quot; type=&quot;xsd:string&quot;/&gt;
+(11)&lt;xsd:attribute name=&quot;coordValue&quot; type=&quot;xsd:string&quot;/&gt;
+(12)<strong>&lt;xsd:attribute name=&quot;section&quot; type=&quot;xsd:string&quot;/&gt;</strong><br>
 </font>&lt;/xsd:complexType&gt;
 &lt;/xsd:element&gt;
 </pre>
@@ -64,8 +67,9 @@ files.</p>
   way to uniquely identify (relative to the application context) the NetCDF dataset.  It is important to understand that the <I>id</I> attribute refers to 
   the NetCDF dataset defined by the XML instance document, NOT the </FONT><font color="#0000FF">referenced dataset </font><FONT color=#0000ff>if there is  one. </FONT>
   <LI><FONT color=#0000ff>The optional <I><strong>title</strong></I> attribute provides a way to add a human readable title to the netCDF dataset. </FONT>
-  <LI><font color="#0000ff">The optional <em><strong>enhance</strong></em> attribute indicates whether the </font><font color="#0000FF">referenced dataset </font><font color="#0000ff"> is opened in enhanced mode or not (default not). </font>  
-  <LI><font color="#0000ff">The optional <em><strong>addRecords</strong></em> attribute is used only when the referenced datasets is a netCDF-3 file. If true (default false) then a structure variable containing the record variables is added. </font>
+  <LI><font color="#0000ff">The optional <em><strong>enhance<a name="enhance"></a></strong></em> attribute indicates whether the </font><font color="#0000FF">referenced dataset </font><font color="#0000ff"> is opened in enhanced mode, and can be set to <em>All, ScaleMissing, CoordSystems, or None </em>(case insensitive). For backwards compatibility, a value of <em>true</em> means <em>All</em>. Default is <em>None</em>. See NetcdfDataset.EnhanceMode.</font>  
+  <LI><font color="#0000ff">The optional <em><strong>addRecords</strong></em> attribute is used only when the referenced datasets is a netCDF-3 file. If true (default false) then a Structure named <em><strong>record</strong></em> is added, containing the record (unlimited) variables. This allows one to read efficiently along the unlimited dimension. </font>  
+  <LI><font color="#0000ff">These 3 parameters control how the referenced dataset is opened. If <strong>iosp</strong> is specified, it is a fully qualified class name of an <strong><a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/IOSPoverview.html">IOServiceProvider</a></strong>  class that knows how to open the file specified by <strong>location</strong>. The optional <strong>iospParam</strong> is passed to the IOSP through the <strong>IOServiceProvider</strong>.setSpecial() method. The optional <strong>bufferSize</strong> tells the IOSP how many bytes to use for buffering the file data. </font>
   <LI><font color="#990000">The optional <strong><em>ncoords</em></strong> attribute is used for <strong>joinExisting</strong> aggregation datasets to indicate the number of coordinates that come from the dataset.</font>  
   <LI><font color="#990000"> The <strong><em>coordValue</em></strong> attribute is used for aggregation datasets to assign a coordinate value(s) to the dataset. If there are multiple coordinates for a single file, blanks and/or commas are used to delineate them, so you cannot use those characters in your coordinate values.</font>
 </OL>
@@ -179,9 +183,12 @@ color=#0000ff>objects that are in the referenced dataset. Place the remove eleme
        &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
       &lt;/xsd:complexType&gt;
      &lt;/xsd:element&gt;</pre>
-<pre><strong>(2)</strong>  &lt;xsd:element ref=&quot;netcdf&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;</pre>
+<pre><strong>     &lt;xsd:element ref=&quot;promoteGlobalAttribute&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br>     &lt;xsd:element ref=&quot;cacheVariable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br>(2)</strong>  &lt;xsd:element ref=&quot;netcdf&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;</pre>
 <pre><strong>(3)</strong>  &lt;xsd:element name=&quot;scan&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
       &lt;xsd:complexType&gt;
+
+       <strong>&lt;xsd:sequence&gt;<br>         &lt;xsd:element ref=&quot;crawlableDatasetImpl&quot; minOccurs=&quot;0&quot;/&gt;<br>       &lt;/xsd:sequence&gt;</strong>
+
 <strong>(4)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
 <strong>(5)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;
 <strong>(6)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;
@@ -189,7 +196,7 @@ color=#0000ff>objects that are in the referenced dataset. Place the remove eleme
 <strong>(8)</strong>    &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
 
 <strong>(9)</strong>    &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(10)</strong>   &lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:boolean&quot;/&gt;
+<strong>(10)</strong>   &lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:string&quot;/&gt;
 <br>      &lt;/xsd:complexType&gt;
      &lt;/xsd:element&gt;
 
@@ -210,10 +217,9 @@ color=#0000ff>objects that are in the referenced dataset. Place the remove eleme
 <pre><strong>(13)</strong> &lt;xsd:attribute name=&quot;type&quot; type=&quot;AggregationType&quot; use=&quot;required&quot;/&gt;
 <strong>(14)</strong> &lt;xsd:attribute name=&quot;dimName&quot; type=&quot;xsd:token&quot; /&gt;
 <strong>(15)</strong> &lt;xsd:attribute name=&quot;recheckEvery&quot; type=&quot;xsd:string&quot; /&gt;
-
-      &lt;!-- fmrc only  --&gt;<br>(16) &lt;xsd:attribute name=&quot;fmrcDefinition&quot; type=&quot;xsd:string&quot; /&gt;<br>(17) &lt;xsd:attribute name=&quot;timeUnitsChange&quot; type=&quot;xsd:boolean&quot; /&gt;
-
-  &lt;/xsd:complexType&gt;
+<strong>(16)</strong> &lt;xsd:attribute name=&quot;timeUnitsChange&quot; type=&quot;xsd:boolean&quot;/&gt;<br>
+      &lt;!-- fmrc only  --&gt;<br><strong>(17)</strong> &lt;xsd:attribute name=&quot;fmrcDefinition&quot; type=&quot;xsd:string&quot; /&gt;<br>
+&lt;/xsd:complexType&gt;
 &lt;/xsd:element&gt;
 </pre>
 <ol>
@@ -227,12 +233,13 @@ color=#0000ff>objects that are in the referenced dataset. Place the remove eleme
   <li><font color="#990000">If present, only files whose last modified date is older than this amount of time from the present will be included. This is a way to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot; or &quot;1 hour&quot;. </font></li>
   <li><font color="#990000">A <em><strong>dateFormatMark</strong></em>  is used on <strong>joinNew</strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string. You can ignore trailing text. For example:<pre>
         Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini 
-DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm
-</pre> 
-  </font></li>
-  <li><font color="#990000"> You can optionally specify that the files should be opened in enhanced mode (default false)</font></li>
+ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre> 
+      </font>
+    <p><font color="#990000">A <em><strong>dateFormatMark</strong></em> can be used on a <strong>joinExisting </strong>only if there is a single time in each file of the aggregation, in which case the coordinate values of the time can be created from the filename, instead of having to open each file and read it.</font></p>
+  <font color="#990000"></font></li>
+  <li><font color="#990000"> You can optionally specify that the files should be opened in <a href="#enhance">enhanced mode</a> (default is <em>NetcdfDataset.EnhanceMode.None</em>)</font></li>
   <li><font color="#990000">A specialized scanFmrc element can be used for a <em><strong><a href="FmrcAggregation.html#forecastModelRunSingleCollection">forecastModelRunSingleCollection</a> </strong></em>aggregation, where forecast model run data is stored in multiple files, with one forecast time per file.</font></li>
-  <li><font color="#990000"> For scanFmrc, the run date and the forecast date is extracting from the file pathname using a <strong>runDateMatcher </strong>and either a <strong>forecastDateMatcher </strong>or a<strong> forecastOffsetMatcher </strong>attribute<strong>. </strong>All of these require matching a specific string in the file's pathname and then matching a date or hour offset immediately before or after the match. The match is specified by placing it between '#' marking characters. The <strong>runDateMatcher </strong>and <strong>forecastDateMatcher </strong>has a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string before or after the match, while a <strong>forecastOffsetMatcher</strong> counts the number of 'H' characters, and extracts an hour offset from the run date. For example: </font>
+  <li><font color="#990000"> For scanFmrc, the run date and the forecast date is extracted from the file pathname using a <strong>runDateMatcher </strong>and either a <strong>forecastDateMatcher </strong>or a<strong> forecastOffsetMatcher </strong>attribute<strong>. </strong>All of these require matching a specific string in the file's pathname and then matching a date or hour offset immediately before or after the match. The match is specified by placing it between '#' marking characters. The <strong>runDateMatcher </strong>and <strong>forecastDateMatcher </strong>has a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string before or after the match, while a <strong>forecastOffsetMatcher</strong> counts the number of 'H' characters, and extracts an hour offset from the run date. For example: </font>
     <pre><font color="#990000">     
              Filename:  gfs_3_20060706_0300_006.grb 
        runDateMatcher: #gfs_3_#yyyyMMdd_HH
@@ -243,19 +250,57 @@ forecastOffsetMatcher:                     HHH#.grb#</font></pre>
 </li>
   <li><font color="#990000">You must specify an aggregation type.</font></li>
   <li><font color="#990000">For all types except <em><strong>joinUnion</strong></em>, you must specify the dimension name to join. </font></li>
-  <li><font color="#990000">When you are using scan elements on a set of files that may change, and you are using caching, set <strong>recheckEvery</strong> to a valid <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time value, like &quot;10 min&quot;, &quot;1 hour&quot;, &quot;30 days&quot;, etc. Whenever the dataset is reacquired from the cache, the directories will be rescanned if <strong>recheckEvery</strong> amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing. <br>
+  <li><font color="#990000">When you are using scan elements on a set of files that may change, and you are using caching, set <strong>recheckEvery</strong> to a valid <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time value, like &quot;10 min&quot;, &quot;1 hour&quot;, &quot;30 days&quot;, etc. Whenever the dataset is reacquired from the cache, the directories will be rescanned if <strong>recheckEvery</strong> amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing.</font></li>
+  <li><font color="#990000">Only for OuterDimension Aggregation, if this is set to true, the units of the joined coordinate variable may change, so examine them and do any appropriate convesion so that the aggregated coordinate values have consistent units. </font></li>
+  <li><font color="#990000">Only for forecastModelRunCollection or forecastModelRunSingleCollection. LOOK expose ?? <br>
   </font></li>
 </ol>
+<h3>Aggregation Type</h3>
 <pre> &lt;!-- type of aggregation --&gt;
  &lt;xsd:simpleType name=&quot;AggregationType&quot;&gt;
   &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
    &lt;xsd:enumeration value=&quot;forecastModelRunCollection&quot;/&gt;<br>   &lt;xsd:enumeration value=&quot;forecastModelRunSingleCollection&quot;/&gt;
    &lt;xsd:enumeration value=&quot;joinExisting&quot;/&gt;
    &lt;xsd:enumeration value=&quot;joinNew&quot;/&gt;
+   <strong>&lt;xsd:enumeration value=&quot;tiled&quot;/&gt;</strong>
    &lt;xsd:enumeration value=&quot;union&quot;/&gt;
   &lt;/xsd:restriction&gt;
  &lt;/xsd:simpleType&gt;</pre>
 <p> <font color="#990000">The allowable aggregation types.</font></p>
+<h3>logicalView Element</h3>
+<pre>  <em>&lt;!-- logical view  --&gt;<br>  &lt;xsd:element name=&quot;logicalView&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:attribute name=&quot;section&quot; type=&quot;xsd:token&quot; use=&quot;optional&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</em>
+</pre>
+<p>not implemented. <br>
+</p>
+<h3>crawlableDataset Element</h3>
+<pre>  <strong>&lt;!-- crawlableDataset - same as catalog --&gt;
+  &lt;xsd:element name=&quot;crawlableDatasetImpl&quot;&gt;
+   &lt;xsd:complexType&gt;
+    &lt;xsd:sequence&gt;
+     &lt;xsd:any namespace=&quot;##any&quot; minOccurs=&quot;0&quot; processContents=&quot;lax&quot;/&gt;
+    &lt;/xsd:sequence&gt;
+    &lt;xsd:attribute name=&quot;className&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+   &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
+</strong></pre>
+<h3><strong><br>
+  promoteGlobalAttribute Element</strong></h3>
+<pre>  <strong>&lt;!-- promote global attribute to variable --&gt;
+  &lt;xsd:element name=&quot;promoteGlobalAttribute&quot;&gt;
+   &lt;xsd:complexType&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;
+    &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;
+   &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;
+</strong></pre>
+<h3><strong><br>
+  cacheVariable Element</strong></h3>
+<pre> <strong> &lt;!-- cache a Variable for efficiency --&gt;
+  &lt;xsd:element name=&quot;cacheVariable&quot;&gt;
+   &lt;xsd:complexType&gt;
+    &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;
+   &lt;/xsd:complexType&gt;
+  &lt;/xsd:element&gt;</strong></pre>
 <h2>Notes</h2>
 <ul>
   <li><font color="#0000FF">  Any attributes of type xsd:token, have trailing and ending spaces    
@@ -438,7 +483,7 @@ forecastOffsetMatcher:                     HHH#.grb#</font></pre>
 </blockquote>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 08, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 03, 2008 
 </address>
 <p>&nbsp;</p>
 </BODY>

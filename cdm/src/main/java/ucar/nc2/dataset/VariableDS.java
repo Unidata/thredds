@@ -29,16 +29,29 @@ import java.io.IOException;
  * An wrapper around a Variable, creating an "enhanced" Variable.
  * The original Variable is used for the I/O.
  * There are several distinct uses:
- *   1) "enhanced mode" : handle scale/offset/missing values; this can change DataType and data values
- *   2) container for coordinate system information
- *   3) NcML modifications to underlying Variable
+ * <ol>
+ * <li>  1) handle scale/offset/missing values; this can change DataType and data values
+ * <li>  2) container for coordinate system information
+ * <li>  3) NcML modifications to underlying Variable
+ * </ol>
+ * The default case is for VariableDS to be opened in enhanced mode, which checks for scale/offset/missing values and
+ *   converts the data automatically. For double/floats, missing data is replaced with NaN's (you can turn off NaN
+ *   replacement with NetcdfDataset.setUseNaNs(false)).
+ *   This is done whenever the NetcdfDataset.open is called with NetcdfDataset.EnhanceMode equal to All or ScaleOffset.
+ *
+ * Automatic conversion has a lot of overhead, and if you need maximum performance, but still want to use
+ *   scale/offset/missing value handling, open the NetcdfDataset with EnhanceMode.ScaleOffsetDefer. The variableDs
+ *   data type is not promoted, and the data is not converted on a read, but you can call the convertScaleOffset()
+ *   routines which will do the conversion on a point-by-point basis, or convertArray() which will convert the entire
+ *   Array.
+ * 
  * @author caron
  */
 
 public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   private EnhancementsImpl proxy;
   private EnhanceScaleMissingImpl smProxy;
-  private boolean isEnhanced;
+  private NetcdfDataset.EnhanceMode enhanceMode;
 
   protected Variable orgVar; // wrap this Variable
   private DataType orgDataType; // keep seperate for the case where there is no ioVar.
@@ -113,12 +126,12 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       VariableDS ncVarDS = (VariableDS) orgVar;
       this.proxy = ncVarDS.proxy;
       this.smProxy = ncVarDS.smProxy;
-      this.isEnhanced = ncVarDS.isEnhanced;
+      this.enhanceMode = ncVarDS.enhanceMode;
 
     } else {
       this.proxy = new EnhancementsImpl( this);
       if (enhance) {
-        enhance();
+        enhance(NetcdfDataset.defaultEnhanceMode);
       } else {
         this.smProxy = new EnhanceScaleMissingImpl();
       }
@@ -132,7 +145,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   protected VariableDS( VariableDS vds) {
     super(vds);
 
-    this.isEnhanced = vds.isEnhanced;
+    this.enhanceMode = vds.enhanceMode;
     this.orgVar = vds.orgVar;
     this.orgDataType = vds.orgDataType;
     this.smProxy = vds.smProxy;
@@ -147,20 +160,32 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return new VariableDS( this);
   }
 
-  /** recalc scale/offset/missing value. This may change the DataType */
-  public void enhance() {
+  /**
+   * public by accident.
+   * Calculate scale/offset/missing value info. This may change the DataType.
+   */
+  public void enhance(NetcdfDataset.EnhanceMode mode) {
     if (orgVar instanceof VariableDS) return; // LOOK ????
 
+    if (mode == NetcdfDataset.EnhanceMode.All)
+      mode = NetcdfDataset.EnhanceMode.ScaleMissing;
+    else if (mode == NetcdfDataset.EnhanceMode.AllDefer)
+      mode = NetcdfDataset.EnhanceMode.ScaleMissingDefer;
+
     this.smProxy = new EnhanceScaleMissingImpl( this);
-    if (smProxy.hasScaleOffset() && (smProxy.getConvertedDataType() != getDataType()))
+
+    // see if we need to promote the data type
+    if ((mode == NetcdfDataset.EnhanceMode.ScaleMissing) &&
+         smProxy.hasScaleOffset() && (smProxy.getConvertedDataType() != getDataType()))
       setDataType( smProxy.getConvertedDataType());
-    this.isEnhanced = true;
+
+    this.enhanceMode = mode;
   }
 
   /** If this Variable has been "enhanced", ie processed for scale/offset/missing value
-   * @return if enhanced
+   * @return EnhanceMode
    */
-  public boolean isEnhanced() { return isEnhanced; }
+  NetcdfDataset.EnhanceMode getEnhanceMode() { return enhanceMode; }
 
   public boolean isCoordinateVariable() {
     return (this instanceof CoordinateAxis) || super.isCoordinateVariable();
@@ -193,8 +218,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
 
   // EnhanceScaleMissing interface
-
-
   public Array convert(Array data) {
     return smProxy.convert( data);
   }
@@ -235,8 +258,12 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return smProxy.isInvalidData( p0);
   }
 
-  public boolean isMissing(double p0) {
-    return smProxy.isMissing( p0);
+  public boolean isMissing(double val) {
+    return smProxy.isMissing( val);
+  }
+
+  public boolean isMissingFast(double val) {
+    return smProxy.isMissingFast( val);
   }
 
   public boolean isMissingValue(double p0) {
@@ -263,7 +290,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return smProxy.getUseNaNs() ;
   }
 
-  /* public double convertScaleOffsetMissing(byte value) {
+  public double convertScaleOffsetMissing(byte value) {
     return smProxy.convertScaleOffsetMissing( value);
   }
   public double convertScaleOffsetMissing(short value) {
@@ -277,7 +304,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
   public double convertScaleOffsetMissing(double value) {
     return smProxy.convertScaleOffsetMissing( value);
-  } */
+  } 
 
   /*
    * A VariableDS usually wraps another Variable.
@@ -342,8 +369,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     }
 
     // LOOK not caching
-    
-    return convert(result);
+    return (enhanceMode ==  NetcdfDataset.EnhanceMode.ScaleMissing) ? convert(result) : result;
   }
 
   // section of regular Variable
@@ -365,7 +391,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       return Array.factoryConstant( dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
-    return convert(result);
+    return (enhanceMode ==  NetcdfDataset.EnhanceMode.ScaleMissing) ? convert(result) : result;
   }
 
   // structure-member Variables.

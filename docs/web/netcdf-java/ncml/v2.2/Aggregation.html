@@ -108,6 +108,7 @@ netcdf TestUnion.ncml {
   &lt;netcdf location=&quot;file:/test/temperature/febAvgWeek.nc&quot; <em>coordValue</em>=&quot;66234 89237 108736 123494&quot;/&gt;
 &lt;/aggregation&gt;</pre>
   </li>
+  <li>If there is exactly one time slice in each file of the <strong>JoinExisting</strong> aggregation, and you are using a <a href="#scan">scan</a> element to dynamically scan the files in a directory, then you can use the <a href="#dateFormatMark">dateFormatMark</a> attribute to derive the date from the filename. </li>
   <li>You may explicitly define the coordinate variable, but not specify its values, so that you can  define attributes for it. The coordinate values will be read from the the nested <strong>netcdf</strong> dataset coordinate variables</li>
   <li>If you do not specify a coordinate variable, one must exist in each of the nested datasets, and the coordinate values will be read from it, just like any other aggregation variable. </li>
 </ol>
@@ -161,7 +162,7 @@ netcdf TestUnion.ncml {
 <p>Note that you must explicitly specify the coordinate variable in order to assign attributes to it, which is something you are likely to need to do, for example defining a units attribute is usually necessary. Assigning the <strong>_CoordinateAxisType</strong> type is a recommended way to make sure that the <a href="http://www.unidata.ucar.edu/software/netcdf-java/CoordinateAttributes3.html#CoordinateAttributes">nj22 Coordinate layer</a> correctly identifies the coordinate type.</p>
 <p>Also note that, contrary to previous versions of NcML aggregation, you do <strong>not</strong> need to define a dimension element for the aggregation dimension (e.g. &lt;dimension name=&quot;time&quot;&gt; and <strong>must not</strong> use the old form     <em><strong>&lt;dimension name=&quot;time&quot; length=&quot;0&quot; /&gt;</strong></em> as it will override the dimension created by the aggregation. </p>
 <p><i>For all aggregations, the aggregation element is processed first, so that the objects (dimensions, attributes, groups, and variables) from the nested datasets exist and can be modified by other NcML elements.</i> </p>
-<h2>Aggregation by scanning  a directory</h2>
+<h2><a name="scan"></a>Aggregation by scanning  a directory</h2>
 <p>Its often convenient to indicate that all the files in some directory should be aggregated. This can be done for <strong>joinExisting</strong> and <strong>joinNew</strong> (not <strong>union</strong>) types. The following  example scans all of the files in the directory <strong>/data/model </strong> (and its subdirectories) which end in <strong>&quot;.nc&quot;.</strong> By default, the files are ordered by sorting on the filename. </p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;aggregation dimName=&quot;time&quot; type=&quot;<strong>joinExisting</strong>&quot;&gt;
@@ -200,7 +201,7 @@ netcdf TestUnion.ncml {
   &lt;/aggregation&gt;
 &lt;/netcdf&gt; 
 </pre>
-<p>The <em><strong>dateFormatMark</strong></em><a name="dateFormatMark"></a> attribute is used on <strong>joinNew</strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a <a href="AnnotatedSchema.html#SimpleDataFormat"><strong>java.text.SimpleDataFormat</strong></a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string, then it ignores any trailing text. For example: </p>
+<p>The <em><strong>dateFormatMark</strong></em><a name="dateFormatMark"></a> attribute is used on <strong>joinNew</strong> aggregation (or <strong>joinExisting</strong> if there is only one time slice in each file) to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a <a href="AnnotatedSchema.html#SimpleDataFormat"><strong>java.text.SimpleDataFormat</strong></a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string, then it ignores any trailing text. For example: </p>
 <pre>      Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini 
 DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <p>The net effect is to add a coordinate variable, whose values are ISO 8601 formatted date/time Strings, with a <strong>_CoordinateAxisType</strong> of &quot;Time&quot;, for example: </p>
@@ -237,9 +238,9 @@ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <pre><strong>    // Enable Aggregation caching. Every hour, delete stuff older than 30 days<br>    Aggregation.setPersistenceCache( new DiskCache2(&quot;/.nj22/cachePersist&quot;, true, 60 * 24 * 30, 60));</strong></pre>
 <p>When this is enabled, <strong>joinExisting</strong> aggregations will save  information to special XML files in the specified directory, in order to avoid opening every file to obtain its coordinate values, each time the dataset is opened. Instead, the first time it is opened, the values are read, then subsequent opens will use the cached values. </p>
 <p>If using a <strong>scan</strong> element on changing directories, be sure to specify the <strong>recheckEvery</strong> attribute to make sure that the cached information gets updated.</p>
-<p>&nbsp; </p>
+<p>&nbsp;</p>
 <h2>Nested Aggregation<a name="nested"></a></h2>
-<p>One can nest netcdf elements </p>
+<p>One can nest netcdf elements in aggregation, for example: </p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
 <pre> &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;</pre>
 <pre>  &lt;netcdf&gt;
@@ -260,7 +261,7 @@ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <p>Next: <a href="FmrcAggregation.html">FMRC Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April 14, 2008
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 03, 2008
 </address>
 <p>&nbsp;</p>
 </body>

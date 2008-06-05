@@ -54,8 +54,29 @@ import java.util.*;
  * }
  * </pre>
  *
+ *
+ * By default NetcdfDataset is opened with NetcdfDataset.EnhanceMode.All, which adds automatic scale/offset/missing value
+ *   handling by VariableDS, and automatic CoordinateSystem construction by the CoordSysBuilder plugins. The default "enhance
+ *   mode" can be set through setDefaultEnhanceMode(). One can also explicitly set the EnhanceMode of the dataset
+ *   in the factory methods:
+ *   <ul>
+ *   <li>All : scale/offset/missing and CoordinateSystem
+ *   <li>ScaleMissing : just scale/offset/missing
+ *   <li>ScaleMissingDefer : caclulate scale/offset/missing info, but dont automatically convert
+ *   <li>CoordSystem : just CoordinateSystem
+ *   <li>AllDefer : ScaleMissingDefer and CoordSystem
+ *   <li>None : no enhancements
+ *   </ul>
+ *
+ * Automatic conversion has a lot of overhead, and if you need maximum performance, but still want to use
+ *   scale/offset/missing value handling, open the NetcdfDataset with EnhanceMode.ScaleOffsetDefer (or AllDefer).
+ *   The VariableDS data type is not promoted, and the data is not converted on a read, but you can call the
+ *   convertScaleOffset() routines which will do the conversion on a point-by-point basis, or convertArray()
+ *   which will convert the entire Array.
+ *
  * @author caron
  * @see ucar.nc2.NetcdfFile
+ * @see ucar.nc2.dataset.VariableDS
  */
 
 /* Implementation notes.
@@ -77,15 +98,51 @@ import java.util.*;
 
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
+  /**
+   * Possible enhancement modes for a NetcdfDataset
+   */
   static public enum EnhanceMode {
-    None,         // no enhancement
-    ScaleMissing, // add scale/offset and missing values
-    CoordSystems, // build coordinate systems
-    All           // do all enhancements
+    /** no enhancement */
+    None,
+    /** just implement scale/offset and missing values */
+    ScaleMissing,
+    /** caclulate scale/offset/missing params, but dont automatically convert data */
+    ScaleMissingDefer,
+    /** just build coordinate systems */
+    CoordSystems,
+    /** implement scale/offset/missing values and build coordinate systems */
+    All,
+    /** ScaleMissingDefer and CoordSystems */
+    AllDefer
+  }
+
+  /**
+   * Find the EnhanceMode that matches the String. For backwards compatibility, 'true' = All.
+   * @param enhanceMode : 'None', 'All', 'ScaleMissing', 'ScaleMissingDefer', 'CoordSystems', All',  case insensitive
+   * @return matched EnhanceMode, default EnhanceMode.None
+   */
+  static public NetcdfDataset.EnhanceMode getEnhanceMode(String enhanceMode) {
+    NetcdfDataset.EnhanceMode mode = NetcdfDataset.EnhanceMode.None;
+    if (enhanceMode == null) return mode;
+
+    if (enhanceMode.equalsIgnoreCase("true"))
+      mode = NetcdfDataset.EnhanceMode.All;
+    else if (enhanceMode.equalsIgnoreCase("All"))
+       mode = NetcdfDataset.EnhanceMode.All;
+    else if (enhanceMode.equalsIgnoreCase("AllDefer"))
+       mode = NetcdfDataset.EnhanceMode.AllDefer;
+    else if (enhanceMode.equalsIgnoreCase("ScaleMissing"))
+      mode = NetcdfDataset.EnhanceMode.ScaleMissing;
+    else if (enhanceMode.equalsIgnoreCase("ScaleMissingDefer"))
+      mode = NetcdfDataset.EnhanceMode.ScaleMissingDefer;
+    else if (enhanceMode.equalsIgnoreCase("CoordSystems"))
+      mode = NetcdfDataset.EnhanceMode.CoordSystems;
+    return mode;
   }
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
   static protected boolean useNaNs = true;
+  static protected NetcdfDataset.EnhanceMode defaultEnhanceMode = NetcdfDataset.EnhanceMode.All;
   static protected boolean fillValueIsMissing = true, invalidDataIsMissing = true, missingDataIsMissing = true;
 
   /**
@@ -96,6 +153,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static public void setUseNaNs(boolean b) {
     useNaNs = b;
   }
+
+  /**
+   * Set the default EnhanceMode
+   *
+   * @param b true if want to replace missing values with NaNs (default true)
+   */
+  static public void setDefaultEnhanceMode(NetcdfDataset.EnhanceMode b) {
+    defaultEnhanceMode = b;
+  }
+
+
 
   /**
    * Get whether to use NaNs for missing values, for efficiency
@@ -271,32 +339,23 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (mode == EnhanceMode.None) return;
 
     // enhance scale/offset first, so its transferred to CoordinateAxes in next section
-    if (mode == EnhanceMode.All || mode == EnhanceMode.ScaleMissing) {
+    if (mode == EnhanceMode.All || mode == EnhanceMode.AllDefer || mode == EnhanceMode.ScaleMissing || mode == EnhanceMode.ScaleMissingDefer) {
       for (Variable v : ds.getVariables()) {
         VariableEnhanced ve = (VariableEnhanced) v;
-        ve.enhance();
+        ve.enhance(mode);
         if ((cancelTask != null) && cancelTask.isCancel()) return;
       }
-      ds.scaleOffsetWasAdded = true;
     }
 
     // now find coord systems which may add new variables, change some Variables to axes, etc
-    if (mode == EnhanceMode.All || mode == EnhanceMode.CoordSystems) {
+    if (mode == EnhanceMode.All || mode == EnhanceMode.AllDefer || mode == EnhanceMode.CoordSystems) {
       if (!ds.coordSysWereAdded)
         ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
       ds.coordSysWereAdded = true;
     }
 
     ds.finish(); // recalc the global lists
-
-    if (ds.coordSysWereAdded && ds.scaleOffsetWasAdded)
-      ds.isEnhanced = EnhanceMode.All;
-    else if (ds.coordSysWereAdded)
-      ds.isEnhanced = EnhanceMode.CoordSystems;
-    else if (ds.scaleOffsetWasAdded)
-      ds.isEnhanced = EnhanceMode.ScaleMissing;
-    else
-      ds.isEnhanced = EnhanceMode.None;
+    ds.enhanceMode = mode;
   }
 
    /**
@@ -311,7 +370,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
    */
   static public NetcdfDataset acquireDataset(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    return acquireDataset(null, location, EnhanceMode.All, -1, cancelTask, null);
+    return acquireDataset(null, location, defaultEnhanceMode, -1, cancelTask, null);
   }
 
   /**
@@ -539,13 +598,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   ////////////////////////////////////////////////////////////////////////////////////
   private NetcdfFile orgFile = null;
-  private EnhanceMode isEnhanced = EnhanceMode.None; // the current state of enhancement
+  //private EnhanceMode isEnhanced = EnhanceMode.None; // the current state of enhancement
 
   private List<CoordinateSystem> coordSys = new ArrayList<CoordinateSystem>();
   private List<CoordinateAxis> coordAxes = new ArrayList<CoordinateAxis>();
   private List<CoordinateTransform> coordTransforms = new ArrayList<CoordinateTransform>();
   private boolean coordSysWereAdded = false;
-  private boolean scaleOffsetWasAdded = false;
+  //private boolean scaleOffsetWasAdded = false;
+  private EnhanceMode enhanceMode = EnhanceMode.None; // the current state of enhancement
 
   // If its an aggregation
   private ucar.nc2.ncml.Aggregation agg = null; // used to close underlying files
@@ -583,23 +643,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @return whether the dataset enhancment mode.
    */
   public EnhanceMode getEnhanceMode() {
-    return isEnhanced;
-  }
-
-  /**
-   * Get whether the dataset has scale/ offset enhancement.
-   * @return whether the dataset has scale/ offset enhancement.
-   */
-  public boolean isEnhancedScaleOffset() {
-    return isEnhanced == EnhanceMode.All || isEnhanced == EnhanceMode.ScaleMissing;
-  }
-
-  /**
-   * Get whether the dataset has coordinate systems added.
-   * @return whether the dataset has coordinate systems added.
-   */
-  public boolean isEnhancedCoordSystems() {
-    return isEnhanced == EnhanceMode.All || isEnhanced == EnhanceMode.CoordSystems;
+    return enhanceMode;
   }
 
   /**
@@ -788,7 +832,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
    */
   public NetcdfDataset(NetcdfFile ncfile) throws IOException {
-    this(ncfile, true);
+    this(ncfile, defaultEnhanceMode);
   }
 
   /**
@@ -796,11 +840,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * You must not use the original NetcdfFile after this call.
    *
    * @param ncfile  NetcdfFile to transform, do not use independently after this.
-   * @param enhance if true, process scale/offset/missing and add Coordinate Systems
+   * @param enhance if true, enhance with defaultEnhanceMode
    * @throws java.io.IOException on read error
    */
   public NetcdfDataset(NetcdfFile ncfile, boolean enhance) throws IOException {
-    this(ncfile, enhance ? EnhanceMode.All : EnhanceMode.None);
+    this(ncfile, enhance ? defaultEnhanceMode : EnhanceMode.None);
   }
 
   /**
@@ -1021,12 +1065,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * recalc enhancement info - use All
+   * recalc enhancement info - use defaulr enhance mode
    *
    * @throws java.io.IOException on error
    */
   public void enhance() throws IOException {
-    enhance(this, EnhanceMode.All, null);
+    enhance(this, defaultEnhanceMode, null);
   }
 
   /**

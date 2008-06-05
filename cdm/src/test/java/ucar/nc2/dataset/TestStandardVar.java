@@ -336,8 +336,9 @@ public class TestStandardVar extends TestCase {
     Index ima2 = A2.getIndex();
     int[] shape2 = A2.getShape();
 
-    assert (vs.isMissing(A2.getFloat(ima2.set(0,0))));
-    assert (Double.isNaN(A2.getFloat(ima2.set(0,0))));
+    double mval = A2.getFloat(ima2.set(0,0));
+    assert vs.isMissing(mval);
+    assert Double.isNaN(mval);
 
     for (i=0; i<shape2[0]; i++) {
       for (j=1; j<shape2[1]; j++) {

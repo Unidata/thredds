@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -34,15 +34,13 @@ import java.io.IOException;
  */
 public class DatasetCollectionManager {
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
+  static private boolean debugSync = false, debugSyncDetail = false;
 
   private List<Scanner> scanList = new ArrayList<Scanner>();
-  // private List<MyCrawlableDataset> files; // current list of MyCrawlableDataset
   private Map<String, MyCrawlableDataset> map; // current map of MyCrawlableDataset
 
   private TimeUnit recheck; // how often to recheck
   private long lastScanned; // last time scanned
-
-  private boolean debugSync = false, debugSyncDetail = false;
 
   public DatasetCollectionManager(String recheckS) {
     if (recheckS != null) {
@@ -177,7 +175,6 @@ public class DatasetCollectionManager {
   }
 
   private void scan(java.util.Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException {
-
     // run through all scanners and collect MyCrawlableDataset instances
     for (Scanner scanner : scanList) {
       scanner.scanDirectory(map, cancelTask);

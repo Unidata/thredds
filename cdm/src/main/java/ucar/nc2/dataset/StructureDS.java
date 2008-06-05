@@ -36,7 +36,7 @@ import java.util.List;
 public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
   private EnhancementsImpl proxy;
   private EnhanceScaleMissingImpl smProxy;
-  private boolean isEnhanced = false;
+  //private boolean isEnhanced = false;
 
   protected Structure orgVar; // wrap this Variable
 
@@ -206,15 +206,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return convert(result);
   }
 
-  /**
-   * If this Variable has been "enhanced", ie processed for scale/offset/missing value
-   *
-   * @return if enhanced
-   */
-  public boolean isEnhanced() {
-    return isEnhanced;
-  }
-
   ///////////////////////////////////////
 
   // VariableEnhanced implementation
@@ -337,14 +328,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /**
+   * public by accident.
    * recalc any enhancement info
    */
-  public void enhance() {
+  public void enhance(NetcdfDataset.EnhanceMode mode) {
     for (Variable v : getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
-      ve.enhance();
+      ve.enhance(mode);
     }
-    this.isEnhanced = true;
   }
 
   public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
@@ -407,8 +398,12 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return smProxy.isInvalidData(p0);
   }
 
-  public boolean isMissing(double p0) {
-    return smProxy.isMissing(p0);
+  public boolean isMissing(double val) {
+    return smProxy.isMissing( val);
+  }
+
+  public boolean isMissingFast(double val) {
+    return smProxy.isMissingFast( val);
   }
 
   public boolean isMissingValue(double p0) {
@@ -441,7 +436,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    *
    * @param value data to convert
    * @return converted data.
-   *
+   */
   public double convertScaleOffsetMissing(byte value) {
     return smProxy.convertScaleOffsetMissing(value);
   }
@@ -460,7 +455,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   public double convertScaleOffsetMissing(double value) {
     return smProxy.convertScaleOffsetMissing(value);
-  } */
+  } 
 
   /*
    * Extract scalar value and convert to double value, with scale, offset if applicable.

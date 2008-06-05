@@ -367,23 +367,6 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
       return null;
     }
 
-    public double convertScaleOffsetMissing(double value) {
-      return value;
-    }
-
-    public double convertScaleOffsetMissing(byte value) {
-      return (double) value;
-    }
-    public double convertScaleOffsetMissing(short value) {
-      return (double) value;
-    }
-    public double convertScaleOffsetMissing(int value) {
-      return (double) value;
-    }
-    public double convertScaleOffsetMissing(long value) {
-      return (double) value;
-    }
-
   public int compareTo(VariableSimpleIF o) {
     return getName().compareTo(o.getName());
   }

@@ -74,14 +74,12 @@ import org.jdom.Element;
 
  */
 public abstract class Aggregation implements ProxyReader {
-
+  // JOIN_EXISTING with a DateFormatMark makes it into a JOIN_EXISTING_ONE
   static public enum Type { FORECAST_MODEL_COLLECTION,  FORECAST_MODEL_SINGLE, JOIN_EXISTING, JOIN_EXISTING_ONE,
       JOIN_NEW, TILED, UNION }
 
-  static protected int TYPICAL_DATASET_RANDOM = 0;
-  static protected int TYPICAL_DATASET_LATEST = 1;
-  static protected int TYPICAL_DATASET_PENULTIMATE = 2;
-  static protected int typicalDatasetMode = 0;
+  static protected enum TypicalDataset {RANDOM, LATEST, PENULTIMATE }
+  static protected TypicalDataset typicalDatasetMode;
 
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
   static protected DiskCache2 diskCache2 = null;
@@ -92,11 +90,11 @@ public abstract class Aggregation implements ProxyReader {
 
   static public void setTypicalDatasetMode(String mode) {
     if (mode.equalsIgnoreCase("random"))
-      typicalDatasetMode = TYPICAL_DATASET_RANDOM;
+      typicalDatasetMode = TypicalDataset.RANDOM;
     else if (mode.equalsIgnoreCase("latest"))
-      typicalDatasetMode = TYPICAL_DATASET_LATEST;
+      typicalDatasetMode = TypicalDataset.LATEST;
     else if (mode.equalsIgnoreCase("penultimate"))
-      typicalDatasetMode = TYPICAL_DATASET_PENULTIMATE;
+      typicalDatasetMode = TypicalDataset.PENULTIMATE;
     else
       logger.error("Unknown setTypicalDatasetMode= " + mode);
   }
@@ -117,7 +115,8 @@ public abstract class Aggregation implements ProxyReader {
   // experimental
   protected boolean timeUnitsChange = false;
   protected String dateFormatMark;
-  protected boolean enhance = false, isDate = false;
+  protected NetcdfDataset.EnhanceMode enhance = NetcdfDataset.EnhanceMode.None;
+  protected boolean isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
   protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
@@ -153,7 +152,7 @@ public abstract class Aggregation implements ProxyReader {
    */
   public void addExplicitDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
                                  ucar.nc2.util.cache.FileFactory reader, CancelTask cancelTask) {
-    Dataset nested = makeDataset(cacheName, location, ncoordS, coordValueS, sectionSpec, false, reader);
+    Dataset nested = makeDataset(cacheName, location, ncoordS, coordValueS, sectionSpec, NetcdfDataset.EnhanceMode.None, reader);
     explicitDatasets.add(nested);
   }
 
@@ -174,11 +173,10 @@ public abstract class Aggregation implements ProxyReader {
    * @param olderThan           files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
    * @throws IOException if I/O error
    */
-  public void addCrawlableDatasetScan(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString, String dateFormatMark, String enhanceS, String subdirs, String olderThan) throws IOException {
+  public void addCrawlableDatasetScan(Element crawlableDatasetElement, String dirName, String suffix,
+          String regexpPatternString, String dateFormatMark, NetcdfDataset.EnhanceMode mode, String subdirs, String olderThan) throws IOException {
     this.dateFormatMark = dateFormatMark;
-
-    if ((enhanceS != null) && enhanceS.equalsIgnoreCase("true"))
-      enhance = true;
+    this.enhance = mode;
 
     if (dateFormatMark != null) {
       isDate = true;
@@ -382,9 +380,9 @@ public abstract class Aggregation implements ProxyReader {
       throw new FileNotFoundException("No datasets in this aggregation");
 
     int select;
-    if (typicalDatasetMode == TYPICAL_DATASET_LATEST)
+    if (typicalDatasetMode == TypicalDataset.LATEST)
       select = n - 1;
-    else if (typicalDatasetMode == TYPICAL_DATASET_PENULTIMATE)
+    else if (typicalDatasetMode == TypicalDataset.PENULTIMATE)
       select = (n < 2) ? 0 : n - 2;
     else // random is default
       select = (n < 2) ? 0 : new Random().nextInt(n);
@@ -430,7 +428,7 @@ public abstract class Aggregation implements ProxyReader {
    * @return a Aggregation.Dataset
    */
   protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
-          boolean enhance, ucar.nc2.util.cache.FileFactory reader) {
+          NetcdfDataset.EnhanceMode enhance, ucar.nc2.util.cache.FileFactory reader) {
     //return new Dataset(cacheName, location, ncoordS, coordValueS, sectionSpec, enhance, reader);
     return new Dataset(cacheName, location, enhance, reader);
   }
@@ -446,7 +444,7 @@ public abstract class Aggregation implements ProxyReader {
     // deferred opening
     protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
-    protected boolean enhance;
+    protected NetcdfDataset.EnhanceMode enhance;
 
     /**
      * For subclasses.
@@ -467,7 +465,7 @@ public abstract class Aggregation implements ProxyReader {
      * @param enhance   open dataset in enhance mode
      * @param reader    factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
-    protected Dataset(String cacheLocation, String location, boolean enhance, ucar.nc2.util.cache.FileFactory reader) {
+    protected Dataset(String cacheLocation, String location, NetcdfDataset.EnhanceMode enhance, ucar.nc2.util.cache.FileFactory reader) {
       this(location);
       this.cacheLocation = cacheLocation;
       this.enhance = enhance;
@@ -487,9 +485,9 @@ public abstract class Aggregation implements ProxyReader {
       NetcdfFile ncfile;
       long start = System.currentTimeMillis();
       if (debugOpenFile) System.out.println(" try to acquire " + cacheLocation);
-      if (enhance) {
-        ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, NetcdfDataset.EnhanceMode.All, -1, cancelTask, spiObject);
-        
+      if (enhance != NetcdfDataset.EnhanceMode.None) {
+        ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, enhance, -1, cancelTask, spiObject);
+
       } else {
         ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
       }

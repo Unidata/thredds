@@ -40,10 +40,9 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   static private final String FillValue = "_FillValue";
 
   private DataType convertedDataType = null;
+  private boolean useNaNs = false;
 
   // defaults from NetcdfDataset modes
-  private boolean useNaNs = NetcdfDataset.useNaNs;
-  //private boolean useNaNs = false;
   private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
   private boolean fillValueIsMissing = NetcdfDataset.fillValueIsMissing;
   private boolean missingDataIsMissing = NetcdfDataset.missingDataIsMissing;
@@ -101,11 +100,11 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     Variable orgVar = forVar.getOriginalVariable();
     if (orgVar instanceof VariableDS) {
       VariableDS orgVarDS = (VariableDS) orgVar;
-      if (orgVarDS.isEnhanced()) return;
+      if (orgVarDS.getEnhanceMode() != null) return;  // LOOK ??
     }
 
     this.isUnsigned = forVar.isUnsigned();
-    //this.hasScaleOffset = this.isUnsigned; // unsigned must be converted
+    this.convertedDataType = forVar.getDataType();
 
     DataType scaleType = null, missType = null, validType = null, fillType = null;
     if (debug) System.out.println("EnhancementsImpl for Variable = " + forVar.getName());
@@ -422,12 +421,22 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         (missingDataIsMissing && hasMissingValue());
   }
 
-  /**
-   * true if val is a missing data value
-   */
   public boolean isMissing(double val) {
-    if (Double.isNaN(val)) return true;
     if (!hasMissing()) return false;
+    if (Double.isNaN(val)) return true;
+    return isMissing_(val);
+  }
+
+  public boolean isMissingFast( double val) {
+    if (!hasMissing()) return false;
+    if (useNaNs) return Double.isNaN(val); // no need to check again
+    if (Double.isNaN(val)) return true;
+    return isMissing_(val);
+  }
+
+  // find data values that match a missing value
+  // assumes that hasMissing() == true
+  private final boolean isMissing_(double val) {
     return (invalidDataIsMissing && isInvalidData(val)) ||
         (fillValueIsMissing && isFillValue(val)) ||
         (missingDataIsMissing && isMissingValue(val));
@@ -472,14 +481,6 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       result[0] = FillValue;
       return result;
     }
-  }
-
-  public Array convert(Array data) {
-    if (hasScaleOffset())
-      data = convertScaleOffset(data);
-    else if (hasMissing() && getUseNaNs())
-      data = convertMissing(data);
-    return data;
   }
 
   public double convertScaleOffsetMissing(byte valb) {
@@ -537,6 +538,13 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     return useNaNs && isMissing(convertedValue) ? Double.NaN : convertedValue;
   }
 
+  public Array convert(Array data) {
+    if (hasScaleOffset())
+      data = convertScaleOffset(data);
+    else if (hasMissing() && getUseNaNs())
+      data = convertMissing(data);
+    return data;
+  }
 
   /**
    * Convert Data with scale and offset.
@@ -545,7 +553,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * @param in data to convert
    * @return converted data.
    */
-  public Array convertScaleOffset(Array in) {
+  private Array convertScaleOffset(Array in) {
     if (!hasScaleOffset) return in;
     if (debugRead) System.out.println("convertScaleOffset ");
 
@@ -560,9 +568,10 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     else if (isUnsigned && in.getElementType() == int.class)
       convertScaleOffsetUnsignedInt(iterIn, iterOut);
     else {
+      boolean checkMissing = useNaNs && hasMissing();
       while (iterIn.hasNext()) {
         double val = scale * iterIn.getDoubleNext() + offset;
-        iterOut.setDoubleNext(useNaNs && isMissing(val) ? Double.NaN : val);
+        iterOut.setDoubleNext(checkMissing && isMissing_(val) ? Double.NaN : val);
       }
     }
 
@@ -570,26 +579,29 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   }
 
   private void convertScaleOffsetUnsignedByte(IndexIterator iterIn, IndexIterator iterOut) {
+    boolean checkMissing = useNaNs && hasMissing();
     while (iterIn.hasNext()) {
       byte valb = iterIn.getByteNext();
       double val = scale * DataType.unsignedByteToShort(valb) + offset;
-      iterOut.setDoubleNext(useNaNs && isMissing(val) ? Double.NaN : val);
+      iterOut.setDoubleNext(checkMissing && isMissing_(val) ? Double.NaN : val);
     }
   }
 
   private void convertScaleOffsetUnsignedShort(IndexIterator iterIn, IndexIterator iterOut) {
+    boolean checkMissing = useNaNs && hasMissing();
     while (iterIn.hasNext()) {
       short valb = iterIn.getShortNext();
       double val = scale * DataType.unsignedShortToInt(valb) + offset;
-      iterOut.setDoubleNext(useNaNs && isMissing(val) ? Double.NaN : val);
+      iterOut.setDoubleNext(checkMissing && isMissing_(val) ? Double.NaN : val);
     }
   }
 
   private void convertScaleOffsetUnsignedInt(IndexIterator iterIn, IndexIterator iterOut) {
+    boolean checkMissing = useNaNs && hasMissing();
     while (iterIn.hasNext()) {
       int valb = iterIn.getIntNext();
       double val = scale * DataType.unsignedIntToLong(valb) + offset;
-      iterOut.setDoubleNext(useNaNs && isMissing(val) ? Double.NaN : val);
+      iterOut.setDoubleNext(checkMissing && isMissing_(val) ? Double.NaN : val);
     }
   }
 
@@ -599,20 +611,20 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * @param in convert this array
    * @return same array, with missing values replaced by NaNs
    */
-  public Array convertMissing(Array in) {
+  private Array convertMissing(Array in) {
     if (debugRead) System.out.println("convertMissing ");
 
     IndexIterator iterIn = in.getIndexIterator();
     if (in.getElementType() == double.class) {
       while (iterIn.hasNext()) {
         double val = iterIn.getDoubleNext();
-        if (isMissing(val))
+        if (isMissing_(val))
           iterIn.setDoubleCurrent(Double.NaN);
       }
     } else if (in.getElementType() == float.class) {
       while (iterIn.hasNext()) {
         float val = iterIn.getFloatNext();
-        if (isMissing(val))
+        if (isMissing_(val))
           iterIn.setFloatCurrent(Float.NaN);
       }
     }
@@ -628,14 +640,9 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    */
   public float[] setMissingToNaN(float[] values) {
     if (!hasMissing()) return values;
-    final int length = values.length;
-    for (int i = 0; i < length; i++) {
-      float value = values[i];
-      if ((invalidDataIsMissing && isInvalidData(value)) ||
-          (fillValueIsMissing && isFillValue(value)) ||
-          (missingDataIsMissing && isMissingValue(value))) {
+    for (int i = 0; i < values.length; i++) {
+      if (isMissing_(values[i]))
         values[i] = Float.NaN;
-      }
     }
     return values;
   }

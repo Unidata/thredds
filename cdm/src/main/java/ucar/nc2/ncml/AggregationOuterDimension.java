@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc
+ * Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc, FmrcSingle
  *
  * @author caron
  * @since Aug 10, 2007
@@ -416,7 +416,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
   @Override
   protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
-          boolean enhance, ucar.nc2.util.cache.FileFactory reader) {
+          NetcdfDataset.EnhanceMode enhance, ucar.nc2.util.cache.FileFactory reader) {
     return new DatasetOuterDimension(cacheName, location, ncoordS, coordValueS, enhance, reader);
   }
 
@@ -448,7 +448,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
      * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
     protected DatasetOuterDimension(String cacheName, String location, String ncoordS, String coordValueS,
-                                    boolean enhance, ucar.nc2.util.cache.FileFactory reader) {
+                                    NetcdfDataset.EnhanceMode enhance, ucar.nc2.util.cache.FileFactory reader) {
       super(cacheName, location, enhance, reader);
       this.coordValue = coordValueS;
 

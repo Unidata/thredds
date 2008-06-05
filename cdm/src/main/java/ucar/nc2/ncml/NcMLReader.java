@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -418,16 +418,7 @@ public class NcMLReader {
     // enhance means do scale/offset and/or add CoordSystems
     String enhanceS = netcdfElem.getAttributeValue("enhance");
     if (enhanceS != null) {
-      NetcdfDataset.EnhanceMode mode = NetcdfDataset.EnhanceMode.None;
-      if (enhanceS.equalsIgnoreCase("true"))
-        mode = NetcdfDataset.EnhanceMode.All;
-      else if (enhanceS.equalsIgnoreCase("All"))
-        mode = NetcdfDataset.EnhanceMode.All;
-      else if (enhanceS.equalsIgnoreCase("ScaleMissing"))
-        mode = NetcdfDataset.EnhanceMode.ScaleMissing;
-      else if (enhanceS.equalsIgnoreCase("CoordSystems"))
-        mode = NetcdfDataset.EnhanceMode.CoordSystems;
-
+      NetcdfDataset.EnhanceMode mode = NetcdfDataset.getEnhanceMode(enhanceS);
       targetDS.enhance(mode);
     }
 
@@ -1095,7 +1086,7 @@ public class NcMLReader {
       if (fmrcDefinition != null)
         aggh.setInventoryDefinition(fmrcDefinition);
 
-      // nested scan2 elements
+      // nested scanFmrc elements
       java.util.List<Element> scan2List = aggElem.getChildren("scanFmrc", ncNS);
       for (Element scanElem : scan2List) {
         String dirLocation = scanElem.getAttributeValue("location");
@@ -1175,12 +1166,12 @@ public class NcMLReader {
       String suffix = scanElem.getAttributeValue("suffix");
       String regexpPatternString = scanElem.getAttributeValue("regExp");
       String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
-      String enhance = scanElem.getAttributeValue("enhance");
+      NetcdfDataset.EnhanceMode mode = NetcdfDataset.getEnhanceMode(scanElem.getAttributeValue("enhance"));
       String subdirs = scanElem.getAttributeValue("subdirs");
       String olderS = scanElem.getAttributeValue("olderThan");
 
       Element cdElement = scanElem.getChild("crawlableDatasetImpl", ncNS);  // ok if null
-      agg.addCrawlableDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, enhance, subdirs, olderS);
+      agg.addCrawlableDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, mode, subdirs, olderS);
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
@@ -1205,107 +1196,6 @@ public class NcMLReader {
       return readNcML(ncmlLocation, location, netcdfElem, cancelTask);
     }
   }
-
-  /* protected Variable readCoordVariable( NetcdfDataset ds, Element varElem) {
-    String name = varElem.getAttributeValue("name");
-    String type = varElem.getAttributeValue("type");
-    String shape;
-    if (type.equals("string"))
-      shape = name+" "+name+"_len";
-    else
-      shape = name;
-
-    VariableDS v = new VariableDS( ds, name, type, shape, null);
-
-    // look for attributes
-    java.util.List attList = varElem.getChildren("attribute", ncNS);
-    for (int j=0; j< attList.size(); j++) {
-      Attribute a = readAtt((Element) attList.get(j));
-      v.addAttribute( a);
-    }
-
-    // look for values
-    String values = varElem.getAttributeValue("value");
-    if (values == null)
-      values = varElem.getChildText("values", ncNS);
-    if (values != null) {
-      ArrayList valList = new ArrayList();
-      String sep = varElem.getAttributeValue("separator");
-      if (sep == null) sep = " ";
-      StringTokenizer tokn = new StringTokenizer(values, sep);
-      while (tokn.hasMoreTokens())
-        valList.add(tokn.nextToken());
-      v.setValues( valList);
-    }
-
-    return v;
-  } */
-
-  /* protected void readMetadata( NetcdfDataset ds, Element readElem, CancelTask cancelTask) throws IOException {
-    //String name = readElem.getAttributeValue("name"); // not implemented yet
-    //String type = readElem.getAttributeValue("type"); // not implemented yet
-
-    // read dataset
-    NetcdfDataset referencedDataset = ds.openReferencedDataset(cancelTask);
-    transferDataset( referencedDataset, ds);
-    if (debugCmd) System.out.println("CMD readMetadata "+referencedDataset.getLocation());
-
-    /* remove elements just read
-    java.util.List removeList = readElem.getChildren("remove", ncNS);
-    for (int j=0; j< removeList.size(); j++) {
-      Element e = (Element) removeList.get(j);
-      cmdRemove(ds, e.getAttributeValue("type"), e.getAttributeValue("name"));
-    }
-
-    // look for renames
-    java.util.List renameList = readElem.getChildren("rename", ncNS);
-    for (int j=0; j< renameList.size(); j++) {
-      Element e = (Element) renameList.get(j);
-      cmdRename(ds, e.getAttributeValue("type"), e.getAttributeValue("nameInFile"),
-        e.getAttributeValue("rename"));
-    }
-
-    java.util.List varCmdList = readElem.getChildren("readVariable", ncNS);
-    for (int j=0; j< varCmdList.size(); j++) {
-      Element e = (Element) varCmdList.get(j);
-      readReadVariable( ds, e);
-    }
-
-  } */
-
-  /* protected void readReadVariable( NetcdfDataset ds, Element readVarElem) {
-      String varName = readVarElem.getAttributeValue("name");
-
-      String rename = readVarElem.getAttributeValue("rename");
-      if (rename != null) {
-        cmdRename( ds, "variable", varName, rename);
-        varName = rename;
-      }
-
-      VariableDS v = (VariableDS) ds.findVariable(varName);
-      if (v == null) {
-        System.out.println("NetcdfDataset (readReadVariable) cant find variable= "+varName);
-        return;
-      }
-
-      java.util.List removeList = readVarElem.getChildren("removeAttribute", ncNS);
-      for (int j=0; j< removeList.size(); j++) {
-        Element e = (Element) removeList.get(j);
-        cmdRemoveVarAtt(ds, v, e.getAttributeValue("name"));
-      }
-
-      java.util.List renameList = readVarElem.getChildren("renameAttribute", ncNS);
-      for (int j=0; j< renameList.size(); j++) {
-        Element e = (Element) renameList.get(j);
-        cmdRenameVarAtt(ds, v, e.getAttributeValue("nameInFile"), e.getAttributeValue("rename"));
-      }
-
-      java.util.List addList = readVarElem.getChildren("attribute", ncNS);
-      for (int j=0; j< addList.size(); j++) {
-        Element e = (Element) addList.get(j);
-        cmdAddVarAtt(ds, v, e);
-      }
-    } */
 
   /////////////////////////////////////////////
   // command procesing
@@ -1358,65 +1248,7 @@ public class NcMLReader {
     }
   }
 
-  /* protected void cmdRename(NetcdfDataset ds, String type, String name, String rename) {
-    if (type.equals("variable")) {
-      VariableDS v = (VariableDS) ds.findVariable(name);
-      if (v == null) {
-        System.out.println("NetcdfDataset cmdRename cant find variable= "+name);
-        return;
-      }
-      v.rename( rename);
-      v.setAlias( name);
-      if (debugCmd) System.out.println("CMD rename var "+name+" to "+rename);
-
-    } else if (type.equals("attribute")) {
-      ucar.nc2.Attribute oldAtt = ds.findGlobalAttribute( name);
-      if (null == oldAtt) {
-        System.out.println("NetcdfDataset cmdRename cant find global attribute "+name);
-        return;
-      }
-
-      oldAtt.rename( rename);
-      if (debugCmd) System.out.println("CMD rename att "+name+" renamed to "+rename);
-
-    } else if (type.equals("dimension")) {
-      ucar.nc2.Dimension d = ds.findDimension( name);
-      if (null == d) {
-        System.out.println("NetcdfDataset cmdRename cant find dimension "+name);
-        return;
-      }
-      d.rename( rename);
-      if (debugCmd) System.out.println("CMD rename dim "+name+" renamed to "+rename);
-    }
-  }
-
-  protected void cmdAddVarAtt(NetcdfDataset ds, VariableDS v, Element e) {
-    ucar.nc2.Attribute newAtt = readAtt(e);
-    ucar.nc2.Attribute oldAtt = v.findAttribute( newAtt.getName());
-    if (null != oldAtt)
-      v.removeAttribute( oldAtt);
-    ds.addVariableAttribute( v, newAtt);
-    if (debugCmd) System.out.println("CMD variable added att "+newAtt);
-  }
-
-  protected void cmdRemoveVarAtt(NetcdfDataset ds, VariableDS v, String attName) {
-    ucar.nc2.Attribute oldAtt = v.findAttribute( attName);
-    if (null != oldAtt) {
-      v.removeAttribute( oldAtt);
-      if (debugCmd) System.out.println("CMD variable removed att "+attName);
-    } else
-      System.out.println("NetcdfDataset cant find attribute "+attName+" variable "+v.getName());
-  }
-
-  protected void cmdRenameVarAtt(NetcdfDataset ds, Variable v, String attName, String newName) {
-    ucar.nc2.Attribute oldAtt = v.findAttribute( attName);
-    if (null != oldAtt) {
-      oldAtt.rename( newName);
-      if (debugCmd) System.out.println("CMD variable att "+attName+" renamed to "+newName);
-    } else
-      System.out.println("NetcdfDataset cmdRenameVarAtt cant find attribute "+attName+
-        " variable "+v.getName());
-  } */
+  ///////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Read an NcML file and write an equivilent NetcdfFile to a physical file, using Netcdf-3 file format.

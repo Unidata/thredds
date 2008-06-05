@@ -61,4 +61,8 @@ import  java.util.*;
 
      return  Math.sqrt(stddevtotal / values.size());
   }
+
+   public String toString() {
+     return " avg= "+mean() + " stdev= "+stddev();
+   }
 }

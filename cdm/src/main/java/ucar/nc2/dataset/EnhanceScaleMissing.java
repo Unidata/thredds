@@ -130,8 +130,18 @@ public interface EnhanceScaleMissing {
 
   /** true if Variable has missing data values */
   public boolean hasMissing();
-  /** true if val is a missing data value */
+
+  /** true if val is a missing data value.
+   * @return true if this value is a misssing value
+   */
   public boolean isMissing( double val );
+
+  /** true if val is a missing data value.
+   * if useNaNs is true (default) and the variable is of type float or double,
+   *   then assume that missing values have been set to NaN, which speeds up the test considerably.
+   * @return true if this value is a misssing value
+   */
+  public boolean isMissingFast( double val ); 
 
   /** true if Variable has valid_range, valid_min or valid_max attributes */
   public boolean hasInvalidData();
@@ -174,14 +184,14 @@ public interface EnhanceScaleMissing {
    */
   public Array convert(Array data) throws IOException;
 
-  /* Convert this byte value to a double, using scale/offset/missing value if applicable *
+  /* Convert this byte value to a double, using scale/offset/missing value if applicable */
   public double convertScaleOffsetMissing(byte value);
-  /** Convert this short value to a double, using scale/offset/missing value if applicable *
+  /** Convert this short value to a double, using scale/offset/missing value if applicable */
   public double convertScaleOffsetMissing(short value);
-  /** Convert this int value to a double, using scale/offset/missing value if applicable *
+  /** Convert this int value to a double, using scale/offset/missing value if applicable */
   public double convertScaleOffsetMissing(int value);
-  /** Convert this long value to a double, using scale/offset/missing value if applicable *
+  /** Convert this long value to a double, using scale/offset/missing value if applicable */
   public double convertScaleOffsetMissing(long value);
-  /** Convert this double value using scale/offset/missing value if applicable *
-  public double convertScaleOffsetMissing(double value); */
+  /** Convert this double value using scale/offset/missing value if applicable */
+  public double convertScaleOffsetMissing(double value); 
 }

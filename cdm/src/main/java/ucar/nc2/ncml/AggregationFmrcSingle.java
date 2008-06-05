@@ -70,7 +70,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     this.forecastMatcher = forecastMatcher;
     this.offsetMatcher = offsetMatcher;
 
-    this.enhance = true;
+    this.enhance = NetcdfDataset.EnhanceMode.All;
     isDate = true;
 
     CrawlableScanner d = new CrawlableScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
@@ -136,7 +136,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       }
 
       // create the dataset wrapping this file, each is 1 forecast time coordinate of the nested aggregation
-      DatasetOuterDimension ds = (DatasetOuterDimension) makeDataset(location, location, null, myf.dateCoordS, null, true, null);
+      DatasetOuterDimension ds = (DatasetOuterDimension) makeDataset(location, location, null, myf.dateCoordS, null, NetcdfDataset.EnhanceMode.All, null);
       ds.coordValueDate = myf.dateCoord;
       ds.ncoord = 1;
 
