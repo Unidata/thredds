@@ -135,8 +135,10 @@ public class AggregationFmrcSingle extends AggregationFmrc {
         myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
       }
 
+      // LOOK - should cache the GridDataset directly
       // create the dataset wrapping this file, each is 1 forecast time coordinate of the nested aggregation
-      DatasetOuterDimension ds = (DatasetOuterDimension) makeDataset(location, location, null, myf.dateCoordS, null, NetcdfDataset.EnhanceMode.All, null);
+      DatasetOuterDimension ds = (DatasetOuterDimension)
+              makeDataset(location, location, null, myf.dateCoordS, null, NetcdfDataset.EnhanceMode.All, null);
       ds.coordValueDate = myf.dateCoord;
       ds.ncoord = 1;
 
@@ -155,6 +157,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
         typicalDataset = ds;
     }
 
+    // LOOK - should cache the GridDataset directly    
     // open a "typical" dataset and make a GridDataset
     typicalFile = typicalDataset.acquireFile(cancelTask);
     NetcdfDataset typicalDS = (typicalFile instanceof NetcdfDataset) ? (NetcdfDataset) typicalFile : new NetcdfDataset(typicalFile);

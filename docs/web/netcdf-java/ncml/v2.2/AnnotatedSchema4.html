@@ -183,49 +183,52 @@ color=#0000ff>objects that are in the referenced dataset. Place the remove eleme
        &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
       &lt;/xsd:complexType&gt;
      &lt;/xsd:element&gt;</pre>
-<pre><strong>     &lt;xsd:element ref=&quot;promoteGlobalAttribute&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br>     &lt;xsd:element ref=&quot;cacheVariable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br>(2)</strong>  &lt;xsd:element ref=&quot;netcdf&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;</pre>
-<pre><strong>(3)</strong>  &lt;xsd:element name=&quot;scan&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+<pre><strong>(2)  </strong>&lt;xsd:element ref=&quot;promoteGlobalAttribute&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br><strong>(3)</strong>  &lt;xsd:element ref=&quot;cacheVariable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<strong><br>(4)</strong>  &lt;xsd:element ref=&quot;netcdf&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;</pre>
+<pre><strong>(5)</strong>  &lt;xsd:element name=&quot;scan&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
       &lt;xsd:complexType&gt;
 
-       <strong>&lt;xsd:sequence&gt;<br>         &lt;xsd:element ref=&quot;crawlableDatasetImpl&quot; minOccurs=&quot;0&quot;/&gt;<br>       &lt;/xsd:sequence&gt;</strong>
+       &lt;xsd:sequence&gt;<br><strong>(6)</strong>      &lt;xsd:element ref=&quot;crawlableDatasetImpl&quot; minOccurs=&quot;0&quot;/&gt;<br>       &lt;/xsd:sequence&gt;
 
-<strong>(4)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-<strong>(5)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(6)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(7)</strong>    &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;
-<strong>(8)</strong>    &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(7)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+<strong>(8)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(9)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(10)</strong>   &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;
+<strong>(11)</strong>   &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
 
-<strong>(9)</strong>    &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(10)</strong>   &lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:string&quot;/&gt;
+<strong>(12)</strong>   &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(13)</strong>   &lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:string&quot;/&gt;
 <br>      &lt;/xsd:complexType&gt;
      &lt;/xsd:element&gt;
 
-<strong>(11)</strong> &lt;xsd:element name=&quot;scanFmrc&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+<strong>(14)</strong> &lt;xsd:element name=&quot;scanFmrc&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
       &lt;xsd:complexType&gt;
-<strong>(4)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-<strong>(5)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(6)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(7)</strong>    &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;
-<strong>(8)</strong>    &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(7)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+<strong>(8)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(9)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(10)</strong>   &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;
+<strong>(11)</strong>   &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
 
-<strong>(12)</strong>   &lt;xsd:attribute name=&quot;runDateMatcher&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(15)</strong>   &lt;xsd:attribute name=&quot;runDateMatcher&quot; type=&quot;xsd:string&quot; /&gt;
 <strong>    </strong>   &lt;xsd:attribute name=&quot;forecastDateMatcher&quot; type=&quot;xsd:string&quot; /&gt;
 <strong>    </strong>   &lt;xsd:attribute name=&quot;forecastOffsetMatcher&quot; type=&quot;xsd:string&quot; /&gt;
 <br>      &lt;/xsd:complexType&gt;
      &lt;/xsd:element&gt;</pre>
 <pre>    &lt;/xsd:sequence&gt;</pre>
-<pre><strong>(13)</strong> &lt;xsd:attribute name=&quot;type&quot; type=&quot;AggregationType&quot; use=&quot;required&quot;/&gt;
-<strong>(14)</strong> &lt;xsd:attribute name=&quot;dimName&quot; type=&quot;xsd:token&quot; /&gt;
-<strong>(15)</strong> &lt;xsd:attribute name=&quot;recheckEvery&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(16)</strong> &lt;xsd:attribute name=&quot;timeUnitsChange&quot; type=&quot;xsd:boolean&quot;/&gt;<br>
-      &lt;!-- fmrc only  --&gt;<br><strong>(17)</strong> &lt;xsd:attribute name=&quot;fmrcDefinition&quot; type=&quot;xsd:string&quot; /&gt;<br>
+<pre><strong>(16)</strong> &lt;xsd:attribute name=&quot;type&quot; type=&quot;AggregationType&quot; use=&quot;required&quot;/&gt;
+<strong>(17)</strong> &lt;xsd:attribute name=&quot;dimName&quot; type=&quot;xsd:token&quot; /&gt;
+<strong>(18)</strong> &lt;xsd:attribute name=&quot;recheckEvery&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(19)</strong> &lt;xsd:attribute name=&quot;timeUnitsChange&quot; type=&quot;xsd:boolean&quot;/&gt;<br>
+      &lt;!-- fmrc only  --&gt;<br><strong>(20)</strong> &lt;xsd:attribute name=&quot;fmrcDefinition&quot; type=&quot;xsd:string&quot; /&gt;<br>
 &lt;/xsd:complexType&gt;
 &lt;/xsd:element&gt;
 </pre>
 <ol>
   <li><font color="#990000">For <em><strong>joinNew</strong></em> aggregation types, the  variables that will be aggregated must be explicitly listed in a <em><strong>variableAgg</strong></em> element.</font></li>
+  <li><font color="#990000">Specify which global attributes to promote to a variable (outer aggregation only)</font></li>
+  <li><font color="#990000">Specify which variables should be cached (outer aggregation only)</font></li>
   <li><font color="#990000">The nested netcdf datasets can be explicitly listed.</font></li>
   <li><font color="#990000">Or they can be implictly specified by naming a directory in a scan element.</font></li>
+  <li><font color="#990000">Specfiy which  <em>thredds.crawlabledataset.CrawlableDataset </em>class should be used, otherwise use the default implementation. </font></li>
   <li><font color="#990000">The directory pathname. </font></li>
   <li><font color="#990000">If you specify a <strong>suffix</strong>, only files with that ending will be included.</font></li>
   <li><font color="#990000">If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="http://www.regular-expressions.info/">regular expression</a>  will be included.</font></li>
@@ -273,16 +276,20 @@ forecastOffsetMatcher:                     HHH#.grb#</font></pre>
 <p>not implemented. <br>
 </p>
 <h3>crawlableDataset Element</h3>
-<pre>  <strong>&lt;!-- crawlableDataset - same as catalog --&gt;
+<pre>  &lt;!-- crawlableDataset - same as in a thredds catalog --&gt;
   &lt;xsd:element name=&quot;crawlableDatasetImpl&quot;&gt;
    &lt;xsd:complexType&gt;
     &lt;xsd:sequence&gt;
-     &lt;xsd:any namespace=&quot;##any&quot; minOccurs=&quot;0&quot; processContents=&quot;lax&quot;/&gt;
+<strong>(1)</strong>   &lt;xsd:any namespace=&quot;##any&quot; minOccurs=&quot;0&quot; processContents=&quot;lax&quot;/&gt;
     &lt;/xsd:sequence&gt;
-    &lt;xsd:attribute name=&quot;className&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+<strong>(2)</strong> &lt;xsd:attribute name=&quot;className&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
    &lt;/xsd:complexType&gt;
   &lt;/xsd:element&gt;
-</strong></pre>
+</pre>
+<ol>
+  <li>arbitrary parameters that will be passed to CrawlableDataset constructor LOOK </li>
+  <li>full name of a class that implements thredds.crawlabledataset.CrawlableDataset</li>
+</ol>
 <h3><strong><br>
   promoteGlobalAttribute Element</strong></h3>
 <pre>  <strong>&lt;!-- promote global attribute to variable --&gt;

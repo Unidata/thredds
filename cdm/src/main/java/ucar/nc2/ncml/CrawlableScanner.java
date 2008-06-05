@@ -31,6 +31,7 @@ import java.io.IOException;
 
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.TimeUnit;
+import ucar.nc2.dataset.NetcdfDataset;
 import org.jdom.Element;
 
 /**
@@ -44,7 +45,7 @@ public class CrawlableScanner implements Scanner {
 
   private CrawlableDataset crawler;
   private CrawlableDatasetFilter filter;
-
+  //private NetcdfDataset.EnhanceMode mode;
   private boolean wantSubdirs = true;
 
   // filters
@@ -52,7 +53,10 @@ public class CrawlableScanner implements Scanner {
 
   private boolean debugScan = false;
 
-  CrawlableScanner(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS) {
+  CrawlableScanner(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString,
+          String subdirsS, String olderS) {
+    //this.mode = mode;
+
     String crawlerClassName;
     Object crawlerObject = null;
 
@@ -86,6 +90,8 @@ public class CrawlableScanner implements Scanner {
       }
     }
   }
+
+  //NetcdfDataset.EnhanceMode getEnhanceMode() { return mode; }
 
   public void scanDirectory(Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException {
     scanDirectory(crawler, new Date().getTime(), map, cancelTask);

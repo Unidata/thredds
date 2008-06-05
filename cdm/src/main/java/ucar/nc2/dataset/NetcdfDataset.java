@@ -116,12 +116,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     AllDefer
   }
 
+  static public boolean wantCoordinateSystem(EnhanceMode mode) {
+    return mode == EnhanceMode.All || mode == EnhanceMode.AllDefer || mode == EnhanceMode.CoordSystems;
+  }
+
   /**
    * Find the EnhanceMode that matches the String. For backwards compatibility, 'true' = All.
    * @param enhanceMode : 'None', 'All', 'ScaleMissing', 'ScaleMissingDefer', 'CoordSystems', All',  case insensitive
    * @return matched EnhanceMode, default EnhanceMode.None
    */
-  static public NetcdfDataset.EnhanceMode getEnhanceMode(String enhanceMode) {
+  static public NetcdfDataset.EnhanceMode parseEnhanceMode(String enhanceMode) {
     NetcdfDataset.EnhanceMode mode = NetcdfDataset.EnhanceMode.None;
     if (enhanceMode == null) return mode;
 

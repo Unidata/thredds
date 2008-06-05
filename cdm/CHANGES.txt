@@ -48,7 +48,7 @@ This code is ALPHA
         start adding net.jcip.annotations to document thread safetyAgg
         convertScaleOffsetMissing() methods back into VariableEnhanced
         clean up Aggregation, make sure docs are correct
-        clean up NetcdfDataset.EnhanceMode, add deferrred option
+        clean up NetcdfDataset.EnhanceMode, add deferred option
     15: change StringBuffer to StringBuilder for efficiency
         clean up ArrayStructure/StructureData API, clarify Member use
         StructureData.getScalarXXX(name) must be correct type

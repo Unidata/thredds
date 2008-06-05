@@ -79,6 +79,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
   @Override
   protected void buildDataset(CancelTask cancelTask) throws IOException {
+    // LOOK - should cache the GridDataset directly    
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical = typicalDataset.acquireFile(cancelTask);

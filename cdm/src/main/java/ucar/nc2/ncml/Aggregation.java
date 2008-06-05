@@ -115,7 +115,7 @@ public abstract class Aggregation implements ProxyReader {
   // experimental
   protected boolean timeUnitsChange = false;
   protected String dateFormatMark;
-  protected NetcdfDataset.EnhanceMode enhance = NetcdfDataset.EnhanceMode.None;
+  protected NetcdfDataset.EnhanceMode enhance = NetcdfDataset.EnhanceMode.None; // default is no enhancements
   protected boolean isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
@@ -168,7 +168,7 @@ public abstract class Aggregation implements ProxyReader {
    * @param suffix              filter on this suffix (may be null)
    * @param regexpPatternString include if full name matches this regular expression (may be null)
    * @param dateFormatMark      create dates from the filename (may be null)
-   * @param enhanceS            should files bne enhanced?
+   * @param mode                how should files be enhanced
    * @param subdirs             equals "false" if should not descend into subdirectories
    * @param olderThan           files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
    * @throws IOException if I/O error
@@ -352,7 +352,7 @@ public abstract class Aggregation implements ProxyReader {
     // rebuild the metadata
     rebuildDataset();
     ncDataset.finish();
-    if (ncDataset.getEnhanceMode() != NetcdfDataset.EnhanceMode.None) { // force recreation of the coordinate systems
+    if (NetcdfDataset.wantCoordinateSystem(ncDataset.getEnhanceMode())) { // force recreation of the coordinate systems
       ncDataset.clearCoordinateSystems();
       ncDataset.enhance(ncDataset.getEnhanceMode());
       ncDataset.finish();
@@ -482,21 +482,18 @@ public abstract class Aggregation implements ProxyReader {
     }
 
     protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
-      NetcdfFile ncfile;
-      long start = System.currentTimeMillis();
       if (debugOpenFile) System.out.println(" try to acquire " + cacheLocation);
-      if (enhance != NetcdfDataset.EnhanceMode.None) {
-        ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, enhance, -1, cancelTask, spiObject);
+      long start = System.currentTimeMillis();
+
+      NetcdfFile ncfile;
+      if (enhance == NetcdfDataset.EnhanceMode.None) {
+        ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
 
       } else {
-        ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
+        ncfile = NetcdfDataset.acquireDataset(reader, cacheLocation, enhance, -1, cancelTask, spiObject);
       }
 
       if (debugOpenFile) System.out.println(" acquire " + cacheLocation + " took " + (System.currentTimeMillis() - start));
-      //if (type == Type.JOIN_EXISTING) // LOOK should others use this?
-      //  cacheCoordValues(ncfile);
-      // cacheVariables(ncfile); infinite loop
-
       return ncfile;
     }
 
