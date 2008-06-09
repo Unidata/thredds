@@ -91,6 +91,8 @@
   <property name="resourcesOptional.jar" value="release/resourcesOptional.jar"/>
   <property name="threddsResources.jar" value="release/threddsResources-3.10.jar"/>
 
+  <!-- Libraries needed for tests. -->
+  <property name="spring-test.jar" value="external/spring-test-2.5.jar"/>
   <property name="junit.jar" value="external/junit.jar"/>
   <property name="httpunit.jar" value="external/httpunit.jar"/>
 
@@ -579,8 +581,11 @@
   <path id="test.classpath">
     <path refid="compile.classpath"/>
     <fileset refid="runtime.libraries"/>
-    <fileset dir="${lib.dir}" includes="${junit.jar}"/>
-    <fileset dir="${lib.dir}" includes="${httpunit.jar}"/>
+    <fileset dir="${lib.dir}">
+      <include name="${spring-test.jar}" />
+      <include name="${junit.jar}" />
+      <include name="${httpunit.jar}" />
+    </fileset>
     <pathelement location="${build.classes.dir}"/>
     <pathelement location="${test.classes.dir}"/>
     <pathelement location="${cdm.test.classes.dir}"/>
