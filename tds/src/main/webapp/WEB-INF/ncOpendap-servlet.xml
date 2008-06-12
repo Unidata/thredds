@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	- DispatcherServlet application context for PetClinic's web tier.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+  <bean id="ncOpendapController" class="org.springframework.web.servlet.mvc.ServletWrappingController">
+    <property name="servletClass">
+      <value>thredds.server.opendap.NcDODSServlet</value>
+    </property>
+    <!--property name="servletName">
+      <value>action</value>
+    </property>
+    <property name="initParameters">
+      <props>
+        <prop key="config">/WEB-INF/struts-config.xml</prop>
+      </props>
+    </property-->
+  </bean>
+
+  <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+      <value>
+        =rootController
+        /=rootController
+        **/*.jsp=jspController
+        **/*.html=htmlController
+        **/*.xml=xmlController
+      </value>
+    </property>
+  </bean>
+
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
+  </bean>
+
+</beans>
