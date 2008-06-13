@@ -18,9 +18,8 @@
 <h2>Union of NetCDF files</h2>
 <p>The following NcML constructs a dataset by creating the union of two netCDF files (note there is no <em>location</em> attribute in the outer netcdf element).</p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
-  &lt;<strong>aggregation</strong> type=&quot;<strong>union</strong>&quot;&gt;
-    &lt;<strong>netcdf</strong> location=&quot;file:C:/test/path/rh.nc&quot; /&gt;     
-    &lt;<strong>netcdf</strong> location=&quot;file:C:/test/path/temp.nc&quot; /&gt;
+  &lt;<strong>aggregation</strong> type=&quot;<strong>union</strong>&quot;&gt;    
+    &lt;<strong>netcdf</strong> location=&quot;C:/test/path/rh.nc&quot;/&gt;<br>    &lt;<strong>netcdf</strong> location=&quot;C:/test/path/temp.nc&quot;/&gt;
   &lt;/aggregation&gt; 
 &lt;/netcdf&gt;</pre>
 <p>Supposing that the nested files look like: </p>
@@ -42,7 +41,7 @@ netcdf temp.nc {
   lon = 128; 
 
  variables:  
-  float rh(time, lat, lon);  
+  float Temperature(time, lat, lon);  
  }
 </pre>
 <p>Then the aggregation dataset looks like:</p>
@@ -59,7 +58,7 @@ netcdf TestUnion.ncml {
  }</pre>
  
 <p>The <b>rh</b> variable will be read from <em>C:/test/path/rh.nc</em>, while 
-  the <b>Temperature</b> variable will be read from <i>C:/test/path/temp.nc. </i></p>
+  the <b>Temperature</b> variable will be read from <i>C:/test/path/temp.nc. </i>One can also specify the referenced dataset reletive to the working path or reletive to the Ncml, see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/DatasetUrls.html">Dataset URLs</a>.</p>
 <p><i>A <strong>Union</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and variables) from the nested datasets in the order the nested datasets are listed. If an object with the same name already exists, it is skipped. </i><strong><em>You need to pay close attention to  dimensions and coordinate variables, which must match exactly across nested files. </em></strong></p>
 <p><strong>Example file </strong>: <a href="examples/aggUnionSimple.ncml.txt">aggUnionSimple.ncml</a></p>
 <h2> <a name="joinExisting"></a>Aggregation on an existing dimension</h2>
@@ -81,7 +80,7 @@ netcdf TestUnion.ncml {
     &lt;netcdf location=&quot;file:/test/temperature/feb.nc&quot; <strong>ncoords=&quot;28&quot;</strong>/&gt;
   &lt;/aggregation&gt;<br>&lt;/netcdf&gt;
 </pre>
-<p><i>A <strong>JoinExisting</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and variables) from the nested datasets in the order the nested datasets are listed. All variables that use the aggregation dimension are logically concatenated, in the order of the nested datasets. Variables that don't use the aggregation dimension are treated as in a Union dataset, i.e. skipped if one of that name already exists.</i></p>
+<p><i>A <strong>JoinExisting</strong> dataset is constructed by transferring objects (dimensions, attributes, groups, and variables) from the nested datasets in the order the nested datasets are listed. All variables that use the aggregation dimension are logically concatenated, in the order of the nested datasets. Variables that don't use the aggregation dimension are treated as in a Union dataset, i.e. skipped if one with that name already exists.</i></p>
 <p><strong>Example file </strong>: <a href="examples/aggExisting.ncml.txt">aggExisting.ncml</a></p>
 <h3>Defining coordinates on a JoinExisting aggregation </h3>
 <p>Typically the coordinates for a <em><strong>JoinExisting</strong></em> aggregation are taken from the existing coordinate variables, as in the above example. If it is missing, you must define it in the NcML: </p>
@@ -102,6 +101,7 @@ netcdf TestUnion.ncml {
 <p>These are the ways that coordinate values are assigned to a <strong>JoinExisting</strong><a name="JoinExistingTypes"></a> coordinate: </p>
 <ol>
   <li>You may explicitly define the coordinate variable in the NcML, and assign coordinate values to it, as in this example. These will override anything in the nested datasets. If you explicitly list the values, you must know the exact number of them. If you use the start and increment values, as in this example, you don't have to know the exact number, but the values must be evenly spaced. </li>
+  <li>You may explicitly define the coordinate variable, but not specify its values, which allows you to define attributes for the coordinate variable. The coordinate values will be read from the the nested <strong>netcdf</strong> dataset coordinate variables</li>
   <li>You may specify the coordinate values through the <em>coordValue</em> attributes on the individual <em>netcdf</em> elements, with the correct number of space-delimited coordinate values, eg:
     <pre>&lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;
   &lt;netcdf location=&quot;file:/test/temperature/janAvgWeek.nc&quot; <em>coordValue</em>=&quot;1038 7823 12983 43400&quot;/&gt;
@@ -109,7 +109,6 @@ netcdf TestUnion.ncml {
 &lt;/aggregation&gt;</pre>
   </li>
   <li>If there is exactly one time slice in each file of the <strong>JoinExisting</strong> aggregation, and you are using a <a href="#scan">scan</a> element to dynamically scan the files in a directory, then you can use the <a href="#dateFormatMark">dateFormatMark</a> attribute to derive the date from the filename. </li>
-  <li>You may explicitly define the coordinate variable, but not specify its values, so that you can  define attributes for it. The coordinate values will be read from the the nested <strong>netcdf</strong> dataset coordinate variables</li>
   <li>If you do not specify a coordinate variable, one must exist in each of the nested datasets, and the coordinate values will be read from it, just like any other aggregation variable. </li>
 </ol>
 <h2><a name="joinNew"></a>Aggregation on a new dimension</h2>
@@ -238,7 +237,6 @@ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <pre><strong>    // Enable Aggregation caching. Every hour, delete stuff older than 30 days<br>    Aggregation.setPersistenceCache( new DiskCache2(&quot;/.nj22/cachePersist&quot;, true, 60 * 24 * 30, 60));</strong></pre>
 <p>When this is enabled, <strong>joinExisting</strong> aggregations will save  information to special XML files in the specified directory, in order to avoid opening every file to obtain its coordinate values, each time the dataset is opened. Instead, the first time it is opened, the values are read, then subsequent opens will use the cached values. </p>
 <p>If using a <strong>scan</strong> element on changing directories, be sure to specify the <strong>recheckEvery</strong> attribute to make sure that the cached information gets updated.</p>
-<p>&nbsp;</p>
 <h2>Nested Aggregation<a name="nested"></a></h2>
 <p>One can nest netcdf elements in aggregation, for example: </p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
@@ -261,7 +259,7 @@ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <p>Next: <a href="FmrcAggregation.html">FMRC Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 03, 2008
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 13, 2008
 </address>
 <p>&nbsp;</p>
 </body>

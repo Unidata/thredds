@@ -402,8 +402,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static public NetcdfDataset acquireDataset(FileFactory fac, String location, EnhanceMode enhanceMode, int buffer_size,
           ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
 
-    if (fileCache == null)
-      return openDataset(location, enhanceMode, buffer_size, cancelTask, iospMessage);
+    // caching not turned on
+    if (fileCache == null) {
+      if (fac == null)
+        return openDataset(location, enhanceMode, buffer_size, cancelTask, iospMessage);
+      else
+        // must use the factory if there is one
+        return (NetcdfDataset) fac.open(location, buffer_size, cancelTask, iospMessage);
+    }
 
     if (fac != null)
       return (NetcdfDataset) openOrAcquireFile(fileCache, fac, null, location, buffer_size, cancelTask, iospMessage);
@@ -482,7 +488,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
    */
   static public NetcdfFile acquireFile(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    return openOrAcquireFile(fileCache, null, null, location, -1, cancelTask, null);
+    return acquireFile(null, null, location, -1, cancelTask, null);
   }
 
   /**
@@ -502,6 +508,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   static public NetcdfFile acquireFile(ucar.nc2.util.cache.FileFactory factory, Object hashKey,
                 String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+
+    // must use the factory if there is one
+    if ((fileCache == null) && (factory != null)) {
+      return (NetcdfFile) factory.open(location, buffer_size, cancelTask, spiObject);
+    }
+
     return openOrAcquireFile(fileCache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
   }
 
@@ -545,11 +557,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject); // try as a dods file
     }
 
-    if (cache != null)
-      return (NetcdfFile) cache.acquire(location, hashKey, buffer_size, cancelTask, spiObject,
-                             (factory != null) ? factory : defaultNetcdfFileFactory);
-    else
+    if (cache != null) {
+      if (factory == null) factory = defaultNetcdfFileFactory;
+      return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
+    } else {
       return NetcdfFile.open(location, buffer_size, cancelTask, spiObject);
+    }
   }
 
   /*
@@ -574,13 +587,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
                 String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     if (cache == null) return openDODS(location, cancelTask);
 
-    // LOOK should factory be used here ?
-    return (NetcdfFile) cache.acquire(location, hashKey, buffer_size, cancelTask, spiObject, (factory != null) ? factory :
-      new FileFactory() {
-        public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-          return openDODS(location, cancelTask);
-        }
-      });
+    if (factory == null) factory = new DodsFactory();
+    return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
+  }
+
+  static private class DodsFactory implements FileFactory {
+     public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+        return openDODS(location, cancelTask);
+      }
   }
 
   // // try to open as a dods file
@@ -598,13 +612,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
                 String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     if (cache == null) return NcMLReader.readNcML(location, cancelTask);
 
-    // LOOK should factory be used here ?
-    return (NetcdfFile) cache.acquire(location, hashKey, buffer_size, cancelTask, spiObject, (factory != null) ? factory :
-      new FileFactory() {
-        public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-          return NcMLReader.readNcML(location, cancelTask);
-        }
-      });
+    if (factory == null) factory = new NcMLFactory();
+    return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
+  }
+
+  static private class NcMLFactory implements FileFactory {
+     public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+       return NcMLReader.readNcML(location, cancelTask);
+      }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////

@@ -138,8 +138,15 @@ public class TestAll {
 
     suite.addTest( ucar.nc2.TestNC2.suite());
     suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
-    //suite.addTest( ucar.nc2.ncml.TestNcML.suite());  // leave off for now
-    //suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());
+
+    // aggregation, no cache
+    suite.addTest( ucar.nc2.ncml.TestNcML.suite());
+    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite()); 
+
+    // aggregation, with cache
+    ucar.nc2.dataset.NetcdfDataset.initNetcdfFileCache(10,100,60*60);
+    suite.addTest( ucar.nc2.ncml.TestNcML.suite());
+    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());
 
     suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
     suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite());

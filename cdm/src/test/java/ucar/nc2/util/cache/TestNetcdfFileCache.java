@@ -167,7 +167,7 @@ public class TestNetcdfFileCache extends TestCase {
         //System.out.println(" open "+f.getPath());
         try {
           String want = StringUtil.replace(f.getPath(), '\\', "/");
-          cache.acquire(want, null, factory);
+          cache.acquire(factory, want, null);
           count++;
         } catch (IOException e) {
           // e.printStackTrace();
@@ -284,7 +284,7 @@ public class TestNetcdfFileCache extends TestCase {
     String location;
     CallAcquire(String location) { this.location = location; }
     public FileCacheable call() throws Exception {
-      return cache.acquire(location, null, factory);
+      return cache.acquire(factory, location, null);
     }
   }
 

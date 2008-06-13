@@ -31,6 +31,7 @@ import ucar.ma2.InvalidRangeException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Aggregation on datasets to be simply combined - aka "union".
@@ -38,7 +39,7 @@ import java.util.List;
  * @author caron
  */
 public class AggregationUnion extends Aggregation {
-
+  List<NetcdfFile> openDatasets = new ArrayList<NetcdfFile>();
   public AggregationUnion(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.UNION, recheckS);
   }
@@ -51,6 +52,7 @@ public class AggregationUnion extends Aggregation {
       NetcdfFile ncfile = vnested.acquireFile(cancelTask);
       DatasetConstructor.transferDataset(ncfile, ncDataset, null);
       // do not close - all stay open. Could use Proxy if need to open only as needed.
+      openDatasets.add(ncfile);
     }
   }
 
@@ -68,6 +70,18 @@ public class AggregationUnion extends Aggregation {
   @Override
   public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     throw new IllegalStateException(); // should never be called
+  }
+
+  @Override
+  protected void closeDatasets() throws IOException {
+    for (NetcdfFile ncfile : openDatasets) {
+      try {
+        ncfile.close();
+      } catch (IOException e) {
+       // ignore
+      }
+    }
+    super.closeDatasets();
   }
 
 }

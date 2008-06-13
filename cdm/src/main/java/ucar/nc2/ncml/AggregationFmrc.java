@@ -164,6 +164,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       vagg.addAttribute(new Attribute("coordinates", dimName + " " + grid.getCoordinateSystem().getName())); // CF
 
       newGroup.removeVariable( v.getShortName());
+      newGroup.addVariable( vagg);
       aggVars.add(vagg);
 
       if (debug) System.out.println("FmrcAggregation: added grid " + v.getName());

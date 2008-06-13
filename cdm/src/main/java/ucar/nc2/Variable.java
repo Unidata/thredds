@@ -1326,7 +1326,8 @@ public class Variable implements VariableIF {
   }
 
   /**
-   * Reset the dimension array. Anonymous dimensions are left alone. Shared dimensions are searched for recursively in the parent groups.
+   * Reset the dimension array. Anonymous dimensions are left alone.
+   * Shared dimensions are searched for recursively in the parent groups.
    */
   public void resetDimensions() {
     if (immutable) throw new IllegalStateException("Cant modify");

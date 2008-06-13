@@ -97,6 +97,7 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
     if (joinAggCoord == null) {
+      typicalDataset.close( typical); // clean up
       throw new IllegalArgumentException("No existing coordinate variable for joinExisting on "+getLocation());
     }
 

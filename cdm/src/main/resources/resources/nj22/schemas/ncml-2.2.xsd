@@ -175,6 +175,7 @@
           </xsd:complexType>
         </xsd:element>
 
+        <!-- fmrcSingle only  -->
         <xsd:element name="scanFmrc" minOccurs="0" maxOccurs="unbounded">
           <xsd:complexType>
             <xsd:attribute name="location" type="xsd:string" use="required"/>
@@ -196,7 +197,7 @@
       <xsd:attribute name="recheckEvery" type="xsd:string"/>
       <xsd:attribute name="timeUnitsChange" type="xsd:boolean"/>
 
-      <!-- fmrc only  -->
+      <!-- fmrc, fmrcSingle only  -->
       <xsd:attribute name="fmrcDefinition" type="xsd:string"/>
 
     </xsd:complexType>

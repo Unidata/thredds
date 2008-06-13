@@ -21,145 +21,142 @@ files.</p>
   </blockquote>
 </blockquote>
 <h2 align=left>Annotated Schema </h2>
-<p align=left>Aggregation specific elements are <font color="#990000">listed in red.</font></p>
+<p align=left>Aggregation specific elements are <font color="#990000">listed in red.</font> <font color="#990000">The <em>forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting </em>and<em> joinNew</em> aggregation types are called <strong><em>outer aggregations</em></strong> because they work on the outer (first) dimension.</font></p>
 <h3 align=left>schema Element  <B><FONT color=#ff0000> </FONT></B></h3>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;xsd:schema targetNamespace=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;<br>  xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;<br>  xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;<br>  elementFormDefault=&quot;qualified&quot;&gt;
 </pre>
 <h3><B>netcdf Element</B></h3>
-<P><FONT color=#0000ff>  The 
+<P>  The 
       <I><strong>netcdf element</strong> </I>  represents a generic netCDF dataset, i.e. a container for 
     data conforming to the netCDF data model. For instance, a <I>netcdf</I> element might 
     represent an existing <em>netCDF</em> file, a  netCDF file not yet written, a <em>GRIB</em> file read through the netCDF-Java library, a subset of a netCDF file, an aggregation of netCDF files, or a self-contained dataset (i.e. all the 
     data is  included in the NcML document and there is no separate netCDF file 
     holding the data). An NcML document  therefore 
     should not necessarily be thought of as a physical netCDF file, but rather the "public interface" or API to a set of data, which may or may not be implemented 
-  with a physical netCDF file. </FONT></P>
-<P><FONT color=#0000ff>The element <I><strong>netcdf</strong></I> is the root tag of the 
-    NcML instance document, and is said to define a NetCDF dataset.</FONT></P>
+  with a physical netCDF file. </P>
+<P>The element <I><strong>netcdf</strong></I> is the root tag of the 
+    NcML instance document, and is said to define a NetCDF dataset.</P>
 <pre>&lt;!-- XML encoding of Netcdf container object --&gt;
 &lt;xsd:element name=&quot;netcdf&quot;&gt;<br>  &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;
 
- <font color="#0000FF">(1)</font>  &lt;xsd:choice minOccurs=&quot;0&quot;&gt;<br>        &lt;xsd:element name=&quot;readMetadata&quot;/&gt;<br>        &lt;xsd:element name=&quot;explicit&quot;/&gt;<br>      &lt;/xsd:choice&gt;
-<br> <font color="#0000FF">(2)</font>  &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;<br>        &lt;xsd:element ref=&quot;group&quot;/&gt;
+ (1)  &lt;xsd:choice minOccurs=&quot;0&quot;&gt;<br>        &lt;xsd:element name=&quot;readMetadata&quot;/&gt;<br>        &lt;xsd:element name=&quot;explicit&quot;/&gt;<br>      &lt;/xsd:choice&gt;
+<br> (2)  &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;<br>        &lt;xsd:element ref=&quot;group&quot;/&gt;
         &lt;xsd:element ref=&quot;dimension&quot;/&gt;<br>        &lt;xsd:element ref=&quot;variable&quot;/&gt;<br>        &lt;xsd:element ref=&quot;attribute&quot;/&gt;<br>        &lt;xsd:element ref=&quot;remove&quot;/&gt;<br>      &lt;/xsd:choice&gt;
 <br> <font color="#AA0000">(3)  &lt;xsd:element ref=&quot;aggregation&quot; minOccurs=&quot;0&quot;/&gt;</font><br>    &lt;/xsd:sequence&gt;</pre>
-<pre> <font color="#0000FF">(4)</font>&lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:anyURI&quot;/&gt;
- <font color="#0000FF">(5)</font>&lt;xsd:attribute name=&quot;id&quot; type=&quot;xsd:string&quot;/&gt;
- <font color="#0000FF">(6)</font>&lt;xsd:attribute name=&quot;title&quot; type=&quot;xsd:string&quot;/&gt;
- <font color="#0000FF">(7)</font>&lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:string&quot;/&gt;
- <font color="#0000FF">(8)</font>&lt;xsd:attribute name=&quot;addRecords&quot; type=&quot;xsd:boolean&quot;/&gt;
+<pre> (4)&lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:anyURI&quot;/&gt;
+ (5)&lt;xsd:attribute name=&quot;id&quot; type=&quot;xsd:string&quot;/&gt;
+ (6)&lt;xsd:attribute name=&quot;title&quot; type=&quot;xsd:string&quot;/&gt;
+ (7)&lt;xsd:attribute name=&quot;enhance&quot; type=&quot;xsd:string&quot;/&gt;
+ (8)&lt;xsd:attribute name=&quot;addRecords&quot; type=&quot;xsd:boolean&quot;/&gt;
 
  (9)&lt;xsd:attribute name=&quot;iosp&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;xsd:attribute name=&quot;iospParam&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;xsd:attribute name=&quot;bufferSize&quot; type=&quot;xsd:int&quot;/&gt;</pre>
-<pre>    <font color="#AA0000">&lt;!-- for aggregations --&gt;
+<pre>    <font color="#AA0000">&lt;!-- for netcdf elements nested inside of <a href="#aggregation">aggregation</a> elements --&gt;
 (10)&lt;xsd:attribute name=&quot;ncoords&quot; type=&quot;xsd:string&quot;/&gt;
 (11)&lt;xsd:attribute name=&quot;coordValue&quot; type=&quot;xsd:string&quot;/&gt;
-(12)<strong>&lt;xsd:attribute name=&quot;section&quot; type=&quot;xsd:string&quot;/&gt;</strong><br>
+(12)&lt;xsd:attribute name=&quot;section&quot; type=&quot;xsd:string&quot;/&gt;<br>
 </font>&lt;/xsd:complexType&gt;
 &lt;/xsd:element&gt;
 </pre>
 <OL>
-  <LI><font color="#0000FF">A </font><font color="#0000FF"><em><strong>readMetadata</strong></em> (default) or an <em><strong>explicit</strong></em> element comes first. The <em><strong>readMetadata</strong></em> element indicates that all the metadata from the referenced dataset will be read in. The <em><strong>explicit</strong></em> element indicates that only the metadata explictly declared in the NcML file will be used. </font>   
-  <LI><FONT color=#0000ff>The <I><strong>netcdf</strong></I> element may contain any number 
-  (including 0) of elements <I><strong>group, variable</strong></I>, <I><strong>dimension</strong></I>, <I>or<strong> attribute</strong></I>  that can appear in any order.</FONT> <font color="#0000FF">If you use readMetadata, you can remove specific elements with the <em><strong>remove</strong></em> element. </font> 
-  <LI><font color="#990000">An aggregation element is used logically join multiple netcdf datasets into a single dataset.</font>
-  <LI><FONT color=#0000ff>The optional <I><strong>location</strong></I> attribute provides a reference to another netCDF dataset, called the <em><strong>referenced dataset</strong></em>. The location can be an absolute URL (eg <strong>http://server/myfile</strong>, or <strong>file:/usr/local/data/mine.nc</strong>) or a URL reletive to the NcML location (eg <strong>subdir/mydata.nc</strong>). The referenced dataset contains the variable data that is not explicitly specified in the NcML document itself. If the location is missing and the data is not defined in <strong>values</strong> elements, then an empty file is written similar to the way CDL files are written by ncgen. </FONT>  
-  <LI><FONT color=#0000ff>The optional <I><strong>id</strong></I> attribute is meant to provide a 
+  <LI>A <em><strong>readMetadata</strong></em> (default) or an <em><strong>explicit</strong></em> element comes first. The <em><strong>readMetadata</strong></em> element indicates that all the metadata from the referenced dataset will be read in. The <em><strong>explicit</strong></em> element indicates that only the metadata explictly declared in the NcML file will be used.    
+  <LI>The <I><strong>netcdf</strong></I> element may contain any number 
+  (including 0) of elements <I><strong>group, variable</strong></I>, <I><strong>dimension</strong></I>, <I>or<strong> attribute</strong></I>  that can appear in any order. If you use readMetadata, you can remove specific elements with the <em><strong>remove</strong></em> element.  
+  <LI><font color="#990000">An aggregation element is used to logically join multiple netcdf datasets into a single dataset.
+  </font>
+  <LI>The optional <I><strong>location</strong></I> attribute provides a reference to another netCDF dataset, called the <em><strong>referenced dataset</strong></em>. The location can be an absolute URL (eg <strong>http://server/myfile</strong>, or <strong>file:/usr/local/data/mine.nc</strong>) or a URL reletive to the NcML location (eg <strong>subdir/mydata.nc</strong>). The referenced dataset contains the variable data that is not explicitly specified in the NcML document itself. If the location is missing and the data is not defined in <strong>values</strong> elements, then an empty file is written similar to the way CDL files are written by ncgen.   
+  <LI>The optional <I><strong>id</strong></I> attribute is meant to provide a 
   way to uniquely identify (relative to the application context) the NetCDF dataset.  It is important to understand that the <I>id</I> attribute refers to 
-  the NetCDF dataset defined by the XML instance document, NOT the </FONT><font color="#0000FF">referenced dataset </font><FONT color=#0000ff>if there is  one. </FONT>
-  <LI><FONT color=#0000ff>The optional <I><strong>title</strong></I> attribute provides a way to add a human readable title to the netCDF dataset. </FONT>
-  <LI><font color="#0000ff">The optional <em><strong>enhance<a name="enhance"></a></strong></em> attribute indicates whether the </font><font color="#0000FF">referenced dataset </font><font color="#0000ff"> is opened in enhanced mode, and can be set to <em>All, ScaleMissing, CoordSystems, or None </em>(case insensitive). For backwards compatibility, a value of <em>true</em> means <em>All</em>. Default is <em>None</em>. See NetcdfDataset.EnhanceMode.</font>  
-  <LI><font color="#0000ff">The optional <em><strong>addRecords</strong></em> attribute is used only when the referenced datasets is a netCDF-3 file. If true (default false) then a Structure named <em><strong>record</strong></em> is added, containing the record (unlimited) variables. This allows one to read efficiently along the unlimited dimension. </font>  
-  <LI><font color="#0000ff">These 3 parameters control how the referenced dataset is opened. If <strong>iosp</strong> is specified, it is a fully qualified class name of an <strong><a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/IOSPoverview.html">IOServiceProvider</a></strong>  class that knows how to open the file specified by <strong>location</strong>. The optional <strong>iospParam</strong> is passed to the IOSP through the <strong>IOServiceProvider</strong>.setSpecial() method. The optional <strong>bufferSize</strong> tells the IOSP how many bytes to use for buffering the file data. </font>
-  <LI><font color="#990000">The optional <strong><em>ncoords</em></strong> attribute is used for <strong>joinExisting</strong> aggregation datasets to indicate the number of coordinates that come from the dataset.</font>  
-  <LI><font color="#990000"> The <strong><em>coordValue</em></strong> attribute is used for aggregation datasets to assign a coordinate value(s) to the dataset. If there are multiple coordinates for a single file, blanks and/or commas are used to delineate them, so you cannot use those characters in your coordinate values.</font>
+  the NetCDF dataset defined by the XML instance document, NOT the referenced dataset if there is  one. 
+  <LI>The optional <I><strong>title</strong></I> attribute provides a way to add a human readable title to the netCDF dataset. 
+  <LI>The optional <em><strong>enhance<a name="enhance"></a></strong></em> attribute indicates whether the referenced dataset  is opened in enhanced mode, and can be set to <em>All, AllDefer, ScaleMissing, ScaleMissingDefer, CoordSystems, or None </em>(case insensitive). For backwards compatibility, a value of <em>true</em> means <em>All</em>. Default is <em>None</em>. See <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/NetcdfDataset.html#enhance">NetcdfDataset.EnhanceMode</a>.
+  <LI>The optional <em><strong>addRecords</strong></em> attribute is used only when the referenced datasets is a netCDF-3 file. If true (default false) then a Structure named <em><strong>record</strong></em> is added, containing the record (unlimited) variables. This allows one to read efficiently along the unlimited dimension.   
+  <LI>These 3 parameters control how the referenced dataset is opened by the IOServiceProvider. If <strong>iosp</strong> is specified, its value must be a fully qualified class name of an <strong><a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/IOSPoverview.html">IOServiceProvider</a></strong>  class that knows how to open the file specified by <strong>location</strong>. The optional <strong>iospParam</strong> is passed to the IOSP through the <strong>IOServiceProvider</strong>.setSpecial() method. The optional <strong>bufferSize</strong> tells the IOSP how many bytes to use for buffering the file data. 
+  <LI><font color="#990000">The optional <strong><em>ncoords</em></strong> attribute is used for <strong>joinExisting</strong> aggregation datasets to indicate the number of coordinates that come from the dataset. This is used to avoid having to open each dataset when starting. </font>
+  <LI><font color="#990000"> The <strong><em>coordValue</em></strong> attribute is used for <strong>joinExisting</strong> or <strong>joinNew</strong> aggregations to assign a coordinate value(s) to the dataset. A <strong>joinNew</strong> aggregation always has exactly one coordinate value. A <strong>joinExisting</strong> may have multiple values, in which case, blanks and/or commas are used to delineate them, so you cannot use those characters in your coordinate values.</font>
+  <LI><font color="#990000">The <strong>section</strong> attribute is used only for tiled aggregations, and describes which section of the entire dataset this dataset represents.    The section value follows the ucar.ma2.Section <em>section spec</em> (see javadocs), eg &quot;(1:20,:,3)&quot;, parenthesis optional<br>
+  </font>
 </OL>
 <h3><B>group Element</B></h3>
-<p> <FONT color=#0000ff>A <I><strong>group</strong></I> element represents a netCDF group, a container for <I><strong>variable</strong></I>, <I><strong>dimension</strong></I>, <I><strong>attribute</strong></I>, or other <I><strong>group </strong></I>elements. </FONT></p>
+<p> A <I><strong>group</strong></I> element represents a netCDF group, a container for <I><strong>variable</strong></I>, <I><strong>dimension</strong></I>, <I><strong>attribute</strong></I>, or other <I><strong>group </strong></I>elements. </p>
 <pre>  &lt;xsd:element name=&quot;group&quot;&gt;<br>    &lt;xsd:complexType&gt;<br><font color="#0000FF">(1)</font>   &lt;xsd:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;<br>        &lt;xsd:element ref=&quot;dimension&quot;/&gt;<br>        &lt;xsd:element ref=&quot;variable&quot;/&gt;<br>        &lt;xsd:element ref=&quot;attribute&quot;/&gt;<br>        &lt;xsd:element ref=&quot;group&quot;/&gt;<br>        &lt;xsd:element ref=&quot;remove&quot;/&gt;<br>      &lt;/xsd:choice&gt;<br><font color="#0000FF">(2)</font>   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br><font color="#0000FF">(3)</font>   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;
 </pre>
 <OL>
-  <LI><FONT color=#0000ff>The <I><strong>group</strong></I> element may contain any number (including 0) of elements <I><strong>group, variable</strong></I>, <I><strong>dimension</strong></I>, <I>or<strong> attribute</strong></I> that can appear in any order.</FONT> <font color="#0000FF">You can also mix in <em><strong>remove</strong></em> elements to remove  elements.</font>
-  <LI><FONT color=#0000ff>The mandatory <I><strong>name</strong></I> attribute must be unique among groups within its containing <em><strong>group</strong></em> or <strong><em>netcdf</em></strong> element. </FONT>  
-  <LI><FONT color=#0000ff>The optional attribute <em><strong>orgName</strong></em> is used when renaming a group.</FONT></LI>
+  <LI>The <I><strong>group</strong></I> element may contain any number (including 0) of elements <I><strong>group, variable</strong></I>, <I><strong>dimension</strong></I>, <I>or<strong> attribute</strong></I> that can appear in any order. You can also mix in <em><strong>remove</strong></em> elements to remove  elements coming from the referenced dataset.<LI>The mandatory <I><strong>name</strong></I> attribute must be unique among groups within its containing <em><strong>group</strong></em> or <strong><em>netcdf</em></strong> element.   
+  <LI>The optional attribute <em><strong>orgName</strong></em> is used when renaming a group.</LI>
 </OL>
 <h3><B>dimension Element</B></h3>
-<p>  <FONT color=#0000ff>The <I><strong>dimension</strong></I> element represents a netCDF dimension, i.e. a named index of 
-  specified length.</FONT></p>
+<p>  The <I><strong>dimension</strong></I> element represents a netCDF dimension, i.e. a named index of 
+  specified length.</p>
 <pre>  &lt;!-- XML encoding of Dimension object --&gt;
-  &lt;xsd:element name=&quot;dimension&quot;&gt;<br>    &lt;xsd:complexType&gt;<br><font color="#0000FF">(1)</font>   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;<br><font color="#0000FF">(2)</font>   &lt;xsd:attribute name=&quot;length&quot; type=&quot;xsd:nonNegativeInteger&quot;/&gt;<br><font color="#0000FF">(3)</font>   &lt;xsd:attribute name=&quot;isUnlimited&quot; type=&quot;xsd:boolean&quot; default=&quot;false&quot;/&gt;<br><font color="#0000FF">(4)</font>   &lt;xsd:attribute name=&quot;isVariableLength&quot; type=&quot;xsd:boolean&quot; default=&quot;false&quot;/&gt;<br><font color="#0000FF">(5)</font>   &lt;xsd:attribute name=&quot;isShared&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;<br><font color="#0000FF">(6)</font>   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
+  &lt;xsd:element name=&quot;dimension&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>(1)   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;<br>(2)   &lt;xsd:attribute name=&quot;length&quot; type=&quot;xsd:nonNegativeInteger&quot;/&gt;<br>(3)   &lt;xsd:attribute name=&quot;isUnlimited&quot; type=&quot;xsd:boolean&quot; default=&quot;false&quot;/&gt;<br>(4)   &lt;xsd:attribute name=&quot;isVariableLength&quot; type=&quot;xsd:boolean&quot; default=&quot;false&quot;/&gt;<br>(5)   &lt;xsd:attribute name=&quot;isShared&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;<br>(6)   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
 
 <OL>
-  <LI><FONT color=#0000ff>The mandatory <I><strong>name</strong></I> attribute must be unique among dimensions within its containing <em><strong>group</strong></em> or <strong><em>netcdf</em></strong> element. </FONT>   
-  <LI><FONT color=#0000ff>The mandatory attribute <I><strong>length</strong> </I>expresses the 
+  <LI>The mandatory <I><strong>name</strong></I> attribute must be unique among dimensions within its containing <em><strong>group</strong></em> or <strong><em>netcdf</em></strong> element.    
+  <LI>The mandatory attribute <I><strong>length</strong> </I>expresses the 
   cardinality (number of points) associated with the dimension. Its value can be 
   any non negative integer including 0 (since the unlimited dimension in a 
-  netCDF file may have length 0, corresponding to 0 records).</FONT> 
-  <LI><FONT color=#0000ff>The attribute <I><strong>isUnlimited</strong> </I>is <em>true</em> only if the dimension can grow (a.k.a the record dimension in NetCDF-3 files), and <em>false</em> when the length is fixed at file creation. </FONT></LI>
-  <LI><FONT color=#0000ff>The attribute <em><strong>isVariableLength</strong></em> is used for <em>variable length</em> data types, where the length is not part of the metadata..</FONT></LI>
-  <LI><FONT color=#0000ff>The attribute <em><strong>isShared</strong></em> is <em>true</em> for shared dimensions, and <em>false</em> when the dimension is private to the variable.</FONT></LI>
-  <LI><FONT color=#0000ff>The optional attribute <em><strong>orgName</strong></em> is used when renaming a dimension. </FONT></LI>
+  netCDF file may have length 0, corresponding to 0 records). 
+  <LI>The attribute <I><strong>isUnlimited</strong> </I>is <em>true</em> only if the dimension can grow (a.k.a the record dimension in NetCDF-3 files), and <em>false</em> when the length is fixed at file creation. </LI>
+  <LI>The attribute <em><strong>isVariableLength</strong></em> is used for <em>variable length</em> data types, where the length is not part of the metadata..</LI>
+  <LI>The attribute <em><strong>isShared</strong></em> is <em>true</em> for shared dimensions, and <em>false</em> when the dimension is private to the variable.</LI>
+  <LI>The optional attribute <em><strong>orgName</strong></em> is used when renaming a dimension. </LI>
 </OL>
 <h3><B>variable Element </B></h3>
-<P>  <FONT color=#0000ff>A <em><strong>variable</strong></em>  element represents a netCDF variable, i.e. a scalar or multidimensional array of 
-  specified type indexed by 0 or more dimensions.</FONT></P>
-<pre>  &lt;xsd:element name=&quot;variable&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:sequence&gt;<br><font color="#0000FF">(1)</font>     &lt;xsd:element ref=&quot;attribute&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br><font color="#0000FF">(2)</font>     &lt;xsd:element ref=&quot;values&quot; minOccurs=&quot;0&quot;/&gt;<br><font color="#0000FF">(3)</font>     &lt;xsd:element ref=&quot;variable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br><font color="#0000FF">(4)</font>     &lt;xsd:element ref=&quot;logicalView&quot; minOccurs=&quot;0&quot; /&gt;<br><font color="#0000FF">(5)</font>     &lt;xsd:element ref=&quot;remove&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br>      &lt;/xsd:sequence&gt;
-<br><font color="#0000FF">(6)</font>   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot; /&gt;<br><font color="#0000FF">(7)</font>   &lt;xsd:attribute name=&quot;type&quot; type=&quot;DataType&quot; use=&quot;required&quot; /&gt;<br><font color="#0000FF">(8)</font>   &lt;xsd:attribute name=&quot;shape&quot; type=&quot;xsd:token&quot; /&gt;<br><font color="#0000FF">(9)</font>   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
+<P>  A <em><strong>variable</strong></em>  element represents a netCDF variable, i.e. a scalar or multidimensional array of 
+  specified type indexed by 0 or more dimensions.</P>
+<pre>  &lt;xsd:element name=&quot;variable&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:sequence&gt;<br>(1)     &lt;xsd:element ref=&quot;attribute&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br>(2)     &lt;xsd:element ref=&quot;values&quot; minOccurs=&quot;0&quot;/&gt;<br>(3)     &lt;xsd:element ref=&quot;variable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br>(4)     &lt;xsd:element ref=&quot;logicalView&quot; minOccurs=&quot;0&quot; /&gt;<br>(5)     &lt;xsd:element ref=&quot;remove&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; /&gt;<br>      &lt;/xsd:sequence&gt;
+<br>(6)   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot; /&gt;<br>(7)   &lt;xsd:attribute name=&quot;type&quot; type=&quot;DataType&quot; use=&quot;required&quot; /&gt;<br>(8)   &lt;xsd:attribute name=&quot;shape&quot; type=&quot;xsd:token&quot; /&gt;<br>(9)   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
 <OL>
-  <LI><FONT color=#0000ff>A <I><strong>variable</strong></I> element may contain 0 or more <I><strong>attribute</strong></I> elements,</FONT>
-  <LI><FONT color=#ff0000><FONT color=#0000ff>The optional<I> <strong>values</strong></I> element is used 
-  to  specify the data values of the  variable. The values must be listed compatibly with the size and shape of the variable <FONT color=#ff0000><FONT color=#0000ff><FONT color=#ff0000><FONT color=#0000ff>(slowest varying dimension first)</FONT></FONT></FONT></FONT>.</FONT></FONT> <font color="#0000FF">If not specified, the data values are taken from the variable of the same name in the referenced dataset. </font>
-  <LI><font color="#0000FF">A variable of data type <em><strong>structure</strong></em> may have nested variable elements within it. </font>
-  <LI><font color="#0000FF">NOT IMPLEMENTED YET </font>
-  <LI><font color="#0000FF">You can remove attributes from the underlying variable. </font>      
-  <LI><FONT color=#0000ff>The mandatory <I><strong>name</strong></I> attribute must be unique among variables within its containing <em><strong>group, variable, </strong>or </em><strong><em>netcdf</em></strong> element.</FONT>
-  <LI><FONT color=#0000ff>The mandatory <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataTypes">DataTypes</a>.</FONT>
-  <LI><FONT color=#0000ff>The <em><strong>shape</strong></em> attribute   lists the names of the dimensions the variable depends on. For a scalar variable, the list will be empty. The 
-  dimension names must be ordered with the <FONT color=#ff0000><FONT color=#0000ff><FONT color=#ff0000><FONT color=#0000ff>slowest varying dimension first</FONT></FONT></FONT></FONT>  (same as in the CDL description). 
-  For backwards compatibility, scalar variables may omit this attribute, although this is deprecated.</FONT>
-  <LI><FONT color=#0000ff>The optional attribute <em><strong>orgName</strong></em> is used when renaming a variable. .</FONT>  
+  <LI>A <I><strong>variable</strong></I> element may contain 0 or more <I><strong>attribute</strong></I> elements,
+  <LI>The optional<I> <strong>values</strong></I> element is used 
+  to  specify the data values of the  variable. The values must be listed compatibly with the size and shape of the variable (slowest varying dimension first). If not specified, the data values are taken from the variable of the same name in the referenced dataset. 
+  <LI>A variable of data type <em><strong>structure</strong></em> may have nested variable elements within it. 
+  <LI>NOT IMPLEMENTED YET 
+  <LI>You can remove attributes from the underlying variable.       
+  <LI>The mandatory <I><strong>name</strong></I> attribute must be unique among variables within its containing <em><strong>group, variable, </strong>or </em><strong><em>netcdf</em></strong> element.
+  <LI>The mandatory <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataTypes">DataTypes</a>.
+  <LI>The <em><strong>shape</strong></em> attribute   lists the names of the dimensions the variable depends on. For a scalar variable, the list will be empty. The 
+  dimension names must be ordered with the slowest varying dimension first  (same as in the CDL description). 
+  For backwards compatibility, scalar variables may omit this attribute, although this is deprecated.
+  <LI>The optional attribute <em><strong>orgName</strong></em> is used when renaming a variable. .  
 </OL>
 <h3><B>values Element </B></h3>
-<P> <FONT color=#0000ff>A <em><strong>values</strong></em> element specifies the data values of a variable,<FONT color=#ff0000> <FONT color=#0000ff>either by listing them for example: 
-        </FONT></FONT></FONT><strong>&lt;values&gt;-109.0 -107.0 -115.0 93.923230&lt;/values&gt;</strong><FONT color=#0000ff><FONT color=#ff0000><FONT color=#0000ff> or by specifying a start and increment, for example: </FONT></FONT></FONT><strong>&lt;values start=&quot;-109.5&quot; increment=&quot;2.0&quot; /&gt;</strong><FONT color=#0000ff><FONT color=#ff0000><FONT color=#0000ff><FONT color=#ff0000><FONT color=#0000ff>. For a multi-dimensional variable, the values must be listed compatibly with the size and shape of the variable (slowest varying dimension first).</FONT> </FONT></FONT></FONT></FONT></P>
-<pre>  &lt;xsd:element name=&quot;values&quot;&gt;<br>    &lt;xsd:complexType mixed=&quot;true&quot;&gt;<br> <font color="#0000FF">(1)</font>  &lt;xsd:attribute name=&quot;start&quot; type=&quot;xsd:float&quot;/&gt;<br>      &lt;xsd:attribute name=&quot;increment&quot; type=&quot;xsd:float&quot;/&gt;<br>      &lt;xsd:attribute name=&quot;npts&quot; type=&quot;xsd:int&quot;/&gt;<br> <font color="#0000FF">(2)</font>  &lt;xsd:attribute name=&quot;separator&quot; type=&quot;xsd:string&quot; /&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
+<P> A <em><strong>values</strong></em> element specifies the data values of a variable, either by listing them for example:        <strong>&lt;values&gt;-109.0 -107.0 -115.0 93.923230&lt;/values&gt;</strong> or by specifying a start and increment, for example: <strong>&lt;values start=&quot;-109.5&quot; increment=&quot;2.0&quot; /&gt;</strong>. For a multi-dimensional variable, the values must be listed compatibly with the size and shape of the variable (slowest varying dimension first). </P>
+<pre>  &lt;xsd:element name=&quot;values&quot;&gt;<br>    &lt;xsd:complexType mixed=&quot;true&quot;&gt;<br> (1)  &lt;xsd:attribute name=&quot;start&quot; type=&quot;xsd:float&quot;/&gt;<br>      &lt;xsd:attribute name=&quot;increment&quot; type=&quot;xsd:float&quot;/&gt;<br>      &lt;xsd:attribute name=&quot;npts&quot; type=&quot;xsd:int&quot;/&gt;<br> (2)  &lt;xsd:attribute name=&quot;separator&quot; type=&quot;xsd:string&quot; /&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
 <OL>
-  <LI><FONT color=#0000ff>The values can be specified with a <em><strong>start</strong></em> and <em><strong>increment</strong></em> attributes, if they are numeric  and  evenly spaced. You can enter these as  integers or floating point numbers, and they will be converted to the data type of the variable. The number of points will be taken from the shape of the variable. (For backwards compatibility, an <em><strong>npts</strong></em> attribute is allowed, although this is deprecated and ignored).</FONT>
-  <LI><FONT color=#ff0000><FONT color=#0000ff>By default, the list of values are separated by whitespace but  a different token can be specified using the <em><strong>separator</strong></em> attribute. This is useful if you are entering String values, e.g. <FONT color=#ff0000><FONT color=#0000ff>&lt;values separator=&quot;*&quot;&gt;My dog*has*fleas&lt;/values&gt; defines three Strings. </FONT></FONT></FONT></FONT></LI>
+  <LI>The values can be specified with a <em><strong>start</strong></em> and <em><strong>increment</strong></em> attributes, if they are numeric  and  evenly spaced. You can enter these as  integers or floating point numbers, and they will be converted to the data type of the variable. The number of points will be taken from the shape of the variable. (For backwards compatibility, an <em><strong>npts</strong></em> attribute is allowed, although this is deprecated and ignored).
+  <LI>By default, the list of values are separated by whitespace but  a different token can be specified using the <em><strong>separator</strong></em> attribute. This is useful if you are entering String values, e.g. &lt;values separator=&quot;*&quot;&gt;My dog*has*fleas&lt;/values&gt; defines three Strings. </LI>
 </OL>
 <h3><B>attribute Element </B></h3>
-<P>  <FONT color=#0000ff>The 
+<P>  The 
   <I><strong>attribute</strong></I> elements represents a netCDF attribute, i.e. a name-value pair of 
-  specified type. Its value may be specified in the <em><strong>values</strong></em> attribute  e.g. </FONT><strong>&lt;attribute name=&quot;Conventions&quot; value=&quot;COARDS&quot;/&gt;</strong><FONT color=#0000ff>, or in the element content, , e.g. </FONT><strong>&lt;attribute name=&quot;valid_range&quot; type=&quot;float&quot;&gt;-99.0 110&lt;/values&gt;</strong><FONT color=#0000ff><FONT color=#ff0000><FONT color=#0000ff><strong>. </strong>It is recommended to use the second form when there are multiple values, but this is only a matter of style. </FONT></FONT></FONT></P>
-<pre>  &lt;xsd:element name=&quot;attribute&quot;&gt;<br>    &lt;xsd:complexType mixed=&quot;true&quot;&gt;<br><font color="#0000FF">(1)</font>   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;<br><font color="#0000FF">(2)</font>   &lt;xsd:attribute name=&quot;type&quot; type=&quot;DataType&quot; default=&quot;String&quot;/&gt;<br><font color="#0000FF">(3)</font>   &lt;xsd:attribute name=&quot;value&quot; type=&quot;xsd:string&quot; /&gt;<br><font color="#0000FF">(4)</font>   &lt;xsd:attribute name=&quot;separator&quot; type=&quot;xsd:string&quot; /&gt;<br><font color="#0000FF">(5)</font>   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
+  specified type. Its value may be specified in the <em><strong>values</strong></em> attribute  e.g. <strong>&lt;attribute name=&quot;Conventions&quot; value=&quot;COARDS&quot;/&gt;</strong>, or in the element content, , e.g. <strong>&lt;attribute name=&quot;valid_range&quot; type=&quot;float&quot;&gt;-99.0 110&lt;/values&gt;. </strong>It is recommended to use the second form when there are multiple values, but this is only a matter of style. </P>
+<pre>  &lt;xsd:element name=&quot;attribute&quot;&gt;<br>    &lt;xsd:complexType mixed=&quot;true&quot;&gt;<br>(1)   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;<br>(2)   &lt;xsd:attribute name=&quot;type&quot; type=&quot;DataType&quot; default=&quot;String&quot;/&gt;<br>(3)   &lt;xsd:attribute name=&quot;value&quot; type=&quot;xsd:string&quot; /&gt;<br>(4)   &lt;xsd:attribute name=&quot;separator&quot; type=&quot;xsd:string&quot; /&gt;<br>(5)   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
 <OL>
-  <LI><FONT color=#0000ff>The mandatory <I><strong>name</strong></I> attribute must be unique among attributes within its containing <em><strong>group, variable, </strong></em>or <strong><em>netcdf</em></strong> element.</FONT>
-  <LI><FONT color=#0000ff>The <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataTypes">DataTypes</a>.</FONT>
-    <font color="#0000FF">It defaults to a String type. </font>
-  <LI><FONT color=#0000ff>The <I>value </I>attribute contains the actual data of 
+  <LI>The mandatory <I><strong>name</strong></I> attribute must be unique among attributes within its containing <em><strong>group, variable, </strong></em>or <strong><em>netcdf</em></strong> element.
+  <LI>The <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataTypes">DataTypes</a>.
+    It defaults to a String type. 
+  <LI>The <I>value </I>attribute contains the actual data of 
   the <I>attribute</I> element. In the most common case of single-valued 
   attributes, a single number or string will be listed (as in value="3.0"), 
   while in the less frequent case of multi-valued attributes, all the numbers 
   will be listed and separated by a blank or optionally some other character (as 
-  in value="3.0 4.0 5.0"). Values can also be specified in the elemnt content.</FONT>   
-  <LI><FONT color=#ff0000><FONT color=#0000ff>By default, if the attribute has type String, the entire value is taken as the attribute value, and if it has type other than String, then the list of values are separated by whitespace. A different token seperator can be  specified using the <em><strong>separator</strong></em> attribute</FONT></FONT></LI>
-  <LI><FONT color=#0000ff>The optional attribute <em><strong>orgName</strong></em> is used when renaming an attribute. .</FONT> </LI>
+  in value="3.0 4.0 5.0"). Values can also be specified in the elemnt content.   
+  <LI>By default, if the attribute has type String, the entire value is taken as the attribute value, and if it has type other than String, then the list of values are separated by whitespace. A different token seperator can be  specified using the <em><strong>separator</strong></em> attribute</LI>
+  <LI>The optional attribute <em><strong>orgName</strong></em> is used when renaming an attribute. . </LI>
 </OL>
-<h3><B>DataType<a name="DataType"></a> Element </B></h3>
-<P>  <FONT color=#ff0000><FONT 
-color=#0000ff>The DataType element is an enumerated list of the  
-  data types allowed for NcML <I>Variable</I> and <I>Attribute</I> objects. </FONT></FONT></P>
+<h3><B>DataType<a name="DataType"></a> Type </B></h3>
+<P>  The DataType element is an enumerated list of the  
+  data types allowed for NcML <I>Variable</I> and <I>Attribute</I> objects. </P>
 <pre>  &lt;xsd:simpleType name=&quot;DataType&quot;&gt;<br>    &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;<br>      &lt;xsd:enumeration value=&quot;char&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;byte&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;short&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;int&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;long&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;float&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;double&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;String&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;string&quot;/&gt;<br>      &lt;xsd:enumeration value=&quot;Structure&quot;/&gt;<br>    &lt;/xsd:restriction&gt;<br>  &lt;/xsd:simpleType&gt;</pre>
 <ol>
-  <li><font color="#0000FF">Enumeration, Opaque not yet implemented.</font></li>
-  <li><font color="#0000FF">Unsigned types not yet implemented. </font></li>
+  <li>Enumeration, Opaque not yet implemented.</li>
+  <li>Unsigned types not yet implemented. </li>
 </ol>
-<hr>
 <h3><B>remove Element </B></h3>
-<P> <FONT color=#ff0000><FONT 
-color=#0000ff>The remove element is used to remove  </FONT><font color="#0000FF">attribute, dimension, variable or group</font> <FONT 
-color=#0000ff>objects that are in the referenced dataset. Place the remove element in the container of the object to be removed. </FONT></FONT></P>
-<pre>  &lt;xsd:element name=&quot;remove&quot;&gt;<br>    &lt;xsd:complexType&gt;<br><font color="#0000FF">(1)</font>   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-<font color="#0000FF">(2)</font>   &lt;xsd:attribute name=&quot;type&quot; type=&quot;ObjectType&quot; use=&quot;required&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
+<P> The remove element is used to remove  attribute, dimension, variable or group objects that are in the referenced dataset. Place the remove element in the container of the object to be removed. </P>
+<pre>  &lt;xsd:element name=&quot;remove&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>(1)   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+(2)   &lt;xsd:attribute name=&quot;type&quot; type=&quot;ObjectType&quot; use=&quot;required&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
 <pre> &lt;xsd:simpleType name=&quot;ObjectType&quot;&gt;
    &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
      &lt;xsd:enumeration value=&quot;attribute&quot;/&gt;
@@ -169,12 +166,18 @@ color=#0000ff>objects that are in the referenced dataset. Place the remove eleme
    &lt;/xsd:restriction&gt;
  &lt;/xsd:simpleType&gt;</pre>
 <ol>
-  <li><font color="#0000FF">The name of the object to remove </font></li>
-  <li><font color="#0000FF">The type of the object to remove: attribute, dimension, variable or group. </font><br>
-  </li>
+  <li>The name of the object to remove </li>
+  <li>The type of the object to remove: attribute, dimension, variable or group. </li>
 </ol>
-<h3>aggregation Element</h3>
-<p><font color="#990000">The aggregation element allows multiple datasets to be combined into a single logical dataset. There can only be one aggregation element in a netcdf element. </font></p>
+<h3>logicalView Element</h3>
+<pre>  <em>&lt;!-- logical view  --&gt;<br>  &lt;xsd:element name=&quot;logicalView&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:attribute name=&quot;section&quot; type=&quot;xsd:token&quot; use=&quot;optional&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</em>
+</pre>
+<p>not implemented.<br>
+</p>
+<hr>
+<p>Everything following pertains to aggregation, and can be ignored if you are not using aggregation.</p>
+<h3><a name="aggregation"></a>aggregation Element</h3>
+<p>The aggregation element allows multiple datasets to be combined into a single logical dataset. There can only be one aggregation element in a netcdf element. </p>
 <pre>
 &lt;xsd:element name=&quot;aggregation&quot;&gt;<br>   &lt;xsd:complexType&gt;<br>    &lt;xsd:sequence&gt;
 
@@ -223,42 +226,41 @@ color=#0000ff>objects that are in the referenced dataset. Place the remove eleme
 &lt;/xsd:element&gt;
 </pre>
 <ol>
-  <li><font color="#990000">For <em><strong>joinNew</strong></em> aggregation types, the  variables that will be aggregated must be explicitly listed in a <em><strong>variableAgg</strong></em> element.</font></li>
-  <li><font color="#990000">Specify which global attributes to promote to a variable (outer aggregation only)</font></li>
-  <li><font color="#990000">Specify which variables should be cached (outer aggregation only)</font></li>
-  <li><font color="#990000">The nested netcdf datasets can be explicitly listed.</font></li>
-  <li><font color="#990000">Or they can be implictly specified by naming a directory in a scan element.</font></li>
-  <li><font color="#990000">Specfiy which  <em>thredds.crawlabledataset.CrawlableDataset </em>class should be used, otherwise use the default implementation. </font></li>
-  <li><font color="#990000">The directory pathname. </font></li>
-  <li><font color="#990000">If you specify a <strong>suffix</strong>, only files with that ending will be included.</font></li>
-  <li><font color="#990000">If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="http://www.regular-expressions.info/">regular expression</a>  will be included.</font></li>
-  <li><font color="#990000">You can optionally specify if the scan should descend into subdirectories (default true).</font></li>
-  <li><font color="#990000">If present, only files whose last modified date is older than this amount of time from the present will be included. This is a way to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot; or &quot;1 hour&quot;. </font></li>
-  <li><font color="#990000">A <em><strong>dateFormatMark</strong></em>  is used on <strong>joinNew</strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string. You can ignore trailing text. For example:<pre>
+  <li>For <em><strong>joinNew</strong></em> aggregation types, the  variables that will be aggregated must be explicitly listed in a <em><strong>variableAgg</strong></em> element.</li>
+  <li>Specify which global attributes to promote to a variable (outer aggregation only)</li>
+  <li>Specify which variables should be cached (outer aggregation only)</li>
+  <li>The nested netcdf datasets can be explicitly listed.</li>
+  <li>Or they can be implictly specified by naming a directory in a scan element.</li>
+  <li>Specfiy which  <em>thredds.crawlabledataset.CrawlableDataset </em>class should be used, otherwise use the default implementation. </li>
+  <li>The directory pathname. </li>
+  <li>If you specify a <strong>suffix</strong>, only files with that ending will be included.</li>
+  <li>If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="http://www.regular-expressions.info/">regular expression</a>  will be included.</li>
+  <li>You can optionally specify if the scan should descend into subdirectories (default true).</li>
+  <li>If present, only files whose last modified date is older than this amount of time from the present will be included. This is a way to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot; or &quot;1 hour&quot;. </li>
+  <li>A <em><strong>dateFormatMark</strong></em>  is used on <strong>joinNew</strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string. You can ignore trailing text. For example:
+    <pre>
         Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini 
- DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre> 
-      </font>
-    <p><font color="#990000">A <em><strong>dateFormatMark</strong></em> can be used on a <strong>joinExisting </strong>only if there is a single time in each file of the aggregation, in which case the coordinate values of the time can be created from the filename, instead of having to open each file and read it.</font></p>
-  <font color="#990000"></font></li>
-  <li><font color="#990000"> You can optionally specify that the files should be opened in <a href="#enhance">enhanced mode</a> (default is <em>NetcdfDataset.EnhanceMode.None</em>)</font></li>
-  <li><font color="#990000">A specialized scanFmrc element can be used for a <em><strong><a href="FmrcAggregation.html#forecastModelRunSingleCollection">forecastModelRunSingleCollection</a> </strong></em>aggregation, where forecast model run data is stored in multiple files, with one forecast time per file.</font></li>
-  <li><font color="#990000"> For scanFmrc, the run date and the forecast date is extracted from the file pathname using a <strong>runDateMatcher </strong>and either a <strong>forecastDateMatcher </strong>or a<strong> forecastOffsetMatcher </strong>attribute<strong>. </strong>All of these require matching a specific string in the file's pathname and then matching a date or hour offset immediately before or after the match. The match is specified by placing it between '#' marking characters. The <strong>runDateMatcher </strong>and <strong>forecastDateMatcher </strong>has a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string before or after the match, while a <strong>forecastOffsetMatcher</strong> counts the number of 'H' characters, and extracts an hour offset from the run date. For example: </font>
-    <pre><font color="#990000">     
+ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
+    <p>A <em><strong>dateFormatMark</strong></em> can be used on a <strong>joinExisting </strong>only if there is a single time in each file of the aggregation, in which case the coordinate values of the time can be created from the filename, instead of having to open each file and read it.</p>
+  </li>
+  <li> You can optionally specify that the files should be opened in <a href="#enhance">enhanced mode</a> (default is <em>NetcdfDataset.EnhanceMode.None</em>)</li>
+  <li>A specialized scanFmrc element can be used for a <em><strong><a href="FmrcAggregation.html#forecastModelRunSingleCollection">forecastModelRunSingleCollection</a> </strong></em>aggregation, where forecast model run data is stored in multiple files, with one forecast time per file.</li>
+  <li> For scanFmrc, the run date and the forecast date is extracted from the file pathname using a <strong>runDateMatcher </strong>and either a <strong>forecastDateMatcher </strong>or a<strong> forecastOffsetMatcher </strong>attribute<strong>. </strong>All of these require matching a specific string in the file's pathname and then matching a date or hour offset immediately before or after the match. The match is specified by placing it between '#' marking characters. The <strong>runDateMatcher </strong>and <strong>forecastDateMatcher </strong>has a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string before or after the match, while a <strong>forecastOffsetMatcher</strong> counts the number of 'H' characters, and extracts an hour offset from the run date. For example: 
+    <pre>     
              Filename:  gfs_3_20060706_0300_006.grb 
        runDateMatcher: #gfs_3_#yyyyMMdd_HH
-forecastOffsetMatcher:                     HHH#.grb#</font></pre>
+forecastOffsetMatcher:                     HHH#.grb#</pre>
   
-    <p><font color="#990000">will extract the run date 2006-07-06T03:00:00Z, and the forecast offset &quot;6 hours&quot;.</font><font color="#990000">
-  </font></p>
+    <p>will extract the run date 2006-07-06T03:00:00Z, and the forecast offset &quot;6 hours&quot;.  </p>
 </li>
-  <li><font color="#990000">You must specify an aggregation type.</font></li>
-  <li><font color="#990000">For all types except <em><strong>joinUnion</strong></em>, you must specify the dimension name to join. </font></li>
-  <li><font color="#990000">When you are using scan elements on a set of files that may change, and you are using caching, set <strong>recheckEvery</strong> to a valid <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time value, like &quot;10 min&quot;, &quot;1 hour&quot;, &quot;30 days&quot;, etc. Whenever the dataset is reacquired from the cache, the directories will be rescanned if <strong>recheckEvery</strong> amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing.</font></li>
-  <li><font color="#990000">Only for OuterDimension Aggregation, if this is set to true, the units of the joined coordinate variable may change, so examine them and do any appropriate convesion so that the aggregated coordinate values have consistent units. </font></li>
-  <li><font color="#990000">Only for forecastModelRunCollection or forecastModelRunSingleCollection. LOOK expose ?? <br>
+  <li>You must specify an aggregation type.</li>
+  <li>For all types except <em><strong>joinUnion</strong></em>, you must specify the dimension name to join. </li>
+  <li>When you are using scan elements on a set of files that may change, and you are using caching, set <strong>recheckEvery</strong> to a valid <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time value, like &quot;10 min&quot;, &quot;1 hour&quot;, &quot;30 days&quot;, etc. Whenever the dataset is reacquired from the cache, the directories will be rescanned if <strong>recheckEvery</strong> amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing.</li>
+  <li>Only for OuterDimension Aggregation, if this is set to true, the units of the joined coordinate variable may change, so examine them and do any appropriate convesion so that the aggregated coordinate values have consistent units. </li>
+  <li>Only for forecastModelRunCollection or forecastModelRunSingleCollection. LOOK expose ?? <font color="#990000"><br>
   </font></li>
 </ol>
-<h3>Aggregation Type</h3>
+<h3>AggregationType Type</h3>
 <pre> &lt;!-- type of aggregation --&gt;
  &lt;xsd:simpleType name=&quot;AggregationType&quot;&gt;
   &lt;xsd:restriction base=&quot;xsd:string&quot;&gt;
@@ -269,11 +271,7 @@ forecastOffsetMatcher:                     HHH#.grb#</font></pre>
    &lt;xsd:enumeration value=&quot;union&quot;/&gt;
   &lt;/xsd:restriction&gt;
  &lt;/xsd:simpleType&gt;</pre>
-<p> <font color="#990000">The allowable aggregation types.</font></p>
-<h3>logicalView Element</h3>
-<pre>  <em>&lt;!-- logical view  --&gt;<br>  &lt;xsd:element name=&quot;logicalView&quot;&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:attribute name=&quot;section&quot; type=&quot;xsd:token&quot; use=&quot;optional&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</em>
-</pre>
-<p>not implemented. <br>
+<p> The allowable aggregation types. The <em>forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting </em>and<em> joinNew</em> aggregation types are called <strong><em>outer aggregations</em></strong> because they work on the outer (first) dimension.<br>
 </p>
 <h3>crawlableDataset Element</h3>
 <pre>  &lt;!-- crawlableDataset - same as in a thredds catalog --&gt;
@@ -315,7 +313,7 @@ forecastOffsetMatcher:                     HHH#.grb#</font></pre>
       space. </font></li>
   <li><FONT color=#0000ff>If any attribute or content has the  characters "&gt;", "&lt;", """, or "&amp;", they must be encoded using standard XML escape sequences &amp;gt;, &amp;lt;, &amp;quot;, &amp;amp; respectively.</FONT></li>
 </ul>
-<p>&nbsp;</p>
+<hr>
 <h2>The java.text.SimpleDateFormat<a name="SimpleDateFormat" id="SimpleDateFormat"></a> </h2>
 <p> The following is taken from the javadoc, see <a href="http://java.sun.com/j2se/1.4.2/docs/api/index.html">here</a> for full info. The following pattern letters are defined (all other characters from <code>'A'</code> to <code>'Z'</code> and from <code>'a'</code> to <code>'z'</code> are reserved): </p>
 <blockquote>
@@ -490,7 +488,7 @@ forecastOffsetMatcher:                     HHH#.grb#</font></pre>
 </blockquote>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 03, 2008 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 12, 2008 
 </address>
 <p>&nbsp;</p>
 </BODY>

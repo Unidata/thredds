@@ -18,7 +18,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     super(name);
   }
 
-  public void nw_testNcmlGrid() throws IOException {
+  public void testNcmlGrid() throws IOException {
     String filename = "file:./"+TestNcML.topDir + "offsite/aggDateFormat.xml";
 
     GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( filename);
@@ -59,7 +59,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     assert time.getRank() == 1;
     assert time.getSize() == 12;
     assert time.getShape()[0] == 12;
-    assert time.getDataType() == DataType.STRING;
+    assert time.getDataType() == DataType.DOUBLE;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -67,7 +67,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     assert data.getRank() == 1;
     assert data.getSize() == 12;
     assert data.getShape()[0] == 12;
-    assert data.getElementType() == String.class;
+    assert data.getElementType() == double.class;
 
     IndexIterator dataI = data.getIndexIterator();
     while (dataI.hasNext())
@@ -82,7 +82,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     assert g.getShape()[0] == 12;
     assert g.getShape()[1] == 1008;
     assert g.getShape()[2] == 1536;
-    assert g.getDataType() == DataType.BYTE;
+    assert g.getDataType() == DataType.SHORT;
 
     GridCoordSystem gsys = g.getCoordinateSystem();
     assert gsys.getXHorizAxis() != null;
@@ -95,7 +95,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     assert data.getRank() == 2;
     assert data.getShape()[0] == 1008;
     assert data.getShape()[1] == 1536;
-    assert data.getElementType() == byte.class;
+    assert data.getElementType() == short.class;
   }
 
 

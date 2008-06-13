@@ -30,6 +30,7 @@ import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.iosp.IospHelper;
 
 import java.util.*;
 import java.util.zip.ZipInputStream;
@@ -924,7 +925,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
     CEresult cer = CEresult.parseVariableSection(this, variableSection);
-    return spi.readSection(cer);
+
+    if (spi == null)
+      return IospHelper.readSection(cer);
+    else
+      // allow iosp to optimize
+      return spi.readSection(cer);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

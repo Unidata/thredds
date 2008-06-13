@@ -75,7 +75,7 @@ public class DatasetConstructor {
 
         if (null != targetV) target.remove(targetV);
         target.addVariable(v); // reparent group
-        v.resetShape(); // dimensions may be different
+        v.resetDimensions(); // dimensions may be different
 
       } else if (!targetV.hasCachedData() && (targetVe.getOriginalVariable() == null)) {
         // this is the case where we defined the variable, but didnt set its data. we now set it with the first nested

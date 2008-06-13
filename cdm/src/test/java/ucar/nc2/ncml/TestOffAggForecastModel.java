@@ -91,7 +91,7 @@ public class TestOffAggForecastModel extends TestCase {
     Dimension timeDim = ncfile.findDimension("runtime");
     assert null != timeDim;
     assert timeDim.getName().equals("runtime");
-    assert timeDim.getLength() == nagg : timeDim.getLength();
+    assert timeDim.getLength() == nagg : nagg +" != "+ timeDim.getLength();
   }
 
  public void testCoordVar(NetcdfFile ncfile) throws IOException {

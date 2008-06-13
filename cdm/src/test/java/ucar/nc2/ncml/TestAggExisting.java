@@ -49,7 +49,7 @@ public class TestAggExisting extends TestCase {
     String filename = "file:./"+TestNcML.topDir + "aggExistingWcoords.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    System.out.println(" testNcmlDatasetWcoords.open "+ filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -57,14 +57,17 @@ public class TestAggExisting extends TestCase {
     testReadData(ncfile);
     testReadSlice(ncfile);
     ncfile.close();
+    System.out.println(" testNcmlDatasetWcoords.closed ");
   }
 
   public void testNcmlDatasetNoCoords() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExistingNoCoords.xml";
+    NetcdfDataset ncd;
 
     try {
-      NetcdfDataset.openDataset( filename, true, null);
+      ncd = NetcdfDataset.openDataset( filename, true, null);
     } catch (Exception e) {
+      e.printStackTrace();
       assert true;
       return;
     }

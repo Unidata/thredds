@@ -114,25 +114,23 @@ public class TestAggSynGrid extends TestCase {
 
     }
 
-    public void utestAggCoordVar() throws IOException {
+    public void testAggCoordVar() throws IOException {
       NetcdfFile ncfile = gds.getNetcdfFile();
       Variable time = ncfile.findVariable("time");
       assert null != time;
       assert time.getName().equals("time");
       assert time.getRank() == 1 : time.getRank();
       assert time.getShape()[0] == 3;
-      assert time.getDataType() == DataType.DOUBLE : time.getDataType();
+      assert time.getDataType() == DataType.STRING : time.getDataType();
 
       assert time.getDimension(0) == ncfile.findDimension("time");
 
+      int count = 0;
+      String[] want = new String[] {"2005-11-22 22:19:53Z",   "2005-11-22 23:19:53Z",   "2005-11-23 00:19:59Z"};
       Array data = time.read();
-
-      assert (data instanceof ArrayDouble);
-      IndexIterator dataI = data.getIndexIterator();
-      double val = dataI.getDoubleNext();
-      assert TestAll.closeEnough(val, 0.0) : val;
-      assert TestAll.closeEnough(dataI.getDoubleNext(), 10.0) : dataI.getDoubleCurrent();
-      assert TestAll.closeEnough(dataI.getDoubleNext(), 99.0) : dataI.getDoubleCurrent();
+      assert (data instanceof ArrayObject);
+      while (data.hasNext())
+        assert want[count++].equals( data.next());
 
     }
 

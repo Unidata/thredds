@@ -108,7 +108,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       }
 
       try {
-        total_length = Integer.parseInt(head.getValue());
+        total_length = Long.parseLong(head.getValue());
       } catch (NumberFormatException e) {
         throw new IOException("Server has malformed Content-Length header");
       }

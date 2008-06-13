@@ -39,6 +39,8 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
+    17: HTTPRandomAccessFile allows content-length to be long
+        fix NcML aggregation unit tests; integrate aggregation with FileCache
     16: remove direct use of ucar.units, except from ucar.nc2.units
         rewrite NetcdfFileCache, remove NetcdfDatasetCache
         EnhanceScaleMissingImpl uses Misc.closeEnough for missing value comparisions.

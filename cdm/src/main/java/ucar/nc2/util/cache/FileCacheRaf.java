@@ -74,7 +74,7 @@ public class FileCacheRaf {
   }
 
   public Raf acquire(String filename) throws IOException {
-    return (Raf) cache.acquire(filename, null, factory);
+    return (Raf) cache.acquire(factory, filename, null);
   }
 
   public void release(Raf craf) throws IOException {

@@ -28,6 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.io.IOException;
 
+import ucar.nc2.util.CancelTask;
+
 /**
  * Keep cache of open FileCacheable objects, for example NetcdfFile.
  * The FileCacheable object typically contains a RandomAccessFile object that wraps a system resource like a file handle.
@@ -66,6 +68,7 @@ import java.io.IOException;
 public class FileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static private ScheduledExecutorService exec;
+  static private boolean debugPrint = true;
 
   /**
     * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.
@@ -128,17 +131,17 @@ public class FileCache {
   }
 
   /**
-   * Acquire a NetcdfFile, and lock it so no one else can use it.
-   * call NetcdfFile.close() when done.
+   * Acquire a FileCacheable, and lock it so no one else can use it.
+   * call FileCacheable.close() when done.
    *
+   * @param factory     use this factory to open the file; may not be null
    * @param location   file location, also used as the cache name, will be passed to the NetcdfFileFactory
    * @param cancelTask user can cancel, ok to be null.
-   * @param factory     use this factory to open the file; may not be null
    * @return NetcdfFile corresponding to location.
    * @throws IOException on error
    */
-  public FileCacheable acquire(String location, ucar.nc2.util.CancelTask cancelTask, FileFactory factory) throws IOException {
-    return acquire(location, location, -1, cancelTask, null, factory);
+  public FileCacheable acquire(FileFactory factory, String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    return acquire(factory, location, location, -1, cancelTask, null);
   }
 
   /**
@@ -150,17 +153,17 @@ public class FileCache {
    * If cache size goes over maxElement, then immediately (actually in 100 msec) schedule a cleanup in a background thread.
    * This means that the cache should never get much larger than maxElement, unless you have them all locked.
    *
-   * @param location    file location, also used as the cache name, will be passed to the NetcdfFileFactory
-   * @param hashKey     unique key for thius file. If null, the location will be used
+   * @param factory     use this factory to open the file if not in the cache; may not be null
+   * @param hashKey     unique key for this file. If null, the location will be used
+   * @param location    file location, msy also used as the cache name, will be passed to the NetcdfFileFactory
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  user can cancel, ok to be null.
    * @param spiObject   sent to iosp.setSpecial() if not null
-   * @param factory     use this factory to open the file; may not be null
    * @return FileCacheable corresponding to location.
    * @throws IOException on error
    */
-  public FileCacheable acquire(String location, Object hashKey, int buffer_size,
-          ucar.nc2.util.CancelTask cancelTask, Object spiObject, FileFactory factory) throws IOException {
+  public FileCacheable acquire(FileFactory factory, Object hashKey,
+          String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
 
     if (null == hashKey) hashKey = location;
     FileCacheable ncfile = acquireCacheOnly(hashKey);
@@ -232,7 +235,8 @@ public class FileCache {
     if (ncfile != null) {
       try {
         ncfile.sync();
-        if (log.isDebugEnabled()) log.debug("FileCache.aquire from cache " + ncfile.getLocation());
+        if (log.isDebugEnabled()) log.debug("FileCache.aquire from cache " + hashKey);
+        if (debugPrint) System.out.println("FileCache.aquire from cache " + hashKey);
       } catch (IOException e) {
         log.error("FileCache.synch failed on " + ncfile.getLocation() + " " + e.getMessage());
       }
@@ -437,7 +441,7 @@ public class FileCache {
       CacheFile file = new CacheFile(ncfile);
       list.add(file);
       files.put(ncfile, file);
-      if (log.isDebugEnabled()) log.debug("FileCache add to cache " + ncfile.getLocation());
+      if (log.isDebugEnabled()) log.debug("CacheElement add to cache " + hashKey);
     }
 
     CacheFile addFile(FileCacheable ncfile) {
@@ -465,7 +469,8 @@ public class FileCache {
 
         ncfile.setFileCache( FileCache.this);
 
-        if (log.isDebugEnabled()) log.debug("FileCache add to cache " + ncfile.getLocation());
+        if (log.isDebugEnabled()) log.debug("FileCache add to cache " + hashKey);
+        if (debugPrint) System.out.println("FileCache add to cache " + hashKey);
       }
 
       String getCacheName() { return ncfile.getLocation(); }
@@ -477,7 +482,7 @@ public class FileCache {
       }
 
       public String toString() {
-        return isLocked + " " + ncfile.getLocation() + " " + countAccessed + " " + new Date(lastAccessed);
+        return isLocked + " " + hashKey + " " + countAccessed + " " + new Date(lastAccessed);
       }
 
       public int compareTo(CacheFile o) {

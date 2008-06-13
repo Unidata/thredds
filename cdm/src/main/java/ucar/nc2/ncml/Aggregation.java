@@ -430,7 +430,7 @@ public abstract class Aggregation implements ProxyReader {
   protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
           NetcdfDataset.EnhanceMode enhance, ucar.nc2.util.cache.FileFactory reader) {
     //return new Dataset(cacheName, location, ncoordS, coordValueS, sectionSpec, enhance, reader);
-    return new Dataset(cacheName, location, enhance, reader);
+    return new Dataset(cacheName, location, enhance, reader); // overriden in OuterDim, tiled
   }
 
 

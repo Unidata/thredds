@@ -31,12 +31,14 @@ public class TestNcML {
     suite.addTest(new TestSuite(TestAggExisting.class));
 
     suite.addTest(new TestSuite(TestAggSynthetic.class)); //
-    suite.addTest(new TestSuite(TestAggSynGrid.class));
 
     suite.addTest(new TestSuite(TestAggExistingPromote.class));
 
     // requires remote (network) access
     // suite.addTest(new TestSuite(TestRemoteCrawlableDataset.class));
+
+    // LOOK wait until grids are done
+    //suite.addTest(new TestSuite(TestAggSynGrid.class));
 
     return suite;
   }
