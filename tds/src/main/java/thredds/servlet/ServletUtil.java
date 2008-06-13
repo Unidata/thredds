@@ -926,8 +926,9 @@ public class ServletUtil {
       }
       ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, message.length());
       log.error("handleException", t);
-      t.printStackTrace(); // debugging - log.error not showing stack trace !!      
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST, message);
+      t.printStackTrace(); // debugging - log.error not showing stack trace !!   
+      if ( ! res.isCommitted() )
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, message);
     } catch (IOException e) {
       log.error("handleException(): IOException", e);
       t.printStackTrace();
