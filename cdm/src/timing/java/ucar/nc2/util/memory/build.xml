@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="memoryagent" default="compile">
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="build"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac sourcepath="" srcdir="../../../../ucar/nc2/util/memory/" source="1.5" target="1.5" destdir="build">
+       <include name="MemoryCounterAgent.java"/>
+    </javac>
+
+    <jar jarfile="memoryagent.jar" basedir="build" filesetmanifest="merge" >
+
+      <manifest>
+        <attribute name="Premain-Class" value="ucar.nc2.util.memory.MemoryCounterAgent"/>
+      </manifest>
+
+    </jar>
+
+  </target>
+
+  <target name="clean">
+    <delete dir="build"/>
+    <delete file="memoryagent.jar"/>
+  </target>
+</project>
