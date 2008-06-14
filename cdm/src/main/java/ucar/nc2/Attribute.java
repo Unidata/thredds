@@ -40,6 +40,7 @@ import net.jcip.annotations.Immutable;
 @Immutable
 public class Attribute {
   private final String name;
+  private String svalue; // optimization for common case of String values attribute
   private DataType dataType;
   private int nelems;
   private Array values;
@@ -96,6 +97,11 @@ public class Attribute {
    * @return Array of values.
    */
   public Array getValues() {
+    if (values == null && svalue != null) {
+      values = Array.factory(String.class, new int[]{1});
+      values.setObject(values.getIndex(), svalue);
+    }
+
     return values;
   }
 
@@ -106,7 +112,8 @@ public class Attribute {
    * @see Attribute#isString
    */
   public String getStringValue() {
-    return getStringValue(0);
+    return (svalue != null) ? svalue : getStringValue(0);
+    //return getStringValue(0);
   }
 
   /**
@@ -119,6 +126,9 @@ public class Attribute {
   public String getStringValue(int index) {
     if (!isString() || (index < 0) || (index >= nelems))
       return null;
+
+    if ((svalue != null) && (index == 0)) return svalue;
+
     return (String) values.getObject(ima().set0(index));
   }
 
@@ -178,16 +188,18 @@ public class Attribute {
     if (this == o) return true;
     if ((o == null) || !(o instanceof Attribute)) return false;
 
-    final Attribute attribute = (Attribute) o;
+    final Attribute att = (Attribute) o;
 
-    if (!name.equals(attribute.name)) return false;
-    if (nelems != attribute.nelems) return false;
-    if (!dataType.equals(attribute.dataType)) return false;
+    if (!name.equals(att.name)) return false;
+    if (nelems != att.nelems) return false;
+    if (!dataType.equals(att.dataType)) return false;
+
+    if (svalue != null) return svalue.equals(att.getStringValue());
 
     if (values != null) {
       for (int i = 0; i < getLength(); i++) {
         int r1 = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
-        int r2 = attribute.isString() ? attribute.getStringValue(i).hashCode() : attribute.getNumericValue(i).hashCode();
+        int r2 = att.isString() ? att.getStringValue(i).hashCode() : att.getNumericValue(i).hashCode();
         if (r1 != r2) return false;
       }
     }
@@ -205,7 +217,9 @@ public class Attribute {
       result = 37 * result + getName().hashCode();
       result = 37 * result + nelems;
       result = 37 * result + getDataType().hashCode();
-      if (values != null) {
+      if (svalue != null)
+        result = 37 * result + svalue.hashCode();
+      else if (values != null) {
         for (int i = 0; i < getLength(); i++) {
           int h = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
           result = 37 * result + h;
@@ -401,12 +415,16 @@ public class Attribute {
     int len = val.length();
     while ((len > 0) && (val.charAt(len - 1) == 0))
       len--;
-
     if (len != val.length())
       val = val.substring(0, len);
-    values = Array.factory(String.class, new int[]{1});
-    values.setObject(values.getIndex(), val);
-    setValues(values);
+
+    this.svalue = val;
+    this.nelems = 1;
+    this.dataType = DataType.STRING;
+
+    //values = Array.factory(String.class, new int[]{1});
+    //values.setObject(values.getIndex(), val);
+    //setValues(values);
   }
 
   /**

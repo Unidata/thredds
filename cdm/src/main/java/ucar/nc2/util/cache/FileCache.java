@@ -250,7 +250,6 @@ public class FileCache {
    * Normally you need not call this, just close the file as usual.
    *
    * @param ncfile release this file.
-   * @param cacheKey the file was stored with this hash key
    * @throws IOException if file not in cache.
    */
   public void release(FileCacheable ncfile) throws IOException {

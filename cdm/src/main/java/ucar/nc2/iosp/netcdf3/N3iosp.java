@@ -216,13 +216,17 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   protected boolean debug = false, debugSize = false, debugSPIO = false, debugRecord = false, debugSync = false;
   protected boolean showHeaderBytes = false;
 
-  private ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-  private PrintStream out = new PrintStream(bos);
-
   @Override
   public String getDetailInfo() {
-    out.flush();
-    return bos.toString();
+    try {
+      Formatter fout = new Formatter();
+      double size = raf.length() / (1000.0 * 1000.0);
+      fout.format(" raf = %d%n" + raf.getLocation());
+      fout.format(" size= " + Format.dfrac(size, 3) + " Mb");
+      return fout.toString();
+    } catch (IOException e) {
+      return e.getMessage();
+    }
   }
 
   // properties
@@ -235,10 +239,6 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
                    ucar.nc2.util.CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;
-
-    double size = raf.length() / (1000.0 * 1000.0);
-    out.println(" raf=" + raf.getLocation());
-    out.println("   size= " + Format.dfrac(size, 3) + " Mb");
 
     String location = raf.getLocation();
     if (!location.startsWith("http:")) {
@@ -498,7 +498,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   }
 
   public boolean rewriteHeader(boolean largeFile) throws IOException {
-    return headerParser.rewriteHeader(largeFile);
+    return headerParser.rewriteHeader(largeFile, null);
   }
 
 

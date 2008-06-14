@@ -984,7 +984,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           parseInfo.append("**ERROR Coordinate Variable Alias ").append(v.getName()).append(" has rank ").append(v.getRank()).append("\n");
           userAdvice.append("**ERROR Coordinate Variable Alias ").append(v.getName()).append(" has rank ").append(v.getRank()).append("\n");
         } else {
-          Dimension coordDim = ds.findDimension(coordVarAlias);
+          Dimension coordDim = ds.findDimension(coordVarAlias); // LOOK use groups
           Dimension vDim = v.getDimension(0);
           if (!coordDim.equals(vDim)) {
             parseInfo.append("**ERROR Coordinate Variable Alias ").append(v.getName()).append(" names wrong dimension ").append(coordVarAlias).append("\n");

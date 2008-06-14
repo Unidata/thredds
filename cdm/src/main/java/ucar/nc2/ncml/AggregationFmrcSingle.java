@@ -286,7 +286,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
     // redo the time dimension, makes things easier if you dont replace Dimension, just modify the length
     String dimName = timeAxis.getName();
-    Dimension timeDim = ncDataset.findDimension(dimName);
+    Dimension timeDim = ncDataset.findDimension(dimName); // LOOK use group
     timeDim.setLength(max_times);
 
     // reset all variables using this dimension

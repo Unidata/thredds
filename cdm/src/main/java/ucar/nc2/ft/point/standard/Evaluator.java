@@ -69,7 +69,7 @@ public class Evaluator {
     Dimension d = null;
     String s = getLiteral(ds, key, errlog);
     if (s != null) {
-      d = ds.findDimension(s);
+      d = ds.findDimension(s); // LOOK use group
       if ((d == null) && (errlog != null))
         errlog.format(" Cant find Variable %s from %s\n", s, key);
     }

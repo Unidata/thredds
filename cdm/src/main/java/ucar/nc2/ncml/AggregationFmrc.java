@@ -186,7 +186,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     // redo the aggregation dimension, makes things easier if you dont replace Dimension, just modify the length
     int nruns = getTotalCoords();
     String dimName = getDimensionName();
-    Dimension aggDim = ncDataset.findDimension(dimName);
+    Dimension aggDim = ncDataset.findDimension(dimName);   // LOOK use group
     aggDim.setLength(nruns);
 
     // recalc runtime array
@@ -218,7 +218,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
         }
 
         // redo the time dimension, makes things easier if you dont replace Dimension, just modify the length
-        Dimension timeDim = ncDataset.findDimension(timeDimName);
+        Dimension timeDim = ncDataset.findDimension(timeDimName); // LOOK use group
         timeDim.setLength(max_times);
 
         DatasetOuterDimension firstDataset = (DatasetOuterDimension) nestedDatasets.get(0);

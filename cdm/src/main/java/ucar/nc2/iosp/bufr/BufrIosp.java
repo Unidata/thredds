@@ -95,7 +95,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         protoMessage = m;
         m.getRoot();
       }
-      readOneMessage(m, protoMessage.dds.getDescriptorRoot());
+      //readOneMessage(m, protoMessage.dds.getDescriptorRoot());
       msgs.add(m);
       count++;
     }

@@ -202,11 +202,11 @@ public class UnidataPointDatasetHelper {
 
 
   static public Dimension findDimension(NetcdfFile ds, String name) {
-    Dimension result = ds.findDimension(name);
+    Dimension result = ds.findDimension(name); // LOOK use group
     if (result == null) {
       String aname = ds.findAttValueIgnoreCase(null, name+"Dimension", null);
       if (aname != null)
-        result = ds.findDimension(aname);
+        result = ds.findDimension(aname); // LOOK use group
     }
     return result;
   }
@@ -215,9 +215,9 @@ public class UnidataPointDatasetHelper {
     Dimension result = null;
     String aname = ds.findAttValueIgnoreCase(null, "observationDimension", null);
     if (aname != null)
-      result = ds.findDimension(aname);
+      result = ds.findDimension(aname);   // LOOK use group
     if (result == null)
-      result = ds.getUnlimitedDimension();
+      result = ds.getUnlimitedDimension();    // LOOK use group
     return result;
   }
 }

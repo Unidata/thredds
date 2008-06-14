@@ -157,7 +157,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     buildCoords(null);
 
     // reset dimension length
-    Dimension aggDim = ncDataset.findDimension(dimName);
+    Dimension aggDim = ncDataset.findDimension(dimName); // LOOK use group
     aggDim.setLength(getTotalCoords());
 
     // reset coordinate var

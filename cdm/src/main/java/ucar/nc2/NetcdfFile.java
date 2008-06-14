@@ -766,8 +766,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * <p> If the dimensions are in a group, the dimension name will have the
    * group name, in order to disambiguate the dimensions. This means that
    * a Variable's dimensions will not match Dimensions in this list.
-   * Therefore it is generally better to get the shared Dimensions from the
-   * Groups.
+   * Therefore it is better to get the shared Dimensions directly from the Groups.
    *
    * @return List of type Dimension.
    */
@@ -1433,21 +1432,23 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   public void finish() {
     if (immutable) throw new IllegalStateException("Cant modify");
     variables = new ArrayList<Variable>();
-    gattributes = new ArrayList<Attribute>();
     dimensions = new ArrayList<Dimension>();
+    gattributes = new ArrayList<Attribute>();
     finishGroup(rootGroup);
   }
 
   private void finishGroup(Group g) {
 
     variables.addAll(g.variables);
-    /* for (Variable v : g.variables) {
-      v.calcIsCoordinateVariable();
-    } */
 
+    // LOOK should group atts be promoted to global atts?
     for (Attribute oldAtt : g.attributes) {
-      String newName = makeFullNameWithString(g, oldAtt.getName());
-      gattributes.add(new Attribute(newName, oldAtt));
+      if (g == rootGroup) {
+        gattributes.add(oldAtt);
+      } else {
+        String newName = makeFullNameWithString(g, oldAtt.getName());
+        gattributes.add(new Attribute(newName, oldAtt));
+      }
     }
 
     // LOOK this wont match the variables' dimensions if there are groups
