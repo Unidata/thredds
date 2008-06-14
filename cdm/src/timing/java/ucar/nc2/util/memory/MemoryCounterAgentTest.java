@@ -20,8 +20,11 @@
 
 package ucar.nc2.util.memory;
 
+import ucar.nc2.*;
+
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.io.IOException;
 
 public class MemoryCounterAgentTest {
   public static void measureSize(Object o) {
@@ -31,7 +34,7 @@ public class MemoryCounterAgentTest {
         o.getClass().getSimpleName(),
         memShallow, memDeep);
   }
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     measureSize(new Object());
     measureSize(new HashMap());
     measureSize(new LinkedHashMap());
@@ -46,6 +49,8 @@ public class MemoryCounterAgentTest {
     measureSize(new Parent());
     measureSize(new Kid());
     measureSize(Thread.State.TERMINATED);
+
+    testNc();
   }
 
   private static class Parent {
@@ -57,5 +62,11 @@ public class MemoryCounterAgentTest {
   private static class Kid extends Parent {
     private boolean b;
     private float f;
+  }
+
+  static void testNc() throws IOException {
+    NetcdfFile ncfile = NetcdfFile.open("C:/data/20050101.nc");
+    measureSize(ncfile);
+    ncfile.close();
   }
 }
