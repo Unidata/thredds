@@ -20,7 +20,6 @@
 
 package ucar.nc2.ui;
 
-import ucar.ma2.*;
 import ucar.nc2.*;
 
 import ucar.util.prefs.*;
@@ -33,7 +32,6 @@ import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
-import java.io.PrintStream;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
@@ -317,7 +315,7 @@ public class DatasetViewer extends JPanel {
     String spec;
 
     try {
-      spec = CEresult.makeSectionString(v, null);
+      spec = ParsedSectionSpec.makeSectionSpecString(v, null);
       dumpPane.setContext(ds, spec);
 
     } catch (Exception ex) {

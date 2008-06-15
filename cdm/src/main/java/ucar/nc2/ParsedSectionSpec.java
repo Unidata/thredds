@@ -26,25 +26,24 @@ import ucar.ma2.Section;
 
 import java.util.StringTokenizer;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
- * "Constraint Expression" parsing.
+ * Nested Section Expression, allows subsetting of Structure member variables.
  *
  * @author caron
  * @since May 8, 2008
+ * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
  */
-public class CEresult {
+public class ParsedSectionSpec {
   public Variable v; // the variable
   public Section section; // section for this variable
-  public CEresult child;
+  public ParsedSectionSpec child;
 
-  private CEresult(Variable v, Section section) {
+  private ParsedSectionSpec(Variable v, Section section) {
     this.v = v;
     this.section = section;
     this.child = null;
   }
-
 
   /**
    * Parse a section specification String. These have the form:
@@ -67,20 +66,20 @@ public class CEresult {
    *
    * @param ncfile          look for variable in here
    * @param variableSection the string to parse, eg "record(12).wind(1:20,:,3)"
-   * @return return CEresult which has the equivilent Variable
+   * @return return ParsedSectionSpec, aprsed representation of the variableSection String
    * @throws IllegalArgumentException       when token is misformed, or variable name doesnt exist in ncfile
    * @throws ucar.ma2.InvalidRangeException if section does not match variable shape
-   * @see ucar.ma2.Range#parseSpec(String sectionSpec)
+   * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
-  public static CEresult parseVariableSection(NetcdfFile ncfile, String variableSection) throws InvalidRangeException {
+  public static ParsedSectionSpec parseVariableSection(NetcdfFile ncfile, String variableSection) throws InvalidRangeException {
     StringTokenizer stoke = new StringTokenizer(variableSection, ".");
     String selector = stoke.nextToken();
     if (selector == null)
       throw new IllegalArgumentException("empty sectionSpec = " + variableSection);
 
     // parse each selector, find the inner variable
-    CEresult outerV = parseVariableSelector(ncfile, selector);
-    CEresult current = outerV;
+    ParsedSectionSpec outerV = parseVariableSelector(ncfile, selector);
+    ParsedSectionSpec current = outerV;
     while (stoke.hasMoreTokens()) {
       selector = stoke.nextToken();
       current.child = parseVariableSelector( current.v,  selector);
@@ -93,8 +92,7 @@ public class CEresult {
   private static boolean debugSelector = false;
 
   // parse variable name and index selector out of the selector String. variable name must be escaped
-  private static CEresult parseVariableSelector(Object parent, String selector)
-          throws InvalidRangeException {
+  private static ParsedSectionSpec parseVariableSelector(Object parent, String selector) throws InvalidRangeException {
     String varName, indexSelect = null;
 
     int pos1 = selector.indexOf('(');
@@ -129,17 +127,17 @@ public class CEresult {
       section = new Section(v.getShape()); // all
     }
 
-    return new CEresult(v, section);
+    return new ParsedSectionSpec(v, section);
   }
 
-    /** Make section specification String from a range list for a Variable.
+  /** Make section specification String from a range list for a Variable.
    * @param v for this Variable.
    * @param ranges list of Range. Must includes all parent structures. The list be null, meaning use all.
    *   Individual ranges may be null, meaning all for that dimension.
    * @return section specification String.
    * @throws InvalidRangeException is specified section doesnt match variable shape
    */
-  public static String makeSectionString(Variable v, List<Range> ranges) throws InvalidRangeException {
+  public static String makeSectionSpecString(Variable v, List<Range> ranges) throws InvalidRangeException {
     StringBuilder sb = new StringBuilder();
     makeSpec(sb, v, ranges);
     return sb.toString();

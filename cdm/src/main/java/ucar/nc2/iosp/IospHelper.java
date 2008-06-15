@@ -22,7 +22,7 @@ package ucar.nc2.iosp;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.PositioningDataInputStream;
 import ucar.ma2.*;
-import ucar.nc2.CEresult;
+import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 
@@ -560,13 +560,13 @@ public class IospHelper {
   }
 
   // section reading for member data
-  static public ucar.ma2.Array readSection(CEresult cer) throws IOException, InvalidRangeException {    
+  static public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
     if (cer.child == null)
       return cer.v.read(cer.section);
 
     Variable inner = null;
     List<Range> totalRanges = new ArrayList<Range>();
-    CEresult current = cer;
+    ParsedSectionSpec current = cer;
     while (current != null) {
       totalRanges.addAll( current.section.getRanges());
       inner = current.v;
@@ -584,7 +584,7 @@ public class IospHelper {
     return result;
   }
 
-  static private void extractSection(CEresult child, ArrayStructure outerData, IndexIterator to) throws IOException, InvalidRangeException {
+  static private void extractSection(ParsedSectionSpec child, ArrayStructure outerData, IndexIterator to) throws IOException, InvalidRangeException {
     long wantNelems = child.section.computeSize();
 
     StructureMembers.Member m = outerData.findMember( child.v.getShortName());
@@ -606,7 +606,7 @@ public class IospHelper {
   }
 
   // LOOK could be used in createView ??
-  static private ArrayStructure sectionArrayStructure(CEresult child, ArrayStructure innerData, StructureMembers.Member m) throws IOException, InvalidRangeException {
+  static private ArrayStructure sectionArrayStructure(ParsedSectionSpec child, ArrayStructure innerData, StructureMembers.Member m) throws IOException, InvalidRangeException {
     StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
     ArrayStructureW result = new ArrayStructureW(membersw, child.section.getShape());
 

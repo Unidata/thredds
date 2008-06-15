@@ -175,7 +175,7 @@ public class NCdumpPane extends thredds.ui.TextHistoryPane {
     CommonTask(String command) {
       this.command = command;
       try {
-        CEresult cer = CEresult.parseVariableSection(ds, command);
+        ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ds, command);
         while (cer != null) {  // get inner variable
           v = cer.v;
           cer = cer.child;

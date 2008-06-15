@@ -21,18 +21,19 @@
 package ucar.nc2.iosp;
 
 import ucar.ma2.*;
-import ucar.nc2.CEresult;
-import ucar.nc2.Variable;
-import ucar.nc2.Structure;
+import ucar.nc2.ParsedSectionSpec;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
-import java.util.List;
-import java.util.ArrayList;
 
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
+
+  // a no-op but leave it in in case we change our minds
+  static public String createValidNetcdfObjectName(String name) {
+    return name;
+  }
 
   // default implementation, reads into an Array, then writes to WritableByteChannel
   // subclasses should override if possible
@@ -85,7 +86,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return 0;
   }
 
-  public ucar.ma2.Array readSection(CEresult cer) throws IOException, InvalidRangeException {    
+  public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
     return IospHelper.readSection(cer);  //  IOSPs can optimize by overriding
   }
 

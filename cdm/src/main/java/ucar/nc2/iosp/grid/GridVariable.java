@@ -26,6 +26,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.units.DateFormatter;
 
 import java.util.ArrayList;
@@ -308,7 +309,7 @@ public class GridVariable {
         decimalScale = firstRecord.getDecimalScale();
 
         if (vname == null) {
-            vname = NetcdfFile.createValidNetcdfObjectName(useDesc
+            vname = AbstractIOServiceProvider.createValidNetcdfObjectName(useDesc
                     ? desc
                     : name);
         }

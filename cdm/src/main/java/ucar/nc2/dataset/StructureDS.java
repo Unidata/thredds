@@ -111,7 +111,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return result;
   }
 
-  /*
+  /**
   * A StructureDS may wrap another Structure.
   * @return original Structure or null
   */

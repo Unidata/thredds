@@ -61,9 +61,9 @@ public class MemoryCounterAgentTest {
     measureSize(Thread.State.TERMINATED);  // */
 
     System.out.println("======================");
-    //testBufr();
+    testN3();
     System.out.println("======================");
-    testNcd();
+    //testNcd();
   }
 
   private static class Parent {
@@ -142,11 +142,21 @@ public class MemoryCounterAgentTest {
     NetcdfDataset ncfile = NetcdfDataset.openDataset("C:/data/test2.nc");
     measureSize("C:/data/test2.nc", ncfile, null, true);
 
-
     measureSize( "info", ncfile.getInfo(), null, true);
-
     StringBuilder pifo = ncfile.getInfo().getParseInfo();
     System.out.println("info= "+pifo);
+    ncfile.close();
+  }
+
+  static void testN3() throws IOException {
+    NetcdfFile ncfile = NetcdfDataset.openFile("C:/data/test2.nc", null);
+    measureSize("beforeRead", ncfile, null, true);
+
+    for (Variable v : ncfile.getVariables()) {
+      v.read();
+    }
+    measureSize("afterRead", ncfile, null, true);
+
     ncfile.close();
   }
 }

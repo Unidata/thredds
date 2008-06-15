@@ -26,6 +26,7 @@ package ucar.nc2.iosp.grid;
 
 
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
@@ -619,14 +620,14 @@ public class GridIndexToNC {
                                     FmrcCoordSys fmr) {
         // first lookup with name & vert name
         String name =
-            NetcdfFile.createValidNetcdfObjectName(makeVariableName(gr,
+            AbstractIOServiceProvider.createValidNetcdfObjectName(makeVariableName(gr,
                 lookup));
         if (fmr.hasVariable(name)) {
             return name;
         }
 
         // now try just the name
-        String pname = NetcdfFile.createValidNetcdfObjectName(
+        String pname = AbstractIOServiceProvider.createValidNetcdfObjectName(
                            lookup.getParameter(gr).getDescription());
         if (fmr.hasVariable(pname)) {
             return pname;

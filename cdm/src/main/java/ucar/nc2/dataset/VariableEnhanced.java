@@ -34,6 +34,9 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements, Enh
   public ProxyReader getProxyReader();
   public void setProxyReader( ProxyReader proxyReader);
 
+  /** Set the Unit String for this Variable. Default is to use the "units" attribute.
+   * @param units  unit string
+   */
   public void setUnitsString( String units);
   
   /**

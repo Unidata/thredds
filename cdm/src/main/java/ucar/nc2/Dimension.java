@@ -19,6 +19,8 @@
  */
 package ucar.nc2;
 
+import ucar.nc2.iosp.AbstractIOServiceProvider;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -255,7 +257,7 @@ public class Dimension implements Comparable {
    */
   public void setName( String name) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.name = (name == null) ? null : NetcdfFile.createValidNetcdfObjectName(name);
+    this.name = (name == null) ? null : AbstractIOServiceProvider.createValidNetcdfObjectName(name);
     hashCode = 0;
   }
 

@@ -72,9 +72,6 @@ public interface VariableIF extends VariableSimpleIF {
 
     // use only if isMemberOfStructure
     public java.util.List<Dimension> getDimensionsAll();
-    //public ucar.ma2.Array readAllStructuresSpec(java.lang.String rangeSpec, boolean flatten) throws java.io.IOException, ucar.ma2.InvalidRangeException;
-    //public ucar.ma2.Array readAllStructures(java.util.List<Range> ranges, boolean flatten) throws java.io.IOException, ucar.ma2.InvalidRangeException;
-    //public ucar.ma2.Array readAllStructures(ucar.ma2.Section section, boolean flatten) throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
     // use only if isScalar()
     public byte readScalarByte() throws java.io.IOException;

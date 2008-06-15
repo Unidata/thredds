@@ -27,6 +27,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 
@@ -102,7 +103,7 @@ public class GridHorizCoordSys {
         this.lookup   = lookup;
         this.g        = g;
 
-        this.grid_name = NetcdfFile.createValidNetcdfObjectName(
+        this.grid_name = AbstractIOServiceProvider.createValidNetcdfObjectName(
             lookup.getGridName(gdsIndex));
         this.shape_name = lookup.getShapeName(gdsIndex);
         this.g          = g;
@@ -538,7 +539,7 @@ public class GridHorizCoordSys {
         for (int i = 0; i < keyList.size(); i++) {
             String key = (String) keyList.get(i);
             String name =
-                NetcdfFile.createValidNetcdfObjectName("GridDefRecord_param_" + key);
+                AbstractIOServiceProvider.createValidNetcdfObjectName("GridDefRecord_param_" + key);
 
             String vals = getParamString(key);
             try {

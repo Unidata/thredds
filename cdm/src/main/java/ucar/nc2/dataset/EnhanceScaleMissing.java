@@ -184,7 +184,7 @@ public interface EnhanceScaleMissing {
    */
   public Array convert(Array data) throws IOException;
 
-  /* Convert this byte value to a double, using scale/offset/missing value if applicable */
+  /** Convert this byte value to a double, using scale/offset/missing value if applicable */
   public double convertScaleOffsetMissing(byte value);
   /** Convert this short value to a double, using scale/offset/missing value if applicable */
   public double convertScaleOffsetMissing(short value);

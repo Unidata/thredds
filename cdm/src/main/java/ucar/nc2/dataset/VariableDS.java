@@ -306,7 +306,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     return smProxy.convertScaleOffsetMissing( value);
   } 
 
-  /*
+  /**
    * A VariableDS usually wraps another Variable.
    * @return original Variable or null
    */

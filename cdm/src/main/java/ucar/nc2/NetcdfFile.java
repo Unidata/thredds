@@ -325,7 +325,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @param cancelTask  allow task to be cancelled; may be null.
    * @param iospMessage  special iosp tweaking (sent before open is called), may be null
    * @return NetcdfFile object, or null if cant find IOServiceProver
-   * @throws IOException if error
+   * @throws IOException if read error
+   * @throws ClassNotFoundException cannat find iospClassName in thye class path
+   * @throws InstantiationException if class cannot be instantiated
+   * @throws IllegalAccessException if class is not accessible
    */
   static public NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask, Object iospMessage)
           throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
@@ -579,12 +582,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       spi.sendIospMessage(iospMessage);
 
     return result;
-  }
-
-
-  // a no-op but leave it in in case we change our minds
-  static public String createValidNetcdfObjectName(String name) {
-    return name;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -917,13 +914,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Its shape is the accumulation of all the shapes of its parent structures.
    *
    * @param variableSection the constraint expression.
-   * @return Array data read.
+   * @return data requested
    * @throws IOException if error
    * @throws InvalidRangeException if variableSection is invalid
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html"
+   * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
-    CEresult cer = CEresult.parseVariableSection(this, variableSection);
+    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
 
     if (spi == null)
       return IospHelper.readSection(cer);
@@ -1530,14 +1527,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   //////////////////////////////////////////////////////////////////////////////////////
   // Service Provider calls
-  // ALL IO eventually goes through these calls.
+  // All IO eventually goes through these calls.
   // LOOK: these should not be public !!! not hitting variable cache
   // used in NetcdfDataset - try to refactor
 
   // this is for reading non-member variables
   // section is null for full read
 
-  /**
+  /*
    * Do not call this directly, use Variable.read() !!
    * Ranges must be filled (no nulls)
    */
@@ -1548,8 +1545,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
-   * Read data from a top level Variable and send data to a WritableByteChannel.
-   * Must be in big-endian order.
+   * Read data from a top level Variable and send data to a WritableByteChannel. Experimental.
    *
    * @param v a top-level Variable
    * @param section the section of data to read.
@@ -1568,33 +1564,19 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return spi.readToByteChannel(v, section, wbc);
   }
 
+  /**
+   * Read using a section specification and send data to a WritableByteChannel. Experimental.
+   *
+   * @param variableSection the constraint expression.
+   * @param wbc write data to this WritableByteChannel
+   * @return the number of bytes written to the channel
+   * @throws java.io.IOException if read error
+   * @throws ucar.ma2.InvalidRangeException if invalid section
+   */
   public long readToByteChannel(String variableSection, WritableByteChannel wbc) throws IOException, InvalidRangeException {
-    CEresult cer = CEresult.parseVariableSection(this, variableSection);
+    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
     return spi.readToByteChannel(cer.v, cer.section, wbc);
   }
-
-  // this is for reading variables that are members of structures
-  /*
-   * Do not call this directly, use Variable.read() !!
-   * Ranges must be filled (no nulls)
-   * @deprecated
-   *
-  protected Array readMemberData(ucar.nc2.Variable v, Section ranges, boolean flatten) throws IOException, InvalidRangeException {
-    Array result = spi.readNestedData(v, ranges);
-
-    if (flatten) return result;
-
-    // If flatten is false, wrap the result Array in an ArrayStructureMA
-    StructureMembers members = new StructureMembers(v.getName());
-    StructureMembers.Member member = members.addMember(v.getShortName(), v.getDescription(),
-            v.getUnitsString(), v.getDataType(), v.getShape());
-    member.setDataArray(result);
-
-    // LOOK this only works for a single structure, what about nested ?
-    // LOOK what about scalar, rank - 0 ??
-    Range outerRange = ranges.getRange(0);
-    return new ArrayStructureMA(members, new int[]{outerRange.length()});
-  } */
 
   /**
    * Access to iosp debugging info.
@@ -1619,18 +1601,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       sbuff.append("  has no iosp!\n");
     } else {
       sbuff.append("  iosp= ").append(spi.getClass().getName()).append("\n\n");
-      sbuff.append(spi.getDetailInfo());
+      sbuff.append( spi.getDetailInfo());
     }
 
     return sbuff.toString();
   }
-
-  /*
-   * Is this a Netcdf-3 file ?
-   *
-  public boolean isNetcdf3FileFormat() {
-    return (spi != null) && (spi instanceof N3iosp);
-  } */
 
   /**
    * Experimental - DO NOT USE!!!
@@ -1655,6 +1630,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   //////////////////////////////////////////////////////////
 
+  /** debugging - do not use */
   public static void main(String[] arg) throws Exception {
     //NetcdfFile.registerIOProvider( ucar.nc2.grib.GribServiceProvider.class);
 

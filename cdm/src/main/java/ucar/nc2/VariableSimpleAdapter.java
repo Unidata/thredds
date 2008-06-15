@@ -33,6 +33,10 @@ import java.util.ArrayList;
 public class VariableSimpleAdapter implements VariableSimpleIF {
   private StructureMembers.Member m;
 
+  /**
+   * Constructor
+   * @param m adapt this Member
+   */
   public VariableSimpleAdapter( StructureMembers.Member m) {
     this.m = m;
   }

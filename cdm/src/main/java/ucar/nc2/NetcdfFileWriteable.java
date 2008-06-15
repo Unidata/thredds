@@ -181,6 +181,10 @@ public class NetcdfFileWriteable extends NetcdfFile {
     this.extraHeader = extraHeaderBytes;
   }
 
+  /**
+   * Is the file in define mode, which allows objects to be added and changed?
+   * @return true if the file in define mode
+   */
   public boolean isDefineMode() { return defineMode; }
 
   ////////////////////////////////////////////

@@ -24,6 +24,7 @@ package ucar.nc2.constants;
  * Type-safe enumeration of Scientific Feature types.
  *
  * @author john caron
+ * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">Scientific Feature Types</a>
  */
 
 public final class FeatureType {

@@ -258,7 +258,7 @@ public class MemoryCounterAgent {
       for (int i = 0; i < length; i++) {
         Object val = Array.get(obj, i);
         if (val != null)
-          result += deepSizeOf3( name, val, visited, skipClass, false, indent+2);
+          result += deepSizeOf3( name, val, visited, skipClass, true, indent+2);
       }
     } else {
       // add all non-primitive fields to the stack

@@ -22,9 +22,9 @@ package ucar.nc2.constants;
 
 /**
  * Constants for _Coordinate Conventions.
- * Since this is used by many IOSPs, place in ucar.nc2, rather than ucar.nc2.dataset.
+ * Used to annotate Variables, using Attributes.
  *
- * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/CoordinateAttributes.html"
+ * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/CoordinateAttributes.html">_Coordinate Conventions</a>
  * @author caron
  */
 public class _Coordinate {

@@ -833,7 +833,6 @@ public class Variable implements VariableIF {
     Array scalarData = (cache != null && cache.data != null) ? cache.data : read();
     scalarData = scalarData.reduce();
 
-    // LOOK isMember case
     if ((scalarData.getRank() == 0) || ((scalarData.getRank() == 1) && dataType == DataType.CHAR))
       return scalarData;
     throw new java.lang.UnsupportedOperationException("not a scalar variable =" + this);
@@ -1139,6 +1138,8 @@ public class Variable implements VariableIF {
    * @param group     the containing group; if null, use rootGroup
    * @param parent    parent Structure, may be null
    * @param shortName variable shortName, must be unique within the Group
+   * @param dtype     the Variable's DataType
+   * @param dims      space delimited list of dimension names
    */
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
     this.ncfile = ncfile;
@@ -1602,7 +1603,7 @@ public class Variable implements VariableIF {
    *                   for the Variable itself. If the list is null, use the full shape for everything.
    *                   If an individual Range is null, use the full shape for that dimension.
    * @param flatten    if true, remove enclosing StructureData. Otherwise, each parent Structure will create a
-   *                   StructureData container for the returned data array. LOOK maybe always flatten = true ??
+   *                   StructureData container for the returned data array.
    * @return the requested data which has the shape of the request.
    * @deprecated
    *
@@ -1716,6 +1717,7 @@ public class Variable implements VariableIF {
   // deprecated
   /**
    * @deprecated use isVariableLength()
+   * @return isVariableLength()
    */
   public boolean isUnknownLength() {
     return isVariableLength;

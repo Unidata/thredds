@@ -20,15 +20,11 @@
 package ucar.nc2.iosp;
 
 import ucar.ma2.Section;
-import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.nc2.Variable;
-import ucar.nc2.CEresult;
+import ucar.nc2.ParsedSectionSpec;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
-import java.util.List;
 
 /**
  * This is the service provider interface for the low-level I/O access classes (read only).
@@ -104,9 +100,15 @@ public interface IOServiceProvider {
   public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
-  public ucar.ma2.Array readSection(CEresult cer) throws IOException, InvalidRangeException;
+  /**
+   * Allows reading sections of nested variables
+   * @param cer
+   * @return requested data array
+   * @throws IOException
+   * @throws InvalidRangeException
+   */
+  public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
 
-  
   /*
    * LOOK Should we allow reading on member variables ??
    * Read data from a Variable that is nested in one or more Structures.
