@@ -9,9 +9,17 @@ import ucar.nc2.ncml.TestNcML;
 import java.io.IOException;
 
 /**
- * Test NcML AggExisting ways to define coordinate variable calues
- *
- * @see "http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Aggregation.html#JoinExistingTypes"
+ * Test promoting an attribute to a variable.
+ */
+
+/*
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <aggregation dimName="time" type="joinExisting" recheckEvery="4 sec">
+    <promoteGlobalAttribute name="times" orgName="time_coverage_end" />
+    <scan dateFormatMark="CG#yyyyDDD_HHmmss" location="src/test/data/ncml/nc/cg/" suffix=".nc" subdirs="false" />
+  </aggregation>
+</netcdf>
  */
 
 public class TestAggExistingPromote extends TestCase {
@@ -80,6 +88,71 @@ public class TestAggExistingPromote extends TestCase {
     while (dataI.hasNext()) {
       String s = (String) dataI.getObjectNext();
       assert s.equals(result[count]) : s;
+      count++;
+    }
+
+    ncfile.close();
+  }
+
+  /*
+  <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+  <aggregation dimName="time" type="joinExisting">
+    <promoteGlobalAttribute name="title" />
+    <netcdf location="file:src/test/data/ncml/nc/jan.nc"/>
+    <netcdf location="file:src/test/data/ncml/nc/feb.nc"/>
+  </aggregation>
+
+</netcdf>
+   */
+  public void testNotOne() throws IOException, InvalidRangeException {
+    String filename = "file:" + TestNcML.topDir + "aggExistingPromote2.ncml";
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+
+    Dimension dim = ncfile.findDimension("time");
+
+    // the promoted var
+    Variable pv = ncfile.findVariable("title");
+    assert null != pv;
+
+    assert pv.getName().equals("title");
+    assert pv.getRank() == 1;
+    assert pv.getSize() == dim.getLength();
+    assert pv.getDataType() == DataType.STRING;
+    Dimension d = pv.getDimension(0);
+    assert d.getName().equals("time");
+
+    Array datap = pv.read();
+    assert datap.getRank() == 1;
+    assert datap.getSize() == dim.getLength();
+    assert datap.getElementType() == String.class;
+
+    NCdump.printArray(datap, "title", System.out, null);
+
+    while (datap.hasNext())
+      assert datap.next().equals("Example Data");
+
+    // the promoted var
+    pv = ncfile.findVariable("month");
+    assert null != pv;
+
+    assert pv.getName().equals("month");
+    assert pv.getRank() == 1;
+    assert pv.getSize() == dim.getLength();
+    assert pv.getDataType() == DataType.STRING;
+    d = pv.getDimension(0);
+    assert d.getName().equals("time");
+
+    datap = pv.read();
+    assert datap.getRank() == 1;
+    assert datap.getSize() == dim.getLength();
+    assert datap.getElementType() == String.class;
+
+    NCdump.printArray(datap, "title", System.out, null);
+
+    int count = 0;
+    while (datap.hasNext()) {
+      assert datap.next().equals((count < 31) ? "jan" : "feb") : count;
       count++;
     }
 

@@ -55,6 +55,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
 
   protected Variable orgVar; // wrap this Variable
   private DataType orgDataType; // keep seperate for the case where there is no ioVar.
+  private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
 
   /**
    * Constructor when there's no underlying variable.
@@ -330,6 +331,20 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
    */
   public DataType getOriginalDataType() {
     return orgDataType;
+  }
+
+  /**
+   * When this wraps another Variable, get the original Variable's DataType.
+   * @return original Variable's DataType
+   */
+  public String getOriginalName() {
+    return orgName;
+  }
+
+  @Override
+  public void setName(String newName) {
+    this.orgName = shortName;
+    super.setName(newName);
   }
 
   /** Set the proxy reader.

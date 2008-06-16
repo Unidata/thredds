@@ -13,7 +13,7 @@ public class TestNcMLoffsite {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
     
-    suite.addTest(new TestSuite(TestOffAggExistingSSTA.class));
+    suite.addTest(new TestSuite(TestOffAggExistingTimeUnitsChange.class));
 
     suite.addTest(new TestSuite(TestOffNcMLWriteRead.class)); // write and read back NcML //
     suite.addTest(new TestSuite(TestOffNcMLWriteReadwithCoords.class)); // write and read back NcML //
@@ -23,11 +23,10 @@ public class TestNcMLoffsite {
     suite.addTest(new TestSuite(TestOffAggDirDateFormat.class));  // */
     suite.addTest(new TestSuite(TestOffAggReadGridDataset.class)); // */
 
-    // not working = fix
-    // suite.addTest(new TestSuite(TestOffAggNewSync.class));  // */
+    suite.addTest(new TestSuite(TestOffAggNewSync.class));  // */
 
     suite.addTest(new TestSuite(TestOffAggFmrcNetcdf.class));  //
-    // not working - fix suite.addTest(new TestSuite(TestOffAggFmrcGrib.class));  //
+    suite.addTest(new TestSuite(TestOffAggFmrcGrib.class));  //
     suite.addTest(new TestSuite(TestOffAggFmrcNonuniform.class));  //
 
     suite.addTest(new TestSuite(TestOffAggForecastModel.class));

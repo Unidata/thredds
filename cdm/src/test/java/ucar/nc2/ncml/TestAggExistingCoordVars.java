@@ -221,5 +221,36 @@ public class TestAggExistingCoordVars extends TestCase {
     ncfile.close();
   }
 
+  public void testClimatologicalDate() throws IOException, InvalidRangeException {
+    String filename = "file:"+TestNcML.topDir + "aggExisting5.ncml";
+
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+
+    assert time.getName().equals("time");
+    assert time.getRank() == 1;
+    assert time.getSize() == 59;
+    assert time.getShape()[0] == 59;
+    assert time.getDataType() == DataType.INT;
+
+    assert time.getDimension(0) == ncfile.findDimension("time");
+
+      Array data = time.read();
+      assert data.getRank() == 1;
+      assert data.getSize() == 59;
+      assert data.getShape()[0] == 59;
+      assert data.getElementType() == int.class;
+
+      int count = 0;
+      while (data.hasNext()) {
+        assert data.nextInt() == count : data.nextInt() +"!="+ count;
+        count++;
+      }
+
+    ncfile.close();
+  }
+
 
 }

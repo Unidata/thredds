@@ -681,7 +681,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
           System.out.println("");
         }
 
-        Variable v = ncd.findVariable(mainv.getName());
+        Variable v = findVariable(ncd, mainv);
 
         // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)
         // so we need to read only what is there
@@ -725,6 +725,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       dataMap = newMap;
     }
 
+    // public access to the data
     Array read(Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
       if (debugCache) System.out.println("caching "+varName+" section= "+section);
       Array allData = Array.factory(dtype, section.getShape());
@@ -732,10 +733,11 @@ public abstract class AggregationOuterDimension extends Aggregation {
       List<Range> ranges = section.getRanges();
       Range joinRange = section.getRange(0);
       Section innerSection = null;
-      if (section.getRank() > 1)
+      if (section.getRank() > 1) {
         innerSection = new Section(ranges.subList(1, ranges.size()));
+      }
 
-      // make concurrent      
+      // LOOK make concurrent
       int resultPos = 0;
       List<Dataset> nestedDatasets = getDatasets();
       for (Dataset vnested : nestedDatasets) {
@@ -793,21 +795,23 @@ public abstract class AggregationOuterDimension extends Aggregation {
   // data values might be specified by Dataset.coordValue
   class CoordValueVar extends CacheVar {
     Variable v;
-    Section innerSection;
+    //Section innerSection;
 
     CoordValueVar(Variable v) {
       super(v.getName());
       dtype = v.getDataType();
 
-      List<Range> ranges = v.getShapeAsSection().getRanges();
-      innerSection = new Section(ranges.subList(1, ranges.size()));
+      // List<Range> ranges = v.getShapeAsSection().getRanges();
+      //innerSection = new Section(ranges.subList(1, ranges.size()));
     }
 
+    // thi deals with possible listing of the data in the NcML
     protected Array read(DatasetOuterDimension dset) throws IOException {
       Array data = getData(dset);
       if (data != null) return data;
 
-      data = Array.factory(dtype, innerSection.getShape());
+      data = Array.factory(dtype, new int[] {dset.ncoord});
+      //data = Array.factory(dtype, innerSection.getShape());
       IndexIterator ii = data.getIndexIterator();
 
       // we have the coordinates as a String
@@ -875,7 +879,16 @@ public abstract class AggregationOuterDimension extends Aggregation {
         ncfile = dset.acquireFile(null);
         Attribute att = ncfile.findGlobalAttribute(orgName);
         data = att.getValues();
-        setData(dset, data);
+        if (dset.ncoord == 1)
+          setData(dset, data);
+        else {
+          dtype = DataType.getType(data.getElementType());
+          Array allData = Array.factory(dtype, new int[] {dset.ncoord});
+
+          for (int i=0; i<dset.ncoord; i++)
+            Array.arraycopy(data, 0, allData, i, 1); // LOOK generalize to vectors ??
+          setData(dset, allData);
+        }
         return data;
 
       } finally {

@@ -526,8 +526,7 @@ public abstract class Aggregation implements ProxyReader {
         if ((cancelTask != null) && cancelTask.isCancel())
           return null;
 
-        // LOOK what if variable name has been changed in NcML ?
-        Variable v = ncd.findVariable(mainv.getName());
+        Variable v = findVariable(ncd, mainv);
         return v.read();
 
       } finally {
@@ -555,8 +554,7 @@ public abstract class Aggregation implements ProxyReader {
         if (debugRead)
           System.out.print("agg read " + ncd.getLocation() + " nested= " + getLocation() + " " + new Section(section));
 
-        // LOOK what if variable name has been changed in NcML ?
-        Variable v = ncd.findVariable(mainv.getName());
+        Variable v = findVariable(ncd, mainv);
         return v.read(section);
 
       } finally {
@@ -629,7 +627,7 @@ public abstract class Aggregation implements ProxyReader {
       try {
         ncfile = dataset.acquireFile(cancelTask);
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
-        Variable proxyV = ncfile.findVariable(mainV.getName());  // LOOK assumes they have the same name - may have been renamed in NcML!
+        Variable proxyV = findVariable(ncfile, mainV);
         return proxyV.read();
       } finally {
         dataset.close( ncfile);
@@ -640,13 +638,22 @@ public abstract class Aggregation implements ProxyReader {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile(cancelTask);
-        Variable proxyV = ncfile.findVariable(mainV.getName()); // LOOK assumes they have the same name - may have been renamed in NcML!
+        Variable proxyV = findVariable(ncfile, mainV);
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
         return proxyV.read(section);
       } finally {
         dataset.close( ncfile);
       }
     }
+  }
+
+  protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
+    Variable v = ncfile.findVariable(mainV.getName());
+    if (v == null) {  // might be renamed
+      VariableEnhanced ve = (VariableEnhanced) mainV;
+      v = ncfile.findVariable(ve.getOriginalName());
+    }
+    return v;
   }
 
   /*

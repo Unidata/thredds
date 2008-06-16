@@ -56,8 +56,8 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
     }
   }
 
-  public void utestOne() throws Exception  {
-    convertAsNcdataset( "R:/testdata/grid/netcdf/nuwg/eta.nc");
+  public void testOne() throws Exception  {
+    convertAsNcdataset(TestAll.upcShareTestDataDir + "radar/nexrad/level2/6500KHGX20000610_000110.Z");
   }
 
   private void convertAsNcdataset(String location) throws IOException {

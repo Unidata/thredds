@@ -32,8 +32,8 @@ import java.io.File;
 public class URLnaming {
 
   /**
-   * This augments URI.resolve(), by also dealing with base file: URIs.
-   * If baseURL is not a file: scheme, then URI.resolve is called.
+   * This augments URI.resolve(), by also dealing with file: URIs.
+   * If baseURi is not a file: scheme, then URI.resolve is called.
    * Otherwise the last "/" is found in the base, and the ref is appended to it.
    * <p> For file: baseURLS: only reletive URLS not starting with / are supported. This is
    * apparently different from the behavior of URI.resolve(), so may be trouble,
@@ -45,36 +45,49 @@ public class URLnaming {
    * resolved: file://my/guide/collections/sub/my.nc
    * </pre>
    *
-   * @param baseUrl     base URL as a Strng
-   * @param relativeUrl reletive URL, as a String
-   * @return the resolved URL as a String
+   * @param baseUri     base URI as a Strng
+   * @param relativeUri reletive URI, as a String
+   * @return the resolved URI as a String
    */
-  public static String resolve(String baseUrl, String relativeUrl) {
-    if ((baseUrl == null) || (relativeUrl == null))
-      return relativeUrl;
-
-    relativeUrl = canonicalizeRead(relativeUrl);
-    URI refURI = URI.create(relativeUrl);
-    if (refURI.isAbsolute())
-      return relativeUrl;
+  public static String resolve(String baseUri, String relativeUri) {
+    if ((baseUri == null) || (relativeUri == null))
+      return relativeUri;
 
     // deal with a base file URL
-    if (baseUrl.startsWith("file:")) {
-      if ((relativeUrl.length() > 0) && (relativeUrl.charAt(0) == '#'))
-        return baseUrl + relativeUrl;
+    if (baseUri.startsWith("file:")) {
 
-      if ((relativeUrl.length() > 0) && (relativeUrl.charAt(0) == '/'))
-        return relativeUrl;
+      // the case where the reletiveURL is absolute.
+      // unfortunately, we may get an Exception
+      try {
+        URI reletiveURI = URI.create(relativeUri);
+        if (reletiveURI.isAbsolute())
+          return relativeUri;
+      } catch (Exception e) {
+        // empty
+      }
 
-      int pos = baseUrl.lastIndexOf('/');
+      if ((relativeUri.length() > 0) && (relativeUri.charAt(0) == '#'))
+        return baseUri + relativeUri;
+
+      if ((relativeUri.length() > 0) && (relativeUri.charAt(0) == '/'))
+        return relativeUri;
+
+      int pos = baseUri.lastIndexOf('/');
       if (pos > 0) {
-        return baseUrl.substring(0, pos + 1) + relativeUrl;
+        return baseUri.substring(0, pos + 1) + relativeUri;
       }
     }
 
+    // non-file URLs
+
+    //relativeUri = canonicalizeRead(relativeUri);
+    URI reletiveURI = URI.create(relativeUri);
+    if (reletiveURI.isAbsolute())
+      return relativeUri;
+
     //otherwise let the URI class resolve it
-    URI baseURI = URI.create(baseUrl);
-    URI resolvedURI = baseURI.resolve(refURI);
+    URI baseURI = URI.create(baseUri);
+    URI resolvedURI = baseURI.resolve(reletiveURI);
     return resolvedURI.toASCIIString();
   }
 
@@ -136,7 +149,7 @@ public class URLnaming {
   }
 
   public static void main(String args[]) {
-    test("http://localhost:8080/thredds/catalog.html?hi=lo");
+    testResolve("file:/test/me/", "blank in dir", "file:/test/me/blank in dir");
   }
 
   public static void main2(String args[]) {
@@ -147,6 +160,7 @@ public class URLnaming {
 
     test("file:C:/Program Files (x86)/Apache Software Foundation/Tomcat 5.0/content/thredds/cache");
     test("file:C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 5.0\\content\\thredds\\cache");
+    test("http://localhost:8080/thredds/catalog.html?hi=lo");
   }
 
   private static void testResolve(String base, String rel, String result) {

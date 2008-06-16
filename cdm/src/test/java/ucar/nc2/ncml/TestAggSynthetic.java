@@ -9,17 +9,18 @@ import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
 
-/** Test netcdf dataset in the JUnit framework. */
+/**
+ * Test netcdf dataset in the JUnit framework.
+ */
 
 public class TestAggSynthetic extends TestCase {
 
-  public TestAggSynthetic( String name) {
+  public TestAggSynthetic(String name) {
     super(name);
   }
 
-
-  public void test1() throws IOException {
-    String filename = "file:./"+TestNcML.topDir + "aggSynthetic.xml";
+  public void test1() throws IOException, InvalidRangeException {
+    String filename = "file:./" + TestNcML.topDir + "aggSynthetic.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
     Variable v = ncfile.findVariable("time");
@@ -28,69 +29,93 @@ public class TestAggSynthetic extends TestCase {
     assert testAtt != null;
     assert testAtt.equals("months since 2000-6-16 6:00");
 
-    testDimensions( ncfile);
-    testCoordVar( ncfile);
-    testAggCoordVar( ncfile);
-    testReadData( ncfile);
-    testReadSlice( ncfile);
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVar(ncfile);
+    testReadData(ncfile, "T");
+    testReadSlice(ncfile, "T");
 
     ncfile.close();
   }
 
-  public void test2() throws IOException {
-    String filename = "file:./"+TestNcML.topDir + "aggSynthetic2.xml";
+  public void test2() throws IOException, InvalidRangeException {
+    String filename = "file:./" + TestNcML.topDir + "aggSynthetic2.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
-    testDimensions( ncfile);
-    testCoordVar( ncfile);
-    testAggCoordVar2( ncfile);
-    testReadData( ncfile);
-    testReadSlice( ncfile);
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVar2(ncfile);
+    testReadData(ncfile, "T");
+    testReadSlice(ncfile, "T");
 
     ncfile.close();
   }
 
-  public void test3() throws IOException {
-     String filename = "file:./"+TestNcML.topDir + "aggSynthetic3.xml";
-     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+  public void test3() throws IOException, InvalidRangeException {
+    String filename = "file:./" + TestNcML.topDir + "aggSynthetic3.xml";
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
-     testDimensions( ncfile);
-     testCoordVar( ncfile);
-     testAggCoordVar3( ncfile);
-     testReadData( ncfile);
-     testReadSlice( ncfile);
-
-     ncfile.close();
-   }
-
-  public void testNoCoord() throws IOException {
-     String filename = "file:./"+TestNcML.topDir + "aggSynNoCoord.xml";
-     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-
-     testDimensions( ncfile);
-     testCoordVar( ncfile);
-     testAggCoordVarNoCoord( ncfile);
-     testReadData( ncfile);
-     testReadSlice( ncfile);
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVar3(ncfile);
+    testReadData(ncfile, "T");
+    testReadSlice(ncfile, "T");
 
     ncfile.close();
-   }
+  }
 
-  public void testNoCoordDir() throws IOException {
-     String filename = "file:./"+TestNcML.topDir + "aggSynNoCoordsDir.xml";
-     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+  public void testNoCoord() throws IOException, InvalidRangeException {
+    String filename = "file:./" + TestNcML.topDir + "aggSynNoCoord.xml";
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
-     testDimensions( ncfile);
-     testCoordVar( ncfile);
-     testAggCoordVarNoCoordsDir( ncfile);
-     testReadData( ncfile);
-     testReadSlice( ncfile);
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVarNoCoord(ncfile);
+    testReadData(ncfile, "T");
+    testReadSlice(ncfile, "T");
 
     ncfile.close();
-   }
+  }
 
-   public void testDimensions(NetcdfFile ncfile) {
-    System.out.println("ncfile = \n"+ncfile);
+  public void testNoCoordDir() throws IOException, InvalidRangeException {
+    String filename = "file:./" + TestNcML.topDir + "aggSynNoCoordsDir.xml";
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVarNoCoordsDir(ncfile);
+    testReadData(ncfile, "T");
+    testReadSlice(ncfile, "T");
+
+    ncfile.close();
+  }
+
+  public void testRename() throws IOException, InvalidRangeException {
+    String filename = "file:./" + TestNcML.topDir + "aggSynRename.xml";
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVarNoCoordsDir(ncfile);
+    testReadData(ncfile, "Temperature");
+    testReadSlice(ncfile, "Temperature");
+    ncfile.close();
+  }
+
+  public void testScan() throws IOException, InvalidRangeException {
+    String filename = "file:./" + TestNcML.topDir + "aggSynScan.xml";
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVarScan(ncfile);
+    testReadData(ncfile, "T");
+    testReadSlice(ncfile, "T");
+    ncfile.close();
+  }
+
+  public void testDimensions(NetcdfFile ncfile) {
+    System.out.println("ncfile = \n" + ncfile);
 
     Dimension latDim = ncfile.findDimension("lat");
     assert null != latDim;
@@ -107,10 +132,10 @@ public class TestAggSynthetic extends TestCase {
     Dimension timeDim = ncfile.findDimension("time");
     assert null != timeDim;
     assert timeDim.getName().equals("time");
-    assert timeDim.getLength() == 3 :  timeDim.getLength();
+    assert timeDim.getLength() == 3 : timeDim.getLength();
   }
 
- public void testCoordVar(NetcdfFile ncfile) {
+  public void testCoordVar(NetcdfFile ncfile) {
 
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
@@ -143,7 +168,8 @@ public class TestAggSynthetic extends TestCase {
       assert TestUtils.close(dataI.getDoubleNext(), 41.0);
       assert TestUtils.close(dataI.getDoubleNext(), 40.0);
       assert TestUtils.close(dataI.getDoubleNext(), 39.0);
-    } catch (IOException io) {}
+    } catch (IOException io) {
+    }
 
   }
 
@@ -201,74 +227,94 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void testAggCoordVar3(NetcdfFile ncfile) throws IOException {
-      Variable time = ncfile.findVariable("time");
-      assert null != time;
-      assert time.getName().equals("time");
-      assert time.getRank() == 1 : time.getRank();
-      assert time.getShape()[0] == 3;
-      assert time.getDataType() == DataType.DOUBLE : time.getDataType();
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+    assert time.getName().equals("time");
+    assert time.getRank() == 1 : time.getRank();
+    assert time.getShape()[0] == 3;
+    assert time.getDataType() == DataType.DOUBLE : time.getDataType();
 
-      assert time.getDimension(0) == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
-      Array data = time.read();
+    Array data = time.read();
 
-      assert (data instanceof ArrayDouble);
-      IndexIterator dataI = data.getIndexIterator();
-      double val = dataI.getDoubleNext();
-      assert TestAll.closeEnough(val, 0.0) : val;
-      assert TestAll.closeEnough(dataI.getDoubleNext(), 10.0) : dataI.getDoubleCurrent();
-      assert TestAll.closeEnough(dataI.getDoubleNext(), 99.0) : dataI.getDoubleCurrent();
+    assert (data instanceof ArrayDouble);
+    IndexIterator dataI = data.getIndexIterator();
+    double val = dataI.getDoubleNext();
+    assert TestAll.closeEnough(val, 0.0) : val;
+    assert TestAll.closeEnough(dataI.getDoubleNext(), 10.0) : dataI.getDoubleCurrent();
+    assert TestAll.closeEnough(dataI.getDoubleNext(), 99.0) : dataI.getDoubleCurrent();
+  }
+
+  public void testAggCoordVarScan(NetcdfFile ncfile) throws IOException {
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+    assert time.getName().equals("time");
+    assert time.getRank() == 1 : time.getRank();
+    assert time.getShape()[0] == 3;
+    assert time.getDataType() == DataType.INT : time.getDataType();
+
+    assert time.getDimension(0) == ncfile.findDimension("time");
+
+    int count = 0;
+    Array data = time.read();
+    assert (data instanceof ArrayInt);
+    while (data.hasNext()) {
+      int val = data.nextInt();
+      assert val == count * 10 : val + "!="+ count * 10;
+      count++;
     }
+  }
 
   public void testAggCoordVarNoCoord(NetcdfFile ncfile) throws IOException {
-      Variable time = ncfile.findVariable("time");
-      assert null != time;
-      assert time.getName().equals("time");
-      assert time.getRank() == 1 : time.getRank();
-      assert time.getShape()[0] == 3;
-      assert time.getDataType() == DataType.STRING : time.getDataType();
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+    assert time.getName().equals("time");
+    assert time.getRank() == 1 : time.getRank();
+    assert time.getShape()[0] == 3;
+    assert time.getDataType() == DataType.STRING : time.getDataType();
 
-      assert time.getDimension(0) == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
-      Array data = time.read();
+    Array data = time.read();
 
-      assert (data instanceof ArrayObject);
-      IndexIterator dataI = data.getIndexIterator();
-      String coordName = (String) dataI.getObjectNext();
-      assert coordName.equals("time0.nc") : coordName;
-      coordName = (String) dataI.getObjectNext();
-      assert coordName.equals("time1.nc") : coordName;
-      coordName = (String) dataI.getObjectNext();
-      assert coordName.equals("time2.nc") : coordName;
-      }
+    assert (data instanceof ArrayObject);
+    IndexIterator dataI = data.getIndexIterator();
+    String coordName = (String) dataI.getObjectNext();
+    assert coordName.equals("time0.nc") : coordName;
+    coordName = (String) dataI.getObjectNext();
+    assert coordName.equals("time1.nc") : coordName;
+    coordName = (String) dataI.getObjectNext();
+    assert coordName.equals("time2.nc") : coordName;
+  }
 
   public void testAggCoordVarNoCoordsDir(NetcdfFile ncfile) throws IOException {
-      Variable time = ncfile.findVariable("time");
-      assert null != time;
-      assert time.getName().equals("time");
-      assert time.getRank() == 1 : time.getRank();
-      assert time.getShape()[0] == 3;
-      assert time.getDataType() == DataType.STRING : time.getDataType();
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+    assert time.getName().equals("time");
+    assert time.getRank() == 1 : time.getRank();
+    assert time.getShape()[0] == 3;
+    assert time.getDataType() == DataType.STRING : time.getDataType();
 
-      assert time.getDimension(0) == ncfile.findDimension("time");
+    assert time.getDimension(0) == ncfile.findDimension("time");
 
-      Array data = time.read();
+    Array data = time.read();
 
-      assert (data instanceof ArrayObject);
-      IndexIterator dataI = data.getIndexIterator();
-      String coordName = (String) dataI.getObjectNext();
-      assert coordName.equals("time0Dir.nc") : coordName;
-      coordName = (String) dataI.getObjectNext();
-      assert coordName.equals("time1Dir.nc") : coordName;
-      coordName = (String) dataI.getObjectNext();
-      assert coordName.equals("time2Dir.nc") : coordName;
-      }
+    assert (data instanceof ArrayObject);
+    IndexIterator dataI = data.getIndexIterator();
+    String coordName = (String) dataI.getObjectNext();
+    assert coordName.equals("time0Dir.nc") : coordName;
+    coordName = (String) dataI.getObjectNext();
+    assert coordName.equals("time1Dir.nc") : coordName;
+    coordName = (String) dataI.getObjectNext();
+    assert coordName.equals("time2Dir.nc") : coordName;
+  }
 
-  public void testReadData(NetcdfFile ncfile) {
+  public void testReadData(NetcdfFile ncfile, String name) throws IOException {
 
-    Variable v = ncfile.findVariable("T");
+    Variable v = ncfile.findVariable(name);
     assert null != v;
-    assert v.getName().equals("T");
+    assert v.getName().equals(name);
     assert v.getRank() == 3;
     assert v.getSize() == 36 : v.getSize();
     assert v.getShape()[0] == 3;
@@ -282,66 +328,53 @@ public class TestAggSynthetic extends TestCase {
     assert v.getDimension(1) == ncfile.findDimension("lat");
     assert v.getDimension(2) == ncfile.findDimension("lon");
 
-    try {
-      Array data = v.read();
-      assert data.getRank() == 3;
-      assert data.getSize() == 36;
-      assert data.getShape()[0] == 3;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 4;
-      assert data.getElementType() == double.class;
+    Array data = v.read();
+    assert data.getRank() == 3;
+    assert data.getSize() == 36;
+    assert data.getShape()[0] == 3;
+    assert data.getShape()[1] == 3;
+    assert data.getShape()[2] == 4;
+    assert data.getElementType() == double.class;
 
-      int [] shape = data.getShape();
-      Index tIndex = data.getIndex();
-      for (int i=0; i<shape[0]; i++)
-       for (int j=0; j<shape[1]; j++)
-        for (int k=0; k<shape[2]; k++) {
-          double val = data.getDouble( tIndex.set(i, j, k));
+    int[] shape = data.getShape();
+    Index tIndex = data.getIndex();
+    for (int i = 0; i < shape[0]; i++)
+      for (int j = 0; j < shape[1]; j++)
+        for (int k = 0; k < shape[2]; k++) {
+          double val = data.getDouble(tIndex.set(i, j, k));
           // System.out.println(" "+val);
-          assert TestUtils.close(val, 100*i + 10*j + k) : val;
+          assert TestUtils.close(val, 100 * i + 10 * j + k) : val;
         }
 
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
   }
 
-  public void readSlice(NetcdfFile ncfile, int[] origin, int[] shape) {
+  public void readSlice(NetcdfFile ncfile, int[] origin, int[] shape, String name) throws IOException, InvalidRangeException {
 
-    Variable v = ncfile.findVariable("T");
+    Variable v = ncfile.findVariable(name);
 
-    try {
-      Array data = v.read(origin, shape);
-      assert data.getRank() == 3;
-      assert data.getSize() == shape[0] * shape[1] * shape[2];
-      assert data.getShape()[0] == shape[0] : data.getShape()[0] +" "+shape[0];
-      assert data.getShape()[1] == shape[1];
-      assert data.getShape()[2] == shape[2];
-      assert data.getElementType() == double.class;
+    Array data = v.read(origin, shape);
+    assert data.getRank() == 3;
+    assert data.getSize() == shape[0] * shape[1] * shape[2];
+    assert data.getShape()[0] == shape[0] : data.getShape()[0] + " " + shape[0];
+    assert data.getShape()[1] == shape[1];
+    assert data.getShape()[2] == shape[2];
+    assert data.getElementType() == double.class;
 
-      Index tIndex = data.getIndex();
-      for (int i=0; i<shape[0]; i++)
-       for (int j=0; j<shape[1]; j++)
-        for (int k=0; k<shape[2]; k++) {
-          double val = data.getDouble( tIndex.set(i, j, k));
+    Index tIndex = data.getIndex();
+    for (int i = 0; i < shape[0]; i++)
+      for (int j = 0; j < shape[1]; j++)
+        for (int k = 0; k < shape[2]; k++) {
+          double val = data.getDouble(tIndex.set(i, j, k));
           //System.out.println(" "+val);
-          assert TestUtils.close(val, 100*(i+origin[0]) + 10*j + k) : val;
+          assert TestUtils.close(val, 100 * (i + origin[0]) + 10 * j + k) : val;
         }
-
-    } catch (InvalidRangeException io) {
-      assert false;
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
   }
 
-  public void testReadSlice(NetcdfFile ncfile) {
-    readSlice( ncfile, new int[] {0, 0, 0}, new int[] {3, 3, 4} );
-    readSlice( ncfile,new int[] {0, 0, 0}, new int[] {2, 3, 2} );
-    readSlice( ncfile,new int[] {2, 0, 0}, new int[] {1, 3, 4} );
-    readSlice( ncfile,new int[] {1, 0, 0}, new int[] {2, 2, 3} );
-   }
+  public void testReadSlice(NetcdfFile ncfile, String name) throws IOException, InvalidRangeException {
+    readSlice(ncfile, new int[]{0, 0, 0}, new int[]{3, 3, 4}, name);
+    readSlice(ncfile, new int[]{0, 0, 0}, new int[]{2, 3, 2}, name);
+    readSlice(ncfile, new int[]{2, 0, 0}, new int[]{1, 3, 4}, name);
+    readSlice(ncfile, new int[]{1, 0, 0}, new int[]{2, 2, 3}, name);
+  }
 
 }

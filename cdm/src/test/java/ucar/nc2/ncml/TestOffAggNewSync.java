@@ -21,7 +21,7 @@ public class TestOffAggNewSync extends TestCase {
   public void testMove() throws IOException, InterruptedException {
     move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
-    String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
+    String filename = "file:./" + TestNcML.topDir + "offsite/aggExistingSync.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     testAggCoordVar(ncfile, 7);
     ncfile.close();
@@ -35,7 +35,7 @@ public class TestOffAggNewSync extends TestCase {
 
   public void testRemove() throws IOException, InterruptedException {
 
-    String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
+    String filename = "file:./" + TestNcML.topDir + "offsite/aggExistingSync.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     testAggCoordVar(ncfile, 8);
     System.out.println("");
@@ -53,7 +53,7 @@ public class TestOffAggNewSync extends TestCase {
   public void testSync() throws IOException, InterruptedException {
     move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
-    String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
+    String filename = "file:./" + TestNcML.topDir + "offsite/aggExistingSync.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     testAggCoordVar(ncfile, 7);
 
@@ -66,7 +66,7 @@ public class TestOffAggNewSync extends TestCase {
   }
 
   public void testSyncRemove() throws IOException, InterruptedException {
-    String filename = "file:./" + TestNcML.topDir + "offsite/aggNewSync.xml";
+    String filename = "file:./" + TestNcML.topDir + "offsite/aggExistingSync.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     testAggCoordVar(ncfile, 8);
     System.out.println("");

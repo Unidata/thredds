@@ -75,8 +75,9 @@ public class TestLocalNC2 {
     suite.addTest(new TestSuite(TestStructure.class)); //
     suite.addTest(new TestSuite(TestStructureArray.class)); //
 
-    suite.addTest(new TestSuite(TestReadStrides.class));
-    suite.addTestSuite( TestScaleOffsetMissingForStructure.class); // */
+    suite.addTest( new TestSuite(TestReadStrides.class));
+    suite.addTest( new TestSuite(TestScaleOffsetMissingForStructure.class));
+    suite.addTest( new TestSuite(TestSlice.class));
 
     return suite;
   }

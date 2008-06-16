@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+  <aggregation dimName="time" type="joinExisting">
+    <promoteGlobalAttribute name="title" />
+    <promoteGlobalAttribute name="month" />
+    <promoteGlobalAttribute name="vector" />
+    <netcdf location="file:src/test/data/ncml/nc/jan.nc">
+      <attribute name="month" value="jan"/>
+      <attribute name="vector" value="1 2 3" type="int"/>
+    </netcdf>
+    <netcdf location="file:src/test/data/ncml/nc/feb.nc">
+      <attribute name="month" value="feb"/>
+      <attribute name="vector" value="4 5 6" type="int"/>
+    </netcdf>
+  </aggregation>
+
+</netcdf>

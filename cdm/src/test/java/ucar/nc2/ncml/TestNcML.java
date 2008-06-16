@@ -37,7 +37,7 @@ public class TestNcML {
     // requires remote (network) access
     // suite.addTest(new TestSuite(TestRemoteCrawlableDataset.class));
 
-    // LOOK wait until grids are done
+    // LOOK wait until grids are done - fails when cached
     //suite.addTest(new TestSuite(TestAggSynGrid.class));
 
     return suite;

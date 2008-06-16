@@ -162,7 +162,7 @@ netcdf TestUnion.ncml {
 <p>Also note that, contrary to previous versions of NcML aggregation, you do <strong>not</strong> need to define a dimension element for the aggregation dimension (e.g. &lt;dimension name=&quot;time&quot;&gt; and <strong>must not</strong> use the old form     <em><strong>&lt;dimension name=&quot;time&quot; length=&quot;0&quot; /&gt;</strong></em> as it will override the dimension created by the aggregation. </p>
 <p><i>For all aggregations, the aggregation element is processed first, so that the objects (dimensions, attributes, groups, and variables) from the nested datasets exist and can be modified by other NcML elements.</i> </p>
 <h2><a name="scan"></a>Aggregation by scanning  a directory</h2>
-<p>Its often convenient to indicate that all the files in some directory should be aggregated. This can be done for <strong>joinExisting</strong> and <strong>joinNew</strong> (not <strong>union</strong>) types. The following  example scans all of the files in the directory <strong>/data/model </strong> (and its subdirectories) which end in <strong>&quot;.nc&quot;.</strong> By default, the files are ordered by sorting on the filename. </p>
+<p>Its often convenient to indicate that all the files in some directory should be aggregated. This can be done for any  type. The following  example scans all of the files in the directory <strong>/data/model </strong> (and its subdirectories) which end in <strong>&quot;.nc&quot;.</strong> By default, the files are ordered by sorting on the filename. </p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;aggregation dimName=&quot;time&quot; type=&quot;<strong>joinExisting</strong>&quot;&gt;
 <strong>    &lt;scan location=&quot;/data/model/&quot; suffix=&quot;.nc&quot; /&gt;</strong>
@@ -176,7 +176,7 @@ netcdf TestUnion.ncml {
 <strong>    &lt;scan location=&quot;/data/goes/&quot; suffix=&quot;.gini&quot; /&gt;</strong>
   &lt;/aggregation&gt;
 &lt;/netcdf&gt;</pre>
-<p>  However, here the problem is how do you assign coordinate values to each step? If you do nothing, a String-valued coordinate variable will be defined, whose values are the filenames. If you know the number of files, you can specifiy the coordinate variable yourself and  assign it values: </p>
+<p>  Here the problem is how to assign coordinate values to each step? If you do nothing, a String-valued coordinate variable will be defined, whose values are the filenames. If you know the number of files, you can specifiy the coordinate variable yourself and  assign it values: </p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
 <pre><strong>  </strong>&lt;dimension name=&quot;time&quot; length=&quot;48&quot;/&gt;
   &lt;variable name=&quot;time&quot; type=&quot;int&quot; shape=&quot;time&quot;&gt;
@@ -204,8 +204,9 @@ netcdf TestUnion.ncml {
 <pre>      Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini 
 DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <p>The net effect is to add a coordinate variable, whose values are ISO 8601 formatted date/time Strings, with a <strong>_CoordinateAxisType</strong> of &quot;Time&quot;, for example: </p>
-<pre>   &lt;variable name=&quot;time&quot; type=&quot;String&quot; shape=&quot;time&quot;&gt;
-	   &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
+<pre>
+   &lt;variable name=&quot;time&quot; type=&quot;String&quot; shape=&quot;time&quot;&gt;
+     &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
      <strong>&lt;values&gt;2005-11-28T21:00:00Z 2005-11-28T21:15:00Z 2005-11-28T21:30:00Z&lt;/values&gt;</strong>
    &lt;/variable&gt;</pre>
 <p><em>The <strong>scan</strong> element allows you to specify that all of the files in a directory (and its subdirectories, with an optional suffix filter) are included in the aggregation. The files are sorted alphabetically on the filename, unless you specify a <strong>dateFormatMark</strong> attribute, in which case they are sorted by the Date derived from the filename, which is also used for the coordinate values. </em><br>
@@ -259,7 +260,7 @@ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <p>Next: <a href="FmrcAggregation.html">FMRC Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 13, 2008
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 16, 2008
 </address>
 <p>&nbsp;</p>
 </body>

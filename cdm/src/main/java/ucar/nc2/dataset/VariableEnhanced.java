@@ -30,6 +30,7 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements, Enh
 
   public ucar.nc2.Variable getOriginalVariable();
   public void setOriginalVariable(ucar.nc2.Variable orgVar);
+  public String getOriginalName();
 
   public ProxyReader getProxyReader();
   public void setProxyReader( ProxyReader proxyReader);

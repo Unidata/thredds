@@ -306,4 +306,12 @@ public class TestAggUnionSimple extends TestCase {
     scanFile.close();
   }
 
+  public void testRename() throws IOException {
+    String filename = "file:./" + TestNcML.topDir + "aggUnionRename.xml";
+    NetcdfDataset scanFile = NetcdfDataset.openDataset(filename, false, null);
+    Variable v = scanFile.findVariable("LavaFlow");
+    assert v != null;
+    scanFile.close();
+  }
+
 }

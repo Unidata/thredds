@@ -21,9 +21,16 @@
 package ucar.nc2.ncml;
 
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.TestAll;
+import ucar.nc2.Variable;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import junit.framework.TestCase;
 
@@ -37,15 +44,54 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
   public TestOffAggExistingTimeUnitsChange( String name) {
     super(name);
   }
+  //String location = "file:R:/testdata/ncml/nc/narr/narr.ncml";
 
-  //String location = "file:"+TestAll.upcShareTestDataDir + "ncml/nc/narr/narr.xml";
-  String location = "file:R:/testdata/ncml/nc/narr/narr.ncml";
-
-  public void testNarr() throws IOException, InvalidRangeException {
+  public void testNamExtract() throws IOException, InvalidRangeException {
+    String location = "file:"+ TestAll.upcShareTestDataDir + "ncml/nc/namExtract/test_agg.ncml";
     System.out.println(" TestOffAggExistingTimeUnitsChange.open "+ location);
 
-    NetcdfFile ncfile = NcMLReader.readNcML(location, null);
-    System.out.println(" "+ncfile);
+    NetcdfFile ncfile = NetcdfDataset.openFile(location, null);
+
+    Variable v = ncfile.findVariable("time");
+    assert v != null;
+    assert v.getDataType() == DataType.INT;
+
+    String units = v.getUnitsString();
+    assert units != null;
+    assert units.equals("hours since 2006-09-25T06:00:00Z");
+
+    int count = 0;
+    Array data = v.read();
+    NCdumpW.printArray(data, "time", new PrintWriter(System.out), null);
+    while (data.hasNext()) {
+      assert data.nextInt() == (count + 1) * 3;
+      count++;
+    }
+
+    ncfile.close();
+  }
+
+  public void testNarrGrib() throws IOException, InvalidRangeException {
+    String location = "file:"+ TestAll.upcShareTestDataDir + "ncml/nc/narr/narr.ncml";
+    System.out.println(" TestOffAggExistingTimeUnitsChange.open "+ location);
+
+    NetcdfFile ncfile = NetcdfDataset.openFile(location, null);
+
+    Variable v = ncfile.findVariable("time");
+    assert v != null;
+    assert v.getDataType() == DataType.INT;
+
+    String units = v.getUnitsString();
+    assert units != null;
+    assert units.equals("hour since 2007-04-11T00:00:00Z");
+
+    int count = 0;
+    Array data = v.read();
+    NCdumpW.printArray(data, "time", new PrintWriter(System.out), null);
+    while (data.hasNext()) {
+      assert data.nextInt() == count * 3;
+      count++;
+    }
 
     ncfile.close();
   }

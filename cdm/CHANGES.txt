@@ -40,7 +40,10 @@ This code is ALPHA
 
  Release Details:
     17: HTTPRandomAccessFile allows content-length to be long
-        fix NcML aggregation unit tests; integrate aggregation with FileCache
+        fix NcML aggregation unit tests; add new ones
+        integrate aggregation with FileCache, experimental concurrency
+        fix bug with relative URLs with blanks in them (URLnaming)
+        finish new agg features : promoteGlobalAttribute, timeUnitsChange
     16: remove direct use of ucar.units, except from ucar.nc2.units
         rewrite NetcdfFileCache, remove NetcdfDatasetCache
         EnhanceScaleMissingImpl uses Misc.closeEnough for missing value comparisions.

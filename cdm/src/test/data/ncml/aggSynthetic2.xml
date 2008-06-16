@@ -4,7 +4,7 @@
   <variable name="time" type="int" shape="time">
     <attribute name="long_name" type="string" value="time coordinate" />
     <attribute name="units" type="string" value="days since 2001-8-31 00:00:00 UTC" />
-    <values start="0" increment="1" npts="3" />
+    <values start="0" increment="1" />
   </variable>
 	
 	<aggregation dimName="time" type="joinNew">

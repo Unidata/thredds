@@ -36,9 +36,9 @@ import java.util.List;
 public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
   private EnhancementsImpl proxy;
   private EnhanceScaleMissingImpl smProxy;
-  //private boolean isEnhanced = false;
 
   protected Structure orgVar; // wrap this Variable
+  private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
 
   /**
    * Constructor when theres no underlying variable. You better set the values too!
@@ -137,6 +137,20 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    */
   public DataType getOriginalDataType() {
     return DataType.STRUCTURE;
+  }
+
+  /**
+   * When this wraps another Variable, get the original Variable's DataType.
+   * @return original Variable's DataType
+   */
+  public String getOriginalName() {
+    return orgName;
+  }
+
+  @Override
+  public void setName(String newName) {
+    this.orgName = shortName;
+    super.setName(newName);
   }
 
   /**

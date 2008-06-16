@@ -41,6 +41,7 @@ public class TestOffAggFmrcGrib extends TestCase {
     ncfile.close();    
   }
 
+  // the fmrc definition has changed
   public void utestRunseq() throws Exception {
     String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcGribRunseq.xml";
 
@@ -156,30 +157,23 @@ public class TestOffAggFmrcGrib extends TestCase {
     assert time.getSize() == nagg * ntimes;
     assert time.getShape()[0] == nagg;
     assert time.getShape()[1] == ntimes;
-    assert time.getDataType() == DataType.DOUBLE;
+    assert time.getDataType() == DataType.INT;
 
     String units = time.getUnitsString();
     DateUnit du = new DateUnit( units);
 
     DateFormatter formatter = new DateFormatter();
-    try {
       Array data = time.read();
       assert data.getSize() == nagg * ntimes;
       assert data.getShape()[0] == nagg;
       assert data.getShape()[1] == ntimes;
-      assert data.getElementType() == double.class;
+      assert data.getElementType() == int.class;
 
-      IndexIterator dataI = data.getIndexIterator();
-      while (dataI.hasNext()) {
-        double val = dataI.getDoubleNext();
+      while (data.hasNext()) {
+        double val = data.nextDouble();
         Date date = du.makeDate(val);
         if (showValues) System.out.println(" date= "+ formatter.toDateTimeStringISO(date));
       }
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
 
   }
 

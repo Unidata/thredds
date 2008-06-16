@@ -44,7 +44,7 @@
   <li><em><strong>http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.xml</strong></em></li>
 </ul>
 <p>Because xml is so widely used, we recommend using the <em>.ncml</em> suffix when possible.</p>
-<p>3. NetcdfDataset can open <em><strong>THREDDS</strong></em> datasets, which are contained in THREDDS Catalogs. The general form is <strong><em>thredds</em></strong><em>:catalogURL#dataset_id , </em>where <em>catalogURL</em> is the URL of a THREDDS catalog, and <em>dataset_id</em> is the ID of a dataset inside of that catalog. The therdds: prefix ensures that it is understood as a THERDDS dataset. Example:</p>
+<p>3. NetcdfDataset can open <em><strong>THREDDS</strong></em> datasets, which are contained in THREDDS Catalogs. The general form is <strong><em>thredds</em></strong><em>:catalogURL#dataset_id , </em>where <em>catalogURL</em> is the URL of a THREDDS catalog, and <em>dataset_id</em> is the ID of a dataset inside of that catalog. The <em>thredds:</em> prefix ensures that it is understood as a THREDDS dataset. Example:</p>
 <ul>
   <li><em><strong>thredds:http://localhost:8080/test/addeStationDataset.xml#surfaceHourly </strong></em></li>
   <li><em><strong>thredds:file:c:/dev/netcdf-java-2.2/test/data/catalog/addeStationDataset.xml#AddeSurfaceData</strong></em></li>
@@ -62,21 +62,43 @@
 <p>NcML datasets typically reference other CDM datasets, using the <em>location</em> attribute of the <em>netcdf</em> element, for example:</p>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" 
      <strong>location</strong>="file:/dev/netcdf-java-2.2/test/data/example1.nc"&gt;
-...</pre>
-<p>Allowable forms of the referenced dataset location are: </p>
+...
+</pre>
+<p>Allowable forms of the  location are: </p>
 <ul>
   <li>an absolute HTTP URL (eg <strong>http://server/myfile.nc</strong>)</li>
   <li>An absolute file URL with an absolute path (eg <strong>file:/usr/local/data/mine.nc</strong>). </li>
-  <li>An absolute file URL with a relative path (eg <strong>file:data/mine.nc</strong>). The file will be opened reletive to the working directory. </li>
   <li> A relative URL resolved against the NcML location (eg <strong>subdir/mydata.nc</strong>). You must <strong>not</strong> use a <em>file:</em> prefix in this case. </li>
+  <li>An absolute file URL with a relative path (eg <strong>file:data/mine.nc</strong>). The file will be opened relative to the working directory. </li>
 </ul>
 <p>There are a few subtle differences between using a location in NcML and passing a location to the NetcdfFile.open() and related methods:</p>
 <ol>
   <li><em><strong>In NcML, you MUST always use forward slashes</strong></em> in your paths, even when on a Windows machine. For example: <strong>file:C:/data/mine.nc. </strong>NetcdfFile.open() will accept backslashes on a Windows machine. </li>
-  <li>In NcML, a  reletive URL is resolved against the NcML location. In NetcdfFile.open(), its interpreted as reletive to the working directory. </li>
+  <li>In NcML, a  relative URL is resolved against the NcML location. In NetcdfFile.open(), it is interpreted as relative to the working directory. </li>
 </ol>
-<h2><br>
-ucar.nc2.dt.TypedDatasetFactory</h2>
+<h2>NcML<a name="NcmlScan"></a> scan location</h2>
+<p>NcML aggregation <em><strong>scan</strong></em> elements use the location attribute  to specify which directory to find files in, for example:<br>
+</p>
+<pre>
+&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;
+<strong>    </strong>&lt;scan<strong> location=&quot;/data/model/&quot; </strong>suffix=&quot;.nc&quot; /&gt;
+  &lt;/aggregation&gt;
+&lt;/netcdf&gt;</pre>
+<p>Allowable forms of the  location are: </p>
+<ul>
+  <li>an absolute HTTP URL (eg <strong>http://server/myfile.nc</strong>) LOOK should it try to crawl ???</li>
+  <li>An absolute file URL with an absolute path (eg <strong>file:/usr/local/data/mine.nc</strong>). </li>
+  <li> A relative URL resolved against the NcML location (eg <strong>subdir/mydata.nc</strong>). You must <strong>not</strong> use a <em>file:</em> prefix in this case. </li>
+  <li>An absolute file URL with a relative path (eg <strong>file:data/mine.nc</strong>). The file will be opened relative to the working directory. </li>
+</ul>
+<p>There are a few subtle differences between using a location in NcML and passing a location to the NetcdfFile.open() and related methods:</p>
+<ol>
+  <li><em><strong>In NcML, you MUST always use forward slashes</strong></em> in your paths, even when on a Windows machine. For example: <strong>file:C:/data/mine.nc. </strong>NetcdfFile.open() will accept backslashes on a Windows machine. </li>
+  <li>In NcML, a  relative URL is resolved against the NcML location. In NetcdfFile.open(), it is interpreted as relative to the working directory. </li>
+</ol>
+<p>&nbsp;</p>
+<h2> ucar.nc2.dt.TypedDatasetFactory</h2>
 <p>The TypedDatasetFactory creates <em><strong>Scientific Typed Datasets</strong></em> such as GridDatasets, PointObsDatasets, RadialDatasetSweep, etc. Usually (but not always) these are based on NetcdfDataset objects. </p>
 <h3>ucar.nc2.dt.TypedDatasetFactory.open( thredds.catalog.DataType datatype, String location)</h3>
 <p>TypedDatasetFactory.open()  calls NetcdfDataset.openDataset(), then looks for an implementation of the TypedDatasetFactoryIF (interface) that knows how to create a TypedDataset out of the NetcdfDataset. If the thredds.catalog.DataType datatype parameter is not null, it will only look for factories that return that type.</p>
@@ -91,7 +113,7 @@ ucar.nc2.dt.TypedDatasetFactory</h2>
 <p>&nbsp; </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Aug 10, 2007 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 16, 2008
 </address>
 <p>&nbsp;</p>
 </body>

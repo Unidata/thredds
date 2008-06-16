@@ -220,14 +220,15 @@ files.</p>
 <pre><strong>(16)</strong> &lt;xsd:attribute name=&quot;type&quot; type=&quot;AggregationType&quot; use=&quot;required&quot;/&gt;
 <strong>(17)</strong> &lt;xsd:attribute name=&quot;dimName&quot; type=&quot;xsd:token&quot; /&gt;
 <strong>(18)</strong> &lt;xsd:attribute name=&quot;recheckEvery&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(19)</strong> &lt;xsd:attribute name=&quot;timeUnitsChange&quot; type=&quot;xsd:boolean&quot;/&gt;<br>
+<strong>(19)</strong> &lt;xsd:attribute name=&quot;timeUnitsChange&quot; type=&quot;xsd:boolean&quot;/&gt;
+<br>
       &lt;!-- fmrc only  --&gt;<br><strong>(20)</strong> &lt;xsd:attribute name=&quot;fmrcDefinition&quot; type=&quot;xsd:string&quot; /&gt;<br>
 &lt;/xsd:complexType&gt;
 &lt;/xsd:element&gt;
 </pre>
 <ol>
   <li>For <em><strong>joinNew</strong></em> aggregation types, the  variables that will be aggregated must be explicitly listed in a <em><strong>variableAgg</strong></em> element.</li>
-  <li>Specify which global attributes to promote to a variable (outer aggregation only)</li>
+  <li>Specify  global attributes to promote to a variable (outer aggregations only)</li>
   <li>Specify which variables should be cached (outer aggregation only)</li>
   <li>The nested netcdf datasets can be explicitly listed.</li>
   <li>Or they can be implictly specified by naming a directory in a scan element.</li>
@@ -256,7 +257,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
   <li>You must specify an aggregation type.</li>
   <li>For all types except <em><strong>joinUnion</strong></em>, you must specify the dimension name to join. </li>
   <li>When you are using scan elements on a set of files that may change, and you are using caching, set <strong>recheckEvery</strong> to a valid <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time value, like &quot;10 min&quot;, &quot;1 hour&quot;, &quot;30 days&quot;, etc. Whenever the dataset is reacquired from the cache, the directories will be rescanned if <strong>recheckEvery</strong> amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing.</li>
-  <li>Only for OuterDimension Aggregation, if this is set to true, the units of the joined coordinate variable may change, so examine them and do any appropriate convesion so that the aggregated coordinate values have consistent units. </li>
+  <li>Only for <strong>joinExisting </strong>and<strong> forecastModelRunCollection</strong>, if this is set to true, the units of the joined coordinate variable may change, so examine them and do any appropriate conversion so that the aggregated coordinate values have consistent units. </li>
   <li>Only for forecastModelRunCollection or forecastModelRunSingleCollection. LOOK expose ?? <font color="#990000"><br>
   </font></li>
 </ol>
@@ -288,24 +289,32 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
   <li>arbitrary parameters that will be passed to CrawlableDataset constructor LOOK </li>
   <li>full name of a class that implements thredds.crawlabledataset.CrawlableDataset</li>
 </ol>
-<h3><strong><br>
-  promoteGlobalAttribute Element</strong></h3>
-<pre>  <strong>&lt;!-- promote global attribute to variable --&gt;
+<h3><strong>  promoteGlobalAttribute Element</strong></h3>
+<pre>  &lt;!-- promote global attribute to variable --&gt;
   &lt;xsd:element name=&quot;promoteGlobalAttribute&quot;&gt;
    &lt;xsd:complexType&gt;
-    &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;
-    &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;
+<strong>(1)</strong>  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;
+<strong>(2)</strong>  &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;
    &lt;/xsd:complexType&gt;
-  &lt;/xsd:element&gt;
+  &lt;/xsd:element&gt;<strong>
 </strong></pre>
+<ol>
+  <li>The name of the global attribute.</li>
+  <li>Specify the name of the variable. If not given, use the attribute name.</li>
+</ol>
+<p>This can be used on <strong>joinNew, joinExisting, </strong>and<strong> forecastModelRunCollection</strong>, aka the <em><strong>outer dimension aggregations</strong></em>. A new variable will be added using  the aggregation dimension and its type will be taken from the attribute type. If theres more than one slice in the file (eg in a <strong>joinExisting), </strong>the attribute value will be repeated for each coordinate in that file.<strong><br>
+    </strong></p>
 <h3><strong><br>
   cacheVariable Element</strong></h3>
-<pre> <strong> &lt;!-- cache a Variable for efficiency --&gt;
+<pre>  &lt;!-- cache a Variable for efficiency --&gt;
   &lt;xsd:element name=&quot;cacheVariable&quot;&gt;
    &lt;xsd:complexType&gt;
     &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;
    &lt;/xsd:complexType&gt;
-  &lt;/xsd:element&gt;</strong></pre>
+  &lt;/xsd:element&gt;
+</pre>
+<p>Not reagy to be usedd in a general way yet.<br>
+</p>
 <h2>Notes</h2>
 <ul>
   <li><font color="#0000FF">  Any attributes of type xsd:token, have trailing and ending spaces    

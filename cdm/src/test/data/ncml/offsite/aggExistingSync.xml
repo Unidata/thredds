@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
 
-  <aggregation  dimName="time" type="joinNew" recheckEvery="2 sec" >
+  <aggregation  dimName="time" type="joinExisting" recheckEvery="2 sec" >
     <variableAgg name="IR_WV"/>
     <scan location="//zero/share/testdata/image/testSync" suffix=".gini" dateFormatMark="SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm"/>
   </aggregation>

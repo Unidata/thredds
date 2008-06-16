@@ -286,6 +286,7 @@ public class Attribute {
     this.name = name;
     this.dataType = from.dataType;
     this.nelems = from.nelems;
+    this.svalue = from.svalue;
     this.values = from.values;
   }
 
@@ -367,7 +368,11 @@ public class Attribute {
     } else if (c == Long.class) {
       long[] va = new long[n]; pa = va;
       for (int i=0; i<n; i++) va[i] = (Long) values.get(i);
+
+    } else {
+      throw new IllegalArgumentException("unknown type for Attribute = "+c.getName());
     }
+
     setValues( Array.factory(c, new int[] {n}, pa));
   }
 
@@ -411,6 +416,9 @@ public class Attribute {
    * @param val value of Attribute
    */
   private void setStringValue(String val) {
+    if (val == null)
+      throw new IllegalArgumentException("Attribute value cannot be null");
+
     // get rid of trailing zeroes
     int len = val.length();
     while ((len > 0) && (val.charAt(len - 1) == 0))
