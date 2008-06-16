@@ -26,6 +26,7 @@ import ucar.ma2.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc, FmrcSingle
@@ -225,19 +226,71 @@ public abstract class AggregationOuterDimension extends Aggregation {
     Array allData = Array.factory(dtype, mainv.getShape());
     int destPos = 0;
 
-    // make concurrent
     List<Dataset> nestedDatasets = getDatasets();
-    for (Dataset vnested : nestedDatasets) {
-      Array varData = vnested.read(mainv, cancelTask);
-      if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
+    if (executor != null) {
+      CompletionService<Result> completionService = new ExecutorCompletionService<Result>(executor);
 
-      // arraycopy( Array arraySrc, int srcPos, Array arrayDst, int dstPos, int len)
-      Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
-      destPos += varData.getSize();
+      int count = 0;
+      for (Dataset vnested : nestedDatasets)
+        completionService.submit(new ReaderTask(vnested, mainv, cancelTask, count++));
+
+      try {
+        int n = nestedDatasets.size();
+        for (int i = 0; i < n; ++i) {
+          Result r = completionService.take().get();
+          if (r != null) {
+            int size = (int) r.data.getSize();
+            Array.arraycopy(r.data, 0, allData, size * r.index, size);
+          }
+        }
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      } catch (ExecutionException e) {
+        throw new IOException(e.getCause());
+      }
+
+    } else {
+
+      for (Dataset vnested : nestedDatasets) {
+        Array varData = vnested.read(mainv, cancelTask);
+        if ((cancelTask != null) && cancelTask.isCancel())
+          return null;
+
+        // arraycopy( Array arraySrc, int srcPos, Array arrayDst, int dstPos, int len)
+        Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
+        destPos += varData.getSize();
+      }
     }
 
     return allData;
+  }
+
+
+  private class ReaderTask implements Callable<Result> {
+    Dataset ds;
+    Variable mainv;
+    CancelTask cancelTask;
+    int index;
+    ReaderTask(Dataset ds, Variable mainv, CancelTask cancelTask, int index) {
+      this.ds = ds;
+      this.mainv = mainv;
+      this.cancelTask = cancelTask;
+      this.index = index;
+    }
+
+    public Result call() throws Exception {
+      Array data = ds.read(mainv, cancelTask);
+      return new Result(data, index);
+    }
+  }
+
+  private class Result {
+    Array data;
+    int index;
+    Result(Array data, int index) {
+      this.data = data;
+      this.index = index;
+    }
   }
 
   /* protected Array readAggCoord(Variable aggCoord, CancelTask cancelTask) throws IOException {
@@ -425,7 +478,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
    */
   class DatasetOuterDimension extends Dataset {
 
-    protected int ncoord; // number of coordinates in outer dimension for this dataset; joinExisting
+    protected int ncoord; // number of coordinates in outer dimension for this dataset
     protected String coordValue;  // if theres a coordValue on the netcdf element - may be multiple, blank seperated
     protected Date coordValueDate;  // if its a date
     protected boolean isStringValued = false;

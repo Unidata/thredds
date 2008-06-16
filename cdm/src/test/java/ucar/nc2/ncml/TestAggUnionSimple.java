@@ -4,15 +4,111 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
 
-/** Test netcdf dataset in the JUnit framework. */
+/**
+ * Test agg union
+ */
+
+/*
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+	<attribute name="title" type="string" value="Union cldc and lflx"/>
+  <aggregation type="union">
+    <netcdf location="file:src/test/data/ncml/nc/cldc.mean.nc"/>
+    <netcdf location="file:src/test/data/ncml/nc/lflx.mean.nc"/>
+  </aggregation>
+</netcdf>
+
+netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/cldc.mean.nc {
+ dimensions:
+   time = UNLIMITED;   // (456 currently)
+   lat = 21;
+   lon = 360;
+ variables:
+   float lat(lat=21);
+     :long_name = "Latitude";
+     :units = "degrees_north";
+     :actual_range = 10.0f, -10.0f; // float
+   float lon(lon=360);
+     :long_name = "Longitude";
+     :units = "degrees_east";
+     :actual_range = 0.5f, 359.5f; // float
+   double time(time=456);
+     :units = "days since 1-1-1 00:00:0.0";
+     :long_name = "Time";
+     :delta_t = "0000-01-00 00:00:00";
+     :avg_period = "0000-01-00 00:00:00";
+     :actual_range = 715511.0, 729360.0; // double
+   short cldc(time=456, lat=21, lon=360);
+     :valid_range = 0.0f, 8.0f; // float
+     :actual_range = 0.0f, 8.0f; // float
+     :units = "okta";
+     :precision = 1s; // short
+     :missing_value = 32766s; // short
+     :_FillValue = 32766s; // short
+     :long_name = "Cloudiness Monthly Mean at Surface";
+     :dataset = "COADS 1-degree Equatorial Enhanced\nAI";
+     :var_desc = "Cloudiness\nC";
+     :level_desc = "Surface\n0";
+     :statistic = "Mean\nM";
+     :parent_stat = "Individual Obs\nI";
+     :add_offset = 3276.5f; // float
+     :scale_factor = 0.1f; // float
+
+ :title = "COADS 1-degree Equatorial Enhanced";
+ :history = "";
+ :Conventions = "COARDS";
+}
+
+netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/lflx.mean.nc {
+ dimensions:
+   time = UNLIMITED;   // (456 currently)
+   lat = 21;
+   lon = 360;
+ variables:
+   float lat(lat=21);
+     :long_name = "Latitude";
+     :units = "degrees_north";
+     :actual_range = 10.0f, -10.0f; // float
+   float lon(lon=360);
+     :long_name = "Longitude";
+     :units = "degrees_east";
+     :actual_range = 0.5f, 359.5f; // float
+   double time(time=456);
+     :units = "days since 1-1-1 00:00:0.0";
+     :long_name = "Time";
+     :delta_t = "0000-01-00 00:00:00";
+     :avg_period = "0000-01-00 00:00:00";
+     :actual_range = 715511.0, 729360.0; // double
+   short lflx(time=456, lat=21, lon=360);
+     :valid_range = -1000.0f, 1000.0f; // float
+     :actual_range = -88.700005f, 236.1f; // float
+     :units = "grams/kg m/s";
+     :precision = 1s; // short
+     :missing_value = 32766s; // short
+     :_FillValue = 32766s; // short
+     :long_name = "Latent Heat Parameter Monthly Mean at Surface";
+     :dataset = "COADS 1-degree Equatorial Enhanced\nAI";
+     :var_desc = "Latent Heat Parameter\nG";
+     :level_desc = "Surface\n0";
+     :statistic = "Mean\nM";
+     :parent_stat = "Individual Obs\nI";
+     :add_offset = 2276.5f; // float
+     :scale_factor = 0.1f; // float
+
+ :title = "COADS 1-degree Equatorial Enhanced";
+ :history = "";
+ :Conventions = "COARDS";
+}
+*/
 
 public class TestAggUnionSimple extends TestCase {
 
-  public TestAggUnionSimple( String name) {
+  public TestAggUnionSimple(String name) {
     super(name);
   }
 
@@ -20,32 +116,47 @@ public class TestAggUnionSimple extends TestCase {
 
   public void setUp() {
     if (ncfile != null) return;
-    String filename = "file:./"+TestNcML.topDir + "aggUnionSimple.xml";
+    String filename = "file:./" + TestNcML.topDir + "aggUnionSimple.xml";
 
     try {
-      ncfile = NcMLReader.readNcML(filename, null);
+      ncfile = NetcdfDataset.openDataset(filename, false, null);
     } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = "+e);
+      System.out.println("bad URL error = " + e);
     } catch (IOException e) {
-      System.out.println("IO error = "+e);
+      System.out.println("IO error = " + e);
       e.printStackTrace();
       assert false;
     }
   }
- 
 
-   public void tearDown() throws IOException {
-      if (ncfile != null) ncfile.close();
-      ncfile = null;
-    }
+  public void tearDown() throws IOException {
+    if (ncfile != null) ncfile.close();
+    ncfile = null;
+  }
+
+  public void testDataset() {
+    Variable v = ncfile.findVariable("lflx");
+    assert v instanceof VariableDS;
+    VariableDS vds = (VariableDS) v;
+    assert vds.getOriginalDataType() == v.getDataType();
+
+    Variable org = vds.getOriginalVariable();
+    assert vds.getOriginalDataType() == org.getDataType();
+
+    assert !(org instanceof VariableDS);
+
+    assert vds.getProxyReader() == null;
+    assert v.getParentGroup().equals(org.getParentGroup());
+    assert v.getParentGroup() != org.getParentGroup();
+  }
 
   public void testRead() {
-    System.out.println("ncfile = "+ncfile);
-    ucar.nc2.TestUtils.testReadData( ncfile, true);
+    System.out.println("ncfile = " + ncfile);
+    ucar.nc2.TestUtils.testReadData(ncfile, true);
   }
 
   public void testStructure() {
-    System.out.println("TestNested = \n"+ncfile);
+    System.out.println("TestNested = \n" + ncfile);
 
     Attribute att = ncfile.findGlobalAttribute("title");
     assert null != att;
@@ -101,10 +212,11 @@ public class TestAggUnionSimple extends TestCase {
       assert data.getElementType() == float.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert close(dataI.getDoubleNext(), 10.0);
-      assert close(dataI.getDoubleNext(), 9.0);
-      assert close(dataI.getDoubleNext(), 8.0);
-    } catch (IOException io) {}
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 10.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 9.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 8.0);
+    } catch (IOException io) {
+    }
 
   }
 
@@ -150,7 +262,8 @@ public class TestAggUnionSimple extends TestCase {
       assert 32766 == dataI.getShortNext();
       assert 32766 == dataI.getShortNext();
       assert 32766 == dataI.getShortNext();
-    } catch (IOException io) {}
+    } catch (IOException io) {
+    }
   }
 
   public void testReadSlice() {
@@ -181,11 +294,16 @@ public class TestAggUnionSimple extends TestCase {
     }
   }
 
-  boolean close( double d1, double d2) {
-    //System.out.println(d1+" "+d2);
-    if (d1 != 0.0)
-      return Math.abs((d1-d2)/d1) < 1.0e-5;
-    else
-      return Math.abs(d1-d2) < 1.0e-5;
+  /* test that scanning gives the exact same result
+  <aggregation type="union">
+    <scan location="file:src/test/data/ncml/nc/" suffix="mean.nc"/>
+  </aggregation>
+  */
+  public void testScan() throws IOException {
+    String filename = "file:./" + TestNcML.topDir + "aggUnionScan.xml";
+    NetcdfDataset scanFile = NetcdfDataset.openDataset(filename, false, null);
+    TestCompare.compareFiles(ncfile, scanFile, true, true, false);
+    scanFile.close();
   }
+
 }

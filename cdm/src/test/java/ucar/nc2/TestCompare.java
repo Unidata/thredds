@@ -183,8 +183,9 @@ public class TestCompare {
     Array data1 = var1.read();
     Array data2 = var2.read();
 
-    if (showCompare) System.out.println("compareArrays  "+var1.getName()+" "+var1.isUnlimited()+ " size = "+data1.getSize());
+    if (showCompare) System.out.print("compareArrays  "+var1.getName()+" "+var1.isUnlimited()+ " size = "+data1.getSize());
     compareData(data1, data2);
+    if (showCompare) System.out.println(" ok");
   }
 
   static public void compareData(Array data1, Array data2) {

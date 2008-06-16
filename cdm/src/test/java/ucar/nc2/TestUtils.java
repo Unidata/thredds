@@ -9,7 +9,7 @@ import ucar.ma2.Array;
  * Static utililities for testing
  *
  * @author Russ Rew
- * @version $Id: TestUtils.java 51 2006-07-12 17:13:13Z caron $ */
+ */
 
 public class TestUtils  {
 
@@ -26,12 +26,11 @@ public class TestUtils  {
     System.out.println( "**** NCdump done");
   }
 
+  /** read all data, make sure variable metadata matches the array */
   static public void testReadData( NetcdfFile ncfile, boolean showStatus) {
     try {
-      List list = ncfile.getVariables();
-      for (int i = 0; i < list.size(); i++) {
-        Variable v = (Variable) list.get(i);
-        testVarMatchesData( v, showStatus);
+      for (Variable v  : ncfile.getVariables()) {
+        testVarMatchesData(v, showStatus);
       }
     } catch (IOException ioe) {
       ioe.printStackTrace();

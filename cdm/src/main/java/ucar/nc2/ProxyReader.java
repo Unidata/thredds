@@ -36,7 +36,7 @@ public interface ProxyReader {
   
   /**
    * Read all the data for a Variable.
-   * The Array has the same element type and shape as the Variable.
+
    * @param mainv the Variable
    * @param cancelTask allow user to cancel, may be null.
    * @return memory resident Array containing the data. Will have same shape as the Variable.
@@ -45,18 +45,15 @@ public interface ProxyReader {
   public Array read(Variable mainv, CancelTask cancelTask) throws IOException;
 
   /**
-   * Read a section of the data for a Variable and return a memory resident Array.
-   * The Array has the same element type as the Variable, and the requested shape.
-   * Note that this does not do rank reduction, so the returned Array has the same rank
-   *  as the Variable. Use Array.reduce() for rank reduction.
+   * Read a section of the data for a Variable.
    *
    * @param mainv the Variable
    * @param section the section of data to read.
    * @param cancelTask allow user to cancel, may be null.
    *
-   * @return memory resident Array containing the data. Will have same shape as the Variable.
+   * @return memory resident Array containing the data. Will have same shape as the Section.
    * @throws IOException on error
-   * @throws ucar.ma2.InvalidRangeException if section is incorrect rank or shape.
+   * @throws ucar.ma2.InvalidRangeException if section has incorrect rank or shape.
    */
   public Array read(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException;
 }

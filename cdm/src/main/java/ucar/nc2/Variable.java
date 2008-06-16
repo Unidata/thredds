@@ -50,7 +50,7 @@ public class Variable implements VariableIF {
 
   protected DataType dataType;
   protected int elementSize;
-  protected List<Dimension> dimensions = new ArrayList<Dimension>();
+  protected List<Dimension> dimensions = new ArrayList<Dimension>(5);
   protected List<Attribute> attributes = new ArrayList<Attribute>();
 
   protected boolean isVariableLength = false;

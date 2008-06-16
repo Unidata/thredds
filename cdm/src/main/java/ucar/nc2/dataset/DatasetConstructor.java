@@ -36,8 +36,8 @@ public class DatasetConstructor {
    * Dimensions and Variables are replaced with equivalent elements, but unlimited dimensions are turned into regular dimensions.
    * Attribute doesnt have to be replaced because its immutable, so its copied by reference.
    *
-   * @param src copy from here
-   * @param target to here
+   * @param src transfer from here. If src is a NetcdfDataset, transferred variables get reparented to target group.
+   * @param target transfer to this NetcdfDataset.
    * @param replaceCheck if null, add if a Variable of the same name doesnt already exist, otherwise
    *   replace if replaceCheck.replace( Variable v) is true
    */
@@ -70,12 +70,12 @@ public class DatasetConstructor {
            v = new StructureDS(target, (Structure) v);
 
         } else if (!(v instanceof VariableDS)) {
-          v = new VariableDS(target, v, false);  // LOOK : what aboout enhance option ?
+          v = new VariableDS(target, v, false);  // enhancement done by original variable, this is just to reparent to target dataset.
         }
 
         if (null != targetV) target.remove(targetV);
         target.addVariable(v); // reparent group
-        v.resetDimensions(); // dimensions may be different
+        v.resetDimensions(); // dimensions will be different
 
       } else if (!targetV.hasCachedData() && (targetVe.getOriginalVariable() == null)) {
         // this is the case where we defined the variable, but didnt set its data. we now set it with the first nested

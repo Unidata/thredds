@@ -36,10 +36,13 @@ import java.util.ArrayList;
 /**
  * Aggregation on datasets to be simply combined - aka "union".
  *
+ * The variables are transferred from the component files to the
+ *
  * @author caron
  */
 public class AggregationUnion extends Aggregation {
   List<NetcdfFile> openDatasets = new ArrayList<NetcdfFile>();
+
   public AggregationUnion(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.UNION, recheckS);
   }
@@ -49,6 +52,7 @@ public class AggregationUnion extends Aggregation {
     // each Dataset just gets "transfered" into the resulting NetcdfDataset
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
+      // LOOK could just open the file, not use acquire.
       NetcdfFile ncfile = vnested.acquireFile(cancelTask);
       DatasetConstructor.transferDataset(ncfile, ncDataset, null);
       // do not close - all stay open. Could use Proxy if need to open only as needed.

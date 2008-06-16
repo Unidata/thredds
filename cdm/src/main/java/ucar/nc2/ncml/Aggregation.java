@@ -28,6 +28,7 @@ import ucar.nc2.util.DiskCache2;
 import ucar.unidata.util.StringUtil;
 
 import java.util.*;
+import java.util.concurrent.Executor;
 import java.io.*;
 
 import ucar.nc2.units.DateFromString;
@@ -86,6 +87,11 @@ public abstract class Aggregation implements ProxyReader {
 
   static public void setPersistenceCache(DiskCache2 dc) {
     diskCache2 = dc;
+  }
+
+  static protected Executor executor;
+  static public void setExecutor(Executor exec) {
+    executor = exec;
   }
 
   static public void setTypicalDatasetMode(String mode) {
@@ -152,6 +158,7 @@ public abstract class Aggregation implements ProxyReader {
    */
   public void addExplicitDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
                                  ucar.nc2.util.cache.FileFactory reader, CancelTask cancelTask) {
+
     Dataset nested = makeDataset(cacheName, location, ncoordS, coordValueS, sectionSpec, NetcdfDataset.EnhanceMode.None, reader);
     explicitDatasets.add(nested);
   }
@@ -569,18 +576,7 @@ public abstract class Aggregation implements ProxyReader {
       return location.hashCode();
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /* class PolymorphicReader implements ucar.nc2.util.cache.FileFactory {
-
-      public NetcdfDataset openDataset(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws java.io.IOException {
-        return NetcdfDataset.openDataset(location, true, buffer_size, cancelTask, spiObject);
-      }
-
-      public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-        return NetcdfDataset.openFile(location, buffer_size, cancelTask, spiObject);
-      }
-    }  */
-  }
+  } // class Dataset
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

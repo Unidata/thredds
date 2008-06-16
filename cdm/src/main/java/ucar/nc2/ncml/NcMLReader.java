@@ -1147,7 +1147,7 @@ public class NcMLReader {
       String coordValueS = netcdfElemNested.getAttributeValue("coordValue");
       String sectionSpec = netcdfElemNested.getAttributeValue("section");
 
-      // must always open through the reader
+      // must always open through a NcML reader, in case the netcdf element modifies the dataset
       NcmlElementReader reader = new NcmlElementReader(ncmlLocation, location, netcdfElemNested);
       String cacheName = ncmlLocation + "#" + Integer.toString(netcdfElemNested.hashCode());
       agg.addExplicitDataset(cacheName, location, ncoords, coordValueS, sectionSpec, reader, cancelTask);

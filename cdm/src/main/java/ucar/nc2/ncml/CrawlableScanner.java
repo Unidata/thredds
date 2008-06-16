@@ -70,7 +70,7 @@ public class CrawlableScanner implements Scanner {
     try {
       crawler = CrawlableDatasetFactory.createCrawlableDataset(dirName, crawlerClassName, crawlerObject);
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new RuntimeException(e.getCause());
     }
 
     if (null != regexpPatternString)

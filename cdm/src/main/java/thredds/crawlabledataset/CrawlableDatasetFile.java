@@ -1,5 +1,7 @@
 package thredds.crawlabledataset;
 
+import ucar.unidata.util.StringUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -44,24 +46,29 @@ public class CrawlableDatasetFile implements CrawlableDataset
    */
   public CrawlableDatasetFile( String path, Object configObj )
   {
-    if ( path.startsWith( "file:" ) )
-    {
-      try
-      {
-        URI uri = new URI( path );
-        this.file = new File( uri );
-      }
-      catch ( URISyntaxException e )
-      {
+    if ( path.startsWith( "file:" ) ) {
+      path = path.substring(5);
+    }
+    /*   URI uri;
+      try {
+        uri = new URI( path );
+      } catch ( URISyntaxException e ) {
         String tmpMsg = "Bad URI syntax for path <" + path + ">: " + e.getMessage();
+        log.debug( "CrawlableDatasetFile(): " + tmpMsg );
+        throw new IllegalArgumentException( tmpMsg );
+      }
+      try {
+        this.file = new File( uri );
+      } catch ( IllegalArgumentException e ) {
+        String tmpMsg = "path= <" + path + ">: " + e.getMessage();
         log.debug( "CrawlableDatasetFile(): " + tmpMsg );
         throw new IllegalArgumentException( tmpMsg );
       }
     }
     else
-    {
+    {  */
       file = new File( path );
-    }
+    // }
 
     this.path = this.normalizePath( this.file.getPath() );
     this.name = this.file.getName();

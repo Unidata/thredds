@@ -4,12 +4,104 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.ncml.TestNcML;
+import ucar.nc2.dataset.VariableDS;
 
 import java.io.IOException;
 
 /**
- * Test netcdf dataset in the JUnit framework.
+ * Test agg union.
+ * the 2 files are copies, use explicit to mask one and rename the other.
+ */
+
+/*
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+
+  <attribute name="title" type="string" value="Example Data"/>
+
+  <aggregation type="union">
+    <netcdf location="file:src/test/data/ncml/nc/example2.nc">
+      <explicit/>
+
+      <dimension name="time" length="2" isUnlimited="true"/>
+      <dimension name="lat" length="3"/>
+      <dimension name="lon" length="4"/>
+
+      <variable name="lat" type="float" shape="lat">
+        <attribute name="units" type="string" value="degrees_north"/>
+      </variable>
+      <variable name="lon" type="float" shape="lon">
+        <attribute name="units" type="string" value="degrees_east"/>
+      </variable>
+      <variable name="time" type="int" shape="time">
+        <attribute name="units" type="string" value="hours"/>
+      </variable>
+
+      <variable name="ReletiveHumidity" type="int" shape="time lat lon" orgName="rh">
+        <attribute name="long_name" type="string" value="relative humidity"/>
+        <attribute name="units" type="string" value="percent"/>
+      </variable>
+    </netcdf>
+
+    <netcdf location="file:src/test/data/ncml/nc/example1.nc">
+      <explicit/>
+
+      <dimension name="time" length="2" isUnlimited="true"/>
+      <dimension name="lat" length="3"/>
+      <dimension name="lon" length="4"/>
+
+      <variable name="Temperature" type="double" shape="time lat lon" orgName="T">
+        <attribute name="long_name" type="string" value="surface temperature"/>
+        <attribute name="units" type="string" value="degC"/>
+      </variable>
+    </netcdf>
+
+  </aggregation>
+</netcdf>
+
+netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/example1.nc {
+ dimensions:
+   time = UNLIMITED;   // (2 currently)
+   lat = 3;
+   lon = 4;
+ variables:
+   int rh(time=2, lat=3, lon=4);
+     :long_name = "relative humidity";
+     :units = "percent";
+   double T(time=2, lat=3, lon=4);
+     :long_name = "surface temperature";
+     :units = "degC";
+   float lat(lat=3);
+     :units = "degrees_north";
+   float lon(lon=4);
+     :units = "degrees_east";
+   int time(time=2);
+     :units = "hours";
+
+ :title = "Example Data";
+}
+
+netcdf C:/dev/tds/thredds/cdm/src/test/data/ncml/nc/example2.nc {
+ dimensions:
+   time = UNLIMITED;   // (2 currently)
+   lat = 3;
+   lon = 4;
+ variables:
+   int rh(time=2, lat=3, lon=4);
+     :long_name = "relative humidity";
+     :units = "percent";
+   double T(time=2, lat=3, lon=4);
+     :long_name = "surface temperature";
+     :units = "degC";
+   float lat(lat=3);
+     :units = "degrees_north";
+   float lon(lon=4);
+     :units = "degrees_east";
+   int time(time=2);
+     :units = "hours";
+
+ :title = "Example Data";
+}
  */
 
 public class TestAggUnion extends TestCase {
@@ -37,6 +129,32 @@ public class TestAggUnion extends TestCase {
   public void tearDown() throws IOException {
     if (ncfile != null) ncfile.close();
     ncfile = null;
+  }
+
+  public void testDataset() {
+    Variable v = ncfile.findVariable("ReletiveHumidity");
+    assert v instanceof VariableDS;
+    VariableDS vds = (VariableDS) v;
+    assert vds.getOriginalDataType() == v.getDataType();
+
+    Variable org = vds.getOriginalVariable();
+    assert vds.getOriginalDataType() == org.getDataType();
+
+    assert vds.getProxyReader() == null;
+    assert v.getParentGroup().equals(org.getParentGroup());
+    assert v.getParentGroup() != org.getParentGroup();
+
+    // its a VariableDS because the renaming causes a VariableDS wrapper.
+    assert (org instanceof VariableDS);
+
+    vds = (VariableDS) org;
+    org = vds.getOriginalVariable();
+    assert vds.getOriginalDataType() == org.getDataType();
+    assert !(org instanceof VariableDS);
+
+    assert vds.getProxyReader() == null;
+    assert v.getParentGroup().equals(org.getParentGroup());
+    assert v.getParentGroup() != org.getParentGroup();
   }
 
   public void testMetadata() {
@@ -95,9 +213,9 @@ public class TestAggUnion extends TestCase {
       assert data.getElementType() == float.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert close(dataI.getDoubleNext(), 41.0);
-      assert close(dataI.getDoubleNext(), 40.0);
-      assert close(dataI.getDoubleNext(), 39.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 41.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 40.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 39.0);
     } catch (IOException io) {
     }
 
@@ -250,21 +368,14 @@ public class TestAggUnion extends TestCase {
       assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert close(dataI.getDoubleNext(), 1.0);
-      assert close(dataI.getDoubleNext(), 2.0);
-      assert close(dataI.getDoubleNext(), 3.0);
-      assert close(dataI.getDoubleNext(), 4.0);
-      assert close(dataI.getDoubleNext(), 2.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 1.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 2.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 3.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 4.0);
+      assert TestAll.closeEnough(dataI.getDoubleNext(), 2.0);
     } catch (IOException io) {
       io.printStackTrace();
     }
   }
 
-  boolean close(double d1, double d2) {
-    //System.out.println(d1+" "+d2);
-    if (d1 != 0.0)
-      return Math.abs((d1 - d2) / d1) < 1.0e-5;
-    else
-      return Math.abs(d1 - d2) < 1.0e-5;
-  }
 }
