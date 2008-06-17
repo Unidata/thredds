@@ -31,6 +31,11 @@ import java.io.IOException;
  * Netcdf header reading and writing for version 3 file format.
  * This is used by N3iosp.
  *
+ * Large files:
+ *  - Each fixed-size variable and the data for one record's worth of a single record variable are limited in size to a little less than
+ *    4 GiB, which is twice the size limit in versions earlier than netCDF 3.6.
+ *  - The maximum number of records remains 232-1.
+
  * @author caron
  */
 

@@ -17,6 +17,8 @@ This code is ALPHA
   netcdf
     * Structure.select(): create subset consisting only of selected member variables
     * StructureDS correctly gets enhanced
+    * NetcdfFileWriteable supports large file writing, redefine mode, extra header bytes, preallocating the file size,
+       all for Netcdf-3 files.
   iosp
    * netcdf-4
    * complete HDF5 access
@@ -33,6 +35,7 @@ This code is ALPHA
    * Tiled aggregation
    * Existing accepts timeUnitsChange
    * Union accepts scan
+   * Global attributes can be promoted to Variables.
 
  Libraries
   * JDOM 1.1
