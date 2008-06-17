@@ -42,7 +42,6 @@ public class CatGenController extends AbstractController
   {
     WebApplicationContext webAppContext = this.getWebApplicationContext();
     ServletContext sc = webAppContext.getServletContext();
-    tdsContext.init( sc);
     catGenContext.init( tdsContext, servletName, catGenConfigDirName, catGenConfigFileName, catGenResultCatalogsDirName);
 
     // Some debug info.

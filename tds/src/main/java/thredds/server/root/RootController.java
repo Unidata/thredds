@@ -36,7 +36,6 @@ public class RootController extends AbstractController
   {
     WebApplicationContext webAppContext = this.getWebApplicationContext();
     ServletContext sc = webAppContext.getServletContext();
-    tdsContext.init( sc );
     initContent();
 
     // setup logging

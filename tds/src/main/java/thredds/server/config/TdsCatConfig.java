@@ -2,6 +2,8 @@ package thredds.server.config;
 
 import thredds.catalog.InvCatalog;
 
+import java.util.List;
+
 /**
  * _more_
  *
@@ -14,6 +16,8 @@ public class TdsCatConfig
           org.slf4j.LoggerFactory.getLogger( TdsCatConfig.class );
 
   private final TdsContext tdsContext;
+  //private final List<String> catConfigRootList;
+
   public TdsCatConfig( TdsContext tdsContext)
   {
     this.tdsContext = tdsContext;

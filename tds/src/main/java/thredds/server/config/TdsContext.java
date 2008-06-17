@@ -23,7 +23,12 @@ public class TdsContext
           org.slf4j.LoggerFactory.getLogger( TdsContext.class );
 
   private String contextPath;
+  private int webappMajorVersion;
+  private int webappMinorVersion;
+  private int webappBugfixVersion;
+  private int webappBuildVersion;
   private String webappVersion;
+  private String webappVersionFull;
 
   private String contentPath;
   private String initialContentPath;
@@ -52,6 +57,10 @@ public class TdsContext
   private RequestDispatcher jspRequestDispatcher;
 
   public TdsContext() {}
+  public void setMajorVersion( int majorVer) { this.webappMajorVersion = majorVer; }
+  public void setMinorVersion( int minorVer) { this.webappMinorVersion = minorVer; }
+  public void setBugfixVersion( int bugfixVer) { this.webappBugfixVersion = bugfixVer; }
+  public void setBuildVersion( int buildVer) { this.webappBuildVersion = buildVer; }
 //  /**
 //   * Constructor.
 //   *

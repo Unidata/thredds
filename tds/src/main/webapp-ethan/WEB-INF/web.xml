@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5"
+           xmlns="http://java.sun.com/xml/ns/javaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+  <display-name>Minimal THREDDS Data Server</display-name>
+  <description>Minimal THREDDS Data Server</description>
+
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
+  </context-param>
+
+  <!-- listeners -->
+  <listener>
+    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>thredds.server.config.TdsConfigContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- Default Servlet -->
+  <servlet>
+    <servlet-name>root</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>root</servlet-name>
+    <url-pattern>*.html</url-pattern>
+    <url-pattern>*.xml</url-pattern>
+    <url-pattern>*.css</url-pattern>
+    <url-pattern>*.gif</url-pattern>
+  </servlet-mapping>
+
+  <jsp-config>
+    <taglib>
+      <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
+      <taglib-location>/WEB-INF/tld/c.tld</taglib-location>
+    </taglib>
+    <taglib>
+      <taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
+      <taglib-location>/WEB-INF/tld/fmt.tld</taglib-location>
+    </taglib>
+  </jsp-config>
+
+  <!-- ++++++++++ Setup security restrictions ++++++++++ -->
+  <!-- Default is to not allow DELETE, PUT, POST -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>not allowed</web-resource-name>
+      <url-pattern>/*</url-pattern>
+      <http-method>DELETE</http-method>
+      <http-method>PUT</http-method>
+      <!-- http-method>POST</http-method -->
+    </web-resource-collection>
+    <auth-constraint/>
+  </security-constraint>
+
+  <!-- This allows "remote configuration":
+    /thredds/debug gives access to various debug and status info.
+    ThreddsDefault servlet aliases /thredds/root/ to "{tomcat_home}/webapps/thredds/"
+    ThreddsDefault servlet aliases /thredds/dataDir/path to "dirLocation/" where path is mapped to dirLocation through a
+      datasetRoot or datasetScan element in the catalog. -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>sensitive read access</web-resource-name>
+      <url-pattern>/debug</url-pattern>
+      <url-pattern>/debug/*</url-pattern>
+      <url-pattern>/root/*</url-pattern>
+      <url-pattern>/dataDir/*</url-pattern>
+      <http-method>GET</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>tdsConfig</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <!-- ThreddsDefault servlet aliases /thredds/content/ to "{tomcat_home}/content/thredds/"   -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>sensitive read and write access</web-resource-name>
+      <url-pattern>/content/*</url-pattern>
+      <http-method>GET</http-method>
+      <http-method>PUT</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>tdsConfig</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <!-- Setup security restrictions on THREDDS server HTTP POST capabilities in CatalogGen. -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>cataloggen configuration</web-resource-name>
+      <url-pattern>/cataloggen/admin/*</url-pattern>
+      <http-method>GET</http-method>
+      <http-method>POST</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>tdsConfig</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <!-- default restricted access uses DIGEST, but not HTTPS -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>restricted access datasets</web-resource-name>
+      <url-pattern>/restrictedAccess/*</url-pattern>
+      <http-method>GET</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>restrictedDatasetUser</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <!-- can only have one login-config for extire context. -->
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>THREDDS Data Server</realm-name>
+  </login-config>
+
+  <!-- Define security roles. -->
+  <security-role>
+    <description>The configuration role allows users to configure the THREDDS server.</description>
+    <role-name>tdsConfig</role-name>
+  </security-role>
+
+  <security-role>
+    <description>User who can access restricted datasets.</description>
+    <role-name>restrictedDatasetUser</role-name>
+  </security-role>
+
+</web-app>

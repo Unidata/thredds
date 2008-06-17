@@ -8,13 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import thredds.servlet.DataRootHandler;
 import thredds.server.config.TdsContext;
-import thredds.server.views.InvCatalogXmlView;
 import thredds.server.views.FileView;
 import thredds.catalog.InvCatalog;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -38,7 +36,9 @@ public class HtmlController extends AbstractController
   protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
           throws Exception
   {
-    String path = req.getPathInfo();
+    String path = req.getServletPath();
+    if ( path == null || path.equals( "" ))
+      path = req.getPathInfo();
     DataRootHandler drh = DataRootHandler.getInstance();
     String catPath = path.replaceAll( ".html$", ".xml" );
     InvCatalog cat = drh.getCatalog( catPath, null );

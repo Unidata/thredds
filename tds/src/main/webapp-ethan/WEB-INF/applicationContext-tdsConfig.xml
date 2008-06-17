@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	- 
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+  <bean id="tdsContext" class="thredds.server.config.TdsContext">
+    <property name="majorVersion" value="${tds.major.version}"/>
+    <property name="minorVersion" value="${tds.minor.version}"/>
+    <property name="bugfixVersion" value="${tds.bugfix.version}"/>
+    <property name="buildVersion" value="${tds.build.version}"/>
+    <!--property name="contentPath" value="../../content" />
+    <property name="initialContentPath" value="WEB-INF/altContent/startup" />
+    <property name="iddPath" value="WEB-INF/altContent/idd/thredds" />
+    <property name="motherlodePath" value="WEB-INF/altContent/motherlode/thredds" /-->
+  </bean>
+
+
+  <bean id="tdsCatConfig" class="thredds.server.config.TdsCatConfig">
+    <constructor-arg ref="tdsContext" />
+  </bean>
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <value>classpath:thredds/server/tds.properties</value>
+    </property>
+  </bean>
+
+</beans>
