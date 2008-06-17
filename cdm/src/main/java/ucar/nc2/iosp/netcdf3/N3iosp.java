@@ -54,6 +54,53 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   static public final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
   static public final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
   static public final String FillValue = "_FillValue";
+
+  /* CLASSIC
+     The maximum size of a record in the classic format in versions 3.5.1 and earlier is 2^32 - 4 bytes.
+     In versions 3.6.0 and later, there is no such restriction on total record size for the classic format
+     or 64-bit offset format.
+
+     If you don't use the unlimited dimension, only one variable can exceed 2 GiB in size, but it can be as
+       large as the underlying file system permits. It must be the last variable in the dataset, and the offset
+       to the beginning of this variable must be less than about 2 GiB.
+
+     The limit is really 2^31 - 4. If you were to specify a variable size of 2^31 -3, for example, it would be
+       rounded up to the nearest multiple of 4 bytes, which would be 2^31, which is larger than the largest
+       signed integer, 2^31 - 1.
+
+     If you use the unlimited dimension, record variables may exceed 2 GiB in size, as long as the offset of the
+       start of each record variable within a record is less than 2 GiB - 4.
+   */
+
+  /* LARGE FILE
+     Assuming an operating system with Large File Support, the following restrictions apply to the netCDF 64-bit offset format.
+
+     No fixed-size variable can require more than 2^32 - 4 bytes of storage for its data, unless it is the last
+     fixed-size variable and there are no record variables. When there are no record variables, the last
+     fixed-size variable can be any size supported by the file system, e.g. terabytes.
+
+     A 64-bit offset format netCDF file can have up to 2^32 - 1 fixed sized variables, each under 4GiB in size.
+     If there are no record variables in the file the last fixed variable can be any size.
+
+     No record variable can require more than 2^32 - 4 bytes of storage for each record's worth of data,
+     unless it is the last record variable. A 64-bit offset format netCDF file can have up to 2^32 - 1 records,
+     of up to 2^32 - 1 variables, as long as the size of one record's data for each record variable except the
+     last is less than 4 GiB - 4.
+
+     Note also that all netCDF variables and records are padded to 4 byte boundaries.
+   */
+
+  /**
+   * Each fixed-size variable and the data for one record's worth of a single record variable are limited
+   *    to a little less than 4 GiB.
+   */
+  static public final long MAX_VARSIZE = (long) 2 * Integer.MAX_VALUE - 2; // 4,294,967,292
+
+  /**
+   * The maximum number of records is 2^32-1.
+   */
+  static public final int MAX_NUMRECS = Integer.MAX_VALUE;
+
   static private boolean syncExtendOnly = false;
 
   /**
@@ -206,7 +253,8 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
   protected ucar.unidata.io.RandomAccessFile raf;
   protected N3header headerParser;
-  protected int numrecs, recsize;
+  protected int numrecs;
+  protected long recsize;
   protected long lastModified; // used by sync
 
   // used for writing only
@@ -310,7 +358,15 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
       m.setDataParam((int) (vinfo.begin - recStart));
     }
-    members.setStructureSize(recsize);
+
+    // protect agains too large of reads
+    if (recsize > Integer.MAX_VALUE)
+      throw new IllegalArgumentException("Cant read records when recsize > "+Integer.MAX_VALUE);
+    long nrecs = section.computeSize();
+    if (nrecs * recsize > Integer.MAX_VALUE)
+      throw new IllegalArgumentException("Too large read: nrecs * recsize= "+(nrecs * recsize) +"bytes exceeds "+Integer.MAX_VALUE);
+
+    members.setStructureSize((int) recsize);
     ArrayStructureBB structureArray = new ArrayStructureBB(members, new int[]{recordRange.length()});
 
     // note dependency on raf; should probably defer to subclass
@@ -322,9 +378,9 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       raf.seek(recStart + recnum * recsize); // where the record starts
 
       if (recnum != numrecs - 1)
-        raf.readFully(result, count * recsize, recsize);
+        raf.readFully(result, (int) (count * recsize), (int) recsize);
       else
-        raf.read(result, count * recsize, recsize); // "wart" allows file to be one byte short. since its always padding, we allow
+        raf.read(result, (int) (count * recsize), (int) recsize); // "wart" allows file to be one byte short. since its always padding, we allow
       count++;
     }
 
@@ -361,7 +417,10 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       m.setDataArray( data);
       m.setDataObject( data.getIndexIterator());
     }
-    members.setStructureSize(recsize);
+
+    //LOOK this is all wrong - why using recsize ???
+    return null;
+    /* members.setStructureSize(recsize);
     ArrayStructureMA structureArray = new ArrayStructureMA(members, new int[]{nrecords});
 
     // note dependency on raf; should probably defer to subclass
@@ -385,7 +444,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
       }
     }
 
-    return structureArray;
+    return structureArray;  */
   }
 
   public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {

@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Section Specification</title>
+</head>
+
+<body>
+<h1>CDM Section Specification</h1>
+<h3>Syntax</h3>
+<p>Array sections can be specified with Fortran 90 array section syntax, using zero-based indexing. For example:</p>
+<blockquote>
+  <pre><strong>/group1/group2/varName(</strong><strong>12:22</strong><strong>,0:100:2,:,17)</strong> </pre>
+</blockquote>
+<p>specifies an array section for a four dimensional variable: </p>
+<ol>
+  <li><strong>12:22 </strong>includes all the elements from 12 to 22 inclusive </li>
+  <li><strong>0:100:2</strong> includes the elements from 0 to 100 inclusive, with a stride of 2</li>
+  <li><strong>: </strong>includes all the elements</li>
+  <li><strong>17</strong> includes just the 18th element.</li>
+</ol>
+<p>For structures, you can specify nested selectors, e.g. <strong>record(12).wind(</strong><strong>1:20</strong><strong>,:,3)</strong> does a selection on the <strong>wind</strong> member variable of the <strong>record</strong> structure at index 12. If you don&rsquo;t specify a section, it means read the entire variable, e.g. <strong>record.wind </strong>means all the data in all the wind variables in all the record structures.</p>
+<p> Formally:</p>
+<pre> sectionSpec := selector | selector '.' selector </pre>
+<pre> selector := varName ['(' sectionSpec ')']
+ varName := STRING 
+ sectionSpec := dim | dim ',' sectionSpec
+ dim := ':' | slice | start ':' end | start ':' end ':' stride
+
+
+ slice := INTEGER 
+ start := INTEGER
+ stride := INTEGER
+ end := INTEGER
+ STRING := String with escaped chars = '.', '/', '(', and ')'</pre>
+<p> where: </p>
+<ul>
+  <li> Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.</li>
+  <li>Optional components are enclosed between square braces '[' and ']'.</li>
+</ul>
+<p>TBD:</p>
+<ul>
+  <li>escape mechanism is currently %xx , mostly following opendap </li>
+  <li>not sure if any other chars need to be escaped.  </li>
+</ul>
+<h3>Restrictions</h3>
+<p>A Sequence is a one-dimensional Structure with a variable length, it cannot be subsetted </p>
+<p>A variable long name must be used, that is with its  group names: /group1/group2/varName </p>
+<h3>Use</h3>
+<pre>  public Array <strong>NetcdfFile</strong>.<strong>readSection</strong>(String variableSection);</pre>
+<hr>
+<h3>Also See:</h3>
+<ul>
+  <li>Fortran 90 <a href="http://www.liv.ac.uk/HPC/HTMLHPFCourse/HTMLHPFCourseSlidesnode83.html#SECTION0101210000000000000000">Array sections</a> </li>
+  <li>NCAR NCL <a href="http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclVariables.shtml#Subscripts">Array subscripts </a>: probably generalize using this.</li>
+</ul>
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 08, 2008
+</address>
+</body>
+</html>

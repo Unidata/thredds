@@ -7,6 +7,7 @@ import java.util.List;
 import java.io.File;
 
 import ucar.unidata.io.RandomAccessFile;
+import ucar.nc2.util.cache.TestNetcdfFileCache;
 
 /**
  * TestSuite that runs all nj22 unit tests uing only local (to svn tree) files.
@@ -46,6 +47,9 @@ public class TestLocal {
     suite.addTest( ucar.ma2.TestMA2.suite());
     suite.addTest( ucar.nc2.TestLocalNC2.suite());
     suite.addTest( ucar.nc2.units.TestUnitsAll.suite());
+
+    suite.addTest(new TestSuite(ucar.nc2.util.TestDatasetURL.class));
+
 
     TestSetup wrapper = new TestSetup(suite) {
 

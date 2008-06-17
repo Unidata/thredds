@@ -18,11 +18,12 @@
 <p>1. NetcdfFile can work with <em><strong>local files</strong></em>, e.g: </p>
 <ul>
   <li><em><strong>/usr/share/data/model.nc </strong></em></li>
-  <li><em><strong>C:/share/data/model.nc</strong></em><strong> (NOTE we advise using forward slashes everywhere, including Windows) </strong></li>
   <li><em><strong>file:/usr/share/data/model.nc </strong></em></li>
+  <li><em><strong>file:C:/share/data/model.nc</strong></em><strong> (NOTE we advise using forward slashes everywhere, including Windows) </strong></li>
   <li><em><strong>data/model.nc </strong></em> (relative to the current working directory)</li>
 </ul>
-<p>2. NetcdfFile can open <em><strong>remote files</strong></em>, served over HTTP, for example: </p>
+<p>When using a file location that has an embedded ':' char, eg <em><strong>C:/share/data/model.nc</strong></em>, its a good idea to add the file: prefix, to prevent the 'C:' from being misinterpreted as a URL schema.</p>
+<p>2. NetcdfFile can open <em><strong>remote files</strong></em>, <a href="HTTPservice.html">served over HTTP</a>, for example: </p>
 <ul>
   <li><em><strong>http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc</strong></em></li>
 </ul>
@@ -56,7 +57,7 @@
   <li><em>thredds:resolve:http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml</em></li>
 </ul>
 <p>In this case, <strong><em>http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/latest.xml</em></strong> returns a catalog contining the latest dataset in the <strong><em>NCEP/NAM/CONUS_12km</em></strong> collection. NetcdfDataset will read the catalog, extract  the THREDDS dataset, and open it as in section 3 above. </p>
-<h3>ucar.nc2.dataset.NetcdfDataset.openDataset(String location) </h3>
+<h2>ucar.nc2.dataset.NetcdfDataset.openDataset(String location) </h2>
 <p>NetcdfDataset.openDataset() simply calls a NetcdfDataset.openFile(), then enhances the dataset by 1) dealing with packed variables and missing values (if present), and 2) adding coordinate systems if possible. </p>
 <h2>NcML<a name="NcML"></a> referenced datasets</h2>
 <p>NcML datasets typically reference other CDM datasets, using the <em>location</em> attribute of the <em>netcdf</em> element, for example:</p>
@@ -64,14 +65,11 @@
      <strong>location</strong>="file:/dev/netcdf-java-2.2/test/data/example1.nc"&gt;
 ...
 </pre>
-<p>Allowable forms of the  location are: </p>
-<ul>
-  <li>an absolute HTTP URL (eg <strong>http://server/myfile.nc</strong>)</li>
-  <li>An absolute file URL with an absolute path (eg <strong>file:/usr/local/data/mine.nc</strong>). </li>
-  <li> A relative URL resolved against the NcML location (eg <strong>subdir/mydata.nc</strong>). You must <strong>not</strong> use a <em>file:</em> prefix in this case. </li>
+<p>The location is passed to ucar.nc2.dataset.NetcdfDataset.openFile(), and so can be any valid CDM dataset location. In addition, an NcML referenced dataset location can be reletive to the NcML file or the working directory:</p>
+<ul><li> A relative URL resolved against the NcML location (eg <strong>subdir/mydata.nc</strong>). You must <strong>not</strong> use a <em>file:</em> prefix in this case. </li>
   <li>An absolute file URL with a relative path (eg <strong>file:data/mine.nc</strong>). The file will be opened relative to the working directory. </li>
 </ul>
-<p>There are a few subtle differences between using a location in NcML and passing a location to the NetcdfFile.open() and related methods:</p>
+<p>There are a few subtle differences between using a location in NcML and passing a location to the NetcdfDataset.openFile() and related methods:</p>
 <ol>
   <li><em><strong>In NcML, you MUST always use forward slashes</strong></em> in your paths, even when on a Windows machine. For example: <strong>file:C:/data/mine.nc. </strong>NetcdfFile.open() will accept backslashes on a Windows machine. </li>
   <li>In NcML, a  relative URL is resolved against the NcML location. In NetcdfFile.open(), it is interpreted as relative to the working directory. </li>
@@ -85,19 +83,15 @@
 <strong>    </strong>&lt;scan<strong> location=&quot;/data/model/&quot; </strong>suffix=&quot;.nc&quot; /&gt;
   &lt;/aggregation&gt;
 &lt;/netcdf&gt;</pre>
-<p>Allowable forms of the  location are: </p>
+<p>Allowable forms of the  location for the scan directory are:</p>
 <ul>
-  <li>an absolute HTTP URL (eg <strong>http://server/myfile.nc</strong>) LOOK should it try to crawl ???</li>
-  <li>An absolute file URL with an absolute path (eg <strong>file:/usr/local/data/mine.nc</strong>). </li>
-  <li> A relative URL resolved against the NcML location (eg <strong>subdir/mydata.nc</strong>). You must <strong>not</strong> use a <em>file:</em> prefix in this case. </li>
-  <li>An absolute file URL with a relative path (eg <strong>file:data/mine.nc</strong>). The file will be opened relative to the working directory. </li>
+  <li><em><strong>/usr/share/data/</strong></em></li>
+  <li><em><strong>file:/usr/share/data/</strong></em></li>
+  <li><em><strong>file:C:/share/data/model.nc</strong></em><strong> (NOTE we advise using forward slashes everywhere, including Windows) </strong></li>
+  <li><em><strong>data/model.nc </strong></em> (relative to the NcML directory)</li>
+  <li><em><strong>file:data/model.nc </strong></em> (relative to the current working directory)</li>
 </ul>
-<p>There are a few subtle differences between using a location in NcML and passing a location to the NetcdfFile.open() and related methods:</p>
-<ol>
-  <li><em><strong>In NcML, you MUST always use forward slashes</strong></em> in your paths, even when on a Windows machine. For example: <strong>file:C:/data/mine.nc. </strong>NetcdfFile.open() will accept backslashes on a Windows machine. </li>
-  <li>In NcML, a  relative URL is resolved against the NcML location. In NetcdfFile.open(), it is interpreted as relative to the working directory. </li>
-</ol>
-<p>&nbsp;</p>
+<p>When using a directory location that has an embedded ':' char, eg <em><strong>C:/share/data/model.nc</strong></em>, its a really good idea to add the file: prefix, to prevent the 'C:' from being misinterpreted as a URI schema. Future versions of NcML may use URIs for the location.</p>
 <h2> ucar.nc2.dt.TypedDatasetFactory</h2>
 <p>The TypedDatasetFactory creates <em><strong>Scientific Typed Datasets</strong></em> such as GridDatasets, PointObsDatasets, RadialDatasetSweep, etc. Usually (but not always) these are based on NetcdfDataset objects. </p>
 <h3>ucar.nc2.dt.TypedDatasetFactory.open( thredds.catalog.DataType datatype, String location)</h3>
@@ -113,7 +107,7 @@
 <p>&nbsp; </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 16, 2008
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 17, 2008
 </address>
 <p>&nbsp;</p>
 </body>

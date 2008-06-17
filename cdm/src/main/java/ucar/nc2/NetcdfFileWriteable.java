@@ -381,6 +381,10 @@ public class NetcdfFileWriteable extends NetcdfFile {
     v.setDataType(dataType);
     v.setDimensions(dims);
 
+    long size = v.getSize() * v.getElementSize();
+    if (size > N3iosp.MAX_VARSIZE)
+      throw new IllegalArgumentException("Variable size in bytes "+size+" may not exceed "+ N3iosp.MAX_VARSIZE);
+    
     super.addVariable(null, v);
     return v;
   }
@@ -546,8 +550,8 @@ public class NetcdfFileWriteable extends NetcdfFile {
 
     spi = SPFactory.getServiceProvider();
     spiw = (IOServiceProviderWriter) spi;
-    spiw.create(location, this, extraHeader, preallocateSize, isLargeFile);
     spiw.setFill( fill);
+    spiw.create(location, this, extraHeader, preallocateSize, isLargeFile);
 
     defineMode = false;
   }

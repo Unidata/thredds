@@ -71,17 +71,15 @@ public class TestWriteMiscProblems extends TestCase {
     int latSize = 8022;
     int lonSize = 10627;
 
-//	int timeSize = (int) Math.pow(2, 3);
-//	int latSize = (int) Math.pow(2, 13);
-//	int lonSize = (int) Math.pow(2, 13);
-
     System.out.println("File size  (B)  = " + (long) timeSize * latSize * lonSize * 4);
     System.out.println("File size~ (MB) = " + Math.round((long) timeSize * latSize * lonSize * 4 / Math.pow(2, 20)));
 
-    NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew("C:/temp/bigFile2.nc");
-
+    NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew("D:/temp/bigFile2.nc");
     ncFile.setFill(false);
     ncFile.setLargeFile(true);
+
+    long approxSize = (long) timeSize * latSize * lonSize * 4 + 4000;
+    ncFile.setLength(approxSize);
 
     String timeUnits = "hours since 2008-06-06 12:00:0.0";
     String coordUnits = "degrees";
@@ -104,45 +102,17 @@ public class TestWriteMiscProblems extends TestCase {
     System.out.println("That took "+took+" secs");
     start = stop;
 
-//	Array ar;
-//
-//	float[] baseArray = new float[latSize];
-//	for (int i = 0; i < latSize; i++) {
-//	    baseArray[i] = (float) (i);
-//	}
-//	ar = Array.factory(baseArray);
-//	ncFile.write("lat", Array.factory(baseArray));
-//	baseArray = new float[lonSize];
-//	for (int i = 0; i < lonSize; i++) {
-//	    baseArray[i] = (float) (i);
-//	}
-//	ar = Array.factory(baseArray);
-//	ncFile.write("lon", Array.factory(baseArray));
-//
-//	baseArray = new float[timeSize];
-//	for (int i = 0; i < timeSize; i++) {
-//	    baseArray[i] = (float) (i * 3);
-//	}
-//	ar = Array.factory(baseArray);
-//	ncFile.write("time", ar);
-
     System.out.println("Writing netcdf <=");
 
-    int[] shape = new int[]{timeSize, 1, lonSize};
-    float[] floatStorage = new float[timeSize * lonSize];
+    int[] shape = new int[]{1, 1, lonSize};
+    float[] floatStorage = new float[lonSize];
     Array floatArray = Array.factory(float.class, shape, floatStorage);
-    for (int i = 0; i < latSize; i++) {
-      int[] origin = new int[]{0, i, 0};
-      ncFile.write(varName, origin, floatArray);
+    for (int t = 0; t < timeSize; t++) {
+      for (int i = 0; i < latSize; i++) {
+        int[] origin = new int[]{t, i, 0};
+        ncFile.write(varName, origin, floatArray);
+      }
     }
-
-//	int[] shape = new int[] { timeSize, latSize, 1};
-//	float[] floatStorage = new float[timeSize * latSize];
-//	Array floatArray = Array.factory(float.class, shape, floatStorage);
-//	for (int i = 0; i < lonSize; i++) {
-//	    int[] origin = new int[] { 0, 0, i };
-//	    ncFile.write(varName, origin, floatArray);
-//	}
 
     ncFile.close();
 

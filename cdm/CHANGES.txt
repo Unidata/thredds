@@ -17,7 +17,7 @@ This code is ALPHA
   netcdf
     * Structure.select(): create subset consisting only of selected member variables
     * StructureDS correctly gets enhanced
-    * NetcdfFileWriteable supports large file writing, redefine mode, extra header bytes, preallocating the file size,
+    * NetcdfFileWriteable supports large file writing, redefine mode, extra header bytes, preallocating file size,
        all for Netcdf-3 files.
   iosp
    * netcdf-4
@@ -42,6 +42,7 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
+    18: fix large file writing.
     17: HTTPRandomAccessFile allows content-length to be long
         fix NcML aggregation unit tests; add new ones
         integrate aggregation with FileCache, experimental concurrency

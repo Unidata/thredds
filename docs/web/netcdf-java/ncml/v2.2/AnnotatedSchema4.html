@@ -190,7 +190,7 @@ files.</p>
 <pre><strong>(5)</strong>  &lt;xsd:element name=&quot;scan&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
       &lt;xsd:complexType&gt;
 
-       &lt;xsd:sequence&gt;<br><strong>(6)</strong>      &lt;xsd:element ref=&quot;crawlableDatasetImpl&quot; minOccurs=&quot;0&quot;/&gt;<br>       &lt;/xsd:sequence&gt;
+
 
 <strong>(7)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
 <strong>(8)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;
@@ -231,13 +231,13 @@ files.</p>
   <li>Specify  global attributes to promote to a variable (outer aggregations only)</li>
   <li>Specify which variables should be cached (outer aggregation only)</li>
   <li>The nested netcdf datasets can be explicitly listed.</li>
-  <li>Or they can be implictly specified by naming a directory in a scan element.</li>
-  <li>Specfiy which  <em>thredds.crawlabledataset.CrawlableDataset </em>class should be used, otherwise use the default implementation. </li>
-  <li>The directory pathname. </li>
+  <li>The nested netcdf datasets can be implictly specified with a scan element.</li>
+  <li>n/a</li>
+  <li>The scan directory location. </li>
   <li>If you specify a <strong>suffix</strong>, only files with that ending will be included.</li>
   <li>If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="http://www.regular-expressions.info/">regular expression</a>  will be included.</li>
   <li>You can optionally specify if the scan should descend into subdirectories (default true).</li>
-  <li>If present, only files whose last modified date is older than this amount of time from the present will be included. This is a way to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot; or &quot;1 hour&quot;. </li>
+  <li>If <strong>olderThan</strong> attribute is present, only files whose last modified date is older than this amount of time from the present will be included. This is a way to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot; or &quot;1 hour&quot;. </li>
   <li>A <em><strong>dateFormatMark</strong></em>  is used on <strong>joinNew</strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string. You can ignore trailing text. For example:
     <pre>
         Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini 
@@ -274,21 +274,6 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
  &lt;/xsd:simpleType&gt;</pre>
 <p> The allowable aggregation types. The <em>forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting </em>and<em> joinNew</em> aggregation types are called <strong><em>outer aggregations</em></strong> because they work on the outer (first) dimension.<br>
 </p>
-<h3>crawlableDataset Element</h3>
-<pre>  &lt;!-- crawlableDataset - same as in a thredds catalog --&gt;
-  &lt;xsd:element name=&quot;crawlableDatasetImpl&quot;&gt;
-   &lt;xsd:complexType&gt;
-    &lt;xsd:sequence&gt;
-<strong>(1)</strong>   &lt;xsd:any namespace=&quot;##any&quot; minOccurs=&quot;0&quot; processContents=&quot;lax&quot;/&gt;
-    &lt;/xsd:sequence&gt;
-<strong>(2)</strong> &lt;xsd:attribute name=&quot;className&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-   &lt;/xsd:complexType&gt;
-  &lt;/xsd:element&gt;
-</pre>
-<ol>
-  <li>arbitrary parameters that will be passed to CrawlableDataset constructor LOOK </li>
-  <li>full name of a class that implements thredds.crawlabledataset.CrawlableDataset</li>
-</ol>
 <h3><strong>  promoteGlobalAttribute Element</strong></h3>
 <pre>  &lt;!-- promote global attribute to variable --&gt;
   &lt;xsd:element name=&quot;promoteGlobalAttribute&quot;&gt;

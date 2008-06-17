@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1>Reading NetCDF from an HTTP Server </h1>
+<hr WIDTH="100%">
+<p> NetcdfFile can open remote files served over HTTP, if the  HTTP server  allows <em><strong>range requests</strong></em> for a resource, indicated by the  <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.5">Accept-Ranges</a> header. </p>
+<p>Performance will be strongly affected by the file format and the data access pattern. This is because each request for data will incur one or more file access requests. <em>Each</em> file acccess request becomes an HTTP request, incurring the cost of one round-trip message to the server. Generally, the netcdf-3 format (not netcdf-4) is most likely to give good performance, especially when reading large amounts of non-record data per request. Use OPeNDAP for more consistent performance. </p>
+<p>The THREDDS Data Server enables range requests by default. You may have to configure other HTTP servers. Following are our notes on how to do so.</p>
+<h3 wrap="">Enabling Accept-Ranges response header in <a href="http://httpd.apache.org/">Apache HTTP Server</a></h3>
+<ol>
+  <li>Make sure mod_headers is either compiled into the httpd binary (from the commandline run: $APACHE_HOME/bin/httpd -l &amp; look for mod_headers) or loaded as a DSO module (look in httpd.conf for mod_headers).</li>
+  <li>Add the following directive to apply to the web content you need (e.g., it can be at the server-level, vhost-level, &lt;Directory&gt;&lt;/Directory&gt;, and .htaccess): Header set Accept-Ranges bytes<br>     
+    <br>     
+    Example:
+    <pre wrap="">    &lt;Directory "/opt/local_htdocs"&gt;
+       Options FollowSymLinks Indexes
+       AllowOverride None
+       Order allow,deny
+       Allow from all
+       Header set Accept-Ranges bytes
+    &lt;/Directory&gt;</pre>
+  </li>
+  <li> Restart apache</li>
+  <li>(optional): you can test the result by using the Live Http Headers extension in firefox.</li>
+</ol>
+<p>For more information see:</p>
+<ul>
+  <li>  <a class="moz-txt-link-freetext" href="http://httpd.apache.org/docs/2.0/mod/mod_headers.html">http://httpd.apache.org/docs/2.0/mod/mod_headers.html</a></li>
+</ul>
+<p>&nbsp;</p>
+<h2>&nbsp;</h2>
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 8, 2008 
+</address>
+</body>
+</html>

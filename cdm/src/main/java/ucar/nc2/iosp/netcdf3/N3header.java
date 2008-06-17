@@ -31,11 +31,6 @@ import java.io.IOException;
  * Netcdf header reading and writing for version 3 file format.
  * This is used by N3iosp.
  *
- * Large files:
- *  - Each fixed-size variable and the data for one record's worth of a single record variable are limited in size to a little less than
- *    4 GiB, which is twice the size limit in versions earlier than netCDF 3.6.
- *  - The maximum number of records remains 232-1.
-
  * @author caron
  */
 
@@ -72,7 +67,7 @@ public class N3header {
   // N3iosp needs access to thes
   boolean isStreaming = false; // is streaming (numrecs = -1)
   int numrecs = 0; // number of records written
-  int recsize = 0; // size of each record (padded)
+  long recsize = 0; // size of each record (padded)
   long recStart = Integer.MAX_VALUE; // where the record data starts
 
   private boolean useLongOffset;
@@ -222,7 +217,7 @@ public class N3header {
 
       // track how big each record is
       if (isRecord) {
-        recsize += vsize;
+        recsize += vsize; // LOOK vsize may be wrong
         recStart = Math.min(recStart, (int) begin);
       } else {
         nonRecordData = Math.max(nonRecordData, begin + vsize);
@@ -453,6 +448,13 @@ public class N3header {
     return pad;
   }
 
+  // find number of bytes needed to pad to a 4 byte boundary
+  static int padding(long nbytes) {
+    int pad = (int) (nbytes % 4);
+    if (pad != 0) pad = 4 - pad;
+    return pad;
+  }
+
   private void printBytes(int n, Formatter fout) throws IOException {
     long savePos = raf.getFilePointer();
     long pos;
@@ -583,8 +585,11 @@ public class N3header {
 
         if (largeFile)
           raf.writeLong(pos);
-        else
+        else {
+          if (pos > Integer.MAX_VALUE)
+            throw new IllegalArgumentException("Variable starting pos="+pos+" may not exceed "+ Integer.MAX_VALUE);          
           raf.writeInt((int) pos);
+        }
 
         vinfo.begin = pos;
         if (debugVariablePos)
@@ -790,7 +795,7 @@ public class N3header {
       writeString(var.getName());
 
       // dimensions
-      int vsize = var.getDataType().getSize();
+      long vsize = var.getDataType().getSize();
       List<Dimension> dims = var.getDimensions();
       raf.writeInt(dims.size());
       for (Dimension dim : dims) {
@@ -809,7 +814,9 @@ public class N3header {
       // data type, variable size, beginning file position
       int type = getType(var.getDataType());
       raf.writeInt(type);
-      raf.writeInt(vsize);
+
+      int vsizeWrite =  (vsize < Integer.MAX_VALUE) ?  (int) vsize : Integer.MAX_VALUE;
+      raf.writeInt(vsizeWrite);
       long pos = raf.getFilePointer();
       if (largeFile)
         raf.writeLong(0); // come back to this later
@@ -889,12 +896,12 @@ public class N3header {
 
   // variable info for reading/writing
   static class Vinfo {
-    int vsize; // size of array in bytes. if isRecord, size per record.
+    long vsize; // size of array in bytes. if isRecord, size per record.
     long begin; // offset of start of data from start of file
     boolean isRecord; // is it a record variable?
     long attsPos = 0; //  attributes start here - used for update
 
-    Vinfo(int vsize, long begin, boolean isRecord, long attsPos) {
+    Vinfo(long vsize, long begin, boolean isRecord, long attsPos) {
       this.vsize = vsize;
       this.begin = begin;
       this.isRecord = isRecord;

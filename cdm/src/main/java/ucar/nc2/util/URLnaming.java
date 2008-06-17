@@ -53,6 +53,9 @@ public class URLnaming {
     if ((baseUri == null) || (relativeUri == null))
       return relativeUri;
 
+    if (relativeUri.startsWith("file:"))
+      return relativeUri;
+
     // deal with a base file URL
     if (baseUri.startsWith("file:")) {
 

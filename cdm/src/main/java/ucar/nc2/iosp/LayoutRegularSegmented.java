@@ -33,7 +33,8 @@ import ucar.ma2.InvalidRangeException;
 public class LayoutRegularSegmented implements Layout {
   private long total, done, innerNelems;
   private long startPos;
-  private int elemSize, recSize;
+  private long recSize;
+  private int elemSize;
 
   // outer chunk
   private IndexChunker chunker;
@@ -54,7 +55,7 @@ public class LayoutRegularSegmented implements Layout {
    * @param wantSection the wanted section of data
    * @throws ucar.ma2.InvalidRangeException if ranges are misformed
    */
-  public LayoutRegularSegmented(long startPos, int elemSize, int recSize, int[] srcShape, Section wantSection) throws InvalidRangeException {
+  public LayoutRegularSegmented(long startPos, int elemSize, long recSize, int[] srcShape, Section wantSection) throws InvalidRangeException {
     assert startPos > 0;
     assert elemSize > 0;
     assert recSize > 0;

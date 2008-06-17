@@ -27,6 +27,10 @@ import java.net.URL;
 import java.net.URISyntaxException;
 import java.net.MalformedURLException;
 import java.io.File;
+import java.io.IOException;
+
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
 
 /**
  * Class Description.
@@ -42,6 +46,12 @@ public class TestDatasetURL extends TestCase {
 
   public void testBlanks() {
     testResolve("file:/test/me/", "blank in dir", "file:/test/me/blank in dir");
+  }
+
+  public void testNcML() throws IOException {
+    NetcdfFile ncfile = NetcdfDataset.openFile("C:/data/murrayBlanks.ncml", null);
+    
+    ncfile.close();
   }
 
   public void testMisc() {
