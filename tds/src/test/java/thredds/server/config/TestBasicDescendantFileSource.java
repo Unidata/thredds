@@ -3,6 +3,8 @@ package thredds.server.config;
 import junit.framework.*;
 import org.springframework.util.StringUtils;
 import thredds.TestAll;
+import thredds.util.filesource.BasicDescendantFileSource;
+import thredds.util.filesource.DescendantFileSource;
 
 import java.io.File;
 import java.io.IOException;

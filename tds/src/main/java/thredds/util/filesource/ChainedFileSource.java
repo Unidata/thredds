@@ -1,4 +1,4 @@
-package thredds.server.config;
+package thredds.util.filesource;
 
 import java.io.File;
 import java.util.List;

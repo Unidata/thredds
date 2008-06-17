@@ -1,4 +1,4 @@
-package thredds.server.config;
+package thredds.util.filesource;
 
 import org.springframework.util.StringUtils;
 
