@@ -51,7 +51,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       raf.read(b);
       String test = new String( b);
       return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ||
-              test.equals( Level2VolumeScan.AR2V0003);
+             test.equals( Level2VolumeScan.AR2V0003)|| test.equals( Level2VolumeScan.AR2V0004);
     } catch (IOException ioe) {
       return false;
     }
@@ -82,8 +82,10 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
             List<Level2Record> gps = volScan.getHighResSpectrumGroups();
             List<Level2Record> gp = (List)gps.get(0);
             Level2Record record = gp.get(0);
-            makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth_HI", "Radial Spectrum_HI", v1, record);
-            makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Radial Spectrum", v0, record);
+            if(v1 != null)
+                makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth_HI", "Radial Spectrum_HI", v1, record);
+            if(v0 != null)
+                makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Radial Spectrum", v0, record);
         }
     }
     if( volScan.getReflectivityGroups() != null) {
@@ -185,9 +187,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         else
             secondGroup.add(o);
     }
-    if(firstGroup != null)
+    if(firstGroup != null && firstGroup.size() > 0)
         v1 = makeVariable(ncfile, datatype, shortName + "_HI", longName + "_HI",  abbrev + "_HI", firstGroup, 1);
-    if(secondGroup != null)
+    if(secondGroup != null && secondGroup.size() > 0)
         v0 = makeVariable(ncfile, datatype, shortName, longName,  abbrev, secondGroup, 0);
 
   }
