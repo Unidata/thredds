@@ -25,7 +25,10 @@
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
-      <value>classpath:thredds/server/tds.properties</value>
+      <list>
+        <value>classpath:thredds/server/tds.properties</value>
+        <value>classpath:thredds/server/tds.html.properties</value>
+      </list>
     </property>
   </bean>
 

@@ -23,15 +23,15 @@ public class TdsContext
           org.slf4j.LoggerFactory.getLogger( TdsContext.class );
 
   private String contextPath;
-  private int webappMajorVersion;
-  private int webappMinorVersion;
-  private int webappBugfixVersion;
-  private int webappBuildVersion;
+  private int webappMajorVersion = -1;
+  private int webappMinorVersion = -1;
+  private int webappBugfixVersion = -1;
+  private int webappBuildVersion = -1;
   private String webappVersion;
   private String webappVersionFull;
 
   private String contentPath;
-  private String initialContentPath;
+  private String startupContentPath;
   private String iddContentPath;
   private String motherlodeContentPath;
 
@@ -61,25 +61,32 @@ public class TdsContext
   public void setMinorVersion( int minorVer) { this.webappMinorVersion = minorVer; }
   public void setBugfixVersion( int bugfixVer) { this.webappBugfixVersion = bugfixVer; }
   public void setBuildVersion( int buildVer) { this.webappBuildVersion = buildVer; }
+
+  public void setContentPath( String contentPath) {this.contentPath = contentPath; }
+  public void setStartupContentPath( String startupContentPath ) { this.startupContentPath = startupContentPath; }
+  public void setIddContentPath( String iddContentPath ) { this.iddContentPath = iddContentPath; }
+  public void setMotherlodeContentPath( String motherlodeContentPath ) { this.motherlodeContentPath = motherlodeContentPath; }
 //  /**
 //   * Constructor.
 //   *
-//   * @param initialContentPath initial content path (relative to the web app root directory).
+//   * @param startupContentPath initial content path (relative to the web app root directory).
 //   * @param iddContentPath
 //   * @param motherlodeContentPath
 //   */
-//  public TdsContext( String initialContentPath,
+//  public TdsContext( String startupContentPath,
 //                     String iddContentPath, String motherlodeContentPath )
 //  {
-//    if ( initialContentPath == null
+//    if ( startupContentPath == null
 //         || iddContentPath == null
 //         || motherlodeContentPath == null )
 //      throw new IllegalArgumentException( "Null values not allowed.");
 //
-//    this.initialContentPath = initialContentPath;
+//    this.startupContentPath = startupContentPath;
 //    this.iddContentPath = iddContentPath;
 //    this.motherlodeContentPath = motherlodeContentPath;
 //  }
+
+  public void destroy() {}
 
   public void init( ServletContext servletContext )
   {
@@ -88,15 +95,21 @@ public class TdsContext
 
     // Set the context path.
     // Servlet 2.5 allows the following.
-    //contextPath = servletContext.getContextPath();
-    String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
-    if ( tmpContextPath == null ) tmpContextPath = "thredds";
-    contextPath = "/" + tmpContextPath;
+    contextPath = servletContext.getContextPath();
+    //String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
+    //if ( tmpContextPath == null ) tmpContextPath = "thredds";
+    //contextPath = "/" + tmpContextPath;
 
+    // Set the version.
+
+
+    // Determine content path.
+    File tmpFile = new File( this.contentPath);
+    if ( tmpFile.isAbsolute())
+    {
+      if ( tmpFile.isDirectory()) ;
+    }
     this.contentPath = "../../content" + this.contextPath; // if not absolute, relative to root directory.
-    this.initialContentPath = "WEB-INF/altContent/startup";
-    this.iddContentPath = "WEB-INF/altContent/idd/thredds";
-    this.motherlodeContentPath = "WEB-INF/altContent/motherlode/thredds";
 
     // Set the root directory
     this.rootDirectory = new File( servletContext.getRealPath( "/" ) );
@@ -118,7 +131,7 @@ public class TdsContext
     this.publicContentDirectory = new File( this.contentDirectory, "public");
     this.publicContentDirSource = new BasicDescendantFileSource( this.publicContentDirectory);
 
-    this.initialContentDirectory = new File( this.rootDirectory, this.initialContentPath );
+    this.initialContentDirectory = new File( this.rootDirectory, this.startupContentPath );
     this.initialContentDirSource = new BasicDescendantFileSource( this.initialContentDirectory);
 
     this.iddContentDirectory = new File( this.rootDirectory, this.iddContentPath);

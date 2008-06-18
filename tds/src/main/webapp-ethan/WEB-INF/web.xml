@@ -13,12 +13,12 @@
   </context-param>
 
   <!-- listeners -->
-  <listener>
+  <!--listener>
     <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
   </listener>
   <listener>
     <listener-class>thredds.server.config.TdsConfigContextLoaderListener</listener-class>
-  </listener>
+  </listener-->
 
   <!-- Default Servlet -->
   <servlet>
