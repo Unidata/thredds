@@ -28,6 +28,20 @@
     <constructor-arg ref="tdsContext" />
   </bean>
 
+  <bean id="tdsConfigHtml" class="thredds.server.config.TdsConfigHtml">
+    <property name="pageCssPath" value="${tds.html.css}" />
+    <property name="catalogCssPath" value="${tds.html.css.catalog}" />
+    <property name="webappDocsPath" value="${tds.html.webapp.docs.path}" />
+    <property name="webappLogoPath" value="${tds.html.webapp.logo.path}" />
+    <property name="webappLogoAlt" value="${tds.html.webapp.logo.alt}" />
+    <property name="siteLogoPath" value="${tds.html.site.logo.path}" />
+    <property name="siteLogoAlt" value="${tds.html.site.logo.alt}" />
+    <property name="folderIconPath" value="${tds.html.folder.icon.path}" />
+    <property name="folderIconAlt" value="${tds.html.folder.icon.alt}" />
+    <property name="datasetIconPath" value="${tds.html.dataset.icon.path}" />
+    <property name="datasetIconAlt" value="${tds.html.dataset.icon.alt}" />
+  </bean>
+
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>

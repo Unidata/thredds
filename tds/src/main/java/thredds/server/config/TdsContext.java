@@ -22,14 +22,16 @@ public class TdsContext
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( TdsContext.class );
 
+  private String webappName;
+  private String webappVersion;
+  private String webappVersionFull;
+  private String webappBuildDate;
+
   private String contextPath;
   private int webappMajorVersion = -1;
   private int webappMinorVersion = -1;
   private int webappBugfixVersion = -1;
   private int webappBuildVersion = -1;
-  private String webappVersion;
-  private String webappVersionFull;
-  private String webappBuildDate;
 
   private String contentPath;
   private String startupContentPath;
@@ -58,6 +60,8 @@ public class TdsContext
   private RequestDispatcher defaultRequestDispatcher;
   private RequestDispatcher jspRequestDispatcher;
 
+  private TdsConfigHtml tdsConfigHtml;
+
   public TdsContext() {}
   public void setMajorVersion( int majorVer) { this.webappMajorVersion = majorVer; }
   public void setMinorVersion( int minorVer) { this.webappMinorVersion = minorVer; }
@@ -68,6 +72,9 @@ public class TdsContext
   public void setStartupContentPath( String startupContentPath ) { this.startupContentPath = startupContentPath; }
   public void setIddContentPath( String iddContentPath ) { this.iddContentPath = iddContentPath; }
   public void setMotherlodeContentPath( String motherlodeContentPath ) { this.motherlodeContentPath = motherlodeContentPath; }
+
+  public void setTdsConfigHtml( TdsConfigHtml tdsConfigHtml ) { this.tdsConfigHtml = tdsConfigHtml; }
+
 //  /**
 //   * Constructor.
 //   *
@@ -94,6 +101,9 @@ public class TdsContext
   {
     if ( servletContext == null )
       throw new IllegalArgumentException( "ServletContext must not be null.");
+
+    // Set the webapp name.
+    this.webappName = servletContext.getServletContextName();
 
     // Set the context path.
     // Servlet 2.5 allows the following.
@@ -137,8 +147,8 @@ public class TdsContext
     this.contentDirectory = new File( new File( this.rootDirectory, "../../content"), this.contentPath);
     if ( ! this.contentDirectory.exists() || ! this.contentDirectory.isDirectory() )
     {
-        String tmpMsg = "Creation of content directory failed";
-        log.error( "init(): " + tmpMsg + " <" + this.contentDirectory.getAbsolutePath() + ">" );
+      String tmpMsg = "Creation of content directory failed";
+      log.error( "init(): " + tmpMsg + " <" + this.contentDirectory.getAbsolutePath() + ">" );
       this.contentDirectory = this.startupContentDirectory;
       this.contentDirSource = this.startupContentDirSource;
       this.contentDirectoryWritable = false;
@@ -149,7 +159,17 @@ public class TdsContext
       this.contentDirectory = this.contentDirSource.getRootDirectory();
       this.contentDirectoryWritable = this.contentDirectory.canWrite();
     }
-    
+
+    File logDir = new File( this.contentDirectory, "logs");
+    if ( ! logDir.exists())
+    {
+      if ( ! logDir.mkdirs())
+      {
+        System.out.println( "Couldn't create TDS log directory [" + logDir.getPath() + "]." );
+      }
+    }
+    System.setProperty( "logdir", logDir.getPath() ); // variable substitution
+
     this.publicContentDirectory = new File( this.contentDirectory, "public");
     this.publicContentDirSource = new BasicDescendantFileSource( this.publicContentDirectory);
 
@@ -175,8 +195,15 @@ public class TdsContext
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
 
+    if ( this.tdsConfigHtml != null )
+      this.tdsConfigHtml.init( this);
   }
 
+  public String getWebappName()
+  {
+    return this.webappName;
+  }
+  
   /**
    * Return the context path under which this web app is running (e.g., "/thredds").
    *

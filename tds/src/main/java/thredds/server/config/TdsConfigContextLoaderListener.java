@@ -7,6 +7,7 @@ import javax.servlet.ServletContextListener;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.util.Log4jWebConfigurer;
 
 /**
  * _more_
@@ -29,9 +30,8 @@ public class TdsConfigContextLoaderListener
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
     tdsContext.init( servletContext );
-    TdsCatConfig tdsCatConfig = (TdsCatConfig) wac.getBean( "tdsCatConfig", TdsCatConfig.class );
-    tdsCatConfig.init();
-
+    Log4jWebConfigurer.initLogging( servletContext );
+    logger.error( "contextInitialized(): NOT ERROR - done.");
   }
 
   public void contextDestroyed( ServletContextEvent event )
@@ -40,5 +40,6 @@ public class TdsConfigContextLoaderListener
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
     tdsContext.destroy();
+    Log4jWebConfigurer.shutdownLogging( servletContext );
   }
 }

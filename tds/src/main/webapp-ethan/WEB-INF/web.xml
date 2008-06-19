@@ -8,6 +8,19 @@
   <description>Minimal THREDDS Data Server</description>
 
   <context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>tds.root</param-value>
+  </context-param>
+  <!--
+     Location of the Log4J config file, for initialization and refresh checks.
+     Applied by Log4jConfigListener.
+   -->
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/log4j.xml</param-value>
+  </context-param>
+
+  <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
   </context-param>
@@ -15,10 +28,13 @@
   <!-- listeners -->
   <!--listener>
     <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener-->
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   <listener>
     <listener-class>thredds.server.config.TdsConfigContextLoaderListener</listener-class>
-  </listener-->
+  </listener>
 
   <!-- Default Servlet -->
   <servlet>

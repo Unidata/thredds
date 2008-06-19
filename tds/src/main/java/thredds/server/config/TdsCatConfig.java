@@ -3,6 +3,7 @@ package thredds.server.config;
 import thredds.catalog.InvCatalog;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * _more_
@@ -18,6 +19,10 @@ public class TdsCatConfig
   private final TdsContext tdsContext;
   //private final List<String> catConfigRootList;
 
+  private Map staticCatalogMap;
+  private Map datasetRootMap;
+  private Map datasetMap;
+
   public TdsCatConfig( TdsContext tdsContext)
   {
     this.tdsContext = tdsContext;
@@ -25,22 +30,65 @@ public class TdsCatConfig
 
   public void init()
   {
-
+    doReplace( buildFull() );
   }
 
-  public void reinit()
-  {
-
-  }
-
-  public void reinitPartial( String catalogPath )
-  {
-
-  }
-
-  public InvCatalog getCatalog( String catalogPath )
+  public InvCatalog findStaticCatalog( String catalogPath )
   {
     return null;
   }
 
+  public String findDatasetRoot( String path ) // return ???
+  {
+    return null;
+  }
+
+  public void reinit()
+  {
+    doReplace( buildFull() );
+  }
+
+  public void reinitPartial( String catalogPath )
+  {
+    doUpdate( buildUpdate( catalogPath) );
+
+  }
+
+  private AllMaps buildFull()
+  {
+    return new AllMaps();
+  }
+
+  private AllMapsUpdate buildUpdate( String catalogPath )
+  {
+    return new AllMapsUpdate();
+  }
+
+  private synchronized void doReplace( AllMaps replace )
+  {
+
+  }
+
+  private synchronized void doUpdate( AllMapsUpdate update )
+  {
+
+  }
+
+  private static class AllMaps
+  {
+    Map staticCatalogMap;
+    Map datasetRootMap;
+    Map datasetMap;
+  }
+
+  private static class AllMapsUpdate
+  {
+    Map catalogsToRemove;
+    Map datasetRootsToRemove;
+    Map datasetsToRemove;
+
+    Map catalogsToAdd;
+    Map datasetRootsToAdd;
+    Map datasetsToAdd;
+  }
 }

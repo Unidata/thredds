@@ -26,6 +26,13 @@ public class TdsConfigHtml
   private String datasetIconPath;
   private String datasetIconAlt;
 
+  public void init( TdsContext tdsContext )
+  {
+    this.webappContextPath = tdsContext.getContextPath();
+    this.webappName = tdsContext.getWebappName();
+    this.webappVersion = tdsContext.getWebappVersionFull();
+  }
+
   /**
    * Return the webapp context path.
    *
