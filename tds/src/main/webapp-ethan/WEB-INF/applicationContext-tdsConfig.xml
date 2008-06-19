@@ -12,6 +12,11 @@
     <property name="minorVersion" value="${tds.minor.version}"/>
     <property name="bugfixVersion" value="${tds.bugfix.version}"/>
     <property name="buildVersion" value="${tds.build.version}"/>
+    
+    <property name="contentPath" value="${tds.content.path}"/>
+    <property name="startupContentPath" value="${tds.content.startup.path}"/>
+    <property name="iddContentPath" value="${tds.content.idd.path}"/>
+    <property name="motherlodeContentPath" value="${tds.content.motherlode.path}"/>
     <!--property name="contentPath" value="../../content" />
     <property name="initialContentPath" value="WEB-INF/altContent/startup" />
     <property name="iddPath" value="WEB-INF/altContent/idd/thredds" />
