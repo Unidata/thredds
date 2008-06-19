@@ -4,7 +4,8 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <link rel="stylesheet" href="<c:url value="/tdsCat.css"/>" type="text/css"/>
+  <link rel="icon" href="/thredds/favicon.ico" type="image/x-icon"/>
+  <link rel="stylesheet" href="/thredds/tdsCat.css" type="text/css"/>
   <title>${catalog.name}</title>
 </head>
 

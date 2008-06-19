@@ -29,6 +29,7 @@ public class TdsContext
   private int webappBuildVersion = -1;
   private String webappVersion;
   private String webappVersionFull;
+  private String webappBuildDate;
 
   private String contentPath;
   private String startupContentPath;
@@ -37,16 +38,17 @@ public class TdsContext
 
   private File rootDirectory;
   private File contentDirectory;
+  private boolean contentDirectoryWritable = true;
   private File publicContentDirectory;
 
-  private File initialContentDirectory;
+  private File startupContentDirectory;
   private File iddContentDirectory;
   private File motherlodeContentDirectory;
 
   private DescendantFileSource rootDirSource;
   private DescendantFileSource contentDirSource;
   private DescendantFileSource publicContentDirSource;
-  private DescendantFileSource initialContentDirSource;
+  private DescendantFileSource startupContentDirSource;
   private DescendantFileSource iddContentPublicDirSource;
   private DescendantFileSource motherlodeContentPublicDirSource;
 
@@ -101,38 +103,55 @@ public class TdsContext
     //contextPath = "/" + tmpContextPath;
 
     // Set the version.
-
-
-    // Determine content path.
-    File tmpFile = new File( this.contentPath);
-    if ( tmpFile.isAbsolute())
+    if ( this.webappMajorVersion < 0 || this.webappMinorVersion < 0 )
     {
-      if ( tmpFile.isDirectory()) ;
+      this.webappVersion = "unknown";
+      this.webappVersionFull = "unknown";
     }
-    this.contentPath = "../../content" + this.contextPath; // if not absolute, relative to root directory.
-
-    // Set the root directory
-    this.rootDirectory = new File( servletContext.getRealPath( "/" ) );
-    this.rootDirSource = new BasicDescendantFileSource( this.rootDirectory);
-
-    this.contentDirectory = new File( this.rootDirectory, this.contentPath );
-    if ( ! this.contentDirectory.exists() )
+    else
     {
-      if ( ! this.contentDirectory.mkdirs() )
+      StringBuilder ver = new StringBuilder( this.webappMajorVersion);
+      ver.append( ".").append( this.webappMinorVersion);
+      this.webappVersion = ver.toString();
+
+      if ( this.webappBugfixVersion > -1 )
       {
+        ver.append( "." ).append( this.webappBugfixVersion );
+        if ( this.webappBuildVersion > -1 )
+          ver.append( "." ).append( this.webappBuildVersion );
+      }
+      this.webappVersionFull = ver.toString();
+    }
+
+    // Set the root directory and source.
+    this.rootDirectory = new File( servletContext.getRealPath( "/" ) );
+    this.rootDirSource = new BasicDescendantFileSource( this.rootDirectory );
+    this.rootDirectory = this.rootDirSource.getRootDirectory();
+
+    // Set the startup (initial install) content directory and source.
+    this.startupContentDirectory = new File( this.rootDirectory, this.startupContentPath );
+    this.startupContentDirSource = new BasicDescendantFileSource( this.startupContentDirectory );
+    this.startupContentDirectory = this.startupContentDirSource.getRootDirectory();
+
+    // Set the content directory and source.
+    this.contentDirectory = new File( new File( this.rootDirectory, "../../content"), this.contentPath);
+    if ( ! this.contentDirectory.exists() || ! this.contentDirectory.isDirectory() )
+    {
         String tmpMsg = "Creation of content directory failed";
         log.error( "init(): " + tmpMsg + " <" + this.contentDirectory.getAbsolutePath() + ">" );
-//        throw new IOException( tmpMsg );
-      }
+      this.contentDirectory = this.startupContentDirectory;
+      this.contentDirSource = this.startupContentDirSource;
+      this.contentDirectoryWritable = false;
     }
-    this.contentDirSource = new BasicDescendantFileSource( StringUtils.cleanPath( this.contentDirectory.getAbsolutePath()) );
-    this.contentDirectory = this.contentDirSource.getRootDirectory();
-
+    else
+    {
+      this.contentDirSource = new BasicDescendantFileSource( StringUtils.cleanPath( this.contentDirectory.getAbsolutePath()) );
+      this.contentDirectory = this.contentDirSource.getRootDirectory();
+      this.contentDirectoryWritable = this.contentDirectory.canWrite();
+    }
+    
     this.publicContentDirectory = new File( this.contentDirectory, "public");
     this.publicContentDirSource = new BasicDescendantFileSource( this.publicContentDirectory);
-
-    this.initialContentDirectory = new File( this.rootDirectory, this.startupContentPath );
-    this.initialContentDirSource = new BasicDescendantFileSource( this.initialContentDirectory);
 
     this.iddContentDirectory = new File( this.rootDirectory, this.iddContentPath);
     this.iddContentPublicDirSource = new BasicDescendantFileSource( this.iddContentDirectory );
@@ -169,13 +188,24 @@ public class TdsContext
   }
 
   /**
-   * Return the version string for this web application.
+   * Return the version string (<major>.<minor>) for this web application.
    *
-   * @return the context path.
+   * @return the version string.
    */
   public String getWebappVersion()
   {
     return this.webappVersion;
+  }
+
+  /**
+   * Return the full version string (<major>.<minor>.<bug>.<build>)
+   * for this web application.
+   *
+   * @return the full version string.
+   */
+  public String getWebappVersionFull()
+  {
+    return this.webappVersionFull;
   }
 
   /**
@@ -198,6 +228,11 @@ public class TdsContext
     return contentDirectory;
   }
 
+  public boolean isContentDirectoryWritable()
+  {
+    return contentDirectoryWritable;
+  }
+
   /**
    * Return File for the initial content directory. I.e., the directory
    * that contains default content for the content directory, copied
@@ -205,9 +240,9 @@ public class TdsContext
    *
    * @return a File to the initial content directory.
    */
-  public File getInitialContentDirectory()
+  public File getStartupContentDirectory()
   {
-    return initialContentDirectory;
+    return startupContentDirectory;
   }
 
   public File getIddContentDirectory()

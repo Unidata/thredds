@@ -60,7 +60,7 @@ public class RootController extends AbstractController
   {
 
     // first time, create content directory
-    File initialContentDirectory = tdsContext.getInitialContentDirectory();
+    File initialContentDirectory = tdsContext.getStartupContentDirectory();
     if ( initialContentDirectory.exists() )
     {
       try
