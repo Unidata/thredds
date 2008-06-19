@@ -32,10 +32,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 
-import java.io.IOException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -49,7 +46,7 @@ import org.jdom.Element;
  * @author caron
  */
 public class AggregationExisting extends AggregationOuterDimension {
-  private boolean debugPersist = false, debugPersistDetail = false;
+  private boolean debugPersist = true, debugPersistDetail = true;
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.JOIN_EXISTING, recheckS);
@@ -119,8 +116,13 @@ public class AggregationExisting extends AggregationOuterDimension {
     joinAggCoord.setSPobject( cv);
     cacheList.add(cv);
 
+    // check persistence info - may have cached values
+    persistRead();
+
     setDatasetAcquireProxy(typicalDataset, ncDataset);
     typicalDataset.close( typical);
+
+    System.out.println(ncDataset.getLocation()+" invocation count = "+AggregationOuterDimension.invocation);
   }
 
   protected void rebuildDataset() throws IOException {
@@ -199,7 +201,7 @@ public class AggregationExisting extends AggregationOuterDimension {
    *
    * @throws IOException
    */
-  public void persist() throws IOException {
+  public void persistWrite() throws IOException {
     if (diskCache2 == null)
       return;
 
@@ -234,9 +236,9 @@ public class AggregationExisting extends AggregationOuterDimension {
       }
       if (lock == null) return;
 
-      PrintStream out = new PrintStream(fos);
+      PrintWriter out = new PrintWriter(fos);
       out.print("<?xml version='1.0' encoding='UTF-8'?>\n");
-      out.print("<aggregation xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' ");
+      out.print("<aggregation xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' version='2' ");
       out.print("type='" + type + "' ");
       if (dimName != null)
         out.print("dimName='" + dimName + "' ");
@@ -249,12 +251,18 @@ public class AggregationExisting extends AggregationOuterDimension {
         DatasetOuterDimension dod = (DatasetOuterDimension) dataset;
 
         out.print("  <netcdf location='" + dataset.getLocation() + "' ");
-        out.print("ncoords='" + dod.getNcoords(null) + "' ");
+        out.print("ncoords='" + dod.getNcoords(null) + "' >\n");
 
-        if (dod.coordValue != null)
-          out.print("coordValue='" + dod.coordValue + "' ");
-
-        out.print("/>\n");
+        for (CacheVar pv : cacheList) {
+          Array data = pv.dataMap.get(dod.location);
+          if (data != null) {
+            out.print("    <cache varName='" + pv.varName + "' >");
+            NCdumpW.printArray(data, out);
+            out.print("</cache>\n");
+            System.out.println(" wrote array = " + pv.varName + " nelems= "+data.getSize());
+          }
+        }
+        out.print("</netcdf>\n");
       }
 
       out.print("</aggregation>\n");
@@ -263,7 +271,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       cacheFile.setLastModified(datasetManager.getLastScanned());
       cacheDirty = false;
 
-      if (debug)
+      if (debugPersist)
         System.out.println("Aggregation persisted = " + cacheFile.getPath() + " lastModified= " + new Date(datasetManager.getLastScanned()));
 
     } finally {
@@ -283,7 +291,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     if (!cacheFile.exists())
       return;
 
-    if (debugCache) System.out.println(" Try to Read cache " + cacheFile.getPath());
+    if (debugPersist) System.out.println(" Try to Read cache " + cacheFile.getPath());
 
     Element aggElem;
     try {
@@ -292,6 +300,9 @@ public class AggregationExisting extends AggregationOuterDimension {
       if (debugCache) System.out.println(" No cache for " + cacheName+" - "+e.getMessage());
       return;
     }
+
+    String version = aggElem.getAttributeValue("version");
+    if (!version.equals("2")) return; // dont read version 1 cache files  
 
     // use a map to find datasets to avoid O(n**2) searching
     Map<String,Dataset> map = new HashMap<String,Dataset>();
@@ -304,20 +315,48 @@ public class AggregationExisting extends AggregationOuterDimension {
       String location = netcdfElemNested.getAttributeValue("location");
       DatasetOuterDimension dod = (DatasetOuterDimension) map.get(location);
 
-      if ((null != dod) && (dod.ncoord == 0)) {
+      if (null != dod) {
+
         if (debugPersistDetail) System.out.println("  use cache for " + location);
-        String ncoordsS = netcdfElemNested.getAttributeValue("ncoords");
-        try {
-          dod.ncoord = Integer.parseInt(ncoordsS);
-        } catch (NumberFormatException e) {
-          logger.error("bad ncoord attribute on dataset=" + location);
+        if (dod.ncoord == 0) {
+          String ncoordsS = netcdfElemNested.getAttributeValue("ncoords");
+          try {
+            dod.ncoord = Integer.parseInt(ncoordsS);
+            if (debugPersist) System.out.println(" Read the cache; ncoords = " + dod.ncoord);
+          } catch (NumberFormatException e) {
+            logger.error("bad ncoord attribute on dataset=" + location);
+          }
         }
 
-        String coordValue = netcdfElemNested.getAttributeValue("coordValue");
-        if (coordValue != null) {
-          dod.coordValue = coordValue;
-        }
+        // if (dod.coordValue != null) continue; // allow ncml to override
 
+        List<Element> cacheElemList = netcdfElemNested.getChildren("cache", NcMLReader.ncNS);
+        for (Element cacheElemNested : cacheElemList) {
+          String varName = cacheElemNested.getAttributeValue("varName");
+          CacheVar pv = findCacheVariable(varName);
+          if (pv != null) {
+            String sdata = cacheElemNested.getText();
+            if (sdata.length() == 0) continue;
+            System.out.println(" read data for var = " + varName + " size= "+sdata.length());
+            
+            long start = System.nanoTime();
+            String[] vals = sdata.split(" ");
+            double took = .001 * .001 * .001 * (System.nanoTime() - start);
+            System.out.println(" split took = " + took + " sec; ");
+
+            try {
+              start = System.nanoTime();
+              Array data = Array.makeArray(DataType.DOUBLE, vals);
+              took = .001 * .001 * .001 * (System.nanoTime() - start);
+              System.out.println(" makeArray took = " + took + " sec nelems= "+data.getSize());
+              pv.dataMap.put(location, data);
+            } catch (Exception e) {
+              logger.warn("Error reading cached data ",e);
+            }
+
+          } else
+            logger.error("not a cache var=" + varName);
+        }
       }
     }
 

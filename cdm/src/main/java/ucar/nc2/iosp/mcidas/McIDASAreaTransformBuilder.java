@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.adde;
+package ucar.nc2.iosp.mcidas;
 
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.CoordinateTransform;

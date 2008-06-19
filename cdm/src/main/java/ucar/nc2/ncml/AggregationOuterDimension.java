@@ -35,6 +35,7 @@ import java.util.concurrent.*;
  * @since Aug 10, 2007
  */
 public abstract class AggregationOuterDimension extends Aggregation {
+  static public int invocation = 0;
 
   protected List<VariableDS> aggVars = new ArrayList<VariableDS>();
   private int totalCoords = 0;  // the aggregation dimension size
@@ -96,6 +97,12 @@ public abstract class AggregationOuterDimension extends Aggregation {
    */
   void addCacheVariable(String varName) {
     cacheList.add(new CacheVar(varName));
+  }
+
+  CacheVar findCacheVariable(String varName) {
+    for (CacheVar cv : cacheList)
+      if (cv.varName.equals(varName)) return cv;
+    return null;
   }
 
    /**
@@ -774,6 +781,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
     // get the Array of data for this var in this dataset
     protected Array read(DatasetOuterDimension dset) throws IOException {
+      invocation++;
+
       Array data = getData(dset);
       if (data != null) return data;
 
@@ -805,7 +814,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       //innerSection = new Section(ranges.subList(1, ranges.size()));
     }
 
-    // thi deals with possible listing of the data in the NcML
+    // this deals with possible listing of the data in the NcML
     protected Array read(DatasetOuterDimension dset) throws IOException {
       Array data = getData(dset);
       if (data != null) return data;

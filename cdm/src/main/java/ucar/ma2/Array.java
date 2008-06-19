@@ -276,6 +276,63 @@ public abstract class Array {
     return result;
   }
 
+  /**
+   * Make an 1D array from a list of strings.
+   *
+   * @param dtype        data type of the array.
+   * @param stringValues list of strings.
+   * @return resulting 1D array.
+   * @throws NumberFormatException if string values not parssable to specified data type
+   */
+  static public Array makeArray(DataType dtype, List<String> stringValues) throws NumberFormatException {
+    Array result = Array.factory(dtype.getPrimitiveClassType(), new int[]{stringValues.size()});
+    IndexIterator dataI = result.getIndexIterator();
+
+    for (String s : stringValues) {
+      if (dtype == DataType.STRING) {
+        dataI.setObjectNext(s);
+
+      } else if (dtype == DataType.LONG) {
+        long val = Long.parseLong(s);
+        dataI.setLongNext(val);
+
+      } else {
+        double val = Double.parseDouble(s);
+        dataI.setDoubleNext(val);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Make an 1D array from an array of strings.
+   *
+   * @param dtype        data type of the array.
+   * @param stringValues list of strings.
+   * @return resulting 1D array.
+   * @throws NumberFormatException if string values not parssable to specified data type
+   */
+  static public Array makeArray(DataType dtype, String[] stringValues) throws NumberFormatException {
+    Array result = Array.factory(dtype.getPrimitiveClassType(), new int[]{stringValues.length});
+    IndexIterator dataI = result.getIndexIterator();
+
+    for (String s : stringValues) {
+      if (dtype == DataType.STRING) {
+        dataI.setObjectNext(s);
+
+      } else if (dtype == DataType.LONG) {
+        long val = Long.parseLong(s);
+        dataI.setLongNext(val);
+
+      } else {
+        double val = Double.parseDouble(s);
+        dataI.setDoubleNext(val);
+      }
+    }
+    return result;
+  }
+
+
   /////////////////////////////////////////////////////
   protected final Index indexCalc;
   protected final int rank;

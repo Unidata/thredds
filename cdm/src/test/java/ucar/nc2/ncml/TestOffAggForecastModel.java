@@ -41,7 +41,7 @@ public class TestOffAggForecastModel extends TestCase {
 
     if (newModelFile.exists() && !newModelFileSave.exists()) {
       boolean ok = newModelFile.renameTo(newModelFileSave);
-      if (!ok) throw new IOException("cant rename file");
+      if (!ok) throw new IOException("cant rename file "+newModelFile);
     } else if (!newModelFile.exists() && newModelFileSave.exists()) {
       System.out.println("already renamed");
     } else if (!newModelFile.exists() && !newModelFileSave.exists()) {

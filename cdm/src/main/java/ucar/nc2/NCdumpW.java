@@ -578,6 +578,18 @@ public class NCdumpW {
     }
   }
 
+  /**
+   * Print array as undifferentiated sequence of values.
+   * @param ma any Array except ArrayStructure
+   * @param out print to here
+   */
+  static public void printArray(Array ma, PrintWriter out) {
+    while (ma.hasNext()) {
+      out.print( ma.next());
+      out.print( ' ');
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////
   // standard NCML writing.
 

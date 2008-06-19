@@ -13,6 +13,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ncml.TestOffAggForecastModel;
 
 /**
  * TestSuite that runs all nj22 unit tests.
@@ -134,21 +135,16 @@ public class TestAll {
     RandomAccessFile.setDebugLeaks( true);
 
     TestSuite suite= new TestSuite();
-    suite.addTest( ucar.nc2.TestLocal.suite()); // data in the release
+    /* suite.addTest( ucar.nc2.TestLocal.suite()); // data in the release
 
     suite.addTest( ucar.nc2.TestNC2.suite());
     suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
 
     // aggregation, no cache
     suite.addTest( ucar.nc2.ncml.TestNcML.suite());
-    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite()); 
+    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite()); // */
 
-    // aggregation, with cache
-    /*ucar.nc2.dataset.NetcdfDataset.initNetcdfFileCache(10,100,60*60);
-    suite.addTest( ucar.nc2.ncml.TestNcML.suite());
-    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite()); */
-
-    suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
+    /* suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
     suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite());
 
     suite.addTest( ucar.unidata.geoloc.TestGeoloc.suite());  //
@@ -160,21 +156,26 @@ public class TestAll {
     suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite()); //
     suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); // */
 
+    // aggregation, with cache
+    ucar.nc2.dataset.NetcdfDataset.initNetcdfFileCache(10,100,60*60);
+    //suite.addTest( ucar.nc2.ncml.TestNcML.suite());
+    //suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());  // */
+    suite.addTest( new TestSuite(TestOffAggForecastModel.class));  // */    
+
     TestSetup wrapper = new TestSetup(suite) {
 
       protected void setUp() {
         //NetcdfDataset.initNetcdfFileCache(10, 20, 60*60);
-        //NetcdfDatasetCache.init();
         RandomAccessFile.setDebugLeaks(true);
         startTime = System.currentTimeMillis();
       }
 
       protected void tearDown() {
         checkLeaks();
-        NetcdfDataset.getNetcdfFileCache().clearCache(true); // give messages on files not closed
-        NetcdfDataset.shutdown();
-        //NetcdfDatasetCache.clearCache( true);
+        ucar.nc2.util.cache.FileCache fc = NetcdfDataset.getNetcdfFileCache(); 
+        if (fc != null) fc.clearCache(true); // give messages on files not closed
         checkLeaks();
+        NetcdfDataset.shutdown();
 
         double took = (System.currentTimeMillis() - startTime) * .001;
         System.out.println(" that took= "+took+" secs");
@@ -185,9 +186,13 @@ public class TestAll {
   }
 
   static private void checkLeaks() {
-    System.out.println("RandomAccessFile still open");
-    for (String filename : RandomAccessFile.getOpenFiles()) {
-      System.out.println(" open= " + filename);
+    if (RandomAccessFile.getOpenFiles().size() > 0) {
+      System.out.println("RandomAccessFile still open:");
+      for (String filename : RandomAccessFile.getOpenFiles()) {
+        System.out.println(" open= " + filename);
+      }
+    } else {
+      System.out.println(" no leaks");
     }
   }
 

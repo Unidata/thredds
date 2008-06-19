@@ -175,6 +175,8 @@ public class FileCache {
 
     // open the file
     ncfile = factory.open(location, buffer_size, cancelTask, spiObject);
+    if (log.isDebugEnabled()) log.debug("FileCache.open " + hashKey+" "+ncfile.getLocation());
+    if (debugPrint) System.out.println("FileCache.open " + hashKey+" "+ncfile.getLocation());
 
     // user may have canceled
     if ((cancelTask != null) && (cancelTask.isCancel())) {
@@ -235,8 +237,8 @@ public class FileCache {
     if (ncfile != null) {
       try {
         ncfile.sync();
-        if (log.isDebugEnabled()) log.debug("FileCache.aquire from cache " + hashKey);
-        if (debugPrint) System.out.println("FileCache.aquire from cache " + hashKey);
+        if (log.isDebugEnabled()) log.debug("FileCache.aquire from cache " + hashKey+" "+ncfile.getLocation());
+        if (debugPrint) System.out.println("FileCache.aquire from cache " + hashKey+" "+ncfile.getLocation());
       } catch (IOException e) {
         log.error("FileCache.synch failed on " + ncfile.getLocation() + " " + e.getMessage());
       }
@@ -270,6 +272,7 @@ public class FileCache {
       file.countAccessed++;
       file.isLocked.set(false);
       if (log.isDebugEnabled()) log.debug("FileCache.release " + ncfile.getLocation());
+      if (debugPrint) System.out.println("FileCache.release " + ncfile.getLocation());
       return;
     }
     throw new IOException("FileCache.release does not have file in cache = " + ncfile.getLocation());

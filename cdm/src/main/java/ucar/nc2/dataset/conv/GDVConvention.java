@@ -76,14 +76,16 @@ public class GDVConvention extends CSMConvention {
       if (dimName.equals("")) // none
         continue;
       Dimension dim = ds.findDimension(dimName);
-      if (null != dim)
+      if (null != dim) {
         vp.isCoordinateAxis = true;
+        parseInfo.append(" Coordinate Axis added (GDV alias) = ").append(vp.v.getName()).append(" for dimension ").append(dimName).append("\n");        
+      }
     }
 
     super.findCoordinateAxes(ds);
 
     // desperado
-    findCoordinateAxesForce( ds);
+    findCoordinateAxesForce(ds);
   }
 
   private void findCoordinateAxesForce(NetcdfDataset ds) {
@@ -93,7 +95,7 @@ public class GDVConvention extends CSMConvention {
     // find existing axes, so we dont duplicate
     for (VarProcess vp : varList) {
       if (vp.isCoordinateAxis) {
-        AxisType atype = getAxisType( ds, (VariableEnhanced) vp.v);
+        AxisType atype = getAxisType(ds, (VariableEnhanced) vp.v);
         if (atype != null)
           map.put(atype, vp);
       }
@@ -105,18 +107,20 @@ public class GDVConvention extends CSMConvention {
       Variable ncvar = vp.v;
       if (!(ncvar instanceof VariableDS)) continue; // cant be a structure
 
-      AxisType atype = getAxisType( ds, (VariableEnhanced) vp.v);
+      AxisType atype = getAxisType(ds, (VariableEnhanced) vp.v);
       if (atype != null) {
-        if (map.get(atype) == null)
-            vp.isCoordinateAxis = true;
+        if (map.get(atype) == null) {
+          vp.isCoordinateAxis = true;
+          parseInfo.append(" Coordinate Axis added (GDV forced) = ").append(vp.v.getName()).append(" for axis ").append(atype).append("\n");
         }
       }
+    }
   }
 
   /**
    * look for aliases.
    *
-   * @param ds containing dataset
+   * @param ds       containing dataset
    * @param axisType look for this axis type
    * @return name of axis of that type
    */
@@ -161,11 +165,11 @@ public class GDVConvention extends CSMConvention {
       return AxisType.Lat;
 
     if (vname.equalsIgnoreCase("lev") || findAlias(ds, v).equalsIgnoreCase("lev") ||
-        (vname.equalsIgnoreCase("level") || findAlias(ds, v).equalsIgnoreCase("level")))
+            (vname.equalsIgnoreCase("level") || findAlias(ds, v).equalsIgnoreCase("level")))
       return AxisType.GeoZ;
 
     if (vname.equalsIgnoreCase("z") || findAlias(ds, v).equalsIgnoreCase("z") ||
-        (vname.equalsIgnoreCase("altitude") || vname.equalsIgnoreCase("depth")))
+            (vname.equalsIgnoreCase("altitude") || vname.equalsIgnoreCase("depth")))
       return AxisType.Height;
 
     if (vname.equalsIgnoreCase("time") || findAlias(ds, v).equalsIgnoreCase("time"))

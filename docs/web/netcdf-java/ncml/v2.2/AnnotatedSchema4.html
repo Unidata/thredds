@@ -235,7 +235,7 @@ files.</p>
   <li>n/a</li>
   <li>The scan directory location. </li>
   <li>If you specify a <strong>suffix</strong>, only files with that ending will be included.</li>
-  <li>If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="http://www.regular-expressions.info/">regular expression</a>  will be included.</li>
+  <li>If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="#regexp">regular expression</a>  will be included.</li>
   <li>You can optionally specify if the scan should descend into subdirectories (default true).</li>
   <li>If <strong>olderThan</strong> attribute is present, only files whose last modified date is older than this amount of time from the present will be included. This is a way to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot; or &quot;1 hour&quot;. </li>
   <li>A <em><strong>dateFormatMark</strong></em>  is used on <strong>joinNew</strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string. You can ignore trailing text. For example:
@@ -481,8 +481,50 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
   </blockquote>
 </blockquote>
 <hr WIDTH="100%">
+<h2><a name="regexp"></a>Regular Expressions : java.util.regexp</h2>
+<p>Regular expressions are used in <strong>scan</strong> elements to match filenames to be included in the aggregation. Note that the regexp pattern is matched against the <em><strong>full pathname</strong></em>  of the file (<em>/dir/file.nc, </em>not<em> file.nc</em>).</p>
+<p>When placing regular expressions in NcML, you dont need to use \\ for \, eg use</p>
+<pre>  &lt;scan location=&quot;test&quot; regExp=&quot;.*/AG.*\.nc$&quot; /&gt;<br></pre>
+<p>  instead of <br>
+</p>
+<pre>  &lt;scan location=&quot;test&quot; regExp=&quot;.*/AG.*\\.nc$&quot; /&gt;<br>
+</pre>
+<p>This may be confusing if you are used to having to double escape in Java Strings: </p>
+<pre>  Pattern.compile(&quot;.*/AG.*\\.nc$&quot;)</pre>
+<h3>Examples</h3>
+<table width="543" border="1">
+  <tr>
+    <th width="120" scope="col">Pattern</th>
+    <th width="312" scope="col">File Pathname</th>
+    <th width="89" scope="col">match?</th>
+  </tr>
+  <tr>
+    <td><div align="center">
+      <pre><strong>.*/AG.*\.nc$</strong></pre>
+    </div></td>
+    <td><pre>C:/data/test/AG2006001_2006003_ssta.nc</pre>
+    <pre>C:/data/test/AG2006001_2006003_ssta.ncd</pre>
+    <pre>C:/data/test/PS2006001_2006003_ssta.nc</pre></td>
+    <td><p>true</p>
+    <p>false</p>
+    <p>false</p></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<p>Resources:</p>
+<ul>
+  <li><a href="http://java.sun.com/docs/books/tutorial/essential/regex/">http://java.sun.com/docs/books/tutorial/essential/regex/</a></li>
+  <li><a href="http://en.wikipedia.org/wiki/Regular_expression">http://en.wikipedia.org/wiki/Regular_expression</a></li>
+  <li><a href="http://www.regular-expressions.info/">http://www.regular-expressions.info/</a></li>
+</ul>
+<hr WIDTH="100%">
+<p>&nbsp;</p>
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 12, 2008 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 18, 2008 
 </address>
 <p>&nbsp;</p>
 </BODY>

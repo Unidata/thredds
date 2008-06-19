@@ -121,7 +121,11 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Typed
     // we are reading through all records anyway, to get the lat/lon locations!
     startDate = UnidataObsDatasetHelper.getStartDate( ds);
     endDate = UnidataObsDatasetHelper.getEndDate( ds);
-    boundingBox = UnidataObsDatasetHelper.getBoundingBox( ds);
+    try {
+      boundingBox = UnidataObsDatasetHelper.getBoundingBox( ds);
+    } catch (IllegalArgumentException e) {
+      parseInfo.append("Missing geospatial_lat(lon)_min(max) attributes");
+    }
 
     setTimeUnits();
     //setStartDate();

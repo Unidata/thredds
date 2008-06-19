@@ -510,7 +510,7 @@ public class NcMLReader {
     if ((sep == null) && (dtype == DataType.STRING)) {
       List<String> list = new ArrayList<String>();
       list.add(valString);
-      return NetcdfDataset.makeArray(dtype, list);
+      return Array.makeArray(dtype, list);
     }
 
     if (sep == null) sep = " "; // default whitespace separated
@@ -520,7 +520,7 @@ public class NcMLReader {
     while (tokn.hasMoreTokens())
       stringValues.add(tokn.nextToken());
 
-    return NetcdfDataset.makeArray(dtype, stringValues);
+    return Array.makeArray(dtype, stringValues);
   }
 
   private ucar.nc2.Attribute findAttribute(Object parent, String name) {
@@ -1095,6 +1095,9 @@ public class NcMLReader {
         String subdirs = scanElem.getAttributeValue("subdirs");
         String olderS = scanElem.getAttributeValue("olderThan");
 
+        // possible relative location
+        dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);
+
         aggh.addDirectoryScanFmrc(dirLocation, suffix, regexpPatternString, subdirs, olderS, runMatcher, forecastMatcher, offsetMatcher);
 
         if ((cancelTask != null) && cancelTask.isCancel())
@@ -1167,6 +1170,9 @@ public class NcMLReader {
       NetcdfDataset.EnhanceMode mode = NetcdfDataset.parseEnhanceMode(scanElem.getAttributeValue("enhance"));
       String subdirs = scanElem.getAttributeValue("subdirs");
       String olderS = scanElem.getAttributeValue("olderThan");
+
+      // possible relative location
+      dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);
 
       Element cdElement = scanElem.getChild("crawlableDatasetImpl", ncNS);  // ok if null
       agg.addCrawlableDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, mode, subdirs, olderS);

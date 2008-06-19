@@ -40,12 +40,14 @@ public class CoordTransBuilder {
   static private List<Transform> transformList = new ArrayList<Transform>();
   static private boolean userMode = false;
 
+  static private boolean loadWarnings = false;
+
   // search in the order added
   static {
     registerTransform("albers_conical_equal_area", AlbersEqualArea.class);
     registerTransform("lambert_azimuthal_equal_area", LambertAzimuthal.class);
     registerTransform("lambert_conformal_conic", LambertConformalConic.class);
-    registerTransformMaybe("mcidas_area", "ucar.nc2.adde.McIDASAreaTransformBuilder"); // optional - needs visad.jar
+    registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder"); // optional - needs visad.jar
     registerTransform("mercator", Mercator.class);
     registerTransform("orthographic", Orthographic.class);
     registerTransform("polar_stereographic", PolarStereographic.class);
@@ -63,6 +65,7 @@ public class CoordTransBuilder {
     registerTransform("explicit_field", VExplicitField.class);
     registerTransform("existing3DField", VExplicitField.class); // deprecate
     registerTransform("flat_earth", FlatEarth.class);
+
     // further calls to registerTransform are by the user
     userMode = true;
   }

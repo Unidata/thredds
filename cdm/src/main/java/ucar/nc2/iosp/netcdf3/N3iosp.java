@@ -168,9 +168,9 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
 
   /////////////////////////////////////////////////
   // name pattern matching
-  //static private Pattern objectNamePattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\(\\)\\+]*");
-  //static private Pattern objectNamePattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_\\-]*");
-  static private Pattern objectNamePattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_@\\.\\-\\+]*");
+  //static private final String special1 = "_\\.@\\+\\-";
+  //static private final String special2 = " ";
+  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_@\\.\\-\\+]*");
 
   /**
    * Determine if the given name can be used for a Dimension, Attribute, or Variable name.

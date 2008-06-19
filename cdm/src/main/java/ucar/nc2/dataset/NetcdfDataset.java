@@ -759,7 +759,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   @Override
   public synchronized void close() throws java.io.IOException {
-    if (agg != null) agg.persist(); // LOOK
+    if (agg != null) agg.persistWrite(); // LOOK
     if (cache != null) {
       cache.release(this);
 
@@ -1137,7 +1137,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
    */
   public void setValues(Variable v, List<String> values) throws IllegalArgumentException {
-    Array data = makeArray(v.getDataType(), values);
+    Array data = Array.makeArray(v.getDataType(), values);
 
     if (data.getSize() != v.getSize())
       throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + v.getName() +
@@ -1150,31 +1150,16 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Make an 1D array from a list of strings.
+   * Make a 1D array from a list of strings.
    *
    * @param dtype        data type of the array.
    * @param stringValues list of strings.
    * @return resulting 1D array.
    * @throws NumberFormatException if string values not parssable to specified data type
+   * @deprecated use Array#makeArray directly
    */
   static public Array makeArray(DataType dtype, List<String> stringValues) throws NumberFormatException {
-    Array result = Array.factory(dtype.getPrimitiveClassType(), new int[]{stringValues.size()});
-    IndexIterator dataI = result.getIndexIterator();
-
-    for (String s : stringValues) {
-      if (dtype == DataType.STRING) {
-        dataI.setObjectNext(s);
-
-      } else if (dtype == DataType.LONG) {
-        long val = Long.parseLong(s);
-        dataI.setLongNext(val);
-
-      } else {
-        double val = Double.parseDouble(s);
-        dataI.setDoubleNext(val);
-      }
-    }
-    return result;
+    return Array.makeArray(dtype, stringValues);
   }
 
   ////////////////////////////////////////////////////////////////////

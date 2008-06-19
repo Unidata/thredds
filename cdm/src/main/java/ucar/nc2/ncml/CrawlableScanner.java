@@ -51,7 +51,7 @@ public class CrawlableScanner implements Scanner {
   // filters
   private long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
 
-  private boolean debugScan = false;
+  private boolean debugScan = true;
 
   CrawlableScanner(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString,
           String subdirsS, String olderS) {
@@ -101,8 +101,7 @@ public class CrawlableScanner implements Scanner {
     List<CrawlableDataset> children = cd.listDatasets();
 
     for (CrawlableDataset child : children) {
-      //CrawlableDatasetFile cdf = (CrawlableDatasetFile) child;
-      //File f = cdf.getFile();
+      if (debugScan && filter != null) System.out.println("filter " + child);
 
       if (child.isCollection()) {
         if (wantSubdirs) scanDirectory(child, now, map, cancelTask);
@@ -122,7 +121,7 @@ public class CrawlableScanner implements Scanner {
         // add to result
         MyCrawlableDataset myf = new MyCrawlableDataset(this, child);
         map.put(child.getPath(), myf);
-        if (debugScan) System.out.println("added " + myf.file.getPath());
+        if (debugScan) System.out.println(" accept " + myf.file.getPath());
       }
 
       if ((cancelTask != null) && cancelTask.isCancel())

@@ -646,7 +646,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    */
   protected void makeCoordinateSystemsImplicit(NetcdfDataset ncDataset) {
     for (VarProcess vp : varList) {
-      if (!vp.hasCoordinateSystem() && vp.isData()) {
+      if (!vp.hasCoordinateSystem() && vp.maybeData()) {
         List<CoordinateAxis> dataAxesList = vp.findCoordinateAxes(true);
         if (dataAxesList.size() < 2)
           continue;
@@ -1003,6 +1003,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       else {
         isCoordinateAxis = true;
         positive = positive.trim();
+        parseInfo.append(" Coordinate Axis added (from positive attribute ) = ").append(v.getName()).append(" for dimension ").append(coordVarAlias).append("\n");
       }
 
       coordAxes = ds.findAttValueIgnoreCase(v, _Coordinate.Axes, null);
@@ -1036,6 +1037,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     public boolean isData() {
       return !isCoordinateVariable && !isCoordinateAxis && !isCoordinateSystem && !isCoordinateTransform;
+    }
+
+    public boolean maybeData() {
+      return !isCoordinateVariable && !isCoordinateSystem && !isCoordinateTransform;
     }
 
     public boolean hasCoordinateSystem() {

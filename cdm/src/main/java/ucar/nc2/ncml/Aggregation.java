@@ -125,8 +125,8 @@ public abstract class Aggregation implements ProxyReader {
   protected boolean isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
-  protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
-      debugRead = false, debugDateParse = false;
+  protected boolean debug = false, debugOpenFile = true, debugSyncDetail = false, debugProxy = false,
+      debugRead = true, debugDateParse = false;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
@@ -218,7 +218,7 @@ public abstract class Aggregation implements ProxyReader {
    * @throws IOException on error
    */
   public void close() throws IOException {
-    persist();
+    persistWrite();
     closeDatasets();
   }
 
@@ -231,7 +231,7 @@ public abstract class Aggregation implements ProxyReader {
    *
    * @throws IOException on error
    */
-  public void persist() throws IOException {
+  public void persistWrite() throws IOException {
   }
 
   /**
@@ -249,9 +249,6 @@ public abstract class Aggregation implements ProxyReader {
     cacheDirty = true;
     closeDatasets();
     makeDatasets(cancelTask);
-
-    // check persistence info
-    persistRead();
 
     //ucar.unidata.io.RandomAccessFile.setDebugAccess( true);
     buildDataset(cancelTask);
@@ -309,6 +306,14 @@ public abstract class Aggregation implements ProxyReader {
     // LOOK - should they be before or after scanned? Does it make sense to mix scan and explicit?
     for (Aggregation.Dataset dataset : explicitDatasets) {
       datasets.add(dataset);
+    }
+
+    // check for duplicate location
+    Set dset = new HashSet( 2 * datasets.size());
+    for (Aggregation.Dataset dataset : datasets) {
+      if (dset.contains(dataset.cacheLocation))
+        logger.warn("Duplicate dataset in aggregation = "+dataset.cacheLocation);
+      dset.add(dataset.cacheLocation);
     }
   }
 

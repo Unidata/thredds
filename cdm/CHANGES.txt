@@ -43,6 +43,14 @@ This code is ALPHA
 
  Release Details:
     18: fix large file writing.
+        in agg, fix CacheVar, joinExisting persistance.
+        move NetcdfDataset.makeArray to Array.makeArray, add new variant
+        UnidataPointObsDataset does not require bounding box in global attributes
+        NetcdfFileWriteable will allow object names to start with a digit
+        ToolsUI : allow setting file caching
+        add NcdumpW.printArray for vanilla array printing
+        CoordSysBuilder allows coordinate axes to have coordinate systems
+        move McIDASAreaProjection, McIDASAreaTransformBuilder to ucar.nc2.iosp.mcidas
     17: HTTPRandomAccessFile allows content-length to be long
         fix NcML aggregation unit tests; add new ones
         integrate aggregation with FileCache, experimental concurrency

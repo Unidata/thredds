@@ -322,9 +322,9 @@ public class ToolsUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         f.format("NetcdfFileCache contents\n");
-        NetcdfDataset.getNetcdfFileCache().showCache(f);
-        //f.format("\nNetcdfDatasetCache contents\n");
-        //NetcdfDataset.getDatasetCache().showCache(f);
+        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+        if (null != cache)
+          cache.showCache(f);
         viewerPanel.detailTA.setText(f.toString());
         viewerPanel.detailWindow.show();
       }
@@ -334,19 +334,13 @@ public class ToolsUI extends JPanel {
 
     AbstractAction clearCacheAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        NetcdfDataset.getNetcdfFileCache().clearCache(true);
+        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+        if (cache != null)
+          cache.clearCache(true);
       }
     };
-    BAMutil.setActionProperties(clearCacheAction, null, "Clear NetcdfFileCache", false, 'C', -1);
+    BAMutil.setActionProperties(clearCacheAction, null, "Clear NetcdfDatasetCache", false, 'C', -1);
     BAMutil.addActionToMenu(sysMenu, clearCacheAction);
-
-    /* AbstractAction clearCacheDSAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        NetcdfDataset.getDatasetCache().clearCache(true);
-      }
-    };
-    BAMutil.setActionProperties(clearCacheDSAction, null, "Clear NetcdfDatasetCache", false, 'D', -1);
-    BAMutil.addActionToMenu(sysMenu, clearCacheDSAction); */
 
     AbstractAction enableCache = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -354,15 +348,18 @@ public class ToolsUI extends JPanel {
         if (state == isCacheInit) return;
         isCacheInit = state;
         if (isCacheInit) {
-          NetcdfDataset.getNetcdfFileCache().enable();
-          // NetcdfDataset.getDatasetCache().enable();
+          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+          if (cache != null)
+            cache.enable();
+          else 
+            NetcdfDataset.initNetcdfFileCache(10,20,10*60);
         } else {
-          NetcdfDataset.getNetcdfFileCache().disable();
-          // NetcdfDataset.getDatasetCache().disable();
+          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+          if (cache != null) cache.disable();
         }
       }
     };
-    BAMutil.setActionPropertiesToggle(enableCache, null, "enable Caches", isCacheInit, 'N', -1);
+    BAMutil.setActionPropertiesToggle(enableCache, null, "enable NetcdfDatasetCache", isCacheInit, 'N', -1);
     BAMutil.addActionToMenu(sysMenu, enableCache);
 
     AbstractAction showPropertiesAction = new AbstractAction() {
@@ -383,6 +380,27 @@ public class ToolsUI extends JPanel {
     };
     BAMutil.setActionProperties(showPropertiesAction, null, "System Properties", false, 'P', -1);
     BAMutil.addActionToMenu(sysMenu, showPropertiesAction);
+
+
+   /* AbstractAction enableDiskCache = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        if (state == isDiskCacheInit) return;
+        isDiskCacheInit = state;
+        if (isDiskCacheInit) {
+          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+          if (cache != null)
+            cache.enable();
+          else
+            NetcdfDataset.initNetcdfFileCache(10,20,10*60);
+        } else {
+          ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+          if (cache != null) cache.disable();
+        }
+      }
+    };
+    BAMutil.setActionPropertiesToggle(enableDiskCache, null, "enable Aggregation DiskCache", isDiskCacheInit, 'N', -1);
+    BAMutil.addActionToMenu(sysMenu, enableDiskCache); */
 
     /* AbstractAction showLoggingAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -2993,6 +3011,9 @@ public class ToolsUI extends JPanel {
     }
 
     done = true; // on some systems, still get a window close event
+    ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
+    if (cache != null)
+      cache.clearCache(true);
     NetcdfDataset.shutdown(); // shutdown threads
     System.exit(0);
   }
@@ -3018,6 +3039,7 @@ public class ToolsUI extends JPanel {
   }
 
   static boolean isCacheInit = false;
+  static boolean isDiskCacheInit = false;
 
   public static void main(String args[]) {
 
