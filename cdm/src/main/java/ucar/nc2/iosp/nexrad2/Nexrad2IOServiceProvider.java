@@ -51,7 +51,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       raf.read(b);
       String test = new String( b);
       return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ||
-             test.equals( Level2VolumeScan.AR2V0003)|| test.equals( Level2VolumeScan.AR2V0004);
+             test.equals( Level2VolumeScan.AR2V0003)|| test.equals( Level2VolumeScan.AR2V0004) ||
+              test.equals( Level2VolumeScan.AR2V0002);
     } catch (IOException ioe) {
       return false;
     }

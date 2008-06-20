@@ -51,6 +51,7 @@ public class Level2VolumeScan {
   // data formats
   static public final String ARCHIVE2 = "ARCHIVE2";
   static public final String AR2V0001 = "AR2V0001";
+  static public final String AR2V0002 = "AR2V0002";
   static public final String AR2V0003 = "AR2V0003";
   static public final String AR2V0004 = "AR2V0004";   
 
@@ -131,7 +132,7 @@ public class Level2VolumeScan {
     }
 
     //see if we have to uncompress
-    if (dataFormat.equals(AR2V0001) || dataFormat.equals(AR2V0003)) {
+    if (dataFormat.equals(AR2V0001) || dataFormat.equals(AR2V0003) || dataFormat.equals(AR2V0004)) {
       raf.skipBytes(4);
       String BZ = raf.readString(2);
       if (BZ.equals("BZ")) {
