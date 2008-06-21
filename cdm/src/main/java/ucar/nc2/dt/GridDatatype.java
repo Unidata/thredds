@@ -27,6 +27,7 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.List;
+import java.io.IOException;
 
 /**
  * Interface for scientific datatype Grid.
@@ -316,4 +317,12 @@ public interface GridDatatype extends Comparable<GridDatatype> {
    * @return the underlying Variable, if it exists.
    */
   public VariableEnhanced getVariable();
+
+
+  // experimental
+  //public Array read(CoordRange time, CoordRange vertical, CoordRange y, CoordRange x) throws ucar.ma2.InvalidRangeException, IOException;
+  //public Array read(DateRange time, CoordRange vertical, LatlonBoundingBox horiz) throws ucar.ma2.InvalidRangeException, IOException;
+  //public Array read(DateRange time, VerticalRange vertical, LatlonBoundingBox horiz) throws ucar.ma2.InvalidRangeException, IOException;
+
+
 }
