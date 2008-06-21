@@ -51,7 +51,6 @@ public class TdsCatConfig
   public void reinitPartial( String catalogPath )
   {
     doUpdate( buildUpdate( catalogPath) );
-
   }
 
   private AllMaps buildFull()
@@ -61,6 +60,9 @@ public class TdsCatConfig
 
   private AllMapsUpdate buildUpdate( String catalogPath )
   {
+    // Will need some synchronized blocks around section(s) that
+    // determine which parts of maps need to be replaced.
+    // Or just need to wrap entire update section?
     return new AllMapsUpdate();
   }
 
