@@ -73,25 +73,18 @@ class Giniheader {
 
    public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf)
    {
-    try
-    {
-        this.actualSize = raf.length();
-    }
-    catch ( IOException e )
-    {
-        return( false );
-    }
 
-    try{
-        if( this.readPIB( raf ) == null)
-           return false; // not gini file
-    }
-    catch ( IOException e )
-    {
-        return( false );
-    }
+        try{
+            if( this.readPIB( raf ) == null)
+               return false; // not gini file
+        }
+        catch ( IOException e )
+        {
+            System.out.println("ERROR on validating "+e.getMessage());
+            e.printStackTrace();
+        }
 
-    return true;
+        return true;
    }
 
     /**
@@ -101,6 +94,7 @@ class Giniheader {
    */
    byte[] readPIB(ucar.unidata.io.RandomAccessFile raf ) throws IOException {
     this.raf = raf;
+    this.actualSize = raf.length();
     int doff = 0;
     int pos = 0;
     raf.seek(pos);
