@@ -867,7 +867,7 @@
       </sort>
       <addLatest />
       <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="GFS_N_Hemisphere_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
+      <addTimeCoverage datasetNameMatchPattern="GFS_N_Hemisphere_381km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours" />
     </datasetScan>
     <datasetScan name="NCEP GFS Puerto Rico 191km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/GFS/Puerto_Rico_191km" path="model/NCEP/GFS/Puerto_Rico_191km" location="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/GFS/Puerto_Rico_191km/" xlink:title="Available Inventory" />

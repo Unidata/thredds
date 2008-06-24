@@ -71,7 +71,10 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Alaska_191km.fmrcDefinition.xml" />
-     </datasetFmrc>
+        <addTimeCoverage datasetNameMatchPattern="GFS_Alaska_191km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+                         duration="120 hours"/>
+      </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-CONUS_80km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/CONUS_80km">
         <metadata inherited="true">
@@ -88,6 +91,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-CONUS_80km.fmrcDefinition.xml" />
+        <addTimeCoverage datasetNameMatchPattern="GFS_CONUS_80km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+                         duration="240 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-CONUS_95km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/CONUS_95km">
@@ -105,6 +111,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-CONUS_95km.fmrcDefinition.xml" />
+        <addTimeCoverage datasetNameMatchPattern="GFS_CONUS_95km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+                         duration="120 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-CONUS_191km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/CONUS_191km">
@@ -122,6 +131,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-CONUS_191km.fmrcDefinition.xml" />
+        <addTimeCoverage datasetNameMatchPattern="GFS_CONUS_191km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+                         duration="120 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Global_0p5deg" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Global_0p5deg">
@@ -140,7 +152,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/" suffix=".grib2" fmrcDefinition="NCEP-GFS-Global_0p5deg.fmrcDefinition.xml" />
-
+        <addTimeCoverage datasetNameMatchPattern="GFS_Global_0p5deg_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+                         duration="120 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Global_onedeg" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Global_onedeg">
@@ -158,6 +172,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/" suffix=".grib2" fmrcDefinition="NCEP-GFS-Global_onedeg.fmrcDefinition.xml" />
+        <addTimeCoverage datasetNameMatchPattern="GFS_Global_onedeg_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+                         duration="120 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Global_2p5deg" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Global_2p5deg">
@@ -175,6 +192,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/" suffix=".grib2" fmrcDefinition="NCEP-GFS-Global_2p5deg.fmrcDefinition.xml" />
+        <addTimeCoverage datasetNameMatchPattern="GFS_Global_2p5deg_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
+                         duration="120 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Hawaii_160km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Hawaii_160km">
@@ -192,6 +212,8 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Hawaii_160km.fmrcDefinition.xml" />
+        <addTimeCoverage datasetNameMatchPattern="GFS_Hawaii_160km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-N_Hemispheric_381km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/N_Hemisphere_381km">
@@ -209,6 +231,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="GFS_N_Hemisphere_381km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-GFS-Puerto_Rico_191km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GFS/Puerto_Rico_191km">
@@ -226,6 +251,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/" suffix=".grib1" fmrcDefinition="NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="GFS_Puerto_Rico_191km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="120 hours"/>
       </datasetFmrc>
 
     </dataset>
@@ -252,6 +280,8 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-Alaska_11km.fmrcDefinition.xml" />
+        <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_11km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-NAM-Alaska_22km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/Alaska_22km">
@@ -270,6 +300,8 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_22km.fmrcDefinition.xml" />
+        <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_22km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours"/>
       </datasetFmrc>
 
       <dataset name="NCEP-NAM-Alaska_45km">
@@ -289,6 +321,9 @@
             </aggregation>
           </netcdf>
           <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml" />
+          <addTimeCoverage
+                  datasetNameMatchPattern="NAM_Alaska_45km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours"/>
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-NAM-Alaska_45km-conduit" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/Alaska_45km/conduit">
@@ -306,7 +341,10 @@
             </aggregation>
           </netcdf>
           <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/" suffix=".grib2" fmrcDefinition="NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml" />
-         </datasetFmrc>
+          <addTimeCoverage
+                  datasetNameMatchPattern="NAM_Alaska_45km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours"/>
+        </datasetFmrc>
       </dataset>
 
       <datasetFmrc name="NCEP-NAM-Alaska_95km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/Alaska_95km">
@@ -324,7 +362,8 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-Alaska_95km.fmrcDefinition.xml" />
-
+        <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_95km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours"/>
       </datasetFmrc>
 
       <dataset name="NCEP-NAM-CONUS_12km">
@@ -345,7 +384,9 @@
             </aggregation>
           </netcdf>
           <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_12km-noaaport.fmrcDefinition.xml" />
-       </datasetFmrc>
+          <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
+                           startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours"/>
+        </datasetFmrc>
 
       <datasetFmrc name="NCEP-NAM-CONUS_12km-conduit" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_12km/conduit">
         <metadata inherited="true">
@@ -363,7 +404,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_12km-conduit.fmrcDefinition.xml" />
-     </datasetFmrc>
+        <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="72 hours"/>
+      </datasetFmrc>
 
      </dataset>
 
@@ -386,6 +429,9 @@
             </aggregation>
           </netcdf>
           <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml" />
+          <addTimeCoverage
+                  datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="72 hours"/>
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-NAM-CONUS_20km-selectsurface" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_20km/selectsurface" >
@@ -402,6 +448,9 @@
             </aggregation>
           </netcdf>
           <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml" />
+          <addTimeCoverage
+                  datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="48 hours"/>
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-NAM-CONUS_20km-noaaport" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/CONUS_20km/noaaport">
@@ -417,6 +466,9 @@
             </aggregation>
           </netcdf>
           <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml" />
+          <addTimeCoverage
+                  datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="48 hours"/>
         </datasetFmrc>
       </dataset>
 
@@ -441,6 +493,8 @@
             </aggregation>
           </netcdf>
           <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/" suffix=".grib2" fmrcDefinition="NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml" />
+          <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_40km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+                           startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours"/>
         </datasetFmrc>
 
       </dataset>
@@ -460,7 +514,8 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/" suffix=".grib1" fmrcDefinition="NCEP-NAM-CONUS_80km.fmrcDefinition.xml" />
-
+        <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_80km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib1$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-NAM-Polar_90km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NAM/Polar_90km">
@@ -478,6 +533,8 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/" suffix=".grib2" fmrcDefinition="NCEP-NAM-Polar_90km.fmrcDefinition.xml" />
+        <addTimeCoverage datasetNameMatchPattern="NAM_Polar_90km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="48 hours"/>
       </datasetFmrc>
     </dataset>
 
@@ -508,6 +565,8 @@
             </aggregation>
           </netcdf>
           <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/" suffix=".grib2" fmrcDefinition="NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml" />
+          <addTimeCoverage datasetNameMatchPattern="RUC2_CONUS_20km_surface_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+                           startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-RUC2-CONUS_20km-pressure" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/RUC2/CONUS_20km/pressure">
@@ -523,6 +582,9 @@
             </aggregation>
           </netcdf>
           <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/" suffix=".grib2" fmrcDefinition="NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml" />
+          <addTimeCoverage
+                  datasetNameMatchPattern="RUC2_CONUS_20km_pressure_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
         </datasetFmrc>
 
         <datasetFmrc name="NCEP-RUC2-CONUS_20km-hybrid" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/RUC2/CONUS_20km/hybrid">
@@ -538,6 +600,9 @@
             </aggregation>
           </netcdf>
           <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/" suffix=".grib2" fmrcDefinition="NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml" />
+          <addTimeCoverage
+                  datasetNameMatchPattern="RUC2_CONUS_20km_hybrid_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
         </datasetFmrc>
       </dataset>
 
@@ -556,6 +621,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/" suffix=".grib1" fmrcDefinition="NCEP-RUC2-CONUS_40km.fmrcDefinition.xml"/>
+        <addTimeCoverage
+                datasetNameMatchPattern="RUC2_CONUS_40km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib1$"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-RUC-CONUS_80km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/RUC/CONUS_80km">
@@ -573,8 +641,10 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/" suffix=".grib1" fmrcDefinition="NCEP-RUC-CONUS_80km.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="RUC_CONUS_80km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib1$"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
       </datasetFmrc>
-
     </dataset>
 
     <dataset name="Downscaled GFS with Eta Extension (DGEX)">
@@ -601,6 +671,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/" suffix=".grib2" fmrcDefinition="NCEP-DGEX-CONUS_12km.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="DGEX_CONUS_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="192 hours"/>
       </datasetFmrc>
 
       <datasetFmrc name="NCEP-DGEX-Alaska_12km" harvest="true" path="fmrc/NCEP/DGEX/Alaska_12km" collectionType="ForecastModelRuns" >
@@ -618,6 +691,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/" suffix=".grib2" fmrcDefinition="NCEP-DGEX-Alaska_12km.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="DGEX_Alaska_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="192 hours"/>
       </datasetFmrc>
 
     </dataset>
@@ -631,7 +707,7 @@
       <datasetFmrc name="NDFD-CONUS_5km" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/NDFD/CONUS_5km">
         <metadata inherited="true">
           <documentation type="summary">
-            1073 by 689 points, resolution 5 km. Models are run daily at 12Z. Forecasts every 6 hours from 90 to 180 hours.
+            1073 by 689 points, resolution 5 km. Models are run daily at 12Z. Forecasts every 6 hours from 96 to 180 hours.
           </documentation>
           <dataFormat>GRIB-2</dataFormat>
         </metadata>
@@ -642,6 +718,9 @@
           </aggregation>
         </netcdf>
         <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/" suffix=".grib2" fmrcDefinition="NCEP-NDFD-CONUS_5km.fmrcDefinition.xml" />
+        <addTimeCoverage
+                datasetNameMatchPattern="NDFD_CONUS_5km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours"/>
       </datasetFmrc>
 
     </dataset>

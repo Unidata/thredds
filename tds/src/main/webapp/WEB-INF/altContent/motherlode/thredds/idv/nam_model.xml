@@ -252,7 +252,9 @@
         <addDatasetSize />
         <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_45km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours" />
       </datasetScan>
-      <datasetScan name="conduit" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/Alaska_45km/conduit" path="model/NCEP/NAM/Alaska_45km/conduit" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/">
+      <datasetScan name="conduit" collectionType="ForecastModelRuns" harvest="true"
+                   ID="NCEP/NAM/Alaska_45km/conduit" path="model/NCEP/NAM/Alaska_45km/conduit"
+                   location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/Alaska_45km/conduit/" xlink:title="Available Inventory" />
         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model : AWIPS 216 (V) grid over Alaska. Model runs are made at 00Z, 06Z, 12Z, and 18Z with analysis and forecasts every 3 hours out to 84 hours. Horizontal = 139 by 107 points, resolution 45.0 km, Polar Stereographic projection. Vertical = 1000 to 50 hPa pressure levels.</documentation>
@@ -402,7 +404,7 @@
           </variables>
         </metadata>
         <filter>
-          <include regExp=".*\.grib1$" atomic="true" collection="false" />
+          <include regExp=".*\.grib2$" atomic="true" collection="false" />
         </filter>
         <addID />
         <namer>
@@ -413,7 +415,8 @@
         </sort>
         <addLatest />
         <addDatasetSize />
-        <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_45km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours" />
+        <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_45km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
+                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours" />
       </datasetScan>
     </dataset>
     <datasetScan name="NCEP NAM Alaska 95 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/Alaska_95km" path="model/NCEP/NAM/Alaska_95km" location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/">
@@ -663,7 +666,7 @@
           </variables>
         </metadata>
         <filter>
-          <include regExp=".*\.grib1$" atomic="true" collection="false" />
+          <include regExp=".*\.grib2$" atomic="true" collection="false" />
         </filter>
         <addID />
         <namer>
@@ -674,7 +677,7 @@
         </sort>
         <addLatest />
         <addDatasetSize />
-        <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="72 hours" />
+        <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="72 hours" />
       </datasetScan>
       <datasetScan name="selectsurface" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/CONUS_20km/selectsurface" path="model/NCEP/NAM/CONUS_20km/selectsurface" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/">
         <documentation xlink:href="/thredds/modelInventory/model/NCEP/NAM/CONUS_20km/selectsurface/" xlink:title="Available Inventory" />
@@ -981,7 +984,7 @@
           </variables>
         </metadata>
         <filter>
-          <include regExp=".*\.grib1$" atomic="true" collection="false" />
+          <include regExp=".*\.grib2$" atomic="true" collection="false" />
         </filter>
         <addID />
         <namer>
@@ -992,7 +995,7 @@
         </sort>
         <addLatest />
         <addDatasetSize />
-        <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_40km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours" />
+        <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_40km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours" />
       </datasetScan>
     </dataset>
     <datasetScan name="NCEP NAM CONUS 80 km" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NAM/CONUS_80km" path="model/NCEP/NAM/CONUS_80km" location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/">
@@ -1232,7 +1235,7 @@
         </variables>
       </metadata>
       <filter>
-        <include regExp=".*\.grib1$" atomic="true" collection="false" />
+        <include regExp=".*\.grib2$" atomic="true" collection="false" />
       </filter>
       <addID />
       <namer>
@@ -1243,7 +1246,7 @@
       </sort>
       <addLatest />
       <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="NAM_Polar_90km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib1$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="48 hours" />
+      <addTimeCoverage datasetNameMatchPattern="NAM_Polar_90km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$" startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="48 hours" />
     </datasetScan>
   </dataset>
 </catalog>

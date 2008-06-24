@@ -91,6 +91,9 @@
       </sort>
       <addLatest />
       <addDatasetSize />
+      <addTimeCoverage
+              datasetNameMatchPattern="DGEX_CONUS_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="192 hours"/>
     </datasetScan>
     <datasetScan name="NCEP DGEX Alaska 12km" harvest="true" ID="NCEP/DGEX/Alaska_12km" path="model/NCEP/DGEX/Alaska_12km" location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/">
       <dataFormat>GRIB-2</dataFormat>
@@ -153,6 +156,9 @@
       </sort>
       <addLatest />
       <addDatasetSize />
+      <addTimeCoverage
+              datasetNameMatchPattern="DGEX_Alaska_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="192 hours"/>
     </datasetScan>
   </dataset>
 </catalog>

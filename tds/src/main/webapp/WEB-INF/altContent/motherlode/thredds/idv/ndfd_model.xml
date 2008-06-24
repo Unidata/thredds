@@ -31,9 +31,12 @@
       </timeCoverage>
       <variables vocabulary="GRIB-2" />
     </metadata>
-    <datasetScan name="NWS National Digital Forecast Database 5km CONUS" collectionType="ForecastModelRuns" harvest="true" ID="NCEP/NDFD/CONUS_5km" path="model/NCEP/NDFD/CONUS_5km" location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/">
+    <datasetScan name="NWS National Digital Forecast Database 5km CONUS" collectionType="ForecastModelRuns" harvest="true"
+                 ID="NCEP/NDFD/CONUS_5km"
+                 path="model/NCEP/NDFD/CONUS_5km"
+                 location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/">
       <documentation xlink:href="/thredds/modelInventory/model/NCEP/NDFD/CONUS_5km/" xlink:title="Available Inventory" />
-      <documentation type="summary">1073 by 689 points, resolution 5 km. Models are run daily at 12Z. Forecasts every 6 hours from 90 to 180 hours.</documentation>
+      <documentation type="summary">1073 by 689 points, resolution 5 km. Models are run daily at 12Z. Forecasts every 6 hours from 96 to 180 hours.</documentation>
       <metadata inherited="true">
         <geospatialCoverage>
           <northsouth>
@@ -70,7 +73,8 @@
       </sort>
       <addLatest />
       <addDatasetSize />
-      <addTimeCoverage datasetNameMatchPattern="NDFD_CONUS_5km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2" startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="96 hours" />
+      <addTimeCoverage datasetNameMatchPattern="NDFD_CONUS_5km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                       startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours" />
     </datasetScan>
   </dataset>
 </catalog>
