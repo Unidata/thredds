@@ -8,9 +8,18 @@
   <description>Minimal THREDDS Data Server</description>
 
   <context-param>
+    <param-name>ContextPath</param-name>
+    <param-value>thredds</param-value>
+  </context-param>
+
+  <!-- Not needed since logs are placed in content/thredds
+       [NOTE: Should they be in webapps/thredds instead? Would allow
+              for better/more standard (i.e., before any Spring config) Log4J config.]
+  <context-param>
     <param-name>webAppRootKey</param-name>
     <param-value>tds.root</param-value>
   </context-param>
+  -->
   <!--
      Location of the Log4J config file, for initialization and refresh checks.
      Applied by Log4jConfigListener.

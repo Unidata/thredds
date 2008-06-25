@@ -168,7 +168,7 @@ public class TdsContext
         System.out.println( "Couldn't create TDS log directory [" + logDir.getPath() + "]." );
       }
     }
-    System.setProperty( "logdir", logDir.getPath() ); // variable substitution
+    System.setProperty( "tds.log.dir", logDir.getPath() ); // variable substitution
 
     this.publicContentDirectory = new File( this.contentDirectory, "public");
     this.publicContentDirSource = new BasicDescendantFileSource( this.publicContentDirectory);

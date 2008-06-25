@@ -17,10 +17,6 @@
     <property name="startupContentPath" value="${tds.content.startup.path}"/>
     <property name="iddContentPath" value="${tds.content.idd.path}"/>
     <property name="motherlodeContentPath" value="${tds.content.motherlode.path}"/>
-    <!--property name="contentPath" value="../../content" />
-    <property name="initialContentPath" value="WEB-INF/altContent/startup" />
-    <property name="iddPath" value="WEB-INF/altContent/idd/thredds" />
-    <property name="motherlodePath" value="WEB-INF/altContent/motherlode/thredds" /-->
   </bean>
 
 
