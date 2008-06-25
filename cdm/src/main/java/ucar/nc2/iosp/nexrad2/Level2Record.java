@@ -490,38 +490,90 @@ public class Level2Record {
         dbp9 = din.readInt();
 
         vcp = getDataBlockValue(din, (short) dbp1, 40);
-        hasHighResREFData = (dbp4 > 0);
-        if(hasHighResREFData) {
-            reflectHR_gate_count = getDataBlockValue(din, (short) dbp4, 8);
-            reflectHR_first_gate = getDataBlockValue(din, (short) dbp4, 10);
-            ref_rf_threshold = getDataBlockValue(din, (short) dbp4, 14);
-            ref_snr_threshold = getDataBlockValue(din, (short) dbp4, 16);
-            reflectHR_gate_size = getDataBlockValue(din, (short) dbp4, 12);
-            reflectHR_scale = getDataBlockValue1(din, (short) dbp4, 20);
-            reflectHR_addoffset = getDataBlockValue1(din, (short) dbp4, 24);
-            reflectHR_offset =   (short)( dbp4+ 28);
+        int dbpp4 = 0;
+        int dbpp5 = 0;
+        int dbpp6 = 0;
+        if(dbp4 > 0) {
+            String tname =    getDataBlockStringValue(din, (short) dbp4, 1,3);
+            if(tname.startsWith("REF")) {
+                hasHighResREFData = true;
+                dbpp4 = dbp4;
+            } else if (tname.startsWith("VEL")) {
+                hasHighResVELData = true;
+                dbpp5 = dbp4;
+            } else if (tname.startsWith("SW")) {
+                hasHighResSWData = true;
+                dbpp6 = dbp4;
+            }
+
         }
-        hasHighResVELData = (dbp5 > 0);
+        if(dbp5 > 0) {
+
+            String tname =    getDataBlockStringValue(din, (short) dbp5, 1,3);
+            if(tname.startsWith("REF")) {
+                hasHighResREFData = true;
+                dbpp4 = dbp5;
+            } else if (tname.startsWith("VEL")) {
+                hasHighResVELData = true;
+                dbpp5 = dbp5;
+            } else if (tname.startsWith("SW")) {
+                hasHighResSWData = true;
+                dbpp6 = dbp5;
+            }
+        }
+        if(dbp6 > 0) {
+
+            String tname =    getDataBlockStringValue(din, (short) dbp6, 1,3);
+            if(tname.startsWith("REF")) {
+                hasHighResREFData = true;
+                dbpp4 = dbp6;
+            } else if (tname.startsWith("VEL")) {
+                hasHighResVELData = true;
+                dbpp5 = dbp6;
+            } else if (tname.startsWith("SW")) {
+                hasHighResSWData = true;
+                dbpp6 = dbp6;
+            }
+        }
+
+        //hasHighResREFData = (dbp4 > 0);
+
+        if(hasHighResREFData ) {
+            reflectHR_gate_count = getDataBlockValue(din, (short) dbpp4, 8);
+            reflectHR_first_gate = getDataBlockValue(din, (short) dbpp4, 10);
+            reflectHR_gate_size = getDataBlockValue(din, (short) dbpp4, 12);
+            ref_rf_threshold = getDataBlockValue(din, (short) dbpp4, 14);
+            ref_snr_threshold = getDataBlockValue(din, (short) dbpp4, 16);
+            reflectHR_scale = getDataBlockValue1(din, (short) dbpp4, 20);
+            reflectHR_addoffset = getDataBlockValue1(din, (short) dbpp4, 24);
+            reflectHR_offset =   (short)( dbpp4+ 28);
+
+        }
+        //hasHighResVELData = (dbp5 > 0);
         if(hasHighResVELData) {
-            velocityHR_gate_count = getDataBlockValue(din, (short) dbp5, 8);
-            velocityHR_first_gate = getDataBlockValue(din, (short) dbp5, 10);
-            velocityHR_gate_size = getDataBlockValue(din, (short) dbp5, 12);
-            vel_rf_threshold = getDataBlockValue(din, (short) dbp5, 14);
-            vel_snr_threshold = getDataBlockValue(din, (short) dbp5, 16);
-            velocityHR_scale = getDataBlockValue1(din, (short) dbp5, 20);
-            velocityHR_addoffset = getDataBlockValue1(din, (short) dbp5, 24);
-            velocityHR_offset = (short)( dbp5+ 28);
+
+            velocityHR_gate_count = getDataBlockValue(din, (short) dbpp5, 8);
+            velocityHR_first_gate = getDataBlockValue(din, (short) dbpp5, 10);
+            velocityHR_gate_size = getDataBlockValue(din, (short) dbpp5, 12);
+            vel_rf_threshold = getDataBlockValue(din, (short) dbpp5, 14);
+            vel_snr_threshold = getDataBlockValue(din, (short) dbpp5, 16);
+            velocityHR_scale = getDataBlockValue1(din, (short) dbpp5, 20);
+            velocityHR_addoffset = getDataBlockValue1(din, (short) dbpp5, 24);
+            velocityHR_offset = (short)( dbpp5+ 28);
+
         }
-        hasHighResSWData  = (dbp6 > 0);
+       // hasHighResSWData  = (dbp6 > 0);
         if(hasHighResSWData) {
-            spectrumHR_gate_count = getDataBlockValue(din, (short) dbp6, 8);
-            spectrumHR_first_gate = getDataBlockValue(din, (short) dbp6, 10);
-            spectrumHR_gate_size = getDataBlockValue(din, (short) dbp6, 12);
-            sw_rf_threshold = getDataBlockValue(din, (short) dbp6, 14);
-            sw_snr_threshold = getDataBlockValue(din, (short) dbp6, 16);
-            spectrumHR_scale = getDataBlockValue1(din, (short) dbp6, 20);
-            spectrumHR_addoffset = getDataBlockValue1(din, (short) dbp6, 24);
-            spectrumHR_offset = (short) (dbp6 + 28);
+
+            spectrumHR_gate_count = getDataBlockValue(din, (short) dbpp6, 8);
+            spectrumHR_first_gate = getDataBlockValue(din, (short) dbpp6, 10);
+            spectrumHR_gate_size = getDataBlockValue(din, (short) dbpp6, 12);
+            sw_rf_threshold = getDataBlockValue(din, (short) dbpp6, 14);
+            sw_snr_threshold = getDataBlockValue(din, (short) dbpp6, 16);
+            spectrumHR_scale = getDataBlockValue1(din, (short) dbpp6, 20);
+            spectrumHR_addoffset = getDataBlockValue1(din, (short) dbpp6, 24);
+            spectrumHR_offset = (short) (dbpp6 + 28);
+
         }
         hasHighResZDRData = (dbp7 > 0);
         if(hasHighResZDRData) {
@@ -774,7 +826,12 @@ public class Level2Record {
       raf.skipBytes(skip);
       return  raf.readShort();
   }
-
+  private String getDataBlockStringValue(RandomAccessFile raf, short offset, int skip, int size) throws IOException {
+      long off = offset + message_offset + MESSAGE_HEADER_SIZE;
+      raf.seek(off);
+      raf.skipBytes(skip);
+      return  raf.readString(size);
+  }
   private float getDataBlockValue1(RandomAccessFile raf, short offset, int skip) throws IOException {
       long off = offset + message_offset + MESSAGE_HEADER_SIZE;
       raf.seek(off);
