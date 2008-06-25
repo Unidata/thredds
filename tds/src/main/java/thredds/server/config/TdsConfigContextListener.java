@@ -14,15 +14,15 @@ import org.springframework.web.util.Log4jWebConfigurer;
  * @author edavis
  * @since 4.0
  */
-public class TdsConfigContextLoaderListener
+public class TdsConfigContextListener
         implements ServletContextListener
 {
   private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( TdsConfigContextLoaderListener.class );
+          org.slf4j.LoggerFactory.getLogger( TdsConfigContextListener.class );
 
   public void contextInitialized( ServletContextEvent event )
   {
-    System.out.println( "TdsConfigContextLoaderListener.contextInitialized(): start." );
+    System.out.println( "TdsConfigContextListener.contextInitialized(): start." );
 
     ServletContext servletContext = event.getServletContext();
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );

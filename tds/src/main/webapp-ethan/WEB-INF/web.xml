@@ -42,7 +42,7 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   <listener>
-    <listener-class>thredds.server.config.TdsConfigContextLoaderListener</listener-class>
+    <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
   </listener>
 
   <!-- Default Servlet -->

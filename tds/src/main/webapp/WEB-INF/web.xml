@@ -101,7 +101,7 @@
 
   <!-- TDS experimental listener. -->
   <listener>
-    <listener-class>thredds.server.config.TdsConfigContextLoaderListener</listener-class>
+    <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
   </listener>
 
   <!-- TDS listener to handle configuration needed by all/most TDS servlets. -->
