@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-	- DispatcherServlet application context for PetClinic's web tier.
+	- DispatcherServlet application context for TDS root servlet.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <bean id="rootController" class="thredds.server.root.RootController"
-        init-method="init" destroy-method="destroy" >
+  <bean id="rootController" class="thredds.server.root.RootController" >
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
@@ -20,16 +19,11 @@
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
-  <bean id="jspController" class="thredds.server.root.JspController" >
-    <property name="tdsContext" ref="tdsContext"/>
-  </bean>
-
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
         =rootController
         /=rootController
-        **/*.jsp=jspController
         **/*.html=htmlController
         **/*.xml=xmlController
       </value>

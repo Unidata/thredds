@@ -37,9 +37,9 @@ import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
 
 public class ServletUtil {
-  public static final String CONTENT_TEXT = "text/plain; charset=iso-8859-1";
+  public static final String CONTENT_TEXT = "text/plain; charset=utf-8";
 
-  static private org.slf4j.Logger log;
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ServletUtil.class);
   static private boolean isDebugInit = false;
   static private boolean isLogInit = false;
 
@@ -52,7 +52,7 @@ public class ServletUtil {
     setRootPath(context);
     setContentPath();
     initDebugging(context);
-    initLogging( context);
+    //initLogging( context);
   }
 
   static private void setContextPath(ServletContext servletContext) {

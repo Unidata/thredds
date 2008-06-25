@@ -4,7 +4,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
 
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.Log4jWebConfigurer;
@@ -16,7 +15,6 @@ import org.springframework.web.util.Log4jWebConfigurer;
  * @since 4.0
  */
 public class TdsConfigContextLoaderListener
-        //extends org.springframework.web.context.ContextLoaderListener
         implements ServletContextListener
 {
   private org.slf4j.Logger logger =
@@ -24,18 +22,19 @@ public class TdsConfigContextLoaderListener
 
   public void contextInitialized( ServletContextEvent event )
   {
-    //super.contextInitialized( event );
+    System.out.println( "TdsConfigContextLoaderListener.contextInitialized(): start." );
 
     ServletContext servletContext = event.getServletContext();
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
     tdsContext.init( servletContext );
     Log4jWebConfigurer.initLogging( servletContext );
-    logger.error( "contextInitialized(): NOT ERROR - done.");
+    logger.debug( "contextInitialized(): done.");
   }
 
   public void contextDestroyed( ServletContextEvent event )
   {
+    logger.debug( "contextDestroyed(): start." );
     ServletContext servletContext = event.getServletContext();
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );

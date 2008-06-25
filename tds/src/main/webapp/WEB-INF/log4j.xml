@@ -21,7 +21,7 @@
     2005-04-18T11:33:43 -0600 [    359843 -        395] DEBUG - thredds.servlet.CatGenServlet - doGet():
   -->
   <appender name="threddsServlet" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${logdir}/threddsServlet.log"/>
+    <param name="File" value="${tds.log.dir}/threddsServlet.log"/>
     <param name="MaxFileSize" value="10MB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -32,7 +32,7 @@
 
   <!-- keep track of Cache messages in a seperate file. -->
   <appender name="cacheLog" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${logdir}/cache.log"/>
+    <param name="File" value="${tds.log.dir}/cache.log"/>
     <param name="MaxFileSize" value="100KB"/>
     <param name="MaxBackupIndex" value="2"/>
     <param name="Append" value="false"/>
@@ -43,7 +43,7 @@
 
   <!-- catalogErrors.log is recreated each time Tomcat is started -->
   <appender name="catalogErrors" class="org.apache.log4j.FileAppender">
-    <param name="File" value="${logdir}/catalogErrors.log"/>
+    <param name="File" value="${tds.log.dir}/catalogErrors.log"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%m%n"/>
@@ -52,7 +52,7 @@
 
   <!-- cataloggen.log is recreated each time Tomcat is started -->
   <appender name="catalogGen" class="org.apache.log4j.FileAppender">
-    <param name="File" value="${logdir}/cataloggen.log"/>
+    <param name="File" value="${tds.log.dir}/cataloggen.log"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
@@ -61,7 +61,7 @@
 
   <!-- special log for FMRC -->
   <appender name="modelLog" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${logdir}/models.log"/>
+    <param name="File" value="${tds.log.dir}/models.log"/>
     <param name="MaxFileSize" value="5MB"/>
     <param name="MaxBackupIndex" value="5"/>
     <layout class="org.apache.log4j.PatternLayout">

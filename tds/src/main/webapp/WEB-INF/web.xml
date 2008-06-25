@@ -70,34 +70,39 @@
     <url-pattern>/upc.css</url-pattern>
   </filter-mapping>
 
+  <!--
+     Location of the Log4J config file, for initialization.
+     Applied by Log4jConfigListener (currently our listener calls Log4jWebConfigurer.
+   -->
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/log4j.xml</param-value>
+  </context-param>
+
   <!-- Spring Listener to setup Log4j configuration.
        Should be listed before any Spring listeners.
        NOTE: Can't do it here if logs are to go into content/thredds
         (which isn't fully defined until some Spring config happens).
    -->
-  <!--context-param>
-    <param-name>log4jConfigLocation</param-name>
-    <param-value>/WEB-INF/log4j.xml</param-value>
-  </context-param>
-  <listener>
+  <!--listener>
     <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
   </listener-->
 
   <!-- Spring listener to bootstrap Spring WebApplicationContext. Used to
        handle Spring bean configuration outside of SpringMVC configuration.
   -->
-  <!--context-param>
+  <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
   </context-param>
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener-->
+  </listener>
 
   <!-- TDS experimental listener. -->
-  <!--listener>
+  <listener>
     <listener-class>thredds.server.config.TdsConfigContextLoaderListener</listener-class>
-  </listener-->
+  </listener>
 
   <!-- TDS listener to handle configuration needed by all/most TDS servlets. -->
   <listener>
@@ -113,11 +118,11 @@
     <servlet-class>thredds.servlet.ThreddsDefaultServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
-  <!--servlet>
+  <servlet>
     <servlet-name>root</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
-  </servlet-->
+  </servlet>
   <!--servlet>
     <servlet-name>debug</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -343,7 +348,7 @@
 
   <!-- default servlet -->
 
-  <!--servlet-mapping>
+  <servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>*.html</url-pattern>
   </servlet-mapping>
@@ -358,7 +363,7 @@
   <servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>*.gif</url-pattern>
-  </servlet-mapping-->
+  </servlet-mapping>
   <!-- TODO catching the JSP requests with either "*.jsp" or "/*" breaks JSTL <c:import ... />
    -->
   <!--servlet-mapping>
@@ -371,8 +376,8 @@
   </servlet-mapping-->
   <servlet-mapping>
     <servlet-name>ThreddsDefaultServlet</servlet-name>
-    <!--url-pattern>/erd/*</url-pattern-->
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/erd/*</url-pattern>
+    <!--url-pattern>/*</url-pattern-->
   </servlet-mapping>
   <!--servlet-mapping>
     <servlet-name>debug</servlet-name>
