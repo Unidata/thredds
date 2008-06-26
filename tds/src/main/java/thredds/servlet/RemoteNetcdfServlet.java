@@ -35,8 +35,25 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 
 /**
- * Experimental testing.
+ * Experimental "remote netcdf" data transfer protocol.
+ * <pre>
+ * Return NcML to populate the NetcdfFile:
+ *   http://localhost:8080/thredds/ncremote/test/testData.nc
  *
+ * Return binary data, using direct channel transfer to socket outputStream:
+ *   http://localhost:8080/thredds/ncremote/test/testData.nc?Z_sfc(0:0,0:94,0:134)
+ * </pre>
+ *
+ * At the moment its just a faster opendap. possible extensions:
+ * <pre>
+ * Index with coordinate values:
+ *   http://localhost:8080/thredds/ncremote/test/testData.nc?Z_sfc(12.3,1000.0:1200.1,500.0:800.9)
+ *   http://localhost:8080/thredds/ncremote/test/testData.nc?Z_sfc&alt=12.3m&lat=34.6:40.7&lon=66.6:69.9
+ *
+ * FeatureDatasets
+ *   http://localhost:8080/thredds/netcdf/stream/test/testData.nc?lat=34.6:40.7&lon=66.6:69.9&featureType=pointData
+ *   http://localhost:8080/thredds/netcdf/stream/test/testData.nc?var=sfc,P,T&lat=34.6:40.7&lon=66.6:69.9&featureType=pointData
+ * </pre>
  * @author caron
  */
 public class RemoteNetcdfServlet extends AbstractServlet {
@@ -93,23 +110,31 @@ public class RemoteNetcdfServlet extends AbstractServlet {
 
       long length = 0;
       String query = req.getQueryString();
-      StringTokenizer stoke = new StringTokenizer(query, ",");
-      while (stoke.hasMoreTokens()) {
-        if (wantNull) {
-          byte[] b = new byte[1000];
-          for (int i=0; i < 10 * 1000; i++) {
-            out.write(b);
-          }
 
-        } else if (wbc != null) {
+      // they just want the NcML
+      if (query == null) {
+        res.setContentType("text/xml");        
+
+        ncfile.writeNcML(out, req.getRequestURI());
+        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+        return;
+      }
+
+      // otherwise it will be binary data
+      res.setContentType("application/octet-stream");
+
+      StringTokenizer stoke = new StringTokenizer(query, "&");
+      while (stoke.hasMoreTokens()) {
+        if (wbc != null) {
           ncfile.readToByteChannel(stoke.nextToken(), wbc);
-          
         } else {
           Array result = ncfile.readSection(stoke.nextToken());
           length += copy2stream(result, out, false);
         }
       }
-      System.out.println(query + ": length = " + length);
+      out.flush();
+      res.flushBuffer();
+      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, length);
 
     } catch (InvalidRangeException e) {
       ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);

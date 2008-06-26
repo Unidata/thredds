@@ -21,6 +21,7 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.ncremote.NetcdfRemote;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileFactory;
@@ -540,6 +541,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (location.startsWith("dods:")) {
       return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
 
+    } else if (location.startsWith("ncremote:")) {
+      return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through netcdf remote
+
     } else if (location.startsWith("thredds:")) {
       StringBuilder log = new StringBuilder();
       ThreddsDataFactory tdf = new ThreddsDataFactory();
@@ -585,7 +589,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
                 String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-    if (cache == null) return openDODS(location, cancelTask);
+    if (cache == null) return new DODSNetcdfFile(location, cancelTask);
 
     if (factory == null) factory = new DodsFactory();
     return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
@@ -593,19 +597,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private class DodsFactory implements FileFactory {
      public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-        return openDODS(location, cancelTask);
+        return new DODSNetcdfFile(location, cancelTask);
       }
-  }
-
-  // // try to open as a dods file
-  static private NetcdfFile openDODS(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    String dodsUri = null;
-    try {
-      dodsUri = DODSNetcdfFile.canonicalURL(location); // LOOK why canonicalize here, when its done in DODSNetcdfFile ??
-      return new DODSNetcdfFile(dodsUri, cancelTask);
-    } catch (IOException e) {
-      throw new FileNotFoundException("Cant open " + location + " or as DODS " + dodsUri + "\n" + e.getMessage());
-    }
   }
 
   static private NetcdfFile acquireNcml(FileCache cache, FileFactory factory, Object hashKey,
@@ -619,6 +612,20 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static private class NcMLFactory implements FileFactory {
      public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
        return NcMLReader.readNcML(location, cancelTask);
+      }
+  }
+
+  static private NetcdfFile acquireRemote(FileCache cache, FileFactory factory, Object hashKey,
+                String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+    if (cache == null) return new NetcdfRemote(location, cancelTask);
+
+    if (factory == null) factory = new RemoteFactory();
+    return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
+  }
+
+  static private class RemoteFactory implements FileFactory {
+     public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+       return new NetcdfRemote(location, cancelTask);
       }
   }
 

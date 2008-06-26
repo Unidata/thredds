@@ -38,15 +38,17 @@ public class TimeCopy {
   static boolean debug = true;
 
   static public void main(String args[]) throws IOException {
-    copyURL("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
-    copyURL("http://localhost:8080/thredds/netcdf/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/ruc.nc", 10000);
-    copyURL("http://localhost:8080/thredds/netcdf/stream/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/rucStream.nc", 10000);
-    copyURL("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
+    // took = 316.531 sec; len= 20.0 Mbytes; rate = .0631Mb/sec ok=ok
+    copyURL("http://motherlode.ucar.edu:9080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
+    
+    //copyURL("http://localhost:8080/thredds/netcdf/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/ruc.nc", 10000);
+    //copyURL("http://localhost:8080/thredds/netcdf/stream/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/rucStream.nc", 10000);
+    //copyURL("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
 
-    copyURL2null("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
-    copyURL2null("http://localhost:8080/thredds/netcdf/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/ruc.nc", 10000);
-    copyURL2null("http://localhost:8080/thredds/netcdf/stream/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/rucStream.nc", 10000);
-    copyURL2null("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
+    //copyURL2null("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
+    //copyURL2null("http://localhost:8080/thredds/netcdf/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/ruc.nc", 10000);
+    //copyURL2null("http://localhost:8080/thredds/netcdf/stream/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/rucStream.nc", 10000);
+    //copyURL2null("http://localhost:8080/thredds/netcdf/null/dd/RUC2_CONUS_40km_20070709_1800.nc?v,u,Z,T", "C:/temp/null.nc", 10000);
     //copyURL("http://localhost:8080/thredds/netcdf/dd/nssl/mosaic3d_nc/tile1/20070803-2300.netcdf?mrefl_mosaic", "C:/temp/netcdf2.nc", 10000);
     //copyURL("http://localhost:8080/thredds/netcdf/stream/dd/nssl/mosaic3d_nc/tile1/20070803-2300.netcdf?mrefl_mosaic", "C:/temp/nsslStream.nc", 10000);
     //copyURL("http://localhost:8080/thredds/netcdf/dd/nssl/mosaic3d_nc/tile1/20070803-2300.netcdf?mrefl_mosaic", "C:/temp/nssl.nc", 10000); // */

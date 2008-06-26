@@ -76,7 +76,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   static private int default_buffersize = 8092;
   static private ArrayList<IOServiceProvider> registeredProviders = new ArrayList<IOServiceProvider>();
-  static private boolean debugSPI = false, debugCompress = false, showRequest = false;
+  static protected boolean debugSPI = false, debugCompress = false, showRequest = false;
   static boolean debugStructureIterator = false;
   static boolean loadWarnings = false;
 
@@ -225,6 +225,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     debugStructureIterator = debugFlag.isSet("NetcdfFile/structureIterator");
     N3header.disallowFileTruncation = debugFlag.isSet("NetcdfFile/disallowFileTruncation");
     N3header.debugHeaderSize = debugFlag.isSet("NetcdfFile/debugHeaderSize");
+    showRequest = debugFlag.isSet("NetcdfFile/showRequest");
   }
 
   /**
@@ -872,63 +873,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return attValue;
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
-  // public I/O
-
-  /**
-   * Do a bulk read on a list of Variables and
-   * return a corresponding list of Array that contains the results
-   * of a full read on each Variable.
-   * This is mostly here so DODSNetcdf can override it with one call to the server.
-   *
-   * @param variables List of type Variable
-   * @return List of Array, one for each Variable in the input.
-   * @throws IOException if read error
-   */
-  public java.util.List<Array> readArrays(java.util.List<Variable> variables) throws IOException {
-    java.util.List<Array> result = new java.util.ArrayList<Array>();
-    for (Variable variable : variables)
-      result.add(variable.read());
-    return result;
-  }
-
-  /**
-   * Read a variable using the given section specification.
-   * @param variableSection the constraint expression.
-   * @param flatten  MUST BE TRUE
-   * @return Array data read.
-   * @throws IOException if error
-   * @throws InvalidRangeException if variableSection is invalid
-   * @see ucar.ma2.Section#Section(String sectionSpec)for syntax of constraint expression
-   * @deprecated use readSection(), flatten=false no longer supported
-   */
-  public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
-    if (!flatten)
-      throw new UnsupportedOperationException("NetdfFile.read(String variableSection, boolean flatten=false)");
-    return readSection(variableSection);
-  }
-
-  /**
-   * Read a variable using the given section specification.
-   * The result is always an array of the type of the innermost variable.
-   * Its shape is the accumulation of all the shapes of its parent structures.
-   *
-   * @param variableSection the constraint expression.
-   * @return data requested
-   * @throws IOException if error
-   * @throws InvalidRangeException if variableSection is invalid
-   * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
-   */
-  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
-    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
-
-    if (spi == null)
-      return IospHelper.readSection(cer);
-    else
-      // allow iosp to optimize
-      return spi.readSection(cer);
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -1037,7 +981,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   /**
    * This is can only be used for local netcdf-3 files.
    * @param filename location
-   * @deprecated use NetcdfFile.open( location) or NetcdfFileCache.acquire( location)
+   * @deprecated use NetcdfFile.open( location) or NetcdfDataset.openFile( location)
    * @throws java.io.IOException if error
    */
   public NetcdfFile(String filename) throws IOException {
@@ -1052,7 +996,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   /**
    * This is can only be used for netcdf-3 files served over HTTP
    * @param url HTTP URL location
-   * @deprecated use NetcdfFile.open( http:location) or NetcdfFileCache.acquire( http:location)
+   * @deprecated use NetcdfFile.open( http:location) or NetcdfDataset.openFile( http:location)
    * @throws java.io.IOException if error
    */
   public NetcdfFile(URL url) throws IOException {
@@ -1330,7 +1274,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (immutable) throw new IllegalStateException("Cant modify");
 
     Boolean didit = false;
-    if ((spi instanceof N3iosp) && hasUnlimitedDimension()) {
+    if ((spi != null) && (spi instanceof N3iosp) && hasUnlimitedDimension()) {
       didit = (Boolean) spi.sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     }
     return didit;
@@ -1340,7 +1284,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (immutable) throw new IllegalStateException("Cant modify");
 
     Boolean didit = false;
-    if (spi instanceof N3iosp) {
+    if ((spi != null) && (spi instanceof N3iosp)) {
       didit = (Boolean) spi.sendIospMessage(IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE);
     }
     return didit;
@@ -1578,6 +1522,62 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return spi.readToByteChannel(cer.v, cer.section, wbc);
   }
 
+  // public I/O
+
+  /**
+   * Do a bulk read on a list of Variables and
+   * return a corresponding list of Array that contains the results
+   * of a full read on each Variable.
+   * This is mostly here so DODSNetcdf can override it with one call to the server.
+   *
+   * @param variables List of type Variable
+   * @return List of Array, one for each Variable in the input.
+   * @throws IOException if read error
+   */
+  public java.util.List<Array> readArrays(java.util.List<Variable> variables) throws IOException {
+    java.util.List<Array> result = new java.util.ArrayList<Array>();
+    for (Variable variable : variables)
+      result.add(variable.read());
+    return result;
+  }
+
+  /**
+   * Read a variable using the given section specification.
+   * @param variableSection the constraint expression.
+   * @param flatten  MUST BE TRUE
+   * @return Array data read.
+   * @throws IOException if error
+   * @throws InvalidRangeException if variableSection is invalid
+   * @see ucar.ma2.Section#Section(String sectionSpec)for syntax of constraint expression
+   * @deprecated use readSection(), flatten=false no longer supported
+   */
+  public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
+    if (!flatten)
+      throw new UnsupportedOperationException("NetdfFile.read(String variableSection, boolean flatten=false)");
+    return readSection(variableSection);
+  }
+
+  /**
+   * Read a variable using the given section specification.
+   * The result is always an array of the type of the innermost variable.
+   * Its shape is the accumulation of all the shapes of its parent structures.
+   *
+   * @param variableSection the constraint expression.
+   * @return data requested
+   * @throws IOException if error
+   * @throws InvalidRangeException if variableSection is invalid
+   * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+   */
+  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
+    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
+
+    if (spi == null)
+      return IospHelper.readSection(cer);
+    else
+      // allow iosp to optimize
+      return spi.readSection(cer);
+  }
+
   /**
    * Access to iosp debugging info.
    * @param o must be a Variable, Dimension, Attribute, or Group
@@ -1598,7 +1598,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     sbuff.append("  id= ").append(getId()).append("\n");
 
     if (spi == null) {
-      sbuff.append("  has no iosp!\n");
+      sbuff.append("  has no IOSP\n");
     } else {
       sbuff.append("  iosp= ").append(spi.getClass().getName()).append("\n\n");
       sbuff.append( spi.getDetailInfo());
@@ -1608,7 +1608,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
-   * Experimental - DO NOT USE!!!
+   * DO NOT USE - public by accident
    * @return the IOSP for this NetcdfFile
    */
   public IOServiceProvider getIosp() {
@@ -1624,9 +1624,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       super.finalize();
     }
   }
-
-  //////////////////////////////////////////////////////////
-
 
   //////////////////////////////////////////////////////////
 
