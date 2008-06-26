@@ -112,6 +112,19 @@
     <listener-class>dods.servers.netcdf.NcDODSSessionAttributeListener</listener-class>
   </listener> -->
 
+  <!-- Some possible ways to deal with error handling. -->
+  <!--error-page>
+    <exception-type>java.lang.NullPointerException</exception-type>
+    <location>/null.html</location>
+  </error-page-->
+  <!-- The following goes into affect when 'res.sendError(100)' is called. -->
+  <!--error-page>
+    <error-code>100</error-code>
+    <location>/myPage.html</location>
+  </error-page-->
+
+  response.sendError(100);
+
   <!-- Default Servlet -->
   <servlet>
     <servlet-name>ThreddsDefaultServlet</servlet-name>

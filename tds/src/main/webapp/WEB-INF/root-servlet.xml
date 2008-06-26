@@ -22,10 +22,10 @@
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        =rootController
         /=rootController
-        **/*.html=htmlController
-        **/*.xml=xmlController
+        /**/*.html=htmlController
+        /**/*.xml=xmlController
+        /**/*=rootController
       </value>
     </property>
   </bean>

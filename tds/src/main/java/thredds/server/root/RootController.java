@@ -1,8 +1,10 @@
 package thredds.server.root;
 
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +12,7 @@ import javax.servlet.ServletContext;
 
 import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
+import thredds.server.views.FileView;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +23,7 @@ import java.io.IOException;
  * @author edavis
  * @since 4.0
  */
-public class RootController extends AbstractController
+public class RootController extends AbstractController implements LastModified
 {
 //  private static org.slf4j.Logger log =
 //          org.slf4j.LoggerFactory.getLogger( RootController.class );
@@ -81,8 +84,50 @@ public class RootController extends AbstractController
   {
   }
 
-  protected ModelAndView handleRequestInternal( HttpServletRequest request, HttpServletResponse response ) throws Exception
+  protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
+          throws Exception
   {
-    return null;
+    String path = getPath( req );
+    if ( path.equals( "/" ))
+    {
+      String newPath = tdsContext.getContextPath() + "/catalog.html";
+      res.sendRedirect( newPath );
+      return null;
+    }
+
+    File file = tdsContext.getPublicDocFileSource().getFile( path );
+    if ( file == null )
+    {
+      tdsContext.getDefaultRequestDispatcher().forward( req, res );
+      return null;
+    }
+    return new ModelAndView( new FileView(), "file", file );
+  }
+
+  public long getLastModified( HttpServletRequest req )
+  {
+    String path = getPath( req );
+    File file = tdsContext.getPublicDocFileSource().getFile( path );
+    if ( file == null )
+      return -1;
+    long lastModTime = file.lastModified();
+    if ( lastModTime == 0L )
+      return -1;
+    return lastModTime;
+  }
+
+  private String getPath( HttpServletRequest req )
+  {
+    String path = req.getPathInfo();
+    if ( path == null || path.equals( "" ) )
+      path = req.getServletPath();
+
+    if ( path == null )
+      return null;
+
+    if ( ! path.equals( "/" ) )
+      path = StringUtils.trimLeadingCharacter( path, '/' );
+
+    return path;
   }
 }

@@ -19,8 +19,8 @@
       <th align="right">Last Modified</th>
     </tr>
     <c:forEach var="curDs" items="${catalog.datasets}">
-      <!-- ToDo If curDs instanceof InvCatalogRef
-      <!-- If ! (curDs instanceof InvCatalogRef)
+      <%-- ToDo If curDs instanceof InvCatalogRef --%>
+      <%-- If ! (curDs instanceof InvCatalogRef) --%>
       <c:set var="curDsParam" value="${curDs}" scope="request"/>
       <c:set var="curLevelParam" value="0" scope="request"/>
       <c:import url="dataset.jsp" />

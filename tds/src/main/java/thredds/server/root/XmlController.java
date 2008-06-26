@@ -38,7 +38,9 @@ public class XmlController extends AbstractController
   protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
           throws Exception
   {
-    String path = req.getPathInfo();
+    String path = req.getServletPath();
+    if ( path == null || path.equals( "" ) )
+      path = req.getPathInfo();
     DataRootHandler drh = DataRootHandler.getInstance();
     InvCatalog cat = drh.getCatalog( path, null );
 

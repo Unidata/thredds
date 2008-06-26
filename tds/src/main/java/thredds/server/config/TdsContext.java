@@ -107,10 +107,10 @@ public class TdsContext
 
     // Set the context path.
     // Servlet 2.5 allows the following.
-    contextPath = servletContext.getContextPath();
-    //String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
-    //if ( tmpContextPath == null ) tmpContextPath = "thredds";
-    //contextPath = "/" + tmpContextPath;
+    //contextPath = servletContext.getContextPath();
+    String tmpContextPath = servletContext.getInitParameter( "ContextPath" );  // cannot be overridden in the ThreddsConfig file
+    if ( tmpContextPath == null ) tmpContextPath = "thredds";
+    contextPath = "/" + tmpContextPath;
 
     // Set the version.
     if ( this.webappMajorVersion < 0 || this.webappMinorVersion < 0 )
