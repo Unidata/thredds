@@ -47,47 +47,77 @@ import java.nio.*;
  */
 
 class Giniheader {
-  static final byte[] MAGIC = new byte[] {0x43, 0x44, 0x46, 0x01 };
-  static final int MAGIC_DIM = 10;
-  static final int MAGIC_VAR = 11;
-  static final int MAGIC_ATT = 12;
-  private boolean debug = false, debugPos = false, debugString = false, debugHeaderSize = false;
-  private ucar.unidata.io.RandomAccessFile raf;
-  private ucar.nc2.NetcdfFile ncfile;
-  private PrintStream out = System.out;
+    static final byte[] MAGIC = new byte[] {0x43, 0x44, 0x46, 0x01 };
+    static final int MAGIC_DIM = 10;
+    static final int MAGIC_VAR = 11;
+    static final int MAGIC_ATT = 12;
+    private boolean debug = false, debugPos = false, debugString = false, debugHeaderSize = false;
+    private ucar.unidata.io.RandomAccessFile raf;
+    private ucar.nc2.NetcdfFile ncfile;
+    private PrintStream out = System.out;
 
-  int numrecs = 0; // number of records written
-  int recsize = 0; // size of each record (padded)
-  int dataStart = 0; // where the data starts
-  int recStart = 0; // where the record data starts
-  int GINI_PIB_LEN = 21;   // gini product indentification block
-  int GINI_PDB_LEN = 512;  // gini product description block
-  int GINI_HED_LEN = 533;  // gini product header
-  double DEG_TO_RAD = 0.017453292;
-  double EARTH_RAD_KMETERS = 6371.200;
-  byte Z_DEFLATED = 8;
-  byte DEF_WBITS = 15;
-  private long actualSize, calcSize;
-  protected int Z_type = 0;
+    int numrecs = 0; // number of records written
+    int recsize = 0; // size of each record (padded)
+    int dataStart = 0; // where the data starts
+    int recStart = 0; // where the record data starts
+    int GINI_PIB_LEN = 21;   // gini product indentification block
+    int GINI_PDB_LEN = 512;  // gini product description block
+    int GINI_HED_LEN = 533;  // gini product header
+    double DEG_TO_RAD = 0.017453292;
+    double EARTH_RAD_KMETERS = 6371.200;
+    byte Z_DEFLATED = 8;
+    byte DEF_WBITS = 15;
+    private long actualSize, calcSize;
+    protected int Z_type = 0;
 
 
-   public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf)
-   {
 
+    public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf)
+    {
         try{
-            if( this.readPIB( raf ) == null)
-               return false; // not gini file
+             return validatePIB( raf );
         }
         catch ( IOException e )
         {
-            System.out.println("ERROR on validating "+e.getMessage());
-            e.printStackTrace();
+            return false;
+
         }
+    }
 
-        return true;
-   }
+  /**
+   * Read the header and populate the ncfile
+   * @param raf
+   * @throws IOException
+   */
+    boolean validatePIB(ucar.unidata.io.RandomAccessFile raf ) throws IOException {
+        this.raf = raf;
+        this.actualSize = raf.length();
+        int pos = 0;
+        raf.seek(pos);
 
-    /**
+        // gini header process
+        byte[] b = new byte[GINI_PIB_LEN + GINI_HED_LEN];
+
+        raf.read(b);
+        String pib = new String(b);
+
+        pos = pib.indexOf( "KNES" );
+        if ( pos == -1 ) pos = pib.indexOf ( "CHIZ" );
+
+        if ( pos != -1 ) {                    /* 'KNES' or 'CHIZ' found         */
+            pos = pib.indexOf ( "\r\r\n" );    /* <<<<< UPC mod 20030710 >>>>>   */
+            if ( pos != -1 ) {                 /* CR CR NL found             */
+              pos  = pos + 3;
+            }
+        } else {
+            pos = 0;
+            return false;
+        }
+            return true;
+    }
+
+
+  /**
    * Read the header and populate the ncfile
    * @param raf
    * @throws IOException
