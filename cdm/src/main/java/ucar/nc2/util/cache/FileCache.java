@@ -68,7 +68,7 @@ import ucar.nc2.util.CancelTask;
 public class FileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static private ScheduledExecutorService exec;
-  static private boolean debugPrint = true;
+  static private boolean debugPrint = false;
 
   /**
     * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.

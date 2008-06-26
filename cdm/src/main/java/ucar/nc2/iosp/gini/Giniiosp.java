@@ -32,10 +32,7 @@ import java.util.zip.DataFormatException;
 //import java.awt.image.BufferedImage;
 
 /**
- * IOServiceProvider implementation abstract base class to read/write "version 3" netcdf files.
- *  AKA "file format version 1" files.
- *
- *  see   concrete class
+ * IOServiceProvider for GINI files.
  */
 
 public class Giniiosp extends AbstractIOServiceProvider {
@@ -114,7 +111,6 @@ public class Giniiosp extends AbstractIOServiceProvider {
     Array array = Array.factory( DataType.BYTE.getPrimitiveClassType(), v2.getShape(), data);
 
     return array.sectionNoReduce(origin, shape, stride);
-
   }
 
   public Array readDataOld(ucar.nc2.Variable v2, long dataPos, int [] origin, int [] shape, int [] stride) throws IOException, InvalidRangeException  {

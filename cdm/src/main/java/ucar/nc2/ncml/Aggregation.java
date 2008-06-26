@@ -125,8 +125,8 @@ public abstract class Aggregation implements ProxyReader {
   protected boolean isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
-  protected boolean debug = false, debugOpenFile = true, debugSyncDetail = false, debugProxy = false,
-      debugRead = true, debugDateParse = false;
+  protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
+      debugRead = false, debugDateParse = false;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.

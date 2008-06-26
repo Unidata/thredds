@@ -177,6 +177,11 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   }
 
   private Index writeIndex(int edition, File indexFile, RandomAccessFile raf) throws IOException {
+    if (indexFile.exists()) {
+      indexFile.delete();
+      System.out.println("Delete file "+indexFile);
+    }
+
     Index index = null;
     raf.seek(0);
 

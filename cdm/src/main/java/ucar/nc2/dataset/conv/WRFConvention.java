@@ -149,16 +149,24 @@ orientation of the grid). This should be set equal to the center longitude in mo
       ds.addCoordinateAxis( makeLatCoordAxis( ds, "latitude", ds.findDimension("south_north")));  */
 
       Variable glat = ds.findVariable("GLAT");
-      glat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      glat.setDimensions("south_north west_east");
-      glat.setCachedData(convertToDegrees(glat), false);
-      glat.addAttribute(new Attribute("units", "degrees_north"));
+      if (glat == null) {
+        parseInfo.append("Projection type 203 - expected GLAT variable not found");
+      } else {
+        glat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+        glat.setDimensions("south_north west_east");
+        glat.setCachedData(convertToDegrees(glat), false);
+        glat.addAttribute(new Attribute("units", "degrees_north"));
+      }
 
       Variable glon = ds.findVariable("GLON");
-      glon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-      glon.setDimensions("south_north west_east");
-      glon.setCachedData(convertToDegrees(glon), false);
-      glon.addAttribute(new Attribute("units", "degrees_east"));
+      if (glon == null) {
+        parseInfo.append("Projection type 203 - expected GLON variable not found");
+      } else {
+        glon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+        glon.setDimensions("south_north west_east");
+        glon.setCachedData(convertToDegrees(glon), false);
+        glon.addAttribute(new Attribute("units", "degrees_east"));
+      }
 
       VariableDS v = new VariableDS(ds, null, null, "LatLonCoordSys", DataType.CHAR, "", null, null);
       v.addAttribute(new Attribute(_Coordinate.Axes, "GLAT GLON Time"));

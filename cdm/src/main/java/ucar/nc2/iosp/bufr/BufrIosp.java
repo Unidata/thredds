@@ -49,8 +49,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
   static final String obsIndex = "obsRecordIndex";
 
   // debugging
-  static private boolean debugSize = true;
-  static private boolean debugOpen = false;
+  static private boolean debugSize = false;
+  static private boolean debugOpen = true;
 
   static private boolean forceNewIndex = false; // force that a new index file is written
   static private boolean extendIndex = false; // check if index needs to be extended
@@ -150,20 +150,21 @@ public class BufrIosp extends AbstractIOServiceProvider {
     //System.out.println("total offset=" + total_offset + " bb_size= " + bb.capacity());
     // assert offset == bb.capacity() : "total offset="+offset+ " bb_size= "+bb.capacity();
 
-    /* loop through desired obs
-    List<Index.BufrObs> obsList = index.getObservations();
+    // loop through desired obs LOOK assume one obs per message
     Range range = section.getRange(0);
     for (int obsIndex = range.first(); obsIndex <= range.last(); obsIndex += range.stride()) {
-      if (obsIndex >= obsList.size())
+      if (obsIndex >= msgs.size())
         System.out.println("HEY");
-      Index.BufrObs obs = obsList.get(obsIndex);
-      raf.seek(obs.getOffset());
-      bitPos = obs.getBitPos();
-      bitBuf = obs.getStartingByte();
+      BufrMessage obs = msgs.get(obsIndex);
+      raf.seek( obs.dataSection.dataPos+4); // heres where the data starts for this message
 
-      bb.putLong(getTime(obs));
-      readData(delegate.dkeys, abb, bb);
-    } */
+      /* raf.seek(obs.getOffset()); */
+      bitPos = 0; // obs.getBitPos();
+      bitBuf = 0; // obs.getStartingByte(); 
+
+      //bb.putLong(0);  LOOK no pre-computed time field
+      readData(protoMessage.getRoot().getSubKeys(), abb, bb);
+    }
 
     return abb;
   }
@@ -495,14 +496,17 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     //String fileIn = "C:/data/dt2/point/bufr/IUA_CWAO_20060202_12.bufr";
     //String fileIn = "C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr";
-    String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
+    //String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
+    //String fileIn = "R:/testdata/bufr/edition3/idd/profiler/PROFILER_1.bufr";
+    String fileIn = "D:/motherlode/bufr/cat.out";
     NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
-    /* System.out.println(ncf.toString());
+    System.out.println(ncf.toString());
 
-    Structure s = (Structure) ncf.findVariable(obsRecord);
-    StructureData sdata = s.readStructure(0);
+    /* Structure s = (Structure) ncf.findVariable(obsRecord);
+    StructureData sdata = s.readStructure(2);
     PrintWriter pw = new PrintWriter(System.out);
-    NCdumpW.printStructureData(pw, sdata);   */
+    NCdumpW.printStructureData(pw, sdata);  */
+    new WriteT41_ncFlat( ncf, "D:/motherlode/bufr/cat2.nc", true);
 
     //Variable v = ncf.findVariable("recordIndex");
     //NCdumpW.printArray(v.read(), "recordIndex", pw, null);

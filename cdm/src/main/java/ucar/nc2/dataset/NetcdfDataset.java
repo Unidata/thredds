@@ -21,7 +21,7 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.ncremote.NetcdfRemote;
+import ucar.nc2.stream.NetcdfRemote;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileFactory;
@@ -541,7 +541,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (location.startsWith("dods:")) {
       return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
 
-    } else if (location.startsWith("ncremote:")) {
+    } else if (location.startsWith(NetcdfRemote.SCHEME)) {
       return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through netcdf remote
 
     } else if (location.startsWith("thredds:")) {

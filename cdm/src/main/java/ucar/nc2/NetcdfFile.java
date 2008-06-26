@@ -120,11 +120,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
-      registerIOProvider("ucar.nc2.iosp.gini.Giniiosp");
-    } catch (Throwable e) {
-      if (loadWarnings) log.warn("Cant load class: " + e);
-    }
-    try {
       registerIOProvider("ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.warn("Cant load class: " + e);
@@ -159,7 +154,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.warn("Cant load class: " + e);
     }
-
+    try {
+      registerIOProvider("ucar.nc2.iosp.gini.Giniiosp");
+    } catch (Throwable e) {
+      if (loadWarnings) log.warn("Cant load class: " + e);
+    }
+    
     userLoads = true;
   }
 

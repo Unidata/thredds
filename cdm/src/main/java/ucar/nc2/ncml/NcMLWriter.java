@@ -98,21 +98,21 @@ public class NcMLWriter {
     else
       ncd = new NetcdfDataset(ncfile, false);
 
-    // Output the document, use standard formatter
-    //fmt = new XMLOutputter("  ", true);
-    //fmt.setLineSeparator("\n");
     fmt = new XMLOutputter(Format.getPrettyFormat());
     fmt.output(makeDocument(location), os);
   }
 
-  public void writeXMLAgg(NetcdfDataset ncd, OutputStream os, String location) throws IOException {
-    this.ncd = ncd;
+  public void writeXMLexplicit(NetcdfFile ncfile, OutputStream os, String location) throws IOException {
+    if (ncfile instanceof NetcdfDataset)
+      ncd = (NetcdfDataset) ncfile;
+    else
+      ncd = new NetcdfDataset(ncfile, false);
 
-    // Output the document, use standard formatter
-    //fmt = new XMLOutputter("  ", true);
-    //fmt.setLineSeparator("\n");
     fmt = new XMLOutputter(Format.getPrettyFormat());
-    fmt.output(makeDocument(location), os);
+    Document doc = makeDocument(location);
+    Element root = doc.getRootElement();
+    root.addContent( new Element("explicit", ncNS));
+    fmt.output(doc, os);
   }
 
 

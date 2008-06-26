@@ -364,7 +364,7 @@ public class NCdumpW {
       else
         printStructureDataArray( out, (ArrayStructure) array, ilev, ct);
 
-    } else if (array.getElementType() == StructureDataIterator.class) {
+    } else if (array.getElementType() == ArraySequence.class) {
       printSequence( out, (ArraySequence) array, ilev, ct);
 
      } else {

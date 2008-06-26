@@ -32,6 +32,7 @@
 
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
+  <property name="timingSrc.dir" location="${root.dir}/src/timing/java"/>
   <property name="commonSrc.dir" location="${root.dir}/../common/src/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
@@ -66,14 +67,11 @@
   <property name="logging.jar" value="nlog4j-1.2.25.jar"/>
   <property name="logging-minimal.jar" value="slf4j-jdk14-1.2.jar"/>
   <property name="lucene.jar" value="lucene.jar"/>
-  <property name="spring.jar" value="spring-2.5.jar"/>
-  <!-- property name="netcdf1.jar" value="netcdf1.jar"/ -->
-  <!-- property name="prefs.jar" value="prefsAll.jar"/ -->
   <property name="opendap.jar" value="opendap-2.1.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
+  <property name="spring.jar" value="spring-2.5.jar"/>
+  <property name="stax.jar" value="stax-api-1.0.1.jar"/>
   <property name="visadNoDods.jar" value="visadNoDods.jar"/>
-  <!--property name="xml-apis.jar" value="xml-apis.jar"/>
-  <property name="xercesImpl.jar" value="xercesImpl.jar"/ -->
 
   <!-- source -->
   <path id="sourcepath">
@@ -90,6 +88,7 @@
     <include name="external/${jdom.jar}"/>
     <include name="external/${logging.jar}"/>
     <include name="release/${visadNoDods.jar}"/>
+    <include name="external/${stax.jar}"/>
   </fileset>
 
   <fileset id="compileFromSrc.libraries" dir="${root.dir}">
@@ -103,6 +102,7 @@
     <include name="lib/${jgoodies.jar}"/>
     <include name="lib/${lucene.jar}"/>
     <include name="lib/${spring.jar}"/>
+    <include name="lib/${stax.jar}"/>
   </fileset>
 
   <path id="compile.classpath">
@@ -117,8 +117,6 @@
     <include name="external/${http-codec.jar}"/>
     <include name="external/${http-logging.jar}"/>
     <include name="external/${jpeg2000.jar}"/>
-    <!--include name="external/${xercesImpl.jar}"/>
-    <include name="external/${xml-apis.jar}"/ -->
   </fileset>
 
   <path id="runtime.classpath">
@@ -265,7 +263,6 @@
     <include name="thredds/wcs/**/*.java"/>
     <!-- *** -->
     <include name="ucar/**/*.java"/>
-    <exclude name="ucar/nc2/ncml_old/**"/>
     <exclude name="ucar/nc2/dataset/grid/*"/>
     <exclude name="ucar/nc2/util/reflect/*"/>
     <exclude name="ucar/unidata/geoloc/ogc/*"/> <!-- Also needed by TDS. -->
@@ -844,10 +841,6 @@
              signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${visadNoDods.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/visadNoDods.jar" storepass="${keystore.password}"/>
-    <!-- signjar alias="idv" jar="${lib.dir}/external/${xercesImpl.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/xercesImpl.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${xml-apis.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/xml-apis.jar" storepass="${keystore.password}"/ -->
   </target>
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->

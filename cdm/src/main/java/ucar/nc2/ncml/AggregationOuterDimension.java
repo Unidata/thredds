@@ -253,7 +253,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       } catch (ExecutionException e) {
-        throw new IOException(e.getCause());
+        throw new IOException(e.getMessage());
       }
 
     } else {

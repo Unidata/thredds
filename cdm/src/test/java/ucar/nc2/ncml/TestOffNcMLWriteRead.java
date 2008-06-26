@@ -42,9 +42,13 @@ public class TestOffNcMLWriteRead extends TestCase {
   }
 
   public void testReadAsNcfile() throws Exception {
-    for (String s : files) {
+    for (String s : files)
       convertAsNcfile(s, false);
-    }
+  }
+
+  public void testReadAsNcfileExplicit() throws Exception {
+    for (String s : files)
+      convertAsNcfileExplicit(s, false);
   }
 
   public void testReadAsNcfileWithRecords() throws Exception {
@@ -134,6 +138,51 @@ public class TestOffNcMLWriteRead extends TestCase {
     org_ncd.close();
     new_ncd.close();
   }
+
+  private void convertAsNcfileExplicit(String location, boolean useRecords) throws IOException {
+    location = StringUtil.replace(location, '\\', "/");
+
+    if (showFiles) {
+     System.out.println("-----------");
+     System.out.println(" input filename= "+location);
+    }
+
+    NetcdfFile org_ncd = NetcdfDataset.acquireFile(location, null);
+    if (useRecords)
+      org_ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+
+    NcMLWriter writer = new NcMLWriter();
+
+    // make sure writeDirs exists
+    File writeDir = new File(TestDataset.writeDir);
+    writeDir.mkdirs();
+
+    // create a file and write it out
+    int pos = location.lastIndexOf("/");
+    String filename = location.substring(pos+1);
+    String ncmlOut = TestDataset.writeDir+filename+ ".ncml";
+    if (showFiles) System.out.println(" output filename= "+ncmlOut);
+    try {
+     OutputStream out = new BufferedOutputStream( new FileOutputStream( ncmlOut, false));
+     writer.writeXMLexplicit( org_ncd, out, null);
+     out.close();
+    } catch (IOException ioe) {
+     ioe.printStackTrace();
+     assert false;
+    }
+
+    // read it back in
+    NetcdfFile new_ncd = NetcdfDataset.acquireFile(ncmlOut, null);
+    if (useRecords)
+      new_ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+
+    TestCompare.compareFiles( org_ncd, new_ncd);
+    //assert cat.equals( catV1);
+
+    org_ncd.close();
+    new_ncd.close();
+  }
+
 
   private void convertAsNcdataset(String location, boolean useRecords) throws IOException {
     location = StringUtil.replace(location, '\\', "/");

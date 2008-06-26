@@ -136,10 +136,10 @@ class ConstructNC {
     ncfile.addVariable(null, recordStructure);
     recordStructure.setDimensions("record");
 
-    Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, "time", DataType.LONG, ""));
+    /* Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, "time", DataType.LONG, ""));
     timev.addAttribute(new Attribute("units", "msecs since 1970-01-01 00:00"));
     timev.addAttribute(new Attribute("long_name", "observation time"));
-    timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
+    timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));  */
 
     for (DataDescriptor dkey : dkeyRoot.subKeys) {
       if (!dkey.isOkForVariable()) continue;

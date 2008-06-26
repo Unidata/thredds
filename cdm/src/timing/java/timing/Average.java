@@ -63,6 +63,6 @@ import  java.util.*;
   }
 
    public String toString() {
-     return " avg= "+mean() + " stdev= "+stddev();
+     return " avg= "+mean() + " stdev= "+stddev()+ " count= "+values.size();
    }
 }

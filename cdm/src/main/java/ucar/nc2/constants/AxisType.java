@@ -27,70 +27,70 @@ package ucar.nc2.constants;
  * @author john caron
  */
 
-public class AxisType {
+public enum AxisType {
 
-  private static java.util.Map<String,AxisType> hash = new java.util.HashMap<String,AxisType>(10);
+  //private static java.util.Map<String,AxisType> hash = new java.util.HashMap<String,AxisType>(10);
 
   /**
    * represents the runTime coordinate
    */
-  public final static AxisType RunTime = new AxisType("RunTime", 0);
+  RunTime(0),
   /**
    * represents the ensemble coordinate
    */
-  public final static AxisType Ensemble = new AxisType("Ensemble", 1);
+  Ensemble(1),
   /**
    * represents the time coordinate
    */
-  public final static AxisType Time = new AxisType("Time", 2);
+  Time(2),
   /**
    * represents a x coordinate
    */
-  public final static AxisType GeoX = new AxisType("GeoX", 5);
+  GeoX(5),
   /**
    * represents a y coordinate
    */
-  public final static AxisType GeoY = new AxisType("GeoY", 4);
+  GeoY(4),
   /**
    * represents a z coordinate
    */
-  public final static AxisType GeoZ = new AxisType("GeoZ", 3);
+  GeoZ(3),
   /**
    * represents a latitude coordinate
    */
-  public final static AxisType Lat = new AxisType("Lat", 4);
+  Lat(4),
   /**
    * represents a longitude coordinate
    */
-  public final static AxisType Lon = new AxisType("Lon", 5);
+  Lon(5),
   /**
    * represents a vertical height coordinate
    */
-  public final static AxisType Height = new AxisType("Height", 3);
+  Height(3),
   /**
    * represents a vertical pressure coordinate
    */
-  public final static AxisType Pressure = new AxisType("Pressure", 3);
+  Pressure(3),
   /**
    * represents a radial azimuth coordinate
    */
-  public final static AxisType RadialAzimuth = new AxisType("RadialAzimuth", 2);
+  RadialAzimuth(7),
   /**
    * represents a radial distance coordinate
    */
-  public final static AxisType RadialDistance = new AxisType("RadialDistance", 1);
+  RadialDistance(8),
   /**
    * represents a radial elevation coordinate
    */
-  public final static AxisType RadialElevation = new AxisType("RadialElevation", 3);
+  RadialElevation(6);
 
   private int order; // canonical ordering runTime - ensemble - time - z - y - x  or elev - azimuth - distance
-  private String _AxisType;
+  //private String _AxisType;
 
-  private AxisType(String s, int order) {
-    this._AxisType = s;
+  private AxisType(int order) {
+    //this._AxisType = s;
     this.order = order;
-    hash.put(s, this);
+    //hash.put(s, this);
   }
 
   /**
@@ -98,28 +98,16 @@ public class AxisType {
    *
    * @param name match this name
    * @return AxisType or null if no match.
+   * @deprecated use valueOf() directly
    */
   public static AxisType getType(String name) {
-    if (name == null) return null;
-    return hash.get(name);
+    return valueOf( name);
   }
 
   /**
-   * Axis name.
-   *
-   * @return the string name.
+   * axis ordering: runTime - ensemble - time - z - y - x  or elev - azimuth - distance
+   * @return order
    */
-  public String toString() {
-    return _AxisType;
-  }
-
-  /**
-   * canonical ordering: (time, z, x, y) or (time, elevation, azimuth, distance)
-   * @param o compare to this  AxisType
-   * @return +1, 0, -1 if greater tham, equal to, or less than the given AxisType
-   */
-  public int compareTo(AxisType o) {
-    return order - o.order;
-  }
+  public int axisOrder() { return order; }
 
 }

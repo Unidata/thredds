@@ -298,7 +298,7 @@ public class CoordinateAxis extends VariableDS {
       if (t2 == null)
         return 1;
 
-      return t1.compareTo(t2);
+      return t1.axisOrder() - t2.axisOrder();
     }
 
     public boolean equals(Object obj) {

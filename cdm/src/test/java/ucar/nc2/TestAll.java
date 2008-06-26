@@ -135,7 +135,7 @@ public class TestAll {
     RandomAccessFile.setDebugLeaks( true);
 
     TestSuite suite= new TestSuite();
-    /* suite.addTest( ucar.nc2.TestLocal.suite()); // data in the release
+    suite.addTest( ucar.nc2.TestLocal.suite()); // data in the release
 
     suite.addTest( ucar.nc2.TestNC2.suite());
     suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
@@ -144,7 +144,7 @@ public class TestAll {
     suite.addTest( ucar.nc2.ncml.TestNcML.suite());
     suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite()); // */
 
-    /* suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
+    suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
     suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite());
 
     suite.addTest( ucar.unidata.geoloc.TestGeoloc.suite());  //
@@ -156,7 +156,7 @@ public class TestAll {
     suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite()); //
     suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); // */
 
-    // aggregation, with cache
+    /* aggregation, with cache
     ucar.nc2.dataset.NetcdfDataset.initNetcdfFileCache(10,100,60*60);
     //suite.addTest( ucar.nc2.ncml.TestNcML.suite());
     //suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());  // */
