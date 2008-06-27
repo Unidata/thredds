@@ -330,7 +330,7 @@ public class CatalogEnhancer extends JPanel {
     pp.addEnumComboField("localMetadata.dataFormatType", "Data format", DataFormatType.getAllTypes(),
         true, 0, row, null);
 
-    pp.addEnumComboField("localMetadata.dataType", "Data type", FeatureType.getAllTypes(),
+    pp.addEnumComboField("localMetadata.dataType", "Data type", Arrays.asList(FeatureType.values()),
         true, 2, row, null);
 
     pp.addEnumComboField("collectionType", "Collection type", CollectionType.getAllTypes(),

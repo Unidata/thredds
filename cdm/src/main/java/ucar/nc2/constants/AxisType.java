@@ -95,13 +95,16 @@ public enum AxisType {
 
   /**
    * Find the AxisType that matches this name.
-   *
    * @param name match this name
    * @return AxisType or null if no match.
-   * @deprecated use valueOf() directly
    */
   public static AxisType getType(String name) {
-    return valueOf( name);
+   if (name == null) return null;
+    try {
+      return valueOf(name);
+    } catch (IllegalArgumentException e) { // lame!
+      return null;
+    }
   }
 
   /**

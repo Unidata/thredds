@@ -1426,7 +1426,7 @@ public class InvDatasetImpl extends InvDataset {
    * test
    */
   public static void main(String[] args) {
-    InvDatasetImpl topDs = new InvDatasetImpl(null, "topDs", FeatureType.getType("Grid"), "myService", "myUrlPath/");
+    InvDatasetImpl topDs = new InvDatasetImpl(null, "topDs", FeatureType.valueOf("GRID"), "myService", "myUrlPath/");
     InvService myS = new InvService("myService", ServiceType.DODS.toString(),
         "http://motherlode.ucar.edu/cgi-bin/dods/nph-dods", "", null);
     topDs.addService(myS);

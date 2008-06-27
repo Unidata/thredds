@@ -2,6 +2,6 @@
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
   <aggregation dimName="time" type="joinExisting" recheckEvery="4 sec">
     <!--scan dateFormatMark="CG#yyyyDDD_HHmmss" location="src/test/data/ncml/nc/cg/" suffix=".nc" subdirs="false" /-->
-    <scan location="src/test/data/ncml/nc/cg/" suffix=".nc" subdirs="false" />
+    <scan location="nc/cg/" suffix=".nc" subdirs="false" />
   </aggregation>
 </netcdf>

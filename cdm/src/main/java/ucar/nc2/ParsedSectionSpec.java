@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
 import java.util.List;
 
 /**
- * Nested Section Expression, allows subsetting of Structure member variables.
+ * Parsed Section Expression, allows nesting for subsetting of Structure member variables.
  *
  * @author caron
  * @since May 8, 2008

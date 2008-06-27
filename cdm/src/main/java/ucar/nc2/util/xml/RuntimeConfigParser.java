@@ -101,7 +101,7 @@ public class RuntimeConfigParser {
         } else if (elem.getName().equals("typedDatasetFactory")) {
           String typeName = elem.getAttributeValue("datatype");
           String className = elem.getAttributeValue("class");
-          FeatureType datatype = FeatureType.getType(typeName);
+          FeatureType datatype = FeatureType.valueOf(typeName.toUpperCase());
           if (null == datatype) {
             errlog.append("TypedDatasetFactory "+className+" unknown datatype= "+typeName+"\n");
             continue;

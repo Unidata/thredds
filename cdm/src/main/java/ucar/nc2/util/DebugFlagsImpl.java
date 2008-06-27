@@ -33,6 +33,10 @@ public class DebugFlagsImpl implements DebugFlags {
 
   private Map<String,Boolean> map = new HashMap<String,Boolean>();
 
+  /**
+   * Constructor.
+   * @param flagsOn space-separated list of flags to turn on.
+   */
   public DebugFlagsImpl(String flagsOn) {
     StringTokenizer stoke = new StringTokenizer(flagsOn);
     while (stoke.hasMoreTokens())

@@ -259,12 +259,12 @@ public class DiskCache {
 
   /**
    * Remove files if needed to make cache have less than maxBytes bytes file sizes.
-   * This will remove largest files first.
+   * This will remove oldest files first.
    * @param maxBytes max number of bytes in cache.
    * @param sbuff write results here, null is ok.
    */
   static public void cleanCache(long maxBytes, StringBuilder sbuff) {
-    cleanCache( maxBytes, new FileLengthComparator(), sbuff);
+    cleanCache( maxBytes, new FileAgeComparator(), sbuff);
   }
 
   /**
@@ -275,26 +275,27 @@ public class DiskCache {
    * @param sbuff write results here, null is ok.
    */
   static public void cleanCache(long maxBytes, Comparator fileComparator, StringBuilder sbuff) {
-    if (sbuff != null) sbuff.append("CleanCache maxBytes= ").append(maxBytes).append("\n");
+    if (sbuff != null) sbuff.append("DiskCache clean maxBytes= "+maxBytes+"on dir "+root+"\n");
 
     File dir = new File(root);
     File[] files = dir.listFiles();
-    List<File> fileList = Arrays.asList( files);
+    List fileList = Arrays.asList( files);
     Collections.sort( fileList, fileComparator);
 
     long total = 0, total_delete = 0;
-    for (File file : fileList) {
+    for (int i = 0; i < fileList.size(); i++) {
+      File file = (File) fileList.get(i);
       if (file.length() + total > maxBytes) {
         total_delete += file.length();
-        if (sbuff != null) sbuff.append(" delete ").append(file).append(" (").append(file.length()).append(")\n");
+        if (sbuff != null) sbuff.append(" delete "+file+" ("+file.length()+")\n");
         file.delete();
       } else {
         total += file.length();
       }
     }
     if (sbuff != null) {
-      sbuff.append("Total bytes deleted= ").append(total_delete).append("\n");
-      sbuff.append("Total bytes left in cache= ").append(total).append("\n");
+      sbuff.append("Total bytes deleted= "+total_delete+"\n");
+      sbuff.append("Total bytes left in cache= "+total+"\n");
     }
   }
 
@@ -303,6 +304,14 @@ public class DiskCache {
       File f1 = (File) o1;
       File f2 = (File) o2;
       return (int) (f1.length() - f2.length());
+    }
+  }
+
+  static private class FileAgeComparator implements Comparator {
+    public int compare(Object o1, Object o2) {
+      File f1 = (File) o1;
+      File f2 = (File) o2;
+      return (int) (f1.lastModified() - f2.lastModified());
     }
   }
 

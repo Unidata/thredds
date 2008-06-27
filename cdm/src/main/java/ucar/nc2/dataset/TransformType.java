@@ -26,34 +26,7 @@ package ucar.nc2.dataset;
  * @author john caron
  */
 
-public class TransformType {
-
-  private static java.util.Map<String,TransformType> hash = new java.util.HashMap<String,TransformType>(10);
-
-  public final static TransformType Projection = new TransformType("Projection");
-  public final static TransformType Vertical = new TransformType("Vertical");
-
-    private String _TransformType;
-    private TransformType(String s) {
-      this._TransformType = s;
-      hash.put( s, this);
-    }
-
-  /**
-   * Find the AxisType that matches this name.
-   * @param name find this name
-   * @return AxisType or null if no match.
-   */
-  public static TransformType getType(String name) {
-    if (name == null) return null;
-    return hash.get( name);
-  }
-
-  /**
-   * @return the string name.
-   */
-   public String toString() {
-      return _TransformType;
-  }
-
+public enum TransformType {
+  Projection,
+  Vertical;
 }

@@ -170,7 +170,14 @@ public class CrawlableDatasetFile implements CrawlableDataset
 
   public List<CrawlableDataset> listDatasets() throws IOException
   {
-    if ( ! this.isCollection() )
+   if ( ! this.exists() )
+    {
+      String tmpMsg = "This dataset <" + this.getPath() + "> does not exist.";
+      log.error( "listDatasets(): " + tmpMsg);
+      throw new IllegalStateException( tmpMsg );
+    }
+
+  if ( ! this.isCollection() )
     {
       String tmpMsg = "This dataset <" + this.getPath() + "> is not a collection dataset.";
       log.error( "listDatasets(): " + tmpMsg);

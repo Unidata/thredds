@@ -42,7 +42,7 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
-    18: fix large file writing.
+    18: fix large file writing
         in agg, fix CacheVar, joinExisting persistance.
         move NetcdfDataset.makeArray to Array.makeArray, add new variant
         UnidataPointObsDataset does not require bounding box in global attributes
@@ -51,6 +51,11 @@ This code is ALPHA
         add NcdumpW.printArray for vanilla array printing
         CoordSysBuilder allows coordinate axes to have coordinate systems
         move McIDASAreaProjection, McIDASAreaTransformBuilder to ucar.nc2.iosp.mcidas
+        change AxisType, DataType, FeatureType, TransformType into a java 1.5 enum
+        WRFConvention tolerates not having GLAT,GLON fields
+        bug fixes in BUFR
+        NcMLWriter.writeXMLexplicit puts <explicit/> in NcML
+        fix bug in NCdumpW.print sequences
     17: HTTPRandomAccessFile allows content-length to be long
         fix NcML aggregation unit tests; add new ones
         integrate aggregation with FileCache, experimental concurrency

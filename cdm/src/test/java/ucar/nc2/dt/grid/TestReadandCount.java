@@ -55,11 +55,11 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"cf/","cf1.nc", 1,1,5,2);
     doOne(griddir+"cf/","ccsm2.nc", 107, 3, 5, 2); //
     doOne(griddir+"cf/","tomw.nc", 19, 3, 4, 1);
-    doOne(griddir+"cf/","cf1_rap.nc", 11, 1, 4, 0); // not getting x, y
+    doOne(griddir+"cf/","cf1_rap.nc", 11, 2, 4, 0); // not getting x, y
     // doOne("C:/data/conventions/cf/signell/","signell_july2_03.nc", -1, -1, -1, -1); // 2D lat, lon; no x,y
 //**    doOne(griddir+"cf/","feb2003_short.nc", 14, 4, 4, 1);
     doOne(griddir+"cf/","feb2003_short2.nc", 22, 9, 8, 1);
-    doOne(griddir+"cf/","temperature.nc", 2, 2, 5, 1);
+    doOne(griddir+"cf/","temperature.nc", 4, 3, 5, 1);
 
     doOne(griddir+"gdv/","testGDV.nc", 30, 1, 4, 1);
     doOne(griddir+"gdv/","OceanDJF.nc", 15, 1, 4, 1);

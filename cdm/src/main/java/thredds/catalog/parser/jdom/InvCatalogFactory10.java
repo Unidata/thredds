@@ -219,9 +219,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     FeatureType dataType = null;
     if (dataTypeName != null) {
-      dataType = FeatureType.getType( dataTypeName);
+      dataType = FeatureType.getType( dataTypeName.toUpperCase());
       if (dataType == null) {
-        dataType = new FeatureType( dataTypeName);
         factory.appendWarning(" ** warning: non-standard data type = "+dataTypeName+"\n");
       }
     }
@@ -1416,9 +1415,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (dataTypeElem != null) {
       String dataTypeName = dataTypeElem.getText();
       if ((dataTypeName != null) && (dataTypeName.length() > 0)) {
-        FeatureType dataType = FeatureType.getType( dataTypeName);
+        FeatureType dataType = FeatureType.getType( dataTypeName.toUpperCase());
         if (dataType == null) {
-          dataType = new FeatureType( dataTypeName);
           factory.appendWarning(" ** warning: non-standard data type = "+dataTypeName+"\n");
         }
         tmg.setDataType( dataType);

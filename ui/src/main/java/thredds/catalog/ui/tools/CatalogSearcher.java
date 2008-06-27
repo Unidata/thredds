@@ -245,7 +245,7 @@ public class CatalogSearcher extends JPanel {
     int row = 0;
     pp.addHeading("Find Datasets that must have:", row++);
 
-    pp.addEnumComboField("DataType", "Data type", FeatureType.getAllTypes(),
+    pp.addEnumComboField("DataType", "Data type", Arrays.asList(FeatureType.values()),
         true, 0, row, null);
 
     pp.addEnumComboField("ServiceType", "Service type", ServiceType.getAllTypes(),

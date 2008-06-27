@@ -35,6 +35,7 @@ import thredds.ui.BAMutil;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionListener;
@@ -137,7 +138,7 @@ public class DatasetEditor extends JPanel {
     row++;
      // row 2
     addPopups( metadataPP.addEnumComboField(FORMAT_TYPE, "Data format", DataFormatType.getAllTypes(), true, 0, row, null));
-    addPopups( metadataPP.addEnumComboField(DATA_TYPE, "Data type", FeatureType.getAllTypes(), true, 2, row, null));
+    addPopups( metadataPP.addEnumComboField(DATA_TYPE, "Data type", Arrays.asList(FeatureType.values()), true, 2, row, null));
     metadataPP.addEnumComboField(COLLECTION_TYPE, "Collection type", CollectionType.getAllTypes(), true, 4, row++, null);
 
 ////////////

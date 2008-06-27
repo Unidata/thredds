@@ -100,7 +100,7 @@ public class TestInherit1 extends TestCase {
 
     ds = cat.findDatasetByID("nest12");
     s = ds.getDataType();
-    assert (s.toString().equals("Imagine")) : s;
+    assert (s.toString().equalsIgnoreCase("Image")) : s;
 
     ds = cat.findDatasetByID("nest121");
     s = ds.getDataType();

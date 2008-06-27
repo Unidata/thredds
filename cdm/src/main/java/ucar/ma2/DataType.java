@@ -26,39 +26,31 @@ package ucar.ma2;
  * @author john caron
  */
 
-public class DataType {
+public enum DataType {
 
-  private static java.util.Map<String,DataType> hash = new java.util.HashMap<String,DataType>(20);
-
-  public final static DataType BOOLEAN = new DataType("boolean", 1);
-  public final static DataType BYTE = new DataType("byte", 1);
-  public final static DataType CHAR = new DataType("char", 1);
-  public final static DataType SHORT = new DataType("short", 2);
-  public final static DataType INT = new DataType("int", 4);
-  public final static DataType LONG = new DataType("long", 8);
-  public final static DataType FLOAT = new DataType("float", 4);
-  public final static DataType DOUBLE = new DataType("double", 8);
+  BOOLEAN("boolean", 1),
+  BYTE("byte", 1),
+  CHAR("char", 1),
+  SHORT("short", 2),
+  INT("int", 4),
+  LONG("long", 8),
+  FLOAT("float", 4),
+  DOUBLE("double", 8),
 
   // object types
-  public final static DataType STRING = new DataType("String", 1); // LOOK sizes ?
-  public final static DataType STRUCTURE = new DataType("Structure", 1);
-  public final static DataType SEQUENCE = new DataType("Sequence", 4);
+  STRING("String", 1), // LOOK sizes ?
+  STRUCTURE("Structure", 1),
+  SEQUENCE("Sequence", 4),
 
   // netcdf4 types
-  public final static DataType OPAQUE = new DataType("opaque", 1); // LOOK KEEP??
-  public final static DataType ENUM = new DataType("enum", 1);
+  OPAQUE("opaque", 1), // LOOK KEEP??
+  ENUM("enum", 1);
 
-  static { // accept lower case for lookup also
-    hash.put( "string", STRING);
-    hash.put( "structure", STRUCTURE);
-  }
-
-  private String _DataType;
+  private String niceName;
   private int size;
   private DataType(String s, int size) {
-      this._DataType = s;
+      this.niceName = s;
       this.size = size;
-      hash.put( s, this);
   }
 
   /**
@@ -68,7 +60,11 @@ public class DataType {
    */
   public static DataType getType(String name) {
     if (name == null) return null;
-    return hash.get( name);
+    try {
+      return valueOf(name.toUpperCase());
+    } catch (IllegalArgumentException e) { // lame!
+      return null;
+    }
   }
 
    /**
@@ -104,7 +100,7 @@ public class DataType {
    * The DataType name, eg "byte", "float", "String".
    */
    public String toString() {
-      return _DataType;
+      return niceName;
   }
 
    /**
@@ -174,13 +170,17 @@ public class DataType {
   }
 
   /**
-   * Is STRING or CHAR
-   * @return true if STRING or CHAR
+   * Is String or Char
+   * @return true if String or Char
    */
   public boolean isString() {
     return (this == DataType.STRING) || (this == DataType.CHAR);
   }
 
+  /**
+   * Is Byte, Float, Double, Int, Short, or Long
+   * @return true if numeric
+   */
   public boolean isNumeric() {
     return (this == DataType.BYTE) || (this == DataType.FLOAT) || (this == DataType.DOUBLE) || (this == DataType.INT) ||
         (this == DataType.SHORT) || (this == DataType.LONG);  

@@ -21,83 +21,40 @@
 package ucar.nc2.constants;
 
 /**
- * Type-safe enumeration of Scientific Feature types.
+ * Type-safe enumeration of CDM Feature types, aka "Scientific Data Types".
  *
  * @author john caron
- * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">Scientific Feature Types</a>
+ * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Types</a>
  */
 
-public final class FeatureType {
-  private static java.util.List<FeatureType> members = new java.util.ArrayList<FeatureType>(20);
-
-  public final static FeatureType NONE = new FeatureType("");
-
-  public final static FeatureType GRID = new FeatureType("Grid");
-  public final static FeatureType IMAGE = new FeatureType("Image");
-  public final static FeatureType POINT = new FeatureType("Point");
-  public final static FeatureType PROFILE = new FeatureType("Profile");
-  public final static FeatureType RADIAL = new FeatureType("Radial");
-  public final static FeatureType SECTION = new FeatureType("Section");
-  public final static FeatureType STATION = new FeatureType("Station");
-  public final static FeatureType SWATH = new FeatureType("Swath");
-  public final static FeatureType TRAJECTORY = new FeatureType("Trajectory");
-  public final static FeatureType OTHER_UNKNOWN = new FeatureType("other/unknown");
+public enum FeatureType {
+  NONE,
+  GRID,
+  IMAGE,
+  POINT,
+  PROFILE,
+  RADIAL,
+  SECTION,
+  STATION,
+  SWATH,
+  TRAJECTORY,
 
   // experimental
-  public final static FeatureType STATION_PROFILE = new FeatureType("StationProfile");
-  public final static FeatureType STATION_RADIAL = new FeatureType("StationRadial");
-  public final static FeatureType ANY_POINT = new FeatureType("AnyPointFeatureCollection");
-
-  private String name;
-
-  public FeatureType(String s) {
-    this.name = s;
-    members.add(this);
-  }
+  STATION_PROFILE,
+  STATION_RADIAL,
+  ANY_POINT;
 
   /**
-   * @return all FeatureType objects
-   */
-  public static java.util.Collection<FeatureType> getAllTypes() {
-    return members;
-  }
-
-  /**
-   * Find the FeatureType that matches this name, ignore case.
-   *
-   * @param name : match this name
+   * Find the FeatureType that matches this name.
+   * @param name find FeatureType with this name.
    * @return FeatureType or null if no match.
    */
   public static FeatureType getType(String name) {
     if (name == null) return null;
-    for (FeatureType m : members) {
-      if (m.name.equalsIgnoreCase(name))
-        return m;
+    try {
+      return valueOf(name.toUpperCase());
+    } catch (IllegalArgumentException e) { // lame!
+      return null;
     }
-    return null;
-  }
-
-  /**
-   * Return the FeatureType name.
-   */
-  public String toString() {
-    return name;
-  }
-
-  /**
-   * Override Object.hashCode() to be consistent with this equals.
-   */
-  public int hashCode() {
-    return name.hashCode();
-  }
-
-  /**
-   * FeatureType with same name are equal.
-   */
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof FeatureType)) return false;
-    FeatureType so = (FeatureType) o;
-    return name.equals(so.name);
   }
 }

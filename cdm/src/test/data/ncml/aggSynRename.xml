@@ -5,7 +5,7 @@
 
   <aggregation  dimName="time" type="joinNew">
     <variableAgg name="T"/>
-    <scan location="src/test/data/ncml/nc/" suffix="Dir.nc"/>
+    <scan location="nc/" suffix="Dir.nc"/>
   </aggregation>
 
 </netcdf>

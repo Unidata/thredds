@@ -36,7 +36,7 @@ public class Evaluator {
     FeatureType ft = null;
     String fts = getLiteral(ds, key, errlog);
     if (fts != null) {
-      ft = FeatureType.getType(fts);
+      ft = FeatureType.valueOf(fts.toUpperCase());
       if ((ft == null) && (errlog != null))
         errlog.format(" Cant find Feature type %s from %s\n", fts, key);
     }
