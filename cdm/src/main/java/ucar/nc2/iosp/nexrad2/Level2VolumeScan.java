@@ -96,6 +96,7 @@ public class Level2VolumeScan {
   private ArrayList coefficientHighResGroups;
 
   private boolean showMessages = false, showData = false, debugScans = false, debugGroups2 = false, debugRadials = false, debugStats =  false;
+  private boolean runCheck = false;
 
   Level2VolumeScan(RandomAccessFile orgRaf, CancelTask cancelTask) throws IOException {
     this.raf = orgRaf;
@@ -194,7 +195,7 @@ public class Level2VolumeScan {
       if (first == null) first = r;
       last = r;
 
-      if (!r.checkOk()) {
+      if ( runCheck && !r.checkOk()) {
         continue;
       }
 
@@ -262,7 +263,7 @@ public class Level2VolumeScan {
     for (int i = 0; i < groups.size(); i++) {
       ArrayList group = (ArrayList) groups.get(i);
       int size = group.size();
-      testScan(name, group);
+      if(runCheck) testScan(name, group);
       if(size < 600) {
         max_radials = Math.max(max_radials, group.size());
         min_radials = Math.min(min_radials, group.size());
