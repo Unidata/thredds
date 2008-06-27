@@ -270,21 +270,21 @@ public class DiskCache {
   /**
    * Remove files if needed to make cache have less than maxBytes bytes file sizes.
    * This will remove files in sort order defined by fileComparator.
+   * The first files in the sort order are kept, until the max bytes is exceeded, then they are deleted.
    * @param maxBytes max number of bytes in cache.
    * @param fileComparator sort files first with this
    * @param sbuff write results here, null is ok.
    */
-  static public void cleanCache(long maxBytes, Comparator fileComparator, StringBuilder sbuff) {
+  static public void cleanCache(long maxBytes, Comparator<File> fileComparator, StringBuilder sbuff) {
     if (sbuff != null) sbuff.append("DiskCache clean maxBytes= "+maxBytes+"on dir "+root+"\n");
 
     File dir = new File(root);
     File[] files = dir.listFiles();
-    List fileList = Arrays.asList( files);
+    List<File> fileList = Arrays.asList( files);
     Collections.sort( fileList, fileComparator);
 
     long total = 0, total_delete = 0;
-    for (int i = 0; i < fileList.size(); i++) {
-      File file = (File) fileList.get(i);
+    for (File file : fileList) {
       if (file.length() + total > maxBytes) {
         total_delete += file.length();
         if (sbuff != null) sbuff.append(" delete "+file+" ("+file.length()+")\n");
@@ -299,19 +299,16 @@ public class DiskCache {
     }
   }
 
-  static private class FileLengthComparator implements Comparator {
-    public int compare(Object o1, Object o2) {
-      File f1 = (File) o1;
-      File f2 = (File) o2;
+  static private class FileLengthComparator implements Comparator<File> {
+    public int compare(File f1, File f2) {
       return (int) (f1.length() - f2.length());
     }
   }
 
-  static private class FileAgeComparator implements Comparator {
-    public int compare(Object o1, Object o2) {
-      File f1 = (File) o1;
-      File f2 = (File) o2;
-      return (int) (f1.lastModified() - f2.lastModified());
+  // reverse sort - latest come first
+  static private class FileAgeComparator implements Comparator<File> {
+    public int compare(File f1, File f2) {
+      return (int) (f2.lastModified() - f1.lastModified());
     }
   }
 
