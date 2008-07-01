@@ -22,7 +22,7 @@ package ucar.nc2.dt.point;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.PointObsDataset;
-import ucar.nc2.adde.AddeStationObsDataset;
+import ucar.nc2.iosp.adde.AddeStationObsDataset;
 import ucar.nc2.NetcdfFile;
 import thredds.catalog.InvAccess;
 import thredds.catalog.ServiceType;

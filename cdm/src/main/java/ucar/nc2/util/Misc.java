@@ -40,6 +40,13 @@ public class Misc {
     return diff < maxReletiveError;
   } */
 
+  /**
+   * Check if numbers are equal with tolerance
+   * @param v1 first floating point number
+   * @param v2 second floating point number
+   * @param tol reletive tolerence
+   * @return true if within tolerance
+   */
   public static boolean closeEnough( double v1, double v2, double tol) {
     if (show) {
       double d1 = Math.abs(v1-v2);
@@ -52,18 +59,31 @@ public class Misc {
     return diff < tol;
   }
 
+  /**
+   * Check if numbers are equal with default tolerance
+   * @param v1 first floating point number
+   * @param v2 second floating point number
+   * @return true if within tolerance
+   */
   public static boolean closeEnough( double v1, double v2) {
     if (v1 == v2) return true;
     double diff = (v2 == 0.0) ? Math.abs(v1-v2) :  Math.abs(v1/v2-1);
     return diff < maxReletiveError;
   }
 
+  /**
+   * Check if numbers are equal with default tolerance
+   * @param v1 first floating point number
+   * @param v2 second floating point number
+   * @return true if within tolerance
+   */
   public static boolean closeEnough( float v1, float v2) {
     if (v1 == v2) return true;
     double diff = (v2 == 0.0) ? Math.abs(v1-v2) :  Math.abs(v1/v2-1);
     return diff < maxReletiveError;
   }
 
+  /** test */
   public static void main(String args[]) {
     /* double val = 1.0e-10;
     while (closeEnough(1.0+val, 1.0))

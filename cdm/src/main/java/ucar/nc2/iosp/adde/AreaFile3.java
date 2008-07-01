@@ -1,4 +1,4 @@
-package ucar.nc2.adde;
+package ucar.nc2.iosp.adde;
 
 // import edu.wisc.ssec.mcidas.*;
 import edu.wisc.ssec.mcidas.AREAnav;

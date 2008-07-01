@@ -41,7 +41,7 @@ import java.util.*;
  * Read NcML and create NetcdfDataset.
  *
  * @author caron
- * @see "http://www.unidata.ucar.edu/software/netcdf/ncml/"
+ * @see <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">http://www.unidata.ucar.edu/software/netcdf/ncml/</a>
  */
 
 public class NcMLReader {

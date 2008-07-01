@@ -24,7 +24,7 @@ package ucar.unidata.io;
  * Immutable
  *
  * @author caron
- * @see "http://www.fmi.uni-sofia.bg/fmi/logic/vboutchkova/sources/KMPMatch_java.html"
+ * @see <a href="http://www.fmi.uni-sofia.bg/fmi/logic/vboutchkova/sources/KMPMatch_java.html">http://www.fmi.uni-sofia.bg/fmi/logic/vboutchkova/sources/KMPMatch_java.html</a>
  * @since May 9, 2008
  */
 public class KMPMatch {

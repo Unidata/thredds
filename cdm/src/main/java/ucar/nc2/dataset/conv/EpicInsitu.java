@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * "Epic In Situ", dapper conventions.
  *
- * @see "http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/metadata.html"
+ * @see <a href="http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/metadata.html">http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/metadata.html</a>
  *
  * @author caron
  */

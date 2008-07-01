@@ -38,7 +38,7 @@ import thredds.catalog.XMLEntityResolver;
  * Helper class to write NcML-G.
  *
  * @see ucar.nc2.NetcdfFile
- * @see "http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/"
+ * @see <a href="http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/">http://zeus.pin.unifi.it/projectsSites/galeon2-ncml-gml/</a>
  * @author caron
  */
 

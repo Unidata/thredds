@@ -1548,7 +1548,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return Array data read.
    * @throws IOException if error
    * @throws InvalidRangeException if variableSection is invalid
-   * @see ucar.ma2.Section#Section(String sectionSpec)for syntax of constraint expression
+   * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    * @deprecated use readSection(), flatten=false no longer supported
    */
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {

@@ -72,7 +72,7 @@ public class ImageDatasetFactory {
     if (location.startsWith("adde:")) {
 
       try {
-        ucar.nc2.adde.AddeImage addeImage = ucar.nc2.adde.AddeImage.factory( location);
+        ucar.nc2.iosp.adde.AddeImage addeImage = ucar.nc2.iosp.adde.AddeImage.factory( location);
         currentFile = null;
         return addeImage.getImage();
 

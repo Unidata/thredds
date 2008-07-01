@@ -39,7 +39,7 @@ import java.io.*;
  * by Peter Jannesen) and the original compress code.
  *
  *
- *  This version has been modified from the original 0.3-3 version by the
+ * <p> This version has been modified from the original 0.3-3 version by the
  *  Unidata Program Center (support@unidata.ucar.edu) to make the constructor
  *  public and to fix a couple of bugs.
  *  Also:
@@ -51,26 +51,6 @@ import java.io.*;
  * @author	Unidata Program Center
  */
 public class UncompressInputStream extends FilterInputStream {
-  /**
-   * @param is the input stream to decompress
-   * @throws IOException if the header is malformed
-   */
-  public UncompressInputStream(InputStream is) throws IOException {
-    super(is);
-    parse_header();
-  }
-
-
-  byte[] one = new byte[1];
-
-  public synchronized int read() throws IOException {
-    int b = read(one, 0, 1);
-    if (b == 1)
-      return (one[0] & 0xff);
-    else
-      return -1;
-  }
-
 
   // string table stuff
   private static final int TBL_CLEAR = 0x100;
@@ -100,6 +80,28 @@ public class UncompressInputStream extends FilterInputStream {
   private static final int EXTRA = 64;
 
 
+  /**
+   * @param is the input stream to decompress
+   * @throws IOException if the header is malformed
+   */
+  public UncompressInputStream(InputStream is) throws IOException {
+    super(is);
+    parse_header();
+  }
+
+
+  private byte[] one = new byte[1];
+
+  @Override
+  public synchronized int read() throws IOException {
+    int b = read(one, 0, 1);
+    if (b == 1)
+      return (one[0] & 0xff);
+    else
+      return -1;
+  }
+
+  @Override
   public synchronized int read(byte[] buf, int off, int len)
       throws IOException {
     if (eof) return -1;
@@ -328,6 +330,7 @@ public class UncompressInputStream extends FilterInputStream {
   }
 
 
+  @Override
   public synchronized long skip(long num) throws IOException {
     byte[] tmp = new byte[(int) num];
     int got = read(tmp, 0, (int) num);
@@ -339,6 +342,7 @@ public class UncompressInputStream extends FilterInputStream {
   }
 
 
+  @Override
   public synchronized int available() throws IOException {
     if (eof) return 0;
 
@@ -418,6 +422,7 @@ public class UncompressInputStream extends FilterInputStream {
    *
    * @return false
    */
+  @Override
   public boolean markSupported() {
     return false;
   }
@@ -448,6 +453,7 @@ public class UncompressInputStream extends FilterInputStream {
 
   private static final boolean debug = false, debugTiming = false;
 
+  /** test */
   public static void main(String args[]) throws Exception {
     if (args.length != 1) {
       System.err.println("Usage: UncompressInputStream <file>");

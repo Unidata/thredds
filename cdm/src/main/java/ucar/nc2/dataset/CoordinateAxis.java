@@ -51,7 +51,6 @@ import java.io.IOException;
  * A Structure cannot be a CoordinateAxis, although members of Structures can.
  *
  * @author john caron
- * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html"
  */
 
 public class CoordinateAxis extends VariableDS {

@@ -38,6 +38,7 @@ import java.util.*;
  *
  * @author caron
  * @see ucar.nc2.NetcdfFile
+ * @see <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">http://www.unidata.ucar.edu/software/netcdf/ncml/</a>
  */
 
 public class NcMLWriter {

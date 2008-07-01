@@ -334,7 +334,7 @@ abstract public class DatasetSource
   /**
    *
    * @param accessPoints
-   * @return
+   * @return the top-level dataset
    * @throws IOException if the main access point for this DatasetSource is not a container dataset or any of the given access points do not exist or are not under the main access point.
    */
   public InvDataset expand( List accessPoints) throws IOException

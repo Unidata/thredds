@@ -210,7 +210,7 @@ public class GempakFileReader implements GempakConstants {
 
     /**
      * Set the machine type for this system.
-     * @see http://lopica.sourceforge.net/os.html
+     * @see <a href="http://lopica.sourceforge.net/os.html">http://lopica.sourceforge.net/os.html</a>
      */
     private void setByteOrder() {
         String arch = System.getProperty("os.arch");

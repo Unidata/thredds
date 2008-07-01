@@ -29,8 +29,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import ucar.nc2.util.UnsynchronizedBufferedWriter;
-
 /**
  * Input/Output utilities.
  *
@@ -622,13 +620,13 @@ public class IO {
    * @param contents  String holding the contents
    * @return a Result object; generally 0 <= code <=400 is ok
    */
-  static public Result putToURL(String urlString, String contents) {
+  static public HttpResult putToURL(String urlString, String contents) {
 
     URL url;
     try {
       url = new URL(urlString);
     } catch (MalformedURLException e) {
-      return new Result(-1, "** MalformedURLException on URL (" + urlString + ")\n" + e.getMessage());
+      return new HttpResult(-1, "** MalformedURLException on URL (" + urlString + ")\n" + e.getMessage());
     }
 
     try {
@@ -644,25 +642,28 @@ public class IO {
 
       int code = c.getResponseCode();
       String mess = c.getResponseMessage();
-      return new Result(code, mess);
+      return new HttpResult(code, mess);
 
     } catch (java.net.ConnectException e) {
       if (showStackTrace) e.printStackTrace();
-      return new Result(-2, "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
+      return new HttpResult(-2, "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
 
     } catch (IOException e) {
       if (showStackTrace) e.printStackTrace();
-      return new Result(-3, "** IOException on URL: (" + urlString + ")\n" + e.getMessage());
+      return new HttpResult(-3, "** IOException on URL: (" + urlString + ")\n" + e.getMessage());
     }
 
   }
 
-  static public class Result {
-    public int code;
+  /**
+   * Holds the result of an HTTP action.
+   */
+  static public class HttpResult {
+    public int statusCode;
     public String message;
 
-    Result(int code, String message) {
-      this.code = code;
+    HttpResult(int code, String message) {
+      this.statusCode = code;
       this.message = message;
     }
   }

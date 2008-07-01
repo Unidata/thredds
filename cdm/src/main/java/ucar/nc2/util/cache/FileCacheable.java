@@ -23,7 +23,7 @@ package ucar.nc2.util.cache;
 import java.io.IOException;
 
 /**
- * Class Description.
+ * Interface for files that are cacheable.
  *
  * @author caron
  * @since Jun 2, 2008

@@ -27,7 +27,7 @@ import java.util.*;
 
 /**
  * @author Jayson Falkner
- * @see "http://www.onjava.com/pub/a/onjava/2004/03/03/filters.html"
+ * @see <a href="http://www.onjava.com/pub/a/onjava/2004/03/03/filters.html">http://www.onjava.com/pub/a/onjava/2004/03/03/filters.html</a>
  */
 
 /*  cache for 10 days:

@@ -1,4 +1,4 @@
-package ucar.nc2.adde;
+package ucar.nc2.iosp.adde;
 
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -8,7 +8,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  *

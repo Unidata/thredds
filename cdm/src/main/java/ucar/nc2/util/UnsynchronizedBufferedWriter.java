@@ -22,6 +22,7 @@ package ucar.nc2.util;
 import java.io.*;
 
 /**
+ * An unsynchronized version of a BufferedWriter, for performance.
  * @author com.elharo.io
  * @since Nov 4, 2007
  */

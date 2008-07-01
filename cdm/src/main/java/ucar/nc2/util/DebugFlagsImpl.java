@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 /**
- * Class Description.
+ * An implementation of DebugFlags
  *
  * @author caron
  */
@@ -45,7 +45,7 @@ public class DebugFlagsImpl implements DebugFlags {
 
   public boolean isSet(String flagName) {
     Boolean b  = map.get(flagName);
-    return (b != null) && b.booleanValue();
+    return (b != null) && b;
   }
 
   public void set(String flagName, boolean value) {

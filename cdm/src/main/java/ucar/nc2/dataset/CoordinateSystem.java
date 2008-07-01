@@ -56,6 +56,7 @@ import java.util.*;
  * ucar.nc2.dt.grid.GridCoordSys.
  *
  * @author caron
+ * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">Coordinate System Object Model</a>
  */
 public class CoordinateSystem {
 

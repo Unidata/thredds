@@ -1,4 +1,4 @@
-package ucar.nc2.adde;
+package ucar.nc2.iosp.adde;
 
 import ucar.ma2.*;
 import ucar.nc2.dt.image.ImageArrayAdapter;

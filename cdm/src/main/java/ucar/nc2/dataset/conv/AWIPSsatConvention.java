@@ -39,8 +39,8 @@ import java.util.*;
  *
  * @author caron
  *
- * @see "http://www-md.fsl.noaa.gov/eft/AWIPS/16c/onlinehelp/ifpServerSatelliteNETCDF.html"
- * @see "http://www.nws.noaa.gov/mdl/awips/aifmdocs/sec_4_e.htm"
+ * @see <a href="http://www-md.fsl.noaa.gov/eft/AWIPS/16c/onlinehelp/ifpServerSatelliteNETCDF.html">http://www-md.fsl.noaa.gov/eft/AWIPS/16c/onlinehelp/ifpServerSatelliteNETCDF.html</a>
+ * @see <a href="http://www.nws.noaa.gov/mdl/awips/aifmdocs/sec_4_e.htm">http://www.nws.noaa.gov/mdl/awips/aifmdocs/sec_4_e.htm</a>
  */
 
 public class AWIPSsatConvention extends CoordSysBuilder {

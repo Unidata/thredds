@@ -37,7 +37,7 @@ import java.util.*;
  *  is the standard data access library for both NCSC's EDSS project and EPA's Models-3.
  *
  * @author caron
- * @see "http://www.baronams.com/products/ioapi/index.html"
+ * @see <a href="http://www.baronams.com/products/ioapi/index.html">http://www.baronams.com/products/ioapi/index.html</a>
  */
 
 public class M3IOConvention extends CoordSysBuilder {

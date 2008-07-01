@@ -1,6 +1,5 @@
-// $Id: NdbcDataset.java 51 2006-07-12 17:13:13Z caron $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -22,7 +21,6 @@
 package ucar.nc2.dt.point;
 
 import ucar.ma2.*;
-import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
@@ -31,19 +29,15 @@ import ucar.nc2.dt.*;
 import java.io.*;
 import java.util.*;
 
-import thredds.catalog.*;
-
 /**
  * National Data Buoy Center data. This is a time series at a single buoy.
  *
  * <p> This is a single station of data. Assumed to be time ordered.
  * We construct the list of StationObsDatatype records, but without the data cached.
  *
- *  @see "http://www.ndbc.noaa.gov/index.shtml"
- *
+ * @see <a href="http://www.ndbc.noaa.gov/index.shtml">http://www.ndbc.noaa.gov/index.shtml</a>
  *
  * @author caron
- * @version $Revision: 51 $ $Date: 2006-07-12 17:13:13Z $
  */
 
 //  LOOK when from a dods server, record structure not there. Havent dealt with that yet.

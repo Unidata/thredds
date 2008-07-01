@@ -402,8 +402,8 @@ public class URLDumpPane extends TextHistoryPane {
     void putURL(String urlString) {
       if (urlString == null) return;
       String contents = ta.getText();
-      IO.Result result = IO.putToURL( urlString, contents);
-      javax.swing.JOptionPane.showMessageDialog(this, "Status code= "+result.code+"\n"+result.message);
+      IO.HttpResult result = IO.putToURL( urlString, contents);
+      javax.swing.JOptionPane.showMessageDialog(this, "Status code= "+result.statusCode +"\n"+result.message);
     }
 
     public void save() {

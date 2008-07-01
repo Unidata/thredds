@@ -309,7 +309,7 @@ public class NCdump {
    * @throws IllegalArgumentException when token is misformed, or variable name doesnt exist in ncfile
    * @throws ucar.ma2.InvalidRangeException if section does not match variable shape
    *
-   * @see ucar.ma2.Range#parseSpec(String sectionSpec)
+   * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   static private CEresult parseVariableSection( NetcdfFile ncfile, String variableSection) throws InvalidRangeException {
     StringTokenizer stoke = new StringTokenizer(variableSection, ".");
