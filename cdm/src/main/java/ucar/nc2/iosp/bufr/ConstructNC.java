@@ -46,10 +46,10 @@ class ConstructNC {
   private Map<String, String> tableA;
   private Map<String, DescriptorTableB> tableB;
   private Map<String, List<String>> tableD;
-  private BufrDataDescriptionSection dds;
-  DataDescriptor dkeyRoot;
+  private BufrMessage proto;
 
   ConstructNC(BufrMessage proto, int nobs, ucar.nc2.NetcdfFile nc) throws IOException {
+    this.proto = proto;
     this.ncfile = nc;
     this.nobs = nobs;
 
@@ -57,12 +57,10 @@ class ConstructNC {
     tableB = BufrTables.getTableB(proto.ids.getMasterTableFilename() + "-B");
     tableD = BufrTables.getTableD(proto.ids.getMasterTableFilename() + "-D");
 
-    this.dds = proto.dds;
-    proto.getRoot();
-    dkeyRoot = dds.getDescriptorRoot();
-    int nbits = dds.getTotalBits();
-    int inputBytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
-    int outputBytes = dds.getTotalBytes();
+    //dkeyRoot = dds.getDescriptorRoot();
+    //int nbits = dds.getTotalBits();
+    //int inputBytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
+    //int outputBytes = dds.getTotalBytes();
 
     // the category
     int cat = proto.ids.getCategory();
@@ -128,7 +126,7 @@ class ConstructNC {
   }
 
 
-  private void makeObsRecord() {
+  private void makeObsRecord() throws IOException {
     Dimension obsDim = new Dimension("record", nobs);
     ncfile.addDimension(null, obsDim);
 
@@ -141,7 +139,7 @@ class ConstructNC {
     timev.addAttribute(new Attribute("long_name", "observation time"));
     timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));  */
 
-    for (DataDescriptor dkey : dkeyRoot.subKeys) {
+    for (DataDescriptor dkey : proto.getRootDataDescriptor().subKeys) {
       if (!dkey.isOkForVariable()) continue;
 
       if (dkey.replication == 0)
