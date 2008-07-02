@@ -92,9 +92,12 @@ public class BufrIosp extends AbstractIOServiceProvider {
       BufrMessage m = scan.next();
       if (m == null) continue;
 
-      if (protoMessage == null)
+      if (protoMessage == null) {
         protoMessage = m;
-      else {
+        protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete tables        
+        if (!protoMessage.hasTablesComplete())
+          throw new IllegalStateException("BUFR file has incomplete tables");
+      } else {
         if (!protoMessage.equals(m))
           throw new IllegalStateException("File has different BUFR message types msg="+count);
       }
@@ -109,7 +112,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
       parseInfo.format("nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec\n", count, scan.getTotalObs(), took, rate);
     }
 
-    protoMessage.getRootDataDescriptor(); // construct the dds
     delegate = new ConstructNC(protoMessage, scan.getTotalObs(), ncfile);
 
     // count where the obs start in the messages
@@ -280,27 +282,10 @@ public class BufrIosp extends AbstractIOServiceProvider {
   // want the data from the msgOffset-th data subset in the message.
   // this is the non-compressed case
   private void readOneObs(BufrMessage m, int msgOffset, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
-    long pos = m.dataSection.dataPos + 4; // bytes to start of data section
-    int bitOffset = m.getBitOffset(msgOffset); // bit offset from start of data section
-
-    int bitBuf, bitPos;
-    if (bitOffset % 8 == 0) {
-      raf.seek(pos + bitOffset/8);
-      bitPos = 0;
-      bitBuf = 0;
-
-    } else {
-      raf.seek(pos  + bitOffset/8);
-      bitPos = 8 - (bitOffset % 8);
-      bitBuf = raf.read();
-    }
-    System.out.println("pos="+pos+" obs="+(pos  + bitOffset/8)+" bitPos="+bitPos+" bitBuf="+bitBuf);
-    BitReader reader = new BitReader(raf, bitPos, bitBuf);
-
-    //bb.putLong(0);  LOOK no pre-computed time field
+    BitReader reader = new BitReader(raf, m.dataSection.dataPos + 4);
+    reader.setBitOffset( m.getBitOffset(msgOffset)); // bit offset from start of data section
     readData(reader, protoMessage.getRootDataDescriptor().getSubKeys(), abb, bb);
   }
-
 
   private void readData(BitReader reader, List<DataDescriptor> dkeys, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
 

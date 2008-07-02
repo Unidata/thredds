@@ -82,6 +82,8 @@ import opendap.dap.DConnect2;
  */
 
 public class ToolsUI extends JPanel {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ToolsUI.class);
+
   static private final String WorldDetailMap = "/optional/nj22/maps/Countries.zip";
   static private final String USMap = "/optional/nj22/maps/US.zip";
 
@@ -820,7 +822,7 @@ public class ToolsUI extends JPanel {
 
     } catch (Exception e) {
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location + "\n" + e.getMessage());
-      e.printStackTrace();
+      log.error("NetcdfDataset.open cant open " + location, e);
 
       try {
         if (ncfile != null) ncfile.close();
