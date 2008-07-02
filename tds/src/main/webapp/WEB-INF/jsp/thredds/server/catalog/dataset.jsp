@@ -5,17 +5,67 @@
 
 <c:set var="dsList" value="${requestScope.curDsListParam}"/>
 <c:set var="level" value="${requestScope.curLevelParam}"/>
-<tr>
-  <c:forEach var="curDs" items="${dsList}">
+
+<br>
+<h2>DS - Request Attributes</h2>
 <%
-  Enumeration<String> e = pageContext.getAttributeNamesInScope( PageContext.REQUEST_SCOPE );
+  Enumeration<String> e1 = request.getAttributeNames();
+  for ( ; e1.hasMoreElements(); )
+  {
+    String s = e1.nextElement();
+    Object att = request.getAttribute( s );
+    if ( att != null )
+    {
+      String c = att.getClass().toString();
+%>
+      <p><%= s %> : <%= c %></p>
+<%
+    }
+  }
+%>
+      <h2>DS - PageContext (app scope) Attributes</h2>
+<%
+  Enumeration<String> e = pageContext.getAttributeNamesInScope( PageContext.APPLICATION_SCOPE );
   for ( ; e.hasMoreElements(); )
   {
     String s = e.nextElement();
+    Object att = pageContext.getAttribute( s );
+    String c = att != null ? att.getClass().toString() : "--";
 %>
-    <td><%= s %></td>
+    <p><%= s %> : <%= c %></p>
 <%
   }
+%>
+      <h2>DS - PageContext (page scope) Attributes</h2>
+<%
+  e = pageContext.getAttributeNamesInScope( PageContext.PAGE_SCOPE );
+  for ( ; e.hasMoreElements(); )
+  {
+    String s = e.nextElement();
+    Object att = pageContext.getAttribute( s );
+    String c = att != null ? att.getClass().toString() : "--";
+%>
+    <p><%= s %> : <%= c %></p>
+<%
+  }
+%>
+      <h2>DS - PageContext (req scope) Attributes</h2>
+<%
+  e = pageContext.getAttributeNamesInScope( PageContext.REQUEST_SCOPE );
+  for ( ; e.hasMoreElements(); )
+  {
+    String s = e.nextElement();
+    Object att = pageContext.getAttribute( s );
+    String c = att != null ? att.getClass().toString() : "--";
+%>
+    <p><%= s %> : <%= c %></p>
+<%
+  }
+%>
+
+<tr>
+  <c:forEach var="curDs" items="${dsList}">
+<%
   //InvDatasetImpl curDataset = (InvDatasetImpl) pageContext.getAttribute( "curDs" );
 
 %>

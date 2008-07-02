@@ -7,47 +7,87 @@
 
 <c:set var="cat" value="${catalog}" scope="request"/>
 
-<%
-  Enumeration<String> e = pageContext.getAttributeNamesInScope( PageContext.REQUEST_SCOPE );
-  for ( ; e.hasMoreElements(); )
-  {
-    String s = e.nextElement();
-    String c = pageContext.getAttribute( s ).getClass().toString();
-%>
-    <td><%= s %> : <%= c %></td>
-<%
-  }
-                                           
-//  InvCatalogImpl catalog = (InvCatalogImpl) pageContext.getAttribute( "cat" );
-//  String catUri = HtmlUtils.htmlEscape( catalog.getUriString());
-//  String catName = catalog.getName();
-//  List childrenDs = catalog.getDatasets();
-//  InvDatasetImpl onlyChild = null;
-//  if ( childrenDs.size() == 1 )
-//  {
-//    onlyChild = (InvDatasetImpl) childrenDs.get( 0 );
-//    if ( catName == null )
-//      catName = onlyChild.getName();
-//  }
-//  if ( catName != null)
-//    catName = HtmlUtils.htmlEscape( catName);
-%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
+<%
+  InvCatalogImpl catalog = (InvCatalogImpl) request.getAttribute( "catalog" );
+  String catName = (String) request.getAttribute( "catName");
+  String catUri = (String) request.getAttribute( "catUri");
+  String webappName = (String) request.getAttribute( "webappName");
+  String webappVersion = (String) request.getAttribute( "webappVersion");
+  String webappBuildDate = (String) request.getAttribute( "webappBuildDate");
+  String webappDocsPath = (String) request.getAttribute( "webappDocsPath");
+%>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <link rel="icon" href="/thredds/favicon.ico" type="image/x-icon"/>
   <link rel="stylesheet" href="/thredds/tdsCat.css" type="text/css"/>
-  <title>Catalog: <%--= catName != null ? catName : catUri --%></title>
+  <title>Catalog: <%= catUri %></title>
 </head>
 
 <body>
-<%-- //if ( catName != null ) { %>
-  <h1>Catalog: <%= catName %><br><%= catUri %></h1>
-<% //} else { %>
-  <h1>Catalog: <%= catUri %></h1>
-<% //} --%>
 
+<h2>Request Attributes</h2>
+<%
+  Enumeration<String> e1 = request.getAttributeNames();
+  for ( ; e1.hasMoreElements(); )
+  {
+    String s = e1.nextElement();
+    Object att = request.getAttribute( s );
+    if ( att != null )
+    {
+      String c = att.getClass().toString();
+%>
+      <p><%= s %> : <%= c %></p>
+<%
+    }
+  }
+%>
+      <h2>PageContext (app scope) Attributes</h2>
+<%
+  Enumeration<String> e = pageContext.getAttributeNamesInScope( PageContext.APPLICATION_SCOPE );
+  for ( ; e.hasMoreElements(); )
+  {
+    String s = e.nextElement();
+    Object att = pageContext.getAttribute( s );
+    String c = att != null ? att.getClass().toString() : "--";
+%>
+    <p><%= s %> : <%= c %></p>
+<%
+  }
+%>
+      <h2>PageContext (page scope) Attributes</h2>
+<%
+  e = pageContext.getAttributeNamesInScope( PageContext.PAGE_SCOPE );
+  for ( ; e.hasMoreElements(); )
+  {
+    String s = e.nextElement();
+    Object att = pageContext.getAttribute( s );
+    String c = att != null ? att.getClass().toString() : "--";
+%>
+    <p><%= s %> : <%= c %></p>
+<%
+  }
+%>
+      <h2>PageContext (req scope) Attributes</h2>
+<%
+  e = pageContext.getAttributeNamesInScope( PageContext.REQUEST_SCOPE );
+  for ( ; e.hasMoreElements(); )
+  {
+    String s = e.nextElement();
+    Object att = pageContext.getAttribute( s );
+    String c = att != null ? att.getClass().toString() : "--";
+%>
+    <p><%= s %> : <%= c %></p>
+<%
+  }
+%>
+<% if ( catName != null ) { %>
+  <h1>Catalog: <%= catName %><br><%= catUri %></h1>
+<% } else { %>
+  <h1>Catalog: <%= catUri %></h1>
+<% } %>
+                 
 
   <hr size="1" noshade="noshade">
   <table width="95%" cellspacing="0" cellpadding="5" align="center">

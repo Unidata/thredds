@@ -43,11 +43,6 @@ public class TdsConfigHtml
     return webappContextPath;
   }
 
-  public void setWebappContextPath( String webappContextPath )
-  {
-    this.webappContextPath = webappContextPath;
-  }
-
   /**
    * Return the name of the webapp.
    * @return the name of the webapp.
@@ -57,11 +52,6 @@ public class TdsConfigHtml
     return webappName;
   }
 
-  public void setWebappName( String webappName )
-  {
-    this.webappName = webappName;
-  }
-
   /**
    * Return the version of the webapp.
    * @return the version of the webapp.
@@ -69,11 +59,6 @@ public class TdsConfigHtml
   public String getWebappVersion()
   {
     return webappVersion;
-  }
-
-  public void setWebappVersion( String webappVersion )
-  {
-    this.webappVersion = webappVersion;
   }
 
   /**

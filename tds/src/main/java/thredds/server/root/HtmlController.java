@@ -2,6 +2,7 @@ package thredds.server.root;
 
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,10 +11,13 @@ import thredds.servlet.DataRootHandler;
 import thredds.server.config.TdsContext;
 import thredds.server.views.FileView;
 import thredds.catalog.InvCatalog;
+import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvDatasetImpl;
 
 import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * _more_
@@ -45,20 +49,37 @@ public class HtmlController extends AbstractController
 
     if ( cat == null )
     {
+      // If request doesn't match a known catalog, look for a public document.
       File publicFile = tdsContext.getPublicDocFileSource().getFile( path );
-      if ( publicFile == null )
+      if ( publicFile != null )
+        return new ModelAndView( new FileView(), "file", publicFile );
+
+      // If request doesn't match a public document, hand to default.
+      tdsContext.getDefaultRequestDispatcher().forward( req, res);
+      return null;
+    }
+
+    // Hand to catalog view.
+    String catName = cat.getName();
+    String catUri = cat.getUriString();
+    if ( catName == null )
+    {
+      List childrenDs = cat.getDatasets();
+      if ( childrenDs.size() == 1 )
       {
-        tdsContext.getDefaultRequestDispatcher().forward( req, res);
-        return null;
+        InvDatasetImpl onlyChild = (InvDatasetImpl) childrenDs.get( 0 );
+        catName = onlyChild.getName();
       }
-      return new ModelAndView( new FileView(), "file", publicFile);
     }
 
     Map<String,Object> model = new HashMap<String,Object>();
     model.put( "catalog", cat);
+    model.put( "catalogName", HtmlUtils.htmlEscape( catName));
+    model.put( "catalogUri", HtmlUtils.htmlEscape( catUri));
+    model.put( "webappName", this.getServletContext().getServletContextName() );
     model.put( "webappVersion", tdsContext.getWebappVersion());
-    model.put( "webappName", this.getServletContext().getServletContextName());
-    model.put( "docsPath", "http://someserver/thredds/");
+    model.put( "webappBuildDate", tdsContext.getWebappBuildDate());
+    model.put( "webappDocsPath", tdsContext.getTdsConfigHtml().getWebappDocsPath());
     return new ModelAndView( "thredds/server/catalog/catalog", model);
   }
 }

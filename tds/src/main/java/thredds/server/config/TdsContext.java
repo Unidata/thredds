@@ -67,6 +67,7 @@ public class TdsContext
   public void setMinorVersion( int minorVer) { this.webappMinorVersion = minorVer; }
   public void setBugfixVersion( int bugfixVer) { this.webappBugfixVersion = bugfixVer; }
   public void setBuildVersion( int buildVer) { this.webappBuildVersion = buildVer; }
+  public void setWebappBuildDate( String buildDateString) { this.webappBuildDate = buildDateString; }
 
   public void setContentPath( String contentPath) {this.contentPath = contentPath; }
   public void setStartupContentPath( String startupContentPath ) { this.startupContentPath = startupContentPath; }
@@ -74,6 +75,7 @@ public class TdsContext
   public void setMotherlodeContentPath( String motherlodeContentPath ) { this.motherlodeContentPath = motherlodeContentPath; }
 
   public void setTdsConfigHtml( TdsConfigHtml tdsConfigHtml ) { this.tdsConfigHtml = tdsConfigHtml; }
+  public TdsConfigHtml getTdsConfigHtml() { return this.tdsConfigHtml; }
 
 //  /**
 //   * Constructor.
@@ -235,6 +237,11 @@ public class TdsContext
     return this.webappVersionFull;
   }
 
+  public String getWebappBuildDate()
+  {
+    return this.webappBuildDate;
+  }
+  
   /**
    * Return the web apps root directory (i.e., getRealPath( "/")).
    *
