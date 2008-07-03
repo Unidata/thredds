@@ -70,6 +70,8 @@ public class HtmlController extends AbstractController
         InvDatasetImpl onlyChild = (InvDatasetImpl) childrenDs.get( 0 );
         catName = onlyChild.getName();
       }
+      else
+        catName = "";
     }
 
     Map<String,Object> model = new HashMap<String,Object>();

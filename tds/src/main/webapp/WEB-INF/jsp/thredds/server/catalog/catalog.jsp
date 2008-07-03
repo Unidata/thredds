@@ -13,6 +13,7 @@
   InvCatalogImpl catalog = (InvCatalogImpl) request.getAttribute( "catalog" );
   String catName = (String) request.getAttribute( "catName");
   String catUri = (String) request.getAttribute( "catUri");
+  // isLocalCatalog
   String webappName = (String) request.getAttribute( "webappName");
   String webappVersion = (String) request.getAttribute( "webappVersion");
   String webappBuildDate = (String) request.getAttribute( "webappBuildDate");
@@ -27,6 +28,7 @@
 
 <body>
 
+<%--
 <h2>Request Attributes</h2>
 <%
   Enumeration<String> e1 = request.getAttributeNames();
@@ -82,6 +84,7 @@
 <%
   }
 %>
+--%>
 <% if ( catName != null ) { %>
   <h1>Catalog: <%= catName %><br><%= catUri %></h1>
 <% } else { %>

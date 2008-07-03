@@ -1,68 +1,33 @@
 <%@ page import="thredds.catalog.InvDatasetImpl" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Enumeration" %>
+<%@ page import="thredds.catalog.InvDataset" %>
+<%@ page import="thredds.catalog.InvCatalogRef" %>
 <%@ include file="/WEB-INF/jsp/includes.jsp" %>
 
-<c:set var="dsList" value="${requestScope.curDsListParam}"/>
-<c:set var="level" value="${requestScope.curLevelParam}"/>
-
-<br>
-<h2>DS - Request Attributes</h2>
+<%--
+<c:set var="curDsList" value="${requestScope.curDsListParam}" />
+<c:set var="curLevel" value="${requestScope.curLevelParam}" />
+--%>
 <%
-  Enumeration<String> e1 = request.getAttributeNames();
-  for ( ; e1.hasMoreElements(); )
+  List<InvDatasetImpl> curDsList = (List<InvDatasetImpl>) request.getAttribute( "curDsListParam" );
+  int curLevel = Integer.parseInt( (String) request.getAttribute( "curLevelParam" ));
+
+  for ( InvDatasetImpl curDs : curDsList )
   {
-    String s = e1.nextElement();
-    Object att = request.getAttribute( s );
-    if ( att != null )
+    if ( curDs instanceof InvCatalogRef )
     {
-      String c = att.getClass().toString();
-%>
-      <p><%= s %> : <%= c %></p>
-<%
+
     }
-  }
-%>
-      <h2>DS - PageContext (app scope) Attributes</h2>
-<%
-  Enumeration<String> e = pageContext.getAttributeNamesInScope( PageContext.APPLICATION_SCOPE );
-  for ( ; e.hasMoreElements(); )
-  {
-    String s = e.nextElement();
-    Object att = pageContext.getAttribute( s );
-    String c = att != null ? att.getClass().toString() : "--";
-%>
-    <p><%= s %> : <%= c %></p>
-<%
-  }
-%>
-      <h2>DS - PageContext (page scope) Attributes</h2>
-<%
-  e = pageContext.getAttributeNamesInScope( PageContext.PAGE_SCOPE );
-  for ( ; e.hasMoreElements(); )
-  {
-    String s = e.nextElement();
-    Object att = pageContext.getAttribute( s );
-    String c = att != null ? att.getClass().toString() : "--";
-%>
-    <p><%= s %> : <%= c %></p>
-<%
-  }
-%>
-      <h2>DS - PageContext (req scope) Attributes</h2>
-<%
-  e = pageContext.getAttributeNamesInScope( PageContext.REQUEST_SCOPE );
-  for ( ; e.hasMoreElements(); )
-  {
-    String s = e.nextElement();
-    Object att = pageContext.getAttribute( s );
-    String c = att != null ? att.getClass().toString() : "--";
-%>
-    <p><%= s %> : <%= c %></p>
-<%
-  }
+    else
+    {
+      
+    }
 %>
 
+<%
+  }
+%>
 <tr>
   <c:forEach var="curDs" items="${dsList}">
 <%
