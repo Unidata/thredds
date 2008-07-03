@@ -102,8 +102,11 @@ public class BufrIosp extends AbstractIOServiceProvider {
         if (!protoMessage.hasTablesComplete())
           throw new IllegalStateException("BUFR file has incomplete tables");
       } else {
-        if (!protoMessage.equals(m))
-          throw new IllegalStateException("File has different BUFR message types msg=" + count);
+        if (!protoMessage.equals(m)) {
+          System.out.println("File has different BUFR message types msg=" + count);
+          continue; // skip
+          //throw new IllegalStateException("File has different BUFR message types msg=" + count);
+        }
       }
 
       msgs.add(m);
@@ -207,17 +210,18 @@ public class BufrIosp extends AbstractIOServiceProvider {
     BitReader reader = new BitReader(raf, m.dataSection.dataPos + 4);
 
     if (m.dds.isCompressed()) {
-      // readDataCompressed(reader, protoMessage.getRootDataDescriptor().getSubKeys(), msgOffset, abb, bb); 
+      m.calcTotalBits(); // make sure things have been counted.
+      readDataCompressed(reader, m.getRootDataDescriptor(), msgOffset, 0, abb, bb);
 
     } else {
       reader.setBitOffset(m.getBitOffset(msgOffset)); // bit offset from start of data section
-      readData(reader, protoMessage.getRootDataDescriptor().getSubKeys(), abb, bb);
+      readData(reader, m.getRootDataDescriptor().getSubKeys(), abb, bb);
     }
   }
 
   private void readData(BitReader reader, List<DataDescriptor> dkeys, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
 
-    // LOOK : assumes we want all members
+    // LOOK : assumes we want all the members of the structure
     // transfer the bits to the ByteBuffer, aligning on byte boundaries
     for (DataDescriptor dkey : dkeys) {
       // misc skip
@@ -277,42 +281,87 @@ public class BufrIosp extends AbstractIOServiceProvider {
     //System.out.println("bb pos="+bb.position()+" fileBytesUsed = "+used);
   }
 
-  /* private int readDataCompressed(BitReader reader, List<DataDescriptor> dkeys, int msgOffset, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
+  /* Example msg has 60 obs in it. each obs has struct(18):
+    struct {
+      i1;
+      i2;
+      ...
+      struct {
+        f1;
+        f2;
+      } inner(18);
+      ...
+    } outer(60);
 
-    for (DataDescriptor dkey : parent.subKeys) {
+    layout is comp(i1,60), comp(i2,60), ... comp(inner,60), ...
+    where comp(inner,60) = [comp(f1,60), comp(f2(60)] * 18
+    where comp = compressed structure = (minValue, dataWidth, n * dataWidth)
+
+    using BB layout is =
+      [i1, i2, ..., [f1, f2] * 18, ...] * 60
+
+   */
+  // read data for a particular obs
+  private void readDataCompressed(BitReader reader, DataDescriptor parent, int msgOffset, int startBitPos, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
+
+    for (DataDescriptor dkey : parent.getSubKeys()) {
       if (!dkey.isOkForVariable()) // misc skip
         continue;
 
       // sequence : probably works the same way as structure
       if (dkey.replication == 0) {
-        throw new IllegalStateException("compressed sequence");
+        continue; // skip for the moment
       }
 
       // structure
       if (dkey.type == 3) {
-        // just guess how this is stored - no documentation.
-        for (int i=0; i<dkey.replication; i++) {
-          bitOffset = readDataCompressed( reader, bitOffset, n, dkey, out);
+        for (int i = 0; i < dkey.replication; i++) {
+          int start = startBitPos + dkey.bitOffset + i * dkey.bitWidth2; // dkey is the containing structure
+          readDataCompressed(reader, dkey, msgOffset, start, abb, bb);
         }
         continue;
       }
 
       // char data - need to find some to test with
       if (dkey.type == 1) {
-        throw new IllegalStateException("compressed char data");
+        continue; // skip for the moment
       }
 
-      // bitOffset is now set to the next variable. so we skip there
-      reader.setBitOffset(bitOffset);
-      int dataMin = reader.bits2UInt(dkey.bitWidth);
-      // now we are where the increment data width is stored - always in 6 bits 2^6 = 64
+      // skip to where this variable starts
+      reader.setBitOffset( startBitPos + dkey.bitOffset);
+      int value = reader.bits2UInt(dkey.bitWidth);
       int dataWidth = reader.bits2UInt(6);
 
-      bitOffset += dkey.bitWidth + 6 + dataWidth * n;
+      // if dataWidth == 0, just use min value
+      if (dataWidth > 0) {
+        // skip to where this observation starts in the variable data, and read the incremental value
+        reader.setBitOffset( startBitPos + dkey.bitOffset + dkey.bitWidth + 6 + dataWidth * msgOffset);
+        value += reader.bits2UInt(dataWidth);
+      }
+
+      // place into byte buffer
+      if (dkey.getByteWidthCDM() == 1) {
+        bb.put((byte) value);
+      } else if (dkey.getByteWidthCDM() == 2) {
+        int b1 = value & 0xff;
+        int b2 = (value & 0xff00) >> 8;
+        bb.put((byte) b2);
+        bb.put((byte) b1);
+      } else {
+        int b1 = value & 0xff;
+        int b2 = (value & 0xff00) >> 8;
+        int b3 = (value & 0xff0000) >> 16;
+        int b4 = (value & 0xff000000) >> 24;
+        bb.put((byte) b4);
+        bb.put((byte) b3);
+        bb.put((byte) b2);
+        bb.put((byte) b1);
+      }
+
     }
 
-    return bitOffset;
-  }   */
+  }
+
 
 
   ////////////////////////////////////////////////////////////////////

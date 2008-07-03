@@ -75,6 +75,7 @@ public class IndependentWindow extends JFrame {
 
   public void setComponent(Component comp ) {
     Container cp = getContentPane();
+    cp.removeAll();
     cp.add(comp, BorderLayout.CENTER);
     try {
       pack();
