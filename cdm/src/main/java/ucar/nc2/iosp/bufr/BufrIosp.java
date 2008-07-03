@@ -67,8 +67,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   private NetcdfFile ncfile;
   private RandomAccessFile raf;
-  private Formatter parseInfo = new Formatter();
-  private ConstructNC delegate;
+  private Formatter parseInfo;
+  //private ConstructNC delegate;
   private BufrMessage protoMessage;
   private DateFormatter dateFormatter = new DateFormatter();
 
@@ -84,8 +84,12 @@ public class BufrIosp extends AbstractIOServiceProvider {
     this.ncfile = ncfile;
 
     long start = System.nanoTime();
-    if (debugOpen) parseInfo.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+    if (debugOpen) {
+      parseInfo = new Formatter();
+      parseInfo.format("\nOpen %s size = %d Kb \n", raf.getLocation(), raf.length() / 1000);
+    }
 
+    // assume theres no index for now
     BufrScanner scan = new BufrScanner(raf);
     int count = 0;
     while (scan.hasNext()) {
@@ -99,7 +103,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
           throw new IllegalStateException("BUFR file has incomplete tables");
       } else {
         if (!protoMessage.equals(m))
-          throw new IllegalStateException("File has different BUFR message types msg="+count);
+          throw new IllegalStateException("File has different BUFR message types msg=" + count);
       }
 
       msgs.add(m);
@@ -112,7 +116,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
       parseInfo.format("nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec\n", count, scan.getTotalObs(), took, rate);
     }
 
-    delegate = new ConstructNC(protoMessage, scan.getTotalObs(), ncfile);
+    // this fills the netcdf object
+    new ConstructNC(protoMessage, scan.getTotalObs(), ncfile);
 
     // count where the obs start in the messages
     obsStart = new int[msgs.size()];
@@ -129,27 +134,20 @@ public class BufrIosp extends AbstractIOServiceProvider {
   /////////////////////////////////////////////////////////////////////////////////////////////////
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
 
-    // LOOK
-    //if (!(v2 instanceof Structure)) {
-    //  return readDataVariable(v2.getName(), v2.getDataType(), section.getRanges());
-    //}
     Structure s = (Structure) v2;
-
-    if (v2.getName().equals(obsIndex)) {
+    if (v2.getName().equals(obsIndex)) {  // LOOK
       return readIndex(s, section);
     }
 
-    // for the obs structure
-    int[] shape = section.getShape();
-
     // allocate ArrayStructureBB for outer structure
     StructureMembers members = s.makeStructureMembers();
-    int offset = setOffsets(members);
+    setOffsets(members);
 
-    ArrayStructureBB abb = new ArrayStructureBB(members, shape);
+    ArrayStructureBB abb = new ArrayStructureBB(members, section.getShape());
     ByteBuffer bb = abb.getByteBuffer();
     bb.order(ByteOrder.BIG_ENDIAN);
-    long total_offset = offset * section.computeSize();
+
+    // long total_offset = offset * section.computeSize();
     //System.out.println("offset=" + offset + " nelems= " + section.computeSize());
     //System.out.println("total offset=" + total_offset + " bb_size= " + bb.capacity());
     // assert offset == bb.capacity() : "total offset="+offset+ " bb_size= "+bb.capacity();
@@ -161,24 +159,30 @@ public class BufrIosp extends AbstractIOServiceProvider {
       BufrMessage msg = msgf.find(obsIndex);
       if (msg == null) {
         log.error("MsgFinder failed on index " + obsIndex);
-        break;
+        throw new IllegalStateException("MsgFinder failed on index " + obsIndex);
       }
 
       readOneObs(msg, msgf.msgOffset(obsIndex), abb, bb);
-
-      /* raf.seek( obs.dataSection.dataPos+4); // heres where the data starts for this message
-   /* raf.seek(obs.getOffset());
-   bitPos = 0; // obs.getBitPos();
-   bitBuf = 0; // obs.getStartingByte();
-
-   //bb.putLong(0);  LOOK no pre-computed time field
-   readData(protoMessage.getRoot().getSubKeys(), abb, bb); */
     }
 
     return abb;
   }
 
-  // sequentiallly scan through messages to find the correct observation
+  private int setOffsets(StructureMembers members) {
+    int offset = 0;
+    for (StructureMembers.Member m : members.getMembers()) {
+      m.setDataParam(offset);
+      offset += m.getSizeBytes();
+
+      // set inner offsets
+      if (m.getDataType() == DataType.STRUCTURE) {
+        setOffsets(m.getStructureMembers());
+      }
+    }
+    return offset;
+  }
+
+  // sequentially scan through messages to find the correct observation
   private class MsgFinder {
     int msgIndex = 0;
 
@@ -197,94 +201,18 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
   }
 
-  private int setOffsets(StructureMembers members) {
-    int offset = 0;
-    for (StructureMembers.Member m : members.getMembers()) {
-      m.setDataParam(offset);
-      offset += m.getSizeBytes();
-
-      // set inner offsets
-      if (m.getDataType() == DataType.STRUCTURE) {
-        setOffsets(m.getStructureMembers());
-      }
-    }
-    return offset;
-  }
-
-  /* private void readOneMessage(BufrMessage m, DataDescriptor keyRoot) throws IOException {
-
-    raf.seek(m.dataSection.dataPos + 4);
-    int msg_nbits = 0;
-
-    for (int i = 0; i < m.getNumberDatasets(); i++) {
-      BufrDataset ds = new BufrDataset(m, raf.getFilePointer());
-      countData(keyRoot.subKeys, ds.getReplicationCounter(keyRoot), 0);
-
-      int nbits1 = m.dds.getTotalBits();
-      int nbits = ds.getBitCount();
-      if (nbits1 != nbits) {
-        Formatter out = new Formatter(System.out);
-        new BufrDump2().dump(out, m);
-        new BufrDump2().dump(out, protoMessage);
-        out.flush();
-        ds.getBitCount();
-      }
-      msg_nbits += nbits;
-      System.out.println("  dataset BitCount= " + nbits);
-    }
-
-    int msg_nbytes = msg_nbits / 8;
-    if (msg_nbits % 8 != 0) msg_nbytes++;
-
-    msg_nbytes += 4;
-    if (msg_nbytes % 2 != 0) msg_nbytes++;
-    if (msg_nbytes != m.dataSection.dataLength) System.out.print("***BAD ");
-    System.out.println("  message BitCount= " + msg_nbits + " nbytes= " + msg_nbytes + " dataLength=" + m.dataSection.dataLength);
-  } */
-
-  /* private void countData(List<DataDescriptor> dkeys, TableCounter rc, int index) throws IOException {
-
-    for (DataDescriptor dkey : dkeys) {
-      if (!dkey.isOkForVariable()) // misc skip
-        continue;
-
-      // sequence
-      if (dkey.replication == 0) {
-        int count = bits2UInt(dkey.replicationCountSize);
-        TableCounter nested = rc.makeNested(dkey, count, index, dkey.replicationCountSize);
-
-        for (int i = 0; i < count; i++)
-          countData(dkey.subKeys, nested, i);
-
-        continue;
-      }
-
-      // compound
-      if (dkey.type == 3) {
-        TableCounter nested = rc.makeNested(dkey, dkey.replication, index, 0);
-        for (int i = 0; i < dkey.replication; i++)
-          countData(dkey.subKeys, nested, i);
-        continue;
-      }
-
-      // char data
-      if (dkey.type == 1) {
-        for (int i = 0; i < dkey.getByteWidthCDM(); i++)
-          bits2UInt(8);
-        continue;
-      }
-
-      // otherwise read a numberic
-      bits2UInt(dkey.bitWidth);
-    }
-  }  */
-
   // want the data from the msgOffset-th data subset in the message.
   // this is the non-compressed case
   private void readOneObs(BufrMessage m, int msgOffset, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
     BitReader reader = new BitReader(raf, m.dataSection.dataPos + 4);
-    reader.setBitOffset( m.getBitOffset(msgOffset)); // bit offset from start of data section
-    readData(reader, protoMessage.getRootDataDescriptor().getSubKeys(), abb, bb);
+
+    if (m.dds.isCompressed()) {
+      // readDataCompressed(reader, protoMessage.getRootDataDescriptor().getSubKeys(), msgOffset, abb, bb); 
+
+    } else {
+      reader.setBitOffset(m.getBitOffset(msgOffset)); // bit offset from start of data section
+      readData(reader, protoMessage.getRootDataDescriptor().getSubKeys(), abb, bb);
+    }
   }
 
   private void readData(BitReader reader, List<DataDescriptor> dkeys, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
@@ -349,41 +277,43 @@ public class BufrIosp extends AbstractIOServiceProvider {
     //System.out.println("bb pos="+bb.position()+" fileBytesUsed = "+used);
   }
 
- /*  private int bitBuf = 0;
-  private int bitPos = 0; // 8 = most sig bit in byte, 1 = least sig bit in byte
+  /* private int readDataCompressed(BitReader reader, List<DataDescriptor> dkeys, int msgOffset, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
 
-  // read the next nb bits
-  private int bits2UInt(int nb) throws IOException {
+    for (DataDescriptor dkey : parent.subKeys) {
+      if (!dkey.isOkForVariable()) // misc skip
+        continue;
 
-    int bitsLeft = nb;
-    int result = 0;
-
-    if (bitPos == 0) {
-      bitBuf = raf.read();
-      bitPos = 8;
-    }
-
-    while (true) {
-      int shift = bitsLeft - bitPos;
-      if (shift > 0) {
-        // Consume the entire buffer
-        result |= bitBuf << shift;
-        bitsLeft -= bitPos;
-
-        // Get the next byte from the RandomAccessFile
-        bitBuf = raf.read();
-        bitPos = 8;
-      } else {
-        // Consume a portion of the buffer
-        result |= bitBuf >> -shift;
-        bitPos -= bitsLeft;
-        bitBuf &= 0xff >> (8 - bitPos);   // mask off consumed bits
-        //System.out.println( "bitBuf = " + bitBuf );
-
-        return result;
+      // sequence : probably works the same way as structure
+      if (dkey.replication == 0) {
+        throw new IllegalStateException("compressed sequence");
       }
+
+      // structure
+      if (dkey.type == 3) {
+        // just guess how this is stored - no documentation.
+        for (int i=0; i<dkey.replication; i++) {
+          bitOffset = readDataCompressed( reader, bitOffset, n, dkey, out);
+        }
+        continue;
+      }
+
+      // char data - need to find some to test with
+      if (dkey.type == 1) {
+        throw new IllegalStateException("compressed char data");
+      }
+
+      // bitOffset is now set to the next variable. so we skip there
+      reader.setBitOffset(bitOffset);
+      int dataMin = reader.bits2UInt(dkey.bitWidth);
+      // now we are where the increment data width is stored - always in 6 bits 2^6 = 64
+      int dataWidth = reader.bits2UInt(6);
+
+      bitOffset += dkey.bitWidth + 6 + dataWidth * n;
     }
-  } */
+
+    return bitOffset;
+  }   */
+
 
   ////////////////////////////////////////////////////////////////////
 
@@ -518,7 +448,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    ff.format("%s", parseInfo.toString());
+    if (parseInfo != null)
+      ff.format("%s", parseInfo.toString());
     return ff.toString();
   }
 
@@ -526,7 +457,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
    * main.
    */
   public static void main(String args[]) throws Exception, IOException,
-          InstantiationException, IllegalAccessException {
+      InstantiationException, IllegalAccessException {
 
     //String fileIn = "C:/data/dt2/point/bufr/IUA_CWAO_20060202_12.bufr";
     //String fileIn = "C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr";
