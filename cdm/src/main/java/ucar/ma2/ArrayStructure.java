@@ -322,6 +322,10 @@ public abstract class ArrayStructure extends Array {
    */
   public void setMemberArray(StructureMembers.Member m, Array memberArray) {
     m.setDataArray(memberArray);
+    if (memberArray instanceof ArrayStructure) {  // LOOK
+      ArrayStructure as = (ArrayStructure) memberArray;
+      m.setStructureMembers( as.getStructureMembers());
+    }
   }
 
   /**

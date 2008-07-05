@@ -46,7 +46,7 @@ import org.jdom.Element;
  * @author caron
  */
 public class AggregationExisting extends AggregationOuterDimension {
-  private boolean debugPersist = true, debugPersistDetail = true;
+  private boolean debugPersist = false, debugPersistDetail = false;
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.JOIN_EXISTING, recheckS);

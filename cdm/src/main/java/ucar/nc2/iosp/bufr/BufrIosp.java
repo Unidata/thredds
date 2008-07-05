@@ -50,7 +50,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   // debugging
   static private boolean debugSize = false;
-  static private boolean debugOpen = true;
+  static private boolean debugOpen = false;
 
   static private boolean forceNewIndex = false; // force that a new index file is written
   static private boolean extendIndex = false; // check if index needs to be extended
@@ -113,15 +113,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
       count++;
     }
 
-    if (debugOpen) {
-      long took = (System.nanoTime() - start) / (1000 * 1000);
-      double rate = (took > 0) ? ((double) count / took) : 0.0;
-      parseInfo.format("nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec\n", count, scan.getTotalObs(), took, rate);
-    }
-
-    // this fills the netcdf object
-    new ConstructNC(protoMessage, scan.getTotalObs(), ncfile);
-
     // count where the obs start in the messages
     obsStart = new int[msgs.size()];
     int mi = 0;
@@ -130,6 +121,15 @@ public class BufrIosp extends AbstractIOServiceProvider {
       obsStart[mi++] = countObs;
       countObs += m.getNumberDatasets();
     }
+
+    if (debugOpen) {
+      long took = (System.nanoTime() - start) / (1000 * 1000);
+      double rate = (took > 0) ? ((double) count / took) : 0.0;
+      parseInfo.format("nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec\n", count, scan.getTotalObs(), took, rate);
+    }
+
+    // this fills the netcdf object
+    new ConstructNC(protoMessage, countObs, ncfile);
 
     ncfile.finish();
   }
@@ -211,7 +211,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     if (m.dds.isCompressed()) {
       m.calcTotalBits(); // make sure things have been counted.
-      readDataCompressed(reader, m.getRootDataDescriptor(), msgOffset, 0, abb, bb);
+      readDataCompressed(reader, m.getRootDataDescriptor(), msgOffset, m.getCounterFlds(), bb);
 
     } else {
       reader.setBitOffset(m.getBitOffset(msgOffset)); // bit offset from start of data section
@@ -302,11 +302,14 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
    */
   // read data for a particular obs
-  private void readDataCompressed(BitReader reader, DataDescriptor parent, int msgOffset, int startBitPos, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
+  private void readDataCompressed(BitReader reader, DataDescriptor parent, int msgOffset, CounterFld[] counters, ByteBuffer bb) throws IOException {
 
-    for (DataDescriptor dkey : parent.getSubKeys()) {
+    for (int fldidx=0; fldidx < parent.getSubKeys().size(); fldidx++) {
+      DataDescriptor dkey = parent.getSubKeys().get(fldidx);
       if (!dkey.isOkForVariable()) // misc skip
         continue;
+
+      CounterFld counter = counters[fldidx];
 
       // sequence : probably works the same way as structure
       if (dkey.replication == 0) {
@@ -316,8 +319,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
       // structure
       if (dkey.type == 3) {
         for (int i = 0; i < dkey.replication; i++) {
-          int start = startBitPos + dkey.bitOffset + i * dkey.bitWidth2; // dkey is the containing structure
-          readDataCompressed(reader, dkey, msgOffset, start, abb, bb);
+          CounterFld[] nested = counter.getNestedCounters(i);
+          readDataCompressed(reader, dkey, msgOffset, nested, bb);
         }
         continue;
       }
@@ -328,14 +331,15 @@ public class BufrIosp extends AbstractIOServiceProvider {
       }
 
       // skip to where this variable starts
-      reader.setBitOffset( startBitPos + dkey.bitOffset);
+      reader.setBitOffset( counter.getStartingBitPos());
+
       int value = reader.bits2UInt(dkey.bitWidth);
       int dataWidth = reader.bits2UInt(6);
 
       // if dataWidth == 0, just use min value
       if (dataWidth > 0) {
         // skip to where this observation starts in the variable data, and read the incremental value
-        reader.setBitOffset( startBitPos + dkey.bitOffset + dkey.bitWidth + 6 + dataWidth * msgOffset);
+        reader.setBitOffset( counter.getBitPos(msgOffset));
         value += reader.bits2UInt(dataWidth);
       }
 

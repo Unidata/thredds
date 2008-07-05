@@ -226,9 +226,9 @@ public class N3header {
       dataStart = Math.min(dataStart, (int) begin);
 
       if (debugVariablePos)
-        fout.format("%s begin at=%d end=%d  isRecord=%s nonRecordData=%d\n", var.getName(), begin, (begin + vsize), isRecord, nonRecordData);
+        System.out.printf("%s begin at=%d end=%d  isRecord=%s nonRecordData=%d\n", var.getName(), begin, (begin + vsize), isRecord, nonRecordData);
       if (debugHeaderSize)
-        fout.format("%s header size=%d data size= %d\n", var.getName(), (raf.getFilePointer() - startPos), vsize);
+        System.out.printf("%s header size=%d data size= %d\n", var.getName(), (raf.getFilePointer() - startPos), vsize);
 
       ncfile.addVariable(null, var);
     }

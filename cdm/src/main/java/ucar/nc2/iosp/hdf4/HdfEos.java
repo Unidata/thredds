@@ -43,7 +43,7 @@ import org.jdom.Element;
  */
 public class HdfEos {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HdfEos.class);
-  static private boolean showTypes = false, debug = true;
+  static private boolean showTypes = false;
 
   static public void amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
     StringBuilder sbuff = null;

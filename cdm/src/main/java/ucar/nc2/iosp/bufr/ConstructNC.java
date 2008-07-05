@@ -101,7 +101,7 @@ class ConstructNC {
       ncfile.addAttribute(null, new Attribute("cdm_datatype", ftype.toString()));
 
     makeObsRecord();
-    makeReportIndexStructure();
+    //makeReportIndexStructure();
 
     ncfile.finish();
   }
@@ -217,7 +217,9 @@ class ConstructNC {
   }
 
   private Variable addVariable(Structure struct, DataDescriptor dataDesc, int count) {
-    Variable v = new Variable(ncfile, null, struct, dataDesc.name);
+    String name = findUnique(struct, dataDesc.name);
+
+    Variable v = new Variable(ncfile, null, struct, name);
     try {
       if (count > 1)
         v.setDimensionsAnonymous(new int[]{count}); // anon vector
@@ -279,6 +281,20 @@ class ConstructNC {
     v.setSPobject(dataDesc);
     return v;
   }
+
+  private String findUnique(Structure struct, String want) {
+    Variable oldV = struct.findVariable(want);
+    if (oldV == null) return want;
+
+    int seq = 1;
+    while (true) {
+      String wantSeq = want+"-"+seq;
+      oldV = struct.findVariable(wantSeq);
+      if (oldV == null) return wantSeq;
+      seq++;
+    }
+  }
+
 
   private void annotate(Variable v, DataDescriptor dkey) {
     if (dkey.id.equals("0-5-1") || dkey.id.equals("0-5-2") || dkey.id.equals("0-27-1") || dkey.id.equals("0-27-2")) {

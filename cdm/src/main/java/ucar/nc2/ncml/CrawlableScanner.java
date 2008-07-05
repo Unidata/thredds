@@ -51,7 +51,7 @@ public class CrawlableScanner implements Scanner {
   // filters
   private long olderThan_msecs; // files must not have been modified for this amount of time (msecs)
 
-  private boolean debugScan = true;
+  private boolean debugScan = false;
 
   CrawlableScanner(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString,
           String subdirsS, String olderS) {

@@ -47,7 +47,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugFilterIndexer = false;
   static boolean debugChunkIndexer = false;
   static boolean debugVlen = false;
-  static boolean debugStructure = true;
+  static boolean debugStructure = false;
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
 
