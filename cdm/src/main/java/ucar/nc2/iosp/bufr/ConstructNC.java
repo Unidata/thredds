@@ -228,10 +228,17 @@ class ConstructNC {
     } catch (InvalidRangeException e) {
       log.error("illegal count= " + count + " for " + dataDesc);
     }
+
     if (dataDesc.units == null)
-      System.out.println("HEY dataDesc.units == null");
-    else
-      v.addAttribute(new Attribute("units", dataDesc.units));
+      log.warn("dataDesc.units == null for "+name);
+    else {
+      if (dataDesc.units.equalsIgnoreCase("Code_Table") || dataDesc.units.equalsIgnoreCase("Code Table"))
+        v.addAttribute(new Attribute("units", "Code Table "+dataDesc.id));
+      else if (dataDesc.units.equalsIgnoreCase("Flag_Table") ||dataDesc.units.equalsIgnoreCase("Flag Table"))
+        v.addAttribute(new Attribute("units", "Flag Table "+dataDesc.id));
+      else if (!dataDesc.units.startsWith("CCITT"))
+        v.addAttribute(new Attribute("units", dataDesc.units));
+    }
 
     if (dataDesc.type != 1) {
       int nbits = dataDesc.bitWidth;

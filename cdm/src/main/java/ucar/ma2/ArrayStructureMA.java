@@ -19,6 +19,8 @@
  */
 package ucar.ma2;
 
+import java.io.IOException;
+
 /**
  * Concrete implementation of ArrayStructure, data storage is in member arrays, which are converted to
  *   StructureData member data on the fly.
@@ -170,7 +172,25 @@ public class ArrayStructureMA extends ArrayStructure {
     if (nelems != sdata.length)
       throw new IllegalArgumentException("StructureData length= "+sdata.length+"!= shape.length="+nelems);
     this.sdata = sdata;
-  }  
+  }
+
+  /**
+   * Turn any ArrayStructure into a ArrayStructureMA
+   * @param from copy from here. If from is a ArrayStructureMA, return it.
+   * @return equivilent ArrayStructureMA
+   * @throws java.io.IOException on error reading a sequence
+   */
+  static public ArrayStructureMA factoryMA(ArrayStructure from) throws IOException {
+    if (from instanceof ArrayStructureMA)
+      return (ArrayStructureMA) from;
+
+    StructureMembers tosm = new StructureMembers(from.getStructureMembers());
+    ArrayStructureMA to = new ArrayStructureMA(tosm, from.getShape());
+    for (StructureMembers.Member m : from.getMembers()) {
+      to.setMemberArray(m.getName(), from.extractMemberArray(m));
+    }
+    return to;
+  }
 
   protected StructureData makeStructureData( ArrayStructure as, int index) {
     return new StructureDataA( as, index);

@@ -227,6 +227,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   public Array convert(Array data) throws IOException {
     ArrayStructure as = (ArrayStructure) data;
     if (!needsConverting(this, as)) return data;
+    as = ArrayStructureMA.factoryMA( as);
 
     StructureMembers sm = as.getStructureMembers(); // these are from orgVar - may have been renamed
     for (StructureMembers.Member m : sm.getMembers()) {

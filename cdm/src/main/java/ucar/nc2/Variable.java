@@ -856,8 +856,7 @@ public class Variable implements VariableIF {
       memList.add(this);
       Structure s = parent.select(memList);
       ArrayStructure as = (ArrayStructure) s.read();
-      StructureMembers sm = as.getStructureMembers();
-      return as.extractMemberArray( sm.findMember( shortName));
+      return as.extractMemberArray( as.findMember( shortName));
 
     /* try {
         return readMemberOfStructureFlatten(null);
