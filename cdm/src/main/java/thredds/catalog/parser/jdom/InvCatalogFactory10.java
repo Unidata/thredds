@@ -238,9 +238,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (restrictAccess != null) dataset.setResourceControl( restrictAccess);
 
     if (collectionTypeName != null) {
-      CollectionType collectionType = CollectionType.getType( collectionTypeName);
+      CollectionType collectionType = CollectionType.findType( collectionTypeName);
       if (collectionType == null) {
-        collectionType = new CollectionType( collectionTypeName);
+        collectionType = CollectionType.getType( collectionTypeName );
         factory.appendWarning(" ** warning: non-standard collection type = "+collectionTypeName+"\n");
       }
       dataset.setCollectionType( collectionType);
@@ -1427,9 +1427,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (dataFormatElem != null) {
       String dataFormatTypeName = dataFormatElem.getText();
       if ((dataFormatTypeName != null) && (dataFormatTypeName.length() > 0)) {
-        DataFormatType dataFormatType = DataFormatType.getType( dataFormatTypeName);
+        DataFormatType dataFormatType = DataFormatType.findType( dataFormatTypeName);
         if (dataFormatType == null) {
-          dataFormatType = new DataFormatType( dataFormatTypeName);
+          dataFormatType = DataFormatType.getType( dataFormatTypeName );
           factory.appendWarning(" ** warning: non-standard dataFormat type = "+dataFormatTypeName+"\n");
         }
         tmg.setDataFormatType( dataFormatType);

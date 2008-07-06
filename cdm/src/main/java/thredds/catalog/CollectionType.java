@@ -35,26 +35,45 @@ public final class CollectionType {
     public final static CollectionType FORECASTS = new CollectionType("ForecastModelRuns");
 
     private String name;
-    public CollectionType(String s) {
+    private CollectionType(String s) {
       this.name = s;
       members.add(this);
+    }
+
+    private CollectionType(String name, boolean fake) {
+      this.name = name;
     }
 
     /** @return all CollectionType objects */
     public static java.util.Collection<CollectionType> getAllTypes() { return members; }
 
     /**
-     * Find the CollectionType that matches this name, ignore case.
-     * @param name : match this name
+     * Return the known CollectionType that matches the given name (ignoring case)
+     * or null if the name is unknown.
+     *
+     * @param name name of the desired CollectionType.
      * @return CollectionType or null if no match.
      */
-    public static CollectionType getType(String name) {
+    public static CollectionType findType(String name) {
       if (name == null) return null;
       for (CollectionType m : members) {
         if (m.name.equalsIgnoreCase( name))
           return m;
       }
       return null;
+    }
+
+  /**
+   * Return a CollectionType that matches the given name by either matching
+   * a known type (ignoring case) or creating an unknown type.
+   *
+   * @param name name of the desired CollectionType
+   * @return the named CollectionType or null if given name is null.
+   */
+    public static CollectionType getType(String name) {
+      if (name == null) return null;
+      CollectionType type = findType( name);
+      return type != null ? type : new CollectionType( name, false);
     }
 
     /**

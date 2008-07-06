@@ -59,26 +59,51 @@ public final class DataFormatType {
     public final static DataFormatType OTHER_UNKNOWN = new DataFormatType("other/unknown");
 
     private String name;
-    public DataFormatType(String s) {
+    private DataFormatType(String s) {
       this.name = s;
       members.add(this);
     }
+  
+    private DataFormatType(String s, boolean fake)
+    {
+      this.name = s;
+    }
 
-    /** Return all DataFormatType objects */
+    /**
+     * Return all DataFormatType objects
+     *
+     * @return Collection of known DataFormatType-s
+     */
     public static java.util.Collection<DataFormatType> getAllTypes() { return members; }
 
     /**
-     * Find the DataFormatType that matches this name, ignore case.
-     * @param name : match this name
+     * Find the known DataFormatType that matches the given name (ignoring case)
+     * or null if the name is unknown.
+     *
+     * @param name name of the desired DataFormatType.
      * @return DataFormatType or null if no match.
      */
-    public static DataFormatType getType(String name) {
+    public static DataFormatType findType(String name) {
       if (name == null) return null;
       for (DataFormatType m : members) {
         if (m.name.equalsIgnoreCase( name))
           return m;
       }
       return null;
+    }
+    /**
+     * Return a DataFormatType for the given name by either matching
+     * a known type (ignoring case) or creating an unknown type.
+     *
+     * @param name name of the desired DataFormatType.
+     * @return the named DataFormatType or null if given name is null.
+     */
+    public static DataFormatType getType(String name)
+    {
+      if (name == null)
+        return null;
+      DataFormatType t = findType( name );
+      return t != null ? t : new DataFormatType( name, false);
     }
 
     /**

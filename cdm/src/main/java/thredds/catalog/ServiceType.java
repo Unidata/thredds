@@ -20,8 +20,6 @@
 
 package thredds.catalog;
 
-import ucar.nc2.constants.FeatureType;
-
 /**
  * Type-safe enumeration of THREDDS Service types.
  *
@@ -64,9 +62,14 @@ public final class ServiceType {
 
   private String name;
 
-  public ServiceType(String s) {
+  private ServiceType(String s) {
     this.name = s;
     members.add(this);
+  }
+  
+  private ServiceType( String name, boolean fake)
+  {
+    this.name = name;
   }
 
   /**
@@ -79,18 +82,32 @@ public final class ServiceType {
   }
 
   /**
-   * Find the ServiceType that matches this name, ignore case.
+   * Return the known ServiceType that matches the given name (ignoring case)
+   * or null if the name is unknown.
    *
-   * @param name : match this name
+   * @param name name of the desired ServiceType.
    * @return ServiceType or null if no match.
    */
-  public static ServiceType getType(String name) {
+  public static ServiceType findType(String name) {
     if (name == null) return null;
     for (ServiceType serviceType : members) {
       if (serviceType.name.equalsIgnoreCase(name))
         return serviceType;
     }
     return null;
+  }
+
+  /**
+   * Return a ServiceType that matches the given name by either matching
+   * a known type (ignoring case) or creating an unknown type.
+   *
+   * @param name name of the desired ServiceType
+   * @return the named ServiceType or null if given name is null.
+   */
+  public static ServiceType getType(String name) {
+    if (name == null) return null;
+    ServiceType type = findType( name );
+    return type != null ? type : new ServiceType( name, false );
   }
 
   /**
@@ -111,8 +128,10 @@ public final class ServiceType {
    * ServiceType with same name are equal.
    */
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof FeatureType)) return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof ServiceType))
+      return false;
     return o.hashCode() == this.hashCode();
   }
 }

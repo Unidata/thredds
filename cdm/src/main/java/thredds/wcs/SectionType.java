@@ -38,7 +38,7 @@ public final class SectionType {
     public static java.util.Collection getAllTypes() { return hash.values(); }
 
     private String name;
-    public SectionType(String s) {
+    private SectionType(String s) {
       this.name = s;
       hash.put( s, this);
     }

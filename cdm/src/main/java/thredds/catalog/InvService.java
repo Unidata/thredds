@@ -53,7 +53,7 @@ public class InvService {
    */
   public InvService(String name, String serviceTypeName, String base, String suffix, String desc) {
     this.name = name;
-    this.type = ServiceType.getType(serviceTypeName);
+    this.type = ServiceType.findType(serviceTypeName);
     this.base = (base == null) ? "" : base.trim();
     this.suffix = (suffix == null) ? "" : suffix.trim();
     this.desc = desc;
@@ -61,7 +61,7 @@ public class InvService {
     // deal with strange service types
     if (type == null) {
       log.append(" ** InvService: non-standard type =(").append(serviceTypeName).append(") for service (").append(name).append(")");
-      type = new ServiceType(serviceTypeName);
+      type = ServiceType.getType(serviceTypeName);
     }
 
     if (name == null) {

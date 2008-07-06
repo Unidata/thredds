@@ -20,8 +20,6 @@
 
 package thredds.catalog;
 
-import ucar.nc2.constants.FeatureType;
-
 /**
  * Type-safe enumeration of THREDDS Metadata types.
  *
@@ -56,6 +54,10 @@ public final class MetadataType {
     members.add(this);
   }
 
+  private MetadataType(String name, boolean fake) {
+    this.name = name;
+  }
+
   /**
    * Get all MetadataType objects
    * @return all MetadataType objects
@@ -65,18 +67,32 @@ public final class MetadataType {
   }
 
   /**
-   * Find the MetadataType that matches this name, ignore case.
+   * Return the known MetadataType that matches the given name (ignoring case)
+   * or null if the name is unknown.
    *
-   * @param name : match this name
+   * @param name the name of the desired DataFormatType.
    * @return MetadataType or null if no match.
    */
-  public static MetadataType getType(String name) {
+  public static MetadataType findType(String name) {
     if (name == null) return null;
     for (MetadataType m : members) {
       if (m.name.equalsIgnoreCase(name))
         return m;
     }
     return null;
+  }
+
+  /**
+   * Return a MetadataType that matches the given name by either matching
+   * a known type (ignoring case) or creating an unknown type.
+   *
+   * @param name name of the desired MetadataType
+   * @return the named MetadataType or null if given name is null.
+   */
+  public static MetadataType getType(String name) {
+    if (name == null) return null;
+    MetadataType type = findType( name );
+    return type != null ? type : new MetadataType( name, false );
   }
 
   /**
@@ -98,7 +114,7 @@ public final class MetadataType {
    */
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof FeatureType)) return false;
+    if (!(o instanceof MetadataType)) return false;
     return o.hashCode() == this.hashCode();
   }
 }
