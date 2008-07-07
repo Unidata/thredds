@@ -23,6 +23,7 @@
 
 package ucar.unidata.util;
 
+
 import java.text.ParsePosition;
 
 
@@ -54,6 +55,15 @@ public class StringUtil {
 
 
 
+
+    /**
+     * Check if the string is not empty
+     * @param s  String to check
+     * @return true if it's not the empty string (len > 0)
+     */
+    public static boolean notEmpty(String s) {
+        return (s != null) && (s.trim().length() > 0);
+    }
 
     /**
      * Collapse continuous whitespace into one single " ".
@@ -269,7 +279,7 @@ public class StringUtil {
     };
 
 
-    
+
     /**
      * Replace special characters with entities for XML attributes.
      * special: '&', '<', '>', '\'', '"', '\r', '\n'
@@ -336,7 +346,7 @@ public class StringUtil {
      * @return resulting string
      */
     static public String replace(String x, char[] replaceChar,
-                                  String[] replaceWith) {
+                                 String[] replaceWith) {
         // common case no replacement
         boolean ok = true;
         for (int i = 0; i < replaceChar.length; i++) {
@@ -373,7 +383,7 @@ public class StringUtil {
      * @return resulting string
      */
     static public String unreplace(String x, String[] orgReplace,
-                                    char[] orgChar) {
+                                   char[] orgChar) {
         // common case no replacement
         boolean ok = true;
         for (int i = 0; i < orgReplace.length; i++) {
@@ -854,6 +864,26 @@ public class StringUtil {
             return true;
         }
     }
+
+    /**
+     * Match a regular expression
+     *
+     * @param input  string to match
+     * @param patternString  reg ex pattern string
+     *
+     * @return  true if a match
+     */
+    public static boolean regexpMatch(String input, String patternString) {
+        synchronized (MATCH_MUTEX) {
+            Pattern pattern = (Pattern) patternCache.get(patternString);
+            if (pattern == null) {
+                pattern = Pattern.compile(patternString);
+                patternCache.put(patternString, pattern);
+            }
+            return pattern.matcher(input).find();
+        }
+    }
+
 
     /**
      * Check to see if the string starts with a vowel.
@@ -2088,8 +2118,7 @@ public class StringUtil {
      *
      * @throws Exception some problem
      */
-    public static void main(String[] args) throws Exception {
-    }
+    public static void main(String[] args) throws Exception {}
 
 
 
