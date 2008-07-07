@@ -11,12 +11,12 @@ import java.util.List;
  * @author edavis
  * @since 4.0
  */
-public interface InvService
+public interface Service
 {
   public String getName();
   public String getDescription();
   public ServiceType getType();
   public URI getBaseUri();
   public String getSuffix();
-  public List<InvProperty> getProperties();
+  public List<Property> getProperties();
 }
