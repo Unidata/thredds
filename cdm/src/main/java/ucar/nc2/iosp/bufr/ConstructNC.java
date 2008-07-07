@@ -77,7 +77,7 @@ class ConstructNC {
       log.warn("unknown category=" + category);
     }
 
-    String centerName = proto.ids.getCenter_idName( proto.ids.getCenter_id());
+    String centerName = proto.ids.getCenterName();
 
     // global Attributes
     ncfile.addAttribute(null, new Attribute("history", "direct read of BUFR data by CDM version 4.0"));

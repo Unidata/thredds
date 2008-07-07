@@ -42,6 +42,9 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
+    19: BUFR reading mostly works
+        turn off debugging
+        StructureDS.convert nested structures
     18: fix large file writing
         in agg, fix CacheVar, joinExisting persistance.
         move NetcdfDataset.makeArray to Array.makeArray, add new variant
