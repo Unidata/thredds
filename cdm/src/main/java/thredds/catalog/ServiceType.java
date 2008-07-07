@@ -34,31 +34,31 @@ public final class ServiceType {
   public final static ServiceType ADDE = new ServiceType("ADDE");
   public final static ServiceType DODS = new ServiceType("DODS");
   public final static ServiceType OPENDAP = new ServiceType("OPENDAP");
-  public final static ServiceType OPENDAPG = new ServiceType("OPENDAP-G");
+  public final static ServiceType OPENDAPG = new ServiceType( "OPENDAP-G" );
 
-  public final static ServiceType HTTPServer = new ServiceType("HTTPServer");
-  public final static ServiceType FTP = new ServiceType("FTP");
-  public final static ServiceType GRIDFTP = new ServiceType("GridFTP");
-  public final static ServiceType FILE = new ServiceType("File");
-  public final static ServiceType NetcdfServer = new ServiceType("NetcdfServer"); // deprecated
-  public final static ServiceType NetcdfSubset = new ServiceType("NetcdfSubset");
+  public final static ServiceType HTTPServer = new ServiceType( "HTTPServer" );
+  public final static ServiceType FTP = new ServiceType( "FTP" );
+  public final static ServiceType GRIDFTP = new ServiceType( "GridFTP" );
+  public final static ServiceType FILE = new ServiceType( "File" );
+  public final static ServiceType NetcdfServer = new ServiceType( "NetcdfServer" ); // deprecated
+  public final static ServiceType NetcdfSubset = new ServiceType( "NetcdfSubset" );
 
-  public final static ServiceType LAS = new ServiceType("LAS");
-  public final static ServiceType WMS = new ServiceType("WMS");
-  public final static ServiceType WFS = new ServiceType("WFS");
-  public final static ServiceType WCS = new ServiceType("WCS");
-  public final static ServiceType WSDL = new ServiceType("WSDL");
+  public final static ServiceType LAS = new ServiceType( "LAS" );
+  public final static ServiceType WMS = new ServiceType( "WMS" );
+  public final static ServiceType WFS = new ServiceType( "WFS" );
+  public final static ServiceType WCS = new ServiceType( "WCS" );
+  public final static ServiceType WSDL = new ServiceType( "WSDL" );
 
-  public final static ServiceType WebForm = new ServiceType("WebForm");
+  public final static ServiceType WebForm = new ServiceType( "WebForm" );
 
-  public final static ServiceType CATALOG = new ServiceType("Catalog");
-  public final static ServiceType QC = new ServiceType("QueryCapability");
-  public final static ServiceType RESOLVER = new ServiceType("Resolver");
-  public final static ServiceType COMPOUND = new ServiceType("Compound");
-  public final static ServiceType THREDDS = new ServiceType("THREDDS");
+  public final static ServiceType CATALOG = new ServiceType( "Catalog" );
+  public final static ServiceType QC = new ServiceType( "QueryCapability" );
+  public final static ServiceType RESOLVER = new ServiceType( "Resolver" );
+  public final static ServiceType COMPOUND = new ServiceType( "Compound" );
+  public final static ServiceType THREDDS = new ServiceType( "THREDDS" );
 
-  public final static ServiceType NETCDF = new ServiceType("NetCDF"); // deprecated - use dataFormatType = NetCDF
-  public final static ServiceType HTTP = new ServiceType("HTTP"); // deprecated - use HTTPServer
+  public final static ServiceType NETCDF = new ServiceType( "NetCDF" ); // deprecated - use dataFormatType = NetCDF
+  public final static ServiceType HTTP = new ServiceType( "HTTP" ); // deprecated - use HTTPServer
 
   private String name;
 
