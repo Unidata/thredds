@@ -1,4 +1,6 @@
-package thredds.catalog2;
+package thredds.catalog2.beanImpl;
+
+import thredds.catalog2.Property;
 
 /**
  * _more_

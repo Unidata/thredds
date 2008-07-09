@@ -1,9 +1,8 @@
-package thredds.catalog2;
+package thredds.catalog2.beanImpl;
 
 import thredds.catalog.DataFormatType;
-import thredds.catalog.ServiceType;
-
-import java.net.URI;
+import thredds.catalog2.Access;
+import thredds.catalog2.Service;
 
 /**
  * _more_

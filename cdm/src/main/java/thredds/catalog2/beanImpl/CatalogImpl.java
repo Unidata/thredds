@@ -1,4 +1,9 @@
-package thredds.catalog2;
+package thredds.catalog2.beanImpl;
+
+import thredds.catalog2.Catalog;
+import thredds.catalog2.Service;
+import thredds.catalog2.Dataset;
+import thredds.catalog2.Property;
 
 import java.net.URI;
 import java.util.Date;

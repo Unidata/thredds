@@ -1,6 +1,9 @@
-package thredds.catalog2;
+package thredds.catalog2.beanImpl;
 
 import thredds.catalog.ServiceType;
+import thredds.catalog2.Service;
+import thredds.catalog2.Property;
+import thredds.catalog2.Catalog;
 
 import java.net.URI;
 import java.util.List;
