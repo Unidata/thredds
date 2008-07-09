@@ -12,20 +12,19 @@ import java.util.Collections;
  * @author edavis
  * @since 4.0
  */
-public class ServiceImpl
+public class ServiceImpl implements Service
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( ServiceImpl.class );
-
   private String name;
   private String description;
   private ServiceType serviceType;
   private URI baseUri;
+  private URI fullyResolvedBaseUri;
   private String suffix;
   private List<Property> properties;
 
-  public ServiceImpl( String name, String description, ServiceType serviceType, URI baseUri, String suffix, List<Property> properties )
+  public ServiceImpl( Catalog parentCatalog, String name, String description, ServiceType serviceType, URI baseUri, String suffix, List<Property> properties )
   {
+    if ( parentCatalog == null ) throw new IllegalArgumentException( "Parent catalog must not be null.");
     if ( name == null ) throw new IllegalArgumentException( "Name must not be null.");
     if ( serviceType == null ) throw new IllegalArgumentException( "Service type must not be null.");
     if ( baseUri == null ) throw new IllegalArgumentException( "Base URI must not be null.");
@@ -33,6 +32,7 @@ public class ServiceImpl
     this.description = description == null ? "" : description;
     this.serviceType = serviceType;
     this.baseUri = baseUri;
+    this.fullyResolvedBaseUri = parentCatalog.getDocumentBaseUri().resolve( this.baseUri );
     this.suffix = suffix == null ? "" : suffix;
     if (properties == null )
       this.properties = Collections.emptyList();
@@ -40,33 +40,45 @@ public class ServiceImpl
       this.properties = properties;
   }
 
+  @Override
   public String getName()
   {
-    return name;
+    return this.name;
   }
 
+  @Override
   public String getDescription()
   {
-    return description;
+    return this.description;
   }
 
-  public ServiceType getServiceType()
+  @Override
+  public ServiceType getType()
   {
-    return serviceType;
+    return this.serviceType;
   }
 
+  @Override
   public URI getBaseUri()
   {
-    return baseUri;
+    return this.baseUri;
   }
 
+  @Override
+  public URI getFullyResolvedBaseUri()
+  {
+    return this.fullyResolvedBaseUri;
+  }
+
+  @Override
   public String getSuffix()
   {
-    return suffix;
+    return this.suffix;
   }
 
+  @Override
   public List<Property> getProperties()
   {
-    return properties;
+    return this.properties;
   }
 }

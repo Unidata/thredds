@@ -21,11 +21,13 @@ public class PropertyImpl implements Property
     this.value = value;
   }
 
+  @Override
   public String getName()
   {
     return null;
   }
 
+  @Override
   public String getValue()
   {
     return null;
