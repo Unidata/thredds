@@ -11,5 +11,5 @@ import java.net.URI;
  */
 public interface AccessUriBuilder
 {
-  public URI buildAccessUri( Access access);
+  public URI buildAccessUri( Access access, URI docBaseUri);
 }

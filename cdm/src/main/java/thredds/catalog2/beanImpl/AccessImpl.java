@@ -12,21 +12,25 @@ import thredds.catalog2.Service;
  */
 public class AccessImpl implements Access
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( AccessImpl.class );
-
   private Service service;
   private String uriPath;
   private DataFormatType dataFormat;
   private long dataSize;
 
-  public AccessImpl( Service service, String uriPath, DataFormatType dataFormat, long dataSize )
+  public AccessImpl( Service service, String uriPath )
   {
     if ( service == null ) throw new IllegalArgumentException( "Service must not be null.");
     if ( uriPath == null ) throw new IllegalArgumentException( "Path must not be null.");
     this.service = service;
     this.uriPath = uriPath;
-    this.dataFormat = dataFormat;
+  }
+
+  public void setDataFormat( DataFormatType dataFormat )
+  {
+    this.dataFormat = dataFormat != null ? dataFormat : DataFormatType.NONE;
+  }
+  public void setDataSize( long dataSize )
+  {
     this.dataSize = dataSize;
   }
 

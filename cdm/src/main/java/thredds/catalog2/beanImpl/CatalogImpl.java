@@ -29,6 +29,7 @@ public class CatalogImpl implements Catalog
 
   public CatalogImpl( String name, URI documentBaseUri, String version, Date expires, Date lastModified )
   {
+    if ( documentBaseUri == null ) throw new IllegalArgumentException( "Catalog base URI must not be null.");
     this.name = name;
     this.documentBaseUri = documentBaseUri;
     this.version = version;
@@ -38,6 +39,30 @@ public class CatalogImpl implements Catalog
     this.services = Collections.emptyList();
     this.datasets = Collections.emptyList();
     this.properties = Collections.emptyList();
+  }
+
+  public void setServices( List<Service> services )
+  {
+    if ( services == null )
+      this.services = Collections.emptyList();
+    else
+      this.services = services;
+  }
+
+  public void setDatasets( List<Dataset> datasets )
+  {
+    if ( datasets == null )
+      this.datasets = Collections.emptyList();
+    else
+      this.datasets = datasets;
+  }
+
+  public void setProperties( List<Property> properties )
+  {
+    if ( properties == null )
+      this.properties = Collections.emptyList();
+    else
+      this.properties = properties;
   }
 
   @Override
@@ -79,12 +104,12 @@ public class CatalogImpl implements Catalog
   @Override
   public List<Dataset> getDatasets()
   {
-    return null;
+    return this.datasets;
   }
 
   @Override
   public List<Property> getProperties()
   {
-    return null;
+    return this.properties;
   }
 }

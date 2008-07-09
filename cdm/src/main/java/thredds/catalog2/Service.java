@@ -17,7 +17,6 @@ public interface Service
   public String getDescription();
   public ServiceType getType();
   public URI getBaseUri();
-  public URI getFullyResolvedBaseUri();
   public String getSuffix();
   public List<Property> getProperties();
 }

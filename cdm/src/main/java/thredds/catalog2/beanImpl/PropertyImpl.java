@@ -10,9 +10,6 @@ import thredds.catalog2.Property;
  */
 public class PropertyImpl implements Property
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( PropertyImpl.class );
-
   private String name;
   private String value;
   public PropertyImpl( String name, String value )
@@ -26,12 +23,12 @@ public class PropertyImpl implements Property
   @Override
   public String getName()
   {
-    return null;
+    return this.name;
   }
 
   @Override
   public String getValue()
   {
-    return null;
+    return this.value;
   }
 }
