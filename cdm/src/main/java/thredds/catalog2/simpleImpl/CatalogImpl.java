@@ -9,6 +9,7 @@ import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.Collections;
+import java.util.ArrayList;
 
 /**
  * _more_
@@ -36,23 +37,29 @@ public class CatalogImpl implements Catalog
     this.expires = expires;
     this.lastModified = lastModified;
 
-    this.services = Collections.emptyList();
-    this.datasets = Collections.emptyList();
-    this.properties = Collections.emptyList();
+    this.services = new ArrayList<Service>();
+    this.datasets = new ArrayList<Dataset>();
+    this.properties = new ArrayList<Property>();
   }
 
   public void setServices( List<Service> services )
   {
     if ( services == null )
-      this.services = Collections.emptyList();
+      this.services = new ArrayList<Service>();
     else
       this.services = services;
+  }
+
+  public void addService ( Service service )
+  {
+    if ( service == null ) throw new IllegalArgumentException( "Can't add a null Service.");
+    this.services.add( service );
   }
 
   public void setDatasets( List<Dataset> datasets )
   {
     if ( datasets == null )
-      this.datasets = Collections.emptyList();
+      this.datasets = new ArrayList<Dataset>();
     else
       this.datasets = datasets;
   }
@@ -60,7 +67,7 @@ public class CatalogImpl implements Catalog
   public void setProperties( List<Property> properties )
   {
     if ( properties == null )
-      this.properties = Collections.emptyList();
+      this.properties = new ArrayList<Property>();
     else
       this.properties = properties;
   }
