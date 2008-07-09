@@ -1,4 +1,4 @@
-package thredds.catalog2.beanImpl;
+package thredds.catalog2.simpleImpl;
 
 import thredds.catalog.DataFormatType;
 import thredds.catalog2.Access;
