@@ -47,11 +47,30 @@ public class TestRegexp extends TestCase {
     testOne(".*/AG.*\\.nc$", "C:/data/roy/caron/PS2006001_2006003_ssta.nc", false);
   }
 
+
   private void testOne(String ps, String match, boolean expect) {
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
     System.out.printf(" match %s against %s = %s %n", ps, match, matcher.matches());
     assert matcher.matches() == expect;
+  }
+
+  public void test3() {
+    testOne(".*JU[CM]E00 EGRR.*", "JUCE00 EGRR", true);
+    testOne(".*JU[^CM]E00 EGRR.*", "JUCE00 EGRR", false);
+  }
+
+  public void test4() {
+    testMatch(".*(J.....) (....) .*", "WMO JUBE99 EGRR 030000", true);
+    testMatch(".*([IJ].....) (....) .*", "WMO IUBEs9 sssR 030000", true);
+  }
+
+  private void testMatch(String ps, String match, boolean expect) {
+    Pattern pattern = Pattern.compile(ps);
+    Matcher matcher = pattern.matcher(match);
+    System.out.printf(" match %s against %s = %s %n", ps, match, matcher.matches());
+    for (int i=1; i<=matcher.groupCount(); i++)
+      System.out.println(" "+i+ " "+matcher.group(i));
   }
 
 }

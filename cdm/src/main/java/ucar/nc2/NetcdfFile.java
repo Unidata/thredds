@@ -22,6 +22,7 @@ package ucar.nc2;
 import ucar.ma2.*;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.UncompressInputStream;
+import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.CancelTask;
@@ -374,6 +375,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     ucar.unidata.io.RandomAccessFile raf;
     if (uriString.startsWith("http:")) { // open through URL
       raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+
+    } else if (uriString.startsWith("nodods:")) { // open through URL
+      uriString = "http" + uriString.substring(6);
+      raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
+
+    } else if (uriString.startsWith("slurp:")) { // open through URL
+      uriString = "http" + uriString.substring(5);
+      byte[] contents = IO.readURLContentsToByteArray( uriString); // read all into memory
+      raf = new InMemoryRandomAccessFile(uriString, contents);
 
     } else {
       // get rid of crappy microsnot \ replace with happy /

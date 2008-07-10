@@ -545,6 +545,21 @@ public class IO {
   }
 
   /**
+   * Read the contents from the inputStream and place into a byte array,
+   * with any error messages  put in the return String.
+   *
+   * @param is the inputStream to read from.
+   * @return byte[] holding the contents, or an error message.
+   * @throws java.io.IOException on io error
+   */
+  static public byte[] readURLContentsToByteArray(String urlString) throws IOException {
+    ByteArrayOutputStream bout = new ByteArrayOutputStream(200000);
+    copyUrlB(urlString, bout, 200000);
+    return bout.toByteArray();
+  }
+
+
+  /**
    * read the contents from the named URL, write to a file.
    *
    * @param urlString the URL to read from.

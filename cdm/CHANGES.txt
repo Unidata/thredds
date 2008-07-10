@@ -42,6 +42,7 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
+    20: add nodods:, slurp: as aliases for http:
     19: BUFR reading mostly works
         turn off debugging
         StructureDS.convert nested structures

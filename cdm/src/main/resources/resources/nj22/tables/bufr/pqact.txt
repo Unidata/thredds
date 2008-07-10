@@ -1,0 +1,52 @@
+ISXT40 KBOU     
+ISX[AB]40 KWNO
+ISXX.. KNES      ; Seawinds
+IUAC.. RJTD
+IUAC.. RKSL   
+IUCI.. SBBR  
+IUC[SN].. RJTD 
+IUPC.. RJTD
+IUPT0. KBOU 
+IUPT41 KBOU
+IUPT42 KBOU 
+IUPT43 KBOU 
+IUS[ACDL][^01]. RJTD
+IUSC[01]. RJTD 
+IUSD.. EDZW
+IUS[TX].1 KWBC
+IUS[TX].2 KWBC
+IUS[TX].3 KWBC 
+IUS[TX].4 KWBC
+IUS[TX].[68] KWBC
+IUS[UV].1 KWBC
+IUS[UV].2 KWBC
+IUS[UV].3 KWBC
+IUS[UV].4 KWBC
+IUS[UVYZ].[68] KWBC  
+IUS[YZ].1 KWBC 
+IUS[YZ].2 KWBC  
+IUS[YZ].3 KWBC 
+IUS[YZ].4 KWBC 
+IUTX.. KNES		
+#
+J.CX.. KNES
+JSAT98 KKCI  
+JUBE99 KKCI 
+JU[CM]E00 EGRR
+JU[FJ]E00 EGRR
+JU[TW]E00 EGRR
+JU[CM]E00 KKCI 
+JUTX.. KNES
+
+# CCCC  International four-letter location indicator of the station originating or compiling the bulletin
+EDZW Center = Offenbach (RSMC) (78.0) 
+EGRR Center= UK Meteorological Office Bracknell (RSMC) (74.0)
+KBOU Center= The NOAA Forecast Systems Laboratory (59.0)  
+KKCI Center= US National Weather Service (NCEP) (7.0)
+KNES Center= US National Weather Service (NCEP) (7.0)  
+KWBC Center= US National Weather Service (NCEP) (7.0)
+KWNO Center= NCEP /  Central Operations (7.3) 
+RJTD Center= Tokyo (RSMC), Japan Meteorological Agency (34.0)
+SBBR Center= Brazilian Space Agency ? INPE (46.0) 
+VHHH Center= Hong-Kong 110.0   
+
