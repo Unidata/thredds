@@ -2,7 +2,7 @@
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
          xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata IDD Model Data" version="1.0">
   <service name="latest" serviceType="Resolver"
-           base="http://motherlode.ucar.edu:9080/thredds/dqc/latestModel-InvCat1.0"/>
+           base="/thredds/dqc/latestModel-InvCat1.0"/>
   <!--service name="latest" serviceType="Resolver"
            base="/thredds/idd/model"/-->
   <property name="CatalogGenConfigOrigURL" value="/thredds/cataloggen/config/catGenConfig.ModelsInvCat1.0-IDV.xml"/>
@@ -50,7 +50,7 @@
           <catGen:datasetSource accessPoint="/data/ldm/pub/decoded/netcdf/grid/NCEP/NAM/CONUS_80km"
                                 name="model data source" structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -108,7 +108,7 @@
           <catGen:datasetSource accessPoint="/data/ldm/pub/decoded/netcdf/grid/NCEP/GFS/CONUS_80km"
                                 name="model data source" structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -163,7 +163,7 @@
           <catGen:datasetSource accessPoint="/data/ldm/pub/decoded/netcdf/grid/NCEP/GFS/Global_5x2p5deg"
                                 name="model data source" structure="Flat" type="Local">
           <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -221,7 +221,7 @@
                                 name="model data source"
                                 structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -279,7 +279,7 @@
                                 name="model data source"
                                 structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -335,7 +335,7 @@
                                 name="model data source"
                                 structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -391,7 +391,7 @@
                                 name="model data source"
                                 structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -450,7 +450,7 @@
                                 name="model data source"
                                 structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -501,7 +501,7 @@
                                 name="model data source"
                                 structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -554,7 +554,7 @@
                                 name="model data source"
                                 structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -607,7 +607,7 @@
                                 name="model data source"
                                 structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only"
                                   type="RegExp"/>
@@ -659,7 +659,7 @@
           <catGen:datasetSource accessPoint="/data/ldm/pub/decoded/netcdf/grid/UNIDATA/WSETA" name="model data source"
                                 structure="Flat" type="Local">
             <catGen:resultService accessPointHeader="/data/ldm/pub/decoded/netcdf/grid/"
-                                  base="http://motherlode.ucar.edu:9080/thredds/dodsC/modelsNc/" name="mlode"
+                                  base="/thredds/dodsC/modelsNc/" name="mlode"
                                   serviceType="DODS"/>
             <catGen:datasetFilter matchPattern="nc$" name="Accept netCDF files only" type="RegExp"/>
             <catGen:datasetNamer addLevel="false"
