@@ -1,0 +1,16 @@
+package thredds.catalog2.xml;
+
+/**
+ * _more_
+ *
+ * @author edavis
+ * @since 4.0
+ */
+public abstract class AbstractCatalogElement
+{
+  public static final String THREDDS_CATALOG_ELEMENT_NAME = "catalog";
+  public static final String THREDDS_CATALOG_NAME_ATTRIBUTE_NAME = "name";
+  public static final String THREDDS_CATALOG_EXPIRES_ATTRIBUTE_NAME = "expires";
+  public static final String THREDDS_CATALOG_LAST_MODIFIED_ATTRIBUTE_NAME = "lastModified";
+  public static final String THREDDS_CATALOG_VERSION_ATTRIBUTE_NAME = "version";
+}
