@@ -68,7 +68,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   private NetcdfFile ncfile;
   private RandomAccessFile raf;
   private Formatter parseInfo;
-  //private ConstructNC delegate;
+  private ConstructNC construct;
   private BufrMessage protoMessage;
   private DateFormatter dateFormatter = new DateFormatter();
 
@@ -129,7 +129,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
 
     // this fills the netcdf object
-    new ConstructNC(protoMessage, countObs, ncfile);
+    construct = new ConstructNC(protoMessage, countObs, ncfile);
 
     ncfile.finish();
   }
@@ -412,7 +412,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
   // read in the data into an ArrayStructureBB
   private ArraySequence makeArraySequence(BitReader reader, int count, DataDescriptor seqdd) throws IOException {
     // kludge
-    Sequence s = (Sequence) seqdd.refersTo;
+    DataDescriptor pdd = null; // DataDescriptor.getParellel( proto, seqdd);
+    Sequence s = (Sequence) pdd.obj;
     assert s != null;
 
     // for the obs structure

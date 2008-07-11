@@ -193,7 +193,8 @@ class ConstructNC {
 
     parent.addMemberVariable(seq);
     seq.setSPobject(dataDesc);
-    dataDesc.refersTo = seq;
+
+    dataDesc.obj = seq;
   }
 
   private void addMember(Structure parent, DataDescriptor dkey) {

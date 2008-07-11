@@ -198,7 +198,6 @@ class Index2NC {
 
     parent.addMemberVariable(seq);
     seq.setSPobject(dataDesc);
-    dataDesc.refersTo = seq;
   }
 
   private void addMember(Structure parent, DataDescriptor dkey) {
