@@ -95,13 +95,13 @@ public class ArraySequence extends ArrayStructure {
         else if (dataType == DataType.FLOAT)
           resultIter.setFloatNext(sdata.getScalarFloat(m));
 
-        else if (dataType == DataType.BYTE)
+        else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1))
           resultIter.setByteNext(sdata.getScalarByte(m));
 
-        else if (dataType == DataType.SHORT)
+        else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2))
           resultIter.setShortNext(sdata.getScalarShort(m));
 
-        else if (dataType == DataType.INT)
+        else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4))
           resultIter.setIntNext(sdata.getScalarInt(m));
 
         else if (dataType == DataType.LONG)
@@ -128,15 +128,15 @@ public class ArraySequence extends ArrayStructure {
           float[] data = sdata.getJavaArrayFloat(m);
           for (float aData : data) resultIter.setFloatNext(aData);
 
-        } else if (dataType == DataType.BYTE) {
+        } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
           byte[] data = sdata.getJavaArrayByte(m);
           for (byte aData : data) resultIter.setByteNext(aData);
 
-        } else if (dataType == DataType.SHORT) {
+        } else if ((dataType == DataType.SHORT)|| (dataType == DataType.ENUM2)) {
           short[] data = sdata.getJavaArrayShort(m);
           for (short aData : data) resultIter.setShortNext(aData);
 
-        } else if (dataType == DataType.INT) {
+        } else if ((dataType == DataType.INT)|| (dataType == DataType.ENUM4)) {
           int[] data = sdata.getJavaArrayInt(m);
           for (int aData : data) resultIter.setIntNext(aData);
 

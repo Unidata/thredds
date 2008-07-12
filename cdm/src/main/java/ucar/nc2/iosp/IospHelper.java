@@ -69,13 +69,14 @@ public class IospHelper {
    * @param index    handles skipping around in the file.
    * @param dataType dataType of the variable
    * @param arr      primitive array to read data into
+   * @param byteOrder if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
   static public Object readData(RandomAccessFile raf, Layout index, DataType dataType, Object arr, int byteOrder) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***RAF LayoutType="+index.getClass().getName());
 
-   if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
+   if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1) ) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -86,7 +87,7 @@ public class IospHelper {
       //return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
       if (dataType == DataType.CHAR) return convertByteToChar(pa); else return pa;
 
-    } else if (dataType == DataType.SHORT) {
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = (short[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -96,7 +97,7 @@ public class IospHelper {
       }
       return pa;
 
-    } else if (dataType == DataType.INT) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       int[] pa = (int[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -183,7 +184,7 @@ public class IospHelper {
   static public Object readData(PositioningDataInputStream raf, Layout index, DataType dataType, Object arr) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***PositioningDataInputStream LayoutType="+index.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -192,7 +193,7 @@ public class IospHelper {
       //return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
       if (dataType == DataType.CHAR) return convertByteToChar(pa); else return pa;
 
-    } else if (dataType == DataType.SHORT) {
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = (short[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -200,7 +201,7 @@ public class IospHelper {
       }
       return pa;
 
-    } else if (dataType == DataType.INT) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       int[] pa = (int[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -274,7 +275,7 @@ public class IospHelper {
   static public Object readData(LayoutBB layout, DataType dataType, Object arr) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***BB LayoutType="+layout.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -287,7 +288,7 @@ public class IospHelper {
       //return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
       if (dataType == DataType.CHAR) return convertByteToChar(pa); else return pa;
 
-    } else if (dataType == DataType.SHORT) {
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = (short[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -299,7 +300,7 @@ public class IospHelper {
       }
       return pa;
 
-    } else if (dataType == DataType.INT) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       int[] pa = (int[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -376,15 +377,15 @@ public class IospHelper {
       for (int i = 0; i < count; i++)
         result.setDoubleNext( bb.getDouble(offset + i*8));
 
-    } else if (dtype == DataType.INT) {
+    } else if ((dtype == DataType.INT) || (dtype == DataType.ENUM4)) {
       for (int i = 0; i < count; i++)
         result.setIntNext( bb.getInt(offset + i*4));
 
-    } else if (dtype == DataType.SHORT) {
+    } else if ((dtype == DataType.SHORT) || (dtype == DataType.ENUM2)) {
       for (int i = 0; i < count; i++)
         result.setShortNext( bb.getShort(offset + i*2));
 
-    } else if ((dtype == DataType.BYTE) || (dtype == DataType.OPAQUE)) {
+    } else if ((dtype == DataType.BYTE) || (dtype == DataType.OPAQUE) || (dtype == DataType.ENUM1)) {
       for (int i = 0; i < count; i++)
         result.setByteNext( bb.get(offset + i));
 
@@ -410,13 +411,13 @@ public class IospHelper {
   static public Object makePrimitiveArray(int size, DataType dataType) {
     Object arr = null;
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
       arr = new byte[size];
 
-    } else if (dataType == DataType.SHORT) {
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       arr = new short[size];
 
-    } else if (dataType == DataType.INT) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       arr = new int[size];
 
     } else if (dataType == DataType.FLOAT) {
@@ -440,7 +441,7 @@ public class IospHelper {
    */
   static public Object makePrimitiveArray(int size, DataType dataType, Object fillValue) {
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE))  {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1))  {
       byte[] pa = new byte[size];
       byte val = (Byte) fillValue;
       if (val != 0)
@@ -450,14 +451,14 @@ public class IospHelper {
     } else if (dataType == DataType.OPAQUE) {
       return new byte[size];
 
-    } else if (dataType == DataType.SHORT) {
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = new short[size];
       short val = (Short) fillValue;
       if (val != 0)
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
 
-    } else if (dataType == DataType.INT) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       int[] pa = new int[size];
       int val = (Integer) fillValue;
       if (val != 0)
@@ -485,7 +486,7 @@ public class IospHelper {
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
 
-    } else if ((dataType == DataType.STRING) || (dataType == DataType.ENUM)) {
+    } else if (dataType == DataType.STRING) {
       String[] pa = new String[size];
       for (int i = 0; i < size; i++) pa[i] = (String) fillValue;
       return pa;

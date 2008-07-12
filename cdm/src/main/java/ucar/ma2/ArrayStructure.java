@@ -279,15 +279,15 @@ public abstract class ArrayStructure extends Array {
       float[] pa = getJavaArrayFloat(recno, m);
       return Array.factory(float.class, m.getShape(), pa);
 
-    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE)) {
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
       byte[] pa = getJavaArrayByte(recno, m);
       return Array.factory(byte.class, m.getShape(), pa);
 
-    } else if (dataType == DataType.SHORT) {
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = getJavaArrayShort(recno, m);
       return Array.factory(short.class, m.getShape(), pa);
 
-    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM)) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       int[] pa = getJavaArrayInt(recno, m);
       return Array.factory(int.class, m.getShape(), pa);
 
@@ -380,15 +380,15 @@ public abstract class ArrayStructure extends Array {
       for (int recno = 0; recno < getSize(); recno++)
         copyFloats(recno, m, resultIter);
 
-    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE)) {
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
       for (int recno = 0; recno < getSize(); recno++)
         copyBytes(recno, m, resultIter);
 
-    } else if (dataType == DataType.SHORT) {
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       for (int recno = 0; recno < getSize(); recno++)
         copyShorts(recno, m, resultIter);
 
-    } else if (dataType == DataType.INT) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       for (int recno = 0; recno < getSize(); recno++)
         copyInts(recno, m, resultIter);
 
@@ -496,13 +496,13 @@ public abstract class ArrayStructure extends Array {
     } else if (dataType == DataType.FLOAT) {
       return getScalarFloat(recno, m);
 
-    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE)) {
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
       return getScalarByte(recno, m);
 
-    } else if (dataType == DataType.SHORT) {
+    } else if ((dataType == DataType.SHORT)|| (dataType == DataType.ENUM2)) {
       return getScalarShort(recno, m);
 
-    } else if (dataType == DataType.INT) {
+    } else if ((dataType == DataType.INT)|| (dataType == DataType.ENUM4)) {
       return getScalarInt(recno, m);
 
     } else if (dataType == DataType.LONG) {
@@ -636,7 +636,7 @@ public abstract class ArrayStructure extends Array {
    * @return scalar double value
    */
   public byte getScalarByte(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.BYTE)
+    if ((m.getDataType() != DataType.BYTE) && (m.getDataType() != DataType.ENUM1))
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
     Array data = m.getDataArray();
     return data.getByte(recnum * m.getSize()); // gets first one in the array
@@ -650,7 +650,7 @@ public abstract class ArrayStructure extends Array {
    * @return byte[]
    */
   public byte[] getJavaArrayByte(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.BYTE)
+    if ((m.getDataType() != DataType.BYTE) && (m.getDataType() != DataType.ENUM1))
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
     int count = m.getSize();
     Array data = m.getDataArray();
@@ -668,7 +668,7 @@ public abstract class ArrayStructure extends Array {
    * @return scalar double value
    */
   public short getScalarShort(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.SHORT)
+    if ((m.getDataType() != DataType.SHORT) && (m.getDataType() != DataType.ENUM2))
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
     Array data = m.getDataArray();
     return data.getShort(recnum * m.getSize()); // gets first one in the array
@@ -682,7 +682,7 @@ public abstract class ArrayStructure extends Array {
    * @return short[]
    */
   public short[] getJavaArrayShort(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.SHORT)
+    if ((m.getDataType() != DataType.SHORT) && (m.getDataType() != DataType.ENUM2))
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
     int count = m.getSize();
     Array data = m.getDataArray();
@@ -700,7 +700,7 @@ public abstract class ArrayStructure extends Array {
    * @return scalar double value
    */
   public int getScalarInt(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.INT)
+    if ((m.getDataType() != DataType.INT) && (m.getDataType() != DataType.ENUM4))
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
     Array data = m.getDataArray();
     return data.getInt(recnum * m.getSize()); // gets first one in the array
@@ -714,7 +714,7 @@ public abstract class ArrayStructure extends Array {
    * @return int[]
    */
   public int[] getJavaArrayInt(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.INT)
+    if ((m.getDataType() != DataType.INT) && (m.getDataType() != DataType.ENUM4))
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
     int count = m.getSize();
     Array data = m.getDataArray();

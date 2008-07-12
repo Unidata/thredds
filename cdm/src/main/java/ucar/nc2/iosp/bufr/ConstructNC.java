@@ -162,6 +162,7 @@ class ConstructNC {
   }
 
   private int structNum = 1;
+
   private void addStructure(Structure parent, DataDescriptor dataDesc, int count) {
     String structName = "struct" + structNum;
     structNum++;
@@ -180,6 +181,7 @@ class ConstructNC {
   }
 
   private int seqNum = 1;
+
   private void addSequence(Structure parent, DataDescriptor dataDesc) {
     //String seqName = ftype == (FeatureType.STATION_PROFILE) ? "profile" : "seq";
     String seqName = "seq" + seqNum;
@@ -194,7 +196,7 @@ class ConstructNC {
     parent.addMemberVariable(seq);
     seq.setSPobject(dataDesc);
 
-    dataDesc.obj = seq;
+    dataDesc.refersTo = seq;
   }
 
   private void addMember(Structure parent, DataDescriptor dkey) {
@@ -231,17 +233,49 @@ class ConstructNC {
     }
 
     if (dataDesc.units == null)
-      log.warn("dataDesc.units == null for "+name);
+      log.warn("dataDesc.units == null for " + name);
     else {
       if (dataDesc.units.equalsIgnoreCase("Code_Table") || dataDesc.units.equalsIgnoreCase("Code Table"))
-        v.addAttribute(new Attribute("units", "Code Table "+dataDesc.id));
-      else if (dataDesc.units.equalsIgnoreCase("Flag_Table") ||dataDesc.units.equalsIgnoreCase("Flag Table"))
-        v.addAttribute(new Attribute("units", "Flag Table "+dataDesc.id));
-      else if (!dataDesc.units.startsWith("CCITT"))
+        v.addAttribute(new Attribute("units", "Code Table " + dataDesc.id));
+      else if (dataDesc.units.equalsIgnoreCase("Flag_Table") || dataDesc.units.equalsIgnoreCase("Flag Table"))
+        v.addAttribute(new Attribute("units", "Flag Table " + dataDesc.id));
+      else if (!dataDesc.units.startsWith("CCITT") && !dataDesc.units.startsWith("Numeric"))
         v.addAttribute(new Attribute("units", dataDesc.units));
     }
 
-    if (dataDesc.type != 1) {
+    if (dataDesc.type == 1) {
+      v.setDataType(DataType.CHAR);
+      int size = dataDesc.bitWidth / 8;
+      try {
+        v.setDimensionsAnonymous(new int[]{size});
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+      }
+
+    } else if ((dataDesc.type == 2) && CodeTable.hasTable(dataDesc.id)) {
+      int nbits = dataDesc.bitWidth;
+      int nbytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
+
+      CodeTable ct = CodeTable.getTable(dataDesc.id);
+      if (nbytes == 1)
+        v.setDataType(DataType.ENUM1);
+      else if (nbytes == 2)
+        v.setDataType(DataType.ENUM2);
+      else if (nbytes == 4)
+        v.setDataType(DataType.ENUM4);
+
+      v.removeAttribute("units");
+      v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName()+ " (" + dataDesc.id+")"));
+
+      Group g = struct.getParentGroup();
+      EnumTypedef enumTypedef  = g.findEnumeration(ct.getName());
+      if (enumTypedef == null) {
+        enumTypedef = new EnumTypedef(ct.getName(), ct.getMap());
+        g.addEnumeration(enumTypedef);
+      }
+      v.setEnumTypedef( enumTypedef);
+
+    } else {
       int nbits = dataDesc.bitWidth;
       int nbytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
       if (nbytes == 1) {
@@ -272,14 +306,6 @@ class ConstructNC {
       if (dataDesc.refVal != 0)
         v.addAttribute(new Attribute("add_offset", (float) scale * dataDesc.refVal));
 
-    } else {
-      v.setDataType(DataType.CHAR);
-      int size = dataDesc.bitWidth / 8;
-      try {
-        v.setDimensionsAnonymous(new int[]{size});
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-      }
     }
 
     annotate(v, dataDesc);
@@ -296,7 +322,7 @@ class ConstructNC {
 
     int seq = 1;
     while (true) {
-      String wantSeq = want+"-"+seq;
+      String wantSeq = want + "-" + seq;
       oldV = struct.findVariable(wantSeq);
       if (oldV == null) return wantSeq;
       seq++;
@@ -311,7 +337,7 @@ class ConstructNC {
     }
 
     if (dkey.id.equals("0-6-1") || dkey.id.equals("0-6-2") ||
-            dkey.id.equals("0-28-1") || dkey.id.equals("0-28-2")) {
+        dkey.id.equals("0-28-1") || dkey.id.equals("0-28-2")) {
       v.addAttribute(new Attribute("units", "degrees_east"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     }

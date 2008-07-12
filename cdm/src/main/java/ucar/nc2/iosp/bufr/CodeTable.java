@@ -19,215 +19,111 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import org.jdom.*;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
 import org.jdom.input.SAXBuilder;
+import org.jdom.Element;
 
-import java.io.*;
-import java.util.Formatter;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author caron
- * @since Jul 10, 2008
+ * @since Jul 12, 2008
  */
 public class CodeTable {
-  Formatter out;
-  BufferedReader dataIS;
-  String line;
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeTable.class);
+  static private Map<String, CodeTable> tableMap;
 
-  CodeTable(String filename) throws IOException {
-    out = new Formatter(System.out);
-    dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
-    getNextLine();
-
-    int count = 0;
-    while (readCodeTable() && count < 100) {
-      out.format("%d ", count);
-      count++;
-    }
-
-    out.flush();
-    dataIS.close();
+  static public CodeTable getTable(String id) {
+    if (tableMap == null) init();
+    return tableMap.get(id);
   }
 
-  private boolean getNextLine() throws IOException {
-    line = dataIS.readLine();
-    return (line != null);
+  static public boolean hasTable(String id) {
+    if (tableMap == null) init();
+    return tableMap.get(id) != null;
   }
 
-  private boolean readCodeTable() throws IOException {
-    int x = Integer.parseInt(line.substring(0, 3));
-    int y = Integer.parseInt(line.substring(3, 6));
-    int ncodes = Integer.parseInt(line.substring(7, 11)); // incorrect
-    out.format("Code 0-%d-%d ncodes=%d %n", x, y, ncodes);
+  static void init() {
+    tableMap = new HashMap<String, CodeTable>(100);
+    String filename = "C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans2.xml";
 
-    int countCodes = 0;
-    boolean first = true;
-    while (readOneCode(first)) {
-      if (!getNextLine()) return false;
-      first = false;
-      countCodes++;
-    }
-
-    if (countCodes != ncodes) out.format("*** Really %d codes %n", countCodes);
-
-    return true;
-  }
-
-  private boolean readOneCode(boolean first) throws IOException {
-    if (!first && line.substring(0, 3).trim().length() != 0) return false; //
-
-    int code = Integer.parseInt(line.substring(12, 16));
-    int nlines = Integer.parseInt(line.substring(17, 19));
-    String value = line.substring(20);
-    if (nlines > 1) {
-      for (int j = 1; j < nlines; j++) {
-        if (!getNextLine()) return false;
-        //value += " ";
-        value += line.substring(20);
-      }
-    }
-    out.format("   code %d = %s %n", code, value);
-    return true;
-  }
-
-
-  static public void main2(String args[]) throws IOException {
-    org.jdom.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
-      doc = builder.build("C:/docs/bufr/wmo/Code-FlagTables-11-2007.xml");
+      org.jdom.Document tdoc = builder.build(filename);
+      org.jdom.Element root = tdoc.getRootElement();
 
-      Format pretty = Format.getPrettyFormat();
-      String sep = pretty.getLineSeparator();
-      String ind = pretty.getIndent();
-      String mine = "\r\n";
-      pretty.setLineSeparator(mine);
+      for (Element elem : (List<Element>) root.getChildren("table")) {
 
-      // wierd - cant pretty print ??!!
-      XMLOutputter fmt = new XMLOutputter(pretty);
-      Writer pw = new FileWriter("C:/docs/bufr/wmo/wordNice.txt");
-      fmt.output(doc, pw);
+        String kind = elem.getAttributeValue("kind");
+        if ((kind == null) || !kind.equals("code")) {
+          continue;
+        }
 
-    } catch (JDOMException e) {
-      throw new IOException(e.getMessage());
-    }
+        List<Element> cElems = (List<Element>) elem.getChildren("code");
+        if (cElems.size() == 0) {
+          continue;
+        }
 
-  }
+        String name = elem.getAttributeValue("name");
+        String desc = elem.getAttributeValue("desc");
+        CodeTable ct = new CodeTable(name, desc);
+        tableMap.put(ct.id, ct);
+        // System.out.printf(" added %s == %s %n", ct.id, desc);
 
+        for (Element cElem : cElems) {
+          String valueS = cElem.getAttributeValue("value").trim();
+          String text = cElem.getText();
+          if (text.toLowerCase().startsWith("reserved"))
+            continue;
+          else if (text.toLowerCase().startsWith("not used"))
+            continue;
+          else {
+            try {
+              int value = Integer.parseInt(valueS);
+              ct.addValue(value, text);
+            } catch (NumberFormatException e) {
+              log.warn("BAD VALUE "+valueS+" for table "+name);
+            }
+          }
+        }
+      }
 
-  static public void transform(Element elem, Element telem) {
-    String name = elem.getName();
-
-    if (name.equals("sub-section") || name.equals("tc")) {
-      Element nelem = new Element(name);
-      telem.addContent(nelem);
-      telem = nelem;
-    }
-
-    if (name.equals("r") && !hasAncestor(telem, "tc")) {
-      Element nelem = new Element(name);
-      telem.addContent(nelem);
-      telem = nelem;
-    }
-
-    String s = elem.getText();
-    if (s != null) {
-      s = s.trim();
-      if (s.length() > 0)
-        telem.addContent(s);
-    }
-
-    if (name.equals("noBreakHyphen")) {
-      telem.addContent("-");
-      return;
-    }
-
-    for (Object o : elem.getChildren()) {
-      Element e = (Element) o;
-      transform(e, telem);
+    } catch (Exception e) {
+      log.error("Can't read BUFR code table "+filename, e);
     }
   }
 
-  static boolean hasAncestor(Element e, String name) {
-    while (e != null) {
-      if (e.getName().equals(name)) return true;
-      e = e.getParentElement();
-    }
-    return false;
+  private String id, name;
+  private Map<Integer,String> map;
+
+  private CodeTable(String id, String name) {
+    this.id = normal(id);
+    this.name = name;
+    map = new HashMap<Integer,String>(20);
   }
 
-  static Formatter f = new Formatter(System.out);
+  private String normal( String id) {
+    String[] tok = id.split(" ");
+    if (tok.length != 3)
+      log.warn("Illegal table name="+id);
 
-  static private void transform2(Element root) {
-    String lastRtext = null;
-    for (Element e : (List<Element>) root.getChildren("sub-section")) {
-      lastRtext = subSection(e, lastRtext);
+    else try {
+      int f = Integer.parseInt(tok[0]);
+      int x = Integer.parseInt(tok[1]);
+      int y = Integer.parseInt(tok[2]);
+      return f+"-"+x+"-"+y;
+    } catch (NumberFormatException e) {
+      log.warn("Illegal table name="+id);
     }
+    return "";
   }
 
-  static private String subSection(Element elem, String lastRtext) {
-    List<Element> rElems = (List<Element>) elem.getChildren("r");
-    List<Element> tcElems = (List<Element>) elem.getChildren("tc");
-    String desc = rElems.size() > 0 ? rElems.get(0).getText() : "unknown";
-    f.format("------%n%s == %s%n", lastRtext, desc);
-    for (int i = 2; i < tcElems.size(); i += 2) { // skip first 2
-      String value = tcElems.get(i).getText();
-      String text = (i + 1 < tcElems.size()) ? tcElems.get(i + 1).getText() : "unknown";
-      f.format("%s == %s %n", value, text);
-    }
-    return (rElems.size() > 0) ? rElems.get(rElems.size() - 1).getText() : null;
+  public String getName() { return name; }
+  public Map<Integer,String> getMap() { return map; }
+
+  private void addValue(int value, String text) {
+    map.put(value,text);  
   }
 
-
-  static public void main3(String args[]) throws IOException {
-     org.jdom.Document orgDoc;
-     try {
-       SAXBuilder builder = new SAXBuilder();
-       orgDoc = builder.build("C:/docs/bufr/wmo/Code-FlagTables-11-2007.xml");
-
-       org.jdom.Document tdoc = new org.jdom.Document();
-       Element root = new Element("tdoc");
-       tdoc.setRootElement(root);
-       transform(orgDoc.getRootElement(), root);
-
-       /* XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-       Writer pw = new FileWriter("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans.xml");
-       fmt.output(tdoc, pw);
-       pw = new PrintWriter(System.out);
-       fmt.output(tdoc, pw);  // */
-
-       transform2(root);
-
-     } catch (JDOMException e) {
-       throw new IOException(e.getMessage());
-     }
-
-
-   }
-
-  static public void main(String args[]) throws IOException {
-     org.jdom.Document tdoc;
-     try {
-       SAXBuilder builder = new SAXBuilder();
-       tdoc = builder.build("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans1.xml");
-       transform2(tdoc.getRootElement());
-
-       /* XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-       Writer pw = new FileWriter("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans2.xml");
-       fmt.output(tdoc, pw);
-       pw = new PrintWriter(System.out);
-       fmt.output(tdoc, pw);  // */
-
-     } catch (JDOMException e) {
-       throw new IOException(e.getMessage());
-     }
-
-
-   }
-
- }
-
-
+}

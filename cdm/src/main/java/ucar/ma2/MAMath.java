@@ -132,16 +132,16 @@ public class MAMath {
     } else if (dataType == DataType.LONG) {
       while (from.hasNext())
         to.setLongNext(from.getLongNext());
-    } else if (dataType == DataType.INT) {
+    } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       while (from.hasNext())
         to.setIntNext(from.getIntNext());
-    } else if (dataType == DataType.SHORT) {
+    } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       while (from.hasNext())
         to.setShortNext(from.getShortNext());
     } else if (dataType == DataType.CHAR) {
       while (from.hasNext())
         to.setCharNext(from.getCharNext());
-    } else if (dataType == DataType.BYTE) {
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
       while (from.hasNext())
         to.setByteNext(from.getByteNext());
     } else if (dataType == DataType.BOOLEAN) {

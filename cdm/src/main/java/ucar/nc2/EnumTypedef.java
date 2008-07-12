@@ -44,7 +44,10 @@ public class EnumTypedef {
   public List<String> getEnumStrings() {
     return new ArrayList<String>(map.values());
   }
-  public String getEnumString(int e) { return map.get(e); }
+  public String lookupEnumString(int e) {
+    String result = map.get(e);
+    return (result == null) ? "Unknown enum value= "+e : result;
+  }
 
   /** String representation.
    * @param strict if true, write in strict adherence to CDL definition.

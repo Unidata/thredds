@@ -444,7 +444,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
   public Object getFillValue(DataType dt) {
     DataType useType = convertedDataType == null ? dt : convertedDataType;
-    if (useType == DataType.BYTE) {
+    if ((useType == DataType.BYTE) || (useType == DataType.ENUM1)) {
       byte[] result = new byte[1];
       result[0] = hasFillValue ? (byte) fillValue : NC_FILL_BYTE;
       return result;
@@ -456,11 +456,11 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       char[] result = new char[1];
       result[0] = hasFillValue ? (char) fillValue : NC_FILL_CHAR;
       return result;
-    } else if (useType == DataType.SHORT) {
+    } else if ((useType == DataType.SHORT) || (useType == DataType.ENUM2)) {
       short[] result = new short[1];
       result[0] = hasFillValue ? (short) fillValue : NC_FILL_SHORT;
       return result;
-    } else if (useType == DataType.INT) {
+    } else if ((useType == DataType.INT) || (useType == DataType.ENUM4)) {
       int[] result = new int[1];
       result[0] = hasFillValue ? (int) fillValue : NC_FILL_INT;
       return result;

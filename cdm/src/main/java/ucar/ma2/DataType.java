@@ -44,7 +44,10 @@ public enum DataType {
 
   // netcdf4 types
   OPAQUE("opaque", 1), // LOOK KEEP??
-  ENUM("enum", 1);
+
+  ENUM1("enum1", 1), // byte
+  ENUM2("enum2", 2), // short
+  ENUM4("enum4", 4); // int
 
   private String niceName;
   private int size;
@@ -120,11 +123,11 @@ public enum DataType {
       return float.class;
     if (this == DataType.DOUBLE)
       return double.class;
-    if (this == DataType.SHORT)
+    if ((this == DataType.SHORT)  || (this == DataType.ENUM2))
       return short.class;
-    if (this == DataType.INT) 
+    if ((this == DataType.INT)  || (this == DataType.ENUM4))
       return int.class;
-    if ((this == DataType.BYTE) || (this == DataType.OPAQUE))
+    if ((this == DataType.BYTE) || (this == DataType.OPAQUE)  || (this == DataType.ENUM1))
       return byte.class;
      if (this == DataType.CHAR)
       return char.class;
@@ -132,7 +135,7 @@ public enum DataType {
       return boolean.class;
     if (this == DataType.LONG)
       return long.class;
-    if ((this == DataType.STRING) || (this == DataType.ENUM))
+    if (this == DataType.STRING)
       return String.class;
     if (this == DataType.STRUCTURE)
       return StructureData.class;
@@ -146,15 +149,15 @@ public enum DataType {
    * @return the Object class type
    */
   public Class getClassType() {
-    if ((this == DataType.BYTE) || (this == DataType.OPAQUE))
+    if ((this == DataType.BYTE) || (this == DataType.OPAQUE) || (this == DataType.ENUM1))
       return Byte.class;
     if (this == DataType.FLOAT)
       return Float.class;
     if (this == DataType.DOUBLE)
       return Double.class;
-    if (this == DataType.SHORT)
+    if ((this == DataType.SHORT) || (this == DataType.ENUM2))
       return Short.class;
-    if ((this == DataType.INT) || (this == DataType.ENUM))
+    if ((this == DataType.INT) || (this == DataType.ENUM4))
       return Integer.class;
     if (this == DataType.CHAR)
       return Character.class;
@@ -184,6 +187,14 @@ public enum DataType {
   public boolean isNumeric() {
     return (this == DataType.BYTE) || (this == DataType.FLOAT) || (this == DataType.DOUBLE) || (this == DataType.INT) ||
         (this == DataType.SHORT) || (this == DataType.LONG);  
+  }
+
+  /**
+   * Is tis an enumeration types?
+   * @return true if ENUM1, 2, or 4
+   */
+  public boolean isEnum() {
+    return (this == DataType.ENUM1) || (this == DataType.ENUM2)  || (this == DataType.ENUM4);
   }
 
 

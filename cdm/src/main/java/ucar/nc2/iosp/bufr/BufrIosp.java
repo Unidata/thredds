@@ -207,8 +207,10 @@ public class BufrIosp extends AbstractIOServiceProvider {
   // want the data from the msgOffset-th data subset in the message.
   // this is the non-compressed case
   private void readOneObs(BufrMessage m, int msgOffset, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
-    BitReader reader = new BitReader(raf, m.dataSection.dataPos + 4);
+    // transfer info from proto message
+    DataDescriptor.transferInfo(protoMessage.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
 
+    BitReader reader = new BitReader(raf, m.dataSection.dataPos + 4);
     if (m.dds.isCompressed()) {
       m.calcTotalBits(); // make sure things have been counted.
       readDataCompressed(reader, m.getRootDataDescriptor(), msgOffset, m.getCounterFlds(), bb);
@@ -411,9 +413,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   // read in the data into an ArrayStructureBB
   private ArraySequence makeArraySequence(BitReader reader, int count, DataDescriptor seqdd) throws IOException {
-    // kludge
-    DataDescriptor pdd = null; // DataDescriptor.getParellel( proto, seqdd);
-    Sequence s = (Sequence) pdd.obj;
+    Sequence s = (Sequence) seqdd.refersTo;
     assert s != null;
 
     // for the obs structure

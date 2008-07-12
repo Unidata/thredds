@@ -416,8 +416,18 @@ public class StructureTable extends JPanel {
         e.printStackTrace();
         return "ERROR " + e.getMessage();
       }
-      return sd.getScalarObject(sd.getStructureMembers().getMember(memberCol));
+
+      StructureMembers.Member m = sd.getStructureMembers().getMember(memberCol);
+      Object val = sd.getScalarObject(m);
+      if (m.getDataType().isEnum()) {
+        val = enumLookup(m, (Number) val);
+      }
+
+      return val;
     }
+
+    String enumLookup(StructureMembers.Member m, Number val) { return "sorry"; }
+    
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -455,6 +465,12 @@ public class StructureTable extends JPanel {
       struct = null;
       fireTableDataChanged();
     }
+
+    String enumLookup(StructureMembers.Member m, Number val) {
+      Variable v = struct.findVariable(m.getName());
+      return v.lookupEnumString( val.intValue());
+    }
+
   }
 
   // handles Sequences
@@ -547,6 +563,7 @@ public class StructureTable extends JPanel {
       structureData = new ArrayList<StructureData>(); // empty list
       fireTableDataChanged();
     }
+
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -574,6 +591,7 @@ public class StructureTable extends JPanel {
       as = null;
       fireTableDataChanged();
     }
+
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -618,6 +636,7 @@ public class StructureTable extends JPanel {
       traj = null;
       fireTableDataChanged();
     }
+
   }
 
   ////////////////////////////////////////////////////////////////////////

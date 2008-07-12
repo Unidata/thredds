@@ -372,6 +372,15 @@ class H5header {
           v.setParentGroup(ncGroup);
           ncGroup.addVariable(v);
 
+          if (v.getDataType().isEnum()) {
+            EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
+            if (enumTypedef == null) {
+              enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
+              ncGroup.addEnumeration(enumTypedef);
+            }
+            v.setEnumTypedef(enumTypedef);
+          }
+
           Vinfo vinfo = (Vinfo) v.getSPobject();
           if (debugV) debugOut.println("  made Variable " + v.getName() + "  vinfo= " + vinfo + "\n" + v);
         }
@@ -379,8 +388,13 @@ class H5header {
       } else if (facadeNested.isTypedef) {
         if (debugReference && facadeNested.dobj.mdt.type == 7) debugOut.println(facadeNested);
 
-        if (facadeNested.dobj.mdt.map != null)
-          ncGroup.addEnumeration(new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map));
+        if (facadeNested.dobj.mdt.map != null) {
+          EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
+          if (enumTypedef == null) {
+            enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map);
+            ncGroup.addEnumeration(enumTypedef);
+          }
+        }
         if (debugV) debugOut.println("  made enumeration " + facadeNested.name);
 
       } else if (!facadeNested.isDimensionNotVariable && warnings) {
@@ -924,7 +938,7 @@ class H5header {
     boolean useFillValue = false;
     byte[] fillValue;
 
-    Map<Integer, String> enumMap;
+    // Map<Integer, String> enumMap;
 
     /**
      * Constructor
@@ -1030,8 +1044,18 @@ class H5header {
         // LOOK - should get the object, and change type to whatever it is (?)
 
       } else if (hdfType == 8) { // enums
-        tinfo.dataType = DataType.ENUM;
-        enumMap = mdt.map;
+        if (tinfo.byteSize == 1)
+          tinfo.dataType = DataType.ENUM1;
+        else if (tinfo.byteSize == 2)
+          tinfo.dataType = DataType.ENUM2;
+        else if (tinfo.byteSize == 4)
+          tinfo.dataType = DataType.ENUM4;
+        else {
+          log.warn("Illegal byte suze for enum type = "+tinfo.byteSize);
+          throw new IllegalStateException("Illegal byte suze for enum type = "+tinfo.byteSize);
+        }
+
+        // enumMap = mdt.map;
 
       } else if (hdfType == 9) { // variable length array
         tinfo.isVString = mdt.isVString;
@@ -1138,10 +1162,10 @@ class H5header {
     }
 
     Object getFillValueDefault(DataType dtype) {
-      if ((dtype == DataType.BYTE) || (typeInfo.dataType == DataType.OPAQUE)) return N3iosp.NC_FILL_BYTE;
+      if ((dtype == DataType.BYTE) || (dtype == DataType.ENUM1) ||(typeInfo.dataType == DataType.OPAQUE)) return N3iosp.NC_FILL_BYTE;
       if (dtype == DataType.CHAR) return (byte) 0;
-      if (dtype == DataType.SHORT) return N3iosp.NC_FILL_SHORT;
-      if (dtype == DataType.INT) return N3iosp.NC_FILL_INT;
+      if ((dtype == DataType.SHORT) || (dtype == DataType.ENUM2)) return N3iosp.NC_FILL_SHORT;
+      if ((dtype == DataType.INT) || (dtype == DataType.ENUM4)) return N3iosp.NC_FILL_INT;
       if (dtype == DataType.LONG) return N3iosp.NC_FILL_LONG;
       if (dtype == DataType.FLOAT) return N3iosp.NC_FILL_FLOAT;
       if (dtype == DataType.DOUBLE) return N3iosp.NC_FILL_DOUBLE;
@@ -1151,18 +1175,18 @@ class H5header {
     Object getFillValueNonDefault() {
       if (fillValue == null) return null;
 
-      if ((typeInfo.dataType == DataType.BYTE) || (typeInfo.dataType == DataType.CHAR) || (typeInfo.dataType == DataType.OPAQUE))
+      if ((typeInfo.dataType == DataType.BYTE) || (typeInfo.dataType == DataType.CHAR) || (typeInfo.dataType == DataType.ENUM1) || (typeInfo.dataType == DataType.OPAQUE))
         return fillValue[0];
 
       ByteBuffer bbuff = ByteBuffer.wrap(fillValue);
       if (typeInfo.byteOrder >= 0)
         bbuff.order(typeInfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
 
-      if (typeInfo.dataType == DataType.SHORT) {
+      if ((typeInfo.dataType == DataType.SHORT) || (typeInfo.dataType == DataType.ENUM2))  {
         ShortBuffer tbuff = bbuff.asShortBuffer();
         return tbuff.get();
 
-      } else if (typeInfo.dataType == DataType.INT) {
+      } else if ((typeInfo.dataType == DataType.INT) || (typeInfo.dataType == DataType.ENUM4))  {
         IntBuffer tbuff = bbuff.asIntBuffer();
         return tbuff.get();
 

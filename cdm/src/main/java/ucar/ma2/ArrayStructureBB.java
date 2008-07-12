@@ -146,7 +146,7 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   public byte getScalarByte(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.BYTE) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
+    if ((m.getDataType() != DataType.BYTE) && (m.getDataType() != DataType.ENUM1)) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
     if (m.getDataArray() != null) return super.getScalarByte(recnum, m);
 
     int offset = calcOffsetSetOrder(recnum, m);
@@ -154,7 +154,7 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   public byte[] getJavaArrayByte(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.BYTE) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
+    if ((m.getDataType() != DataType.BYTE)  && (m.getDataType() != DataType.ENUM1)) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be byte");
     if (m.getDataArray() != null) return super.getJavaArrayByte(recnum, m);
 
     int offset = calcOffsetSetOrder(recnum, m);
@@ -173,7 +173,7 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   public short getScalarShort(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.SHORT) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
+    if ((m.getDataType() != DataType.SHORT) && (m.getDataType() != DataType.ENUM2)) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
     if (m.getDataArray() != null) return super.getScalarShort(recnum, m);
 
     int offset = calcOffsetSetOrder(recnum, m);
@@ -181,7 +181,7 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   public short[] getJavaArrayShort(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.SHORT) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
+    if ((m.getDataType() != DataType.SHORT)  && (m.getDataType() != DataType.ENUM2)) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be short");
     if (m.getDataArray() != null) return super.getJavaArrayShort(recnum, m);
 
     int offset = calcOffsetSetOrder(recnum, m);
@@ -200,7 +200,7 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   public int getScalarInt(int recnum, StructureMembers.Member m) {
-    if (m.getDataType() != DataType.INT) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
+    if ((m.getDataType() != DataType.INT) && (m.getDataType() != DataType.ENUM4)) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
     if (m.getDataArray() != null) return super.getScalarInt(recnum, m);
 
     int offset = calcOffsetSetOrder(recnum, m);
@@ -208,7 +208,7 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   public int[] getJavaArrayInt(int recnum, StructureMembers.Member m) {
-    if ((m.getDataType() != DataType.INT) && (m.getDataType() != DataType.ENUM)) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
+    if ((m.getDataType() != DataType.INT) && (m.getDataType() != DataType.ENUM4)) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be int");
     if (m.getDataArray() != null) return super.getJavaArrayInt(recnum, m);
 
     int offset = calcOffsetSetOrder(recnum, m);

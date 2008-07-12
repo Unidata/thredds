@@ -631,6 +631,28 @@ public class Variable implements VariableIF {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Lookup he enum string for this value.
+   * Can only be called on enum types, where dataType.isEnum() is true.
+   * @param val the integer value of this enum
+   * @return the String value
+   */
+  public String lookupEnumString(int val) {
+    if (!dataType.isEnum())
+      throw new UnsupportedOperationException("Can only call Variable.lookupEnumVal() on enum types");
+    return enumTypedef.lookupEnumString(val);
+  }
+  private EnumTypedef enumTypedef;
+
+  public void setEnumTypedef(EnumTypedef enumTypedef) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    if (!dataType.isEnum())
+      throw new UnsupportedOperationException("Can only call Variable.setEnumTypedef() on enum types");
+    this.enumTypedef = enumTypedef;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   // IO
   // implementation notes to subclassers
   // all other calls use them, so override only these:
@@ -1026,7 +1048,7 @@ public class Variable implements VariableIF {
     StringBuilder buf = new StringBuilder();
     buf.setLength(0);
     buf.append(indent);
-    buf.append(dataType.toString());
+    buf.append(dataType.isEnum() ? "enum "+enumTypedef.getName() : dataType.toString());
     if (isVariableLength) buf.append("(*)"); // LOOK
     buf.append(" ");
     getNameAndDimensions(buf, useFullName, strict);

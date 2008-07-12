@@ -164,6 +164,7 @@ public class Attribute {
       }
     }
 
+    // LOOK can attributes be enum valued? for now, no
     if (dataType == DataType.BYTE)
       return values.getByte(ima().set0(index));
     else if (dataType == DataType.SHORT)

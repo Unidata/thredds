@@ -105,7 +105,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   private Array readData(ucar.nc2.Variable v2, long dataPos, Section wantSection) throws IOException, InvalidRangeException {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
-    Object data = null;
+    Object data;
 
     if (vinfo.useFillValue) { // fill value only
       Object pa = IospHelper.makePrimitiveArray((int) wantSection.computeSize(), dataType, vinfo.getFillValue());
@@ -194,7 +194,9 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (typeInfo.hdfType == 8) { // enum
       Object data = IospHelper.readDataFill( myRaf, layout, dataType, fillValue, byteOrder);
       Array codesArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
+      return codesArray;
 
+      /* LOOK should it return the string, or the integer ??
       // now transform into a String array
       String[] stringData = new String[(int) codesArray.getSize()];
       int count = 0;
@@ -203,7 +205,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         String s = vinfo.enumMap.get(code);
         stringData[count++] = (s == null) ? "" : s;
       }
-      return Array.factory(String.class, shape, stringData);
+      return Array.factory(String.class, shape, stringData); */
     }
 
     if ((typeInfo.hdfType == 9) && !typeInfo.isVString) { // vlen (not string)  LOOK NOT TESTED!!!
