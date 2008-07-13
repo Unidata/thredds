@@ -382,8 +382,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     }
 
     // LOOK not caching
-    return enhanceMode.contains(NetcdfDataset.EnhanceMode.ScaleMissing) ? convert(result) : result;
-  }
+    if (enhanceMode != null && enhanceMode.contains(NetcdfDataset.EnhanceMode.ScaleMissing))
+      return convert(result);
+    else
+      return result;  }
 
   // section of regular Variable
   @Override
@@ -404,7 +406,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       return Array.factoryConstant( dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
-    return enhanceMode.contains(NetcdfDataset.EnhanceMode.ScaleMissing) ? convert(result) : result;
+    if (enhanceMode != null && enhanceMode.contains(NetcdfDataset.EnhanceMode.ScaleMissing))
+      return convert(result);
+    else
+      return result;
   }
 
   // structure-member Variables.

@@ -55,11 +55,11 @@ public class TimeScaleOffsetMissing extends TestCase {
     Average file = new Average();
 
     // warm up
-    openDataset(NetcdfDataset.parseEnhanceMode("All"), null);
+    openDataset(NetcdfDataset.getEnhanceAll(), null);
     openFile(null);
 
     for (int i=0; i<N; i++) {
-      openDataset(NetcdfDataset.parseEnhanceMode("All"), all);
+      openDataset(NetcdfDataset.getEnhanceAll(), all);
       openDataset(NetcdfDataset.parseEnhanceMode("AllDefer"), alldefer);
       openDataset(NetcdfDataset.parseEnhanceMode("ScaleMissing"), sm);
       NetcdfDataset.setUseNaNs(false);

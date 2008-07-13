@@ -109,16 +109,21 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     ScaleMissingDefer,
     /** build coordinate systems */
     CoordSystems,
+    /** convert enums to Strings */
+    ConvertEnums
   }
 
-  // LOOK! must be immutable
+  // LOOK! need immutable
   //static private EnumSet<EnhanceMode> EnhanceNone = EnumSet.noneOf(EnhanceMode.class);
-  static private EnumSet<EnhanceMode> EnhanceAll = EnumSet.of(EnhanceMode.ScaleMissing, EnhanceMode.CoordSystems);
+  static private EnumSet<EnhanceMode> EnhanceAll = EnumSet.of(EnhanceMode.ScaleMissing, EnhanceMode.CoordSystems, EnhanceMode.ConvertEnums);
+  static public EnumSet<EnhanceMode> getEnhanceAll() { return EnumSet.copyOf( EnhanceAll); }
+  static public EnumSet<EnhanceMode> getEnhanceNone() { return EnumSet.noneOf(EnhanceMode.class); }
+  static protected EnumSet<EnhanceMode> defaultEnhanceMode = EnhanceAll;
 
   /**
    * Find the EnhanceMode that matches the String. For backwards compatibility, 'true' = All.
    * @param enhanceMode : 'None', 'All', 'ScaleMissing', 'ScaleMissingDefer', 'CoordSystems', All',  case insensitive
-   * @return matched EnhanceMode, default EnhanceMode.None
+   * @return EnumSet<EnhanceMode> 
    */
   static public EnumSet<EnhanceMode> parseEnhanceMode(String enhanceMode) {
     if (enhanceMode == null) return null;
@@ -126,15 +131,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     EnumSet<EnhanceMode> mode = null;
 
     if (enhanceMode.equalsIgnoreCase("true") || enhanceMode.equalsIgnoreCase("All")) {
-      mode = EnumSet.of(EnhanceMode.ScaleMissing, EnhanceMode.CoordSystems);
+      mode = getEnhanceAll();
     } else if (enhanceMode.equalsIgnoreCase("AllDefer")) {
-      mode = EnumSet.of(EnhanceMode.ScaleMissingDefer, EnhanceMode.CoordSystems);
+      mode = EnumSet.of(EnhanceMode.ScaleMissingDefer, EnhanceMode.CoordSystems, EnhanceMode.ConvertEnums);
     } else if (enhanceMode.equalsIgnoreCase("ScaleMissing")) {
       mode = EnumSet.of(EnhanceMode.ScaleMissing);
     } else if (enhanceMode.equalsIgnoreCase("ScaleMissingDefer")) {
       mode = EnumSet.of(EnhanceMode.ScaleMissingDefer);
     } else if (enhanceMode.equalsIgnoreCase("CoordSystems")) {
       mode = EnumSet.of(EnhanceMode.CoordSystems);
+    } else if (enhanceMode.equalsIgnoreCase("ConvertEnums")) {
+      mode = EnumSet.of(EnhanceMode.ConvertEnums);
     }
     
     return mode;
@@ -142,7 +149,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
   static protected boolean useNaNs = true;
-  static protected EnumSet<EnhanceMode> defaultEnhanceMode = EnhanceAll;
   static protected boolean fillValueIsMissing = true, invalidDataIsMissing = true, missingDataIsMissing = true;
 
   /**
