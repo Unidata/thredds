@@ -476,7 +476,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
   @Override
   protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
-          EnumSet<NetcdfDataset.EnhanceMode> enhance, ucar.nc2.util.cache.FileFactory reader) {
+          EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
     return new DatasetOuterDimension(cacheName, location, ncoordS, coordValueS, enhance, reader);
   }
 
@@ -508,7 +508,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
      * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
     protected DatasetOuterDimension(String cacheName, String location, String ncoordS, String coordValueS,
-                                    EnumSet<NetcdfDataset.EnhanceMode> enhance, ucar.nc2.util.cache.FileFactory reader) {
+                                    EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
       super(cacheName, location, enhance, reader);
       this.coordValue = coordValueS;
 

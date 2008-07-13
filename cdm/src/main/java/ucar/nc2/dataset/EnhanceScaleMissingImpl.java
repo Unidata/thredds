@@ -22,6 +22,8 @@ package ucar.nc2.dataset;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
+import java.util.EnumSet;
+
 /**
  * Implementation of EnhanceScaleMissing for missing data, unsigned, and scale/offset packed data.
  *
@@ -100,7 +102,8 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     Variable orgVar = forVar.getOriginalVariable();
     if (orgVar instanceof VariableDS) {
       VariableDS orgVarDS = (VariableDS) orgVar;
-      if ((orgVarDS.enhanceMode != null) && orgVarDS.enhanceMode.contains(NetcdfDataset.EnhanceMode.ScaleMissing)) return; 
+      EnumSet<NetcdfDataset.Enhance> orgEnhanceMode = orgVarDS.getEnhanceMode();
+      if ((orgEnhanceMode != null) && orgEnhanceMode.contains(NetcdfDataset.Enhance.ScaleMissing)) return;
     }
 
     this.isUnsigned = forVar.isUnsigned();
@@ -538,7 +541,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     return useNaNs && isMissing(convertedValue) ? Double.NaN : convertedValue;
   }
 
-  public Array convert(Array data) {
+  public Array convertScaleOffsetMissing(Array data) {
     if (hasScaleOffset())
       data = convertScaleOffset(data);
     else if (hasMissing() && getUseNaNs())

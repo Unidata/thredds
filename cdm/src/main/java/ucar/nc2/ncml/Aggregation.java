@@ -121,7 +121,7 @@ public abstract class Aggregation implements ProxyReader {
   // experimental
   protected boolean timeUnitsChange = false;
   protected String dateFormatMark;
-  protected EnumSet<NetcdfDataset.EnhanceMode> enhance = null; // default no enhancement
+  protected EnumSet<NetcdfDataset.Enhance> enhance = null; // default no enhancement
   protected boolean isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
@@ -181,7 +181,7 @@ public abstract class Aggregation implements ProxyReader {
    * @throws IOException if I/O error
    */
   public void addCrawlableDatasetScan(Element crawlableDatasetElement, String dirName, String suffix,
-          String regexpPatternString, String dateFormatMark, EnumSet<NetcdfDataset.EnhanceMode> mode, String subdirs, String olderThan) throws IOException {
+          String regexpPatternString, String dateFormatMark, EnumSet<NetcdfDataset.Enhance> mode, String subdirs, String olderThan) throws IOException {
     this.dateFormatMark = dateFormatMark;
     this.enhance = mode;
 
@@ -364,7 +364,7 @@ public abstract class Aggregation implements ProxyReader {
     // rebuild the metadata
     rebuildDataset();
     ncDataset.finish();
-    if (ncDataset.getEnhanceMode().contains(NetcdfDataset.EnhanceMode.CoordSystems)) { // force recreation of the coordinate systems
+    if (ncDataset.getEnhanceMode().contains(NetcdfDataset.Enhance.CoordSystems)) { // force recreation of the coordinate systems
       ncDataset.clearCoordinateSystems();
       ncDataset.enhance(ncDataset.getEnhanceMode());
       ncDataset.finish();
@@ -440,7 +440,7 @@ public abstract class Aggregation implements ProxyReader {
    * @return a Aggregation.Dataset
    */
   protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
-          EnumSet<NetcdfDataset.EnhanceMode> enhance, ucar.nc2.util.cache.FileFactory reader) {
+          EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
     //return new Dataset(cacheName, location, ncoordS, coordValueS, sectionSpec, enhance, reader);
     return new Dataset(cacheName, location, enhance, reader); // overriden in OuterDim, tiled
   }
@@ -456,7 +456,7 @@ public abstract class Aggregation implements ProxyReader {
     // deferred opening
     protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
-    protected EnumSet<NetcdfDataset.EnhanceMode> enhance;
+    protected EnumSet<NetcdfDataset.Enhance> enhance;
 
     /**
      * For subclasses.
@@ -477,7 +477,7 @@ public abstract class Aggregation implements ProxyReader {
      * @param enhance   open dataset in enhance mode, may be null
      * @param reader    factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
-    protected Dataset(String cacheLocation, String location, EnumSet<NetcdfDataset.EnhanceMode> enhance, ucar.nc2.util.cache.FileFactory reader) {
+    protected Dataset(String cacheLocation, String location, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
       this(location);
       this.cacheLocation = cacheLocation;
       this.enhance = enhance;

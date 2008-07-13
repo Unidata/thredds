@@ -20,9 +20,7 @@
 
 package ucar.nc2;
 
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Enumeration Typedef map ints to Strings.
@@ -56,13 +54,16 @@ public class EnumTypedef {
   public String writeCDL(boolean strict) {
     StringBuilder buff = new StringBuilder();
     String name = strict ? NetcdfFile.escapeName(getName()) : getName();    
-    buff.append("   ").append(name).append(" = ");
+    buff.append("  enum ").append(name).append(" { ");
     int count = 0;
-    for (String s : map.values()) {
-      if (0 < count++) buff.append(",");
-      buff.append("\"").append(s).append("\"");
+    List keyset = Arrays.asList(map.keySet().toArray());
+    Collections.sort(keyset);
+    for (Object key : keyset) {
+      String s = map.get(key);
+      if (0 < count++) buff.append(", ");
+      buff.append(s).append(" = ").append(key);
     }
-    buff.append(";");
+    buff.append("};");
     return buff.toString();
   }
 

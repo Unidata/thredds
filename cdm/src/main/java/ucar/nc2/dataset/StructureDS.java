@@ -190,7 +190,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       return Array.factoryConstant(dataType.getPrimitiveClassType(), getShape(), data);
     }
 
-    return convert(result);
+    return convertScaleOffsetMissing(result);
   }
 
   // section of regular Variable
@@ -218,14 +218,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         m.setVariableInfo(v.getUnitsString(), v.getDescription());
     }
 
-    return convert(result);
+    return convertScaleOffsetMissing(result);
   }
 
   ///////////////////////////////////////
 
   // VariableEnhanced implementation
 
-  public Array convert(Array data) throws IOException {
+  public Array convertScaleOffsetMissing(Array data) throws IOException {
     ArrayStructure as = (ArrayStructure) data;
     if (!needsConverting(this, as)) return data;
     as = ArrayStructureMA.factoryMA( as);
@@ -239,7 +239,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
       if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs())) {
         Array mdata = as.extractMemberArray(m);
-        mdata = v2.convert(mdata);
+        mdata = v2.convertScaleOffsetMissing(mdata);
         as.setMemberArray(m, mdata);
       }
 
@@ -252,13 +252,13 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
             ArrayObject.D1 seqArray = (ArrayObject.D1) as.extractMemberArray(m);
             for (int i=0; i<seqArray.getSize(); i++) {
               ArraySequence innerSeq =  (ArraySequence) seqArray.get(i);
-              innerStruct.convert( innerSeq); // modify each innerSequence as needed
+              innerStruct.convertScaleOffsetMissing( innerSeq); // modify each innerSequence as needed
             }
 
           // non-Sequence Structures
           } else {
             Array mdata = as.extractMemberArray(m);
-            mdata = innerStruct.convert(mdata);
+            mdata = innerStruct.convertScaleOffsetMissing(mdata);
             as.setMemberArray(m, mdata);
           }
         }
@@ -344,10 +344,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /**
-   * public by accident.
+   * DO NOT USE DIRECTLY. public by accident.
    * recalc any enhancement info
    */
-  public void enhance(EnumSet<NetcdfDataset.EnhanceMode> mode) {
+  public void enhance(EnumSet<NetcdfDataset.Enhance> mode) {
     for (Variable v : getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
       ve.enhance(mode);

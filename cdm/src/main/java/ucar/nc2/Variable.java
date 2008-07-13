@@ -633,7 +633,7 @@ public class Variable implements VariableIF {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Lookup he enum string for this value.
+   * Lookup the enum string for this value.
    * Can only be called on enum types, where dataType.isEnum() is true.
    * @param val the integer value of this enum
    * @return the String value

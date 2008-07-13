@@ -24,6 +24,8 @@ import java.util.*;
 
 /**
  * Implementation of Enhancements for coordinate systems and standard attribute handling.
+ * Factored out so that it can be used as a 'mixin' in VariablesDS and StructureDS.
+ * 
  * @author caron
  */
 class EnhancementsImpl implements Enhancements {
@@ -100,9 +102,7 @@ class EnhancementsImpl implements Enhancements {
         if ((att != null) && att.isString())
           desc = att.getStringValue().trim();
       }
-
     }
-
     return (desc == null) ? "" : desc;
   }
 

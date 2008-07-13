@@ -43,7 +43,7 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements, Enh
   public void setUnitsString( String units);
   
   /**
-   * Enhance using the given set of NetcdfDataset.EnhanceMode modes
+   * Enhance using the given set of NetcdfDataset.Enhance
    */
-  public void enhance(EnumSet<NetcdfDataset.EnhanceMode> mode);
+  public void enhance(EnumSet<NetcdfDataset.Enhance> mode);
 }
