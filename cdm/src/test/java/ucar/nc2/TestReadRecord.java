@@ -213,7 +213,7 @@ public class TestReadRecord extends TestCase {
 
 
   public void testDatasetAddRecord() throws InvalidRangeException, IOException {
-    NetcdfDataset nc = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir + "testWriteRecord.nc", NetcdfDataset.EnhanceMode.All,
+    NetcdfDataset nc = NetcdfDataset.openDataset(TestLocal.cdmTestDataDir + "testWriteRecord.nc", NetcdfDataset.getDefaultEnhanceMode(),
         -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     // record variable

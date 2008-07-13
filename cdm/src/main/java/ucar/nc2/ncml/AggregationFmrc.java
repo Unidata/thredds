@@ -84,8 +84,8 @@ public class AggregationFmrc extends AggregationOuterDimension {
     Dataset typicalDataset = getTypicalDataset();
     NetcdfFile typical = typicalDataset.acquireFile(cancelTask);
     NetcdfDataset typicalDS = (typical instanceof NetcdfDataset) ? (NetcdfDataset) typical : new NetcdfDataset(typical);
-    if (typicalDS.getEnhanceMode() == NetcdfDataset.EnhanceMode.None)
-      typicalDS.enhance();
+    //if (typicalDS.getEnhanceMode() == NetcdfDataset.EnhanceMode.None) LOOK
+    //  typicalDS.enhance();
 
     // work with a GridDataset
     GridDataset typicalGds = new ucar.nc2.dt.grid.GridDataset(typicalDS);

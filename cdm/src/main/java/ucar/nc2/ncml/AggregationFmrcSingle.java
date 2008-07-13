@@ -70,7 +70,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     this.forecastMatcher = forecastMatcher;
     this.offsetMatcher = offsetMatcher;
 
-    this.enhance = NetcdfDataset.EnhanceMode.All;
+    this.enhance = NetcdfDataset.getDefaultEnhanceMode();
     isDate = true;
 
     CrawlableScanner d = new CrawlableScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
@@ -138,7 +138,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       // LOOK - should cache the GridDataset directly
       // create the dataset wrapping this file, each is 1 forecast time coordinate of the nested aggregation
       DatasetOuterDimension ds = (DatasetOuterDimension)
-              makeDataset(location, location, null, myf.dateCoordS, null, NetcdfDataset.EnhanceMode.All, null);
+              makeDataset(location, location, null, myf.dateCoordS, null, NetcdfDataset.getDefaultEnhanceMode(), null);
       ds.coordValueDate = myf.dateCoord;
       ds.ncoord = 1;
 
@@ -161,8 +161,8 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     // open a "typical" dataset and make a GridDataset
     typicalFile = typicalDataset.acquireFile(cancelTask);
     NetcdfDataset typicalDS = (typicalFile instanceof NetcdfDataset) ? (NetcdfDataset) typicalFile : new NetcdfDataset(typicalFile);
-    if (typicalDS.getEnhanceMode() == NetcdfDataset.EnhanceMode.None)
-      typicalDS.enhance();
+    //if (typicalDS.getEnhanceMode() == NetcdfDataset.EnhanceMode.None)  LOOK
+    //  typicalDS.enhance();
     GridDataset gds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
 
     // find the one time axis

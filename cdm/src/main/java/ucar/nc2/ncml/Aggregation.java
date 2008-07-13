@@ -121,7 +121,7 @@ public abstract class Aggregation implements ProxyReader {
   // experimental
   protected boolean timeUnitsChange = false;
   protected String dateFormatMark;
-  protected NetcdfDataset.EnhanceMode enhance = NetcdfDataset.EnhanceMode.None; // default is no enhancements
+  protected EnumSet<NetcdfDataset.EnhanceMode> enhance = null; // default no enhancement
   protected boolean isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
@@ -159,7 +159,7 @@ public abstract class Aggregation implements ProxyReader {
   public void addExplicitDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
                                  ucar.nc2.util.cache.FileFactory reader, CancelTask cancelTask) {
 
-    Dataset nested = makeDataset(cacheName, location, ncoordS, coordValueS, sectionSpec, NetcdfDataset.EnhanceMode.None, reader);
+    Dataset nested = makeDataset(cacheName, location, ncoordS, coordValueS, sectionSpec, null, reader);
     explicitDatasets.add(nested);
   }
 
@@ -181,7 +181,7 @@ public abstract class Aggregation implements ProxyReader {
    * @throws IOException if I/O error
    */
   public void addCrawlableDatasetScan(Element crawlableDatasetElement, String dirName, String suffix,
-          String regexpPatternString, String dateFormatMark, NetcdfDataset.EnhanceMode mode, String subdirs, String olderThan) throws IOException {
+          String regexpPatternString, String dateFormatMark, EnumSet<NetcdfDataset.EnhanceMode> mode, String subdirs, String olderThan) throws IOException {
     this.dateFormatMark = dateFormatMark;
     this.enhance = mode;
 
@@ -364,7 +364,7 @@ public abstract class Aggregation implements ProxyReader {
     // rebuild the metadata
     rebuildDataset();
     ncDataset.finish();
-    if (NetcdfDataset.wantCoordinateSystem(ncDataset.getEnhanceMode())) { // force recreation of the coordinate systems
+    if (ncDataset.getEnhanceMode().contains(NetcdfDataset.EnhanceMode.CoordSystems)) { // force recreation of the coordinate systems
       ncDataset.clearCoordinateSystems();
       ncDataset.enhance(ncDataset.getEnhanceMode());
       ncDataset.finish();
@@ -440,7 +440,7 @@ public abstract class Aggregation implements ProxyReader {
    * @return a Aggregation.Dataset
    */
   protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
-          NetcdfDataset.EnhanceMode enhance, ucar.nc2.util.cache.FileFactory reader) {
+          EnumSet<NetcdfDataset.EnhanceMode> enhance, ucar.nc2.util.cache.FileFactory reader) {
     //return new Dataset(cacheName, location, ncoordS, coordValueS, sectionSpec, enhance, reader);
     return new Dataset(cacheName, location, enhance, reader); // overriden in OuterDim, tiled
   }
@@ -456,7 +456,7 @@ public abstract class Aggregation implements ProxyReader {
     // deferred opening
     protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
-    protected NetcdfDataset.EnhanceMode enhance;
+    protected EnumSet<NetcdfDataset.EnhanceMode> enhance;
 
     /**
      * For subclasses.
@@ -474,10 +474,10 @@ public abstract class Aggregation implements ProxyReader {
      *
      * @param cacheLocation a unique name to use for caching
      * @param location  attribute "location" on the netcdf element
-     * @param enhance   open dataset in enhance mode
+     * @param enhance   open dataset in enhance mode, may be null
      * @param reader    factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
-    protected Dataset(String cacheLocation, String location, NetcdfDataset.EnhanceMode enhance, ucar.nc2.util.cache.FileFactory reader) {
+    protected Dataset(String cacheLocation, String location, EnumSet<NetcdfDataset.EnhanceMode> enhance, ucar.nc2.util.cache.FileFactory reader) {
       this(location);
       this.cacheLocation = cacheLocation;
       this.enhance = enhance;
@@ -498,7 +498,7 @@ public abstract class Aggregation implements ProxyReader {
       long start = System.currentTimeMillis();
 
       NetcdfFile ncfile;
-      if (enhance == NetcdfDataset.EnhanceMode.None) {
+      if (enhance == null || (enhance.isEmpty())) {
         ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
 
       } else {

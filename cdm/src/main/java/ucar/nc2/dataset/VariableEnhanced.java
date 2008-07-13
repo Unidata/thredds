@@ -21,6 +21,8 @@ package ucar.nc2.dataset;
 
 import ucar.nc2.ProxyReader;
 
+import java.util.EnumSet;
+
 /**
  * Public interface to an "enhanced Variable", implemented by the ucar.nc2.dataset package.
  * @author john caron
@@ -41,7 +43,7 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements, Enh
   public void setUnitsString( String units);
   
   /**
-   * Process scale/offset/missing value
+   * Enhance using the given set of NetcdfDataset.EnhanceMode modes
    */
-  void enhance(NetcdfDataset.EnhanceMode mode);
+  public void enhance(EnumSet<NetcdfDataset.EnhanceMode> mode);
 }

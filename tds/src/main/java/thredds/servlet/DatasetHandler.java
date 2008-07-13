@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetFmrc;
 import thredds.catalog.InvDatasetScan;
-import thredds.servlet.PathMatcher;
 import thredds.servlet.restrict.RestrictedDatasetServlet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -213,8 +212,8 @@ public class DatasetHandler {
     NetcdfDataset ncd;
     if (ncfile instanceof NetcdfDataset) {
       ncd = (NetcdfDataset) ncfile;
-      if (ncd.getEnhanceMode() == NetcdfDataset.EnhanceMode.None)
-        ncd.enhance();
+      //if (ncd.getEnhanceMode() == NetcdfDataset.EnhanceMode.None) // LOOK
+      ncd.enhance();
     } else {
       ncd = new NetcdfDataset(ncfile, true);
     }

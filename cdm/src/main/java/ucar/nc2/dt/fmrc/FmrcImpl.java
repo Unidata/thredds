@@ -104,8 +104,8 @@ public class FmrcImpl implements ForecastModelRunCollection {
 
   private void init(NetcdfDataset ncd) throws IOException {
     this.ncd_2dtime = ncd;
-    if (ncd.getEnhanceMode() == NetcdfDataset.EnhanceMode.None)
-      ncd.enhance();
+    //if (ncd.getEnhanceMode() == NetcdfDataset.EnhanceNone) // LOOK
+    //  ncd.enhance();
     // ncd.setCached(3); // dont allow a normal close LOOK why ?? who is managing ??
 
     gridHash = new HashMap<String, Gridset>();  // key = grid name, value = Gridset

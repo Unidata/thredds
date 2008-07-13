@@ -100,7 +100,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     Variable orgVar = forVar.getOriginalVariable();
     if (orgVar instanceof VariableDS) {
       VariableDS orgVarDS = (VariableDS) orgVar;
-      if (orgVarDS.getEnhanceMode() != null) return;  // LOOK ??
+      if ((orgVarDS.enhanceMode != null) && orgVarDS.enhanceMode.contains(NetcdfDataset.EnhanceMode.ScaleMissing)) return; 
     }
 
     this.isUnsigned = forVar.isUnsigned();

@@ -27,6 +27,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import junit.framework.TestCase;
 import timing.Average;
@@ -54,17 +55,17 @@ public class TimeScaleOffsetMissing extends TestCase {
     Average file = new Average();
 
     // warm up
-    openDataset(NetcdfDataset.EnhanceMode.All, null);
+    openDataset(NetcdfDataset.parseEnhanceMode("All"), null);
     openFile(null);
 
     for (int i=0; i<N; i++) {
-      openDataset(NetcdfDataset.EnhanceMode.All, all);
-      openDataset(NetcdfDataset.EnhanceMode.AllDefer, alldefer);
-      openDataset(NetcdfDataset.EnhanceMode.ScaleMissing, sm);
+      openDataset(NetcdfDataset.parseEnhanceMode("All"), all);
+      openDataset(NetcdfDataset.parseEnhanceMode("AllDefer"), alldefer);
+      openDataset(NetcdfDataset.parseEnhanceMode("ScaleMissing"), sm);
       NetcdfDataset.setUseNaNs(false);
-      openDataset(NetcdfDataset.EnhanceMode.ScaleMissing, smNoNans);
-      openDataset(NetcdfDataset.EnhanceMode.CoordSystems, coords);
-      openDataset(NetcdfDataset.EnhanceMode.None, none);
+      openDataset(NetcdfDataset.parseEnhanceMode("ScaleMissing"), smNoNans);
+      openDataset(NetcdfDataset.parseEnhanceMode("CoordSystems"), coords);
+      openDataset(null, none);
       openFile(file);
     }
 
@@ -97,7 +98,7 @@ public class TimeScaleOffsetMissing extends TestCase {
     if (avg != null) avg.add(took);
   }
 
-  public void openDataset(NetcdfDataset.EnhanceMode enhance, Average avg) throws IOException, InvalidRangeException {
+  public void openDataset(EnumSet<NetcdfDataset.EnhanceMode> enhance, Average avg) throws IOException, InvalidRangeException {
     long start = System.nanoTime();
 
     NetcdfDataset ncd = NetcdfDataset.openDataset(TestAll.upcShareTestDataDir +"grid/netcdf/AZ.000000000.nc", enhance, -1, null, null);

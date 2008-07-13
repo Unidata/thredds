@@ -77,7 +77,6 @@ import java.util.*;
  *
  * @author caron
  * @see ucar.nc2.NetcdfFile
- * @see ucar.nc2.dataset.VariableDS
  */
 
 /* Implementation notes.
@@ -99,55 +98,51 @@ import java.util.*;
 
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
+
   /**
    * Possible enhancement modes for a NetcdfDataset
    */
   static public enum EnhanceMode {
-    /** no enhancement */
-    None,
-    /** just implement scale/offset and missing values */
+    /** implement scale/offset and missing values, promoting data type if needed */
     ScaleMissing,
-    /** caclulate scale/offset/missing params, but dont automatically convert data */
+    /** caclulate scale/offset/missing params, but dont automatically convert data. dont use both ScaleMissingDefer and ScaleMissing */ 
     ScaleMissingDefer,
-    /** just build coordinate systems */
+    /** build coordinate systems */
     CoordSystems,
-    /** implement scale/offset/missing values and build coordinate systems */
-    All,
-    /** ScaleMissingDefer and CoordSystems */
-    AllDefer
   }
 
-  static public boolean wantCoordinateSystem(EnhanceMode mode) {
-    return mode == EnhanceMode.All || mode == EnhanceMode.AllDefer || mode == EnhanceMode.CoordSystems;
-  }
+  // LOOK! must be immutable
+  //static private EnumSet<EnhanceMode> EnhanceNone = EnumSet.noneOf(EnhanceMode.class);
+  static private EnumSet<EnhanceMode> EnhanceAll = EnumSet.of(EnhanceMode.ScaleMissing, EnhanceMode.CoordSystems);
 
   /**
    * Find the EnhanceMode that matches the String. For backwards compatibility, 'true' = All.
    * @param enhanceMode : 'None', 'All', 'ScaleMissing', 'ScaleMissingDefer', 'CoordSystems', All',  case insensitive
    * @return matched EnhanceMode, default EnhanceMode.None
    */
-  static public NetcdfDataset.EnhanceMode parseEnhanceMode(String enhanceMode) {
-    NetcdfDataset.EnhanceMode mode = NetcdfDataset.EnhanceMode.None;
-    if (enhanceMode == null) return mode;
+  static public EnumSet<EnhanceMode> parseEnhanceMode(String enhanceMode) {
+    if (enhanceMode == null) return null;
 
-    if (enhanceMode.equalsIgnoreCase("true"))
-      mode = NetcdfDataset.EnhanceMode.All;
-    else if (enhanceMode.equalsIgnoreCase("All"))
-       mode = NetcdfDataset.EnhanceMode.All;
-    else if (enhanceMode.equalsIgnoreCase("AllDefer"))
-       mode = NetcdfDataset.EnhanceMode.AllDefer;
-    else if (enhanceMode.equalsIgnoreCase("ScaleMissing"))
-      mode = NetcdfDataset.EnhanceMode.ScaleMissing;
-    else if (enhanceMode.equalsIgnoreCase("ScaleMissingDefer"))
-      mode = NetcdfDataset.EnhanceMode.ScaleMissingDefer;
-    else if (enhanceMode.equalsIgnoreCase("CoordSystems"))
-      mode = NetcdfDataset.EnhanceMode.CoordSystems;
+    EnumSet<EnhanceMode> mode = null;
+
+    if (enhanceMode.equalsIgnoreCase("true") || enhanceMode.equalsIgnoreCase("All")) {
+      mode = EnumSet.of(EnhanceMode.ScaleMissing, EnhanceMode.CoordSystems);
+    } else if (enhanceMode.equalsIgnoreCase("AllDefer")) {
+      mode = EnumSet.of(EnhanceMode.ScaleMissingDefer, EnhanceMode.CoordSystems);
+    } else if (enhanceMode.equalsIgnoreCase("ScaleMissing")) {
+      mode = EnumSet.of(EnhanceMode.ScaleMissing);
+    } else if (enhanceMode.equalsIgnoreCase("ScaleMissingDefer")) {
+      mode = EnumSet.of(EnhanceMode.ScaleMissingDefer);
+    } else if (enhanceMode.equalsIgnoreCase("CoordSystems")) {
+      mode = EnumSet.of(EnhanceMode.CoordSystems);
+    }
+    
     return mode;
   }
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
   static protected boolean useNaNs = true;
-  static protected NetcdfDataset.EnhanceMode defaultEnhanceMode = NetcdfDataset.EnhanceMode.All;
+  static protected EnumSet<EnhanceMode> defaultEnhanceMode = EnhanceAll;
   static protected boolean fillValueIsMissing = true, invalidDataIsMissing = true, missingDataIsMissing = true;
 
   /**
@@ -160,30 +155,30 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Set the default EnhanceMode
-   *
-   * @param mode the default EnhanceMode for open and acquire factory methods
-   */
-  static public void setDefaultEnhanceMode(NetcdfDataset.EnhanceMode mode) {
-    defaultEnhanceMode = mode;
-  }
-
-  /**
-   * Get the default EnhanceMode
-   *
-   * @return the default EnhanceMode for open and acquire factory methods
-   */
-  static public NetcdfDataset.EnhanceMode getDefaultEnhanceMode() {
-    return defaultEnhanceMode;
-  }
-
-  /**
    * Get whether to use NaNs for missing values, for efficiency
    *
    * @return whether to use NaNs for missing values, for efficiency
    */
   static public boolean getUseNaNs() {
     return useNaNs;
+  }
+
+  /**
+   * Set the default set of Enhancements to do for all subsequent dataset opens and acquires.
+   *
+   * @param mode the default set of Enhancements for open and acquire factory methods
+   */
+  static public void setDefaultEnhanceMode(EnumSet<EnhanceMode> mode) {
+    defaultEnhanceMode = mode;
+  }
+
+  /**
+   * Get the default set of Enhancements
+   *
+   * @return the the default set of Enhancements for open and acquire factory methods
+   */
+  static public EnumSet<EnhanceMode> getDefaultEnhanceMode() {
+    return EnumSet.copyOf(defaultEnhanceMode);
   }
 
   /**
@@ -265,7 +260,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-    * Call when application exits, if you have previsouly called initNetcdfFileCache.
+    * Call when application exits, if you have previously called initNetcdfFileCache.
    *  This shuts down any background threads in order to get a clean process shutdown.
     */
   static public void shutdown() {
@@ -311,7 +306,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
    *
    * @param location    location of file
-   * @param enhance     if true, process scale/offset/missing and add Coordinate Systems
+   * @param enhance     if true, use defaultEnhanceMode, else no enhancements
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  allow task to be cancelled; may be null.
    * @param spiObject   sent to iosp.setSpecial() if not null
@@ -319,7 +314,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
    */
   static public NetcdfDataset openDataset(String location, boolean enhance, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-    return openDataset(location, enhance ? EnhanceMode.All : EnhanceMode.None, buffer_size, cancelTask, spiObject);
+    return openDataset(location, enhance ? defaultEnhanceMode : null, buffer_size, cancelTask, spiObject);
   }
 
   /**
@@ -333,7 +328,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
    */
-  static public NetcdfDataset openDataset(String location, EnhanceMode enhanceMode, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+  static public NetcdfDataset openDataset(String location, EnumSet<EnhanceMode> enhanceMode, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     // do not acquire
     NetcdfFile ncfile = openOrAcquireFile( null, null, null, location, buffer_size, cancelTask, spiObject);
     NetcdfDataset ds;
@@ -347,27 +342,26 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return ds;
   }
 
-  static private void enhance(NetcdfDataset ds, EnhanceMode mode, CancelTask cancelTask) throws IOException {
-    if (mode == EnhanceMode.None) return;
+  static private void enhance(NetcdfDataset ds, EnumSet<EnhanceMode> mode, CancelTask cancelTask) throws IOException {
+    ds.enhanceMode = (mode == null) ? EnumSet.noneOf(EnhanceMode.class) : EnumSet.copyOf(mode);
 
     // enhance scale/offset first, so its transferred to CoordinateAxes in next section
-    if (mode == EnhanceMode.All || mode == EnhanceMode.AllDefer || mode == EnhanceMode.ScaleMissing || mode == EnhanceMode.ScaleMissingDefer) {
+    if (ds.enhanceMode.contains(EnhanceMode.ScaleMissing)) {
       for (Variable v : ds.getVariables()) {
         VariableEnhanced ve = (VariableEnhanced) v;
-        ve.enhance(mode);
+        ve.enhance(ds.enhanceMode);
         if ((cancelTask != null) && cancelTask.isCancel()) return;
       }
     }
 
     // now find coord systems which may add new variables, change some Variables to axes, etc
-    if (mode == EnhanceMode.All || mode == EnhanceMode.AllDefer || mode == EnhanceMode.CoordSystems) {
-      if (!ds.coordSysWereAdded)
+    if (ds.enhanceMode.contains(EnhanceMode.CoordSystems)) {
+      if (!ds.coordSysWereAdded) // LOOK why do we need this ? why not recalculate ??
         ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
       ds.coordSysWereAdded = true;
     }
 
     ds.finish(); // recalc the global lists
-    ds.enhanceMode = mode;
   }
 
    /**
@@ -375,7 +369,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * You still close with NetcdfDataset.close(), the release is handled automatically.
    * You must first call initNetcdfFileCache() for caching to actually take place.
    *
-    * @param location    location of file, passed to FileFactory
+   * @param location    location of file, passed to FileFactory
    * @param cancelTask  allow task to be cancelled; may be null.
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
@@ -392,7 +386,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param fac         if not null, use this factory if the file is not in the cache. If null, use the default factory.
    * @param location    location of file, passed to FileFactory
-   * @param enhanceMode how to enhance
+   * @param enhanceMode how to enhance. if null, then no enhancement
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  allow task to be cancelled; may be null.
    * @param iospMessage   sent to iosp.setSpecial() if not null
@@ -400,7 +394,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
 
    */
-  static public NetcdfDataset acquireDataset(FileFactory fac, String location, EnhanceMode enhanceMode, int buffer_size,
+  static public NetcdfDataset acquireDataset(FileFactory fac, String location, EnumSet<EnhanceMode> enhanceMode, int buffer_size,
           ucar.nc2.util.CancelTask cancelTask, Object iospMessage) throws IOException {
 
     // caching not turned on
@@ -421,8 +415,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static class MyNetcdfDatasetFactory implements ucar.nc2.util.cache.FileFactory {
     String location;
-    EnhanceMode enhanceMode;
-    MyNetcdfDatasetFactory(String location, EnhanceMode enhanceMode) {
+    EnumSet<EnhanceMode>  enhanceMode;
+    MyNetcdfDatasetFactory(String location, EnumSet<EnhanceMode>  enhanceMode) {
       this.location = location;
       this.enhanceMode = enhanceMode;
     }
@@ -631,14 +625,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   ////////////////////////////////////////////////////////////////////////////////////
   private NetcdfFile orgFile = null;
-  //private EnhanceMode isEnhanced = EnhanceMode.None; // the current state of enhancement
 
   private List<CoordinateSystem> coordSys = new ArrayList<CoordinateSystem>();
   private List<CoordinateAxis> coordAxes = new ArrayList<CoordinateAxis>();
   private List<CoordinateTransform> coordTransforms = new ArrayList<CoordinateTransform>();
   private boolean coordSysWereAdded = false;
-  //private boolean scaleOffsetWasAdded = false;
-  private EnhanceMode enhanceMode = EnhanceMode.None; // the current state of enhancement
+
+  private EnumSet<EnhanceMode> enhanceMode = EnumSet.noneOf(EnhanceMode.class); // enhancement mode for this specific dataset
 
   // If its an aggregation
   private ucar.nc2.ncml.Aggregation agg = null; // used to close underlying files
@@ -672,10 +665,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Get whether the dataset enhancment mode.
-   * @return whether the dataset enhancment mode.
+   * Get the current state of dataset enhancement.
+   * @return the current state of dataset enhancement.
    */
-  public EnhanceMode getEnhanceMode() {
+  public EnumSet<EnhanceMode> getEnhanceMode() {
     return enhanceMode;
   }
 
@@ -877,7 +870,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
    */
   public NetcdfDataset(NetcdfFile ncfile, boolean enhance) throws IOException {
-    this(ncfile, enhance ? defaultEnhanceMode : EnhanceMode.None);
+    this(ncfile, enhance ? defaultEnhanceMode : null);
   }
 
   /**
@@ -888,7 +881,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param mode   enhancement mode : process scale/offset/missing and/or add Coordinate Systems
    * @throws java.io.IOException on read error
    */
-  public NetcdfDataset(NetcdfFile ncfile, EnhanceMode mode) throws IOException {
+  public NetcdfDataset(NetcdfFile ncfile, EnumSet<EnhanceMode> mode) throws IOException {
     super(ncfile);
 
     this.orgFile = ncfile;
@@ -1098,7 +1091,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * recalc enhancement info - use defaulr enhance mode
+   * recalc enhancement info - use default enhance mode
    *
    * @throws java.io.IOException on error
    */
@@ -1112,7 +1105,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param mode how to enhance
    * @throws java.io.IOException on error
    */
-  public void enhance(EnhanceMode mode) throws IOException {
+  public void enhance(EnumSet<EnhanceMode> mode) throws IOException {
     enhance(this, mode, null);
   }
   ///////////////////////////////////////////////////////////////////////

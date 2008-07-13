@@ -26,6 +26,7 @@ import ucar.ma2.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.EnumSet;
 
 /**
  * An "enhanced" Structure.
@@ -90,7 +91,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     // all member variables must be wrapped, reparented
     List<Variable> newList = new ArrayList<Variable>(members.size());
     for (Variable v : members) {
-      Variable newVar = (v instanceof Structure) ? (Variable) new StructureDS(g, (Structure) v) : (Variable) new VariableDS(g, v, false);
+      Variable newVar = (v instanceof Structure) ? new StructureDS(g, (Structure) v) : new VariableDS(g, v, false);
       newVar.setParentStructure(this);
       newList.add(newVar);
     }
@@ -346,7 +347,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    * public by accident.
    * recalc any enhancement info
    */
-  public void enhance(NetcdfDataset.EnhanceMode mode) {
+  public void enhance(EnumSet<NetcdfDataset.EnhanceMode> mode) {
     for (Variable v : getVariables()) {
       VariableEnhanced ve = (VariableEnhanced) v;
       ve.enhance(mode);

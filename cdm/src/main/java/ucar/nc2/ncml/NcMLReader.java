@@ -416,7 +416,7 @@ public class NcMLReader {
     targetDS.finish();
 
     // enhance means do scale/offset and/or add CoordSystems
-    NetcdfDataset.EnhanceMode mode = NetcdfDataset.parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
+    EnumSet<NetcdfDataset.EnhanceMode> mode = NetcdfDataset.parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
     targetDS.enhance(mode);
 
     // optionally add record structure to netcdf-3
@@ -1167,7 +1167,7 @@ public class NcMLReader {
       String suffix = scanElem.getAttributeValue("suffix");
       String regexpPatternString = scanElem.getAttributeValue("regExp");
       String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
-      NetcdfDataset.EnhanceMode mode = NetcdfDataset.parseEnhanceMode(scanElem.getAttributeValue("enhance"));
+      EnumSet<NetcdfDataset.EnhanceMode> mode = NetcdfDataset.parseEnhanceMode(scanElem.getAttributeValue("enhance"));
       String subdirs = scanElem.getAttributeValue("subdirs");
       String olderS = scanElem.getAttributeValue("olderThan");
 

@@ -24,6 +24,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 /**
  * An wrapper around a Variable, creating an "enhanced" Variable.
@@ -51,7 +52,7 @@ import java.io.IOException;
 public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   private EnhancementsImpl proxy;
   private EnhanceScaleMissingImpl smProxy;
-  private NetcdfDataset.EnhanceMode enhanceMode;
+  EnumSet<NetcdfDataset.EnhanceMode> enhanceMode;
 
   protected Variable orgVar; // wrap this Variable
   private DataType orgDataType; // keep seperate for the case where there is no ioVar.
@@ -127,7 +128,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       VariableDS ncVarDS = (VariableDS) orgVar;
       this.proxy = ncVarDS.proxy;
       this.smProxy = ncVarDS.smProxy;
-      this.enhanceMode = ncVarDS.enhanceMode;
+      //this.enhanceMode = ncVarDS.enhanceMode;
 
     } else {
       this.proxy = new EnhancementsImpl( this);
@@ -146,7 +147,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   protected VariableDS( VariableDS vds) {
     super(vds);
 
-    this.enhanceMode = vds.enhanceMode;
+    //this.enhanceMode = vds.enhanceMode;
     this.orgVar = vds.orgVar;
     this.orgDataType = vds.orgDataType;
     this.smProxy = vds.smProxy;
@@ -162,31 +163,28 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
   }
 
   /**
-   * public by accident.
+   * DO NOT USE DIRECTLY. public by accident.
    * Calculate scale/offset/missing value info. This may change the DataType.
    */
-  public void enhance(NetcdfDataset.EnhanceMode mode) {
-    if (orgVar instanceof VariableDS) return; // LOOK ????
+  public void enhance(EnumSet<NetcdfDataset.EnhanceMode> mode) {
+    // if (orgVar instanceof VariableDS) return;
+    this.enhanceMode = mode; // note keeping a reference to enhanceMode, from NetcdfDataset
 
-    if (mode == NetcdfDataset.EnhanceMode.All)
-      mode = NetcdfDataset.EnhanceMode.ScaleMissing;
-    else if (mode == NetcdfDataset.EnhanceMode.AllDefer)
-      mode = NetcdfDataset.EnhanceMode.ScaleMissingDefer;
+    if (mode.contains(NetcdfDataset.EnhanceMode.ScaleMissing) || mode.contains(NetcdfDataset.EnhanceMode.ScaleMissingDefer)) {
+      this.smProxy = new EnhanceScaleMissingImpl( this);
 
-    this.smProxy = new EnhanceScaleMissingImpl( this);
+      // promote the data type if ScaleMissing is set
+      if (mode.contains(NetcdfDataset.EnhanceMode.ScaleMissing) &&
+          smProxy.hasScaleOffset() && (smProxy.getConvertedDataType() != getDataType()))
+        setDataType( smProxy.getConvertedDataType());
+    }
 
-    // see if we need to promote the data type
-    if ((mode == NetcdfDataset.EnhanceMode.ScaleMissing) &&
-         smProxy.hasScaleOffset() && (smProxy.getConvertedDataType() != getDataType()))
-      setDataType( smProxy.getConvertedDataType());
-
-    this.enhanceMode = mode;
   }
 
-  /** If this Variable has been "enhanced", ie processed for scale/offset/missing value
-   * @return EnhanceMode
+  /** Get the current state of enhancement
+   * @return the current state of enhancement
    */
-  NetcdfDataset.EnhanceMode getEnhanceMode() { return enhanceMode; }
+  //EnumSet<NetcdfDataset.EnhanceMode> getEnhancementState() { return enhancementState; }
 
   public boolean isCoordinateVariable() {
     return (this instanceof CoordinateAxis) || super.isCoordinateVariable();
@@ -384,7 +382,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     }
 
     // LOOK not caching
-    return (enhanceMode ==  NetcdfDataset.EnhanceMode.ScaleMissing) ? convert(result) : result;
+    return enhanceMode.contains(NetcdfDataset.EnhanceMode.ScaleMissing) ? convert(result) : result;
   }
 
   // section of regular Variable
@@ -406,7 +404,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       return Array.factoryConstant( dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
-    return (enhanceMode ==  NetcdfDataset.EnhanceMode.ScaleMissing) ? convert(result) : result;
+    return enhanceMode.contains(NetcdfDataset.EnhanceMode.ScaleMissing) ? convert(result) : result;
   }
 
   // structure-member Variables.
