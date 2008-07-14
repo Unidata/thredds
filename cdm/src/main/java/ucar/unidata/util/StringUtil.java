@@ -458,7 +458,7 @@ public class StringUtil {
     /**
      * Replace any char "out" in s with "in".
      * @param s string to replace
-     * @param out repalce this character
+     * @param out replace this character
      * @param in with this string
      * @return modified string if needed
      */

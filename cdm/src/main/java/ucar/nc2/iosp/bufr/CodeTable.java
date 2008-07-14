@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+import ucar.unidata.util.StringUtil;
+
 /**
  * @author caron
  * @since Jul 12, 2008
@@ -99,7 +101,7 @@ public class CodeTable {
 
   private CodeTable(String id, String name) {
     this.id = normal(id);
-    this.name = name;
+    this.name = StringUtil.replace( name, ' ', "_");
     map = new HashMap<Integer,String>(20);
   }
 

@@ -51,7 +51,7 @@ class H5header {
   static private Charset utf8Charset = Charset.forName(utf8CharsetName); // cant use until 1.6
 
   // debugging
-  static private boolean debugEnum = false, debugVlen = false;
+  static private boolean debugEnum = true, debugVlen = false;
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;
@@ -911,6 +911,17 @@ class H5header {
     DataType dt = vinfo.getNCDataType();
     if (dt == null) return false;
     v.setDataType(dt);
+
+    /* if (dt.isEnum()) {
+      Group ncGroup = v.getParentGroup();
+      EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
+      if (enumTypedef == null) {
+        enumTypedef = new EnumTypedef(facadeNested.name, mdt.map);
+        ncGroup.addEnumeration(enumTypedef);
+      }
+      v.setEnumTypedef(enumTypedef);
+    } */
+
     return true;
   }
 
@@ -2253,7 +2264,7 @@ class H5header {
             enumName[i] = readString(raf); // no padding
         }
 
-        // read the values; must switch to parent byte order (!)
+        // read the values; must switch to base byte order (!)
         if (base.byteOrder >= 0) raf.order(base.byteOrder);
         int[] enumValue = new int[nmembers];
         for (int i = 0; i < nmembers; i++)

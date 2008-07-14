@@ -284,11 +284,13 @@ public class Group {
     boolean hasG = (groups.size() > 0);
     boolean hasA = (attributes.size() > 0);
 
-    if (hasE)
-      out.print(indent+" enums:\n");
-    for (EnumTypedef e : enums) {
-      out.print(indent + e.writeCDL(strict));
-      out.print(indent + "\n");
+    if (hasE) {
+      out.print(indent+" types:\n");
+      for (EnumTypedef e : enums) {
+        out.print(indent + e.writeCDL(strict));
+        out.print(indent + "\n");
+      }
+      out.print(indent+"\n");
     }
 
     if (hasD)

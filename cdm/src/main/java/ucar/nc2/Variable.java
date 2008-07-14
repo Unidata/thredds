@@ -1048,7 +1048,14 @@ public class Variable implements VariableIF {
     StringBuilder buf = new StringBuilder();
     buf.setLength(0);
     buf.append(indent);
-    buf.append(dataType.isEnum() ? "enum "+enumTypedef.getName() : dataType.toString());
+    if (dataType.isEnum()) {
+      if (enumTypedef == null)
+        buf.append("enum UNKNOWN");
+      else
+        buf.append("enum "+enumTypedef.getName());
+    } else
+      buf.append(dataType.toString());
+
     if (isVariableLength) buf.append("(*)"); // LOOK
     buf.append(" ");
     getNameAndDimensions(buf, useFullName, strict);
