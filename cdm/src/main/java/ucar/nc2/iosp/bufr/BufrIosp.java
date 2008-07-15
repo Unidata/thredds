@@ -69,14 +69,14 @@ public class BufrIosp extends AbstractIOServiceProvider {
   private RandomAccessFile raf;
   private Formatter parseInfo;
   private ConstructNC construct;
-  private BufrMessage protoMessage;
+  private Message protoMessage;
   private DateFormatter dateFormatter = new DateFormatter();
 
-  private List<BufrMessage> msgs = new ArrayList<BufrMessage>();
+  private List<Message> msgs = new ArrayList<Message>();
   private int[] obsStart; // for each message, the starting observation index
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    return BufrScanner.isValidFile(raf);
+    return MessageScanner.isValidFile(raf);
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -90,10 +90,10 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
 
     // assume theres no index for now
-    BufrScanner scan = new BufrScanner(raf);
+    MessageScanner scan = new MessageScanner(raf);
     int count = 0;
     while (scan.hasNext()) {
-      BufrMessage m = scan.next();
+      Message m = scan.next();
       if (m == null) continue;
 
       if (protoMessage == null) {
@@ -117,7 +117,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     obsStart = new int[msgs.size()];
     int mi = 0;
     int countObs = 0;
-    for (BufrMessage m : msgs) {
+    for (Message m : msgs) {
       obsStart[mi++] = countObs;
       countObs += m.getNumberDatasets();
     }
@@ -159,7 +159,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     MsgFinder msgf = new MsgFinder();
     Range range = section.getRange(0);
     for (int obsIndex = range.first(); obsIndex <= range.last(); obsIndex += range.stride()) {
-      BufrMessage msg = msgf.find(obsIndex);
+      Message msg = msgf.find(obsIndex);
       if (msg == null) {
         log.error("MsgFinder failed on index " + obsIndex);
         throw new IllegalStateException("MsgFinder failed on index " + obsIndex);
@@ -189,9 +189,9 @@ public class BufrIosp extends AbstractIOServiceProvider {
   private class MsgFinder {
     int msgIndex = 0;
 
-    BufrMessage find(int index) {
+    Message find(int index) {
       while (msgIndex < msgs.size()) {
-        BufrMessage m = msgs.get(msgIndex);
+        Message m = msgs.get(msgIndex);
         if ((obsStart[msgIndex] <= index) && (index < obsStart[msgIndex] + m.getNumberDatasets()))
           return m;
         msgIndex++;
@@ -206,7 +206,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   // want the data from the msgOffset-th data subset in the message.
   // this is the non-compressed case
-  private void readOneObs(BufrMessage m, int msgOffset, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
+  private void readOneObs(Message m, int msgOffset, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
     // transfer info from proto message
     DataDescriptor.transferInfo(protoMessage.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
 
@@ -498,7 +498,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   public String getDetailInfo() {
     Formatter ff = new Formatter();
     try {
-      new BufrDump2().dump(ff, protoMessage);
+      new Dump().dump(ff, protoMessage);
     } catch (IOException e) {
       e.printStackTrace();
     }

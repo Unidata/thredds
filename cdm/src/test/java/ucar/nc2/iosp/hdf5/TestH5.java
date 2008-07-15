@@ -3,6 +3,7 @@ package ucar.nc2.iosp.hdf5;
 import junit.framework.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestAll;
+import ucar.nc2.dataset.NetcdfDataset;
 
 /**
  * TestSuite that runs all the sample testsNew
@@ -31,6 +32,21 @@ public class TestH5 {
     try {
       System.out.println("**** Open "+ TestAll.upcShareTestDataDir + "hdf5/"+filename);
       NetcdfFile ncfile = NetcdfFile.open( TestAll.upcShareTestDataDir + "hdf5/"+filename);
+      if (TestH5.dumpFile) System.out.println("open H5 "+ncfile);
+      return ncfile;
+
+    } catch (java.io.IOException e) {
+      System.out.println(" fail = "+e);
+      e.printStackTrace();
+      assert(false);
+      return null;
+    }
+  }
+
+  public static NetcdfDataset openH5dataset( String filename) {
+    try {
+      System.out.println("**** Open "+ TestAll.upcShareTestDataDir + "hdf5/"+filename);
+      NetcdfDataset ncfile = NetcdfDataset.openDataset( TestAll.upcShareTestDataDir + "hdf5/"+filename);
       if (TestH5.dumpFile) System.out.println("open H5 "+ncfile);
       return ncfile;
 

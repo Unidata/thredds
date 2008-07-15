@@ -43,7 +43,7 @@ public class Group {
   protected List<Dimension> dimensions = new ArrayList<Dimension>();
   protected List<Group> groups = new ArrayList<Group>();
   protected List<Attribute> attributes = new ArrayList<Attribute>();
-  protected List<EnumTypedef> enums = new ArrayList<EnumTypedef>();
+  protected List<EnumTypedef> enumTypedefs = new ArrayList<EnumTypedef>();
   private boolean immutable = false;
 
    /**
@@ -140,6 +140,12 @@ public class Group {
   public java.util.List<Dimension> getDimensions() { return dimensions; }
 
   /**
+   * Get the enumerations contained directly in this group.
+   * @return List of type EnumTypedef; may be empty, not null.
+   */
+  public java.util.List<EnumTypedef> getEnumTypedefs() { return enumTypedefs; }
+
+  /**
    * Retrieve a Dimension using its (short) name. If it doesnt exist in this group,
    *  recursively look in parent groups.
    * @param name Dimension name.
@@ -222,7 +228,7 @@ public class Group {
   public EnumTypedef findEnumeration(String name) {
     if (name == null) return null;
     name =  NetcdfFile.unescapeName(name);
-    for (EnumTypedef d : enums) {
+    for (EnumTypedef d : enumTypedefs) {
       if (name.equals(d.getName()))
         return d;
     }
@@ -278,7 +284,7 @@ public class Group {
   }
 
   protected void writeCDL(PrintWriter out, String indent, boolean strict) {
-    boolean hasE = (enums.size() > 0);
+    boolean hasE = (enumTypedefs.size() > 0);
     boolean hasD = (dimensions.size() > 0);
     boolean hasV = (variables.size() > 0);
     boolean hasG = (groups.size() > 0);
@@ -286,7 +292,7 @@ public class Group {
 
     if (hasE) {
       out.print(indent+" types:\n");
-      for (EnumTypedef e : enums) {
+      for (EnumTypedef e : enumTypedefs) {
         out.print(indent + e.writeCDL(strict));
         out.print(indent + "\n");
       }
@@ -406,7 +412,7 @@ public class Group {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (e == null) return;
 
-    enums.add( e);
+    enumTypedefs.add( e);
   }
 
   /** Add a Variable

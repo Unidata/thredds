@@ -908,6 +908,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   private void convertGroup(Group g, Group from) {
+     for (EnumTypedef et : from.getEnumTypedefs())
+      g.addEnumeration(et);
+
     for (Dimension d : from.getDimensions())
       g.addDimension(d);
 

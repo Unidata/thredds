@@ -26,6 +26,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.IOException;
 
@@ -62,6 +63,29 @@ public class TestOddTypes extends TestCase {
     assert v2 != null;
 
     Array data = v2.read();
+    assert data.getElementType() == int.class;
+
+    NetcdfDataset ncd = TestH5.openH5dataset("support/enum.h5");
+    v2 = ncd.findVariable("enum");
+    assert v2 != null;
+
+    data = v2.read();
+    assert data.getElementType() == String.class;
+  }
+
+  public void testEnum2() throws InvalidRangeException, IOException {
+    NetcdfFile ncfile = NetcdfDataset.openFile("D:/netcdf4/tst_enum_data.nc", null);
+    Variable v2 = ncfile.findVariable("primary_cloud");
+    assert v2 != null;
+
+    Array data = v2.read();
+    assert data.getElementType() == byte.class;
+
+    NetcdfDataset ncd = NetcdfDataset.openDataset("D:/netcdf4/tst_enum_data.nc");
+    v2 = ncd.findVariable("primary_cloud");
+    assert v2 != null;
+
+    data = v2.read();
     assert data.getElementType() == String.class;
   }
 

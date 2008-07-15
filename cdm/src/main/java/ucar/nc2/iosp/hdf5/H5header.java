@@ -586,9 +586,26 @@ class H5header {
         if (debug1) debugOut.println("ERROR attribute " + e.getMessage());
         return null;
       }
+
+      // convert attributes to enum strings
+      if (v.getDataType().isEnum()) {
+        EnumTypedef enumTypedef = ncfile.getRootGroup().findEnumeration( mdt.enumTypeName);
+        if (enumTypedef != null)
+          data = convertEnums( enumTypedef, data); 
+      }
     }
 
     return data;
+  }
+
+  protected Array convertEnums(EnumTypedef enumTypedef, Array values) {
+    Array result = Array.factory(DataType.STRING, values.getShape());
+    IndexIterator ii = result.getIndexIterator();
+    while (values.hasNext()) {
+      String sval = enumTypedef.lookupEnumString(values.nextInt());
+      ii.setObjectNext(sval);
+    }
+    return result;
   }
 
   /* private Array readAttributeData() {
@@ -912,15 +929,15 @@ class H5header {
     if (dt == null) return false;
     v.setDataType(dt);
 
-    /* if (dt.isEnum()) {
+    if (dt.isEnum()) {
       Group ncGroup = v.getParentGroup();
-      EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
+      EnumTypedef enumTypedef = ncGroup.findEnumeration( mdt.enumTypeName);
       if (enumTypedef == null) {
-        enumTypedef = new EnumTypedef(facadeNested.name, mdt.map);
+        enumTypedef = new EnumTypedef( mdt.enumTypeName, mdt.map);
         ncGroup.addEnumeration(enumTypedef);
       }
       v.setEnumTypedef(enumTypedef);
-    } */
+    }
 
     return true;
   }
@@ -1463,7 +1480,7 @@ class H5header {
         raf.skipBytes(4); // header messages multiples of 8
 
         long posMess = raf.getFilePointer();
-        int count = readMessagesVersion1(posMess, nmess, Integer.MAX_VALUE);
+        int count = readMessagesVersion1(posMess, nmess, Integer.MAX_VALUE, this.who);
         if (debugContinueMessage) debugOut.println(" nmessages read = " + count);
         if (debugPos) debugOut.println("<--done reading messages for <" + who + ">; position=" + raf.getFilePointer());
         if (debugTracker) memTracker.addByLen("Object " + who, getFileOffset(address), headerSize + 16);
@@ -1496,7 +1513,7 @@ class H5header {
         if (debugDetail) debugOut.println(" sizeOfChunk=" + sizeOfChunk);
 
         long posMess = raf.getFilePointer();
-        int count = readMessagesVersion2(posMess, sizeOfChunk, (flags & 4) != 0);
+        int count = readMessagesVersion2(posMess, sizeOfChunk, (flags & 4) != 0, this.who);
         if (debugContinueMessage) debugOut.println(" nmessages read = " + count);
         if (debugPos) debugOut.println("<--done reading messages for <" + name + ">; position=" + raf.getFilePointer());
       }
@@ -1562,7 +1579,7 @@ class H5header {
     // read messages, starting at pos, until you hit maxMess read, or maxBytes read
     // if you hit a continuation message, call recursively
     // return number of messaages read
-    private int readMessagesVersion1(long pos, int maxMess, int maxBytes) throws IOException {
+    private int readMessagesVersion1(long pos, int maxMess, int maxBytes, String objectName) throws IOException {
       if (debugContinueMessage)
         debugOut.println(" readMessages start at =" + pos + " maxMess= " + maxMess + " maxBytes= " + maxBytes);
 
@@ -1575,7 +1592,7 @@ class H5header {
 
         Message mess = new Message();
         //messages.add( mess);
-        int n = mess.read(pos, 1, false);
+        int n = mess.read(pos, 1, false, objectName);
         pos += n;
         bytesRead += n;
         count++;
@@ -1585,7 +1602,7 @@ class H5header {
         if (mess.mtype == MessageType.ObjectHeaderContinuation) {
           MessageContinue c = (MessageContinue) mess.messData;
           if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation--- ");
-          count += readMessagesVersion1(getFileOffset(c.offset), maxMess - count, (int) c.length);
+          count += readMessagesVersion1(getFileOffset(c.offset), maxMess - count, (int) c.length, objectName);
           if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation return --- ");
         } else if (mess.mtype != MessageType.NIL) {
           messages.add(mess);
@@ -1594,7 +1611,7 @@ class H5header {
       return count;
     }
 
-    private int readMessagesVersion2(long filePos, long maxBytes, boolean creationOrderPresent) throws IOException {
+    private int readMessagesVersion2(long filePos, long maxBytes, boolean creationOrderPresent, String objectName) throws IOException {
       if (debugContinueMessage)
         debugOut.println(" readMessages2 starts at =" + filePos + " maxBytes= " + maxBytes);
 
@@ -1608,7 +1625,7 @@ class H5header {
 
         Message mess = new Message();
         //messages.add( mess);
-        int n = mess.read(filePos, 2, creationOrderPresent);
+        int n = mess.read(filePos, 2, creationOrderPresent, objectName);
         filePos += n;
         bytesRead += n;
         count++;
@@ -1627,7 +1644,7 @@ class H5header {
           if (!sig.equals("OCHK"))
             throw new IllegalStateException(" ObjectHeaderContinuation Missing signature");
 
-          count += readMessagesVersion2(continuationBlockFilePos + 4, (int) c.length - 8, creationOrderPresent);
+          count += readMessagesVersion2(continuationBlockFilePos + 4, (int) c.length - 8, creationOrderPresent, objectName);
           if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation return --- ");
           if (debugContinueMessage)
             debugOut.println("   continuationMessages =" + count + " bytesRead=" + bytesRead + " maxBytes=" + maxBytes);
@@ -1749,7 +1766,7 @@ class H5header {
      * @return number of bytes read
      * @throws IOException of read error
      */
-    int read(long filePos, int version, boolean creationOrderPresent) throws IOException {
+    int read(long filePos, int version, boolean creationOrderPresent, String objectName) throws IOException {
       this.start = filePos;
       raf.seek(filePos);
       if (debugPos) debugOut.println("  --> Message Header starts at =" + raf.getFilePointer());
@@ -1779,7 +1796,7 @@ class H5header {
       if (debugPos) debugOut.println("  --> Message Data starts at=" + raf.getFilePointer());
 
       if ((headerMessageFlags & 2) != 0) { // shared
-        messData = getSharedMessageData(mtype);
+        messData = getSharedDataObject(mtype).mdt; // LOOK ??
         return header_length + size;
       }
 
@@ -1798,7 +1815,7 @@ class H5header {
 
       } else if (mtype == MessageType.Datatype) { // 3
         MessageDatatype data = new MessageDatatype();
-        data.read();
+        data.read(objectName);
         messData = data;
 
       } else if (mtype == MessageType.FillValueOld) { // 4
@@ -1888,7 +1905,7 @@ class H5header {
     }
   }
 
-  private Object getSharedMessageData(MessageType mtype) throws IOException {
+  private DataObject getSharedDataObject(MessageType mtype) throws IOException {
     byte sharedVersion = raf.readByte();
     byte sharedType = raf.readByte();
     if (sharedVersion == 1) raf.skipBytes(6);
@@ -1908,7 +1925,7 @@ class H5header {
       if (null == dobj)
         throw new IllegalStateException("cant find data object at" + address);
       if (mtype == MessageType.Datatype) {
-        return dobj.mdt;
+        return dobj;
       }
       throw new UnsupportedOperationException("****SHARED MESSAGE type = " + mtype);
     }
@@ -2140,6 +2157,7 @@ class H5header {
 
     // enums (8)
     Map<Integer, String> map;
+    String enumTypeName;
 
     // enum, variable-length, array types have "base" DataType
     MessageDatatype base;
@@ -2166,7 +2184,7 @@ class H5header {
       return sbuff.toString();
     }
 
-    void read() throws IOException {
+    void read(String objectName) throws IOException {
       if (debugPos) debugOut.println("   *MessageDatatype start pos= " + raf.getFilePointer());
 
       byte tandv = raf.readByte();
@@ -2251,7 +2269,7 @@ class H5header {
           debugDetail = true;
         }
         base = new MessageDatatype(); // base type
-        base.read();
+        base.read(objectName);
         debugDetail = saveDebugDetail;
 
         // read the enums
@@ -2268,9 +2286,10 @@ class H5header {
         if (base.byteOrder >= 0) raf.order(base.byteOrder);
         int[] enumValue = new int[nmembers];
         for (int i = 0; i < nmembers; i++)
-          enumValue[i] = (int) readVariableSize(base.byteSize); // assume unsigned integer type, fits into int
+          enumValue[i] = readVariableSize(base.byteSize); // assume size is 1, 2, or 4
         raf.order(RandomAccessFile.LITTLE_ENDIAN);
 
+        enumTypeName = objectName;
         map = new TreeMap<Integer, String>();
         for (int i = 0; i < nmembers; i++)
           map.put(enumValue[i], enumName[i]);
@@ -2285,7 +2304,7 @@ class H5header {
         if (debug1)
           debugOut.println("   type 9(variable length): type= " + (isVString ? "string" : "sequence of type:"));
         base = new MessageDatatype(); // base type
-        base.read();
+        base.read(objectName);
 
       } else if (type == 10) { // array
         if (debug1) debugOut.print("   type 10(array) lengths= ");
@@ -2306,7 +2325,7 @@ class H5header {
         if (debug1) debugOut.println();
 
         base = new MessageDatatype(); // base type
-        base.read();
+        base.read(objectName);
 
       } else if (warnings) {
         debugOut.println(" WARNING not dealing with type= " + type);
@@ -2352,7 +2371,7 @@ class H5header {
 
       //HDFdumpWithCount(buffer, raf.getFilePointer(), 16);
       mdt = new MessageDatatype();
-      mdt.read();
+      mdt.read( name);
       if (debugDetail) debugOut.println("   ***End Member name=" + name);
 
       // ??
@@ -2635,10 +2654,10 @@ class H5header {
       if (debugPos) debugOut.println("   *MessageAttribute before mdt pos= " + filePos);
       boolean isShared = (flags & 1) != 0;
       if (isShared) {
-        mdt = (MessageDatatype) getSharedMessageData(MessageType.Datatype);
+        mdt = getSharedDataObject(MessageType.Datatype).mdt;
         if (debug1) debugOut.println("    MessageDatatype: " + mdt);
       } else {
-        mdt.read();
+        mdt.read( name);
         if (version == 1) typeSize += padding(typeSize, 8);
       }
       raf.seek(filePos + typeSize); // make it more robust for errors
@@ -3152,9 +3171,9 @@ class H5header {
         for (int i = 0; i < nrecords + 1; i++) {
           Entry2 e = entries[i];
           e.childAddress = readOffset();
-          e.nrecords = readVariableSize(1); // readVariableSizeMax(maxNumRecords);
+          e.nrecords = readVariableSizeUnsigned(1); // readVariableSizeMax(maxNumRecords);
           if (depth > 1)
-            e.totNrecords = readVariableSize(2); // readVariableSizeMax(maxNumRecordsPlusDesc);
+            e.totNrecords = readVariableSizeUnsigned(2); // readVariableSizeMax(maxNumRecordsPlusDesc);
 
           if (debugBtree2)
             debugOut.println(" BTree2 entry childAddress=" + e.childAddress + " nrecords=" + e.nrecords + " totNrecords=" + e.totNrecords);
@@ -4187,7 +4206,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
       int nbytes = maxHeapSize / 8;
       if (maxHeapSize % 8 != 0) nbytes++;
-      long blockOffset = readVariableSize(nbytes);
+      long blockOffset = readVariableSizeUnsigned(nbytes);
 
       if (debugDetail || debugFractalHeap) {
         debugOut.println(" -- FH IndirectBlock version=" + version + " blockOffset= " + blockOffset);
@@ -4241,7 +4260,7 @@ There is _no_ datatype information stored for these sort of selections currently
 
       int nbytes = maxHeapSize / 8;
       if (maxHeapSize % 8 != 0) nbytes++;
-      dblock.offset = readVariableSize(nbytes);
+      dblock.offset = readVariableSizeUnsigned(nbytes);
       dblock.dataPos = pos; // raf.getFilePointer();  // offsets are from the start of the block
 
       if (debugDetail || debugFractalHeap)
@@ -4346,15 +4365,15 @@ There is _no_ datatype information stored for these sort of selections currently
   // size of data depends on "maximum possible number"
   private long readVariableSizeMax(int maxNumber) throws IOException {
     int size = getNumBytesFromMax(maxNumber);
-    return readVariableSize(size);
+    return readVariableSizeUnsigned(size);
   }
 
   private long readVariableSizeFactor(int sizeFactor) throws IOException {
     int size = (int) Math.pow(2, sizeFactor);
-    return readVariableSize(size);
+    return readVariableSizeUnsigned(size);
   }
 
-  private long readVariableSize(int size) throws IOException {
+  private long readVariableSizeUnsigned(int size) throws IOException {
     long vv;
     if (size == 1) {
       vv = DataType.unsignedByteToShort(raf.readByte());
@@ -4370,6 +4389,18 @@ There is _no_ datatype information stored for these sort of selections currently
       vv = readVariableSizeN(size);
     }
     return vv;
+  }
+
+  private int readVariableSize(int size) throws IOException {
+    long vv;
+    if (size == 1) {
+      return raf.readByte();
+    } else if (size == 2) {
+      return raf.readShort();
+    } else if (size == 4) {
+      return raf.readInt();
+    }
+    throw new IllegalArgumentException("Dont support int size == "+size);
   }
 
   // Little endian

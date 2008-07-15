@@ -1191,6 +1191,7 @@ public class Variable implements VariableIF {
     this.dataType = from.getDataType();
     this.dimensions = new ArrayList<Dimension>(from.dimensions); // dimensions are shared
     this.elementSize = from.getElementSize();
+    this.enumTypedef = from.enumTypedef;
     this.group = from.group;
     this.isMetadata = from.isMetadata;
     this.isVariableLength = from.isVariableLength;

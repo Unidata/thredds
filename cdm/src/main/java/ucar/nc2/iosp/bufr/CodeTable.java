@@ -25,6 +25,7 @@ import org.jdom.Element;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.io.InputStream;
 
 import ucar.unidata.util.StringUtil;
 
@@ -48,11 +49,12 @@ public class CodeTable {
 
   static void init() {
     tableMap = new HashMap<String, CodeTable>(100);
-    String filename = "C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans2.xml";
+    String filename = "/resources/bufr/codes/Code-FlagTables-11-2007.trans2.xml";
+    InputStream is = CodeTable.class.getResourceAsStream(filename);
 
     try {
       SAXBuilder builder = new SAXBuilder();
-      org.jdom.Document tdoc = builder.build(filename);
+      org.jdom.Document tdoc = builder.build(is);
       org.jdom.Element root = tdoc.getRootElement();
 
       for (Element elem : (List<Element>) root.getChildren("table")) {

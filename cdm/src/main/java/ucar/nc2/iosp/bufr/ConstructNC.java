@@ -43,19 +43,12 @@ class ConstructNC {
   private FeatureType ftype;
   private int nobs;
 
-  private Map<String, String> tableA;
-  private Map<String, DescriptorTableB> tableB;
-  private Map<String, List<String>> tableD;
-  private BufrMessage proto;
+  private Message proto;
 
-  ConstructNC(BufrMessage proto, int nobs, ucar.nc2.NetcdfFile nc) throws IOException {
+  ConstructNC(Message proto, int nobs, ucar.nc2.NetcdfFile nc) throws IOException {
     this.proto = proto;
     this.ncfile = nc;
     this.nobs = nobs;
-
-    tableA = BufrTables.getTableA(proto.ids.getMasterTableFilename() + "-A");
-    tableB = BufrTables.getTableB(proto.ids.getMasterTableFilename() + "-B");
-    tableD = BufrTables.getTableD(proto.ids.getMasterTableFilename() + "-D");
 
     //dkeyRoot = dds.getDescriptorRoot();
     //int nbits = dds.getTotalBits();
@@ -64,7 +57,7 @@ class ConstructNC {
 
     // the category
     int cat = proto.ids.getCategory();
-    String category = tableA.get(Integer.toString(cat));
+    String category = proto.getCategoryName();
     if (cat == 0) {
       ftype = FeatureType.STATION;
     } else if (cat == 2) {
@@ -90,7 +83,7 @@ class ConstructNC {
     ncfile.addAttribute(null, new Attribute("BUFR:centerName", centerName));
     ncfile.addAttribute(null, new Attribute("BUFR:center", proto.ids.getCenter_id()));
     ncfile.addAttribute(null, new Attribute("BUFR:subCenter", proto.ids.getCenter_id()));
-    ncfile.addAttribute(null, new Attribute("BUFR:tableName", proto.ids.getMasterTableFilename()));
+    //ncfile.addAttribute(null, new Attribute("BUFR:tableName", proto.ids.getMasterTableFilename()));
     ncfile.addAttribute(null, new Attribute("BUFR:table", proto.ids.getMasterTableId()));
     ncfile.addAttribute(null, new Attribute("BUFR:tableVersion", proto.ids.getMasterTableVersion()));
     ncfile.addAttribute(null, new Attribute("BUFR:localTableVersion", proto.ids.getLocalTableVersion()));
