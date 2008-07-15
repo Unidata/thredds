@@ -23,6 +23,7 @@ import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dataset.VariableDS;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -316,7 +317,7 @@ public interface GridDatatype extends Comparable<GridDatatype> {
    * get the underlying Variable, if it exists.
    * @return the underlying Variable, if it exists.
    */
-  public VariableEnhanced getVariable();
+  public VariableDS getVariable();
 
 
   // experimental

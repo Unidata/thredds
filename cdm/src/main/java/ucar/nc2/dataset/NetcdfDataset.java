@@ -56,24 +56,22 @@ import java.util.*;
  * </pre>
  *
  *
- * By default NetcdfDataset is opened with NetcdfDataset.EnhanceMode.All, which adds automatic scale/offset/missing value
- *   handling by VariableDS, and automatic CoordinateSystem construction by the CoordSysBuilder plugins. The default "enhance
- *   mode" can be set through setDefaultEnhanceMode(). One can also explicitly set the EnhanceMode of the dataset
- *   in the factory methods:
+ * By default NetcdfDataset is opened with all enhancements turned on. The default "enhance
+ *   mode" can be set through setDefaultEnhanceMode(). One can also explicitly set the enhancements you want in
+ *   the dataset factory methods. The enhancements are:
  *   <ul>
- *   <li>All : scale/offset/missing and CoordinateSystem
- *   <li>ScaleMissing : just scale/offset/missing
- *   <li>ScaleMissingDefer : caclulate scale/offset/missing info, but dont automatically convert
- *   <li>CoordSystem : just CoordinateSystem
- *   <li>AllDefer : ScaleMissingDefer and CoordSystem
- *   <li>None : no enhancements
+ *   <li>ScaleMissing : process scale/offset/missing attributes, and automatically convert the data.
+ *   <li>ScaleMissingDefer : process scale/offset/missing attributes, but dont automatically convert the data. You can call
+ *         VariableEnhanced.convertScaleOffsetMissing() on the data manually.
+ *   <li>CoordSystem : extract CoordinateSystem using the CoordSysBuilder plug-in mechanism
+ *   <li>ConvertEnums : automaticlly convert enum values to their corresponding Strings. If you want to do this manually, you
+ *          can call Variable.lookupEnumString() manually.
  *   </ul>
  *
- * Automatic conversion has a lot of overhead, and if you need maximum performance, but still want to use
- *   scale/offset/missing value handling, open the NetcdfDataset with EnhanceMode.ScaleOffsetDefer (or AllDefer).
+ * Automatic ScaleMissing processing has some overhead, and if you need maximum performance, but still want to use
+ *   scale/offset/missing value handling, open the NetcdfDataset with ScaleMissingDefer.
  *   The VariableDS data type is not promoted, and the data is not converted on a read, but you can call the
- *   convertScaleOffset() routines which will do the conversion on a point-by-point basis, or convertArray()
- *   which will convert the entire Array.
+ *   convertScaleOffsetMissing() routines which will do the conversion on a point-by-point basis.
  *
  * @author caron
  * @see ucar.nc2.NetcdfFile

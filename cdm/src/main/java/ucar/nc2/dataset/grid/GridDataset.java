@@ -123,7 +123,7 @@ public class GridDataset {
         }
 
         if (gcs != null)
-          addGeoGrid( v, gcs);
+          addGeoGrid( (VariableDS) v, gcs);
         }
 
    }
@@ -134,7 +134,7 @@ public class GridDataset {
   }
 
 
-  private void addGeoGrid( VariableEnhanced varDS, GridCoordSys gcs) {
+  private void addGeoGrid( VariableDS varDS, GridCoordSys gcs) {
     Gridset gridset;
     if (null == (gridset = (Gridset) gridsetHash.get( gcs.getName()))) {
       gridset = new Gridset( gcs);

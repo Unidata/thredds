@@ -61,7 +61,10 @@ public class EnumTypedef {
     for (Object key : keyset) {
       String s = map.get(key);
       if (0 < count++) buff.append(", ");
-      buff.append(s).append(" = ").append(key);
+      if (strict)
+        buff.append( NetcdfFile.escapeName(s)).append(" = ").append(key);
+      else
+        buff.append("'").append(s).append("' = ").append(key);
     }
     buff.append("};");
     return buff.toString();

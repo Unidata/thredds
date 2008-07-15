@@ -165,7 +165,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         throw new IllegalStateException("MsgFinder failed on index " + obsIndex);
       }
 
-      readOneObs(msg, msgf.msgOffset(obsIndex), abb, bb);
+      readOneObs(msg, msgf.msgOffset(obsIndex), abb, bb, members);
     }
 
     return abb;
@@ -205,8 +205,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   // want the data from the msgOffset-th data subset in the message.
-  // this is the non-compressed case
-  private void readOneObs(Message m, int msgOffset, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
+  private void readOneObs(Message m, int msgOffset, ArrayStructureBB abb, ByteBuffer bb, StructureMembers members) throws IOException {
     // transfer info from proto message
     DataDescriptor.transferInfo(protoMessage.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
 

@@ -50,7 +50,7 @@ public class GeoGrid implements NamedObject { // , ucar.nc2.dt.GridDatatype {
 
   private GridDataset dataset;
   private GridCoordSys gcs;
-  private VariableEnhanced vs;
+  private VariableDS vs;
   private int xDimOrgIndex = -1, yDimOrgIndex = -1, zDimOrgIndex = -1, tDimOrgIndex = -1;
   private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1;
   private ArrayList mydims;
@@ -63,7 +63,7 @@ public class GeoGrid implements NamedObject { // , ucar.nc2.dt.GridDatatype {
    * @param dsvar wraps this Variable
    * @param gcs has this grid coordinate system
    */
-  public GeoGrid(GridDataset dataset, VariableEnhanced dsvar, GridCoordSys gcs) {
+  public GeoGrid(GridDataset dataset, VariableDS dsvar, GridCoordSys gcs) {
     this.dataset = dataset;
     this.vs = dsvar;
     this.gcs = gcs;

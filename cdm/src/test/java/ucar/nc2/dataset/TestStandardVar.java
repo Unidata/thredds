@@ -184,7 +184,7 @@ public class TestStandardVar extends TestCase {
 
     assert(null != (t2 = dsRead.findVariable("t2")));
     assert t2 instanceof VariableEnhanced;
-    VariableEnhanced vs = (VariableEnhanced) t2;
+    VariableDS vs = (VariableDS) t2;
     assert( vs.getDataType() == DataType.SHORT) : vs.getDataType();
     assert( !vs.hasMissing());
 
@@ -208,7 +208,8 @@ public class TestStandardVar extends TestCase {
 
     assert(null != (v = dsRead.findVariable("t3")));
     assert v instanceof VariableEnhanced;
-    VariableEnhanced vs = (VariableEnhanced) v;
+    assert v instanceof VariableDS;
+    VariableDS vs = (VariableDS) v;
     assert( vs.getDataType() == DataType.BYTE);
 
     Attribute att = vs.findAttribute("_FillValue");
@@ -245,7 +246,8 @@ public class TestStandardVar extends TestCase {
     // default use of missing_value
     assert(null != (v = dsRead.findVariable("t4")));
     assert v instanceof VariableEnhanced;
-    VariableEnhanced vs = (VariableEnhanced) v;
+    assert v instanceof VariableDS;
+    VariableDS vs = (VariableDS) v;
     assert( vs.getDataType() == DataType.SHORT);
 
     Attribute att = vs.findAttribute("missing_value");
@@ -296,7 +298,8 @@ public class TestStandardVar extends TestCase {
     // standard convert with missing data
     assert(null != (v = dsRead.findVariable("t5")));
     assert v instanceof VariableEnhanced;
-    VariableEnhanced vs = (VariableEnhanced) v;
+    assert v instanceof VariableDS;
+    VariableDS vs = (VariableDS) v;
     assert( vs.getDataType() == DataType.FLOAT);
 
     assert( vs.hasMissing());

@@ -96,7 +96,7 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
     Structure s = (Structure) ncfile.findVariable("record");
     assert (s != null);
 
-    VariableEnhanced vm = (VariableEnhanced) s.findVariable("testScale");
+    VariableDS vm = (VariableDS) s.findVariable("testScale");
     Array vmData = vm.read();
     if (vmData.hasNext()) {
       float vmval = vmData.nextFloat();

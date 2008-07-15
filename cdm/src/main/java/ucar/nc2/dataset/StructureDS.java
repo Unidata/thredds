@@ -31,12 +31,12 @@ import java.util.EnumSet;
 /**
  * An "enhanced" Structure.
  *
+ * @see NetcdfDataset
  * @author john caron
  */
 
 public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced {
   private EnhancementsImpl proxy;
-  private EnhanceScaleMissingImpl smProxy;
 
   protected Structure orgVar; // wrap this Variable
   private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
@@ -58,7 +58,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     super(ds, group, parentStructure, shortName);
     setDimensions(dims);
     this.proxy = new EnhancementsImpl(this, units, desc);
-    this.smProxy = new EnhanceScaleMissingImpl();
 
     if (units != null)
       addAttribute(new Attribute("units", units));
@@ -76,7 +75,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     this.group = g;
     this.orgVar = orgVar;
     this.proxy = new EnhancementsImpl(this);
-    this.smProxy = new EnhanceScaleMissingImpl(); // scale/offset not applied to Structure, only members.
 
     // dont share cache, iosp : all IO is delegated
     this.ncfile = null;
@@ -185,12 +183,13 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       result = postReader.read(this, null);
     else if (orgVar != null)
       result = orgVar.read();
-    else { // return fill value in a "constant array"; this allow NcML to act as ncgen LOOK not tested?
-      Object data = smProxy.getFillValue(getDataType());
-      return Array.factoryConstant(dataType.getPrimitiveClassType(), getShape(), data);
+    else {
+      throw new IllegalStateException("StructureDS has no way to get data");
+      //Object data = smProxy.getFillValue(getDataType());
+      //return Array.factoryConstant(dataType.getPrimitiveClassType(), getShape(), data);
     }
 
-    return convertScaleOffsetMissing(result);
+    return convert(result);
   }
 
   // section of regular Variable
@@ -204,9 +203,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       result = postReader.read(this, section, null);
     else if (orgVar != null)
       result = orgVar.read(section);
-    else { // return fill value in a "constant array" LOOK not tested?
-      Object data = smProxy.getFillValue(getDataType());
-      return Array.factoryConstant(dataType.getPrimitiveClassType(), section.getShape(), data);
+    else {
+      throw new IllegalStateException("StructureDS has no way to get data");
+      //Object data = smProxy.getFillValue(getDataType());
+      //return Array.factoryConstant(dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
     // correct the member info
@@ -218,17 +218,15 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         m.setVariableInfo(v.getUnitsString(), v.getDescription());
     }
 
-    return convertScaleOffsetMissing(result);
+    return convert(result);
   }
 
   ///////////////////////////////////////
 
-  // VariableEnhanced implementation
-
-  public Array convertScaleOffsetMissing(Array data) throws IOException {
+  protected Array convert(Array data) throws IOException {
     ArrayStructure as = (ArrayStructure) data;
-    if (!needsConverting(this, as)) return data;
-    as = ArrayStructureMA.factoryMA( as);
+    if (!convertNeeded(this, as)) return data;
+    as = ArrayStructureMA.factoryMA( as); // LOOK! converting to ArrayStructureMA
 
     StructureMembers sm = as.getStructureMembers(); // these are from orgVar - may have been renamed
     for (StructureMembers.Member m : sm.getMembers()) {
@@ -237,28 +235,36 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         v2 = findVariableFromOrgName(m.getName());
       if (v2 == null) continue;
 
-      if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs())) {
-        Array mdata = as.extractMemberArray(m);
-        mdata = v2.convertScaleOffsetMissing(mdata);
-        as.setMemberArray(m, mdata);
+      if (v2 instanceof VariableDS) {
+        VariableDS vds = (VariableDS) v2;
+        if (vds.getNeedScaleOffsetMissing()) {
+          Array mdata = as.extractMemberArray(m);
+          mdata = vds.convertScaleOffsetMissing(mdata);
+          as.setMemberArray(m, mdata);
+
+        } else if (vds.getNeedEnumConversion()) {
+          Array mdata = as.extractMemberArray(m);
+          mdata = vds.convertEnums(mdata);
+          as.setMemberArray(m, mdata);
+        }
       }
 
       // recurse into sub-structures
       if (v2 instanceof StructureDS) {
         StructureDS innerStruct = (StructureDS) v2;
-        if (innerStruct.needsConverting(innerStruct, null)) {
+        if (innerStruct.convertNeeded(innerStruct, null)) {
 
           if (innerStruct.getDataType() == DataType.SEQUENCE) {
             ArrayObject.D1 seqArray = (ArrayObject.D1) as.extractMemberArray(m);
             for (int i=0; i<seqArray.getSize(); i++) {
               ArraySequence innerSeq =  (ArraySequence) seqArray.get(i);
-              innerStruct.convertScaleOffsetMissing( innerSeq); // modify each innerSequence as needed
+              innerStruct.convert( innerSeq); // modify each innerSequence as needed
             }
 
           // non-Sequence Structures
           } else {
             Array mdata = as.extractMemberArray(m);
-            mdata = innerStruct.convertScaleOffsetMissing(mdata);
+            mdata = innerStruct.convert(mdata);
             as.setMemberArray(m, mdata);
           }
         }
@@ -266,6 +272,61 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       m.setVariableInfo(v2);
     }
     return as;
+  }
+
+  protected boolean convertNeeded(Structure s, ArrayStructure as) {
+
+    if (as == null) { // check everything
+      for (Variable v : s.getVariables()) {
+
+        if (v instanceof VariableDS) {
+          VariableDS vds = (VariableDS) v;
+          if (vds.getNeedScaleOffsetMissing() || vds.getNeedEnumConversion())
+            return true;
+        }
+
+        if (v instanceof StructureDS) {
+          StructureDS nested = (StructureDS) v;
+          if (convertNeeded(nested, null))
+            return true;
+        }
+      }
+      return false;
+    }
+
+    // only check the ones present in the ArrayStructure
+    for (StructureMembers.Member m : as.getMembers()) {
+      VariableEnhanced v2 = (VariableEnhanced) s.findVariable(m.getName());
+      if ((v2 == null) && (orgVar != null)) // tricky stuff in case NcML renamed the variable
+        v2 = findVariableFromOrgName(m.getName());
+      if (v2 == null) continue;
+
+      if (v2 instanceof VariableDS) {
+        VariableDS vds = (VariableDS) v2;
+        if (vds.getNeedScaleOffsetMissing() || vds.getNeedEnumConversion())
+          return true;
+      }
+
+      if (v2 instanceof StructureDS) {
+        StructureDS nested = (StructureDS) v2;
+        if (convertNeeded(nested, null))
+          return true;
+      }
+    }
+    return false;
+  }
+
+  private VariableEnhanced findVariableFromOrgName(String shortName) {
+    for (Variable vTop : getVariables()) {
+      Variable v = vTop;
+      while (v instanceof VariableEnhanced) {
+        Variable org = ((VariableEnhanced) v).getOriginalVariable();
+        if (org.getShortName().equals(shortName))
+          return (VariableEnhanced) vTop;
+        v = org;
+      }
+    }
+    return null;
   }
 
   /* private void convertNested(ArrayStructure as, StructureMembers.Member outerM, StructureDS innerStruct) {
@@ -292,56 +353,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       innerM.setVariableInfo(v2);
     }
   } */
-
-  boolean needsConverting(Structure s, ArrayStructure as) {
-    if (as == null) { // check everything
-      for (Variable v : s.getVariables()) {
-        VariableEnhanced ve = (VariableEnhanced) v;
-
-        if (ve.hasScaleOffset() || (ve.hasMissing() && ve.getUseNaNs()))
-          return true;
-
-        if (ve instanceof StructureDS) {
-          StructureDS nested = (StructureDS) ve;
-          if (needsConverting(nested, null))
-            return true;
-        }
-      }
-      return false;
-    }
-
-    // only check the ones present in the ArrayStructure and the Structure
-    for (StructureMembers.Member m : as.getMembers()) {
-      VariableEnhanced v2 = (VariableEnhanced) s.findVariable(m.getName());
-      if ((v2 == null) && (orgVar != null)) // tricky stuff in case NcML renamed the variable
-        v2 = findVariableFromOrgName(m.getName());
-      if (v2 == null) continue;
-      //assert v2 != null : m.getName() + " not in " + getName();
-
-      if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs()))
-        return true;
-
-      if (v2 instanceof StructureDS) {
-        StructureDS nested = (StructureDS) v2;
-        if (needsConverting(nested, null))
-          return true;
-      }
-    }
-    return false;
-  }
-
-  private VariableEnhanced findVariableFromOrgName(String shortName) {
-    for (Variable vTop : getVariables()) {
-      Variable v = vTop;
-      while (v instanceof VariableEnhanced) {
-        Variable org = ((VariableEnhanced) v).getOriginalVariable();
-        if (org.getShortName().equals(shortName))
-          return (VariableEnhanced) vTop;
-        v = org;
-      }
-    }
-    return null;
-  }
 
   /**
    * DO NOT USE DIRECTLY. public by accident.
@@ -378,7 +389,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     proxy.setUnitsString(units);
   }
 
-  public double getValidMax() {
+  /* public double getValidMax() {
     return smProxy.getValidMax();
   }
 
@@ -446,13 +457,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return smProxy.getUseNaNs();
   }
 
-  /*
-   * Convert data if hasScaleOffset, using scale and offset.
-   * Also if useNaNs = true, return NaN if value is missing data.
-   *
-   * @param value data to convert
-   * @return converted data.
-   */
   public double convertScaleOffsetMissing(byte value) {
     return smProxy.convertScaleOffsetMissing(value);
   }
@@ -471,36 +475,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   public double convertScaleOffsetMissing(double value) {
     return smProxy.convertScaleOffsetMissing(value);
-  } 
-
-  /*
-   * Extract scalar value and convert to double value, with scale, offset if applicable.
-   * Underlying type must be convertible to double.
-   * @param sdata the StructureData
-   * @param m member Variable.
-   * @return values converted with scale/offset/missing if appropriate
-   * @throws IllegalArgumentException if m is not legal member.
-   * @throws ForbiddenConversionException if not convertible to float.
-   *
-  public double convertScalarDouble(StructureData sdata, StructureMembers.Member m) {
-    VariableDS mv = (VariableDS) findVariable(m.getName());
-    DataType dt = m.getDataType();
-    if (dt == DataType.FLOAT)
-      return mv.convertScaleOffsetMissing( (double) sdata.getScalarFloat( m));
-    else if (dt == DataType.DOUBLE)
-      return mv.convertScaleOffsetMissing(  sdata.getScalarDouble( m));
-    else if (dt == DataType.BYTE)
-      return mv.convertScaleOffsetMissing(  sdata.getScalarByte( m));
-    else if (dt == DataType.SHORT)
-      return mv.convertScaleOffsetMissing(  sdata.getScalarShort( m));
-    else if (dt == DataType.INT)
-      return mv.convertScaleOffsetMissing(  sdata.getScalarInt( m));
-    else if (dt == DataType.LONG)
-      return mv.convertScaleOffsetMissing(  sdata.getScalarLong( m));
-    else if (dt == DataType.CHAR)
-      return mv.convertScaleOffsetMissing(  sdata.getScalarChar( m));
-
-    throw new ForbiddenConversionException();
   } */
 
 }

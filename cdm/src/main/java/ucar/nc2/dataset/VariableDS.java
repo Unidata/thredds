@@ -31,25 +31,16 @@ import java.util.EnumSet;
  * The original Variable is used for the I/O.
  * There are several distinct uses:
  * <ol>
- * <li>  1) handle scale/offset/missing values; this can change DataType and data values
+ * <li>  1) handle scale/offset/missing values/enum conversion; this can change DataType and data values
  * <li>  2) container for coordinate system information
  * <li>  3) NcML modifications to underlying Variable
  * </ol>
- * The default case is for VariableDS to be opened in enhanced mode, which checks for scale/offset/missing values and
- *   converts the data automatically. For double/floats, missing data is replaced with NaN's (you can turn off NaN
- *   replacement with NetcdfDataset.setUseNaNs(false)).
- *   This is done whenever the NetcdfDataset.open is called with NetcdfDataset.EnhanceMode equal to All or ScaleOffset.
  *
- * Automatic conversion has a lot of overhead, and if you need maximum performance, but still want to use
- *   scale/offset/missing value handling, open the NetcdfDataset with EnhanceMode.ScaleOffsetDefer. The variableDs
- *   data type is not promoted, and the data is not converted on a read, but you can call the convertScaleOffset()
- *   routines which will do the conversion on a point-by-point basis, or convertArray() which will convert the entire
- *   Array.
- * 
+ * @see NetcdfDataset
  * @author caron
  */
 
-public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
+public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, EnhanceScaleMissing {
   private EnhancementsImpl enhanceProxy;
   private EnhanceScaleMissingImpl scaleMissingProxy;
   private EnumSet<NetcdfDataset.Enhance> enhanceMode;
@@ -181,17 +172,17 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
       if (orgEnhanceMode != null) {
         if (orgEnhanceMode.contains(NetcdfDataset.Enhance.ScaleMissing)) {
           alreadyScaleOffsetMissing = true;
-          this.enhanceMode.add(NetcdfDataset.Enhance.ScaleMissing);
+          this.enhanceMode.add(NetcdfDataset.Enhance.ScaleMissing); // Note: promote the enhancement to the wrapped variable
         }
         if (orgEnhanceMode.contains(NetcdfDataset.Enhance.ConvertEnums)) {
           alreadyEnumConversion = true;
-          this.enhanceMode.add(NetcdfDataset.Enhance.ConvertEnums);
+          this.enhanceMode.add(NetcdfDataset.Enhance.ConvertEnums); // Note: promote the enhancement to the wrapped variable
         }
       }
     }
 
     // do we need to calculate the ScaleMissing ?
-    if (!alreadyScaleOffsetMissing && mode.contains(NetcdfDataset.Enhance.ScaleMissing) || mode.contains(NetcdfDataset.Enhance.ScaleMissingDefer)) {
+    if (!alreadyScaleOffsetMissing && dataType.isNumeric() && mode.contains(NetcdfDataset.Enhance.ScaleMissing) || mode.contains(NetcdfDataset.Enhance.ScaleMissingDefer)) {
       this.scaleMissingProxy = new EnhanceScaleMissingImpl( this);
 
       // promote the data type if ScaleMissing is set
@@ -205,8 +196,16 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     }
 
     // do we need to do enum conversion ?
-    needEnumConversion = !alreadyEnumConversion && mode.contains(NetcdfDataset.Enhance.ConvertEnums) && dataType.isEnum();
+    if (!alreadyEnumConversion && mode.contains(NetcdfDataset.Enhance.ConvertEnums) && dataType.isEnum()) {
+      this.needEnumConversion = true;
+
+      // promote data type to STRING ????
+    }
+
   }
+
+  boolean getNeedScaleOffsetMissing() { return needScaleOffsetMissing; }
+  boolean getNeedEnumConversion() { return needEnumConversion; }
 
   /** Get the enhancement mode
    * @return the enhancement mode
@@ -414,7 +413,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced {
     else if (needEnumConversion)
       return convertEnums(result);
     else
-      return result;  }
+      return result;
+  }
 
   // section of regular Variable
   @Override

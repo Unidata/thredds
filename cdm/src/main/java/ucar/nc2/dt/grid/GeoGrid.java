@@ -47,10 +47,11 @@ import java.io.IOException;
  */
 
 public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGrid.class);
 
   private GridDataset dataset;
   private GridCoordSys gcs;
-  private VariableEnhanced vs;
+  private VariableDS vs;
   private int xDimOrgIndex = -1, yDimOrgIndex = -1, zDimOrgIndex = -1, tDimOrgIndex = -1, eDimOrgIndex = -1, rtDimOrgIndex = -1;
   private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1, eDimNewIndex = -1, rtDimNewIndex = -1;
   private List<Dimension> mydims;
@@ -64,7 +65,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * @param dsvar   wraps this Variable
    * @param gcs     has this grid coordinate system
    */
-  public GeoGrid(GridDataset dataset, VariableEnhanced dsvar, GridCoordSys gcs) {
+  public GeoGrid(GridDataset dataset, VariableDS dsvar, GridCoordSys gcs) {
     this.dataset = dataset;
     this.vs = dsvar;
     this.gcs = gcs;
@@ -288,7 +289,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return vs.getAttributes();
   }
 
-  public VariableEnhanced getVariable() {
+  public VariableDS getVariable() {
     return vs;
   }
 
@@ -336,14 +337,14 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   }
 
   /**
-   * get the standardized description, see VariableStandardized.getDescription()
+   * get the standardized description
    */
   public String getDescription() {
     return vs.getDescription();
   }
 
   /**
-   * get the unit as a string, see VariableStandardized.getUnitString()
+   * get the unit as a string
    */
   public String getUnitsString() {
     String units = vs.getUnitsString();
@@ -361,14 +362,14 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   //public ucar.unidata.geoloc.ProjectionImpl getProjection() { return gcs.getProjection(); }
 
   /**
-   * true if there may be missing data, see VariableStandardized.hasMissing()
+   * true if there may be missing data, see VariableDS.hasMissing()
    */
   public boolean hasMissingData() {
     return vs.hasMissing();
   }
 
   /**
-   * if val is missing data, see VariableStandardized.isMissingData()
+   * if val is missing data, see VariableDS.isMissingData()
    */
   public boolean isMissingData(double val) {
     return vs.isMissing(val);
@@ -599,8 +600,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     try {
       dataVolume = vs.read(start, shape);
     } catch (Exception ex) {
-      System.out.println("Exception: GeoGrid.getdataSlice() on dataset " + getName());
-      ex.printStackTrace();
+      log.error("GeoGrid.getdataSlice() on dataset " + getName(), ex);
       throw new java.io.IOException(ex.getMessage());
     }
 

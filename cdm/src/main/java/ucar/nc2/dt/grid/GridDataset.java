@@ -114,7 +114,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
       }
 
       if (gcs != null)
-        addGeoGrid(v, gcs);
+        addGeoGrid((VariableDS) v, gcs);
     }
 
   }
@@ -203,7 +203,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
     ds.close();
   }
 
-  private void addGeoGrid(VariableEnhanced varDS, GridCoordSys gcs) {
+  private void addGeoGrid(VariableDS varDS, GridCoordSys gcs) {
     Gridset gridset;
     if (null == (gridset = gridsetHash.get(gcs.getName()))) {
       gridset = new Gridset(gcs);

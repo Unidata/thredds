@@ -229,9 +229,9 @@ class ConstructNC {
       log.warn("dataDesc.units == null for " + name);
     else {
       if (dataDesc.units.equalsIgnoreCase("Code_Table") || dataDesc.units.equalsIgnoreCase("Code Table"))
-        v.addAttribute(new Attribute("units", "Code Table " + dataDesc.id));
+        v.addAttribute(new Attribute("units", "CodeTable " + dataDesc.id));
       else if (dataDesc.units.equalsIgnoreCase("Flag_Table") || dataDesc.units.equalsIgnoreCase("Flag Table"))
-        v.addAttribute(new Attribute("units", "Flag Table " + dataDesc.id));
+        v.addAttribute(new Attribute("units", "FlagTable " + dataDesc.id));
       else if (!dataDesc.units.startsWith("CCITT") && !dataDesc.units.startsWith("Numeric"))
         v.addAttribute(new Attribute("units", dataDesc.units));
     }
@@ -339,9 +339,9 @@ class ConstructNC {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     }
 
-    if (dkey.id.equals("0-4-250")) {   // time
+    /* if (dkey.id.equals("0-4-250")) {   // time
       v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
-    }
+    } */
 
     if (dkey.id.equals("0-7-6")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));

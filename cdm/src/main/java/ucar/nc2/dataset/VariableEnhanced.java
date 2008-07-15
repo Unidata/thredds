@@ -28,7 +28,7 @@ import java.util.EnumSet;
  * @author john caron
  */
 
-public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements, EnhanceScaleMissing {
+public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements {
 
   public ucar.nc2.Variable getOriginalVariable();
   public void setOriginalVariable(ucar.nc2.Variable orgVar);
