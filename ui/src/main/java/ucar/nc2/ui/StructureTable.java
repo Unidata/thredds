@@ -418,12 +418,7 @@ public class StructureTable extends JPanel {
       }
 
       StructureMembers.Member m = sd.getStructureMembers().getMember(memberCol);
-      Object val = sd.getScalarObject(m);
-      if (m.getDataType().isEnum()) {
-        val = enumLookup(m, (Number) val);
-      }
-
-      return val;
+      return sd.getScalarObject(m);
     }
 
     String enumLookup(StructureMembers.Member m, Number val) { return "sorry"; }

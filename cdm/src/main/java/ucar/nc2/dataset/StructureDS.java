@@ -111,6 +111,21 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /**
+   * Create a subset of the Structure consisting only of the one member variable
+   * @param v Variable
+   * @return subsetted Structure
+   */
+  @Override
+  public Structure select( Variable v) {
+    StructureDS result = new StructureDS(group, orgVar);
+    List<Variable> members = new ArrayList<Variable>(1);
+    members.add(v);
+    result.setMemberVariables(members);
+    result.isSubset = true;
+    return result;
+  }
+
+  /**
   * A StructureDS may wrap another Structure.
   * @return original Structure or null
   */
@@ -215,7 +230,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     for (StructureMembers.Member m : sm.getMembers()) {
       Variable v = findVariable(m.getName());
       if (v != null)
-        m.setVariableInfo(v.getUnitsString(), v.getDescription());
+        m.setVariableInfo(v.getShortName(), v.getUnitsString(), v.getDescription());
     }
 
     return convert(result);
@@ -244,8 +259,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
         } else if (vds.getNeedEnumConversion()) {
           Array mdata = as.extractMemberArray(m);
+          System.out.print(" convert "+vds.getName()+" array="+mdata.hashCode());
           mdata = vds.convertEnums(mdata);
           as.setMemberArray(m, mdata);
+          System.out.println(" to  array="+mdata.hashCode());
         }
       }
 
@@ -269,7 +286,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
           }
         }
       }
-      m.setVariableInfo(v2);
+      m.setVariableInfo(v2.getShortName(), v2.getUnitsString(), v2.getDescription());
+
     }
     return as;
   }

@@ -205,7 +205,7 @@ public class CodeTableGen {
     List<Element> tcElems = (List<Element>) elem.getChildren("tc");
     String desc = rElems.size() > 0 ? rElems.get(0).getText() : "unknown";
 
-    if ((lastRtext == null) || lastRtext.equals("0 20 003") || lastRtext.equals("0 31 021") ||
+    if ((lastRtext == null) || lastRtext.equals("0 20 003") || // lastRtext.equals("0 31 021") ||
         lastRtext.equals("0 31 031") || lastRtext.equals("0 35 000")) {
       f.format("skip %s %s %n", lastRtext, desc);
 
@@ -258,6 +258,9 @@ public class CodeTableGen {
       Writer pw = new FileWriter("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans2.xml");
       fmt.output(ndoc, pw);
       pw = new PrintWriter(System.out);
+      fmt.output(ndoc, pw);
+
+      pw = new FileWriter("C:/dev/tds/bufr/resources/resources/bufr/codes/Code-FlagTables-11-2007.trans2.xml");
       fmt.output(ndoc, pw);
 
     } catch (JDOMException e) {
@@ -355,7 +358,7 @@ public class CodeTableGen {
 
   static public void main(String args[]) throws IOException {
     passTwo();
-    // passThree();
+    //passThree();
   }
 
 }

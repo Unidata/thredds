@@ -94,9 +94,11 @@ public enum DataType {
       return DataType.LONG;
     if (c == String.class)
       return DataType.STRING;
-    if (c == StructureData.class)
-      return DataType.STRUCTURE;
-    return null;
+     if (c == StructureData.class)
+       return DataType.STRUCTURE;
+     if (c == ArraySequence.class)
+       return DataType.SEQUENCE;
+     return null;
   }
 
   /**

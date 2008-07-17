@@ -31,7 +31,7 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * BufrIosp delegates the construction of the Netcdf objects to this.
+ * BufrIosp delegates the construction of the Netcdf objects to ConstructNC.
  *
  * @author caron
  */
@@ -171,6 +171,9 @@ class ConstructNC {
 
     parent.addMemberVariable(struct);
     struct.setSPobject(dataDesc);
+
+    dataDesc.name = structName;
+    dataDesc.refersTo = struct;
   }
 
   private int seqNum = 1;
@@ -189,6 +192,7 @@ class ConstructNC {
     parent.addMemberVariable(seq);
     seq.setSPobject(dataDesc);
 
+    dataDesc.name = seqName;
     dataDesc.refersTo = seq;
   }
 
@@ -214,6 +218,7 @@ class ConstructNC {
 
   private Variable addVariable(Structure struct, DataDescriptor dataDesc, int count) {
     String name = findUnique(struct, dataDesc.name);
+    dataDesc.name = name; // name may need to be changed for uniqueness
 
     Variable v = new Variable(ncfile, null, struct, name);
     try {
@@ -257,7 +262,7 @@ class ConstructNC {
       else if (nbytes == 4)
         v.setDataType(DataType.ENUM4);
 
-      v.removeAttribute("units");
+      //v.removeAttribute("units");
       v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName()+ " (" + dataDesc.id+")"));
 
       Group g = struct.getParentGroup();

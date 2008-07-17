@@ -19,8 +19,6 @@
  */
 package ucar.ma2;
 
-import ucar.nc2.VariableIF;
-
 import java.util.*;
 
 /**
@@ -308,6 +306,9 @@ public class StructureMembers {
      */
     public void setDataArray(Array data) {
       this.dataArray = data;
+      dtype = DataType.getType( data.getElementType());
+      if (dtype == null)
+        System.out.println("HEY");
     }
 
     /**
@@ -326,23 +327,17 @@ public class StructureMembers {
       this.dataObject = o;
     }
 
-    // LOOK ma2 depends on nc2
-    public void setVariableInfo(VariableIF v) {
-      if (!name.equals(v.getShortName())) {
+    public void setVariableInfo(String vname, String unitString, String desc) {
+      if (!this.name.equals(vname)) {
         memberHash.remove(name);
-        name = v.getShortName(); // see StructureDS.convert()
+        name = vname;
         memberHash.put(name, this);
       }
-      String u = v.getUnitsString();
-      if (u != null) units = u;
-      String d = v.getDescription();
-      if (d != null) desc = d;
-      dtype = v.getDataType();
-    }
 
-    public void setVariableInfo(String unitString, String desc) {
-      this.units = unitString;
-      this.desc = desc;
+      if (unitString != null)
+        this.units = unitString;
+      if (desc != null)
+        this.desc = desc;
     }
 
     public String toString() { return name; }

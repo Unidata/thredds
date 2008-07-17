@@ -199,7 +199,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     if (!alreadyEnumConversion && mode.contains(NetcdfDataset.Enhance.ConvertEnums) && dataType.isEnum()) {
       this.needEnumConversion = true;
 
-      // promote data type to STRING ????
+      // LOOK promote data type to STRING ????
+      setDataType( DataType.STRING);
     }
 
   }
@@ -444,6 +445,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   }
 
   protected Array convertEnums(Array values) {
+    DataType dt = DataType.getType(values.getElementType());
+    if (!dt.isNumeric())
+      System.out.println("HEY");
+
     Array result = Array.factory(DataType.STRING, values.getShape());
     IndexIterator ii = result.getIndexIterator();
     while (values.hasNext()) {

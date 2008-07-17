@@ -103,9 +103,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
           throw new IllegalStateException("BUFR file has incomplete tables");
       } else {
         if (!protoMessage.equals(m)) {
-          System.out.println("File has different BUFR message types msg=" + count);
+          log.warn("File "+ncfile.getLocation()+" has different BUFR message types msgno=" + count+"; skipping");
           continue; // skip
-          //throw new IllegalStateException("File has different BUFR message types msg=" + count);
         }
       }
 
@@ -157,15 +156,26 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     // loop through the obs dimension index
     MsgFinder msgf = new MsgFinder();
+    Message current = null;
+    List<MemberDD> m2dd = null;
+
     Range range = section.getRange(0);
     for (int obsIndex = range.first(); obsIndex <= range.last(); obsIndex += range.stride()) {
       Message msg = msgf.find(obsIndex);
       if (msg == null) {
         log.error("MsgFinder failed on index " + obsIndex);
         throw new IllegalStateException("MsgFinder failed on index " + obsIndex);
+
+      } else if (msg != current) {
+        // transfer info from proto message
+        DataDescriptor.transferInfo(protoMessage.getRootDataDescriptor().getSubKeys(), msg.getRootDataDescriptor().getSubKeys());
+        // create message to member mapping
+        m2dd = associateMessage2Members( msg.getRootDataDescriptor().getSubKeys(), members); // connect this message to the desired StructureMembers
+        current = msg;
       }
 
-      readOneObs(msg, msgf.msgOffset(obsIndex), abb, bb, members);
+      System.out.println("read obs"+obsIndex+" in msg "+msgf.msgIndex);
+      readOneObs(msg, msgf.obsOffsetInMessage(obsIndex), abb, bb, m2dd);
     }
 
     return abb;
@@ -199,52 +209,93 @@ public class BufrIosp extends AbstractIOServiceProvider {
       return null;
     }
 
-    int msgOffset(int index) {
+    // the offset in the message for this observation
+    int obsOffsetInMessage(int index) {
       return index - obsStart[msgIndex];
     }
   }
 
-  // want the data from the msgOffset-th data subset in the message.
-  private void readOneObs(Message m, int msgOffset, ArrayStructureBB abb, ByteBuffer bb, StructureMembers members) throws IOException {
-    // transfer info from proto message
-    DataDescriptor.transferInfo(protoMessage.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
+  List<MemberDD> associateMessage2Members(List<DataDescriptor> dkeys, StructureMembers members) throws IOException {
+    List<MemberDD> result = new ArrayList<MemberDD>( members.getMembers().size());
 
-    BitReader reader = new BitReader(raf, m.dataSection.dataPos + 4);
-    if (m.dds.isCompressed()) {
-      m.calcTotalBits(); // make sure things have been counted.
-      readDataCompressed(reader, m.getRootDataDescriptor(), msgOffset, m.getCounterFlds(), bb);
+    int bitOffset = 0;
+    for (DataDescriptor dkey : dkeys) {
+      StructureMembers.Member m = members.findMember(dkey.name);
+      if (m != null) {
+        MemberDD mdd = new MemberDD(m, dkey, bitOffset);
+        result.add(mdd);
 
-    } else {
-      reader.setBitOffset(m.getBitOffset(msgOffset)); // bit offset from start of data section
-      readData(reader, m.getRootDataDescriptor().getSubKeys(), abb, bb);
+        if (dkey.getSubKeys() != null) 
+          mdd.nested = associateMessage2Members(dkey.getSubKeys(), m.getStructureMembers());
+
+      } else {
+        log.error("associateMessage2Members cant find "+dkey.name);
+      }
+
+      bitOffset += dkey.getBitWidth();
+    }
+
+    return result;
+  }
+
+  // associate a structure member to the corresponding DataDescriptor in a particular message
+  // cannot be precalculated with proto, since a particular message can vary compress/not and bitWidth
+  private class MemberDD {
+    StructureMembers.Member m;
+    DataDescriptor dd;
+    int bitOffset; // from start of structure
+    List<MemberDD> nested;
+
+    MemberDD(StructureMembers.Member m, DataDescriptor dd, int bitOffset) {
+      this.m = m;
+      this.dd = dd;
+      this.bitOffset = bitOffset;
     }
   }
 
-  private void readData(BitReader reader, List<DataDescriptor> dkeys, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
+  // want the data from the msgOffset-th data subset in the message.
+  private void readOneObs(Message m, int obsOffsetInMessage, ArrayStructureBB abb, ByteBuffer bb, List<MemberDD> m2dd) throws IOException {
+    BitReader reader = new BitReader(raf, m.dataSection.dataPos + 4);
+    if (m.dds.isCompressed()) {
+      readDataCompressed(reader, m.getRootDataDescriptor(), obsOffsetInMessage, m.getCounterFlds(), bb);
+    } else {
+      BitCounterUncompressed bitCounter = m.getBitCounterUncompressed(obsOffsetInMessage);
+      readData(reader, bitCounter, 0, m2dd, abb, bb);
+    }
+  }
 
-    // LOOK : assumes we want all the members of the structure
+  private void readData(BitReader reader, BitCounterUncompressed bitCounter, int row, List<MemberDD> m2dd, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
+
     // transfer the bits to the ByteBuffer, aligning on byte boundaries
-    for (DataDescriptor dkey : dkeys) {
-      // misc skip
-      if (!dkey.isOkForVariable())
-        continue;
+    for (MemberDD mdd : m2dd) {
+      DataDescriptor dkey = mdd.dd;
+
+      // position raf to this field
+      reader.setBitOffset( bitCounter.getStartBit(row) + mdd.bitOffset);
 
       // sequence
       if (dkey.replication == 0) {
         int count = reader.bits2UInt(dkey.replicationCountSize);
-        ArraySequence seq = makeArraySequence(reader, count, dkey);
+        BitCounterUncompressed[] bitCounterNested = bitCounter.getNested(dkey);
+        if (bitCounterNested == null)
+          throw new IllegalStateException("No nested BitCounterUncompressed for "+dkey.name);
+        ArraySequence seq = makeArraySequence(reader, bitCounterNested[row], count, mdd);
         int index = abb.addObjectToHeap(seq);
         bb.putInt(index); // an index into the Heap
         continue;
       }
 
+      // structure
       if (dkey.type == 3) {
+        BitCounterUncompressed[] bitCounterNested = bitCounter.getNested(dkey);
+        if (bitCounterNested == null)
+          throw new IllegalStateException("No nested BitCounterUncompressed for "+dkey.name);
         for (int i = 0; i < dkey.replication; i++)
-          readData(reader, dkey.subKeys, abb, bb);
+          readData(reader, bitCounterNested[row], i, mdd.nested, abb, bb);
         continue;
       }
 
-      //System.out.println(dkey.name+" bbpos="+bb.position());
+      // regular fields
 
       // char data
       if (dkey.type == 1) {
@@ -411,7 +462,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   // read in the data into an ArrayStructureBB
-  private ArraySequence makeArraySequence(BitReader reader, int count, DataDescriptor seqdd) throws IOException {
+  private ArraySequence makeArraySequence(BitReader reader, BitCounterUncompressed bitCounterNested, int count, MemberDD mdd) throws IOException {
+    DataDescriptor seqdd = mdd.dd;
     Sequence s = (Sequence) seqdd.refersTo;
     assert s != null;
 
@@ -442,7 +494,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     // loop through desired obs
     for (int i = 0; i < count; i++)
-      readData(reader, seqdd.getSubKeys(), abb, bb);
+      readData(reader, bitCounterNested, i, mdd.nested, abb, bb);
 
     return new ArraySequence(members, new SequenceIterator(count, abb), count);
   }

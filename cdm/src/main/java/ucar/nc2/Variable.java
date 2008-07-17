@@ -639,8 +639,8 @@ public class Variable implements VariableIF {
    * @return the String value
    */
   public String lookupEnumString(int val) {
-    if (!dataType.isEnum())
-      throw new UnsupportedOperationException("Can only call Variable.lookupEnumVal() on enum types");
+    //if (!dataType.isEnum())
+    //  throw new UnsupportedOperationException("Can only call Variable.lookupEnumVal() on enum types");
     return enumTypedef.lookupEnumString(val);
   }
   private EnumTypedef enumTypedef;
