@@ -1,5 +1,7 @@
 package thredds.catalog2;
 
+import thredds.catalog2.explorer.CatalogExplorer;
+
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
@@ -13,12 +15,13 @@ import java.util.List;
 public interface Catalog
 {
   public String getName();
-  public URI getDocumentBaseUri();
+  public URI getBaseUri();
   public String getVersion();
   public Date getExpires();
   public Date getLastModified();
   public List<Service> getServices();
 
   public List<Dataset> getDatasets();
+
   public List<Property> getProperties();
 }

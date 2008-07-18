@@ -8,7 +8,6 @@ import thredds.catalog2.Property;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
-import java.util.Collections;
 import java.util.ArrayList;
 
 /**
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 public class CatalogImpl implements Catalog
 {
   private String name;
-  private URI documentBaseUri;
+  private URI baseUri;
   private String version;
   private Date expires;
   private Date lastModified;
@@ -28,11 +27,11 @@ public class CatalogImpl implements Catalog
   private List<Dataset> datasets;
   private List<Property> properties;
 
-  public CatalogImpl( String name, URI documentBaseUri, String version, Date expires, Date lastModified )
+  public CatalogImpl( String name, URI baseUri, String version, Date expires, Date lastModified )
   {
-    if ( documentBaseUri == null ) throw new IllegalArgumentException( "Catalog base URI must not be null.");
+    if ( baseUri == null ) throw new IllegalArgumentException( "Catalog base URI must not be null.");
     this.name = name;
-    this.documentBaseUri = documentBaseUri;
+    this.baseUri = baseUri;
     this.version = version;
     this.expires = expires;
     this.lastModified = lastModified;
@@ -79,9 +78,9 @@ public class CatalogImpl implements Catalog
   }
 
   @Override
-  public URI getDocumentBaseUri()
+  public URI getBaseUri()
   {
-    return this.documentBaseUri;
+    return this.baseUri;
   }
 
   @Override

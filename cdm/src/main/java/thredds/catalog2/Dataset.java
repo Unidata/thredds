@@ -15,10 +15,10 @@ public interface Dataset extends MetadataContainer
   public String getName();
   public String getId();
   public String getAlias();
+  public List<Property> getProperties();
 
   public boolean isAccessible();
   public List<Access> getAccesses();
-  public Access getAccess( ServiceType type );
 
   public boolean isCollection();
   public List<Dataset> getDatasets();
