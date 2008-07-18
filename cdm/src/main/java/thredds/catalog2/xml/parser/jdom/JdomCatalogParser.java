@@ -1,6 +1,6 @@
 package thredds.catalog2.xml.parser.jdom;
 
-import thredds.catalog2.xml.parser.CatalogBuilder;
+import thredds.catalog2.xml.parser.CatalogParser;
 import thredds.catalog2.Catalog;
 
 import java.net.URI;
@@ -14,7 +14,7 @@ import java.io.InputStream;
  * @author edavis
  * @since 4.0
  */
-public class JdomCatalogBuilder implements CatalogBuilder
+public class JdomCatalogParser implements CatalogParser
 {
   @Override
   public Catalog readXML( URI uri )

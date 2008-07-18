@@ -13,7 +13,7 @@ import java.io.InputStream;
  * @author edavis
  * @since 4.0
  */
-public interface CatalogBuilder
+public interface CatalogParser
 {
   public Catalog readXML( URI uri);
   public Catalog readXML( File file, URI baseUri);
