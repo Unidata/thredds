@@ -8,5 +8,6 @@ package thredds.catalog2.xml;
  */
 public abstract class AbstractCatalogRefElement
 {
-  public static final String THREDDS_CATALOG_REF_ELEMENT_NAME = "catalogRef";
+  public static final String ELEMENT_NAME = "catalogRef";
+  public static final String TITLE_ATTRIBUTE_NAME = "title";
 }
