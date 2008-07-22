@@ -21,7 +21,7 @@ public interface Catalog
   public Date getLastModified();
   public List<Service> getServices();
 
-  public List<Dataset> getDatasets();
+  public List<? extends DatasetNode> getDatasets();
 
   public List<Property> getProperties();
 }

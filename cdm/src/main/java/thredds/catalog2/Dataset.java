@@ -10,19 +10,11 @@ import java.util.List;
  * @author edavis
  * @since 4.0
  */
-public interface Dataset extends MetadataContainer
+public interface Dataset extends DatasetNode
 {
-  public String getName();
-  public String getId();
   public String getAlias();
-  public List<Property> getProperties();
 
   public boolean isAccessible();
   public List<Access> getAccesses();
 
-  public boolean isCollection();
-  public List<Dataset> getDatasets();
-
-  public Catalog getParentCatalog();
-  public Dataset getParent();
 }

@@ -1,6 +1,7 @@
 package thredds.catalog2;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * _more_
@@ -8,8 +9,7 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public interface CatalogRef extends MetadataContainer
+public interface CatalogRef extends DatasetNode
 {
-  public String getTitle();
-  public URI getUri();
+  public URI getReference();
 }

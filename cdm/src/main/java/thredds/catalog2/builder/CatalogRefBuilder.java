@@ -10,7 +10,7 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public interface CatalogRefBuilder extends CatalogRef
+public interface CatalogRefBuilder extends CatalogRef, DatasetNodeBuilder
 {
   public void setId( String id );
   public void setTitle( String title );
