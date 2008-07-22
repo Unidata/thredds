@@ -1,6 +1,7 @@
 package thredds.catalog2.builder;
 
 import thredds.catalog2.Dataset;
+import thredds.catalog2.explorer.DatasetExplorer;
 
 /**
  * _more_
@@ -8,7 +9,7 @@ import thredds.catalog2.Dataset;
  * @author edavis
  * @since 4.0
  */
-public interface DatasetBuilder extends Dataset, DatasetNodeBuilder
+public interface DatasetBuilder extends DatasetExplorer, DatasetNodeBuilder
 {
   public void setAlias( String alias );
   public void setAlias( Dataset aliasDataset );

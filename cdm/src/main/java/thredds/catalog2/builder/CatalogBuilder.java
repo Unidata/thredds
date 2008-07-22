@@ -1,6 +1,7 @@
 package thredds.catalog2.builder;
 
 import thredds.catalog2.Catalog;
+import thredds.catalog2.explorer.CatalogExplorer;
 
 import java.net.URI;
 import java.util.Date;
@@ -11,7 +12,7 @@ import java.util.Date;
  * @author edavis
  * @since 4.0
  */
-public interface CatalogBuilder extends Catalog
+public interface CatalogBuilder extends CatalogExplorer
 {
   public void setName( String name);
   public void setBaseUri( URI baseUri);

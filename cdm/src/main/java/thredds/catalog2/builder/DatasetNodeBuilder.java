@@ -1,6 +1,6 @@
 package thredds.catalog2.builder;
 
-import thredds.catalog2.DatasetNode;
+import thredds.catalog2.explorer.DatasetNodeExplorer;
 
 /**
  * _more_
@@ -8,7 +8,7 @@ import thredds.catalog2.DatasetNode;
  * @author edavis
  * @since 4.0
  */
-public interface DatasetNodeBuilder extends DatasetNode
+public interface DatasetNodeBuilder extends DatasetNodeExplorer
 {
   public void setId( String id );
 
