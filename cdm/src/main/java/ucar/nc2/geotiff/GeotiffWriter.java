@@ -344,7 +344,7 @@ public class GeotiffWriter {
       float max = (float) (dataMinMax.max);
       geotiff.addTag(new IFDEntry(Tag.SMinSampleValue, FieldType.FLOAT).setValue(min));
       geotiff.addTag(new IFDEntry(Tag.SMaxSampleValue, FieldType.FLOAT).setValue(max));
-      geotiff.addTag(new IFDEntry(Tag.GDALNoData, FieldType.FLOAT).setValue(-32768.0f));
+      geotiff.addTag(new IFDEntry(Tag.GDALNoData, FieldType.FLOAT).setValue(min - 1.f));
     }
 
 /*
@@ -394,7 +394,7 @@ public class GeotiffWriter {
     IndexIterator floatIter = floatArray.getIndexIterator();
     while (dataIter.hasNext()) {
       float v = dataIter.getFloatNext();
-      if (grid.isMissingData((double) v)) v = -32768.0f; //minValue;
+      if (grid.isMissingData((double) v)) v =minValue;
       floatIter.setFloatNext(v);
     }
 
@@ -635,7 +635,8 @@ public class GeotiffWriter {
    * test
    */
   public static void main(String args[]) throws IOException {
-    String fileOut = "/home/yuanho/tmp/tmbF.tif";
+    String fileOut = "/home/yuanho/tmp/satF.tif";
+    //String fileOut = "/home/yuanho/tmp/tmbF.tif";
     //LatLonPointImpl p1 = new LatLonPointImpl(38.0625, -80.6875);
     //LatLonPointImpl p2 = new LatLonPointImpl(47.8125, -67.0625);
     LatLonPointImpl p1 = new LatLonPointImpl(29.0, 225.0);
@@ -648,7 +649,8 @@ public class GeotiffWriter {
     //writer.writeGrid("2003091116_ruc2.nc", "P_sfc", 0, 0, false);
     //writer.writeGrid("/home/yuanho/dev/netcdf-java/geotiff/2003072918_avn-x.nc", "P_sfc", 0, 0, false,llr);
     //writer.writeGrid("/home/yuanho/tmp/NE_1961-1990_Yearly_Max_Temp.nc", "tmax", 0, 0, false, llr);
-    writer.writeGrid("/home/yuanho/tmp/TMB.nc", "MBchla", 0, 0, false, llr);
+   // writer.writeGrid("/home/yuanho/tmp/TMB.nc", "MBchla", 0, 0, false, llr);
+    writer.writeGrid("/home/yuanho/Desktop/geotiff/BA/ssta/8day/BA2008150_2008157_ssta.nc", "BAssta", 0, 0, false, llr);
     writer.close();
 
     // read it back in
