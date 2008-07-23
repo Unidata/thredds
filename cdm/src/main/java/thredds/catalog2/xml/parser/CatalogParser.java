@@ -15,8 +15,8 @@ import java.io.InputStream;
  */
 public interface CatalogParser
 {
-  public Catalog readXML( URI uri);
-  public Catalog readXML( File file, URI baseUri);
-  public Catalog readXML( Reader reader, URI baseUri );
-  public Catalog readXML( InputStream is, URI baseUri );
+  public Catalog readXML( URI uri) throws CatalogParserException;
+  public Catalog readXML( File file, URI baseUri) throws CatalogParserException;
+  public Catalog readXML( Reader reader, URI baseUri ) throws CatalogParserException;
+  public Catalog readXML( InputStream is, URI baseUri ) throws CatalogParserException;
 }
