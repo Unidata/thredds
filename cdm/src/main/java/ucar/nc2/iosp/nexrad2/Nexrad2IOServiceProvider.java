@@ -86,7 +86,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
             if(v1 != null)
                 makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth_HI", "Radial Spectrum_HI", v1, record);
             if(v0 != null)
-                makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Radial Spectrum", v0, record);
+                makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth", "Radial Spectrum", v0, record);
         }
     }
     if( volScan.getReflectivityGroups() != null) {
@@ -513,9 +513,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   }
 
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-    Vgroup vgroup = (Vgroup) v2.getSPobject();
-
-    Range scanRange = section.getRange(0);
+    Vgroup vgroup = (Vgroup) v2.getSPobject();    Range scanRange = section.getRange(0);
     Range radialRange = section.getRange(1);
     Range gateRange = section.getRange(2);
 
