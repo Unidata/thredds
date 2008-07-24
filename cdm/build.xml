@@ -260,6 +260,7 @@
     <include name="thredds/catalog/query/*.java"/>
     <include name="thredds/cataloggen/**/*.java"/>
     <include name="thredds/crawlabledataset/**/*.java"/>
+    <include name="thredds/catalog2/**/*.java"/>
     <include name="thredds/wcs/**/*.java"/>
     <!-- *** -->
     <include name="ucar/**/*.java"/>
