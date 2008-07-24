@@ -7,6 +7,8 @@ import thredds.catalog2.Catalog;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.XMLConstants;
 import java.net.URI;
 import java.io.*;
 
@@ -23,7 +25,10 @@ public class SAXCatalogParser implements CatalogParser
 {
   private boolean isValidating = false;
   private SAXCatalogParser()
-  {}
+  {
+    SchemaFactory schemaFactory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+    //schemaFactory.newSchema(  )
+  }
 
   public static SAXCatalogParser getInstance()
   {
