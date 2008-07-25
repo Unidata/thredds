@@ -26,7 +26,7 @@ public class CatalogParserFactory
   public CatalogParser getCatalogParser()
   {
     SAXCatalogParser catParser = SAXCatalogParser.getInstance();
-    catParser.setValidating( this.isValidating );
+    catParser.wantValidating( this.isValidating );
     return catParser;
   }
 }
