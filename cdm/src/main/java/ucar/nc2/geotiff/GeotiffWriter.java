@@ -104,6 +104,7 @@ public class GeotiffWriter {
     GridDataset dataset = ucar.nc2.dt.grid.GridDataset.open(fileName);
     GridDatatype grid = dataset.findGridDatatype(gridName);
     GridCoordSystem gcs = grid.getCoordinateSystem();
+    ProjectionImpl proj = grid.getProjection();
 
     if (grid == null)
       throw new IllegalArgumentException("No grid named " + gridName + " in fileName");
@@ -143,14 +144,35 @@ public class GeotiffWriter {
     double maxLat = llpn.getLatitude();
 
     // (x1, y1) is upper left point and (x2, y2) is lower right point
-    int x1 = getLonIndex(lon, minLon, 0);
-    int y1 = getLatIndex(lat, maxLat, 0);
-    int x2 = getLonIndex(lon, maxLon, 1);
-    int y2 = getLatIndex(lat, minLat, 1);
+    int x1;
+    int x2;
+    int y1;
+    int y2;
+    double xStart;
+    double yStart;
+    if( !gcs.isLatLon()) {
 
+        ProjectionPoint pjp0 = proj.latLonToProj(maxLat, minLon);
+        double [] lonArray = (double [])lon.copyTo1DJavaArray();
+        double [] latArray = (double [])lat.copyTo1DJavaArray();
+        x1 = getXIndex(lon, pjp0.getX(), 0);
+        y1 = getYIndex(lat, pjp0.getY(), 0);
+        yStart = latArray[x1];
+        xStart = lonArray[y1];
+        ProjectionPoint pjpn = proj.latLonToProj(minLat, maxLon);
+        x2 = getXIndex(lon, pjpn.getX(), 1);
+        y2 = getYIndex(lat, pjpn.getY(), 1);
+
+    } else {
+        xStart = minLon;
+        yStart = maxLat;
+        x1 = getLonIndex(lon, minLon, 0);
+        y1 = getLatIndex(lat, maxLat, 0);
+        x2 = getLonIndex(lon, maxLon, 1);
+        y2 = getLatIndex(lat, minLat, 1);
+    }
     // data must go from top to bottom LOOK IS THIS REALLY NEEDED ?
-    double xStart = minLon;
-    double yStart = maxLat;
+
     double xInc = xaxis.getIncrement() * scaler;
     double yInc = Math.abs(yaxis.getIncrement()) * scaler;
 
@@ -166,7 +188,52 @@ public class GeotiffWriter {
 
   }
 
-  int getLatIndex(Array lat, double value, int side) {
+   int getXIndex( Array aAxis, double value, int side)
+    {
+
+      IndexIterator aIter = aAxis.getIndexIterator();
+      int count = 0;
+      int isInd = 0;
+
+      double aValue = aIter.getFloatNext();
+      if ( aValue == value || aValue > value ) return 0;
+
+      while (aIter.hasNext() && aValue < value) {
+        count++;
+        aValue = aIter.getFloatNext();
+        if (aValue == value) isInd = 1;
+      }
+      if( isInd == 1) count += side;
+      count -= side;
+
+      return count;
+    }
+
+    int getYIndex( Array aAxis, double value, int side)
+      {
+
+        IndexIterator aIter = aAxis.getIndexIterator();
+        int count = 0;
+        int isInd = 0;
+
+        double aValue = aIter.getFloatNext();
+        if ( aValue == value || aValue < value ) return 0;
+
+        while (aIter.hasNext() && aValue > value) {
+          count++;
+          aValue = aIter.getFloatNext();
+          if (aValue == value) isInd = 1;
+        }
+
+        if( isInd == 1) count += side;
+        count -= side;
+        return count;
+      }
+
+
+
+  int getLatIndex( Array lat, double value, int side)
+  {
     int[] shape = lat.getShape();
     IndexIterator latIter = lat.getIndexIterator();
     Index ind = lat.getIndex();
