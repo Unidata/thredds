@@ -66,7 +66,7 @@ public class TestCatalogParser extends TestCase
     }
     try
     {
-      cp.readXML( new StringReader( sb.toString() ), baseUri);
+      cp.parse( new StringReader( sb.toString() ), baseUri);
     }
     catch ( CatalogParserException e )
     {

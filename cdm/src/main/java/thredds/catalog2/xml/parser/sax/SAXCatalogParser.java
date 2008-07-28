@@ -4,6 +4,7 @@ import thredds.catalog2.xml.parser.CatalogParser;
 import thredds.catalog2.xml.parser.CatalogParserException;
 import thredds.catalog2.xml.parser.CatalogNamespace;
 import thredds.catalog2.Catalog;
+import thredds.catalog2.builder.CatalogBuilder;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
@@ -130,14 +131,14 @@ public class SAXCatalogParser implements CatalogParser
     return null;
   }
 
-  public Catalog readXML( URI uri )
+  public Catalog parse( URI uri )
           throws CatalogParserException
   {
     InputSource is = new InputSource( uri.toString() );
     return readXML( is );
   }
 
-  public Catalog readXML( File file, URI baseUri )
+  public Catalog parse( File file, URI baseUri )
           throws CatalogParserException
   {
     InputSource is = null;
@@ -153,7 +154,7 @@ public class SAXCatalogParser implements CatalogParser
     return readXML( is);
   }
 
-  public Catalog readXML( Reader reader, URI baseUri )
+  public Catalog parse( Reader reader, URI baseUri )
           throws CatalogParserException
   {
     InputSource is = new InputSource( reader );
@@ -161,11 +162,31 @@ public class SAXCatalogParser implements CatalogParser
     return readXML( is);
   }
 
-  public Catalog readXML( InputStream is, URI baseUri )
+  public Catalog parse( InputStream is, URI baseUri )
           throws CatalogParserException
   {
     InputSource inSource = new InputSource( is );
     inSource.setSystemId( baseUri.toString() );
     return readXML( inSource );
+  }
+
+  public CatalogBuilder parseIntoBuilder( URI uri ) throws CatalogParserException
+  {
+    return null;
+  }
+
+  public CatalogBuilder parseIntoBuilder( File file, URI baseUri ) throws CatalogParserException
+  {
+    return null;
+  }
+
+  public CatalogBuilder parseIntoBuilder( Reader reader, URI baseUri ) throws CatalogParserException
+  {
+    return null;
+  }
+
+  public CatalogBuilder parseIntoBuilder( InputStream is, URI baseUri ) throws CatalogParserException
+  {
+    return null;
   }
 }

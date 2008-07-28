@@ -31,6 +31,12 @@ public interface CatalogBuilder extends CatalogExplorer
 
   public void addProperty( String name, String value );
 
+  /**
+   * Generate the resulting Catalog.
+   *
+   * @return the resulting Catalog object (immutable?).  
+   * @throws IllegalStateException if any Catalog invariants are violated.
+   */
   public Catalog finish();
 
 }
