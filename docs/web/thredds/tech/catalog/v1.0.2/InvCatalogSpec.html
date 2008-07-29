@@ -70,8 +70,8 @@ further descriptive information can be placed. </p>
 </div>
 
 <ul>
-<li>Catalog <a href="Primer.html">Primer</a></li>
-  <li><a href="Example1.0rc8.xml">Example</a> 1.0 Catalog</li>
+<li>Catalog <a href="../Primer.html">Primer</a></li>
+  <li><a href="../Example1.0rc8.xml">Example</a> 1.0 Catalog</li>
   <li>InvCatalog XML Schema:</li>
   <ul>
     <li>Version 1.0.2<br>
@@ -82,12 +82,12 @@ further descriptive information can be placed. </p>
     1.0</a></li>
   </ul>
 
-  <li><a href="DL.html">Writing metadata for Digital Libraries</a></li>
+  <li><a href="../DL.html">Writing metadata for Digital Libraries</a></li>
   <li>Read catalogs using the InvCatalog Java API in the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">netCDF-java library</a>.<br>
   </li>
 
-  <li><a href="Changes.1.0.1.html">Changes</a> since version 0.6.</li>
-  <li><a href="./CatalogNotes.html">Notes on future directions</a><br>
+  <li><a href="Changes.html">Changes</a> since version 1.0.1.</li>
+  <li><a href="../CatalogNotes.html">Notes on future directions</a><br>
   </li>
 </ul>
 
@@ -127,7 +127,7 @@ further descriptive information can be placed. </p>
 
 <h3><em>service</em><a name="service"></a> element</h3>
 
-<pre>&lt;xsd:element name="service"&gt;<br> &lt;xsd:complexType&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/&gt; &lt;!-- see <a href="InvCatalogSpec.v1.0.1.server.html">Server-side InvCat doc</a> --&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="base" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="serviceType" type="serviceTypes" use="required" /&gt;<br>  &lt;xsd:attribute name="desc" type="xsd:string"/&gt;<br>  &lt;xsd:attribute name="suffix" type="xsd:string" /&gt;<br> &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
+<pre>&lt;xsd:element name="service"&gt;<br> &lt;xsd:complexType&gt;<br>  &lt;xsd:sequence&gt;<br>    &lt;xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="service" minOccurs="0" maxOccurs="unbounded" /&gt;<br>    &lt;xsd:element ref="datasetRoot" minOccurs="0" maxOccurs="unbounded"/&gt; &lt;!-- see <a href="InvCatalogSpec.server.html">Server-side InvCat doc</a> --&gt;<br>  &lt;/xsd:sequence&gt;<br><br>  &lt;xsd:attribute name="name" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="base" type="xsd:string" use="required" /&gt;<br>  &lt;xsd:attribute name="serviceType" type="serviceTypes" use="required" /&gt;<br>  &lt;xsd:attribute name="desc" type="xsd:string"/&gt;<br>  &lt;xsd:attribute name="suffix" type="xsd:string" /&gt;<br> &lt;/xsd:complexType&gt;<br>&lt;/xsd:element&gt;</pre>
 
 <p>A <i>service</i> element represents a data access service and allows basic data access information to be factored out of <i>dataset</i> and <i>access</i> elements.</p>The <i>name</i>
 attribute is required and its value must be unique for all service
@@ -236,7 +236,7 @@ useful to clients so they know how to present the data to the user.
   or <em>HTTP</em>, as it specifies the format of the transferred file. It is
   not needed for client/server protocols like DODS or ADDE.<br>
 </p>
-<p>An <i>access</i> element may contain an optional <a href="InvCatalogSpec11.html#dataSize"><em>dataSize</em></a>
+<p>An <i>access</i> element may contain an optional <a href="dataSize"><em>dataSize</em></a>
   element to specify how large the dataset would be if it were to be copied to
   the client.
 </p>
@@ -334,7 +334,7 @@ method. The data format values come from the <a href="#dataFormatType">data form
 <p>Including any of these elements in a metadata element with its <i>inherit</i>
   attribute set to "true" means that they apply to the containing dataset and any nested datasets.<br>
 </p>
-<p>If your intention is to enable THREDDS to write entries into a Digital Library, you should to be aware of <a href="DL.html">how elements are mapped to Digital Libraries</a>. For example, you will probably want to add a <i>documentation</i> element with type <em>summary<a name="summary"></a></em> as its content will be the description of the dataset in the DL entry. Another documentation element you may need has type <em>rights<a name="rights"></a></em> which specifies what restrictions there are on the dataset usage.</p>
+<p>If your intention is to enable THREDDS to write entries into a Digital Library, you should to be aware of <a href="../DL.html">how elements are mapped to Digital Libraries</a>. For example, you will probably want to add a <i>documentation</i> element with type <em>summary<a name="summary"></a></em> as its content will be the description of the dataset in the DL entry. Another documentation element you may need has type <em>rights<a name="rights"></a></em> which specifies what restrictions there are on the dataset usage.</p>
 
 
 <p>Examples:</p>
@@ -718,7 +718,7 @@ dataset. Additional information can be encoded in service properties.</p>
 
 <p>The next set of service types are all bulk transfer protocols, and you need
   to also specify the <a href="#dataFormatType">dataFormat</a> for datasets that use
-  these. <strong>FTP</strong> is the well-known File Transfer Protocol, and <a href="http://www.globus.org/datagrid/gridftp.html"><strong>GridFTP</strong></a>
+  these. <strong>FTP</strong> is the well-known File Transfer Protocol, and <a href="http://www.globus.org/grid_software/data/gridftp.php"><strong>GridFTP</strong></a>
   is a variant of that used by the Globus Data Grid. The <strong>File</strong>
   service is for local files, used for local catalogs or in situations like DODS
   Aggregation Server configuration. A <em>File</em> dataset is not readable by
@@ -750,13 +750,13 @@ dataset. Additional information can be encoded in service properties.</p>
 
 <pre>&lt;xsd:simpleType name="variableNameVocabulary"&gt;<br>  &lt;xsd:union memberTypes="xsd:token"&gt;<br>    &lt;xsd:simpleType&gt;<br>      &lt;xsd:restriction base="xsd:token"&gt;<br>        &lt;xsd:enumeration value="CF-1.0"/&gt;<br>        &lt;xsd:enumeration value="DIF"/&gt;<br>        &lt;xsd:enumeration value="GRIB"/&gt;<br>      &lt;/xsd:restriction&gt;<br>    &lt;/xsd:simpleType&gt;<br>  &lt;/xsd:union&gt;<br>&lt;/xsd:simpleType&gt;</pre>
 
-<p>These are the known vocabularies for standard variable names, used in the <a href="#variables">variables</a> element. <strong>CF</strong> refers to the <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/index.html">Climate and Forecast Conventions</a> metadata conventions for netCDF; they have a list of <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/standard_name.html">standard variable names</a>. <strong>DIF</strong> is <a href="http://gcmd.gsfc.nasa.gov/User/difguide/difman.html">Directory Interchange Format</a> from NASA's Global Change Master Directory, which has a controlled variable <a href="http://gcmd.gsfc.nasa.gov/User/difguide/parameters.html">classification scheme</a>. The World Meteorological Organization's <a href="http://dss.ucar.edu/docs/formats/grib/gribdoc/">GRIB (version 1)</a> data file format defines a set of standard parameters.</p>
+<p>These are the known vocabularies for standard variable names, used in the <a href="#variables">variables</a> element. <strong>CF</strong> refers to the <a href="http://cf-pcmdi.llnl.gov/">Climate and Forecast Conventions</a> metadata conventions for netCDF; they have a list of <a href="http://cf-pcmdi.llnl.gov/documents/cf-standard-names/">standard variable names</a>. <strong>DIF</strong> is <a href="http://gcmd.gsfc.nasa.gov/User/difguide/difman.html">Directory Interchange Format</a> from NASA's Global Change Master Directory, which has a controlled variable <a href="http://gcmd.gsfc.nasa.gov/User/difguide/parameters.html">classification scheme</a>. The World Meteorological Organization's <a href="http://dss.ucar.edu/docs/formats/grib/gribdoc/">GRIB (version 1)</a> data file format defines a set of standard parameters.</p>
 
 <p>You can also use another vocabulary name; send it to us and we will add it to this list.<br>
 </p><hr style="width: 100%; height: 2px;">
 <h3><a name="Dataset_Access_Methods"></a>Dataset Access Methods</h3>
 
-<p>A dataset access method can be specified in several ways. Each specification references a <i>service</i> element and provides a <i>urlPath</i> attribute from which a dataset access URL is formed (see <a href="InvCatalogSpec11.html#constructingURLs">constructing URLs</a>).<br>
+<p>A dataset access method can be specified in several ways. Each specification references a <i>service</i> element and provides a <i>urlPath</i> attribute from which a dataset access URL is formed (see <a href="#constructingURLs">constructing URLs</a>).<br>
 </p>
 
 <p>1) A dataset element has a urlPath attribute and inherits a
@@ -780,7 +780,7 @@ refer to one service. Example:<br>
 <p>There are several ways for a dataset to have more than one access method:<br>
 </p>
 
-<p>4) An access method can reference a <a href="InvCatalogSpec11.html#compoundService">compound service</a>.<br>
+<p>4) An access method can reference a <a href="#compoundService">compound service</a>.<br>
 </p>
 
 <p>5) A dataset can contain multiple access elements. Example:<br>
@@ -865,7 +865,7 @@ service@base attribute.</p>
       when the user requests it.</li>
     <li> A <em><strong>DQC<a name="dqcDataset"></a> dataset</strong></em> is a 
       collection of query datasets. It has service type <em>QueryCapability</em>, 
-      and its URL points to an XML document called a <a href="../dqc/DqcSpec.html">Dataset 
+      and its URL points to an XML document called a <a href="../../dqc/DqcSpec.html">Dataset 
       Query Capability (DQC) document</a>. That document describes in a compact 
       way the set of possible queries to a server, or equivalently the set of 
       query datasets contained in the DQC dataset.</li>
