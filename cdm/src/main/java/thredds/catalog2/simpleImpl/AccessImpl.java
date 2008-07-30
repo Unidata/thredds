@@ -3,6 +3,7 @@ package thredds.catalog2.simpleImpl;
 import thredds.catalog.DataFormatType;
 import thredds.catalog2.Access;
 import thredds.catalog2.Service;
+import thredds.catalog2.builder.AccessBuilder;
 
 /**
  * _more_
@@ -10,19 +11,33 @@ import thredds.catalog2.Service;
  * @author edavis
  * @since 4.0
  */
-public class AccessImpl implements Access
+public class AccessImpl implements AccessBuilder
 {
   private Service service;
-  private String uriPath;
+  private String urlPath;
   private DataFormatType dataFormat;
   private long dataSize;
 
-  public AccessImpl( Service service, String uriPath )
+  public AccessImpl( Service service, String urlPath )
   {
     if ( service == null ) throw new IllegalArgumentException( "Service must not be null.");
-    if ( uriPath == null ) throw new IllegalArgumentException( "Path must not be null.");
+    if ( urlPath == null ) throw new IllegalArgumentException( "Path must not be null.");
     this.service = service;
-    this.uriPath = uriPath;
+    this.urlPath = urlPath;
+  }
+
+  @Override
+  public void setService( Service service )
+  {
+    if ( service == null ) throw new IllegalArgumentException( "Service must not be null." );
+    this.service = service;
+  }
+
+  @Override
+  public void setUrlPath( String urlPath )
+  {
+    if ( urlPath == null ) throw new IllegalArgumentException( "Path must not be null." );
+    this.urlPath = urlPath;
   }
 
   public void setDataFormat( DataFormatType dataFormat )
@@ -41,9 +56,9 @@ public class AccessImpl implements Access
   }
 
   @Override
-  public String getUriPath()
+  public String getUrlPath()
   {
-    return uriPath;
+    return urlPath;
   }
   
   @Override
@@ -56,5 +71,11 @@ public class AccessImpl implements Access
   public long getDataSize()
   {
     return dataSize;
+  }
+
+  @Override
+  public Access finish()
+  {
+    return this;
   }
 }

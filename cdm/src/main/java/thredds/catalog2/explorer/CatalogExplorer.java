@@ -11,6 +11,14 @@ import thredds.catalog2.*;
  */
 public interface CatalogExplorer extends Catalog
 {
+  /**
+   * Return the named Service or null if no such service exists. All Service
+   * objects contained in this Catalog are searched including nested Service
+   * objects.
+   *
+   * @param name the name of the service to find.
+   * @return the Service object with the given name or null if none exists.
+   */
   public Service getServiceByName( String name );
 
   public Service getServiceByType( ServiceType type );

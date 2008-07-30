@@ -12,11 +12,10 @@ import thredds.catalog.DataFormatType;
  */
 public interface AccessBuilder extends Access
 {
-  public void setServiceName( String name );
   public void setService( Service service );
   public void setUrlPath( String urlPath );
   public void setDataFormat( DataFormatType dataFormat );
   public void setDataSize( long bytes );
   
-  public void finish();
+  public Access finish();
 }

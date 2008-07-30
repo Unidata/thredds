@@ -254,6 +254,8 @@
   <patternset id="sources">
     <include name="thredds/catalog/*.java"/>
     <include name="thredds/catalog/parser/jdom/*.java"/>
+    <include name="thredds/catalog2/**/*.java"/>
+    <include name="thredds/util/**/*.java"/>
     <!-- The following includes, to ***, are needed by TDS. -->
     <include name="thredds/catalog/crawl/*.java"/>
     <include name="thredds/catalog/dl/*.java"/>

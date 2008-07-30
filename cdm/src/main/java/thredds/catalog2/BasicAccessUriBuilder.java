@@ -37,7 +37,7 @@ public class BasicAccessUriBuilder implements AccessUriBuilder
     // [From "Constructing URLs" section of InvCatalog spec:
     //    http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs ]
     StringBuilder sb = new StringBuilder( baseServiceUri.toString());
-    sb.append( access.getUriPath() );
+    sb.append( access.getUrlPath() );
     String suffix = access.getService().getSuffix();
     if ( suffix != null && (! suffix.equals( "" )))
       sb.append( suffix );

@@ -14,7 +14,7 @@ import java.net.URI;
 public interface Access
 {
   public Service getService();
-  public String getUriPath();
+  public String getUrlPath();
   public DataFormatType getDataFormat();
   public long getDataSize();
 }

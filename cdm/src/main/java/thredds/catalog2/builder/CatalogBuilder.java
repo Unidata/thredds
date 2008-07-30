@@ -2,6 +2,7 @@ package thredds.catalog2.builder;
 
 import thredds.catalog2.Catalog;
 import thredds.catalog2.explorer.CatalogExplorer;
+import thredds.catalog.ServiceType;
 
 import java.net.URI;
 import java.util.Date;
@@ -20,8 +21,8 @@ public interface CatalogBuilder extends CatalogExplorer
   public void setExpires( Date expires );
   public void setLastModified( Date lastModified );
 
-  public ServiceBuilder addService();
-  public ServiceBuilder addService( int index);
+  public ServiceBuilder addService( String name, ServiceType type, URI baseUri );
+  public ServiceBuilder addService( String name, ServiceType type, URI baseUri, int index);
 
   public DatasetBuilder addDataset();
   public DatasetBuilder addDataset( int index);

@@ -1,5 +1,6 @@
 package thredds.catalog2.builder;
 
+import thredds.catalog2.DatasetNode;
 import thredds.catalog2.explorer.DatasetNodeExplorer;
 
 /**
