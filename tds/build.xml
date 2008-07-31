@@ -769,7 +769,7 @@
     </antcall>
   </target>
 
-  <target name="test-TDS-crawlLimitedCat1Ds-newmlode-8080">
+  <target name="test-TDS-crawlLimitedCat1Ds-newmotherlode-8080">
     <antcall target="test-TDS">
       <param name="thredds.tds.test.id" value="crawlLimitedCat1Ds-newmlode-8080" />
       <param name="thredds.tds.test.server" value="newmotherlode.ucar.edu:8080" />
