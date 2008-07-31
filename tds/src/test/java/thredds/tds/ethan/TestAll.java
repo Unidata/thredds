@@ -6,6 +6,7 @@ import java.util.*;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -108,6 +109,39 @@ public class TestAll extends TestCase
 
   protected void setUp()
   {
+    if ( null == System.getProperty( "thredds.tds.test.id"))
+      System.setProperty( "thredds.tds.test.id", "crawl-newmlode-8080" );
+    if ( null == System.getProperty( "thredds.tds.test.server" ) )
+      System.setProperty( "thredds.tds.test.server", "newmotherlode.ucar.edu:8080" );
+    if ( null == System.getProperty( "thredds.tds.test.level" ) )
+      System.setProperty( "thredds.tds.test.level", "crawl-catalogs" );
+    if ( null == System.getProperty( "thredds.tds.test.catalogs" ) )
+    {
+      StringBuilder sb = new StringBuilder()
+//              .append( "catalog.xml").append( ",")
+//              .append( "topcatalog.xml").append( "," )
+//              .append( "idd/models.xml").append( "," )
+//              .append( "idv/models.xml").append( "," )
+//              .append( "cataloggen/catalogs/uniModelsInvCat1.0en.xml" ).append( "," )
+//              .append( "cataloggen/catalogs/idv-rt-models.InvCat1.0.xml" ).append( "," )
+//              .append( "idv/rt-models.xml" ).append( "," )
+
+              //.append( "catalog/station/metar/catalog.xml" ).append( "," )
+              //.append( "catalog/nexrad/composite/nws/catalog.xml" ).append( "," )
+              .append( "catalog/nexrad/composite/gini/ntp/4km/20080731/catalog.xml" ).append( "," )
+//              .append( "catalog/nexrad/composite/gini/catalog.xml" ).append( "," )
+//              .append( "catalog/nexrad/composite/1km/files/catalog.xml" ).append( "," )
+//              .append( "catalog/nexrad/level2/KFTG/catalog.xml" ).append( "," )
+//              .append( "catalog/nexrad/level3/N0R/VNX/catalog.xml" ).append( "," )
+//              .append( "catalog/station/profiler/wind/1hr/catalog.xml" ).append( "," )
+//              .append( "catalog/station/profiler/RASS/1hr/catalog.xml" ).append( "," )
+//              .append( "catalog/station/soundings/catalog.xml" ).append( "," )
+//              .append( "catalog/satellite/WV/AK-REGIONAL_16km/catalog.xml" ).append( "," )
+              ;
+
+      System.setProperty( "thredds.tds.test.catalogs", sb.toString() );
+    }
+
     host = System.getProperty( "thredds.tds.test.server", host );
     targetTdsUrl = "http://" + host + "/thredds/";
 
@@ -117,6 +151,8 @@ public class TestAll extends TestCase
     String catalogListString = System.getProperty( "thredds.tds.test.catalogs", null );
     if ( catalogListString == null )
       catalogListString = System.getProperty( "thredds.tds.test.catalog", "catalog.xml" );
+    if ( catalogListString.endsWith( "," ))
+      catalogListString = catalogListString.substring( 0, catalogListString.length() - 1 );
     catalogList = catalogListString.split( "," );
   }
 
@@ -140,6 +176,7 @@ public class TestAll extends TestCase
 
   public void testCrawlCatalogs()
   {
+
     boolean pass = true;
     StringBuilder msg = new StringBuilder();
 
@@ -233,6 +270,15 @@ public class TestAll extends TestCase
     return dqc;
   }
 
+  public void utestMyFile()
+  {
+    File f = new File( "z:/tmp/catalog.xml");
+    URI uri = f.toURI();
+    StringBuilder log = new StringBuilder();
+    InvCatalogImpl cat = TestAll.openAndValidateCatalog( uri.toString(), log, true );
+    int i = 1;
+    i++;
+  }
   public static InvCatalogImpl openAndValidateCatalog( String catUrl, StringBuilder log, boolean logToStdOut )
   {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
