@@ -30,20 +30,22 @@ public class TestUriResolver extends TestCase
     URI uri = null;
     try
     {
-      uri = new URI( "http://motherlode.ucar.edu:8080/thredds/catalog.xml");
+      uri = new URI( "http://newmotherlode.ucar.edu:8080/thredds/catalog/nexrad/composite/gini/ntp/4km/20080731/catalog.xml");
     }
     catch ( URISyntaxException e )
     {
       fail();
     }
     UriResolver uriResolver = UriResolver.newDefaultUriResolver();
+    String resp = null;
     try
     {
-      uriResolver.getInputStream( uri );
+      resp = uriResolver.getString( uri );
     }
     catch ( IOException e )
     {
-      fail();
+      fail( e.getMessage());
     }
+    assertTrue( "URI resolved to null string.", resp != null );
   }
 }

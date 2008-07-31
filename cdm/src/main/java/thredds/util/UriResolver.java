@@ -21,7 +21,7 @@ public class UriResolver
           org.slf4j.LoggerFactory.getLogger( UriResolver.class );
 
   private long connectionTimeout = 30000; // in milliseconds
-  private int socketTimeout = 30000; // in milliseconds, time to wait for data
+  private int socketTimeout = 1 * 60 * 1000; // in milliseconds, time to wait for data
   private String contentCharset = "UTF-8";
 
   private UriResolver() {}
@@ -42,6 +42,20 @@ public class UriResolver
   public Reader getReader( URI uri )
   { return null; }
 
+  public String getString( URI uri )
+          throws IOException
+  {
+//    if ( uri.getScheme().equalsIgnoreCase( "file") )
+//        return new FileInputStream( getFile( uri) );
+//
+    if ( uri.getScheme().equalsIgnoreCase( "http" ))
+    {
+      return getHttpResponseBodyAsString( uri );
+    }
+
+    return null;
+  }
+
   public InputStream getInputStream( URI uri )
           throws IOException
   {
@@ -56,12 +70,21 @@ public class UriResolver
     return null;
   }
 
+  private String getHttpResponseBodyAsString( URI uri )
+          throws IOException
+  {
+    HttpMethod method = getHttpResponse( uri );
+
+    return method.getResponseBodyAsString();
+    //method.getResponseHeader( "Character-encoding" );
+  }
+
   private InputStream getHttpResponseBodyAsStream( URI uri )
           throws IOException
   {
     HttpMethod method = getHttpResponse( uri );
 
-    return method.getResponseBodyAsStream();
+    return new BufferedInputStream( method.getResponseBodyAsStream(), 1000 * 1000);
     //method.getResponseHeader( "Character-encoding" );
   }
 

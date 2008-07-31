@@ -33,13 +33,13 @@ public class CatalogDefaultHandler extends DefaultHandler
   @Override
   public void startDocument() throws SAXException
   {
-    super.startDocument();
+    System.out.println( "Start of document" );
   }
 
   @Override
   public void endDocument() throws SAXException
   {
-    super.endDocument();
+    System.out.println( "End of document" );
   }
 
   @Override
@@ -59,13 +59,21 @@ public class CatalogDefaultHandler extends DefaultHandler
   @Override
   public void startElement( String uri, String localName, String qName, Attributes atts ) throws SAXException
   {
-    super.startElement( uri, localName, qName, atts );
+    //super.startElement( uri, localName, qName, atts );
+    StringBuilder sb = new StringBuilder( "Start Element: " ).append( localName);
+    if ( localName.equals( "dataset") )
+    {
+      sb.append( atts.getValue( "name" ));
+    }
+    System.out.println( sb.toString() );
+
   }
 
   @Override
   public void endElement( String uri, String localName, String qName ) throws SAXException
   {
-    super.endElement( uri, localName, qName );
+    //super.endElement( uri, localName, qName );
+    System.out.println( "End Element: " + localName );
   }
 
   @Override
