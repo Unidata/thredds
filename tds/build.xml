@@ -653,7 +653,7 @@
 
   <property name="tdsIddCat-full" value="${tdsCat},${tdsIddCat-models}" />
   <!-- Removed ${tdsIddCat-soundings} from below till John/Robb fix BUFR profile problem. -->
-  <property name="tdsIddCat-fullSample" value="${tdsIddCat-metar},${tdsIddCat-radCompNws},${tdsIddCat-radCompUniGini},${tdsIddCat-radCompUniGrib1km},${tdsIddCat-radLevel2},${tdsIddCat-radLevel3},${tdsIddCat-profWind1hr},${tdsIddCat-profRASS1hr},${tdsIddCat-satellite}" />
+  <property name="tdsIddCat-fullSample" value="${tdsIddCat-models},${tdsIddCat-metar},${tdsIddCat-radCompNws},${tdsIddCat-radCompUniGini},${tdsIddCat-radCompUniGrib1km},${tdsIddCat-radLevel2},${tdsIddCat-radLevel3},${tdsIddCat-profWind1hr},${tdsIddCat-profRASS1hr},${tdsIddCat-satellite}" />
 
   <!-- Used by TeamCity to test motherlode:8080 every hour -->
   <target name="test-TDS-ping-motherlode-8080" description="ping TDS on motherlode:8080">
@@ -748,7 +748,8 @@
 
   <property name="tdsIddCat-sample" value="${tdsIddCat-metar},${tdsIddCat-radCompNws},${tdsIddCat-radCompUniGrib1km},${tdsIddCat-radLevel2},${tdsIddCat-radLevel3},${tdsIddCat-profWind1hr},${tdsIddCat-profRASS1hr},${tdsIddCat-satellite}" />
 
-  <property name="tdsNewMlodeAll" value="${tdsIddCat-models},${tdsMlodeIdvCat},${tdsMlodeCatGen},${tdsIddCat-sample}" />
+  <property name="tdsNewMlodeAll" value="${tdsMlodeCatGen},${tdsIddCat-sample}" />
+  <!--property name="tdsNewMlodeAll" value="${tdsIddCat-models},${tdsMlodeIdvCat},${tdsMlodeCatGen},${tdsIddCat-sample}" /-->
 
 
   <target name="test-TDS-ping-newmotherlode-8080" description="ping TDS on newmotherlode:8080">
