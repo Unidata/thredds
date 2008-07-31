@@ -25,7 +25,7 @@ import java.util.List;
 public interface Catalog
 {
   public String getName();
-  public URI getBaseUri();
+  public URI getDocBaseUri();
   public String getVersion();
   public Date getExpires();
   public Date getLastModified();

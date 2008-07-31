@@ -50,7 +50,7 @@ public class CatalogImpl implements CatalogBuilder
   }
 
   @Override
-  public URI getBaseUri()
+  public URI getDocBaseUri()
   {
     return this.baseUri;
   }

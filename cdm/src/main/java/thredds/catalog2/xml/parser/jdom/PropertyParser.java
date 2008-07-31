@@ -1,6 +1,5 @@
 package thredds.catalog2.xml.parser.jdom;
 
-import thredds.catalog2.xml.parser.ElementParser;
 import thredds.catalog2.xml.PropertyElementUtils;
 import thredds.catalog2.Property;
 
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * @author edavis
  * @since 4.0
  */
-public class PropertyParser //implements ElementParser
+public class PropertyParser
 {
   private Logger log = LoggerFactory.getLogger( getClass() );
 
