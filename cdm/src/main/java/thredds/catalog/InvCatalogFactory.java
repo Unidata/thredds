@@ -28,6 +28,7 @@ import java.net.*;
 import java.util.*;
 
 import ucar.nc2.util.IO;
+import thredds.util.UriResolver;
 
 /**
  * Reads an XML document and constructs thredds.catalog object.
@@ -253,8 +254,14 @@ public class InvCatalogFactory {
     fatalMessages.setLength(0);
 
     org.jdom.Document jdomDoc;
+    InputStream is = null;
     try {
       jdomDoc = saxBuilder.build(uri.toURL());
+//      UriResolver uriResolver = UriResolver.newDefaultUriResolver();
+//      String s = uriResolver.getString( uri );
+//      //StringReader
+//      is = new BufferedInputStream( uriResolver.getInputStream( uri ), 1000000 );
+//      jdomDoc = saxBuilder.build( is );
     } catch (Exception e) {
       InvCatalogImpl cat = new InvCatalogImpl(uri.toString(), null, null);
       cat.appendErrorMessage("**Fatal:  InvCatalogFactory.readXML failed"
@@ -263,6 +270,17 @@ public class InvCatalogFactory {
           + "\n errMessages= " + errMessages.toString()
           + "\n warnMessages= " + warnMessages.toString() + "\n", true);
       return cat;
+    }
+    finally
+    {
+      if ( is != null) try
+      {
+        is.close();
+      }
+      catch ( IOException e )
+      {
+        log.warn( "Failed to close input stream [" + uri.toString() + "]." );
+      }
     }
 
     if (fatalMessages.length() > 0) {
