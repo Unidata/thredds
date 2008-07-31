@@ -748,7 +748,7 @@
 
   <property name="tdsIddCat-sample" value="${tdsIddCat-metar},${tdsIddCat-radCompNws},${tdsIddCat-radCompUniGrib1km},${tdsIddCat-radLevel2},${tdsIddCat-radLevel3},${tdsIddCat-profWind1hr},${tdsIddCat-profRASS1hr},${tdsIddCat-satellite}" />
 
-  <property name="tdsNewMlodeAll" value="${tdsMlodeIdvCat},${tdsIddCat-sample}" />
+  <property name="tdsNewMlodeAll" value="${tdsIddCat-sample}" />
   <!--property name="tdsNewMlodeAll" value="${tdsIddCat-models},${tdsMlodeIdvCat},${tdsMlodeCatGen},${tdsIddCat-sample}" /-->
 
 
