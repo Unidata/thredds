@@ -113,17 +113,19 @@
   </listener> -->
 
   <!-- Some possible ways to deal with error handling. -->
-  <!--error-page>
+  <!--
+  <error-page>
     <exception-type>java.lang.NullPointerException</exception-type>
     <location>/null.html</location>
-  </error-page-->
+  </error-page>
+  -->
   <!-- The following goes into affect when 'res.sendError(100)' is called. -->
-  <!--error-page>
+  <!--
+  <error-page>
     <error-code>100</error-code>
     <location>/myPage.html</location>
-  </error-page-->
-
-  response.sendError(100);
+  </error-page>
+  -->
 
   <!-- Default Servlet -->
   <servlet>
