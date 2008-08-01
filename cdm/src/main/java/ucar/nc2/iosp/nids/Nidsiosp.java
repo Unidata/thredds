@@ -46,6 +46,8 @@ public class Nidsiosp extends AbstractIOServiceProvider {
   // private Nidsheader.Vinfo myInfo;
   protected Nidsheader headerParser;
 
+  private static int pcode;
+
   final static int Z_DEFLATED = 8;
   final static int DEF_WBITS = 15;
 
@@ -109,7 +111,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
     headerParser = new Nidsheader();
     headerParser.read(myRaf, ncfile);
     //myInfo = headerParser.getVarInfo();
-
+    pcode = headerParser.pcode;
     ncfile.finish();
   }
 
@@ -177,7 +179,8 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       }
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), dd);
 
-    } else if (v2.getName().startsWith("EchoTop") || v2.getName().startsWith("VertLiquid") || v2.getName().startsWith("BaseReflectivityComp")) {
+    } else if (v2.getName().startsWith("EchoTop") || v2.getName().startsWith("VertLiquid")
+            || v2.getName().startsWith("BaseReflectivityComp") || v2.getName().startsWith("LayerCompReflect")) {
       data = readOneArrayData(bos, vinfo, v2.getName());
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
@@ -583,7 +586,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
 
       return fdata;
 
-    } else if (vName.startsWith("RadialVelocity")) {
+    } else if (vName.startsWith("RadialVelocity")|| vName.startsWith("SpectrumWidth") ) {
       int[] levels = vinfo.len;
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
@@ -1195,7 +1198,7 @@ asw.setStructureData(sdata, i);
 
       return fdata;
 
-    } else if (vName.startsWith("BaseReflectivityComp")) {
+    } else if (vName.startsWith("BaseReflectivityComp") ||  vName.startsWith("LayerCompReflect")) {
       int[] levels = vinfo.len;
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
@@ -1380,10 +1383,10 @@ asw.setStructureData(sdata, i);
   public Object readRadialDataGate(Nidsheader.Vinfo vinfo) throws IOException, InvalidRangeException {
     //int doff = 0;
     float[] gatedata = new float[vinfo.xt];
-
+    double ddg = Nidsheader.code_reslookup(pcode);
     float sc = vinfo.y0 * 1.0f;
     for (int rad = 0; rad < vinfo.xt; rad++) {
-      gatedata[rad] = (vinfo.x0 + rad) * sc;
+      gatedata[rad] = (vinfo.x0 + rad) * sc * (float)ddg;
 
     }   //end of for loop
 
