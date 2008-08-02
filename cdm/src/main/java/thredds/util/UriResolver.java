@@ -8,6 +8,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 
 import java.io.*;
 import java.net.URI;
+import java.util.zip.GZIPInputStream;
 
 /**
  * _more_
@@ -23,6 +24,8 @@ public class UriResolver
   private long connectionTimeout = 30000; // in milliseconds
   private int socketTimeout = 1 * 60 * 1000; // in milliseconds, time to wait for data
   private String contentCharset = "UTF-8";
+  private String contentEncoding = "gzip";
+  private boolean wantContentEncoding = true;
 
   private UriResolver() {}
   public static UriResolver newDefaultUriResolver()
@@ -84,7 +87,18 @@ public class UriResolver
   {
     HttpMethod method = getHttpResponse( uri );
 
-    return new BufferedInputStream( method.getResponseBodyAsStream(), 1000 * 1000);
+    InputStream is = new BufferedInputStream( method.getResponseBodyAsStream(), 1000 * 1000);
+    Header contentEncodingHeader = method.getResponseHeader( "Content-Encoding" );
+    if ( contentEncodingHeader != null )
+    {
+      String contentEncoding = contentEncodingHeader.getValue();
+      if (contentEncoding != null && contentEncoding.equalsIgnoreCase( "gzip" ))
+      {
+        System.out.println( "GZIP" );
+        is = new GZIPInputStream( is );
+      }
+    }
+    return is;
     //method.getResponseHeader( "Character-encoding" );
   }
 
@@ -113,6 +127,7 @@ public class UriResolver
     params.setSoTimeout( this.socketTimeout );
     params.setContentCharset( this.contentCharset );
     HttpMethod method = new GetMethod( uri.toString() );
+    method.addRequestHeader( "Accept-Encoding", "gzip" );
 
     client.executeMethod( method );
     int statusCode = method.getStatusCode();

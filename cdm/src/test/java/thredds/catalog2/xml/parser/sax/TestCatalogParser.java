@@ -18,6 +18,7 @@ import javax.xml.transform.Source;
 import java.io.StringReader;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -39,7 +40,8 @@ public class TestCatalogParser extends TestCase
     super( name );
   }
 
-  public void test1()
+  public static void main( String[] args ) throws InterruptedException
+  //public void test1()
   {
     Schema schema = null;
     try
@@ -57,8 +59,8 @@ public class TestCatalogParser extends TestCase
 
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware( true );
-    if ( schema != null )
-      factory.setSchema( schema );
+//    if ( schema != null )
+//      factory.setSchema( schema );
     SAXParser parser = null;
     try
     {
@@ -76,7 +78,10 @@ public class TestCatalogParser extends TestCase
     CatalogDefaultHandler catHandler = new CatalogDefaultHandler();
 
 
-    String catUriString = "http://newmotherlode.ucar.edu:8080/thredds/catalog/nexrad/composite/gini/ntp/4km/20080731/catalog.xml";
+    String catUriString = "http://newmotherlode.ucar.edu:8080/thredds/catalog/nexrad/level2/KFTG/20080730/catalog.xml";
+    //String catUriString = "http://newmotherlode.ucar.edu:8080/thredds/catalog/nexrad/composite/gini/ntp/4km/20080731/catalog.xml";
+    if ( args.length > 0 && args[0] != null && args[0].startsWith( "http://" ))
+      catUriString = args[0];
     //String catUriString = "http://newmotherlode.ucar.edu:8080/thredds/catalog.xml";
     URI catUri = null;
     try
@@ -87,6 +92,25 @@ public class TestCatalogParser extends TestCase
     {
       fail( "Bad syntax in catalog URI [" + catUriString + "]: " + e.getMessage() );
     }
+    try
+    {
+      InputStream is = getInputStream( catUri );
+      InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+      int cnt = 1;
+      while (isr.ready())
+      {
+        char[] c = new char[1000];
+        int num = isr.read( c);
+        System.out.println( cnt + "["+num+"]" + new String( c) );
+        cnt++;
+      }
+    }
+    catch ( IOException e )
+    {
+      fail( "Failed to read catalog [" + catUriString + "]: " + e.getMessage() );
+    }
+    boolean junk = true;
+    if ( junk ) return;
     try
     {
       parser.parse( catUri.toString(), catHandler );
@@ -104,14 +128,14 @@ public class TestCatalogParser extends TestCase
 
   }
 
-  private InputStream getInputStream( URI uri )
+  private static InputStream getInputStream( URI uri )
           throws IOException
   {
     UriResolver uriResolver = UriResolver.newDefaultUriResolver();
     return uriResolver.getInputStream( uri );
   }
 
-  private Schema getSchema()
+  private static Schema getSchema()
           throws IOException, SAXException
   {
     SchemaFactory schemaFactory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );

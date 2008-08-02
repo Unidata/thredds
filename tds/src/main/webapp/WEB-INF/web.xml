@@ -362,7 +362,6 @@
  </servlet -->
 
   <!-- default servlet -->
-
   <servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>*.html</url-pattern>
@@ -392,7 +391,9 @@
   <servlet-mapping>
     <servlet-name>ThreddsDefaultServlet</servlet-name>
     <url-pattern>/erd/*</url-pattern>
-    <!--url-pattern>/*</url-pattern-->
+    <!--
+    <url-pattern>/*</url-pattern>
+    -->
   </servlet-mapping>
   <!--servlet-mapping>
     <servlet-name>debug</servlet-name>
