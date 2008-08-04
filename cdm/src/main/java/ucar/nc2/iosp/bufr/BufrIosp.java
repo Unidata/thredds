@@ -174,7 +174,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         current = msg;
       }
 
-      System.out.println("read obs"+obsIndex+" in msg "+msgf.msgIndex);
+      //System.out.println("read obs"+obsIndex+" in msg "+msgf.msgIndex);
       readOneObs(msg, msgf.obsOffsetInMessage(obsIndex), abb, bb, m2dd);
     }
 
@@ -355,6 +355,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
    */
   // read data for a particular obs
   private void readDataCompressed(BitReader reader, DataDescriptor parent, int msgOffset, CounterFld[] counters, ByteBuffer bb) throws IOException {
+    //Formatter out = new Formatter(System.out);
 
     for (int fldidx=0; fldidx < parent.getSubKeys().size(); fldidx++) {
       DataDescriptor dkey = parent.getSubKeys().get(fldidx);
@@ -371,6 +372,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       // structure
       if (dkey.type == 3) {
         for (int i = 0; i < dkey.replication; i++) {
+          //out.format("%nRead parent=%s obe=%d level=%d%n",dkey.name, msgOffset, i);
           CounterFld[] nested = counter.getNestedCounters(i);
           readDataCompressed(reader, dkey, msgOffset, nested, bb);
         }
@@ -385,7 +387,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       // skip to where this variable starts
       reader.setBitOffset( counter.getStartingBitPos());
 
-      int value = reader.bits2UInt(dkey.bitWidth);
+      int value = reader.bits2UInt(dkey.bitWidth); // read min value
       int dataWidth = reader.bits2UInt(6);
 
       // if dataWidth == 0, just use min value
@@ -393,6 +395,12 @@ public class BufrIosp extends AbstractIOServiceProvider {
         // skip to where this observation starts in the variable data, and read the incremental value
         reader.setBitOffset( counter.getBitPos(msgOffset));
         value += reader.bits2UInt(dataWidth);
+      }
+
+      if (dataWidth > dkey.bitWidth) {
+        int missingVal = ucar.bufr.BufrNumbers.missing_value[dkey.bitWidth];
+        if ((value & missingVal) != value) // overflow
+          value = missingVal;     // replace with missing value
       }
 
       // place into byte buffer
@@ -414,8 +422,16 @@ public class BufrIosp extends AbstractIOServiceProvider {
         bb.put((byte) b1);
       }
 
-    }
 
+   /* if (true) {
+        out.format("  read %s (%s) bitWidth=%d dataWidth=%d value= %d == ",
+                dkey.name, dkey.id, dkey.bitWidth, dataWidth, value );
+            float val = (value + dkey.refVal);
+            double scale = Math.pow(10.0, -dkey.scale);
+            out.format(" %f", val * scale);
+          out.format("%n");
+        } */
+    }
   }
 
 

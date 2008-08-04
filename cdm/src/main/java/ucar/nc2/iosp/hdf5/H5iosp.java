@@ -27,7 +27,10 @@ import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.*;
 
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
+import java.util.Formatter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -63,11 +66,6 @@ public class H5iosp extends AbstractIOServiceProvider {
     H5header.setDebugFlags(debugFlag);
   }
 
-
-  static public void setDebugOutputStream(java.io.PrintStream printStream) {
-    H5header.debugOut = printStream;
-  }
-
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     return H5header.isValidFile(raf);
   }
@@ -85,7 +83,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     this.myRaf = raf;
     headerParser = new H5header(myRaf, ncfile, this);
-    headerParser.read();
+    headerParser.read(null);
 
     // check if its an HDF5-EOS file
     Group eosInfo = ncfile.getRootGroup().findGroup("HDFEOS INFORMATION");
@@ -115,13 +113,13 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     if (vinfo.mfp != null) { // filtered
-      if (debugFilter) H5header.debugOut.println("read variable filtered " + v2.getName() + " vinfo = " + vinfo);
+      if (debugFilter) System.out.println("read variable filtered " + v2.getName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
       H5tiledLayoutBB layout = new H5tiledLayoutBB(v2, wantSection, myRaf, vinfo.mfp.getFilters());
       data = IospHelper.readDataFill(layout, v2.getDataType(), vinfo.getFillValue());
 
     } else { // normal case
-      if (debug) H5header.debugOut.println("read variable " + v2.getName() + " vinfo = " + vinfo);
+      if (debug) System.out.println("read variable " + v2.getName() + " vinfo = " + vinfo);
 
       DataType readDtype = v2.getDataType();
       int elemSize = v2.getElementSize();
@@ -257,7 +255,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         Layout.Chunk chunk = layout.next();
         if (chunk == null) continue;
         if (debugStructure)
-          H5header.debugOut.println(" readStructure " + v.getName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
+          System.out.println(" readStructure " + v.getName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
         // copy bytes directly into the underlying byte[]
         myRaf.seek(chunk.getSrcPos());
         myRaf.read(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
@@ -283,7 +281,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         Layout.Chunk chunk = layout.next();
         if (chunk == null) continue;
         for (int i = 0; i < chunk.getNelems(); i++) {
-          if (debugStructure) H5header.debugOut.println(" readStructure " + v.getName() + " chunk.getSrcPos= " +
+          if (debugStructure) System.out.println(" readStructure " + v.getName() + " chunk.getSrcPos= " +
                   chunk.getSrcPos() + " index.getElemSize= " + layout.getElemSize());
 
           StructureData sdata = readStructure(s, asw, chunk.getSrcPos() + layout.getElemSize() * i);
@@ -358,11 +356,11 @@ public class H5iosp extends AbstractIOServiceProvider {
   // old way
   private StructureData readStructure(Structure s, ArrayStructureW asw, long dataPos) throws IOException, InvalidRangeException {
     StructureDataW sdata = new StructureDataW(asw.getStructureMembers());
-    if (debug) H5header.debugOut.println(" readStructure " + s.getName() + " dataPos = " + dataPos);
+    if (debug) System.out.println(" readStructure " + s.getName() + " dataPos = " + dataPos);
 
     for (Variable v2 : s.getVariables()) {
       H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
-      if (debug) H5header.debugOut.println(" readStructureMember " + v2.getName() + " vinfo = " + vinfo);
+      if (debug) System.out.println(" readStructureMember " + v2.getName() + " vinfo = " + vinfo);
       Array dataArray = readData(v2, dataPos + vinfo.dataPos, v2.getShapeAsSection());
       sdata.setMemberData(v2.getShortName(), dataArray);
     }
@@ -393,6 +391,16 @@ public class H5iosp extends AbstractIOServiceProvider {
       return vinfo.toString();
     }
     return null;
+  }
+
+  public String getDetailInfo() {
+    ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);
+    try {
+      headerParser.read( new PrintStream(ff));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return ff.toString();
   }
 
 }

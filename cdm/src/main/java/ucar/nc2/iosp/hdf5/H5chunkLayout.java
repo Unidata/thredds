@@ -82,7 +82,7 @@ class H5chunkLayout extends Indexer {
     this.chunkSize = new int[nChunkDims];
     System.arraycopy(vinfo.storageSize, 0, chunkSize, 0, nChunkDims);
     this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size
-    if (debug) H5header.debugOut.println(" H5chunkIndexer: " + this);
+    if (debug) System.out.println(" H5chunkIndexer: " + this);
 
     // create the data chunk iterator
     chunkIterator = vinfo.btree.getDataChunkIterator(this.want);

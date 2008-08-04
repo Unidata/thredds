@@ -119,8 +119,13 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Typed
     timeUnit = recordHelper.timeUnit;
 
     // we are reading through all records anyway, to get the lat/lon locations!
-    startDate = UnidataObsDatasetHelper.getStartDate( ds);
-    endDate = UnidataObsDatasetHelper.getEndDate( ds);
+    try {
+      startDate = UnidataObsDatasetHelper.getStartDate( ds);
+      endDate = UnidataObsDatasetHelper.getEndDate( ds);
+    } catch (IllegalArgumentException e) {
+      parseInfo.append("Missing time_coverage_start or end attributes");
+    }
+
     try {
       boundingBox = UnidataObsDatasetHelper.getBoundingBox( ds);
     } catch (IllegalArgumentException e) {
@@ -141,7 +146,6 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Typed
   protected void setStartDate() { startDate = timeUnit.makeDate( recordHelper.minDate);}
   protected void setEndDate() { endDate = timeUnit.makeDate( recordHelper.maxDate);}
   protected void setBoundingBox() { boundingBox = recordHelper.boundingBox;}
-
 
   public List getData(CancelTask cancel) throws IOException {
     return allData;

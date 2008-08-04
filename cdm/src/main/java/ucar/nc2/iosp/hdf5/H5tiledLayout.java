@@ -75,7 +75,7 @@ class H5tiledLayout implements Layout {
     this.chunkSize = new int[nChunkDims];
     System.arraycopy(vinfo.storageSize, 0, chunkSize, 0, nChunkDims);
     this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size
-    if (debug) H5header.debugOut.println(" H5tiledLayout: " + this);
+    if (debug) System.out.println(" H5tiledLayout: " + this);
 
     // create the data chunk iterator
     LayoutTiled.DataChunkIterator iter = vinfo.btree.getDataChunkIterator2( this.want, nChunkDims);

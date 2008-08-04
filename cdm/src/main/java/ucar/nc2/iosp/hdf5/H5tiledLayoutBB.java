@@ -89,7 +89,7 @@ class H5tiledLayoutBB implements LayoutBB {
     this.chunkSize = new int[nChunkDims];
     System.arraycopy(vinfo.storageSize, 0, chunkSize, 0, nChunkDims);
     this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size
-    if (debug) H5header.debugOut.println(" H5tiledLayout: " + this);
+    if (debug) System.out.println(" H5tiledLayout: " + this);
 
     // create the data chunk iterator
     H5header.DataBTree.DataChunkIterator iter = vinfo.btree.getDataChunkIterator(this.want);

@@ -297,6 +297,12 @@ class ConstructNC {
         v.addAttribute(new Attribute("missing_value", BufrDataSection.missing_value[nbits]));
       }
 
+      // value = scale_factor * packed + add_offset
+      // bpacked = (value * 10^scale - refVal)
+      // (bpacked + refVal) / 10^scale = value
+      // value = bpacked * 10^-scale + refVal * 10^-scale
+      // scale_factor = 10^-scale
+      // add_ofset =  refVal * 10^-scale
       int scale10 = dataDesc.scale;
       double scale = (scale10 == 0) ? 1.0 : Math.pow(10.0, -scale10);
       if (scale10 != 0)

@@ -56,7 +56,6 @@ class H5header {
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;
   static private boolean warnings = false, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
-  static java.io.PrintStream debugOut = System.out;
 
   static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debug1 = debugFlag.isSet("H5header/header");
@@ -118,6 +117,9 @@ class H5header {
 
   DateFormatter formatter = new DateFormatter();
   private java.text.SimpleDateFormat hdfDateParser;
+
+  private java.io.PrintStream debugOut = System.out;
+  //private Formatter debugOut = new Formatter(System.out);
   private MemTracker memTracker;
 
   H5header(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile, H5iosp h5iosp) {
@@ -126,13 +128,17 @@ class H5header {
     this.h5iosp = h5iosp;
   }
 
-  void read() throws IOException {
+  void read(java.io.PrintStream debugPS) throws IOException {
+    if (debugPS != null)
+      debugOut = debugPS;
+
     long actualSize = raf.length();
     memTracker = new MemTracker(actualSize);
 
     if (!isValidFile(raf))
       throw new IOException("Not a netCDF4/HDF5 file ");
-    if (debug1) debugOut.println("H5header 0pened file to read:'" + ncfile.getLocation() + "', size=" + actualSize);
+    // if (debug1) debugOut.format("H5header 0pened file to read:'%s' size= %d %n", ncfile.getLocation(), + actualSize);
+    if (debug1) debugOut.println("H5header 0pened file to read:'" + ncfile.getLocation() +"' size= " + actualSize);
     // now we are positioned right after the header
 
     // header information is in le byte order
@@ -3690,9 +3696,9 @@ class H5header {
    */
   Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int byteOrder) throws IOException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
-    if (debugHeap) H5header.debugOut.println(" heapId= " + heapId);
+    if (debugHeap) debugOut.println(" heapId= " + heapId);
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
-    if (debugHeap) H5header.debugOut.println(" HeapObject= " + ho);
+    if (debugHeap) debugOut.println(" HeapObject= " + ho);
     if (byteOrder >= 0) raf.order(byteOrder);
 
     if (DataType.FLOAT == dataType) {
@@ -4438,7 +4444,7 @@ There is _no_ datatype information stored for these sort of selections currently
     if (filePos >= 0) raf.seek(filePos);
     byte[] mess = new byte[nbytes];
     raf.read(mess);
-    printBytes(head, mess, nbytes, false);
+    printBytes(head, mess, nbytes, false, debugOut);
     raf.seek(savePos);
   }
 
@@ -4453,32 +4459,32 @@ There is _no_ datatype information stored for these sort of selections currently
     return sbuff.toString();
   }
 
-  static void printBytes(String head, byte[] buff, int n, boolean count) {
-    debugOut.print(head + " == ");
+  static void printBytes(String head, byte[] buff, int n, boolean count, java.io.PrintStream ps) {
+    ps.print(head + " == ");
     for (int i = 0; i < n; i++) {
       byte b = buff[i];
       int ub = (b < 0) ? b + 256 : b;
-      if (count) debugOut.print(i + ":");
-      debugOut.print(ub);
+      if (count) ps.print(i + ":");
+      ps.print(ub);
       if (!count) {
-        debugOut.print("(");
-        debugOut.print(b);
-        debugOut.print(")");
+        ps.print("(");
+        ps.print(b);
+        ps.print(")");
       }
-      debugOut.print(" ");
+      ps.print(" ");
     }
-    debugOut.println();
+    ps.println();
   }
 
-  static void printBytes(String head, byte[] buff, int offset, int n) {
-    debugOut.print(head + " == ");
+  static void printBytes(String head, byte[] buff, int offset, int n, java.io.PrintStream ps) {
+    ps.print(head + " == ");
     for (int i = 0; i < n; i++) {
       byte b = buff[offset + i];
       int ub = (b < 0) ? b + 256 : b;
-      debugOut.print(ub);
-      debugOut.print(" ");
+      ps.print(ub);
+      ps.print(" ");
     }
-    debugOut.println();
+    ps.println();
   }
 
   public void close() {

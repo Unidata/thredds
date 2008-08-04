@@ -314,16 +314,9 @@ public interface GridDatatype extends Comparable<GridDatatype> {
   public String getInfo();
 
   /**
-   * get the underlying Variable, if it exists.
-   * @return the underlying Variable, if it exists.
+   * Get the underlying Variable, if it exists.
+   * @return the underlying Variable, if it exists, else null
    */
   public VariableDS getVariable();
-
-
-  // experimental
-  //public Array read(CoordRange time, CoordRange vertical, CoordRange y, CoordRange x) throws ucar.ma2.InvalidRangeException, IOException;
-  //public Array read(DateRange time, CoordRange vertical, LatlonBoundingBox horiz) throws ucar.ma2.InvalidRangeException, IOException;
-  //public Array read(DateRange time, VerticalRange vertical, LatlonBoundingBox horiz) throws ucar.ma2.InvalidRangeException, IOException;
-
 
 }
