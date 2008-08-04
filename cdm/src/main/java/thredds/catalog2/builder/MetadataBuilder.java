@@ -9,7 +9,7 @@ import thredds.catalog2.explorer.MetadataExplorer;
  * @author edavis
  * @since 4.0
  */
-public interface MetadataBuilder extends MetadataExplorer
+public interface MetadataBuilder
 {
   
 }

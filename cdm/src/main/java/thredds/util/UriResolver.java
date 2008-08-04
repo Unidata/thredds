@@ -42,10 +42,10 @@ public class UriResolver
     return u;
   }
 
-  public Reader getReader( URI uri )
+  public Reader getResponseBodyAsReader( URI uri )
   { return null; }
 
-  public String getString( URI uri )
+  public String getResponseBodyAsString( URI uri )
           throws IOException
   {
 //    if ( uri.getScheme().equalsIgnoreCase( "file") )
@@ -59,7 +59,7 @@ public class UriResolver
     return null;
   }
 
-  public InputStream getInputStream( URI uri )
+  public InputStream getResponseBodyAsInputStream( URI uri )
           throws IOException
   {
     if ( uri.getScheme().equalsIgnoreCase( "file") )
@@ -125,7 +125,6 @@ public class UriResolver
     HttpClientParams params = client.getParams();
     params.setConnectionManagerTimeout( this.connectionTimeout );
     params.setSoTimeout( this.socketTimeout );
-    params.setContentCharset( this.contentCharset );
     HttpMethod method = new GetMethod( uri.toString() );
     method.addRequestHeader( "Accept-Encoding", "gzip" );
 

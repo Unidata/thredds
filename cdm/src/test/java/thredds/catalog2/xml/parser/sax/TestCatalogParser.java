@@ -132,7 +132,7 @@ public class TestCatalogParser extends TestCase
           throws IOException
   {
     UriResolver uriResolver = UriResolver.newDefaultUriResolver();
-    return uriResolver.getInputStream( uri );
+    return uriResolver.getResponseBodyAsInputStream( uri );
   }
 
   private static Schema getSchema()

@@ -13,7 +13,7 @@ import java.util.Date;
  * @author edavis
  * @since 4.0
  */
-public interface CatalogBuilder extends CatalogExplorer
+public interface CatalogBuilder
 {
   public void setName( String name);
   public void setBaseUri( URI baseUri);

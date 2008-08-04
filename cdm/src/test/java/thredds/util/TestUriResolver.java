@@ -40,7 +40,7 @@ public class TestUriResolver extends TestCase
     String resp = null;
     try
     {
-      resp = uriResolver.getString( uri );
+      resp = uriResolver.getResponseBodyAsString( uri );
     }
     catch ( IOException e )
     {

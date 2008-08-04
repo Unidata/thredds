@@ -57,6 +57,8 @@ public interface Service
    */
   public List<Property> getProperties();
 
+  public Property getProperty( String name );
+
   /**
    * Return the List of Service Objects nested in this service. Nested
    * services are only allowed when this service has a "Compound" ServiceType.
@@ -64,4 +66,6 @@ public interface Service
    * @return the List of Service Objects nested in this service, may be an empty list but not null.
    */
   public List<Service> getServices();
+
+  public Service getService( String name );
 }

@@ -77,7 +77,7 @@ public enum CatalogNamespace
     if ( this.getResourceName() != null )
       inStream = this.getClass().getClassLoader().getResourceAsStream( this.getResourceName() );
     if ( inStream == null && this.getResourceUri() != null )
-      inStream = UriResolver.newDefaultUriResolver().getInputStream( this.getResourceUri() );
+      inStream = UriResolver.newDefaultUriResolver().getResponseBodyAsInputStream( this.getResourceUri() );
 
     return inStream;
   }

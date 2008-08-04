@@ -5,6 +5,7 @@ import thredds.catalog2.explorer.ServiceExplorer;
 import thredds.catalog2.Service;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * Provide an interface for constructing Service objects.
@@ -12,11 +13,21 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public interface ServiceBuilder extends ServiceExplorer
+public interface ServiceBuilder
 {
+  public String getName();
+  public void setName( String name );
+
+  public String getDescription();
   public void setDescription( String description );
+
+  public ServiceType getType();
   public void setType( ServiceType type );
+
+  public URI getBaseUri();
   public void setBaseUri( URI baseUri );
+
+  public String getSuffix();
   public void setSuffix( String suffix );
 
   /**
@@ -28,6 +39,8 @@ public interface ServiceBuilder extends ServiceExplorer
    * @throws IllegalArgumentException if the name or value are null.
    */
   public void addProperty( String name, String value );
+  public List<String> getPropertyNames();
+  public String getPropertyValue( String name );
 
   /**
    * Add a new Service object with the given name, type, and base uri to this
@@ -70,6 +83,10 @@ public interface ServiceBuilder extends ServiceExplorer
    * @throws IllegalStateException this Service or an already added Service has the given name.
    */
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri, int index );
+  public List<ServiceBuilder> getServiceBuilders();
+  public ServiceBuilder getServiceBuilder( String name );
+
+  public boolean isFinished();
 
   /**
    * Return the finished Service.

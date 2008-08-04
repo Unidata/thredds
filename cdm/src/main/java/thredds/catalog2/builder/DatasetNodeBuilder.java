@@ -9,7 +9,7 @@ import thredds.catalog2.explorer.DatasetNodeExplorer;
  * @author edavis
  * @since 4.0
  */
-public interface DatasetNodeBuilder extends DatasetNodeExplorer
+public interface DatasetNodeBuilder
 {
   public void setId( String id );
 

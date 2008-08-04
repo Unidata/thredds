@@ -10,7 +10,7 @@ import thredds.catalog.DataFormatType;
  * @author edavis
  * @since 4.0
  */
-public interface AccessBuilder extends Access
+public interface AccessBuilder
 {
   public void setService( Service service );
   public void setUrlPath( String urlPath );
