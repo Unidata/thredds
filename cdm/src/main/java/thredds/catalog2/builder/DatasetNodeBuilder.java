@@ -1,5 +1,7 @@
 package thredds.catalog2.builder;
 
+import thredds.catalog2.DatasetNode;
+
 import java.util.List;
 
 /**
@@ -28,14 +30,13 @@ public interface DatasetNodeBuilder
   public boolean isCollection();
 
   public DatasetBuilder addDataset();
-  public DatasetBuilder addDataset( int index );
-
   public DatasetAliasBuilder addDatasetAlias();
-
   public CatalogRefBuilder addCatalogRef();
-  public CatalogRefBuilder addCatalogRef( int index );
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders();
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id );
   public DatasetNodeBuilder getDatasetNodeBuilderByName( String name );
+
+  public boolean isFinished();
+  public DatasetNode finish();
 }

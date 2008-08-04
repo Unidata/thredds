@@ -3,7 +3,6 @@ package thredds.catalog2.simpleImpl;
 import thredds.catalog2.builder.*;
 import thredds.catalog2.*;
 
-import java.util.List;
 import java.net.URI;
 
 /**
@@ -16,62 +15,41 @@ public class CatalogRefImpl
         extends DatasetNodeImpl
         implements CatalogRef, CatalogRefBuilder
 {
-  public List<String> getPropertyNames()
+  private URI reference;
+  private boolean finished = false;
+
+  protected CatalogRefImpl( String name, URI reference )
   {
-    return null;
+    super( name);
+    if ( reference == null ) throw new IllegalArgumentException( "CatalogRef reference URI must not be null." );
+    this.reference = reference;
   }
 
-  public String getPropertyValue( String name )
-  {
-    return null;
-  }
-
-  public CatalogBuilder getParentCatalogBuilder()
-  {
-    return null;
-  }
-
-  public DatasetBuilder getParentDatasetBuilder()
-  {
-    return null;
-  }
-
-  public List<DatasetNodeBuilder> getDatasetNodeBuilders()
-  {
-    return null;
-  }
-
-  public DatasetNodeBuilder getDatasetNodeBuilderById( String id )
-  {
-    return null;
-  }
-
-  public DatasetNodeBuilder getDatasetNodeBuilderByName( String name )
-  {
-    return null;
-  }
-
+  @Override
   public void setReference( URI reference )
   {
+    if ( this.finished ) throw new IllegalStateException( "This CatalogRefBuilder has been finished().");
+    if ( reference == null ) throw new IllegalArgumentException( "CatalogRef reference URI must not be null." );
+    this.reference = reference;
   }
 
-  public boolean isFinished()
-  {
-    return false;
-  }
-
-  public CatalogRef finish()
-  {
-    return null;
-  }
-
-  public Property getProperty( String name )
-  {
-    return null;
-  }
-
+  @Override
   public URI getReference()
   {
-    return null;
+    return this.reference;
+  }
+
+  @Override
+  public boolean isFinished()
+  {
+    return this.finished;
+  }
+
+  @Override
+  public CatalogRef finish()
+  {
+    super.finish();
+    this.finished = true;
+    return this;
   }
 }

@@ -6,7 +6,7 @@ package thredds.catalog2;
  * @author edavis
  * @since 4.0
  */
-public interface DatasetAlias
+public interface DatasetAlias extends DatasetNode
 {
   public DatasetNode getAlias();
 }

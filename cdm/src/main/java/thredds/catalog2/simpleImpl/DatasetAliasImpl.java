@@ -16,17 +16,45 @@ public class DatasetAliasImpl
         extends DatasetNodeImpl
         implements DatasetAlias, DatasetAliasBuilder
 {
-  public void setAlias( DatasetNodeBuilder aliasDataset )
+  private DatasetNodeImpl alias;
+
+  private boolean finished = false;
+
+  protected DatasetAliasImpl( String name, DatasetNodeBuilder aliasRef )
   {
+    super( name);
+    if ( aliasRef == null ) throw new IllegalArgumentException( "Alias may not be null.");
+    this.alias = (DatasetNodeImpl) aliasRef;
+  }
+
+  public void setAlias( DatasetNodeBuilder aliasRef )
+  {
+    if ( this.finished ) throw new IllegalStateException( "This DatasetAliasBuilder has been finished().");
+    if ( aliasRef == null ) throw new IllegalArgumentException( "Alias may not be null." );
+    this.alias = (DatasetNodeImpl) aliasRef;
   }
 
   public DatasetNode getAlias()
   {
-    return null;
+    if ( ! this.finished ) throw new IllegalStateException( "This DatasetAlias has escaped its DatasetAliasBuilder before being finished().");
+    return this.alias;
   }
 
   public DatasetBuilder getAliasBuilder()
   {
-    return null;
+    if ( this.finished ) throw new IllegalStateException( "This DatasetAliasBuilder has been finished()." );
+    return (DatasetBuilder) this.alias;
+  }
+
+  public boolean isFinished()
+  {
+    return this.finished;
+  }
+  
+  public DatasetAlias finish()
+  {
+    super.finish();
+    this.finished = true;
+    return this;
   }
 }

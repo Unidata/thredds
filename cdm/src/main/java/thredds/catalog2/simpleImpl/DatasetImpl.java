@@ -4,9 +4,11 @@ import thredds.catalog2.Dataset;
 import thredds.catalog2.Access;
 import thredds.catalog2.builder.DatasetBuilder;
 import thredds.catalog2.builder.AccessBuilder;
+import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog.ServiceType;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * _more_
@@ -18,21 +20,19 @@ public class DatasetImpl
         extends DatasetNodeImpl
         implements Dataset, DatasetBuilder
 {
-  public void setAlias( DatasetBuilder aliasDataset )
+  private boolean accessible = false;
+  private List<AccessBuilder> accessBuilders;
+  private List<Access> accesses;
+  private Map<ServiceType,Access> accessMap;
+
+  private boolean finished = false;
+
+  protected DatasetImpl( String name)
   {
+    super( name);
   }
 
-  public Dataset getAlias()
-  {
-    return null;
-  }
-
-  public DatasetBuilder getAliasBuilder()
-  {
-    return null;
-  }
-
-  public AccessBuilder addAccess()
+  public AccessBuilder addAccess( ServiceBuilder service, String urlPath )
   {
     return null;
   }
@@ -69,6 +69,8 @@ public class DatasetImpl
 
   public Dataset finish()
   {
-    return null;
+    super.finish();
+    this.finished = true;
+    return this;
   }
 }

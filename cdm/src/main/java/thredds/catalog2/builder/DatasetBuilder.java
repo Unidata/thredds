@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface DatasetBuilder extends DatasetNodeBuilder
 {
-  public AccessBuilder addAccess();
+  public AccessBuilder addAccess( ServiceBuilder service, String urlPath );
 
   public boolean isAccessible();
   public List<AccessBuilder> getAccessBuilders();
