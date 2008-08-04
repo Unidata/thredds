@@ -34,7 +34,7 @@ import ucar.unidata.util.StringUtil;
  */
 public class CompareTableB {
 
-  String bmt = "file:C:\\docs\\bufr\\britishMet\\WORKING\\bufr\\Code Tables 2007\\edited/BUFR_Tab_B_5.xml";
+  String bmt = "file:C:/doc/bufr/britMet/BUFR_B_080731.xml";
   String robbt = "C:\\dev\\tds\\bufr\\resources\\resources\\source\\wmo\\verified\\B4M-000-013-B";
   String robbxml = "file:C:\\dev\\tds\\bufr\\resources\\resources\\source\\wmo\\xml/B4M-000-013-B.xml";
 
@@ -132,7 +132,7 @@ public class CompareTableB {
         if (!f1.name.equals(f2.name)) System.out.printf("%n key %s%n  %s%n  %s %n", fxy(key), f1.name, f2.name);
         if (f1.scale != f2.scale) System.out.printf(" key %s scale %d != %d %n", fxy(key), f1.scale, f2.scale);
         if (f1.reference != f2.reference) System.out.printf(" key %s reference %d != %d %n", fxy(key), f1.reference, f2.reference);
-        //if (f1.width != f2.width) System.out.printf(" key %s width %d != %d %n", fxy(key), f1.width, f2.width);
+        if (f1.width != f2.width) System.out.printf(" key %s width %d != %d %n", fxy(key), f1.width, f2.width);
       }
     }
 
