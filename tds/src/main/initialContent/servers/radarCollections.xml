@@ -5,7 +5,7 @@
   <dataset name="NEXRAD Level2 Radar Data">
     <service name="OPENDAP" serviceType="OPENDAP" base="/thredds/dodsC" />
 
-    <datasetScan name="NEXRAD Level II Radar WSR-88D from IDD" collectionType="TimeSeries" ID="nexrad/level2/IDD" path="nexrad/level2/IDD" location="/data/ldm/pub/native/radar/level2">
+    <datasetScan name="NEXRAD Level II Radar WSR-88D from IDD" collectionType="TimeSeries" ID="nexrad/level2/IDD" path="nexrad/level2/IDD" location="/data/ldm/gempak/nexrad/NIDS">
       <metadata inherited="true">
         <dataType>Radial</dataType>
         <dataFormat>NEXRAD2</dataFormat>
