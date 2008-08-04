@@ -29,8 +29,8 @@ public interface Catalog
   public String getVersion();
   public Date getExpires();
   public Date getLastModified();
-  public List<Service> getServices();
 
+  public List<Service> getServices();
   public Service getServiceByName( String name );
   public Service getServiceByType( ServiceType type );
 

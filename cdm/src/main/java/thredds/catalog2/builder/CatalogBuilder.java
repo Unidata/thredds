@@ -5,6 +5,7 @@ import thredds.catalog.ServiceType;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.List;
 
 /**
  * _more_
@@ -14,23 +15,40 @@ import java.util.Date;
  */
 public interface CatalogBuilder
 {
+  public String getName();
   public void setName( String name);
-  public void setBaseUri( URI baseUri);
+
+  public URI getDocBaseUri();
+  public void setDocBaseUri( URI docBaseUri);
+
+  public String getVersion();
   public void setVersion( String version );
+
+  public Date getExpires();
   public void setExpires( Date expires );
+
+  public Date getLastModified();
   public void setLastModified( Date lastModified );
 
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri );
-  public ServiceBuilder addService( String name, ServiceType type, URI baseUri, int index);
+  public List<ServiceBuilder> getServiceBuilders();
+  public ServiceBuilder getServiceBuilderByName( String name );
+  public ServiceBuilder getServiceBuilderByType( ServiceType type );
+
 
   public DatasetBuilder addDataset();
-  public DatasetBuilder addDataset( int index);
-
   public CatalogRefBuilder addCatalogRef();
-  public CatalogRefBuilder addCatalogRef( int index);
+  public DatasetAliasBuilder addDatasetAlias();
+
+  public List<DatasetNodeBuilder> getDatasetNodeBuilders();
+  public DatasetNodeBuilder getDatasetNodeBuilderById( String id );
+  public DatasetNodeBuilder getDatasetNodeBuilderByName( String name );
 
   public void addProperty( String name, String value );
+  public List<String> getPropertyNames();
+  public String getPropertyValue( String name );
 
+  public boolean isFinished();
   /**
    * Generate the resulting Catalog.
    *

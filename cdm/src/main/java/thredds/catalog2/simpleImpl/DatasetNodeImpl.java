@@ -1,9 +1,6 @@
 package thredds.catalog2.simpleImpl;
 
-import thredds.catalog2.builder.DatasetNodeBuilder;
-import thredds.catalog2.builder.CatalogRefBuilder;
-import thredds.catalog2.builder.MetadataBuilder;
-import thredds.catalog2.builder.DatasetBuilder;
+import thredds.catalog2.builder.*;
 import thredds.catalog2.Property;
 import thredds.catalog2.Metadata;
 import thredds.catalog2.Catalog;
@@ -64,6 +61,11 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return null;
   }
 
+  public DatasetAliasBuilder addDatasetAlias()
+  {
+    return null;
+  }
+
   public CatalogRefBuilder addCatalogRef()
   {
     return null;
@@ -120,6 +122,46 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   }
 
   public Property getPropertyByName( String name )
+  {
+    return null;
+  }
+
+  public Property getProperty( String name )
+  {
+    return null;
+  }
+
+  public List<String> getPropertyNames()
+  {
+    return null;
+  }
+
+  public String getPropertyValue( String name )
+  {
+    return null;
+  }
+
+  public CatalogBuilder getParentCatalogBuilder()
+  {
+    return null;
+  }
+
+  public DatasetBuilder getParentDatasetBuilder()
+  {
+    return null;
+  }
+
+  public List<DatasetNodeBuilder> getDatasetNodeBuilders()
+  {
+    return null;
+  }
+
+  public DatasetNodeBuilder getDatasetNodeBuilderById( String id )
+  {
+    return null;
+  }
+
+  public DatasetNodeBuilder getDatasetNodeBuilderByName( String name )
   {
     return null;
   }

@@ -9,6 +9,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import java.io.*;
 import java.net.URI;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 /**
  * _more_
@@ -24,7 +25,7 @@ public class UriResolver
   private long connectionTimeout = 30000; // in milliseconds
   private int socketTimeout = 1 * 60 * 1000; // in milliseconds, time to wait for data
   private String contentCharset = "UTF-8";
-  private String contentEncoding = "gzip";
+  private String contentEncoding = "gzip,deflate";
   private boolean wantContentEncoding = true;
 
   private UriResolver() {}
@@ -96,6 +97,11 @@ public class UriResolver
       {
         System.out.println( "GZIP" );
         is = new GZIPInputStream( is );
+      }
+      else if ( contentEncoding != null && contentEncoding.equalsIgnoreCase( "deflate" ) )
+      {
+        System.out.println( "GZIP" );
+        is = new InflaterInputStream( is );
       }
     }
     return is;

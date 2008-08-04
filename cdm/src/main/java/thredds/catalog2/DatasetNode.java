@@ -15,6 +15,7 @@ public interface DatasetNode
   public String getId();
   public String getName();
   public List<Property> getProperties();
+  public Property getProperty( String name);
   public List<Metadata> getMetadata();
 
   public Catalog getParentCatalog();

@@ -12,9 +12,7 @@ import java.util.List;
  */
 public interface Dataset extends DatasetNode
 {
-  public String getAlias();
-
   public boolean isAccessible();
   public List<Access> getAccesses();
-
+  public Access getAccessByType( ServiceType type);
 }

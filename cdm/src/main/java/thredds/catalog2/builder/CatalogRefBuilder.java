@@ -12,11 +12,9 @@ import java.net.URI;
  */
 public interface CatalogRefBuilder extends DatasetNodeBuilder
 {
-  public void setId( String id );
-  public void setTitle( String title );
+  public URI getReference();
   public void setReference( URI reference );
 
-  public MetadataBuilder addMetadata();
-
-  public void finish();
+  public boolean isFinished();
+  public CatalogRef finish();
 }

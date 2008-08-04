@@ -1,10 +1,7 @@
 package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.*;
-import thredds.catalog2.builder.CatalogBuilder;
-import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.builder.DatasetBuilder;
-import thredds.catalog2.builder.CatalogRefBuilder;
+import thredds.catalog2.builder.*;
 import thredds.catalog.ServiceType;
 
 import java.net.URI;
@@ -80,6 +77,36 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
+  public Service getServiceByName( String name )
+  {
+    return null;
+  }
+
+  @Override
+  public Service getServiceByType( ServiceType type )
+  {
+    return null;
+  }
+
+  @Override
+  public List<ServiceBuilder> getServiceBuilders()
+  {
+    return null;
+  }
+
+  @Override
+  public ServiceBuilder getServiceBuilderByName( String name )
+  {
+    return null;
+  }
+
+  @Override
+  public ServiceBuilder getServiceBuilderByType( ServiceType type )
+  {
+    return null;
+  }
+
+  @Override
   public List<DatasetNode> getDatasets()
   {
     return null;
@@ -93,13 +120,19 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
-  public Service getServiceByName( String name )
+  public Property getPropertyByName( String name )
   {
     return null;
   }
 
   @Override
-  public Property getPropertyByName( String name )
+  public List<String> getPropertyNames()
+  {
+    return null;
+  }
+
+  @Override
+  public String getPropertyValue( String name )
   {
     return null;
   }
@@ -117,7 +150,19 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
-  public Service getServiceByType( ServiceType type )
+  public List<DatasetNodeBuilder> getDatasetNodeBuilders()
+  {
+    return null;
+  }
+
+  @Override
+  public DatasetNodeBuilder getDatasetNodeBuilderById( String id )
+  {
+    return null;
+  }
+
+  @Override
+  public DatasetNodeBuilder getDatasetNodeBuilderByName( String name )
   {
     return null;
   }
@@ -128,7 +173,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
-  public void setBaseUri( URI baseUri )
+  public void setDocBaseUri( URI docBaseUri )
   {
   }
 
@@ -154,19 +199,13 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
-  public ServiceBuilder addService( String name, ServiceType type, URI baseUri, int index )
-  {
-    return null;
-  }
-
-  @Override
   public DatasetBuilder addDataset()
   {
     return null;
   }
 
   @Override
-  public DatasetBuilder addDataset( int index )
+  public DatasetAliasBuilder addDatasetAlias()
   {
     return null;
   }
@@ -178,14 +217,14 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
-  public CatalogRefBuilder addCatalogRef( int index )
+  public void addProperty( String name, String value )
   {
-    return null;
   }
 
   @Override
-  public void addProperty( String name, String value )
+  public boolean isFinished()
   {
+    return false;
   }
 
   @Override
