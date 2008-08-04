@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * @author edavis
  * @since 4.0
  */
-public class CatalogImpl implements CatalogBuilder
+public class CatalogImpl implements Catalog, CatalogBuilder
 {
   private String name;
   private URI baseUri;
@@ -80,9 +80,10 @@ public class CatalogImpl implements CatalogBuilder
   }
 
   @Override
-  public List<Dataset> getDatasets()
+  public List<DatasetNode> getDatasets()
   {
-    return this.datasets;
+    return null;
+    //return this.datasets;
   }
 
   @Override
@@ -104,13 +105,13 @@ public class CatalogImpl implements CatalogBuilder
   }
 
   @Override
-  public <T extends DatasetNode> T getDatasetById( String id )
+  public DatasetNode getDatasetById( String id )
   {
     return null;
   }
 
   @Override
-  public <T extends DatasetNode> T getDatasetByName( String name )
+  public DatasetNode getDatasetByName( String name )
   {
     return null;
   }

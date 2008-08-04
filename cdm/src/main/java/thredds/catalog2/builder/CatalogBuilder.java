@@ -1,7 +1,6 @@
 package thredds.catalog2.builder;
 
 import thredds.catalog2.Catalog;
-import thredds.catalog2.explorer.CatalogExplorer;
 import thredds.catalog.ServiceType;
 
 import java.net.URI;

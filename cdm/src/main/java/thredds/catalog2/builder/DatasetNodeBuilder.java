@@ -1,8 +1,5 @@
 package thredds.catalog2.builder;
 
-import thredds.catalog2.DatasetNode;
-import thredds.catalog2.explorer.DatasetNodeExplorer;
-
 /**
  * _more_
  *
@@ -11,8 +8,10 @@ import thredds.catalog2.explorer.DatasetNodeExplorer;
  */
 public interface DatasetNodeBuilder
 {
+  public String getId();
   public void setId( String id );
 
+  public String getName();
   public void setName( String name );
 
   public void addProperty( String name, String value );

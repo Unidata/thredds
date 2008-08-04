@@ -18,8 +18,10 @@ public interface DatasetNode
   public List<Metadata> getMetadata();
 
   public Catalog getParentCatalog();
-  public <T extends DatasetNode> T getParent();
+  public DatasetNode getParent();
 
   public boolean isCollection();
-  public List<? extends DatasetNode> getDatasets();
+  public List<DatasetNode> getDatasets();
+  public DatasetNode getDatasetById( String id);
+  public DatasetNode getDatasetByName( String name);
 }

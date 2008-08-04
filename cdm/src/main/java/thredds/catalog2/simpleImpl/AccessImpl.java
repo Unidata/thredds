@@ -11,7 +11,7 @@ import thredds.catalog2.builder.AccessBuilder;
  * @author edavis
  * @since 4.0
  */
-public class AccessImpl implements AccessBuilder
+public class AccessImpl implements Access, AccessBuilder
 {
   private Service service;
   private String urlPath;
@@ -71,6 +71,12 @@ public class AccessImpl implements AccessBuilder
   public long getDataSize()
   {
     return dataSize;
+  }
+
+  @Override
+  public boolean isFinished()
+  {
+    return false;
   }
 
   @Override

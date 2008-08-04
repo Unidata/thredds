@@ -18,7 +18,7 @@ import java.util.Map;
  * @author edavis
  * @since 4.0
  */
-public class DatasetNodeImpl implements DatasetNodeBuilder
+public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 {
   private String id;
   private String name;
@@ -94,7 +94,7 @@ public class DatasetNodeImpl implements DatasetNodeBuilder
     return null;
   }
 
-  public <T extends DatasetNode> T getParent()
+  public DatasetNode getParent()
   {
     return null;
   }
@@ -104,17 +104,17 @@ public class DatasetNodeImpl implements DatasetNodeBuilder
     return false;
   }
 
-  public List<? extends DatasetNode> getDatasets()
+  public List<DatasetNode> getDatasets()
   {
     return null;
   }
 
-  public <T extends DatasetNode> T getDatasetByName( String name )
+  public DatasetNode getDatasetByName( String name )
   {
     return null;
   }
 
-  public <T extends DatasetNode> T getDatasetById( String id )
+  public DatasetNode getDatasetById( String id )
   {
     return null;
   }

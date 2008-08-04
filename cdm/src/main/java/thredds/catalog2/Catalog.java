@@ -1,6 +1,6 @@
 package thredds.catalog2;
 
-import thredds.catalog2.explorer.CatalogExplorer;
+import thredds.catalog.ServiceType;
 
 import java.net.URI;
 import java.util.Date;
@@ -31,7 +31,13 @@ public interface Catalog
   public Date getLastModified();
   public List<Service> getServices();
 
-  public List<? extends DatasetNode> getDatasets();
+  public Service getServiceByName( String name );
+  public Service getServiceByType( ServiceType type );
+
+  public List<DatasetNode> getDatasets();
+  public DatasetNode getDatasetById( String id );
+  public DatasetNode getDatasetByName( String name );
 
   public List<Property> getProperties();
+  public Property getPropertyByName( String name );
 }

@@ -106,21 +106,23 @@ public class ServiceImpl implements Service, ServiceBuilder
     if ( this.getName().equals( name) || this.servicesMap.containsKey( name ))
       throw new IllegalStateException( "Duplicate service name [" + name + "].");
     ServiceImpl sb = new ServiceImpl( name, type, baseUri );
+    this.rawServices.add( sb );
     this.services.add( sb );
     this.servicesMap.put( name, sb );
     return sb;
   }
 
-  @Override
-  public ServiceBuilder addService( String name, ServiceType type, URI baseUri, int index )
-  {
-    if ( this.getName().equals( name ) || this.servicesMap.containsKey( name ) )
-      throw new IllegalStateException( "Duplicate service name [" + name + "]." );
-    ServiceImpl sb = new ServiceImpl( name, type, baseUri );
-    this.services.add( index, sb );
-    this.servicesMap.put( name, sb );
-    return sb;
-  }
+//  @Override
+//  public ServiceBuilder addService( String name, ServiceType type, URI baseUri, int index )
+//  {
+//    if ( this.getName().equals( name ) || this.servicesMap.containsKey( name ) )
+//      throw new IllegalStateException( "Duplicate service name [" + name + "]." );
+//    ServiceImpl sb = new ServiceImpl( name, type, baseUri );
+//    this.rawServices.add( index, sb );
+//    this.services.add( index, sb );
+//    this.servicesMap.put( name, sb );
+//    return sb;
+//  }
 
   @Override
   public String getName()

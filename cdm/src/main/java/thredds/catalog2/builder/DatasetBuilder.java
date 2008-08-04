@@ -1,7 +1,6 @@
 package thredds.catalog2.builder;
 
 import thredds.catalog2.Dataset;
-import thredds.catalog2.explorer.DatasetExplorer;
 
 /**
  * _more_

@@ -1,8 +1,5 @@
 package thredds.catalog2.builder;
 
-import thredds.catalog2.Metadata;
-import thredds.catalog2.explorer.MetadataExplorer;
-
 /**
  * _more_
  *
