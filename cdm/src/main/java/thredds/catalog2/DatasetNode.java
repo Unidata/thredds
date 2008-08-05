@@ -24,5 +24,4 @@ public interface DatasetNode
   public boolean isCollection();
   public List<DatasetNode> getDatasets();
   public DatasetNode getDatasetById( String id);
-  public DatasetNode getDatasetByName( String name);
 }

@@ -54,6 +54,9 @@ public class DatasetAliasImpl
   
   public DatasetAlias finish()
   {
+    if ( this.finished )
+      return this;
+
     super.finish();
     this.finished = true;
     return this;

@@ -30,19 +30,19 @@ public interface CatalogBuilder
   public Date getLastModified();
   public void setLastModified( Date lastModified );
 
+  // * @throws IllegalStateException this CatalogBuilder has already been finished or already contains a ServiceBuilder with the given name.
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri );
   public List<ServiceBuilder> getServiceBuilders();
   public ServiceBuilder getServiceBuilderByName( String name );
   public ServiceBuilder getServiceBuilderByType( ServiceType type );
 
 
-  public DatasetBuilder addDataset();
-  public CatalogRefBuilder addCatalogRef();
-  public DatasetAliasBuilder addDatasetAlias();
+  public DatasetBuilder addDataset( String name );
+  public CatalogRefBuilder addCatalogRef( String name, URI reference );
+  public DatasetAliasBuilder addDatasetAlias( String name, DatasetNodeBuilder alias );
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders();
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id );
-  public DatasetNodeBuilder getDatasetNodeBuilderByName( String name );
 
   public void addProperty( String name, String value );
   public List<String> getPropertyNames();

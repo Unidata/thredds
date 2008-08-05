@@ -12,8 +12,8 @@ import thredds.catalog.DataFormatType;
  */
 public interface AccessBuilder
 {
-  public Service getService();
-  public void setService( Service service );
+  public ServiceBuilder getServiceBuilder();
+  public void setService( ServiceBuilder service );
 
   public String getUrlPath();
   public void setUrlPath( String urlPath );

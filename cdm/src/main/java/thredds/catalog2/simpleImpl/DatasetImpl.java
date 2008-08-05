@@ -7,6 +7,7 @@ import thredds.catalog.ServiceType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * _more_
@@ -21,23 +22,29 @@ public class DatasetImpl
   private boolean accessible = false;
   private List<AccessBuilder> accessBuilders;
   private List<Access> accesses;
-  private Map<ServiceType,Access> accessMap;
 
   private boolean finished = false;
 
   protected DatasetImpl( String name, CatalogBuilder parentCatalog, DatasetNodeBuilder parent )
   {
     super( name, parentCatalog, parent);
+
+    this.accessBuilders = new ArrayList<AccessBuilder>();
+    this.accesses = new ArrayList<Access>();
   }
 
   public AccessBuilder addAccess( ServiceBuilder service, String urlPath )
   {
-    return null;
+    if ( finished ) throw new IllegalStateException( "This DatasetBuilder has been finished().");
+    AccessImpl a = new AccessImpl( (ServiceImpl) service, urlPath );
+    this.accessBuilders.add( a );
+    this.accesses.add( a );
+    return a;
   }
 
   public boolean isAccessible()
   {
-    return false;
+    return ! this.accessBuilders.isEmpty();
   }
 
   public List<Access> getAccesses()
@@ -67,6 +74,9 @@ public class DatasetImpl
 
   public Dataset finish()
   {
+    if ( this.finished )
+      return this;
+
     super.finish();
     this.finished = true;
     return this;

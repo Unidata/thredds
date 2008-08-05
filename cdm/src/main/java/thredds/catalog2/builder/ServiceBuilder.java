@@ -15,7 +15,6 @@ import java.util.List;
 public interface ServiceBuilder
 {
   public String getName();
-  public void setName( String name );
 
   public String getDescription();
   public void setDescription( String description );
@@ -56,7 +55,7 @@ public interface ServiceBuilder
    * @return a ServiceBuilder for further construction and modification of the new Service.
    *
    * @throws IllegalArgumentException if the name, type, or base URI are null.
-   * @throws IllegalStateException this Service or an already added Service has the given name.
+   * @throws IllegalStateException this ServiceBuilder has already been finished or the top container of this ServiceBuilder already contains a ServiceBuilder with the given name.
    */
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri );
 

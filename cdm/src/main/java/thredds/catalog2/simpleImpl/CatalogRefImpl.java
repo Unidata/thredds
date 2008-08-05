@@ -48,6 +48,9 @@ public class CatalogRefImpl
   @Override
   public CatalogRef finish()
   {
+    if ( this.finished )
+      return this;
+
     super.finish();
     this.finished = true;
     return this;

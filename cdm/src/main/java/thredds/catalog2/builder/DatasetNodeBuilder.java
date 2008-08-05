@@ -24,6 +24,7 @@ public interface DatasetNodeBuilder
   public String getPropertyValue( String name );
 
   public MetadataBuilder addMetadata();
+  public List<MetadataBuilder> getMetadataBuilders();
 
   public CatalogBuilder getParentCatalogBuilder();
   public DatasetBuilder getParentDatasetBuilder();
@@ -36,7 +37,6 @@ public interface DatasetNodeBuilder
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders();
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id );
-  public DatasetNodeBuilder getDatasetNodeBuilderByName( String name );
 
   public boolean isFinished();
   public DatasetNode finish();

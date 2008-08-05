@@ -38,7 +38,7 @@ public class TestServiceImpl extends TestCase
   public void testNullName()
   {
     try
-    { new ServiceImpl( null, type, docBaseUri ); }
+    { new ServiceImpl( null, type, docBaseUri, null, null ); }
     catch ( IllegalArgumentException e )
     { return; }
     catch ( Exception e )
@@ -49,7 +49,7 @@ public class TestServiceImpl extends TestCase
   public void testNullType()
   {
     try
-    { new ServiceImpl( "s1", null, docBaseUri ); }
+    { new ServiceImpl( "s1", null, docBaseUri, null, null ); }
     catch ( IllegalArgumentException e )
     { return; }
     catch ( Exception e )
@@ -60,7 +60,7 @@ public class TestServiceImpl extends TestCase
   public void testNullDocBaseUri()
   {
     try
-    { new ServiceImpl( "s1", type, null ); }
+    { new ServiceImpl( "s1", type, null, null, null ); }
     catch ( IllegalArgumentException e )
     { return; }
     catch ( Exception e )
@@ -71,7 +71,7 @@ public class TestServiceImpl extends TestCase
   public void testNormal()
   {
     String name = "s1";
-    ServiceBuilder sb = new ServiceImpl( name, type, docBaseUri );
+    ServiceBuilder sb = new ServiceImpl( name, type, docBaseUri, null, null );
 
     assertTrue( "Name [" + sb.getName() + "] not as expected [" + name + "].",
                 sb.getName().equals( name));

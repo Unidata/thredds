@@ -1,5 +1,7 @@
 package thredds.catalog2.builder;
 
+import thredds.catalog2.Metadata;
+
 /**
  * _more_
  *
@@ -8,5 +10,6 @@ package thredds.catalog2.builder;
  */
 public interface MetadataBuilder
 {
-  
+  public boolean isFinished();
+  public Metadata finish();
 }

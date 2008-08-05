@@ -36,7 +36,6 @@ public interface Catalog
 
   public List<DatasetNode> getDatasets();
   public DatasetNode getDatasetById( String id );
-  public DatasetNode getDatasetByName( String name );
 
   public List<Property> getProperties();
   public Property getPropertyByName( String name );

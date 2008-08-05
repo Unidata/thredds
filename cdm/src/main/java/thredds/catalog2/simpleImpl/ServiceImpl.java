@@ -21,19 +21,26 @@ public class ServiceImpl implements Service, ServiceBuilder
   private ServiceType type;
   private URI baseUri;
   private String suffix;
+
   private List<Property> properties;
   private Map<String,Property> propertiesMap;
+
   private List<ServiceBuilder> serviceBuilders;
   private List<Service> services;
   private Map<String,Service> servicesMap;
 
+  private Set<String> uniqueServiceNames;
+  private ServiceImpl containerService;
+  private CatalogImpl containerCatalog;
+
   private boolean finished = false;
 
-  protected ServiceImpl( String name, ServiceType type, URI baseUri )
+  protected ServiceImpl( String name, ServiceType type, URI baseUri, CatalogImpl containerCatalog, ServiceImpl containerService )
   {
     if ( name == null ) throw new IllegalArgumentException( "Name must not be null.");
     if ( type == null ) throw new IllegalArgumentException( "Service type must not be null.");
     if ( baseUri == null ) throw new IllegalArgumentException( "Base URI must not be null.");
+    if ( containerCatalog != null && containerService != null ) throw new IllegalArgumentException( "Both container catalog and service are not null, at least one must be null.");
     this.name = name;
     this.description = "";
     this.type = type;
@@ -44,14 +51,27 @@ public class ServiceImpl implements Service, ServiceBuilder
     this.serviceBuilders = new ArrayList<ServiceBuilder>();
     this.services = new ArrayList<Service>();
     this.servicesMap = new HashMap<String,Service>();
+
+    this.containerCatalog = containerCatalog;
+    this.containerService = containerService;
+    if ( this.containerCatalog == null && this.containerService == null )
+    {
+      this.uniqueServiceNames = new HashSet<String>();
+      this.uniqueServiceNames.add( name );
+    }
   }
 
-  @Override
-  public void setName( String name )
+  protected void addUniqueServiceName( String name )
   {
-    if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished().");
-    if ( name == null ) throw new IllegalArgumentException( "Name must not be null." );
-    this.name = name;
+    if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( ! this.uniqueServiceNames.add( name ) )
+      throw new IllegalStateException( "Given service name [" + name + "] not unique in container service." );
+  }
+
+  protected boolean removeUniqueServiceName( String name )
+  {
+    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    return this.uniqueServiceNames.add( name );
   }
 
   @Override
@@ -111,10 +131,16 @@ public class ServiceImpl implements Service, ServiceBuilder
   @Override
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
   {
-    if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
-    if ( this.getName().equals( name) || this.servicesMap.containsKey( name ))
-      throw new IllegalStateException( "Duplicate service name [" + name + "].");
-    ServiceImpl sb = new ServiceImpl( name, type, baseUri );
+    if ( this.finished )
+      throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+
+    // Track unique service names, throw llegalStateException if name not unique.
+    if ( containerCatalog != null )
+      containerCatalog.addUniqueServiceName( name );
+    else if ( containerService != null )
+      containerService.addUniqueServiceName( name );
+
+    ServiceImpl sb = new ServiceImpl( name, type, baseUri, this.containerCatalog, this.containerService );
     this.serviceBuilders.add( sb );
     this.services.add( sb );
     this.servicesMap.put( name, sb );
@@ -241,23 +267,12 @@ public class ServiceImpl implements Service, ServiceBuilder
     if ( this.finished )
       return this;
 
-    // Check not-null invariants.
-    if ( name == null ) throw new IllegalArgumentException( "Name must not be null." );
-    if ( type == null ) throw new IllegalArgumentException( "Service type must not be null." );
-    if ( baseUri == null ) throw new IllegalArgumentException( "Base URI must not be null." );
+    // Finish subordinates.
+    for ( ServiceBuilder sb : this.serviceBuilders )
+      sb.finish();
 
-    // Check for duplicate service names.
-    String duplicateName = anyDuplicateServiceNames();
-    if ( duplicateName != null )
-      throw new IllegalStateException( "Duplicate service name [" + duplicateName + "]." );
-
+    // Mark finished.
     this.finished = true;
     return this;
-  }
-
-  private String anyDuplicateServiceNames()
-  {
-    // ToDo Implement
-    return null;
   }
 }

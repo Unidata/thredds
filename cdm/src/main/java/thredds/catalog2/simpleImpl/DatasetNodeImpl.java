@@ -6,10 +6,7 @@ import thredds.catalog2.Metadata;
 import thredds.catalog2.Catalog;
 import thredds.catalog2.DatasetNode;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Collections;
-import java.util.ArrayList;
+import java.util.*;
 import java.net.URI;
 
 /**
@@ -24,13 +21,15 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   private String name;
   private List<Property> properties;
   private Map<String,Property> propertiesMap;
+
+  private List<MetadataBuilder> metadataBuilders;
   private List<Metadata> metadata;
 
   private Catalog parentCatalog;
   protected DatasetNode parent;
+
   private List<DatasetNodeBuilder> childrenBuilders;
   private List<DatasetNode> children;
-  private Map<String,DatasetNode> childrenNameMap;
   private Map<String,DatasetNode> childrenIdMap;
 
   private boolean finished = false;
@@ -41,15 +40,30 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     this.name = name;
     this.parentCatalog = (Catalog) parentCatalog;
     this.parent = (DatasetNode) parent;
+
+    this.properties = new ArrayList<Property>();
+    this.propertiesMap = new HashMap<String,Property>();
+
+    this.metadataBuilders = new ArrayList<MetadataBuilder>();
+    this.metadata = new ArrayList<Metadata>();
+
+    this.childrenBuilders = new ArrayList<DatasetNodeBuilder>();
+    this.children = new ArrayList<DatasetNode>();
+    this.childrenIdMap = new HashMap<String, DatasetNode>();
   }
 
   @Override
   public void setId( String id )
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished().");
-//ToDo    ((CatalogImpl) this.parentCatalog).getCatalogSearchHelper();
-    this.id = id;
-    ((DatasetNodeImpl) this.parent).childrenIdMap.put( id, this );
+    if ( ! this.id.equals( id ))
+    {
+      // ToDo Check if another dataset in parent catalog has this id - ((CatalogImpl) this.parentCatalog).getCatalogSearchHelper();
+      ( (DatasetNodeImpl) this.parent ).childrenIdMap.remove( this.id );
+
+      this.id = id;
+      ((DatasetNodeImpl) this.parent).childrenIdMap.put( id, this );
+    }
   }
 
   @Override
@@ -137,17 +151,24 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   {
     if ( !this.finished )
       throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
-    return null;
+    return Collections.unmodifiableList( this.metadata );
+  }
+
+  @Override
+  public List<MetadataBuilder> getMetadataBuilders()
+  {
+    if ( !this.finished )
+      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
+    return Collections.unmodifiableList( this.metadataBuilders );
   }
 
   @Override
   public DatasetBuilder addDataset( String name)
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    DatasetBuilder db = new DatasetImpl( name, (CatalogBuilder) this.getParentCatalog(), this );
+    DatasetImpl db = new DatasetImpl( name, (CatalogBuilder) this.getParentCatalog(), this );
     this.childrenBuilders.add( db );
-    this.children.add( (DatasetNode) db );
-    this.childrenNameMap.put( name, (DatasetNode) db );
+    this.children.add( db );
     return db;
   }
 
@@ -155,10 +176,9 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   public DatasetAliasBuilder addDatasetAlias( String name, DatasetNodeBuilder alias )
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    DatasetAliasBuilder dab = new DatasetAliasImpl( name, alias, (CatalogBuilder) this.getParentCatalog(), this );
+    DatasetAliasImpl dab = new DatasetAliasImpl( name, alias, (CatalogBuilder) this.getParentCatalog(), this );
     this.childrenBuilders.add( dab );
-    this.children.add( (DatasetNode) dab );
-    this.childrenNameMap.put( name, (DatasetNode) dab );
+    this.children.add( dab );
     return dab;
   }
 
@@ -166,10 +186,9 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   public CatalogRefBuilder addCatalogRef( String name, URI reference)
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    CatalogRefBuilder crb = new CatalogRefImpl( name, reference, (CatalogBuilder) this.getParentCatalog(), this );
+    CatalogRefImpl crb = new CatalogRefImpl( name, reference, (CatalogBuilder) this.getParentCatalog(), this );
     this.childrenBuilders.add( crb );
-    this.children.add( (DatasetNode) crb );
-    this.childrenNameMap.put( name, (DatasetNode) crb );
+    this.children.add( crb );
     return crb;
   }
 
@@ -201,14 +220,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     if ( !this.finished )
       throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
     return Collections.unmodifiableList( this.children);
-  }
-
-  @Override
-  public DatasetNode getDatasetByName( String name )
-  {
-    if ( !this.finished )
-      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
-    return this.childrenNameMap.get( name );
   }
 
   @Override
@@ -247,13 +258,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return null;
   }
 
-  @Override
-  public DatasetNodeBuilder getDatasetNodeBuilderByName( String name )
-  {
-    if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    return null;
-  }
-
   public boolean isFinished()
   {
     return this.finished;
@@ -261,9 +265,16 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 
   public DatasetNode finish()
   {
-    if ( this.finished ) return this;
+    if ( this.finished )
+      return this;
 
     // Check invariants.
+
+    // Finish subordinates.
+    for ( MetadataBuilder mb : this.metadataBuilders )
+      mb.finish();
+    for ( DatasetNodeBuilder dnb : this.childrenBuilders)
+      dnb.finish();
 
     // Mark as finished.
     this.finished = true;

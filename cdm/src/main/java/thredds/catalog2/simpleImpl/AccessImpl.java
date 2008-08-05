@@ -4,6 +4,7 @@ import thredds.catalog.DataFormatType;
 import thredds.catalog2.Access;
 import thredds.catalog2.Service;
 import thredds.catalog2.builder.AccessBuilder;
+import thredds.catalog2.builder.ServiceBuilder;
 
 /**
  * _more_
@@ -13,14 +14,14 @@ import thredds.catalog2.builder.AccessBuilder;
  */
 public class AccessImpl implements Access, AccessBuilder
 {
-  private Service service;
+  private ServiceImpl service;
   private String urlPath;
   private DataFormatType dataFormat;
   private long dataSize;
 
   private boolean finished = false;
 
-  protected AccessImpl( Service service, String urlPath )
+  protected AccessImpl( ServiceImpl service, String urlPath )
   {
     if ( service == null ) throw new IllegalArgumentException( "Service must not be null.");
     if ( urlPath == null ) throw new IllegalArgumentException( "Path must not be null.");
@@ -29,11 +30,11 @@ public class AccessImpl implements Access, AccessBuilder
   }
 
   @Override
-  public void setService( Service service )
+  public void setService( ServiceBuilder service )
   {
     if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
     if ( service == null ) throw new IllegalArgumentException( "Service must not be null." );
-    this.service = service;
+    this.service = (ServiceImpl) service;
   }
 
   @Override
@@ -62,6 +63,14 @@ public class AccessImpl implements Access, AccessBuilder
   @Override
   public Service getService()
   {
+    if ( !this.finished ) throw new IllegalStateException( "This Access has escaped its AccessBuilder before finish() was called." );
+    return service;
+  }
+
+  @Override
+  public ServiceBuilder getServiceBuilder()
+  {
+    if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
     return service;
   }
 
@@ -92,7 +101,11 @@ public class AccessImpl implements Access, AccessBuilder
   @Override
   public Access finish()
   {
-    // No invariants to check.
+    if ( this.finished)
+      return this;
+
+    this.service.finish();
+
     this.finished = true;
     return this;
   }
