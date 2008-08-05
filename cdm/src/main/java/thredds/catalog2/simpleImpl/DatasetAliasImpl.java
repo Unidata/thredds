@@ -5,6 +5,7 @@ import thredds.catalog2.DatasetNode;
 import thredds.catalog2.builder.DatasetAliasBuilder;
 import thredds.catalog2.builder.DatasetBuilder;
 import thredds.catalog2.builder.DatasetNodeBuilder;
+import thredds.catalog2.builder.CatalogBuilder;
 
 /**
  * _more_
@@ -20,9 +21,9 @@ public class DatasetAliasImpl
 
   private boolean finished = false;
 
-  protected DatasetAliasImpl( String name, DatasetNodeBuilder aliasRef )
+  protected DatasetAliasImpl( String name, DatasetNodeBuilder aliasRef, CatalogBuilder parentCatalog, DatasetNodeBuilder parent )
   {
-    super( name);
+    super( name, parentCatalog, parent);
     if ( aliasRef == null ) throw new IllegalArgumentException( "Alias may not be null.");
     this.alias = (DatasetNodeImpl) aliasRef;
   }

@@ -3,6 +3,7 @@ package thredds.catalog2.builder;
 import thredds.catalog2.DatasetNode;
 
 import java.util.List;
+import java.net.URI;
 
 /**
  * _more_
@@ -29,9 +30,9 @@ public interface DatasetNodeBuilder
 
   public boolean isCollection();
 
-  public DatasetBuilder addDataset();
-  public DatasetAliasBuilder addDatasetAlias();
-  public CatalogRefBuilder addCatalogRef();
+  public DatasetBuilder addDataset( String name );
+  public DatasetAliasBuilder addDatasetAlias( String name, DatasetNodeBuilder alias);
+  public CatalogRefBuilder addCatalogRef( String name, URI reference);
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders();
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id );

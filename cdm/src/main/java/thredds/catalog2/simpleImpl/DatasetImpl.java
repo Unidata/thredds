@@ -2,9 +2,7 @@ package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.Dataset;
 import thredds.catalog2.Access;
-import thredds.catalog2.builder.DatasetBuilder;
-import thredds.catalog2.builder.AccessBuilder;
-import thredds.catalog2.builder.ServiceBuilder;
+import thredds.catalog2.builder.*;
 import thredds.catalog.ServiceType;
 
 import java.util.List;
@@ -27,9 +25,9 @@ public class DatasetImpl
 
   private boolean finished = false;
 
-  protected DatasetImpl( String name)
+  protected DatasetImpl( String name, CatalogBuilder parentCatalog, DatasetNodeBuilder parent )
   {
-    super( name);
+    super( name, parentCatalog, parent);
   }
 
   public AccessBuilder addAccess( ServiceBuilder service, String urlPath )

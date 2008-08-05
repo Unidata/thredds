@@ -18,9 +18,9 @@ public class CatalogRefImpl
   private URI reference;
   private boolean finished = false;
 
-  protected CatalogRefImpl( String name, URI reference )
+  protected CatalogRefImpl( String name, URI reference, CatalogBuilder parentCatalog, DatasetNodeBuilder parent )
   {
-    super( name);
+    super( name, parentCatalog, parent);
     if ( reference == null ) throw new IllegalArgumentException( "CatalogRef reference URI must not be null." );
     this.reference = reference;
   }
