@@ -350,7 +350,7 @@ public class NCdumpW {
     ilev.incr();
 
     if (array == null)
-      throw new IllegalArgumentException("null array");
+      throw new IllegalArgumentException("null array for "+name);
 
     if ((array instanceof ArrayChar) && (array.getRank() > 0) ) {
       printStringArray(out, (ArrayChar) array, ilev, ct);

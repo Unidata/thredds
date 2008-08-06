@@ -176,7 +176,6 @@ public class StructureMembers {
 
     /*
      * If member is type Structure, you must set its constituent members
-     *
      * @param members set to this value
      */
     public void setStructureMembers(StructureMembers members) {
@@ -272,7 +271,7 @@ public class StructureMembers {
     }
 
     ////////////////////////////////////////////////
-
+    // these should not really be public
 
     /**
      * Get the data parameter value, for use behind the scenes.

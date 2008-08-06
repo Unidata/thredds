@@ -32,6 +32,10 @@ public class ArraySequence extends ArrayStructure {
   private StructureDataIterator iter;
   private int count;
 
+  protected ArraySequence(ArraySequence proxy) {
+    super(proxy.getStructureMembers(), proxy.getShape());
+  }
+
   public ArraySequence(StructureMembers members, StructureDataIterator iter, int count) {
     super(members, new int[] {0});
     this.iter = iter;

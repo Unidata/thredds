@@ -65,6 +65,10 @@ public class TestRegexp extends TestCase {
     testMatch(".*([IJ].....) (....) .*", "WMO IUBEs9 sssR 030000", true);
   }
 
+  public void test5() {
+    testMatch("(.*)\\(see Note.*", "Software identification (see Note 2)", true);
+  }
+
   private void testMatch(String ps, String match, boolean expect) {
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);

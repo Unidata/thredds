@@ -240,13 +240,12 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
   protected Array convert(Array data) throws IOException {
     ArrayStructure as = (ArrayStructure) data;
-    if (!convertNeeded(this, as)) return data;
+    if (!isConvertNeeded(this, as)) return data;
     as = ArrayStructureMA.factoryMA( as); // LOOK! converting to ArrayStructureMA
 
-    StructureMembers sm = as.getStructureMembers(); // these are from orgVar - may have been renamed
-    for (StructureMembers.Member m : sm.getMembers()) {
+    for (StructureMembers.Member m : as.getMembers()) {
       VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
-      if ((v2 == null) && (orgVar != null))
+      if ((v2 == null) && (orgVar != null)) // these are from orgVar - may have been renamed
         v2 = findVariableFromOrgName(m.getName());
       if (v2 == null) continue;
 
@@ -259,23 +258,26 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
         } else if (vds.getNeedEnumConversion()) {
           Array mdata = as.extractMemberArray(m);
-          System.out.print(" convert "+vds.getName()+" array="+mdata.hashCode());
+          //System.out.print(" convert "+vds.getName()+" array="+mdata.hashCode());
           mdata = vds.convertEnums(mdata);
           as.setMemberArray(m, mdata);
-          System.out.println(" to  array="+mdata.hashCode());
+          //System.out.println(" to  array="+mdata.hashCode());
         }
       }
 
       // recurse into sub-structures
       if (v2 instanceof StructureDS) {
         StructureDS innerStruct = (StructureDS) v2;
-        if (innerStruct.convertNeeded(innerStruct, null)) {
+        if (innerStruct.isConvertNeeded(innerStruct, null)) {
 
           if (innerStruct.getDataType() == DataType.SEQUENCE) {
             ArrayObject.D1 seqArray = (ArrayObject.D1) as.extractMemberArray(m);
+            ArrayObject.D1 newSeq = new ArrayObject.D1(ArraySequence.class, (int) seqArray.getSize());
+            m.setDataArray(newSeq); // put back into member array
+
             for (int i=0; i<seqArray.getSize(); i++) {
-              ArraySequence innerSeq =  (ArraySequence) seqArray.get(i);
-              innerStruct.convert( innerSeq); // modify each innerSequence as needed
+              ArraySequence innerSeq =  (ArraySequence) seqArray.get(i); // get old ArraySequence
+              newSeq.set(i, new SequenceConverter( innerStruct, innerSeq)); // wrap in converter
             }
 
           // non-Sequence Structures
@@ -292,7 +294,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return as;
   }
 
-  protected boolean convertNeeded(Structure s, ArrayStructure as) {
+  protected boolean isConvertNeeded(Structure s, ArrayStructure as) {
 
     if (as == null) { // check everything
       for (Variable v : s.getVariables()) {
@@ -305,7 +307,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
         if (v instanceof StructureDS) {
           StructureDS nested = (StructureDS) v;
-          if (convertNeeded(nested, null))
+          if (isConvertNeeded(nested, null))
             return true;
         }
       }
@@ -327,7 +329,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
       if (v2 instanceof StructureDS) {
         StructureDS nested = (StructureDS) v2;
-        if (convertNeeded(nested, null))
+        if (isConvertNeeded(nested, null))
           return true;
       }
     }
@@ -346,6 +348,61 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
     return null;
   }
+
+  protected StructureData convert(StructureData sdata) throws IOException {
+    StructureMembers smResult = new StructureMembers( sdata.getStructureMembers());
+    StructureDataW result = new StructureDataW( smResult);
+
+    for (StructureMembers.Member m : sdata.getMembers()) {
+      VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
+      if ((v2 == null) && (orgVar != null))
+        v2 = findVariableFromOrgName(m.getName());
+      if (v2 == null)
+        continue;
+
+      StructureMembers.Member mResult = smResult.findMember(m.getName());
+
+      if (v2 instanceof VariableDS) {
+        VariableDS vds = (VariableDS) v2;
+        Array mdata = sdata.getArray(m);
+        
+        if (vds.getNeedScaleOffsetMissing())
+          mdata = vds.convertScaleOffsetMissing(mdata);
+        else if (vds.getNeedEnumConversion())
+          mdata = vds.convertEnums(mdata);
+
+        result.setMemberData(mResult, mdata);
+      }
+
+      // recurse into sub-structures
+      if (v2 instanceof StructureDS) {
+        StructureDS innerStruct = (StructureDS) v2;
+        if (innerStruct.isConvertNeeded(innerStruct, null)) {
+
+          if (innerStruct.getDataType() == DataType.SEQUENCE) {
+            ArrayObject.D1 seqArray = (ArrayObject.D1) sdata.getArray(m);
+            ArrayObject.D1 newSeq = new ArrayObject.D1(ArraySequence.class, (int) seqArray.getSize());
+            m.setDataArray(newSeq); // put back into member array
+
+            for (int i=0; i<seqArray.getSize(); i++) {
+              ArraySequence innerSeq =  (ArraySequence) seqArray.get(i); // get old ArraySequence
+              newSeq.set(i, new SequenceConverter( innerStruct, innerSeq)); // wrap in converter
+            }
+
+          // non-Sequence Structures
+          } else {
+            Array mdata = sdata.getArray(m);
+            mdata = innerStruct.convert(mdata);
+            result.setMemberData(mResult, mdata);
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+
 
   /* private void convertNested(ArrayStructure as, StructureMembers.Member outerM, StructureDS innerStruct) {
     StructureMembers innerMembers = outerM.getStructureMembers(); // these are from orgVar - may have been renamed
@@ -371,6 +428,48 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       innerM.setVariableInfo(v2);
     }
   } */
+
+  private class SequenceConverter extends ArraySequence {
+    StructureDS orgStruct;
+    ArraySequence orgSeq;
+    SequenceConverter( StructureDS orgStruct, ArraySequence orgSeq) {
+      super(orgSeq);
+      this.orgStruct = orgStruct;
+      this.orgSeq = orgSeq;
+    }
+
+    @Override
+    public StructureDataIterator getStructureDataIterator() throws java.io.IOException {
+      return new StructureDataConverter(  orgSeq.getStructureDataIterator());
+    }
+
+    private class StructureDataConverter implements StructureDataIterator {
+      StructureDataIterator orgIter;
+      StructureDataConverter( StructureDataIterator orgIter) {
+        this.orgIter = orgIter;
+      }
+
+      public boolean hasNext() throws IOException {
+        return orgIter.hasNext();
+      }
+
+      public StructureData next() throws IOException {
+        StructureData sdata = orgIter.next();
+        return orgStruct.convert(sdata);
+      }
+
+      public void setBufferSize(int bytes) {
+        orgIter.setBufferSize(bytes);
+      }
+
+      public StructureDataIterator reset() {
+        orgIter.reset();
+        return this;
+      }
+    }
+  }
+
+  ///////////////////////////////////////////////////////////
 
   /**
    * DO NOT USE DIRECTLY. public by accident.

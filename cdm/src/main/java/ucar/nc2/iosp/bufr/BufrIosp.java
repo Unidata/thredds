@@ -227,13 +227,16 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
         if (dkey.getSubKeys() != null) 
           mdd.nested = associateMessage2Members(dkey.getSubKeys(), m.getStructureMembers());
-
-      } else {
-        log.error("associateMessage2Members cant find "+dkey.name);
       }
 
       bitOffset += dkey.getBitWidth();
     }
+
+    /* for (StructureMembers.Member m : members.getMembers()) {
+      if () {
+        log.error("associateMessage2Members cant find "+m.getName());
+      }
+    } */
 
     return result;
   }

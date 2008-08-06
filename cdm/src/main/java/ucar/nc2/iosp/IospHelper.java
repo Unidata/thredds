@@ -593,16 +593,30 @@ public class IospHelper {
       Array innerData = outerData.getArray(recno, m);
 
       if (child.child == null) {  // inner variable
-
         if (wantNelems != innerData.getSize())
           innerData = innerData.section(child.section.getRanges());
         MAMath.copy(child.v.getDataType(), innerData.getIndexIterator(), to);
 
       } else {                   // not an inner variable - must be an ArrayStructure
-        if (wantNelems != innerData.getSize())
-          innerData = sectionArrayStructure(child, (ArrayStructure) innerData, m);
-        extractSection(child.child, (ArrayStructure) innerData, to);
+
+        if (innerData instanceof ArraySequence)
+          extractSectionFromSequence(child.child, (ArraySequence) innerData, to);
+        else {
+          if (wantNelems != innerData.getSize())
+            innerData = sectionArrayStructure(child, (ArrayStructure) innerData, m);
+          extractSection(child.child, (ArrayStructure) innerData, to);
+        }
       }
+    }
+  }
+
+  static private void extractSectionFromSequence(ParsedSectionSpec child, ArraySequence outerData, IndexIterator to) throws IOException, InvalidRangeException {
+    StructureDataIterator sdataIter = outerData.getStructureDataIterator();
+    while (sdataIter.hasNext()) {
+      StructureData sdata = sdataIter.next();
+      StructureMembers.Member m = outerData.findMember( child.v.getShortName());
+      Array innerData = sdata.getArray( child.v.getShortName());
+      MAMath.copy(m.getDataType(), innerData.getIndexIterator(), to);
     }
   }
 

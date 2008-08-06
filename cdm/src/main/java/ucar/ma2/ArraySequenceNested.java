@@ -22,6 +22,7 @@ package ucar.ma2;
 /**
  * Handles nested sequences: a 1D array of variable length 1D arrays of StructureData.
  * Uses same technique as ArrayStructureMA for the inner fields; data storage is in member arrays.
+ * Used only by opendap internals.
  *
  * Example use:
  * <pre>

@@ -87,7 +87,7 @@ public class CodeTable {
               int value = Integer.parseInt(valueS);
               ct.addValue(value, text);
             } catch (NumberFormatException e) {
-              log.warn("BAD VALUE "+valueS+" for table "+name);
+              log.warn("NumberFormatException on '"+valueS+"' for CodeTable "+name+" in "+filename);
             }
           }
         }
