@@ -6,8 +6,8 @@ import thredds.catalog2.builder.*;
 import thredds.catalog.ServiceType;
 
 import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * _more_
@@ -19,7 +19,6 @@ public class DatasetImpl
         extends DatasetNodeImpl
         implements Dataset, DatasetBuilder
 {
-  private boolean accessible = false;
   private List<AccessBuilder> accessBuilders;
   private List<Access> accesses;
 
@@ -49,33 +48,63 @@ public class DatasetImpl
 
   public List<Access> getAccesses()
   {
-    return null;
+    if ( ! finished ) throw new IllegalStateException( "This Dataset has escaped its DatasetBuilder before finish() was called." );
+    return Collections.unmodifiableList( this.accesses );
   }
 
-  public Access getAccessByType( ServiceType type )
+  public List<Access> getAccessesByType( ServiceType type )
   {
-    return null;
+    if ( !finished )
+      throw new IllegalStateException( "This Dataset has escaped its DatasetBuilder before finish() was called." );
+    List<Access> list = new ArrayList<Access>();
+    for ( Access a : this.accesses )
+    {
+      if ( a.getService().getType().equals( type ))
+        list.add( a );
+    }
+    return list;
   }
 
   public List<AccessBuilder> getAccessBuilders()
   {
-    return null;
+    if ( finished ) throw new IllegalStateException( "This DatasetBuilder has been finished()." );
+    return Collections.unmodifiableList( this.accessBuilders );
   }
 
-  public AccessBuilder getAccessBuilderByType( ServiceType type )
+  public List<AccessBuilder> getAccessBuildersByType( ServiceType type )
   {
-    return null;
+    if ( finished ) throw new IllegalStateException( "This DatasetBuilder has been finished()." );
+    List<AccessBuilder> list = new ArrayList<AccessBuilder>();
+    for ( AccessBuilder a : this.accessBuilders )
+    {
+      if ( a.getServiceBuilder().getType().equals( type ) )
+        list.add( a );
+    }
+    return list;
   }
 
   public boolean isFinished()
   {
-    return false;
+    return this.finished;
   }
 
   public Dataset finish()
   {
     if ( this.finished )
       return this;
+
+    //ToDo Check invariants
+//    // Check invariants: all access reference a service in the containing catalog.
+//    for ( AccessBuilder ab : this.accessBuilders )
+//    {
+//      String serviceName = ab.getServiceBuilder().getName();
+//      Service abs = ((CatalogSearch)this.getParentCatalogBuilder()).findServiceByName( serviceName);
+//      if ( abs == null )
+//        finishLog.appendBuildErrors( String message );
+//    }
+    // Finish subordinates.
+    for ( AccessBuilder ab : this.accessBuilders )
+      ab.finish();
 
     super.finish();
     this.finished = true;

@@ -16,7 +16,7 @@ import java.util.*;
 public class CatalogImpl implements Catalog, CatalogBuilder
 {
   private String name;
-  private URI baseUri;
+  private URI docBaseUri;
   private String version;
   private Date expires;
   private Date lastModified;
@@ -30,17 +30,18 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   private Map<String,DatasetNode> datasetsMapById;
 
   private List<Property> properties;
+  private Map<String, Property> propertiesMap;
 
   private Set<String> uniqueServiceNames;
 
   private boolean finished = false;
 
 
-  public CatalogImpl( String name, URI baseUri, String version, Date expires, Date lastModified )
+  public CatalogImpl( String name, URI docBaseUri, String version, Date expires, Date lastModified )
   {
-    if ( baseUri == null ) throw new IllegalArgumentException( "Catalog base URI must not be null.");
+    if ( docBaseUri == null ) throw new IllegalArgumentException( "Catalog base URI must not be null.");
     this.name = name;
-    this.baseUri = baseUri;
+    this.docBaseUri = docBaseUri;
     this.version = version;
     this.expires = expires;
     this.lastModified = lastModified;
@@ -54,6 +55,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     this.datasetsMapById = new HashMap<String,DatasetNode>();
 
     this.properties = new ArrayList<Property>();
+    this.propertiesMap = new HashMap<String,Property>();
 
     this.uniqueServiceNames = new HashSet<String>();
   }
@@ -85,7 +87,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   @Override
   public URI getDocBaseUri()
   {
-    return this.baseUri;
+    return this.docBaseUri;
   }
 
   @Override
@@ -109,7 +111,8 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   @Override
   public List<Service> getServices()
   {
-    if ( !finished ) throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
+    if ( !finished )
+      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without finish() being called." );
     return Collections.unmodifiableList( this.services);
   }
 
@@ -122,32 +125,17 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
-  public Service getServiceByType( ServiceType type )
-  {
-    if ( !finished )
-      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
-    return null;
-  }
-
-  @Override
   public List<ServiceBuilder> getServiceBuilders()
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return null;
+    return Collections.unmodifiableList( this.serviceBuilders );
   }
 
   @Override
   public ServiceBuilder getServiceBuilderByName( String name )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return null;
-  }
-
-  @Override
-  public ServiceBuilder getServiceBuilderByType( ServiceType type )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return null;
+    return (ServiceBuilder) this.servicesMap.get( name );
   }
 
   @Override
@@ -155,8 +143,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   {
     if ( !finished )
       throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
-    return null;
-    //return this.datasets;
+    return Collections.unmodifiableList( this.datasets );
   }
 
   @Override
@@ -164,7 +151,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   {
     if ( !finished )
       throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
-    return this.properties;
+    return Collections.unmodifiableList( this.properties);
   }
 
   @Override
@@ -172,21 +159,21 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   {
     if ( !finished )
       throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
-    return null;
+    return this.propertiesMap.get( name );
   }
 
   @Override
   public List<String> getPropertyNames()
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return null;
+    return Collections.unmodifiableList( new ArrayList<String>( this.propertiesMap.keySet() ) );
   }
 
   @Override
   public String getPropertyValue( String name )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return null;
+    return this.propertiesMap.get( name ).getValue();
   }
 
   @Override
@@ -194,51 +181,57 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   {
     if ( !finished )
       throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
-    return null;
+    return this.datasetsMapById.get( id );
   }
 
   @Override
   public List<DatasetNodeBuilder> getDatasetNodeBuilders()
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return null;
+    return Collections.unmodifiableList( this.datasetBuilders );
   }
 
   @Override
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return null;
+    return (DatasetNodeBuilder) this.datasetsMapById.get( id);
   }
 
   @Override
   public void setName( String name )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    this.name = name;
   }
 
   @Override
   public void setDocBaseUri( URI docBaseUri )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    if ( docBaseUri == null ) throw new IllegalArgumentException( "Catalog base URI must not be null." );
+    this.docBaseUri = docBaseUri;
   }
 
   @Override
   public void setVersion( String version )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    this.version = version;
   }
 
   @Override
   public void setExpires( Date expires )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    this.expires = expires;
   }
 
   @Override
   public void setLastModified( Date lastModified )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    this.lastModified = lastModified;
   }
 
   @Override
@@ -261,27 +254,52 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   public DatasetBuilder addDataset( String name )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return null;
+    DatasetImpl db = new DatasetImpl( name, this, null );
+    this.datasetBuilders.add( db );
+    this.datasets.add( db );
+    return db;
   }
 
   @Override
   public DatasetAliasBuilder addDatasetAlias( String name, DatasetNodeBuilder alias )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return null;
+    DatasetAliasImpl dab = new DatasetAliasImpl( name, alias, this, null );
+    this.datasetBuilders.add( dab );
+    this.datasets.add( dab );
+    return dab;
   }
 
   @Override
   public CatalogRefBuilder addCatalogRef( String name, URI reference )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return null;
+    CatalogRefImpl crb = new CatalogRefImpl( name, reference, this, null );
+    this.datasetBuilders.add( crb );
+    this.datasets.add( crb );
+    return crb;
   }
 
   @Override
   public void addProperty( String name, String value )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    PropertyImpl property = new PropertyImpl( name, value );
+    Property curProp = this.propertiesMap.get( name );
+    if ( curProp != null )
+    {
+      int index = this.properties.indexOf( curProp );
+      this.properties.remove( index );
+      this.propertiesMap.remove( name );
+      this.properties.add( index, property );
+    }
+    else
+    {
+      this.properties.add( property );
+    }
+
+    this.propertiesMap.put( name, property );
+    return;
   }
 
   @Override

@@ -32,7 +32,6 @@ public interface Catalog
 
   public List<Service> getServices();
   public Service getServiceByName( String name );
-  public Service getServiceByType( ServiceType type );
 
   public List<DatasetNode> getDatasets();
   public DatasetNode getDatasetById( String id );

@@ -74,6 +74,11 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.uniqueServiceNames.add( name );
   }
 
+  protected boolean containUniqueServiceName( String name )
+  {
+    return this.uniqueServiceNames.contains( name );
+  }
+
   @Override
   public void setDescription( String description )
   {
@@ -213,7 +218,7 @@ public class ServiceImpl implements Service, ServiceBuilder
   }
 
   @Override
-  public Property getProperty( String name )
+  public Property getPropertyByName( String name )
   {
     if ( !this.finished )
       throw new IllegalStateException( "This Service has escaped from its ServiceBuilder without being finished()." );
@@ -244,7 +249,7 @@ public class ServiceImpl implements Service, ServiceBuilder
   }
 
   @Override
-  public ServiceBuilder getServiceBuilder( String name )
+  public ServiceBuilder getServiceBuilderByName( String name )
   {
     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
     for ( ServiceBuilder b : this.serviceBuilders )

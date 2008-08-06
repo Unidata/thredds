@@ -37,7 +37,8 @@ public class DatasetAliasImpl
 
   public DatasetNode getAlias()
   {
-    if ( ! this.finished ) throw new IllegalStateException( "This DatasetAlias has escaped its DatasetAliasBuilder before being finished().");
+    if ( ! this.finished )
+      throw new IllegalStateException( "This DatasetAlias has escaped its DatasetAliasBuilder before finish() was called.");
     return this.alias;
   }
 

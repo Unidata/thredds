@@ -46,7 +46,7 @@ public interface ServiceBuilder
    * modification of the new Service.
    *
    * <p>If this Service or an already added Service has the given name, an
-   * IllegalStateException is thrown. {@link ServiceBuilder#getServiceBuilder(String)}
+   * IllegalStateException is thrown. {@link ServiceBuilder#getServiceBuilderByName(String)}
    * can be used to check before calling this method.
    *
    * @param name the name of the new Service object.
@@ -82,7 +82,7 @@ public interface ServiceBuilder
 //   */
 //  public ServiceBuilder addService( String name, ServiceType type, URI baseUri, int index );
   public List<ServiceBuilder> getServiceBuilders();
-  public ServiceBuilder getServiceBuilder( String name );
+  public ServiceBuilder getServiceBuilderByName( String name );
 
   public boolean isFinished();
 

@@ -57,7 +57,7 @@ public interface Service
    */
   public List<Property> getProperties();
 
-  public Property getProperty( String name );
+  public Property getPropertyByName( String name );
 
   /**
    * Return the List of Service Objects nested in this service. Nested

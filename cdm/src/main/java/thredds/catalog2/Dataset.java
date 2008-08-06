@@ -14,5 +14,5 @@ public interface Dataset extends DatasetNode
 {
   public boolean isAccessible();
   public List<Access> getAccesses();
-  public Access getAccessByType( ServiceType type);
+  public List<Access> getAccessesByType( ServiceType type);
 }

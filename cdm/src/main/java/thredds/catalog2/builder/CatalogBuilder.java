@@ -34,7 +34,6 @@ public interface CatalogBuilder
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri );
   public List<ServiceBuilder> getServiceBuilders();
   public ServiceBuilder getServiceBuilderByName( String name );
-  public ServiceBuilder getServiceBuilderByType( ServiceType type );
 
 
   public DatasetBuilder addDataset( String name );
