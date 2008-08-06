@@ -67,7 +67,7 @@ class ConstructNC {
     } else if (cat == 4) {
       ftype = FeatureType.TRAJECTORY;
     } else {
-      log.warn("unknown category=" + category);
+      // log.warn("unknown category=" + category);
     }
 
     String centerName = proto.ids.getCenterName();

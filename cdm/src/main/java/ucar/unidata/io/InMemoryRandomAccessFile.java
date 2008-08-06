@@ -57,7 +57,9 @@ public class InMemoryRandomAccessFile extends RandomAccessFile {
     return dataEnd;
   }
 
+  @Override
   protected int read_(long pos, byte[] b, int offset, int len) throws IOException {
+    len = Math.min(len, (int) (buffer.length - pos));
     // copy out of buffer
     System.arraycopy(buffer, (int) pos, b, offset, len);
     return len;
