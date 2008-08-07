@@ -756,6 +756,28 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         return tdata;
     }
 
+    public URI getRadarDatasetURI(String stnName, String productID,
+                                  Date absTime) throws IOException {
+        // absTime is a member of  datasetsDateURI
+        InvDataset invdata = queryRadarStation(stnName, productID, absTime);
+        /*  List dsets = idata.getDatasets();
+          int siz = dsets.size();
+          if(siz != 1)
+              return null;
+
+          InvDataset invdata = (InvDataset)dsets.get(0);     */
+        List      acess = invdata.getAccess();
+        InvAccess ia    = (InvAccess) acess.get(0);
+        URI       ui    = ia.getStandardUri();
+
+        if (ui == null) {
+            throw new IOException("Invalid time selected: "
+                                  + absTime.toString() + "\n");
+        }
+
+        return ui;
+    }
+
     /**
      * Getting invDataset list for a single radar station.
      * @param stnName radar station name
