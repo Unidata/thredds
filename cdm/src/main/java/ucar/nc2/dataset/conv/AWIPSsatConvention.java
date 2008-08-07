@@ -205,7 +205,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     double lonDxDy = findAttributeDouble( ds, "lonDxDy");
 
     // lat0, lon0, par
-    Mercator proj = new Mercator(latDxDy, lonDxDy, latDxDy);
+    Mercator proj = new Mercator( lonDxDy, latDxDy);
 
     // we have to project in order to find the start LOOK may be wrong
     double lat0 = findAttributeDouble( ds, "lat00");

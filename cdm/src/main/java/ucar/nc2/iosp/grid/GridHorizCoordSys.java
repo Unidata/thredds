@@ -28,6 +28,7 @@ import ucar.ma2.DataType;
 
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 
@@ -714,48 +715,42 @@ public class GridHorizCoordSys {
      * Make a Mercator projection 
      */
     private void makeMercator() {
+      /**
+       * Construct a Mercator Projection.
+       * @param lon0 longitude of origin (degrees)
+       * @param par standard parallel (degrees). cylinder cuts earth at this latitude.
+       */
+      double Latin = gdsIndex.readDouble("Latin");
+      double Lo1 = getParamValue(gdsIndex.LO1); //gdsIndex.Lo1;
+      double La1 = getParamValue(gdsIndex.LA1); //gdsIndex.La1;
 
-        /**
-         * Construct a Mercator Projection.
-         * @param lat0 latitude of origin (degrees)
-         * @param lon0 longitude of origin (degrees)
-         * @param par standard parallel (degrees). cylinder cuts earth at this latitude.
-         */
-        double Latin = gdsIndex.readDouble("Latin") * .001;
-        double La1   = getParamValue(gdsIndex.LA1);
-        double Lo1   = getParamValue(gdsIndex.LO1);
+      // put longitude origin at first point - doesnt actually matter
+      proj = new Mercator(Lo1, Latin);
 
-        // put projection origin at La1, Lo1
-        proj   = new Mercator(La1, Lo1, Latin);
-        startx = 0;
-        starty = 0;
+      // find out where
+      ProjectionPoint startP = proj.latLonToProj( new LatLonPointImpl(La1, Lo1));
+      startx = startP.getX();
+      starty = startP.getY();
 
-        if (Double.isNaN(getDxInKm())) {
-            setDxDy(startx, starty, proj);
-        }
+      attributes.add(new Attribute("grid_mapping_name", "mercator"));
+      attributes.add(new Attribute("standard_parallel", Latin));
+      attributes.add(new Attribute("longitude_of_projection_origin", Lo1));
 
-        attributes.add(new Attribute("grid_mapping_name", "mercator"));
-        attributes.add(new Attribute("standard_parallel", new Double(Latin)));
-        attributes.add(new Attribute("longitude_of_projection_origin",
-                                     new Double(Lo1)));
-        attributes.add(new Attribute("latitude_of_projection_origin",
-                                     new Double(La1)));
+       if (GridServiceProvider.debugProj) {
+        double Lo2 = getParamValue(gdsIndex.LO2);
+        if (Lo2 < Lo2) Lo2 += 360;
+        double La2 = getParamValue(gdsIndex.LA2);
+        LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
+        System.out.println("GribHorizCoordSys.makeMercator:   end at latlon= " + endLL);
 
-        if (GridServiceProvider.debugProj) {
-            double          Lo2   = getParamValue(gdsIndex.LO2) + 360.0;
-            double          La2   = getParamValue(gdsIndex.LA2);
-            LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
-            System.out.println(
-                "GridHorizCoordSys.makeMercator end at latlon " + endLL);
+        ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
+        System.out.println("   start at proj coord " + new ProjectionPointImpl(startx,starty));
+        System.out.println("   end at proj coord " + endPP);
 
-            ProjectionPointImpl endPP =
-                (ProjectionPointImpl) proj.latLonToProj(endLL);
-            System.out.println("   end at proj coord " + endPP);
-
-            double endx = startx + getNx() * getDxInKm();
-            double endy = starty + getNy() * getDyInKm();
-            System.out.println("   should be x=" + endx + " y=" + endy);
-        }
+        double endx = startx + (getNx()-1) * getDxInKm();
+        double endy = starty + (getNy()-1) * getDyInKm();
+        System.out.println("   should be x=" + endx + " y=" + endy);
+      }
     }
 
     /**

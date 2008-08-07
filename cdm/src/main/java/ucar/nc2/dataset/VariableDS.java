@@ -135,6 +135,38 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   }
 
   /**
+   * Wrap the given Variable, making it into a VariableDS.
+   * Delegate data reading to the original variable.
+   * Does not share cache, iosp.
+   * This is for NcML explicit mode
+   *
+   * @param group     the containing group; may not be null
+   * @param parent    parent Structure, may be null
+   * @param shortName variable shortName, must be unique within the Group
+   * @param orgVar the original Variable to wrap. The original Variable is not modified.
+   *    Must not be a Structure, use StructureDS instead.
+   */
+  public VariableDS(Group group, Structure parent, String shortName, Variable orgVar) {
+    super(null, group, parent, shortName);
+
+    if (orgVar instanceof Structure)
+      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
+
+    // dont share cache, iosp : all IO is delegated
+    this.ncfile = null;
+    this.spiObject = null;
+    this.preReader = null;
+    this.postReader = null;
+    createNewCache();
+
+    this.orgVar = orgVar;
+    this.orgDataType = orgVar.getDataType();
+
+    this.enhanceProxy = new EnhancementsImpl( this);
+    this.scaleMissingProxy = new EnhanceScaleMissingImpl();
+  }
+
+  /**
    * Copy constructor, for subclasses.
    * @param vds copy from here.
    */

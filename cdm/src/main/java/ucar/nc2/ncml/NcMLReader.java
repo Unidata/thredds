@@ -412,7 +412,7 @@ public class NcMLReader {
     if (hasFatalError)
       throw new IllegalArgumentException("NcML had fatal errors - see logs");
 
-    // transfer from groups to global conatiners
+    // transfer from groups to global containers
     targetDS.finish();
 
     // enhance means do scale/offset and/or add CoordSystems
@@ -782,20 +782,12 @@ public class NcMLReader {
 
     } else { //explicit
       if (refv instanceof Structure) {
-        v = new StructureDS(g, (Structure) refv); // true
-        v.setName(name);
-        if (shape != null) // LOOK check conformable
-          v.setDimensions(shape);
-        //StructureDS vs = new StructureDS(ds, g, null, name, shape, null, null);
-        //vs.setIOVar(refv);
+        v = new StructureDS(g, null, name, (Structure) refv); 
+        v.setDimensions(shape);
       } else {
-        v = new VariableDS(g, refv, false);
-        v.setName(name);
+        v = new VariableDS(g, null, name, refv);
         v.setDataType(dtype);
-        if (shape != null) // LOOK check conformable
-          v.setDimensions(shape);
-        //VariableDS vs = new VariableDS(ds, g, null, name, dtype, shape, null, null);
-        //vs.setIOVar(refv);
+        v.setDimensions(shape);
       }
       if (debugConstruct) System.out.println(" modify explicit var = " + nameInFile);
       g.addVariable(v);

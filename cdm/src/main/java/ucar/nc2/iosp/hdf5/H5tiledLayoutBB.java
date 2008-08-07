@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Iterator to read/write subsets of an array.
@@ -46,6 +47,7 @@ class H5tiledLayoutBB implements LayoutBB {
 
   private RandomAccessFile raf;
   private H5header.Filter[] filters;
+  private ByteOrder byteOrder;
 
   private Section want;
   private int[] chunkSize; // from the StorageLayout message (exclude the elemSize)
@@ -65,7 +67,7 @@ class H5tiledLayoutBB implements LayoutBB {
    * @throws InvalidRangeException if section invalid for this variable
    * @throws java.io.IOException   on io error
    */
-  H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, H5header.Filter[] filters) throws InvalidRangeException, IOException {
+  H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, H5header.Filter[] filters, ByteOrder byteOrder) throws InvalidRangeException, IOException {
     wantSection = Section.fill(wantSection, v2.getShape());
 
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
@@ -74,6 +76,7 @@ class H5tiledLayoutBB implements LayoutBB {
 
     this.raf = raf;
     this.filters = filters;
+    this.byteOrder = byteOrder;
 
     // we have to translate the want section into the same rank as the storageSize, in order to be able to call
     // Section.intersect(). It appears that storageSize (actually msl.chunkSize) may have an extra dimension, reletive
@@ -177,7 +180,9 @@ class H5tiledLayoutBB implements LayoutBB {
           data = shuffle(data, f.data[0]);
       }
 
-      return ByteBuffer.wrap(data);
+      ByteBuffer result = ByteBuffer.wrap(data);
+      result.order(byteOrder);
+      return result;
     }
 
     /**

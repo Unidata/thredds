@@ -107,7 +107,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         return;
     }
 
-    this.isUnsigned = orgVar.isUnsigned();
+    this.isUnsigned = (orgVar != null) ? orgVar.isUnsigned() : forVar.isUnsigned();
     this.convertedDataType = forVar.getDataType();
 
     DataType scaleType = null, missType = null, validType = null, fillType = null;

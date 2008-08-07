@@ -419,7 +419,7 @@ class Giniheader {
         latin = nd.doubleValue();
         this.ncfile.addAttribute(null, att);
 
-        latt = 0.0; // this is not corrected
+        latt = 0.0; // this is not corrected  // jc 8/7/08 not used
 
        // dyKm =  Math.cos( DEG_TO_RAD*latt);
        // dxKm = DEG_TO_RAD * EARTH_RAD_KMETERS * Math.abs((lon_1-lon_2) / (nx-1));
@@ -427,7 +427,7 @@ class Giniheader {
       //  dyKm = dy *( Math.log( Math.tan(DEG_TO_RAD*( (lat2-latt)/2.0 + 45.0 ) ) )
       //                  -Math.log( Math.tan(DEG_TO_RAD*( (lat1-latt)/2.0 + 45.0 ) ) ) );
       //  dxKm = DEG_TO_RAD * EARTH_RAD_KMETERS * Math.abs(lon1-lon2) / (ny-1);
-        projection = new Mercator(latt, lonv, latin) ;
+        projection = new Mercator( lonv, latin) ;
         break;
 
       case 3:                               /* Lambert Conformal             */

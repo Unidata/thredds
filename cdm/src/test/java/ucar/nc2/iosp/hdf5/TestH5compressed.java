@@ -4,6 +4,8 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.TestNC2;
+import ucar.nc2.TestAll;
 
 import java.io.*;
 
@@ -85,5 +87,23 @@ public class TestH5compressed extends TestCase {
 
     ncfile.close();
   }
+
+  public void testEndian() throws IOException {
+    String testDir = TestAll.upcShareTestDataDir + "netcdf4/";
+    NetcdfFile ncfile = TestNC2.open(testDir+"endianTest.nc4");
+    Variable v = ncfile.findVariable("TMP");
+    assert v != null;
+    assert v.getDataType() == DataType.FLOAT;
+
+    Array data = v.read();
+    assert data.getElementType() == float.class;
+
+    //large values indicate incorrect inflate or byte swapping
+    while (data.hasNext()) {
+      float val = data.nextFloat();
+      assert Math.abs(val) < 100.0 : val;
+    }
+  }
+
 
 }

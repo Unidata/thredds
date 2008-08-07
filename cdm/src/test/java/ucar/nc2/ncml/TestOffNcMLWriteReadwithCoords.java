@@ -77,7 +77,7 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
     if (showFiles) System.out.println(" output filename= "+ncmlOut);
     try {
       OutputStream out = new BufferedOutputStream( new FileOutputStream( ncmlOut, false));
-      writer.writeXML( org_ncd, out, null);
+      writer.writeXMLexplicit( org_ncd, out, null);
       out.close();
     } catch (IOException ioe) {
       ioe.printStackTrace();
@@ -87,7 +87,6 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
     // read it back in
     NetcdfDataset new_ncd = NetcdfDataset.openDataset(ncmlOut, true, null);
     TestCompare.compareFiles( org_ncd, new_ncd);
-    //assert cat.equals( catV1);
 
     org_ncd.close();
     new_ncd.close();

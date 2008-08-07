@@ -96,6 +96,33 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     setMemberVariables(newList);
   }
 
+  /**
+   * Wrap the given Structure, making it into a StructureDS.
+   * Delegate data reading to the original variable.
+   * Does not share cache, iosp.
+   * This is for NcML explicit mode
+   *
+   * @param group     the containing group; may not be null
+   * @param parent    parent Structure, may be null
+   * @param shortName variable shortName, must be unique within the Group
+   * @param orgVar the original Structure to wrap.
+   */
+  public StructureDS(Group group, Structure parent, String shortName, Structure orgVar) {
+    super(null, group, parent, shortName);
+
+    if (orgVar instanceof Structure)
+      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
+
+    // dont share cache, iosp : all IO is delegated
+    this.ncfile = null;
+    this.spiObject = null;
+    this.preReader = null;
+    this.postReader = null;
+    createNewCache();
+
+    this.orgVar = orgVar;
+  }
+
   // for section and slice
   @Override
   protected Variable copy() {
@@ -230,7 +257,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     for (StructureMembers.Member m : sm.getMembers()) {
       Variable v = findVariable(m.getName());
       if (v != null)
-        m.setVariableInfo(v.getShortName(), v.getUnitsString(), v.getDescription());
+        m.setVariableInfo(v.getShortName(), v.getDataType(), v.getUnitsString(), v.getDescription());
     }
 
     return convert(result);
@@ -288,7 +315,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
           }
         }
       }
-      m.setVariableInfo(v2.getShortName(), v2.getUnitsString(), v2.getDescription());
+      m.setVariableInfo(v2.getShortName(), v2.getDataType(), v2.getUnitsString(), v2.getDescription());
 
     }
     return as;

@@ -44,9 +44,8 @@ public class Mercator extends AbstractCoordTransBuilder {
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
     double par = readAttributeDouble( ctv, "standard_parallel");
     double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin");
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin");
 
-    ucar.unidata.geoloc.projection.Mercator proj = new ucar.unidata.geoloc.projection.Mercator(lat0, lon0, par);
+    ucar.unidata.geoloc.projection.Mercator proj = new ucar.unidata.geoloc.projection.Mercator( lon0, par);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }

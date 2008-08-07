@@ -137,7 +137,7 @@ netcdf TestUnion.ncml {
 <h3>Defining coordinates on a JoinNew aggregation </h3>
 <p>A <em><strong>JoinNew</strong></em> aggregation has to create a new coordinate variable. In the above example, one was automatically created with type double, to match the coordValues specified on the netcdf elements. However, it has no units or other attributes. To specify attibutes on the coordinate system, you can use the following:</p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;</pre>
-<pre><strong>(1)</strong>&lt;variable name=&quot;time&quot;&gt;
+<pre><strong>(1)</strong>&lt;variable name=&quot;time&quot; type=&quot;int&quot; &gt;
      &lt;attribute name=&quot;units&quot; value=&quot;months since 2000-6-16 6:00&quot;/&gt;
      &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
      &lt;values&gt;0 1 2&lt;/values&gt;
@@ -149,7 +149,7 @@ netcdf TestUnion.ncml {
     &lt;netcdf location=&quot;file:/test/data/ncml/nc/time2.nc&quot; /&gt;
    &lt;/aggregation&gt;
 
-&lt;/netcdf</pre>
+&lt;/netcdf&gt;</pre>
 <p>Its not obvious from the NcML, but the aggregation element <strong>(2)</strong> is processed first, so that all of the objects of the aggregated datasets are available to be modified by  other NcML elements, for example by <strong>(1)</strong>.  </p>
 <p>There are 4 ways that  coordinate values are assigned to a JoinNew coordinate: </p>
 <ol>

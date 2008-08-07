@@ -47,6 +47,8 @@ import java.util.*;
  * @author caron
  */
 public class GribHorizCoordSys {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribHorizCoordSys.class);
+
   private TableLookup lookup;
   private Index.GdsRecord gdsIndex;
   private Group g;
@@ -145,13 +147,16 @@ public class GribHorizCoordSys {
       addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
 
     } else {
-      makeProjection(ncfile);
-      double[] yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, getDyInKm(), "km",
-              "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
-      double[] xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, getDxInKm(), "km",
-              "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
-      if (GribServiceProvider.addLatLon) addLatLon2D(ncfile, xData, yData);
-      //add2DCoordSystem(ncfile, "projectionCoordSys", "time y x"); // LOOK is this needed?
+      boolean hasProj = makeProjection(ncfile);
+      if (hasProj) {
+        double[] yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, getDyInKm(), "km",
+                "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
+        double[] xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, getDxInKm(), "km",
+                "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
+        if (GribServiceProvider.addLatLon) addLatLon2D(ncfile, xData, yData);
+      } else {
+        log.warn("Unknown grid type= "+gdsIndex.grid_type+"; no projection found");
+      }
     }
   }
 
@@ -294,7 +299,7 @@ public class GribHorizCoordSys {
     ncfile.addVariable(g, lonVar);
   }
 
-  private void makeProjection(NetcdfFile ncfile) {
+  private boolean makeProjection(NetcdfFile ncfile) {
     switch (lookup.getProjectionType(gdsIndex)) {
       case TableLookup.PolarStereographic:
         makePS();
@@ -309,7 +314,7 @@ public class GribHorizCoordSys {
         makeSpaceViewOrOthographic();
         break;
       default:
-        throw new UnsupportedOperationException("unknown projection = " + gdsIndex.grid_type);
+        return false;
     }
 
     Variable v = new Variable(ncfile, g, null, grid_name);
@@ -331,6 +336,8 @@ public class GribHorizCoordSys {
 
     addGDSparams(v);
     ncfile.addVariable(g, v);
+
+    return true;
   }
 
   private void addGDSparams(Variable v) {
@@ -447,35 +454,40 @@ public class GribHorizCoordSys {
   private void makeMercator() {
     /**
      * Construct a Mercator Projection.
-     * @param lat0 latitude of origin (degrees)
      * @param lon0 longitude of origin (degrees)
      * @param par standard parallel (degrees). cylinder cuts earth at this latitude.
      */
-    double Latin = gdsIndex.readDouble("Latin") * .001;
-    double La1 = gdsIndex.La1;
+    double Latin = gdsIndex.readDouble("Latin");
     double Lo1 = gdsIndex.Lo1;
+    double La1 = gdsIndex.La1;
 
-    // put projection origin at La1, Lo1
-    proj = new Mercator(La1, Lo1, Latin);
-    startx = 0;
-    starty = 0;
+    // put longitude origin at first point - doesnt actually matter
+    proj = new Mercator(Lo1, Latin);
+
+    // find out where
+    LatLonPointImpl startLL = new LatLonPointImpl(La1, Lo1);
+    ProjectionPoint startP = proj.latLonToProj( startLL);
+    startx = startP.getX();
+    starty = startP.getY();
 
     attributes.add(new Attribute("grid_mapping_name", "mercator"));
     attributes.add(new Attribute("standard_parallel", Latin));
     attributes.add(new Attribute("longitude_of_projection_origin", Lo1));
-    attributes.add(new Attribute("latitude_of_projection_origin", La1));
 
     if (GribServiceProvider.debugProj) {
-      double Lo2 = gdsIndex.readDouble("Lo2") + 360.0;
+      double Lo2 = gdsIndex.readDouble("Lo2");
+      if (Lo2 < Lo2) Lo2 += 360;
       double La2 = gdsIndex.readDouble("La2");
       LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
-      System.out.println("GribHorizCoordSys.makeMercator end at latlon " + endLL);
+      System.out.println("GribHorizCoordSys.makeMercator: start at latlon= " + startLL);
+      System.out.println("                                  end at latlon= " + endLL);
 
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
+      System.out.println("   start at proj coord " + new ProjectionPointImpl(startx,starty));
       System.out.println("   end at proj coord " + endPP);
 
-      double endx = startx + getNx() * getDxInKm();
-      double endy = starty + getNy() * getDyInKm();
+      double endx = startx + (getNx()-1) * getDxInKm();
+      double endy = starty + (getNy()-1) * getDyInKm();
       System.out.println("   should be x=" + endx + " y=" + endy);
     }
   }

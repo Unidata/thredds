@@ -115,7 +115,8 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (vinfo.mfp != null) { // filtered
       if (debugFilter) System.out.println("read variable filtered " + v2.getName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
-      H5tiledLayoutBB layout = new H5tiledLayoutBB(v2, wantSection, myRaf, vinfo.mfp.getFilters());
+      ByteOrder bo = (vinfo.typeInfo.byteOrder == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+      H5tiledLayoutBB layout = new H5tiledLayoutBB(v2, wantSection, myRaf, vinfo.mfp.getFilters(), bo);
       data = IospHelper.readDataFill(layout, v2.getDataType(), vinfo.getFillValue());
 
     } else { // normal case

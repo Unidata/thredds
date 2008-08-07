@@ -204,7 +204,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;
         case 3:
-          proj = new Mercator(standardLat, standardLon, standardLat); // thanks to Robert Scmunk
+          proj = new Mercator(standardLon, standardLat); // thanks to Robert Scmunk
           projCT = new ProjectionCT("Mercator", "FGDC", proj);
           // proj = new TransverseMercator(standardLat, standardLon, 1.0);
           //projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
