@@ -67,5 +67,5 @@ public interface Service
    */
   public List<Service> getServices();
 
-  public Service getService( String name );
+  public Service getServiceByName( String name );
 }

@@ -19,8 +19,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 {
   private String id;
   private String name;
-  private List<Property> properties;
-  private Map<String,Property> propertiesMap;
+  private PropertyContainer propertyContainer;
 
   private List<MetadataBuilder> metadataBuilders;
   private List<Metadata> metadata;
@@ -41,8 +40,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     this.parentCatalog = (Catalog) parentCatalog;
     this.parent = (DatasetNode) parent;
 
-    this.properties = new ArrayList<Property>();
-    this.propertiesMap = new HashMap<String,Property>();
+    this.propertyContainer = new PropertyContainer();
 
     this.metadataBuilders = new ArrayList<MetadataBuilder>();
     this.metadata = new ArrayList<Metadata>();
@@ -89,53 +87,41 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   @Override
   public void addProperty( String name, String value )
   {
-    if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    PropertyImpl property = new PropertyImpl( name, value );
-    Property curProp = this.propertiesMap.get( name );
-    if ( curProp != null )
-    {
-      int index = this.properties.indexOf( curProp );
-      this.properties.remove( index );
-      this.propertiesMap.remove( name );
-      this.properties.add( index, property );
-    }
-    else
-    {
-      this.properties.add( property );
-    }
+    if ( this.finished )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been finish()-ed." );
+    this.propertyContainer.addProperty( name, value );
+  }
 
-    this.propertiesMap.put( name, property );
-    return;
+  @Override
+  public List<String> getPropertyNames()
+  {
+    if ( this.finished )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    return this.propertyContainer.getPropertyNames();
+  }
+
+  @Override
+  public String getPropertyValue( String name )
+  {
+    if ( this.finished )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    return this.propertyContainer.getPropertyValue( name );
   }
 
   @Override
   public List<Property> getProperties()
   {
     if ( !this.finished )
-      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
-    return Collections.unmodifiableList( this.properties );
+      throw new IllegalStateException( "This DatasetNode has escaped from its DatasetNodeBuilder before finish() was called." );
+    return this.propertyContainer.getProperties();
   }
 
   @Override
   public Property getPropertyByName( String name )
   {
     if ( !this.finished )
-      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
-    return this.propertiesMap.get( name);
-  }
-
-  @Override
-  public List<String> getPropertyNames()
-  {
-    if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    return Collections.unmodifiableList( new ArrayList<String>( this.propertiesMap.keySet() ) );
-  }
-
-  @Override
-  public String getPropertyValue( String name )
-  {
-    if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    return this.propertiesMap.get( name ).getValue();
+      throw new IllegalStateException( "This DatasetNode has escaped from its ServiceBuilder before finish() was called." );
+    return this.propertyContainer.getPropertyByName( name );
   }
 
   @Override
