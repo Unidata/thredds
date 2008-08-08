@@ -300,13 +300,13 @@ public class StructureDataW extends StructureData {
    * @param m get data from this StructureMembers.Member. Must be of type Structure.
    * @return StructureData
    */
+  @Override
   public ArrayStructure getArrayStructure(StructureMembers.Member m) {
     return (ArrayStructure) getArray(m);
   }
 
   public ArraySequence getArraySequence(StructureMembers.Member m) {
-    throw new UnsupportedOperationException("getArraySequence");
+    return (ArraySequence) getArray(m);
   }
-
 
 }

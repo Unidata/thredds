@@ -247,7 +247,7 @@ public class H5iosp extends AbstractIOServiceProvider {
           hasStrings = true;
       }
       int recsize = layout.getElemSize();
-      sm.setStructureSize(recsize);
+      sm.setStructureSize(recsize); // gotta calculate this ourself
 
       // place data into an ArrayStructureBB for efficiency
       ArrayStructureBB asbb = new ArrayStructureBB(sm, shape);
@@ -314,12 +314,13 @@ public class H5iosp extends AbstractIOServiceProvider {
         m.setDataObject( ByteOrder.nativeOrder()); // the string index is always written in "native order"
         int size = m.getSize();
         int destPos = pos  + m.getDataParam();
-        for (int i = 0; i < size; i++)  { // 16 byte "heap ids" are in the ByteBuffer
-          String s = headerParser.readHeapString(bb, destPos + i * 16);
-          int index = asbb.addObjectToHeap(s);
-          bb.order( ByteOrder.nativeOrder()); // the string index is always written in "native order"
-          bb.putInt(destPos + i * 4, index); // overwrite with the index into the StringHeap
-        }
+        String[] result = new String[size];
+        for (int i = 0; i < size; i++)
+          result[i] = headerParser.readHeapString(bb, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
+
+        int index = asbb.addObjectToHeap( result);
+        bb.order( ByteOrder.nativeOrder()); // the string index is always written in "native order"
+        bb.putInt(destPos, index); // overwrite with the index into the StringHeap
       }
     }
   }

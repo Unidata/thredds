@@ -38,9 +38,9 @@ public enum DataType {
   DOUBLE("double", 8),
 
   // object types
-  STRING("String", 1), // LOOK sizes ?
-  STRUCTURE("Structure", 1),
-  SEQUENCE("Sequence", 4),
+  SEQUENCE("Sequence", 4), // 32-bit index
+  STRING("String", 4),     // 32-bit index
+  STRUCTURE("Structure", 1), // size meaningless
 
   // netcdf4 types
   OPAQUE("opaque", 1), // LOOK KEEP??

@@ -87,7 +87,7 @@ public class TestDate extends TestCase {
    * <p>[snip]
    *
    */
-  public void testStandardDatePrecision() {
+  public void utestStandardDatePrecision() {
     Date d = DateUnit.getStandardDate("47865.7916666665110000 days since 1858-11-17 00:00:00 UTC");
     String isoDateTimeString = formatter.toDateTimeStringISO( d );
 

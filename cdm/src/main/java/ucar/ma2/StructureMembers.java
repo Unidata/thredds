@@ -248,11 +248,16 @@ public class StructureMembers {
 
     /**
      * Get the total size in bytes. This does not have to match the VariableSimpleIF.
-     * Note that this will not be correct for type Sequence
+     *
+     * Note that this will not be correct when containing a member of type Sequence, or String, since those
+     * are variable length. In that case
+     *
      * @return total size in bytes
      */
     public int getSizeBytes() {
       if (getDataType() == DataType.SEQUENCE)
+        return getDataType().getSize();
+      else if (getDataType() == DataType.STRING)
         return getDataType().getSize();
       else if (getDataType() == DataType.STRUCTURE)
         return size * members.getStructureSize();
@@ -333,7 +338,8 @@ public class StructureMembers {
         memberHash.put(name, this);
       }
 
-      this.dtype = dtype;
+      if (dtype != null)
+        this.dtype = dtype;
       if (unitString != null)
         this.units = unitString;
       if (desc != null)

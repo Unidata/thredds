@@ -192,6 +192,7 @@ public class ArrayStructureMA extends ArrayStructure {
     return to;
   }
 
+  @Override
   protected StructureData makeStructureData( ArrayStructure as, int index) {
     return new StructureDataA( as, index);
   }

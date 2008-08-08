@@ -42,7 +42,8 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
-    20: Mercator projection: remove lat0; grib parameters were interpreted wrong
+    20: StructureDS: get nested convert to work
+        Mercator projection: remove lat0; grib parameters were interpreted wrong
         Allow opening GRIB files where we dont know the grid type, and so cant add coordinates
         HDF5 bug: filtered data (eg compressed) wasnt checking for byte order.
         add 'nodods':, 'slurp:' as aliases for http:

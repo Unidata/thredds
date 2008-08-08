@@ -839,31 +839,6 @@ public abstract class ArrayStructure extends Array {
     throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be String or char");
   }
 
-  /* LOOK can we optimize ??
-  public String[] getJavaArrayString(StructureMembers.Member m) {
-
-    if (m.getDataType() == DataType.STRING) {
-      Array data = getArray(m);
-      int n = m.getSize();
-      String[] result = new String[n];
-      for (int i = 0; i < result.length; i++)
-        result[i] = (String) data.getObject(i);
-     return result;
-
-    } else if (m.getDataType() == DataType.CHAR) {
-      ArrayChar data = (ArrayChar) getArray(m);
-      ArrayChar.StringIterator iter = data.getStringIterator();
-      String[] result = new String[ iter.getNumElems()];
-      int count = 0;
-      while (iter.hasNext())
-        result[count++] =  iter.next();
-      return result;
-    }
-
-    throw new IllegalArgumentException("getJavaArrayString: not String DataType :"+m.getDataType());
-  }  /*
-
-
   /**
   * Get member data of type Structure.
   * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
@@ -905,7 +880,7 @@ public abstract class ArrayStructure extends Array {
   }
 
   /**
-   * Get member data of type array of Structure.
+   * Get member data of type ArraySequence
    *
    * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
    * @param m      get data from this StructureMembers.Member. Must be of type Structure.

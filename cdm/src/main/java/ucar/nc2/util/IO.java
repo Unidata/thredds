@@ -545,10 +545,10 @@ public class IO {
   }
 
   /**
-   * Read the contents from the inputStream and place into a byte array,
+   * Read the contents from the given URL and place into a byte array,
    * with any error messages  put in the return String.
    *
-   * @param is the inputStream to read from.
+   * @param urlString read from this URL.
    * @return byte[] holding the contents, or an error message.
    * @throws java.io.IOException on io error
    */
