@@ -759,6 +759,11 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
     public URI getRadarDatasetURI(String stnName, String productID,
                                   Date absTime) throws IOException {
         // absTime is a member of  datasetsDateURI
+
+        if(productID == null) {
+            return getRadarDatasetURI(stnName, absTime);
+        }
+
         InvDataset invdata = queryRadarStation(stnName, productID, absTime);
         /*  List dsets = idata.getDatasets();
           int siz = dsets.size();
