@@ -55,6 +55,7 @@ public class ServiceImpl implements Service, ServiceBuilder
     this.containerService = containerService;
     if ( this.containerCatalog == null && this.containerService == null )
     {
+      this.containerService = this;
       this.uniqueServiceNames = new HashSet<String>();
       this.uniqueServiceNames.add( name );
     }

@@ -77,9 +77,24 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
+  public void setName( String name )
+  {
+    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    this.name = name;
+  }
+
+  @Override
   public String getName()
   {
     return this.name;
+  }
+
+  @Override
+  public void setDocBaseUri( URI docBaseUri )
+  {
+    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    if ( docBaseUri == null ) throw new IllegalArgumentException( "Catalog base URI must not be null." );
+    this.docBaseUri = docBaseUri;
   }
 
   @Override
@@ -89,9 +104,23 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
+  public void setVersion( String version )
+  {
+    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    this.version = version;
+  }
+
+  @Override
   public String getVersion()
   {
     return this.version;
+  }
+
+  @Override
+  public void setExpires( Date expires )
+  {
+    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    this.expires = expires;
   }
 
   @Override
@@ -101,9 +130,32 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
+  public void setLastModified( Date lastModified )
+  {
+    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    this.lastModified = lastModified;
+  }
+
+  @Override
   public Date getLastModified()
   {
     return this.lastModified;
+  }
+
+  @Override
+  public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
+  {
+    if ( finished )
+      throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+
+    // Track unique service names, throw llegalStateException if name not unique.
+    this.addUniqueServiceName( name );
+
+    ServiceImpl sb = new ServiceImpl( name, type, baseUri, this, null );
+    this.serviceBuilders.add( sb );
+    this.services.add( sb );
+    this.servicesMap.put( name, sb );
+    return null;
   }
 
   @Override
@@ -134,14 +186,6 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
     return (ServiceBuilder) this.servicesMap.get( name );
-  }
-
-  @Override
-  public List<DatasetNode> getDatasets()
-  {
-    if ( !finished )
-      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
-    return Collections.unmodifiableList( this.datasets );
   }
 
   @Override
@@ -185,80 +229,6 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   }
 
   @Override
-  public DatasetNode getDatasetById( String id )
-  {
-    if ( !finished )
-      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
-    return this.datasetsMapById.get( id );
-  }
-
-  @Override
-  public List<DatasetNodeBuilder> getDatasetNodeBuilders()
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return Collections.unmodifiableList( this.datasetBuilders );
-  }
-
-  @Override
-  public DatasetNodeBuilder getDatasetNodeBuilderById( String id )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return (DatasetNodeBuilder) this.datasetsMapById.get( id);
-  }
-
-  @Override
-  public void setName( String name )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    this.name = name;
-  }
-
-  @Override
-  public void setDocBaseUri( URI docBaseUri )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    if ( docBaseUri == null ) throw new IllegalArgumentException( "Catalog base URI must not be null." );
-    this.docBaseUri = docBaseUri;
-  }
-
-  @Override
-  public void setVersion( String version )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    this.version = version;
-  }
-
-  @Override
-  public void setExpires( Date expires )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    this.expires = expires;
-  }
-
-  @Override
-  public void setLastModified( Date lastModified )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    this.lastModified = lastModified;
-  }
-
-  @Override
-  public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
-  {
-    if ( finished )
-      throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-
-    // Track unique service names, throw llegalStateException if name not unique.
-    this.addUniqueServiceName( name );
-
-    ServiceImpl sb = new ServiceImpl( name, type, baseUri, this, null );
-    this.serviceBuilders.add( sb );
-    this.services.add( sb );
-    this.servicesMap.put( name, sb );
-    return null;
-  }
-
-  @Override
   public DatasetBuilder addDataset( String name )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
@@ -286,6 +256,36 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     this.datasetBuilders.add( crb );
     this.datasets.add( crb );
     return crb;
+  }
+
+  @Override
+  public List<DatasetNode> getDatasets()
+  {
+    if ( !finished )
+      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
+    return Collections.unmodifiableList( this.datasets );
+  }
+
+  @Override
+  public DatasetNode getDatasetById( String id )
+  {
+    if ( !finished )
+      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
+    return this.datasetsMapById.get( id );
+  }
+
+  @Override
+  public List<DatasetNodeBuilder> getDatasetNodeBuilders()
+  {
+    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    return Collections.unmodifiableList( this.datasetBuilders );
+  }
+
+  @Override
+  public DatasetNodeBuilder getDatasetNodeBuilderById( String id )
+  {
+    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    return (DatasetNodeBuilder) this.datasetsMapById.get( id);
   }
 
   @Override
