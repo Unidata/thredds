@@ -2,10 +2,14 @@ package thredds.catalog2.simpleImpl;
 
 import junit.framework.*;
 import thredds.catalog2.builder.ServiceBuilder;
+import thredds.catalog2.builder.CatalogBuilderFactory;
+import thredds.catalog2.Property;
+import thredds.catalog2.Service;
 import thredds.catalog.ServiceType;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * _more_
@@ -18,6 +22,8 @@ public class TestServiceImpl extends TestCase
   private URI baseUri;
   private URI docBaseUri;
   private ServiceType type;
+
+  private CatalogBuilderFactory catBuildFactory;
 
   public TestServiceImpl( String name )
   {
@@ -34,12 +40,14 @@ public class TestServiceImpl extends TestCase
     { fail(); }
 
     type = ServiceType.OPENDAP;
+
+    catBuildFactory = new CatalogBuilderFactoryImpl();
   }
 
   public void testConstructorNullName()
   {
     try
-    { new ServiceImpl( null, type, baseUri, null, null ); }
+    { catBuildFactory.newServiceBuilder( null, type, baseUri ); }
     catch ( IllegalArgumentException e )
     { return; }
     catch ( Exception e )
@@ -50,7 +58,8 @@ public class TestServiceImpl extends TestCase
   public void testConstructorNullType()
   {
     try
-    { new ServiceImpl( "s1", null, baseUri, null, null ); }
+    {
+      catBuildFactory.newServiceBuilder( "s1", null, baseUri ); }
     catch ( IllegalArgumentException e )
     { return; }
     catch ( Exception e )
@@ -61,7 +70,8 @@ public class TestServiceImpl extends TestCase
   public void testConstructorNullDocBaseUri()
   {
     try
-    { new ServiceImpl( "s1", type, null, null, null ); }
+    {
+      catBuildFactory.newServiceBuilder( "s1", type, null ); }
     catch ( IllegalArgumentException e )
     { return; }
     catch ( Exception e )
@@ -86,7 +96,7 @@ public class TestServiceImpl extends TestCase
   public void testNormal()
   {
     String name = "s1";
-    ServiceBuilder sb = new ServiceImpl( name, type, baseUri, null, null );
+    ServiceBuilder sb = catBuildFactory.newServiceBuilder( name, type, baseUri );
 
     assertTrue( "Name [" + sb.getName() + "] not as expected [" + name + "].",
                 sb.getName().equals( name));
@@ -121,7 +131,7 @@ public class TestServiceImpl extends TestCase
 
   public void testContainerDatasetNonuniqueDatasetName()
   {
-    ServiceImpl sb = new ServiceImpl( "s1", type, baseUri, null, null );
+    ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
     sb.addService( "s2", type, baseUri );
     sb.addService( "s3", type, baseUri );
     try
@@ -131,5 +141,76 @@ public class TestServiceImpl extends TestCase
     catch ( Exception e )
     { fail( "Non-IllegalStateException: " + e.getMessage()); }
     fail( "No IllegalStateException.");
+  }
+
+  public void testContainerDatasetNonuniqueDatasetNameNested()
+  {
+    ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
+    sb.addService( "s2", type, baseUri );
+    ServiceImpl sb3 = (ServiceImpl) sb.addService( "s3", type, baseUri );
+    sb3.addService( "s3.1", type, baseUri );
+    try
+    { sb3.addService( "s3.2", type, baseUri ); }
+    catch ( IllegalStateException e )
+    { return; }
+    catch ( Exception e )
+    { fail( "Non-IllegalStateException: " + e.getMessage()); }
+    fail( "No IllegalStateException.");
+  }
+
+  public void testContainerDatasetNonuniqueDatasetNameNestedTwoLevels()
+  {
+    ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
+    sb.addService( "s2", type, baseUri );
+    ServiceBuilder sb3 = (ServiceImpl) sb.addService( "s3", type, baseUri );
+    sb3.addService( "s3.1", type, baseUri );
+    ServiceBuilder sb3_2 = (ServiceImpl) sb3.addService( "s3.2", type, baseUri );
+    sb3_2.addService( "s3.2.1", type, baseUri );
+    try
+    { sb3_2.addService( "s2", type, baseUri ); }
+    catch ( IllegalStateException e )
+    { return; }
+    catch ( Exception e )
+    { fail( "Non-IllegalStateException: " + e.getMessage()); }
+    fail( "No IllegalStateException.");
+  }
+
+  public void testProperties()
+  {
+    ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
+    String nameProp1 = "p1";
+    String valueProp1 = "p1.v";
+    sb.addProperty( nameProp1, valueProp1 );
+    sb.addProperty( "p2", "p2.v" );
+    sb.addProperty( "p3", "p3.v" );
+    assertTrue( "Property(" + nameProp1 + ") value [" + sb.getPropertyValue( nameProp1 )+ "] not as expected [" + valueProp1 + "].",
+                sb.getPropertyValue( nameProp1 ).equals( valueProp1));
+    String newValueProp1 = "p1.vNew";
+    sb.addProperty( nameProp1, newValueProp1 );
+    assertTrue( "Property(" + nameProp1 + ") new value [" + sb.getPropertyValue( nameProp1 ) + "] not as expected [" + newValueProp1 + "].",
+                sb.getPropertyValue( nameProp1 ).equals( newValueProp1 ) );
+
+    boolean pass = false;
+    try
+    { ((ServiceImpl) sb).getProperties(); }
+    catch ( IllegalStateException e )
+    { pass = true; }
+    catch ( Exception e )
+    { fail( "Non-IllegalStateException: " + e.getMessage()); }
+    if ( ! pass ) fail( "No IllegalStateException.");
+
+    Service s = sb.finish();
+    assertTrue( "ServiceBuilder not finished after call to finish().",
+                sb.isFinished() );
+    List<Property> props = null;
+    try
+    { props = s.getProperties(); }
+    catch ( IllegalStateException e )
+    { fail( "Unexpected IllegalStateException: " + e.getMessage() ); }
+    catch ( Exception e )
+    { fail( "Non-IllegalStateException: " + e.getMessage()); }
+
+    assertTrue( "Size of property list [" + props.size() + "] not as expected [3]",
+                props.size() == 3);
   }
 }

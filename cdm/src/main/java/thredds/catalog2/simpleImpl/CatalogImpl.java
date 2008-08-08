@@ -155,7 +155,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     this.serviceBuilders.add( sb );
     this.services.add( sb );
     this.servicesMap.put( name, sb );
-    return null;
+    return sb;
   }
 
   @Override
@@ -297,6 +297,18 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   @Override
   public Catalog finish()
   {
+    if ( this.finished )
+      return this;
+
+    // Check invariants
+    // ToDo check that all datasets with Ids have unique Ids
+
+    // Finish subordinates.
+    for ( ServiceBuilder sb : this.serviceBuilders )
+      sb.finish();
+    for ( DatasetNodeBuilder dnb : this.datasetBuilders )
+      dnb.finish();
+
     this.finished = true;
     return this;
   }
