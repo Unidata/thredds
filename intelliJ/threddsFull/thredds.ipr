@@ -333,6 +333,7 @@
       <module fileurl="file://$PROJECT_DIR$/docs.iml" filepath="$PROJECT_DIR$/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/grib.iml" filepath="$PROJECT_DIR$/grib.iml" />
       <module fileurl="file://$PROJECT_DIR$/intelliJ.iml" filepath="$PROJECT_DIR$/intelliJ.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ldm/ldm.iml" filepath="$PROJECT_DIR$/ldm/ldm.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib.iml" filepath="$PROJECT_DIR$/lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/opendap.iml" filepath="$PROJECT_DIR$/opendap.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
