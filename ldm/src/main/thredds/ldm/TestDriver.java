@@ -93,7 +93,6 @@ public class TestDriver {
     Executor executor = Executors.newFixedThreadPool(5);
     final MessageBroker broker = new MessageBroker(executor);
 
-    // look for all message types in the files
      test("D:/bufr/nlode/snap080808/20080728_0000.bufr", new MClosure() {
         public void run(String filename) throws IOException {
           scan(filename, broker);

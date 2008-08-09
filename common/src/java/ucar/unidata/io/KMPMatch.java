@@ -19,6 +19,8 @@
  */
 package ucar.unidata.io;
 
+import java.io.InputStream;
+
 /**
  * Knuth-Morris-Pratt Algorithm for Pattern Matching
  * Immutable
@@ -67,6 +69,32 @@ public class KMPMatch {
     }
     return -1;
   }
+
+  /**
+   * Finds the first occurrence of match in data.
+   * @param data search in this byte block
+   * @param start start at data[start]
+   * @param max end at data[start+max]
+   * @return index into block of first match, else -1 if not found.
+   *
+  public int scan(InputStream is, int start, int max) {
+    int j = 0;
+    if (data.length == 0) return -1;
+
+    for (int i = start; i < start + max; i++) {
+      while (j > 0 && match[j] != data[i])
+        j = failure[j - 1];
+
+      if (match[j] == data[i])
+        j++;
+
+      if (j == match.length)
+        return i - match.length + 1;
+
+    }
+    return -1;
+  } // */
+
 
   private int[] computeFailure(byte[] match) {
     int[] result = new int[match.length];
