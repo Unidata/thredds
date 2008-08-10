@@ -37,6 +37,7 @@
       <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/dataset/NetcdfDatasetCacheOld.java" />
       <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/NetcdfFileCache.java" />
       <file url="file://$PROJECT_DIR$/../../../bufr/src/ucar/bufr/BufrScanner.java" />
+      <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/thredds/catalog2/simpleImpl/TestServiceImpl.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
@@ -89,6 +90,16 @@
           <module name="tds">
             <files>
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-dqcServletRedirect/WEB-INF/web.xml" />
+            </files>
+          </module>
+          <module name="intelliJ">
+            <files>
+              <file url="file://$PROJECT_DIR$/bufrTable/web/WEB-INF/web.xml" />
+            </files>
+          </module>
+          <module name="bufrTable">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/web.xml" />
             </files>
           </module>
         </modules>
@@ -328,6 +339,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/bufr.iml" filepath="$PROJECT_DIR$/bufr.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bufrTable/bufrTables.iml" filepath="$PROJECT_DIR$/bufrTable/bufrTables.iml" />
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/common.iml" filepath="$PROJECT_DIR$/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/docs.iml" filepath="$PROJECT_DIR$/docs.iml" />

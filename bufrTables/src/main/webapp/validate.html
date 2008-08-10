@@ -1,0 +1,38 @@
+<html>
+<head>
+<title>BUFRValidation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+<h1>BUFR Message Validator </h1>
+<p><em>version 0.1 </em></p>
+<hr>
+<FORM ENCTYPE='multipart/form-data' method='POST' action='/bufr/validate'>
+<p><strong>Your Name: </strong>
+  <input type="text" name="username">
+</p>
+<p>Please enter or browse to a local filename:</p>
+<p><strong>Filename: </strong>
+  <INPUT NAME='uploadFile' TYPE='file' size="80"><INPUT TYPE='submit' VALUE='Validate' /> 
+  <input type="checkbox" name="xml" value="true"/>
+    return XML </p>
+</FORM>
+
+<form method="GET" action='/bufr/validate'>
+<p></p>
+OR enter the URL of a file accessible through an HTTP Server:
+<p><strong>URL: </strong>
+  <INPUT NAME='URL' TYPE='text' id="URL" size="80">
+<input type="submit" value="Validate"/>
+<input type="checkbox" name="xml" value="true"/>
+return XML
+</form>
+ 
+<hr>
+<h3>Useful links: </h3>
+<ul>
+  <li><a href="cdmValidateHelp.htmleHelp.html">CDM validation output help</a> </li>
+  <li><a href="http://titania.badc.rl.ac.uk/cgi-bin/cf-checker.pl">CF-1.0 Compliance checker</a> </li>
+</ul>
+</body>
+</html>

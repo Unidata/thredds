@@ -7,18 +7,10 @@
     <content url="file://$MODULE_DIR$/../../../bufr">
       <sourceFolder url="file://$MODULE_DIR$/../../../bufr/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../bufr/test/src" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../bufr/resources/resources/source" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../../../bufr/resources" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -38,6 +30,15 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="common" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../../bufr/resources/resources/bufr" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
 </module>
