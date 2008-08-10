@@ -99,6 +99,8 @@ public class TestDriver {
         }
       });
 
+    broker.exit();
+
   }
 
 

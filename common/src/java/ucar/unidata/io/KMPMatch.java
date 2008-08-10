@@ -50,7 +50,7 @@ public class KMPMatch {
    * @param data search in this byte block
    * @param start start at data[start]
    * @param max end at data[start+max]
-   * @return index into block of first match, else -1 if not found.
+   * @return index into data[] of first match, else -1 if not found.
    */
   public int indexOf(byte[] data, int start, int max) {
     int j = 0;

@@ -33,7 +33,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/../../../bufr/resources/resources/bufr" />
+          <root url="file://$MODULE_DIR$/../../../bufr/resources" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
