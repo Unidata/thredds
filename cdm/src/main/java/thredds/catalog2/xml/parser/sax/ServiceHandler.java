@@ -9,8 +9,6 @@ import java.util.Date;
 import java.io.IOException;
 import java.net.URI;
 
-import thredds.catalog2.xml.parser.CatalogNamespace;
-import thredds.catalog2.simpleImpl.CatalogBuilderFactoryImpl;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.CatalogBuilder;
 
@@ -20,7 +18,7 @@ import thredds.catalog2.builder.CatalogBuilder;
  * @author edavis
  * @since 4.0
  */
-public class ServiceDefaultHandler extends DefaultHandler
+public class ServiceHandler extends DefaultHandler
 {
   private ServiceBuilder service;
 
@@ -29,7 +27,7 @@ public class ServiceDefaultHandler extends DefaultHandler
 
   private Map<String,String> namespaceMap;
 
-  public ServiceDefaultHandler( CatalogBuilder parentBuilder, ServiceBuilder altParentBuilder,
+  public ServiceHandler( CatalogBuilder parentBuilder, ServiceBuilder altParentBuilder,
                                 Attributes atts, DefaultHandler top, DefaultHandler parent )
   {
     this.namespaceMap = new HashMap<String,String>();
@@ -74,7 +72,7 @@ public class ServiceDefaultHandler extends DefaultHandler
   {
     if ( localName.equals( "service" ))
     {
-//      ServiceDefaultHandler sdh = new ServiceDefaultHandler( Attributes atts, DefaultHandler
+//      ServiceHandler sdh = new ServiceHandler( Attributes atts, DefaultHandler
 //      top, DefaultHandler
 //      parent);
 //      String name = atts.getValue( CatalogNamespace.CATALOG_1_0.getNamespaceUri(), "name" )

@@ -111,10 +111,6 @@ public class SAXCatalogParser implements CatalogParser
       e.printStackTrace();
     }
 
-//    XMLReader reader = parser.getXMLReader();
-//    reader.setErrorHandler( new ThreddsCatalogErrorHandler() );
-//    reader.setContentHandler( new CatalogDefaultHandler() );
-
     DefaultHandler catHandler = new ThreddsCatalogHandler();
     try
     {
