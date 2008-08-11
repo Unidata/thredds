@@ -10,6 +10,8 @@ import java.io.*;
 import java.net.URI;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * _more_
@@ -22,106 +24,105 @@ public class HttpUriResolver
   private org.slf4j.Logger logger =
           org.slf4j.LoggerFactory.getLogger( HttpUriResolver.class );
 
-  private long connectionTimeout = 30000; // in milliseconds
-  private int socketTimeout = 1 * 60 * 1000; // in milliseconds, time to wait for data
-  private String contentCharset = "UTF-8";
+  private URI uri;
+  private long connectionTimeout;
+  private int socketTimeout;
   private String contentEncoding = "gzip,deflate";
-  private boolean wantContentEncoding = true;
+  private boolean allowContentEncoding;
+  private boolean followRedirects;
 
-  private HttpUriResolver() {}
-  public static HttpUriResolver newDefaultUriResolver()
+  private HttpMethod method = null;
+  private Map<String,String> respHeaders;
+
+  HttpUriResolver( URI uri, long connectionTimeout, int socketTimeout,
+                          boolean allowContentEncoding,
+                          boolean followRedirects )
   {
-    return new HttpUriResolver();
+    if ( ! uri.getScheme().equalsIgnoreCase( "http" ) )
+      throw new IllegalArgumentException( "Given a Non-HTTP URI [" + uri.toString() + "].");
+
+    this.uri = uri;
+    this.connectionTimeout = connectionTimeout;
+    this.socketTimeout = socketTimeout;
+    this.allowContentEncoding = allowContentEncoding;
+    this.followRedirects = followRedirects;
   }
 
-  public static HttpUriResolver newUriResolverSettingTimeouts( long connectionTimeout,
-                                                           int socketTimeout )
-  {
-    HttpUriResolver u = new HttpUriResolver();
-    u.connectionTimeout = connectionTimeout;
-    u.socketTimeout = socketTimeout;
-    return u;
-  }
+  public URI getUri() { return this.uri; }
+  public long getConnectionTimeout() { return this.connectionTimeout; }
+  public int getSocketTimeout() { return this.socketTimeout; }
+  public String getContentEncoding() { return this.contentEncoding; }
+  public boolean getAllowContentEncoding() { return this.allowContentEncoding; }
+  public boolean getFollowRedirects() { return this.followRedirects; }
 
-  public Reader getResponseBodyAsReader( URI uri )
-  { return null; }
-
-  public String getResponseBodyAsString( URI uri )
+  public void makeRequest()
           throws IOException
   {
-//    if ( uri.getScheme().equalsIgnoreCase( "file") )
-//        return new FileInputStream( getFile( uri) );
-//
-    if ( uri.getScheme().equalsIgnoreCase( "http" ))
+    if ( method != null )
+      throw new IllegalStateException( "Request already made.");
+
+    this.method = getHttpResponse( uri );
+  }
+
+  public int getResponseStatusCode()
+  {
+    if ( method == null )
+      throw new IllegalStateException( "Request has not been made." );
+    return this.method.getStatusCode();
+  }
+
+  public String getResponseStatusText()
+  {
+    if ( method == null )
+      throw new IllegalStateException( "Request has not been made." );
+    return this.method.getStatusText();
+  }
+
+  public Map<String,String> getResponseHeaders()
+  {
+    if ( method == null )
+      throw new IllegalStateException( "Request has not been made." );
+
+    if ( this.respHeaders == null )
     {
-      return getHttpResponseBodyAsString( uri );
+      this.respHeaders = new HashMap<String,String>();
+      Header[] headers = this.method.getResponseHeaders();
+      for ( Header h : headers )
+        this.respHeaders.put( h.getName(), h.getValue() );
     }
 
-    return null;
+    return respHeaders;
   }
 
-  public InputStream getResponseBodyAsInputStream( URI uri )
-          throws IOException
+  public String getResponseHeaderValue( String name )
   {
-    if ( uri.getScheme().equalsIgnoreCase( "file") )
-        return new FileInputStream( getFile( uri) );
+    if ( method == null )
+      throw new IllegalStateException( "Request has not been made." );
 
-    if ( uri.getScheme().equalsIgnoreCase( "http" ))
-    {
-      return getHttpResponseBodyAsStream( uri );
-    }
-
-    return null;
+    Header responseHeader = this.method.getResponseHeader( name );
+    return responseHeader == null ? null : responseHeader.getValue();
   }
 
-  private String getHttpResponseBodyAsString( URI uri )
+  public InputStream getResponseBodyAsInputStream()
           throws IOException
   {
-    HttpMethod method = getHttpResponse( uri );
+    if ( method == null )
+      throw new IllegalStateException( "Request has not been made." );
 
-    return method.getResponseBodyAsString();
-    //method.getResponseHeader( "Character-encoding" );
-  }
-
-  private InputStream getHttpResponseBodyAsStream( URI uri )
-          throws IOException
-  {
-    HttpMethod method = getHttpResponse( uri );
-
-    InputStream is = new BufferedInputStream( method.getResponseBodyAsStream(), 1000 * 1000);
+    InputStream is = method.getResponseBodyAsStream();
     Header contentEncodingHeader = method.getResponseHeader( "Content-Encoding" );
     if ( contentEncodingHeader != null )
     {
       String contentEncoding = contentEncodingHeader.getValue();
-      if (contentEncoding != null && contentEncoding.equalsIgnoreCase( "gzip" ))
+      if ( contentEncoding != null )
       {
-        System.out.println( "GZIP" );
-        is = new GZIPInputStream( is );
-      }
-      else if ( contentEncoding != null && contentEncoding.equalsIgnoreCase( "deflate" ) )
-      {
-        System.out.println( "GZIP" );
-        is = new InflaterInputStream( is );
+        if ( contentEncoding.equalsIgnoreCase( "gzip" ) )
+          return new GZIPInputStream( is );
+        else if ( contentEncoding.equalsIgnoreCase( "deflate" ) )
+          return new InflaterInputStream( is );
       }
     }
     return is;
-    //method.getResponseHeader( "Character-encoding" );
-  }
-
-  private Reader getHttpResponseBodyAsReader( URI uri )
-          throws IOException
-  {
-    HttpMethod method = getHttpResponse( uri );
-    InputStream bodyAsStream = method.getResponseBodyAsStream();
-    Reader reader = new InputStreamReader( bodyAsStream);
-    Header charEncodingHeader = method.getResponseHeader( "Character-encoding" );
-    if ( charEncodingHeader != null )
-    {
-      charEncodingHeader.getValue();
-    }
-
-    //return reader;
-    return null;
   }
 
   private HttpMethod getHttpResponse( URI uri )
@@ -132,7 +133,8 @@ public class HttpUriResolver
     params.setConnectionManagerTimeout( this.connectionTimeout );
     params.setSoTimeout( this.socketTimeout );
     HttpMethod method = new GetMethod( uri.toString() );
-    method.addRequestHeader( "Accept-Encoding", "gzip" );
+    method.setFollowRedirects( this.followRedirects );
+    method.addRequestHeader( "Accept-Encoding", this.contentEncoding );
 
     client.executeMethod( method );
     int statusCode = method.getStatusCode();
@@ -142,15 +144,5 @@ public class HttpUriResolver
     }
 
     return null; // ToDo throw exception with some informative inforamtion.
-  }
-
-  private File getFile( URI uri)
-  {
-    File file = null;
-    if ( uri.getScheme().equals( "file" ) )
-      file = new File( uri);
-    if ( file.exists() && file.isFile() && file.canRead())
-      return file;
-    return null;
   }
 }

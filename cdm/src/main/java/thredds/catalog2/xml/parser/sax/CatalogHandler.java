@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Date;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.simpleImpl.CatalogBuilderFactoryImpl;
@@ -25,24 +26,29 @@ public class CatalogHandler extends DefaultHandler
   private DefaultHandler top;
   private DefaultHandler parent;
 
-  private Map<String,String> namespaceMap;
-
-  public CatalogHandler( Attributes atts, DefaultHandler top, DefaultHandler parent )
+  public CatalogHandler( String docBaseUri, Attributes atts, DefaultHandler top, DefaultHandler parent )
   {
-    this.namespaceMap = new HashMap<String,String>();
-
+    if ( docBaseUri == null )
+      throw new IllegalArgumentException( "Document Base URI must not be null." );
+    URI uri = null;
+    try
+    {
+      uri = new URI( docBaseUri );
+    }
+    catch ( URISyntaxException e )
+    {
+      throw new IllegalArgumentException( "Document Base URI [" + docBaseUri + "] must be a URI.", e );
+    }
     String name = atts.getValue( "", "name");
-    String docBaseUriString = null; // ??? atts.getValue
-    URI docBaseUri = null;
     String version = atts.getValue( "", "version");
     String expiresDateString = atts.getValue( "", "expires");
     Date expires = null;
-    String lastModifiedDateString = null;
+    String lastModifiedDateString = atts.getValue( "", "lastModified" );
     Date lastModified = null;
 
 
     this.catalog = new CatalogBuilderFactoryImpl()
-            .newCatalogBuilder( name, docBaseUri, version, expires, lastModified );
+            .newCatalogBuilder( name, uri, version, expires, lastModified );
 
     this.top = top;
     this.parent = parent;
@@ -98,6 +104,12 @@ public class CatalogHandler extends DefaultHandler
   @Override
   public void endElement( String uri, String localName, String qName ) throws SAXException
   {
+    if ( ! localName.equals( "catalog" ))
+    {
+      throw new SAXException( "Unexpected closing element [" + localName + "].");
+    }
+    
+    //top.s
     //super.endElement( uri, localName, qName );
     System.out.println( "End Element: " + localName );
   }

@@ -1,11 +1,18 @@
 package thredds.catalog2.xml.parser;
 
 import thredds.util.HttpUriResolver;
+import thredds.util.HttpUriResolverFactory;
 
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import org.xml.sax.SAXException;
 
 /**
  * _more_
@@ -77,8 +84,21 @@ public enum CatalogNamespace
     if ( this.getResourceName() != null )
       inStream = this.getClass().getClassLoader().getResourceAsStream( this.getResourceName() );
     if ( inStream == null && this.getResourceUri() != null )
-      inStream = HttpUriResolver.newDefaultUriResolver().getResponseBodyAsInputStream( this.getResourceUri() );
+    {
+      HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver( this.getResourceUri() );
+      httpUriResolver.makeRequest();
+      inStream = httpUriResolver.getResponseBodyAsInputStream();
+    }
 
     return inStream;
+  }
+
+  public Schema resolveNamespaceAsSchema()
+          throws IOException, SAXException
+  {
+    SchemaFactory schemaFactory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+    StreamSource source = new StreamSource( this.resolveNamespace() );
+    source.setSystemId( this.getResourceUri().toString() );
+    return schemaFactory.newSchema( source );
   }
 }

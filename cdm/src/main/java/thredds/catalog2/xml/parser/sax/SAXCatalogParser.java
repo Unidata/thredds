@@ -9,16 +9,12 @@ import thredds.catalog2.builder.CatalogBuilder;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Schema;
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
 import java.net.URI;
 import java.io.*;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * _more_
@@ -46,34 +42,24 @@ public class SAXCatalogParser implements CatalogParser
   {
     if ( wantValidating && schema == null )
     {
-      SchemaFactory schemaFactory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-      InputStream is = null;
       try
       {
-        is = CatalogNamespace.CATALOG_1_0.resolveNamespace();
+        this.schema = CatalogNamespace.CATALOG_1_0.resolveNamespaceAsSchema();
       }
       catch ( IOException e )
       {
         log.warn( "wantValidating(): Failed to read schema.", e );
-        is = null;
+        this.schema = null;
       }
-      if ( is != null )
+      catch ( SAXException e )
       {
-        StreamSource source = new StreamSource( is );
-        try
-        {
-          schema = schemaFactory.newSchema( source );
-        }
-        catch ( SAXException e )
-        {
-          log.warn( "wantValidating(): Failed to parse schema.", e );
-          schema = null;
-        }
-        if ( schema != null )
-          this.isValidating = true;
-        else
-          this.isValidating = false;
+        log.warn( "wantValidating(): Failed to parse schema.", e );
+        this.schema = null;
       }
+      if ( schema != null )
+        this.isValidating = true;
+      else
+        this.isValidating = false;
     }
     else if ( wantValidating && schema != null )
     {
@@ -111,7 +97,7 @@ public class SAXCatalogParser implements CatalogParser
       e.printStackTrace();
     }
 
-    DefaultHandler catHandler = new ThreddsCatalogHandler();
+    ThreddsCatalogHandler catHandler = new ThreddsCatalogHandler( source.getSystemId() );
     try
     {
       parser.parse( source, catHandler );
@@ -124,8 +110,7 @@ public class SAXCatalogParser implements CatalogParser
     {
       e.printStackTrace();
     }
-//    return catHandler.getCatalog();
-    return null;
+    return catHandler.getCatalog();
   }
 
   public Catalog parse( URI uri )

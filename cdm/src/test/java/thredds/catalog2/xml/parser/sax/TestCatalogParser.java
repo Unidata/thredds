@@ -5,15 +5,14 @@ import thredds.catalog2.xml.parser.CatalogParserFactory;
 import thredds.catalog2.xml.parser.CatalogParser;
 import thredds.catalog2.xml.parser.CatalogParserException;
 import thredds.catalog2.xml.parser.CatalogNamespace;
+import thredds.catalog2.Catalog;
 import thredds.util.HttpUriResolver;
+import thredds.util.HttpUriResolverFactory;
 
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Schema;
-import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.stream.StreamSource;
 import java.io.StringReader;
 import java.io.InputStream;
 import java.io.IOException;
@@ -38,111 +37,6 @@ public class TestCatalogParser extends TestCase
   public TestCatalogParser( String name )
   {
     super( name );
-  }
-
-  public static void main( String[] args ) throws InterruptedException
-  //public void test1()
-  {
-    Schema schema = null;
-    try
-    {
-      schema = getSchema();
-    }
-    catch ( SAXException e )
-    {
-      fail( "Failed to read catalog schema: " + e.getMessage());
-    }
-    catch ( IOException e )
-    {
-      fail( "Failed to read catalog schema: " + e.getMessage() );
-    }
-
-    SAXParserFactory factory = SAXParserFactory.newInstance();
-    factory.setNamespaceAware( true );
-//    if ( schema != null )
-//      factory.setSchema( schema );
-    SAXParser parser = null;
-    try
-    {
-      parser = factory.newSAXParser();
-    }
-    catch ( ParserConfigurationException e )
-    {
-      fail( "Failed to get SAXParser: " + e.getMessage() );
-    }
-    catch ( SAXException e )
-    {
-      fail( "Failed to get SAXParser: " + e.getMessage() );
-    }
-
-    DefaultHandler catHandler = new ThreddsCatalogHandler();
-
-
-    String catUriString = "http://newmotherlode.ucar.edu:8080/thredds/catalog/nexrad/level2/KFTG/20080730/catalog.xml";
-    //String catUriString = "http://newmotherlode.ucar.edu:8080/thredds/catalog/nexrad/composite/gini/ntp/4km/20080731/catalog.xml";
-    if ( args.length > 0 && args[0] != null && args[0].startsWith( "http://" ))
-      catUriString = args[0];
-    //String catUriString = "http://newmotherlode.ucar.edu:8080/thredds/catalog.xml";
-    URI catUri = null;
-    try
-    {
-      catUri = new URI( catUriString );
-    }
-    catch ( URISyntaxException e )
-    {
-      fail( "Bad syntax in catalog URI [" + catUriString + "]: " + e.getMessage() );
-    }
-    try
-    {
-      InputStream is = getInputStream( catUri );
-      InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-      int cnt = 1;
-      while (isr.ready())
-      {
-        char[] c = new char[1000];
-        int num = isr.read( c);
-        System.out.println( cnt + "["+num+"]" + new String( c) );
-        cnt++;
-      }
-    }
-    catch ( IOException e )
-    {
-      fail( "Failed to read catalog [" + catUriString + "]: " + e.getMessage() );
-    }
-    boolean junk = true;
-    if ( junk ) return;
-    try
-    {
-      parser.parse( catUri.toString(), catHandler );
-      //parser.parse( getInputStream( catUri), catHandler );
-    }
-    catch ( SAXException e )
-    {
-      fail( "Failed to parse catalog [" + catUriString + "]: " + e.getMessage() );
-    }
-    catch ( IOException e )
-    {
-      fail( "Failed to read catalog [" + catUriString + "]: " + e.getMessage() );
-    }
-
-
-  }
-
-  private static InputStream getInputStream( URI uri )
-          throws IOException
-  {
-    HttpUriResolver httpUriResolver = HttpUriResolver.newDefaultUriResolver();
-    return httpUriResolver.getResponseBodyAsInputStream( uri );
-  }
-
-  private static Schema getSchema()
-          throws IOException, SAXException
-  {
-    SchemaFactory schemaFactory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-    URI catSchemaUri = CatalogNamespace.CATALOG_1_0.getResourceUri();
-    StreamSource source = new StreamSource( getInputStream( catSchemaUri ));
-    source.setSystemId( catSchemaUri.toString() );
-    return schemaFactory.newSchema( source );
   }
 
   /**
@@ -172,28 +66,32 @@ public class TestCatalogParser extends TestCase
             .append( "  </dataset>\n" )
             .append( "</catalog>" );
 
-    CatalogParserFactory cpf = CatalogParserFactory.getInstance();
-    cpf.setValidating( true );
-    CatalogParser cp = cpf.getCatalogParser();
-    URI baseUri = null;
+    CatalogParser cp = CatalogParserFactory.newCatalogParser( true);
+    URI baseUri;
+    String baseUriString = "http://test.catalog.parser/cat.xml";
     try
     {
-      baseUri = new URI( "http://test.catalog.parser/cat.xml" );
+      baseUri = new URI( baseUriString );
     }
     catch ( URISyntaxException e )
     {
-      fail();
+      fail( "Problem with URI [" + baseUriString + "] syntax.");
+      return;
     }
+
+    Catalog cat;
     try
     {
-      cp.parse( new StringReader( sb.toString() ), baseUri);
+      cat = cp.parse( new StringReader( sb.toString() ), baseUri);
     }
     catch ( CatalogParserException e )
     {
-      e.printStackTrace();
-      fail();
+      fail( "Failed to parse catalog: " + e.getMessage());
+      return;
     }
-//    me = new CatalogParser( );
-//    assertTrue( me != null );
+
+    String catName = "Unidata THREDDS Data Server";
+    assertTrue( "Catalog name [" + cat.getName() + "] not as expected [" + catName + "].",
+                cat.getName().equals( catName ) );
   }
 }

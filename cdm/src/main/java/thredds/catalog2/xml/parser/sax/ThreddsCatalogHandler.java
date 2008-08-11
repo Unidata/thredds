@@ -9,6 +9,9 @@ import org.xml.sax.ErrorHandler;
 import java.util.Map;
 import java.util.HashMap;
 
+import thredds.catalog2.builder.CatalogBuilder;
+import thredds.catalog2.Catalog;
+
 /**
  * _more_
  *
@@ -20,15 +23,30 @@ public class ThreddsCatalogHandler extends DefaultHandler
   private org.slf4j.Logger logger =
           org.slf4j.LoggerFactory.getLogger( ThreddsCatalogHandler.class );
 
+  private CatalogBuilder builder;
+  private String docSystemId;
+
   private DefaultHandler state;
   private ErrorHandler errorHandler;
   private Map<String, String> namespaceMap;
 
 
-  public ThreddsCatalogHandler()
+  public ThreddsCatalogHandler( String docSystemId )
   {
+    if ( docSystemId == null )
+      throw new IllegalArgumentException( "Document system ID must not be null.");
+    this.docSystemId = docSystemId;
     this.state = null;
     this.namespaceMap = new HashMap<String, String>();
+  }
+
+  Catalog getCatalog()
+  {
+    if ( builder != null )
+    {
+      return builder.finish();
+    }
+    return null;
   }
 
   void setState( DefaultHandler state )
@@ -76,7 +94,7 @@ public class ThreddsCatalogHandler extends DefaultHandler
       this.state.startElement( uri, localName, qName, attributes );
 
     if ( localName.equals( "catalog" ))
-      this.state = new CatalogHandler( attributes, this, this );
+      this.state = new CatalogHandler( this.docSystemId, attributes, this, this );
     if ( localName.equals( "service" ))
       this.state = new ServiceHandler( null, null, attributes, this, this );
   }

@@ -10,23 +10,31 @@ import thredds.catalog2.xml.parser.sax.SAXCatalogParser;
  */
 public class CatalogParserFactory
 {
-  private boolean isValidating = false;
-
-  private CatalogParserFactory(){}
-  public static CatalogParserFactory getInstance()
+  public static CatalogParser newCatalogParser( boolean wantValidating)
   {
-    return new CatalogParserFactory();
+    SAXCatalogParser catParser = SAXCatalogParser.getInstance();
+    catParser.wantValidating( wantValidating );
+    return catParser;
   }
 
-  public void setValidating( boolean isValidating )
+  private CatalogParserFactory(){}
+  public static CatalogParserFactory newFactory()
+  { return new CatalogParserFactory(); }
+
+  private boolean wantValidating = false;
+
+  public boolean getWantValidating()
+  { return this.wantValidating; }
+
+  public void setWantValidating( boolean wantValidating )
   {
-    this.isValidating = isValidating;
+    this.wantValidating = wantValidating;
   }
 
   public CatalogParser getCatalogParser()
   {
     SAXCatalogParser catParser = SAXCatalogParser.getInstance();
-    catParser.wantValidating( this.isValidating );
+    catParser.wantValidating( this.wantValidating );
     return catParser;
   }
 }
