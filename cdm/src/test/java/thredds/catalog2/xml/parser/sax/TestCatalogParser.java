@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * _more_
@@ -75,7 +76,7 @@ public class TestCatalogParser extends TestCase
       fail( "Failed to get SAXParser: " + e.getMessage() );
     }
 
-    CatalogDefaultHandler catHandler = new CatalogDefaultHandler();
+    DefaultHandler catHandler = new ThreddsCatalogHandler();
 
 
     String catUriString = "http://newmotherlode.ucar.edu:8080/thredds/catalog/nexrad/level2/KFTG/20080730/catalog.xml";

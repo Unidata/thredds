@@ -9,9 +9,10 @@ import java.util.Date;
 import java.io.IOException;
 import java.net.URI;
 
-import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.xml.parser.CatalogNamespace;
 import thredds.catalog2.simpleImpl.CatalogBuilderFactoryImpl;
+import thredds.catalog2.builder.ServiceBuilder;
+import thredds.catalog2.builder.CatalogBuilder;
 
 /**
  * _more_
@@ -19,16 +20,17 @@ import thredds.catalog2.simpleImpl.CatalogBuilderFactoryImpl;
  * @author edavis
  * @since 4.0
  */
-public class CatalogDefaultHandler extends DefaultHandler
+public class ServiceDefaultHandler extends DefaultHandler
 {
-  private CatalogBuilder catalog;
+  private ServiceBuilder service;
 
   private DefaultHandler top;
   private DefaultHandler parent;
 
   private Map<String,String> namespaceMap;
 
-  public CatalogDefaultHandler( Attributes atts, DefaultHandler top, DefaultHandler parent )
+  public ServiceDefaultHandler( CatalogBuilder parentBuilder, ServiceBuilder altParentBuilder,
+                                Attributes atts, DefaultHandler top, DefaultHandler parent )
   {
     this.namespaceMap = new HashMap<String,String>();
 
@@ -42,8 +44,8 @@ public class CatalogDefaultHandler extends DefaultHandler
     Date lastModified = null;
 
 
-    this.catalog = new CatalogBuilderFactoryImpl()
-            .newCatalogBuilder( name, docBaseUri, version, expires, lastModified );
+//    this.service = new CatalogBuilderFactoryImpl()
+//            .newCatalogBuilder( name, docBaseUri, version, expires, lastModified );
 
     this.top = top;
     this.parent = parent;
@@ -76,7 +78,7 @@ public class CatalogDefaultHandler extends DefaultHandler
 //      top, DefaultHandler
 //      parent);
 //      String name = atts.getValue( CatalogNamespace.CATALOG_1_0.getNamespaceUri(), "name" )
-//      this.catalog.addService(  )
+//      this.service.addService(  )
     }
     else if ( localName.equals( "dataset"))
     {

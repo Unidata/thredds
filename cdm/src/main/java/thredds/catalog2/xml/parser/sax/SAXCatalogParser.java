@@ -18,6 +18,7 @@ import java.io.*;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * _more_
@@ -111,10 +112,10 @@ public class SAXCatalogParser implements CatalogParser
     }
 
 //    XMLReader reader = parser.getXMLReader();
-//    reader.setErrorHandler( new DefaultErrorHandler() );
+//    reader.setErrorHandler( new ThreddsCatalogErrorHandler() );
 //    reader.setContentHandler( new CatalogDefaultHandler() );
 
-    CatalogDefaultHandler catHandler = new CatalogDefaultHandler();
+    DefaultHandler catHandler = new ThreddsCatalogHandler();
     try
     {
       parser.parse( source, catHandler );

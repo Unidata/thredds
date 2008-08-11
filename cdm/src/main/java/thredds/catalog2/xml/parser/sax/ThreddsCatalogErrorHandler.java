@@ -10,7 +10,7 @@ import org.xml.sax.SAXParseException;
  * @author edavis
  * @since 4.0
  */
-public class DefaultErrorHandler implements ErrorHandler
+public class ThreddsCatalogErrorHandler implements ErrorHandler
 {
   public void warning( SAXParseException exception )
           throws SAXException
