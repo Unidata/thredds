@@ -15,7 +15,7 @@ import java.io.IOException;
 public class TestUriResolver extends TestCase
 {
 
-//  private UriResolver me;
+//  private HttpUriResolver me;
 
   public TestUriResolver( String name )
   {
@@ -36,11 +36,11 @@ public class TestUriResolver extends TestCase
     {
       fail();
     }
-    UriResolver uriResolver = UriResolver.newDefaultUriResolver();
+    HttpUriResolver httpUriResolver = HttpUriResolver.newDefaultUriResolver();
     String resp = null;
     try
     {
-      resp = uriResolver.getResponseBodyAsString( uri );
+      resp = httpUriResolver.getResponseBodyAsString( uri );
     }
     catch ( IOException e )
     {

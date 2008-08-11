@@ -4,6 +4,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.ErrorHandler;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ public class ThreddsCatalogHandler extends DefaultHandler
           org.slf4j.LoggerFactory.getLogger( ThreddsCatalogHandler.class );
 
   private DefaultHandler state;
+  private ErrorHandler errorHandler;
   private Map<String, String> namespaceMap;
 
 
@@ -33,39 +35,81 @@ public class ThreddsCatalogHandler extends DefaultHandler
   {
     this.state = state;
   }
+  void setErrorHandler( ErrorHandler eh )
+  {
+    this.errorHandler = eh;
+  }
 
-  public void startPrefixMapping( String prefix, String uri ) throws SAXException
+  @Override
+  public void startDocument()
+          throws SAXException
+  {
+    super.startDocument();
+  }
+
+  @Override
+  public void endDocument()
+          throws SAXException
+  {
+    super.endDocument();
+  }
+
+  @Override
+  public void startPrefixMapping( String prefix, String uri )
+          throws SAXException
   {
     this.namespaceMap.put( prefix, uri );
   }
 
-  public void endPrefixMapping( String prefix ) throws SAXException
+  @Override
+  public void endPrefixMapping( String prefix )
+          throws SAXException
   {
     this.namespaceMap.remove( prefix );
   }
 
-  public void startElement( String uri, String localName, String qName, Attributes attributes ) throws SAXException
+  @Override
+  public void startElement( String uri, String localName, String qName, Attributes attributes )
+          throws SAXException
   {
-    this.state.startElement( uri, localName, qName, attributes );
+    if ( state != null )
+      this.state.startElement( uri, localName, qName, attributes );
+
+    if ( localName.equals( "catalog" ))
+      this.state = new CatalogHandler( attributes, this, this );
+    if ( localName.equals( "service" ))
+      this.state = new ServiceHandler( null, null, attributes, this, this );
   }
 
-  public void endElement( String uri, String localName, String qName ) throws SAXException
+  @Override
+  public void endElement( String uri, String localName, String qName )
+          throws SAXException
   {
-    this.state.endElement( uri, localName, qName );
+    if ( state != null )
+      this.state.endElement( uri, localName, qName );
+
+    throw new SAXException( "Closing XML element [" + localName + "] after parsing completed.");
+    // OR call warning/error/fatal?
   }
 
-  public void warning( SAXParseException e ) throws SAXException
+  @Override
+  public void warning( SAXParseException e )
+          throws SAXException
   {
-    this.state.warning( e );
+    this.errorHandler.warning( e );
   }
 
-  public void error( SAXParseException e ) throws SAXException
+  @Override
+  public void error( SAXParseException e )
+          throws SAXException
   {
-    this.state.error( e );
+    this.errorHandler.error( e );
   }
 
-  public void fatalError( SAXParseException e ) throws SAXException
+  @Override
+  public void fatalError( SAXParseException e )
+          throws SAXException
   {
-    this.state.fatalError( e );
+    this.errorHandler.fatalError( e );
   }
 }

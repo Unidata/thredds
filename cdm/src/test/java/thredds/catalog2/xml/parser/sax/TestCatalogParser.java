@@ -5,7 +5,7 @@ import thredds.catalog2.xml.parser.CatalogParserFactory;
 import thredds.catalog2.xml.parser.CatalogParser;
 import thredds.catalog2.xml.parser.CatalogParserException;
 import thredds.catalog2.xml.parser.CatalogNamespace;
-import thredds.util.UriResolver;
+import thredds.util.HttpUriResolver;
 
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Schema;
@@ -14,7 +14,6 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.Source;
 import java.io.StringReader;
 import java.io.InputStream;
 import java.io.IOException;
@@ -132,8 +131,8 @@ public class TestCatalogParser extends TestCase
   private static InputStream getInputStream( URI uri )
           throws IOException
   {
-    UriResolver uriResolver = UriResolver.newDefaultUriResolver();
-    return uriResolver.getResponseBodyAsInputStream( uri );
+    HttpUriResolver httpUriResolver = HttpUriResolver.newDefaultUriResolver();
+    return httpUriResolver.getResponseBodyAsInputStream( uri );
   }
 
   private static Schema getSchema()

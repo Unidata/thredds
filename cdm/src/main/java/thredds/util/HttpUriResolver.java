@@ -17,10 +17,10 @@ import java.util.zip.InflaterInputStream;
  * @author edavis
  * @since 4.0
  */
-public class UriResolver
+public class HttpUriResolver
 {
   private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( UriResolver.class );
+          org.slf4j.LoggerFactory.getLogger( HttpUriResolver.class );
 
   private long connectionTimeout = 30000; // in milliseconds
   private int socketTimeout = 1 * 60 * 1000; // in milliseconds, time to wait for data
@@ -28,16 +28,16 @@ public class UriResolver
   private String contentEncoding = "gzip,deflate";
   private boolean wantContentEncoding = true;
 
-  private UriResolver() {}
-  public static UriResolver newDefaultUriResolver()
+  private HttpUriResolver() {}
+  public static HttpUriResolver newDefaultUriResolver()
   {
-    return new UriResolver();
+    return new HttpUriResolver();
   }
 
-  public static UriResolver newUriResolverSettingTimeouts( long connectionTimeout,
+  public static HttpUriResolver newUriResolverSettingTimeouts( long connectionTimeout,
                                                            int socketTimeout )
   {
-    UriResolver u = new UriResolver();
+    HttpUriResolver u = new HttpUriResolver();
     u.connectionTimeout = connectionTimeout;
     u.socketTimeout = socketTimeout;
     return u;

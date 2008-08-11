@@ -1,6 +1,6 @@
 package thredds.catalog2.xml.parser;
 
-import thredds.util.UriResolver;
+import thredds.util.HttpUriResolver;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,7 +77,7 @@ public enum CatalogNamespace
     if ( this.getResourceName() != null )
       inStream = this.getClass().getClassLoader().getResourceAsStream( this.getResourceName() );
     if ( inStream == null && this.getResourceUri() != null )
-      inStream = UriResolver.newDefaultUriResolver().getResponseBodyAsInputStream( this.getResourceUri() );
+      inStream = HttpUriResolver.newDefaultUriResolver().getResponseBodyAsInputStream( this.getResourceUri() );
 
     return inStream;
   }

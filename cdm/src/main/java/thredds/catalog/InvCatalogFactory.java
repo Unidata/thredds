@@ -28,7 +28,6 @@ import java.net.*;
 import java.util.*;
 
 import ucar.nc2.util.IO;
-import thredds.util.UriResolver;
 
 /**
  * Reads an XML document and constructs thredds.catalog object.
@@ -257,10 +256,10 @@ public class InvCatalogFactory {
     InputStream is = null;
     try {
       jdomDoc = saxBuilder.build(uri.toURL());
-//      UriResolver uriResolver = UriResolver.newDefaultUriResolver();
-//      String s = uriResolver.getString( uri );
+//      HttpUriResolver httpUriResolver = HttpUriResolver.newDefaultUriResolver();
+//      String s = httpUriResolver.getString( uri );
 //      //StringReader
-//      is = new BufferedInputStream( uriResolver.getInputStream( uri ), 1000000 );
+//      is = new BufferedInputStream( httpUriResolver.getInputStream( uri ), 1000000 );
 //      jdomDoc = saxBuilder.build( is );
     } catch (Exception e) {
       InvCatalogImpl cat = new InvCatalogImpl(uri.toString(), null, null);
