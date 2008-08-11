@@ -382,16 +382,39 @@ public class BufrIosp extends AbstractIOServiceProvider {
         continue;
       }
 
-      // char data - need to find some to test with
-      if (dkey.type == 1) {
-        continue; // skip for the moment
-      }
-
       // skip to where this variable starts
       reader.setBitOffset( counter.getStartingBitPos());
 
+      // char data special case
+      if (dkey.type == 1) {
+        int n = dkey.bitWidth/8;
+        byte[] minValue = new byte[n];
+        for (int i=0; i<n; i++)
+          minValue[i] = (byte) reader.bits2UInt(8);
+        int dataWidth = reader.bits2UInt(6); // incremental data width
+
+        if (dataWidth == 0) { // use the min value
+          for (int i = 0; i < n; i++)
+            bb.put(minValue[i]);
+
+        } else { // read the incremental value
+          reader.setBitOffset( counter.getBitPos(msgOffset));
+          int nt = Math.min(n, dataWidth);
+          for (int i = 0; i < nt; i++) {
+            int cval = reader.bits2UInt(8);
+            if (cval < 32 || cval > 126) cval = 0; // printable ascii KLUDGE!
+            bb.put((byte) cval);
+          }
+          for (int i = nt; i < n; i++) // can dataWidth < n ?
+            bb.put((byte) 0);
+        }
+        continue;
+      }
+
+      // numeric fields
+
       int value = reader.bits2UInt(dkey.bitWidth); // read min value
-      int dataWidth = reader.bits2UInt(6);
+      int dataWidth = reader.bits2UInt(6); // incremental data woidth
 
       // if dataWidth == 0, just use min value
       if (dataWidth > 0) {
@@ -400,6 +423,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         value += reader.bits2UInt(dataWidth);
       }
 
+      // workaround for misformed messages
       if (dataWidth > dkey.bitWidth) {
         int missingVal = ucar.bufr.BufrNumbers.missing_value[dkey.bitWidth];
         if ((value & missingVal) != value) // overflow
@@ -425,15 +449,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
         bb.put((byte) b1);
       }
 
-
-   /* if (true) {
-        out.format("  read %s (%s) bitWidth=%d dataWidth=%d value= %d == ",
-                dkey.name, dkey.id, dkey.bitWidth, dataWidth, value );
-            float val = (value + dkey.refVal);
-            double scale = Math.pow(10.0, -dkey.scale);
-            out.format(" %f", val * scale);
-          out.format("%n");
-        } */
     }
   }
 
