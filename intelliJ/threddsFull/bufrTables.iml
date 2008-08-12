@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module relativePaths="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="web" name="servlet">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../../bufrTables/src/main/webapp/WEB-INF/web.xml" optional="false" version="2.5" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/../../../bufrTables/src/main/webapp" relative="/" />
+        </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/../../../bufrTables/src/main/java" />
+        </sourceRoots>
+        <building>
+          <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../../../bufrTables/target" />
+          <setting name="EXPLODED_ENABLED" value="true" />
+          <setting name="JAR_URL" value="file://" />
+          <setting name="JAR_ENABLED" value="false" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="true" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
+          <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="true" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="true" />
+        </building>
+        <packaging>
+          <containerElement type="module" name="bufr">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+          </containerElement>
+          <containerElement type="module" name="bufrTables">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+          </containerElement>
+          <containerElement type="module" name="common">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes/resources/bufr" />
+            <url>file://$MODULE_DIR$/../../../../bufr/resources/resources/bufr</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-fileupload-1.2.1.jar" />
+            <url>jar://$MODULE_DIR$/../../../lib/external/commons-fileupload-1.2.1.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-io-1.4.jar" />
+            <url>jar://$MODULE_DIR$/../../../lib/external/commons-io-1.4.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="&lt;N/A&gt;" />
+            <url>jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/jdom.jar" />
+            <url>jar://$MODULE_DIR$/../../../lib/external/jdom.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/junit.jar" />
+            <url>jar://$MODULE_DIR$/../../../lib/external/junit.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/netcdf-4.0.jar" />
+            <url>jar://$MODULE_DIR$/../../../lib/release/netcdf-4.0.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/nlog4j-1.2.25.jar" />
+            <url>jar://$MODULE_DIR$/../../../lib/external/nlog4j-1.2.25.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+            <url>jar://$MODULE_DIR$/../../../lib/external/slf4j-jdk14-1.2.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+            <url>file://$MODULE_DIR$/../../../../bufr/resources</url>
+          </containerElement>
+        </packaging>
+      </configuration>
+    </facet>
+    <facet type="web" name="Web" implicit="true">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../bufrTables/src/main/webapp/WEB-INF/web.xml" optional="false" version="2.5" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/../../bufrTables/src/main/webapp" relative="/" />
+        </webroots>
+        <building>
+          <setting name="EXPLODED_URL" value="file://" />
+          <setting name="EXPLODED_ENABLED" value="false" />
+          <setting name="JAR_URL" value="file://" />
+          <setting name="JAR_ENABLED" value="false" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
+          <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="true" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
+        </building>
+        <packaging>
+          <containerElement type="module" name="bufrTables">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+          </containerElement>
+        </packaging>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../bufrTables">
+      <sourceFolder url="file://$MODULE_DIR$/../../bufrTables/src/main/java" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../bufrTables/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../lib/external/commons-fileupload-1.2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../lib/external/commons-io-1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../lib/external/jdom.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../lib/external/nlog4j-1.2.25.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../lib/release/netcdf-4.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module" module-name="common" exported="" />
+    <orderEntry type="module" module-name="bufr" exported="" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../../../bufr/resources/resources/bufr" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntryProperties />
+  </component>
+</module>
+
