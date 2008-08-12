@@ -1,5 +1,7 @@
 package thredds.catalog2;
 
+import thredds.catalog.ServiceType;
+
 import java.util.List;
 
 /**
@@ -11,7 +13,9 @@ import java.util.List;
 public interface CatalogSearchHelper
 {
   public Service findServiceByName( String name );
+  public List<Service> findServiceByType( ServiceType type );
   public DatasetNode findDatasetById( String id );
   public List<Dataset> findAccessibleDatasets();
+  public List<Dataset> findAccessibleDatasetsByType( ServiceType type );
   public List<CatalogRef> findCatalogRefs();
 }

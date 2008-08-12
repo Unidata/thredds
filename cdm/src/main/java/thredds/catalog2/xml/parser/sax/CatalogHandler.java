@@ -108,7 +108,7 @@ public class CatalogHandler extends DefaultHandler
     {
       throw new SAXException( "Unexpected closing element [" + localName + "].");
     }
-    
+
     //top.s
     //super.endElement( uri, localName, qName );
     System.out.println( "End Element: " + localName );
