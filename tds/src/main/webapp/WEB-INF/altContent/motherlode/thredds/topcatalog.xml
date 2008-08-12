@@ -19,10 +19,8 @@
     <catalogRef xlink:href="http://dataportal.ucar.edu/metadata/ucar.thredds"
                 xlink:title="NCAR Data Portal" name="" />
     <dataset name="NOAA/NCDC NOMADS">
-      <catalogRef xlink:href="http://nomads.ncdc.noaa.gov:9090/dods/thredds"
+      <catalogRef xlink:href="http://nomads.ncdc.noaa.gov/thredds/catalog.xml"
                   xlink:title="NCDC NOMADS Data Server" name="" />
-      <catalogRef xlink:href="http://nomads.ncdc.noaa.gov:9091/dods/thredds"
-                  xlink:title="NCDC NOMADS Data Server 2" name="" />
     </dataset>
 
     <catalogRef xlink:href="http://coast-enviro.er.usgs.gov/thredds/bathy_catalog.xml"
@@ -44,12 +42,18 @@
     <catalogRef xlink:href="http://ngportal.sf.utas.edu.au/opendap/catalog.xml"
                 xlink:title="TPAC Ocean and Climate Digital Library Portal" name="" />
 
+    <catalogRef xlink:href="http://monsoondata.org:9090/dods/thredds"
+                xlink:title="COLA GrADS Data Server" name="" />
+
+    <catalogRef xlink:href="http://cdp.ucar.edu:9191/dods/thredds"
+                xlink:title="Community Data Portal GDS - COLA Climate Modeling Data Sets" name="" />
+
     <catalogRef xlink:href="http://motherlode.ucar.edu:8080/thredds/catalog.xml"
                 xlink:title="Unidata THREDDS/IDD Server (motherlode)" name="" />
     <dataset name="Unidata LEAD catalogs">
-      <catalogRef xlink:href="http://lead.unidata.ucar.edu:8080/thredds/catalog.html"
+      <catalogRef xlink:href="http://lead.unidata.ucar.edu:8080/thredds/catalog.xml"
                   xlink:title="IDD Data" name="" />
-      <catalogRef xlink:href="http://lead.unidata.ucar.edu:8080/thredds/topcatalog.html"
+      <catalogRef xlink:href="http://lead.unidata.ucar.edu:8080/thredds/topcatalog.xml"
                   xlink:title="LEAD Data" name="" />
     </dataset>
   </dataset>
