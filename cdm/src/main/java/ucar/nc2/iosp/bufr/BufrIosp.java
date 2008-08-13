@@ -99,7 +99,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       if (protoMessage == null) {
         protoMessage = m;
         protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete tables        
-        if (!protoMessage.hasTablesComplete())
+        if (!protoMessage.isTablesComplete())
           throw new IllegalStateException("BUFR file has incomplete tables");
       } else {
         if (!protoMessage.equals(m)) {

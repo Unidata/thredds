@@ -5,10 +5,11 @@
       <configuration>
         <descriptors>
           <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../bufrTables/src/main/webapp/WEB-INF/web.xml" optional="false" version="2.5" />
+          <deploymentDescriptor url="file://test">
+            <option name="DEFAULT_DIR" value="META-INF" />
+          </deploymentDescriptor>
         </descriptors>
-        <webroots>
-          <root url="file://$MODULE_DIR$/../../bufrTables/src/main/webapp" relative="/" />
-        </webroots>
+        <webroots />
         <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../../../bufrTables/target" />

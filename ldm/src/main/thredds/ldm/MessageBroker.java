@@ -22,7 +22,6 @@ package thredds.ldm;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Formatter;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,20 +31,30 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 
 /**
- * Class Description.
+ * Recieves data from an InputStream, breaks into BUFR messages by scanning for "BUFR" header.
+ * Writes them out using regexp on the header, like pqact does.
+ *
+ * Multithreaded:
+ *   main thread for reading input stream, and breaking into messages
+ *   seperate thread for processing messages
+ *   seperate thread for each output.
  *
  * @author caron
  * @since Aug 8, 2008
  */
 public class MessageBroker {
-  Executor executor;
-  Thread messProcessor;
-  LinkedBlockingQueue<MessageTask> messQ = new LinkedBlockingQueue<MessageTask>();
+  private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch("BUFR".getBytes());
+
+  private Executor executor;
+  private Thread messProcessor;
+  private LinkedBlockingQueue<MessageTask> messQ = new LinkedBlockingQueue<MessageTask>(10);
+  private Formatter out = new Formatter(System.out);
+
+  private MessageDispatchDDS dispatch;
 
   //CompletionService<Result> completionService;
-  ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch("BUFR".getBytes());
 
-  MessageBroker(Executor executor) {
+  public MessageBroker(Executor executor) throws IOException {
     this.executor = executor;
 
     // start up a thread for processing messages as they come off the wire
@@ -53,31 +62,53 @@ public class MessageBroker {
     messProcessor.start();
     //ExecutorService messProcessor = Executors.newSingleThreadExecutor();
     //this.completionService = new ExecutorCompletionService<Result>(executor);
+
+    dispatch = new MessageDispatchDDS("D:/bufr/dispatch.txt");
   }
 
-  void exit() {
+  public void exit() throws IOException {
+    // wait util all tasks are complete
+    while (messQ.peek() != null) {
+      try {
+        Thread.currentThread().sleep(2000); // wait 2 sec
+      } catch (InterruptedException e) {
+        // not sure what to do
+      }
+    }
+
     messProcessor.interrupt();
+    dispatch.exit();
   }
+
+  int bad_msgs = 0;
+  int total_msgs = 0;
 
   private class MessageProcessor implements Runnable {
-    private boolean cancel = false;
 
     public void run() {
       while (true) {
         try {
-          if (cancel && messQ.peek() == null) break;
-          process(messQ.take()); // bloccks until a task is ready
+          if (Thread.currentThread().isInterrupted()) break;
+          process(messQ.take()); // blocks until a task is ready
+
         } catch (InterruptedException e) {
-          cancel = true;
+          break; // exit thread
         }
       }
+      System.out.println("exit MessageProcessor");
     }
 
     void process(MessageTask mtask) {
-      System.out.println("*** process messsage " + mtask.id);
+      //out.format("    %d start process %n", mtask.id);
       try {
         Message m = getMessage(new InMemoryRandomAccessFile("BUFR", mtask.mess));
-        new Dump().dumpHeader(new Formatter(System.out), m);
+        m.setHeader( mtask.header);
+        m.setRawBytes( mtask.mess);
+
+        dispatch.dispatch(m);
+        //out.format("    %d", mtask.id);
+        //new Dump().dumpHeaderShort(out, m);
+        
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -108,6 +139,7 @@ public class MessageBroker {
     byte[] mess;
     int len, have;
     int id;
+    String header;
 
     MessageTask(int messlen) {
       this.len = messlen;
@@ -119,62 +151,119 @@ public class MessageBroker {
   }
 
   public void process(InputStream is) throws IOException {
+    int pos = -1;
+    Buffer b = null;
 
     while (true) {
-      Buffer b = readBuffer(is);
-      process(b, is);
+      b = (pos < 0) ? readBuffer(is) : readBuffer(is, b, pos);
+      pos = process(b, is);
       if (b.done) break;
     }
   }
 
-  private void process(Buffer b, InputStream is) throws IOException {
+  // return where in the buffer we got to.
+  private int process(Buffer b, InputStream is) throws IOException {
     int start = 0;
     while (start < b.have) {
       int matchPos = matcher.indexOf(b.buff, start, b.have - start);
-      if (matchPos < 0) break; // LOOK
+
+      // didnt find "BUFR" match
+      if (matchPos < 0) {
+        if (start == 0) // discard all but last 3 bytes
+          return b.have - 3;
+        else
+          return start; // indicates part of the buffer thats not processed
+      }
+
+      // do we have the length already read ??
+      if (matchPos + 6 >= b.have) {
+        return start; // this will save the end of the buffer and read more in.  
+      }
 
       // read BUFR message length
       int b1 = (b.buff[matchPos + 4] & 0xff);
       int b2 = (b.buff[matchPos + 5] & 0xff);
       int b3 = (b.buff[matchPos + 6] & 0xff);
       int messLen = b1 << 16 | b2 << 8 | b3;
-      System.out.println("match at=" + matchPos + " len= " + messLen);
-      int last = matchPos + messLen;
+      // System.out.println("match at=" + matchPos + " len= " + messLen);
 
       // create a task for this message
+      //int headerLen = matchPos - start;
       MessageTask task = new MessageTask(messLen);
+      task.header = extractHeader(start, matchPos, b);
 
       // copy message bytes into it
+      int last = matchPos + messLen;
       if (last > b.have) {
         task.have = b.have - matchPos;
         System.arraycopy(b.buff, matchPos, task.mess, 0, task.have);
 
         // read the rest of the message
-        if (!readBuffer(is, task.mess, task.have, messLen - task.have)) {
+        if (!readBuffer(is, task.mess, task.have, task.len - task.have)) {
           System.out.println("Failed to read remaining BUFR message");
           break;
         }
 
       } else {
-        task.have = messLen;
+        task.have = task.len;
         System.arraycopy(b.buff, matchPos, task.mess, 0, task.have);
       }
 
+      boolean ok = true;
+      
       // check on ending
-      for (int i = messLen - 4; i < messLen; i++) {
+      for (int i = task.len - 4; i < task.len; i++) {
         int bb = task.mess[i];
-        if (bb != 55)
+        if (bb != 55) {
           System.out.println("Missing End of BUFR message at pos=" + i + " " + bb);
+          ok = false;
+          bad_msgs++;
+        }
       }
 
-      messQ.add(task);
-      System.out.println(" added message " + task.id + " start=" + matchPos + " end= " + (matchPos + messLen));
+      try {
+        if (ok) messQ.put(task);
+        total_msgs++;
+        //System.out.println(" added message " + task.id + " start=" + matchPos + " end= " + (matchPos + messLen));
+      } catch (InterruptedException e) {
+        System.out.println(" interrupted queue put - assume process exit");
+        break;
+      }
 
       start = matchPos + messLen + 1;
     }
+
+    return -1;
   }
 
-  // read until buffer is full or end of stream
+  private String extractHeader(int startScan, int messagePos, Buffer buff) {
+    int sizeHeader = messagePos - startScan;
+    if (sizeHeader > 30) sizeHeader = 30;
+    byte[] header = new byte[sizeHeader];
+    int startHeader = messagePos - sizeHeader;
+    System.arraycopy(buff.buff, startHeader, header, 0, sizeHeader);
+
+    // cleanup
+    int start = 0;
+    for (start=0; start<header.length; start++) {
+      byte b = header[start];
+      if ((b == 73) || (b == 74)) // I or J
+        break;
+    }
+
+    byte[] bb = new byte[sizeHeader];
+    int count = 0;
+    for (int i=start; i<header.length; i++) {
+      byte b = header[i];
+      if (b >= 32 && b < 127) // ascii only
+        bb[count++] = b;
+    }
+    return new String(bb, 0, count);
+  }
+
+  private boolean showRead = false;
+
+  // read into dest byte array, until buffer is full or end of stream
   private boolean readBuffer(InputStream is, byte[] dest, int start, int want) throws IOException {
     int done = 0;
     while (done < want) {
@@ -183,14 +272,16 @@ public class MessageBroker {
         return false;
       done += got;
     }
-    //System.out.println("Read buffer " + done);
+
+    if (showRead) System.out.println("Read buffer at " + bytesRead+" len="+done);
+    bytesRead += done;
     return true;
   }
 
-  // read until buffer is full or end of stream
+  // read into new Buffer, until buffer is full or end of stream
   private Buffer readBuffer(InputStream is) throws IOException {
     Buffer b = new Buffer();
-    int want = buffsize;
+    int want = BUFFSIZE;
     while (b.have < want) {
       int got = is.read(b.buff, b.have, want - b.have);
       if (got < 0) {
@@ -199,11 +290,41 @@ public class MessageBroker {
       }
       b.have += got;
     }
-    //System.out.println("Read buffer " + b.have);
+    if (showRead) System.out.println("Read buffer at " + bytesRead+" len="+b.have);
+    bytesRead += b.have;
     return b;
   }
 
-  private int buffsize = 15000;
+    // read into new Buffer, until buffer is full or end of stream
+  private Buffer readBuffer(InputStream is, Buffer prev, int pos) throws IOException {
+    Buffer b = new Buffer();
+
+      // copy remains of last buffer here
+    int remain = prev.have - pos;
+    //if (remain > BUFFSIZE /2)
+    //  out.format(" remain = "+remain+" bytesRead="+bytesRead);
+
+    System.arraycopy(prev.buff, pos, b.buff, 0, remain);
+    b.have = remain;
+
+
+    int want = BUFFSIZE;
+    while (b.have < want) {
+      int got = is.read(b.buff, b.have, want - b.have);
+      if (got < 0) {
+        b.done = true;
+        break;
+      }
+      b.have += got;
+    }
+
+    if (showRead) System.out.println("Read buffer at " + bytesRead+" len="+b.have);
+    bytesRead += b.have;
+    return b;
+  }
+
+  private long bytesRead = 0;
+  private int BUFFSIZE = 15000;
 
   private class Buffer {
     byte[] buff;
@@ -211,7 +332,7 @@ public class MessageBroker {
     boolean done;
 
     Buffer() {
-      buff = new byte[buffsize];
+      buff = new byte[BUFFSIZE];
       have = 0;
       done = false;
     }

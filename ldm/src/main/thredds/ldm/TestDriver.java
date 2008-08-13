@@ -59,6 +59,42 @@ public class TestDriver {
     }
   }
 
+  static void test(String filename, String startsWith, MClosure closure) throws IOException {
+    File f = new File(filename);
+    if (!f.exists()) {
+      System.out.println(filename + " does not exist");
+      return;
+    }
+    if (f.isDirectory()) testAllInDir(f, startsWith, closure);
+    else {
+      try {
+        closure.run(f.getPath());
+      } catch (Exception ioe) {
+        System.out.println("Failed on " + f.getPath() + ": " + ioe.getMessage());
+        ioe.printStackTrace();
+      }
+    }
+  }
+
+  static void testAllInDir(File dir, String startsWith,  MClosure closure) {
+    List<File> list = Arrays.asList(dir.listFiles());
+    Collections.sort(list);
+
+    for (File f : list) {
+      if (!f.getName().startsWith(startsWith)) continue;
+
+      if (f.isDirectory())
+        testAllInDir(f, closure);
+      else {
+        try {
+          closure.run(f.getPath());
+        } catch (Exception ioe) {
+          System.out.println("Failed on " + f.getPath() + ": " + ioe.getMessage());
+          ioe.printStackTrace();
+        }
+      }
+    }
+  }
 
   static void testAllInDir(File dir, MClosure closure) {
     List<File> list = Arrays.asList(dir.listFiles());
@@ -85,6 +121,7 @@ public class TestDriver {
   }
 
   static void scan(String filename, MessageBroker broker) throws IOException {
+    System.out.println("Read from file "+filename);
     FileInputStream fin = new FileInputStream( filename);
     broker.process(fin);
   }
@@ -93,12 +130,20 @@ public class TestDriver {
     Executor executor = Executors.newFixedThreadPool(5);
     final MessageBroker broker = new MessageBroker(executor);
 
-     test("D:/bufr/nlode/snap080808/20080728_0000.bufr", new MClosure() {
+    long start = System.nanoTime();
+
+     test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
+     // test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
         public void run(String filename) throws IOException {
           scan(filename, broker);
         }
       });
 
+    long stop = System.nanoTime();
+    int n = broker.total_msgs;
+    double secs = 1.0e-9 * (stop - start);
+    double rate = n / secs;
+    System.out.printf(" done reading %d (bad %d) in %.1f secs, rate = %.0f msg/sec %n",n, broker.bad_msgs, secs, rate);
     broker.exit();
 
   }

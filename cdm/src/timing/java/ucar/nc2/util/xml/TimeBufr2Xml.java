@@ -21,13 +21,8 @@
 package ucar.nc2.util.xml;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Format;
 import ucar.bufr.MessageScanner;
 import ucar.bufr.Message;
-import ucar.bufr.Dump;
-import ucar.nc2.dt.StationObsDataset;
-import ucar.nc2.dt.StationObsDatatype;
-import ucar.nc2.dt.Station;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
@@ -41,8 +36,6 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Formatter;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.ZipOutputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -114,7 +107,7 @@ public class TimeBufr2Xml {
       if (m == null) continue;
       //if (count == 0) new BufrDump2().dump(out, m);
 
-      if (!m.hasTablesComplete()) {
+      if (!m.isTablesComplete()) {
         out.format("**INCOMPLETE%n");
         bad++;
         continue;

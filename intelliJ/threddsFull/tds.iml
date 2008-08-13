@@ -514,7 +514,7 @@
         <customNs />
       </configuration>
     </facet>
-    <facet type="web" name="Web" implicit="true">
+    <facet type="web" name="Web">
       <configuration>
         <descriptors>
           <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../tds/src/main/webapp-ethan/WEB-INF/web.xml" optional="false" version="2.5" />
