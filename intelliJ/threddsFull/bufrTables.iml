@@ -12,7 +12,7 @@
         <webroots />
         <sourceRoots />
         <building>
-          <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../../../bufrTables/target" />
+          <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/../../bufrTables/target" />
           <setting name="EXPLODED_ENABLED" value="true" />
           <setting name="JAR_URL" value="file://" />
           <setting name="JAR_ENABLED" value="false" />
@@ -103,7 +103,6 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../bufrTables">
       <sourceFolder url="file://$MODULE_DIR$/../../bufrTables/src/main/java" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/../../bufrTables/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

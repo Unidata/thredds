@@ -30,6 +30,7 @@ import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.*;
+import java.io.IOException;
 
 /**
  * Make a NetcdfDataset into a collection of GeoGrids with Georeferencing coordinate systems.
@@ -380,6 +381,29 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////
+
+  // test dataset handler
+  static private ucar.nc2.dt.grid.GridDataset openGridDataset(String filename) throws IOException {
+
+    // fetch it as a NetcdfFile; this deals with possible NcML
+    NetcdfFile ncfile = NetcdfDataset.acquireFile(filename, null);
+
+    if (ncfile == null) return null;
+
+    // convert to NetcdfDataset with enhance
+    NetcdfDataset ncd;
+    if (ncfile instanceof NetcdfDataset) {
+      ncd = (NetcdfDataset) ncfile;
+      //if (ncd.getEnhanceMode() == NetcdfDataset.EnhanceMode.None) // LOOK
+      ncd.enhance();
+    } else {
+      ncd = new NetcdfDataset(ncfile, true);
+    }
+
+    // convert to a GridDataset
+    return new ucar.nc2.dt.grid.GridDataset(ncd);
+  }
+
   /**
    * testing
    */
@@ -387,11 +411,13 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
     String defaultFilename = "R:/testdata/grid/netcdf/cf/mississippi.nc";
     String filename = (arg.length > 0) ? arg[0] : defaultFilename;
     try {
-      GridDataset gridDs = GridDataset.open(filename);
+      GridDataset gridDs = openGridDataset(filename);
+      //GridDataset gridDs = GridDataset.open(filename);
       //System.out.println(gridDs.getDetailInfo());
 
       String outFilename = "C:/data/writeGrid.nc";
-      GeoGrid gg = gridDs.findGridByName("cape_sfc");
+      GeoGrid gg = gridDs.findGridByName("latent");
+      assert gg != null;
       gg.writeFile(outFilename);
 
       gridDs = GridDataset.open(outFilename);
