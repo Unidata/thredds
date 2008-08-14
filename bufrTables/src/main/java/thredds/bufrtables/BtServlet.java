@@ -406,7 +406,7 @@ public class BtServlet extends HttpServlet {
       rootElem.addContent(bufrMessage);
 
       bufrMessage.setAttribute("pos", Integer.toString(count));
-      if (!m.hasTablesComplete())
+      if (!m.isTablesComplete())
         bufrMessage.setAttribute("dds", "incomplete");
       else
         bufrMessage.setAttribute("dds", "ok");
