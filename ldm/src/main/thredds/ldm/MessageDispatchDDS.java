@@ -133,7 +133,7 @@ public class MessageDispatchDDS {
       boolean hasBadMessages = badHashSet.contains(m.hashCode()); // did we find any messages that fail bit count ??
 
       out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
-      cfg.format("0x%x, %s, %5d, %8d, %5d, %5s, %5s, %s, %s, %s, %s, %s %n", m.hashCode(), mtype.name,
+      cfg.format("0x%x, %s, %5d, %8d, %5f, %5s, %5s, %s, %s, %s, %s, %s %n", m.hashCode(), mtype.name,
               mtype.count, mtype.countObs, mtype.countBytes/1000,
               m.isTablesComplete(), !hasBadMessages,
               m.getCenterNo(), m.getTableName(), m.is.getBufrEdition(), m.getCategoryNo(),
@@ -180,7 +180,8 @@ public class MessageDispatchDDS {
     Message proto;
     String name;
     String fileout;
-    int count, countObs, countBytes;
+    int count, countObs;
+    float countBytes;
     boolean ignore;
 
     MessType(Message proto) {
