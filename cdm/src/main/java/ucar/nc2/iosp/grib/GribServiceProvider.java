@@ -95,7 +95,15 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
 
     open(index, cancelTask);
     if (debugOpen) System.out.println(" GribServiceProvider.open " + ncfile.getLocation()+" took "+(System.currentTimeMillis()-start));
+  }
 
+  public String toStringDebug(Object o) {
+    if (o instanceof Variable) {
+      Variable v = (Variable) o;
+      GribVariable pv = (GribVariable) v.getSPobject();
+      return pv.dump();
+    }
+    return null;
   }
 
   /**

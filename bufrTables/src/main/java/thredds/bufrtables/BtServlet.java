@@ -213,7 +213,7 @@ public class BtServlet extends HttpServlet {
         message = scan.next();
         if (message == null) continue;
         if (count == messno) {
-          byte[] mbytes = scan.getMessageBytes( message);
+          byte[] mbytes = scan.getMessageBytesFromLast( message);
           NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
           ncd = new NetcdfDataset(ncfile);
         }
@@ -268,7 +268,7 @@ public class BtServlet extends HttpServlet {
         Message m = scan.next();
         if (m == null) continue;
         if (count == messno) {
-          byte[] mbytes = scan.getMessageBytes(m);
+          byte[] mbytes = scan.getMessageBytesFromLast(m);
           NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
           NetcdfDataset ncd = new NetcdfDataset(ncfile);
           return ncd;

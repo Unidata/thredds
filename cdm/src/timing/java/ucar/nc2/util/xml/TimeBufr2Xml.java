@@ -120,7 +120,7 @@ public class TimeBufr2Xml {
         continue;
       }
 
-      byte[] mbytes = scan.getMessageBytes(m);
+      byte[] mbytes = scan.getMessageBytesFromLast(m);
 
       NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);

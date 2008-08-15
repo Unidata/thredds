@@ -110,6 +110,8 @@ public class GempakFileReader implements GempakConstants {
             throws IOException {
         setByteOrder();
         rf = raf;
+        raf.seek(0);
+      
         boolean ok = init(fullCheck);
         fileSize = rf.length();
         if ( !ok) {

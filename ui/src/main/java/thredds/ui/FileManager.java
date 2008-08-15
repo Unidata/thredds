@@ -72,7 +72,6 @@ public class FileManager {
   private boolean readOk = true, selectedFile = false;
   private static boolean debug = false, test = false;
 
-
   public FileManager(JFrame parent) {
     this(parent, null, null, null);
   }

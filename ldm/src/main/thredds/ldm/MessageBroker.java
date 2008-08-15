@@ -215,7 +215,7 @@ public class MessageBroker {
       for (int i = task.len - 4; i < task.len; i++) {
         int bb = task.mess[i];
         if (bb != 55) {
-          System.out.println("Missing End of BUFR message at pos=" + i + " " + bb);
+          //System.out.println("Missing End of BUFR message at pos=" + i + " " + bb);
           ok = false;
           bad_msgs++;
         }

@@ -70,7 +70,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
         try {
             gemreader = new GempakGridReader();
             gemreader.init(raf, false);
-        } catch (IOException ioe) {
+        } catch (Exception ioe) {
             return false;
         }
         return true;

@@ -55,12 +55,14 @@ import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.util.*;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
+import ucar.unidata.io.*;
 
 import thredds.catalog.query.DqcFactory;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.io.RandomAccessFile;
 import java.util.*;
 import java.util.List;
 
@@ -96,6 +98,7 @@ public class ToolsUI extends JPanel {
   private ucar.util.prefs.PreferencesExt mainPrefs;
 
   // UI
+  private BufrPanel bufrPanel;
   private CoordSysPanel coordSysPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
@@ -115,6 +118,7 @@ public class ToolsUI extends JPanel {
   private ViewerPanel viewerPanel;
 
   private JTabbedPane tabbedPane;
+  private JTabbedPane iospTabPane;
   private JFrame parentFrame;
   private FileManager fileChooser;
   private AboutWindow aboutWindow = null;
@@ -132,7 +136,7 @@ public class ToolsUI extends JPanel {
   //private IndependentWindow debugWindow;
   //private TextOutputStreamPane debugPane;
   //  private PrintStream debugOS;
-  private boolean debug = false, debugTab = false, debugNcmlWrite = false, debugCB = false;
+  private boolean debug = false, debugTab = true, debugNcmlWrite = false, debugCB = false;
 
 
   public ToolsUI(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) {
@@ -146,13 +150,15 @@ public class ToolsUI extends JPanel {
     fileChooser = new FileManager(parentFrame, null, filters, (PreferencesExt) prefs.node("FileManager"));
 
     viewerPanel = new ViewerPanel((PreferencesExt) mainPrefs.node("varTable"));
+    iospTabPane = new JTabbedPane(JTabbedPane.TOP);
 
-    // the overall UI
+    // the top UI
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
     tabbedPane.addTab("Viewer", viewerPanel);
 
     // all the other component are defferred for fast startup
     tabbedPane.addTab("NCDump", new JLabel("NCDump"));
+    tabbedPane.addTab("Iosp", iospTabPane);
     tabbedPane.addTab("CoordSys", new JLabel("CoordSys"));
     tabbedPane.addTab("Grids", new JLabel("Grids"));
     tabbedPane.addTab("Fmrc", new JLabel("Fmrc"));
@@ -182,15 +188,22 @@ public class ToolsUI extends JPanel {
     setLayout(new BorderLayout());
     add(tabbedPane, BorderLayout.CENTER);
 
+    // nested tab UI
+    bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
+    iospTabPane.addTab("BUFR", bufrPanel);
+    iospTabPane.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        Component c = iospTabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = iospTabPane.getSelectedIndex();
+          String title = iospTabPane.getTitleAt(idx);
+          makeComponentNested(iospTabPane, title);
+        }
+      }
+    });
+
     // dynamic proxy for DebugFlags
     debugFlags = (DebugFlags) java.lang.reflect.Proxy.newProxyInstance(DebugFlags.class.getClassLoader(), new Class[]{DebugFlags.class}, new DebugProxyHandler());
-
-    /* the debug message window
-    debugPane = new TextOutputStreamPane();
-    debugWindow = debugPane.makeIndependentWindow("Debug Messages");
-    Rectangle bounds = (Rectangle) mainPrefs.getBean(DEBUG_FRAME_SIZE, new Rectangle(100, 50, 500, 700));
-    debugWindow.setBounds(bounds);
-    debugWindow.setIconImage(BAMutil.getImage("netcdfUI")); */
 
     makeMenuBar();
     setDebugFlags();
@@ -267,7 +280,6 @@ public class ToolsUI extends JPanel {
             thredds.catalog.InvAccess access = (thredds.catalog.InvAccess) e.getNewValue();
             setThreddsDatatype(access);
           }
-
           if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("File")) {
             thredds.catalog.InvDataset ds = (thredds.catalog.InvDataset) e.getNewValue();
             setThreddsDatatype(ds, e.getPropertyName().equals("File"));
@@ -300,6 +312,35 @@ public class ToolsUI extends JPanel {
     tabbedPane.setComponentAt(idx, c);
     if (debugTab) System.out.println("tabbedPane changed " + title + " added ");
   }
+
+  // deffered creation of components to minimize startup
+  private void makeComponentNested(JTabbedPane parent, String title) {
+    // find the correct index
+    int n = parent.getTabCount();
+    int idx;
+    for (idx = 0; idx < n; idx++) {
+      String cTitle = parent.getTitleAt(idx);
+      if (cTitle.equals(title)) break;
+    }
+    if (idx >= n) {
+      if (debugTab) System.out.println("tabbedPaneNested cant find " + title);
+      return;
+    }
+
+    Component c;
+    if (title.equals("BUFR")) {
+      bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
+      c = bufrPanel;
+
+    } else {
+      System.out.println("tabbedPaneNested unknown component " + title);
+      return;
+    }
+
+    parent.setComponentAt(idx, c);
+    if (debugTab) System.out.println("tabbedPaneNested changed " + title + " added ");
+  }
+
 
   private void makeMenuBar() {
     JMenuBar mb = new JMenuBar();
@@ -618,6 +659,7 @@ public class ToolsUI extends JPanel {
     //}
 
     if (viewerPanel != null) viewerPanel.save();
+    if (bufrPanel != null) bufrPanel.save();
     if (coordSysPanel != null) coordSysPanel.save();
     if (ncdumpPanel != null) ncdumpPanel.save();
     if (ncmlPanel != null) ncmlPanel.save();
@@ -1394,6 +1436,7 @@ public class ToolsUI extends JPanel {
 
   }
 
+  /////////////////////////////////////////////////////////////////////
   private class CoordSysPanel extends OpPanel {
     NetcdfDataset ds = null;
     CoordSysTable coordSysTable;
@@ -1514,6 +1557,58 @@ public class ToolsUI extends JPanel {
     }
 
   }
+
+  /////////////////////////////////////////////////////////////////////
+  private class BufrPanel extends OpPanel {
+    ucar.unidata.io.RandomAccessFile raf  = null;
+    BufrTable bufrTable;
+
+    boolean useDefinition = false;
+    JComboBox defComboBox;
+    IndependentWindow defWindow;
+    AbstractButton defButt;
+
+    BufrPanel(PreferencesExt p) {
+      super(p, "file:", true, false);
+      bufrTable = new BufrTable(prefs);
+      add(bufrTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        if (raf != null)
+          raf.close();
+        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+
+        bufrTable.setBufrFile(raf);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        ta.setText(bos.toString());
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      bufrTable.save();
+      super.save();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////////////////
 
   private class NcmlPanel extends OpPanel {
     NetcdfDataset ds = null;
