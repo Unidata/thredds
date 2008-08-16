@@ -223,7 +223,7 @@ abstract public class StructureData {
    * Get scalar value as a double, with conversion as needed. Underlying type must be convertible to double.
    * @param memberName name of member Variable. Must be convertible to double.
    * @return scalar value as a double
-   * @throws ForbiddenConversionException if not convertible to float.
+   * @throws ForbiddenConversionException if not convertible to double.
    */
   public double convertScalarDouble(String memberName) {
     StructureMembers.Member m = members.findMember(memberName);
@@ -238,6 +238,26 @@ abstract public class StructureData {
    * @throws ForbiddenConversionException if not convertible to double.
    */
   abstract public double convertScalarDouble(StructureMembers.Member m);
+
+  /**
+   * Get scalar value as a int, with conversion as needed. Underlying type must be convertible to int.
+   * @param memberName name of member Variable. Must be convertible to double.
+   * @return scalar value as a int
+   * @throws ForbiddenConversionException if not convertible to int.
+   */
+  public int convertScalarInt(String memberName) {
+    StructureMembers.Member m = members.findMember(memberName);
+    if (m == null) throw new IllegalArgumentException("illegal member name =" + memberName);
+    return convertScalarInt(m);
+  }
+
+  /**
+   * Get scalar value as a int, with conversion as needed. Underlying type must be convertible to int.
+   * @param m member Variable.
+   * @return scalar value as a int
+   * @throws ForbiddenConversionException if not convertible to int.
+   */
+  abstract public int convertScalarInt(StructureMembers.Member m);
 
   /////////////////////////////////////////////////////////////////////////////////////////////
 

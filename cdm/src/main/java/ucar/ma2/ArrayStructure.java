@@ -555,6 +555,23 @@ public abstract class ArrayStructure extends Array {
     throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to double");
   }
 
+  /**
+   * Get scalar value as an int, with conversion as needed. Underlying type must be convertible to int.
+   *
+   * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
+   * @param m      member Variable.
+   * @return scalar double value
+   * @throws ForbiddenConversionException if not convertible to double.
+   */
+  public int convertScalarInt(int recnum, StructureMembers.Member m) {
+    if (m.getDataType() == DataType.INT) return getScalarInt(recnum, m);
+    if (m.getDataType() == DataType.SHORT) return (int) getScalarShort(recnum, m);
+    if (m.getDataType() == DataType.BYTE) return (int) getScalarByte(recnum, m);
+    Object o = getScalarObject(recnum, m);
+    if (o instanceof Number) return ((Number) o).intValue();
+    throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to int");
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**

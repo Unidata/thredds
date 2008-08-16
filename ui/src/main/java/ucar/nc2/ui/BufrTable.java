@@ -31,6 +31,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
+import ucar.nc2.Attribute;
+import ucar.ma2.StructureDataIterator;
+import ucar.ma2.StructureData;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -45,6 +48,7 @@ import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
@@ -58,7 +62,7 @@ public class BufrTable extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted messageTable, obsTable, ddsTable;
-  private JSplitPane split;
+  private JSplitPane split, split2;
 
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
@@ -73,10 +77,11 @@ public class BufrTable extends JPanel {
     messageTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("MessageBean"), false);
     messageTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        MessageBean vb = (MessageBean) messageTable.getSelectedBean();
+        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         java.util.List<DdsBean> beanList = new ArrayList<DdsBean>();
         try {
-          setDataDescriptors(beanList, vb.m.getRootDataDescriptor(), 0);
+          setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
+          setObs(mb.m);
         } catch (IOException e1) {
           e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -105,7 +110,7 @@ public class BufrTable extends JPanel {
         infoTA.clear();
         Formatter f = new Formatter();
         try {
-          new Dump().dumpDDS(f, vb.m);
+          new Dump().dump(f, vb.m);
         } catch (IOException e1) {
           e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -143,19 +148,19 @@ public class BufrTable extends JPanel {
 
           infoTA.clear();
           Formatter out = new Formatter();
-            if (!ok) out.format("*** BAD BIT COUNT %n");
-            long last = m.dataSection.dataPos + m.dataSection.dataLength;
-            out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
-                    m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
-                    nbitsCounted, nbitsGiven);
-            out.format(" countBits= %d givenBits=%d %n", nbitsCounted, nbitsGiven);
-            out.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.dataLength);
-            out.format("%n");
+          if (!ok) out.format("*** BAD BIT COUNT %n");
+          long last = m.dataSection.dataPos + m.dataSection.dataLength;
+          out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
+              m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
+              nbitsCounted, nbitsGiven);
+          out.format(" countBits= %d givenBits=%d %n", nbitsCounted, nbitsGiven);
+          out.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.dataLength);
+          out.format("%n");
           infoTA.appendLine(out.toString());
 
         } catch (Exception ex) {
           ByteArrayOutputStream bos = new ByteArrayOutputStream();
-          ex.printStackTrace( new PrintStream(bos));
+          ex.printStackTrace(new PrintStream(bos));
           infoTA.appendLine(bos.toString());
         }
 
@@ -200,7 +205,10 @@ public class BufrTable extends JPanel {
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, messageTable, ddsTable);
+    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ddsTable, obsTable);
+    split2.setDividerLocation(prefs.getInt("splitPos2", 800));
+
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, messageTable, split2);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     setLayout(new BorderLayout());
@@ -217,8 +225,10 @@ public class BufrTable extends JPanel {
   public void save() {
     messageTable.saveState(false);
     ddsTable.saveState(false);
+    obsTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
+    prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
   private String location;
@@ -256,6 +266,24 @@ public class BufrTable extends JPanel {
         seqno = setDataDescriptors(beanList, key, seqno);
     }
     return seqno;
+  }
+
+  private void setObs(Message m) {
+    java.util.List<ObsBean> beanList = new ArrayList<ObsBean>();
+    try {
+      NetcdfDataset ncd = getBufrMessageAsDataset(m);
+      Variable v = ncd.findVariable("obsRecord");
+      if ((v != null) && (v instanceof Structure)) {
+        Structure obs = (Structure) v;
+        StructureDataIterator iter = obs.getStructureIterator();
+        while (iter.hasNext()) {
+          beanList.add( new ObsBean(obs, iter.next())); 
+        }
+      }
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    obsTable.setBeans(beanList);
   }
 
   public class MessageBean {
@@ -328,23 +356,6 @@ public class BufrTable extends JPanel {
 
   }
 
-  public class ObsBean {
-    int n;
-
-    // no-arg constructor
-    public ObsBean() {
-    }
-
-    // create from a dataset
-    public ObsBean(int n) {
-      this.n = n;
-    }
-
-    public int getNobs() {
-      return n;
-    }
-  }
-
   public class DdsBean {
     DataDescriptor dds;
     int seq;
@@ -387,6 +398,127 @@ public class BufrTable extends JPanel {
       return seq;
     }
 
+  }
+
+
+  public class ObsBean {
+    double lat = Double.NaN, lon = Double.NaN, alt = Double.NaN;
+    int year = -1, month = -1, day = -1, hour = -1, minute = -1, sec = -1;
+    Date time;
+    int wmo_block = -1, wmo_id = -1;
+    String stn = null;
+
+    // no-arg constructor
+    public ObsBean() {
+    }
+
+    // create from a dataset
+    public ObsBean(Structure obs, StructureData sdata) {
+      // first choice
+       for (Variable v : obs.getVariables()) {
+         Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+         if (att == null) continue;
+         String val = att.getStringValue();
+         if (val.equals("0-5-1") && Double.isNaN(lat)) {
+           lat = sdata.convertScalarDouble(v.getShortName());
+         } else if (val.equals("0-6-1") && Double.isNaN(lon)) {
+           lon = sdata.convertScalarDouble(v.getShortName());
+         } else if (val.equals("0-7-30") && Double.isNaN(alt)) {
+
+           alt = sdata.convertScalarDouble(v.getShortName());
+         } else if (val.equals("0-4-1") && (year<0)) {
+           year = sdata.convertScalarInt(v.getShortName());
+         } else if (val.equals("0-4-2")&& (month<0)) {
+           month = sdata.convertScalarInt(v.getShortName());
+         } else if (val.equals("0-4-3")&& (day<0)) {
+           day = sdata.convertScalarInt(v.getShortName());
+         } else if (val.equals("0-4-4")&& (hour<0)) {
+           hour = sdata.convertScalarInt(v.getShortName());
+         } else if (val.equals("0-4-5")&& (minute<0)) {
+           minute = sdata.convertScalarInt(v.getShortName());
+         } else if (val.equals("0-4-6")&& (sec<0)) {
+           sec = sdata.convertScalarInt(v.getShortName());
+
+         } else if (val.equals("0-1-1")&& (wmo_block<0)) {
+           wmo_block = sdata.convertScalarInt(v.getShortName());
+         } else if (val.equals("0-1-2")&& (wmo_id<0)) {
+           wmo_id = sdata.convertScalarInt(v.getShortName());
+
+         } else if (val.equals("0-1-7")&& (stn == null)) {
+           stn = sdata.getScalarString(v.getShortName());
+         } else if (val.equals("0-1-194")&& (stn == null)) {
+           stn = sdata.getScalarString(v.getShortName());
+         } else if (val.equals("0-1-11")&& (stn == null)) {
+           stn = sdata.getScalarString(v.getShortName());
+         }
+       }
+
+      // second choice
+       for (Variable v : obs.getVariables()) {
+         Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+         if (att == null) continue;
+         String val = att.getStringValue();
+         if (val.equals("0-5-2") && Double.isNaN(lat)) {
+           lat = sdata.convertScalarDouble(v.getShortName());
+         } else if (val.equals("0-6-2") && Double.isNaN(lon)) {
+           lon = sdata.convertScalarDouble(v.getShortName());
+         } else if (val.equals("0-7-1") && Double.isNaN(alt)) {
+           alt = sdata.convertScalarDouble(v.getShortName());
+         } else if (val.equals("0-4-7")&& (sec<0)) {
+           sec = sdata.convertScalarInt(v.getShortName());
+         }
+       }
+
+      // third choice
+       for (Variable v : obs.getVariables()) {
+         Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+         if (att == null) continue;
+         String val = att.getStringValue();
+         if (val.equals("0-7-10") && Double.isNaN(alt)) {
+           alt = sdata.convertScalarDouble(v.getShortName());
+         } else if (val.equals("0-7-2") && Double.isNaN(alt)) {
+           alt = sdata.convertScalarDouble(v.getShortName());
+         }
+
+       }
+
+    }
+
+    public double getLat() {
+      return lat;
+    }
+    public double getLon() {
+      return lon;
+    }
+    public double getHeight() {
+      return alt;
+    }
+    public int getYear() {
+      return year;
+    }
+    public int getMonth() {
+      return month;
+    }
+    public int getDay() {
+      return day;
+    }
+    public int getHour() {
+      return hour;
+    }
+    public int getMinute() {
+      return minute;
+    }
+    public int getSec() {
+      return sec;
+    }
+
+    public String getWmoId() {
+      return wmo_block+"/"+wmo_id;
+    }
+
+    public String getStation() {
+      return stn;
+    }
   }
 
 }

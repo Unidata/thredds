@@ -45,6 +45,10 @@ public class StructureDataA extends StructureData {
     return sa.getArray(recno, m);
   }
 
+  public int convertScalarInt(StructureMembers.Member m) {
+    return sa.convertScalarInt(recno, m);
+  }
+
   public float convertScalarFloat(StructureMembers.Member m) {
     return sa.convertScalarFloat(recno, m);
   }

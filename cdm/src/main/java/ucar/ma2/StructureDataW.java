@@ -87,6 +87,10 @@ public class StructureDataW extends StructureData {
     return getScalarDouble(m);
   }
 
+  public int convertScalarInt(StructureMembers.Member m) {
+    return getScalarInt(m);
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**

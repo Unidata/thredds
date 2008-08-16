@@ -46,7 +46,8 @@ public class MessageDispatchDDS {
   int failWrite = 0;
   int ignored = 0;
 
-  int total_bytes, total_obs;
+  long total_bytes;
+  int total_obs;
 
   boolean showMatch = false;
   boolean showBad = false;
@@ -121,8 +122,9 @@ public class MessageDispatchDDS {
     }
   }
 
-  private String inputFilename = "D:/bufr/dispatch2.csv";
-  private String inputFilenameOut = "D:/bufr/dispatch3.csv";
+  private String rootDir = "C:/data/bufr2/";
+  private String inputFilename = rootDir+"dispatch.csv";
+  private String inputFilenameOut = rootDir+"dispatchOut.csv";
 
   void exit() throws IOException {
     for (MessType mtype : typeMap.values())
@@ -186,11 +188,11 @@ public class MessageDispatchDDS {
       }
     }
 
-    File file = new File("D:/bufr/dispatch/bad.bufr");
+    File file = new File(rootDir+"/dispatch/bad.bufr");
     FileOutputStream fos = new FileOutputStream(file);
     badWbc = fos.getChannel();
 
-    file = new File("D:/bufr/dispatch/sample.bufr");
+    file = new File(rootDir+"/dispatch/sample.bufr");
     fos = new FileOutputStream(file);
     sampleWbc = fos.getChannel();
   }
@@ -241,7 +243,7 @@ public class MessageDispatchDDS {
 
     WritableByteChannel getWBC() throws FileNotFoundException {
       if (wbc == null) {
-        File file = new File("D:/bufr/dispatch/", fileout + ".bufr");
+        File file = new File(rootDir+"/dispatch/", fileout + ".bufr");
         fos = new FileOutputStream(file);
         wbc = fos.getChannel();
       }
