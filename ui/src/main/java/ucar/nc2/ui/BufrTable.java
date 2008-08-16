@@ -34,6 +34,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Attribute;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
+import ucar.ma2.DataType;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -444,12 +445,12 @@ public class BufrTable extends JPanel {
          } else if (val.equals("0-1-2")&& (wmo_id<0)) {
            wmo_id = sdata.convertScalarInt(v.getShortName());
 
-         } else if (val.equals("0-1-7")&& (stn == null)) {
-           stn = sdata.getScalarString(v.getShortName());
-         } else if (val.equals("0-1-194")&& (stn == null)) {
-           stn = sdata.getScalarString(v.getShortName());
-         } else if (val.equals("0-1-11")&& (stn == null)) {
-           stn = sdata.getScalarString(v.getShortName());
+         } else if ((stn == null) &&
+             (val.equals("0-1-7") || val.equals("0-1-194") || val.equals("0-1-11") )) {
+           if (v.getDataType().isString())
+             stn = sdata.getScalarString(v.getShortName());
+           else
+             stn = Integer.toString( sdata.convertScalarInt(v.getShortName()));
          }
        }
 
