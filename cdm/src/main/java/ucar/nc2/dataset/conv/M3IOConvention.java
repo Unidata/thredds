@@ -214,8 +214,8 @@ public class M3IOConvention extends CoordSysBuilder {
   }
 
   private CoordinateTransform makeTMProjection(NetcdfDataset ds) {
-    double lat0 = findAttributeDouble(ds,  "PROJ_ALPHA");
-    double tangentLon = findAttributeDouble(ds,  "PROJ_BETA");
+    double lat0 = findAttributeDouble(ds,  "P_ALP");
+    double tangentLon = findAttributeDouble(ds,  "P_BET");
     //double lon0 = findAttributeDouble( "X_CENT");
     //double lat0 = findAttributeDouble( "Y_CENT");
 
@@ -231,8 +231,8 @@ public class M3IOConvention extends CoordSysBuilder {
   }
 
   private CoordinateTransform makeSTProjection(NetcdfDataset ds) {
-    double latt = findAttributeDouble(ds,  "PROJ_ALPHA");
-    double lont = findAttributeDouble(ds,  "PROJ_BETA");
+    double latt = findAttributeDouble(ds,  "P_ALP");
+    double lont = findAttributeDouble(ds,  "P_BET");
     //double lon0 = findAttributeDouble( "X_CENT");
     //double lat0 = findAttributeDouble( "Y_CENT");
 
