@@ -18,25 +18,21 @@ import java.io.InputStream;
  */
 public class JdomCatalogParser implements CatalogParser
 {
-  @Override
   public Catalog parse( URI uri )
   {
     return null;
   }
 
-  @Override
   public Catalog parse( File file, URI baseUri )
   {
     return null;
   }
 
-  @Override
   public Catalog parse( Reader reader, URI baseUri )
   {
     return null;
   }
 
-  @Override
   public Catalog parse( InputStream is, URI baseUri )
   {
     return null;

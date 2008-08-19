@@ -16,7 +16,6 @@ public class BasicAccessUriBuilder implements AccessUriBuilder
 {
   private Logger log = LoggerFactory.getLogger( getClass());
 
-  @Override
   public URI buildAccessUri( Access access, URI docBaseUri )
   {
     if ( access == null )

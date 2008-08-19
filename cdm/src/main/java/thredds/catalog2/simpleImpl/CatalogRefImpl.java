@@ -25,7 +25,6 @@ public class CatalogRefImpl
     this.reference = reference;
   }
 
-  @Override
   public void setReference( URI reference )
   {
     if ( this.finished ) throw new IllegalStateException( "This CatalogRefBuilder has been finished().");
@@ -33,7 +32,6 @@ public class CatalogRefImpl
     this.reference = reference;
   }
 
-  @Override
   public URI getReference()
   {
     return this.reference;

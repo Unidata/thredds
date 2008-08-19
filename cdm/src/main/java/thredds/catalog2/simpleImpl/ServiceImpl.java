@@ -79,26 +79,22 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.uniqueServiceNames.contains( name );
   }
 
-  @Override
   public String getName()
   {
     return this.name;
   }
 
-  @Override
   public void setDescription( String description )
   {
     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
     this.description = description != null ? description : "";
   }
 
-  @Override
   public String getDescription()
   {
     return this.description;
   }
 
-  @Override
   public void setType( ServiceType type )
   {
     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
@@ -107,13 +103,11 @@ public class ServiceImpl implements Service, ServiceBuilder
     this.type = type;
   }
 
-  @Override
   public ServiceType getType()
   {
     return this.type;
   }
 
-  @Override
   public void setBaseUri( URI baseUri )
   {
     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
@@ -122,26 +116,22 @@ public class ServiceImpl implements Service, ServiceBuilder
     this.baseUri = baseUri;
   }
 
-  @Override
   public URI getBaseUri()
   {
     return this.baseUri;
   }
 
-  @Override
   public void setSuffix( String suffix )
   {
     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
     this.suffix = suffix != null ? suffix : "";
   }
 
-  @Override
   public String getSuffix()
   {
     return this.suffix;
   }
 
-  @Override
   public void addProperty( String name, String value )
   {
     if ( this.finished )
@@ -149,7 +139,6 @@ public class ServiceImpl implements Service, ServiceBuilder
     this.propertyContainer.addProperty( name, value );
   }
 
-  @Override
   public List<String> getPropertyNames()
   {
     if ( this.finished )
@@ -157,7 +146,6 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.propertyContainer.getPropertyNames();
   }
 
-  @Override
   public String getPropertyValue( String name )
   {
     if ( this.finished )
@@ -165,7 +153,6 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.propertyContainer.getPropertyValue( name );
   }
 
-  @Override
   public List<Property> getProperties()
   {
     if ( !this.finished )
@@ -173,7 +160,6 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.propertyContainer.getProperties();
   }
 
-  @Override
   public Property getPropertyByName( String name )
   {
     if ( !this.finished )
@@ -181,7 +167,6 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.propertyContainer.getPropertyByName( name );
   }
 
-  @Override
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
   {
     if ( this.finished )
@@ -200,7 +185,6 @@ public class ServiceImpl implements Service, ServiceBuilder
     return sb;
   }
 
-//  @Override
 //  public ServiceBuilder addService( String name, ServiceType type, URI baseUri, int index )
 //  {
 //     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished().");
@@ -213,7 +197,6 @@ public class ServiceImpl implements Service, ServiceBuilder
 //    return sb;
 //  }
 
-  @Override
   public List<Service> getServices()
   {
     if ( !this.finished )
@@ -221,7 +204,6 @@ public class ServiceImpl implements Service, ServiceBuilder
     return Collections.unmodifiableList( this.services );
   }
 
-  @Override
   public Service getServiceByName( String name )
   {
     if ( !this.finished )
@@ -229,14 +211,12 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.servicesMap.get( name );
   }
 
-  @Override
   public List<ServiceBuilder> getServiceBuilders()
   {
     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
     return Collections.unmodifiableList( this.serviceBuilders );
   }
 
-  @Override
   public ServiceBuilder getServiceBuilderByName( String name )
   {
     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
@@ -248,13 +228,11 @@ public class ServiceImpl implements Service, ServiceBuilder
     return null;
   }
 
-  @Override
   public boolean isFinished()
   {
     return this.finished;
   }
 
-  @Override
   public Service finish()
   {
     if ( this.finished )

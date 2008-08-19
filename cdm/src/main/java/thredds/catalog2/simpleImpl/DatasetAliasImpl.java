@@ -48,11 +48,13 @@ public class DatasetAliasImpl
     return (DatasetBuilder) this.alias;
   }
 
+  @Override
   public boolean isFinished()
   {
     return this.finished;
   }
-  
+
+  @Override
   public DatasetAlias finish()
   {
     if ( this.finished )

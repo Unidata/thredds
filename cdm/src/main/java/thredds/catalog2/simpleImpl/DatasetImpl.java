@@ -83,11 +83,13 @@ public class DatasetImpl
     return list;
   }
 
+  @Override
   public boolean isFinished()
   {
     return this.finished;
   }
 
+  @Override
   public Dataset finish()
   {
     if ( this.finished )

@@ -11,7 +11,6 @@ public class BasicAccessUriBuilderResolver
 {
   //public void setAccessUriBuilders( List<AccessUriBuilder> accessUriBuilders );
 
-  @Override
   public AccessUriBuilder resolveAccessUriBuilder( Dataset dataset, Access access )
   {
     return new BasicAccessUriBuilder();

@@ -50,7 +50,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     this.childrenIdMap = new HashMap<String, DatasetNode>();
   }
 
-  @Override
   public void setId( String id )
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished().");
@@ -64,13 +63,11 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     }
   }
 
-  @Override
   public String getId()
   {
     return this.id;
   }
 
-  @Override
   public void setName( String name )
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
@@ -78,13 +75,11 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     this.name = name;
   }
 
-  @Override
   public String getName()
   {
     return this.name;
   }
 
-  @Override
   public void addProperty( String name, String value )
   {
     if ( this.finished )
@@ -92,7 +87,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     this.propertyContainer.addProperty( name, value );
   }
 
-  @Override
   public List<String> getPropertyNames()
   {
     if ( this.finished )
@@ -100,7 +94,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.propertyContainer.getPropertyNames();
   }
 
-  @Override
   public String getPropertyValue( String name )
   {
     if ( this.finished )
@@ -108,7 +101,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.propertyContainer.getPropertyValue( name );
   }
 
-  @Override
   public List<Property> getProperties()
   {
     if ( !this.finished )
@@ -116,7 +108,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.propertyContainer.getProperties();
   }
 
-  @Override
   public Property getPropertyByName( String name )
   {
     if ( !this.finished )
@@ -124,7 +115,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.propertyContainer.getPropertyByName( name );
   }
 
-  @Override
   public MetadataBuilder addMetadata()
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
@@ -132,7 +122,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return null;
   }
 
-  @Override
   public List<Metadata> getMetadata()
   {
     if ( !this.finished )
@@ -140,7 +129,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return Collections.unmodifiableList( this.metadata );
   }
 
-  @Override
   public List<MetadataBuilder> getMetadataBuilders()
   {
     if ( !this.finished )
@@ -148,7 +136,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return Collections.unmodifiableList( this.metadataBuilders );
   }
 
-  @Override
   public DatasetBuilder addDataset( String name)
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
@@ -158,7 +145,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return db;
   }
 
-  @Override
   public DatasetAliasBuilder addDatasetAlias( String name, DatasetNodeBuilder alias )
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
@@ -168,7 +154,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return dab;
   }
 
-  @Override
   public CatalogRefBuilder addCatalogRef( String name, URI reference)
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
@@ -178,7 +163,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return crb;
   }
 
-  @Override
   public Catalog getParentCatalog()
   {
     if ( !this.finished )
@@ -186,7 +170,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.parentCatalog;
   }
 
-  @Override
   public DatasetNode getParent()
   {
     if ( !this.finished )
@@ -194,13 +177,11 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.parent;
   }
 
-  @Override
   public boolean isCollection()
   {
     return ! this.childrenBuilders.isEmpty();
   }
 
-  @Override
   public List<DatasetNode> getDatasets()
   {
     if ( !this.finished )
@@ -208,7 +189,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return Collections.unmodifiableList( this.children);
   }
 
-  @Override
   public DatasetNode getDatasetById( String id )
   {
     if ( !this.finished )
@@ -216,39 +196,37 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.childrenIdMap.get( id);
   }
 
-  @Override
   public CatalogBuilder getParentCatalogBuilder()
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
     return null;
   }
 
-  @Override
   public DatasetBuilder getParentDatasetBuilder()
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
     return null;
   }
 
-  @Override
   public List<DatasetNodeBuilder> getDatasetNodeBuilders()
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
     return null;
   }
 
-  @Override
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id )
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
     return null;
   }
 
+  @Override
   public boolean isFinished()
   {
     return this.finished;
   }
 
+  @Override
   public DatasetNode finish()
   {
     if ( this.finished )

@@ -15,7 +15,6 @@ public abstract class AbstractMetadataImpl implements Metadata
 
   private boolean inherited;
 
-  @Override
   public boolean isInherited()
   {
     return inherited;

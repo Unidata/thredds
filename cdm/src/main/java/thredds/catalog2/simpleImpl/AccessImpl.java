@@ -29,7 +29,6 @@ public class AccessImpl implements Access, AccessBuilder
     this.urlPath = urlPath;
   }
 
-  @Override
   public void setService( ServiceBuilder service )
   {
     if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
@@ -37,7 +36,6 @@ public class AccessImpl implements Access, AccessBuilder
     this.service = (ServiceImpl) service;
   }
 
-  @Override
   public void setUrlPath( String urlPath )
   {
     if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
@@ -45,14 +43,12 @@ public class AccessImpl implements Access, AccessBuilder
     this.urlPath = urlPath;
   }
 
-  @Override
   public void setDataFormat( DataFormatType dataFormat )
   {
     if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
     this.dataFormat = dataFormat != null ? dataFormat : DataFormatType.NONE;
   }
 
-  @Override
   public void setDataSize( long dataSize )
   {
     if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
@@ -60,45 +56,38 @@ public class AccessImpl implements Access, AccessBuilder
     this.dataSize = dataSize;
   }
 
-  @Override
   public Service getService()
   {
     if ( !this.finished ) throw new IllegalStateException( "This Access has escaped its AccessBuilder before finish() was called." );
     return service;
   }
 
-  @Override
   public ServiceBuilder getServiceBuilder()
   {
     if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
     return service;
   }
 
-  @Override
   public String getUrlPath()
   {
     return urlPath;
   }
   
-  @Override
   public DataFormatType getDataFormat()
   {
     return dataFormat;
   }
 
-  @Override
   public long getDataSize()
   {
     return dataSize;
   }
 
-  @Override
   public boolean isFinished()
   {
     return this.finished;
   }
 
-  @Override
   public Access finish()
   {
     if ( this.finished)
