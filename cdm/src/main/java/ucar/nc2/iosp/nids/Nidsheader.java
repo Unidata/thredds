@@ -1719,7 +1719,7 @@ class Nidsheader{
     } else if (prod_type == Precip_Accum) {
       radial               = 1;
       prod_elevation  = -1;
-      startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
+      //startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
       endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
       summary = "NTP is a raster image of storm total rainfall accumulation at range 124 nm";
       cmemo = "Strm Tot Rain [IN] " + cmode[pinfo.opmode] ;
@@ -2620,8 +2620,8 @@ class Nidsheader{
         0,    4,    0,    0,    0,    0,    0,    0,    0,    0,    /*  40- 49 */
         0,    0,    0,    0,    0,  0.5,    1,    4,    0,    0,    /*  50- 59 */
         0,    0,    0,    4,    4,    4,    4,    0,    0,    0,    /*  60- 69 */
-        0,    0,    0,    0,    0,    0,    0,    0,    2,    2,    /*  70- 79 */
-        2,    0,    0,    0,    0,    0,    0,    0,    0,    4,    /*  80- 89 */
+        0,    0,    0,    0,    0,    0,    0,    0,    1,    1,    /*  70- 79 */
+        1,    0,    0,    0,    0,    0,    0,    0,    0,    4,    /*  80- 89 */
         4,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /*  90- 99 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 100-109 */
       };
