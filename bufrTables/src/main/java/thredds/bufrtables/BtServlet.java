@@ -426,7 +426,7 @@ public class BtServlet extends HttpServlet {
       bufrMessage.addContent(new Element("BitCount").setText("countBits " + nbitsCounted + " != " + nbitsGiven + " dataSizeBits"));
 
       bufrMessage.setAttribute("nobs", Integer.toString(m.getNumberDatasets()));
-      bufrMessage.addContent(new Element("WMOheader").setText(extractWMO(m.header)));
+      bufrMessage.addContent(new Element("WMOheader").setText(extractWMO(m.getHeader())));
       bufrMessage.addContent(new Element("center").setText(m.getCenterName()));
       bufrMessage.addContent(new Element("category").setText(m.getCategoryFullName()));
       bufrMessage.addContent(new Element("date").setText(m.ids.getReferenceTime()));
