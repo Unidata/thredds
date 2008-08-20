@@ -136,7 +136,7 @@ public class ToolsUI extends JPanel {
   //private IndependentWindow debugWindow;
   //private TextOutputStreamPane debugPane;
   //  private PrintStream debugOS;
-  private boolean debug = false, debugTab = true, debugNcmlWrite = false, debugCB = false;
+  private boolean debug = false, debugTab = false, debugNcmlWrite = false, debugCB = false;
 
 
   public ToolsUI(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) {

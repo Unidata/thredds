@@ -55,6 +55,7 @@ public class MessageDispatchDDS {
   Dump dumper = new Dump();
   WritableByteChannel badWbc;
   WritableByteChannel sampleWbc;
+  WritableByteChannel allWbc;
 
   void dispatch(Message m) {
     total_msgs++;
@@ -63,15 +64,18 @@ public class MessageDispatchDDS {
 
     // find the message type, based on dds
     MessType matched = typeMap.get(m.hashCode());
+    boolean newOne = false;
 
     if (matched == null) {
       matched = new MessType(m);
       typeMap.put(m.hashCode(), matched);
-      writeSample( m);
-      
+      writeSample(m, allWbc);
+      newOne = true;
+
     } else if (matched.proto == null) {
       matched.proto = m;
-      writeSample( m);
+      writeSample(m, allWbc);
+      newOne = true;
     }
 
     matched.count++;
@@ -83,8 +87,10 @@ public class MessageDispatchDDS {
       return; // dont write messages that fail bit counter;
     }
 
-    matched.write(m);
     matched.countBytes += m.getRawBytes().length + m.getHeader().length();
+    if (matched.write(m) && newOne) {
+      writeSample(m, sampleWbc);  // dont want "ignored" messsages
+    }
   }
 
   boolean checkIfBad(Message m) {
@@ -106,31 +112,33 @@ public class MessageDispatchDDS {
         }
       }
 
-      if (showBad) System.out.println("bad <" + m.header + ">");
+      if (showBad) System.out.println("bad <" + m.getHeader() + ">");
       badCount++;
       badBytes += m.getRawBytes().length + m.getHeader().length();
     }
     return isBad;
   }
 
-  void writeSample(Message m) {
+  void writeSample(Message m, WritableByteChannel wbc) {
     try {
-      sampleWbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
-      sampleWbc.write(ByteBuffer.wrap(m.getRawBytes()));
+      wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
+      wbc.write(ByteBuffer.wrap(m.getRawBytes()));
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
   }
 
-  private String rootDir = "C:/data/bufr2/";
-  private String inputFilename = rootDir+"dispatch.csv";
-  private String inputFilenameOut = rootDir+"dispatchOut.csv";
+  private String rootDir = "D:/bufr/";
+  private String inputFilename = rootDir + "dispatch.csv";
+  private String inputFilenameOut = rootDir + "dispatchOut.csv";
 
   void exit() throws IOException {
-    for (MessType mtype : typeMap.values())
-      mtype.close();
+    for (MessageWriter writer : writers.values())
+      writer.close();
+
     badWbc.close();
     sampleWbc.close();
+    allWbc.close();
 
     Formatter out = new Formatter(System.out);
     Formatter cfg = new Formatter(new FileOutputStream(inputFilenameOut));
@@ -188,15 +196,18 @@ public class MessageDispatchDDS {
       }
     }
 
-    File file = new File(rootDir+"/dispatch/bad.bufr");
+    File file = new File(rootDir + "/dispatch/abad.bufr");
     FileOutputStream fos = new FileOutputStream(file);
     badWbc = fos.getChannel();
 
-    file = new File(rootDir+"/dispatch/sample.bufr");
+    file = new File(rootDir + "/dispatch/asample.bufr");
     fos = new FileOutputStream(file);
     sampleWbc = fos.getChannel();
-  }
 
+    file = new File(rootDir + "/dispatch/asampleAll.bufr");
+    fos = new FileOutputStream(file);
+    allWbc = fos.getChannel();
+  }
 
   private class MessType {
     int hash;
@@ -238,46 +249,38 @@ public class MessageDispatchDDS {
       return header.substring(7, 11) + "-" + header.substring(0, 6);
     }
 
-    WritableByteChannel wbc;
-    FileOutputStream fos;
-
-    WritableByteChannel getWBC() throws FileNotFoundException {
-      if (wbc == null) {
-        File file = new File(rootDir+"/dispatch/", fileout + ".bufr");
-        fos = new FileOutputStream(file);
-        wbc = fos.getChannel();
-      }
-      return wbc;
-    }
-
-    void write(Message m) {
+    boolean write(Message m) {
       if (ignore) {
         ignored++;
-        return;
+        return false;
       }
 
       try {
-        WritableByteChannel wbc = getWBC();
-        wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
-        wbc.write(ByteBuffer.wrap(m.getRawBytes()));
-        if (showMatch) System.out.println("match <" + m.header + ">");
+        Calendar mcal = m.ids.getReferenceTimeCal();
+        int day = mcal.get(Calendar.DAY_OF_MONTH);
+        String writerName = fileout + "-"+ day;
+        MessageWriter writer = writers.get(writerName);
+        if (writer == null) {
+          writer = new MessageWriter(fileout, mcal);
+          writers.put(writerName, writer);
+        }
+
+        writer.write(m);
+        if (showMatch) System.out.println("match <" + m.getHeader() + ">");
         match++;
 
       } catch (IOException e) {
         failWrite++;
         e.printStackTrace();
+        return false;
       }
 
-    }
-
-    void close() throws IOException {
-      if (wbc != null)
-        wbc.close();
-      if (fos != null)
-        fos.close();
+      return true;
     }
 
   }
+
+  Map<String, MessageWriter> writers = new HashMap<String, MessageWriter>(100);
 
   private static class MessTypeSorter implements Comparator<MessType> {
     public int compare(MessType o1, MessType o2) {

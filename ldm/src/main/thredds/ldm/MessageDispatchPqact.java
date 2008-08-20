@@ -63,10 +63,10 @@ public class MessageDispatchPqact {
     // run through the pattern matching
     Pqact matched = null;
     for (Pqact pqact : pqactList) {
-      boolean match = pqact.match(m.header, m);
+      boolean match = pqact.match(m.getHeader(), m);
       if ((matched != null) && match) {
         duplicates++;
-        System.out.println("double match <" + m.header + "> with " + matched.pats + " and " + pqact.pats);
+        System.out.println("double match <" + m.getHeader() + "> with " + matched.pats + " and " + pqact.pats);
       }
       if (match)
         matched = pqact;
@@ -76,14 +76,14 @@ public class MessageDispatchPqact {
       try {
         unmatchWbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
         unmatchWbc.write(ByteBuffer.wrap(m.getRawBytes()));
-        if (showMatch) System.out.println("no match <" + m.header + ">");
+        if (showMatch) System.out.println("no match <" + m.getHeader() + ">");
         nomatch++;
 
       } catch (IOException e) {
         e.printStackTrace();
       }
 
-      if (showMatch) System.out.println("no match <" + m.header + ">");
+      if (showMatch) System.out.println("no match <" + m.getHeader() + ">");
       nomatch++;
 
     } else if (matched.ignore) {
@@ -94,7 +94,7 @@ public class MessageDispatchPqact {
         WritableByteChannel wbc = matched.getWBC();
         wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
         wbc.write(ByteBuffer.wrap(m.getRawBytes()));
-        if (showMatch) System.out.println("match <" + m.header + ">");
+        if (showMatch) System.out.println("match <" + m.getHeader() + ">");
         match++;
 
       } catch (IOException e) {

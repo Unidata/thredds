@@ -21,11 +21,11 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.bufr.*;
 import ucar.nc2.*;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
+import ucar.ma2.*;
 
 import java.util.*;
 import java.io.IOException;
@@ -88,10 +88,10 @@ class ConstructNC {
     ncfile.addAttribute(null, new Attribute("BUFR:tableVersion", proto.ids.getMasterTableVersion()));
     ncfile.addAttribute(null, new Attribute("BUFR:localTableVersion", proto.ids.getLocalTableVersion()));
 
-    ncfile.addAttribute(null, new Attribute("Conventions", "Unidata Point Feature v1.0"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "BUFR/CDM"));
 
-    if (ftype != null)
-      ncfile.addAttribute(null, new Attribute("cdm_datatype", ftype.toString()));
+    //if (ftype != null)
+    //  ncfile.addAttribute(null, new Attribute("cdm_datatype", ftype.toString()));
 
     makeObsRecord();
     //makeReportIndexStructure();
@@ -127,12 +127,15 @@ class ConstructNC {
     ncfile.addVariable(null, recordStructure);
     recordStructure.setDimensions("record");
 
-    /* Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, "time", DataType.LONG, ""));
-    timev.addAttribute(new Attribute("units", "msecs since 1970-01-01 00:00"));
-    timev.addAttribute(new Attribute("long_name", "observation time"));
-    timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));  */
+    DataDescriptor root = proto.getRootDataDescriptor();
+    if (hasTime()) {
+      Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, "time", DataType.INT, ""));
+      timev.addAttribute(new Attribute("units", dateUnit.getUnitsString()));
+      timev.addAttribute(new Attribute("long_name", "time of observation"));
+      timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
+    }
 
-    for (DataDescriptor dkey : proto.getRootDataDescriptor().subKeys) {
+    for (DataDescriptor dkey : root.subKeys) {
       if (!dkey.isOkForVariable()) continue;
 
       if (dkey.replication == 0)
@@ -155,7 +158,6 @@ class ConstructNC {
   }
 
   private int structNum = 1;
-
   private void addStructure(Structure parent, DataDescriptor dataDesc, int count) {
     String structName = "struct" + structNum;
     structNum++;
@@ -263,15 +265,15 @@ class ConstructNC {
         v.setDataType(DataType.ENUM4);
 
       //v.removeAttribute("units");
-      v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName()+ " (" + dataDesc.id+")"));
+      v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName() + " (" + dataDesc.id + ")"));
 
       Group g = struct.getParentGroup();
-      EnumTypedef enumTypedef  = g.findEnumeration(ct.getName());
+      EnumTypedef enumTypedef = g.findEnumeration(ct.getName());
       if (enumTypedef == null) {
         enumTypedef = new EnumTypedef(ct.getName(), ct.getMap());
         g.addEnumeration(enumTypedef);
       }
-      v.setEnumTypedef( enumTypedef);
+      v.setEnumTypedef(enumTypedef);
 
     } else {
       int nbits = dataDesc.bitWidth;
@@ -335,32 +337,125 @@ class ConstructNC {
 
 
   private void annotate(Variable v, DataDescriptor dkey) {
-    if (dkey.id.equals("0-5-1") || dkey.id.equals("0-5-2") || dkey.id.equals("0-27-1") || dkey.id.equals("0-27-2")) {
+    if (dkey.id.equals("0-5-1") || dkey.id.equals("0-5-2")) {
       v.addAttribute(new Attribute("units", "degrees_north"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     }
 
-    if (dkey.id.equals("0-6-1") || dkey.id.equals("0-6-2") ||
-        dkey.id.equals("0-28-1") || dkey.id.equals("0-28-2")) {
+    if (dkey.id.equals("0-6-1") || dkey.id.equals("0-6-2")) {
       v.addAttribute(new Attribute("units", "degrees_east"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     }
 
-    if (dkey.id.equals("0-7-1") || dkey.id.equals("0-7-2")) {
+    if (dkey.id.equals("0-7-1") || dkey.id.equals("0-7-2")|| dkey.id.equals("0-7-10")|| dkey.id.equals("0-7-30")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     }
-
-    /* if (dkey.id.equals("0-4-250")) {   // time
-      v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
-    } */
 
     if (dkey.id.equals("0-7-6")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     }
 
-    if (dkey.id.equals("0-1-18")) {
+    if (dkey.id.equals("0-1-7") || dkey.id.equals("0-1-11")|| dkey.id.equals("0-1-18")) {
       v.addAttribute(new Attribute("standard_name", "station_name"));
     }
 
+  }
+
+  boolean hasTime;
+  private String yearName, monthName, dayName, hourName, minName, secName;
+  private DateUnit dateUnit;
+  private Calendar cal;
+
+  private boolean hasTime() throws IOException {
+
+    DataDescriptor root = proto.getRootDataDescriptor();
+    for (DataDescriptor dkey : root.subKeys) {
+      if (!dkey.isOkForVariable()) continue;
+
+      String key = dkey.id;
+      if (key.equals("0-4-1") && (yearName == null))
+        yearName = dkey.name;
+      if (key.equals("0-4-2") && (monthName == null))
+        monthName = dkey.name;
+      if (key.equals("0-4-3") && (dayName == null))
+        dayName = dkey.name;
+      if (key.equals("0-4-4") && (hourName == null))
+        hourName = dkey.name;
+      if (key.equals("0-4-5") && (minName == null))
+        minName = dkey.name;
+      if ((key.equals("0-4-6") || key.equals("0-4-7")) && (secName == null))
+        secName = dkey.name;
+    }
+
+    hasTime = (yearName != null) && (monthName != null) && (dayName != null) && (hourName != null);
+
+    if (hasTime) {
+      String u;
+      if (secName != null)
+        u = "secs";
+      else if (minName != null)
+        u = "minutes";
+      else
+        u = "hours";
+      try {
+        dateUnit = new DateUnit(u + " since " +proto.ids.getReferenceTime());
+      } catch (Exception e) {
+        log.error("BufrIosp failed to create date unit", e);
+        hasTime = false;
+      }
+    }
+
+    if (hasTime)
+      cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+
+    return hasTime;
+  }
+
+  double makeObsTimeValue(ArrayStructure abb) {
+    int year = abb.convertScalarInt(0, abb.findMember(yearName));
+    int month = abb.convertScalarInt(0, abb.findMember(monthName));
+    int day = abb.convertScalarInt(0, abb.findMember(dayName));
+    int hour = abb.convertScalarInt(0, abb.findMember(hourName));
+    int min = (minName == null) ? 0 : abb.convertScalarInt(0, abb.findMember(minName));
+    int sec = (secName == null) ? 0 : abb.convertScalarInt(0, abb.findMember(secName));
+
+    cal.set(year, month-1, day, hour, min, sec);
+    Date d = cal.getTime();
+    return dateUnit.makeValue(d);
+  }
+
+  // not currently used
+  static public String identifyCoords(String val) {
+    if (val.equals("0-5-1") || val.equals("0-5-2"))
+      return AxisType.Lat.toString();
+
+    if (val.equals("0-6-1") || val.equals("0-6-2"))
+      return AxisType.Lon.toString();
+
+    if (val.equals("0-7-30") || val.equals("0-7-1") || val.equals("0-7-2") || val.equals("0-7-10"))
+      return AxisType.Height.toString();
+
+    if (val.equals("0-4-1"))
+      return "year";
+    if (val.equals("0-4-2"))
+      return "month";
+    if (val.equals("0-4-3"))
+      return "day";
+    if (val.equals("0-4-4"))
+      return "hour";
+    if (val.equals("0-4-5"))
+      return "minute";
+    if (val.equals("0-4-6") || val.equals("0-4-7"))
+      return "sec";
+
+    if (val.equals("0-1-1"))
+      return "wmo_block";
+    if (val.equals("0-1-2"))
+      return "wmo_id";
+
+    if ((val.equals("0-1-7") || val.equals("0-1-194") || val.equals("0-1-11") || val.equals("0-1-18")))
+      return "station_id";
+
+    return null;
   }
 }

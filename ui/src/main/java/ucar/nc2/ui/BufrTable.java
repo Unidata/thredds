@@ -78,12 +78,16 @@ public class BufrTable extends JPanel {
     messageTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("MessageBean"), false);
     messageTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
+        ddsTable.setBeans(new ArrayList());
+        obsTable.setBeans(new ArrayList());
+
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         java.util.List<DdsBean> beanList = new ArrayList<DdsBean>();
         try {
           setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
           setObs(mb.m);
         } catch (IOException e1) {
+          JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
           e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         ddsTable.setBeans(beanList);
@@ -113,6 +117,7 @@ public class BufrTable extends JPanel {
         try {
           new Dump().dump(f, vb.m);
         } catch (IOException e1) {
+          JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
           e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         infoTA.appendLine(f.toString());
@@ -132,6 +137,7 @@ public class BufrTable extends JPanel {
             dataWindow.showIfNotIconified();
           }
         } catch (Exception ex) {
+          JOptionPane.showMessageDialog(BufrTable.this, ex.getMessage());
           ex.printStackTrace();
         }
       }
@@ -142,15 +148,15 @@ public class BufrTable extends JPanel {
         Message m = mb.m;
 
         try {
-          DataDescriptor root = m.getRootDataDescriptor(); // make sure the dds has been formed
-          int nbitsCounted = m.getTotalBits();
+          Formatter out = new Formatter();
+          int nbitsCounted = m.countBits(out);
           int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
           boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number
 
           infoTA.clear();
-          Formatter out = new Formatter();
           if (!ok) out.format("*** BAD BIT COUNT %n");
           long last = m.dataSection.dataPos + m.dataSection.dataLength;
+          DataDescriptor root = m.getRootDataDescriptor();
           out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
               m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
               nbitsCounted, nbitsGiven);
@@ -251,6 +257,8 @@ public class BufrTable extends JPanel {
     }
 
     messageTable.setBeans(beanList);
+    obsTable.setBeans(new ArrayList());
+    ddsTable.setBeans(new ArrayList());
   }
 
   private NetcdfDataset getBufrMessageAsDataset(Message m) throws IOException {
@@ -270,6 +278,7 @@ public class BufrTable extends JPanel {
   }
 
   private void setObs(Message m) {
+    
     java.util.List<ObsBean> beanList = new ArrayList<ObsBean>();
     try {
       NetcdfDataset ncd = getBufrMessageAsDataset(m);
@@ -282,6 +291,7 @@ public class BufrTable extends JPanel {
         }
       }
     } catch (Exception ex) {
+      JOptionPane.showMessageDialog(BufrTable.this, ex.getMessage());
       ex.printStackTrace();
     }
     obsTable.setBeans(beanList);
@@ -446,7 +456,7 @@ public class BufrTable extends JPanel {
            wmo_id = sdata.convertScalarInt(v.getShortName());
 
          } else if ((stn == null) &&
-             (val.equals("0-1-7") || val.equals("0-1-194") || val.equals("0-1-11") )) {
+             (val.equals("0-1-7") || val.equals("0-1-194") || val.equals("0-1-11") || val.equals("0-1-18") )) {
            if (v.getDataType().isString())
              stn = sdata.getScalarString(v.getShortName());
            else
@@ -465,9 +475,9 @@ public class BufrTable extends JPanel {
            lon = sdata.convertScalarDouble(v.getShortName());
          } else if (val.equals("0-7-1") && Double.isNaN(alt)) {
            alt = sdata.convertScalarDouble(v.getShortName());
-         } else if (val.equals("0-4-7")&& (sec<0)) {
+         } else if ((val.equals("0-4-7")) && (sec<0)) {
            sec = sdata.convertScalarInt(v.getShortName());
-         }
+         } 
        }
 
       // third choice

@@ -51,7 +51,7 @@ class H5header {
   static private Charset utf8Charset = Charset.forName(utf8CharsetName); // cant use until 1.6
 
   // debugging
-  static private boolean debugEnum = true, debugVlen = false;
+  static private boolean debugEnum = false, debugVlen = false;
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;

@@ -305,6 +305,29 @@ public class TestAll {
     return 1;
   }
 
+  static public int readAll( NetcdfFile ncfile) {
+    System.out.println("\n------Reading ncfile "+ncfile.location);
+    try {
+
+      for (Variable v : ncfile.getVariables()) {
+        if (v.getSize() > max_size) {
+          Section s = makeSubset(v);
+          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
+          v.read(s);
+        } else {
+          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
+          v.read();
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      assert false;
+    }
+
+    return 1;
+  }
+
+
   ////////////////////////////////////////////////
 
   public interface Act {

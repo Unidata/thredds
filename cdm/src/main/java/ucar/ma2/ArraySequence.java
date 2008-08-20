@@ -25,6 +25,8 @@ import java.io.IOException;
  * ArraySequence is the default way to contain the data for a Sequence, using a StructureDataIterator.
  * A Sequence is a one-dimensional Structure with indeterminate length.
  * The only data access is through getStructureIterator().
+ * So an ArraySequence is really a wrapper around a StructureDataIterator, adapting it to an Array.
+ * 
  * @author caron
  * @since Feb 27, 2008
  */
