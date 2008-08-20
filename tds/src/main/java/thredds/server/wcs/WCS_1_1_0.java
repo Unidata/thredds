@@ -2,6 +2,7 @@ package thredds.server.wcs;
 
 import thredds.servlet.ServletUtil;
 import thredds.wcs.v1_1_0.*;
+import thredds.wcs.Version;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
+import thredds.wcs.Version;
+
 /**
  * Each implementation handles a different version of WCS requests. 
  *

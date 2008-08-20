@@ -4,6 +4,7 @@ import thredds.servlet.*;
 import thredds.wcs.WcsDataset;
 import thredds.wcs.SectionType;
 import thredds.wcs.GetCoverageRequest;
+import thredds.wcs.Version;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

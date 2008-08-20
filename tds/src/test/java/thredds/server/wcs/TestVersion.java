@@ -1,6 +1,7 @@
 package thredds.server.wcs;
 
 import junit.framework.*;
+import thredds.wcs.Version;
 
 /**
  * _more_

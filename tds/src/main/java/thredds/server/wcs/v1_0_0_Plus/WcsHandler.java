@@ -2,13 +2,12 @@ package thredds.server.wcs.v1_0_0_Plus;
 
 import thredds.servlet.ServletUtil;
 import thredds.server.wcs.VersionHandler;
-import thredds.server.wcs.Version;
+import thredds.wcs.Version;
 import thredds.wcs.v1_0_0_Plus.*;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.File;
@@ -18,7 +17,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.util.IO;
 
 /**
  * _more_
