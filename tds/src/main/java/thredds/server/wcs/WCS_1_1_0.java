@@ -33,9 +33,9 @@ public class WCS_1_1_0 implements VersionHandler
   /**
    * Declare the default constructor to be package private.
    */
-  WCS_1_1_0()
+  WCS_1_1_0( String versionString )
   {
-    this.version = new Version( "1.1.0" );
+    this.version = new Version( versionString );
   }
 
   public Version getVersion() { return this.version; }

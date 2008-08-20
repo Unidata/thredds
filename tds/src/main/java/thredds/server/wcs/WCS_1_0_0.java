@@ -27,9 +27,9 @@ public class WCS_1_0_0 implements VersionHandler
   /**
    * Declare the default constructor to be package private.
    */
-  WCS_1_0_0()
+  WCS_1_0_0( String versionString )
   {
-    this.version = new Version( "1.0.0");
+    this.version = new Version( versionString );
   }
 
   private WcsDataset openWcsDataset( HttpServletRequest req, HttpServletResponse res) throws IOException

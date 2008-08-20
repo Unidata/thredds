@@ -7,7 +7,7 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 
 /**
- * Represent the incoming WCS 1.0.0+ request.
+ * Represent the incoming WCS 1.0.0 request.
  *
  * @author edavis
  * @since 4.0

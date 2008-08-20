@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.ArrayList;
 
 /**
- * Represents a WCS 1.0.0+ Exception and includes the code, locator, and
+ * Represents a WCS 1.0.0 Exception and includes the code, locator, and
  * textMessages used in an OWS Exception Report.
  *
  * @author edavis

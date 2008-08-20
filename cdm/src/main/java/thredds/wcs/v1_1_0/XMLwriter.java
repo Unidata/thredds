@@ -7,18 +7,8 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPoint;
 
 import java.util.*;
-import java.net.URI;
-
-import thredds.catalog.XMLEntityResolver;
-import thredds.wcs.SectionType;
 
 /**
  * Generates WCS 1.1.0 XML responses.

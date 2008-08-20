@@ -36,9 +36,9 @@ public class WcsHandler implements VersionHandler
   /**
    * Declare the default constructor to be package private.
    */
-  public WcsHandler()
+  public WcsHandler( String versionString)
   {
-    this.version = new Version( "1.0.0.11" );
+    this.version = new Version( versionString );
   }
 
   public Version getVersion() { return this.version; }
