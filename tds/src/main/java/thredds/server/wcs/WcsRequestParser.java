@@ -118,19 +118,14 @@ public class WcsRequestParser
   private static GridDataset openDataset( HttpServletRequest req, HttpServletResponse res )
           throws WcsException
   {
-//    String datasetURL = ServletUtil.getParameterIgnoreCase( req, "dataset" );
-//    boolean isRemote = ( datasetURL != null );
-//    String datasetPath = isRemote ? datasetURL : req.getPathInfo();
-//
-//    // convert to a GridDataset
-//    GridDataset gd = isRemote ? ucar.nc2.dt.grid.GridDataset.open( datasetPath ) : DatasetHandler.openGridDataset( req, res, datasetPath );
-//    if ( gd == null ) return null;
+    String datasetURL = ServletUtil.getParameterIgnoreCase( req, "dataset" );
+    boolean isRemote = ( datasetURL != null );
+    String datasetPath = isRemote ? datasetURL : req.getPathInfo();
 
     GridDataset dataset;
-    String datasetPath = req.getPathInfo();
     try
     {
-      dataset = DatasetHandler.openGridDataset( req, res, datasetPath );
+      dataset = isRemote ? ucar.nc2.dt.grid.GridDataset.open( datasetPath ) : DatasetHandler.openGridDataset( req, res, datasetPath );
     }
     catch ( IOException e )
     {

@@ -3,6 +3,9 @@ package thredds.wcs.v1_0_0_1;
 import thredds.wcs.WcsRequest;
 import ucar.nc2.dt.GridDataset;
 
+import java.net.URI;
+import java.util.List;
+
 /**
  * _more_
  *
@@ -11,24 +14,41 @@ import ucar.nc2.dt.GridDataset;
  */
 public class WcsRequestBuilder
 {
+  private String versionString;
   private WcsRequest.Operation operation;
   private GridDataset dataset;
 
-  public static WcsRequestBuilder newWcsRequestFactory( WcsRequest.Operation operation,
+  public static WcsRequestBuilder newWcsRequestFactory( String versionString,
+                                                        WcsRequest.Operation operation,
                                                         GridDataset dataset )
   {
-    return new WcsRequestBuilder( operation, dataset );
+    return new WcsRequestBuilder( versionString, operation, dataset );
   }
 
-  private WcsRequestBuilder( WcsRequest.Operation operation,
+  private WcsRequestBuilder( String versionString,
+                             WcsRequest.Operation operation,
                              GridDataset dataset )
   {
-    if ( operation == null ) throw new IllegalArgumentException( "Operation may not be null." );
-    if ( dataset == null ) throw new IllegalArgumentException( "Dataset may not be null." );
+    if ( versionString == null || versionString.equals( ""))
+      throw new IllegalArgumentException( "Versions string may not be null or empty string.");
+    if ( operation == null )
+      throw new IllegalArgumentException( "Operation may not be null." );
+    if ( dataset == null )
+      throw new IllegalArgumentException( "Dataset may not be null." );
 
     this.operation = operation;
     this.dataset = dataset;
   }
+
+
+  private URI serverURI;
+  private GetCapabilities.Section section;
+  private String updateSequence;
+  private GetCapabilities.ServiceInfo serviceInfo;
+
+  private List<String> coverageIds;
+
+  private String coverageId, crs, responseCRS, bbox, time, parameter, format;
 
   public GetCapabilities buildGetCapabilities()
   {
