@@ -1,12 +1,11 @@
 package thredds.wcs.v1_0_0_1;
 
-import thredds.wcs.WcsRequest;
+import thredds.wcs.Request;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.units.DateRange;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Collections;
 
 /**
  * _more_
@@ -17,12 +16,12 @@ import java.util.Collections;
 public class WcsRequestBuilder
 {
   private String versionString;
-  private WcsRequest.Operation operation;
+  private Request.Operation operation;
   private GridDataset dataset;
   private String datasetPath;
 
   public static WcsRequestBuilder newWcsRequestFactory( String versionString,
-                                                        WcsRequest.Operation operation,
+                                                        Request.Operation operation,
                                                         GridDataset dataset,
                                                         String datasetPath )
   {
@@ -30,7 +29,7 @@ public class WcsRequestBuilder
   }
 
   private WcsRequestBuilder( String versionString,
-                             WcsRequest.Operation operation,
+                             Request.Operation operation,
                              GridDataset dataset,
                              String datasetPath )
   {
@@ -49,10 +48,10 @@ public class WcsRequestBuilder
     this.datasetPath = datasetPath;
   }
 
-  public WcsRequest.Operation getOperation() { return this.operation; }
-  public boolean isGetCapabilitiesOperation() { return operation.equals( WcsRequest.Operation.GetCapabilities ); }
-  public boolean isDescribeCoverageOperation() { return operation.equals( WcsRequest.Operation.DescribeCoverage ); }
-  public boolean isGetCoverageOperation() { return operation.equals( WcsRequest.Operation.GetCoverage ); }
+  public Request.Operation getOperation() { return this.operation; }
+  public boolean isGetCapabilitiesOperation() { return operation.equals( Request.Operation.GetCapabilities ); }
+  public boolean isDescribeCoverageOperation() { return operation.equals( Request.Operation.DescribeCoverage ); }
+  public boolean isGetCoverageOperation() { return operation.equals( Request.Operation.GetCoverage ); }
   public String getVersionString() { return versionString; }
   public GridDataset getDataset() { return dataset; } 
   public String getDatasetPath() { return datasetPath; }
@@ -98,7 +97,7 @@ public class WcsRequestBuilder
 
   public GetCapabilities buildGetCapabilities()
   {
-    if ( !operation.equals( WcsRequest.Operation.GetCapabilities ) )
+    if ( !operation.equals( Request.Operation.GetCapabilities ) )
       throw new IllegalStateException( "Can't build GetCapabilities request, " + operation.name() + " builder was specified." );
 
     // Check GetCapabilities requirements.
@@ -124,10 +123,10 @@ public class WcsRequestBuilder
   // ----- GetCoverage -----
 
   private String coverageId, crs, responseCRS;
-  private WcsRequest.BoundingBox bbox;
+  private Request.BoundingBox bbox;
   private DateRange timeRange;
   private WcsCoverage.VerticalRange verticalRange;  // parameter
-  private WcsRequest.Format format;
+  private Request.Format format;
 
   public String getCoverageId() { return coverageId; }
   public void setCoverageId( String coverageId )
@@ -153,8 +152,8 @@ public class WcsRequestBuilder
     this.responseCRS = responseCRS;
   }
 
-  public WcsRequest.BoundingBox getBbox() { return bbox; }
-  public void setBbox( WcsRequest.BoundingBox bbox )
+  public Request.BoundingBox getBbox() { return bbox; }
+  public void setBbox( Request.BoundingBox bbox )
   {
     if ( !this.isGetCoverageOperation() )
       throw new IllegalStateException( "Bounding box only settable for GetCoverage request." );
@@ -177,8 +176,8 @@ public class WcsRequestBuilder
     this.verticalRange = verticalRange;
   }
 
-  public WcsRequest.Format getFormat() { return format; }
-  public void setFormat( WcsRequest.Format format )
+  public Request.Format getFormat() { return format; }
+  public void setFormat( Request.Format format )
   {
     if ( !this.isGetCoverageOperation() )
       throw new IllegalStateException( "Format only settable for GetCoverage request." );
@@ -187,7 +186,7 @@ public class WcsRequestBuilder
 
   public DescribeCoverage buildDescribeCoverage()
   {
-    if ( ! operation.equals( WcsRequest.Operation.DescribeCoverage ) )
+    if ( ! operation.equals( Request.Operation.DescribeCoverage ) )
       throw new IllegalStateException( "Can't build DescribeCoverage request, " + operation.name() + " builder was specified." );
 
     return null;
@@ -195,7 +194,7 @@ public class WcsRequestBuilder
 
   public GetCoverage buildGetCoverage()
   {
-    if ( ! operation.equals( WcsRequest.Operation.GetCoverage ) )
+    if ( ! operation.equals( Request.Operation.GetCoverage ) )
       throw new IllegalStateException( "Can't build GetCoverage request, " + operation.name() + " builder was specified." );
 
     return null;

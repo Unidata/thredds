@@ -10,21 +10,21 @@ import ucar.nc2.dt.GridDataset;
  */
 public class WcsRequestFactory
 {
-  private WcsRequest request;
+  private Request request;
 
   private String versionString;
-  private WcsRequest.Operation operation;
+  private Request.Operation operation;
   private GridDataset dataset;
   
   public static WcsRequestFactory newWcsRequestFactory( String versionString,
-                                                        WcsRequest.Operation operation,
+                                                        Request.Operation operation,
                                                         GridDataset dataset )
   {
     return new WcsRequestFactory( versionString, operation, dataset);
   }
 
   private WcsRequestFactory( String versionString,
-                             WcsRequest.Operation operation,
+                             Request.Operation operation,
                              GridDataset dataset )
   {
     if ( versionString == null ) throw new IllegalArgumentException( "Version may not be null.");
@@ -36,7 +36,7 @@ public class WcsRequestFactory
     this.dataset = dataset;
   }
 
-  public WcsRequest getRequest()
+  public Request getRequest()
   {
     return request;
   }

@@ -9,6 +9,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
+import thredds.wcs.Request;
 
 /**
  * _more_
@@ -34,7 +35,7 @@ public class GetCoverage extends WcsRequest
   private boolean isSingleVerticalRequest = false;
 
 
-  public GetCoverage( Operation operation, String version, WcsDataset dataset,
+  public GetCoverage( Request.Operation operation, String version, WcsDataset dataset,
                       String coverageId, String crs, String responseCRS,
                       String bbox, String time, String parameter, String format )
           throws WcsException

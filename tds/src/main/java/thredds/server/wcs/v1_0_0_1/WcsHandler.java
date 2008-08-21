@@ -4,6 +4,7 @@ import thredds.servlet.ServletUtil;
 import thredds.server.wcs.VersionHandler;
 import thredds.server.wcs.Version;
 import thredds.wcs.v1_0_0_1.*;
+import thredds.wcs.Request;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ public class WcsHandler implements VersionHandler
 
   /**
    * Declare the default constructor to be package private.
+   * @param verString the version string.
    */
   public WcsHandler( String verString )
   {
@@ -62,7 +64,7 @@ public class WcsHandler implements VersionHandler
       URI serverURI = new URI( req.getRequestURL().toString());
       WcsRequest request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(),
                                                           serverURI, req, res);
-      if ( request.getOperation().equals( WcsRequest.Operation.GetCapabilities))
+      if ( request.getOperation().equals( Request.Operation.GetCapabilities))
       {
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
@@ -72,7 +74,7 @@ public class WcsHandler implements VersionHandler
         ((GetCapabilities) request).writeCapabilitiesReport( pw );
         pw.flush();
       }
-      else if ( request.getOperation().equals( WcsRequest.Operation.DescribeCoverage ) )
+      else if ( request.getOperation().equals( Request.Operation.DescribeCoverage ) )
       {
         res.setContentType( "text/xml" );
         res.setStatus( HttpServletResponse.SC_OK );
@@ -82,7 +84,7 @@ public class WcsHandler implements VersionHandler
         ((DescribeCoverage) request).writeDescribeCoverageDoc( pw );
         pw.flush();
       }
-      else if ( request.getOperation().equals( WcsRequest.Operation.GetCoverage ) )
+      else if ( request.getOperation().equals( Request.Operation.GetCoverage ) )
       {
         File covFile = ((GetCoverage) request).writeCoverageDataToFile();
         if ( covFile != null && covFile.exists())

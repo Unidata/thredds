@@ -5,6 +5,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import thredds.wcs.Request;
 
 /**
  * Represent the incoming WCS 1.0.0 request.
@@ -19,16 +20,11 @@ public abstract class WcsRequest
   protected static final Namespace xlinkNS = Namespace.getNamespace( "xlink", "http://www.w3.org/1999/xlink" );
 
   // General request info
-  private Operation operation;
+  private Request.Operation operation;
   private String version;
 
   // Dataset
   private WcsDataset dataset;
-
-  public enum Operation
-  {
-    GetCapabilities, DescribeCoverage, GetCoverage
-  }
 
   public enum RequestEncoding
   {
@@ -59,7 +55,7 @@ public abstract class WcsRequest
     }
   }
 
-  WcsRequest( Operation operation, String version, WcsDataset dataset )
+  WcsRequest( Request.Operation operation, String version, WcsDataset dataset )
   {
     this.operation = operation;
     this.version = version;
@@ -71,7 +67,7 @@ public abstract class WcsRequest
       throw new IllegalArgumentException( "Non-null dataset required." );
   }
 
-  public Operation getOperation() { return operation; }
+  public Request.Operation getOperation() { return operation; }
   public String getVersion() { return version; }
   public WcsDataset getDataset() { return dataset; }
 

@@ -16,6 +16,7 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
+import thredds.wcs.Request;
 
 /**
  * _more_
@@ -32,7 +33,7 @@ public class DescribeCoverage extends WcsRequest
 
   private Document describeCoverageDoc;
 
-  public DescribeCoverage( Operation operation, String version, WcsDataset dataset,
+  public DescribeCoverage( Request.Operation operation, String version, WcsDataset dataset,
                            List<String> coverages )
   {
     super( operation, version, dataset );

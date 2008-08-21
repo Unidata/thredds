@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.io.PrintWriter;
 import java.io.IOException;
 
+import thredds.wcs.Request;
+
 /**
  * _more_
  *
@@ -54,7 +56,7 @@ public class GetCapabilities extends WcsRequest
 
   private Document capabilitiesReport;
 
-  public GetCapabilities( Operation operation, String version, WcsDataset dataset,
+  public GetCapabilities( Request.Operation operation, String version, WcsDataset dataset,
                           URI serverURI, Section section, String updateSequence,
                           ServiceInfo serviceInfo )
   {
@@ -301,9 +303,9 @@ public class GetCapabilities extends WcsRequest
     // WCS_Capabilities/Capability/
     Element requestElem = new Element( "Request", wcsNS );
 
-    requestElem.addContent( genCapabilityOperationElem( Operation.GetCapabilities.toString() ));
-    requestElem.addContent( genCapabilityOperationElem( Operation.DescribeCoverage.toString() ));
-    requestElem.addContent( genCapabilityOperationElem( Operation.GetCoverage.toString() ));
+    requestElem.addContent( genCapabilityOperationElem( Request.Operation.GetCapabilities.toString() ));
+    requestElem.addContent( genCapabilityOperationElem( Request.Operation.DescribeCoverage.toString() ));
+    requestElem.addContent( genCapabilityOperationElem( Request.Operation.GetCoverage.toString() ));
 
     capElem.addContent( requestElem);
 

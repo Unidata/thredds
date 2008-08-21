@@ -1,6 +1,7 @@
 package thredds.server.wcs.v1_0_0_1;
 
 import thredds.wcs.v1_0_0_1.*;
+import thredds.wcs.Request;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DatasetHandler;
 
@@ -34,7 +35,7 @@ public class WcsRequestParser
 //    String acceptVersionsParam = ServletUtil.getParameterIgnoreCase( req, "AcceptVersions" );
 
     // General request info
-    WcsRequest.Operation operation;
+    Request.Operation operation;
     String datasetPath = req.getPathInfo();
     GridDataset gridDataset = openDataset( req, res );
     if ( gridDataset == null )
@@ -48,7 +49,7 @@ public class WcsRequestParser
     String requestParam = ServletUtil.getParameterIgnoreCase( req, "Request" );
     try
     {
-      operation = WcsRequest.Operation.valueOf( requestParam );
+      operation = Request.Operation.valueOf( requestParam );
     }
     catch ( IllegalArgumentException e )
     {
@@ -56,7 +57,7 @@ public class WcsRequestParser
     }
 
     // Handle "GetCapabilities" request.
-    if ( operation.equals( WcsRequest.Operation.GetCapabilities ) )
+    if ( operation.equals( Request.Operation.GetCapabilities ) )
     {
       String sectionParam = ServletUtil.getParameterIgnoreCase( req, "Section" );
       String updateSequenceParam = ServletUtil.getParameterIgnoreCase( req, "UpdateSequence" );
@@ -76,7 +77,7 @@ public class WcsRequestParser
       return new GetCapabilities( operation, version, wcsDataset, serverURI, section, updateSequenceParam, null);
     }
     // Handle "DescribeCoverage" request.
-    else if ( operation.equals( WcsRequest.Operation.DescribeCoverage ) )
+    else if ( operation.equals( Request.Operation.DescribeCoverage ) )
     {
       String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
       List<String> coverageIdList = splitCommaSeperatedList( coverageIdListParam );
@@ -84,7 +85,7 @@ public class WcsRequestParser
       return new DescribeCoverage( operation, version, wcsDataset, coverageIdList);
     }
     // Handle "GetCoverage" request.
-    else if ( operation.equals( WcsRequest.Operation.GetCoverage ) )
+    else if ( operation.equals( Request.Operation.GetCoverage ) )
     {
       String coverageId = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
       String crs = ServletUtil.getParameterIgnoreCase( req, "CRS" );

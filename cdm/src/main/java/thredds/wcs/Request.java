@@ -1,16 +1,20 @@
 package thredds.wcs;
 
+import ucar.nc2.dt.GridDataset;
+
 /**
  * _more_
  *
  * @author edavis
  * @since 4.0
  */
-public interface WcsRequest
+public interface Request
 {
   public String getVersionString();
   public Operation getOperation();
   public RequestEncoding getRequestEncoding();
+  public GridDataset getDataset();
+  public String getDatasetPath();
 
   public enum Operation
   {
