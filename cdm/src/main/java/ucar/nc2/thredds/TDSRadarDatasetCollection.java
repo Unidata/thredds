@@ -745,7 +745,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
             throw new IOException("Invalid catalog <" + catalogURI + ">\n"
                                   + buff.toString());
         }
-        catalog.writeXML(System.out);  // debugg
+        // catalog.writeXML(System.out);  // debugg
 
         List       datasets = catalog.getDatasets();
 
@@ -1268,7 +1268,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
     public static void main(String args[]) throws IOException {
         StringBuffer errlog = new StringBuffer();
         String ds_location =
-            "http://motherlode.ucar.edu:8081/thredds/radarServer/nexrad/level2/IDD/dataset.xml";
+            "http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level3/IDD/dataset.xml";
         // "http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2";
         TDSRadarDatasetCollection dsc =
             TDSRadarDatasetCollection.factory("test", ds_location, errlog);
