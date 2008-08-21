@@ -8,7 +8,7 @@ package thredds.wcs;
  */
 public interface WcsRequest
 {
-  public Version getVersion();
+  public String getVersionString();
   public Operation getOperation();
   public RequestEncoding getRequestEncoding();
 
@@ -78,7 +78,7 @@ public interface WcsRequest
       maxPSB.replace( indx, indx + 1, "]" );
 
       if ( ! minMaxOk )
-        throw new IllegalArgumentException( "Minimum point " + minPSB.toString() + " not alwasy smaller than maximum point " + maxPSB.toString() + ".");
+        throw new IllegalArgumentException( "Minimum point " + minPSB.toString() + " not always smaller than maximum point " + maxPSB.toString() + ".");
 
       this.dimensionLength = minPoint.length;
       this.minPoint = minPoint;
@@ -86,5 +86,10 @@ public interface WcsRequest
       this.minPointString = minPSB.toString();
       this.maxPointString = maxPSB.toString();
     }
+
+    public int getDimensionLength() { return this.dimensionLength; }
+    public float getMinPointValue( int index ) { return this.minPoint[ index]; }
+    public float getMaxPointValue( int index ) { return this.maxPoint[ index]; }
+    public String toString() { return "Min " + this.minPointString + "; Max " + this.maxPointString;}
   }
 }

@@ -1,7 +1,7 @@
 package thredds.server.wcs;
 
 import thredds.servlet.*;
-import thredds.wcs.Version;
+import thredds.server.wcs.Version;
 
 import java.io.*;
 import java.util.List;

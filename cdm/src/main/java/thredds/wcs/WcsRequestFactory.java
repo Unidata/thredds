@@ -12,26 +12,26 @@ public class WcsRequestFactory
 {
   private WcsRequest request;
 
-  private Version version;
+  private String versionString;
   private WcsRequest.Operation operation;
   private GridDataset dataset;
   
-  public static WcsRequestFactory newWcsRequestFactory( Version version,
+  public static WcsRequestFactory newWcsRequestFactory( String versionString,
                                                         WcsRequest.Operation operation,
                                                         GridDataset dataset )
   {
-    return new WcsRequestFactory( version, operation, dataset);
+    return new WcsRequestFactory( versionString, operation, dataset);
   }
 
-  private WcsRequestFactory( Version version,
+  private WcsRequestFactory( String versionString,
                              WcsRequest.Operation operation,
                              GridDataset dataset )
   {
-    if ( version == null ) throw new IllegalArgumentException( "Version may not be null.");
+    if ( versionString == null ) throw new IllegalArgumentException( "Version may not be null.");
     if ( operation == null ) throw new IllegalArgumentException( "Operation may not be null.");
     if ( dataset == null ) throw new IllegalArgumentException( "Dataset may not be null.");
     
-    this.version = version;
+    this.versionString = versionString;
     this.operation = operation;
     this.dataset = dataset;
   }

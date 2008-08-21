@@ -1,4 +1,4 @@
-package thredds.wcs;
+package thredds.server.wcs;
 
 import java.util.Arrays;
 
