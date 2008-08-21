@@ -127,13 +127,13 @@ public class TestDriver {
   }
 
   public static void main(String args[]) throws IOException {
-    Executor executor = Executors.newFixedThreadPool(5);
+    ExecutorService executor = Executors.newFixedThreadPool(5);
     final MessageBroker broker = new MessageBroker(executor);
 
     long start = System.nanoTime();
 
-     // test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
-     //test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
+     //test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
+     // test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
      test("D:\\bufr\\nlode\\snap080808", new MClosure() {
         public void run(String filename) throws IOException {
           scan(filename, broker);
@@ -145,8 +145,8 @@ public class TestDriver {
     double secs = 1.0e-9 * (stop - start);
     double rate = n / secs;
     System.out.printf(" done reading %d (bad %d) in %.1f secs, rate = %.0f msg/sec %n",n, broker.bad_msgs, secs, rate);
-    broker.exit();
 
+    broker.exit();
   }
 
 

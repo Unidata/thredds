@@ -30,6 +30,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Encapsolates writing to a particular file.
@@ -37,14 +42,19 @@ import java.util.Calendar;
  * @author caron
  * @since Aug 19, 2008
  */
-public class MessageWriter {
-  private String rootDir = "D:/bufr/dispatch/";
+public class MessageWriter implements Callable<Object> {
+  private static final String rootDir = "D:/bufr/dispatch/";
 
-  long lastModified;
-  WritableByteChannel wbc;
-  FileOutputStream fos;
+  private final ConcurrentLinkedQueue q; // unbounded, threadsafe
+  private final WritableByteChannel wbc;
+  private final FileOutputStream fos;
 
-  MessageWriter(String fileout, Calendar mcal) throws FileNotFoundException {
+  private final ExecutorService executor;
+  private final AtomicBoolean isScheduled = new AtomicBoolean(false);
+  private long lastModified;
+
+  MessageWriter(ExecutorService executor, String fileout, Calendar mcal) throws FileNotFoundException {
+    this.executor = executor;
     File dir = new File(rootDir + fileout);
     dir.mkdirs();
 
@@ -53,12 +63,15 @@ public class MessageWriter {
     File file = new File(rootDir + fileout + "/"+date+  ".bufr");
     fos = new FileOutputStream(file);
     wbc = fos.getChannel();
+    q = new ConcurrentLinkedQueue();
   }
 
-  void write(Message m) throws IOException {
-    wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
-    wbc.write(ByteBuffer.wrap(m.getRawBytes()));
-    lastModified = System.currentTimeMillis();
+  // put a message on the queue, schedule writing if not already scheduled.
+  void scheduleWrite(Message m) throws IOException {
+    q.add(m);
+    if (!isScheduled.getAndSet(true)) {
+      executor.submit( this);
+    }
   }
 
   void close() throws IOException {
@@ -66,5 +79,16 @@ public class MessageWriter {
       wbc.close();
     if (fos != null)
       fos.close();
+  }
+
+  public Object call() throws IOException {
+    while (!q.isEmpty()) {
+      Message m = (Message) q.remove();
+      wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
+      wbc.write(ByteBuffer.wrap(m.getRawBytes()));
+    }
+    lastModified = System.currentTimeMillis();
+    isScheduled.getAndSet(false);
+    return this;
   }
 }

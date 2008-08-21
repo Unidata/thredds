@@ -25,11 +25,13 @@ import ucar.bufr.Dump;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
 
 /**
- * BUFR Message Dispatch using pattern matching on the WMO header
+ * BUFR Message Dispatch using DDS hashmap to sort the messages.
+ * This is a singleton used on a single thread.
  *
  * @author caron
  * @since Aug 11, 2008
@@ -49,13 +51,52 @@ public class MessageDispatchDDS {
   long total_bytes;
   int total_obs;
 
+  boolean checkBad = false;
   boolean showMatch = false;
   boolean showBad = false;
+  boolean showConfig = false;
 
   Dump dumper = new Dump();
   WritableByteChannel badWbc;
   WritableByteChannel sampleWbc;
   WritableByteChannel allWbc;
+
+  private final ExecutorService executor;
+
+  MessageDispatchDDS(ExecutorService executor) throws IOException {
+    this.executor = executor;
+
+    File inputFile = new File(inputFilename);
+    if (inputFile.exists()) {
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)));
+      int count = 0;
+      while (true) {
+        String line = dataIS.readLine();
+        if (line == null) break;
+        line = line.trim();
+        if (line.length() == 0) break;
+        if (line.charAt(0) == '#') continue;
+
+        String[] toke = line.split(",");
+        //String hashS = toke[0].substring(2); // remove the "0x"
+        Integer hash = Integer.parseInt(toke[0]);
+        typeMap.put(hash, new MessType(hash, toke[1], toke[2]));
+        count++;
+      }
+    }
+
+    File file = new File(rootDir + "/dispatch/abad.bufr");
+    FileOutputStream fos = new FileOutputStream(file);
+    badWbc = fos.getChannel();
+
+    file = new File(rootDir + "/dispatch/asample.bufr");
+    fos = new FileOutputStream(file);
+    sampleWbc = fos.getChannel();
+
+    file = new File(rootDir + "/dispatch/asampleAll.bufr");
+    fos = new FileOutputStream(file);
+    allWbc = fos.getChannel();
+  }
 
   void dispatch(Message m) {
     total_msgs++;
@@ -94,6 +135,8 @@ public class MessageDispatchDDS {
   }
 
   boolean checkIfBad(Message m) {
+    if (!checkBad) return false;
+
     boolean isBad = false;
     try {
       isBad = m.isTablesComplete() && !m.isBitCountOk();
@@ -176,39 +219,6 @@ public class MessageDispatchDDS {
     cfg.close();
   }
 
-  MessageDispatchDDS(String filename) throws IOException {
-    File inputFile = new File(inputFilename);
-    if (inputFile.exists()) {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)));
-      int count = 0;
-      while (true) {
-        String line = dataIS.readLine();
-        if (line == null) break;
-        line = line.trim();
-        if (line.length() == 0) break;
-        if (line.charAt(0) == '#') continue;
-
-        String[] toke = line.split(",");
-        //String hashS = toke[0].substring(2); // remove the "0x"
-        Integer hash = Integer.parseInt(toke[0]);
-        typeMap.put(hash, new MessType(hash, toke[1], toke[2]));
-        count++;
-      }
-    }
-
-    File file = new File(rootDir + "/dispatch/abad.bufr");
-    FileOutputStream fos = new FileOutputStream(file);
-    badWbc = fos.getChannel();
-
-    file = new File(rootDir + "/dispatch/asample.bufr");
-    fos = new FileOutputStream(file);
-    sampleWbc = fos.getChannel();
-
-    file = new File(rootDir + "/dispatch/asampleAll.bufr");
-    fos = new FileOutputStream(file);
-    allWbc = fos.getChannel();
-  }
-
   private class MessType {
     int hash;
     String name;
@@ -224,7 +234,7 @@ public class MessageDispatchDDS {
       this.name = name.trim();
       nameMap.put(this.name, 0);
       this.ignore = fileout.equalsIgnoreCase("ignore");
-      System.out.printf(" add hash=%d name=%s filename=%s%n", hash, name, fileout);
+      if (showConfig) System.out.printf(" add hash=%d name=%s filename=%s%n", hash, name, fileout);
     }
 
     MessType(Message proto) {
@@ -261,11 +271,11 @@ public class MessageDispatchDDS {
         String writerName = fileout + "-"+ day;
         MessageWriter writer = writers.get(writerName);
         if (writer == null) {
-          writer = new MessageWriter(fileout, mcal);
+          writer = new MessageWriter(executor, fileout, mcal);
           writers.put(writerName, writer);
         }
 
-        writer.write(m);
+        writer.scheduleWrite(m);
         if (showMatch) System.out.println("match <" + m.getHeader() + ">");
         match++;
 

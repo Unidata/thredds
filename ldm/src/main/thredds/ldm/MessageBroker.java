@@ -32,12 +32,10 @@ import ucar.unidata.io.InMemoryRandomAccessFile;
 
 /**
  * Recieves data from an InputStream, breaks into BUFR messages by scanning for "BUFR" header.
- * Writes them out using regexp on the header, like pqact does.
- *
  * Multithreaded:
  *   main thread for reading input stream, and breaking into messages
- *   seperate thread for processing messages
- *   seperate thread for each output.
+ *   seperate thread for processing messages (MessageDispatch)
+ *   seperate thread pool (using executor) for writing output.
  *
  * @author caron
  * @since Aug 8, 2008
@@ -45,25 +43,23 @@ import ucar.unidata.io.InMemoryRandomAccessFile;
 public class MessageBroker {
   private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch("BUFR".getBytes());
 
-  private Executor executor;
+  private ExecutorService executor;
   private Thread messProcessor;
-  private LinkedBlockingQueue<MessageTask> messQ = new LinkedBlockingQueue<MessageTask>(10);
+  private LinkedBlockingQueue<MessageTask> messQ = new LinkedBlockingQueue<MessageTask>(10); // unbounded, threadsafe
   private Formatter out = new Formatter(System.out);
 
   private MessageDispatchDDS dispatch;
 
   //CompletionService<Result> completionService;
 
-  public MessageBroker(Executor executor) throws IOException {
+  public MessageBroker(ExecutorService executor) throws IOException {
     this.executor = executor;
 
     // start up a thread for processing messages as they come off the wire
     messProcessor = new Thread(new MessageProcessor());
     messProcessor.start();
-    //ExecutorService messProcessor = Executors.newSingleThreadExecutor();
-    //this.completionService = new ExecutorCompletionService<Result>(executor);
-
-    dispatch = new MessageDispatchDDS("D:/bufr/dispatch.txt");
+    
+    dispatch = new MessageDispatchDDS(executor);
   }
 
   public void exit() throws IOException {
@@ -78,6 +74,7 @@ public class MessageBroker {
 
     messProcessor.interrupt();
     dispatch.exit();
+    executor.shutdown();
   }
 
   int bad_msgs = 0;
@@ -89,7 +86,7 @@ public class MessageBroker {
       while (true) {
         try {
           if (Thread.currentThread().isInterrupted()) break;
-          process(messQ.take()); // blocks until a task is ready
+          process( messQ.take()); // blocks until a task is ready
 
         } catch (InterruptedException e) {
           break; // exit thread
@@ -149,6 +146,9 @@ public class MessageBroker {
     }
 
   }
+
+  //////////////////////////////////////////////////////
+  // read and extract a Bufr Message
 
   public void process(InputStream is) throws IOException {
     int pos = -1;

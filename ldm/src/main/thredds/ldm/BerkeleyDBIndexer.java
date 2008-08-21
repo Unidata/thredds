@@ -22,27 +22,79 @@ package thredds.ldm;
 
 import com.sleepycat.je.*;
 import com.sleepycat.persist.StoreConfig;
+import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.bind.tuple.TupleOutput;
 import com.sleepycat.bind.tuple.TupleInput;
-import com.sleepycat.bind.tuple.TupleBinding;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
+
+import ucar.bufr.Message;
 
 /**
  * Class Description.
  *
  * @author caron
- * @since Aug 14, 2008
+ * @since Aug 20, 2008
  */
 public class BerkeleyDBIndexer {
-  private static File myDbEnvPath = new File("D:/bufr/bdb/");
 
-  private class MyKey {
-    int fileno;
-    long pos;
+  private Environment myEnv;
+  private Database database;
 
-    public String toString() { return fileno + " "+pos; }
+  private int fileno;
+
+  public BerkeleyDBIndexer(String dir, int fileno) {
+    this.fileno = fileno;
+
+    try {
+      setup(dir, false);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void setup(String dir, boolean readOnly) throws DatabaseException {
+    EnvironmentConfig myEnvConfig = new EnvironmentConfig();
+    StoreConfig storeConfig = new StoreConfig();
+
+    myEnvConfig.setReadOnly(readOnly);
+    storeConfig.setReadOnly(readOnly);
+
+    myEnvConfig.setAllowCreate(!readOnly);
+    storeConfig.setAllowCreate(!readOnly);
+
+    myEnv = new Environment(new File(dir), myEnvConfig);
+
+    DatabaseConfig dbConfig = new DatabaseConfig();
+    dbConfig.setAllowCreate(true);
+    dbConfig.setDeferredWrite(true);
+
+    database = myEnv.openDatabase(null, "sampleDatabase", dbConfig);
+  }
+
+  // Close the store and environment
+  public void close() {
+    if (database != null) {
+      try {
+        database.close();
+      } catch (DatabaseException dbe) {
+        System.err.println("Error closing database: " + dbe.toString());
+        System.exit(-1);
+      }
+    }
+
+    if (myEnv != null) {
+      try {
+        // Finally, close the store and environment.
+        myEnv.close();
+      } catch (DatabaseException dbe) {
+        System.err.println("Error closing MyDbEnv: " + dbe.toString());
+        System.exit(-1);
+      }
+    }
   }
 
   private class MyData {
@@ -50,6 +102,13 @@ public class BerkeleyDBIndexer {
     long date;
 
     public String toString() { return date + " "+nobs; }
+  }
+
+  private class MyKey {
+    int fileno;
+    long pos;
+
+    public String toString() { return fileno + " "+pos; }
   }
 
   private class DataBinding extends TupleBinding {
@@ -87,144 +146,34 @@ public class BerkeleyDBIndexer {
     }
   }
 
+  boolean writeIndex(Message m, long pos) throws IOException {
 
-  private Environment myEnv;
-  private Database database;
-
-  private void populate() throws DatabaseException {
-    Random r = new Random(System.currentTimeMillis());
-    for (int i = 0; i < 100; i++) {
-      String aKey = "key" + r.nextInt();
-      String aData = "data" + i;
-      DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes());
-      DatabaseEntry theData = new DatabaseEntry(aData.getBytes());
-      database.put(null, theKey, theData);
-    }
-  }
-
-  private void populate2() throws DatabaseException {
     TupleBinding keyBinding = new KeyBinding();
     TupleBinding dataBinding = new DataBinding();
     MyKey myKey = new MyKey();
     MyData myData = new MyData();
 
-    Random r = new Random(System.currentTimeMillis());
-    for (int i = 0; i < 100 * 1000; i++) {
-      myKey.fileno = i / 10;
-      myKey.pos = r.nextLong();
-      myData.date = r.nextLong();
-      myData.nobs = r.nextInt(100);
+    int n = m.getNumberDatasets();
+    for (int i=0; i<n; i++) {
+      myKey.fileno = fileno;
+      myKey.pos = pos;
+      //myData.date = m.getObsTime(i);
+      //myData.lat = m.getLat(i);
+      //myData.lon = m.getLon(i);
 
       DatabaseEntry keyEntry = new DatabaseEntry();
       keyBinding.objectToEntry(myKey, keyEntry);
 
       DatabaseEntry dataEntry = new DatabaseEntry();
       dataBinding.objectToEntry(myData, dataEntry);
-      database.put(null, keyEntry, dataEntry);
-    }
 
-  }
-
-  private void retrieve() throws DatabaseException {
-    for (int i = 0; i < 100; i++) {
-      String aKey = "key" + i;
-      DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes());
-      DatabaseEntry theData = new DatabaseEntry();
-      if (database.get(null, theKey, theData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
-        byte[] retData = theData.getData();
-        String foundData = new String(retData);
-        System.out.println("For key: '" + aKey + "' found data: '" + foundData + "'.");
-      } else {
-        System.out.println("No record found for key '" + aKey + "'.");
-      }
-    }
-  }
-
-  private void retrieve2() throws DatabaseException {
-    TupleBinding keyBinding = new KeyBinding();
-    TupleBinding dataBinding = new DataBinding();
-
-    Cursor myCursor = null;
-    try {
-      myCursor = database.openCursor(null, null);
-      DatabaseEntry foundKey = new DatabaseEntry();
-      DatabaseEntry foundData = new DatabaseEntry();
-
-      int count = 0;
-      while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
-        MyKey key = (MyKey) keyBinding.entryToObject(foundKey);
-        MyData data = (MyData) dataBinding.entryToObject(foundData);
-        System.out.printf("key = %s data = %s %n ", key, data);
-        count++;
-      }
-      System.out.printf("count = %d %n", count);
-    } finally {
-      if (null != myCursor)
-        myCursor.close();
-    }
-  }
-
-  private void setup(boolean readOnly) throws DatabaseException {
-    EnvironmentConfig myEnvConfig = new EnvironmentConfig();
-    StoreConfig storeConfig = new StoreConfig();
-
-    myEnvConfig.setReadOnly(readOnly);
-    storeConfig.setReadOnly(readOnly);
-
-    myEnvConfig.setAllowCreate(!readOnly);
-    storeConfig.setAllowCreate(!readOnly);
-
-    myEnv = new Environment(myDbEnvPath, myEnvConfig);
-
-    DatabaseConfig dbConfig = new DatabaseConfig();
-    dbConfig.setAllowCreate(true);
-    dbConfig.setDeferredWrite(true);
-
-    database = myEnv.openDatabase(null, "sampleDatabase", dbConfig);
-  }
-
-  // Close the store and environment
-  public void close() {
-    if (database != null) {
       try {
-        database.close();
-      } catch (DatabaseException dbe) {
-        System.err.println("Error closing database: " + dbe.toString());
-        System.exit(-1);
+        database.put(null, keyEntry, dataEntry);
+      } catch (DatabaseException e) {
+        throw new IOException(e);
       }
     }
-
-    if (myEnv != null) {
-      try {
-        // Finally, close the store and environment.
-        myEnv.close();
-      } catch (DatabaseException dbe) {
-        System.err.println("Error closing MyDbEnv: " + dbe.toString());
-        System.exit(-1);
-      }
-    }
+    return true;
   }
 
-  public static void main(String args[]) {
-    BerkeleyDBIndexer edp = new BerkeleyDBIndexer();
-
-    try {
-      edp.setup(false);
-      edp.populate2();
-      edp.retrieve2();
-
-    } catch (DatabaseException dbe) {
-      System.err.println("ExampleDatabasePut: " + dbe.toString());
-      dbe.printStackTrace();
-
-    } catch (Exception e) {
-      System.out.println("Exception: " + e.toString());
-      e.printStackTrace();
-
-    } finally {
-      edp.close();
-    }
-
-    System.out.println("All done.");
-  }
 }
