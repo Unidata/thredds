@@ -35,20 +35,20 @@ import ucar.unidata.util.StringUtil;
  */
 public class CodeTable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeTable.class);
-  static private Map<String, CodeTable> tableMap;
+  static private Map<Short, CodeTable> tableMap;
 
-  static public CodeTable getTable(String id) {
+  static public CodeTable getTable(short id) {
     if (tableMap == null) init();
     return tableMap.get(id);
   }
 
-  static public boolean hasTable(String id) {
+  static public boolean hasTable(short id) {
     if (tableMap == null) init();
     return tableMap.get(id) != null;
   }
 
   static void init() {
-    tableMap = new HashMap<String, CodeTable>(100);
+    tableMap = new HashMap<Short, CodeTable>(100);
     String filename = "/resources/bufr/codes/Code-FlagTables-11-2007.trans2.xml";
     InputStream is = CodeTable.class.getResourceAsStream(filename);
 
@@ -72,7 +72,7 @@ public class CodeTable {
         String name = elem.getAttributeValue("name");
         String desc = elem.getAttributeValue("desc");
         CodeTable ct = new CodeTable(name, desc);
-        tableMap.put(ct.id, ct);
+        tableMap.put(ct.fxy, ct);
         // System.out.printf(" added %s == %s %n", ct.id, desc);
 
         for (Element cElem : cElems) {
@@ -98,30 +98,28 @@ public class CodeTable {
     }
   }
 
-  private String id, name;
+  private short fxy;
+  private String name;
   private Map<Integer,String> map;
 
   private CodeTable(String id, String name) {
-    this.id = normal(id);
+    this.fxy = getFxy(id);
     this.name = StringUtil.replace( name, ' ', "_");
     map = new HashMap<Integer,String>(20);
   }
 
-  private String normal( String id) {
-    String[] tok = id.split(" ");
-    if (tok.length != 3)
-      log.warn("Illegal table name="+id);
-
-    else try {
-      int f = Integer.parseInt(tok[0]);
-      int x = Integer.parseInt(tok[1]);
-      int y = Integer.parseInt(tok[2]);
-      return f+"-"+x+"-"+y;
+  private short getFxy(String name) {
+    try {
+      String[] tok = name.split(" ");
+      int f = (tok.length > 0) ? Integer.parseInt(tok[0]) : 0;
+      int x = (tok.length > 1) ? Integer.parseInt(tok[1]) : 0;
+      int y = (tok.length > 2) ? Integer.parseInt(tok[2]) : 0;
+      return (short) ((f << 14) + (x << 8) + (y));
     } catch (NumberFormatException e) {
-      log.warn("Illegal table name="+id);
+      log.warn("Illegal table name="+name);
+      return 0;
     }
-    return "";
-  }
+  }  
 
   public String getName() { return name; }
   public Map<Integer,String> getMap() { return map; }

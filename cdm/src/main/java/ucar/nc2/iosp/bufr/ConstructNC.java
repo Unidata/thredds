@@ -236,9 +236,9 @@ class ConstructNC {
       log.warn("dataDesc.units == null for " + name);
     else {
       if (dataDesc.units.equalsIgnoreCase("Code_Table") || dataDesc.units.equalsIgnoreCase("Code Table"))
-        v.addAttribute(new Attribute("units", "CodeTable " + dataDesc.id));
+        v.addAttribute(new Attribute("units", "CodeTable " + dataDesc.getFxyName()));
       else if (dataDesc.units.equalsIgnoreCase("Flag_Table") || dataDesc.units.equalsIgnoreCase("Flag Table"))
-        v.addAttribute(new Attribute("units", "FlagTable " + dataDesc.id));
+        v.addAttribute(new Attribute("units", "FlagTable " + dataDesc.getFxyName()));
       else if (!dataDesc.units.startsWith("CCITT") && !dataDesc.units.startsWith("Numeric"))
         v.addAttribute(new Attribute("units", dataDesc.units));
     }
@@ -252,11 +252,11 @@ class ConstructNC {
         e.printStackTrace();
       }
 
-    } else if ((dataDesc.type == 2) && CodeTable.hasTable(dataDesc.id)) {
+    } else if ((dataDesc.type == 2) && CodeTable.hasTable(dataDesc.fxy)) {
       int nbits = dataDesc.bitWidth;
       int nbytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
 
-      CodeTable ct = CodeTable.getTable(dataDesc.id);
+      CodeTable ct = CodeTable.getTable(dataDesc.fxy);
       if (nbytes == 1)
         v.setDataType(DataType.ENUM1);
       else if (nbytes == 2)
@@ -265,7 +265,7 @@ class ConstructNC {
         v.setDataType(DataType.ENUM4);
 
       //v.removeAttribute("units");
-      v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName() + " (" + dataDesc.id + ")"));
+      v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName() + " (" + dataDesc.getFxyName() + ")"));
 
       Group g = struct.getParentGroup();
       EnumTypedef enumTypedef = g.findEnumeration(ct.getName());
@@ -315,7 +315,7 @@ class ConstructNC {
     }
 
     annotate(v, dataDesc);
-    v.addAttribute(new Attribute("BUFR:TableB_descriptor", dataDesc.id));
+    v.addAttribute(new Attribute("BUFR:TableB_descriptor", dataDesc.getFxyName()));
     v.addAttribute(new Attribute("BUFR:bitWidth", dataDesc.bitWidth));
     struct.addMemberVariable(v);
     v.setSPobject(dataDesc);
@@ -337,25 +337,26 @@ class ConstructNC {
 
 
   private void annotate(Variable v, DataDescriptor dkey) {
-    if (dkey.id.equals("0-5-1") || dkey.id.equals("0-5-2")) {
+    String id = dkey.getFxyName();
+    if (id.equals("0-5-1") || id.equals("0-5-2")) {
       v.addAttribute(new Attribute("units", "degrees_north"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     }
 
-    if (dkey.id.equals("0-6-1") || dkey.id.equals("0-6-2")) {
+    if (id.equals("0-6-1") || id.equals("0-6-2")) {
       v.addAttribute(new Attribute("units", "degrees_east"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     }
 
-    if (dkey.id.equals("0-7-1") || dkey.id.equals("0-7-2")|| dkey.id.equals("0-7-10")|| dkey.id.equals("0-7-30")) {
+    if (id.equals("0-7-1") || id.equals("0-7-2")|| id.equals("0-7-10")|| id.equals("0-7-30")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     }
 
-    if (dkey.id.equals("0-7-6")) {
+    if (id.equals("0-7-6")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     }
 
-    if (dkey.id.equals("0-1-7") || dkey.id.equals("0-1-11")|| dkey.id.equals("0-1-18")) {
+    if (id.equals("0-1-7") || id.equals("0-1-11")|| id.equals("0-1-18")) {
       v.addAttribute(new Attribute("standard_name", "station_name"));
     }
 
@@ -372,7 +373,7 @@ class ConstructNC {
     for (DataDescriptor dkey : root.subKeys) {
       if (!dkey.isOkForVariable()) continue;
 
-      String key = dkey.id;
+      String key = dkey.getFxyName();
       if (key.equals("0-4-1") && (yearName == null))
         yearName = dkey.name;
       if (key.equals("0-4-2") && (monthName == null))

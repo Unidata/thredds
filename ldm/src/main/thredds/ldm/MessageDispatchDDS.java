@@ -37,6 +37,10 @@ import java.nio.ByteBuffer;
  * @since Aug 11, 2008
  */
 public class MessageDispatchDDS {
+  private static final String rootDir = "D:/bufr/";
+  private static final String inputFilename = rootDir + "dispatch.csv";
+  private static final  String inputFilenameOut = rootDir + "dispatchOut.csv";
+
   private Set<Integer> badHashSet = new HashSet<Integer>(200);
   private Map<String, Integer> nameMap = new HashMap<String, Integer>(200);
   private Map<Integer, MessType> typeMap = new HashMap<Integer, MessType>(200);
@@ -51,7 +55,7 @@ public class MessageDispatchDDS {
   long total_bytes;
   int total_obs;
 
-  boolean checkBad = false;
+  boolean checkBad = true;
   boolean showMatch = false;
   boolean showBad = false;
   boolean showConfig = false;
@@ -170,10 +174,6 @@ public class MessageDispatchDDS {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
   }
-
-  private String rootDir = "D:/bufr/";
-  private String inputFilename = rootDir + "dispatch.csv";
-  private String inputFilenameOut = rootDir + "dispatchOut.csv";
 
   void exit() throws IOException {
     for (MessageWriter writer : writers.values())
