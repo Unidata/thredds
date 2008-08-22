@@ -44,7 +44,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
   protected List<CacheVar> cacheList = new ArrayList<CacheVar>(); // promote global attribute to variable
   protected boolean timeUnitsChange = false;
 
-  protected boolean debugCache = false;
+  protected boolean debugCache = false, debugInvocation = false;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.

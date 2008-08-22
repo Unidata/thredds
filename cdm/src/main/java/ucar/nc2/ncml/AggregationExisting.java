@@ -122,7 +122,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     setDatasetAcquireProxy(typicalDataset, ncDataset);
     typicalDataset.close( typical);
 
-    System.out.println(ncDataset.getLocation()+" invocation count = "+AggregationOuterDimension.invocation);
+    if (debugInvocation) System.out.println(ncDataset.getLocation()+" invocation count = "+AggregationOuterDimension.invocation);
   }
 
   protected void rebuildDataset() throws IOException {
@@ -259,7 +259,8 @@ public class AggregationExisting extends AggregationOuterDimension {
             out.print("    <cache varName='" + pv.varName + "' >");
             NCdumpW.printArray(data, out);
             out.print("</cache>\n");
-            System.out.println(" wrote array = " + pv.varName + " nelems= "+data.getSize());
+            if (debugPersist)
+              System.out.println(" wrote array = " + pv.varName + " nelems= "+data.getSize());
           }
         }
         out.print("</netcdf>\n");
@@ -337,18 +338,18 @@ public class AggregationExisting extends AggregationOuterDimension {
           if (pv != null) {
             String sdata = cacheElemNested.getText();
             if (sdata.length() == 0) continue;
-            System.out.println(" read data for var = " + varName + " size= "+sdata.length());
+            if (debugPersist) System.out.println(" read data for var = " + varName + " size= "+sdata.length());
             
             long start = System.nanoTime();
             String[] vals = sdata.split(" ");
             double took = .001 * .001 * .001 * (System.nanoTime() - start);
-            System.out.println(" split took = " + took + " sec; ");
+            if (debugPersist) System.out.println(" split took = " + took + " sec; ");
 
             try {
               start = System.nanoTime();
               Array data = Array.makeArray(DataType.DOUBLE, vals);
               took = .001 * .001 * .001 * (System.nanoTime() - start);
-              System.out.println(" makeArray took = " + took + " sec nelems= "+data.getSize());
+              if (debugPersist) System.out.println(" makeArray took = " + took + " sec nelems= "+data.getSize());
               pv.dataMap.put(location, data);
             } catch (Exception e) {
               logger.warn("Error reading cached data ",e);
