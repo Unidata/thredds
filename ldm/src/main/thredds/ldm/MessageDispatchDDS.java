@@ -37,11 +37,11 @@ import java.nio.ByteBuffer;
  * @since Aug 11, 2008
  */
 public class MessageDispatchDDS {
-  public static final String rootDir = "C:/data/bufr2/";
+  public static final String rootDir = "D:/bufr/";
   public static final String dispatchDir = rootDir + "dispatch/";
+
   private static final String inputFilename = rootDir + "dispatch.csv";
   private static final String inputFilenameOut = rootDir + "dispatchOut.csv";
-
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MessageDispatchDDS.class);
 
   private Set<Integer> badHashSet = new HashSet<Integer>(200);
@@ -58,7 +58,7 @@ public class MessageDispatchDDS {
   long total_bytes;
   int total_obs;
 
-  boolean checkBad = true;
+  //boolean checkBad = true;
   boolean showMatch = false;
   boolean showBad = false;
   boolean showConfig = false;
@@ -74,6 +74,7 @@ public class MessageDispatchDDS {
   MessageDispatchDDS(CompletionService<IndexerTask> executor) throws IOException {
     this.executor = executor;
 
+    // read config file
     File inputFile = new File(inputFilename);
     if (inputFile.exists()) {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)));
@@ -150,8 +151,6 @@ public class MessageDispatchDDS {
   }
 
   boolean checkIfBad(Message m) {
-    if (!checkBad) return false;
-
     boolean isBad;
     try {
       isBad = m.isTablesComplete() && !m.isBitCountOk();
@@ -240,13 +239,14 @@ public class MessageDispatchDDS {
     }
   }
 
+  // Message type based on Message.hashCode
   private class MessType {
     int hash;
     String name;
     String fileout;
     String index;
-    BerkeleyDBIndexer indexer;
-    int fileno = 0;
+    Indexer indexer;
+    short fileno = 0;
 
     Message proto;
     int count, countObs, nbad;
@@ -258,15 +258,19 @@ public class MessageDispatchDDS {
       this.hash = hash;
       this.fileout = filename.trim();
       this.name = name.trim();
-      this.index = index.trim();
 
       nameMap.put(this.name, 0);
       this.ignore = fileout.equalsIgnoreCase("ignore");
       if (bitsOk.equalsIgnoreCase("true"))
         this.checkBad = false; // dont need to check bits
 
+      this.index = index.trim();
       if (index.length() > 0) {
-        indexer = BerkeleyDBIndexer.factory( index);  
+        try {
+          indexer = BerkeleyDBIndexer.factory( filename, index);
+        } catch (Exception e) {
+          logger.error("Cant open BerkeleyDBIndexer", e);
+        }
       }
 
       if (showConfig) System.out.printf(" add hash=%d name=%s filename=%s index=%s%n", hash, name, fileout, index);

@@ -22,23 +22,18 @@ package thredds.ldm;
 
 import ucar.bufr.Message;
 
-import java.util.List;
 import java.io.IOException;
 
 /**
- * encapsolates writing an index
+ * Class Description.
  *
  * @author caron
- * @since Aug 21, 2008
+ * @since Aug 22, 2008
  */
-public class IndexerTask {
-  List<Message> mlist;
-  Indexer indexer;
-  short fileno;
+public interface Indexer {
 
-  public void process() throws IOException {
-    if (indexer == null) return;
-    for (Message m : mlist)
-      indexer.writeIndex(fileno, m);
-  }
+  public boolean writeIndex(short fileno, Message m) throws IOException;
+
+  public void close();
+
 }

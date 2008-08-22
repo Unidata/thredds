@@ -29,8 +29,12 @@ import com.sleepycat.bind.tuple.TupleInput;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Formatter;
 
 import ucar.bufr.Message;
+import ucar.bufr.BufrDataDescriptionSection;
 import ucar.nc2.units.DateFormatter;
 
 /**
@@ -39,21 +43,19 @@ import ucar.nc2.units.DateFormatter;
  * @author caron
  * @since Aug 20, 2008
  */
-public class BerkeleyDBIndexer {
+public class BerkeleyDBIndexer implements Indexer {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BerkeleyDBIndexer.class);
 
   private Environment myEnv;
   private Database database;
   private SecondaryDatabase secondary;
 
+  private List<Short> indexFlds;
   private DateFormatter dateFormatter = new DateFormatter();
 
-  public BerkeleyDBIndexer(String dir) {
-    try {
-      setup(dir, false);
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+  public BerkeleyDBIndexer(String dir, List<Short> indexFlds) throws DatabaseException {
+    this.indexFlds = indexFlds;
+    setup(dir, false);
   }
 
   private void setup(String dirName, boolean readOnly) throws DatabaseException {
@@ -77,14 +79,14 @@ public class BerkeleyDBIndexer {
     dbConfig.setDeferredWrite(true);
     database = myEnv.openDatabase(null, "primaryDatabase", dbConfig);
 
-    // secondary
+    /* secondary
     MyKeyCreator keyCreator = new MyKeyCreator( new DataBinding());
     SecondaryConfig secConfig = new SecondaryConfig();
     secConfig.setAllowCreate(!readOnly);
     secConfig.setSortedDuplicates(!readOnly);
     secConfig.setKeyCreator( keyCreator);
 
-    secondary = myEnv.openSecondaryDatabase(null, "secDatabase", database, secConfig);
+    secondary = myEnv.openSecondaryDatabase(null, "secDatabase", database, secConfig);  */
   }
 
   // Close the store and environment
@@ -118,39 +120,9 @@ public class BerkeleyDBIndexer {
     }
   }
 
-  private class MyKeyCreator implements SecondaryKeyCreator {
-    DataBinding dataBind;
-    MyKeyCreator( DataBinding dataBind) {
-      this.dataBind = dataBind;
-    }
+  //////////////////////////////////////
 
-    public boolean createSecondaryKey(SecondaryDatabase secondaryDatabase, DatabaseEntry key, DatabaseEntry data, DatabaseEntry result) throws DatabaseException {
-      MyData mydata = (MyData) dataBind.entryToObject(data);
-      TupleOutput to = new TupleOutput();
-      to.writeString(mydata.stn);
-      to.writeLong(mydata.date);
-      result.setData( to.getBufferBytes(), 0, to.getBufferLength());
-      return true;
-    }
-  }
-
-  private class MyData {
-    String stn;
-    long date;
-
-    public String toString() {
-      Date d = new Date(date);
-      return dateFormatter.toDateTimeStringISO(d) + " <"+stn+">";
-    }
-  }
-
-  private class MyKey {
-    int fileno;
-    long pos;
-    public String toString() { return fileno + " "+pos; }
-  }
-
-  private class SecKey {
+  /* private class SecKey {
     String stn;
     long date;
     public String toString() {
@@ -159,40 +131,7 @@ public class BerkeleyDBIndexer {
     }
   }
 
-  private class DataBinding extends TupleBinding {
-
-    public void objectToEntry(Object object, TupleOutput to) {
-      MyData myData = (MyData) object;
-      to.writeLong(myData.date);
-      to.writeString(myData.stn);
-    }
-
-    public Object entryToObject(TupleInput ti) {
-      MyData myData = new MyData();
-      myData.date = ti.readLong();
-      myData.stn = ti.readString();
-      return myData;
-    }
-
-  }
-
-  private class KeyBinding extends TupleBinding {
-
-    public void objectToEntry(Object object, TupleOutput to) {
-      MyKey myKey = (MyKey) object;
-      to.writeInt(myKey.fileno);
-      to.writeLong(myKey.pos);
-    }
-
-    public Object entryToObject(TupleInput ti) {
-      MyKey myKey = new MyKey();
-      myKey.fileno = ti.readInt();
-      myKey.pos = ti.readLong();
-      return myKey;
-    }
-  }
-
-  private class SecKeyBinding extends TupleBinding {
+    private class SecKeyBinding extends TupleBinding {
 
     public void objectToEntry(Object object, TupleOutput to) {
       SecKey myKey = (SecKey) object;
@@ -208,25 +147,91 @@ public class BerkeleyDBIndexer {
     }
   }
 
-  boolean writeIndex(Message m, int fileno) throws IOException {
+  private class MyKeyCreator implements SecondaryKeyCreator {
+    DataBinding dataBind;
+    MyKeyCreator( DataBinding dataBind) {
+      this.dataBind = dataBind;
+    }
 
+    public boolean createSecondaryKey(SecondaryDatabase secondaryDatabase, DatabaseEntry key, DatabaseEntry data, DatabaseEntry result) throws DatabaseException {
+      MyData mydata = (MyData) dataBind.entryToObject(data);
+      TupleOutput to = new TupleOutput();
+      to.writeString(mydata.stn);
+      to.writeLong(mydata.date);
+      result.setData( to.getBufferBytes(), 0, to.getBufferLength());
+      return true;
+    }
+  }   */
+
+  private class MyData {
+    String stn;
+    long date;
+
+    public String toString() {
+      Date d = new Date(date);
+      return dateFormatter.toDateTimeStringISO(d) + " <"+stn+">";
+    }
+  }
+
+  private class DataBinding extends TupleBinding {
+    public void objectToEntry(Object object, TupleOutput to) {
+      Object[] dataArray = (Object[]) object;
+      for (int i=0; i<dataArray.length; i++) {
+        Object data = dataArray[i];
+        if (data instanceof byte[])
+          to.writeFast((byte[]) data);
+        else if (data instanceof Float)
+          to.writeFloat((Float) data);
+        else if (data instanceof Integer)
+          to.writeInt((Integer) data);
+      }
+    }
+    public Object entryToObject(TupleInput ti) { // LOOK wrong
+      MyData myData = new MyData();
+      myData.date = ti.readLong();
+      myData.stn = ti.readString();
+      return null;
+    }
+  }
+
+  private class MyKey {
+    short fileno, obsno;
+    int pos;
+    public String toString() { return fileno + " "+pos+ " "+obsno; }
+  }
+  private class KeyBinding extends TupleBinding {
+    public void objectToEntry(Object object, TupleOutput to) {
+      MyKey myKey = (MyKey) object;
+      to.writeShort(myKey.fileno);
+      to.writeInt(myKey.pos);
+      to.writeShort(myKey.obsno);
+    }
+    public Object entryToObject(TupleInput ti) {
+      MyKey myKey = new MyKey();
+      myKey.fileno = ti.readShort();
+      myKey.pos = ti.readInt();
+      myKey.obsno = ti.readShort();
+      return myKey;
+    }
+  }
+
+  public boolean writeIndex(short fileno, Message m) throws IOException {
     KeyBinding keyBinding = new KeyBinding();
     DataBinding dataBinding = new DataBinding();
     MyKey myKey = new MyKey();
-    MyData myData = new MyData();
 
-    int n = m.getNumberDatasets();
+    Object[][] result = m.readValues(indexFlds);
+    int n = result.length;
     for (int i=0; i<n; i++) {
       myKey.fileno = fileno;
-      myKey.pos = m.getStartPos();
-      myData.date = m.ids.getReferenceTimeCal().getTime().getTime();
-      myData.stn = m.getStringValue(0, "0-1-18");
+      myKey.pos = (int) m.getStartPos(); // file < 2^32
+      myKey.obsno = (short) i;
 
       DatabaseEntry keyEntry = new DatabaseEntry();
       keyBinding.objectToEntry(myKey, keyEntry);
 
       DatabaseEntry dataEntry = new DatabaseEntry();
-      dataBinding.objectToEntry(myData, dataEntry);
+      dataBinding.objectToEntry(result[i], dataEntry);
       // System.out.println("--index write "+myKey+" == "+myData);
 
       try {
@@ -262,7 +267,7 @@ public class BerkeleyDBIndexer {
     }
   }
 
-  private void retrieve2() throws DatabaseException {
+  /* private void retrieve2() throws DatabaseException {
     TupleBinding keyBinding = new KeyBinding();
     TupleBinding dataBinding = new DataBinding();
 
@@ -284,18 +289,25 @@ public class BerkeleyDBIndexer {
       if (null != myCursor)
         myCursor.close();
     }
+  } */
+
+  static public BerkeleyDBIndexer factory( String dir, String index) throws Exception {
+    String[] tokes = index.split(" ");
+    List<Short> indexFields = new ArrayList<Short>(tokes.length);
+    Formatter out = new Formatter(System.out);
+    out.format("BerkeleyDBIndexer dir= %s indexFlds= ", dir);
+    for( String s : tokes) {
+      short fxy = BufrDataDescriptionSection.getDesc("0-"+s);
+      indexFields.add( fxy);
+      out.format("%s ", BufrDataDescriptionSection.getDescName(fxy));
+    }
+    out.format("%n");
+
+    return new BerkeleyDBIndexer( MessageDispatchDDS.dispatchDir+dir+"/bdb", indexFields);
   }
 
-  static public BerkeleyDBIndexer factory( String index) {
-    if (index.equals("fslprofilers"))
-      return new BerkeleyDBIndexer(MessageDispatchDDS.dispatchDir+index+"/bdb");
-    else
-      return null;
-  }
-
-
-  public static void main(String args[]) throws DatabaseException {
-    BerkeleyDBIndexer indexer = new BerkeleyDBIndexer(MessageDispatchDDS.dispatchDir+"fslprofilers/bdb");
+  public static void main(String args[]) throws Exception {
+    BerkeleyDBIndexer indexer = BerkeleyDBIndexer.factory(MessageDispatchDDS.dispatchDir+"fslprofilers/bdb", "1-18");
     indexer.retrieve();
     indexer.close();    
   }

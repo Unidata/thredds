@@ -32,24 +32,24 @@ import ucar.unidata.io.InMemoryRandomAccessFile;
 /**
  * Recieves data from an InputStream, breaks into BUFR messages by scanning for "BUFR" header.
  * Multithreaded:
- *   main thread for reading input stream, and breaking into messages
- *   seperate thread for processing messages (MessageDispatch)
- *   seperate thread pool (using executor) for writing output.
- *   seperate thread for indexing messsage (Indexer)
- *
+ * main thread for reading input stream, and breaking into messages
+ * seperate thread for processing messages (MessageDispatch)
+ * seperate thread pool (using executor) for writing output.
+ * seperate thread for indexing messsage (Indexer)
+ * <p/>
  * Processing steps: <ol>
- *   <li> the main thread reads from InputStream, finds message boundaries, places messaages onto the message Queue.
- *   <li> messProcessor thread waits on message Queue, sends messages to the MessageDispatch, which decides
- *        what should be done with a message (ignore, check bad bits, write to file). Messages to be written are
- *        placed on a queue in a MessageWriter, which controls all access to a single file.
- *        The MessageWriter task is submitted to the completionService.
- *        So no IO is done in this thread.
- *   <li> The completionService uses threads from the ExecutorService to call the MessageWriter to append messages
- *        to the file.
- *   <li> indexProcessor waits for Futures from the MessageWriter. These contain the info to write indices for
- *        some of the bufr message types.
+ * <li> the main thread reads from InputStream, finds message boundaries, places messaages onto the message Queue.
+ * <li> messProcessor thread waits on message Queue, sends messages to the MessageDispatch, which decides
+ * what should be done with a message (ignore, check bad bits, write to file). Messages to be written are
+ * placed on a queue in a MessageWriter, which controls all access to a single file.
+ * The MessageWriter task is submitted to the completionService.
+ * So no IO is done in this thread.
+ * <li> The completionService uses threads from the ExecutorService to call the MessageWriter to append messages
+ * to the file.
+ * <li> indexProcessor waits for Futures from the MessageWriter. These contain the info to write indices for
+ * some of the bufr message types.
  * </ol>
- *
+ * <p/>
  * TDB: close MessageWriter periodically. sync indexer. delete old messages, and their indices.
  *
  * @author caron
@@ -79,7 +79,7 @@ public class MessageBroker {
 
     // completionService manages Callable objects that write bufr message to files
     completionService = new ExecutorCompletionService(executor);
-    dispatch = new MessageDispatchDDS( completionService);
+    dispatch = new MessageDispatchDDS(completionService);
 
     // a thread for indexing messages after they have been written
     indexProcessor = new Thread(new IndexProcessor());
@@ -98,87 +98,12 @@ public class MessageBroker {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    
+
     indexProcessor.interrupt();
   }
 
-  //////////////////////////////////////////////////////////////////
-
-  private class MessageProcessor implements Runnable {
-    private boolean cancel = false;
-
-    public void run() {
-      while (true) {
-        try {
-          MessageTask mtask = messQ.poll(); // see if ones ready
-          if (mtask == null) {
-            if (cancel) break; // check if interrupted
-            mtask = messQ.take(); // block until ready
-          }
-          process( mtask);
-
-        } catch (InterruptedException e) {
-          cancel = true;
-        }
-      }
-
-      System.out.println("exit MessageProcessor");
-      dispatch.exit();
-    }
-
-    void process(MessageTask mtask) {
-      //out.format("    %d start process %n", mtask.id);
-      try {
-        Message m = getMessage(new InMemoryRandomAccessFile("BUFR", mtask.mess));
-        m.setHeader( mtask.header);
-        m.setRawBytes( mtask.mess);
-
-        dispatch.dispatch(m);
-        //out.format("    %d", mtask.id);
-        //new Dump().dumpHeaderShort(out, m);
-        
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-
-    public Message getMessage(RandomAccessFile raf) throws IOException {
-      raf.seek(4);
-      BufrIndicatorSection is = new BufrIndicatorSection(raf);
-      BufrIdentificationSection ids = new BufrIdentificationSection(raf, is);
-      BufrDataDescriptionSection dds = new BufrDataDescriptionSection(raf);
-
-      long dataPos = raf.getFilePointer();
-      int dataLength = BufrNumbers.uint3(raf);
-      DataSection dataSection = new DataSection(dataPos, dataLength);
-
-      if ((is.getBufrEdition() > 4) || (is.getBufrEdition() < 2)) {
-        System.out.println("Edition " + is.getBufrEdition() + " is not supported");
-        return null;
-      }
-
-      return new Message(raf, is, ids, dds, dataSection);
-    }
-  }
-
-  private static AtomicInteger seqId = new AtomicInteger();
-
-  private class MessageTask {
-    byte[] mess;
-    int len, have;
-    int id;
-    String header;
-
-    MessageTask(int messlen) {
-      this.len = messlen;
-      this.mess = new byte[messlen];
-      this.have = 0;
-      this.id = seqId.getAndIncrement();
-    }
-
-  }
-
   //////////////////////////////////////////////////////
+  // Step 4 - optionally write an index
 
   private class IndexProcessor implements Runnable {
     private boolean cancel = false;
@@ -209,8 +134,87 @@ public class MessageBroker {
     }
   }
 
+  //////////////////////////////////////////////////////////////////
+  // Step 2 - dispatch message
+
+  private class MessageProcessor implements Runnable {
+    private boolean cancel = false;
+
+    public void run() {
+      while (true) {
+        try {
+          MessageTask mtask = messQ.poll(); // see if ones ready
+          if (mtask == null) {
+            if (cancel) break; // check if interrupted
+            mtask = messQ.take(); // block until ready
+          }
+          process(mtask);
+
+        } catch (InterruptedException e) {
+          cancel = true;
+        }
+      }
+
+      System.out.println("exit MessageProcessor");
+      dispatch.exit();
+    }
+
+    void process(MessageTask mtask) {
+      //out.format("    %d start process %n", mtask.id);
+      try {
+        Message m = getMessage(new InMemoryRandomAccessFile("BUFR", mtask.mess));
+        if (null == m) return;
+        m.setHeader(mtask.header);
+        m.setRawBytes(mtask.mess);
+
+        // decide what to do with the message
+        // Step 3 (write to file) is done in the dispatcher
+        dispatch.dispatch(m);
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    public Message getMessage(RandomAccessFile raf) throws IOException {
+      raf.seek(4);
+      BufrIndicatorSection is = new BufrIndicatorSection(raf);
+      BufrIdentificationSection ids = new BufrIdentificationSection(raf, is);
+      BufrDataDescriptionSection dds = new BufrDataDescriptionSection(raf);
+
+      long dataPos = raf.getFilePointer();
+      int dataLength = BufrNumbers.uint3(raf);
+      DataSection dataSection = new DataSection(dataPos, dataLength);
+
+      if ((is.getBufrEdition() > 4) || (is.getBufrEdition() < 2)) {
+        System.out.println("Edition " + is.getBufrEdition() + " is not supported");
+        bad_msgs++;
+        return null;
+      }
+
+      return new Message(raf, is, ids, dds, dataSection);
+    }
+  }
+
+  private static AtomicInteger seqId = new AtomicInteger();
+
+  private class MessageTask {
+    byte[] mess;
+    int len, have;
+    int id;
+    String header;
+
+    MessageTask(int messlen) {
+      this.len = messlen;
+      this.mess = new byte[messlen];
+      this.have = 0;
+      this.id = seqId.getAndIncrement();
+    }
+
+  }
+
   //////////////////////////////////////////////////////
-  // read and extract a Bufr Message
+  // Step 1 - read and extract a Bufr Message
 
   public void process(InputStream is) throws IOException {
     int pos = -1;
@@ -239,7 +243,7 @@ public class MessageBroker {
 
       // do we have the length already read ??
       if (matchPos + 6 >= b.have) {
-        return start; // this will save the end of the buffer and read more in.  
+        return start; // this will save the end of the buffer and read more in.
       }
 
       // read BUFR message length
@@ -272,7 +276,7 @@ public class MessageBroker {
       }
 
       boolean ok = true;
-      
+
       // check on ending
       for (int i = task.len - 4; i < task.len; i++) {
         int bb = task.mess[i];
@@ -307,7 +311,7 @@ public class MessageBroker {
 
     // cleanup
     int start;
-    for (start=0; start<header.length; start++) {
+    for (start = 0; start < header.length; start++) {
       byte b = header[start];
       if ((b == 73) || (b == 74)) // I or J
         break;
@@ -315,7 +319,7 @@ public class MessageBroker {
 
     byte[] bb = new byte[sizeHeader];
     int count = 0;
-    for (int i=start; i<header.length; i++) {
+    for (int i = start; i < header.length; i++) {
       byte b = header[i];
       if (b >= 32 && b < 127) // ascii only
         bb[count++] = b;
@@ -335,7 +339,7 @@ public class MessageBroker {
       done += got;
     }
 
-    if (showRead) System.out.println("Read buffer at " + bytesRead+" len="+done);
+    if (showRead) System.out.println("Read buffer at " + bytesRead + " len=" + done);
     bytesRead += done;
     return true;
   }
@@ -352,16 +356,16 @@ public class MessageBroker {
       }
       b.have += got;
     }
-    if (showRead) System.out.println("Read buffer at " + bytesRead+" len="+b.have);
+    if (showRead) System.out.println("Read buffer at " + bytesRead + " len=" + b.have);
     bytesRead += b.have;
     return b;
   }
 
-    // read into new Buffer, until buffer is full or end of stream
+  // read into new Buffer, until buffer is full or end of stream
   private Buffer readBuffer(InputStream is, Buffer prev, int pos) throws IOException {
     Buffer b = new Buffer();
 
-      // copy remains of last buffer here
+    // copy remains of last buffer here
     int remain = prev.have - pos;
     //if (remain > BUFFSIZE /2)
     //  out.format(" remain = "+remain+" bytesRead="+bytesRead);
@@ -380,7 +384,7 @@ public class MessageBroker {
       b.have += got;
     }
 
-    if (showRead) System.out.println("Read buffer at " + bytesRead+" len="+b.have);
+    if (showRead) System.out.println("Read buffer at " + bytesRead + " len=" + b.have);
     bytesRead += b.have;
     return b;
   }

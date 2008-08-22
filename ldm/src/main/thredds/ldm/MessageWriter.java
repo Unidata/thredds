@@ -50,14 +50,14 @@ public class MessageWriter implements Callable<IndexerTask> {
   private final FileOutputStream fos;
 
   private final CompletionService<IndexerTask> executor;
-  private final BerkeleyDBIndexer indexer;
-  private final int fileno;
+  private final Indexer indexer;
+  private final short fileno;
 
   private final AtomicBoolean isScheduled = new AtomicBoolean(false);
   private long lastModified;
   private long filePos = 0;
 
-  MessageWriter(CompletionService<IndexerTask> executor, BerkeleyDBIndexer indexer, int fileno, String fileout, Calendar mcal) throws FileNotFoundException {
+  MessageWriter(CompletionService<IndexerTask> executor, Indexer indexer, short fileno, String fileout, Calendar mcal) throws FileNotFoundException {
     this.executor = executor;
     this.indexer = indexer;
     this.fileno = fileno;
