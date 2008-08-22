@@ -30,44 +30,55 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Calendar;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Encapsolates writing to a particular file.
+ * Encapsolates writing BUFR message to one particular file.
  *
  * @author caron
  * @since Aug 19, 2008
  */
-public class MessageWriter implements Callable<Object> {
-  private static final String rootDir = "D:/bufr/dispatch/";
+public class MessageWriter implements Callable<IndexerTask> {
+  private static String rootDir = "./";
+  static void setRootDir( String _rootDir) {
+    rootDir = _rootDir;
+  }
 
   private final ConcurrentLinkedQueue q; // unbounded, threadsafe
   private final WritableByteChannel wbc;
   private final FileOutputStream fos;
 
-  private final ExecutorService executor;
+  private final CompletionService executor;
+  private final BerkeleyDBIndexer indexer;
+  private final int fileno;
+
   private final AtomicBoolean isScheduled = new AtomicBoolean(false);
   private long lastModified;
+  private long filePos = 0;
 
-  MessageWriter(ExecutorService executor, String fileout, Calendar mcal) throws FileNotFoundException {
+  MessageWriter(CompletionService executor, BerkeleyDBIndexer indexer, int fileno, String fileout, Calendar mcal) throws FileNotFoundException {
     this.executor = executor;
+    this.indexer = indexer;
+    this.fileno = fileno;
     File dir = new File(rootDir + fileout);
     dir.mkdirs();
 
     String date = mcal.get( Calendar.YEAR)+"-"+(1+mcal.get( Calendar.MONTH))+"-"+mcal.get( Calendar.DAY_OF_MONTH);
 
-    File file = new File(rootDir + fileout + "/"+date+  ".bufr");
-    fos = new FileOutputStream(file);
+    File file = new File(rootDir + fileout + "/"+fileout+"-"+date+  ".bufr");
+    if (file.exists())
+      filePos = file.length();
+
+    fos = new FileOutputStream(file, true); // append
     wbc = fos.getChannel();
     q = new ConcurrentLinkedQueue();
   }
 
   // put a message on the queue, schedule writing if not already scheduled.
-  void scheduleWrite(Message m) throws IOException {
+  void scheduleWrite(Message m) {
     q.add(m);
     if (!isScheduled.getAndSet(true)) {
       executor.submit( this);
@@ -81,14 +92,27 @@ public class MessageWriter implements Callable<Object> {
       fos.close();
   }
 
-  public Object call() throws IOException {
+  public IndexerTask call() throws IOException {
+    IndexerTask task = new IndexerTask();
+    task.indexer = this.indexer;
+    if (this.indexer != null) {
+      task.mlist = new ArrayList<Message>(3);
+      task.fileno = this.fileno;
+    }
+
     while (!q.isEmpty()) {
       Message m = (Message) q.remove();
       wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
       wbc.write(ByteBuffer.wrap(m.getRawBytes()));
+
+      if (this.indexer != null) { // track info we need to write the index
+        m.setStartPos( filePos);
+        filePos += m.getHeader().length() + m.getRawBytes().length;
+        task.mlist.add(m);
+      }
     }
     lastModified = System.currentTimeMillis();
     isScheduled.getAndSet(false);
-    return this;
+    return task; // the result becomes available in the Future of the CompletionService
   }
 }

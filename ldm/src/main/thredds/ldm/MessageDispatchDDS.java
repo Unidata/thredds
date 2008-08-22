@@ -26,6 +26,7 @@ import ucar.bufr.Dump;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CompletionService;
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
 
@@ -37,9 +38,12 @@ import java.nio.ByteBuffer;
  * @since Aug 11, 2008
  */
 public class MessageDispatchDDS {
-  private static final String rootDir = "D:/bufr/";
+  public static final String rootDir = "D:/bufr/";
+  public static final String dispatchDir = "D:/bufr/dispatch/";
   private static final String inputFilename = rootDir + "dispatch.csv";
-  private static final  String inputFilenameOut = rootDir + "dispatchOut.csv";
+  private static final String inputFilenameOut = rootDir + "dispatchOut.csv";
+
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MessageDispatchDDS.class);
 
   private Set<Integer> badHashSet = new HashSet<Integer>(200);
   private Map<String, Integer> nameMap = new HashMap<String, Integer>(200);
@@ -59,15 +63,16 @@ public class MessageDispatchDDS {
   boolean showMatch = false;
   boolean showBad = false;
   boolean showConfig = false;
+  boolean showResults = false;
 
   Dump dumper = new Dump();
   WritableByteChannel badWbc;
   WritableByteChannel sampleWbc;
   WritableByteChannel allWbc;
 
-  private final ExecutorService executor;
+  private final CompletionService executor;
 
-  MessageDispatchDDS(ExecutorService executor) throws IOException {
+  MessageDispatchDDS(CompletionService executor) throws IOException {
     this.executor = executor;
 
     File inputFile = new File(inputFilename);
@@ -84,10 +89,13 @@ public class MessageDispatchDDS {
         String[] toke = line.split(",");
         //String hashS = toke[0].substring(2); // remove the "0x"
         Integer hash = Integer.parseInt(toke[0]);
-        typeMap.put(hash, new MessType(hash, toke[1], toke[2]));
+        String bitsOk = (toke.length > 8) ? toke[7].trim() : "";
+        typeMap.put(hash, new MessType(hash, toke[1], toke[2], toke[3], bitsOk));
         count++;
       }
     }
+
+    MessageWriter.setRootDir(dispatchDir);
 
     File file = new File(rootDir + "/dispatch/abad.bufr");
     FileOutputStream fos = new FileOutputStream(file);
@@ -126,15 +134,21 @@ public class MessageDispatchDDS {
     matched.count++;
     matched.countObs += m.getNumberDatasets();
 
-    //checkIfBad(m); //  write messages that fail bit counter anyway
-    if (checkIfBad(m)) {
+    if (matched.ignore) {
+      ignored++;
+      return;
+    }
+
+    if (matched.checkBad && checkIfBad(m)) {
       matched.nbad++;
       return; // dont write messages that fail bit counter;
     }
 
-    matched.countBytes += m.getRawBytes().length + m.getHeader().length();
-    if (matched.write(m) && newOne) {
-      writeSample(m, sampleWbc);  // dont want "ignored" messsages
+    boolean written = matched.scheduleWrite(m);
+    if (written) matched.countBytes += m.getRawBytes().length + m.getHeader().length();
+
+    if (written && newOne) {
+      writeSample(m, sampleWbc);  // keep samples
     }
   }
 
@@ -175,66 +189,89 @@ public class MessageDispatchDDS {
     }
   }
 
-  void exit() throws IOException {
-    for (MessageWriter writer : writers.values())
-      writer.close();
+  void exit() {
+    try {
+      for (MessageWriter writer : writers.values())
+        writer.close();
+      
+      for (MessType mtype : typeMap.values())
+        if (mtype.indexer != null) mtype.indexer.close();
 
-    badWbc.close();
-    sampleWbc.close();
-    allWbc.close();
+      badWbc.close();
+      sampleWbc.close();
+      allWbc.close();
 
-    Formatter out = new Formatter(System.out);
-    Formatter cfg = new Formatter(new FileOutputStream(inputFilenameOut));
+      Formatter out = new Formatter(System.out);
+      Formatter cfg = new Formatter(new FileOutputStream(inputFilenameOut));
 
-    out.format("\n===============================================\n");
-    cfg.format("#    hash, filename, wmo, nmess, nobs, kBytes, complete, bitsOk, nbad, center, table, edition, category%n");
+      if (showResults) out.format("\n===============================================\n");
+      cfg.format("#    hash, filename, wmo, index, nmess, nobs, kBytes, complete, bitsOk, nbad, center, table, edition, category%n");
 
-    int avg_msg = (int) (total_bytes / total_msgs);
-    int avg_obs = (int) (total_obs / total_msgs);
-    out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d \n",
-            total_msgs, total_obs, total_bytes, avg_msg, avg_obs);
-    out.format("matched=%d types=%d bad=%d badTypes=%d badBytes=%d ignored=%d failWrite=%d %n",
-            match, typeMap.size(), badCount, badHashSet.size(), badBytes, ignored, failWrite);
-
-    List<MessType> mtypes = new ArrayList<MessType>(typeMap.values());
-    Collections.sort(mtypes, new MessTypeSorter());
-    for (MessType mtype : mtypes) {
-      if (mtype.proto == null) {
-        out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
-        cfg.format("%d, %s, %s, %5d, %8d, %5f %n",
-                mtype.hash, mtype.fileout, mtype.name,
-                mtype.count, mtype.countObs, mtype.countBytes / 1000);
-        continue;
+      int avg_msg = (int) (total_bytes / total_msgs);
+      int avg_obs = (int) (total_obs / total_msgs);
+      if (showResults) {
+        out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d \n",
+                total_msgs, total_obs, total_bytes, avg_msg, avg_obs);
+        out.format("matched=%d types=%d bad=%d badTypes=%d badBytes=%d ignored=%d failWrite=%d %n",
+                match, typeMap.size(), badCount, badHashSet.size(), badBytes, ignored, failWrite);
       }
-      Message m = mtype.proto;
-      boolean hasBadMessages = badHashSet.contains(m.hashCode()); // did we find any messages that fail bit count ??
-      out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
-      cfg.format("%d, %s, %s, %5d, %8d, %5f, %5s, %5s, %d, %s, %s, %s, %s%n",
-              mtype.hash, mtype.fileout, mtype.name,
-              mtype.count, mtype.countObs, mtype.countBytes / 1000,
-              m.isTablesComplete(), !hasBadMessages, mtype.nbad,
-              m.getCenterNo(), m.getTableName(), m.is.getBufrEdition(), m.getCategoryNo());
+
+      List<MessType> mtypes = new ArrayList<MessType>(typeMap.values());
+      Collections.sort(mtypes, new MessTypeSorter());
+      for (MessType mtype : mtypes) {
+        if (mtype.proto == null) {
+          if (showResults) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
+          cfg.format("%d, %s, %s, %5d, %8d, %5f %n",
+                  mtype.hash, mtype.fileout, mtype.name,
+                  mtype.count, mtype.countObs, mtype.countBytes / 1000);
+          continue;
+        }
+        Message m = mtype.proto;
+        boolean hasBadMessages = badHashSet.contains(m.hashCode()); // did we find any messages that fail bit count ??
+        if (showResults) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
+        cfg.format("%d, %s, %s, %s, %5d, %8d, %5f, %5s, %5s, %d, %s, %s, %s, %s%n",
+                mtype.hash, mtype.fileout, mtype.name, mtype.index,
+                mtype.count, mtype.countObs, mtype.countBytes / 1000,
+                m.isTablesComplete(), !hasBadMessages, mtype.nbad,
+                m.getCenterNo(), m.getTableName(), m.is.getBufrEdition(), m.getCategoryNo());
+      }
+      if (showResults) out.format("\n");
+      cfg.close();
+    } catch (IOException ioe) {
+      logger.error("MessageDispatchDDS.exit", ioe);
     }
-    out.format("\n");
-    cfg.close();
   }
 
   private class MessType {
     int hash;
     String name;
     String fileout;
+    String index;
+    BerkeleyDBIndexer indexer;
+    int fileno = 0;
+
     Message proto;
     int count, countObs, nbad;
     float countBytes;
     boolean ignore;
+    boolean checkBad = true; // default is to check for bad bits
 
-    MessType(int hash, String filename, String name) {
+    MessType(int hash, String filename, String name, String index, String bitsOk) {
       this.hash = hash;
       this.fileout = filename.trim();
       this.name = name.trim();
+      this.index = index.trim();
+
       nameMap.put(this.name, 0);
       this.ignore = fileout.equalsIgnoreCase("ignore");
-      if (showConfig) System.out.printf(" add hash=%d name=%s filename=%s%n", hash, name, fileout);
+      if (bitsOk.equalsIgnoreCase("true"))
+        this.checkBad = false; // dont need to check bits
+
+      if (index.length() > 0) {
+        indexer = BerkeleyDBIndexer.factory( index);  
+      }
+
+      if (showConfig) System.out.printf(" add hash=%d name=%s filename=%s index=%s%n", hash, name, fileout, index);
     }
 
     MessType(Message proto) {
@@ -259,31 +296,26 @@ public class MessageDispatchDDS {
       return header.substring(7, 11) + "-" + header.substring(0, 6);
     }
 
-    boolean write(Message m) {
-      if (ignore) {
-        ignored++;
-        return false;
-      }
-
-      try {
-        Calendar mcal = m.ids.getReferenceTimeCal();
-        int day = mcal.get(Calendar.DAY_OF_MONTH);
-        String writerName = fileout + "-"+ day;
-        MessageWriter writer = writers.get(writerName);
-        if (writer == null) {
-          writer = new MessageWriter(executor, fileout, mcal);
+    boolean scheduleWrite(Message m) {
+      Calendar mcal = m.ids.getReferenceTimeCal();
+      int day = mcal.get(Calendar.DAY_OF_MONTH);
+      String writerName = fileout + "-" + day;
+      MessageWriter writer = writers.get(writerName);
+      if (writer == null) {
+        try {
+          writer = new MessageWriter(executor, indexer, fileno, fileout, mcal);
           writers.put(writerName, writer);
+          fileno++;
+          
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+          return false;
         }
-
-        writer.scheduleWrite(m);
-        if (showMatch) System.out.println("match <" + m.getHeader() + ">");
-        match++;
-
-      } catch (IOException e) {
-        failWrite++;
-        e.printStackTrace();
-        return false;
       }
+
+      writer.scheduleWrite(m); // put it on the write queue
+      if (showMatch) System.out.println("match <" + m.getHeader() + ">");
+      match++;
 
       return true;
     }

@@ -23,6 +23,7 @@ package thredds.ldm;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Formatter;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,21 +37,42 @@ import ucar.unidata.io.InMemoryRandomAccessFile;
  *   main thread for reading input stream, and breaking into messages
  *   seperate thread for processing messages (MessageDispatch)
  *   seperate thread pool (using executor) for writing output.
+ *   seperate thread for indexing messsage (Indexer)
+ *
+ * Processing steps: <ol>
+ *   <li> the main thread reads from InputStream, finds message boundaries, places messaages onto the message Queue.
+ *   <li> messProcessor thread waits on message Queue, sends messages to the MessageDispatch, which decides
+ *        what should be done with a message (ignore, check bad bits, write to file). Messages to be written are
+ *        placed on a queue in a MessageWriter, which controls all access to a single file.
+ *        The MessageWriter task is submitted to the completionService.
+ *        So no IO is done in this thread.
+ *   <li> The completionService uses threads from the ExecutorService to call the MessageWriter to append messages
+ *        to the file.
+ *   <li> indexProcessor waits for Futures from the MessageWriter. These contain the info to write indices for
+ *        some of the bufr message types.
+ * </ol>
+ *
+ * TDB: close MessageWriter periodically. sync indexer. delete old messages, and their indices.
  *
  * @author caron
  * @since Aug 8, 2008
  */
 public class MessageBroker {
   private static final ucar.unidata.io.KMPMatch matcher = new ucar.unidata.io.KMPMatch("BUFR".getBytes());
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MessageBroker.class);
 
   private ExecutorService executor;
+  private CompletionService completionService;
+
   private Thread messProcessor;
+  private Thread indexProcessor;
   private LinkedBlockingQueue<MessageTask> messQ = new LinkedBlockingQueue<MessageTask>(10); // unbounded, threadsafe
   private Formatter out = new Formatter(System.out);
 
   private MessageDispatchDDS dispatch;
 
-  //CompletionService<Result> completionService;
+  int bad_msgs = 0;
+  int total_msgs = 0;
 
   public MessageBroker(ExecutorService executor) throws IOException {
     this.executor = executor;
@@ -58,41 +80,49 @@ public class MessageBroker {
     // start up a thread for processing messages as they come off the wire
     messProcessor = new Thread(new MessageProcessor());
     messProcessor.start();
-    
-    dispatch = new MessageDispatchDDS(executor);
+
+    // completionService manages Callable objects that write bufr message to files
+    completionService = new ExecutorCompletionService(executor);
+    dispatch = new MessageDispatchDDS( completionService);
+
+    // start up a thread for indexing messages after they have been written
+    indexProcessor = new Thread(new IndexProcessor());
+    indexProcessor.start();
   }
 
   public void exit() throws IOException {
-    // wait util all tasks are complete
-    while (messQ.peek() != null) {
-      try {
-        Thread.currentThread().sleep(2000); // wait 2 sec
-      } catch (InterruptedException e) {
-        // not sure what to do
-      }
-    }
-
     messProcessor.interrupt();
-    dispatch.exit();
+
     executor.shutdown();
+    try {
+      executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+    
+    indexProcessor.interrupt();
   }
 
-  int bad_msgs = 0;
-  int total_msgs = 0;
-
   private class MessageProcessor implements Runnable {
+    private boolean cancel = false;
 
     public void run() {
       while (true) {
         try {
-          if (Thread.currentThread().isInterrupted()) break;
-          process( messQ.take()); // blocks until a task is ready
+          MessageTask mtask = messQ.poll(); // see if ones ready
+          if (mtask == null) {
+            if (cancel) break; // check if interrupted
+            mtask = messQ.take(); // block until ready
+          }
+          process( mtask);
 
         } catch (InterruptedException e) {
-          break; // exit thread
+          cancel = true;
         }
       }
+
       System.out.println("exit MessageProcessor");
+      dispatch.exit();
     }
 
     void process(MessageTask mtask) {
@@ -145,6 +175,37 @@ public class MessageBroker {
       this.id = seqId.getAndIncrement();
     }
 
+  }
+
+  //////////////////////////////////////////////////////
+
+  private class IndexProcessor implements Runnable {
+    private boolean cancel = false;
+
+    public void run() {
+      while (true) {
+        try {
+          Future f = completionService.poll(); // see if ones ready
+          if (f == null) {
+            if (cancel) break; // check if interrupted
+            f = completionService.take(); // block until ready
+          }
+
+          IndexerTask itask = (IndexerTask) f.get();
+          itask.process(); // write index
+
+        } catch (IOException e) {
+          logger.error("MessageBroker.IndexProcessor", e);
+
+        } catch (ExecutionException e) {
+          logger.error("MessageBroker.IndexProcessor", e);
+
+        } catch (InterruptedException e) {
+          cancel = true;
+        }
+      }
+      System.out.println("exit IndexProcessor");
+    }
   }
 
   //////////////////////////////////////////////////////

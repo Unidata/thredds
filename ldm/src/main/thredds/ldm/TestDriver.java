@@ -26,9 +26,7 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Class Description.
@@ -123,18 +121,30 @@ public class TestDriver {
   static void scan(String filename, MessageBroker broker) throws IOException {
     System.out.println("Read from file "+filename);
     FileInputStream fin = new FileInputStream( filename);
+
+    long start = System.nanoTime();
+    int startMess = broker.total_msgs;
+
     broker.process(fin);
+
+    long stop = System.nanoTime();
+    int n = broker.total_msgs - startMess;
+
+    double secs = 1.0e-9 * (stop - start);
+    double rate = n / secs;
+    System.out.printf("%s done reading %d in %.1f secs, rate = %.0f msg/sec %n",filename, n, secs, rate);
   }
 
-  public static void main(String args[]) throws IOException {
+  public static void main(String args[]) throws IOException, InterruptedException {
     ExecutorService executor = Executors.newFixedThreadPool(5);
     final MessageBroker broker = new MessageBroker(executor);
 
     long start = System.nanoTime();
 
-     //test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
-    test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
-     // test("D:\\bufr\\nlode\\snap080808", new MClosure() {
+    //test("D:/bufr/nlode/snap080808/20080728_0000.bufr", new MClosure() {
+    //test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
+    // test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
+    test("D:\\bufr\\nlode\\snap080808", new MClosure() {
         public void run(String filename) throws IOException {
           scan(filename, broker);
         }
@@ -146,7 +156,9 @@ public class TestDriver {
     double rate = n / secs;
     System.out.printf(" done reading %d (bad %d) in %.1f secs, rate = %.0f msg/sec %n",n, broker.bad_msgs, secs, rate);
 
+    Thread.currentThread().sleep(2000);
     broker.exit();
+    executor.shutdown();
   }
 
 

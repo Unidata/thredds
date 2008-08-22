@@ -29,8 +29,11 @@ import com.sleepycat.bind.tuple.TupleInput;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
+import java.util.List;
+import java.util.Date;
 
 import ucar.bufr.Message;
+import ucar.nc2.units.DateFormatter;
 
 /**
  * Class Description.
@@ -43,11 +46,9 @@ public class BerkeleyDBIndexer {
   private Environment myEnv;
   private Database database;
 
-  private int fileno;
+  private DateFormatter dateFormatter = new DateFormatter();
 
-  public BerkeleyDBIndexer(String dir, int fileno) {
-    this.fileno = fileno;
-
+  public BerkeleyDBIndexer(String dir) {
     try {
       setup(dir, false);
 
@@ -56,7 +57,7 @@ public class BerkeleyDBIndexer {
     }
   }
 
-  private void setup(String dir, boolean readOnly) throws DatabaseException {
+  private void setup(String dirName, boolean readOnly) throws DatabaseException {
     EnvironmentConfig myEnvConfig = new EnvironmentConfig();
     StoreConfig storeConfig = new StoreConfig();
 
@@ -66,7 +67,10 @@ public class BerkeleyDBIndexer {
     myEnvConfig.setAllowCreate(!readOnly);
     storeConfig.setAllowCreate(!readOnly);
 
-    myEnv = new Environment(new File(dir), myEnvConfig);
+    File dir = new File(dirName);
+    dir.mkdirs();
+
+    myEnv = new Environment(dir, myEnvConfig);
 
     DatabaseConfig dbConfig = new DatabaseConfig();
     dbConfig.setAllowCreate(true);
@@ -98,16 +102,17 @@ public class BerkeleyDBIndexer {
   }
 
   private class MyData {
-    int nobs;
+    String stn;
     long date;
-
-    public String toString() { return date + " "+nobs; }
+    public String toString() {
+      Date d = new Date(date);
+      return dateFormatter.toDateTimeStringISO(d) + " <"+stn+">";
+    }
   }
 
   private class MyKey {
     int fileno;
     long pos;
-
     public String toString() { return fileno + " "+pos; }
   }
 
@@ -116,14 +121,13 @@ public class BerkeleyDBIndexer {
     public void objectToEntry(Object object, TupleOutput to) {
       MyData myData = (MyData) object;
       to.writeLong(myData.date);
-      to.writeInt(myData.nobs);
+      to.writeString(myData.stn);
     }
 
-    // Convert a TupleInput to a MyData2 object
     public Object entryToObject(TupleInput ti) {
       MyData myData = new MyData();
       myData.date = ti.readLong();
-      myData.nobs = ti.readInt();
+      myData.stn = ti.readString();
       return myData;
     }
 
@@ -137,7 +141,6 @@ public class BerkeleyDBIndexer {
       to.writeLong(myKey.pos);
     }
 
-    // Convert a TupleInput to a MyData2 object
     public Object entryToObject(TupleInput ti) {
       MyKey myKey = new MyKey();
       myKey.fileno = ti.readInt();
@@ -146,7 +149,7 @@ public class BerkeleyDBIndexer {
     }
   }
 
-  boolean writeIndex(Message m, long pos) throws IOException {
+  boolean writeIndex(Message m, int fileno) throws IOException {
 
     TupleBinding keyBinding = new KeyBinding();
     TupleBinding dataBinding = new DataBinding();
@@ -156,16 +159,16 @@ public class BerkeleyDBIndexer {
     int n = m.getNumberDatasets();
     for (int i=0; i<n; i++) {
       myKey.fileno = fileno;
-      myKey.pos = pos;
-      //myData.date = m.getObsTime(i);
-      //myData.lat = m.getLat(i);
-      //myData.lon = m.getLon(i);
+      myKey.pos = m.getStartPos();
+      myData.date = m.ids.getReferenceTimeCal().getTime().getTime();
+      myData.stn = m.getStringValue(0, "0-1-18");
 
       DatabaseEntry keyEntry = new DatabaseEntry();
       keyBinding.objectToEntry(myKey, keyEntry);
 
       DatabaseEntry dataEntry = new DatabaseEntry();
       dataBinding.objectToEntry(myData, dataEntry);
+      // System.out.println("--index write "+myKey+" == "+myData);
 
       try {
         database.put(null, keyEntry, dataEntry);
@@ -175,5 +178,44 @@ public class BerkeleyDBIndexer {
     }
     return true;
   }
+
+  private void retrieve() throws DatabaseException {
+    TupleBinding keyBinding = new KeyBinding();
+    TupleBinding dataBinding = new DataBinding();
+
+    Cursor myCursor = null;
+    try {
+      myCursor = database.openCursor(null, null);
+      DatabaseEntry foundKey = new DatabaseEntry();
+      DatabaseEntry foundData = new DatabaseEntry();
+
+      int count = 0;
+      while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+        MyKey key = (MyKey) keyBinding.entryToObject(foundKey);
+        MyData data = (MyData) dataBinding.entryToObject(foundData);
+        System.out.printf("key = %s data = %s %n", key, data);
+        count++;
+      }
+      System.out.printf("count = %d %n", count);
+    } finally {
+      if (null != myCursor)
+        myCursor.close();
+    }
+  }
+
+  static public BerkeleyDBIndexer factory( String index) {
+    if (index.equals("fslprofilers"))
+      return new BerkeleyDBIndexer(MessageDispatchDDS.dispatchDir+index+"/bdb");
+    else
+      return null;
+  }
+
+
+  public static void main(String args[]) throws DatabaseException {
+    BerkeleyDBIndexer indexer = new BerkeleyDBIndexer(MessageDispatchDDS.dispatchDir+"fslprofilers/bdb");
+    indexer.retrieve();
+    indexer.close();    
+  }
+
 
 }
