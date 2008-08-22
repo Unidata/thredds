@@ -22,8 +22,6 @@ package thredds.ldm;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Formatter;
-import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,12 +60,11 @@ public class MessageBroker {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MessageBroker.class);
 
   private ExecutorService executor;
-  private CompletionService completionService;
+  private CompletionService<IndexerTask> completionService;
 
   private Thread messProcessor;
   private Thread indexProcessor;
-  private LinkedBlockingQueue<MessageTask> messQ = new LinkedBlockingQueue<MessageTask>(10); // unbounded, threadsafe
-  private Formatter out = new Formatter(System.out);
+  private LinkedBlockingQueue<MessageTask> messQ = new LinkedBlockingQueue<MessageTask>(); // unbounded, threadsafe
 
   private MessageDispatchDDS dispatch;
 
@@ -77,16 +74,18 @@ public class MessageBroker {
   public MessageBroker(ExecutorService executor) throws IOException {
     this.executor = executor;
 
-    // start up a thread for processing messages as they come off the wire
+    //a thread for processing messages as they come off the wire
     messProcessor = new Thread(new MessageProcessor());
-    messProcessor.start();
 
     // completionService manages Callable objects that write bufr message to files
     completionService = new ExecutorCompletionService(executor);
     dispatch = new MessageDispatchDDS( completionService);
 
-    // start up a thread for indexing messages after they have been written
+    // a thread for indexing messages after they have been written
     indexProcessor = new Thread(new IndexProcessor());
+
+    // start up the threads
+    messProcessor.start();
     indexProcessor.start();
   }
 
@@ -97,11 +96,13 @@ public class MessageBroker {
     try {
       executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     }
     
     indexProcessor.interrupt();
   }
+
+  //////////////////////////////////////////////////////////////////
 
   private class MessageProcessor implements Runnable {
     private boolean cancel = false;
@@ -185,13 +186,13 @@ public class MessageBroker {
     public void run() {
       while (true) {
         try {
-          Future f = completionService.poll(); // see if ones ready
+          Future<IndexerTask> f = completionService.poll(); // see if ones ready
           if (f == null) {
             if (cancel) break; // check if interrupted
             f = completionService.take(); // block until ready
           }
 
-          IndexerTask itask = (IndexerTask) f.get();
+          IndexerTask itask = f.get();
           itask.process(); // write index
 
         } catch (IOException e) {
@@ -305,7 +306,7 @@ public class MessageBroker {
     System.arraycopy(buff.buff, startHeader, header, 0, sizeHeader);
 
     // cleanup
-    int start = 0;
+    int start;
     for (start=0; start<header.length; start++) {
       byte b = header[start];
       if ((b == 73) || (b == 74)) // I or J

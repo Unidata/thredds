@@ -144,7 +144,8 @@ public class TestDriver {
     //test("D:/bufr/nlode/snap080808/20080728_0000.bufr", new MClosure() {
     //test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
     // test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
-    test("D:\\bufr\\nlode\\snap080808", new MClosure() {
+    //test("D:\\bufr\\nlode\\snap080808", new MClosure() {
+    test("C:/data/bufr2/mlode/mlodeSorted", new MClosure() {
         public void run(String filename) throws IOException {
           scan(filename, broker);
         }

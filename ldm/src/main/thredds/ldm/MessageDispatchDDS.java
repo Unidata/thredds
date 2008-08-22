@@ -25,7 +25,6 @@ import ucar.bufr.Dump;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.CompletionService;
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
@@ -38,8 +37,8 @@ import java.nio.ByteBuffer;
  * @since Aug 11, 2008
  */
 public class MessageDispatchDDS {
-  public static final String rootDir = "D:/bufr/";
-  public static final String dispatchDir = "D:/bufr/dispatch/";
+  public static final String rootDir = "C:/data/bufr2/";
+  public static final String dispatchDir = rootDir + "dispatch/";
   private static final String inputFilename = rootDir + "dispatch.csv";
   private static final String inputFilenameOut = rootDir + "dispatchOut.csv";
 
@@ -70,15 +69,14 @@ public class MessageDispatchDDS {
   WritableByteChannel sampleWbc;
   WritableByteChannel allWbc;
 
-  private final CompletionService executor;
+  private final CompletionService<IndexerTask> executor;
 
-  MessageDispatchDDS(CompletionService executor) throws IOException {
+  MessageDispatchDDS(CompletionService<IndexerTask> executor) throws IOException {
     this.executor = executor;
 
     File inputFile = new File(inputFilename);
     if (inputFile.exists()) {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)));
-      int count = 0;
       while (true) {
         String line = dataIS.readLine();
         if (line == null) break;
@@ -91,21 +89,20 @@ public class MessageDispatchDDS {
         Integer hash = Integer.parseInt(toke[0]);
         String bitsOk = (toke.length > 8) ? toke[7].trim() : "";
         typeMap.put(hash, new MessType(hash, toke[1], toke[2], toke[3], bitsOk));
-        count++;
       }
     }
 
     MessageWriter.setRootDir(dispatchDir);
 
-    File file = new File(rootDir + "/dispatch/abad.bufr");
+    File file = new File(dispatchDir + "abad.bufr");
     FileOutputStream fos = new FileOutputStream(file);
     badWbc = fos.getChannel();
 
-    file = new File(rootDir + "/dispatch/asample.bufr");
+    file = new File(dispatchDir + "asample.bufr");
     fos = new FileOutputStream(file);
     sampleWbc = fos.getChannel();
 
-    file = new File(rootDir + "/dispatch/asampleAll.bufr");
+    file = new File(dispatchDir + "asampleAll.bufr");
     fos = new FileOutputStream(file);
     allWbc = fos.getChannel();
   }
@@ -155,12 +152,13 @@ public class MessageDispatchDDS {
   boolean checkIfBad(Message m) {
     if (!checkBad) return false;
 
-    boolean isBad = false;
+    boolean isBad;
     try {
       isBad = m.isTablesComplete() && !m.isBitCountOk();
     } catch (Exception e) {
       isBad = true;
     }
+
     if (isBad) {
       if (!badHashSet.contains(m.hashCode())) { // only write one kind of each bad message
         badHashSet.add(m.hashCode());
@@ -169,7 +167,7 @@ public class MessageDispatchDDS {
           badWbc.write(ByteBuffer.wrap(m.getRawBytes()));
 
         } catch (IOException e) {
-          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          e.printStackTrace();
         }
       }
 
@@ -185,7 +183,7 @@ public class MessageDispatchDDS {
       wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
       wbc.write(ByteBuffer.wrap(m.getRawBytes()));
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     }
   }
 
@@ -208,7 +206,7 @@ public class MessageDispatchDDS {
       cfg.format("#    hash, filename, wmo, index, nmess, nobs, kBytes, complete, bitsOk, nbad, center, table, edition, category%n");
 
       int avg_msg = (int) (total_bytes / total_msgs);
-      int avg_obs = (int) (total_obs / total_msgs);
+      int avg_obs = (total_obs / total_msgs);
       if (showResults) {
         out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d \n",
                 total_msgs, total_obs, total_bytes, avg_msg, avg_obs);
@@ -281,7 +279,7 @@ public class MessageDispatchDDS {
       this.name = extractName(proto.getHeader());
       Integer nameCount = nameMap.get(this.name);
       if (nameCount != null) {
-        nameCount = new Integer(nameCount + 1);
+        nameCount++;
         nameMap.put(this.name, nameCount); // increment this name counter
         this.name = name + "-" + nameCount;  // form a new one to avoid filename collision
       }

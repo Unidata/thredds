@@ -28,9 +28,7 @@ import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Calendar;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,11 +45,11 @@ public class MessageWriter implements Callable<IndexerTask> {
     rootDir = _rootDir;
   }
 
-  private final ConcurrentLinkedQueue q; // unbounded, threadsafe
+  private final ConcurrentLinkedQueue<Message> q; // unbounded, threadsafe
   private final WritableByteChannel wbc;
   private final FileOutputStream fos;
 
-  private final CompletionService executor;
+  private final CompletionService<IndexerTask> executor;
   private final BerkeleyDBIndexer indexer;
   private final int fileno;
 
@@ -59,7 +57,7 @@ public class MessageWriter implements Callable<IndexerTask> {
   private long lastModified;
   private long filePos = 0;
 
-  MessageWriter(CompletionService executor, BerkeleyDBIndexer indexer, int fileno, String fileout, Calendar mcal) throws FileNotFoundException {
+  MessageWriter(CompletionService<IndexerTask> executor, BerkeleyDBIndexer indexer, int fileno, String fileout, Calendar mcal) throws FileNotFoundException {
     this.executor = executor;
     this.indexer = indexer;
     this.fileno = fileno;
@@ -74,8 +72,11 @@ public class MessageWriter implements Callable<IndexerTask> {
 
     fos = new FileOutputStream(file, true); // append
     wbc = fos.getChannel();
-    q = new ConcurrentLinkedQueue();
+    q = new ConcurrentLinkedQueue<Message>();
   }
+
+  // last time the file was written to
+  public long getLastModified() { return lastModified; }
 
   // put a message on the queue, schedule writing if not already scheduled.
   void scheduleWrite(Message m) {
@@ -96,12 +97,12 @@ public class MessageWriter implements Callable<IndexerTask> {
     IndexerTask task = new IndexerTask();
     task.indexer = this.indexer;
     if (this.indexer != null) {
-      task.mlist = new ArrayList<Message>(3);
+      task.mlist = new ArrayList<Message>(10);
       task.fileno = this.fileno;
     }
 
     while (!q.isEmpty()) {
-      Message m = (Message) q.remove();
+      Message m = q.remove();
       wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
       wbc.write(ByteBuffer.wrap(m.getRawBytes()));
 
@@ -115,4 +116,5 @@ public class MessageWriter implements Callable<IndexerTask> {
     isScheduled.getAndSet(false);
     return task; // the result becomes available in the Future of the CompletionService
   }
+
 }

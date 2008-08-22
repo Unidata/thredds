@@ -28,8 +28,6 @@ import com.sleepycat.bind.tuple.TupleInput;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
-import java.util.List;
 import java.util.Date;
 
 import ucar.bufr.Message;
@@ -45,6 +43,7 @@ public class BerkeleyDBIndexer {
 
   private Environment myEnv;
   private Database database;
+  private SecondaryDatabase secondary;
 
   private DateFormatter dateFormatter = new DateFormatter();
 
@@ -72,15 +71,33 @@ public class BerkeleyDBIndexer {
 
     myEnv = new Environment(dir, myEnvConfig);
 
+    // primary
     DatabaseConfig dbConfig = new DatabaseConfig();
     dbConfig.setAllowCreate(true);
     dbConfig.setDeferredWrite(true);
+    database = myEnv.openDatabase(null, "primaryDatabase", dbConfig);
 
-    database = myEnv.openDatabase(null, "sampleDatabase", dbConfig);
+    // secondary
+    MyKeyCreator keyCreator = new MyKeyCreator( new DataBinding());
+    SecondaryConfig secConfig = new SecondaryConfig();
+    secConfig.setAllowCreate(!readOnly);
+    secConfig.setSortedDuplicates(!readOnly);
+    secConfig.setKeyCreator( keyCreator);
+
+    secondary = myEnv.openSecondaryDatabase(null, "secDatabase", database, secConfig);
   }
 
   // Close the store and environment
   public void close() {
+    if (secondary != null) {
+      try {
+        secondary.close();
+      } catch (DatabaseException dbe) {
+        System.err.println("Error closing secondary database: " + dbe.toString());
+        System.exit(-1);
+      }
+    }
+
     if (database != null) {
       try {
         database.close();
@@ -101,9 +118,26 @@ public class BerkeleyDBIndexer {
     }
   }
 
+  private class MyKeyCreator implements SecondaryKeyCreator {
+    DataBinding dataBind;
+    MyKeyCreator( DataBinding dataBind) {
+      this.dataBind = dataBind;
+    }
+
+    public boolean createSecondaryKey(SecondaryDatabase secondaryDatabase, DatabaseEntry key, DatabaseEntry data, DatabaseEntry result) throws DatabaseException {
+      MyData mydata = (MyData) dataBind.entryToObject(data);
+      TupleOutput to = new TupleOutput();
+      to.writeString(mydata.stn);
+      to.writeLong(mydata.date);
+      result.setData( to.getBufferBytes(), 0, to.getBufferLength());
+      return true;
+    }
+  }
+
   private class MyData {
     String stn;
     long date;
+
     public String toString() {
       Date d = new Date(date);
       return dateFormatter.toDateTimeStringISO(d) + " <"+stn+">";
@@ -114,6 +148,15 @@ public class BerkeleyDBIndexer {
     int fileno;
     long pos;
     public String toString() { return fileno + " "+pos; }
+  }
+
+  private class SecKey {
+    String stn;
+    long date;
+    public String toString() {
+      Date d = new Date(date);
+      return " <"+stn+"> " + dateFormatter.toDateTimeStringISO(d);
+    }
   }
 
   private class DataBinding extends TupleBinding {
@@ -149,10 +192,26 @@ public class BerkeleyDBIndexer {
     }
   }
 
+  private class SecKeyBinding extends TupleBinding {
+
+    public void objectToEntry(Object object, TupleOutput to) {
+      SecKey myKey = (SecKey) object;
+      to.writeString(myKey.stn);
+      to.writeLong(myKey.date);
+    }
+
+    public Object entryToObject(TupleInput ti) {
+      SecKey myKey = new SecKey();
+      myKey.stn = ti.readString();
+      myKey.date = ti.readLong();
+      return myKey;
+    }
+  }
+
   boolean writeIndex(Message m, int fileno) throws IOException {
 
-    TupleBinding keyBinding = new KeyBinding();
-    TupleBinding dataBinding = new DataBinding();
+    KeyBinding keyBinding = new KeyBinding();
+    DataBinding dataBinding = new DataBinding();
     MyKey myKey = new MyKey();
     MyData myData = new MyData();
 
@@ -186,6 +245,30 @@ public class BerkeleyDBIndexer {
     Cursor myCursor = null;
     try {
       myCursor = database.openCursor(null, null);
+      DatabaseEntry foundKey = new DatabaseEntry();
+      DatabaseEntry foundData = new DatabaseEntry();
+
+      int count = 0;
+      while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+        MyKey key = (MyKey) keyBinding.entryToObject(foundKey);
+        MyData data = (MyData) dataBinding.entryToObject(foundData);
+        System.out.printf("key = %s data = %s %n", key, data);
+        count++;
+      }
+      System.out.printf("count = %d %n", count);
+    } finally {
+      if (null != myCursor)
+        myCursor.close();
+    }
+  }
+
+  private void retrieve2() throws DatabaseException {
+    TupleBinding keyBinding = new KeyBinding();
+    TupleBinding dataBinding = new DataBinding();
+
+    SecondaryCursor myCursor = null;
+    try {
+      myCursor = secondary.openSecondaryCursor(null, null);
       DatabaseEntry foundKey = new DatabaseEntry();
       DatabaseEntry foundData = new DatabaseEntry();
 
