@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
 
+import thredds.wcs.Request;
+
 /**
  * _more_
  *
@@ -41,7 +43,7 @@ public class WcsCoverage
 
   private String defaultRequestCrs;
 
-  private List<WcsRequest.Format> supportedCoverageFormatList;
+  private List<Request.Format> supportedCoverageFormatList;
 
   private WcsRangeField range;
 
@@ -71,11 +73,11 @@ public class WcsCoverage
 
     this.defaultRequestCrs = "OGC:CRS84";
 
-    this.supportedCoverageFormatList = new ArrayList<WcsRequest.Format>();
+    this.supportedCoverageFormatList = new ArrayList<Request.Format>();
     //this.supportedCoverageFormatList.add("application/x-netcdf");
-    this.supportedCoverageFormatList.add( WcsRequest.Format.GeoTIFF);
-    this.supportedCoverageFormatList.add( WcsRequest.Format.GeoTIFF_Float);
-    this.supportedCoverageFormatList.add( WcsRequest.Format.NetCDF3);
+    this.supportedCoverageFormatList.add( Request.Format.GeoTIFF);
+    this.supportedCoverageFormatList.add( Request.Format.GeoTIFF_Float);
+    this.supportedCoverageFormatList.add( Request.Format.NetCDF3);
 
     CoordinateAxis1D zaxis = this.coordSys.getVerticalAxis();
     WcsRangeField.Axis vertAxis;
@@ -105,8 +107,8 @@ public class WcsCoverage
 
   public String getDefaultRequestCrs() { return defaultRequestCrs; }
   public String getNativeCrs() { return nativeCRS; }
-  public List<WcsRequest.Format> getSupportedCoverageFormatList() { return supportedCoverageFormatList; }
-  public boolean isSupportedCoverageFormat( WcsRequest.Format covFormat )
+  public List<Request.Format> getSupportedCoverageFormatList() { return supportedCoverageFormatList; }
+  public boolean isSupportedCoverageFormat( Request.Format covFormat )
   {
     return supportedCoverageFormatList.contains( covFormat);
   }
@@ -154,7 +156,7 @@ public class WcsCoverage
     return diskCache;
   }
 
-  public File writeCoverageDataToFile( WcsRequest.Format format, LatLonRect bboxLatLonRect, VerticalRange verticalRange, DateRange timeRange)
+  public File writeCoverageDataToFile( Request.Format format, LatLonRect bboxLatLonRect, VerticalRange verticalRange, DateRange timeRange)
           throws WcsException
   {
     // Get the height range.
@@ -190,7 +192,7 @@ public class WcsCoverage
     /////////
     try
     {
-      if ( format == WcsRequest.Format.GeoTIFF || format == WcsRequest.Format.GeoTIFF_Float )
+      if ( format == Request.Format.GeoTIFF || format == Request.Format.GeoTIFF_Float )
       {
         File dir = new File( getDiskCache().getRootDirectory() );
         File tifFile = File.createTempFile( "WCS", ".tif", dir );
@@ -203,7 +205,7 @@ public class WcsCoverage
           Array data = subset.readDataSlice( 0, 0, -1, -1 );
 
           GeotiffWriter writer = new GeotiffWriter( tifFile.getPath() );
-          writer.writeGrid( this.dataset.getDataset(), subset, data, format == WcsRequest.Format.GeoTIFF );
+          writer.writeGrid( this.dataset.getDataset(), subset, data, format == Request.Format.GeoTIFF );
 
           writer.close();
         }
@@ -220,7 +222,7 @@ public class WcsCoverage
   
         return tifFile;
       }
-      else if ( format == WcsRequest.Format.NetCDF3 )
+      else if ( format == Request.Format.NetCDF3 )
       {
         File dir = new File( getDiskCache().getRootDirectory() );
         File ncFile = File.createTempFile( "WCS", ".nc", dir );
@@ -260,7 +262,14 @@ public class WcsCoverage
   {
     private double min, max;
     private int stride;
+    private boolean singlePoint = false;
 
+    public VerticalRange( double point, int stride )
+    {
+      this( point, point, stride );
+      this.singlePoint = true;
+
+    }
     public VerticalRange( double minimum, double maximum, int stride )
     {
       if ( minimum > maximum )
@@ -281,6 +290,8 @@ public class WcsCoverage
     public double getMinimum() { return min; }
     public double getMaximum() { return max; }
     public int getStride() { return stride; }
+    public boolean isSinglePoint() { return singlePoint; }
+    
     public String toString()
     {
       return "[min="+ min + ",max=" + max + ",stride=" + stride + "]";

@@ -35,6 +35,7 @@ public class DescribeCoverage extends WcsRequest
 
   public DescribeCoverage( Request.Operation operation, String version, WcsDataset dataset,
                            List<String> coverages )
+          throws WcsException
   {
     super( operation, version, dataset );
 
@@ -50,7 +51,7 @@ public class DescribeCoverage extends WcsRequest
         badCovIds += (badCovIds.length() > 0 ? ", " : "") + curCov;
     }
     if ( badCovIds.length() > 0 )
-      throw new IllegalArgumentException("Coverage ID list contains one or more unknown IDs <" + badCovIds + ">." );
+      throw new WcsException("Coverage ID list contains one or more unknown IDs <" + badCovIds + ">." );
   }
 
   public Document getDescribeCoverageDoc()
@@ -431,7 +432,7 @@ public class DescribeCoverage extends WcsRequest
 
     // supportedFormats/formats [1..*] (wcs) (space seperated list of strings)
     // supportedFormats/formats@codeSpace [0..1] (URI)
-    for ( WcsRequest.Format curFormat : coverage.getSupportedCoverageFormatList())
+    for ( Request.Format curFormat : coverage.getSupportedCoverageFormatList())
     {
       supportedFormatsElem.addContent(
               new Element( "formats", wcsNS)

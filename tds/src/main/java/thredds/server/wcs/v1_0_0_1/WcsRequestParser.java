@@ -9,11 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.net.URI;
+import java.text.ParseException;
 
 /**
  * Parse an incoming WCS 1.0.0+ request.
@@ -94,13 +97,183 @@ public class WcsRequestParser
       String time = ServletUtil.getParameterIgnoreCase( req, "TIME" );
       // ToDo The name of this parameter is dependent on the coverage (see WcsCoverage.getRangeSetAxisName()).
       String parameter = ServletUtil.getParameterIgnoreCase( req, "Vertical" );
-      String format = ServletUtil.getParameterIgnoreCase( req, "FORMAT" );
+      String formatString = ServletUtil.getParameterIgnoreCase( req, "FORMAT" );
+
+      // Assign and validate PARAMETER ("Vertical") parameter.
+      WcsCoverage.VerticalRange verticalRange = parseRangeSetAxisValues( parameter );
+      Request.Format format = parseFormat( formatString );
 
       return new GetCoverage( operation, version, wcsDataset, coverageId,
-                              crs, responseCRS, bbox, time, parameter, format);
+                              crs, responseCRS, parseBoundingBox( bbox),
+                              parseTime( time ),
+                              verticalRange,
+                              format);
     }
     else
       throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation <" + requestParam + ">." );
+  }
+
+  private static Request.BoundingBox parseBoundingBox( String bboxString )
+          throws WcsException
+  {
+    if ( bboxString == null || bboxString.equals( "" ) )
+      return null;
+
+    String[] bboxSplit = bboxString.split( "," );
+    if ( bboxSplit.length != 4 )
+    {
+      log.error( "parseBoundingBox(): BBOX <" + bboxString + "> not limited to X and Y." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX <" + bboxString + "> has more values <" + bboxSplit.length + "> than expected <4>." );
+    }
+    double minx = Double.parseDouble( bboxSplit[0] );
+    double miny = Double.parseDouble( bboxSplit[1] );
+    double maxx = Double.parseDouble( bboxSplit[2] );
+    double maxy = Double.parseDouble( bboxSplit[3] );
+
+    double[] minP = new double[2];
+    minP[0] = Double.parseDouble( bboxSplit[0] );
+    minP[1] = Double.parseDouble( bboxSplit[1] );
+    double[] maxP = new double[2];
+    maxP[0] = Double.parseDouble( bboxSplit[2] );
+    maxP[1] = Double.parseDouble( bboxSplit[3] );
+
+    if ( minP[0] > maxP[0] || minP[1] > maxP[1])
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "BBOX", "BBOX [" + bboxString + "] minimum point larger than maximum point.");
+
+    return new Request.BoundingBox( minP, maxP);
+  }
+
+  private static DateRange parseTime( String time )
+          throws WcsException
+  {
+    if ( time == null || time.equals( "" ) )
+      return null;
+
+    DateRange dateRange;
+
+    try
+    {
+      if ( time.indexOf( "," ) != -1 )
+      {
+        log.error( "parseTime(): Unsupported time parameter (list) <" + time + ">." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME",
+                                "Not currently supporting time list." );
+        //String[] timeList = time.split( "," );
+        //dateRange = new DateRange( date, date, null, null );
+      }
+      else if ( time.indexOf( "/" ) != -1 )
+      {
+        String[] timeRange = time.split( "/" );
+        if ( timeRange.length != 2 )
+        {
+          log.error( "parseTime(): Unsupported time parameter (time range with resolution) <" + time + ">." );
+          throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME", "Not currently supporting time range with resolution." );
+        }
+        dateRange = new DateRange( new DateType( timeRange[0], null, null ),
+                                   new DateType( timeRange[1], null, null ), null, null );
+      }
+      else
+      {
+        DateType date = new DateType( time, null, null );
+        dateRange = new DateRange( date, date, null, null );
+      }
+    }
+    catch ( ParseException e )
+    {
+      log.error( "parseTime(): Failed to parse time parameter <" + time + ">: " + e.getMessage() );
+
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME",
+                              "Invalid time format <" + time + ">." );
+    }
+
+    return dateRange;
+  }
+
+  private static WcsCoverage.VerticalRange parseRangeSetAxisValues( String rangeSetAxisSelectionString )
+          throws WcsException
+  {
+    if ( rangeSetAxisSelectionString == null || rangeSetAxisSelectionString.equals( "" ) )
+      return null;
+
+    WcsCoverage.VerticalRange range;
+
+    if ( rangeSetAxisSelectionString.indexOf( "," ) != -1 )
+    {
+      log.error( "parseRangeSetAxisValues(): Vertical value list not supported <" + rangeSetAxisSelectionString + ">." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Not currently supporting list of Vertical values (just range, i.e., \"min/max\")." );
+    }
+    else if ( rangeSetAxisSelectionString.indexOf( "/" ) != -1 )
+    {
+      String[] rangeSplit = rangeSetAxisSelectionString.split( "/" );
+      if ( rangeSplit.length != 2 )
+      {
+        log.error( "parseRangeSetAxisValues(): Unsupported Vertical value (range with resolution) <" + rangeSetAxisSelectionString + ">." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Not currently supporting vertical range with resolution." );
+      }
+      double minValue = 0;
+      double maxValue = 0;
+      try
+      {
+        minValue = Double.parseDouble( rangeSplit[0] );
+        maxValue = Double.parseDouble( rangeSplit[1] );
+      }
+      catch ( NumberFormatException e )
+      {
+        log.error( "parseRangeSetAxisValues(): Failed to parse Vertical range min or max <" + rangeSetAxisSelectionString + ">: " + e.getMessage() );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Failed to parse Vertical range min or max." );
+      }
+      if ( minValue > maxValue )
+      {
+        log.error( "parseRangeSetAxisValues(): Vertical range must be \"min/max\" <" + rangeSetAxisSelectionString + ">." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Vertical range must be \"min/max\"." );
+      }
+      range = new WcsCoverage.VerticalRange( minValue, maxValue, 1 );
+    }
+    else
+    {
+      double value = 0;
+      try
+      {
+        value = Double.parseDouble( rangeSetAxisSelectionString );
+      }
+      catch ( NumberFormatException e )
+      {
+        log.error( "parseRangeSetAxisValues(): Failed to parse Vertical value <" + rangeSetAxisSelectionString + ">: " + e.getMessage() );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Failed to parse Vertical value." );
+      }
+      range = new WcsCoverage.VerticalRange( value, 1 );
+    }
+
+    if ( range == null )
+    {
+      log.error( "parseRangeSetAxisValues(): Invalid Vertical range requested <" + rangeSetAxisSelectionString + ">." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "Vertical", "Invalid Vertical range requested." );
+    }
+
+    return range;
+  }
+
+  private static Request.Format parseFormat( String formatString )
+          throws WcsException
+  {
+    // Assign and validate FORMAT parameter.
+    if ( formatString == null )
+    {
+      log.error( "GetCoverage(): FORMAT parameter required." );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", "FORMAT parameter required." );
+    }
+    Request.Format format;
+    try
+    {
+      format = Request.Format.valueOf( formatString.trim() );
+    }
+    catch ( IllegalArgumentException e )
+    {
+      String msg = "Unknown format value [" + formatString + "].";
+      log.error( "GetCoverage(): " + msg );
+      throw new WcsException( WcsException.Code.InvalidParameterValue, "FORMAT", msg );
+    }
+    return format;
   }
 
   private static List<String> splitCommaSeperatedList( String identifiers )

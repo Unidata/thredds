@@ -56,12 +56,12 @@ public interface Request
   public class BoundingBox
   {
     private int dimensionLength;
-    private float[] minPoint;
-    private float[] maxPoint;
+    private double[] minPoint;
+    private double[] maxPoint;
     private String minPointString;
     private String maxPointString;
 
-    public BoundingBox( float[] minPoint, float[] maxPoint)
+    public BoundingBox( double[] minPoint, double[] maxPoint)
     {
       if ( minPoint.length != maxPoint.length )
         throw new IllegalArgumentException( "The dimension length of the minimum point [" + minPoint.length + "] and maximum point [" + maxPoint.length + "] must be equal.");
@@ -92,8 +92,8 @@ public interface Request
     }
 
     public int getDimensionLength() { return this.dimensionLength; }
-    public float getMinPointValue( int index ) { return this.minPoint[ index]; }
-    public float getMaxPointValue( int index ) { return this.maxPoint[ index]; }
+    public double getMinPointValue( int index ) { return this.minPoint[ index]; }
+    public double getMaxPointValue( int index ) { return this.maxPoint[ index]; }
     public String toString() { return "Min " + this.minPointString + "; Max " + this.maxPointString;}
   }
 }
