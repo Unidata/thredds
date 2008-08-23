@@ -42,6 +42,7 @@ This code is ALPHA
   * use new visad library 12/04/07
 
  Release Details:
+    22: improved BUFR reading
     21: Improve nexrad3 iosp
         GeoTiff: new projections
     20: StructureDS: get nested convert to work
@@ -55,7 +56,6 @@ This code is ALPHA
         BUFR code tables (still experimental)
         BUFR "associated variables"
         VariableDS extends EnhanceScaleMissing, StructureDS and VariableEnhanced does not
-
     19: BUFR reading mostly works
         turn off debugging
         StructureDS.convert nested structures

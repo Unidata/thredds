@@ -63,6 +63,7 @@ public class MessageDispatchDDS {
   boolean showBad = false;
   boolean showConfig = false;
   boolean showResults = false;
+  boolean writeSamples = false;
 
   Dump dumper = new Dump();
   WritableByteChannel badWbc;
@@ -95,17 +96,19 @@ public class MessageDispatchDDS {
 
     MessageWriter.setRootDir(dispatchDir);
 
-    File file = new File(dispatchDir + "abad.bufr");
-    FileOutputStream fos = new FileOutputStream(file);
-    badWbc = fos.getChannel();
+    if (writeSamples) {
+      File file = new File(dispatchDir + "abad.bufr");
+      FileOutputStream fos = new FileOutputStream(file);
+      badWbc = fos.getChannel();
 
-    file = new File(dispatchDir + "asample.bufr");
-    fos = new FileOutputStream(file);
-    sampleWbc = fos.getChannel();
+      file = new File(dispatchDir + "asample.bufr");
+      fos = new FileOutputStream(file);
+      sampleWbc = fos.getChannel();
 
-    file = new File(dispatchDir + "asampleAll.bufr");
-    fos = new FileOutputStream(file);
-    allWbc = fos.getChannel();
+      file = new File(dispatchDir + "asampleAll.bufr");
+      fos = new FileOutputStream(file);
+      allWbc = fos.getChannel();
+    }
   }
 
   void dispatch(Message m) {
@@ -178,6 +181,8 @@ public class MessageDispatchDDS {
   }
 
   void writeSample(Message m, WritableByteChannel wbc) {
+    if (!writeSamples) return;
+
     try {
       wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
       wbc.write(ByteBuffer.wrap(m.getRawBytes()));
@@ -194,9 +199,9 @@ public class MessageDispatchDDS {
       for (MessType mtype : typeMap.values())
         if (mtype.indexer != null) mtype.indexer.close();
 
-      badWbc.close();
-      sampleWbc.close();
-      allWbc.close();
+      if (badWbc != null) badWbc.close();
+      if (sampleWbc != null) sampleWbc.close();
+      if (allWbc != null) allWbc.close();
 
       Formatter out = new Formatter(System.out);
       Formatter cfg = new Formatter(new FileOutputStream(inputFilenameOut));
@@ -204,8 +209,8 @@ public class MessageDispatchDDS {
       if (showResults) out.format("\n===============================================\n");
       cfg.format("#    hash, filename, wmo, index, nmess, nobs, kBytes, complete, bitsOk, nbad, center, table, edition, category%n");
 
-      int avg_msg = (int) (total_bytes / total_msgs);
-      int avg_obs = (total_obs / total_msgs);
+      int avg_msg = (total_msgs == 0) ? 0 : (int) (total_bytes / total_msgs);
+      int avg_obs = (total_msgs == 0) ? 0 : (total_obs / total_msgs);
       if (showResults) {
         out.format("total_msgs=%d total_obs=%d total_bytes=%d avg_msg_size=%d avg_obs/msg=%d \n",
                 total_msgs, total_obs, total_bytes, avg_msg, avg_obs);
@@ -218,8 +223,8 @@ public class MessageDispatchDDS {
       for (MessType mtype : mtypes) {
         if (mtype.proto == null) {
           if (showResults) out.format(" MessType %s count=%d fileout= %s\n", mtype.name, mtype.count, mtype.fileout);
-          cfg.format("%d, %s, %s, %5d, %8d, %5f %n",
-                  mtype.hash, mtype.fileout, mtype.name,
+          cfg.format("%d, %s, %s, %s, %5d, %8d, %5f %n",
+                  mtype.hash, mtype.fileout, mtype.name, mtype.index,
                   mtype.count, mtype.countObs, mtype.countBytes / 1000);
           continue;
         }
@@ -265,9 +270,9 @@ public class MessageDispatchDDS {
         this.checkBad = false; // dont need to check bits
 
       this.index = index.trim();
-      if (index.length() > 0) {
+      if (!ignore && !this.index.equalsIgnoreCase("no")) {
         try {
-          indexer = BerkeleyDBIndexer.factory( filename, index);
+          indexer = BerkeleyDBIndexer.factory( fileout, index);
         } catch (Exception e) {
           logger.error("Cant open BerkeleyDBIndexer", e);
         }

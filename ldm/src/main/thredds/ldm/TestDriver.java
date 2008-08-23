@@ -141,11 +141,11 @@ public class TestDriver {
 
     long start = System.nanoTime();
 
-    //test("D:/bufr/nlode/snap080808/20080728_0000.bufr", new MClosure() {
-    //test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
-    // test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
+    test("D:/bufr/out/RJTD-IUCN53-1.bufr", new MClosure() {
+    // test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
+    //test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
     //test("D:\\bufr\\nlode\\snap080808", new MClosure() {
-    test("C:/data/bufr2/mlode/mlodeSorted", new MClosure() {
+    //test("C:/data/bufr2/mlode/mlodeSorted", new MClosure() {
         public void run(String filename) throws IOException {
           scan(filename, broker);
         }
@@ -157,9 +157,13 @@ public class TestDriver {
     double rate = n / secs;
     System.out.printf(" done reading %d (bad %d) in %.1f secs, rate = %.0f msg/sec %n",n, broker.bad_msgs, secs, rate);
 
-    Thread.currentThread().sleep(2000);
     broker.exit();
-    executor.shutdown();
+
+    stop = System.nanoTime();
+    secs = 1.0e-9 * (stop - start);
+    rate = n / secs;
+    System.out.printf(" final exit %.1f secs, rate = %.0f msg/sec %n", secs, rate);
+
   }
 
 

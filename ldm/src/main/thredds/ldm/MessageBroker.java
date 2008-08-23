@@ -64,7 +64,8 @@ public class MessageBroker {
 
   private Thread messProcessor;
   private Thread indexProcessor;
-  private LinkedBlockingQueue<MessageTask> messQ = new LinkedBlockingQueue<MessageTask>(); // unbounded, threadsafe
+  private ArrayBlockingQueue<MessageTask> messQ = new ArrayBlockingQueue<MessageTask>(1000); // unbounded, threadsafe
+  private ArrayBlockingQueue<Future<IndexerTask>> completionQ = new ArrayBlockingQueue<Future<IndexerTask>>(1000); // unbounded, threadsafe
 
   private MessageDispatchDDS dispatch;
 
@@ -78,7 +79,7 @@ public class MessageBroker {
     messProcessor = new Thread(new MessageProcessor());
 
     // completionService manages Callable objects that write bufr message to files
-    completionService = new ExecutorCompletionService(executor);
+    completionService = new ExecutorCompletionService(executor, completionQ);
     dispatch = new MessageDispatchDDS(completionService);
 
     // a thread for indexing messages after they have been written
@@ -90,17 +91,65 @@ public class MessageBroker {
   }
 
   public void exit() throws IOException {
+    try {
+      Thread.currentThread().sleep(1000); // wait a sec
+      } catch (InterruptedException e) {
+      }
+
+    System.out.println("On exit 1: messageQ size = "+messQ.size());
+    while (messQ.peek() != null) {
+      try {
+        Thread.currentThread().sleep(1000); // wait a sec
+      } catch (InterruptedException e) {
+        System.out.println("Thread interrupted messQ size = "+messQ.size());
+        break; // ok get out of here
+      }
+    }
+    System.out.println("On exit 2: messageQ size = "+messQ.size());
+    // shut down the message processor
     messProcessor.interrupt();
 
-    executor.shutdown();
-    try {
-      executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    // wait for all io to be complete
+    System.out.println("On exit 3: completionQ size = "+completionQ.size());
+    while (completionQ.peek() != null) {
+      try {
+        Thread.currentThread().sleep(1000); // wait a sec
+      } catch (InterruptedException e) {
+        System.out.println("Thread interrupted messQ size = "+completionQ.size());
+        break; // ok get out of here
+      }
     }
+    System.out.println("On exit 4: completionQ size = "+completionQ.size());
 
+    shutdownAndAwaitTermination( executor);
+
+    // shut down the index processor
     indexProcessor.interrupt();
+
+    // shut down the indexers
+    dispatch.exit();
   }
+
+  // from javadoc
+  private void shutdownAndAwaitTermination(ExecutorService pool) {
+    pool.shutdown(); // Disable new tasks from being submitted
+    try {
+      // Wait a while for existing tasks to terminate
+      if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+        pool.shutdownNow(); // Cancel currently executing tasks
+        // Wait a while for tasks to respond to being cancelled
+        if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+            System.err.println("Pool did not terminate");
+      }
+    } catch (InterruptedException ie) {
+      // (Re-)Cancel if current thread also interrupted
+      pool.shutdownNow();
+      // Preserve interrupt status
+      Thread.currentThread().interrupt();
+    }
+    System.out.println("Pool terminated");
+  }
+
 
   //////////////////////////////////////////////////////
   // Step 4 - optionally write an index
@@ -120,14 +169,11 @@ public class MessageBroker {
           IndexerTask itask = f.get();
           itask.process(); // write index
 
-        } catch (IOException e) {
-          logger.error("MessageBroker.IndexProcessor", e);
-
-        } catch (ExecutionException e) {
-          logger.error("MessageBroker.IndexProcessor", e);
-
         } catch (InterruptedException e) {
           cancel = true;
+
+        } catch (Exception e) {
+          logger.error("MessageBroker.IndexProcessor ", e);
         }
       }
       System.out.println("exit IndexProcessor");
@@ -156,7 +202,6 @@ public class MessageBroker {
       }
 
       System.out.println("exit MessageProcessor");
-      dispatch.exit();
     }
 
     void process(MessageTask mtask) {

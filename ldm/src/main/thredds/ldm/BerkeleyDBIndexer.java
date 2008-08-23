@@ -26,16 +26,14 @@ import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.bind.tuple.TupleOutput;
 import com.sleepycat.bind.tuple.TupleInput;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Formatter;
+import java.io.*;
+import java.util.*;
 
 import ucar.bufr.Message;
 import ucar.bufr.BufrDataDescriptionSection;
+import ucar.bufr.DataDescriptor;
 import ucar.nc2.units.DateFormatter;
+import ucar.ma2.DataType;
 
 /**
  * Class Description.
@@ -46,17 +44,118 @@ import ucar.nc2.units.DateFormatter;
 public class BerkeleyDBIndexer implements Indexer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BerkeleyDBIndexer.class);
 
+  private String dirName;
   private Environment myEnv;
   private Database database;
   private SecondaryDatabase secondary;
 
+  private int nStndFlds = 7;
+  private boolean useDoy = false;
+  private List<DataFld> dataflds = new ArrayList<DataFld>();
   private List<Short> indexFlds;
+  private boolean isNew = false;
+
+  private Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
   private DateFormatter dateFormatter = new DateFormatter();
 
-  public BerkeleyDBIndexer(String dir, List<Short> indexFlds) throws DatabaseException {
-    this.indexFlds = indexFlds;
-    setup(dir, false);
+  public BerkeleyDBIndexer(String dirName, List<Short> indexFlds) throws DatabaseException {
+    this.dirName = dirName;
+    setup(dirName, false);
+
+    // add time fields
+    dataflds.add( new DataFld( BufrDataDescriptionSection.getDesc("0-4-1")));
+    dataflds.add( new DataFld( BufrDataDescriptionSection.getDesc("0-4-2")));
+    dataflds.add( new DataFld( BufrDataDescriptionSection.getDesc("0-4-3")));
+    dataflds.add( new DataFld( BufrDataDescriptionSection.getDesc("0-4-4")));
+    dataflds.add( new DataFld( BufrDataDescriptionSection.getDesc("0-4-5")));
+    dataflds.add( new DataFld( BufrDataDescriptionSection.getDesc("0-4-6")));
+    dataflds.add( new DataFld( BufrDataDescriptionSection.getDesc("0-4-43")));
+
+    for (short fxy : indexFlds)
+      dataflds.add( new DataFld(fxy));
+    makeIndexFlds();
+    isNew = true;
   }
+
+  public BerkeleyDBIndexer(String dirName) throws DatabaseException, IOException {
+    this.dirName = dirName;
+    setup(dirName, false);
+
+    String filename = dirName +"/schema.txt";
+    File inputFile = new File(filename);
+    if (inputFile.exists()) {
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)));
+      while (true) {
+        String line = dataIS.readLine();
+        if (line == null) break;
+        line = line.trim();
+        if (line.length() == 0) break;
+        if (line.charAt(0) == '#') continue;
+        dataflds.add( new DataFld(line));
+      }
+    }
+    makeIndexFlds();
+  }
+
+  private class DataFld {
+    String descName;
+    short fxy;
+    String fldName;
+    DataType dtype;
+
+    DataFld( String line) {
+      String[] toke = line.split(",");
+      this.descName = toke[0];
+      this.fxy = BufrDataDescriptionSection.getDesc(descName);
+      this.fldName = toke[1];
+      this.dtype = DataType.getType(toke[2]);
+    }
+
+    DataFld( short fxy) {
+      this.fxy = fxy;
+      this.descName = BufrDataDescriptionSection.getDescName(fxy);
+    }
+  }
+
+  private void setFldInfo( Message m) throws IOException {
+    DataDescriptor root = m.getRootDataDescriptor();
+    for (DataDescriptor dds : root.getSubKeys()) {
+      DataFld fld = findKey( dds.fxy);
+      if (fld != null) {
+        fld.fldName = dds.name;
+        if (dds.type == 0) {
+          fld.dtype = (dds.scale == 0) ? DataType.INT : DataType.FLOAT;
+        } else {
+          fld.dtype = DataType.STRING;
+        }
+      }
+    }
+    isNew = false;
+    writeIndexFlds();
+  }
+
+  private void makeIndexFlds() {
+    indexFlds = new ArrayList<Short>(dataflds.size());
+    for (DataFld fld : dataflds)
+      indexFlds.add(fld.fxy);
+}
+
+  private DataFld findKey( short fxy) {
+    for (DataFld fld : dataflds) {
+      if (fld.fxy == fxy) return fld;
+    }
+    return null;
+  }
+
+  private void writeIndexFlds() throws FileNotFoundException {
+    String filename = dirName +"/schema.txt";
+    Formatter out = new Formatter(new FileOutputStream(filename));
+    for (DataFld fld : dataflds) {
+      out.format("%s,%s,%s%n", fld.descName, fld.fldName, fld.dtype);
+    }
+    out.close();
+  }
+  /////////////////////////
 
   private void setup(String dirName, boolean readOnly) throws DatabaseException {
     EnvironmentConfig myEnvConfig = new EnvironmentConfig();
@@ -91,6 +190,8 @@ public class BerkeleyDBIndexer implements Indexer {
 
   // Close the store and environment
   public void close() {
+    System.out.println("close Indexer="+ dirName);
+
     if (secondary != null) {
       try {
         secondary.close();
@@ -163,37 +264,6 @@ public class BerkeleyDBIndexer implements Indexer {
     }
   }   */
 
-  private class MyData {
-    String stn;
-    long date;
-
-    public String toString() {
-      Date d = new Date(date);
-      return dateFormatter.toDateTimeStringISO(d) + " <"+stn+">";
-    }
-  }
-
-  private class DataBinding extends TupleBinding {
-    public void objectToEntry(Object object, TupleOutput to) {
-      Object[] dataArray = (Object[]) object;
-      for (int i=0; i<dataArray.length; i++) {
-        Object data = dataArray[i];
-        if (data instanceof byte[])
-          to.writeFast((byte[]) data);
-        else if (data instanceof Float)
-          to.writeFloat((Float) data);
-        else if (data instanceof Integer)
-          to.writeInt((Integer) data);
-      }
-    }
-    public Object entryToObject(TupleInput ti) { // LOOK wrong
-      MyData myData = new MyData();
-      myData.date = ti.readLong();
-      myData.stn = ti.readString();
-      return null;
-    }
-  }
-
   private class MyKey {
     short fileno, obsno;
     int pos;
@@ -215,12 +285,101 @@ public class BerkeleyDBIndexer implements Indexer {
     }
   }
 
+  private class MyData {
+    long date;
+    Object[] flds;
+
+    public String toString() {
+      Date d = new Date(date);
+      Formatter out = new Formatter();
+      out.format("%s", dateFormatter.toDateTimeStringISO(new Date(date)));
+      for (Object data : flds)
+        out.format(", %s", data);
+      return out.toString();
+    }
+  }
+
+  private class DataBinding extends TupleBinding {
+
+    public void objectToEntry(Object object, TupleOutput to) {
+      Object[] dataArray = (Object[]) object;
+
+      try {
+        // first extract the time
+        int year = ((Number)dataArray[0]).intValue();
+        int month = (dataArray[1] == null) ? 1 : ((Number)dataArray[1]).intValue();
+        int day = (dataArray[2] == null) ? 0 : ((Number)dataArray[2]).intValue();
+        int hour = ((Number)dataArray[3]).intValue();
+        int min = (dataArray[4] == null) ? 0 : ((Number)dataArray[4]).intValue();
+        int sec = (dataArray[5] == null) ? 0 : ((Number)dataArray[5]).intValue();
+        int doy = (dataArray[6] == null) ? -1 : ((Number)dataArray[6]).intValue();
+
+        cal.set(year,month-1,day,hour,min,sec);
+        if (doy >= 0)
+          cal.set(Calendar.DAY_OF_YEAR, doy);
+        to.writeLong(cal.getTime().getTime());
+
+      //System.out.printf("write %d, %d, %d, %d, %d == %s %n",  year, month, day, hour, min,
+      //        dateFormatter.toDateTimeStringISO(cal.getTime()));
+        
+      } catch (Exception e) {
+        System.out.println("Error on "+dirName);
+        e.printStackTrace();
+      }
+
+
+      for (int i=nStndFlds; i<dataArray.length; i++) {
+        Object data = dataArray[i];
+        if (data == null) continue;
+
+        if (data instanceof byte[]) {
+          byte[] bdata = (byte []) data;
+          //to.writeFast((byte) bdata.length);
+          //to.writeFast(bdata);
+          to.writeString(new String(bdata));
+        } else if (data instanceof Float)
+          to.writeFloat((Float) data);
+        else if (data instanceof Integer)
+          to.writeInt((Integer) data);
+      }
+    }
+
+    public Object entryToObject(TupleInput ti) { // LOOK wrong
+      MyData myData = new MyData();
+      myData.date = ti.readLong();
+      myData.flds = new Object[dataflds.size()-nStndFlds];
+
+      for (int i=nStndFlds;i<dataflds.size(); i++) {
+        int fldidx = i - nStndFlds;
+        DataFld fld = dataflds.get(i);
+        if (fld.dtype == DataType.STRING) {
+          myData.flds[fldidx] = ti.readString();
+        } else if (fld.dtype == DataType.FLOAT)
+          myData.flds[fldidx] = ti.readFloat();
+        else if (fld.dtype == DataType.INT)
+          myData.flds[fldidx] = ti.readInt();
+      }
+      return myData;
+    }
+  }
+
   public boolean writeIndex(short fileno, Message m) throws IOException {
+    if (isNew)
+      setFldInfo(m);
+
     KeyBinding keyBinding = new KeyBinding();
     DataBinding dataBinding = new DataBinding();
     MyKey myKey = new MyKey();
 
-    Object[][] result = m.readValues(indexFlds);
+    Object[][] result;
+    try {
+      result = m.readValues(indexFlds);
+    } catch (Exception e) {
+      System.err.println("Fail on "+m.getHeader());
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      return false;
+    }
+
     int n = result.length;
     for (int i=0; i<n; i++) {
       myKey.fileno = fileno;
@@ -232,11 +391,12 @@ public class BerkeleyDBIndexer implements Indexer {
 
       DatabaseEntry dataEntry = new DatabaseEntry();
       dataBinding.objectToEntry(result[i], dataEntry);
-      // System.out.println("--index write "+myKey+" == "+myData);
+      //System.out.println("--index write "+myKey+" on "+dirName);
 
       try {
         database.put(null, keyEntry, dataEntry);
       } catch (DatabaseException e) {
+        System.out.println("--index write error on "+dirName);
         throw new IOException(e);
       }
     }
@@ -257,7 +417,7 @@ public class BerkeleyDBIndexer implements Indexer {
       while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
         MyKey key = (MyKey) keyBinding.entryToObject(foundKey);
         MyData data = (MyData) dataBinding.entryToObject(foundData);
-        System.out.printf("key = %s data = %s %n", key, data);
+        System.out.printf("key = %s; data = %s %n", key, data);
         count++;
       }
       System.out.printf("count = %d %n", count);
@@ -291,23 +451,25 @@ public class BerkeleyDBIndexer implements Indexer {
     }
   } */
 
+  static boolean showFlds = false;
   static public BerkeleyDBIndexer factory( String dir, String index) throws Exception {
-    String[] tokes = index.split(" ");
+    String[] tokes = index.trim().split(" ");
     List<Short> indexFields = new ArrayList<Short>(tokes.length);
     Formatter out = new Formatter(System.out);
-    out.format("BerkeleyDBIndexer dir= %s indexFlds= ", dir);
+    if (showFlds) out.format("BerkeleyDBIndexer dir= %s indexFlds= ", dir);
     for( String s : tokes) {
+      if (s.length() == 0) continue;
       short fxy = BufrDataDescriptionSection.getDesc("0-"+s);
       indexFields.add( fxy);
-      out.format("%s ", BufrDataDescriptionSection.getDescName(fxy));
+      if (showFlds) out.format("%s ", BufrDataDescriptionSection.getDescName(fxy));
     }
-    out.format("%n");
+    if (showFlds) out.format("%n");
 
     return new BerkeleyDBIndexer( MessageDispatchDDS.dispatchDir+dir+"/bdb", indexFields);
   }
 
   public static void main(String args[]) throws Exception {
-    BerkeleyDBIndexer indexer = BerkeleyDBIndexer.factory(MessageDispatchDDS.dispatchDir+"fslprofilers/bdb", "1-18");
+    BerkeleyDBIndexer indexer = new BerkeleyDBIndexer(MessageDispatchDDS.dispatchDir+"RJTD-IUCN53/bdb");
     indexer.retrieve();
     indexer.close();    
   }
