@@ -86,8 +86,8 @@ public class UnidataObsConvention extends CoordSysBuilder {
             if (!addAxisType(ds, vname, AxisType.Height)) { // attribute named
 
               for (int i = 0; i < ds.getVariables().size(); i++) {
-                VariableEnhanced ve = (VariableEnhanced) ds.getVariables().get(i);
-                String positive = ds.findAttValueIgnoreCase(null, "positive", null);
+                VariableEnhanced ve = (VariableEnhanced) ds.getVariables().get( i );
+                String positive = ds.findAttValueIgnoreCase((Variable) ve, "positive", null);
                 if (positive != null) {
                   addAxisType((Variable) ve, AxisType.Height); // CF-1
                   break;
