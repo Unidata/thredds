@@ -168,6 +168,7 @@ class GeoKey  {
     static public final Tag GeogCitationGeoKey = new Tag("GeogCitationGeoKey", 2049);
     static public final Tag GeogGeodeticDatumGeoKey = new Tag("GeogGeodeticDatumGeoKey", 2050);
     static public final Tag GeogPrimeMeridianGeoKey = new Tag("GeogPrimeMeridianGeoKey", 2051);
+    static public final Tag GeogLinearUnitsGeoKey = new Tag("GeogLinearUnitsGeoKey", 2052);
     static public final Tag GeogAngularUnitsGeoKey = new Tag("GeogAngularUnitsGeoKey", 2054);
     static public final Tag GeogAngularUnitsSizeGeoKey = new Tag("GeogAngularUnitsSizeGeoKey", 2055);
     static public final Tag GeogSemiMajorAxisGeoKey = new Tag("GeogSemiMajorAxisGeoKey", 2056);
@@ -268,8 +269,10 @@ class GeoKey  {
     static public final TagValue GeographicType_Sphere = new TagValue(Tag.GeographicTypeGeoKey, "Sphere", 4035);
 
     // these include the prime meridian, so are preferred
-    static public final TagValue GeographicType_NAD83 = new TagValue(Tag.GeographicTypeGeoKey, "NAD83", 4269);
+    static public final TagValue GeographicType_NAD83 = new TagValue(Tag.GeographicTypeGeoKey, "GCS_NAD83", 4269);
     static public final TagValue GeographicType_WGS_84 = new TagValue(Tag.GeographicTypeGeoKey, "WGS_84", 4326);
+    static public final TagValue GeographicType_GCS_NAD27 = new TagValue(Tag.GeographicTypeGeoKey, "GCS_NAD27", 4267);
+
     //
     static public final TagValue GeogGeodeticDatum_WGS_84 = new TagValue(Tag.GeogGeodeticDatumGeoKey, "WGS_84", 4326);
     static public final TagValue GeogPrimeMeridian_GREENWICH = new TagValue(Tag.GeogPrimeMeridianGeoKey, "Greenwich", 8901);
@@ -280,6 +283,7 @@ class GeoKey  {
     static public final TagValue ProjCoordTrans_LambertConfConic_1SP = new TagValue(Tag.ProjCoordTransGeoKey, "LambertConfConic_1SP", 9);
     static public final TagValue ProjCoordTrans_Stereographic = new TagValue(Tag.ProjCoordTransGeoKey, "Stereographic", 14);
     static public final TagValue ProjCoordTrans_TransverseMercator = new TagValue(Tag.ProjCoordTransGeoKey, "TransverseMercator", 1);
+    static public final TagValue ProjCoordTrans_Mercator = new TagValue(Tag.ProjCoordTransGeoKey, "Mercator", 7);  
     // units
     static public final TagValue ProjLinearUnits_METER = new TagValue(Tag.ProjLinearUnitsGeoKey, "Meter", 9001);
     static public final TagValue GeogAngularUnits_DEGREE = new TagValue(Tag.GeogAngularUnitsGeoKey, "Degree", 9102);

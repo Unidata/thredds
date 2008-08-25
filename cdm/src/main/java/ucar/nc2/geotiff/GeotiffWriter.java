@@ -335,8 +335,10 @@ public class GeotiffWriter {
 
     // get rid of this when all projections are implemented
     if (!gcs.isLatLon() && !(gcs.getProjection() instanceof LambertConformal)
-        && !(gcs.getProjection() instanceof Stereographic))
-      throw new IllegalArgumentException("Must be lat/lon or LambertConformal grid = " + gcs.getProjection().getClass().getName());
+        && !(gcs.getProjection() instanceof Stereographic)
+        && !(gcs.getProjection() instanceof Mercator)
+        && !(gcs.getProjection() instanceof TransverseMercator) )
+      throw new IllegalArgumentException("Must be lat/lon or LambertConformal or Mercator and grid = " + gcs.getProjection().getClass().getName());
 
     // write the data first
     if (greyScale) {
@@ -434,8 +436,12 @@ public class GeotiffWriter {
       addLambertConformalTags((LambertConformal) gcs.getProjection(), xStart, yStart);
     else if (gcs.getProjection() instanceof Stereographic)
       addPolarStereographicTags((Stereographic) gcs.getProjection(), xStart, yStart);
-    else
-      addPolarStereographicTags((Stereographic) gcs.getProjection(), xStart, yStart);
+    else if (gcs.getProjection() instanceof Mercator)
+      addMercatorTags((Mercator) gcs.getProjection());
+    else if (gcs.getProjection() instanceof TransverseMercator)
+      addTransverseMercatorTags((TransverseMercator) gcs.getProjection());
+    else if (gcs.getProjection() instanceof AlbersEqualArea)
+      addAlbersEqualAreaTags((AlbersEqualArea) gcs.getProjection());
 
     geotiff.writeMetadata(imageNumber);
     //geotiff.close();
@@ -570,6 +576,90 @@ public class GeotiffWriter {
 
   }
 
+  private void addMercatorTags(Mercator proj) {
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GTModelTypeGeoKey, GeoKey.TagValue.ModelType_Projected));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GTRasterTypeGeoKey, GeoKey.TagValue.RasterType_Area));
+      
+      // define the "geographic Coordinate System"
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeographicTypeGeoKey, GeoKey.TagValue.GeographicType_GCS_NAD27));
+      geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
+      geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogAngularUnitsGeoKey, GeoKey.TagValue.GeogAngularUnits_DEGREE));
+
+      // define the "coordinate transformation"
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectedCSTypeGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.PCSCitationGeoKey, "Snyder"));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectionGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
+      //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
+
+      // the specifics for mercator
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_Mercator));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLongGeoKey, proj.getOriginLon()));
+   //     geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLatGeoKey, proj..getOriginLat()));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjStdParallel1GeoKey, proj.getParallel()));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjScaleAtNatOriginGeoKey, 1));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseEastingGeoKey, 0));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseNorthingGeoKey, 0));
+
+
+  }
+
+  private void addTransverseMercatorTags(TransverseMercator proj) {
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GTModelTypeGeoKey, GeoKey.TagValue.ModelType_Projected));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GTRasterTypeGeoKey, GeoKey.TagValue.RasterType_Area));
+
+      // define the "geographic Coordinate System"
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeographicTypeGeoKey, GeoKey.TagValue.GeographicType_GCS_NAD27));
+      geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
+      geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogAngularUnitsGeoKey, GeoKey.TagValue.GeogAngularUnits_DEGREE));
+
+      // define the "coordinate transformation"
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectedCSTypeGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.PCSCitationGeoKey, "Snyder"));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectionGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
+      //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
+
+      // the specifics for mercator
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_TransverseMercator));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLatGeoKey, proj.getOriginLat()));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLongGeoKey, proj.getTangentLon()));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjScaleAtNatOriginGeoKey, proj.getScale()));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjScaleAtNatOriginGeoKey, 1));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseEastingGeoKey, 0));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseNorthingGeoKey, 0));
+
+
+  }
+    
+  private void addAlbersEqualAreaTags(AlbersEqualArea proj) {
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GTModelTypeGeoKey, GeoKey.TagValue.ModelType_Projected));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GTRasterTypeGeoKey, GeoKey.TagValue.RasterType_Area));
+
+      // define the "geographic Coordinate System"
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.GeographicTypeGeoKey, GeoKey.TagValue.GeographicType_GCS_NAD27));
+      geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
+      geotiff.addGeoKey( new GeoKey( GeoKey.Tag.GeogAngularUnitsGeoKey, GeoKey.TagValue.GeogAngularUnits_DEGREE));
+
+      // define the "coordinate transformation"
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectedCSTypeGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.PCSCitationGeoKey, "Snyder"));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjectionGeoKey, GeoKey.TagValue.ProjectedCSType_UserDefined));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjLinearUnitsGeoKey, GeoKey.TagValue.ProjLinearUnits_METER));
+      //geotiff.addGeoKey( new GeoKey( GeoKey.Tag.ProjLinearUnitsSizeGeoKey, 1.0)); // units of km
+
+      // the specifics for mercator
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCoordTransGeoKey, GeoKey.TagValue.ProjCoordTrans_TransverseMercator));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjNatOriginLatGeoKey, proj.getOriginLat()));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjCenterLongGeoKey, proj.getOriginLon()));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjStdParallel1GeoKey, proj.getParallelOne()));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjStdParallel2GeoKey, proj.getParallelTwo()));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseEastingGeoKey, 0));
+      geotiff.addGeoKey(new GeoKey(GeoKey.Tag.ProjFalseNorthingGeoKey, 0));
+
+  }
+   
+
   private void dump(Array data, int col) {
     int[] shape = data.getShape();
     Index ima = data.getIndex();
@@ -702,12 +792,12 @@ public class GeotiffWriter {
    * test
    */
   public static void main(String args[]) throws IOException {
-    String fileOut = "/home/yuanho/tmp/satF.tif";
+    String fileOut = "/home/yuanho/Download/MODSCW_mercatorA.tif";
     //String fileOut = "/home/yuanho/tmp/tmbF.tif";
     //LatLonPointImpl p1 = new LatLonPointImpl(38.0625, -80.6875);
     //LatLonPointImpl p2 = new LatLonPointImpl(47.8125, -67.0625);
-    LatLonPointImpl p1 = new LatLonPointImpl(29.0, 225.0);
-    LatLonPointImpl p2 = new LatLonPointImpl(50.0, 247.0);
+    LatLonPointImpl p1 = new LatLonPointImpl(16.99, -99.0);
+    LatLonPointImpl p2 = new LatLonPointImpl(31.0, -78.0);
     LatLonRect llr = new LatLonRect(p1, p2);
     GeotiffWriter writer = new GeotiffWriter(fileOut);
     //writer.writeGrid("radar.nc", "noice_wat", 0, 0, true);
@@ -717,7 +807,7 @@ public class GeotiffWriter {
     //writer.writeGrid("/home/yuanho/dev/netcdf-java/geotiff/2003072918_avn-x.nc", "P_sfc", 0, 0, false,llr);
     //writer.writeGrid("/home/yuanho/tmp/NE_1961-1990_Yearly_Max_Temp.nc", "tmax", 0, 0, false, llr);
    // writer.writeGrid("/home/yuanho/tmp/TMB.nc", "MBchla", 0, 0, false, llr);
-    writer.writeGrid("/home/yuanho/Desktop/geotiff/BA/ssta/8day/BA2008150_2008157_ssta.nc", "BAssta", 0, 0, false, llr);
+    writer.writeGrid("/home/yuanho/Download/MODSCW_mercator.nc", "chlor_a", 0, 0, true, llr);
     writer.close();
 
     // read it back in
