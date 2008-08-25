@@ -68,9 +68,9 @@ public class GetCapabilities extends WcsRequest
     this.updateSequence = updateSequence;
 
     if ( this.serverURI == null )
-      throw new IllegalArgumentException( "Non-null server URI required.");
+      throw new IllegalArgumentException( "Null server URI not allowed.");
     if ( this.section == null )
-      throw new IllegalArgumentException( "Non-null sections list required (may be empty).");
+      throw new IllegalArgumentException( "Null section not allowed.");
   }
 
   String getCurrentUpdateSequence()

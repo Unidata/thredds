@@ -30,16 +30,20 @@ public class GetCapabilitiesBuilder extends WcsRequestBuilder
   private GetCapabilities.ServiceInfo serviceInfo;
 
   public URI getServerUri() { return this.serverUri; }
-  public void setServerUri( URI serverUri ) { this.serverUri = serverUri; }
+  public GetCapabilitiesBuilder setServerUri( URI serverUri )
+  { this.serverUri = serverUri; return this; }
 
   public GetCapabilities.Section getSection() { return this.section; }
-  public void setSection( GetCapabilities.Section section ) { this.section = section; }
+  public GetCapabilitiesBuilder setSection( GetCapabilities.Section section )
+  { this.section = section; return this; }
 
   public String getUpdateSequence() { return updateSequence; }
-  public void setUpdateSequence( String updateSequence ) { this.updateSequence = updateSequence; }
+  public GetCapabilitiesBuilder setUpdateSequence( String updateSequence )
+  { this.updateSequence = updateSequence; return this; }
 
   public GetCapabilities.ServiceInfo getServiceInfo() { return serviceInfo; }
-  public void setServiceInfo( GetCapabilities.ServiceInfo serviceInfo ) { this.serviceInfo = serviceInfo; }
+  public GetCapabilitiesBuilder setServiceInfo( GetCapabilities.ServiceInfo serviceInfo )
+  { this.serviceInfo = serviceInfo; return this; }
 
   public GetCapabilities buildGetCapabilities()
   {
@@ -47,7 +51,7 @@ public class GetCapabilitiesBuilder extends WcsRequestBuilder
     if ( this.serverUri == null )
       throw new IllegalStateException( "Null server URI not allowed." );
     if ( this.section == null )
-      throw new IllegalStateException( "Null section list not allowed (may be empty)." );
+      throw new IllegalStateException( "Null section not allowed." );
 
     return new GetCapabilities( this.getOperation(), this.getVersionString(),
                                 this.getWcsDataset(),

@@ -58,11 +58,15 @@ import ucar.unidata.io.http.HTTPRandomAccessFile;
 import ucar.unidata.io.*;
 
 import thredds.catalog.query.DqcFactory;
+import thredds.wcs.v1_0_0_1.GetCapabilities;
+import thredds.wcs.v1_0_0_1.WcsException;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.io.RandomAccessFile;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
@@ -2022,14 +2026,33 @@ public class ToolsUI extends JPanel {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
             GridDataset gridDataset = dsTable.getGridDataset();
-            thredds.wcs.WcsDataset wcs = new thredds.wcs.WcsDataset(gridDataset, "", false);
+            URI gdUri = null;
+            try
+            {
+              gdUri = new URI( "http://none.such.server/thredds/wcs/dataset" );
+            }
+            catch ( URISyntaxException e1 )
+            {
+              e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            GetCapabilities getCap =
+            ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
+                    thredds.wcs.v1_0_0_1.WcsRequestBuilder
+                            .newWcsRequestBuilder( "1.0.0",
+                                                   thredds.wcs.Request.Operation.GetCapabilities,
+                                                   gridDataset, "" ) )
+                    .setServerUri( gdUri ).setSection( GetCapabilities.Section.All )
+                    .buildGetCapabilities();
+            org.jdom.Document doc = null;
+            doc = null;
             String gc;
             try {
-              gc = wcs.getCapabilities();
+              doc = getCap.generateCapabilities();
+              gc = "need to convert doc to string";
               detailTA.setText(gc);
               detailTA.gotoTop();
               detailWindow.show();
-            } catch (IOException e1) {
+            } catch (WcsException e1) {
               e1.printStackTrace();
             }
 
