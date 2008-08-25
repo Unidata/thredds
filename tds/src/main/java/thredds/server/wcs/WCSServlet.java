@@ -1,7 +1,6 @@
 package thredds.server.wcs;
 
 import thredds.servlet.*;
-import thredds.server.wcs.Version;
 
 import java.io.*;
 import java.util.List;
@@ -54,18 +53,12 @@ public class WCSServlet extends AbstractServlet {
 
     // Make sure to add these in increasing order!
     versionHandlers = new ArrayList<VersionHandler>();
-//    versionHandlers.add( new WCS_1_0_0( "1.0.0" )
-//            .setDeleteImmediately( deleteImmediately )
-//            .setDiskCache( diskCache ));
     versionHandlers.add( new thredds.server.wcs.v1_0_0_1.WcsHandler( "1.0.0" )
             .setDeleteImmediately( deleteImmediately )
             .setDiskCache( diskCache ) );
     versionHandlers.add( new thredds.server.wcs.v1_0_0_Plus.WcsHandler( "1.0.0.11" )
             .setDeleteImmediately( deleteImmediately )
             .setDiskCache( diskCache ) );
-//    versionHandlers.add( new WCS_1_1_0( "1.1.0" )
-//            .setDeleteImmediately( deleteImmediately )
-//            .setDiskCache( diskCache ));
     for ( VersionHandler vh: versionHandlers)
     {
       supportedVersionsString = (supportedVersionsString == null ? "" : supportedVersionsString + ",") + vh.getVersion().getVersionString();

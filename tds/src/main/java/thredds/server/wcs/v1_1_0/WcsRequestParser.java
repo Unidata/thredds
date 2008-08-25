@@ -1,4 +1,4 @@
-package thredds.server.wcs;
+package thredds.server.wcs.v1_1_0;
 
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DatasetHandler;

@@ -1,8 +1,10 @@
-package thredds.server.wcs;
+package thredds.server.wcs.v1_1_0;
 
 import thredds.servlet.ServletUtil;
 import thredds.wcs.v1_1_0.*;
 import thredds.server.wcs.Version;
+import thredds.server.wcs.VersionHandler;
+import thredds.server.wcs.v1_1_0.WcsRequestParser;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
