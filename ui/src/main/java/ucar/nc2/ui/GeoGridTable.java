@@ -32,6 +32,8 @@ import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.ProjectionImpl;
 import thredds.ui.*;
+import thredds.wcs.v1_0_0_1.WcsException;
+import thredds.wcs.v1_0_0_1.DescribeCoverage;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -54,7 +56,6 @@ public class GeoGridTable extends JPanel {
   private PreferencesExt prefs;
   private NetcdfDataset ds;
   private GridDataset gridDataset;
-  private thredds.wcs.WcsDataset wcs = null;
 
   private BeanTableSorted varTable, csTable = null, axisTable = null;
   private JSplitPane split = null, split2 = null;
@@ -82,19 +83,34 @@ public class GeoGridTable extends JPanel {
     csPopup.addAction("WCS DescribeCoverage", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
-        if (wcs == null)
-          wcs = new thredds.wcs.WcsDataset(gridDataset, "", false);
-        String dc;
         if (gridDataset.findGridDatatype(vb.getName()) != null)
-          try {
-            dc = wcs.describeCoverage(vb.getName());
+        {
+          List<String> coverageIdList = Collections.singletonList( vb.getName() );
+          try
+          {
+            DescribeCoverage descCov =
+                    ( (thredds.wcs.v1_0_0_1.DescribeCoverageBuilder)
+                            thredds.wcs.v1_0_0_1.WcsRequestBuilder
+                                    .newWcsRequestBuilder( "1.0.0",
+                                                           thredds.wcs.Request.Operation.DescribeCoverage,
+                                                           gridDataset, "" ) )
+                            .setCoverageIdList( coverageIdList )
+                            .buildDescribeCoverage();
+            String dc = descCov.writeDescribeCoverageDocAsString();
             infoTA.clear();
             infoTA.appendLine(dc);
             infoTA.gotoTop();
             infoWindow.showIfNotIconified();
-          } catch (IOException e1) {
+          }
+          catch (WcsException e1)
+          {
             e1.printStackTrace();
           }
+          catch (IOException e1)
+          {
+            e1.printStackTrace();
+          }
+        }
       }
     });
 

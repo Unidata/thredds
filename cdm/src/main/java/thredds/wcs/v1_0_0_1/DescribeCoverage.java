@@ -68,7 +68,14 @@ public class DescribeCoverage extends WcsRequest
     xmlOutputter.output( getDescribeCoverageDoc(), pw );
   }
 
-  public Document generateDescribeCoverageDoc()
+  public String writeDescribeCoverageDocAsString()
+          throws IOException
+  {
+    XMLOutputter xmlOutputter = new XMLOutputter( org.jdom.output.Format.getPrettyFormat() );
+    return xmlOutputter.outputString( getDescribeCoverageDoc() );
+  }
+
+  Document generateDescribeCoverageDoc()
   {
     // CoverageDescription (wcs) [1]
     Element coverageDescriptionsElem = new Element( "CoverageDescription", wcsNS );

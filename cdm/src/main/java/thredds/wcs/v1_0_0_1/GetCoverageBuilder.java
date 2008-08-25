@@ -30,25 +30,32 @@ public class GetCoverageBuilder extends WcsRequestBuilder
   private Request.Format format;
 
   public String getCoverageId() { return coverageId; }
-  public void setCoverageId( String coverageId ) { this.coverageId = coverageId; }
+  public GetCoverageBuilder setCoverageId( String coverageId )
+  { this.coverageId = coverageId; return this; }
 
   public String getCrs() { return crs; }
-  public void setCrs( String crs ) { this.crs = crs; }
+  public GetCoverageBuilder setCrs( String crs )
+  { this.crs = crs; return this; }
 
   public String getResponseCRS() { return responseCRS; }
-  public void setResponseCRS( String responseCRS ) { this.responseCRS = responseCRS; }
+  public GetCoverageBuilder setResponseCRS( String responseCRS )
+  { this.responseCRS = responseCRS; return this; }
 
   public Request.BoundingBox getBbox() { return bbox; }
-  public void setBbox( Request.BoundingBox bbox ) { this.bbox = bbox; }
+  public GetCoverageBuilder setBbox( Request.BoundingBox bbox )
+  { this.bbox = bbox; return this; }
 
   public DateRange getTimeRange() { return timeRange; }
-  public void setTimeRange( DateRange timeRange ) { this.timeRange = timeRange; }
+  public GetCoverageBuilder setTimeRange( DateRange timeRange )
+  { this.timeRange = timeRange; return this; }
 
   public WcsCoverage.VerticalRange getVerticalRange() { return verticalRange; }
-  public void setVerticalRange( WcsCoverage.VerticalRange verticalRange ) { this.verticalRange = verticalRange; }
+  public GetCoverageBuilder setVerticalRange( WcsCoverage.VerticalRange verticalRange )
+  { this.verticalRange = verticalRange; return this; }
 
   public Request.Format getFormat() { return format; }
-  public void setFormat( Request.Format format ) { this.format = format; }
+  public GetCoverageBuilder setFormat( Request.Format format )
+  { this.format = format; return this; }
 
   public GetCoverage buildGetCoverage()
           throws WcsException

@@ -1289,7 +1289,7 @@ public class ToolsUI extends JPanel {
           {
             try {
               SimpleUnit su = SimpleUnit.factoryWithExceptions(units);
-              sb.append(" unit convert = " + su.toString());
+              sb.append(" unit convert = ").append( su.toString());
               if (su.isUnknownUnit())
                 sb.append(" UNKNOWN UNIT");
 
@@ -2033,7 +2033,8 @@ public class ToolsUI extends JPanel {
             }
             catch ( URISyntaxException e1 )
             {
-              e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+              e1.printStackTrace();
+              return;
             }
             GetCapabilities getCap =
             ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
@@ -2041,21 +2042,17 @@ public class ToolsUI extends JPanel {
                             .newWcsRequestBuilder( "1.0.0",
                                                    thredds.wcs.Request.Operation.GetCapabilities,
                                                    gridDataset, "" ) )
-                    .setServerUri( gdUri ).setSection( GetCapabilities.Section.All )
+                    .setServerUri( gdUri )
+                    .setSection( GetCapabilities.Section.All )
                     .buildGetCapabilities();
-            org.jdom.Document doc = null;
-            doc = null;
-            String gc;
             try {
-              doc = getCap.generateCapabilities();
-              gc = "need to convert doc to string";
+              String gc = getCap.writeCapabilitiesReportAsString();
               detailTA.setText(gc);
               detailTA.gotoTop();
               detailWindow.show();
             } catch (WcsException e1) {
               e1.printStackTrace();
             }
-
           }
         }
       });

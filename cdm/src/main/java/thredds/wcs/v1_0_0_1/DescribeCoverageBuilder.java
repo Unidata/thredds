@@ -27,7 +27,8 @@ public class DescribeCoverageBuilder extends WcsRequestBuilder
   private List<String> coverageIdList;
 
   public List<String> getCoverageIdList() { return coverageIdList; }
-  public void setCoverageIdList( List<String> coverageIdList ) { this.coverageIdList = coverageIdList; }
+  public DescribeCoverageBuilder setCoverageIdList( List<String> coverageIdList )
+  { this.coverageIdList = coverageIdList; return this; }
 
   public DescribeCoverage buildDescribeCoverage()
           throws WcsException

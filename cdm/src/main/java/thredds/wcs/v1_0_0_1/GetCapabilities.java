@@ -98,7 +98,14 @@ public class GetCapabilities extends WcsRequest
     xmlOutputter.output( getCapabilitiesReport(), pw );
   }
 
-  public Document generateCapabilities()
+  public String writeCapabilitiesReportAsString()
+          throws WcsException
+  {
+    XMLOutputter xmlOutputter = new XMLOutputter( org.jdom.output.Format.getPrettyFormat() );
+    return xmlOutputter.outputString( getCapabilitiesReport() );
+  }
+
+  Document generateCapabilities()
           throws WcsException
   {
     Element rootElem;
