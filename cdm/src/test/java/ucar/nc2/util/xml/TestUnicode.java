@@ -37,7 +37,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.awt.*;
-import java.text.Normalizer;
+//import java.text.Normalizer;
 
 import junit.framework.TestCase;
 
@@ -93,7 +93,7 @@ public class TestUnicode extends TestCase {
     //for (int i=0; i<helloGreek.length; i++) b[i] = (byte) helloGreek[i];
 
     String helloGreek = makeString(helloGreekCode, true);
-    String s2 = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
+    String s2 ="";// = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
 
     //String lineb = new String( b, "UTF-8");
     System.out.println(" helloGreek= "+helloGreek);
@@ -135,7 +135,7 @@ public class TestUnicode extends TestCase {
 
   public void makeNetCDF() throws IOException, InvalidRangeException {
     String helloGreek = makeString(helloGreekCode, true);
-    helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
+    helloGreek = ""; //Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
     System.out.println("normalized= "+showString(helloGreek));
 
     String filename = "C:/data/unicode/helloNorm.nc";
