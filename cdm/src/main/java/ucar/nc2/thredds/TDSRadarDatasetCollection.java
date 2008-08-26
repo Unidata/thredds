@@ -191,7 +191,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         this.startDate =
             DateUnit.getStandardOrISO((String) radarTimeSpan.get(0));
         this.endDate =
-            DateUnit.getStandardOrISO((String) radarTimeSpan.get(0));
+            DateUnit.getStandardOrISO((String) radarTimeSpan.get(1));
 
         try {
             timeUnit = new DateUnit("hours since 1991-01-01T00:00");
