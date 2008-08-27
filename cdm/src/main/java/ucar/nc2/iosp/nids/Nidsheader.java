@@ -149,7 +149,7 @@ class Nidsheader{
     int pos = 0;
     //long     actualSize = 0;
     raf.seek(pos);
-    int readLen = 25;
+    int readLen = 35;
     int rc = 0;
 
     // Read in the contents of the NEXRAD Level III product head
@@ -161,6 +161,19 @@ class Nidsheader{
         return 0;
     }
 
+    // new check
+    int iarr2_1 = bytesToInt(b[0], b[1], false);
+    int iarr2_16 = bytesToInt(b[30], b[31], false);
+    int iarr2_10 = bytesToInt(b[18], b[19], false);
+    int iarr2_7 = bytesToInt(b[12], b[13], false);
+    if ( ( iarr2_1 == iarr2_16 ) &&
+         ( ( iarr2_1 >=   16  ) && ( iarr2_1 <= 299) ) &&
+         ( iarr2_10  ==   -1 ) &&
+         ( iarr2_7   <    10000 ) )  {
+         noHeader = true;
+         return 1;
+
+    }
     //Get product message header into a string for processing
 
     String pib = new String(b);
@@ -1971,10 +1984,16 @@ class Nidsheader{
 
   }
 
-  //public Vinfo getVarInfo( )
-  //{
-  //   return myInfo;
-  //}
+  public static int bytesToInt(byte a, byte b, boolean swapBytes) {
+  		// again, high order bit is expressed left into 32-bit form
+  		if (swapBytes) {
+  			return (a & 0xff) + ((int)b << 8);
+  		} else {
+  			return ((int)a << 8) + (b & 0xff);
+  		}
+  }
+
+
   public short convertunsignedByte2Short(byte b)
   {
      return (short)((b<0)? (short)b + 256 : (short)b);
