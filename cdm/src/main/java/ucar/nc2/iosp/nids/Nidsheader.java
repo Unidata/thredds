@@ -1477,7 +1477,7 @@ class Nidsheader{
         vName = "rays_time";
         lName = "rays time";
         att = new Attribute(_Coordinate.AxisType, AxisType.Time.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "seconds since 1970-01-01 00:00 UTC"
+        addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "milliseconds since 1970-01-01 00:00 UTC"
                     ,hoff, hedsiz, isZ, 0);
 
         Variable v = new Variable(ncfile, null, null, cname + "_RAW");
