@@ -1983,6 +1983,15 @@ class Nidsheader{
       return word;
 
   }
+   /***
+    * Concatenate two bytes to a 32-bit int value.  <b>a</b> is the high order
+    * byte in the resulting int representation, unless swapBytes is true, in
+    * which <b>b</b> is the high order byte.
+    * @param a high order byte
+    * @param b low order byte
+    * @param swapBytes byte order swap flag
+    * @return 32-bit integer
+    */
 
   public static int bytesToInt(byte a, byte b, boolean swapBytes) {
   		// again, high order bit is expressed left into 32-bit form
