@@ -38,7 +38,7 @@ import java.util.*;
  * @author edavis
  * @since 5 May 2005 10:12 -0600
  */
-public abstract class SingleTrajectoryObsDataset
+public class SingleTrajectoryObsDataset
         extends TypedDatasetImpl
         implements TrajectoryObsDataset
 {
