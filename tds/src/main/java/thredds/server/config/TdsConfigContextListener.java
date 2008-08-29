@@ -7,6 +7,8 @@ import javax.servlet.ServletContextListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.Log4jWebConfigurer;
+import thredds.servlet.DataRootHandler;
+import thredds.servlet.RestrictedAccessConfigListener;
 
 /**
  * _more_
@@ -29,6 +31,11 @@ public class TdsConfigContextListener
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
     tdsContext.init( servletContext );
     Log4jWebConfigurer.initLogging( servletContext );
+
+    DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
+
+    catHandler.registerConfigListener( new RestrictedAccessConfigListener() );
+
     logger.debug( "contextInitialized(): done.");
   }
 

@@ -25,6 +25,7 @@ import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.servlet.PathMatcher;
 import thredds.cataloggen.ProxyDatasetHandler;
+import thredds.server.config.TdsContext;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.DateUtil;
@@ -52,48 +53,14 @@ import java.io.*;
  * @author caron
  */
 public class DataRootHandler {
-  // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
-  static private DataRootHandler singleton = null;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
 
-  /**
-   * Initialize the DataRootHandler singleton instance.
-   *
-   * This method should only be called once. Additional calls will be ignored.
-   *
-   * @param contentPath should be absolute path under which all catalogs lay, typically ${tomcat_home}/content/thredds/
-   * @param servletContextPath the servlet context path
-   */
-  static public void init(String contentPath, String servletContextPath) {
-    if ( singleton != null)
-    {
-      log.warn( "init(): Singleton already initialized: ignored call -- init(\"" + contentPath + "\",\"" + servletContextPath + "\"); successful call -- init(\""+singleton.contentPath+"\",\""+singleton.servletContextPath+"\").");
-      return;
-    }
-    singleton = new DataRootHandler(contentPath, servletContextPath);
-  }
-
-  /**
-   * Get the singleton.
-   *
-   * The init() method must be called before this method is called.
-   *
-   * @return the singleton instance.
-   *
-   * @throws IllegalStateException if init() has not been called.
-   */
-  static public DataRootHandler getInstance() {
-    if ( singleton == null)
-    {
-      log.error( "getInstance(): Called without init() having been called.");
-      throw new IllegalStateException( "init() must be called first.");
-    }
-    return singleton;
-  }
-
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  private final TdsContext tdsContext;
+//   * @param contentPath all catalogs are reletive to this file path, eg {tomcat_home}/content/thredds
   private final String contentPath;
+//    * @param servletContextPath all catalogs are reletive to this URL path, eg thredds
   private final String servletContextPath;
 
   // @GuardedBy("this") LOOK should be able to access without synchronization
@@ -109,14 +76,70 @@ public class DataRootHandler {
 
   /**
    * Constructor.
-   * @param contentPath all catalogs are reletive to this file path, eg {tomcat_home}/content/thredds
-   * @param servletContextPath all catalogs are reletive to this URL path, eg thredds
+   * @param tdsContext
    */
-  private DataRootHandler(String contentPath, String servletContextPath) {
-    this.contentPath = contentPath;
-    this.servletContextPath = servletContextPath;
+  public DataRootHandler( TdsContext tdsContext )
+  {
+    this.tdsContext = tdsContext;
+    this.contentPath = null;
+    this.servletContextPath = null;
     this.staticCatalogHash = new HashMap<String,InvCatalogImpl>();
   }
+
+  public void init()
+  {
+    //this.contentPath = this.tdsContext.
+    this.initCatalogs();
+
+    this.makeDebugActions();
+    DatasetHandler.makeDebugActions();
+
+  }
+
+  void initCatalogs()
+  {
+    ArrayList<String> catList = new ArrayList<String>();
+    catList.add( "catalog.xml" ); // always first
+    getExtraCatalogs( catList );
+    this.initCatalogs( catList );
+  }
+
+  private void getExtraCatalogs( List<String> extraList )
+  {
+    // if there are some roots in ThreddsConfig, then dont read extraCatalogs.txt
+    ThreddsConfig.getCatalogRoots( extraList );
+    if ( extraList.size() > 0 )
+      return;
+
+    // see if extraCatalogs.txt exists
+    File file = new File( contentPath + "extraCatalogs.txt" );
+    if ( file.exists() )
+    {
+
+      try
+      {
+        FileInputStream fin = new FileInputStream( file );
+        BufferedReader reader = new BufferedReader( new InputStreamReader( fin ) );
+        while ( true )
+        {
+          String line = reader.readLine();
+          if ( line == null ) break;
+          line = line.trim();
+          if ( line.length() == 0 ) continue;
+          if ( line.startsWith( "#" ) ) continue; // Skip comment lines.
+          extraList.add( line );
+        }
+        fin.close();
+
+      }
+      catch ( IOException e )
+      {
+        log.error( "Error on getExtraCatalogs ", e );
+      }
+    }
+
+  }
+
 
   public boolean registerConfigListener( ConfigListener cl )
   {
