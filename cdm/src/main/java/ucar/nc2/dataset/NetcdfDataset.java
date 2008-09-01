@@ -432,7 +432,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     EnumSet<Enhance>  enhanceMode;
     MyNetcdfDatasetFactory(String location, EnumSet<Enhance>  enhanceMode) {
       this.location = location;
-      this.enhanceMode = enhanceMode;
+      this.enhanceMode = (enhanceMode == null) ? EnumSet.noneOf(Enhance.class) : EnumSet.copyOf(enhanceMode);
     }
 
     public NetcdfFile open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
