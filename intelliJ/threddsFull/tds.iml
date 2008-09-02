@@ -206,6 +206,10 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-dqcServletRedirect/resources" relative="/" />
         </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
+          <root url="file://$MODULE_DIR$/../../tds/src/test/java" />
+        </sourceRoots>
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -361,6 +365,10 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-expThredds/resources" relative="/" />
         </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
+          <root url="file://$MODULE_DIR$/../../tds/src/test/java" />
+        </sourceRoots>
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -522,6 +530,10 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-ethan" relative="/" />
         </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
+          <root url="file://$MODULE_DIR$/../../tds/src/test/java" />
+        </sourceRoots>
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
