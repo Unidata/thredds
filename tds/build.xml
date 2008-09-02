@@ -781,6 +781,32 @@
 <!-- =========================== -->
 
   <!-- -->
+  <target name="test-TDS-by-hand" description="test a TDS by hand">
+    <antcall target="test-TDS">
+      <param name="thredds.tds.test.id" value="test-1-by-hand" />
+      <param name="thredds.tds.test.server" value="motherlode.ucar.edu:8081" />
+      <param name="thredds.tds.test.level" value="ping-catalogs" />
+      <param name="thredds.tds.test.catalogs" value="${tdsIddCat-fullSample}" />
+      <!--
+      Ping each catalog in the given list of catalogs (in this case,
+      a fairly full list of catalogs):
+        <param name="thredds.tds.test.level" value="ping-catalogs" />
+        <param name="thredds.tds.test.catalogs" value="${tdsIddCat-full}" />
+
+      Crawl each catalog in the given list (in this case, a fairly full
+      list of catalogs minus their ancestor catalog "/thredds/catalog.xml"):
+        <param name="thredds.tds.test.level" value="crawl-catalogs" />
+        <param name="thredds.tds.test.catalogs" value="${tdsIddCat-fullSample}" />
+
+      Crawl each catalog in given list and open one dataset per collection of node datasets
+      (the list of catalogs is only "idv/models.xml" catalog):
+        <param name="thredds.tds.test.level" value="crawl-catalogs-and1DsPerCollection"  />
+        <param name="thredds.tds.test.catalogs" value="${tdsMlodeIdvCat}" />
+       -->
+
+    </antcall>
+  </target>
+
 
   <!-- Make sure to set the following properties:
        1) "thredds.tds.test.id"
