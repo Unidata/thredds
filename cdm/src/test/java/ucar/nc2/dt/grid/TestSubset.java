@@ -509,5 +509,33 @@ public class TestSubset extends TestCase {
     assert Math.abs(org_shape[2] - 3 * shape[1]) < 3 : org_shape[2] + " != " + (3 * shape[1]);
     dataset.close();
   }
+
+   public void testBBSubsetVP2() throws Exception {
+    String filename = "C:/Documents and Settings/caron/My Documents/downloads/MSG2-SEVI-MSGCLAI-0000-0000-20070522114500.000000000Z-582760.grb";
+    GridDataset dataset = GridDataset.open(filename);
+    GeoGrid grid = dataset.findGridByName("Pixel_scene_type");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+
+    System.out.println("original bbox= " + gcs.getBoundingBox());
+    System.out.println("lat/lon bbox= " + gcs.getLatLonBoundingBox());
+
+    ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(new LatLonPointImpl(), 20.0, 40.0);
+    System.out.println("subset lat/lon bbox= " + llbb_subset);
+
+    GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
+    GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
+    assert null != gcs2;
+
+    System.out.println("result lat/lon bbox= " + gcs2.getLatLonBoundingBox());
+    System.out.println("result bbox= " + gcs2.getBoundingBox());
+
+    ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
+    System.out.println("projection mapArea= " + pr);
+    assert (pr.equals(gcs2.getBoundingBox()));
+
+    dataset.close();
+  }
 }
 

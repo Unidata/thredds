@@ -211,7 +211,7 @@
             </updown>
           </geospatialCoverage>
           <variables vocabulary="">
-            <variable name="VIS" vocabulary_name="" units="N/A">Imager Visiable</variable>
+            <variable name="VIS" vocabulary_name="" units="N/A">Imager Visible</variable>
           </variables>
         </metadata>
       </datasetScan>

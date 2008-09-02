@@ -23,7 +23,8 @@ public class TestH5read extends TestCase {
  public void testH5data() {
    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
 
-   TestAll.readAllDir (TestH5.testDir, new FileFilter() {
+   //TestAll.readAllDir (TestH5.testDir, new FileFilter() {
+   TestAll.readAllDir ("D:/", new FileFilter() {
       public boolean accept(File file) {
         String name = file.getPath();
         return (name.endsWith(".h5") || name.endsWith(".H5") || name.endsWith(".he5") || name.endsWith(".nc"));

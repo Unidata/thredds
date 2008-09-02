@@ -565,8 +565,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         location = "file:" + location;
       return acquireNcml(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
 
-    } else if (location.startsWith("http:") && isDODS(location)) {
+    } else if (location.startsWith("http:")) {
+      int status = checkIfDods(location);
+      if (status == 200)
         return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject); // try as a dods file
+      else if (status == 401)
+        throw new IOException("Unauthorized to open dataset "+location);
+      // fall through
     }
 
     if (cache != null) {
@@ -582,13 +587,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * LOOK should probably get rid of this, just try getting the dds
    * LOOK by going through HttpURLConnection instead of DConnect, may not be setting permissions etc
    */
-  static private boolean isDODS(String location) throws IOException {
+  static private int checkIfDods(String location) throws IOException {
     try {
       URL u = new URL(location + ".dds");
       HttpURLConnection conn = (HttpURLConnection) u.openConnection();
       conn.setRequestMethod("HEAD");
-      int code = conn.getResponseCode();
-      return (code == 200);
+      return conn.getResponseCode();
 
     } catch (Exception e) {
       throw new IOException(location + " is not a valid URL." + e.getMessage());

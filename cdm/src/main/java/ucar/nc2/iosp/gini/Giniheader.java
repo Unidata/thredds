@@ -983,7 +983,7 @@ class Giniheader {
   String getPhysElemLongName(int phys_elem, int ent_id ) {
      switch( phys_elem ) {
       case 1:
-        return "Imager Visiable";
+        return "Imager Visible";
       case 2:
         return "Imager 3.9 micron IR";
       case 3:
@@ -1066,7 +1066,7 @@ class Giniheader {
   String getPhysElemSummary(int phys_elem, int ent_id ) {
      switch( phys_elem ) {
       case 1:
-        return "Satellite Product Imager Visiable";
+        return "Satellite Product Imager Visible";
       case 2:
         return "Satellite Product Imager 3.9 micron IR";
       case 3:
