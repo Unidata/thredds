@@ -93,15 +93,25 @@ public class AggregationExisting extends AggregationOuterDimension {
     }
 
     VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
-    if (joinAggCoord == null) {
+    if ((joinAggCoord == null) && (type == Type.JOIN_EXISTING)) {
       typicalDataset.close( typical); // clean up
       throw new IllegalArgumentException("No existing coordinate variable for joinExisting on "+getLocation());
     }
 
     if (type == Type.JOIN_EXISTING_ONE) {
-      // replace aggregation coordinate variable
-      joinAggCoord.setDataType(DataType.STRING);
-      joinAggCoord.getAttributes().clear();
+      // ok if cordinate doesnt exist for a "join existing one", since we have to create it anyway
+      if (joinAggCoord == null) {
+        joinAggCoord = new VariableDS(ncDataset, null, null, dimName, DataType.STRING, dimName, null, null);
+        joinAggCoord.setProxyReader(this); // do the reading here
+        ncDataset.getRootGroup().addVariable(joinAggCoord);
+        aggVars.add(joinAggCoord);
+
+      } else {
+        // replace aggregation coordinate variable
+        joinAggCoord.setDataType(DataType.STRING);
+        joinAggCoord.getAttributes().clear();
+      }
+      
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
       joinAggCoord.addAttribute(new Attribute("long_name", "time coordinate"));
       joinAggCoord.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
@@ -263,7 +273,7 @@ public class AggregationExisting extends AggregationOuterDimension {
               System.out.println(" wrote array = " + pv.varName + " nelems= "+data.getSize());
           }
         }
-        out.print("</netcdf>\n");
+        out.print("  </netcdf>\n");
       }
 
       out.print("</aggregation>\n");
@@ -347,7 +357,7 @@ public class AggregationExisting extends AggregationOuterDimension {
 
             try {
               start = System.nanoTime();
-              Array data = Array.makeArray(DataType.DOUBLE, vals);
+              Array data = Array.makeArray(pv.dtype, vals);
               took = .001 * .001 * .001 * (System.nanoTime() - start);
               if (debugPersist) System.out.println(" makeArray took = " + took + " sec nelems= "+data.getSize());
               pv.dataMap.put(location, data);

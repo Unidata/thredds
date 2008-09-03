@@ -586,6 +586,9 @@ public abstract class AggregationOuterDimension extends Aggregation {
           Dimension d = ncd.getRootGroup().findDimension(dimName);
           if (d != null)
             ncoord = d.getLength();
+          else
+            throw new IllegalArgumentException("Dimension not found= "+dimName);
+          
         } finally {
           close(ncd);
         }

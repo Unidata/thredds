@@ -445,6 +445,8 @@ public class AWIPSConvention extends CoordSysBuilder {
     double min = findAttributeDouble(ds, "xMin");
     double max = findAttributeDouble(ds, "xMax");
     double d = findAttributeDouble(ds, "dx");
+    if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d)) return null;
+
     CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, "degrees_east", "longitude");
     ds.setValues(v, n, min, d);
     v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
@@ -461,6 +463,8 @@ public class AWIPSConvention extends CoordSysBuilder {
     double min = findAttributeDouble(ds, "yMin");
     double max = findAttributeDouble(ds, "yMax");
     double d = findAttributeDouble(ds, "dy");
+    if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d)) return null;
+
     CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, "degrees_north", "latitude");
     ds.setValues(v, n, min, d);
     v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
@@ -576,6 +580,10 @@ public class AWIPSConvention extends CoordSysBuilder {
 
   private double findAttributeDouble( NetcdfDataset ds, String attname) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
+    if (att == null) {
+      parseInfo.append("ERROR cant find attribute=").append(attname).append("\n");
+      return Double.NaN;
+    }
     return att.getNumericValue().doubleValue();
   }
 
