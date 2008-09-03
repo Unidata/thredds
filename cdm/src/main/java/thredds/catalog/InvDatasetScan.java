@@ -272,6 +272,7 @@ public class InvDatasetScan extends InvCatalogRef {
    */
   public void setScanLocation(String scanLocation )
   {
+    // ToDo LOOK Instead hand InvDatasetScan (or InvCatFactory?) an algorithm for converting an aliased location.
     if ( ! scanLocation.equals( this.scanLocation))
     {
       this.isValid = true;

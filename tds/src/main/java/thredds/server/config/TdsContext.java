@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import thredds.util.filesource.*;
+import thredds.servlet.ThreddsConfig;
 
 /**
  * _more_
@@ -203,6 +204,11 @@ public class TdsContext
 
     if ( this.tdsConfigHtml != null )
       this.tdsConfigHtml.init( this);
+
+    // read in persistent user-defined params from threddsConfog.xml
+    File tdsConfigFile = this.configSource.getFile( this.getTdsConfigFileName() );
+    ThreddsConfig.init( servletContext, tdsConfigFile.getPath(), log );
+
   }
 
   public String getWebappName()

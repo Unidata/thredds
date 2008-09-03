@@ -46,7 +46,7 @@ public class ThreddsConfig {
   //private static HashMap paramHash;
   private static List<String> catalogRoots;
 
-  static void init(javax.servlet.ServletContext context, String filename, org.slf4j.Logger log) {
+  public static void init(javax.servlet.ServletContext context, String filename, org.slf4j.Logger log) {
     _context = context;
     _filename = filename;
 

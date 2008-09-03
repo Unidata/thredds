@@ -56,12 +56,50 @@ public class DataRootHandler {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
 
+  // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
+  static private DataRootHandler singleton = null;
+
+  /**
+   * Initialize the DataRootHandler singleton instance.
+   * <p/>
+   * This method should only be called once. Additional calls will be ignored.
+   *
+   * @param drh the singleton instance of DataRootHandler being used
+   */
+  static public void setInstance( DataRootHandler drh )
+  {
+    if ( singleton != null )
+    {
+      log.warn( "setInstance(): Singleton already set: ignoring call." );
+      return;
+    }
+    singleton = drh;
+  }
+
+  /**
+   * Get the singleton.
+   * <p/>
+   * The setInstance() method must be called before this method is called.
+   *
+   * @return the singleton instance.
+   * @throws IllegalStateException if setInstance() has not been called.
+   */
+  static public DataRootHandler getInstance()
+  {
+    if ( singleton == null )
+    {
+      log.error( "getInstance(): Called without setInstance() having been called." );
+      throw new IllegalStateException( "setInstance() must be called first." );
+    }
+    return singleton;
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private final TdsContext tdsContext;
-//   * @param contentPath all catalogs are reletive to this file path, eg {tomcat_home}/content/thredds
-  private final String contentPath;
-//    * @param servletContextPath all catalogs are reletive to this URL path, eg thredds
-  private final String servletContextPath;
+////   * @param contentPath all catalogs are reletive to this file path, eg {tomcat_home}/content/thredds
+//  private final String contentPath;
+////    * @param servletContextPath all catalogs are reletive to this URL path, eg thredds
+//  private final String servletContextPath;
 
   // @GuardedBy("this") LOOK should be able to access without synchronization
   private HashMap<String,InvCatalogImpl> staticCatalogHash; // Hash of static catalogs, key = path
@@ -81,8 +119,6 @@ public class DataRootHandler {
   public DataRootHandler( TdsContext tdsContext )
   {
     this.tdsContext = tdsContext;
-    this.contentPath = null;
-    this.servletContextPath = null;
     this.staticCatalogHash = new HashMap<String,InvCatalogImpl>();
   }
 
@@ -93,7 +129,6 @@ public class DataRootHandler {
 
     this.makeDebugActions();
     DatasetHandler.makeDebugActions();
-
   }
 
   void initCatalogs()
@@ -112,8 +147,8 @@ public class DataRootHandler {
       return;
 
     // see if extraCatalogs.txt exists
-    File file = new File( contentPath + "extraCatalogs.txt" );
-    if ( file.exists() )
+    File file = this.tdsContext.getConfigFileSource().getFile( "extraCatalogs.txt" );
+    if ( file != null && file.exists() )
     {
 
       try
@@ -192,7 +227,7 @@ public class DataRootHandler {
       }
       catch ( Throwable e )
       {
-        logCatalogInit.error( "Error initializing catalog " + catName + "; " + e.getMessage(), e );
+        logCatalogInit.error( "initCatalogs(): Error initializing catalog " + catName + "; " + e.getMessage(), e );
       }
     }
 
@@ -222,33 +257,24 @@ public class DataRootHandler {
    * @throws IOException if reading catalog fails
    */
   private void initCatalog(String path, boolean recurse ) throws IOException {
-    String catalogFullPath = contentPath + path;
-    File f = new File(catalogFullPath);
-    String s1 = f.getCanonicalPath();
-    catalogFullPath = StringUtil.replace(s1,'\\',"/");
-    
-    // Check that the catalog is under the content path directory and
-    // handle it gracefully rather than throw StringIndexOutOfBoundsException.
-    if ( ! catalogFullPath.startsWith( contentPath ))
+    File f = this.tdsContext.getConfigFileSource().getFile( path );
+
+    if ( f == null )
     {
-      logCatalogInit.error( "initCatalog(): Path <" + path + "> points outside of content path <" + contentPath + "> (skip).");
+      logCatalogInit.error( "initCatalog(): Catalog [" + path + "] does not exist in config directory." );
       return;
-    }
-    if ( path.matches( "\\.{1,2}/.*" ) || path.matches( ".*/\\.{1,2}/.*"))
-    {
-      path = catalogFullPath.substring( contentPath.length() );
     }
 
     // make sure we dont already have it
       if ( staticCatalogHash.containsKey(path)) { // This method only called by synchronized methods.
-        logCatalogInit.warn("DataRootHandler.initCatalog has already seen catalog=" + catalogFullPath + " possible loop (skip)");
+        logCatalogInit.warn("initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
         return;
       }
 
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(true); // always validate the config catalogs
-    InvCatalogImpl cat = readCatalog( factory, path, catalogFullPath );
+    InvCatalogImpl cat = readCatalog( factory, path, f.getPath() );
     if ( cat == null ) {
-      logCatalogInit.warn( "initCatalog(): failed to read catalog <" + catalogFullPath + ">." );
+      logCatalogInit.warn( "initCatalog(): failed to read catalog <" + f.getPath() + ">." );
       return;
     }
 
@@ -412,14 +438,15 @@ public class DataRootHandler {
           }
 
           String path;
-          if ( href.startsWith( this.servletContextPath + "/" ) )
+          String contextPathPlus = this.tdsContext.getContextPath() + "/";
+          if ( href.startsWith( contextPathPlus ) )
           {
-            path = href.substring( 9 ); // absolute starting from content root
+            path = href.substring( contextPathPlus.length() ); // absolute starting from content root
           }
           else if ( href.startsWith( "/" ) )
           {
             // Drop the catRef because it points to a non-TDS served catalog.
-            logCatalogInit.warn( "**Warning: Skipping catalogRef <xlink:href=" + href + ">. Reference is relative to the server outside the context path <" + this.servletContextPath + "/" + ">. " +
+            logCatalogInit.warn( "**Warning: Skipping catalogRef <xlink:href=" + href + ">. Reference is relative to the server outside the context path [" + contextPathPlus + "]. " +
                       "Parent catalog info: Name=\"" + catref.getParentCatalog().getName() + "\"; Base URI=\"" + catref.getParentCatalog().getUriString() + "\"; dirPath=\"" + dirPath + "\"." );
             continue;
           }
@@ -459,8 +486,11 @@ public class DataRootHandler {
 
     // LOOK !!
     // rearrange scanDir if it starts with content
-    if (dscan.getScanLocation().startsWith("content/"))
-      dscan.setScanLocation(contentPath + "public/" + dscan.getScanLocation().substring(8));
+    if ( this.isContentAliasPath( dscan.getScanLocation() ) )
+    {
+      File file = replaceContentAliasPath( dscan.getScanLocation() );
+      dscan.setScanLocation( file.getPath() );
+    }
 
     // Check whether InvDatasetScan is valid before adding.
     if ( ! dscan.isValid() )
@@ -475,6 +505,18 @@ public class DataRootHandler {
 
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanLocation() + ">");
     return true;
+  }
+
+  private String contentAliasPath = "content/";
+  private boolean isContentAliasPath( String path )
+  {
+    return path.startsWith( this.contentAliasPath );
+  }
+  private File replaceContentAliasPath( String path )
+  {
+    if ( ! isContentAliasPath( path ))
+      return null;
+    return this.tdsContext.getPublicDocFileSource().getFile( path.substring( contentAliasPath.length() ) );
   }
 
   // Only called by synchronized methods
@@ -523,10 +565,13 @@ public class DataRootHandler {
     }
 
     // rearrange dirLocation if it starts with content
-    if (dirLocation.startsWith("content/"))
-      dirLocation = contentPath + "public/" + dirLocation.substring(8);
-
-    File file = new File(dirLocation);
+    File file = replaceContentAliasPath( dirLocation );
+    if ( file != null )
+    {
+      dirLocation = file.getPath();
+    }
+    else
+      file = new File(dirLocation);
     if (!file.exists()) {
       logCatalogInit.error("**Error: Data Root =" + path + " directory= <" + dirLocation + "> does not exist");
       return false;
@@ -1190,16 +1235,20 @@ public class DataRootHandler {
       if (expiresDateType != null) {
         if (expiresDateType.getDate().getTime() < System.currentTimeMillis()) {
           // If stale, re-read catalog from disk.
-          String catalogFullPath = contentPath + workPath;
-          log.info( "getCatalog(): Rereading expired catalog [" + catalogFullPath + "].");
-          InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
-          InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
+          File catFile = this.tdsContext.getConfigFileSource().getFile( workPath );
+          if ( catFile != null )
+          {
+            String catalogFullPath = catFile.getPath();
+            log.info( "getCatalog(): Rereading expired catalog [" + catalogFullPath + "].");
+            InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
+            InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
 
-          if (reReadCat != null) {
-            synchronized (this) {
-              staticCatalogHash.put(workPath, reReadCat);
+            if (reReadCat != null) {
+              synchronized (this) {
+                staticCatalogHash.put(workPath, reReadCat);
+              }
+              catalog = reReadCat;
             }
-            catalog = reReadCat;
           }
         }
       }
@@ -1281,9 +1330,10 @@ public class DataRootHandler {
     if ( ! path.startsWith( "tdr"))
       return null;
 
-    String catalogFullPath = contentPath + path;
-    File catFile = new File( catalogFullPath);
-    if (!catFile.exists()) return null;
+    File catFile = this.tdsContext.getConfigFileSource().getFile( path );
+    if ( catFile == null )
+      return null;
+    String catalogFullPath = catFile.getPath();
 
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false); // no validation
     InvCatalogImpl cat = readCatalog( factory, path, catalogFullPath );
@@ -1571,13 +1621,13 @@ public class DataRootHandler {
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
             e.pw.print(" <b>" + ds.path+"</b>");
-            String url = servletContextPath + "/dataDir/" + ds.path+"/";
+            String url = DataRootHandler.this.tdsContext.getContextPath() + "/dataDir/" + ds.path+"/";
             if (ds.fmrc == null) {
               String type = (ds.scan == null) ? "root":"scan";
               e.pw.println(" for "+type+" directory= <a href='" +url+"'>"+ds.dirLocation+"</a> ");
             } else {
               if (ds.dirLocation == null) {
-                url = servletContextPath + "/"+ ds.path;
+                url = DataRootHandler.this.tdsContext.getContextPath() + "/"+ ds.path;
                 e.pw.println("  for fmrc= <a href='" +url+"'>"+ds.fmrc.getXlinkHref()+"</a>");
               } else {
                 e.pw.println("  for fmrc= <a href='" +url+"'>"+ds.dirLocation+"</a>");
