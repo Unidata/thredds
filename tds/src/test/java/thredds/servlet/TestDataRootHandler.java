@@ -2,6 +2,7 @@ package thredds.servlet;
 
 import junit.framework.*;
 import thredds.TestAll;
+import thredds.server.config.TdsContext;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.crawlabledataset.filter.WildcardMatchOnNameFilter;
 import thredds.crawlabledataset.filter.MultiSelectorFilter;
@@ -18,6 +19,9 @@ import java.net.URISyntaxException;
 
 import ucar.unidata.util.TestUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.mock.web.MockServletContext;
+
+import javax.servlet.ServletContext;
 
 /**
  * _more_
@@ -536,7 +540,22 @@ public class TestDataRootHandler extends TestCase
 
     // Call DataRootHandler.init() to point to contentPath directory
     //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
-    DataRootHandler drh = DataRootHandler.getInstance();
+    TdsContext tdsContext = new TdsContext();
+    tdsContext.setMajorVersion( 0 );
+    tdsContext.setMinorVersion( 0 );
+    tdsContext.setBugfixVersion( 0 );
+    tdsContext.setBuildVersion( 0 );
+    tdsContext.setWebappBuildDate( "2008-09-04T22:44Z" );
+    tdsContext.setContentPath( "thredds" );
+    tdsContext.setStartupContentPath( "startup" );
+    tdsContext.setIddContentPath( "idd" );
+    tdsContext.setMotherlodeContentPath( "motherlode" );
+    tdsContext.setTdsConfigFileName( "threddsConfig.xml" );
+    MockServletContext sc = new MockServletContext();
+    sc.setContextPath( "/thredds"  );
+    tdsContext.init( sc );
+    DataRootHandler drh = new DataRootHandler( tdsContext ); // DataRootHandler.getInstance();
+    drh.init();
 
     // Call DataRootHandler.initCatalog() on the config catalog
     try
