@@ -1,4 +1,3 @@
-// $Id: TestTimeCoverage.java 61 2006-07-12 21:36:00Z edavis $
 /*
  * Copyright 1997-2006 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
@@ -88,26 +87,5 @@ public class TestTimeCoverage  extends TestCase {
     TimeUnit tu = d.getTimeUnit();
     assert tu.getUnitString().equals("days") : tu.getUnitString(); // LOOK should be 3 hours, or hours or ??
  }
+
 }
-
-/* Change History:
-   $Log: TestTimeCoverage.java,v $
-   Revision 1.4  2006/06/06 16:17:08  caron
-   *** empty log message ***
-
-   Revision 1.3  2006/05/08 02:47:20  caron
-   cleanup code for 1.5 compile
-   modest performance improvements
-   dapper reading, deal with coordinate axes as structure members
-   improve DL writing
-   TDS unit testing
-
-   Revision 1.2  2006/02/14 01:01:02  caron
-   SpatialCOverage may hav enull ranges.
-   tweak Validator - add regular field for  axes.
-   change TDS version header, must be "dods/version"
-
-   Revision 1.1  2005/05/26 01:58:01  caron
-   fix DateRange bugs
-
-*/

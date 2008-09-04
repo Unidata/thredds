@@ -16,6 +16,7 @@ public class TestUnitsAll {
     suite.addTest(new TestSuite(TestSimpleUnits.class));
     //suite.addTest(new TestSuite(TestTimeUnits.class));
     suite.addTest(new TestSuite(TestDateUnits.class));
+    suite.addTest(new TestSuite(TestDateRange.class));
 
     return suite;
   }
