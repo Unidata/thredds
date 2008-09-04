@@ -85,7 +85,7 @@ public class TestDataRootHandler extends TestCase
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
-    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
+    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
     DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
@@ -174,7 +174,7 @@ public class TestDataRootHandler extends TestCase
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
-    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
+    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
     DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
@@ -275,7 +275,7 @@ public class TestDataRootHandler extends TestCase
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
-    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
+    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
     DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
@@ -411,7 +411,7 @@ public class TestDataRootHandler extends TestCase
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
-    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
+    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
     DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
@@ -535,7 +535,7 @@ public class TestDataRootHandler extends TestCase
     writeConfigCatalog( outsideContentDirCat, new File( tmpDir, "catalog.xml") );
 
     // Call DataRootHandler.init() to point to contentPath directory
-    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
+    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
     DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
@@ -616,7 +616,7 @@ public class TestDataRootHandler extends TestCase
     writeConfigCatalog( catalog2, new File( contentDir, cat2Filename) );
 
     // Call DataRootHandler.init() to point to contentPath directory
-    DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
+    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
     DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog

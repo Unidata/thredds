@@ -127,8 +127,9 @@ public class TdsContext
     }
     else
     {
-      StringBuilder ver = new StringBuilder( this.webappMajorVersion);
-      ver.append( ".").append( this.webappMinorVersion);
+      StringBuilder ver = new StringBuilder();
+      ver.append( this.webappMajorVersion)
+              .append( ".").append( this.webappMinorVersion);
       this.webappVersion = ver.toString();
 
       if ( this.webappBugfixVersion > -1 )

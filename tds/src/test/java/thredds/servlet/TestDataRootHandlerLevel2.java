@@ -67,7 +67,7 @@ public class TestDataRootHandlerLevel2 extends TestCase
 //                file1.equals( file2 ));
 
     // Call DataRootHandler.init() to point to contentPath directory
-    DataRootHandler.init( fullCanonicalTestDirPath, "/thredds" );
+    //DataRootHandler.init( fullCanonicalTestDirPath, "/thredds" );
     DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog

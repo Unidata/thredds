@@ -89,7 +89,7 @@ public class ExampleThreddsServlet extends HttpServlet
     // handles all catalogs, including ones with DatasetScan elements, ie dynamic
     InvDatasetScan.setContext( ServletUtil.getContextPath() );
     InvDatasetScan.setCatalogServletName( "");
-    DataRootHandler.init( contentPath, ServletUtil.getContextPath() );
+    //DataRootHandler.init( contentPath, ServletUtil.getContextPath() );
     dataRootHandler = DataRootHandler.getInstance();
     List<String> cats = new ArrayList<String>();
     cats.add( "catalog.xml");
