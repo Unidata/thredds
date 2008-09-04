@@ -102,14 +102,17 @@ public class ThreddsConfig {
     }
 
     Element contentRootsElem = rootElem.getChild( "contentRoots" );
-    List<Element> contentRootElemList = contentRootsElem.getChildren( "contentRoot" );
-    for ( Element curRoot : contentRootElemList )
+    if ( contentRootsElem != null )
     {
-      String location = curRoot.getTextNormalize();
-      if ( ! location.isEmpty() )
+      List<Element> contentRootElemList = contentRootsElem.getChildren( "contentRoot" );
+      for ( Element curRoot : contentRootElemList )
       {
-        contentRootList.add( location );
-        log.debug( "ThreddsConfig: adding contentRoot [" + location + "]." );
+        String location = curRoot.getTextNormalize();
+        if ( ! location.isEmpty() )
+        {
+          contentRootList.add( location );
+          log.debug( "ThreddsConfig: adding contentRoot [" + location + "]." );
+        }
       }
     }
 

@@ -35,6 +35,7 @@ public class TdsConfigContextListener
     DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
 
     catHandler.registerConfigListener( new RestrictedAccessConfigListener() );
+    catHandler.init();
     DataRootHandler.setInstance( catHandler );
 
     logger.debug( "contextInitialized(): done.");
