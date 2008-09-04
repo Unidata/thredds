@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <threddsConfig>
 
+  <contentRoots>
+    <contentRoot>content</contentRoot>
+    <!--contentRoot>idd</contentRoot-->
+    <contentRoot>motherlode</contentRoot>
+  </contentRoots>
+
   <catalogRoot>topcatalog.xml</catalogRoot>
   <catalogRoot>gempakTestCat.xml</catalogRoot>
 

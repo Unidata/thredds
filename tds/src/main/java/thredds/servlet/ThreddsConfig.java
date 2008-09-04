@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.Collections;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.JDOMException;
@@ -45,6 +46,7 @@ public class ThreddsConfig {
 
   //private static HashMap paramHash;
   private static List<String> catalogRoots;
+  private static List<String> contentRootList;
 
   public static void init(javax.servlet.ServletContext context, String filename, org.slf4j.Logger log) {
     _context = context;
@@ -56,6 +58,7 @@ public class ThreddsConfig {
   static void readConfig(org.slf4j.Logger log) {
     //paramHash = new HashMap();
     catalogRoots = new ArrayList<String>();
+    contentRootList = new ArrayList<String>();
 
     File file = new File(_filename);
     if (!file.exists()) return;
@@ -98,6 +101,18 @@ public class ThreddsConfig {
       }
     }
 
+    Element contentRootsElem = rootElem.getChild( "contentRoots" );
+    List<Element> contentRootElemList = contentRootsElem.getChildren( "contentRoot" );
+    for ( Element curRoot : contentRootElemList )
+    {
+      String location = curRoot.getTextNormalize();
+      if ( ! location.isEmpty() )
+      {
+        contentRootList.add( location );
+        log.debug( "ThreddsConfig: adding contentRoot [" + location + "]." );
+      }
+    }
+
     // viewer plug-in
     List<Element> viewerList = rootElem.getChildren("Viewer");
     for (Element elem : viewerList) {
@@ -126,6 +141,11 @@ public class ThreddsConfig {
 
   static void getCatalogRoots(List<String> extraList) {
     extraList.addAll( catalogRoots);
+  }
+
+  public static List<String> getContentRootList()
+  {
+    return Collections.unmodifiableList( contentRootList);
   }
 
   /* static public String getInitParameter(String name, String defaultValue) {

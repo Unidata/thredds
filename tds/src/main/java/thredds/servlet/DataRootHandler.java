@@ -96,10 +96,6 @@ public class DataRootHandler {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private final TdsContext tdsContext;
-////   * @param contentPath all catalogs are reletive to this file path, eg {tomcat_home}/content/thredds
-//  private final String contentPath;
-////    * @param servletContextPath all catalogs are reletive to this URL path, eg thredds
-//  private final String servletContextPath;
 
   // @GuardedBy("this") LOOK should be able to access without synchronization
   private HashMap<String,InvCatalogImpl> staticCatalogHash; // Hash of static catalogs, key = path

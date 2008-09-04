@@ -155,7 +155,8 @@ public class TdsContext
     if ( ! this.contentDirectory.exists() || ! this.contentDirectory.isDirectory() )
     {
       String tmpMsg = "Creation of content directory failed";
-      log.error( "init(): " + tmpMsg + " <" + this.contentDirectory.getAbsolutePath() + ">" );
+      log.error( "init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
+      System.out.println( "ERROR - TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]." );
       this.contentDirectory = this.startupContentDirectory;
       this.contentDirSource = this.startupContentDirSource;
       this.contentDirectoryWritable = false;
@@ -167,12 +168,16 @@ public class TdsContext
       this.contentDirectoryWritable = this.contentDirectory.canWrite();
     }
 
+    // read in persistent user-defined params from threddsConfig.xml
+    File tdsConfigFile = this.contentDirSource.getFile( this.getTdsConfigFileName() );
+    ThreddsConfig.init( servletContext, tdsConfigFile.getPath(), log );
+
     File logDir = new File( this.contentDirectory, "logs");
     if ( ! logDir.exists())
     {
       if ( ! logDir.mkdirs())
       {
-        System.out.println( "Couldn't create TDS log directory [" + logDir.getPath() + "]." );
+        System.out.println( "ERROR - TdsContext.init(): Couldn't create TDS log directory [" + logDir.getPath() + "]." );
       }
     }
     System.setProperty( "tds.log.dir", logDir.getPath() ); // variable substitution
@@ -191,10 +196,23 @@ public class TdsContext
             new BasicWithExclusionsDescendantFileSource( this.contentDirectory,
                                                          Collections.singletonList( "public" ) );
     chain.add( contentMinusPublicSource );
-    if ( false )
+    for ( String curContentRoot : ThreddsConfig.getContentRootList() )
     {
-      chain.add( this.iddContentPublicDirSource );
-      chain.add( this.motherlodeContentPublicDirSource );
+      if ( curContentRoot.equalsIgnoreCase( "idd" ))
+        chain.add( this.iddContentPublicDirSource );
+      else if ( curContentRoot.equalsIgnoreCase( "motherlode" ))
+        chain.add( this.motherlodeContentPublicDirSource );
+      else
+      {
+        try
+        {
+          chain.add( new BasicDescendantFileSource( StringUtils.cleanPath( curContentRoot ) ) );
+        }
+        catch ( IllegalArgumentException e )
+        {
+          System.out.println( "WARN - TdsContext.init(): Couldn't add content root [" + curContentRoot + "]: " + e.getMessage() );
+        }
+      }
     }
     this.configSource = new ChainedFileSource( chain );
     this.publicDocSource = this.publicContentDirSource; // allow for chain?
@@ -204,11 +222,6 @@ public class TdsContext
 
     if ( this.tdsConfigHtml != null )
       this.tdsConfigHtml.init( this);
-
-    // read in persistent user-defined params from threddsConfog.xml
-    File tdsConfigFile = this.configSource.getFile( this.getTdsConfigFileName() );
-    ThreddsConfig.init( servletContext, tdsConfigFile.getPath(), log );
-
   }
 
   public String getWebappName()
