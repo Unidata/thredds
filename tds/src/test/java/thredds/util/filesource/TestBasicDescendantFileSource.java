@@ -161,6 +161,9 @@ public class TestBasicDescendantFileSource extends TestCase
     assertNull( bfl.getFile( "../tmp/dir1"));
     // Test getFile() with absolute path.
     assertNull( bfl.getFile( tmpDir.getAbsolutePath()));
+    // Test getFile()
+    assertNotNull( bfl.getFile( ""));
+    assertTrue( bfl.getFile( "").equals( tmpDir.getAbsoluteFile()));
     assertNotNull( bfl.getFile( "dir1"));
     assertNull( bfl.getFile( "dir1/noFile"));
     assertNotNull( bfl.getFile( "dir1/file1_1"));

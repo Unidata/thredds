@@ -39,6 +39,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.io.*;
 
+import org.springframework.util.StringUtils;
+
 /**
  * The DataRootHandler manages all the "data roots" for a given web application
  * and provides mappings from URLs to catalog and data objects (e.g.,
@@ -239,6 +241,7 @@ public class DataRootHandler {
    * @throws IOException if reading catalog fails
    */
   synchronized void initCatalog(String path) throws IOException {
+    path = StringUtils.cleanPath( path );
     logCatalogInit.info("\n**************************************\nCatalog init "+path + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
     initCatalog(path, true);
   }
@@ -253,6 +256,7 @@ public class DataRootHandler {
    * @throws IOException if reading catalog fails
    */
   private void initCatalog(String path, boolean recurse ) throws IOException {
+    path = StringUtils.cleanPath( path );
     File f = this.tdsContext.getConfigFileSource().getFile( path );
 
     if ( f == null )
@@ -484,14 +488,13 @@ public class DataRootHandler {
     // rearrange scanDir if it starts with content
     if ( this.isContentAliasPath( dscan.getScanLocation() ) )
     {
-      File file = replaceContentAliasPath( dscan.getScanLocation() );
-      dscan.setScanLocation( file.getPath() );
+      dscan.setScanLocation( replaceContentAliasPath( dscan.getScanLocation() ) );
     }
 
     // Check whether InvDatasetScan is valid before adding.
     if ( ! dscan.isValid() )
     {
-      logCatalogInit.error( dscan.getInvalidMessage());
+      logCatalogInit.error( dscan.getInvalidMessage() + "\n... Dropping this datasetScan [" + path + "].");
       return false;
     }
 
@@ -508,11 +511,12 @@ public class DataRootHandler {
   {
     return path.startsWith( this.contentAliasPath );
   }
-  private File replaceContentAliasPath( String path )
+  private String replaceContentAliasPath( String path )
   {
     if ( ! isContentAliasPath( path ))
       return null;
-    return this.tdsContext.getPublicDocFileSource().getFile( path.substring( contentAliasPath.length() ) );
+    return StringUtils.cleanPath( this.tdsContext.getPublicDocFileSource().getFile( "").getPath())
+            + path.substring( contentAliasPath.length() - 1 );
   }
 
   // Only called by synchronized methods
@@ -561,14 +565,14 @@ public class DataRootHandler {
     }
 
     // rearrange dirLocation if it starts with content
-    File file = replaceContentAliasPath( dirLocation );
-    if ( file != null )
+    String newDirLoc = replaceContentAliasPath( dirLocation );
+    if ( newDirLoc != null )
     {
-      dirLocation = file.getPath();
+      dirLocation = newDirLoc;
     }
-    else
-      file = new File(dirLocation);
-    if (!file.exists()) {
+    File file = new File(dirLocation);
+    if ( ! file.exists())
+    {
       logCatalogInit.error("**Error: Data Root =" + path + " directory= <" + dirLocation + "> does not exist");
       return false;
     }

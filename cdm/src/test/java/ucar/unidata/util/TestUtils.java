@@ -4,6 +4,7 @@ import junit.framework.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * Static utililities for testing
@@ -13,6 +14,51 @@ import java.io.IOException;
  */
 public class TestUtils
 {
+  /**
+   * Creates a new temporary directory in the specified directory. The name
+   * of the new directory is generated with the given prefix string followed
+   * by a random string. Returns null if the given directory does not exist
+   * or a temporary directory cannot be created.
+   *
+   * The temporary directory and any content will be deleted on termination
+   * of the VM (i.e., deleteOnExit() has been called on the directory).
+   *
+   * @param prefix a prefix for the name of the temporary file.
+   * @param directory the directory in which to create the temporary directory.
+   * @return the File representing the newly created temporary directory.
+   *
+   * @throws IllegalArgumentException if the prefix is null or shorter than three characters or if the directory is null, does not exist, or is not a directory.
+   */
+  public static File createTempDirectory( String prefix, File directory )
+  {
+    if ( prefix == null )
+      throw new IllegalArgumentException( "Prefix may not be null.");
+    if ( prefix.length() < 3 )
+      throw new IllegalArgumentException( "Prefix must be at least three characters.");
+    if ( directory == null || ! directory.exists() || ! directory.isDirectory() )
+      throw new IllegalArgumentException( "Given directory must exist and be a directory.");
+
+    File newDir = null;
+    Random rand = new Random();
+    boolean success = false;
+    int numTries = 0;
+    while ( numTries < 5 )
+    {
+      newDir = new File( directory, prefix + "." + rand.nextInt( 1000000) );
+      if ( newDir.mkdir())
+      {
+        success = true;
+        break;
+      }
+      numTries++;
+    }
+    if ( ! success )
+      return null;
+
+    newDir.deleteOnExit();
+    return newDir;
+  }
+
   /**
    * Create a new directory for the given path. Fails if the directory already
    * exists or can't be created.

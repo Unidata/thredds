@@ -3,7 +3,7 @@ package thredds;
 import junit.framework.*;
 
 /**
- * _more_
+ * Tests that use zero:/upc/share
  *
  * @author edavis
  * @since May 7, 2007 10:58:38 AM
@@ -20,7 +20,6 @@ public class TestAllLevel2 extends TestCase
   {
 
     TestSuite suite = new TestSuite();
-    suite.addTestSuite( thredds.servlet.TestDataRootHandlerLevel2.class );
 
     return suite;
   }

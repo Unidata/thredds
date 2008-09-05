@@ -171,7 +171,8 @@ public class TdsContext
 
     // read in persistent user-defined params from threddsConfig.xml
     File tdsConfigFile = this.contentDirSource.getFile( this.getTdsConfigFileName() );
-    ThreddsConfig.init( servletContext, tdsConfigFile.getPath(), log );
+    String tdsConfigFilename = tdsConfigFile != null ? tdsConfigFile.getPath() : "";
+    ThreddsConfig.init( servletContext, tdsConfigFilename, log );
 
     File logDir = new File( this.contentDirectory, "logs");
     if ( ! logDir.exists())
@@ -216,7 +217,7 @@ public class TdsContext
       }
     }
     this.configSource = new ChainedFileSource( chain );
-    this.publicDocSource = this.publicContentDirSource; // allow for chain?
+    this.publicDocSource = this.publicContentDirSource;
 
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
