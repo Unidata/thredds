@@ -1,5 +1,6 @@
 package thredds.util;
 
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -22,13 +23,13 @@ public class StartsWithAliasReplacement
 
   public boolean containsPathAlias( String path )
   {
-    //path = StringUtils
+    path = StringUtils.cleanPath( path );
     return path.startsWith( "alias/" );
-    return false;
   }
 
   public String replacePathAlias( String path )
   {
+    path = StringUtils.cleanPath( path );
     return null;
   }
 }
