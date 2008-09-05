@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import ucar.unidata.util.TestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.core.io.FileSystemResourceLoader;
 
 import javax.servlet.ServletContext;
 
@@ -38,6 +39,8 @@ public class TestDataRootHandler extends TestCase
   private File tmpDir;
   private File contentDir;
 
+  private DataRootHandler drh;
+
   public TestDataRootHandler( String name )
   {
     super( name );
@@ -49,6 +52,25 @@ public class TestDataRootHandler extends TestCase
     tmpDir = TestUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestDataRootHandler" );
     contentDir = TestUtils.addDirectory( tmpDir, "contentPath" );
 
+    // Create, configure, and initialize a DataRootHandler.
+    TdsContext tdsContext = new TdsContext();
+    tdsContext.setMajorVersion( 0 );
+    tdsContext.setMinorVersion( 0 );
+    tdsContext.setBugfixVersion( 0 );
+    tdsContext.setBuildVersion( 0 );
+    tdsContext.setWebappBuildDate( "2008-09-04T22:44Z" );
+    tdsContext.setContentPath( "thredds" );
+    tdsContext.setStartupContentPath( "WEB-INF/altContent/startup" );
+    tdsContext.setIddContentPath( "WEB-INF/altContent/idd/thredds" );
+    tdsContext.setMotherlodeContentPath( "WEB-INF/altContent/motherlode/thredds" );
+    tdsContext.setTdsConfigFileName( "threddsConfig.xml" );
+    MockServletContext sc = new MockServletContext( "target/war", new FileSystemResourceLoader() );
+    sc.setContextPath( "/thredds" );
+    sc.setServletContextName( "THREDDS Data Server" );
+    tdsContext.init( sc );
+    drh = new DataRootHandler( tdsContext ); // DataRootHandler.getInstance();
+    drh.init();
+    DataRootHandler.setInstance( drh );
   }
   protected void tearDown()
   {
@@ -87,10 +109,6 @@ public class TestDataRootHandler extends TestCase
     InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
                                                   dsScanLocation, null, null, null );
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
-
-    // Call DataRootHandler.init() to point to contentPath directory
-    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
-    DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
     try
@@ -176,10 +194,6 @@ public class TestDataRootHandler extends TestCase
     InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
                                                   dsScanLocation, null, null, null );
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
-
-    // Call DataRootHandler.init() to point to contentPath directory
-    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
-    DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
     try
@@ -277,10 +291,6 @@ public class TestDataRootHandler extends TestCase
     InvCatalogImpl catalog = createConfigCatalog( catalogName, dsScanName, dsScanPath,
                                                   dsScanLocation, null, null, null );
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
-
-    // Call DataRootHandler.init() to point to contentPath directory
-    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
-    DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
     try
@@ -414,10 +424,6 @@ public class TestDataRootHandler extends TestCase
                                                   dsScanLocation, null, null, null );
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
-    // Call DataRootHandler.init() to point to contentPath directory
-    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
-    DataRootHandler drh = DataRootHandler.getInstance();
-
     // Call DataRootHandler.initCatalog() on the config catalog
     try
     {
@@ -538,25 +544,6 @@ public class TestDataRootHandler extends TestCase
                                                           "*.grib2", null, null );
     writeConfigCatalog( outsideContentDirCat, new File( tmpDir, "catalog.xml") );
 
-    // Call DataRootHandler.init() to point to contentPath directory
-    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
-    TdsContext tdsContext = new TdsContext();
-    tdsContext.setMajorVersion( 0 );
-    tdsContext.setMinorVersion( 0 );
-    tdsContext.setBugfixVersion( 0 );
-    tdsContext.setBuildVersion( 0 );
-    tdsContext.setWebappBuildDate( "2008-09-04T22:44Z" );
-    tdsContext.setContentPath( "thredds" );
-    tdsContext.setStartupContentPath( "startup" );
-    tdsContext.setIddContentPath( "idd" );
-    tdsContext.setMotherlodeContentPath( "motherlode" );
-    tdsContext.setTdsConfigFileName( "threddsConfig.xml" );
-    MockServletContext sc = new MockServletContext();
-    sc.setContextPath( "/thredds"  );
-    tdsContext.init( sc );
-    DataRootHandler drh = new DataRootHandler( tdsContext ); // DataRootHandler.getInstance();
-    drh.init();
-
     // Call DataRootHandler.initCatalog() on the config catalog
     try
     {
@@ -633,10 +620,6 @@ public class TestDataRootHandler extends TestCase
     InvCatalogImpl catalog2 = createConfigCatalog( "catalog 2", null, null, null,
                                                    null, null, null );
     writeConfigCatalog( catalog2, new File( contentDir, cat2Filename) );
-
-    // Call DataRootHandler.init() to point to contentPath directory
-    //DataRootHandler.init( fullCanonicalContentPath, "/thredds" );
-    DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
     try

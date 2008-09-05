@@ -2,11 +2,15 @@ package thredds.servlet;
 
 import junit.framework.TestCase;
 import thredds.TestAll;
+import thredds.server.config.TdsContext;
 import thredds.catalog.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.core.io.FileSystemResourceLoader;
 
 /**
  * _more_
@@ -18,9 +22,35 @@ public class TestDataRootHandlerLevel2 extends TestCase
 {
   private String level2DirPath = TestAll.upcShareThreddsDataDir + "TestDataRootHandlerLevel2";
 
+  private DataRootHandler drh;
+
   public TestDataRootHandlerLevel2( String name )
   {
     super( name );
+  }
+
+  protected void setUp()
+  {
+    // Create, configure, and initialize a DataRootHandler.
+    TdsContext tdsContext = new TdsContext();
+    tdsContext.setMajorVersion( 0 );
+    tdsContext.setMinorVersion( 0 );
+    tdsContext.setBugfixVersion( 0 );
+    tdsContext.setBuildVersion( 0 );
+    tdsContext.setWebappBuildDate( "2008-09-04T22:44Z" );
+    tdsContext.setContentPath( "thredds" );
+    tdsContext.setStartupContentPath( "WEB-INF/altContent/startup" );
+    tdsContext.setIddContentPath( "WEB-INF/altContent/idd/thredds" );
+    tdsContext.setMotherlodeContentPath( "WEB-INF/altContent/motherlode/thredds" );
+    tdsContext.setTdsConfigFileName( "threddsConfig.xml" );
+    MockServletContext sc = new MockServletContext( "target/war", new FileSystemResourceLoader() );
+    sc.setContextPath( "/thredds" );
+    sc.setServletContextName( "THREDDS Data Server" );
+    tdsContext.init( sc );
+    drh = new DataRootHandler( tdsContext ); // DataRootHandler.getInstance();
+    drh.init();
+    DataRootHandler.setInstance( drh );
+
   }
 
   /**
@@ -65,10 +95,6 @@ public class TestDataRootHandlerLevel2 extends TestCase
     }
 //    assertTrue( "Symbolic link catalog <" + symLinkToRegCatFile.getPath() + "> is not a symbolic link.",
 //                file1.equals( file2 ));
-
-    // Call DataRootHandler.init() to point to contentPath directory
-    //DataRootHandler.init( fullCanonicalTestDirPath, "/thredds" );
-    DataRootHandler drh = DataRootHandler.getInstance();
 
     // Call DataRootHandler.initCatalog() on the config catalog
     try
