@@ -18,11 +18,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import ucar.unidata.util.TestUtils;
-import org.springframework.util.StringUtils;
+
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.core.io.FileSystemResourceLoader;
-
-import javax.servlet.ServletContext;
 
 /**
  * _more_

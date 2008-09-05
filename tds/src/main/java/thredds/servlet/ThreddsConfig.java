@@ -32,6 +32,7 @@ import java.util.Collections;
 import org.jdom.input.SAXBuilder;
 import org.jdom.JDOMException;
 import org.jdom.Element;
+import org.springframework.util.StringUtils;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 
@@ -94,9 +95,9 @@ public class ThreddsConfig {
 
     List<Element> rootList = rootElem.getChildren("catalogRoot");
     for (Element catrootElem : rootList) {
-      String location = catrootElem.getText().trim();
+      String location = StringUtils.cleanPath( catrootElem.getTextNormalize() );
       if (location.length() > 0) {
-        catalogRoots.add(location);
+        catalogRoots.add( location );
         log.debug("ThreddsConfig: adding catalogRoot = " + location);
       }
     }
@@ -107,7 +108,7 @@ public class ThreddsConfig {
       List<Element> contentRootElemList = contentRootsElem.getChildren( "contentRoot" );
       for ( Element curRoot : contentRootElemList )
       {
-        String location = curRoot.getTextNormalize();
+        String location = StringUtils.cleanPath( curRoot.getTextNormalize() );
         if ( ! location.isEmpty() )
         {
           contentRootList.add( location );
