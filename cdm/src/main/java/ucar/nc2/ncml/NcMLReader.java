@@ -1255,7 +1255,7 @@ public class NcMLReader {
    * @see ucar.nc2.FileWriter#writeToFile
    */
   public static void writeNcMLToFile(String ncmlLocation, String fileOutName) throws IOException {
-    NetcdfDataset ncd = (NetcdfDataset) NetcdfDataset.acquireFile(ncmlLocation, null);
+    NetcdfFile ncd = NetcdfDataset.acquireFile(ncmlLocation, null);
     //int dataMode = (ncd.getReferencedFile() != null) ? 1 : 2;
     NetcdfFile ncdnew = ucar.nc2.FileWriter.writeToFile(ncd, fileOutName);
     ncd.close();

@@ -519,10 +519,12 @@ public class AggregationFmrc extends AggregationOuterDimension {
     List<Dataset> nestedDatasets = getDatasets();
     for (int i = 0; i < nestedDatasets.size(); i++) {
       Dataset dataset = nestedDatasets.get(i);
-      NetcdfDataset ncfile = null;
+      NetcdfDataset ncd = null;
       try {
-        ncfile = (NetcdfDataset) dataset.acquireFile(cancelTask);
-        VariableDS v = (VariableDS) ncfile.findVariable(timeAxis.getName());
+        NetcdfFile ncfile = dataset.acquireFile(cancelTask);
+        ncd = (ncfile instanceof NetcdfDataset) ? (NetcdfDataset) ncfile : new NetcdfDataset(ncfile);
+
+        VariableDS v = (VariableDS) ncd.findVariable(timeAxis.getName());
         if (v == null) {
           logger.warn("readTimeCoordinates: variable = " + timeAxis.getName() + " not found in file " + dataset.getLocation());
           return;
@@ -537,7 +539,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
           units = v.getUnitsString();
 
       } finally {
-        dataset.close(ncfile);
+        dataset.close( ncd);
       }
       if (cancelTask != null && cancelTask.isCancel()) return;
     }

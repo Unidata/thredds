@@ -152,15 +152,16 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     // make concurrent
     for (Dataset dataset : getDatasets()) {
-      NetcdfDataset ncfile = null;
+      NetcdfFile ncfile = null;
       try {
-        ncfile = (NetcdfDataset) dataset.acquireFile(cancelTask);
-        VariableDS v = (VariableDS) ncfile.findVariable(timeAxis.getName());
+        ncfile = dataset.acquireFile(cancelTask);
+        Variable v = ncfile.findVariable(timeAxis.getName());
         if (v == null) {
           logger.warn("readTimeCoordinates: variable = " + timeAxis.getName() + " not found in file " + dataset.getLocation());
           return;
         }
-        CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, v, null);
+        VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS(null, v, true);
+        CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, vds, null);
         java.util.Date[] dates = timeCoordVar.getTimeDates();
         for (Date d : dates)
           dateList.add(d);

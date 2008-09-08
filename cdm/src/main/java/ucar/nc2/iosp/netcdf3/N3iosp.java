@@ -269,8 +269,8 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     try {
       Formatter fout = new Formatter();
       double size = raf.length() / (1000.0 * 1000.0);
-      fout.format(" raf = %d%n" + raf.getLocation());
-      fout.format(" size= " + Format.dfrac(size, 3) + " Mb");
+      fout.format(" raf = %s%n", raf.getLocation());
+      fout.format(" size= %s%n", Format.dfrac(size, 3));
       return fout.toString();
     } catch (IOException e) {
       return e.getMessage();
