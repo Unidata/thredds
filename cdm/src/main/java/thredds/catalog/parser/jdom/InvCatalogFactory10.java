@@ -20,6 +20,7 @@
 
 package thredds.catalog.parser.jdom;
 
+import thredds.util.PathAliasReplacement;
 import thredds.catalog.*;
 import thredds.crawlabledataset.*;
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
@@ -81,6 +82,25 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     return catalog;
   } */
+
+  private List<PathAliasReplacement> dataRootLocAliasExpanders;
+  public void setDataRootLocationAliasExpanders( List<PathAliasReplacement> dataRootLocAliasExpanders)
+  {
+    this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>( dataRootLocAliasExpanders);
+  }
+  public List<PathAliasReplacement> getDataRootLocationAliasExpanders()
+  {
+    return Collections.unmodifiableList( this.dataRootLocAliasExpanders );
+  }
+  private String expandDataRootLocationAlias( String location )
+  {
+    for ( PathAliasReplacement par : this.dataRootLocAliasExpanders )
+    {
+      if ( par.containsPathAlias( location ))
+        return par.replacePathAlias( location );
+    }
+    return location;
+  }
 
   public InvCatalogImpl parseXML( InvCatalogFactory fac, org.jdom.Document jdomDoc, URI uri) {
     this.factory = fac;
@@ -302,7 +322,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     Element fmrcElem = dsElem.getChild( "fmrcInventory", defNS );
     if (fmrcElem != null) {
-      String location = fmrcElem.getAttributeValue("location");
+      String location = expandDataRootLocationAlias( fmrcElem.getAttributeValue("location"));
       String def = fmrcElem.getAttributeValue("fmrcDefinition");
       String suffix = fmrcElem.getAttributeValue("suffix");
       String olderThan = fmrcElem.getAttributeValue("olderThan");
@@ -335,7 +355,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
       String path = dsElem.getAttributeValue( "path" );
 
-      String scanDir = dsElem.getAttributeValue( "dirLocation" );
+      String scanDir = expandDataRootLocationAlias( dsElem.getAttributeValue( "dirLocation" ));
       String filter = dsElem.getAttributeValue( "filter" );
       String addDatasetSizeString = dsElem.getAttributeValue( "addDatasetSize" );
       String addLatest = dsElem.getAttributeValue( "addLatest" );
@@ -396,7 +416,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String name = dsElem.getAttributeValue( "name" );
     String path = dsElem.getAttributeValue( "path" );
 
-    String scanDir = dsElem.getAttributeValue( "location" );
+    String scanDir = expandDataRootLocationAlias( dsElem.getAttributeValue( "location" ));
 
     // Read datasetConfig element
     String configClassName = null;
@@ -1010,6 +1030,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String dirLocation = s.getAttributeValue("location");
     if ( dirLocation == null )
       dirLocation = s.getAttributeValue( "dirLocation" );
+    dirLocation = expandDataRootLocationAlias( dirLocation );
 
     if (path != null) {
       if (path.charAt(0) == '/') path = path.substring(1);
