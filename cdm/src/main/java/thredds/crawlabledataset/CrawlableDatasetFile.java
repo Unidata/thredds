@@ -153,7 +153,7 @@ public class CrawlableDatasetFile implements CrawlableDataset
 
   public boolean exists()
   {
-    return file.exists();
+    return file.exists() && file.canRead();
   }
 
   public boolean isCollection()
@@ -185,11 +185,19 @@ public class CrawlableDatasetFile implements CrawlableDataset
     }
 
     List<CrawlableDataset> list = new ArrayList<CrawlableDataset>();
-    for (File allFile : this.file.listFiles()) {
-      list.add(new CrawlableDatasetFile(this, allFile.getName()));
+    File[] files = this.file.listFiles();
+    if ( files == null )
+    {
+      log.error( "listDatasets(): the underlying file [" + this.file.getPath() + "] exists, is a directory, and canRead()==true but listFiles() returns null. This may be a problem Java has on Windows XP (Java 7 should fix).");
+      return Collections.emptyList();
+    }
+    for (File allFile : files ) {
+      CrawlableDatasetFile crDs = new CrawlableDatasetFile( this, allFile.getName() );
+      if ( crDs.exists())
+        list.add( crDs );
     }
 
-    return ( list );
+    return list;
   }
 
   public List<CrawlableDataset> listDatasets( CrawlableDatasetFilter filter ) throws IOException

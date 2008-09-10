@@ -110,10 +110,17 @@ public class DirectoryScan implements Scanner {
       throw new IllegalArgumentException(tmpMsg);
     }
 
-    for (File f : allDir.listFiles()) {
+    File[] files = allDir.listFiles();
+    if ( files == null )
+    {
+      logger.error( "scanDirectory(): the underlying file [" + dirName + "] exists, is a directory, and canRead()==true but listFiles() returns null. This may be a problem Java has on Windows XP (Java 7 should fix)." );
+      return;
+    }
+
+    for (File f : files ) {
       String location = f.getAbsolutePath();
 
-      if (f.isDirectory()) {
+      if (f.isDirectory() && f.canRead()) {
         if (wantSubdirs) scanDirectory(location, now, result, cancelTask);
 
       } else if (accept(location)) {

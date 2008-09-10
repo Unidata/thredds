@@ -98,12 +98,17 @@ public class CrawlableScanner implements Scanner {
   }
 
   private void scanDirectory(CrawlableDataset cd, long now, Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException {
+    if ( ! cd.exists() || ! cd.isCollection() )
+    {
+      logger.error( "scanDirectory(): the crawlableDataset to be scanned [" + cd.getPath() + "] does not exist or is not a collection.");
+      return;
+    }
     List<CrawlableDataset> children = cd.listDatasets();
 
     for (CrawlableDataset child : children) {
       if (debugScan && filter != null) System.out.println("filter " + child);
 
-      if (child.isCollection()) {
+      if (child.isCollection() && child.exists()) {
         if (wantSubdirs) scanDirectory(child, now, map, cancelTask);
 
       } else if ((filter == null) || filter.accept(child)) {
