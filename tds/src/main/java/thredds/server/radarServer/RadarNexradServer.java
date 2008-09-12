@@ -58,6 +58,7 @@ public class RadarNexradServer {
            // should be a more efficient way
            allVars.add( "DPA");
            allVars.add( "DHR");
+           allVars.add( "DSP");
            allVars.add( "N1P");
            allVars.add( "N0R");
            allVars.add( "N1R");
