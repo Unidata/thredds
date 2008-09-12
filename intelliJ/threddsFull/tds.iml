@@ -206,10 +206,6 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-dqcServletRedirect/resources" relative="/" />
         </webroots>
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
-          <root url="file://$MODULE_DIR$/../../tds/src/test/java" />
-        </sourceRoots>
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -365,10 +361,6 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-expThredds/resources" relative="/" />
         </webroots>
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
-          <root url="file://$MODULE_DIR$/../../tds/src/test/java" />
-        </sourceRoots>
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -530,10 +522,6 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-ethan" relative="/" />
         </webroots>
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
-          <root url="file://$MODULE_DIR$/../../tds/src/test/java" />
-        </sourceRoots>
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -585,11 +573,6 @@
           <containerElement type="library" name="stax" level="module">
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/lib" />
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../../bufr/resources/resources/bufr</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="0" />
@@ -669,6 +652,11 @@
           <containerElement type="library" level="module">
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/classes" />
+            <url>file://$MODULE_DIR$/../../../bufr/resources</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="/WEB-INF/classes" />
             <url>file://$MODULE_DIR$/../../../grib/resources</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -690,6 +678,11 @@
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/lib" />
             <url>jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+            <url>file://$MODULE_DIR$/../../../bufr/resources/resources/bufr</url>
           </containerElement>
         </packaging>
       </configuration>

@@ -164,9 +164,9 @@ dimensions:<br>   y = 428;<br>   x = 614;<br>   time = 2;<br>   depth_below_surf
 <h3>Implicit Coordinate System </h3>
 <p>When there is no <strong>_CoordinateSystems</strong> or <strong>_CoordinateAxes</strong> attribute on a data Variable, a list of coordinate axes is constructed from the list of Coordinate Variables  for the data Variable. If there are 2 or more axes, the Coordinate System for the variable is found by examining all Coordinate Systems and matching exactly its list of Coordinate Axes. If there is no existing Coordinate System  that matches, one is added, and this is called an <em><strong>implicit Coordinate System</strong></em>. </p>
 <h3>Assigning CoordinateTransforms</h3>
-<p>The only way to  add a Coordinate Transform to an implicit Coordinate System, is to add a <strong>_CoordinateAxes</strong> or <strong>_CoordinateAxesTypes</strong> attribute to the Coordinate Transform Variable listing the names or types of Coordinate Axes. The Coordinate Transform will be addded to any Coordinate System that contains all named axes. For example:</p>
+<p>The only way to  add a Coordinate Transform to an implicit Coordinate System, is to add a <strong>_CoordinateAxes</strong> or <strong>_CoordinateAxisTypes</strong> attribute to the Coordinate Transform Variable listing the names or types of Coordinate Axes. The Coordinate Transform will be addded to any Coordinate System that contains all named axes. For example:</p>
 <pre>   char ProjectionCoordinateSystem;<strong><br></strong>     ProjectionCoordinateSystem:_CoordinateTransformType = &quot;Projection&quot;;
-<strong>     ProjectionCoordinateSystem:_CoordinateAxesTypes = &quot;GeoX GeoY&quot;;</strong></pre>
+<strong>     ProjectionCoordinateSystem:_CoordinateAxisTypes = &quot;GeoX GeoY&quot;;</strong></pre>
 <p>will apply to any CoordinateSystem that has both <strong>GeoX</strong> and <strong>GeoY</strong> Coordinate axes.</p>
 <pre>   char VerticalCoordinateSystem;<strong><br></strong>     VerticalCoordinateSystem:_CoordinateTransformType = &quot;Vertical&quot;;
 <strong>     VerticalCoordinateSystem:_CoordinateAxes = &quot;hybrid&quot;;</strong>
@@ -214,7 +214,7 @@ dimensions:<br>   y = 428;<br>   x = 614;<br>   time = 2;<br>   depth_below_surf
 <p class="CDL">This means to apply it to any Coordinate System that includes the x and y Coordinate Axes.</p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 20, 2006
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 10, 2008
 </address>
 <p>&nbsp;</p>
 </body>

@@ -55,7 +55,7 @@
           </xsl:for-each>
         </table>
 
-        <a href="cdmValidateHelp.html">Validation Help</a>
+        <a href="../validateHelp.html">Validation Help</a>
 
       </body>
     </html>

@@ -51,6 +51,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.bufr.MessageScanner;
 import ucar.bufr.Message;
 import ucar.bufr.Dump;
+import ucar.bufr.DataDescriptor;
 
 /**
  * @author caron
@@ -100,7 +101,7 @@ public class BtServlet extends HttpServlet {
    * @throws java.io.IOException
    */
   public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+          throws ServletException, IOException {
 
     if (!allow) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
@@ -171,39 +172,73 @@ public class BtServlet extends HttpServlet {
   }
 
   private void showMessDDS(HttpServletResponse res, File file, String cacheName, int messno) throws IOException {
-    Message m = getBufrMessage(file, messno);
-    if (m == null) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, "message " + messno + " not found in " + cacheName);
-      return;
-    }
+    Message m = null;
+    try {
+      m = getBufrMessage(file, messno);
+      if (m == null) {
+        res.sendError(HttpServletResponse.SC_NOT_FOUND, "message " + messno + " not found in " + cacheName);
+        return;
+      }
 
-    res.setContentType("text/plain");
-    OutputStream out = res.getOutputStream();
-    Formatter f = new Formatter(out);
-    f.format("File %s message %d %n%n", cacheName, messno);
-    new Dump().dump(f, m);
-    f.flush();
+      res.setContentType("text/plain");
+      OutputStream out = res.getOutputStream();
+      Formatter f = new Formatter(out);
+      f.format("File %s message %d %n%n", cacheName, messno);
+      new Dump().dump(f, m);
+      f.flush();
+
+    } finally {
+      if (m != null) {
+        m.close();
+      }
+    }
   }
 
   private void showMessSize(HttpServletResponse res, File file, String cacheName, int messno) throws IOException {
-    Message m = getBufrMessage(file, messno);
-    if (m == null) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, "message " + messno + " not found in " + cacheName);
-      return;
-    }
+    Message m = null;
+    try {
+      m = getBufrMessage(file, messno);
+      if (m == null) {
+        res.sendError(HttpServletResponse.SC_NOT_FOUND, "message " + messno + " not found in " + cacheName);
+        return;
+      }
 
-    res.setContentType("text/plain");
-    OutputStream out = res.getOutputStream();
-    Formatter f = new Formatter(out);
-    f.format("File %s message %d %n%n", cacheName, messno);
-    new Dump().dump(f, m);
-    f.flush();
+      res.setContentType("text/plain");
+      OutputStream out = res.getOutputStream();
+      Formatter f = new Formatter(out);
+      f.format("File %s message %d %n%n", cacheName, messno);
+
+      try {
+        int nbitsCounted = m.calcTotalBits(f);
+        int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
+        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number
+
+        if (!ok) f.format("*** BAD BIT COUNT %n");
+        long last = m.dataSection.dataPos + m.dataSection.dataLength;
+        DataDescriptor root = m.getRootDataDescriptor();
+        f.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
+                m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
+                nbitsCounted, nbitsGiven);
+        f.format(" countBits= %d givenBits=%d %n", nbitsCounted, nbitsGiven);
+        f.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.dataLength);
+        f.format("%n");
+
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
+      }
+      f.flush();
+      
+    } finally {
+      if (m != null) {
+        m.close();
+      }
+    }
   }
 
   private void showMessData(HttpServletResponse res, File file, String cacheName, int messno) throws IOException {
     Message message = null;
     NetcdfDataset ncd = null;
-
     RandomAccessFile raf = null;
     try {
       raf = new RandomAccessFile(file.getPath(), "r");
@@ -213,48 +248,40 @@ public class BtServlet extends HttpServlet {
         message = scan.next();
         if (message == null) continue;
         if (count == messno) {
-          byte[] mbytes = scan.getMessageBytesFromLast( message);
+          byte[] mbytes = scan.getMessageBytesFromLast(message);
           NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
           ncd = new NetcdfDataset(ncfile);
+          break;
         }
         count++;
       }
-    } finally {
-      if (raf != null) raf.close();
-    }
 
-    if (ncd == null) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, "message " + messno + " not found in " + cacheName);
-      return;
-    }
+      if (ncd == null) {
+        res.sendError(HttpServletResponse.SC_NOT_FOUND, "message " + messno + " not found in " + cacheName);
+        return;
+      }
 
-    try {
       res.setContentType("text/plain");
       OutputStream out = res.getOutputStream();
       new Bufr2Xml(message, ncd, out);
       out.flush();
 
     } finally {
-      ncd.close();
+      if (ncd != null) ncd.close();
+      else if (raf != null) raf.close();
     }
   }
 
   private Message getBufrMessage(File file, int messno) throws IOException {
-    RandomAccessFile raf = null;
-    try {
-      raf = new RandomAccessFile(file.getPath(), "r");
-      MessageScanner scan = new MessageScanner(raf);
-      int count = 0;
-      while (scan.hasNext()) {
-        Message m = scan.next();
-        if (m == null) continue;
-        if (count == messno) return m;
-        count++;
-      }
-    } finally {
-      if (raf != null) raf.close();
+    RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
+    MessageScanner scan = new MessageScanner(raf);
+    int count = 0;
+    while (scan.hasNext()) {
+      Message m = scan.next();
+      if (m == null) continue;
+      if (count == messno) return m;
+      count++;
     }
-
     return null;
   }
 
@@ -344,7 +371,7 @@ public class BtServlet extends HttpServlet {
   }
 
   private void processUploadedFile(HttpServletRequest req, HttpServletResponse res, DiskFileItem item,
-                                   String username, boolean wantXml) throws Exception {
+          String username, boolean wantXml) throws Exception {
 
     if ((username == null) || (username.length() == 0)) username = "anon";
     username = StringUtil.filter(username, "_");
@@ -363,7 +390,7 @@ public class BtServlet extends HttpServlet {
       // debug
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
       FileOutputStream fout = new FileOutputStream("C:/temp/bufr.xml");
-      System.out.print(fmt.outputString(doc));
+      //System.out.print(fmt.outputString(doc));
       fmt.output(doc, fout);
 
       int len = showValidatorResults(res, doc, wantXml);
@@ -420,7 +447,7 @@ public class BtServlet extends HttpServlet {
       else {
         bufrMessage.setAttribute("size", "fail");
         bufrMessage.addContent(
-            new Element("ByteCount").setText("countBytes " + m.getCountedDataBytes() + " != " + m.dataSection.dataLength + " dataSize"));
+                new Element("ByteCount").setText("countBytes " + m.getCountedDataBytes() + " != " + m.dataSection.dataLength + " dataSize"));
       }
 
       bufrMessage.addContent(new Element("BitCount").setText("countBits " + nbitsCounted + " != " + nbitsGiven + " dataSizeBits"));

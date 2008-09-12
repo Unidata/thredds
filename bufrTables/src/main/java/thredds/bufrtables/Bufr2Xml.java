@@ -188,7 +188,8 @@ public class Bufr2Xml {
     if ((units != null) && !units.equals(name) && !units.startsWith("Code"))
       staxWriter.writeAttribute("units", v.getUnitsString());
 
-    String desc = v.findAttribute("BUFR:TableB_descriptor").getStringValue();
+    Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+    String desc = (att == null) ? "N/A" : att.getStringValue();
     staxWriter.writeAttribute("Bufr", desc); // */
 
     // write data value

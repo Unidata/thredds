@@ -151,7 +151,12 @@ public class ReadTdsLogs {
       count++;
 
       if (log.verb.equals("POST")) {
-        System.out.println(" *** skip " + log);
+        System.out.println(" *** skip POST " + log);
+        continue;
+      }
+
+      if (log.returnCode != 200) {
+        System.out.println(" *** skip failure " + log);
         continue;
       }
 
@@ -417,9 +422,9 @@ public class ReadTdsLogs {
     // */
 
     // sendRequests
-    read("d:/motherlode/logs/access.2008-05-29.log", new MClosure() {
+    read("d:/motherlode/logs/access.2008-09-12.log", new MClosure() {
       public void run(String filename) throws IOException {
-        new ReadTdsLogs().sendRequests(filename, "http://motherlode.ucar.edu:8081", 1000);
+        new ReadTdsLogs().sendRequests(filename, "http://newmotherlode.ucar.edu:8080", -1);
       }
     });
     System.out.println("total_sendRequest_time= " + total_sendRequest_time/1000/1000/1000+" secs");

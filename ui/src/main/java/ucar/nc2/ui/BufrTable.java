@@ -149,7 +149,7 @@ public class BufrTable extends JPanel {
 
         try {
           Formatter out = new Formatter();
-          int nbitsCounted = m.countBits(out);
+          int nbitsCounted = m.calcTotalBits(out);
           int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
           boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number
 

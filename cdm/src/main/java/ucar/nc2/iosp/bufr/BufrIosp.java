@@ -268,7 +268,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       readDataCompressed(reader, m.getRootDataDescriptor(), obsOffsetInMessage, bitCounter, bb);
     } else {
       BitCounterUncompressed bitCounter = m.getBitCounterUncompressed(obsOffsetInMessage);
-      readData(reader, bitCounter, 0, m2dd, abb, bb);
+      readDataUncompressed(reader, bitCounter, 0, m2dd, abb, bb);
     }
 
     if (construct.hasTime) {
@@ -277,7 +277,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
   }
 
-  private void readData(BitReader reader, BitCounterUncompressed bitCounter, int row, List<MemberDD> m2dd, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
+  private void readDataUncompressed(BitReader reader, BitCounterUncompressed bitCounter, int row, List<MemberDD> m2dd, ArrayStructureBB abb, ByteBuffer bb) throws IOException {
 
     // transfer the bits to the ByteBuffer, aligning on byte boundaries
     for (MemberDD mdd : m2dd) {
@@ -308,7 +308,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         if (bitCounterNested == null)
           throw new IllegalStateException("No nested BitCounterUncompressed for "+dkey.name);
         for (int i = 0; i < dkey.replication; i++)
-          readData(reader, bitCounterNested[row], i, mdd.nested, abb, bb);
+          readDataUncompressed(reader, bitCounterNested[row], i, mdd.nested, abb, bb);
         continue;
       }
 
@@ -543,7 +543,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
     // loop through desired obs
     for (int i = 0; i < count; i++)
-      readData(reader, bitCounterNested, i, mdd.nested, abb, bb);
+      readDataUncompressed(reader, bitCounterNested, i, mdd.nested, abb, bb);
 
     return new ArraySequence(members, new SequenceIterator(count, abb), count);
   }
