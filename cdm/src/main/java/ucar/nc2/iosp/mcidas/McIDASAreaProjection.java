@@ -17,21 +17,38 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
+
 package ucar.nc2.iosp.mcidas;
+
 
 import edu.wisc.ssec.mcidas.AREAnav;
 import edu.wisc.ssec.mcidas.AreaFile;
 import edu.wisc.ssec.mcidas.McIDASException;
 
 import ucar.unidata.geoloc.*;
+import ucar.unidata.util.Parameter;
 
 import java.awt.geom.Rectangle2D;
+
 
 /**
  * McIDASAreaProjection is the ProjectionImpl for McIDAS Area navigation
  * modules.
  */
 public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
+
+    /** Attribute for the Area Directory */
+    public static String ATTR_AREADIR = "AreaDirectory";
+
+    /** Attribute for the Navigation Block */
+    public static String ATTR_NAVBLOCK = "NavBlock";
+
+    /** Attribute for the Navigation Block */
+    public static String ATTR_AUXBLOCK = "AuxBlock";
+
+    /** Attribute for the Navigation Block */
+    public static String GRID_MAPPING_NAME = "mcidas_area";
 
     /** Area navigation */
     private AREAnav anav = null;
@@ -48,15 +65,21 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     /** navigation block */
     private int[] navBlock;
 
-    // aux Block - needed for conxtructCopy
+    /** aux block */
     private int[] auxBlock;
 
-      /** copy constructor - avoid clone !! */
+    /**
+     * copy constructor - avoid clone !!
+     *
+     * @return construct a copy of this
+     */
     public ProjectionImpl constructCopy() {
-      return new McIDASAreaProjection(dirBlock, navBlock, auxBlock);
+        return new McIDASAreaProjection(dirBlock, navBlock, auxBlock);
     }
 
-    // needed for beans
+    /**
+     * Default bean constructor
+     */
     public McIDASAreaProjection() {}
 
     /**
@@ -116,9 +139,12 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
         elements = dir[9];
         anav.setFlipLineCoordinates(dir[8]);  // invert Y axis coordinates
 
-        addParameter(ATTR_NAME, "mcidas_area");
-        addParameter("AreaHeader", dir.toString());
-        addParameter("NavHeader", nav.toString());
+        addParameter(ATTR_NAME, GRID_MAPPING_NAME);
+        addParameter(new Parameter(ATTR_AREADIR, makeDoubleArray(dir)));
+        addParameter(new Parameter(ATTR_NAVBLOCK, makeDoubleArray(nav)));
+        if (aux != null) {
+            addParameter(new Parameter(ATTR_AUXBLOCK, makeDoubleArray(aux)));
+        }
     }
 
 
@@ -233,10 +259,12 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
      */
     public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
                                   int lonIndex) {
-        float[] fromLatA = from[latIndex];
-        float[] fromLonA = from[lonIndex];
+        float[]   fromLatA = from[latIndex];
+        float[]   fromLonA = from[lonIndex];
 
-        float[][] xy = anav.toLinEle(new float[][] { fromLatA, fromLonA });
+        float[][] xy       = anav.toLinEle(new float[][] {
+            fromLatA, fromLonA
+        });
         to[INDEX_X] = xy[0];
         to[INDEX_Y] = xy[1];
         return to;
@@ -254,9 +282,11 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
      * @return the "to" array
      */
     public float[][] projToLatLon(float[][] from, float[][] to) {
-        float[] fromXA = from[INDEX_X];
-        float[] fromYA = from[INDEX_Y];
-        float[][] latlon = anav.toLatLon(new float[][] { fromXA, fromYA });
+        float[]   fromXA = from[INDEX_X];
+        float[]   fromYA = from[INDEX_Y];
+        float[][] latlon = anav.toLatLon(new float[][] {
+            fromXA, fromYA
+        });
         to[INDEX_LAT] = latlon[0];
         to[INDEX_LON] = latlon[1];
         return to;
@@ -276,12 +306,14 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
      *
      * @return the "to" array.
      */
-    public double[][] latLonToProj(double[][] from, double[][] to, int latIndex,
-                                  int lonIndex) {
-        double[] fromLatA = from[latIndex];
-        double[] fromLonA = from[lonIndex];
+    public double[][] latLonToProj(double[][] from, double[][] to,
+                                   int latIndex, int lonIndex) {
+        double[]   fromLatA = from[latIndex];
+        double[]   fromLonA = from[lonIndex];
 
-        double[][] xy = anav.toLinEle(new double[][] { fromLatA, fromLonA });
+        double[][] xy       = anav.toLinEle(new double[][] {
+            fromLatA, fromLonA
+        });
         to[INDEX_X] = xy[0];
         to[INDEX_Y] = xy[1];
         return to;
@@ -299,9 +331,11 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
      * @return the "to" array
      */
     public double[][] projToLatLon(double[][] from, double[][] to) {
-        double[] fromXA = from[INDEX_X];
-        double[] fromYA = from[INDEX_Y];
-        double[][] latlon = anav.toLatLon(new double[][] { fromXA, fromYA });
+        double[]   fromXA = from[INDEX_X];
+        double[]   fromYA = from[INDEX_Y];
+        double[][] latlon = anav.toLatLon(new double[][] {
+            fromXA, fromYA
+        });
         to[INDEX_LAT] = latlon[0];
         to[INDEX_LON] = latlon[1];
         return to;
@@ -384,22 +418,40 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
      * @throws Exception  problem reading data
      */
     public static void main(String[] args) throws Exception {
-        String           file = (args.length > 0)
-                                ? args[0]
-                                : "c:/data/satellite/AREA8760";
-        AreaFile         af   = new AreaFile(file);
+        String               file = (args.length > 0)
+                                    ? args[0]
+                                    : "c:/data/satellite/AREA8760";
+        AreaFile             af   = new AreaFile(file);
         McIDASAreaProjection proj = new McIDASAreaProjection(af);
-        LatLonPoint      llp  = new LatLonPointImpl(45, -105);
+        LatLonPoint          llp  = new LatLonPointImpl(45, -105);
         System.out.println("lat/lon = " + llp);
         ProjectionPoint pp = proj.latLonToProj(llp);
         System.out.println("proj point = " + pp);
         llp = proj.projToLatLon(pp);
         System.out.println("reverse llp = " + llp);
-        double[][] latlons = new double[][] { {45},{-105} };
-        double[][] linele = proj.latLonToProj(latlons);
-        System.out.println("proj point = " + linele[0][0] +","+linele[1][0]);
+        double[][] latlons = new double[][] {
+            { 45 }, { -105 }
+        };
+        double[][] linele  = proj.latLonToProj(latlons);
+        System.out.println("proj point = " + linele[0][0] + ","
+                           + linele[1][0]);
         double[][] outll = proj.projToLatLon(linele);
-        System.out.println("proj point = " + outll[0][0] +","+outll[1][0]);
+        System.out.println("proj point = " + outll[0][0] + "," + outll[1][0]);
+    }
+
+    /**
+     * make a double array out of an int array
+     *
+     * @param ints  array of ints
+     *
+     * @return  array of doubles
+     */
+    private double[] makeDoubleArray(int[] ints) {
+        double[] newArray = new double[ints.length];
+        for (int i = 0; i < ints.length; i++) {
+            newArray[i] = ints[i];
+        }
+        return newArray;
     }
 }
 
