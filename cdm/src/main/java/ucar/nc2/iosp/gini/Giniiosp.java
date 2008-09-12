@@ -92,9 +92,9 @@ public class Giniiosp extends AbstractIOServiceProvider {
     if( headerParser.gini_GetCompressType() == 0)
         return readData( v2, vinfo.begin, origin, shape, stride, levels);
     else if(headerParser.gini_GetCompressType() == 2 )
-        return readCompressedData( v2, vinfo.begin, origin, shape, stride);
+        return readCompressedData( v2, vinfo.begin, origin, shape, stride, levels);
     else if(headerParser.gini_GetCompressType() == 1 )
-        return readCompressedZlib( v2, vinfo.begin, vinfo.nx, vinfo.ny, origin, shape, stride);
+        return readCompressedZlib( v2, vinfo.begin, vinfo.nx, vinfo.ny, origin, shape, stride, levels);
     else
         return null;
   }
@@ -111,9 +111,9 @@ public class Giniiosp extends AbstractIOServiceProvider {
     myRaf.read(data);
 
     if(levels == null){
-    Array array = Array.factory( DataType.BYTE.getPrimitiveClassType(), v2.getShape(), data);
+        Array array = Array.factory( DataType.BYTE.getPrimitiveClassType(), v2.getShape(), data);
 
-    return array.sectionNoReduce(origin, shape, stride);
+        return array.sectionNoReduce(origin, shape, stride);
     } else {
         int level = levels[0];
         float [] a = new float[level];
@@ -205,7 +205,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
   // for the compressed data read all out into a array and then parse into requested
   public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int [] origin,
-                                 int [] shape, int [] stride) throws IOException, InvalidRangeException  {
+                                 int [] shape, int [] stride, int [] levels) throws IOException, InvalidRangeException  {
 
       long length = myRaf.length();
 
@@ -225,16 +225,54 @@ public class Giniiosp extends AbstractIOServiceProvider {
         int t = dbb.getNumBanks();
         byte[] udata = dbb.getData();
 
-        Array array = Array.factory( DataType.BYTE.getPrimitiveClassType(), v2.getShape(), udata);
-        v2.setCachedData(array, false);
-        return array.sectionNoReduce(origin, shape, stride);
+        if(levels == null){
+            Array array = Array.factory( DataType.BYTE.getPrimitiveClassType(), v2.getShape(), udata);
+            v2.setCachedData(array, false);
+            return array.sectionNoReduce(origin, shape, stride);
+        }  else {
+            data_size = udata.length;
+            int level = levels[0];
+            float [] a = new float[level];
+            float [] b = new float[level];
+            float[] fdata = new float[data_size];
+            int scale = 1;
+
+            for(int i = 0; i < level; i++){
+                int numer = levels[1+ 5*i] - levels[2+ 5*i];
+                int denom = levels[3+ 5*i] - levels[4+ 5*i];
+                a[i]  = (numer*1.f) / (1.f*denom);
+                b[i]  = levels[1+5*i] - a[i] * levels[3+5*i];
+            }
+
+            int k;
+            for(int i = 0; i < data_size; i++){
+                int ival =  convertunsignedByte2Short(udata[i]);
+                k = -1;
+                for (int j = 0; j < level; j++ ) {
+                    if ( levels[3+(j*5)] <= ival && ival <= levels[4+(j*5)] ) {
+                        k = j;
+                        scale = levels[5+j*5];
+                    }
+                }
+
+                if ( k >= 0 )
+                    fdata[i] = (a[k] * ival + b[k])/scale;
+                else
+                    fdata[i] = 0;
+
+            }
+            Array array = Array.factory( DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), fdata);
+
+            return array.sectionNoReduce(origin, shape, stride);
+        }
+
       }
 
     return null;
   }
 
  public Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, int [] origin,
-                                 int [] shape, int [] stride) throws IOException, InvalidRangeException  {
+                                 int [] shape, int [] stride, int [] levels) throws IOException, InvalidRangeException  {
 
       long length = myRaf.length();
 
@@ -297,10 +335,47 @@ public class Giniiosp extends AbstractIOServiceProvider {
       System.arraycopy(uncomp, 0, inflateData, 0, nx*ny );
       if ( data != null) {
 
-        Array array = Array.factory( DataType.BYTE.getPrimitiveClassType(), v2.getShape(), uncomp);
-        if (array.getSize() < Variable.defaultSizeToCache)
-          v2.setCachedData(array, false);
-        return array.sectionNoReduce(origin, shape, stride);
+        if(levels == null){
+            Array array = Array.factory( DataType.BYTE.getPrimitiveClassType(), v2.getShape(), uncomp);
+            if (array.getSize() < Variable.defaultSizeToCache)
+              v2.setCachedData(array, false);
+            return array.sectionNoReduce(origin, shape, stride);
+        } else {
+            data_size = uncomp.length;
+            int level = levels[0];
+            float [] a = new float[level];
+            float [] b = new float[level];
+            float[] fdata = new float[data_size];
+            int scale = 1;
+
+            for(int i = 0; i < level; i++){
+                int numer = levels[1+ 5*i] - levels[2+ 5*i];
+                int denom = levels[3+ 5*i] - levels[4+ 5*i];
+                a[i]  = (numer*1.f) / (1.f*denom);
+                b[i]  = levels[1+5*i] - a[i] * levels[3+5*i];
+            }
+
+            int k;
+            for(int i = 0; i < data_size; i++){
+                int ival =  convertunsignedByte2Short(uncomp[i]);
+                k = -1;
+                for (int j = 0; j < level; j++ ) {
+                    if ( levels[3+(j*5)] <= ival && ival <= levels[4+(j*5)] ) {
+                        k = j;
+                        scale = levels[5+j*5];
+                    }
+                }
+
+                if ( k >= 0 )
+                    fdata[i] = (a[k] * ival + b[k])/scale;
+                else
+                    fdata[i] = 0;
+
+            }
+            Array array = Array.factory( DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), fdata);
+
+            return array.sectionNoReduce(origin, shape, stride);
+        }
       }
 
     return null;
