@@ -55,7 +55,16 @@ public class RadarNexradServer {
                return;
            }
            stationMap = sm.getStationMap( stationList );
-           // should be a more efficient way
+           String prodDir = RadarServer.dataLocation.get( "nexrad/level3/IDD" );
+           if( prodDir != null ) {
+             File files = new File( prodDir );
+             String[] prods = files.list();
+             for( String prod : prods ) {
+               if( ! allVars.contains( prod ) ) {
+                 allVars.add( prod );
+               }
+             }
+           }
            allVars.add( "DPA");
            allVars.add( "DHR");
            allVars.add( "DSP");
@@ -648,9 +657,8 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
         if( path != null ) {
             File files = new File( path );
             stations = files.list();
-            // actually not a station, it's a var so get next dir down
-            if( stations[ 0 ].length() == 3 && allVars.contains( stations[ 0 ].toUpperCase() ) ) {
-                //path += "/N0R";
+            // actually not a station, it's a var so go next dir down
+            if( allVars.contains( stations[ 0 ].toUpperCase() ) ) {
                 path += "/"+ stations[ 0 ];
                 files = new File( path );
                 stations = files.list();
