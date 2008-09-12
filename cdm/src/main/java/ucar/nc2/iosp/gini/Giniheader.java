@@ -563,7 +563,7 @@ class Giniheader {
     this.ncfile.addAttribute(null, att);
    // if(proj == 1)
    //     dyKm = nv.doubleValue()/dyKm;
-    /* compression flag */
+    /* compression flag 43 byte */
 
     nv = new Byte( ( bos.get() ));      /* Res [km] */
     att = new Attribute( "compressionFlag", nv );
@@ -574,6 +574,14 @@ class Giniheader {
        Z_type = 2;
        //out.println( "ReadNexrInfo:: This is a Z file ");
     }
+
+   /* new 47 - 60 */
+    bos.position(46);
+    nv = new Byte( ( bos.get() ) );      /* Cal indicator */
+    int navcal = convertunsignedByte2Short(nv);
+    int [] calcods = null;
+    if(navcal == 128)
+        calcods = getCalibrationInfo(bos, phys_elem, ent_id);
 
     // only one data variable per gini file
 
@@ -601,18 +609,30 @@ class Giniheader {
 
     var.setDimensions( dims);
 
-    // data type
-    var.setDataType( DataType.BYTE);
-    var.addAttribute(new Attribute("_unsigned", "true"));
-    var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
-    var.addAttribute( new Attribute("scale_factor", new Short((short)(1))));
-    var.addAttribute( new Attribute("add_offset", new Short((short)(0))));
-
-      // size and beginning data position in file
+    // size and beginning data position in file
     int vsize = velems;
     long begin = dataStart ;
     if (debug) out.println(" name= "+vname+" vsize="+vsize+" velems="+velems+" begin= "+begin+" isRecord="+isRecord+"\n");
-    var.setSPobject( new Vinfo (vsize, begin, isRecord, nx, ny));
+    if( navcal == 128) {
+        var.setDataType( DataType.FLOAT);
+        var.setSPobject( new Vinfo (vsize, begin, isRecord, nx, ny, calcods));
+     /*   var.addAttribute(new Attribute("_unsigned", "true"));
+        int numer = calcods[0] - calcods[1];
+        int denom = calcods[2] - calcods[3];
+        float a  = (numer*1.f) / (1.f*denom);
+        float b  = calcods[0] - a * calcods[2];
+        var.addAttribute( new Attribute("scale_factor", new Float(a)));
+        var.addAttribute( new Attribute("add_offset", new Float(b)));
+      */
+    }
+    else  {
+        var.setDataType( DataType.BYTE);
+        var.addAttribute(new Attribute("_unsigned", "true"));
+        var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
+        var.addAttribute( new Attribute("scale_factor", new Short((short)(1))));
+        var.addAttribute( new Attribute("add_offset", new Short((short)(0))));
+        var.setSPobject( new Vinfo (vsize, begin, isRecord, nx, ny));
+    }
     String coordinates = "x y time";
     var.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
     ncfile.addVariable(null, var);
@@ -705,7 +725,103 @@ class Giniheader {
     ncfile.finish();
   }
 
+  int [] getCalibrationInfo(ByteBuffer bos, int phys_elem, int ent_id){
 
+    bos.position(46);
+    byte nv = new Byte( ( bos.get() ) );      /* Cal indicator */
+    int navcal = convertunsignedByte2Short(nv);
+    int [] calcods = null;
+    if( navcal == 128 ) {    /* Unidata Cal block found; unpack values */
+        int      scale=10000;
+        int      jscale=100000000;
+        byte  [] unsb = new byte[8];
+        byte[] b4 = new byte[4];
+        bos.get(unsb);
+        String unitStr = new String(unsb).toUpperCase();
+        String iname;
+        String iunit;
+        bos.position(55);
+        nv = new Byte( ( bos.get() ) );
+        int calcod = convertunsignedByte2Short(nv);
+
+        if ( unitStr.contains("INCH") ) {
+            iname = new String( "RAIN" );
+            iunit = new String( "IN  ");
+
+        } else if ( unitStr.contains("DBZ" ) ) {
+            iname = new String( "ECHO" );
+            iunit = new String( "DBZ " );
+
+        } else if (unitStr.contains("KFT" ) ) {
+
+            iname = new String( "TOPS");
+            iunit = new String( "KFT ");
+
+        } else if ( unitStr.contains("KG/M" ) ) {
+
+            iname = new String( "VIL " );
+            iunit = new String( "mm  " );
+
+        } else {
+
+            iname = new String( "    " );
+            iunit = new String( "    " );
+        }
+
+        if ( calcod > 0 ) {
+            calcods = new int[5*calcod + 1];
+            calcods[0] = calcod;
+            for (int i = 0; i < calcod; i++ ) {
+
+                bos.position(56+i*16);
+                bos.get(b4);
+                int minb = getInt(b4, 4) / 10000;        /* min brightness values         */
+                bos.get(b4);
+                int maxb = getInt(b4, 4 ) / 10000;       /* max brightness values         */
+                bos.get(b4);
+                int mind = getInt(b4, 4 );               /* min data values               */
+                bos.get(b4);
+                int maxd = getInt(b4, 4 );               /* max data values               */
+
+                int idscal = 1;
+                while ( !(mind % idscal != 0) && !(maxd % idscal != 0) ) {
+                    idscal *= 10;
+                }
+                idscal /= 10;
+
+                if ( idscal < jscale ) jscale = idscal;
+
+                calcods[1+i*5] = mind;
+                calcods[2+i*5] = maxd;
+                calcods[3+i*5] = minb;
+                calcods[4+i*5] = maxb;
+                calcods[5+i*5] = 0;
+
+            }
+
+           if ( jscale > scale ) jscale = scale;
+                scale /= jscale;
+
+            if ( gini_GetPhysElemID(phys_elem, ent_id).contains("Precipitation") ) {
+                if ( scale < 100 ) {
+                    jscale /= (100/scale);
+                    scale   = 100;
+                }
+            }
+
+            for (int i = 0; i < calcod; i++ ) {
+                calcods[1+i*5] /= jscale;
+                calcods[2+i*5] /= jscale;
+                calcods[5+i*5]  = scale;
+            }
+
+      }
+
+    }
+
+    return calcods;
+      
+  }
 
 
   int gini_GetCompressType( )
@@ -1236,6 +1352,8 @@ class Giniheader {
     boolean isRecord; // is it a record variable?
     int nx;
     int ny;
+    int [] levels;
+
     Vinfo( int vsize, long begin, boolean isRecord, int x, int y) {
       this.vsize = vsize;
       this.begin = begin;
@@ -1243,6 +1361,16 @@ class Giniheader {
       this.nx = x;
       this.ny = y;
     }
+
+    Vinfo( int vsize, long begin, boolean isRecord, int x, int y, int[] levels) {
+      this.vsize = vsize;
+      this.begin = begin;
+      this.isRecord = isRecord;
+      this.nx = x;
+      this.ny = y;
+      this.levels = levels;
+    }
+     
   }
 
 

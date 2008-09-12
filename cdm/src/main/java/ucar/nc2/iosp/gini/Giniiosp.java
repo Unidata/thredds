@@ -87,19 +87,21 @@ public class Giniiosp extends AbstractIOServiceProvider {
     int[] shape = section.getShape();
     int[] stride = section.getStride();
     Giniheader.Vinfo vinfo = (Giniheader.Vinfo) v2.getSPobject();
+    int[] levels = vinfo.levels;
 
     if( headerParser.gini_GetCompressType() == 0)
-        return readData( v2, vinfo.begin, origin, shape, stride);
+        return readData( v2, vinfo.begin, origin, shape, stride, levels);
     else if(headerParser.gini_GetCompressType() == 2 )
-        return readCompressedData( v2, vinfo.begin, origin, shape, stride );
+        return readCompressedData( v2, vinfo.begin, origin, shape, stride);
     else if(headerParser.gini_GetCompressType() == 1 )
-        return readCompressedZlib( v2, vinfo.begin, vinfo.nx, vinfo.ny, origin, shape, stride );
+        return readCompressedZlib( v2, vinfo.begin, vinfo.nx, vinfo.ny, origin, shape, stride);
     else
         return null;
   }
 
   // all the work is here, so can be called recursively
-  private Array readData(ucar.nc2.Variable v2, long dataPos, int [] origin, int [] shape, int [] stride) throws IOException, InvalidRangeException  {
+  private Array readData(ucar.nc2.Variable v2, long dataPos, int [] origin, int [] shape, int [] stride,
+                       int [] levels) throws IOException, InvalidRangeException  {
 
     long length = myRaf.length();
     myRaf.seek(dataPos);
@@ -108,9 +110,45 @@ public class Giniiosp extends AbstractIOServiceProvider {
     byte[] data = new byte[data_size];
     myRaf.read(data);
 
+    if(levels == null){
     Array array = Array.factory( DataType.BYTE.getPrimitiveClassType(), v2.getShape(), data);
 
     return array.sectionNoReduce(origin, shape, stride);
+    } else {
+        int level = levels[0];
+        float [] a = new float[level];
+        float [] b = new float[level];
+        float[] fdata = new float[data_size];
+        int scale = 1;
+
+        for(int i = 0; i < level; i++){
+            int numer = levels[1+ 5*i] - levels[2+ 5*i];
+            int denom = levels[3+ 5*i] - levels[4+ 5*i];
+            a[i]  = (numer*1.f) / (1.f*denom);
+            b[i]  = levels[1+5*i] - a[i] * levels[3+5*i];
+        }
+        
+        int k;
+        for(int i = 0; i < data_size; i++){
+            int ival =  convertunsignedByte2Short(data[i]);
+            k = -1;
+            for (int j = 0; j < level; j++ ) {
+                if ( levels[3+(j*5)] <= ival && ival <= levels[4+(j*5)] ) {
+                    k = j;
+                    scale = levels[5+j*5];
+                }
+            }
+
+            if ( k >= 0 )
+                fdata[i] = (a[k] * ival + b[k])/scale;
+            else
+                fdata[i] = 0;
+
+        }
+        Array array = Array.factory( DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), fdata);
+
+        return array.sectionNoReduce(origin, shape, stride);
+    }
   }
 
   public Array readDataOld(ucar.nc2.Variable v2, long dataPos, int [] origin, int [] shape, int [] stride) throws IOException, InvalidRangeException  {
@@ -166,7 +204,8 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
 
   // for the compressed data read all out into a array and then parse into requested
-  public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int [] origin, int [] shape, int [] stride) throws IOException, InvalidRangeException  {
+  public Array readCompressedData(ucar.nc2.Variable v2, long dataPos, int [] origin,
+                                 int [] shape, int [] stride) throws IOException, InvalidRangeException  {
 
       long length = myRaf.length();
 
@@ -194,7 +233,8 @@ public class Giniiosp extends AbstractIOServiceProvider {
     return null;
   }
 
- public Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, int [] origin,  int [] shape, int [] stride) throws IOException, InvalidRangeException  {
+ public Array readCompressedZlib(ucar.nc2.Variable v2, long dataPos, int nx, int ny, int [] origin,
+                                 int [] shape, int [] stride) throws IOException, InvalidRangeException  {
 
       long length = myRaf.length();
 
