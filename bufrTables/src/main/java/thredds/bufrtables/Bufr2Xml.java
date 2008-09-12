@@ -136,6 +136,16 @@ public class Bufr2Xml {
 
         if (m.getDataType().isString() || m.getDataType().isNumeric()) {
           writeVariable((VariableDS) v, sdata.getArray(m), indent);
+
+        } else if (m.getDataType() == DataType.STRUCTURE) {
+          writeStructureArray((Structure) v, (ArrayStructure) sdata.getArray(m), indent);
+
+        } else if (m.getDataType() == DataType.SEQUENCE) {
+          writeSequence((Structure) v, (ArraySequence) sdata.getArray(m), indent);
+        }
+
+        if (m.getDataType().isString() || m.getDataType().isNumeric()) {
+          writeVariable((VariableDS) v, sdata.getArray(m), indent);
         }
       }
       indent.decr();
@@ -160,7 +170,14 @@ public class Bufr2Xml {
 
         if (m.getDataType().isString() || m.getDataType().isNumeric()) {
           writeVariable((VariableDS) v, sdata.getArray(m), indent);
+
+        } else if (m.getDataType() == DataType.STRUCTURE) {
+          writeStructureArray((Structure) v, (ArrayStructure) sdata.getArray(m), indent);
+
+        } else if (m.getDataType() == DataType.SEQUENCE) {
+          writeSequence((Structure) v, (ArraySequence) sdata.getArray(m), indent);
         }
+
       }
       indent.decr();
 

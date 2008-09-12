@@ -21,13 +21,14 @@ body {
 <p>Specific areas of the WMO tables B and D are reserved for local use, namely categories 48-63 inclusive, and entries 192-255 inclusive (cf p L3-49 of <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/BUFRCREXPreface_en.html">BUFR Guide</a>). All other entries in tables B and D are  shared, and we call these<strong><em> standard WMO data descriptors</em></strong>. </p>
 <p>The <a href="http://www.wmo.int/pages/prog/www/WMOCodes/OperationalCodes.html">standard WMO tables</a> are available from the WMO in Word format. Extracting these  tables from the Word documents is an error-prone and time-consuming process, that is to say, Word is not a machine readable format. We have extracted the standard tables, and validated them against an independent effort by Gil Ross from the British Met Office. </p>
 <ul>
-  <li>We assume that there is no dependency on the edition number of the BUFR record.</li>
+  <li>We assume that there is no local override of the standard WMO data descriptors</li>
+  <li>We assume that there is no dependency on the edition number of the BUFR record</li>
   <li>We assume that all previous version of the standard tables are backwards compatible with the latest version (currently at version 13)</li>
-  <li>We expect that future versions may not be compatible, and so versioned archives will need to be maintained.</li>
+  <li>We expect that future versions may not be compatible, and so versioned archives will need to be maintained</li>
 </ul>
 <h3>BUFR Message Validator Services</h3>
 <ul>
-  <li><a href="validate.html">Unidata BUFR Message Validator</a></li>
+  <li><a href="validate.html">Unidata BUFR Record Validator</a></li>
   <li><a href="http://www.ecmwf.int/products/data/d/check/">ECMWF BUFR/CREX format checker</a> </li>
 </ul>
 <h3>Working group email list</h3>
