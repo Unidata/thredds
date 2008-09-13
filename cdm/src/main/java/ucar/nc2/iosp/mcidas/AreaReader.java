@@ -156,8 +156,8 @@ public class AreaReader {
         Dimension       bands = new Dimension("bands", numBands, true);
         Dimension       time  = new Dimension("time", 1, true);
         Dimension dirDim      = new Dimension("dirSize", af.AD_DIRSIZE,
-                                    false);
-        Dimension navDim = new Dimension("navSize", navBlock.length, false);
+                                    true);
+        Dimension navDim = new Dimension("navSize", navBlock.length, true);
         List<Dimension> image = new ArrayList<Dimension>();
         image.add(time);
         image.add(bands);
@@ -292,6 +292,7 @@ public class AreaReader {
 
         // add the attributes
         ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
+        ncfile.addAttribute(null, new Attribute("netCDF-Java", "4.0"));
         ncfile.addAttribute(null,
                             new Attribute("nominal image time",
                                           df.toDateTimeString(nomTime)));
