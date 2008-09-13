@@ -20,6 +20,7 @@
  */
 
 
+
 package ucar.nc2.iosp.mcidas;
 
 
@@ -151,14 +152,14 @@ public class AreaReader {
         }
 
         // make the dimensions
-        Dimension elements    = new Dimension("elements", numElements, true);
-        Dimension       lines = new Dimension("lines", numLines, true);
-        Dimension       bands = new Dimension("bands", numBands, true);
-        Dimension       time  = new Dimension("time", 1, true);
-        Dimension dirDim      = new Dimension("dirSize", af.AD_DIRSIZE,
-                                    true);
+        Dimension elements     = new Dimension("elements", numElements, true);
+        Dimension       lines  = new Dimension("lines", numLines, true);
+        Dimension       bands  = new Dimension("bands", numBands, true);
+        Dimension       time   = new Dimension("time", 1, true);
+        Dimension       dirDim = new Dimension("dirSize", af.AD_DIRSIZE,
+                                     true);
         Dimension navDim = new Dimension("navSize", navBlock.length, true);
-        List<Dimension> image = new ArrayList<Dimension>();
+        List<Dimension> image  = new ArrayList<Dimension>();
         image.add(time);
         image.add(bands);
         image.add(lines);
@@ -176,8 +177,9 @@ public class AreaReader {
         // make the variables
 
         // time
-        Variable timeVar = new Variable(ncfile, null, null, "time",
-                                        DataType.INT, "time");
+        Variable timeVar = new Variable(ncfile, null, null, "time");
+        timeVar.setDataType(DataType.INT);
+        timeVar.setDimensions("time");
         timeVar.addAttribute(new Attribute("units",
                                            "seconds since "
                                            + df.toDateTimeString(nomTime)));
@@ -189,8 +191,9 @@ public class AreaReader {
 
 
         // lines and elements
-        Variable lineVar = new Variable(ncfile, null, null, "lines",
-                                        DataType.INT, "lines");
+        Variable lineVar = new Variable(ncfile, null, null, "lines");
+        lineVar.setDataType(DataType.INT);
+        lineVar.setDimensions("lines");
         lineVar.addAttribute(new Attribute("units", "km"));
         lineVar.addAttribute(new Attribute("standard_name",
                                            "projection_y_coordinate"));
@@ -204,8 +207,9 @@ public class AreaReader {
         lineVar.setCachedData(varArray, false);
         ncfile.addVariable(null, lineVar);
 
-        Variable elementVar = new Variable(ncfile, null, null, "elements",
-                                           DataType.INT, "elements");
+        Variable elementVar = new Variable(ncfile, null, null, "elements");
+        elementVar.setDataType(DataType.INT);
+        elementVar.setDimensions("elements");
         elementVar.addAttribute(new Attribute("units", "km"));
         elementVar.addAttribute(new Attribute("standard_name",
                 "projection_x_coordinate"));
@@ -218,8 +222,9 @@ public class AreaReader {
 
 
         // TODO: handle bands and calibrations
-        Variable bandVar = new Variable(ncfile, null, null, "bands",
-                                        DataType.INT, "bands");
+        Variable bandVar = new Variable(ncfile, null, null, "bands");
+        bandVar.setDataType(DataType.INT);
+        bandVar.setDimensions("bands");
         bandVar.addAttribute(new Attribute("long_name",
                                            "spectral band number"));
         bandVar.addAttribute(new Attribute("axis", "Z"));
@@ -231,8 +236,8 @@ public class AreaReader {
         ncfile.addVariable(null, bandVar);
 
         // the image
-        Variable imageVar = new Variable(ncfile, null, null, "image",
-                                         DataType.INT, "");
+        Variable imageVar = new Variable(ncfile, null, null, "image");
+        imageVar.setDataType(DataType.INT);
         imageVar.setDimensions(image);
         setCalTypeAttributes(imageVar, getCalType(calName));
         imageVar.addAttribute(new Attribute(getADDescription(af.AD_CALTYPE),
@@ -242,8 +247,9 @@ public class AreaReader {
         ncfile.addVariable(null, imageVar);
 
 
-        Variable dirVar = new Variable(ncfile, null, null, "areaDirectory",
-                                       DataType.INT, "dirSize");
+        Variable dirVar = new Variable(ncfile, null, null, "areaDirectory");
+        dirVar.setDataType(DataType.INT);
+        dirVar.setDimensions("dirSize");
         setAreaDirectoryAttributes(dirVar);
         ArrayInt.D1 dirArray = new ArrayInt.D1(AreaFile.AD_DIRSIZE);
         for (int i = 0; i < AreaFile.AD_DIRSIZE; i++) {
@@ -252,8 +258,9 @@ public class AreaReader {
         dirVar.setCachedData(dirArray, false);
         ncfile.addVariable(null, dirVar);
 
-        Variable navVar = new Variable(ncfile, null, null, "navBlock",
-                                       DataType.INT, "navSize");
+        Variable navVar = new Variable(ncfile, null, null, "navBlock");
+        navVar.setDataType(DataType.INT);
+        navVar.setDimensions("navSize");
         setNavBlockAttributes(navVar);
         ArrayInt.D1 navArray = new ArrayInt.D1(navBlock.length);
         for (int i = 0; i < navBlock.length; i++) {
@@ -265,8 +272,9 @@ public class AreaReader {
 
         // projection variable
         ProjectionImpl projection = new McIDASAreaProjection(af);
-        Variable proj = new Variable(ncfile, null, null, "AREAnav",
-                                     DataType.CHAR, "");
+        Variable       proj = new Variable(ncfile, null, null, "AREAnav");
+        proj.setDataType(DataType.CHAR);
+        proj.setDimensions("");
 
         List params = projection.getProjectionParameters();
         for (int i = 0; i < params.size(); i++) {
@@ -294,7 +302,7 @@ public class AreaReader {
         ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
         ncfile.addAttribute(null, new Attribute("netCDF-Java", "4.0"));
         ncfile.addAttribute(null,
-                            new Attribute("nominal image time",
+                            new Attribute("nominal_image_time",
                                           df.toDateTimeString(nomTime)));
         String encStr = "netCDF encoded on "
                         + df.toDateTimeString(new Date());
@@ -462,7 +470,7 @@ public class AreaReader {
     }
 
     // TODO: Move to use edu.wisc.ssec.mcidas.AreaDirectory.getDescription
-    // once it's release
+    // once it's released
 
     /**
      * Get a description for a particular Area Directory entry
@@ -473,7 +481,7 @@ public class AreaReader {
      */
     private String getADDescription(int index) {
 
-        String desc = "dir[" + index + "]";
+        String desc = "dir(" + index + ")";
         switch (index) {
 
           case AreaFile.AD_STATUS :
@@ -489,11 +497,11 @@ public class AreaReader {
               break;
 
           case AreaFile.AD_IMGDATE :
-              desc = "nominal year and Julian day of the image, yyyddd";
+              desc = "nominal year and Julian day of the image (yyyddd)";
               break;
 
           case AreaFile.AD_IMGTIME :
-              desc = "nominal time of the image, hhmmss";
+              desc = "nominal time of the image (hhmmss)";
               break;
 
           case AreaFile.AD_STLINE :
@@ -537,15 +545,15 @@ public class AreaReader {
               break;
 
           case AreaFile.AD_CRDATE :
-              desc = "year and Julian day the image file was created, yyyddd";
+              desc = "year and Julian day the image file was created (yyyddd)";
               break;
 
           case AreaFile.AD_CRTIME :
-              desc = "image file creation time, hhmmss";
+              desc = "image file creation time (hhmmss)";
               break;
 
           case AreaFile.AD_BANDMAP :
-              desc = "spectral band map, bands 1-32";
+              desc = "spectral band map: bands 1-32";
               break;
 
           case AreaFile.AD_DATAOFFSET :
@@ -561,11 +569,11 @@ public class AreaReader {
               break;
 
           case AreaFile.AD_STARTDATE :
-              desc = "actual image start year and Julian day, yyyddd";
+              desc = "actual image start year and Julian day (yyyddd)";
               break;
 
           case AreaFile.AD_STARTTIME :
-              desc = "actual image start time, hhmmss; in milliseconds for POES data";
+              desc = "actual image start time (hhmmss) in milliseconds for POES data";
               break;
 
           case AreaFile.AD_STARTSCAN :
@@ -617,6 +625,7 @@ public class AreaReader {
               break;
 
         }
+        desc = desc.replaceAll("\\s", "_");
         return desc;
 
     }
