@@ -83,10 +83,13 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     return catalog;
   } */
 
-  private List<PathAliasReplacement> dataRootLocAliasExpanders;
+  private List<PathAliasReplacement> dataRootLocAliasExpanders = Collections.emptyList();
   public void setDataRootLocationAliasExpanders( List<PathAliasReplacement> dataRootLocAliasExpanders)
   {
-    this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>( dataRootLocAliasExpanders);
+    if ( dataRootLocAliasExpanders == null )
+      this.dataRootLocAliasExpanders = Collections.emptyList();
+    else
+      this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>( dataRootLocAliasExpanders);
   }
   public List<PathAliasReplacement> getDataRootLocationAliasExpanders()
   {

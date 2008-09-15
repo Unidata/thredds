@@ -506,6 +506,7 @@ public class DataRootHandler {
     return true;
   }
 
+  // @ToDo remove this section and replace with InvCatalogFactory10.setDataRootLocationAliasExpanders( List<PathAliasReplacement>)
   private String contentAliasPath = "content/";
   private boolean isContentAliasPath( String path )
   {
