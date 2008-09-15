@@ -46,6 +46,7 @@ import java.util.regex.Pattern;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.IO;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.bufr.MessageScanner;
@@ -100,8 +101,7 @@ public class BtServlet extends HttpServlet {
    * @throws ServletException
    * @throws java.io.IOException
    */
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-          throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
     if (!allow) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
@@ -121,6 +121,16 @@ public class BtServlet extends HttpServlet {
 
       String xml = req.getParameter("xml");
       boolean wantXml = (xml != null) && xml.equals("true");
+
+      try {
+        processURL(req, res, urlString, null, wantXml);
+        return;
+      } catch (Exception e) {
+        log.info("Validator processURL", e);
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+      }
+
+      return;
     }
 
     // info about existing files
@@ -184,6 +194,11 @@ public class BtServlet extends HttpServlet {
       OutputStream out = res.getOutputStream();
       Formatter f = new Formatter(out);
       f.format("File %s message %d %n%n", cacheName, messno);
+      if (!m.isTablesComplete()) {
+        f.format(" MISSING DATA DESCRIPTORS= ");
+        m.showMissingFields(f);
+        f.format("%n%n");
+      }
       new Dump().dump(f, m);
       f.flush();
 
@@ -217,8 +232,8 @@ public class BtServlet extends HttpServlet {
         long last = m.dataSection.dataPos + m.dataSection.dataLength;
         DataDescriptor root = m.getRootDataDescriptor();
         f.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
-                m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
-                nbitsCounted, nbitsGiven);
+            m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
+            nbitsCounted, nbitsGiven);
         f.format(" countBits= %d givenBits=%d %n", nbitsCounted, nbitsGiven);
         f.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.dataLength);
         f.format("%n");
@@ -228,7 +243,7 @@ public class BtServlet extends HttpServlet {
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ex.getMessage());
       }
       f.flush();
-      
+
     } finally {
       if (m != null) {
         m.close();
@@ -371,7 +386,7 @@ public class BtServlet extends HttpServlet {
   }
 
   private void processUploadedFile(HttpServletRequest req, HttpServletResponse res, DiskFileItem item,
-          String username, boolean wantXml) throws Exception {
+                                   String username, boolean wantXml) throws Exception {
 
     if ((username == null) || (username.length() == 0)) username = "anon";
     username = StringUtil.filter(username, "_");
@@ -388,12 +403,12 @@ public class BtServlet extends HttpServlet {
       Document doc = readBufr(uploadedFile, cacheName);
 
       // debug
-      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-      FileOutputStream fout = new FileOutputStream("C:/temp/bufr.xml");
+      //XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      //FileOutputStream fout = new FileOutputStream("C:/temp/bufr.xml");
       //System.out.print(fmt.outputString(doc));
-      fmt.output(doc, fout);
+      //fmt.output(doc, fout);
 
-      int len = showValidatorResults(res, doc, wantXml);
+      showValidatorResults(res, doc, wantXml);
 
 
     } finally {
@@ -407,14 +422,55 @@ public class BtServlet extends HttpServlet {
       }
     }
 
-
     if (req.getRemoteUser() == null) {
     }
 
     log.info("Uploaded File = " + item.getName() + " sent to " + uploadedFile.getPath() + " size= " + uploadedFile.length());
   }
 
-  private Document readBufr(File file, String cacheName) throws Exception {
+  private void processURL(HttpServletRequest req, HttpServletResponse res, String urls, String username, boolean wantXml) throws Exception {
+
+    if ((username == null) || (username.length() == 0)) username = "anon";
+    username = StringUtil.filter(username, "_");
+    String filename = urls;
+    filename = StringUtil.replace(filename, "/", "-");
+    filename = StringUtil.filter(filename, ".-_");
+
+    String cacheName = username + "/" + filename;
+    File uploadedFile = new File(cacheDir + "/" + cacheName);
+    uploadedFile.getParentFile().mkdirs();
+    IO.readURLtoFile(urls, uploadedFile);
+
+    try {
+      Document doc = readBufr(uploadedFile, cacheName);
+
+      // debug
+      //XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      //FileOutputStream fout = new FileOutputStream("C:/temp/bufr.xml");
+      //System.out.print(fmt.outputString(doc));
+      //fmt.output(doc, fout);
+
+      showValidatorResults(res, doc, wantXml);
+
+
+    } finally {
+
+      if (deleteImmediately) {
+        try {
+          uploadedFile.delete();
+        } catch (Exception e) {
+          log.error("Uploaded File = " + uploadedFile.getPath() + " delete failed = " + e.getMessage());
+        }
+      }
+    }
+
+    if (req.getRemoteUser() == null) {
+    }
+
+    log.info("Uploaded File = " + urls + " sent to " + uploadedFile.getPath() + " size= " + uploadedFile.length());
+  }
+
+  private Document readBufr(File file, String cacheName) throws IOException {
     long start = System.nanoTime();
     RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
 
@@ -447,7 +503,7 @@ public class BtServlet extends HttpServlet {
       else {
         bufrMessage.setAttribute("size", "fail");
         bufrMessage.addContent(
-                new Element("ByteCount").setText("countBytes " + m.getCountedDataBytes() + " != " + m.dataSection.dataLength + " dataSize"));
+            new Element("ByteCount").setText("countBytes " + m.getCountedDataBytes() + " != " + m.dataSection.dataLength + " dataSize"));
       }
 
       bufrMessage.addContent(new Element("BitCount").setText("countBits " + nbitsCounted + " != " + nbitsGiven + " dataSizeBits"));

@@ -12,11 +12,9 @@
         <h2>Dataset=<xsl:value-of select="bufrValidation/@fileName"/>
         </h2>
 
-        <h3>Messages</h3>
-
         <table border="1">
           <tr>
-            <th>mess</th>
+            <th>record</th>
             <th>nobs</th>
             <th>WMO Header</th>
             <th>center</th>

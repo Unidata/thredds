@@ -115,6 +115,12 @@ public class BufrTable extends JPanel {
         infoTA.clear();
         Formatter f = new Formatter();
         try {
+          if (!vb.m.isTablesComplete()) {
+            f.format(" MISSING DATA DESCRIPTORS= ");
+            vb.m.showMissingFields(f);
+            f.format("%n%n");
+          }
+
           new Dump().dump(f, vb.m);
         } catch (IOException e1) {
           JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
