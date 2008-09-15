@@ -39,11 +39,15 @@ This code is ALPHA
 
  Libraries
   * JDOM 1.1
-  * use new visad library 12/04/07
+  * updated visad 9/12/08
 
  Release Details:
     23: new visad.jar (9/12/08)
         more BUFR fixes
+        DateRange now moves when start or end date = "present"
+        NetcdfFile.canOpen()
+        GeoCoordSys: warn, dont fail, if x, y axis units not compatible with "km"
+        mcidas area iosp
     22: improved BUFR reading
     21: Improve nexrad3 iosp
         GeoTiff: new projections

@@ -103,17 +103,16 @@ public class DateType {
       return;
     }
 
+    // see if its the string "present"
+    isPresent = text.equalsIgnoreCase("present");
+    if (isPresent) {
+      return;
+    }
+
     // see if its got a format
     if (format != null) {
       SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(format);
       date = dateFormat.parse(text);
-      return;
-    }
-
-    // see if its the string "present"
-    isPresent = text.equalsIgnoreCase("present");
-    if (isPresent) {
-      date = new Date();
       return;
     }
 
@@ -131,10 +130,13 @@ public class DateType {
     date = formatter.getISODate( text);
   }
 
-  public Date getDate() { return date; }
+  public Date getDate() {
+    return isPresent() ? new Date() : date;
+  }
   public void setDate( Date date) {
     this.date = date;
     this.text = toDateTimeString();
+    this.isPresent = false;
   }
 
   public boolean isPresent() { return isPresent; }
@@ -165,17 +167,17 @@ public class DateType {
 
   public String toDateString() {
     if (null == formatter) formatter = new DateFormatter();
-    return formatter.toDateOnlyString( date);
+    return formatter.toDateOnlyString( getDate());
   }
 
   public String toDateTimeString() {
     if (null == formatter) formatter = new DateFormatter();
-    return formatter.toDateTimeString( date);
+    return formatter.toDateTimeString( getDate());
   }
 
   public String toDateTimeStringISO() {
     if (null == formatter) formatter = new DateFormatter();
-    return formatter.toDateTimeStringISO( date);
+    return formatter.toDateTimeStringISO( getDate());
   }
 
   public String toString() { return getText(); }
@@ -183,7 +185,7 @@ public class DateType {
   public int hashCode() {
     if (isBlank()) return 0;
     if (isPresent()) return 1;
-    return date.hashCode();
+    return getDate().hashCode();
   }
   
   public boolean equals(Object o) {
@@ -202,11 +204,9 @@ public class DateType {
   }
 
   public DateType add( TimeUnit d) {
-    Date useDate = (isPresent) ? new Date() : date;
     if (cal == null) cal = Calendar.getInstance();
-    cal.setTime( useDate);
+    cal.setTime( getDate());
     cal.add( Calendar.SECOND, (int) d.getValueInSeconds());
-    //System.out.println(" add start "+date+" add "+d.getSeconds()+" = "+cal.getTime());
     return new DateType(false, (Date) cal.getTime().clone()); // prob dont need clone LOOK
   }
 
@@ -215,11 +215,9 @@ public class DateType {
   }
 
   public DateType subtract( TimeUnit d) {
-    Date useDate = (isPresent) ? new Date() : date;
     if (cal == null) cal = Calendar.getInstance();
-    cal.setTime( useDate);
+    cal.setTime( getDate());
     cal.add( Calendar.SECOND, (int) -d.getValueInSeconds());
-    //System.out.println(" subtract start "+date+" add "+d.getSeconds()+" = "+cal.getTime());
     return new DateType(false, (Date) cal.getTime().clone());
   }
 

@@ -422,7 +422,7 @@ public class ReadTdsLogs {
     // */
 
     // sendRequests
-    read("d:/motherlode/logs/access.2008-09-12.log", new MClosure() {
+    read("d:/motherlode/logs/access.2008-09-11.log", new MClosure() {
       public void run(String filename) throws IOException {
         new ReadTdsLogs().sendRequests(filename, "http://newmotherlode.ucar.edu:8080", -1);
       }

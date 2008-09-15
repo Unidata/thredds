@@ -4,9 +4,10 @@ import junit.framework.*;
 
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
- * _more_
+ * test that DateRange moves when start or end is "present".
  *
  * @author edavis
  * @since 4.0
@@ -59,11 +60,12 @@ public class TestDateRange extends TestCase
   private void checkValuesAfterDelay( DateRange dr )
   {
     long d = Calendar.getInstance().getTimeInMillis();
-    DateType startDateType = dr.getStart();
-    DateType endDateType = dr.getEnd();
+    Date startDate = dr.getStart().getDate();
+    Date endDate = dr.getEnd().getDate();
     System.out.println( "Current : " + d );
-    System.out.println( "Start   : " + startDateType.toDateTimeStringISO() + " [" + startDateType.getDate().getTime() + "]." );
-    System.out.println( "End     : " + endDateType.toDateTimeStringISO() + " [" + endDateType.getDate().getTime() + "]." );
+    System.out.println( "Start   :  [" + startDate.getTime() + "]." );
+    System.out.println( "End     :  [" + endDate.getTime() + "]." );
+
     try
     {
       synchronized ( this )
@@ -81,20 +83,15 @@ public class TestDateRange extends TestCase
       fail( "Failed to wait: " + e.getMessage() );
       return;
     }
-    long d2 = Calendar.getInstance().getTimeInMillis();
-    DateType start2DateType = dr.getStart();
-    DateType end2DateType = dr.getEnd();
-    System.out.println( "\nCurrent : " + d2 );
-    System.out.println( "Start   : " + start2DateType.toDateTimeStringISO() + " [" + start2DateType.getDate().getTime() + "]." );
-    System.out.println( "End     : " + end2DateType.toDateTimeStringISO() + " [" + end2DateType.getDate().getTime() + "]." );
 
-    assertTrue( "Start dates are equal [" +
-                startDateType.toDateTimeStringISO() + " - " + startDateType.getDate().getTime() +
-                "] [" + start2DateType.toDateTimeStringISO() + " - " + start2DateType.getDate().getTime() + "]",
-                ! startDateType.equals( start2DateType ) );
-    assertTrue( "End dates are equal [" +
-                endDateType.toDateTimeStringISO() + " - " + endDateType.getDate().getTime() +
-                "] [" + end2DateType.toDateTimeStringISO() + " - " + end2DateType.getDate().getTime() + "]",
-                ! endDateType.equals( end2DateType ) );
+    long d2 = Calendar.getInstance().getTimeInMillis();
+    Date startDate2 = dr.getStart().getDate();
+    Date endDate2 = dr.getEnd().getDate();
+    System.out.println( "\nCurrent : " + d2 );
+    System.out.println( "Start   : [" + startDate2.getTime() + "]." );
+    System.out.println( "End     : [" + endDate2.getTime() + "]." );
+
+    assertTrue( "Start dates are equal ", !startDate.equals( startDate2 ) );
+    assertTrue( "End dates are equal [" , !endDate.equals( endDate2 ) );
   }
 }

@@ -34,7 +34,7 @@ import java.text.ParseException;
 public class DateRange {
   private DateType start, end;
   private TimeDuration duration, resolution;
-  private boolean isEmpty, useStart, useEnd, useDuration, useResolution;
+  private boolean isEmpty, isMoving, useStart, useEnd, useDuration, useResolution;
 
   /** default Constructor
    * @throws java.text.ParseException artifact, cant happen
@@ -90,16 +90,21 @@ public class DateRange {
     boolean invalid = true;
     if (useStart && useEnd) {
       invalid = false;
+      this.isMoving = this.start.isPresent() || this.end.isPresent();
+      useDuration = false;
       recalcDuration();
 
     } else if (useStart && useDuration) {
       invalid = false;
+      this.isMoving = this.start.isPresent();
       this.end = this.start.add( duration);
 
     } else if (useEnd && useDuration) {
       invalid = false;
+      this.isMoving = this.end.isPresent();
       this.start = this.end.subtract( duration);
     }
+
     if (invalid)
       throw new IllegalArgumentException("DateRange must have 2 of start, end, duration");
 
@@ -108,7 +113,13 @@ public class DateRange {
   }
 
   private void checkIfEmpty() {
-    isEmpty = this.end.before( this.start);
+    if (this.start.isPresent() && this.end.isPresent())
+      isEmpty = true;
+    else if (this.start.isPresent() || this.end.isPresent())
+      isEmpty = duration.getValue() <= 0;
+    else
+      isEmpty = this.end.before( this.start);
+
     if (isEmpty)
       duration.setValueInSeconds(0);
   }
@@ -132,6 +143,128 @@ public class DateRange {
     return "years";
   }
 
+  /**
+   * Determine if the given date is included in this date range.
+   * The date range includes the start and end dates.
+   * @param d date to check
+   * @return  true if date in inside this range
+   */
+  public boolean included( Date d) {
+    if (isEmpty) return false;
+
+    if (getStart().after( d)) return false;
+    if (getEnd().before( d)) return false;
+
+    return true;
+  }
+
+  /**
+   * Determine if the given range intersects this date range.
+   * @param start_want  range starts here
+   * @param end_want  range ends here
+   * @return  true if ranges intersect
+   */
+  public boolean intersects( Date start_want, Date end_want) {
+    if (isEmpty) return false;
+
+    if (getStart().after( end_want)) return false;
+    if (getEnd().before( start_want)) return false;
+
+    return true;
+  }
+
+  /**
+   * Intersect with another date range
+   * @param clip interset with this date range
+   * @return new date range that is the intersection
+   */
+  public DateRange intersect( DateRange clip) {
+    if (isEmpty) return this;
+    if (clip.isEmpty) return clip;
+
+    DateType ss = getStart();
+    DateType s = ss.before( clip.getStart()) ? clip.getStart() : ss;
+
+    DateType ee = getEnd();
+    DateType e = ee.before( clip.getEnd()) ? ee : clip.getEnd();
+
+    return new DateRange(s, e, null, resolution);
+  }
+
+  /** Extend this date range by the given one.
+   * @param dr given DateRange
+   **/
+  public void extend( DateRange dr) {
+    boolean localEmpty = isEmpty;
+    if (localEmpty || dr.getStart().before( getStart()))
+      setStart( dr.getStart());
+    if (localEmpty || getEnd().before(dr.getEnd()))
+      setEnd( dr.getEnd());
+  }
+
+  public DateType getStart() {
+    return (isMoving && !useStart) ? this.end.subtract( duration) : start;
+  }
+
+  public void setStart(DateType start) {
+    this.start = start;
+    useStart = true;
+
+    if (useEnd) {
+      this.isMoving = this.start.isPresent() || this.end.isPresent();
+      useDuration = false;
+      recalcDuration();
+
+    } else {
+      this.isMoving = this.start.isPresent();
+      this.end = this.start.add( duration);
+    }
+    checkIfEmpty();
+  }
+
+  public DateType getEnd() {
+    return (isMoving && !useEnd) ? this.start.add( duration) : end;
+  }
+
+  public void setEnd(DateType end) {
+    this.end = end;
+    useEnd = true;
+
+    if (useStart) {
+      this.isMoving = this.start.isPresent() || this.end.isPresent();
+      useDuration = false;
+      recalcDuration();
+
+    } else {
+      this.isMoving = this.end.isPresent();
+      this.start = this.end.subtract( duration);
+    }
+    checkIfEmpty();
+  }
+
+  public TimeDuration getDuration() {
+    if (isMoving && !useDuration)
+      recalcDuration();
+    return duration;
+  }
+
+  public void setDuration(TimeDuration duration) {
+    this.duration = duration;
+    useDuration = true;
+
+    if (useStart) {
+      this.isMoving = this.start.isPresent();
+      this.end = this.start.add( duration);
+      useEnd = false;
+
+    } else {
+      this.isMoving = this.end.isPresent();
+      this.start = this.end.subtract( duration);
+    }
+    checkIfEmpty();
+  }
+
+  // assumes not moving
   private void recalcDuration() {
     long min = getStart().getDate().getTime();
     long max = getEnd().getDate().getTime();
@@ -158,113 +291,6 @@ public class DateRange {
     }
 
     hashCode = 0;
-  }
-
-  /**
-   * Determine if the given date is included in this date range.
-   * The date range includes the start and end dates.
-   * @param d date to check
-   * @return  true if date in inside this range
-   */
-  public boolean included( Date d) {
-    if (isEmpty) return false;
-
-    if (start.after( d)) return false;
-    if (end.before( d)) return false;
-
-    return true;
-  }
-
-  /**
-   * Determine if the given range intersects this date range.
-   * @param start_want  range starts here
-   * @param end_want  range ends here
-   * @return  true if ranges intersect
-   */
-  public boolean intersects( Date start_want, Date end_want) {
-    if (isEmpty) return false;
-
-    if (start.after( end_want)) return false;
-    if (end.before( start_want)) return false;
-
-    return true;
-  }
-
-  /**
-   * Intersect with another date range
-   * @param clip interset with this date range
-   * @return new date range that is the intersection
-   */
-  public DateRange intersect( DateRange clip) {
-    if (isEmpty) return this;
-    if (clip.isEmpty) return clip;
-
-    DateType s = start.before( clip.getStart()) ? clip.getStart() : start;
-    DateType e = end.before( clip.getEnd()) ? end : clip.getEnd();
-
-    return new DateRange(s, e, null, resolution);
-  }
-
-  /** Extend this date range by the given one.
-   * @param dr given DateRange
-   **/
-  public void extend( DateRange dr) {
-    boolean localEmpty = isEmpty;
-    if (localEmpty || dr.getStart().before( start))
-      setStart( dr.getStart());
-    if (localEmpty || end.before(dr.getEnd()))
-      setEnd( dr.getEnd());
-  }
-
-  public DateType getStart() { return start; }
-  public void setStart(DateType start) {
-    this.start = start;
-    useStart = true;
-
-    if (start.isPresent()) {
-      this.end = start.add( duration);
-      useEnd = false;
-    } else if (end.isPresent()) {
-      recalcDuration();
-      this.start = end.subtract( duration);
-    } else {
-      recalcDuration();
-      this.end = start.add( duration);
-    }
-    checkIfEmpty();
-  }
-
-  public DateType getEnd() { return end; }
-  public void setEnd(DateType end) {
-    this.end = end;
-    useEnd = true;
-
-    if (end.isPresent()) {
-      this.start = end.subtract( duration);
-      useStart = false;
-    } else if (start.isPresent()) {
-      recalcDuration();
-      this.end = start.add( duration);
-    } else {
-      recalcDuration();
-      this.start = end.subtract( duration);
-    }
-    checkIfEmpty();
-  }
-
-  public TimeDuration getDuration() { return duration; }
-  public void setDuration(TimeDuration duration) {
-    this.duration = duration;
-    useDuration = true;
-
-    if (this.end.isPresent()) {
-      this.start = end.subtract( duration);
-      useStart = false;
-    } else {
-      this.end = start.add( duration);
-      useEnd = false;
-    }
-    checkIfEmpty();
   }
 
   public TimeDuration getResolution() { return resolution; }

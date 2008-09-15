@@ -510,7 +510,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
-   public void testBBSubsetVP2() throws Exception {
+   public void utestBBSubsetVP2() throws Exception {
     String filename = "C:/Documents and Settings/caron/My Documents/downloads/MSG2-SEVI-MSGCLAI-0000-0000-20070522114500.000000000Z-582760.grb";
     GridDataset dataset = GridDataset.open(filename);
     GeoGrid grid = dataset.findGridByName("Pixel_scene_type");

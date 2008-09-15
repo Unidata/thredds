@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1>Netcdf-Java FAQ</h1>
+<p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
+<blockquote>
+  <p> Underneath a <strong>Variable/NetcdfFile</strong> is (usually) a <strong>java.io.RandomAccessFile</strong> object, which is not thread-safe, because  it keeps the state of the file position. So even if all you want to do is read data in multiple threads, you need to synchronize, typically on the <strong>NetcdFile</strong> object. Alternatively, open a new <strong>NetcdfFile</strong> for each thread. The Threads Data Server (TDS) uses a cache of open <strong>NetcdfFile</strong> files by using the <strong>NetcdfDataset.acquireFile() </strong>method, which allows stateless handling of data requests minimizing file opening and closing..</p>
+</blockquote>
+<p>&nbsp;</p>
+<hr />
+<address>
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 15, 2008
+</address>
+</body>
+</html>

@@ -319,6 +319,34 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
+   * Find out if the file can be opened, but dont actually open it.
+   * @param location same as open
+   * @return true if can be opened
+   * @throws IOException
+   */
+  static public boolean canOpen(String location) throws IOException {
+    ucar.unidata.io.RandomAccessFile raf = null;
+    try {
+      raf = getRaf(location, -1);
+      return (raf != null) ? canOpen(raf) : false;
+    } finally  {
+      if (raf != null) raf.close();
+    }
+  }
+
+  private static boolean canOpen(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+    if (N3header.isValidFile(raf)) {
+      return true;
+    } else {
+      for (IOServiceProvider registeredSpi : registeredProviders) {
+        if (registeredSpi.isValidFile(raf))
+          return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Open an existing file (read only), specifying which IOSP is to be used.
    *
    * @param location    location of file

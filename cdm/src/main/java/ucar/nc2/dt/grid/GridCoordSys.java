@@ -105,19 +105,20 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       xaxis = cs.getXaxis();
       yaxis = cs.getYaxis();
 
+      // change to warning
       ProjectionImpl p = cs.getProjection();
       if (!(p instanceof RotatedPole)) {
         if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
           if (sbuff != null) {
-            sbuff.append(cs.getName()).append(": X axis units must be convertible to km\n");
+            sbuff.append(cs.getName()).append(": X axis units are not convertible to km\n");
           }
-          return false;
+          //return false;
         }
         if (!SimpleUnit.kmUnit.isCompatible(yaxis.getUnitsString())) {
           if (sbuff != null) {
-            sbuff.append(cs.getName()).append(": Y axis units must be convertible to km\n");
+            sbuff.append(cs.getName()).append(": Y axis units are not convertible to km\n");
           }
-          return false;
+          //return false;
         }
       }
     } else {
