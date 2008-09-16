@@ -194,7 +194,7 @@ public class AreaReader {
         Variable lineVar = new Variable(ncfile, null, null, "lines");
         lineVar.setDataType(DataType.INT);
         lineVar.setDimensions("lines");
-        lineVar.addAttribute(new Attribute("units", "km"));
+        //lineVar.addAttribute(new Attribute("units", "km"));
         lineVar.addAttribute(new Attribute("standard_name",
                                            "projection_y_coordinate"));
         varArray = new ArrayInt.D1(numLines);
@@ -210,7 +210,7 @@ public class AreaReader {
         Variable elementVar = new Variable(ncfile, null, null, "elements");
         elementVar.setDataType(DataType.INT);
         elementVar.setDimensions("elements");
-        elementVar.addAttribute(new Attribute("units", "km"));
+        //elementVar.addAttribute(new Attribute("units", "km"));
         elementVar.addAttribute(new Attribute("standard_name",
                 "projection_x_coordinate"));
         varArray = new ArrayInt.D1(numElements);

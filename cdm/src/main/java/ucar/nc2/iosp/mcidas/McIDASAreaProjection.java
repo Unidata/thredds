@@ -19,6 +19,7 @@
  */
 
 
+
 package ucar.nc2.iosp.mcidas;
 
 
@@ -131,6 +132,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
         }
         dirBlock = dir;
         navBlock = nav;
+        auxBlock = aux;
         anav.setImageStart(dir[5], dir[6]);
         anav.setRes(dir[11], dir[12]);
         anav.setStart(0, 0);
@@ -164,6 +166,15 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
      */
     public int[] getNavBlock() {
         return navBlock;
+    }
+
+    /**
+     * Get the auxilliary block used to initialize this McIDASAreaProjection
+     *
+     * @return the auxilliary block (may be null)
+     */
+    public int[] getAuxBlock() {
+        return auxBlock;
     }
 
     /*MACROBODY
