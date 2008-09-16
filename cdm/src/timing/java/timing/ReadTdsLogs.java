@@ -139,10 +139,14 @@ public class ReadTdsLogs {
   }
 
   static long total_sendRequest_time = 0;
+  static long total_expected_time = 0;
   void sendRequests(String filename, String server, int max) throws IOException {
+    int count = 0;
+    long expected = 0;
+    long actual = 0;
+
     InputStream ios = new FileInputStream(filename);
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
-    int count = 0;
     while ((max < 0) || (count < max)) {
       String line = dataIS.readLine();
       if (line == null) break;
@@ -161,7 +165,7 @@ public class ReadTdsLogs {
       }
 
       String urlString = server + log.path;
-      System.out.print(" send " + urlString);
+      System.out.print(urlString+","+log.sizeBytes+ ","+log.msecs);
       long start = System.nanoTime();
 
       try {
@@ -172,12 +176,16 @@ public class ReadTdsLogs {
       }
 
       long took = System.nanoTime() - start;
-      total_sendRequest_time += took;
+      total_expected_time += log.msecs;
+
       long msecs = took/1000/1000;
-      System.out.println("  took " + msecs+" msecs");
+      float speedup = (msecs > 0) ? ((float)log.msecs)/msecs : 0;
+      total_sendRequest_time += msecs;
+
+      System.out.println("," + msecs+","+speedup);
     }
     ios.close();
-    System.out.println("total sendRequests= " + count);
+    System.out.println("total requests= " + count);
   }
 
 
@@ -427,7 +435,11 @@ public class ReadTdsLogs {
         new ReadTdsLogs().sendRequests(filename, "http://newmotherlode.ucar.edu:8080", -1);
       }
     });
-    System.out.println("total_sendRequest_time= " + total_sendRequest_time/1000/1000/1000+" secs");
+    System.out.println("total_sendRequest_time= " + total_sendRequest_time/1000+" secs");
+    System.out.println("total_expected_time= " + total_expected_time/1000+" secs");
+
+    float speedup = ((float) total_expected_time)/total_sendRequest_time;
+    System.out.println("speedup= " + speedup);
     // */
 
   }

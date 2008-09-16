@@ -60,6 +60,7 @@ import ucar.nc2.units.DateRange;
  */
 
 public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCoordSystem {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordSys.class);
 
   /**
    * Determine if this CoordinateSystem can be made into a GridCoordSys.
@@ -469,7 +470,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     try {
       factor = axisUnit.convertTo(1.0, SimpleUnit.kmUnit);
     } catch (IllegalArgumentException e) {
-      e.printStackTrace();
+      log.warn("convertUnits failed", e);
       return;
     }
     if (factor == 1.0) return;
@@ -478,7 +479,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     try {
       data = axis.read();
     } catch (IOException e) {
-      e.printStackTrace();
+      log.warn("convertUnits read failed", e);
       return;
     }
     IndexIterator ii = data.getIndexIterator();

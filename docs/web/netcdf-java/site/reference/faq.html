@@ -7,10 +7,26 @@
 
 <body>
 <h1>Netcdf-Java FAQ</h1>
+<h3>Logging</h3>
+<p><strong>Q: How do I get rid of the message &quot;log4j:WARN No appenders could be found for logger (ucar.nc2.NetcdfFile).  log4j:WARN Please initialize the log4j system properly&quot; ?</strong></p>
+<blockquote>
+  <p>Add the following to your startup code:</p>
+  <pre wrap="">
+    org.apache.log4j.BasicConfigurator.configure();
+
+    org.apache.log4j.Logge logger = org.apache.log4j.Logger.getRootLogger();
+    logger.setLevel(org.apache.log4j.Level.OFF);</pre>
+</blockquote>
+<h3>Multithreading</h3>
 <p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
 <blockquote>
-  <p> Underneath a <strong>Variable/NetcdfFile</strong> is (usually) a <strong>java.io.RandomAccessFile</strong> object, which is not thread-safe, because  it keeps the state of the file position. So even if all you want to do is read data in multiple threads, you need to synchronize, typically on the <strong>NetcdFile</strong> object. Alternatively, open a new <strong>NetcdfFile</strong> for each thread. The Threads Data Server (TDS) uses a cache of open <strong>NetcdfFile</strong> files by using the <strong>NetcdfDataset.acquireFile() </strong>method, which allows stateless handling of data requests minimizing file opening and closing..</p>
+  <p> Underneath a <strong>Variable/NetcdfFile</strong> is (usually) a <strong>java.io.RandomAccessFile</strong> object, which is not thread-safe, because  it keeps the state of the file position. So even if all you want to do is read data in multiple threads, you need to synchronize, typically on the <strong>NetcdFile</strong> object. Alternatively, open a new <strong>NetcdfFile</strong> for each thread. The THREDDS Data Server (TDS) uses a cache of open <strong>NetcdfFile</strong> files by using the <strong>NetcdfDataset.acquireFile() </strong>method, which allows stateless handling of data requests minimizing file opening and closing.</p>
 </blockquote>
+<p><strong>Q: Do I need to synchronize if I use NetcdfDataset.acquireFile()?</strong></p>
+<blockquote>
+  <p wrap="">The way that the cache is designed to work is that you get back a NetcdfFile object, which should then used only in a single thread so you dont need synchronization (&quot;thread-confinement&quot;), such as to answer a single request in a server. Until you release that NetcdfFile object, no one else can get it from the cache. If another request is made for that same NetcdfFile while its locked, a new NetcdfFile is opened.     And of course, the cache itself is thread-safe. So if you use it properly, you never have to do synchronization yourself.</p>
+</blockquote>
+<p>&nbsp;</p>
 <p>&nbsp;</p>
 <hr />
 <address>
