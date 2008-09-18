@@ -121,6 +121,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.warn("Cant load class: " + e);
     }
     try {
+      NetcdfFile.class.getClassLoader().loadClass("edu.wisc.ssec.mcidas.AreaFile"); // only load if visad.jar is present
+      registerIOProvider("ucar.nc2.iosp.mcidas.AreaServiceProvider");
+    } catch (Throwable e) {
+      if (loadWarnings) log.warn("Cant load class: " + e);
+    }
+    try {
       registerIOProvider("ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.warn("Cant load class: " + e);
