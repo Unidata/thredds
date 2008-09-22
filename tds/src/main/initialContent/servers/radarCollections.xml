@@ -168,8 +168,8 @@
           <end>1998-06-29T19:01:21</end>
       </timeCoverage>
       <variables vocabulary="DIF">
-        <variable name="BREF1/BaseReflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
-        <variable name="VEL1/BaseVelocity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
+        <variable name="N0R/Base Reflectivity Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Radar Reflectivity" units="dbZ" />
+        <variable name="N0V/Radial Velocity Tilt 1" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Velocity" units="knots" />
       </variables>
       </metadata>
     </datasetScan>
