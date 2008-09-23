@@ -165,12 +165,13 @@ public class ReadTdsLogs {
       }
 
       String urlString = server + log.path;
-      System.out.print(urlString+","+log.sizeBytes+ ","+log.msecs);
+      System.out.print("\""+urlString+"\","+log.sizeBytes+ ","+log.msecs);
       long start = System.nanoTime();
 
       try {
         IO.copyUrlB(urlString, null, 10 * 1000); // read data and throw away
       } catch (Throwable t) {
+        //t.printStackTrace();
         System.out.println("  FAILED ");
         continue;
       }
@@ -430,7 +431,7 @@ public class ReadTdsLogs {
     // */
 
     // sendRequests
-    read("d:/motherlode/logs/access.2008-09-11.log", new MClosure() {
+    read("d:/motherlode/logs/access.2008-09-22.log", new MClosure() {
       public void run(String filename) throws IOException {
         new ReadTdsLogs().sendRequests(filename, "http://newmotherlode.ucar.edu:8080", -1);
       }

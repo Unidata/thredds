@@ -45,7 +45,7 @@ public class TimeTDS {
         extractDatasetInfo(dd, System.out);
       }
     };
-    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL, true, listener);
+    CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL, false, listener);
 
     long start = System.currentTimeMillis();
     crawler.crawl(catUrl, null, System.out);
@@ -94,8 +94,8 @@ public class TimeTDS {
 
   public static void main(String args[]) {
 
-    // new TimeTDS("http://localhost:8080/thredds/catalog.xml");
-    new TimeTDS("http://lead.unidata.ucar.edu:8080/thredds/idd/obsData.xml");
+    new TimeTDS("http://localhost:8080/thredds/catalog.xml");
+    //new TimeTDS("http://lead.unidata.ucar.edu:8080/thredds/idd/obsData.xml");
   }
 
 }

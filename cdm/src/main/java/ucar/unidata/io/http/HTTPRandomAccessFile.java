@@ -90,6 +90,8 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     initHttpClient();
 
+    boolean needtest = true;
+
     HttpMethod method = null;
     try {
       method = new HeadMethod(url);
@@ -98,7 +100,13 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       doConnect(method);
 
       Header head = method.getResponseHeader("Accept-Ranges");
-      if (head == null || !head.getValue().equalsIgnoreCase("bytes")) {
+      if (head == null) {
+        needtest = true; // header is optional - need more testing
+
+      } else if (head.getValue().equalsIgnoreCase("bytes")) {
+        needtest = false;
+
+      } else if (head.getValue().equalsIgnoreCase("none")) {
         throw new IOException("Server does not support byte Ranges");
       }
 
@@ -116,9 +124,35 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     } finally {
       if (method != null) method.releaseConnection();
     }
-    // header[0] = new NVPair("User-Agent", "HTTPnetCDF;"); ??
+
+    if (needtest && !rangeOk(url))
+      throw new IOException("Server does not support byte Ranges");
 
     if (debugLeaks) openFiles.add(location);
+  }
+
+  private boolean rangeOk(String url) {
+    HttpMethod method = null;
+    try {
+      method = new GetMethod(url);
+      method.setFollowRedirects(true);
+      method.setRequestHeader("Range", "bytes=" + 0 + "-" + 1);
+      doConnect(method);
+
+      int code = method.getStatusCode();
+      if (code != 206)
+        throw new IOException("Server does not support Range requests, code= " + code);
+
+      // clear stream
+      method.getResponseBody();
+      return true;
+
+    } catch (IOException e) {
+      return false;
+
+    } finally {
+      if (method != null) method.releaseConnection();
+    }
   }
 
   private void doConnect(HttpMethod method) throws IOException {

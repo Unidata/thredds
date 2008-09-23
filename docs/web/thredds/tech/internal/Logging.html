@@ -23,8 +23,66 @@
 </table>
 
 
-<p><em>last updated May 30, 2006 </em>
+<p><em>last updated Sep 22, 2008</em></p>
+<h2>Tomcat access logging </h2>
+<p>Rolls over each day</p>
+<p>&lt;how to turn on?&gt;</p>
+<p>File is in {tomcat_home}/logs/access.YYYY-MM-DD.log</p>
+<p>Example:</p>
+<p>76.106.9.7 - - [18/Sep/2008:04:51:23 -0600] &quot;GET /thredds/radarServer/nexrad/level2/IDD?&amp;stn=KMLB&amp;time_start=1998-09-21T10:51:20&amp;time_end=2008-09-19T10:51:20 HTTP/1.1&quot; 200 408606 &quot;null&quot; &quot;Java/1.6.0_07&quot; 1719<br>
 </p>
+<table width="1018" border="1">
+  <tr>
+    <td width="79"><strong>Field</strong></td>
+    <td width="448"><strong>Example</strong></td>
+  </tr>
+  <tr>
+    <td>host</td>
+    <td>76.106.9.7</td>
+  </tr>
+  <tr>
+    <td>session id </td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <td>userid</td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <td>Date</td>
+    <td>[18/Sep/2008:04:51:23 -0600]</td>
+  </tr>
+  <tr>
+    <td>Request</td>
+    <td>&quot;GET /thredds/radarServer/nexrad/level2/IDD?&amp;stn=KMLB&amp;time_start=1998-09-21T10:51:20&amp;time_end=2008-09-19T10:51:20 HTTP/1.1&quot; </td>
+  </tr>
+  <tr>
+    <td>status</td>
+    <td>200</td>
+  </tr>
+  <tr>
+    <td>size</td>
+    <td>408606</td>
+  </tr>
+  <tr>
+    <td>referrer</td>
+    <td>&quot;null&quot;</td>
+  </tr>
+  <tr>
+    <td>client</td>
+    <td>&quot;Java/1.6.0_07&quot;</td>
+  </tr>
+  <tr>
+    <td>msecs</td>
+    <td>1719</td>
+  </tr>
+</table>
+<h3>setting tomcat log levels in catalina .out</h3>
+<p>To disable this message you need to modify logging properties file.<br>
+If you have logging.properties in your tomcat/conf folder then make changes there. Otherwise modify jre&rsquo;s file.</p>
+<p>Add to the end of /usr/local/java/jre/lib/logging.properties this line:</p>
+<p>org.apache.tomcat.util.http.Parameters.level = SEVERE</p>
+<p>http://www.itonguard.com/20080605/disable-warning-parameters-invalid-chunk-ignored-messages-in-tomcat-log/</p>
 <h2>TDS Logging</h2>
 <p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">log4j</a> library embedded in the <a href="http://www.slf4j.org/nlog4j/">NLOG4J</a> library. The NLOG4J library also implements the SLF4J logging facade, which the nj22 library needs. Users of the TDS can ignore the SLF4J facade, and need only deal with  log4j. </p>
 <p>The default log4j configuration file  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You can modify this if you want and restart the TDS to have it take efffect. However, it will be overwritten when you install an updated thredds.war file.</p>
@@ -39,6 +97,7 @@
 <h2>ThreddsAccess logfile</h2>
 <p>Supposed to roll over once a month. </p>
 <pre>  &lt;appender name=&quot;threddsAccess&quot; class=&quot;org.apache.log4j.DailyRollingFileAppender&quot;&gt;<br>    &lt;param name=&quot;File&quot; value=&quot;${logdir}/threddsAccess.log&quot;/&gt;<br>    &lt;param name=&quot;DatePattern&quot; value=&quot;.yyyy-MM&quot;/&gt;<br>    &lt;layout class=&quot;org.apache.log4j.PatternLayout&quot;&gt;<br>      &lt;param name=&quot;ConversionPattern&quot; value=&quot;%X{host} %X{ident} %X{userid} [%d{dd/MMM/yyyy:HH:mm:ss}] %X{request} %m%n<br>    &lt;/layout&gt;<br>  &lt;/appender&gt;
+
 
 &quot;%X{host} %X{ident} %X{userid} [%d{dd/MMM/yyyy:HH:mm:ss}] %X{request} %m%n&quot;
 

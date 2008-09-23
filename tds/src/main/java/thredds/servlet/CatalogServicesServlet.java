@@ -306,10 +306,19 @@ public class CatalogServicesServlet extends HttpServlet {
     sb.append(StringUtil.quoteHtmlContent(mess));
     sb.append("</b>\r\n");
 
-    // show catalog.xml
+     // show catalog.xml
     sb.append("<hr><pre>\r\n");
-    String catString = IO.readURLcontents(catURL);
-    sb.append(StringUtil.quoteHtmlContent(catString)).append("\r\n");
+    try {
+      String catString = IO.readURLcontentsWithException( catURL);
+      sb.append( StringUtil.quoteHtmlContent(catString)+"\r\n");
+    } catch (Exception ee) {
+      log.warn("Error reading URL= "+catURL);
+      sb.append("Error reading URL= ");
+      sb.append(catURL);
+      sb.append("; err=");
+      sb.append(ee.getMessage());
+      sb.append("\r\n");
+    }
     sb.append("</pre>\r\n");
 
     sb.append("</body>\r\n");
