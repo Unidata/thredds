@@ -152,7 +152,7 @@ abstract class DoradeDescriptor {
      * file position, or null if no descriptor name is available
      * @throws DescriptorException
      */
-    private static String peekName(RandomAccessFile file)
+    protected static String peekName(RandomAccessFile file)
             throws DescriptorException {
         try {
             long filepos = file.getFilePointer();

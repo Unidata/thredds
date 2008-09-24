@@ -222,16 +222,28 @@ class DoradeRADD extends DoradeDescriptor {
 	//
 	// Find the cell vector (CELV or CSFD)
 	//
-	try 
+    try
 	{
 	    long startpos = file.getFilePointer();
-	    try 
-	    {
-		myCELV = new DoradeCELV(file, littleEndianData);
-	    } catch (DescriptorException ex) {
-		file.seek(startpos);
-		myCELV = new DoradeCSFD(file, littleEndianData);
-	    }
+	  //  try
+	 //   {
+        String dName = peekName(file);
+        if(dName.equals("CELV"))
+        {
+            myCELV = new DoradeCELV(file, littleEndianData);
+
+        } else if(dName.equals("CSFD")){
+            file.seek(startpos);
+            myCELV = new DoradeCSFD(file, littleEndianData);
+
+        } else {
+            throw new DescriptorException("Expected " + dName +
+                                  " descriptor not found!");
+        }
+    //    } catch (DescriptorException ex) {
+    //    file.seek(startpos);
+	//	myCELV = new DoradeCSFD(file, littleEndianData);
+     //   }
 	} catch (IOException ioex) {
 		throw new DescriptorException(ioex);
 	}
