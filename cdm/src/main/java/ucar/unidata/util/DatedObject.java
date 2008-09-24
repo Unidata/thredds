@@ -22,19 +22,10 @@
 
 
 
-
-
-
-
-
-
-
 package ucar.unidata.util;
 
 
 import java.util.ArrayList;
-
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -54,8 +45,10 @@ public class DatedObject implements DatedThing {
     /** The object */
     private Object object;
 
-    public DatedObject() {
-    }
+    /**
+     * Default ctor
+     */
+    public DatedObject() {}
 
     /**
      * Construct this object with just a date
@@ -185,7 +178,7 @@ public class DatedObject implements DatedThing {
         List result = Arrays.asList(array);
         datedThings = new ArrayList();
         datedThings.addAll(result);
-        return  datedThings;
+        return datedThings;
     }
 
     /**
