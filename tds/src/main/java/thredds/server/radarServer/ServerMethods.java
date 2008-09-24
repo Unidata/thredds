@@ -1,6 +1,6 @@
 /* class ServerMethods
  *
- * Utility methods for all the THREDDS servlets
+ * Utility methods for all the THREDDS server type of servlets
  * Outputs either xml, html, ascii, dqc data or catalog files.
  *
  * By:  Robb Kambic  08/12/2007
@@ -74,10 +74,7 @@ public class ServerMethods {
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT")); // same as UTC
     }
 
-    //private ArrayList<Aggregation.Dataset> datasetList;
-    //private Date start, end;
     private org.slf4j.Logger log;
-    private PrintWriter pw;
 
     public ServerMethods( org.slf4j.Logger log ) {
         this.log = log;
@@ -139,8 +136,6 @@ public class ServerMethods {
 
      ///////////////////////////////////////
   // station handling
-  //static public List<Station> stationList = null;
- //private HashMap<String, Station> stationMap;
 
   /**
    * Determine if any of the given station names are actually in the dataset.
@@ -165,26 +160,11 @@ public class ServerMethods {
     }
     return true;
   }
-    /*
-  public boolean isStationListEmpty(List<String> stns) throws IOException {
-    HashMap<String, Station> map = getStationMap();
-    for (String stn : stns) {
-      if (map.get(stn) != null) return false;
-    }
-    return true;
-  }
-  */
+
   // What happened here!!!!
   //public boolean intersect(DateRange dr, Date start, Date end ) throws IOException {
   //  return dr.intersect(start, end);
   //}
-
-    /*
-  public List<Station> getStationList() throws IOException {
-    return stationList;
-  }
-   */
-
 
   public List<Station> getStations( String stnLocation ) {
 
@@ -267,93 +247,16 @@ public class ServerMethods {
       return stationList;
   }
 
-  public List<Station> getStationsOld( String dqcLocation ) {
-
-      StringBuilder errlog = new StringBuilder();
-      try {
-
-      DqcFactory dqcFactory = new DqcFactory(true);
-      dqcLocation = dqcLocation.replaceAll( " ", "%20");    
-      QueryCapability dqc = dqcFactory.readXML( dqcLocation );
-      if (dqc.hasFatalError()) {
-          errlog.append(dqc.getErrorMessages());
-          return null;
-      }
-
-      // have a look at what selectors there are before proceeding
-      SelectStation selStation = null;
-      SelectList selTime    = null;
-      SelectService selService = null;
-      //SelectGeoRegion selRegion = null;
-
-      ArrayList selectors = dqc.getSelectors();
-      for (int i = 0; i < selectors.size(); i++) {
-          Selector s = (Selector) selectors.get(i);
-          if (s instanceof SelectStation) {
-              selStation = (SelectStation) s;
-              selStation.getStations();
-          }
-          if (s instanceof SelectList) {
-              selTime = (SelectList) s;
-          }
-          if (s instanceof SelectService) {
-              selService = (SelectService) s;
-          }
-          // if (s instanceof SelectGeoRegion)
-          //   selRegion = (SelectGeoRegion) s;
-      }
-      //this.stationList = selStation.getStations();
-      return selStation.getStations();
-
-      } catch ( IOException ioe ){
-
-      }
-      //return stationList;
-      return null;
-  }
   public HashMap<String, Station> getStationMap( List<Station> list )  {
-      //if (null == stationMap) {
         HashMap<String, Station> stationMap = new HashMap<String, Station>();
-        //List<Station> list = getStationList();
         for (Station station : list) {
           stationMap.put(station.getValue(), station);
         }
-      //}
       return stationMap;
     }
 
- /*
-  private HashMap<String, Station> getStationMap() throws IOException {
-    if (null == stationMap) {
-      HashMap<String, Station> stationMap = new HashMap<String, Station>();
-      List<Station> list = getStationList();
-      for (Station station : list) {
-        stationMap.put(station.getValue(), station);
-      }
-    }
-    return stationMap;
-  }
-  */
-
-  /**
-   * Get the list of station names .
-   *
-   * @return list of station names
-   * @throws IOException if read error
-   */
-  /*
-  public List<String> getStationNames() throws IOException {
-    ArrayList<String> result = new ArrayList<String>();
-    List<Station> stations = getStationList();
-    for (Station s : stations) {
-        result.add(s.getValue());
-    }
-    return result;
-  }
-  */
   public List<String> getStationNames( List<Station> stations ) {
     ArrayList<String> result = new ArrayList<String>();
-    //List<Station> stations = getStationList();
     for (Station s : stations) {
         result.add(s.getValue());
     }
@@ -374,30 +277,14 @@ public class ServerMethods {
    * @return list of station names contained within the bounding box
    * @throws IOException if read error
    */
-  /*
-  public List<String> getStationNames(LatLonRect boundingBox) throws IOException {
-    LatLonPointImpl latlonPt = new LatLonPointImpl();
-    ArrayList<String> result = new ArrayList<String>();
-    List<Station> stations = getStationList();
-    for (Station s : stations) {
-      latlonPt.set(s.getLatitude(), s.getLongitude());
-      if (boundingBox.contains(latlonPt)) {
-        result.add(s.getValue());
-        // boundingBox.contains(latlonPt);   debugging
-      }
-    }
-    return result;
-  }
-  */
+
   public List<String> getStationNames(LatLonRect boundingBox, List<Station> stations ) {
     LatLonPointImpl latlonPt = new LatLonPointImpl();
     ArrayList<String> result = new ArrayList<String>();
-    //List<Station> stations = getStationList();
     for (Station s : stations) {
       latlonPt.set(s.getLocation().getLatitude(), s.getLocation().getLongitude());
       if (boundingBox.contains(latlonPt)) {
         result.add(s.getValue());
-        // boundingBox.contains(latlonPt);   debugging
       }
     }
     return result;
@@ -412,30 +299,9 @@ public class ServerMethods {
    * @return name of station closest to the specified point
    * @throws IOException if read error
    */
-  /*
-  public String findClosestStation(double lat, double lon) throws IOException {
-    double cos = Math.cos(Math.toRadians(lat));
-    List<Station> stations = getStationList();
-    Station min_station = stations.get(0);
-    double min_dist = Double.MAX_VALUE;
-
-    for (Station s : stations) {
-      double lat1 = s.getLatitude();
-      double lon1 = LatLonPointImpl.lonNormal(s.getLongitude(), lon);
-      double dy = Math.toRadians(lat - lat1);
-      double dx = cos * Math.toRadians(lon - lon1);
-      double dist = dy * dy + dx * dx;
-      if (dist < min_dist) {
-        min_dist = dist;
-        min_station = s;
-      }
-    }
-    return min_station.getValue();
-  }
-  */
+   
   public String findClosestStation(double lat, double lon, List<Station> stations) {
     double cos = Math.cos(Math.toRadians(lat));
-    //List<Station> stations = getStationList();
     Station min_station = stations.get(0);
     double min_dist = Double.MAX_VALUE;
 
@@ -452,38 +318,7 @@ public class ServerMethods {
     }
     return min_station.getValue();
   }
-  ////////////////////////////////////////////////////////////////
-  // date filter
-  /*
-  private List<Aggregation.Dataset> filterDataset(DateRange range) {
-    if (range == null)
-      return datasetList;
 
-    List<Aggregation.Dataset> result = new ArrayList<Aggregation.Dataset>();
-    for (Aggregation.Dataset ds : datasetList) {
-      if (range.intersect(ds.time_start, ds.time_end))
-        result.add(ds);
-    }
-    return result;
-  }
-
-  Aggregation.Dataset filterDataset(DateType want) {
-    if (want.isPresent())
-      return datasetList.get(datasetList.size() - 1);
-
-    Date time = want.getDate();
-    for (Aggregation.Dataset ds : datasetList) {
-      if (time.before(ds.time_end) && time.after(ds.time_start)) {
-        return ds;
-      }
-      if (time.equals(ds.time_end) || time.equals(ds.time_start)) {
-        return ds;
-      }
-    }
-    return null;
-  }
-
-   */
     /**
      * Get an input stream reader for the filename
      *
@@ -643,7 +478,4 @@ public class ServerMethods {
            +":"+ date.substring(11,13) +":00";
     }
 
-    public void setPW( PrintWriter pw ){
-        this.pw = pw;
-    }
 } // end ServerMethods

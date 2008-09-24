@@ -14,32 +14,26 @@ package thredds.server.radarServer;
 import thredds.servlet.*;
 import java.io.*;
 import java.util.*;
-import java.util.Calendar;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import thredds.server.ncSubset.QueryParams;
-import thredds.catalog.XMLEntityResolver;
 import thredds.catalog.query.Station;
 import org.jdom.Document;
 import org.jdom.Element;
-import ucar.nc2.units.DateFormatter;
 
 public class RadarNexradServer {
 
-    static public String radarStations = "RadarNexradStations.xml";
+    static public final String radarStations = "RadarNexradStations.xml";
     static public List<Station> stationList = null;
     static public HashMap<String, Station> stationMap;
+    static public final ArrayList<String> allVars = new ArrayList();
+    static private final String serviceName = "OPENDAP";
+    static private final String serviceType = "OPENDAP";
 
-    static public ArrayList<String> allVars = new ArrayList();
-    private String serviceName = "OPENDAP";
-    private String serviceType = "OPENDAP";
-    private String serviceBase;
     private ServerMethods sm;
-    private QueryParams qp;
     private boolean debug = false;
-    private PrintWriter pw = null;
     private org.slf4j.Logger log;
 
     public RadarNexradServer( ) {}
@@ -55,16 +49,7 @@ public class RadarNexradServer {
                return;
            }
            stationMap = sm.getStationMap( stationList );
-           String prodDir = RadarServer.dataLocation.get( "nexrad/level3/IDD" );
-           if( prodDir != null ) {
-             File files = new File( prodDir );
-             String[] prods = files.list();
-             for( String prod : prods ) {
-               if( ! allVars.contains( prod ) ) {
-                 allVars.add( prod );
-               }
-             }
-           }
+           // should be a more efficient way
            allVars.add( "DPA");
            allVars.add( "DHR");
            allVars.add( "DSP");
@@ -136,13 +121,12 @@ public class RadarNexradServer {
    }
 
 // process Nexrad query get parmameters from servlet call
-public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
+public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res, PrintWriter pw )
             throws ServletException, IOException {
 
     String radarDir = null;
     try {
         if (debug) System.out.println(req.getQueryString());
-        sm.setPW( pw );
 
         // need to extract data according to the (dataset) given
         String pathInfo = req.getPathInfo();
@@ -155,7 +139,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
             radarDir = RadarServer.dataLocation.get( "nexrad/level2/IDD" ); // default
 
         // parse the input
-        qp = new QueryParams();
+        QueryParams qp = new QueryParams();
         if (!qp.parseQuery(req, res, new String[]{ QueryParams.XML, QueryParams.HTML, QueryParams.RAW, QueryParams.NETCDF}))
           return; // has sent the error message
 
@@ -275,7 +259,8 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
             }
         }
         // write out catalog with datasets
-        // accept = XML inplies OPENDAY server 
+        // accept = XML inplies OPENDAY server
+        String serviceBase = "";
         if ( ServerMethods.p_xml_i.matcher(qp.acceptType).find()) {
             serviceBase = "/thredds/dodsC/"+ pathInfo +"/";
             pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -365,7 +350,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
         }
 
         // qualifies products according to stations, time, and variables
-        boolean dataFound = processQuery( radarDir );
+        boolean dataFound = processQuery( radarDir, qp, pw, serviceBase );
 
         // add ending tags
         if ( ServerMethods.p_xml_i.matcher(qp.acceptType).find() ) {
@@ -391,7 +376,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
 } // end radarNexradQuery
 
     // processQuery is limited by the stns, dates and vars in the query
-    protected Boolean processQuery( String tdir ) throws IOException {
+    protected Boolean processQuery( String tdir, QueryParams qp, PrintWriter pw, String serviceBase ) throws IOException {
 
         // set date info
         String yyyymmddStart = qp.time_start.toDateString();
@@ -441,7 +426,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                 File file = new File( sDir +"/"+ sdirs[ 0 ] );
                 if( file.isFile() ) { // products in dir, process dir
                     dataFound = processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
-                        qp.hasTimePoint, dateStart, dateEnd );
+                        qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
                 } else if( sm.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
                     java.util.Arrays.sort( sdirs, new CompareKeyDescend() );
                     for( int j = 0; j < sdirs.length; j++) {
@@ -454,7 +439,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                             file = new File( dDir +"/"+ ndirs[ 0 ]);
                             if( file.isFile() ) { // products in dir, process dir
                                 dataFound = processProducts( ndirs, dDir.replaceFirst( tdir, "").substring( 1 ),
-                                    qp.hasTimePoint, dateStart, dateEnd );
+                                    qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
                                 if( qp.hasTimePoint ) // only want one product
                                     break;
                             } else if( allVars.contains( ndirs[ 0 ].toUpperCase() ) ) {
@@ -474,7 +459,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                         if( file.isFile() ) { // products in dir, return dir
                             //dirTree.add( vDir );
                             dataFound = processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
-                                qp.hasTimePoint, dateStart, dateEnd );
+                                qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
 
                         }
                     }
@@ -495,7 +480,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                 File file = new File( vDir +"/"+ vdirs[ 0 ] );
                 if( file.isFile() ) { // products in dir, process dir
                     dataFound = processProducts( vdirs, vDir.replaceFirst( tdir, "").substring( 1 ),
-                        qp.hasTimePoint, dateStart, dateEnd );
+                        qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
                 } else if( stationMap.get( "K"+ vdirs[ 0 ] ) != null ) { // got to be level3 station
                     for (String station : qp.stns ) {
                         String sDir = vDir +'/'+ station ;
@@ -507,7 +492,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                         file = new File( sDir +"/"+ sdirs[ 0 ] );
                         if( file.isFile() ) { // products in dir, return dir
                             dataFound = processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
-                                qp.hasTimePoint, dateStart, dateEnd );
+                                qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
                         } else if( sm.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
                             java.util.Arrays.sort( sdirs, new CompareKeyDescend() );
                             for( int k = 0; k < sdirs.length; k++) {
@@ -517,7 +502,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                                     files = new File( dDir );
                                     String[] ddirs = files.list();
                                     dataFound = processProducts( ddirs, dDir.replaceFirst( tdir, "").substring( 1 ),
-                                        qp.hasTimePoint, dateStart, dateEnd );
+                                        qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase);
                                     if( qp.hasTimePoint ) // only want one product
                                         break;
                                 }    
@@ -544,7 +529,8 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
 
     // check if product has valid time then creates a dataset for product
     protected Boolean processProducts( String[] products, String rPath,
-        Boolean latest, String dateStart, String dateEnd ) {
+        Boolean latest, String dateStart, String dateEnd, QueryParams qp,
+        PrintWriter pw, String serviceBase ) {
 
         java.util.Arrays.sort( products, new CompareKeyDescend() );
 
@@ -558,7 +544,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                 if( ! sm.isValidDate( products[ t ], dateStart, dateEnd ) )
                     continue;
                 dataFound = true;
-                XMLdataset(  products[ t ], rPath );
+                XMLdataset(  products[ t ], rPath, pw );
                 if ( latest ) {
                     break;
                 }
@@ -570,7 +556,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
                 if( ! sm.isValidDate( products[ t ], dateStart, dateEnd ) )
                     continue;
                 dataFound = true;
-                HTMLdataset(  products[ t ], rPath );
+                HTMLdataset(  products[ t ], rPath, pw, serviceBase );
                 if ( latest ) {
                     break;
                 }
@@ -580,7 +566,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
     }
 
     // create a XML dataset entry for a catalog
-    public void XMLdataset(String product, String rPath ) {
+    public void XMLdataset(String product, String rPath, PrintWriter pw ) {
 
         pw.println("      <dataset name=\""+ product +"\" ID=\""+
               product.hashCode() +"\"" );
@@ -594,7 +580,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
     } // end datasetOut
 
     // create a HTML dataset entry for a catalog
-    public void HTMLdataset(String product, String rPath ) {
+    public void HTMLdataset(String product, String rPath, PrintWriter pw, String serviceBase ) {
 
         pw.println( "  <tr>" );
         pw.println("    <td align=center valign=center><a href=\"/thredds/dodsC/"+ 
@@ -657,8 +643,9 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
         if( path != null ) {
             File files = new File( path );
             stations = files.list();
-            // actually not a station, it's a var so go next dir down
+            // actually not a station, it's a var so get next dir down
             if( allVars.contains( stations[ 0 ].toUpperCase() ) ) {
+                //path += "/N0R";
                 path += "/"+ stations[ 0 ];
                 files = new File( path );
                 stations = files.list();
@@ -674,7 +661,7 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
     /**
      * print station in a XML format from this info
     */
-    public void printStations( String[] stations ) {
+    public void printStations( String[] stations, PrintWriter pw ) {
         for (String s : stations ) {
             Station stn;
             if( s.length() == 3 ) { // level3 stns
@@ -706,10 +693,6 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res )
            pw.println( "   </station>");
         }
 
-    }
-
-    public void setPW( PrintWriter pw ){
-        this.pw = pw;
     }
 
     protected class CompareKeyDescend implements Comparator {
