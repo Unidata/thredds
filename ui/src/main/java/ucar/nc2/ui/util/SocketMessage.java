@@ -128,7 +128,7 @@ public class SocketMessage {
         try {
           if (debug) System.out.println("SocketMessage Connection established with " + connection);
           if (throwAway) {
-            IO.copy2null(connection.getInputStream());
+            IO.copy2null(connection.getInputStream(), -1);
             /* long count = IO.writeToFile(connection.getInputStream(), "C:/temp/save");
             if (debug) System.out.println("SocketMessage had length " + count/(1000*1000)+" Mb"); */
           } else {

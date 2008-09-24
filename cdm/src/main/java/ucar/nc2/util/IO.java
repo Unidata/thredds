@@ -96,6 +96,7 @@ public class IO {
    * copy all bytes from in and throw them away.
    *
    * @param in  InputStream
+   * @param buffersize size of buffer to use, if -1 uses default value (9200)
    * @return number of bytes copied
    * @throws java.io.IOException on io error
    */
