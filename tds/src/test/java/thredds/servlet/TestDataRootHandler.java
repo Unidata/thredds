@@ -2,6 +2,8 @@ package thredds.servlet;
 
 import junit.framework.*;
 import thredds.TestAll;
+import thredds.util.TdsConfiguredPathAliasReplacement;
+import thredds.util.PathAliasReplacement;
 import thredds.server.config.TdsContext;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.crawlabledataset.filter.WildcardMatchOnNameFilter;
@@ -14,6 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -85,6 +88,8 @@ public class TestDataRootHandler extends TestCase
     sc.setServletContextName( "THREDDS Data Server" );
     tdsContext.init( sc );
     drh = new DataRootHandler( tdsContext ); // DataRootHandler.getInstance();
+    PathAliasReplacement par = new TdsConfiguredPathAliasReplacement( "content" );
+    drh.setDataRootLocationAliasExpanders( Collections.singletonList( par ) );
     drh.init();
     DataRootHandler.setInstance( drh );
   }

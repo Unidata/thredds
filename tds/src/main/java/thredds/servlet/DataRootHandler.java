@@ -26,6 +26,8 @@ import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.servlet.PathMatcher;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.server.config.TdsContext;
+import thredds.util.PathAliasReplacement;
+import thredds.util.TdsConfiguredPathAliasReplacement;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.DateUtil;
@@ -118,6 +120,44 @@ public class DataRootHandler {
   {
     this.tdsContext = tdsContext;
     this.staticCatalogHash = new HashMap<String,InvCatalogImpl>();
+  }
+
+  private List<PathAliasReplacement> dataRootLocAliasExpanders = Collections.emptyList();
+
+  public void setDataRootLocationAliasExpanders( List<PathAliasReplacement> dataRootLocAliasExpanders )
+  {
+    if ( dataRootLocAliasExpanders == null )
+      this.dataRootLocAliasExpanders = Collections.emptyList();
+    else
+      this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>( dataRootLocAliasExpanders );
+
+    // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
+    String contentReplacementPath = StringUtils.cleanPath( tdsContext.getPublicDocFileSource().getFile( "" ).getPath() );
+    String iddDataRootReplacmentPath = ThreddsConfig.get( "contentRoot.iddDataRoot", null );
+    for ( PathAliasReplacement par : this.dataRootLocAliasExpanders )
+    {
+      if ( par instanceof TdsConfiguredPathAliasReplacement )
+      {
+        TdsConfiguredPathAliasReplacement tcPar = (TdsConfiguredPathAliasReplacement) par;
+        if ( tcPar.getAlias().equals( "content"))
+          tcPar.init( contentReplacementPath );
+        else if ( tcPar.getAlias().equals( "iddDataRoot"))
+          tcPar.init( iddDataRootReplacmentPath );
+      }
+    }
+  }
+
+  public List<PathAliasReplacement> getDataRootLocationAliasExpanders()
+  {
+    return Collections.unmodifiableList( this.dataRootLocAliasExpanders );
+  }
+
+  private InvCatalogFactory getCatalogFactory( boolean validate )
+  {
+    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( validate );
+    if ( ! this.dataRootLocAliasExpanders.isEmpty() )
+      factory.setDataRootLocationAliasExpanders( this.dataRootLocAliasExpanders );
+    return factory;
   }
 
   public void init()
@@ -271,7 +311,7 @@ public class DataRootHandler {
         return;
       }
 
-    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(true); // always validate the config catalogs
+    InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
     InvCatalogImpl cat = readCatalog( factory, path, f.getPath() );
     if ( cat == null ) {
       logCatalogInit.warn( "initCatalog(): failed to read catalog <" + f.getPath() + ">." );
@@ -484,13 +524,6 @@ public class DataRootHandler {
       return false;
     }
 
-    // LOOK !!
-    // rearrange scanDir if it starts with content
-    if ( this.isContentAliasPath( dscan.getScanLocation() ) )
-    {
-      dscan.setScanLocation( replaceContentAliasPath( dscan.getScanLocation() ) );
-    }
-
     // Check whether InvDatasetScan is valid before adding.
     if ( ! dscan.isValid() )
     {
@@ -504,20 +537,6 @@ public class DataRootHandler {
 
     logCatalogInit.debug(" added rootPath=<" + path + ">  for directory= <" + dscan.getScanLocation() + ">");
     return true;
-  }
-
-  // @ToDo remove this section and replace with InvCatalogFactory10.setDataRootLocationAliasExpanders( List<PathAliasReplacement>)
-  private String contentAliasPath = "content/";
-  private boolean isContentAliasPath( String path )
-  {
-    return path.startsWith( this.contentAliasPath );
-  }
-  private String replaceContentAliasPath( String path )
-  {
-    if ( ! isContentAliasPath( path ))
-      return null;
-    return StringUtils.cleanPath( this.tdsContext.getPublicDocFileSource().getFile( "").getPath())
-            + path.substring( contentAliasPath.length() - 1 );
   }
 
   // Only called by synchronized methods
@@ -565,12 +584,6 @@ public class DataRootHandler {
       return false;
     }
 
-    // rearrange dirLocation if it starts with content
-    String newDirLoc = replaceContentAliasPath( dirLocation );
-    if ( newDirLoc != null )
-    {
-      dirLocation = newDirLoc;
-    }
     File file = new File(dirLocation);
     if ( ! file.exists())
     {
@@ -946,7 +959,7 @@ public class DataRootHandler {
     }
 
     // Return catalog as XML response.
-    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
+    InvCatalogFactory catFactory = getCatalogFactory( false );
     String result = catFactory.writeXML( cat );
     ServletUtil.logServerAccess( HttpServletResponse.SC_OK, result.length() );
 
@@ -1195,7 +1208,7 @@ public class DataRootHandler {
     }
 
     // Return catalog as XML response.
-    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(false);
+    InvCatalogFactory catFactory = getCatalogFactory(false);
     String result = catFactory.writeXML(catalog);
     ServletUtil.logServerAccess(HttpServletResponse.SC_OK, result.length());
 
@@ -1241,7 +1254,7 @@ public class DataRootHandler {
           {
             String catalogFullPath = catFile.getPath();
             log.info( "getCatalog(): Rereading expired catalog [" + catalogFullPath + "].");
-            InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
+            InvCatalogFactory factory = getCatalogFactory( true);
             InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
 
             if (reReadCat != null) {
@@ -1336,7 +1349,7 @@ public class DataRootHandler {
       return null;
     String catalogFullPath = catFile.getPath();
 
-    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false); // no validation
+    InvCatalogFactory factory = getCatalogFactory( false); // no validation
     InvCatalogImpl cat = readCatalog( factory, path, catalogFullPath );
     if ( cat == null ) {
       log.warn( "makeTDRDynamicCatalog(): failed to read tdr catalog <" + catalogFullPath + ">." );
@@ -1497,7 +1510,7 @@ public class DataRootHandler {
     }
 
     // Send latest.xml catalog as response.
-    InvCatalogFactory catFactory = new InvCatalogFactory("default", true);
+    InvCatalogFactory catFactory = getCatalogFactory( false);
     String catAsString = catFactory.writeXML((InvCatalogImpl) cat);
     PrintWriter out = res.getWriter();
     res.setContentType("text/xml");

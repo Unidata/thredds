@@ -26,14 +26,17 @@ public class TdsConfigContextListener
   {
     System.out.println( "TdsConfigContextListener.contextInitialized(): start." );
 
+    // Get webapp context.
     ServletContext servletContext = event.getServletContext();
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
+
+    // Initialize the TDS context.
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
     tdsContext.init( servletContext );
     Log4jWebConfigurer.initLogging( servletContext );
 
+    // Initialize the DataRootHandler.
     DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
-
     catHandler.registerConfigListener( new RestrictedAccessConfigListener() );
     catHandler.init();
     DataRootHandler.setInstance( catHandler );

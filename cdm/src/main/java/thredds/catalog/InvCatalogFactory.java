@@ -28,6 +28,8 @@ import java.net.*;
 import java.util.*;
 
 import ucar.nc2.util.IO;
+import thredds.util.PathAliasReplacement;
+import thredds.catalog.parser.jdom.InvCatalogFactory10;
 
 /**
  * Reads an XML document and constructs thredds.catalog object.
@@ -135,6 +137,28 @@ public class InvCatalogFactory {
     fatalMessages = xml.getFatalMessages();
 
     setDefaults();
+  }
+
+  private List<PathAliasReplacement> dataRootLocAliasExpanders = Collections.emptyList();
+
+  public void setDataRootLocationAliasExpanders( List<PathAliasReplacement> dataRootLocAliasExpanders )
+  {
+    if ( dataRootLocAliasExpanders == null )
+      this.dataRootLocAliasExpanders = Collections.emptyList();
+    else
+      this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>( dataRootLocAliasExpanders );
+
+    for ( InvCatalogConvertIF catConv : this.converters.values())
+    {
+      // LOOK! ToDo Should be more generic (add setter to InvCatalogConvertIF?)
+      if ( catConv instanceof InvCatalogFactory10 )
+        ((InvCatalogFactory10) catConv).setDataRootLocationAliasExpanders( this.dataRootLocAliasExpanders );
+    }
+  }
+
+  public List<PathAliasReplacement> getDataRootLocationAliasExpanders()
+  {
+    return Collections.unmodifiableList( this.dataRootLocAliasExpanders );
   }
 
   private void setDefaults() {
