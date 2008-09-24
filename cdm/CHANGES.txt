@@ -44,6 +44,9 @@ This code is ALPHA
  Release Details:
     24: cleanup error messages when catref or show catalog service fails to open remote catalog.
         HTTPRandomAccessFile tolerates lack of "Accept-Ranges" header
+        start to reduce memory consumption based on TDS profiling
+          remove ucar.ma2.Index.set/getName() since its never used
+
     23: new visad.jar (9/12/08)
         more BUFR fixes
         DateRange now moves when start or end date = "present"

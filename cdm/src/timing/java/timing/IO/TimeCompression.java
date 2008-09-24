@@ -52,8 +52,8 @@ public class TimeCompression {
 
   static public void main( String[] args) throws IOException {
     testCompressRandom();
-    testCompressFile("C:/data/NAM_CONUS_80km_20070501_1200.nc");
-    testCompressFile("C:/data/NAM_CONUS_80km_20070501_1200.nc");
+    testCompressFile("D:/data/NAM_CONUS_80km_20070501_1200.nc");
+    testCompressFile("D:/data/NAM_CONUS_80km_20070501_1200.nc");
   }
 
   static public void testCompressFile(String filename) throws IOException {

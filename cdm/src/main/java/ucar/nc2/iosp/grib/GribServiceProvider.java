@@ -44,7 +44,6 @@ import java.net.URL;
 public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   protected NetcdfFile ncfile;
   protected RandomAccessFile raf;
-  protected StringBuilder parseInfo = new StringBuilder();
   protected FmrcCoordSys fmrcCoordSys;
 
   // keep this info to reopen index when extending or syncing
@@ -362,7 +361,7 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
 
 
   public String getDetailInfo() {
-    return parseInfo.toString();
+    return null; // (parseInfo == null) ? "None" : parseInfo.toString();
   }
 
 

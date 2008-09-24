@@ -46,7 +46,7 @@ public class Index implements Cloneable {
 
   // LOOK: can we eliminate for the common case?
   protected int[] current; // current element's index, used only for the general case
-  protected String[] name; // index names (optional)
+  //protected String[] name; // index names (optional)
 
   /**
    * General case Index - use when you want to manipulate current elements yourself
@@ -160,13 +160,13 @@ public class Index implements Cloneable {
       if (r == null) {          // null range means use the whole original dimension
         newindex.shape[newDim] = shape[ii];
         newindex.stride[newDim] = stride[ii];
-        if (name != null) newindex.name[newDim] = name[ii];
+        //if (name != null) newindex.name[newDim] = name[ii];
         newDim++;
       } else if (r.length() != 1) {
         newindex.shape[newDim] = r.length();
         newindex.stride[newDim] = stride[ii] * r.stride();
         newindex.offset += stride[ii] * r.first();
-        if (name != null) newindex.name[newDim] = name[ii];
+        //if (name != null) newindex.name[newDim] = name[ii];
         newDim++;
       } else {
         newindex.offset += stride[ii] * r.first();   // constant due to rank reduction
@@ -218,7 +218,7 @@ public class Index implements Cloneable {
         newindex.stride[ii] = stride[ii] * r.stride();
         newindex.offset += stride[ii] * r.first();
       }
-      if (name != null) newindex.name[ii] = name[ii];
+      //if (name != null) newindex.name[ii] = name[ii];
     }
     newindex.size = computeSize(newindex.shape);
     newindex.fastIterator = false;
@@ -262,8 +262,7 @@ public class Index implements Cloneable {
       if (ii != dim) {
         newindex.shape[count] = shape[ii];
         newindex.stride[count] = stride[ii];
-        if (name != null)
-          newindex.name[count] = name[ii];
+        //if (name != null) newindex.name[count] = name[ii];
 
         count++;
       }
@@ -293,10 +292,10 @@ public class Index implements Cloneable {
     newIndex.stride[index2] = stride[index1];
     newIndex.shape[index1] = shape[index2];
     newIndex.shape[index2] = shape[index1];
-    if (name != null) {
+    /* if (name != null) {
       newIndex.name[index1] = name[index2];
       newIndex.name[index2] = name[index1];
-    }
+    } */
 
     newIndex.fastIterator = false;
     newIndex.precalc(); // any subclass-specific optimizations
@@ -321,7 +320,7 @@ public class Index implements Cloneable {
     for (int i = 0; i < dims.length; i++) {
       newIndex.stride[i] = stride[dims[i]];
       newIndex.shape[i] = shape[dims[i]];
-      if (name != null) newIndex.name[i] = name[dims[i]];
+      //if (name != null) newIndex.name[i] = name[dims[i]];
       if (i != dims[i]) isPermuted = true;
     }
 
@@ -685,13 +684,13 @@ public class Index implements Cloneable {
       sbuff.append(" ");
     }
 
-    if (name != null) {
+    /* if (name != null) {
       sbuff.append(" names= ");
       for (int ii = 0; ii < rank; ii++) {
         sbuff.append(name[ii]);
         sbuff.append(" ");
       }
-    }
+    } */
 
     sbuff.append(" offset= ").append(offset);
     sbuff.append(" rank= ").append(rank);
@@ -727,34 +726,33 @@ public class Index implements Cloneable {
     i.shape = shape.clone();
     i.current = new int[rank];  // want zeros
 
-    if (name != null)
-      i.name = name.clone();
+    // if (name != null) i.name = name.clone();
 
     return i;
   }
 
   //////////////////////////////////////////////////////////////
-  /**
+  /*
    * Set the name of one of the indices.
    *
    * @param dim       which index?
    * @param indexName name of index
-   */
+   *
   public void setIndexName(int dim, String indexName) {
     if (name == null) name = new String[rank];
     name[dim] = indexName;
   }
 
-  /**
+  /*
    * Get the name of one of the indices.
    *
    * @param dim which index?
    * @return name of index, or null if none.
-   */
+   *
   public String getIndexName(int dim) {
     if (name == null) return null;
     return name[dim];
-  }
+  } */
 
   ////////////////////// inner class ///////////////////////////
 

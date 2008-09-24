@@ -84,9 +84,8 @@ public class DateUnit { // extends SimpleUnit {
 
   ////////////////////////////////////////////////////////////////////////
   private double value;
-  private String timeUnitString, udunitString;
+  private String udunitString;
   private TimeUnit timeUnit = null;
-  private DateFormatter formatter;
   private Unit uu;
 
   /**
@@ -97,6 +96,8 @@ public class DateUnit { // extends SimpleUnit {
   public DateUnit(String text) throws Exception {
     super();
 
+    String timeUnitString;
+
     text = text.trim();
     StringTokenizer stoker = new StringTokenizer(text);
     String firstToke = stoker.nextToken();
@@ -105,12 +106,12 @@ public class DateUnit { // extends SimpleUnit {
       //if (this.value == 0.0)
       //  this.value = 1.0;
       this.udunitString = text.substring( firstToke.length()); // eliminate the value if there is one
-      this.timeUnitString = stoker.nextToken();
+      timeUnitString = stoker.nextToken();
 
     } catch (NumberFormatException e) { // stupid way to test if it starts with a number
       this.value = 0.0;
       this.udunitString = text;
-      this.timeUnitString = firstToke;
+      timeUnitString = firstToke;
     }
 
     uu = SimpleUnit.makeUnit( udunitString); // always a base unit
@@ -142,7 +143,7 @@ public class DateUnit { // extends SimpleUnit {
    * For udunit dates, get the time unit only, as a String, eg "secs" or "days"
    * @return  time unit as a string
    */
-  public String getTimeUnitString() { return timeUnitString; }
+  public String getTimeUnitString() { return timeUnit.getUnitString(); }
    /**
    * For udunit dates, get the time unit.
     * @return time unit
@@ -191,7 +192,7 @@ public class DateUnit { // extends SimpleUnit {
   public String makeStandardDateString(double value) {
     Date date = makeDate( value);
     if (date == null) return null;
-    if (formatter == null) formatter = new DateFormatter();
+    DateFormatter formatter = new DateFormatter();
     return formatter.toDateTimeStringISO(date);
   }
 

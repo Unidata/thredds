@@ -665,23 +665,23 @@ public abstract class Array {
   }
 
   //////////////////////////////////////////////////////////////
-  /**
+  /*
    * Set the name of one of the indices.
    * @param dim which index?
    * @param indexName name of index
-   */
+   *
   public void setIndexName( int dim, String indexName) {
     indexCalc.setIndexName( dim, indexName);
   }
 
-  /**
+  /*
    * Get the name of one of the indices.
    * @param dim which index?
    * @return name of index, or null if none.
-   */
+   *
   public String getIndexName( int dim) {
     return indexCalc.getIndexName( dim);
-  }
+  } */
 
   /** This is present so that Array is-a MultiArray: equivalent to sectionNoReduce().
   public Array read(int [] origin, int [] shape) throws InvalidRangeException {

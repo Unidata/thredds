@@ -1186,7 +1186,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   ////////////////////////////////////////////////////////////////////
   // debugging
 
-  private NetcdfDatasetInfo info = null;
+  // private NetcdfDatasetInfo info = null;
 
   /**
    * Show debug / underlying implementation details
@@ -1213,9 +1213,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @return NetcdfDatasetInfo object
    */
   public NetcdfDatasetInfo getInfo() {
-    if (null == info)
-      info = new NetcdfDatasetInfo(this);
-    return info;
+    return new NetcdfDatasetInfo(this);
   }
 
   void dumpClasses(Group g, PrintStream out) {

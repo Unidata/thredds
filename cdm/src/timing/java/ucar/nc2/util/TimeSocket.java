@@ -66,7 +66,7 @@ public class TimeSocket {
 
   double copyFake(File f) throws IOException {
     InputStream in = new FileInputStream(f);
-    ucar.nc2.util.IO.copy2null( in);
+    ucar.nc2.util.IO.copy2null( in, -1);
     in.close();
     return f.length() / (1000 * 1000);
   }

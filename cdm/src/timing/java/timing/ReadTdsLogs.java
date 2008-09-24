@@ -431,9 +431,9 @@ public class ReadTdsLogs {
     // */
 
     // sendRequests
-    read("d:/motherlode/logs/access.2008-09-22.log", new MClosure() {
+    read("d:/motherlode/logs/access.2008-09-20.log", new MClosure() {
       public void run(String filename) throws IOException {
-        new ReadTdsLogs().sendRequests(filename, "http://newmotherlode.ucar.edu:8080", -1);
+        new ReadTdsLogs().sendRequests(filename, "http://newmotherlode.ucar.edu:8081", -1);
       }
     });
     System.out.println("total_sendRequest_time= " + total_sendRequest_time/1000+" secs");
