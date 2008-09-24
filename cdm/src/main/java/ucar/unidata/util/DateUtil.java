@@ -21,10 +21,6 @@
  */
 
 
-
-
-
-
 package ucar.unidata.util;
 
 
@@ -582,6 +578,40 @@ public class DateUtil {
         return milliseconds;
     }
 
+
+    /**
+     * Decode a date from a WMO header of the form ddHHmm.
+     *
+     * @param wmoDate  WMO header string
+     * @param baseDate  base date to get the year and month
+     *
+     * @return  the date that is represented by wmoDate
+     */
+    public static Date decodeWMODate(String wmoDate, Date baseDate) {
+        if (baseDate == null) {
+            baseDate = new Date();
+        }
+        if (wmoDate.length() > 6) {
+            return baseDate;
+        } else {
+            wmoDate = StringUtil.padLeft(wmoDate, 6, "0");
+        }
+        Calendar cal = Calendar.getInstance(TIMEZONE_GMT);
+        cal.setTimeInMillis(baseDate.getTime());
+        int day    = Integer.parseInt(wmoDate.substring(0, 2));
+        int hour   = Integer.parseInt(wmoDate.substring(2, 4));
+        int min    = Integer.parseInt(wmoDate.substring(4));
+        int calDay = cal.get(cal.DAY_OF_MONTH);
+        if ((calDay - day) > 26) {
+            cal.add(cal.MONTH, 1);
+        } else if ((day - calDay) > 20) {
+            cal.add(cal.MONTH, -1);
+        }
+        cal.set(cal.DAY_OF_MONTH, day);
+        cal.set(cal.HOUR_OF_DAY, hour);
+        cal.set(cal.MINUTE, min);
+        return cal.getTime();
+    }
 
 
     /**

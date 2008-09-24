@@ -458,7 +458,7 @@ public class StringUtil {
     /**
      * Replace any char "out" in s with "in".
      * @param s string to replace
-     * @param out replace this character
+     * @param out repalce this character
      * @param in with this string
      * @return modified string if needed
      */
@@ -883,6 +883,55 @@ public class StringUtil {
             return pattern.matcher(input).find();
         }
     }
+
+
+    /**
+     * Change a wildcard expression to a proper regular expression
+     *
+     * @param wildcard  wildcard string (*, ?);
+     *
+     * @return  the corresponding regular expression
+     */
+    public static String wildcardToRegexp(String wildcard) {
+        StringBuffer s = new StringBuffer(wildcard.length());
+        s.append('^');
+        for (int i = 0, is = wildcard.length(); i < is; i++) {
+            char c = wildcard.charAt(i);
+            switch (c) {
+
+              case '*' :
+                  s.append(".*");
+                  break;
+
+              case '?' :
+                  s.append(".");
+                  break;
+
+              // escape special regexp-characters
+              case '(' :
+              case ')' :
+              case '[' :
+              case ']' :
+              case '$' :
+              case '^' :
+              case '.' :
+              case '{' :
+              case '}' :
+              case '|' :
+              case '\\' :
+                  s.append("\\");
+                  s.append(c);
+                  break;
+
+              default :
+                  s.append(c);
+                  break;
+            }
+        }
+        s.append('$');
+        return (s.toString());
+    }
+
 
 
     /**
@@ -1337,6 +1386,40 @@ public class StringUtil {
      * array and added to the result List.
      *
      * @param content The String to  parse
+     * @param lengths the length of each word.
+     * @param lineDelimiter What to split  the line content string on 
+     *                      (usually "\n").
+     * @param commentString If non-null defines the comment String in 
+     *                      the content.
+     * @param trimWords Do we trim each word.
+     *
+     * @return A list of String arrays  that holds the words.
+     */
+    public static List<String[]> parseLineWords(String content,
+            int[] lengths, String lineDelimiter, String commentString,
+            boolean trimWords) {
+        int[] indices = new int[lengths.length];
+        int   length  = 0;
+        for (int i = 0; i < indices.length; i++) {
+            indices[i] = length;
+            length     += lengths[i];
+        }
+        return parseLineWords(content, indices, lengths, lineDelimiter,
+                              commentString, trimWords);
+    }
+
+
+
+    /**
+     *  This splits the given content String into a set of lines
+     * (delimited by the given lineDelimiter).
+     * If a line begins with the given commentString it is ignored.
+     * If the length of the trim value of the line is 0 it is ignored.
+     * If a line is not to be ignored then the substrings defined by the
+     * given fromIndices/toIndices are extracted, placed into a String
+     * array and added to the result List.
+     *
+     * @param content The String to  parse
      * @param indices the index in the line which defines the word start.
      * @param lengths the length of each word.
      * @param lineDelimiter What to split  the line content string on (usually "\n").
@@ -1345,10 +1428,9 @@ public class StringUtil {
      *
      *  @return A list of String arrays  that holds the words.
      */
-    public static List parseLineWords(String content, int[] indices,
-                                      int[] lengths, String lineDelimiter,
-                                      String commentString,
-                                      boolean trimWords) {
+    public static List<String[]> parseLineWords(String content,
+            int[] indices, int[] lengths, String lineDelimiter,
+            String commentString, boolean trimWords) {
         List lines  = StringUtil.split(content, lineDelimiter, false);
         List result = new ArrayList();
         for (int i = 0; i < lines.size(); i++) {
@@ -1362,8 +1444,11 @@ public class StringUtil {
             }
             String[] words = new String[indices.length];
             for (int idx = 0; idx < indices.length; idx++) {
-                words[idx] = line.substring(indices[idx],
-                                            indices[idx] + lengths[idx]);
+                int endIndex = indices[idx] + lengths[idx];
+                if (endIndex > line.length()) {
+                    endIndex = line.length();
+                }
+                words[idx] = line.substring(indices[idx], endIndex);
                 if (trimWords) {
                     words[idx] = words[idx].trim();
                 }
@@ -2118,7 +2203,18 @@ public class StringUtil {
      *
      * @throws Exception some problem
      */
-    public static void main(String[] args) throws Exception {}
+    public static void main(String[] args) throws Exception {
+        String pattern =
+            ".*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).*";
+        String with  = "NCEP GFS 191km Alaska $1-$2-$3 $4:$5:00 GMT";
+        String value = "GFS_Alaska_191km_20051011_0000.grib1";
+        System.err.println(value);
+        System.err.println(pattern);
+        System.err.println(with);
+        System.err.println(value.replaceAll(pattern, with));
+
+
+    }
 
 
 
