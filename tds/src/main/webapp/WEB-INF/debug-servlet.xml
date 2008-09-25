@@ -7,21 +7,16 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <bean id="catGenController"
-        class="thredds.server.cataloggen.CatGenController"
-          init-method="init" destroy-method="destroy" >
+  <bean id="debugController" class="thredds.server.root.DebugController">
     <property name="tdsContext" ref="tdsContext"/>
-    <property name="catGenContext" ref="catGenContext"/>
   </bean>
 
-  <bean id="tdsContext" class="thredds.server.config.TdsContext"/>
-  <bean id="catGenContext" class="thredds.server.cataloggen.CatGenContext"/>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        =catGenController
-        /=catGenController
+        /debug=debugController
+        /debug/*=debugController
       </value>
     </property>
   </bean>

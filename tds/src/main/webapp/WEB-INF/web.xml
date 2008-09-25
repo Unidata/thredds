@@ -140,12 +140,12 @@
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
-  <!--servlet>
+  <servlet>
     <servlet-name>debug</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
-  <servlet>
+  <!--servlet>
     <servlet-name>dataDir</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
   </servlet>
@@ -384,11 +384,15 @@
     <servlet-name>root</servlet-name>
     <url-pattern>*.gif</url-pattern>
   </servlet-mapping>
-  <!--servlet-mapping>
+  <servlet-mapping>
     <servlet-name>debug</servlet-name>
-    <url-pattern>/debug*</url-pattern>
+    <url-pattern>/debug</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>debug</servlet-name>
+    <url-pattern>/debug/*</url-pattern>
+  </servlet-mapping>
+  <!--servlet-mapping>
     <servlet-name>dataDir</servlet-name>
     <url-pattern>/dataDir/*</url-pattern>
   </servlet-mapping>
