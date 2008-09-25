@@ -25,6 +25,8 @@ import ucar.nc2.util.IO;
 import java.io.BufferedReader;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.*;
 
 /**
@@ -34,6 +36,126 @@ import java.util.regex.*;
  * @since Apr 10, 2008
  */
 public class ReadTdsLogs {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ReadTdsLogs.class);
+
+  ///////////////////////////////////////////////////////
+  // multithreading
+
+  ExecutorService executor;
+  ExecutorCompletionService completionService;
+  ArrayBlockingQueue<Future<SendRequestTask>> completionQ;
+  Thread resultProcessingThread;
+
+  AtomicLong total_requests = new AtomicLong();
+  AtomicLong total_sendRequest_time = new AtomicLong();
+  AtomicLong total_expected_time = new AtomicLong();
+
+  final String server;
+  Formatter out;
+
+  ReadTdsLogs(String server) throws FileNotFoundException {
+    this.server = server;
+
+    executor = Executors.newFixedThreadPool(1);
+    completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // unbounded, threadsafe
+    completionService = new ExecutorCompletionService(executor, completionQ);
+
+    out = new Formatter(new FileOutputStream("C:/TEMP/readTDSmulti.csv"));
+    resultProcessingThread = new Thread(new ResultProcessor());
+    resultProcessingThread.start();
+  }
+
+  public class SendRequestTask implements Callable<SendRequestTask> {
+    Log log;
+    boolean failed = false;
+    long msecs;
+
+    SendRequestTask(Log log) {
+      this.log = log;
+    }
+
+    public SendRequestTask call() throws Exception {
+      long start = System.nanoTime();
+
+      try {
+        IO.copyUrlB(server + log.path, null, 10 * 1000); // read data and throw away
+
+        long took = System.nanoTime() - start;
+        msecs = took / 1000 / 1000;
+
+        total_sendRequest_time.getAndAdd(msecs);
+        total_expected_time.getAndAdd((long) log.msecs);
+        total_requests.getAndIncrement();
+
+      } catch (Throwable t) {
+        failed = true;
+      }
+
+      return this;
+    }
+  }
+
+  private class ResultProcessor implements Runnable {
+    private boolean cancel = false;
+
+    public void run() {
+      while (true) {
+        try {
+          Future<SendRequestTask> f = completionService.poll(); // see if ones ready
+          if (f == null) {
+            if (cancel) break; // check if interrupted
+            f = completionService.take(); // block until ready
+          }
+
+          SendRequestTask itask = f.get();
+          Log log = itask.log;
+          String urlString = server + log.path;
+          out.format("\"%s\",%d,%d",urlString,log.sizeBytes ,log.msecs);
+          long start = System.nanoTime();
+          float speedup = (itask.msecs > 0) ? ((float) log.msecs) / itask.msecs : 0;
+
+          out.format(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
+        } catch (InterruptedException e) {
+          cancel = true;
+
+        } catch (Exception e) {
+          logger.error("MessageBroker.IndexProcessor ", e);
+        }
+      }
+      System.out.println("exit IndexProcessor");
+    }
+  }
+
+  public void exit() throws IOException {
+
+    executor.shutdown(); // Disable new tasks from being submitted
+    try {
+      // Wait a while for existing tasks to terminate
+      if (!executor.awaitTermination(60, TimeUnit.MINUTES)) {
+        executor.shutdownNow(); // Cancel currently executing tasks
+        // Wait a while for tasks to respond to being cancelled
+        if (!executor.awaitTermination(60, TimeUnit.MINUTES))
+            System.err.println("Pool did not terminate");
+      }
+    } catch (InterruptedException ie) {
+      // (Re-)Cancel if current thread also interrupted
+      executor.shutdownNow();
+      // Preserve interrupt status
+      Thread.currentThread().interrupt();
+    }
+    System.out.println("executor terminated");
+
+    System.out.println("total requests= " + total_requests.get());
+    System.out.println("total_sendRequest_time= " + total_sendRequest_time.get() / 1000 + " secs");
+    System.out.println("total_expected_time= " + total_expected_time.get() / 1000 + " secs");
+
+    float speedup = ((float) total_expected_time.get()) / total_sendRequest_time.get();
+    System.out.println("speedup= " + speedup);
+    out.close();
+  }
+
+  ///////////////////////////////////////////////////////
+  // log reading
 
   // sample
   // 128.117.140.75 - - [02/May/2008:00:46:26 -0600] "HEAD /thredds/dodsC/model/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20080501_1800.grib2.dds HTTP/1.1" 200 - "null" "Java/1.6.0_05" 21
@@ -58,7 +180,7 @@ public class ReadTdsLogs {
       log.referrer = m.group(7);
       log.client = m.group(8);
       log.msecs = parse(m.group(9));
- 
+
       String[] reqss = log.request.split(" ");
       if (reqss.length == 3) {
         log.verb = reqss[0];
@@ -84,7 +206,7 @@ public class ReadTdsLogs {
 
     public String toCSV() {
       //return ip + "," + date + ",\"" + verb + "\","+ path + "\"," + returnCode + "," + sizeBytes + ",\"" + referrer + "\",\"" + client + "\"," + msecs;
-      return ip + "," + date + ","+ verb + ",\"" + path + "\"," + returnCode + "," + sizeBytes + ",\"" + referrer + "\",\"" + client + "\"," + msecs;
+      return ip + "," + date + "," + verb + ",\"" + path + "\"," + returnCode + "," + sizeBytes + ",\"" + referrer + "\",\"" + client + "\"," + msecs;
     }
 
     public String toString() {
@@ -138,9 +260,8 @@ public class ReadTdsLogs {
     System.out.println("total requests= " + count + " filter=" + filterCount);
   }
 
-  static long total_sendRequest_time = 0;
-  static long total_expected_time = 0;
-  void sendRequests(String filename, String server, int max) throws IOException {
+
+  void sendRequests(String filename, int max) throws IOException {
     int count = 0;
     long expected = 0;
     long actual = 0;
@@ -152,7 +273,6 @@ public class ReadTdsLogs {
       if (line == null) break;
       Log log = parseLine(regPattern, line);
       if (log == null) continue;
-      count++;
 
       if (log.verb.equals("POST")) {
         System.out.println(" *** skip POST " + log);
@@ -164,31 +284,12 @@ public class ReadTdsLogs {
         continue;
       }
 
-      String urlString = server + log.path;
-      System.out.print("\""+urlString+"\","+log.sizeBytes+ ","+log.msecs);
-      long start = System.nanoTime();
-
-      try {
-        IO.copyUrlB(urlString, null, 10 * 1000); // read data and throw away
-      } catch (Throwable t) {
-        //t.printStackTrace();
-        System.out.println("  FAILED ");
-        continue;
-      }
-
-      long took = System.nanoTime() - start;
-      total_expected_time += log.msecs;
-
-      long msecs = took/1000/1000;
-      float speedup = (msecs > 0) ? ((float)log.msecs)/msecs : 0;
-      total_sendRequest_time += msecs;
-
-      System.out.println("," + msecs+","+speedup);
+      completionService.submit(new SendRequestTask(log));
+      count++;
     }
     ios.close();
     System.out.println("total requests= " + count);
   }
-
 
   ////////////////////////////////////////////////////////
 
@@ -220,7 +321,7 @@ public class ReadTdsLogs {
           break;
         }
       }
-      if (!filtered){
+      if (!filtered) {
         out.println(log.toCSV());
         unknown.accum(log);
       }
@@ -229,12 +330,13 @@ public class ReadTdsLogs {
     }
 
     ios.close();
-    System.out.println(" "+filename+" requests= " + count + " bad=" + bad);
+    System.out.println(" " + filename + " requests= " + count + " bad=" + bad);
   }
 
   static Filter all = new All();
   static Filter unknown = new Unknown();
   static List<Filter> filters = new ArrayList<Filter>();
+
   static abstract class Filter {
     abstract boolean isMine(Log log);
 
@@ -261,14 +363,20 @@ public class ReadTdsLogs {
   }
 
   static class All extends Filter {
-    All() { super("All"); }
+    All() {
+      super("All");
+    }
+
     boolean isMine(Log log) {
       return true;
     }
   }
 
   static class Unknown extends Filter {
-    Unknown() { super("Unknown"); }
+    Unknown() {
+      super("Unknown");
+    }
+
     boolean isMine(Log log) {
       return false;
     }
@@ -276,46 +384,63 @@ public class ReadTdsLogs {
 
   static class Client extends Filter {
     String clientStartsWith;
+
     Client(String clientStartsWith) {
       super(clientStartsWith);
       this.clientStartsWith = clientStartsWith;
     }
+
     boolean isMine(Log log) {
       return log.client.startsWith(clientStartsWith);
     }
   }
 
   static class JUnitReqs extends Filter {
-    JUnitReqs() { super("JUnitReqs"); }
+    JUnitReqs() {
+      super("JUnitReqs");
+    }
+
     boolean isMine(Log log) {
       return log.ip.equals("128.117.140.75");
     }
   }
 
   static class Idv extends Filter {
-    Idv() { super("IDV"); }
+    Idv() {
+      super("IDV");
+    }
+
     boolean isMine(Log log) {
       return log.client.startsWith("IDV") || log.client.startsWith("Jakarta Commons-HttpClient");
     }
   }
 
   static class PostProbe extends Filter {
-    PostProbe() { super("PostProbe"); }
+    PostProbe() {
+      super("PostProbe");
+    }
+
     boolean isMine(Log log) {
       return log.request.startsWith("POST /proxy");
     }
   }
 
   static class FileServer extends Filter {
-    FileServer() { super("FileServer"); }
+    FileServer() {
+      super("FileServer");
+    }
+
     boolean isMine(Log log) {
       return log.path.startsWith("/thredds/fileServer/") &&
-        log.client.startsWith("Wget") || log.client.startsWith("curl") || log.client.startsWith("Python-urllib");
+              log.client.startsWith("Wget") || log.client.startsWith("curl") || log.client.startsWith("Python-urllib");
     }
   }
 
   static class Datafed extends Filter {
-    Datafed() { super("Datafed"); }
+    Datafed() {
+      super("Datafed");
+    }
+
     boolean isMine(Log log) {
       return log.ip.equals("128.252.21.75") && log.path.startsWith("/thredds/wcs/");
     }
@@ -329,8 +454,8 @@ public class ReadTdsLogs {
     String line3 = "82.141.193.194 - - [01/May/2008:09:29:06 -0600] \"GET /thredds/wcs/galeon/testdata/sst.nc?REQUEST=GetCoverage&SERVICE=WCS&VERSION=1.0.0&COVERAGE=tos&CRS=EPSG:4326&BBOX=1,-174,359,184&WIDTH=128&HEIGHT=128&FORMAT=GeoTIFF HTTP/1.1\" 200 32441 \"null\" \"null\" 497";
 
     //Pattern p =
-            //Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"GET(.*)\" (\\d+) (\\d+) \"(.*)\" \"(.*)\" (\\d+)");
-   //         Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
+    //Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"GET(.*)\" (\\d+) (\\d+) \"(.*)\" \"(.*)\" (\\d+)");
+    //         Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
 
     Log log = parseLine(regPattern, line3);
     if (log != null)
@@ -431,17 +556,14 @@ public class ReadTdsLogs {
     // */
 
     // sendRequests
+    final ReadTdsLogs reader = new ReadTdsLogs("http://newmotherlode.ucar.edu:8081");
+
     read("d:/motherlode/logs/access.2008-09-20.log", new MClosure() {
       public void run(String filename) throws IOException {
-        new ReadTdsLogs().sendRequests(filename, "http://newmotherlode.ucar.edu:8081", -1);
+        reader.sendRequests(filename, -1);
       }
     });
-    System.out.println("total_sendRequest_time= " + total_sendRequest_time/1000+" secs");
-    System.out.println("total_expected_time= " + total_expected_time/1000+" secs");
-
-    float speedup = ((float) total_expected_time)/total_sendRequest_time;
-    System.out.println("speedup= " + speedup);
-    // */
+    reader.exit();
 
   }
 

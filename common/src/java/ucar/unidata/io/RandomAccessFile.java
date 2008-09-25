@@ -248,13 +248,11 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @throws IOException if an I/O error occurrs.
    */
   public void close() throws IOException {
-    if (debugLeaks) {
+    if (debugLeaks)
       openFiles.remove(location);
-    }
 
-    if (file == null) {
+    if (file == null)
       return;
-    }
 
     // If we are writing and the buffer has been modified, flush the contents
     // of the buffer.

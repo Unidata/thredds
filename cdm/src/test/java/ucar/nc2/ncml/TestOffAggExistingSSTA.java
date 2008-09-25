@@ -24,9 +24,12 @@ package ucar.nc2.ncml;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.util.List;
 
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
+import ucar.unidata.io.RandomAccessFile;
 
 public class TestOffAggExistingSSTA extends TestCase {
 
@@ -37,10 +40,20 @@ public class TestOffAggExistingSSTA extends TestCase {
   public void testSSTA() throws IOException, InvalidRangeException {
     String filename = "file:"+TestNcML.topDir + "offsite/aggExistingSSTA.xml";
 
+    RandomAccessFile.setDebugLeaks( true);
+
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestNcmlAggExisting.open "+ filename);
     System.out.println(" "+ncfile);
 
+    Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
+
+    List<String> openfiles = RandomAccessFile.getOpenFiles();
+
     ncfile.close();
+
+    openfiles = RandomAccessFile.getOpenFiles();
+    assert openfiles.size() == 0;
+
   }
 }

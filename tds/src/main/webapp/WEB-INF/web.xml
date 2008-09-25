@@ -366,6 +366,10 @@
   <!-- default servlet -->
   <servlet-mapping>
     <servlet-name>root</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>root</servlet-name>
     <url-pattern>*.html</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
@@ -467,10 +471,10 @@
     <url-pattern>/catalog/*</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>CatalogServices</servlet-name>
     <url-pattern>/catalog.html</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>CatalogServices</servlet-name>
