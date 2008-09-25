@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import thredds.servlet.DataRootHandler;
+import thredds.servlet.HtmlWriter;
 import thredds.server.config.TdsContext;
 import thredds.server.views.FileView;
 import thredds.catalog.InvCatalog;
@@ -18,6 +19,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * _more_
@@ -45,7 +48,18 @@ public class HtmlController extends AbstractController
       path = req.getPathInfo();
     DataRootHandler drh = DataRootHandler.getInstance();
     String catPath = path.replaceAll( ".html$", ".xml" );
-    InvCatalog cat = drh.getCatalog( catPath, null );
+
+    InvCatalog cat = null;
+    String baseUriString = req.getRequestURI();
+    try
+    {
+      cat = drh.getCatalog( catPath, new URI( baseUriString ) );
+    }
+    catch ( URISyntaxException e )
+    {
+      logger.error( "handleRequestInternal(): bad URI syntax [" + baseUriString + "]: " + e.getMessage());
+      cat = null;
+    }
 
     if ( cat == null )
     {
@@ -59,29 +73,37 @@ public class HtmlController extends AbstractController
       return null;
     }
 
-    // Hand to catalog view.
-    String catName = cat.getName();
-    String catUri = cat.getUriString();
-    if ( catName == null )
+    if ( true)
     {
-      List childrenDs = cat.getDatasets();
-      if ( childrenDs.size() == 1 )
-      {
-        InvDatasetImpl onlyChild = (InvDatasetImpl) childrenDs.get( 0 );
-        catName = onlyChild.getName();
-      }
-      else
-        catName = "";
+      HtmlWriter.getInstance().writeCatalog( res, (InvCatalogImpl) cat, true );
+      return null;
     }
+    else
+    {
+      // Hand to catalog view.
+      String catName = cat.getName();
+      String catUri = cat.getUriString();
+      if ( catName == null )
+      {
+        List childrenDs = cat.getDatasets();
+        if ( childrenDs.size() == 1 )
+        {
+          InvDatasetImpl onlyChild = (InvDatasetImpl) childrenDs.get( 0 );
+          catName = onlyChild.getName();
+        }
+        else
+          catName = "";
+      }
 
-    Map<String,Object> model = new HashMap<String,Object>();
-    model.put( "catalog", cat);
-    model.put( "catalogName", HtmlUtils.htmlEscape( catName));
-    model.put( "catalogUri", HtmlUtils.htmlEscape( catUri));
-    model.put( "webappName", this.getServletContext().getServletContextName() );
-    model.put( "webappVersion", tdsContext.getWebappVersion());
-    model.put( "webappBuildDate", tdsContext.getWebappBuildDate());
-    model.put( "webappDocsPath", tdsContext.getTdsConfigHtml().getWebappDocsPath());
-    return new ModelAndView( "thredds/server/catalog/catalog", model);
+      Map<String,Object> model = new HashMap<String,Object>();
+      model.put( "catalog", cat);
+      model.put( "catalogName", HtmlUtils.htmlEscape( catName));
+      model.put( "catalogUri", HtmlUtils.htmlEscape( catUri));
+      model.put( "webappName", this.getServletContext().getServletContextName() );
+      model.put( "webappVersion", tdsContext.getWebappVersion());
+      model.put( "webappBuildDate", tdsContext.getWebappBuildDate());
+      model.put( "webappDocsPath", tdsContext.getTdsConfigHtml().getWebappDocsPath());
+      return new ModelAndView( "thredds/server/catalog/catalog", model);
+    }
   }
 }

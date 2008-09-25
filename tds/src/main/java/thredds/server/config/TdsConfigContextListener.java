@@ -9,6 +9,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.Log4jWebConfigurer;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.RestrictedAccessConfigListener;
+import thredds.servlet.HtmlWriter;
 
 /**
  * _more_
@@ -40,6 +41,21 @@ public class TdsConfigContextListener
     catHandler.registerConfigListener( new RestrictedAccessConfigListener() );
     catHandler.init();
     DataRootHandler.setInstance( catHandler );
+
+    // Initialize HtmlWriter
+    // LOOK! ToDo This should be removed once HtmlController uses JSP.
+    HtmlWriter.init( tdsContext.getContextPath(),
+                     tdsContext.getWebappName(),
+                     tdsContext.getWebappVersionFull(),
+                     tdsContext.getTdsConfigHtml().getWebappDocsPath(),
+                     tdsContext.getTdsConfigHtml().getPageCssPath(),
+                     tdsContext.getTdsConfigHtml().getCatalogCssPath(),
+                     tdsContext.getTdsConfigHtml().getWebappLogoPath(),
+                     tdsContext.getTdsConfigHtml().getWebappLogoAlt(),
+                     tdsContext.getTdsConfigHtml().getSiteLogoPath(),
+                     tdsContext.getTdsConfigHtml().getSiteLogoAlt(),
+                     tdsContext.getTdsConfigHtml().getFolderIconPath(),
+                     tdsContext.getTdsConfigHtml().getFolderIconAlt() );
 
     logger.debug( "contextInitialized(): done.");
   }

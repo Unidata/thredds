@@ -16,6 +16,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.Collections;
 import java.util.HashMap;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * _more_
@@ -42,7 +44,18 @@ public class XmlController extends AbstractController
     if ( path == null || path.equals( "" ) )
       path = req.getPathInfo();
     DataRootHandler drh = DataRootHandler.getInstance();
-    InvCatalog cat = drh.getCatalog( path, null );
+
+    InvCatalog cat = null;
+    String baseUriString = req.getRequestURI();
+    try
+    {
+      cat = drh.getCatalog( path, new URI( baseUriString ) );
+    }
+    catch ( URISyntaxException e )
+    {
+      logger.error( "handleRequestInternal(): bad URI syntax [" + baseUriString + "]: " + e.getMessage() );
+      cat = null;
+    }
 
     if ( cat == null )
     {
