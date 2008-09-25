@@ -21,18 +21,6 @@
 
   <bean id="tdsDRH" class="thredds.servlet.DataRootHandler">
     <constructor-arg ref="tdsContext" />
-    <property name="dataRootLocationAliasExpanders">
-      <list>
-        <ref bean="contentPathAlias" />
-        <ref bean="iddMacroPathAlias" />  
-      </list>
-    </property>
-  </bean>
-  <bean id="contentPathAlias" class="thredds.util.TdsConfiguredPathAliasReplacement">
-    <constructor-arg value="content" />
-  </bean>
-  <bean id="iddMacroPathAlias" class="thredds.util.TdsConfiguredPathAliasReplacement">
-    <constructor-arg value="iddDataRoot" />
   </bean>
   
   <!--

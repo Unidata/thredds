@@ -28,6 +28,7 @@ import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
 import thredds.util.TdsConfiguredPathAliasReplacement;
+import thredds.util.StartsWithPathAliasReplacement;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.DateUtil;
@@ -122,29 +123,16 @@ public class DataRootHandler {
     this.staticCatalogHash = new HashMap<String,InvCatalogImpl>();
   }
 
+  private PathAliasReplacement contentPathAliasReplacement = null;
+  private PathAliasReplacement iddDataRootPathAliasReplacement = null;
+  private List<PathAliasReplacement> fullDataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
   private List<PathAliasReplacement> dataRootLocAliasExpanders = Collections.emptyList();
 
   public void setDataRootLocationAliasExpanders( List<PathAliasReplacement> dataRootLocAliasExpanders )
   {
-    if ( dataRootLocAliasExpanders == null )
-      this.dataRootLocAliasExpanders = Collections.emptyList();
-    else
+    if ( dataRootLocAliasExpanders != null )
       this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>( dataRootLocAliasExpanders );
-
-    // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
-    String contentReplacementPath = StringUtils.cleanPath( tdsContext.getPublicDocFileSource().getFile( "" ).getPath() );
-    String iddDataRootReplacmentPath = ThreddsConfig.get( "contentRoot.iddDataRoot", null );
-    for ( PathAliasReplacement par : this.dataRootLocAliasExpanders )
-    {
-      if ( par instanceof TdsConfiguredPathAliasReplacement )
-      {
-        TdsConfiguredPathAliasReplacement tcPar = (TdsConfiguredPathAliasReplacement) par;
-        if ( tcPar.getAlias().equals( "content"))
-          tcPar.init( contentReplacementPath );
-        else if ( tcPar.getAlias().equals( "iddDataRoot"))
-          tcPar.init( iddDataRootReplacmentPath );
-      }
-    }
+    this.updateFullDataRootLocationAliasExpanders( this.dataRootLocAliasExpanders );
   }
 
   public List<PathAliasReplacement> getDataRootLocationAliasExpanders()
@@ -152,21 +140,35 @@ public class DataRootHandler {
     return Collections.unmodifiableList( this.dataRootLocAliasExpanders );
   }
 
-  private InvCatalogFactory getCatalogFactory( boolean validate )
-  {
-    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( validate );
-    if ( ! this.dataRootLocAliasExpanders.isEmpty() )
-      factory.setDataRootLocationAliasExpanders( this.dataRootLocAliasExpanders );
-    return factory;
-  }
-
   public void init()
   {
+    // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
+    String contentReplacementPath = StringUtils.cleanPath( tdsContext.getPublicDocFileSource().getFile( "" ).getPath() );
+    this.contentPathAliasReplacement = new StartsWithPathAliasReplacement( "content", contentReplacementPath );
+
+    String iddDataRootReplacementPath = ThreddsConfig.get( "contentRoot.iddDataRoot", null );
+    if ( iddDataRootReplacementPath != null )
+    {
+      iddDataRootReplacementPath = StringUtils.cleanPath( iddDataRootReplacementPath );
+      this.iddDataRootPathAliasReplacement = new StartsWithPathAliasReplacement( "${iddDataRoot}", iddDataRootReplacementPath );
+    }
+    this.updateFullDataRootLocationAliasExpanders( null );
+
     //this.contentPath = this.tdsContext.
     this.initCatalogs();
 
     this.makeDebugActions();
     DatasetHandler.makeDebugActions();
+  }
+
+  private void updateFullDataRootLocationAliasExpanders( List<PathAliasReplacement> list )
+  {
+    this.fullDataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
+    this.fullDataRootLocationAliasExpanders.add( this.contentPathAliasReplacement );
+    if ( iddDataRootPathAliasReplacement != null )
+      this.fullDataRootLocationAliasExpanders.add( this.iddDataRootPathAliasReplacement );
+    if ( list != null && ! list.isEmpty())
+      this.fullDataRootLocationAliasExpanders.addAll( list );
   }
 
   void initCatalogs()
@@ -348,6 +350,14 @@ public class DataRootHandler {
     if (recurse) {
       initFollowCatrefs(dirPath, cat.getDatasets());
     }
+  }
+
+  private InvCatalogFactory getCatalogFactory( boolean validate )
+  {
+    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( validate );
+    if ( !this.fullDataRootLocationAliasExpanders.isEmpty() )
+      factory.setDataRootLocationAliasExpanders( this.fullDataRootLocationAliasExpanders );
+    return factory;
   }
 
   /**
