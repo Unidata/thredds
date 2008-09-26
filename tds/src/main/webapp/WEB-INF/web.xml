@@ -174,10 +174,6 @@
     <servlet-name>NetcdfDODS</servlet-name>
     <servlet-class>thredds.server.opendap.NcDODSServlet</servlet-class>
     <init-param>
-      <param-name>maxNetcdfFilesCached</param-name>
-      <param-value>10</param-value>
-    </init-param>
-    <init-param>
       <param-name>DebugOn</param-name>
       <param-value></param-value>
     </init-param>

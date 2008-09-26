@@ -561,7 +561,7 @@ public class ReadTdsLogs {
     // sendRequests
     final ReadTdsLogs reader = new ReadTdsLogs("http://newmotherlode.ucar.edu:8081");
 
-    read("d:/motherlode/logs/access.2008-09-22.log", new MClosure() {
+    read("d:/motherlode/logs/access.2008-09-21.log", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }

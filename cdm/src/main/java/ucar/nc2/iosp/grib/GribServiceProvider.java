@@ -20,8 +20,6 @@
 package ucar.nc2.iosp.grib;
 
 import ucar.grib.Index;
-import ucar.grib.grib1.Grib1IndexExtender;
-import ucar.grib.grib2.Grib2IndexExtender;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
@@ -33,7 +31,6 @@ import ucar.nc2.util.DiskCache;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
-import java.util.*;
 import java.net.URL;
 
 /**
@@ -122,39 +119,44 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
     saveLocation = location;
     String indexLocation = location + ".gbx";
 
-    Index saveIndex;
-    File saveIndexFile;
+    Index index;
+    File indexFile;
 
     if (indexLocation.startsWith("http:")) { // LOOK direct access through http
       InputStream ios = indexExistsAsURL(indexLocation);
       if (ios != null) {
-        saveIndex = new Index();
-        saveIndex.open(indexLocation, ios);
+        index = new Index();
+        index.open(indexLocation, ios);
         if (debugOpen) System.out.println("  opened HTTP index = "+indexLocation);
-        return saveIndex;
+        return index;
 
       } else { // otherwise write it to / get it from the cache
-        saveIndexFile = DiskCache.getCacheFile(indexLocation);
-        if (debugOpen) System.out.println("  HTTP index = "+saveIndexFile.getPath());
+        indexFile = DiskCache.getCacheFile(indexLocation);
+        if (debugOpen) System.out.println("  HTTP index = "+ indexFile.getPath());
       }
 
     } else {
       // always check first if the index file lives inb the same dir as the regular file, and use it
-      saveIndexFile = new File(indexLocation);
-      if (!saveIndexFile.exists()) { // look in cache if need be
-        if (debugOpen) System.out.println("GribServiceProvider: saveIndexFile not exist "+saveIndexFile.getPath()+" ++ "+ indexLocation);
-        saveIndexFile = DiskCache.getFile(indexLocation, alwaysInCache);
-        if (debugOpen) System.out.println("GribServiceProvider: use "+saveIndexFile.getPath());
+      indexFile = new File(indexLocation);
+      if (!indexFile.exists()) { // look in cache if need be
+        if (debugOpen) System.out.println("GribServiceProvider: saveIndexFile not exist "+ indexFile.getPath()+" ++ "+ indexLocation);
+        indexFile = DiskCache.getFile(indexLocation, alwaysInCache);
+        if (debugOpen) System.out.println("GribServiceProvider: use "+ indexFile.getPath());
       }
     }
 
     // if exist already, read it
-    if (!forceNewIndex && saveIndexFile.exists()) {
-      saveIndex = new Index();
-      boolean ok = saveIndex.open(saveIndexFile.getPath());
+    if (!forceNewIndex && indexFile.exists()) {
+      index = new Index();
+      boolean ok = true;
+      try {
+        ok = index.open(indexFile.getPath());
+      } catch (Exception e) {
+        ok = false; 
+      }
 
       if (ok) {
-        if (debugOpen) System.out.println("  opened index = "+saveIndexFile.getPath());
+        if (debugOpen) System.out.println("  opened index = "+ indexFile.getPath());
 
         // deal with possiblity that the grib file has grown, and the index should be extended.
         // only do this if index extension is allowed.
@@ -169,8 +171,8 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
         } */
 
       } else {  // rewrite if fail to open
-        saveIndex = writeIndex( edition, saveIndexFile, raf);
-        if (debugOpen) System.out.println("  rewrite index = "+saveIndexFile.getPath());
+        index = writeIndex( edition, indexFile, raf);
+        if (debugOpen) System.out.println("  rewrite index = "+ indexFile.getPath());
       }
 
     } else {
@@ -178,12 +180,12 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
       // saveIndexFile = DiskCache.getFile(indexLocation, alwaysInCache);
 
       // doesnt exist (or is being forced), create it and write it
-      saveIndex = writeIndex( edition, saveIndexFile, raf);
-      if (debugOpen) System.out.println("  write index = "+saveIndexFile.getPath());
+      index = writeIndex( edition, indexFile, raf);
+      if (debugOpen) System.out.println("  write index = "+ indexFile.getPath());
     }
 
 
-    return saveIndex;
+    return index;
   }
 
   private File getIndexFile(String location) throws IOException {

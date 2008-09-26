@@ -13,7 +13,7 @@ public class TestReadandCountGrib extends TestCase {
 
   public void testRead() throws Exception {
 
-    // our grib reader
+    /* our grib reader
     doOne("grib1/data/","cfs.wmo", 51, 4, 6, 3);
     doOne("grib1/data/","eta218.grb", 14, 5, 7, 4);
     doOne("grib1/data/","extended.wmo", 8, 6, 10, 4);
@@ -31,7 +31,7 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib1/data/","OCEAN.wmo", 4, 4, 12, 0);
     doOne("grib1/data/","RUC.wmo", 27, 7, 10, 5);
     doOne("grib1/data/","RUC2.wmo", 44, 10, 13, 5);
-    doOne("grib1/data/","WAVE.wmo", 28, 12, 24, 4);
+    doOne("grib1/data/","WAVE.wmo", 28, 12, 24, 4); // */
     doOne("grib2/data/","eta2.wmo", 35, 7, 9, 6);
     doOne("grib2/data/","ndfd.wmo", 1, 1, 3, 0); //
     doOne("grib2/data/","eta218.wmo", 57, 13, 18, 10);

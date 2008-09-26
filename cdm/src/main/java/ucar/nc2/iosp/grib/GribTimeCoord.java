@@ -179,22 +179,22 @@ public class GribTimeCoord {
       return validTime;
 
     try {
-      validTime = formatter.getISODate( record.refTime);
+      validTime = record.refTime;
     } catch (Throwable e) {
       log.error("getValidTime("+record.refTime+")", e);
       return null;
     }
 
-    int calandar_unit = Calendar.HOUR;
+    int calendar_unit = Calendar.HOUR;
     int factor = 1;
     String timeUnit = lookup.getFirstTimeRangeUnitName();
 
     if (timeUnit.equalsIgnoreCase("hour") || timeUnit.equalsIgnoreCase("hours")) {
       factor = 1;  // common case
     } else if (timeUnit.equalsIgnoreCase("minutes") || timeUnit.equalsIgnoreCase("minute")) {
-      calandar_unit = Calendar.MINUTE;
+      calendar_unit = Calendar.MINUTE;
     } else if (timeUnit.equalsIgnoreCase("second") || timeUnit.equalsIgnoreCase("secs")) {
-      calandar_unit = Calendar.SECOND;
+      calendar_unit = Calendar.SECOND;
     } else if (timeUnit.equalsIgnoreCase("day") || timeUnit.equalsIgnoreCase("days")) {
       factor = 24;
     } else if (timeUnit.equalsIgnoreCase("month") || timeUnit.equalsIgnoreCase("months")) {
@@ -214,7 +214,7 @@ public class GribTimeCoord {
     }
 
     calendar.setTime(validTime);
-    calendar.add(calandar_unit, factor * record.forecastTime);
+    calendar.add(calendar_unit, factor * record.forecastTime);
     validTime = calendar.getTime();
 
     record.setValidTime(validTime);
