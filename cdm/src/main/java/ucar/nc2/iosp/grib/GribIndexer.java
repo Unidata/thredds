@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -37,7 +37,7 @@ import java.util.List;
 // Author: 	Robb Kambic
 // Date  : 	Mar 22, 2007
 // 
-// Purpose: 	walks directory sturcture making Grib Indexes as needed.
+// Purpose: 	walks directory structure making Grib Indexes as needed.
 //    
 // Description:  
 //

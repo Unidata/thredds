@@ -96,7 +96,7 @@
   <component name="IdProvider" IDEtalkID="70822C482020A3B7F3AE070007C742C1" />
   <component name="InspectionProjectProfileManager">
     <option name="PROJECT_PROFILE" value="Project Default" />
-    <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
+    <option name="USE_PROJECT_LEVEL_SETTINGS" value="true" />
     <scopes />
     <profiles>
       <profile version="1.0" is_locked="false">
@@ -161,7 +161,12 @@
         <inspection_tool class="SynchronizeOnNonFinalField" level="WARNING" enabled="false" />
       </profile>
     </profiles>
-    <list size="0" />
+    <list size="4">
+      <item index="0" class="java.lang.String" itemvalue="SERVER PROBLEM" />
+      <item index="1" class="java.lang.String" itemvalue="INFO" />
+      <item index="2" class="java.lang.String" itemvalue="WARNING" />
+      <item index="3" class="java.lang.String" itemvalue="ERROR" />
+    </list>
   </component>
   <component name="JavacSettings">
     <option name="DEBUGGING_INFO" value="true" />
