@@ -149,8 +149,8 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     }
 
     // turn off Grib extend indexing; indexes are automatically done every 10 minutes externally
-    boolean extendIndex = ThreddsConfig.getBoolean("GribIndexing.setExtendIndex", false);
-    ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex(extendIndex);
+    //boolean extendIndex = ThreddsConfig.getBoolean("GribIndexing.setExtendIndex", false);
+    //ucar.nc2.iosp.grib.GribServiceProvider.setExtendIndex(extendIndex);
 
     boolean alwaysUseCache = ThreddsConfig.getBoolean("GribIndexing.alwaysUseCache", false);
     ucar.nc2.iosp.grib.GribServiceProvider.setIndexAlwaysInCache(alwaysUseCache);
