@@ -41,7 +41,9 @@ public class GribVariable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribVariable.class);
 
   private String name, desc, vname;
-  private Index.GribRecord firstRecord;
+  int levelType1; // from the Index.GridRecord;
+
+  //private Index.GribRecord firstRecord;
   private TableLookup lookup;
   private boolean isGrib1;
 
@@ -49,10 +51,10 @@ public class GribVariable {
   private GribCoordSys vcs; // maximal strategy (old way)
   private GribTimeCoord tcs;
   private GribVertCoord vc;
-  private List<Index.GribRecord> records = new ArrayList<Index.GribRecord>(); // Index.GribRecord
+  private List<Index.GribRecord> records = new ArrayList<Index.GribRecord>(); // becomes empty after initiazing
 
   private int nlevels, ntimes;
-  private Index.GribRecord[] recordTracker;
+  private GribRecordLW[] recordTracker;
   private int decimalScale = 0;
   private boolean hasVert = false;
   private boolean showRecords = false, showGen = false;
@@ -66,8 +68,9 @@ public class GribVariable {
   }
 
   void addProduct(Index.GribRecord record) {
+    if (records.size() == 0)
+      levelType1 = record.levelType1;
     records.add(record);
-    if (firstRecord == null) firstRecord = record;
   }
 
   List<Index.GribRecord> getRecords() {
@@ -141,6 +144,9 @@ public class GribVariable {
   } */
 
   Variable makeVariable(NetcdfFile ncfile, Group g, boolean useDesc) {
+    assert records.size() > 0 : "no records for this variable";
+    Index.GribRecord firstRecord = records.get(0);
+
     nlevels = getVertNlevels();
     ntimes = tcs.getNTimes();
     decimalScale = firstRecord.decimalScale;
@@ -201,7 +207,7 @@ public class GribVariable {
     if (showRecords)
       System.out.println("Variable " + getName());
 
-    recordTracker = new Index.GribRecord[ntimes * nlevels];
+    recordTracker = new GribRecordLW[ntimes * nlevels];
     for (Index.GribRecord p : records) {
       if (showRecords)
         System.out.println(" " + vc.getVariableName() +
@@ -236,19 +242,21 @@ public class GribVariable {
 
       int recno = time * nlevels + level;
       if (recordTracker[recno] == null)
-        recordTracker[recno] = p;
+        recordTracker[recno] = new GribRecordLW(p);
       else {
-        Index.GribRecord q = recordTracker[recno];
-        if (!p.typeGenProcess.equals(q.typeGenProcess)) {
+        GribRecordLW q = recordTracker[recno];
+        if (!p.typeGenProcess.equals( q.typeGenProcess)) { // LOOK what the hell is this?
           log.warn("Duplicate record; level=" + level + " time= " + time + " for " + getName() + " file=" + ncfile.getLocation() + "\n"
-              + "   " + getVertLevelName() + " (type=" + p.levelType1 + "," + p.levelType2 + ")  value=" + p.levelValue1 + "," + p.levelValue2 + "\n"
-              + "   already got (type=" + q.levelType1 + "," + q.levelType2 + ")  value=" + q.levelValue1 + "," + q.levelValue2 + "\n"
-              + "   gen=" + p.typeGenProcess + "   " + q.typeGenProcess);
+            + "   " + getVertLevelName() + " (type=" + p.levelType1 + "," + p.levelType2 + ")  value=" + p.levelValue1 + "," + p.levelValue2 + "\n"
+            + "   gen=" + p.typeGenProcess+" prev="+ q.typeGenProcess);
         }
-        recordTracker[recno] = p; // replace it with latest one
+        recordTracker[recno] = new GribRecordLW(p); // replace it with latest one
         // System.out.println("   gen="+p.typeGenProcess+" "+q.typeGenProcess+"=="+lookup.getTypeGenProcessName(p));
       }
     }
+
+    // let all references to Index go, to reduce retained size
+    records.clear();
 
     return v;
   }
@@ -279,7 +287,7 @@ public class GribVariable {
     return count;
   }
 
-  public Index.GribRecord findRecord(int time, int level) {
+  public GribRecordLW findRecord(int time, int level) {
     return recordTracker[time * nlevels + level];
   }
 
@@ -302,7 +310,7 @@ public class GribVariable {
 
     if (!getName().equals(that.getName())) return false;
     if (!hcs.getID().equals(that.hcs.getID())) return false;
-    if (firstRecord.levelType1 != that.firstRecord.levelType1) return false;
+    if (levelType1 != that.levelType1) return false;
 
     return true;
   }
@@ -314,7 +322,7 @@ public class GribVariable {
     if (hashCode == 0) {
       int result = 17;
       result = 37 * result + name.hashCode();
-      result += 37 * result + firstRecord.levelType1;
+      result += 37 * result + levelType1;
       result += 37 * result + hcs.getID().hashCode();
       hashCode = result;
     }

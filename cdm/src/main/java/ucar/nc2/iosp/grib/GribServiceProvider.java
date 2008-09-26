@@ -42,13 +42,14 @@ import java.net.URL;
  * @author caron
  */
 public abstract class GribServiceProvider extends AbstractIOServiceProvider {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribServiceProvider.class);
+
   protected NetcdfFile ncfile;
   protected RandomAccessFile raf;
   protected FmrcCoordSys fmrcCoordSys;
 
   // keep this info to reopen index when extending or syncing
-  private Index saveIndex = null;    // the Grid record index
-  private File saveIndexFile = null; // the index file
+  private long saveIndexLength;    // the Grid record index length - used for sync'ing
   private int saveEdition = 0;
   private String saveLocation;
 
@@ -59,10 +60,10 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   static public boolean addLatLon = false; // add lat/lon coordinates for striuct CF compliance
   static public boolean forceNewIndex = false; // force that a new index file is written
   static public boolean useMaximalCoordSys = false;
-  static public boolean extendIndex = true; // check if index needs to be extended
+  //static public boolean extendIndex = true; // check if index needs to be extended
 
   static public void useMaximalCoordSys(boolean b) { useMaximalCoordSys = b; }
-  static public void setExtendIndex(boolean b) { extendIndex = b; }
+  //static public void setExtendIndex(boolean b) { extendIndex = b; }
 
   /**
    * Set disk cache policy for index files.
@@ -121,6 +122,9 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
     saveLocation = location;
     String indexLocation = location + ".gbx";
 
+    Index saveIndex;
+    File saveIndexFile;
+
     if (indexLocation.startsWith("http:")) { // LOOK direct access through http
       InputStream ios = indexExistsAsURL(indexLocation);
       if (ios != null) {
@@ -154,7 +158,7 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
 
         // deal with possiblity that the grib file has grown, and the index should be extended.
         // only do this if index extension is allowed.
-        if (extendIndex) {
+        /* if (extendIndex) {
           HashMap attrHash = saveIndex.getGlobalAttributes();
           String lengthS = (String) attrHash.get( "length" );
           long length = (lengthS == null) ? 0 : Long.parseLong( lengthS );
@@ -162,7 +166,7 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
              if (debugOpen) System.out.println("  calling extendIndex" );
              saveIndex = extendIndex(edition, raf, saveIndexFile, saveIndex );
            }
-        }
+        } */
 
       } else {  // rewrite if fail to open
         saveIndex = writeIndex( edition, saveIndexFile, raf);
@@ -181,6 +185,28 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
 
     return saveIndex;
   }
+
+  private File getIndexFile(String location) throws IOException {
+    String indexLocation = location + ".gbx";
+    File indexFile = null;
+
+    if (indexLocation.startsWith("http:")) { // LOOK direct access through http maybe should disallow ??
+        indexFile = DiskCache.getCacheFile(indexLocation);
+        if (debugOpen) System.out.println("  HTTP index = "+indexFile.getPath());
+
+    } else {
+      // always check first if the index file lives in the same dir as the regular file, and use it
+      indexFile = new File(indexLocation);
+      if (!indexFile.exists()) { // look in cache if need be
+        if (debugOpen) System.out.println("GribServiceProvider: saveIndexFile not exist "+indexFile.getPath()+" ++ "+ indexLocation);
+        indexFile = DiskCache.getFile(indexLocation, alwaysInCache);
+        if (debugOpen) System.out.println("GribServiceProvider: use "+indexFile.getPath());
+      }
+    }
+
+    return indexFile;
+  }
+
 
   private Index writeIndex(int edition, File indexFile, RandomAccessFile raf) throws IOException {
     if (indexFile.exists()) {
@@ -205,20 +231,24 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
     return index;
   }
 
-  public boolean syncExtend() { return false; }
+  // LOOK no more syncing 9/24/08 jc. dont want to keep old index around. not used in TDS, main use case
+
+  /* public boolean syncExtend() { return false; }
 
   public boolean sync() throws IOException {
-    HashMap attrHash = saveIndex.getGlobalAttributes();
-    String lengthS = (String) attrHash.get( "length" );
-    long length = (lengthS == null) ? 0 : Long.parseLong( lengthS );
+    //HashMap attrHash = saveIndex.getGlobalAttributes();
+    //String lengthS = (String) attrHash.get( "length" );
+    //long length = (lengthS == null) ? 0 : Long.parseLong( lengthS );
 
-    if( length < raf.length() ) {
+    if( saveIndexLength < raf.length() ) {
+      File indexFile = getIndexFile( saveLocation);
+      Index saveIndex;
 
       // case 1 is where we look to see if the index has grown. This can be turned off if needed to deal with multithreading
       // conflicts (eg TDS). We should get File locking working to deal with this instead.
-      if (extendIndex && (saveIndexFile != null)) {
+      if (extendIndex && (indexFile != null)) {
         if (debugOpen) System.out.println("calling IndexExtender" );
-        saveIndex = extendIndex( saveEdition, raf, saveIndexFile, saveIndex );
+        saveIndex = extendIndex( saveEdition, raf, indexFile, saveIndex );
 
       // case 2 just reopen the index again
       } else {
@@ -240,7 +270,7 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
    * .gbx index, reads the data file starting at old eof for new
    * data, updates the *.gbx file and the index
    *
-   */
+   *
   private Index extendIndex(int edition, RandomAccessFile raf, File indexFile, Index index) throws IOException {
 
     if (edition == 1) {
@@ -252,7 +282,7 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
       index = indexExt.extendIndex(raf, indexFile, index);
     }
     return index;
-  }
+  }   */
 
   // if exists, return input stream, otherwise null
   private InputStream indexExistsAsURL(String indexLocation) {
@@ -311,7 +341,7 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
     GribHorizCoordSys hsys = pv.getHorizCoordSys();
     int nx = hsys.getNx();
 
-    Index.GribRecord record = pv.findRecord(timeIdx, levIdx);
+    GribRecordLW record = pv.findRecord(timeIdx, levIdx);
     if (record == null) {
       int xyCount = yRange.length() * xRange.length();
       for (int j=0; j<xyCount; j++)

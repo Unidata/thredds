@@ -52,6 +52,7 @@ public class ReadTdsLogs {
 
   final String server;
   Formatter out;
+  boolean dump = true;
 
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
@@ -60,7 +61,7 @@ public class ReadTdsLogs {
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // unbounded, threadsafe
     completionService = new ExecutorCompletionService(executor, completionQ);
 
-    out = new Formatter(new FileOutputStream("C:/TEMP/readTDSmulti.csv"));
+    out = new Formatter(new FileOutputStream("C:/TEMP/readTDSnew1.csv"));
     resultProcessingThread = new Thread(new ResultProcessor());
     resultProcessingThread.start();
   }
@@ -111,10 +112,12 @@ public class ReadTdsLogs {
           Log log = itask.log;
           String urlString = server + log.path;
           out.format("\"%s\",%d,%d",urlString,log.sizeBytes ,log.msecs);
+          if (dump) System.out.printf("\"%s\",%d,%d",urlString,log.sizeBytes ,log.msecs);
           long start = System.nanoTime();
           float speedup = (itask.msecs > 0) ? ((float) log.msecs) / itask.msecs : 0;
 
           out.format(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
+          if (dump) System.out.printf(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
         } catch (InterruptedException e) {
           cancel = true;
 
@@ -558,7 +561,7 @@ public class ReadTdsLogs {
     // sendRequests
     final ReadTdsLogs reader = new ReadTdsLogs("http://newmotherlode.ucar.edu:8081");
 
-    read("d:/motherlode/logs/access.2008-09-20.log", new MClosure() {
+    read("d:/motherlode/logs/access.2008-09-22.log", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }

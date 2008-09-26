@@ -62,9 +62,9 @@ public class MemoryCounterAgentTest {
     measureSize(Thread.State.TERMINATED);  // */
 
     System.out.println("======================");
-    testNcml();
+    //testGrib1();
     System.out.println("======================");
-    //testNcd();
+    testGrib2();
   }
 
   private static class Parent {
@@ -109,13 +109,21 @@ public class MemoryCounterAgentTest {
     ncfile.close();
   }
 
-  static void testGrib() throws IOException {
-    String filename = "C:/data/NAM_CONUS_80km_20070322_0000.grib1";
+  static void testGrib1() throws IOException {
+    String filename = "D:\\data\\grib\\nam\\conus80/NAM_CONUS_80km_20060811_0000.grib1";
     NetcdfFile ncfile = NetcdfFile.open(filename);
-    measureSize(filename, ncfile, null, true);
+    measureSize(filename, ncfile, null, false);
 
     Variable vv = ncfile.findVariable("Absolute_vorticity");
-    measureSize(vv.getName(), vv, Group.class, true);
+    measureSize(vv.getName(), vv, Group.class, false);
+
+    ncfile.close();
+  }
+
+  static void testGrib2() throws IOException {
+    String filename = "D:\\data\\grib\\gfs\\global0p5/GFS_Global_0p5deg_20060824_0000.grib2";
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+    measureSize(filename, ncfile, null, true);
 
     ncfile.close();
   }

@@ -38,7 +38,7 @@ import java.util.*;
 public class GribVertCoord implements Comparable {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribVertCoord.class);
 
-  private Index.GribRecord typicalRecord;
+  private Index.GribRecord typicalRecord; // becomes null after init
   private String levelName;
   private TableLookup lookup;
   private int seq = 0;
@@ -148,7 +148,10 @@ public class GribVertCoord implements Comparable {
   }
 
   void addToNetcdfFile( NetcdfFile ncfile, Group g) {
-    if (dontUseVertical) return;
+    if (dontUseVertical) {
+      typicalRecord = null;      
+      return;
+    }
 
     if (g == null)
       g = ncfile.getRootGroup();
@@ -221,6 +224,12 @@ public class GribVertCoord implements Comparable {
 
       ncfile.addVariable( g, b);
     }
+
+  }
+
+  void empty() {
+    // let all references to Index go, to reduce retained size
+    typicalRecord = null;
   }
 
   int getIndex(Index.GribRecord record) {

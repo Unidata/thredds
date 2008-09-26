@@ -53,7 +53,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
   private DiskFileItemFactory factory;
   private File cacheDir;
   private long maxFileUploadSize;
-  boolean allow = false, deleteImmediately = true;
+  private boolean allow = false, deleteImmediately = true;
 
   public void init() throws ServletException {
     super.init();

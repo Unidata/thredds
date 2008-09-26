@@ -30,8 +30,7 @@ import java.net.URISyntaxException;
  */
 public class HtmlController extends AbstractController
 {
-//  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( HtmlController.class );
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( HtmlController.class );
 
   private TdsContext tdsContext;
 
@@ -57,7 +56,7 @@ public class HtmlController extends AbstractController
     }
     catch ( URISyntaxException e )
     {
-      logger.error( "handleRequestInternal(): bad URI syntax [" + baseUriString + "]: " + e.getMessage());
+      log.error( "handleRequestInternal(): bad URI syntax [" + baseUriString + "]: " + e.getMessage());
       cat = null;
     }
 

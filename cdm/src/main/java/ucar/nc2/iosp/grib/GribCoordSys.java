@@ -35,7 +35,7 @@ import java.util.*;
  */
 public class GribCoordSys {
   private GribHorizCoordSys hcs;
-  private Index.GribRecord record;
+  private Index.GribRecord record; // becomes null after initiazing
   private String verticalName;
   private TableLookup lookup;
 
@@ -171,6 +171,9 @@ public class GribCoordSys {
     if (record.levelType1 == 109) {
       findCoordinateTransform (g, "Pressure", record.levelType1);
     }
+
+    // let all references to Index go, to reduce retained size
+    record = null;
   }
 
   void findCoordinateTransform (Group g, String nameStartsWith, int levelType) {

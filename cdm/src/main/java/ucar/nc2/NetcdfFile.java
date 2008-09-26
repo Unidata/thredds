@@ -1676,18 +1676,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     //NetcdfFile.registerIOProvider( ucar.nc2.grib.GribServiceProvider.class);
 
     try {
-      String filename = "C:/data/test/20060904.1335.n18.nc";
-      //String filename = "C:/dev/grib/data/ndfd.wmo";
-      //String filename = "c:/data/radar/level2/6500KHGX20000610_000110.raw";
+      String filename = "D:/data/grib/nam/conus80/NAM_CONUS_80km_20060811_0000.grib1";
       NetcdfFile ncfile = NetcdfFile.open(filename);
-      Attribute att = ncfile.findGlobalAttribute("pass_date\\units");
+      Thread.currentThread().sleep( 60 * 60 * 1000); // pause to examine in profiler
 
-      System.out.println();
-      System.out.println(att);
-
-      //System.out.println( file.toStringV3());
-      //file.writeNcML( System.out);
       ncfile.close();
+
     } catch (Exception e) {
       e.printStackTrace();
     }

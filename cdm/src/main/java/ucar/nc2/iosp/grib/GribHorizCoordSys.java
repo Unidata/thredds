@@ -50,8 +50,10 @@ public class GribHorizCoordSys {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribHorizCoordSys.class);
 
   private TableLookup lookup;
-  private Index.GdsRecord gdsIndex;
+  private Index.GdsRecord gdsIndex; // becomes null after init
   private Group g;
+  int nx, ny;
+  double dx, dy;
 
   private String grid_name, shape_name, id;
   private boolean isLatLon = true, isGaussian = false;
@@ -67,6 +69,11 @@ public class GribHorizCoordSys {
     this.gdsIndex = gdsIndex;
     this.lookup = lookup;
     this.g = g;
+
+    this.nx = gdsIndex.nx;
+    this.ny = gdsIndex.ny;
+    this.dx = gdsIndex.dx * .001;
+    this.dy = gdsIndex.dy * .001;
 
     this.grid_name = lookup.getGridName(gdsIndex);
     grid_name = StringUtil.replace(grid_name, ' ', "_");
@@ -108,29 +115,28 @@ public class GribHorizCoordSys {
   }
 
   int getNx() {
-    return gdsIndex.nx;
+    return nx;
   }
 
   int getNy() {
-    return gdsIndex.ny;
+    return ny;
   }
 
   private double getDxInKm() {
-    return gdsIndex.dx * .001;
+    return dx;
   }
 
   private double getDyInKm() {
-    return gdsIndex.dy * .001;
+    return dy;
   }
 
   void addDimensionsToNetcdfFile(NetcdfFile ncfile) {
-
     if (isLatLon) {
-      ncfile.addDimension(g, new Dimension("lat", gdsIndex.ny));
-      ncfile.addDimension(g, new Dimension("lon", gdsIndex.nx));
+      ncfile.addDimension(g, new Dimension("lat", ny));
+      ncfile.addDimension(g, new Dimension("lon", nx));
     } else {
-      ncfile.addDimension(g, new Dimension("y", gdsIndex.ny));
-      ncfile.addDimension(g, new Dimension("x", gdsIndex.nx));
+      ncfile.addDimension(g, new Dimension("y", ny));
+      ncfile.addDimension(g, new Dimension("x", nx));
     }
   }
 
@@ -158,6 +164,14 @@ public class GribHorizCoordSys {
         log.warn("Unknown grid type= "+gdsIndex.grid_type+"; no projection found");
       }
     }
+  }
+
+  // release memory after init
+  void empty() {
+    gdsIndex = null;
+    varHash = null;
+    productHash = null;
+    vcsHash= null;
   }
 
   private double[] addCoordAxis(NetcdfFile ncfile, String name, int n, double start, double incr, String units,

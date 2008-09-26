@@ -93,11 +93,10 @@ public class Index2NC  {
   void open(Index index, TableLookup lookup, int version, NetcdfFile ncfile, FmrcCoordSys fmrcCoordSys, CancelTask cancelTask) throws IOException {
 
     // create the HorizCoord Systems : one for each gds
-    List hcsList = index.getHorizCoordSys();
+    List<Index.GdsRecord> hcsList = index.getHorizCoordSys();
     boolean needGroups = (hcsList.size() > 1);
     for (int i = 0; i < hcsList.size(); i++) {
-      Index.GdsRecord gdsIndex =  (Index.GdsRecord) hcsList.get(i);
-
+      Index.GdsRecord gdsIndex = hcsList.get(i);
       Group g = null;
       if (needGroups) {
         g = new Group(ncfile, null, "proj"+i);
@@ -197,6 +196,10 @@ public class Index2NC  {
       }
     }
 
+    // clean out stuff we dont need anymore
+    for (GribHorizCoordSys ghcs : hcsHash.values()) {
+      ghcs.empty();
+    }
   }
 
   // make coordinate system without missing data - means that we have to make a coordinate axis for each unique set
@@ -334,6 +337,10 @@ public class Index2NC  {
       }
 
     } // loop over hcs
+
+    for (GribVertCoord gvcs : vertCoords) {
+      gvcs.empty();
+    }
 
   }
 
