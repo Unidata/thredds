@@ -173,7 +173,7 @@ public class Index implements Cloneable {
       }
     }
     newindex.size = computeSize(newindex.shape);
-    newindex.fastIterator = false;
+    newindex.fastIterator = (newindex.size == size); // if equal, then its not a real subset, so can still use fastIterator
     newindex.precalc(); // any subclass-specific optimizations
     return newindex;
   }
@@ -221,7 +221,7 @@ public class Index implements Cloneable {
       //if (name != null) newindex.name[ii] = name[ii];
     }
     newindex.size = computeSize(newindex.shape);
-    newindex.fastIterator = false;
+    newindex.fastIterator = (newindex.size == size); // if equal, then its not a real subset, so can still use fastIterator
     newindex.precalc(); // any subclass-specific optimizations
     return newindex;
   }

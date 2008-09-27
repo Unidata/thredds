@@ -57,7 +57,7 @@ public class ReadTdsLogs {
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(1);
+    executor = Executors.newFixedThreadPool(10);
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // unbounded, threadsafe
     completionService = new ExecutorCompletionService(executor, completionQ);
 
@@ -284,6 +284,11 @@ public class ReadTdsLogs {
 
       if (log.returnCode != 200) {
         System.out.println(" *** skip failure " + log);
+        continue;
+      }
+
+      if (log.path.indexOf("fmrc") > 0)  {
+        System.out.println(" *** skip fmrc " + log);
         continue;
       }
 
@@ -561,12 +566,18 @@ public class ReadTdsLogs {
     // sendRequests
     final ReadTdsLogs reader = new ReadTdsLogs("http://newmotherlode.ucar.edu:8081");
 
-    read("d:/motherlode/logs/access.2008-09-21.log", new MClosure() {
+    long startElapsed = System.nanoTime();
+
+    read("d:/motherlode/logs/access.2008-09-22.log", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }
     });
     reader.exit();
+
+    long elapsedTime = System.nanoTime() - startElapsed;
+    System.out.println("elapsed= "+elapsedTime/(1000 * 1000 * 1000)+ "secs");
+
 
   }
 

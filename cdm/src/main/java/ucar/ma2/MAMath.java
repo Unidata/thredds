@@ -22,7 +22,7 @@ package ucar.ma2;
 /**
  * Element by element algebra on Arrays
  *
- * @author @caron
+ * @author caron
  * @see Index
  */
 public class MAMath {
@@ -54,6 +54,9 @@ public class MAMath {
    * The values from the arrays a and b are converted to double (if needed),
    * and the sum is converted to the type of result (if needed).
    *
+   * @param result result array
+   * @param a operand
+   * @param b operand
    * @throws IllegalArgumentException a,b,and result are not conformable
    */
   public static void addDouble(Array result, Array a, Array b)
@@ -74,6 +77,8 @@ public class MAMath {
   /**
    * Check that two arrays are conformable.
    *
+   * @param a operand
+   * @param b operand
    * @return true if conformable
    */
   public static boolean conformable(Array a, Array b) {
@@ -84,6 +89,8 @@ public class MAMath {
    * Check that two array shapes are conformable.
    * The shapes must match exactly, except that dimensions of length 1 are ignored.
    *
+   * @param shapeA shape of array 1
+   * @param shapeB shape of array 2
    * @return true if conformable
    */
   public static boolean conformable(int[] shapeA, int[] shapeB) {

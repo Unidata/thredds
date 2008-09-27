@@ -1,6 +1,5 @@
-// $Id:Giniiosp.java 63 2006-07-12 21:50:51Z edavis $
 /*
- * Copyright 1997-2006 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -29,7 +28,6 @@ import java.awt.image.*;
 import java.util.*;
 import java.util.zip.Inflater;
 import java.util.zip.DataFormatException;
-//import java.awt.image.BufferedImage;
 
 /**
  * IOServiceProvider for GINI files.
@@ -130,7 +128,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
         
         int k;
         for(int i = 0; i < data_size; i++){
-            int ival =  convertunsignedByte2Short(data[i]);
+            int ival =  convertUnsignedByte2Short(data[i]);
             k = -1;
             for (int j = 0; j < level; j++ ) {
                 if ( levels[3+(j*5)] <= ival && ival <= levels[4+(j*5)] ) {
@@ -246,7 +244,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
             int k;
             for(int i = 0; i < data_size; i++){
-                int ival =  convertunsignedByte2Short(udata[i]);
+                int ival =  convertUnsignedByte2Short(udata[i]);
                 k = -1;
                 for (int j = 0; j < level; j++ ) {
                     if ( levels[3+(j*5)] <= ival && ival <= levels[4+(j*5)] ) {
@@ -357,7 +355,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
 
             int k;
             for(int i = 0; i < data_size; i++){
-                int ival =  convertunsignedByte2Short(uncomp[i]);
+                int ival =  convertUnsignedByte2Short(uncomp[i]);
                 k = -1;
                 for (int j = 0; j < level; j++ ) {
                     if ( levels[3+(j*5)] <= ival && ival <= levels[4+(j*5)] ) {
@@ -465,13 +463,14 @@ public class Giniiosp extends AbstractIOServiceProvider {
     myRaf.close();
   }
 
-  public short convertunsignedByte2Short(byte b) {
+  // get this to inline for performance
+  private final short convertUnsignedByte2Short(byte b) {
     return (short) ((b < 0) ? (short) b + 256 : (short) b);
   }
 
   int isZlibHed( byte[] buf ){
-       short b0 = convertunsignedByte2Short(buf[0]);
-       short b1 = convertunsignedByte2Short(buf[1]);
+       short b0 = convertUnsignedByte2Short(buf[0]);
+       short b1 = convertUnsignedByte2Short(buf[1]);
 
        if ( (b0 & 0xf) == Z_DEFLATED ) {
          if ( (b0 >> 4) + 8 <= DEF_WBITS ) {
