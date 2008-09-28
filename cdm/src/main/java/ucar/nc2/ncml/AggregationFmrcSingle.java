@@ -73,7 +73,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     this.enhance = NetcdfDataset.getDefaultEnhanceMode();
     isDate = true;
 
-    CrawlableScanner d = new CrawlableScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
+    DatasetScanner d = new DatasetScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
     datasetManager.addDirectoryScan(d);
   }
 

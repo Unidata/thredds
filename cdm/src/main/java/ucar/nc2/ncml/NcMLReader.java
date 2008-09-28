@@ -1079,13 +1079,14 @@ public class NcMLReader {
       java.util.List<Element> scan2List = aggElem.getChildren("scanFmrc", ncNS);
       for (Element scanElem : scan2List) {
         String dirLocation = scanElem.getAttributeValue("location");
-        String suffix = scanElem.getAttributeValue("suffix");
         String regexpPatternString = scanElem.getAttributeValue("regExp");
+        String suffix = scanElem.getAttributeValue("suffix");
+        String subdirs = scanElem.getAttributeValue("subdirs");
+        String olderS = scanElem.getAttributeValue("olderThan");
+
         String runMatcher = scanElem.getAttributeValue("runDateMatcher");
         String forecastMatcher = scanElem.getAttributeValue("forecastDateMatcher");
         String offsetMatcher = scanElem.getAttributeValue("forecastOffsetMatcher");
-        String subdirs = scanElem.getAttributeValue("subdirs");
-        String olderS = scanElem.getAttributeValue("olderThan");
 
         // possible relative location
         dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);
@@ -1156,18 +1157,21 @@ public class NcMLReader {
     java.util.List<Element> dirList = aggElem.getChildren("scan", ncNS);
     for (Element scanElem : dirList) {
       String dirLocation = scanElem.getAttributeValue("location");
-      String suffix = scanElem.getAttributeValue("suffix");
       String regexpPatternString = scanElem.getAttributeValue("regExp");
-      String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
-      EnumSet<NetcdfDataset.Enhance> mode = NetcdfDataset.parseEnhanceMode(scanElem.getAttributeValue("enhance"));
+      String suffix = scanElem.getAttributeValue("suffix");
       String subdirs = scanElem.getAttributeValue("subdirs");
       String olderS = scanElem.getAttributeValue("olderThan");
+
+      String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
+      EnumSet<NetcdfDataset.Enhance> mode = NetcdfDataset.parseEnhanceMode(scanElem.getAttributeValue("enhance"));
 
       // possible relative location
       dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);
 
-      Element cdElement = scanElem.getChild("crawlableDatasetImpl", ncNS);  // ok if null
-      agg.addCrawlableDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, mode, subdirs, olderS);
+      // can embed a full-blown crawlableDatasetImpl element LOOK- not implemented yet
+      // Element cdElement = scanElem.getChild("crawlableDatasetImpl", ncNS);  // ok if null
+      Element cdElement = null;
+      agg.addDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, mode, subdirs, olderS);
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;

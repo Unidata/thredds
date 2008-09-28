@@ -34,7 +34,9 @@ import java.util.concurrent.*;
  * @author caron
  * @since Aug 10, 2007
  */
+
 public abstract class AggregationOuterDimension extends Aggregation {
+  static protected boolean debugCache = false, debugInvocation = false;
   static public int invocation = 0;
 
   protected List<VariableDS> aggVars = new ArrayList<VariableDS>();
@@ -43,8 +45,6 @@ public abstract class AggregationOuterDimension extends Aggregation {
   protected List<String> aggVarNames = new ArrayList<String>(); // joinNew
   protected List<CacheVar> cacheList = new ArrayList<CacheVar>(); // promote global attribute to variable
   protected boolean timeUnitsChange = false;
-
-  protected boolean debugCache = false, debugInvocation = false;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
@@ -96,6 +96,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
    * @param varName name of variable to cache. must exist.
    */
   void addCacheVariable(String varName) {
+    if (findCacheVariable(varName) != null) return; // no duplicates
     cacheList.add(new CacheVar(varName));
   }
 
@@ -795,6 +796,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
         Variable v = ncfile.findVariable(varName);
         data = v.read();
         setData(dset, data);
+        if (debugCache) System.out.println("caching "+varName+" complete data");
         return data;
 
       } finally {
@@ -806,15 +808,10 @@ public abstract class AggregationOuterDimension extends Aggregation {
   /////////////////////////////////////////////
   // data values might be specified by Dataset.coordValue
   class CoordValueVar extends CacheVar {
-    Variable v;
-    //Section innerSection;
 
-    CoordValueVar(Variable v) {
-      super(v.getName());
-      dtype = v.getDataType();
-
-      // List<Range> ranges = v.getShapeAsSection().getRanges();
-      //innerSection = new Section(ranges.subList(1, ranges.size()));
+    CoordValueVar(String varName, DataType dtype) {
+      super(varName);
+      this.dtype = dtype;
     }
 
     // this deals with possible listing of the data in the NcML
@@ -823,7 +820,6 @@ public abstract class AggregationOuterDimension extends Aggregation {
       if (data != null) return data;
 
       data = Array.factory(dtype, new int[] {dset.ncoord});
-      //data = Array.factory(dtype, innerSection.getShape());
       IndexIterator ii = data.getIndexIterator();
 
       // we have the coordinates as a String

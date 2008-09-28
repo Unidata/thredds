@@ -33,9 +33,12 @@ This code is ALPHA
    * Point Feature Types completely reworked, based on StructureData iterators
   NcML
    * Tiled aggregation
-   * Existing accepts timeUnitsChange
+   * A JoinExisting type now accepts timeUnitsChange, ndicating time units change in the differnt files
+   * A JoinExisting type now accepts dateFormatMark, if theres only one time step per file, to specify the agg coord value
    * Union accepts scan
    * Global attributes can be promoted to Variables.
+   * Can specify variables to cache.
+   * Can specify iosp, a string parameter to the iosp, and the RAF buffer size
 
  Libraries
   * JDOM 1.1

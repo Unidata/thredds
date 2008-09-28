@@ -37,6 +37,12 @@ import org.jdom.Element;
 /**
  * Superclass for NcML Aggregation.
  *
+ * An Aggregation acts as a ProxyReader for VariableDS. That, is it must implement:
+ * <pre>
+ *   public Array read(Variable mainv);
+ *   public Array read(Variable mainv, Section section);
+ * </pre>
+ *
  * @author caron
  */
 
@@ -105,6 +111,10 @@ public abstract class Aggregation implements ProxyReader {
       logger.error("Unknown setTypicalDatasetMode= " + mode);
   }
 
+
+  static protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
+      debugRead = false, debugDateParse = false;
+
   //////////////////////////////////////////////////////////////////////////////////////////
 
   protected NetcdfDataset ncDataset; // the aggregation belongs to this dataset
@@ -125,8 +135,6 @@ public abstract class Aggregation implements ProxyReader {
   protected boolean isDate = false;
   protected DateFormatter formatter = new DateFormatter();
 
-  protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
-      debugRead = false, debugDateParse = false;
 
   /**
    * Create an Aggregation for the given NetcdfDataset.
@@ -168,7 +176,7 @@ public abstract class Aggregation implements ProxyReader {
   }
 
   /**
-   * Add a crawlable dataset scan
+   * Add a dataset scan
    *
    * @param crawlableDatasetElement defines a CrawlableDataset, or null
    * @param dirName             scan this directory
@@ -180,7 +188,7 @@ public abstract class Aggregation implements ProxyReader {
    * @param olderThan           files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
    * @throws IOException if I/O error
    */
-  public void addCrawlableDatasetScan(Element crawlableDatasetElement, String dirName, String suffix,
+  public void addDatasetScan(Element crawlableDatasetElement, String dirName, String suffix,
           String regexpPatternString, String dateFormatMark, EnumSet<NetcdfDataset.Enhance> mode, String subdirs, String olderThan) throws IOException {
     this.dateFormatMark = dateFormatMark;
     this.enhance = mode;
@@ -190,7 +198,7 @@ public abstract class Aggregation implements ProxyReader {
       if (type == Type.JOIN_EXISTING) type = Type.JOIN_EXISTING_ONE; // tricky
     }
 
-    CrawlableScanner d = new CrawlableScanner(crawlableDatasetElement, dirName, suffix, regexpPatternString, subdirs, olderThan);
+    DatasetScanner d = new DatasetScanner(crawlableDatasetElement, dirName, suffix, regexpPatternString, subdirs, olderThan);
     datasetManager.addDirectoryScan(d);
   }
 

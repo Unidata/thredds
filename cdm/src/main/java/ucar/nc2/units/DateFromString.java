@@ -177,13 +177,17 @@ public class DateFromString
    */
   public static Date getDateUsingCompleteDateFormatWithOffset( String dateString, String dateFormatString, int startIndex )
   {
-    SimpleDateFormat dateFormat = new SimpleDateFormat( dateFormatString, Locale.US );
-    dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+    try {
+      SimpleDateFormat dateFormat = new SimpleDateFormat( dateFormatString, Locale.US );
+      dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
 
-    // We have to cut off the dateString, so that it doesnt grab extra characters.
-    // ie  new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)
-    String s = dateString.substring( 0, startIndex + dateFormatString.length());
-    return dateFormat.parse( s, new ParsePosition( startIndex ) );
+      // We have to cut off the dateString, so that it doesnt grab extra characters.
+      // ie  new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)
+      String s = dateString.substring( 0, startIndex + dateFormatString.length());
+      return dateFormat.parse( s, new ParsePosition( startIndex ) );
+    } catch (IllegalArgumentException e) {
+      throw new RuntimeException("SimpleDateFormat bad = "+dateFormatString+" "+e.getMessage());
+    }
   }
 
   /**

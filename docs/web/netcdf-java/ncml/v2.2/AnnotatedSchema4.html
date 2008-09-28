@@ -5,6 +5,7 @@
 <META content="MSHTML 6.00.2723.2500" name=GENERATOR><title>NcML-2.2</title></HEAD>
 <BODY bgColor=#ffffff>
 <h1 align=left><B>Annotated Schema for NcML-2.2</B></h1>
+<p align=left><em>for version 4.0 of the Netcdf-Java/CDM library</em></p>
 <hr>
 <p align=left>An <em><strong>NcML document</strong></em> is an XML document (aka an <em>instance</em> document) whose contents are described and constrained by <em><strong>NcML Schema-2.2</strong></em>. NcML Schema-2.2 combines the earlier <em>NcML core schema</em> which is an XML description of the netCDF-Java 2.2 / NetCDF-4 data model, with the earlier <em>NcML dataset schema</em>, which allows you to define, redefine, aggregate, and subset existing netCDF 
 files.</p>
@@ -189,13 +190,10 @@ files.</p>
 <pre><strong>(2)  </strong>&lt;xsd:element ref=&quot;promoteGlobalAttribute&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<br><strong>(3)</strong>  &lt;xsd:element ref=&quot;cacheVariable&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;<strong><br>(4)</strong>  &lt;xsd:element ref=&quot;netcdf&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;</pre>
 <pre><strong>(5)</strong>  &lt;xsd:element name=&quot;scan&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
       &lt;xsd:complexType&gt;
-
-
-
 <strong>(7)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-<strong>(8)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(9)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(10)</strong>   &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;
+<strong>(8)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;
+(<strong>9)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;<strong>
+(10)</strong>   &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;
 <strong>(11)</strong>   &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
 
 <strong>(12)</strong>   &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot; /&gt;
@@ -205,9 +203,9 @@ files.</p>
 
 <strong>(14)</strong> &lt;xsd:element name=&quot;scanFmrc&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
       &lt;xsd:complexType&gt;
-<strong>(7)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
-<strong>(8)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;
-<strong>(9)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;
+<strong>(7)</strong>    &lt;xsd:attribute name=&quot;location&quot; type=&quot;xsd:string&quot; <strong>
+(8)</strong>    &lt;xsd:attribute name=&quot;regExp&quot; type=&quot;xsd:string&quot; /&gt;use=&quot;required&quot;/&gt;
+<strong>(9)</strong>    &lt;xsd:attribute name=&quot;suffix&quot; type=&quot;xsd:string&quot; /&gt;
 <strong>(10)</strong>   &lt;xsd:attribute name=&quot;subdirs&quot; type=&quot;xsd:boolean&quot; default=&quot;true&quot;/&gt;
 <strong>(11)</strong>   &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
 
@@ -227,22 +225,22 @@ files.</p>
 &lt;/xsd:element&gt;
 </pre>
 <ol>
-  <li>For <em><strong>joinNew</strong></em> aggregation types, the  variables that will be aggregated must be explicitly listed in a <em><strong>variableAgg</strong></em> element.</li>
-  <li>Specify  global attributes to promote to a variable (outer aggregations only)</li>
-  <li>Specify which variables should be cached (outer aggregation only)</li>
-  <li>The nested netcdf datasets can be explicitly listed.</li>
-  <li>The nested netcdf datasets can be implictly specified with a scan element.</li>
+  <li>For <em><strong>joinNew</strong></em> aggregation types, each  variable to be aggregated must be explicitly listed in a <em><strong>variableAgg</strong></em> element. </li>
+  <li>Optionally specify  global attributes to promote to a variable (outer aggregations only) with a <a href="#promoteGlobalAttribute">promoteGlobalAttribute</a> element. </li>
+  <li>Specify which variables should be cached (outer aggregation only) with a <a href="#cacheVariable">cacheVariable</a> element. </li>
+  <li>Nested <strong>netcdf</strong> datasets can be explicitly listed.</li>
+  <li>Nested netcdf datasets can be implictly specified with a <strong>scan</strong> element.</li>
   <li>n/a</li>
-  <li>The scan directory location. </li>
-  <li>If you specify a <strong>suffix</strong>, only files with that ending will be included.</li>
-  <li>If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="#regexp">regular expression</a>  will be included.</li>
-  <li>You can optionally specify if the scan should descend into subdirectories (default true).</li>
-  <li>If <strong>olderThan</strong> attribute is present, only files whose last modified date is older than this amount of time from the present will be included. This is a way to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot; or &quot;1 hour&quot;. </li>
-  <li>A <em><strong>dateFormatMark</strong></em>  is used on <strong>joinNew</strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string. You can ignore trailing text. For example:
+  <li>The scan directory <strong>location</strong>. </li>
+  <li>If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="#regexp">regular expression</a> will be included.</li>
+  <li>If you specify a <strong>suffix</strong>, only files with that ending will be included. You must not specify a <strong>regExp</strong> attribute. </li>
+  <li>You can optionally specify if the scan should  descend into <strong>subdir</strong>ectories (default true).</li>
+  <li>If <strong>olderThan</strong> attribute is present, only files whose last modified date are older than this amount of time will be included. This is a way to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot; or &quot;1 hour&quot;. </li>
+  <li>A <strong>dateFormatMark</strong>  is used on <strong><em>joinNew</em></strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string. You can ignore trailing text. For example:
     <pre>
         Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini 
  DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
-    <p>A <em><strong>dateFormatMark</strong></em> can be used on a <strong>joinExisting </strong>only if there is a single time in each file of the aggregation, in which case the coordinate values of the time can be created from the filename, instead of having to open each file and read it.</p>
+    <p>A <strong>dateFormatMark</strong> can be used on a <strong><em>joinExisting</em> </strong>type only if there is a single time in each file of the aggregation, in which case the coordinate values of the time can be created from the filename, instead of having to open each file and read it.</p>
   </li>
   <li> You can optionally specify that the files should be opened in <a href="#enhance">enhanced mode</a> (default is <em>NetcdfDataset.EnhanceMode.None</em>)</li>
   <li>A specialized scanFmrc element can be used for a <em><strong><a href="FmrcAggregation.html#forecastModelRunSingleCollection">forecastModelRunSingleCollection</a> </strong></em>aggregation, where forecast model run data is stored in multiple files, with one forecast time per file.</li>
@@ -257,8 +255,8 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
   <li>You must specify an aggregation type.</li>
   <li>For all types except <em><strong>joinUnion</strong></em>, you must specify the dimension name to join. </li>
   <li>When you are using scan elements on a set of files that may change, and you are using caching, set <strong>recheckEvery</strong> to a valid <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time value, like &quot;10 min&quot;, &quot;1 hour&quot;, &quot;30 days&quot;, etc. Whenever the dataset is reacquired from the cache, the directories will be rescanned if <strong>recheckEvery</strong> amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute, the collection will be assumed to be non-changing.</li>
-  <li>Only for <strong>joinExisting </strong>and<strong> forecastModelRunCollection</strong>, if this is set to true, the units of the joined coordinate variable may change, so examine them and do any appropriate conversion so that the aggregated coordinate values have consistent units. </li>
-  <li>Only for forecastModelRunCollection or forecastModelRunSingleCollection. LOOK expose ?? <font color="#990000"><br>
+  <li>Only for <strong><em>joinExisting</em> </strong>and<strong> <em>forecastModelRunCollection</em></strong> types: if <strong>timeUnitsChange</strong> is set to true, the units of the joined coordinate variable may change, so examine them and do any appropriate conversion so that the aggregated coordinate values have consistent units. </li>
+  <li>Experimental, do not use. <font color="#990000"><br>
   </font></li>
 </ol>
 <h3>AggregationType Type</h3>
@@ -274,7 +272,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
  &lt;/xsd:simpleType&gt;</pre>
 <p> The allowable aggregation types. The <em>forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting </em>and<em> joinNew</em> aggregation types are called <strong><em>outer aggregations</em></strong> because they work on the outer (first) dimension.<br>
 </p>
-<h3><strong>  promoteGlobalAttribute Element</strong></h3>
+<h3><strong>  promoteGlobalAttribute<a name="promoteGlobalAttribute"></a> Element</strong></h3>
 <pre>  &lt;!-- promote global attribute to variable --&gt;
   &lt;xsd:element name=&quot;promoteGlobalAttribute&quot;&gt;
    &lt;xsd:complexType&gt;
@@ -290,7 +288,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 <p>This can be used on <strong>joinNew, joinExisting, </strong>and<strong> forecastModelRunCollection</strong>, aka the <em><strong>outer dimension aggregations</strong></em>. A new variable will be added using  the aggregation dimension and its type will be taken from the attribute type. If theres more than one slice in the file (eg in a <strong>joinExisting), </strong>the attribute value will be repeated for each coordinate in that file.<strong><br>
     </strong></p>
 <h3><strong><br>
-  cacheVariable Element</strong></h3>
+  cacheVariable<a name="cacheVariable"></a> Element</strong></h3>
 <pre>  &lt;!-- cache a Variable for efficiency --&gt;
   &lt;xsd:element name=&quot;cacheVariable&quot;&gt;
    &lt;xsd:complexType&gt;
@@ -298,7 +296,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
    &lt;/xsd:complexType&gt;
   &lt;/xsd:element&gt;
 </pre>
-<p>Not reagy to be usedd in a general way yet.<br>
+<p>Not ready to be used in a general way yet.<br>
 </p>
 <h2>Notes</h2>
 <ul>
@@ -524,7 +522,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 <hr WIDTH="100%">
 <p>&nbsp;</p>
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 18, 2008 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 27, 2008 
 </address>
 <p>&nbsp;</p>
 </BODY>

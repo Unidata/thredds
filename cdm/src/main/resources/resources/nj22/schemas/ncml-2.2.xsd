@@ -2,8 +2,9 @@
 <xsd:schema targetNamespace="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+            xmlns:thredds="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
             elementFormDefault="qualified">
-
+  
   <!-- XML encoding of Netcdf container object -->
   <xsd:element name="netcdf">
     <xsd:complexType>
@@ -161,8 +162,8 @@
         <xsd:element name="scan" minOccurs="0" maxOccurs="unbounded">
           <xsd:complexType>
             <xsd:attribute name="location" type="xsd:string" use="required"/>
-            <xsd:attribute name="suffix" type="xsd:string"/>
             <xsd:attribute name="regExp" type="xsd:string"/>
+            <xsd:attribute name="suffix" type="xsd:string"/>
             <xsd:attribute name="subdirs" type="xsd:boolean" default="true"/>
             <xsd:attribute name="olderThan" type="xsd:string"/>
 
@@ -175,8 +176,8 @@
         <xsd:element name="scanFmrc" minOccurs="0" maxOccurs="unbounded">
           <xsd:complexType>
             <xsd:attribute name="location" type="xsd:string" use="required"/>
-            <xsd:attribute name="suffix" type="xsd:string"/>
             <xsd:attribute name="regExp" type="xsd:string"/>
+            <xsd:attribute name="suffix" type="xsd:string"/>
             <xsd:attribute name="subdirs" type="xsd:boolean" default="true"/>
             <xsd:attribute name="olderThan" type="xsd:string"/>
 

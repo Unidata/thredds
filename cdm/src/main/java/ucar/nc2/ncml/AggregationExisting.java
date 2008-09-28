@@ -46,14 +46,13 @@ import org.jdom.Element;
  * @author caron
  */
 public class AggregationExisting extends AggregationOuterDimension {
-  private boolean debugPersist = false, debugPersistDetail = false;
+  static private boolean debugPersist = false, debugPersistDetail = false;
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.JOIN_EXISTING, recheckS);
   }
 
   protected void buildDataset(CancelTask cancelTask) throws IOException {
-    buildCoords(cancelTask);
 
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
@@ -62,8 +61,16 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     // LOOK not dealing with groups
 
-    // create aggregation dimension
+    // a little tricky to get the coord var cached if we have to read through the datasets on the buildCoords()
     String dimName = getDimensionName();
+    Variable tcv = typical.findVariable(dimName);
+    CacheVar coordCacheVar = new CoordValueVar(dimName, tcv.getDataType());
+    cacheList.add(coordCacheVar);  // coordinate variable is always cached
+
+    // now find out how many coordinates we have, caching values if needed
+    buildCoords(cancelTask);
+
+    // create aggregation dimension, now that we know the size
     Dimension aggDim = new Dimension(dimName, getTotalCoords());
     ncDataset.removeDimension(null, dimName); // remove previous declaration, if any
     ncDataset.addDimension(null, aggDim);
@@ -92,6 +99,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
 
+    // handle the agg coordinate variable
     VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
     if ((joinAggCoord == null) && (type == Type.JOIN_EXISTING)) {
       typicalDataset.close( typical); // clean up
@@ -122,9 +130,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     }
 
     // make it a cacheVar
-    CacheVar cv = new CoordValueVar(joinAggCoord);
-    joinAggCoord.setSPobject( cv);
-    cacheList.add(cv);
+    joinAggCoord.setSPobject( coordCacheVar);
 
     // check persistence info - may have cached values
     persistRead();
@@ -216,18 +222,17 @@ public class AggregationExisting extends AggregationOuterDimension {
     if (diskCache2 == null)
       return;
 
-    // only write out if something changed after the cache file was last written
-    if (!cacheDirty)
+    String cacheName = getCacheName();
+    if (cacheName == null) return;
+    File cacheFile = diskCache2.getCacheFile(cacheName);
+
+    // only write out if something changed after the cache file was last written, or if the file has been deleted
+    if (!cacheDirty && cacheFile.exists())
       return;
 
     FileChannel channel = null;
     try {
-      String cacheName = getCacheName();
-      if (cacheName == null) return;
-
-      File cacheFile = diskCache2.getCacheFile(cacheName);
-      boolean exists = cacheFile.exists();
-      if (!exists) {
+      if (!cacheFile.exists()) {
         File dir = cacheFile.getParentFile();
         dir.mkdirs();
       }
@@ -271,7 +276,7 @@ public class AggregationExisting extends AggregationOuterDimension {
             NCdumpW.printArray(data, out);
             out.print("</cache>\n");
             if (debugPersist)
-              System.out.println(" wrote array = " + pv.varName + " nelems= "+data.getSize());
+              System.out.println(" wrote array = " + pv.varName + " nelems= "+data.getSize()+" for "+dataset.getLocation());
           }
         }
         out.print("  </netcdf>\n");
@@ -280,7 +285,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       out.print("</aggregation>\n");
       out.close(); // this also closes the  channel and releases the lock
 
-      cacheFile.setLastModified(datasetManager.getLastScanned());
+      cacheFile.setLastModified( datasetManager.getLastScanned());
       cacheDirty = false;
 
       if (debugPersist)
@@ -298,7 +303,6 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     String cacheName = getCacheName();
     if (cacheName == null) return;
-
     File cacheFile = diskCache2.getCacheFile(cacheName);
     if (!cacheFile.exists())
       return;

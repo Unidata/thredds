@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * Encapsolate a "scan" or "scan2" element: a directory that we want to scan.
  *
- * @deprecated use CrawlableScanner
+ * @deprecated use DatasetScanner
  * @author caron
  * @since Aug 10, 2007
  */

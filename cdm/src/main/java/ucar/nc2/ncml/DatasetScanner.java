@@ -31,21 +31,19 @@ import java.io.IOException;
 
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.TimeUnit;
-import ucar.nc2.dataset.NetcdfDataset;
 import org.jdom.Element;
 
 /**
- * Use CrawlableDataset to scan for datasets in an aggreggation.
+ * DatasetScanner implements the datasetScan element, to scan for datasets.
  *
  * @author caron
  * @since Aug 10, 2007
  */
-public class CrawlableScanner implements Scanner {
-  static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CrawlableScanner.class);
+public class DatasetScanner implements Scanner {
+  static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetScanner.class);
 
   private CrawlableDataset crawler;
   private CrawlableDatasetFilter filter;
-  //private NetcdfDataset.EnhanceMode mode;
   private boolean wantSubdirs = true;
 
   // filters
@@ -53,9 +51,8 @@ public class CrawlableScanner implements Scanner {
 
   private boolean debugScan = false;
 
-  CrawlableScanner(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString,
+  DatasetScanner(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString,
           String subdirsS, String olderS) {
-    //this.mode = mode;
 
     String crawlerClassName;
     Object crawlerObject = null;
@@ -144,7 +141,7 @@ public class CrawlableScanner implements Scanner {
 
     config.addContent( serviceType);
 
-    CrawlableScanner crawl = new CrawlableScanner(config, cat, null, null, "true", null);
+    DatasetScanner crawl = new DatasetScanner(config, cat, null, null, "true", null);
     crawl.scanDirectory(new HashMap<String, MyCrawlableDataset>(), null);
   }
 }

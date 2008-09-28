@@ -418,7 +418,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   /** Get the proxy reader, or null.
    * @return return the proxy reader, if any
    */
-  public ProxyReader getProxyReader() { return this.postReader; }
+  public ProxyReader getProxyReader() {
+    return this.postReader;
+  }
 
   public String toStringDebug() {
     return (orgVar != null) ? orgVar.toStringDebug() : "";

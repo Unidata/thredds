@@ -26,7 +26,7 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Manage a list of Scanners that find files (actually CrawlableDataset).
+ * Manage a list of Scanners that find Files (actually finds CrawlableDataset).
  * Tracks when they need to be rescanned.
  *
  * @author caron

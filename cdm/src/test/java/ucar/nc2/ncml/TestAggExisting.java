@@ -67,7 +67,7 @@ public class TestAggExisting extends TestCase {
     try {
       ncd = NetcdfDataset.openDataset( filename, true, null);
     } catch (Exception e) {
-      e.printStackTrace();
+      //e.printStackTrace();
       assert true;
       return;
     }

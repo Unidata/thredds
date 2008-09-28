@@ -30,7 +30,7 @@ import java.util.Date;
  * @since Aug 10, 2007
  */
 class MyCrawlableDataset {
-  Scanner dir;
+  //Scanner dir;
   CrawlableDataset file;
 
   Date dateCoord; // will have both or neither
@@ -40,7 +40,7 @@ class MyCrawlableDataset {
   Double offset;
 
   MyCrawlableDataset(Scanner dir, CrawlableDataset file) {
-    this.dir = dir;
+    //this.dir = dir;
     this.file = file;
   }
 
