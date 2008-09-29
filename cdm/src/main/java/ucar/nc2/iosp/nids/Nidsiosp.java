@@ -184,7 +184,11 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       data = readOneArrayData(bos, vinfo, v2.getName());
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().startsWith("PrecipArray")) {
+    } else if ( v2.getName().startsWith("Precip") && !vinfo.isRadial) {
+      data = readOneArrayData(bos, vinfo, v2.getName());
+      outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
+
+    }else if (v2.getName().startsWith("PrecipArray")) {
       data = readOneArrayData1(bos, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
@@ -1184,7 +1188,7 @@ asw.setStructureData(sdata, i);
 
     if (vName.endsWith("_RAW")) {
       return pdata;
-    } else if (vName.equals("EchoTop") || vName.equals("VertLiquid")) {
+    } else if (vName.equals("EchoTop") || vName.equals("VertLiquid") || vName.startsWith("Precip")) {
       int[] levels = vinfo.len;
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];

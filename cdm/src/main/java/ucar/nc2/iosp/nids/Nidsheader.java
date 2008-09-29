@@ -619,37 +619,40 @@ class Nidsheader{
     if ( pinfo.offsetToTabularBlock != 0 ) {
          int tlayer = pinfo.offsetToTabularBlock*2;
          bos.position(tlayer);
-         short tab_divider = bos.getShort();
-         if ( tab_divider != -1) {
-             out.println ( "Block divider not found" );
-             throw new IOException("error reading graphic alphanumeric block" );
+         if( bos.hasRemaining()) {
+             
+             short tab_divider = bos.getShort();
+             if ( tab_divider != -1) {
+                 out.println ( "Block divider not found" );
+                 throw new IOException("error reading graphic alphanumeric block" );
+             }
+             short tab_bid = bos.getShort();
+             int tblen = bos.getInt();
+
+             bos.position(tlayer+116);
+             int inc = bos.getInt();
+             bos.position(tlayer+128); // skip the second header and prod description
+
+             tab_divider = bos.getShort();
+             if ( tab_divider != -1) {
+                 out.println ( "tab divider not found" );
+                 throw new IOException("error reading graphic alphanumeric block" );
+             }
+             int npage = bos.getShort();
+
+             int ppos =  bos.position();
+
+             ArrayList dims =  new ArrayList();
+             Dimension tbDim = new Dimension("pageNumber", npage);
+             ncfile.addDimension( null, tbDim);
+             dims.add( tbDim);
+             Variable ppage = new Variable(ncfile, null, null, "TabMessagePage");
+             ppage.setDimensions(dims);
+             ppage.setDataType(DataType.STRING);
+             ppage.addAttribute( new Attribute("long_name", "Graphic Product Message"));
+             ncfile.addVariable(null, ppage);
+             ppage.setSPobject( new Vinfo (npage, 0, tblen, 0, hoff, ppos, isR, isZ, null, null, tab_bid, 0));
          }
-         short tab_bid = bos.getShort();
-         int tblen = bos.getInt();
-
-         bos.position(tlayer+116);
-         int inc = bos.getInt();
-         bos.position(tlayer+128); // skip the second header and prod description
-
-         tab_divider = bos.getShort();
-         if ( tab_divider != -1) {
-             out.println ( "tab divider not found" );
-             throw new IOException("error reading graphic alphanumeric block" );
-         }
-         int npage = bos.getShort();
-
-         int ppos =  bos.position();
-
-         ArrayList dims =  new ArrayList();
-         Dimension tbDim = new Dimension("pageNumber", npage);
-         ncfile.addDimension( null, tbDim);
-         dims.add( tbDim);
-         Variable ppage = new Variable(ncfile, null, null, "TabMessagePage");
-         ppage.setDimensions(dims);
-         ppage.setDataType(DataType.STRING);
-         ppage.addAttribute( new Attribute("long_name", "Graphic Product Message"));
-         ncfile.addVariable(null, ppage);
-         ppage.setSPobject( new Vinfo (npage, 0, tblen, 0, hoff, ppos, isR, isZ, null, null, tab_bid, 0));
 
      }
 
@@ -1309,6 +1312,10 @@ class Nidsheader{
                        cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
         }
         else if( cname.startsWith("BaseReflectivityComp") || cname.startsWith("LayerCompReflect")){
+          addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
+                       cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
+        }
+        else if( cname.startsWith("Precip")){
           addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
                        cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
         }
@@ -2128,7 +2135,7 @@ class Nidsheader{
       buf.get(b2, 0, 2);
       p6 = (short)getInt(b2, 2);
       //t1 = getUInt(b2, 2);
-      buf.get(b2, 0, 2);
+      buf.get(b2, 0, 2);      
       p7 = (short)getInt(b2, 2);
       buf.get(b2, 0, 2);
       p8 = (short)getInt(b2, 2);
@@ -2559,10 +2566,11 @@ class Nidsheader{
       String pname = null;
       switch( code ){
           case 19:
-              if(elevation == 0) pname = "N0R";
-              else if (elevation == 1) pname = "N1R";
-              else if (elevation == 2) pname = "N2R";
-              else if (elevation == 3) pname = "N3R";
+              pname = "N" + elevation + "R";
+          //    if(elevation == 0) pname = "N0R";
+          //    else if (elevation == 1) pname = "N1R";
+          //    else if (elevation == 2) pname = "N2R";
+          //    else if (elevation == 3) pname = "N3R";
             break;
           case 20:
               pname = "N0Z";
@@ -2571,10 +2579,11 @@ class Nidsheader{
               pname = "N0W";
             break;
           case 27:
-              if(elevation == 0) pname = "N0V";
-              else if (elevation == 1) pname = "N1V";
-              else if (elevation == 2) pname = "N2V";
-              else if (elevation == 3) pname = "N3V";
+              pname = "N" + elevation + "V";
+          //    if(elevation == 0) pname = "N0V";
+          //    else if (elevation == 1) pname = "N1V";
+          //    else if (elevation == 2) pname = "N2V";
+          //    else if (elevation == 3) pname = "N3V";
             break;
           case 28:
             pname = "NSP";
@@ -2597,10 +2606,11 @@ class Nidsheader{
           case 48:
             pname = "NVW";
           case 56:
-              if(elevation == 0) pname = "N0S";
-              else if (elevation == 1) pname = "N1S";
-              else if (elevation == 2) pname = "N2S";
-              else if (elevation == 3) pname = "N3S";
+              pname = "N" + elevation + "S";
+          //    if(elevation == 0) pname = "N0S";
+          //    else if (elevation == 1) pname = "N1S";
+          //     else if (elevation == 2) pname = "N2S";
+          //     else if (elevation == 3) pname = "N3S";
             break;
           case 57:
             pname = "NVL";
