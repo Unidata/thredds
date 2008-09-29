@@ -21,6 +21,7 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -53,10 +54,13 @@ public class GempakFileReader implements GempakConstants {
     /** header info */
     protected List<DMFileHeaderInfo> fileHeaderInfo;
 
-    /** key info */
+    /** headers */
+    protected DMHeaders headers;
+
+    /** key */
     protected DMKeys keys;
 
-    /** part info */
+    /** part */
     protected List<DMPart> parts;
 
     /** the machine type byte order */
@@ -111,7 +115,7 @@ public class GempakFileReader implements GempakConstants {
         setByteOrder();
         rf = raf;
         raf.seek(0);
-      
+
         boolean ok = init(fullCheck);
         fileSize = rf.length();
         if ( !ok) {
@@ -148,7 +152,12 @@ public class GempakFileReader implements GempakConstants {
             return false;
         }
 
-        // TODO: Read the headers (DM_RPRT)
+        // Read the headers (DM_RHDA)
+        readHeaders();
+        if (headers == null) {
+            logError("Couldn't read headers");
+            return false;
+        }
 
         // Read the parts (DM_RPRT)
         readParts();
@@ -270,20 +279,121 @@ public class GempakFileReader implements GempakConstants {
         }
         keys = new DMKeys();
         // read the row keys
-        int          num   = dmLabel.krkeys;
-        List<String> rkeys = new ArrayList<String>(num);
+        int       num   = dmLabel.krkeys;
+        List<Key> rkeys = new ArrayList<Key>(num);
         for (int i = 0; i < num; i++) {
             String key = DM_RSTR(dmLabel.kprkey + i);
-            rkeys.add(key);
+            rkeys.add(new Key(key, i, ROW));
         }
         keys.kkrow = rkeys;
         num        = dmLabel.kckeys;
-        List<String> ckeys = new ArrayList<String>(num);
+        List<Key> ckeys = new ArrayList<Key>(num);
         for (int i = 0; i < num; i++) {
             String key = DM_RSTR(dmLabel.kpckey + i);
-            ckeys.add(key);
+            ckeys.add(new Key(key, i, COL));
         }
         keys.kkcol = ckeys;
+    }
+
+    /** keys to swap */
+    private static String[] swapKeys = {
+        "STID", "STD2", "STAT", "COUN", "GPM1", "GVCD"
+    };
+
+    /** number  of words to swap */
+    private static int[] swapNum = {
+        1, 1, 1, 1, 3, 1
+    };
+
+    /**
+     * Read the headers (DM_RHDA)
+     *
+     * @throws IOException problem reading file
+     */
+    protected void readHeaders() throws IOException {
+        if (dmLabel == null) {
+            return;
+        }
+        headers = new DMHeaders();
+        List<int[]> rowHeaders = new ArrayList<int[]>(dmLabel.krow);
+        int         istart     = dmLabel.kprowh;
+
+        // first word is a valid flag so we have to add 1 to size
+        int[] header;
+        for (int i = 0; i < dmLabel.krow; i++) {
+            header = new int[dmLabel.krkeys + 1];
+            DM_RINT(istart, header);
+            if (header[0] != IMISSD) {
+                headers.lstrw = i;
+            }
+            rowHeaders.add(header);
+            istart += header.length;
+        }
+        headers.rowHeaders = rowHeaders;
+        List<int[]> colHeaders = new ArrayList<int[]>(dmLabel.kcol);
+        istart = dmLabel.kpcolh;
+        for (int i = 0; i < dmLabel.kcol; i++) {
+            header = new int[dmLabel.kckeys + 1];
+            DM_RINT(istart, header);
+            if (header[0] != IMISSD) {
+                headers.lstcl = i;
+            }
+            colHeaders.add(header);
+            istart += header.length;
+        }
+        headers.colHeaders = colHeaders;
+
+
+        // some of the words are characters
+        if (needToSwap) {
+            int[]    keyLoc  = new int[swapKeys.length];
+            String[] keyType = new String[swapKeys.length];
+            boolean  haveRow = false;
+            boolean  haveCol = false;
+            for (int i = 0; i < swapKeys.length; i++) {
+                Key key = findKey(swapKeys[i]);
+                keyLoc[i]  = (key != null)
+                             ? key.loc + 1
+                             : 0;
+                keyType[i] = (key != null)
+                             ? key.type
+                             : "";
+                if (keyType[i].equals(ROW)) {
+                    haveRow = true;
+                }
+                if (keyType[i].equals(COL)) {
+                    haveCol = true;
+                }
+            }
+            if (haveRow) {
+                for (int[] toCheck : headers.rowHeaders) {
+                    for (int j = 0; j < swapKeys.length; j++) {
+                        if (keyType[j].equals(ROW)) {
+                            if (swapKeys[j].equals("GVCD")
+                                    && !(toCheck[keyLoc[j]]
+                                         > GempakUtil.vertCoords.length)) {
+                                continue;
+                            }
+                            GempakUtil.swp4(toCheck, keyLoc[j], swapNum[j]);
+                        }
+                    }
+                }
+            }
+            if (haveCol) {
+                for (int[] toCheck : headers.colHeaders) {
+                    for (int j = 0; j < swapKeys.length; j++) {
+                        if (keyType[j].equals(COL)) {
+                            if (swapKeys[j].equals("GVCD")
+                                    && !(toCheck[keyLoc[j]]
+                                         > GempakUtil.vertCoords.length)) {
+                                continue;
+                            }
+                            GempakUtil.swp4(toCheck, keyLoc[j], swapNum[j]);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -390,6 +500,7 @@ public class GempakFileReader implements GempakConstants {
         GempakFileReader gfr = new GempakFileReader(args[0]);
         gfr.printFileLabel();
         gfr.printKeys();
+        gfr.printHeaders();
         gfr.printParts();
 
     }
@@ -505,8 +616,8 @@ public class GempakFileReader implements GempakConstants {
                      || (kmachn == MTALPH) || (kmachn == MTLNUX)
                      || (kmachn == MTIGPH));
 
-//      Set the file values of the missing data values to the current
-//      system values so that random values will not be converted.
+            //      Set the file values of the missing data values to the current
+            //      system values so that random values will not be converted.
             kmissd = IMISSD;
             smissd = RMISSD;
 
@@ -709,15 +820,43 @@ public class GempakFileReader implements GempakConstants {
     }
 
     /**
+     * Class to hold information about a key.
+     */
+    protected class Key {
+
+        /** the key name */
+        public String name;
+
+        /** the key location */
+        public int loc;
+
+        /** the key type (ROW or COL) */
+        public String type;
+
+        /**
+         * Create a new key
+         *
+         * @param name  the name
+         * @param loc   the location
+         * @param type  the type
+         */
+        public Key(String name, int loc, String type) {
+            this.name = name;
+            this.loc  = loc;
+            this.type = type;
+        }
+    }
+
+    /**
      * Class to mimic the DMKEYS common block.
      */
     protected class DMKeys {
 
         /** row keys */
-        public List<String> kkrow;
+        public List<Key> kkrow;
 
         /** col keys */
-        public List<String> kkcol;
+        public List<Key> kkcol;
 
         /**
          * Default ctor
@@ -732,10 +871,91 @@ public class GempakFileReader implements GempakConstants {
             StringBuffer buf = new StringBuffer();
             buf.append("\nKeys:\n");
             buf.append("  row keys = ");
-            buf.append(kkrow);
+            for (Key key : keys.kkrow) {
+                buf.append(key.name);
+                buf.append(", ");
+            }
             buf.append("\n");
             buf.append("  column keys = ");
-            buf.append(kkcol);
+            for (Key key : keys.kkcol) {
+                buf.append(key.name);
+                buf.append(", ");
+            }
+            return buf.toString();
+        }
+    }
+
+    /**
+     * Find a key with the given name
+     *
+     * @param name  the name of the key
+     *
+     * @return the key or null;
+     */
+    public Key findKey(String name) {
+        if (keys == null) {
+            return null;
+        }
+        // search rows
+        for (Key key : keys.kkrow) {
+            if (key.name.equals(name)) {
+                return key;
+            }
+        }
+        // search columns
+        for (Key key : keys.kkcol) {
+            if (key.name.equals(name)) {
+                return key;
+            }
+        }
+        return null;
+
+    }
+
+    /**
+     * Class to mimic the DMHDRS common block.
+     */
+    protected class DMHeaders {
+
+        /** last valid row */
+        public int lstrw = 0;
+
+        /** last valid column */
+        public int lstcl = 0;
+
+        /** row keys */
+        public List<int[]> rowHeaders;
+
+        /** column keys */
+        public List<int[]> colHeaders;
+
+        /**
+         * Default ctor
+         */
+        public DMHeaders() {}
+
+        /**
+         * Get a String representation of this object.
+         * @return a String representation of this object.
+         */
+        public String toString() {
+            StringBuilder buf = new StringBuilder();
+            buf.append("\nHeaders:\n");
+            if (rowHeaders != null) {
+                buf.append("  num row headers = ");
+                buf.append(rowHeaders.size());
+                buf.append("\n");
+            }
+            buf.append("  last row = ");
+            buf.append(lstrw);
+            buf.append("\n");
+            if (colHeaders != null) {
+                buf.append("  num column headers = ");
+                buf.append(colHeaders.size());
+                buf.append("\n");
+            }
+            buf.append("  last column = ");
+            buf.append(lstcl);
             return buf.toString();
         }
     }
@@ -826,6 +1046,16 @@ public class GempakFileReader implements GempakConstants {
             return;
         }
         System.out.println(keys);
+    }
+
+    /**
+     * Print the row and column keys
+     */
+    public void printHeaders() {
+        if (headers == null) {
+            return;
+        }
+        System.out.println(headers);
     }
 
     /**

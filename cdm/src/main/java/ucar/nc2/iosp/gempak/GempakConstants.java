@@ -99,6 +99,7 @@ public interface GempakConstants {
     /** Grid packing */
     public static final int MDGRID = 5;
 
+    // Grid params
     /** Grid nav block length */
     public static final int LLNNAV = 256;
 
@@ -131,5 +132,15 @@ public interface GempakConstants {
     /** GRIB2 packing */
     public static final int MDGRB2 = 5;
 
+    // DM stuff
+
+    /** row identifier */
+    public static final String ROW = "ROW";
+
+    /** column identifier */
+    public static final String COL = "COL";
+
+    /** Block size */
+    public static final int MBLKSZ = 128;
 }
 

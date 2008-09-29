@@ -21,6 +21,7 @@
  */
 
 
+
 package ucar.nc2.iosp.gempak;
 
 
@@ -145,13 +146,14 @@ public class GempakGridReader extends GempakFileReader {
 
         // check that the column names are correct
         for (int i = 0; i < keys.kkcol.size(); i++) {
-            String colkey = keys.kkcol.get(i);
-            if ( !colkey.equals(kcolnm[i])) {
+            Key colkey = keys.kkcol.get(i);
+            if ( !colkey.name.equals(kcolnm[i])) {
                 logError("Column name " + colkey + " doesn't match "
                          + kcolnm[i]);
                 return false;
             }
         }
+
         if ( !fullCheck) {
             return true;
         }
@@ -176,33 +178,29 @@ public class GempakGridReader extends GempakFileReader {
         // TODO: move this up into GempakFileReader using DM_RHDA
         // and account for the flipping there.
         List<GempakGridRecord> tmpList = new ArrayList<GempakGridRecord>();
-        int                    iword   = dmLabel.kpcolh;
         int[]                  header  = new int[dmLabel.kckeys];
-        for (int i = 0; i < dmLabel.kcol; i++) {
-            int valid = DM_RINT(iword++);
-            DM_RINT(iword, header);
-            if (valid != IMISSD) {
-                // swap the appropriate strings
-                // vertical coord if stored as a string
-                if ((header[6] > GempakUtil.vertCoords.length)
-                        && needToSwap) {
-                    header[6] = GempakUtil.swp4(header[6]);
-                }
-                if (needToSwap) {
-                    GempakUtil.swp4(header, 7, 3);
-                }
-                GempakGridRecord gh = new GempakGridRecord(i + 1, header);
-                gh.navBlock = navBlock;
-                String name = gh.getParameterName();
-                //if (name.equals("TMPK") ||
-                //    name.equals("UREL") ||
-                //    name.equals("VREL") ||
-                //    name.equals("PMSL")) {
-                tmpList.add(gh);
-                //}
-            }
-            iword += header.length;
+        if ((headers == null) || (headers.colHeaders == null)) {
+            return false;
         }
+        int gridNum = 0;
+        for (int[] fullHeader : headers.colHeaders) {
+            gridNum++;  // grid numbers are 1 based
+            if ((fullHeader == null) || (fullHeader[0] == IMISSD)) {
+                continue;
+            }
+            // TODO: have GempakGridRecord skip the first word
+            System.arraycopy(fullHeader, 1, header, 0, header.length);
+            GempakGridRecord gh = new GempakGridRecord(gridNum, header);
+            gh.navBlock = navBlock;
+            String name = gh.getParameterName();
+            //if (name.equals("TMPK") ||
+            //    name.equals("UREL") ||
+            //    name.equals("VREL") ||
+            //    name.equals("PMSL")) {
+            tmpList.add(gh);
+            //}
+        }
+
         // reset the file size since we've gone through all the grids.
         fileSize = rf.length();
 
