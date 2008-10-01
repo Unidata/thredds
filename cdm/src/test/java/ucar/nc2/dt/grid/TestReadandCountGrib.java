@@ -13,7 +13,7 @@ public class TestReadandCountGrib extends TestCase {
 
   public void testRead() throws Exception {
 
-    /* our grib reader
+    // our grib reader
     doOne("grib1/data/","cfs.wmo", 51, 4, 6, 3);
     doOne("grib1/data/","eta218.grb", 14, 5, 7, 4);
     doOne("grib1/data/","extended.wmo", 8, 6, 10, 4);
@@ -31,15 +31,17 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib1/data/","OCEAN.wmo", 4, 4, 12, 0);
     doOne("grib1/data/","RUC.wmo", 27, 7, 10, 5);
     doOne("grib1/data/","RUC2.wmo", 44, 10, 13, 5);
-    doOne("grib1/data/","WAVE.wmo", 28, 12, 24, 4); // */
+    doOne("grib1/data/","WAVE.wmo", 28, 12, 24, 4); //
     doOne("grib2/data/","eta2.wmo", 35, 7, 9, 6);
     doOne("grib2/data/","ndfd.wmo", 1, 1, 3, 0); //
     doOne("grib2/data/","eta218.wmo", 57, 13, 18, 10);
     doOne("grib2/data/","PMSL_000", 1, 1, 3, 0);
     doOne("grib2/data/","CLDGRIB2.2005040905", 5, 1, 3, 0);
     //doOne("grib2/data/","LMPEF_CLM_050518_1200.grb", 1, 1, 5, 1);
-    doOne("grib2/data/","AVOR_000.grb", 1, 2, 4, 1); // */
-    doOne("grib2/data/","AVN.5deg.wmo", 117, 13, 15, 12);
+    doOne("grib2/data/","AVOR_000.grb", 1, 2, 4, 1); //
+    doOne("grib2/data/","AVN.5deg.wmo", 117, 13, 15, 12);  // */
+
+    TestReadandCount.doOne(TestAll.upcShareTestDataDir+"ncml/nc/narr/", "narr-a_221_20070411_0600_000.grb", -1, -1, -1, -1);
   }
 
   private void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {

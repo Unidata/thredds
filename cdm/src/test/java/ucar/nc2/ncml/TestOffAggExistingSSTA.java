@@ -29,6 +29,8 @@ import java.util.List;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 
 public class TestOffAggExistingSSTA extends TestCase {
@@ -41,19 +43,20 @@ public class TestOffAggExistingSSTA extends TestCase {
     String filename = "file:"+TestNcML.topDir + "offsite/aggExistingSSTA.xml";
 
     RandomAccessFile.setDebugLeaks( true);
+    List<String> openfiles = RandomAccessFile.getOpenFiles();
+    int count = RandomAccessFile.getOpenFiles().size();
 
+    NetcdfDataset.disableNetcdfFileCache();
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestNcmlAggExisting.open "+ filename);
     System.out.println(" "+ncfile);
 
     Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
 
-    List<String> openfiles = RandomAccessFile.getOpenFiles();
-
     ncfile.close();
 
-    openfiles = RandomAccessFile.getOpenFiles();
-    assert openfiles.size() == 0;
+    int count2 = RandomAccessFile.getOpenFiles().size();
+    assert count == count2 : "openFile count "+count +"!="+ count2;
 
   }
 }

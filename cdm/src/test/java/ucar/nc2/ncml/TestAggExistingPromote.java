@@ -4,9 +4,12 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Test promoting an attribute to a variable.
@@ -28,7 +31,7 @@ public class TestAggExistingPromote extends TestCase {
     super(name);
   }
 
-  public void testWithDateFormatMark() throws IOException, InvalidRangeException {
+  public void testWithDateFormatMark() throws Exception, InvalidRangeException {
     String filename = "file:" + TestNcML.topDir + "aggExistingPromote.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -70,11 +73,40 @@ public class TestAggExistingPromote extends TestCase {
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.STRING;
+    assert time.getDataType() == DataType.DOUBLE;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    String[] result = new String[]{"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
+    String units = time.getUnitsString();
+    DateUnit du = new DateUnit(units);
+    DateFormatter df = new DateFormatter();
+
+    String[] result = new String[] {"2006-06-07T12:00:00Z",   "2006-06-07T13:00:00Z",   "2006-06-07T14:00:00Z"};
+    try {
+      Array data = time.read();
+      assert data.getRank() == 1;
+      assert data.getSize() == 3;
+      assert data.getShape()[0] == 3;
+      assert data.getElementType() == double.class;
+
+      NCdump.printArray(data, "time coord", System.out, null);
+
+      count = 0;
+      dataI = data.getIndexIterator();
+      while (dataI.hasNext()) {
+        double val = dataI.getDoubleNext();
+        Date dateVal = du.makeDate(val);
+        String dateS = df.toDateTimeStringISO(dateVal);
+        assert dateS.equals( result[count]) : dateS+" != "+ result[count];
+        count++;
+      }
+
+    } catch (IOException io) {
+      io.printStackTrace();
+      assert false;
+    }
+
+    /* String[] result = new String[]{"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
     Array data = time.read();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
@@ -89,7 +121,7 @@ public class TestAggExistingPromote extends TestCase {
       String s = (String) dataI.getObjectNext();
       assert s.equals(result[count]) : s;
       count++;
-    }
+    } */
 
     ncfile.close();
   }

@@ -406,8 +406,10 @@ class ConstructNC {
       }
     }
 
-    if (hasTime)
+    if (hasTime) {
       cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+      cal.clear();
+    }
 
     return hasTime;
   }

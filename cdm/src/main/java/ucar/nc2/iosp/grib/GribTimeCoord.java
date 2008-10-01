@@ -30,6 +30,8 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 
 import java.util.*;
+import java.io.PrintWriter;
+import java.io.IOException;
 
 /**
  * A Time Coordinate for a Grib dataset.
@@ -105,7 +107,8 @@ public class GribTimeCoord {
     }
 
     Collections.sort( timeList );
-    return timeList.equals( times);
+    boolean isEqual = timeList.equals( times);
+    return isEqual;
   }
 
   void setSequence( int seq) { this.seq = seq; }
@@ -158,6 +161,13 @@ public class GribTimeCoord {
     v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
     ncfile.addVariable( g, v);
+
+    /*  debug time coords
+    try {
+      NCdumpW.printArray(dataArray, "Added time coord "+v.getName(), new PrintWriter(System.out), null);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } */
   }
 
   int getIndex(Index.GribRecord record) {

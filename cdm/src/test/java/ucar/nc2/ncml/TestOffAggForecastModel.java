@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.StringReader;
 import java.text.ParseException;
 
 import ucar.ma2.*;
@@ -17,11 +18,18 @@ public class TestOffAggForecastModel extends TestCase {
     super(name);
   }
 
+  static String ncml =
+    "<?xml version='1.0' encoding='UTF-8'?>\n" +
+    "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+    "  <aggregation dimName='runtime' type='forecastModelRunCollection' recheckEvery='0 sec'>\n" +
+    "    <scan location='D:/data/ncmodels/' suffix='.nc' dateFormatMark='NAM_CONUS_80km_#yyyyMMdd_HHmm' enhance='true'/>\n" +
+    "  </aggregation>\n" +
+    "</netcdf>";
+
   public void testForecastModel() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "offsite/aggForecastModel.xml";
-
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestAggForecastModel.open "+ filename);
+    System.out.println(" TestOffAggForecastModel.testForecastModel=\n"+ ncml);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
 
     testDimensions(ncfile, nruns);
     testCoordVar(ncfile);
@@ -34,8 +42,8 @@ public class TestOffAggForecastModel extends TestCase {
 
   public void testForecastModelExtend() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "offsite/aggForecastModel.xml";
-    String newModel = "C:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc";
-    String newModelsave = "C:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc.save";
+    String newModel = "D:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc";
+    String newModelsave = "D:/data/ncmodels/NAM_CONUS_80km_20051212_1200.nc.save";
     File newModelFile = new File(newModel);
     File newModelFileSave = new File(newModelsave);
 
@@ -51,7 +59,8 @@ public class TestOffAggForecastModel extends TestCase {
       if (!ok) throw new IOException("cant delete file "+newModelFile.getPath());
     }
 
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    System.out.println(" TestOffAggForecastModel.testForecastModel=\n"+ ncml);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
 
     testDimensions(ncfile, nruns-1);

@@ -244,6 +244,20 @@ public class NcMLReader {
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
   static public NetcdfDataset readNcML(Reader r, CancelTask cancelTask) throws IOException {
+    return readNcML( r, null, cancelTask);
+  }
+
+  /**
+   * Read NcML doc from a Reader, and construct a NetcdfDataset.
+   *
+   * @param r        the Reader containing the NcML document
+   * @param ncmlLocation         the URL location string of the NcML document, used to resolve reletive path of the referenced dataset,
+   *                                or may be just a unique name for caching purposes.
+   * @param cancelTask allow user to cancel the task; may be null
+   * @return the resulting NetcdfDataset
+   * @throws IOException on read error, or bad referencedDatasetUri URI
+   */
+  static public NetcdfDataset readNcML(Reader r, String ncmlLocation, CancelTask cancelTask) throws IOException {
 
     org.jdom.Document doc;
     try {
@@ -260,7 +274,7 @@ public class NcMLReader {
     }
 
     Element netcdfElem = doc.getRootElement();
-    NetcdfDataset ncd = readNcML(null, netcdfElem, cancelTask);
+    NetcdfDataset ncd = readNcML(ncmlLocation, netcdfElem, cancelTask);
     if (debugOpen) System.out.println("***NcMLReader.readNcML (stream) result= \n" + ncd);
     return ncd;
   }
@@ -268,7 +282,8 @@ public class NcMLReader {
   /**
    * Read NcML from a JDOM Document, and construct a NetcdfDataset.
    *
-   * @param ncmlLocation the location of the NcML, or may be just a unique name for caching purposes.
+   * @param ncmlLocation         the URL location string of the NcML document, used to resolve reletive path of the referenced dataset,
+   *                                or may be just a unique name for caching purposes.
    * @param netcdfElem   the JDOM Document's root (netcdf) element
    * @param cancelTask   allow user to cancel the task; may be null
    * @return the resulting NetcdfDataset
@@ -293,7 +308,8 @@ public class NcMLReader {
   /**
    * This sets up the target dataset and the referenced dataset.
    *
-   * @param ncmlLocation         the URL location string of the NcML document, or may be just a unique name for caching purposes.
+   * @param ncmlLocation         the URL location string of the NcML document, used to resolve reletive path of the referenced dataset,
+   *                                or may be just a unique name for caching purposes.
    * @param referencedDatasetUri refers to this dataset (may be null)
    * @param netcdfElem           JDOM netcdf element
    * @param cancelTask           allow user to cancel the task; may be null
@@ -1128,7 +1144,7 @@ public class NcMLReader {
       list = aggElem.getChildren("cacheVariable", ncNS);
       for (Element gattElem : list) {
         String varName = gattElem.getAttributeValue("name");
-        aggo.addCacheVariable(varName);
+        aggo.addCacheVariable(varName, null);
       }
     }
 

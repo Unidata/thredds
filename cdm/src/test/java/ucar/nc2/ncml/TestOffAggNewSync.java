@@ -89,7 +89,7 @@ public class TestOffAggNewSync extends TestCase {
     assert time.getRank() == 1;
     assert time.getSize() == n : time.getSize();
     assert time.getShape()[0] == n;
-    assert time.getDataType() == DataType.STRING;
+    assert time.getDataType() == DataType.DOUBLE;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -97,15 +97,15 @@ public class TestOffAggNewSync extends TestCase {
     assert data.getRank() == 1;
     assert data.getSize() == n;
     assert data.getShape()[0] == n;
-    assert data.getElementType() == String.class;
+    assert data.getElementType() == double.class;
 
-    String prev = null;
+    double prev = Double.NaN;
     IndexIterator dataI = data.getIndexIterator();
     while (dataI.hasNext()) {
-      String curr = (String) dataI.getObjectNext();
-      System.out.println(" coord=" + curr);
-      assert (prev == null) || prev.compareTo(curr) < 0;
-      prev = curr;
+      double dval = dataI.getDoubleNext();
+      System.out.println(" coord=" + dval);
+      assert (Double.isNaN(prev) || dval > prev);
+      prev = dval;
     }
   }
 

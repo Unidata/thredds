@@ -22,6 +22,7 @@ package ucar.nc2.ncml;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
+import ucar.nc2.units.DateUnit;
 import ucar.ma2.*;
 
 import java.io.IOException;
@@ -37,7 +38,7 @@ import java.util.concurrent.*;
 
 public abstract class AggregationOuterDimension extends Aggregation {
   static protected boolean debugCache = false, debugInvocation = false;
-  static public int invocation = 0;
+  static public int invocation = 0;  // debugging
 
   protected List<VariableDS> aggVars = new ArrayList<VariableDS>();
   private int totalCoords = 0;  // the aggregation dimension size
@@ -95,9 +96,9 @@ public abstract class AggregationOuterDimension extends Aggregation {
    *
    * @param varName name of variable to cache. must exist.
    */
-  void addCacheVariable(String varName) {
+  void addCacheVariable(String varName, DataType dtype) {
     if (findCacheVariable(varName) != null) return; // no duplicates
-    cacheList.add(new CacheVar(varName));
+    cacheList.add(new CacheVar(varName, dtype));
   }
 
   CacheVar findCacheVariable(String varName) {
@@ -547,7 +548,9 @@ public abstract class AggregationOuterDimension extends Aggregation {
     protected void setInfo(MyCrawlableDataset myf) {
       super.setInfo(myf);
       coordValueDate = myf.dateCoord;
-      // LOOK why not dateCoordS etc ??
+      coordValue = myf.dateCoordS;
+      if ((coordValue == null) && (type == Type.JOIN_NEW)) // use filename as coord value
+        coordValue = myf.file.getName();
     }
 
 
@@ -720,8 +723,9 @@ public abstract class AggregationOuterDimension extends Aggregation {
     DataType dtype;
     Map<String, Array> dataMap = new HashMap<String, Array>();
 
-    CacheVar(String varName) {
+    CacheVar(String varName, DataType dtype) {
       this.varName = varName;
+      this.dtype = dtype;
     }
 
     // clear out old stuff from the Hash, so it doesnt grow forever
@@ -739,7 +743,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     // public access to the data
     Array read(Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
       if (debugCache) System.out.println("caching "+varName+" section= "+section);
-      Array allData = Array.factory(dtype, section.getShape());
+      Array allData = null;
 
       List<Range> ranges = section.getRanges();
       Range joinRange = section.getRange(0);
@@ -748,7 +752,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
         innerSection = new Section(ranges.subList(1, ranges.size()));
       }
 
-      // LOOK make concurrent
+      // LOOK could make concurrent
       int resultPos = 0;
       List<Dataset> nestedDatasets = getDatasets();
       for (Dataset vnested : nestedDatasets) {
@@ -762,6 +766,12 @@ public abstract class AggregationOuterDimension extends Aggregation {
         Array varData = read(dod);
         if ((innerSection != null) && (varData.getSize() != innerSection.computeSize())) // do we need to subset the data array ?
           varData = varData.section(innerSection.getRanges());
+
+        // may not know the data until now
+        if (dtype == null)
+          dtype = DataType.getType(varData.getElementType());
+        if (allData == null)
+          allData = Array.factory(dtype, section.getShape());
 
         // copy to result array
         int nelems = (int) varData.getSize();
@@ -789,6 +799,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
       Array data = getData(dset);
       if (data != null) return data;
+      if (type == Type.JOIN_NEW) return null;
 
       NetcdfFile ncfile = null;
       try {
@@ -800,7 +811,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
         return data;
 
       } finally {
-        dset.close(ncfile);
+        ncfile.close();
       }
     }
   }
@@ -808,13 +819,22 @@ public abstract class AggregationOuterDimension extends Aggregation {
   /////////////////////////////////////////////
   // data values might be specified by Dataset.coordValue
   class CoordValueVar extends CacheVar {
+    String units;
+    DateUnit du;
 
-    CoordValueVar(String varName, DataType dtype) {
-      super(varName);
-      this.dtype = dtype;
+    CoordValueVar(String varName, DataType dtype, String units) {
+      super(varName, dtype);
+      this.units = units;
+
+      try {
+        du = new DateUnit(units);
+      } catch (Exception e) {
+        // ok to fail - may not be a time coordinate
+      }
+
     }
 
-    // this deals with possible listing of the data in the NcML
+    // this deals with possible setting of the coord values in the NcML
     protected Array read(DatasetOuterDimension dset) throws IOException {
       Array data = getData(dset);
       if (data != null) return data;
@@ -822,8 +842,21 @@ public abstract class AggregationOuterDimension extends Aggregation {
       data = Array.factory(dtype, new int[] {dset.ncoord});
       IndexIterator ii = data.getIndexIterator();
 
-      // we have the coordinates as a String
-      if (dset.coordValue != null) {
+      if (dset.coordValueDate != null) { // its a date, typicallly parsed from the filename
+        // we have the coordinates as a Date
+        if (dtype == DataType.STRING) {
+          ii.setObjectNext(dset.coordValue); // coordValueDate as a String, see setInfo()
+
+        } else if (du != null) {
+          double val = du.makeValue(dset.coordValueDate);
+          ii.setDoubleNext(val);
+        }
+
+        setData(dset, data);
+        return data;
+
+      } else if (dset.coordValue != null) { 
+        // we have the coordinates as a String, typicallly entered in the ncML
 
         // if theres only one coord
         if (dset.ncoord == 1) {
@@ -874,7 +907,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
     String orgName;
 
     PromoteVar(String varName, String orgName) {
-      super(varName);
+      super(varName, null);
       this.orgName = orgName != null ? orgName : varName;
     }
 
@@ -887,12 +920,14 @@ public abstract class AggregationOuterDimension extends Aggregation {
         ncfile = dset.acquireFile(null);
         Attribute att = ncfile.findGlobalAttribute(orgName);
         data = att.getValues();
+        if (dtype == null)
+          dtype = DataType.getType(data.getElementType());
+
         if (dset.ncoord == 1)
           setData(dset, data);
         else {
-          dtype = DataType.getType(data.getElementType());
+          // duplocate the value to each of the coordinates
           Array allData = Array.factory(dtype, new int[] {dset.ncoord});
-
           for (int i=0; i<dset.ncoord; i++)
             Array.arraycopy(data, 0, allData, i, 1); // LOOK generalize to vectors ??
           setData(dset, allData);
@@ -900,7 +935,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
         return data;
 
       } finally {
-        dset.close(ncfile);
+        ncfile.close();
       }
     }
 

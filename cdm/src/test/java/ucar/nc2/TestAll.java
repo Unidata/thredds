@@ -153,14 +153,14 @@ public class TestAll {
     suite.addTest( thredds.catalog.TestCatalogAll.suite()); //
 
     suite.addTest( ucar.nc2.TestIosp.suite());   //
-    suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite()); //
     suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite()); // */
+    suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite()); //
 
-    /* aggregation, with cache
+    // aggregation, with cache
     ucar.nc2.dataset.NetcdfDataset.initNetcdfFileCache(10,100,60*60);
-    //suite.addTest( ucar.nc2.ncml.TestNcML.suite());
-    //suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());  // */
-    suite.addTest( new TestSuite(TestOffAggForecastModel.class));  // */    
+    suite.addTest( ucar.nc2.ncml.TestNcML.suite());
+    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());  // */
+    suite.addTest( new TestSuite(TestOffAggForecastModel.class));  // */
 
     TestSetup wrapper = new TestSetup(suite) {
 

@@ -64,7 +64,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     // a little tricky to get the coord var cached if we have to read through the datasets on the buildCoords()
     String dimName = getDimensionName();
     Variable tcv = typical.findVariable(dimName);
-    CacheVar coordCacheVar = new CoordValueVar(dimName, tcv.getDataType());
+    CacheVar coordCacheVar = new CoordValueVar(dimName, tcv.getDataType(), tcv.getUnitsString());
     cacheList.add(coordCacheVar);  // coordinate variable is always cached
 
     // now find out how many coordinates we have, caching values if needed
@@ -116,8 +116,8 @@ public class AggregationExisting extends AggregationOuterDimension {
 
       } else {
         // replace aggregation coordinate variable
-        joinAggCoord.setDataType(DataType.STRING);
-        joinAggCoord.getAttributes().clear();
+        //joinAggCoord.setDataType(DataType.STRING);
+        //joinAggCoord.getAttributes().clear(); // why ?
       }
       
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));

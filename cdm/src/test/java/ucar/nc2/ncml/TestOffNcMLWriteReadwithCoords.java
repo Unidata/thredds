@@ -45,7 +45,7 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
     files.add( TestAll.upcShareTestDataDir + "satellite/gini/ntp_20041206_2154"); //
     files.add( TestAll.upcShareTestDataDir + "satellite/dmsp/F14200307192230.n.OIS"); // 
 
-    files.add( TestAll.upcShareTestDataDir + "radar/nexrad/level2/6500KHGX20000610_000110.Z"); // */
+    files.add( TestAll.upcShareTestDataDir + "radar/nexrad/level2/6500KHGX20000610_000110"); // */
     files.add( TestAll.upcShareTestDataDir + "radar/nexrad/level2/Level2_KYUX_20060527_2335.ar2v");
   }
 

@@ -28,8 +28,10 @@ import java.net.URISyntaxException;
 import java.net.MalformedURLException;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dataset.NetcdfDataset;
 
 /**
@@ -49,8 +51,16 @@ public class TestDatasetURL extends TestCase {
   }
 
   public void testNcML() throws IOException {
-    NetcdfFile ncfile = NetcdfDataset.openFile("C:/data/murrayBlanks.ncml", null);
-    
+    String ncml =
+      "<?xml version='1.0' encoding='UTF-8'?>\n" +
+      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+      " <aggregation type='joinNew' dimName='fake'>\n" +
+      "  <netcdf location='file:/D:/data/dir mit blank/20070101.nc' coord='1'/>\n" +
+      "  <netcdf location='file:/D:/data/dir mit blank/20070301.nc' coord='2'/>\n" +
+      " </aggregation>\n" +
+      "</netcdf> ";
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), "D:/data/", null);
+
     ncfile.close();
   }
 

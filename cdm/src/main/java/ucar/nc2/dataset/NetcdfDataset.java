@@ -257,6 +257,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     defaultNetcdfFileFactory = new MyNetcdfFileFactory();
   }
 
+  static public void disableNetcdfFileCache() {
+    if (null != fileCache) fileCache.disable();
+    fileCache = null;
+    shutdown();
+  }
+
   // no state, so a singleton is ok
   static private class MyNetcdfFileFactory implements ucar.nc2.util.cache.FileFactory {
     public NetcdfFile open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {

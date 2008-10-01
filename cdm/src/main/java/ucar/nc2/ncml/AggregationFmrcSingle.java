@@ -45,7 +45,7 @@ import java.util.*;
  * @author caron
  */
 public class AggregationFmrcSingle extends AggregationFmrc {
-  private Calendar cal = new GregorianCalendar(); // for date computations
+  private Calendar cal; // for date computations
 
   private Map<Date, List<DatasetOuterDimension>> runHash = new HashMap<Date, List<DatasetOuterDimension>>();
   private List<Date> runs; // list of run dates
@@ -61,6 +61,8 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
   public AggregationFmrcSingle(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Type.FORECAST_MODEL_SINGLE, recheckS);
+    cal = new GregorianCalendar();
+    cal.clear();
   }
 
   public void addDirectoryScanFmrc(String dirName, String suffix, String regexpPatternString, String subdirs, String olderThan,

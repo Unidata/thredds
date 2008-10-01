@@ -31,6 +31,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
 
 import junit.framework.TestCase;
 
@@ -72,10 +74,19 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
   }
 
   public void testNarrGrib() throws IOException, InvalidRangeException {
-    String location = "file:"+ TestAll.upcShareTestDataDir + "ncml/nc/narr/narr.ncml";
-    System.out.println(" TestOffAggExistingTimeUnitsChange.open "+ location);
+    String ncml =
+            "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                    "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+                    " <aggregation type='joinExisting' dimName='time' timeUnitsChange='true' >\n" +
+                    "  <netcdf location='narr-a_221_20070411_0000_000.grb'/>\n" +
+                    "  <netcdf location='narr-a_221_20070411_0300_000.grb'/>\n" +
+                    "  <netcdf location='narr-a_221_20070411_0600_000.grb'/>\n" +
+                    " </aggregation>\n" +
+                    "</netcdf>";
 
-    NetcdfFile ncfile = NetcdfDataset.openFile(location, null);
+    String location = "file:"+ TestAll.upcShareTestDataDir + "ncml/nc/narr/";
+    System.out.println(" TestOffAggExistingTimeUnitsChange.testNarrGrib=\n"+ ncml);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
 
     Variable v = ncfile.findVariable("time");
     assert v != null;

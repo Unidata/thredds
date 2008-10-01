@@ -353,6 +353,7 @@ public class BerkeleyDBIndexer implements Indexer {
         int sec = (dataArray[5] == null) ? 0 : ((Number) dataArray[5]).intValue();
         int doy = (dataArray[6] == null) ? -1 : ((Number) dataArray[6]).intValue();
 
+        cal.clear();
         cal.set(year, month - 1, day, hour, min, sec);
         if (doy >= 0)
           cal.set(Calendar.DAY_OF_YEAR, doy);

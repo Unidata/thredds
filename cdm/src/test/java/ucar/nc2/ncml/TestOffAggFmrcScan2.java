@@ -25,6 +25,8 @@ import junit.framework.TestCase;
 
 import ucar.nc2.*;
 
+import java.io.StringReader;
+
 public class TestOffAggFmrcScan2 extends TestCase {
 
   public TestOffAggFmrcScan2( String name) {
@@ -32,9 +34,18 @@ public class TestOffAggFmrcScan2 extends TestCase {
   }
 
   public void testOpen() throws Exception {
-    String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcScan2.xml";
+    String ncml =
+      "<?xml version='1.0' encoding='UTF-8'?>\n" +
+      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+      "  <aggregation dimName='run' type='forecastModelRunSingleCollection' timeUnitsChange='true' >\n" +
+      "    <scanFmrc location='D:/data/grib/rtmodels/' regExp='.*_nmm\\.GrbF[0-9]{5}$'\n" +
+      "           runDateMatcher='yyMMddHH#_nmm.GrbF#'\n" +
+      "           forecastOffsetMatcher='#_nmm.GrbF#HHH'/>\n" +
+      "  </aggregation>\n" +
+      "</netcdf>";
 
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcScan2.xml";
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
     System.out.println("file="+ncfile);
 
@@ -42,9 +53,18 @@ public class TestOffAggFmrcScan2 extends TestCase {
   }
 
   public void testOpenNomads() throws Exception {
+    String ncml =
+      "<?xml version='1.0' encoding='UTF-8'?>\n" +
+      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+      "  <aggregation dimName='run' type='forecastModelRunSingleCollection' timeUnitsChange='true' >\n" +
+      "    <scanFmrc location='D:/data/nomads/gfs-hi' suffix='.grb'\n" +
+      "           runDateMatcher='#gfs_3_#yyyyMMdd_HH'\n" +
+      "           forecastOffsetMatcher='HHH#.grb#'/>\n" +
+      "  </aggregation>\n" +
+      "</netcdf>";
+    
     String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcNomads.xml";
-
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
     System.out.println("file="+ncfile);
 

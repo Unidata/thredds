@@ -4,9 +4,12 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
+import java.util.Date;
 
 /** Test NcML AggExisting ways to define coordinate variable calues
  * @see "http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Aggregation.html#JoinExistingTypes"
@@ -179,7 +182,7 @@ public class TestAggExistingCoordVars extends TestCase {
     ncfile.close();
   }
 
-  public void testWithDateFormatMark() throws IOException, InvalidRangeException {
+  public void testWithDateFormatMark() throws Exception, InvalidRangeException {
     String filename = "file:"+TestNcML.topDir + "aggExistingOne.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -191,9 +194,13 @@ public class TestAggExistingCoordVars extends TestCase {
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.STRING;
+    assert time.getDataType() == DataType.DOUBLE;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
+
+    String units = time.getUnitsString();
+    DateUnit du = new DateUnit(units);
+    DateFormatter df = new DateFormatter();
 
     String[] result = new String[] {"2006-06-07T12:00:00Z",   "2006-06-07T13:00:00Z",   "2006-06-07T14:00:00Z"};
     try {
@@ -201,15 +208,17 @@ public class TestAggExistingCoordVars extends TestCase {
       assert data.getRank() == 1;
       assert data.getSize() == 3;
       assert data.getShape()[0] == 3;
-      assert data.getElementType() == String.class;
+      assert data.getElementType() == double.class;
 
       NCdump.printArray(data, "time coord", System.out, null);
 
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
-        String s = (String) dataI.getObjectNext();
-        assert s.equals( result[count]) : s;
+        double val = dataI.getDoubleNext();
+        Date dateVal = du.makeDate(val);
+        String dateS = df.toDateTimeStringISO(dateVal);
+        assert dateS.equals( result[count]) : dateS+" != "+ result[count];
         count++;
       }
 
