@@ -2,7 +2,6 @@ package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.xml.parser.CatalogParser;
 import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog2.xml.parser.CatalogNamespace;
 import thredds.catalog2.Catalog;
 import thredds.catalog2.simpleImpl.CatalogBuilderFactoryImpl;
 import thredds.catalog2.builder.CatalogBuilder;
@@ -18,8 +17,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.EndElement;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -68,22 +65,17 @@ public class StaxCatalogParser implements CatalogParser
   {
     try
     {
-       reader = this.factory.createXMLEventReader( source );
-    }
-    catch ( XMLStreamException e )
-    {
-      throw new CatalogParserException( "", e );
-    }
+      reader = this.factory.createXMLEventReader( source );
 
-    CatalogBuilderFactory catBuilderFac = new CatalogBuilderFactoryImpl();
-    try
-    {
+      CatalogBuilderFactory catBuilderFac = new CatalogBuilderFactoryImpl();
+      CatalogBuilder catBuilder = null;
       while ( reader.hasNext() )
       {
         XMLEvent event = reader.peek();
         if ( event.isEndDocument())
         {
-          reader.close();
+          reader.next();
+          continue;
         }
         else if ( event.isStartDocument())
         {
@@ -92,34 +84,49 @@ public class StaxCatalogParser implements CatalogParser
         }
         else if ( event.isStartElement())
         {
-          StartElement se = event.asStartElement();
-          if ( se.getName().getNamespaceURI().equals( CatalogNamespace.CATALOG_1_0.getNamespaceUri())
-               && se.getName().getLocalPart().equals( "catalog" ) )
+          if ( CatalogElementParser.isRecognizedElement( event.asStartElement() ))
           {
             CatalogElementParser catElemParser = new CatalogElementParser( source.getSystemId(), reader, catBuilderFac);
-            catElemParser.parse();
+            catBuilder = catElemParser.parse();
           }
           else
-            System.out.println( "start : " + se.getName().getLocalPart());
+          {
+            log.warn( "parse(): Unrecognized start element [" + event.asStartElement().getName() + "]." );
+            reader.next();
+            continue;
+          }
         }
         else if ( event.isEndElement())
         {
-          EndElement se = event.asEndElement();
-          System.out.println( "end   : " + se.getName() );
+          if ( CatalogElementParser.isRecognizedElement( event.asEndElement() ) )
+          {
+            break;
+          }
+          else
+          {
+            log.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
+            break;
+          }
         }
         else
         {
+          log.debug( "parse(): Unhandled event [" + event.getLocation() + "--" + event + "].");
           reader.next();
           continue;
         }
       }
+
+      reader.close();
+
+      if ( catBuilder != null )
+        return catBuilder.finish();
+      else
+        return null;
     }
     catch ( XMLStreamException e )
     {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      throw new CatalogParserException( "", e );
     }
-
-    return null;
   }
 
   public Catalog parse( URI uri )

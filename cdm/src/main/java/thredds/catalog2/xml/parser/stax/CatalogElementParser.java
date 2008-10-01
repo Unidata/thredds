@@ -4,14 +4,15 @@ import thredds.catalog2.builder.CatalogBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.xml.parser.CatalogNamespace;
 import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.AbstractCatalogElement;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
-import javax.xml.stream.events.EndElement;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.namespace.QName;
+import javax.xml.XMLConstants;
 import java.util.Date;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,9 +28,29 @@ public class CatalogElementParser
   private org.slf4j.Logger logger =
           org.slf4j.LoggerFactory.getLogger( CatalogElementParser.class );
 
-  private final static QName versionAttName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(), "version" );
-  private final static QName expiresAttName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(), "expires" );
-  private final static QName lastModifiedAttName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(), "lastModified" );
+  private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                                                      AbstractCatalogElement.ELEMENT_NAME );
+  private final static QName versionAttName = new QName( XMLConstants.NULL_NS_URI,
+                                                         AbstractCatalogElement.VERSION_ATTRIBUTE_NAME );
+  private final static QName expiresAttName = new QName( XMLConstants.NULL_NS_URI,
+                                                         AbstractCatalogElement.EXPIRES_ATTRIBUTE_NAME );
+  private final static QName lastModifiedAttName = new QName( XMLConstants.NULL_NS_URI,
+                                                              AbstractCatalogElement.LAST_MODIFIED_ATTRIBUTE_NAME );
+
+  public static boolean isRecognizedElement( XMLEvent event )
+  {
+    QName elemName = null;
+    if ( event.isStartElement() )
+      elemName = event.asStartElement().getName();
+    else if ( event.isEndElement() )
+      elemName = event.asEndElement().getName();
+    else
+      return false;
+
+    if ( elemName.equals( elementName ) )
+      return true;
+    return false;
+  }
 
   private final String baseUriString;
   private final XMLEventReader reader;
@@ -43,41 +64,32 @@ public class CatalogElementParser
     this.catBuilderFactory = catBuilderFactory;
   }
 
-  public void parse()
+  public CatalogBuilder parse()
           throws CatalogParserException
   {
     try
     {
-      StartElement startCatElem = (StartElement) reader.nextEvent();
-      Attribute versionAtt = startCatElem.getAttributeByName( versionAttName );
-      String versionString = versionAtt.getValue();
-      Attribute expiresAtt = startCatElem.getAttributeByName( expiresAttName );
-      Date expiresDate = null;
-      Attribute lastModifiedAtt = startCatElem.getAttributeByName( lastModifiedAttName );
-      Date lastModifiedDate = null;
-      URI baseUri = new URI( baseUriString);
-      CatalogBuilder catBuilder =
-              catBuilderFactory.newCatalogBuilder(
-                      startCatElem.getName().getLocalPart(),
-                      baseUri, versionString, expiresDate, lastModifiedDate );
+      CatalogBuilder builder = this.parseElement( reader.nextEvent() );
 
       while ( reader.hasNext() )
       {
         XMLEvent event = reader.peek();
         if ( event.isStartElement() )
         {
-          StartElement se = event.asStartElement();
-          if ( se.getName().getNamespaceURI().equals( CatalogNamespace.CATALOG_1_0.getNamespaceUri() )
-               && se.getName().getLocalPart().equals( "service" ) )
-          {
-            System.out.println( "start : " + se.getName().getLocalPart() );
-          }
-          System.out.println( "start : " + se.getName().getLocalPart() );
+          handleStartElement( event.asStartElement(), builder );
         }
         else if ( event.isEndElement() )
         {
-          reader.next();
-          return;
+          if ( isRecognizedElement( event.asEndElement() ) )
+          {
+            reader.next();
+            break;
+          }
+          else
+          {
+            logger.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
+            break;
+          }
         }
         else
         {
@@ -85,16 +97,53 @@ public class CatalogElementParser
           continue;
         }
       }
+
+      return builder;
     }
     catch ( XMLStreamException e )
     {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      throw new CatalogParserException( "Failed to parse catalog element.", e );
+    }
+  }
+
+  private CatalogBuilder parseElement( XMLEvent event )
+          throws CatalogParserException
+  {
+    if ( !event.isStartElement() )
+      throw new IllegalArgumentException( "Event must be start element." );
+    StartElement startCatElem = event.asStartElement();
+
+    Attribute versionAtt = startCatElem.getAttributeByName( versionAttName );
+    String versionString = versionAtt.getValue();
+    Attribute expiresAtt = startCatElem.getAttributeByName( expiresAttName );
+    Date expiresDate = null;
+    Attribute lastModifiedAtt = startCatElem.getAttributeByName( lastModifiedAttName );
+    Date lastModifiedDate = null;
+    URI baseUri = null;
+    try
+    {
+      baseUri = new URI( baseUriString );
     }
     catch ( URISyntaxException e )
     {
-      throw new CatalogParserException( "", e );
+      throw new CatalogParserException( "Bad catalog base URI [" + baseUriString + "]", e );
     }
+    return catBuilderFactory.newCatalogBuilder(
+            startCatElem.getName().getLocalPart(),
+            baseUri, versionString, expiresDate, lastModifiedDate );
+  }
 
+  private void handleStartElement( StartElement startElement, CatalogBuilder catalogBuilder )
+          throws CatalogParserException
+  {
+    if ( ServiceElementParser.isRecognizedElement( startElement ) )
+    {
+      ServiceElementParser serviceElemParser = new ServiceElementParser( reader, catalogBuilder );
+      serviceElemParser.parse();
+    }
+    else
+    {
 
+    }
   }
 }
