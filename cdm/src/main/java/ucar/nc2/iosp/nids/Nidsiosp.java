@@ -184,12 +184,12 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       data = readOneArrayData(bos, vinfo, v2.getName());
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if ( v2.getName().startsWith("Precip") && !vinfo.isRadial) {
-      data = readOneArrayData(bos, vinfo, v2.getName());
+    } else if (v2.getName().startsWith("PrecipArray")) {
+      data = readOneArrayData1(bos, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    }else if (v2.getName().startsWith("PrecipArray")) {
-      data = readOneArrayData1(bos, vinfo);
+    } else if ( v2.getName().startsWith("Precip") && !vinfo.isRadial) {
+      data = readOneArrayData(bos, vinfo, v2.getName());
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
     } else if (v2.getName().equals("unlinkedVectorStruct")) {
