@@ -45,36 +45,43 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
-    24: cleanup error messages when catref or show catalog service fails to open remote catalog.
-        HTTPRandomAccessFile tolerates lack of "Accept-Ranges" header
-        bug in IO.copyUrlB buffering - was very slow, prone to hang
-        start to reduce memory consumption based on TDS profiling:
+  25: opendap parsing bug with signed bytes
+    ncml agg fixes
+    grib thread-safety
+    Calendar.clear() to eliminate millisecs in a Date
+    NIDS: raster,  DPA read bug
+    BUFR tables cleanup
+    add Grib GDS type 87
+  24: cleanup error messages when catref or show catalog service fails to open remote catalog.
+    HTTPRandomAccessFile tolerates lack of "Accept-Ranges" header
+    bug in IO.copyUrlB buffering - was very slow, prone to hang
+    start to reduce memory consumption based on TDS profiling:
         - remove ucar.ma2.Index.set/getName() since its never used
         - NetcdfDataset does not retain NetcdfDatasetInfo
         - remove GribServiceProvider.parseInfo
         - DateUnit does not retain DateFormatter or timeUnitString
         - LatLonPointImpl does not preallocate StringBuilders
-    23: new visad.jar (9/12/08)
-        more BUFR fixes
-        DateRange now moves when start or end date = "present"
-        NetcdfFile.canOpen()
-        GeoCoordSys: warn, dont fail, if x, y axis units not compatible with "km"
-        mcidas area iosp
-    22: improved BUFR reading
-    21: Improve nexrad3 iosp
-        GeoTiff: new projections
-    20: StructureDS: get nested convert to work
-        Mercator projection: remove lat0; grib parameters were interpreted wrong
-        Allow opening GRIB files where we dont know the grid type, and so cant add coordinates
-        HDF5 bug: filtered data (eg compressed) wasnt checking for byte order.
-        add 'nodods':, 'slurp:' as aliases for http:
-        enums return values, enhance will convert to Strings
-        redo NetcdfDataset.EnhanceMode, use EnumSet
-        ENUM1, ENUM2, ENUM4 enum types
-        BUFR code tables (still experimental)
-        BUFR "associated variables"
-        VariableDS extends EnhanceScaleMissing, StructureDS and VariableEnhanced does not
-    19: BUFR reading mostly works
+  23: new visad.jar (9/12/08)
+    more BUFR fixes
+    DateRange now moves when start or end date = "present"
+    NetcdfFile.canOpen()
+    GeoCoordSys: warn, dont fail, if x, y axis units not compatible with "km"
+     mcidas area iosp
+  22: improved BUFR reading
+  21: Improve nexrad3 iosp
+    GeoTiff: new projections
+  20: StructureDS: get nested convert to work
+    Mercator projection: remove lat0; grib parameters were interpreted wrong
+    Allow opening GRIB files where we dont know the grid type, and so cant add coordinates
+    HDF5 bug: filtered data (eg compressed) wasnt checking for byte order.
+    add 'nodods':, 'slurp:' as aliases for http:
+    enums return values, enhance will convert to Strings
+    redo NetcdfDataset.EnhanceMode, use EnumSet
+    ENUM1, ENUM2, ENUM4 enum types
+    BUFR code tables (still experimental)
+    BUFR "associated variables"
+    VariableDS extends EnhanceScaleMissing, StructureDS and VariableEnhanced does not
+  19: BUFR reading mostly works
         turn off debugging
         StructureDS.convert nested structures
     18: fix large file writing
