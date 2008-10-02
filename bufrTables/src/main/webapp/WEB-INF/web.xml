@@ -4,30 +4,33 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
 
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/applicationContext.xml</param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/log4j.xml</param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+
   <servlet>
-    <servlet-name>BufrValidate</servlet-name>
-    <servlet-class>thredds.bufrtables.BtServlet</servlet-class>
-
-    <init-param>
-      <param-name>CacheDir</param-name>
-      <param-value>C:/temp/bt2/</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>CacheScourSecs</param-name>
-      <param-value>3600</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>CacheMaxAgeSecs</param-name>
-      <param-value>3600</param-value>
-    </init-param>
-
+    <servlet-name>bufrTables</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>BufrValidate</servlet-name>
-    <url-pattern>/bufr/*</url-pattern>
+    <servlet-name>bufrTables</servlet-name>
+    <url-pattern>/validate/*</url-pattern>
   </servlet-mapping>
 
 </web-app>

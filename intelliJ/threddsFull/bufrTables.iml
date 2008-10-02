@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
-    <facet type="web" name="servlet">
+    <facet type="web" name="bufrTables">
       <configuration>
         <descriptors>
           <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../bufrTables/src/main/webapp/WEB-INF/web.xml" optional="false" version="2.5" />
@@ -22,7 +22,7 @@
           <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
         </building>
         <packaging>
-          <containerElement type="facet" facetId="opendap/web/Web">
+          <containerElement type="facet" facetId="opendap/web/opendap">
             <attribute name="method" value="0" />
             <attribute name="URI" value="&lt;N/A&gt;" />
           </containerElement>
@@ -50,6 +50,10 @@
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
+          <containerElement type="library" name="Spring" level="application">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+          </containerElement>
           <containerElement type="library" name="stax" level="module">
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/lib" />
@@ -75,8 +79,8 @@
             <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.2.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-logging-1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -101,12 +105,12 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
+            <attribute name="URI" value="&lt;N/A&gt;" />
             <url>jar://$MODULE_DIR$/../../lib/external/jpeg2000.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/junit.jar" />
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="&lt;N/A&gt;" />
             <url>jar://$MODULE_DIR$/../../lib/external/junit.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -125,7 +129,7 @@
             <url>file://$MODULE_DIR$/../../../grib/resources</url>
           </containerElement>
           <containerElement type="library" level="module">
-            <attribute name="method" value="0" />
+            <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
             <url>file://$MODULE_DIR$/../../cdm/src/main/resources</url>
           </containerElement>
@@ -172,6 +176,15 @@
         </packaging>
       </configuration>
     </facet>
+    <facet type="Spring" name="Spring">
+      <configuration>
+        <options>
+          <option name="enableValidation" value="false" />
+          <option name="reportErrorsAsWarnings" value="true" />
+        </options>
+        <customNs />
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../bufrTables/target/WEB-INF/classes" />
@@ -182,17 +195,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module" module-name="common" exported="" />
-    <orderEntry type="module" module-name="bufr" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -202,8 +204,19 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="cdm" />
     <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/javaee.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module" module-name="bufr" exported="" />
+    <orderEntry type="module" module-name="cdm" exported="" />
+    <orderEntry type="module" module-name="common" exported="" />
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/commons-fileupload-1.1.1.jar!/" />
@@ -212,7 +225,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/commons-io-1.2.jar!/" />
@@ -221,6 +234,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" name="Spring" level="application" />
     <orderEntryProperties />
   </component>
 </module>

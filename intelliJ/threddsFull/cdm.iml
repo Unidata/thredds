@@ -12,9 +12,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="bufr" exported="" />
-    <orderEntry type="module" module-name="grib" exported="" />
-    <orderEntry type="module" module-name="opendap" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -24,6 +21,10 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="bufr" exported="" />
+    <orderEntry type="module" module-name="common" exported="" />
+    <orderEntry type="module" module-name="grib" exported="" />
+    <orderEntry type="module" module-name="opendap" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -32,15 +33,6 @@
         <JAVADOC>
           <root url="http://www.jdom.org/docs/apidocs/" />
         </JAVADOC>
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
@@ -71,17 +63,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="common" exported="" />
-    <orderEntry type="module-library" exported="">
-      <library name="stax">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/wstx-lgpl-3.2.5.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../lib/external/stax-api-1.0.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -94,7 +75,26 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/commons-codec-1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="stax">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/wstx-lgpl-3.2.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/stax-api-1.0.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -16,6 +16,10 @@
     </layout>
   </appender>
 
+  <logger name="org.springframework">
+    <level value="ALL"/>
+  </logger>
+
   <root>
     <level value="ALL"/>
     <appender-ref ref="ThreddsStdout"/>

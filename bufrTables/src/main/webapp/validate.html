@@ -8,7 +8,7 @@
 <p><em>version 0.2</em></p>
 <p><strong>Upload a file of one or more BUFR recordss. These must be BUFR edition 2, 3, or 4. </strong></p>
 <hr>
-<FORM ENCTYPE='multipart/form-data' method='POST' action='/bufr/validate'>
+<FORM ENCTYPE='multipart/form-data' method='POST' action='validate/post'>
 <p><strong>Your Name: </strong>
   <input type="text" name="username">
 </p>
@@ -19,7 +19,7 @@
     return XML </p>
 </FORM>
 
-<form method="GET" action='/bufr/validate'>
+<form method="GET" action='validate/get'>
 <p></p>
 OR enter the URL of a file accessible through an HTTP Server:
 <p><strong>URL: </strong>

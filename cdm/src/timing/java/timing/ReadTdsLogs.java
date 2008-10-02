@@ -287,10 +287,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-      if (log.path.indexOf("fmrc") > 0)  {
+      /* if (log.path.indexOf("fmrc") > 0)  {
         System.out.println(" *** skip fmrc " + log);
         continue;
-      }
+      } */
 
       completionService.submit(new SendRequestTask(log));
       count++;
@@ -568,7 +568,7 @@ public class ReadTdsLogs {
 
     long startElapsed = System.nanoTime();
 
-    read("d:/motherlode/logs/access.2008-09-22.log", new MClosure() {
+    read("d:/motherlode/logs/access.2008-09-29.log", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }
