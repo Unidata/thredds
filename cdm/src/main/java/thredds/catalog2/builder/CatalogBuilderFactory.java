@@ -30,6 +30,6 @@ public interface CatalogBuilderFactory
 
   public MetadataBuilder newMetadataBuilder();
 
-  public AccessBuilder newAccessBuilder( ServiceImpl service, String urlPath );
+  public AccessBuilder newAccessBuilder();
   public AccessBuilder newAccessBuilder( Access access);
 }

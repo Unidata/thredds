@@ -44,7 +44,7 @@ public class CatalogRefImpl
   }
 
   @Override
-  public CatalogRef finish()
+  public CatalogRef finish() throws BuildException
   {
     if ( this.finished )
       return this;

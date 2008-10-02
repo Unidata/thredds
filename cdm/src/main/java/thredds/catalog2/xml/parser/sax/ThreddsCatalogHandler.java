@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import thredds.catalog2.builder.CatalogBuilder;
+import thredds.catalog2.builder.BuildException;
 import thredds.catalog2.Catalog;
 
 /**
@@ -40,7 +41,7 @@ public class ThreddsCatalogHandler extends DefaultHandler
     this.namespaceMap = new HashMap<String, String>();
   }
 
-  Catalog getCatalog()
+  Catalog getCatalog() throws BuildException
   {
     if ( builder != null )
     {

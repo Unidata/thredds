@@ -16,5 +16,5 @@ public interface CatalogRefBuilder extends DatasetNodeBuilder
   public void setReference( URI reference );
 
   public boolean isFinished();
-  public CatalogRef finish();
+  public CatalogRef finish() throws BuildException;
 }

@@ -225,7 +225,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.finished;
   }
 
-  public DatasetNode finish()
+  public DatasetNode finish() throws BuildException
   {
     if ( this.finished )
       return this;

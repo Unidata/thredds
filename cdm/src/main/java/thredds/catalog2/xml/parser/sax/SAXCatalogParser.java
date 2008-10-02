@@ -5,6 +5,7 @@ import thredds.catalog2.xml.parser.CatalogParserException;
 import thredds.catalog2.xml.parser.CatalogNamespace;
 import thredds.catalog2.Catalog;
 import thredds.catalog2.builder.CatalogBuilder;
+import thredds.catalog2.builder.BuildException;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
@@ -110,7 +111,14 @@ public class SAXCatalogParser implements CatalogParser
     {
       e.printStackTrace();
     }
-    return catHandler.getCatalog();
+    try
+    {
+      return catHandler.getCatalog();
+    }
+    catch ( BuildException e )
+    {
+      throw new CatalogParserException( "Catalog builder in bad state.", e);
+    }
   }
 
   public Catalog parse( URI uri )

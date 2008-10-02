@@ -39,5 +39,5 @@ public interface DatasetNodeBuilder
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id );
 
   public boolean isFinished();
-  public DatasetNode finish();
+  public DatasetNode finish() throws BuildException;
 }

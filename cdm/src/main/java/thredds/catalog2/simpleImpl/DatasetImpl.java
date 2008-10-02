@@ -32,10 +32,10 @@ public class DatasetImpl
     this.accesses = new ArrayList<Access>();
   }
 
-  public AccessBuilder addAccess( ServiceBuilder service, String urlPath )
+  public AccessBuilder addAccessBuilder()
   {
     if ( finished ) throw new IllegalStateException( "This DatasetBuilder has been finished().");
-    AccessImpl a = new AccessImpl( (ServiceImpl) service, urlPath );
+    AccessImpl a = new AccessImpl();
     this.accessBuilders.add( a );
     this.accesses.add( a );
     return a;
@@ -90,7 +90,7 @@ public class DatasetImpl
   }
 
   @Override
-  public Dataset finish()
+  public Dataset finish() throws BuildException
   {
     if ( this.finished )
       return this;

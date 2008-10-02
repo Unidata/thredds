@@ -266,7 +266,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return this.finished;
   }
 
-  public Catalog finish()
+  public Catalog finish() throws BuildException
   {
     if ( this.finished )
       return this;

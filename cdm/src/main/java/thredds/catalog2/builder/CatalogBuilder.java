@@ -54,6 +54,6 @@ public interface CatalogBuilder
    * @return the resulting Catalog object (immutable?).  
    * @throws IllegalStateException if any Catalog invariants are violated.
    */
-  public Catalog finish();
+  public Catalog finish() throws BuildException;
 
 }

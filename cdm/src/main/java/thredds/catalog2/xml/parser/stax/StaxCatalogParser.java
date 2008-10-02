@@ -6,6 +6,7 @@ import thredds.catalog2.Catalog;
 import thredds.catalog2.simpleImpl.CatalogBuilderFactoryImpl;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.CatalogBuilderFactory;
+import thredds.catalog2.builder.BuildException;
 import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;
 
@@ -118,14 +119,18 @@ public class StaxCatalogParser implements CatalogParser
 
       reader.close();
 
-      if ( catBuilder != null )
-        return catBuilder.finish();
-      else
+      if ( catBuilder == null )
         return null;
+
+      return catBuilder.finish();
     }
     catch ( XMLStreamException e )
     {
-      throw new CatalogParserException( "", e );
+      throw new CatalogParserException( "Failed to parse catalog document.", e );
+    }
+    catch ( BuildException e )
+    {
+      throw new CatalogParserException( "Failed to parse catalog document.", e );
     }
   }
 

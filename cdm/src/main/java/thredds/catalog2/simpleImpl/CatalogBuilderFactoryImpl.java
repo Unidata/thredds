@@ -78,9 +78,9 @@ public class CatalogBuilderFactoryImpl implements CatalogBuilderFactory
     return null;
   }
 
-  public AccessBuilder newAccessBuilder( ServiceImpl service, String urlPath )
+  public AccessBuilder newAccessBuilder()
   {
-    return new AccessImpl( service, urlPath );
+    return new AccessImpl();
   }
 
   public AccessBuilder newAccessBuilder( Access access )

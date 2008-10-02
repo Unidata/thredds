@@ -13,7 +13,7 @@ import thredds.catalog.DataFormatType;
 public interface AccessBuilder
 {
   public ServiceBuilder getServiceBuilder();
-  public void setService( ServiceBuilder service );
+  public void setServiceBuilder( ServiceBuilder service );
 
   public String getUrlPath();
   public void setUrlPath( String urlPath );
@@ -25,5 +25,5 @@ public interface AccessBuilder
   public void setDataSize( long bytes );
   
   public boolean isFinished();
-  public Access finish();
+  public Access finish() throws BuildException;
 }
