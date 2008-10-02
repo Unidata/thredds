@@ -1,7 +1,5 @@
 package thredds.catalog2.builder;
 
-import java.util.List;
-
 /**
  * _more_
  *
@@ -10,25 +8,29 @@ import java.util.List;
  */
 public class BuildException extends Exception
 {
-  //ToDo private final List<ThreddsBuilder> badBuilders;
+  private final ThreddsBuilder causeBuilder;
 
-  public BuildException()
+  public BuildException( ThreddsBuilder causeBuilder )
   {
     super();
+    this.causeBuilder = causeBuilder;
   }
 
-  public BuildException( String message)
+  public BuildException( ThreddsBuilder causeBuilder, String message)
   {
     super( message);
+    this.causeBuilder = causeBuilder;
   }
 
-  public BuildException( String message, Throwable cause)
+  public BuildException( ThreddsBuilder causeBuilder, String message, Throwable cause)
   {
     super( message, cause);
+    this.causeBuilder = causeBuilder;
   }
 
-  public BuildException( Throwable cause)
+  public BuildException( ThreddsBuilder causeBuilder, Throwable cause)
   {
     super( cause);
+    this.causeBuilder = causeBuilder;
   }
 }

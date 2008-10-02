@@ -13,7 +13,7 @@ import java.util.List;
  * @author edavis
  * @since 4.0
  */
-public interface CatalogBuilder
+public interface CatalogBuilder extends ThreddsBuilder
 {
   public String getName();
   public void setName( String name);

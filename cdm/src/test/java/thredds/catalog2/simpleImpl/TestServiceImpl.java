@@ -3,6 +3,7 @@ package thredds.catalog2.simpleImpl;
 import junit.framework.*;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.CatalogBuilderFactory;
+import thredds.catalog2.builder.BuildException;
 import thredds.catalog2.Property;
 import thredds.catalog2.Service;
 import thredds.catalog.ServiceType;
@@ -199,7 +200,15 @@ public class TestServiceImpl extends TestCase
     { fail( "Non-IllegalStateException: " + e.getMessage()); }
     if ( ! pass ) fail( "No IllegalStateException.");
 
-    Service s = sb.finish();
+    Service s = null;
+    try
+    {
+      s = sb.finish();
+    }
+    catch ( BuildException e )
+    {
+      fail();
+    }
     assertTrue( "ServiceBuilder not finished after call to finish().",
                 sb.isFinished() );
     List<Property> props = null;

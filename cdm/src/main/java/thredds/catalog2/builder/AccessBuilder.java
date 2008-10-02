@@ -10,7 +10,7 @@ import thredds.catalog.DataFormatType;
  * @author edavis
  * @since 4.0
  */
-public interface AccessBuilder
+public interface AccessBuilder extends ThreddsBuilder
 {
   public ServiceBuilder getServiceBuilder();
   public void setServiceBuilder( ServiceBuilder service );

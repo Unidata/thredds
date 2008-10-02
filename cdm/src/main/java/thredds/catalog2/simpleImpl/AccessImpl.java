@@ -6,6 +6,7 @@ import thredds.catalog2.Service;
 import thredds.catalog2.builder.AccessBuilder;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.BuildException;
+import thredds.catalog2.builder.ThreddsBuilder;
 
 /**
  * _more_
@@ -89,9 +90,9 @@ public class AccessImpl implements Access, AccessBuilder
       return this;
 
     if ( this.service == null )
-      throw new BuildException( "Access element can't be finished with null service.");
+      throw new BuildException( (ThreddsBuilder) this, "Access element can't be finished with null service.");
     if ( this.urlPath == null )
-      throw new BuildException( "Access element can't be finished with null urlPath." );
+      throw new BuildException( (ThreddsBuilder) this, "Access element can't be finished with null urlPath." );
 
     this.service.finish();
 

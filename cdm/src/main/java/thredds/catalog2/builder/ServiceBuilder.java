@@ -12,7 +12,7 @@ import java.util.List;
  * @author edavis
  * @since 4.0
  */
-public interface ServiceBuilder
+public interface ServiceBuilder extends ThreddsBuilder
 {
   public String getName();
 
@@ -92,5 +92,5 @@ public interface ServiceBuilder
    * @return the finished Service.
    * @throws IllegalStateException if two of this Service and the contained Services have the same name.
    */
-  public Service finish();
+  public Service finish() throws BuildException;
 }

@@ -8,8 +8,8 @@ import thredds.catalog2.Metadata;
  * @author edavis
  * @since 4.0
  */
-public interface MetadataBuilder
+public interface MetadataBuilder extends ThreddsBuilder
 {
   public boolean isFinished();
-  public Metadata finish();
+  public Metadata finish() throws BuildException;
 }

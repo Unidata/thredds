@@ -11,7 +11,7 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public interface DatasetNodeBuilder
+public interface DatasetNodeBuilder extends ThreddsBuilder
 {
   public String getId();
   public void setId( String id );

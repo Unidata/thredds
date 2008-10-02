@@ -1,7 +1,6 @@
 package thredds.catalog2.builder;
 
 import thredds.catalog2.*;
-import thredds.catalog2.simpleImpl.ServiceImpl;
 import thredds.catalog.ServiceType;
 
 import java.util.Date;

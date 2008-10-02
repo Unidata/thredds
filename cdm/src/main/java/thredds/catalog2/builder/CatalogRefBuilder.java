@@ -10,7 +10,8 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public interface CatalogRefBuilder extends DatasetNodeBuilder
+public interface CatalogRefBuilder
+        extends DatasetNodeBuilder
 {
   public URI getReference();
   public void setReference( URI reference );
