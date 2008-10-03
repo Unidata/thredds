@@ -31,7 +31,7 @@ public class StaxCatalogParser implements CatalogParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  private XMLInputFactory factory;
+  private final XMLInputFactory factory;
   private XMLEventReader reader;
 
 //  private boolean isValidating = false;
