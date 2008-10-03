@@ -1,28 +1,17 @@
 package thredds.catalog2.xml.parser;
 
 import junit.framework.*;
-import thredds.catalog2.xml.parser.CatalogParserFactory;
 import thredds.catalog2.xml.parser.CatalogParser;
 import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog2.xml.parser.CatalogNamespace;
 import thredds.catalog2.xml.parser.stax.StaxCatalogParser;
+import thredds.catalog2.xml.writer.ThreddsXmlWriterFactory;
+import thredds.catalog2.xml.writer.ThreddsXmlWriter;
+import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
 import thredds.catalog2.Catalog;
-import thredds.util.HttpUriResolver;
-import thredds.util.HttpUriResolverFactory;
 
-import javax.xml.validation.Schema;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.StringReader;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * _more_
@@ -49,7 +38,13 @@ public class TestCatalogParser extends TestCase
             .append( "<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\"")
             .append( " xmlns:xlink=\"http://www.w3.org/1999/xlink\"")
             .append( " name=\"Unidata THREDDS Data Server\" version=\"1.0.1\">\n" )
-            .append( "  <service name=\"thisDODS\" serviceType=\"OPENDAP\" base=\"/thredds/dodsC/\" />\n" )
+            .append( "  <service name='all' serviceType='Compound' base=''>\n")
+            .append( "    <service name='odap' serviceType='OPENDAP' base='/thredds/dodsC/' />\n" )
+            .append( "    <service name='wcs' serviceType='WCS' base='/thredds/wcs/'>\n" )
+            .append( "      <property name='someInfo' value='good stuff' />\n" )
+            .append( "    </service>" )
+            .append( "  </service>" )
+            .append( "  <property name='moreInfo' value='more good stuff' />\n" )
             .append( "  <dataset name=\"Realtime data from IDD\">\n" )
             .append( "    <catalogRef xlink:href=\"idd/models.xml\" xlink:title=\"NCEP Model Data\" name=\"\" />\n" )
             .append( "    <catalogRef xlink:href=\"idd/radars.xml\" xlink:title=\"NEXRAD Radar\" name=\"\" />\n" )
@@ -96,6 +91,16 @@ public class TestCatalogParser extends TestCase
       String catName = "Unidata THREDDS Data Server";
       assertTrue( "Catalog name [" + cat.getName() + "] not as expected [" + catName + "].",
                   cat.getName().equals( catName ) );
+
+      ThreddsXmlWriter txw = ThreddsXmlWriterFactory.newInstance().createThreddsXmlWriter();
+      try
+      {
+        txw.writeCatalog( cat, System.out );
+      }
+      catch ( ThreddsXmlWriterException e )
+      {
+        fail( "Failed writing catalog to sout: " + e.getMessage());
+      }
     }
   }
 }

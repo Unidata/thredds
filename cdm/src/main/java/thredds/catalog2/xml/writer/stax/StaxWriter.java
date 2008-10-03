@@ -23,6 +23,8 @@ public class StaxWriter
   private org.slf4j.Logger logger =
           org.slf4j.LoggerFactory.getLogger( StaxWriter.class );
 
+  private static final String defaultCharEncoding = "UTF-8";
+
   private final XMLOutputFactory factory;
   public StaxWriter()
   {
@@ -35,80 +37,125 @@ public class StaxWriter
   public void writeCatalog( Catalog catalog, File file )
           throws FileNotFoundException, ThreddsXmlWriterException
   {
-    if ( file == null ) throw new IllegalArgumentException( "File must not be null.");
-    OutputStream os = new FileOutputStream( file);
-    try
-    {
-      XMLStreamWriter xmlStreamWriter =
-              this.factory.createXMLStreamWriter( os, "UTF-8" );
-    }
-    catch ( XMLStreamException e )
-    {
-      throw new ThreddsXmlWriterException( "", e);
-    }
+    XMLStreamWriter xmlStreamWriter = this.getXmlStreamWriter( file );
+    writeStartDocument( xmlStreamWriter );
+    CatalogElementWriter catalogWriter = new CatalogElementWriter();
+    catalogWriter.writeElement( catalog, xmlStreamWriter );
   }
 
   public void writeCatalog( Catalog catalog, Writer writer )
           throws ThreddsXmlWriterException
   {
-    try
-    {
-      XMLStreamWriter xmlStreamWriter =
-              this.factory.createXMLStreamWriter( writer );
-    }
-    catch ( XMLStreamException e )
-    {
-      throw new ThreddsXmlWriterException( "", e );
-    }
+    XMLStreamWriter xmlStreamWriter = getXmlStreamWriter( writer );
+    writeStartDocument( xmlStreamWriter );
+    CatalogElementWriter catalogWriter = new CatalogElementWriter();
+    catalogWriter.writeElement( catalog, xmlStreamWriter );
   }
 
   public void writeCatalog( Catalog catalog, OutputStream os )
           throws ThreddsXmlWriterException
   {
-    try
-    {
-      XMLStreamWriter xmlStreamWriter = this.factory.createXMLStreamWriter( os, "UTF-8");
-      this.writeCatalog( catalog, xmlStreamWriter);
-    }
-    catch ( XMLStreamException e )
-    {
-      throw new ThreddsXmlWriterException( "", e );
-    }
-  }
-
-  private void writeCatalog( Catalog catalog, XMLStreamWriter writer)
-          throws XMLStreamException
-  {
-    writer.writeStartDocument();
+    XMLStreamWriter xmlStreamWriter = getXmlStreamWriter( os );
+    writeStartDocument( xmlStreamWriter );
+    CatalogElementWriter catalogWriter = new CatalogElementWriter();
+    catalogWriter.writeElement( catalog, xmlStreamWriter );
   }
 
   public void writeDataset( Dataset dataset, File file )
+          throws FileNotFoundException, ThreddsXmlWriterException
   {
-    //To change body of implemented methods use File | Settings | File Templates.
+    XMLStreamWriter xmlStreamWriter = this.getXmlStreamWriter( file );
   }
 
   public void writeDataset( Dataset dataset, Writer writer )
+          throws ThreddsXmlWriterException
   {
-    //To change body of implemented methods use File | Settings | File Templates.
+    XMLStreamWriter xmlStreamWriter = this.getXmlStreamWriter( writer );
   }
 
   public void writeDataset( Dataset dataset, OutputStream os )
+          throws ThreddsXmlWriterException
   {
-    //To change body of implemented methods use File | Settings | File Templates.
+    XMLStreamWriter xmlStreamWriter = this.getXmlStreamWriter( os );
   }
 
   public void writeMetadata( Metadata metadata, File file )
+          throws FileNotFoundException, ThreddsXmlWriterException
   {
-    //To change body of implemented methods use File | Settings | File Templates.
+    XMLStreamWriter xmlStreamWriter = this.getXmlStreamWriter( file );
   }
 
   public void writeMetadata( Metadata metadata, Writer writer )
+          throws ThreddsXmlWriterException
   {
-    //To change body of implemented methods use File | Settings | File Templates.
+    XMLStreamWriter xmlStreamWriter = this.getXmlStreamWriter( writer );
   }
 
   public void writeMetadata( Metadata metadata, OutputStream os )
+          throws ThreddsXmlWriterException
   {
-    //To change body of implemented methods use File | Settings | File Templates.
+    XMLStreamWriter xmlStreamWriter = this.getXmlStreamWriter( os );
+  }
+
+  private void writeStartDocument( XMLStreamWriter xmlStreamWriter )
+          throws ThreddsXmlWriterException
+  {
+    try
+    {
+      xmlStreamWriter.writeStartDocument();
+    }
+    catch ( XMLStreamException e )
+    {
+      logger.error( "writeStartDocument(): Failed to write document start to XMLStreamWriter." );
+      throw new ThreddsXmlWriterException( "Failed writing document start to XMLStreamWriter.", e );
+    }
+  }
+
+  private XMLStreamWriter getXmlStreamWriter( File file )
+          throws FileNotFoundException, ThreddsXmlWriterException
+  {
+    if ( file == null )
+      throw new IllegalArgumentException( "File must not be null." );
+    try
+    {
+      return this.factory.createXMLStreamWriter( new FileOutputStream( file ), defaultCharEncoding );
+    }
+    catch ( XMLStreamException e )
+    {
+      logger.error( "getXmlStreamWriter(): Failed to create XMLStreamWriter." );
+      throw new ThreddsXmlWriterException( "Failed to create XMLStreamWriter.", e );
+    }
+  }
+
+  private XMLStreamWriter getXmlStreamWriter( Writer writer )
+          throws ThreddsXmlWriterException
+  {
+    if ( writer == null )
+      throw new IllegalArgumentException( "Writer may not be null.");
+    try
+    {
+      return this.factory.createXMLStreamWriter( writer );
+    }
+    catch ( XMLStreamException e )
+    {
+      logger.error( "getXmlStreamWriter(): Failed to create XMLStreamWriter." );
+      throw new ThreddsXmlWriterException( "Failed to create XMLStreamWriter.", e );
+    }
+  }
+
+  private XMLStreamWriter getXmlStreamWriter( OutputStream os )
+          throws ThreddsXmlWriterException
+  {
+    if ( os == null )
+      throw new IllegalArgumentException( "OutputStream must not be null." );
+    try
+    {
+      return this.factory.createXMLStreamWriter( os, defaultCharEncoding );
+    }
+    catch ( XMLStreamException e )
+    {
+      logger.error( "getXmlStreamWriter(): Failed to create XMLStreamWriter." );
+      throw new ThreddsXmlWriterException( "Failed to create XMLStreamWriter.", e );
+    }
   }
 }

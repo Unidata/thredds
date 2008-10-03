@@ -1,13 +1,10 @@
 package thredds.catalog2.xml.parser.stax;
 
-import thredds.catalog2.builder.CatalogBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.xml.parser.CatalogNamespace;
+import thredds.catalog2.xml.CatalogNamespace;
 import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog2.xml.AbstractServiceElement;
 import thredds.catalog2.xml.PropertyElementUtils;
-import thredds.catalog.ServiceType;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
@@ -16,8 +13,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.namespace.QName;
 import javax.xml.XMLConstants;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * _more_
@@ -51,6 +46,9 @@ public class PropertyElementParser
       return true;
     return false;
   }
+
+  public boolean isRecognizedChildElement( XMLEvent event )
+  { return true; }
 
   private final XMLEventReader reader;
   private final CatalogBuilder catBuilder;
@@ -139,6 +137,7 @@ public class PropertyElementParser
   private void handleStartElement( StartElement startElement )
           throws CatalogParserException
   {
-    throw new CatalogParserException( "Unknown start element [" + startElement.getLocation() + "--" + startElement + "]." );
+    if ( isRecognizedChildElement( startElement ) )
+      StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );
   }
 }

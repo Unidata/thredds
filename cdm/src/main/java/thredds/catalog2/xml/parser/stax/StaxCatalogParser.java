@@ -12,14 +12,21 @@ import thredds.util.HttpUriResolverFactory;
 
 import java.net.URI;
 import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
 
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.Location;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.namespace.QName;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * _more_
@@ -92,6 +99,7 @@ public class StaxCatalogParser implements CatalogParser
           }
           else
           {
+            StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );
             log.warn( "parse(): Unrecognized start element [" + event.asStartElement().getName() + "]." );
             reader.next();
             continue;

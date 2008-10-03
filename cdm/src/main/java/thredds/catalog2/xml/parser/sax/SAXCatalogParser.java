@@ -2,7 +2,7 @@ package thredds.catalog2.xml.parser.sax;
 
 import thredds.catalog2.xml.parser.CatalogParser;
 import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog2.xml.parser.CatalogNamespace;
+import thredds.catalog2.xml.CatalogNamespace;
 import thredds.catalog2.Catalog;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.BuildException;

@@ -1,11 +1,9 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
-import thredds.catalog2.xml.parser.CatalogNamespace;
+import thredds.catalog2.xml.CatalogNamespace;
 import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog2.xml.AbstractServiceElement;
 import thredds.catalog2.xml.AccessElementUtils;
-import thredds.catalog.ServiceType;
 import thredds.catalog.DataFormatType;
 
 import javax.xml.stream.events.StartElement;
@@ -15,8 +13,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.namespace.QName;
 import javax.xml.XMLConstants;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * _more_

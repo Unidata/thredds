@@ -1,4 +1,4 @@
-package thredds.catalog2.xml.parser;
+package thredds.catalog2.xml;
 
 import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;
@@ -22,23 +22,28 @@ import org.xml.sax.SAXException;
  */
 public enum CatalogNamespace
 {
-  CATALOG_1_0( "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
+  CATALOG_1_0( "",
+               "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
                "/resources/thredds/schemas/InvCatalog.1.0.2.xsd",
                "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd"),
-  CATALOG_0_6( "http://www.unidata.ucar.edu/thredds",
+  CATALOG_0_6( "oldThredds",
+               "http://www.unidata.ucar.edu/thredds",
                "/resources/thredds/schemas/InvCatalog.0.6.xsd",
                "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.0.6.xsd"),
-  XLINK( "http://www.w3.org/1999/xlink",
+  XLINK( "xlink",
+         "http://www.w3.org/1999/xlink",
          "/resources/thredds/schemas/xlink.xsd",
          // "/resources/schemas/xlink/1.0.0/xlinks.xsd", // OGC version
          "");
 
+  private String standardPrefix;
   private String namespaceUri;
   private String resourceName;
   private URI resourceUri;
 
-  CatalogNamespace( String namespaceUri, String resourceName, String resourceUri )
+  CatalogNamespace( String standardPrefix, String namespaceUri, String resourceName, String resourceUri )
   {
+    this.standardPrefix = standardPrefix;
     this.namespaceUri = namespaceUri;
     this.resourceName = resourceName;
     try
@@ -51,6 +56,11 @@ public enum CatalogNamespace
     }
   }
 
+  public String getStandardPrefix()
+  {
+    return this.standardPrefix;
+  }
+  
   public String getNamespaceUri()
   {
     return this.namespaceUri;

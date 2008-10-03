@@ -3,7 +3,7 @@ package thredds.catalog2.xml.parser.stax;
 import thredds.catalog2.builder.CatalogBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.xml.parser.CatalogNamespace;
+import thredds.catalog2.xml.CatalogNamespace;
 import thredds.catalog2.xml.parser.CatalogParserException;
 import thredds.catalog2.xml.AbstractServiceElement;
 import thredds.catalog.ServiceType;
@@ -193,7 +193,7 @@ public class ServiceElementParser
     }
     else
     {
-      throw new CatalogParserException( "Unknown start element [" + startElement.getLocation() + "--" + startElement + "].");
+      StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );
     }
   }
 }

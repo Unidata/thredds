@@ -4,24 +4,11 @@ import junit.framework.*;
 import thredds.catalog2.xml.parser.CatalogParserFactory;
 import thredds.catalog2.xml.parser.CatalogParser;
 import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog2.xml.parser.CatalogNamespace;
 import thredds.catalog2.Catalog;
-import thredds.util.HttpUriResolver;
-import thredds.util.HttpUriResolverFactory;
 
-import javax.xml.validation.Schema;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.StringReader;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * _more_
