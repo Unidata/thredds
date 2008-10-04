@@ -1,36 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-	- DispatcherServlet application context for PetClinic's web tier.
--->
+<!-- BUFR Table validation web application context -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <bean id="btController" class="thredds.bufrtables.BtController">
-    <property name="cache" ref="cache"/>
-  </bean>
-
-  <bean id="cache" class="ucar.nc2.util.DiskCache2">
-    <constructor-arg value="C:/temp/bt2/"/>
-    <constructor-arg value="false"/>
-    <constructor-arg value="3600"/>
-    <constructor-arg value="3600"/>
-  </bean>
-
+  <!-- controller dispatcher -->
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /get=btController
-        /post=btController
+        /post=btFileUploadController
+        /get=btUrlUploadController
+        /file/**=btValidateController
+        /mess/**=btMessInfoController
       </value>
     </property>
   </bean>
 
+ <bean id="cache" class="ucar.nc2.util.DiskCache2" destroy-method="exit">
+    <constructor-arg value="C:/temp/bt2/"/>
+    <constructor-arg value="false"/>
+    <constructor-arg value="3600"/>
+    <constructor-arg value="3600"/>
+    <property name="policy" value="1"/>
+  </bean>
+
+  <!-- controller for url uploading -->
+  <bean id="btUrlUploadController" class="thredds.bufrtables.BtUrlUploadController" >
+    <property name="commandClass" value="thredds.bufrtables.UrlUploadBean"/>
+    <property name="cache" ref="cache"/>
+  </bean>
+
+  <!-- controller for file uploading -->
+  <bean id="btFileUploadController" class="thredds.bufrtables.BtFileUploadController" >
+    <property name="commandClass" value="thredds.bufrtables.FileUploadBean"/>
+    <property name="cache" ref="cache"/>
+  </bean>
+
+  <!-- this tells Spring to look for multipart mime responses and wrap them in a CommonsMultipartResolver -->
+  <bean id="multipartResolver"  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="maxUploadSize" value="10000000"/>   <!-- 10 m -->
+  </bean>
+
+  <!-- controller for validation results on BUFR files already uploaded -->
+  <bean id="btValidateController" class="thredds.bufrtables.BtValidateController">
+    <property name="commandClass" value="thredds.bufrtables.FileValidateBean"/>
+    <property name="cache" ref="cache"/>
+  </bean>
+
+  <!-- controller for getting info from individual messages -->
+  <bean id="btMessInfoController" class="thredds.bufrtables.BtMessInfoController">
+    <property name="cache" ref="cache"/>
+  </bean>
+
+  <!-- view resolver for jsp -->
   <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
     <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
     <property name="prefix" value="/WEB-INF/jsp/"/>
     <property name="suffix" value=".jsp"/>
   </bean>
+
+  <!-- view resolver for xsltView -->
+  <bean id="beanResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+    <property name="order" value="1"/>
+  </bean>
+
+  <!-- view using Xslt -->
+  <bean id="xsltView" class="thredds.bufrtables.BtXsltView">
+    <property name="stylesheetLocation" value="/WEB-INF/xsl/validation.xsl" />
+  </bean>
+
+  <!-- view using XML -->
+  <bean id="xmlView" class="thredds.bufrtables.BtXmlView" />
 
 </beans>

@@ -50,6 +50,10 @@
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
+          <containerElement type="library" name="JSTL" level="application">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+          </containerElement>
           <containerElement type="library" name="Spring" level="application">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib" />
@@ -213,7 +217,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="bufr" exported="" />
     <orderEntry type="module" module-name="cdm" exported="" />
     <orderEntry type="module" module-name="common" exported="" />
     <orderEntry type="module-library" exported="">
@@ -235,6 +238,8 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" name="Spring" level="application" />
+    <orderEntry type="library" exported="" name="JSTL" level="application" />
+    <orderEntry type="module" module-name="bufr" exported="" />
     <orderEntryProperties />
   </component>
 </module>

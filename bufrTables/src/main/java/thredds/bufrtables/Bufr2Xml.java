@@ -207,7 +207,7 @@ public class Bufr2Xml {
 
     Attribute att = v.findAttribute("BUFR:TableB_descriptor");
     String desc = (att == null) ? "N/A" : att.getStringValue();
-    staxWriter.writeAttribute("Bufr", desc); // */
+    staxWriter.writeAttribute("bufr", desc); // */
 
     // write data value
     if (v.getDataType().isNumeric()) {

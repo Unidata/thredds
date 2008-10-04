@@ -511,6 +511,14 @@ public class IO {
       throw new IOException("** ConnectException on URL: <" + urlString + ">\n" +
           e.getMessage() + "\nServer probably not running");
 
+    } catch (java.net.UnknownHostException e) {
+      if (showStackTrace) e.printStackTrace();
+      throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
+
+    } catch (Exception e) {
+      if (showStackTrace) e.printStackTrace();
+      throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
+
     } finally {
       if (is != null) is.close();
     }

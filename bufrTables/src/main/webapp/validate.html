@@ -1,44 +1,55 @@
 <html>
 <head>
-<title>BUFR Validation</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>BUFR Validation</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 <body>
 <h1>BUFR Record Validator </h1>
-<p><em>version 0.2</em></p>
-<p><strong>Upload a file of one or more BUFR recordss. These must be BUFR edition 2, 3, or 4. </strong></p>
+
+<p><em>version 0.3</em></p>
+
+<p><strong>Upload a file of one or more BUFR records. These must be BUFR edition 2, 3, or 4. </strong></p>
 <hr>
 <FORM ENCTYPE='multipart/form-data' method='POST' action='validate/post'>
-<p><strong>Your Name: </strong>
-  <input type="text" name="username">
-</p>
-<p>Please enter or browse to a local filename:</p>
-<p><strong>Filename: </strong>
-  <INPUT NAME='uploadFile' TYPE='file' size="80"><INPUT TYPE='submit' VALUE='Validate' /> 
-  <input type="checkbox" name="xml" value="true"/>
+  <p>Please enter or browse to a local filename:</p>
+
+  <p><strong>Filename: </strong>
+    <input type='file' name='file' size="80">
+    <input type='submit' value='Validate'/>
+    <input type="checkbox" name="xml" value="true"/>
     return XML </p>
+    <p><strong>Your Name (keeps your files separate from others): </strong>
+    <input type="text" name="username">
+  </p>
 </FORM>
 
+<hr/>
+
 <form method="GET" action='validate/get'>
-<p></p>
-OR enter the URL of a file accessible through an HTTP Server:
-<p><strong>URL: </strong>
-  <INPUT NAME='URL' TYPE='text' id="URL" size="80">
-<input type="submit" value="Validate"/>
-<input type="checkbox" name="xml" value="true"/>
-return XML
+
+  OR enter the URL of a file accessible through an HTTP Server:
+  <p><strong>URL: </strong>
+    <input type='text' name='url' size="80">
+    <input type="submit" value="Validate"/>
+    <input type="checkbox" name="xml" value="true"/>
+    return XML
+    <p><strong>Your Name (keeps your files separate from others): </strong>
+    <input type="text" name="username">
+  </p>
 </form>
- 
+
 <hr>
 <h3>Useful links: </h3>
 <ul>
   <li><a href="index.html">BUFR Tables Home page</a></li>
-  <li><a href="validateHelp.html">BUFR validation  help</a> </li>
+  <li><a href="validateHelp.html">BUFR validation help</a></li>
   <li><a href="http://www.ecmwf.int/products/data/d/check/">ECMWF BUFR/CREX format checker</a></li>
 </ul>
 <hr WIDTH="100%">
 <address>
-<a href="http://www.unidata.ucar.edu/software/netcdf-java/"><img src="nc.gif" alt="netcdf icon" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 12, 2008
+  <a href="http://www.unidata.ucar.edu/software/netcdf-java/"><img src="nc.gif" alt="netcdf icon" width="64" height="64"
+                                                                   border="0"></a> This document is maintained by <a
+    href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 03, 2008
 </address>
 </body>
 </html>

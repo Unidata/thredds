@@ -156,11 +156,15 @@ public class DiskCache2 {
    *   CACHEPATH_POLICY_NESTED_DIRECTORY: cache files are in nested directories under the root.
    *   CACHEPATH_POLICY_NESTED_TRUNCATE: eliminate leading directories
    *
-   * @param cachePathPolicyParam for CACHEPATH_POLICY_NESTED_TRUNCATE, eliminat this string
+   * @param cachePathPolicyParam for CACHEPATH_POLICY_NESTED_TRUNCATE, eliminate this string
    */
   public void setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) {
     this.cachePathPolicy = cachePathPolicy;
     this.cachePathPolicyParam = cachePathPolicyParam;
+  }
+
+  public void setPolicy(int cachePathPolicy) {
+    this.cachePathPolicy = cachePathPolicy;
   }
 
   /**

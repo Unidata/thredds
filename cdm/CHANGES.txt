@@ -48,7 +48,7 @@ This code is ALPHA
   25: opendap parsing bug with signed bytes
     ncml agg fixes
     grib thread-safety
-    Calendar.clear() to eliminate millisecs in a Date
+    Calendar.clear() to eliminate random millisecs in a new Date
     NIDS: raster,  DPA read bug
     BUFR tables cleanup
     add Grib GDS type 87
@@ -66,7 +66,7 @@ This code is ALPHA
     DateRange now moves when start or end date = "present"
     NetcdfFile.canOpen()
     GeoCoordSys: warn, dont fail, if x, y axis units not compatible with "km"
-     mcidas area iosp
+    mcidas area iosp
   22: improved BUFR reading
   21: Improve nexrad3 iosp
     GeoTiff: new projections
@@ -82,67 +82,67 @@ This code is ALPHA
     BUFR "associated variables"
     VariableDS extends EnhanceScaleMissing, StructureDS and VariableEnhanced does not
   19: BUFR reading mostly works
-        turn off debugging
-        StructureDS.convert nested structures
-    18: fix large file writing
-        in agg, fix CacheVar, joinExisting persistance.
-        move NetcdfDataset.makeArray to Array.makeArray, add new variant
-        UnidataPointObsDataset does not require bounding box in global attributes
-        NetcdfFileWriteable will allow object names to start with a digit
-        ToolsUI : allow setting file caching
-        add NcdumpW.printArray for vanilla array printing
-        CoordSysBuilder allows coordinate axes to have coordinate systems
-        move McIDASAreaProjection, McIDASAreaTransformBuilder to ucar.nc2.iosp.mcidas
-        change AxisType, DataType, FeatureType, TransformType into a java 1.5 enum
-        WRFConvention tolerates not having GLAT,GLON fields
-        bug fixes in BUFR
-        NcMLWriter.writeXMLexplicit puts <explicit/> in NcML
-        fix bug in NCdumpW.print sequences
-    17: HTTPRandomAccessFile allows content-length to be long
-        fix NcML aggregation unit tests; add new ones
-        integrate aggregation with FileCache, experimental concurrency
-        fix bug with relative URLs with blanks in them (URLnaming)
-        finish new agg features : promoteGlobalAttribute, timeUnitsChange
-    16: remove direct use of ucar.units, except from ucar.nc2.units
-        rewrite NetcdfFileCache, remove NetcdfDatasetCache
-        EnhanceScaleMissingImpl uses Misc.closeEnough for missing value comparisions.
-        default VariableDS.useNaNs = true
-        ucar.nc2.util.cache.FileCache uses FileCacheable, FileFactory interfaces;
-            implement NetcdfFileCache, HTTP file cache with FileCache.
-        start adding net.jcip.annotations to document thread safetyAgg
-        convertScaleOffsetMissing() methods back into VariableEnhanced
-        clean up Aggregation, make sure docs are correct
-        clean up NetcdfDataset.EnhanceMode, add deferred option
-    15: change StringBuffer to StringBuilder for efficiency
-        clean up ArrayStructure/StructureData API, clarify Member use
-        StructureData.getScalarXXX(name) must be correct type
-        cleanup javadoc, improve reference docs
-        NetcdfFileWriteable - redefine mode, large file support, extra header bytes
-        library upgrades : JDOM 1.1
-        NetcdfFile.readSection(secSpec) used in NcDumpPanel, replaces old readNestedData.
-    14: NetcdfDataset: unsigned always gets converted
-        Netcdf-3 files: truncate Strings at first null byte.
-        complete rework of point datatypes, now in package ucar.nc2.ft (feature types)
-        many improvements to Structure, ArrayStructure etc
-        rewrite BUFR and supporting library, improve tables, etc
-        make sure compiles under 1.5
-    13: hdf4 attribute arrays
-    12: DODS preload
-        put back HttpClientManager, RuntimeConfigParser temporarily (testing with IDV)
-        hdf4 bug fixes
-        experiment with ucar.nc2.dt2
-        iosp.NmcObsLegacy
-        DataType Sequence
-    11: start to fix name/shortName, ie deal with Groups systematically
-        Structure/ArrayStructure/StructureData refactor
-    10: hdf4 bug fix - no data tag, use missing data
-        Structure.subset(), nc3 optimizes for it
-        hdf5, ArrayStructureBB : set byteOrder
-        ArrayStructureBB puts Strings on "heap"
-        rearrange packages to separate modules
-        cdm build redone - xxxComplete.jar added
-        fix problem preventing 1.5 compilation (ternary op returns array)
-    09: hdf5 byteOrder must be set when chunked (tiledLayout)
+    turn off debugging
+    StructureDS.convert nested structures
+  18: fix large file writing
+    in agg, fix CacheVar, joinExisting persistance.
+    move NetcdfDataset.makeArray to Array.makeArray, add new variant
+    UnidataPointObsDataset does not require bounding box in global attributes
+    NetcdfFileWriteable will allow object names to start with a digit
+    ToolsUI : allow setting file caching
+    add NcdumpW.printArray for vanilla array printing
+    CoordSysBuilder allows coordinate axes to have coordinate systems
+    move McIDASAreaProjection, McIDASAreaTransformBuilder to ucar.nc2.iosp.mcidas
+    change AxisType, DataType, FeatureType, TransformType into a java 1.5 enum
+    WRFConvention tolerates not having GLAT,GLON fields
+    bug fixes in BUFR
+    NcMLWriter.writeXMLexplicit puts <explicit/> in NcML
+    fix bug in NCdumpW.print sequences
+  17: HTTPRandomAccessFile allows content-length to be long
+    fix NcML aggregation unit tests; add new ones
+    integrate aggregation with FileCache, experimental concurrency
+    fix bug with relative URLs with blanks in them (URLnaming)
+    finish new agg features : promoteGlobalAttribute, timeUnitsChange
+  16: remove direct use of ucar.units, except from ucar.nc2.units
+    rewrite NetcdfFileCache, remove NetcdfDatasetCache
+    EnhanceScaleMissingImpl uses Misc.closeEnough for missing value comparisions.
+    default VariableDS.useNaNs = true
+    ucar.nc2.util.cache.FileCache uses FileCacheable, FileFactory interfaces;
+        implement NetcdfFileCache, HTTP file cache with FileCache.
+    start adding net.jcip.annotations to document thread safetyAgg
+    convertScaleOffsetMissing() methods back into VariableEnhanced
+    clean up Aggregation, make sure docs are correct
+    clean up NetcdfDataset.EnhanceMode, add deferred option
+  15: change StringBuffer to StringBuilder for efficiency
+    clean up ArrayStructure/StructureData API, clarify Member use
+    StructureData.getScalarXXX(name) must be correct type
+    cleanup javadoc, improve reference docs
+    NetcdfFileWriteable - redefine mode, large file support, extra header bytes
+    library upgrades : JDOM 1.1
+    NetcdfFile.readSection(secSpec) used in NcDumpPanel, replaces old readNestedData.
+  14: NetcdfDataset: unsigned always gets converted
+    Netcdf-3 files: truncate Strings at first null byte.
+    complete rework of point datatypes, now in package ucar.nc2.ft (feature types)
+    many improvements to Structure, ArrayStructure etc
+    rewrite BUFR and supporting library, improve tables, etc
+    make sure compiles under 1.5
+  13: hdf4 attribute arrays
+  12: DODS preload
+    put back HttpClientManager, RuntimeConfigParser temporarily (testing with IDV)
+    hdf4 bug fixes
+    experiment with ucar.nc2.dt2
+    iosp.NmcObsLegacy
+    DataType Sequence
+  11: start to fix name/shortName, ie deal with Groups systematically
+    Structure/ArrayStructure/StructureData refactor
+  10: hdf4 bug fix - no data tag, use missing data
+    Structure.subset(), nc3 optimizes for it
+    hdf5, ArrayStructureBB : set byteOrder
+    ArrayStructureBB puts Strings on "heap"
+    rearrange packages to separate modules
+    cdm build redone - xxxComplete.jar added
+    fix problem preventing 1.5 compilation (ternary op returns array)
+  09: hdf5 byteOrder must be set when chunked (tiledLayout)
 
 ========================================
 API Changes from Java-Netcdf version 2.2

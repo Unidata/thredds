@@ -17,34 +17,41 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 package thredds.bufrtables;
 
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import ucar.nc2.util.DiskCache2;
-
 /**
- * Class Description.
- *
  * @author caron
- * @since Oct 2, 2008
+ * @since Oct 4, 2008
  */
-public class BtController extends AbstractController {
-  private DiskCache2 cdmValidateCache = null;
+public class UrlUploadBean {
+  private String username;
+  private String url;
+  private boolean xml;
 
-  public void setCache(DiskCache2 cache) {
-    cdmValidateCache = cache;
-    cache.exit();
+  public String getUrl() {
+    return url;
   }
 
-  protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-   String path = request.getPathInfo(); 
-
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  public void setUrl(String url) {
+    this.url = url;
   }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public boolean isXml() {
+    return xml;
+  }
+
+  public void setXml(boolean xml) {
+    this.xml = xml;
+  }
+
 }
+
+

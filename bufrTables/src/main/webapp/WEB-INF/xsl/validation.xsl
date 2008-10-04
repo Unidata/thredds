@@ -26,7 +26,7 @@
           <xsl:for-each select="bufrValidation/bufrMessage">
             <tr>
               <td> 
-                <a href="mess/{/bufrValidation/@fileName}/{@pos}/data.txt"><xsl:value-of select="@pos"/></a>
+                <a href="mess/{/bufrValidation/@fileName}/{@pos}/data.xml"><xsl:value-of select="@record"/></a>
               </td>
               <td>
                 <xsl:value-of select="@nobs"/>
