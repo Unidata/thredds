@@ -144,6 +144,11 @@ public class CatalogElementParser
       ServiceElementParser serviceElemParser = new ServiceElementParser( this.reader, catalogBuilder );
       serviceElemParser.parse();
     }
+    else if ( PropertyElementParser.isSelfElement( startElement ) )
+    {
+      PropertyElementParser parser = new PropertyElementParser( this.reader, catalogBuilder );
+      parser.parse();
+    }
     else
     {
       StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );

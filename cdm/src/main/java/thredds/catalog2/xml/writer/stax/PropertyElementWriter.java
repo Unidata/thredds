@@ -41,6 +41,7 @@ public class PropertyElementWriter implements AbstractElementWriter
       writer.writeAttribute( PropertyElementUtils.NAME_ATTRIBUTE_NAME, property.getName() );
       writer.writeAttribute( PropertyElementUtils.VALUE_ATTRIBUTE_NAME, property.getValue() );
 
+      writer.writeCharacters( "\n" );
       if ( isDocRoot )
         writer.writeEndDocument();
       writer.flush();
