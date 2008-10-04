@@ -2,7 +2,7 @@ package thredds.catalog2.xml.writer.stax;
 
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
 import thredds.catalog2.xml.CatalogNamespace;
-import thredds.catalog2.xml.AbstractServiceElement;
+import thredds.catalog2.xml.ServiceElementUtils;
 import thredds.catalog2.Service;
 import thredds.catalog2.Property;
 
@@ -24,19 +24,19 @@ public class ServiceElementWriter implements AbstractElementWriter
   {
     try
     {
-      writer.writeStartElement( AbstractServiceElement.ELEMENT_NAME );
+      writer.writeStartElement( ServiceElementUtils.ELEMENT_NAME );
       writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
                              CatalogNamespace.CATALOG_1_0.getNamespaceUri() );
       writer.writeNamespace( CatalogNamespace.XLINK.getStandardPrefix(),
                              CatalogNamespace.XLINK.getNamespaceUri() );
-      writer.writeAttribute( AbstractServiceElement.NAME_ATTRIBUTE_NAME, service.getName() );
-      writer.writeAttribute( AbstractServiceElement.SERVICE_TYPE_ATTRIBUTE_NAME, service.getType().toString() );
-      writer.writeAttribute( AbstractServiceElement.BASE_ATTRIBUTE_NAME, service.getBaseUri().toString() );
+      writer.writeAttribute( ServiceElementUtils.NAME_ATTRIBUTE_NAME, service.getName() );
+      writer.writeAttribute( ServiceElementUtils.SERVICE_TYPE_ATTRIBUTE_NAME, service.getType().toString() );
+      writer.writeAttribute( ServiceElementUtils.BASE_ATTRIBUTE_NAME, service.getBaseUri().toString() );
 
       if ( service.getSuffix() != null )
-        writer.writeAttribute( AbstractServiceElement.SUFFIX_ATTRIBUTE_NAME, service.getSuffix() );
+        writer.writeAttribute( ServiceElementUtils.SUFFIX_ATTRIBUTE_NAME, service.getSuffix() );
       if ( service.getDescription() != null )
-        writer.writeAttribute( AbstractServiceElement.DESCRIPTION_ATTRIBUTE_NAME, service.getDescription() );
+        writer.writeAttribute( ServiceElementUtils.DESCRIPTION_ATTRIBUTE_NAME, service.getDescription() );
 
       for ( Property curProperty : service.getProperties() )
       {

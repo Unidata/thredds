@@ -5,7 +5,7 @@ import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.xml.CatalogNamespace;
 import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog2.xml.AbstractServiceElement;
+import thredds.catalog2.xml.ServiceElementUtils;
 import thredds.catalog.ServiceType;
 
 import javax.xml.stream.events.StartElement;
@@ -30,17 +30,17 @@ public class ServiceElementParser
           org.slf4j.LoggerFactory.getLogger( CatalogElementParser.class );
 
   private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                      AbstractServiceElement.ELEMENT_NAME );
+                                                      ServiceElementUtils.ELEMENT_NAME );
   private final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                      AbstractServiceElement.NAME_ATTRIBUTE_NAME );
+                                                      ServiceElementUtils.NAME_ATTRIBUTE_NAME );
   private final static QName baseAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                      AbstractServiceElement.BASE_ATTRIBUTE_NAME );
+                                                      ServiceElementUtils.BASE_ATTRIBUTE_NAME );
   private final static QName serviceTypeAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                             AbstractServiceElement.SERVICE_TYPE_ATTRIBUTE_NAME );
+                                                             ServiceElementUtils.SERVICE_TYPE_ATTRIBUTE_NAME );
   private final static QName descriptionAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                             AbstractServiceElement.DESCRIPTION_ATTRIBUTE_NAME );
+                                                             ServiceElementUtils.DESCRIPTION_ATTRIBUTE_NAME );
   private final static QName suffixAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                             AbstractServiceElement.SUFFIX_ATTRIBUTE_NAME );
+                                                             ServiceElementUtils.SUFFIX_ATTRIBUTE_NAME );
 
   public static boolean isSelfElement( XMLEvent event )
   {

@@ -6,7 +6,7 @@ package thredds.catalog2.xml;
  * @author edavis
  * @since 4.0
  */
-public abstract class AbstractCatalogElement
+public abstract class CatalogElementUtils
 {
   public static final String ELEMENT_NAME = "catalog";
   public static final String NAME_ATTRIBUTE_NAME = "name";

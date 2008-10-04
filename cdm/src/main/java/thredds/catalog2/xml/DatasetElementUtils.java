@@ -6,7 +6,7 @@ package thredds.catalog2.xml;
  * @author edavis
  * @since 4.0
  */
-public abstract class AbstractDatasetElement
+public abstract class DatasetElementUtils
 {
   public static final String ELEMENT_NAME = "dataset";
   public static final String NAME_ATTRIBUTE_NAME = "name";

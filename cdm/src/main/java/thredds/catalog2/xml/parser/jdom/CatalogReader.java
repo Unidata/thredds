@@ -1,6 +1,5 @@
 package thredds.catalog2.xml.parser.jdom;
 
-import thredds.catalog2.xml.AbstractCatalogElement;
 import thredds.catalog2.Catalog;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -13,7 +12,7 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public class CatalogReader extends AbstractCatalogElement
+public class CatalogReader
 {
   public Catalog readCatalog( Document doc, URI baseURI )
   {

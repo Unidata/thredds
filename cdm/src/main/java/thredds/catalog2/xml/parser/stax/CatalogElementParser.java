@@ -4,7 +4,7 @@ import thredds.catalog2.builder.CatalogBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.xml.CatalogNamespace;
 import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog2.xml.AbstractCatalogElement;
+import thredds.catalog2.xml.CatalogElementUtils;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
@@ -29,13 +29,13 @@ public class CatalogElementParser
           org.slf4j.LoggerFactory.getLogger( CatalogElementParser.class );
 
   private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                      AbstractCatalogElement.ELEMENT_NAME );
+                                                      CatalogElementUtils.ELEMENT_NAME );
   private final static QName versionAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                         AbstractCatalogElement.VERSION_ATTRIBUTE_NAME );
+                                                         CatalogElementUtils.VERSION_ATTRIBUTE_NAME );
   private final static QName expiresAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                         AbstractCatalogElement.EXPIRES_ATTRIBUTE_NAME );
+                                                         CatalogElementUtils.EXPIRES_ATTRIBUTE_NAME );
   private final static QName lastModifiedAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                              AbstractCatalogElement.LAST_MODIFIED_ATTRIBUTE_NAME );
+                                                              CatalogElementUtils.LAST_MODIFIED_ATTRIBUTE_NAME );
 
   public static boolean isSelfElement( XMLEvent event )
   {

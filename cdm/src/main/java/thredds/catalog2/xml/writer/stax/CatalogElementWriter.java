@@ -4,7 +4,7 @@ import thredds.catalog2.Catalog;
 import thredds.catalog2.Service;
 import thredds.catalog2.Property;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
-import thredds.catalog2.xml.AbstractCatalogElement;
+import thredds.catalog2.xml.CatalogElementUtils;
 import thredds.catalog2.xml.CatalogNamespace;
 
 import javax.xml.stream.XMLStreamWriter;
@@ -45,23 +45,23 @@ public class CatalogElementWriter implements AbstractElementWriter
   {
     try
     {
-      writer.writeStartElement( AbstractCatalogElement.ELEMENT_NAME );
+      writer.writeStartElement( CatalogElementUtils.ELEMENT_NAME );
       writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
                              CatalogNamespace.CATALOG_1_0.getNamespaceUri() );
       writer.writeNamespace( CatalogNamespace.XLINK.getStandardPrefix(),
                              CatalogNamespace.XLINK.getNamespaceUri() );
-      writer.writeAttribute( AbstractCatalogElement.NAME_ATTRIBUTE_NAME, catalog.getName() );
-      writer.writeAttribute( AbstractCatalogElement.VERSION_ATTRIBUTE_NAME, catalog.getVersion() );
+      writer.writeAttribute( CatalogElementUtils.NAME_ATTRIBUTE_NAME, catalog.getName() );
+      writer.writeAttribute( CatalogElementUtils.VERSION_ATTRIBUTE_NAME, catalog.getVersion() );
 
       DateFormatter df = new DateFormatter();
       if ( catalog.getExpires() != null )
       {
-        writer.writeAttribute( AbstractCatalogElement.EXPIRES_ATTRIBUTE_NAME,
+        writer.writeAttribute( CatalogElementUtils.EXPIRES_ATTRIBUTE_NAME,
                                df.toDateTimeStringISO( catalog.getExpires() ));
       }
       if ( catalog.getLastModified() != null )
       {
-        writer.writeAttribute( AbstractCatalogElement.LAST_MODIFIED_ATTRIBUTE_NAME,
+        writer.writeAttribute( CatalogElementUtils.LAST_MODIFIED_ATTRIBUTE_NAME,
                                df.toDateTimeStringISO( catalog.getLastModified() ));
       }
 
