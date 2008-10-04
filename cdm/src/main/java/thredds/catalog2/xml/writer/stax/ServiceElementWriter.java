@@ -1,8 +1,8 @@
 package thredds.catalog2.xml.writer.stax;
 
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
-import thredds.catalog2.xml.CatalogNamespace;
-import thredds.catalog2.xml.ServiceElementUtils;
+import thredds.catalog2.xml.util.CatalogNamespace;
+import thredds.catalog2.xml.util.ServiceElementUtils;
 import thredds.catalog2.Service;
 import thredds.catalog2.Property;
 

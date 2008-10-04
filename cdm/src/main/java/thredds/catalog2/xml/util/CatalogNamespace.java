@@ -1,4 +1,4 @@
-package thredds.catalog2.xml;
+package thredds.catalog2.xml.util;
 
 import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;

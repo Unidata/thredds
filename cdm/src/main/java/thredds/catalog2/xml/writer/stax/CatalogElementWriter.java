@@ -4,8 +4,8 @@ import thredds.catalog2.Catalog;
 import thredds.catalog2.Service;
 import thredds.catalog2.Property;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
-import thredds.catalog2.xml.CatalogElementUtils;
-import thredds.catalog2.xml.CatalogNamespace;
+import thredds.catalog2.xml.util.CatalogElementUtils;
+import thredds.catalog2.xml.util.CatalogNamespace;
 
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;

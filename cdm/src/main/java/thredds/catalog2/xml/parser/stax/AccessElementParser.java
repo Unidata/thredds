@@ -1,9 +1,9 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
-import thredds.catalog2.xml.CatalogNamespace;
+import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog2.xml.AccessElementUtils;
+import thredds.catalog2.xml.util.AccessElementUtils;
 import thredds.catalog.DataFormatType;
 
 import javax.xml.stream.events.StartElement;

@@ -1,6 +1,6 @@
 package thredds.catalog2.xml.parser.jdom;
 
-import thredds.catalog2.xml.PropertyElementUtils;
+import thredds.catalog2.xml.util.PropertyElementUtils;
 import thredds.catalog2.Property;
 
 import java.net.URI;
