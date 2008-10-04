@@ -34,10 +34,10 @@ public class TestCatalogParser extends TestCase
    */
   public void testOne()
   {
-    StringBuilder sb = new StringBuilder( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-            .append( "<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\"")
-            .append( " xmlns:xlink=\"http://www.w3.org/1999/xlink\"")
-            .append( " name=\"Unidata THREDDS Data Server\" version=\"1.0.1\">\n" )
+    StringBuilder sb = new StringBuilder( "<?xml version='1.0' encoding='UTF-8'?>\n")
+            .append( "<catalog xmlns='http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0'")
+            .append( " xmlns:xlink='http://www.w3.org/1999/xlink'")
+            .append( " name='Unidata THREDDS Data Server' version='1.0.1'>\n" )
             .append( "  <service name='all' serviceType='Compound' base=''>\n")
             .append( "    <service name='odap' serviceType='OPENDAP' base='/thredds/dodsC/' />\n" )
             .append( "    <service name='wcs' serviceType='WCS' base='/thredds/wcs/'>\n" )
@@ -99,6 +99,7 @@ public class TestCatalogParser extends TestCase
       }
       catch ( ThreddsXmlWriterException e )
       {
+        e.printStackTrace();
         fail( "Failed writing catalog to sout: " + e.getMessage());
       }
     }

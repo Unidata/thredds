@@ -26,8 +26,7 @@ import java.net.URISyntaxException;
  */
 public class ServiceElementParser
 {
-  private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( CatalogElementParser.class );
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                                                       ServiceElementUtils.ELEMENT_NAME );
@@ -112,7 +111,7 @@ public class ServiceElementParser
           }
           else
           {
-            logger.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
+            log.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
             break;
           }
         }
@@ -127,7 +126,8 @@ public class ServiceElementParser
     }
     catch ( XMLStreamException e )
     {
-      throw new CatalogParserException( "Failed to parse service element.", e );
+      log.error( "parse(): Failed to parse service element: " + e.getMessage(), e );
+      throw new CatalogParserException( "Failed to parse service element: " + e.getMessage(), e );
     }
   }
 
@@ -151,6 +151,7 @@ public class ServiceElementParser
     }
     catch ( URISyntaxException e )
     {
+      log.error( "parseElement(): Bad service base URI [" + baseUriString + "]: " + e.getMessage(), e );
       throw new CatalogParserException( "Bad service base URI [" + baseUriString + "]", e );
     }
     ServiceBuilder serviceBuilder = null;

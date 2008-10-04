@@ -25,11 +25,12 @@ import java.net.URISyntaxException;
  */
 public class CatalogElementParser
 {
-  private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( CatalogElementParser.class );
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                                                       CatalogElementUtils.ELEMENT_NAME );
+  private final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
+                                                      CatalogElementUtils.NAME_ATTRIBUTE_NAME );
   private final static QName versionAttName = new QName( XMLConstants.NULL_NS_URI,
                                                          CatalogElementUtils.VERSION_ATTRIBUTE_NAME );
   private final static QName expiresAttName = new QName( XMLConstants.NULL_NS_URI,
@@ -52,14 +53,14 @@ public class CatalogElementParser
     return false;
   }
 
-  private final String baseUriString;
+  private final String docBaseUriString;
   private final XMLEventReader reader;
   private final CatalogBuilderFactory catBuilderFactory;
 
-  public CatalogElementParser( String baseUriString, XMLEventReader reader,  CatalogBuilderFactory catBuilderFactory )
+  public CatalogElementParser( String docBaseUriString, XMLEventReader reader,  CatalogBuilderFactory catBuilderFactory )
           throws CatalogParserException
   {
-    this.baseUriString = baseUriString;
+    this.docBaseUriString = docBaseUriString;
     this.reader = reader;
     this.catBuilderFactory = catBuilderFactory;
   }
@@ -87,7 +88,7 @@ public class CatalogElementParser
           }
           else
           {
-            logger.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
+            log.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
             break;
           }
         }
@@ -102,7 +103,8 @@ public class CatalogElementParser
     }
     catch ( XMLStreamException e )
     {
-      throw new CatalogParserException( "Failed to parse catalog element.", e );
+      log.error( "parse(): Failed to parse catalog element: " + e.getMessage(), e);
+      throw new CatalogParserException( "Failed to parse catalog element: " + e.getMessage(), e );
     }
   }
 
@@ -113,24 +115,25 @@ public class CatalogElementParser
       throw new IllegalArgumentException( "Event must be start element." );
     StartElement startCatElem = event.asStartElement();
 
+    Attribute nameAtt = startCatElem.getAttributeByName( nameAttName );
+    String nameString = nameAtt.getValue();
     Attribute versionAtt = startCatElem.getAttributeByName( versionAttName );
     String versionString = versionAtt.getValue();
     Attribute expiresAtt = startCatElem.getAttributeByName( expiresAttName );
     Date expiresDate = null;
     Attribute lastModifiedAtt = startCatElem.getAttributeByName( lastModifiedAttName );
     Date lastModifiedDate = null;
-    URI baseUri = null;
+    URI docBaseUri = null;
     try
     {
-      baseUri = new URI( baseUriString );
+      docBaseUri = new URI( docBaseUriString );
     }
     catch ( URISyntaxException e )
     {
-      throw new CatalogParserException( "Bad catalog base URI [" + baseUriString + "]", e );
+      log.error( "parseElement(): Bad catalog base URI [" + docBaseUriString + "]: " + e.getMessage(), e );
+      throw new CatalogParserException( "Bad catalog base URI [" + docBaseUriString + "]: " + e.getMessage(), e );
     }
-    return catBuilderFactory.newCatalogBuilder(
-            startCatElem.getName().getLocalPart(),
-            baseUri, versionString, expiresDate, lastModifiedDate );
+    return catBuilderFactory.newCatalogBuilder( nameString, docBaseUri, versionString, expiresDate, lastModifiedDate );
   }
 
   private void handleStartElement( StartElement startElement, CatalogBuilder catalogBuilder )

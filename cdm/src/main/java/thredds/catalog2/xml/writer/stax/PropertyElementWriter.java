@@ -16,24 +16,41 @@ import javax.xml.stream.XMLStreamException;
  */
 public class PropertyElementWriter implements AbstractElementWriter
 {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
   public PropertyElementWriter() {}
 
-  public void writeElement( Property property, XMLStreamWriter writer )
+  public void writeElement( Property property, XMLStreamWriter writer, boolean isDocRoot )
           throws ThreddsXmlWriterException
   {
     try
     {
-      writer.writeStartElement( PropertyElementUtils.ELEMENT_NAME );
-      writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
-                             CatalogNamespace.CATALOG_1_0.getNamespaceUri() );
-      writer.writeNamespace( CatalogNamespace.XLINK.getStandardPrefix(),
-                             CatalogNamespace.XLINK.getNamespaceUri() );
+      if ( isDocRoot )
+      {
+        writer.writeStartDocument();
+        writer.writeCharacters( "\n" );
+      }
+      writer.writeEmptyElement( PropertyElementUtils.ELEMENT_NAME );
+      if ( isDocRoot )
+      {
+        writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
+                               CatalogNamespace.CATALOG_1_0.getNamespaceUri() );
+        writer.writeNamespace( CatalogNamespace.XLINK.getStandardPrefix(),
+                               CatalogNamespace.XLINK.getNamespaceUri() );
+      }
       writer.writeAttribute( PropertyElementUtils.NAME_ATTRIBUTE_NAME, property.getName() );
       writer.writeAttribute( PropertyElementUtils.VALUE_ATTRIBUTE_NAME, property.getValue() );
+
+      if ( isDocRoot )
+        writer.writeEndDocument();
+      writer.flush();
+      if ( isDocRoot )
+        writer.close();
     }
     catch ( XMLStreamException e )
     {
-      throw new ThreddsXmlWriterException( "Failed while writing to XMLStreamWriter.", e );
+      log.error( "writeElement(): Failed while writing to XMLStreamWriter: " + e.getMessage());
+      throw new ThreddsXmlWriterException( "Failed while writing to XMLStreamWriter: " + e.getMessage(), e );
     }
   }
 }

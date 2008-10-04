@@ -22,8 +22,8 @@ import javax.xml.XMLConstants;
  */
 public class PropertyElementParser
 {
-  private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( CatalogElementParser.class );
+  private org.slf4j.Logger log =
+          org.slf4j.LoggerFactory.getLogger( getClass() );
 
   private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                                                       PropertyElementUtils.ELEMENT_NAME );
@@ -94,7 +94,7 @@ public class PropertyElementParser
           }
           else
           {
-            logger.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
+            log.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
             break;
           }
         }
@@ -109,7 +109,8 @@ public class PropertyElementParser
     }
     catch ( XMLStreamException e )
     {
-      throw new CatalogParserException( "Failed to parse service element.", e );
+      log.error( "parse(): Failed to parse service element: " + e.getMessage(), e );
+      throw new CatalogParserException( "Failed to parse service element: " + e.getMessage(), e );
     }
   }
 

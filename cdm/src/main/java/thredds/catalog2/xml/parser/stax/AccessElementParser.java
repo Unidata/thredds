@@ -22,8 +22,7 @@ import javax.xml.XMLConstants;
  */
 public class AccessElementParser
 {
-  private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( CatalogElementParser.class );
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                                                       AccessElementUtils.ELEMENT_NAME );
@@ -34,7 +33,7 @@ public class AccessElementParser
   private final static QName dataFormatAttName = new QName( XMLConstants.NULL_NS_URI,
                                                             AccessElementUtils.DATA_FORMAT_ATTRIBUTE_NAME );
 
-  public static boolean isRecognizedElement( XMLEvent event )
+  public static boolean isSelfElement( XMLEvent event )
   {
     QName elemName = null;
     if ( event.isStartElement() )
@@ -85,14 +84,14 @@ public class AccessElementParser
         }
         else if ( event.isEndElement() )
         {
-          if ( isRecognizedElement( event.asEndElement() ) )
+          if ( isSelfElement( event.asEndElement() ) )
           {
             reader.next();
             break;
           }
           else
           {
-            logger.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
+            log.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
             break;
           }
         }
@@ -107,7 +106,8 @@ public class AccessElementParser
     }
     catch ( XMLStreamException e )
     {
-      throw new CatalogParserException( "Failed to parse service element.", e );
+      log.error( "parse(): Failed to parse service element: " + e.getMessage(), e );
+      throw new CatalogParserException( "Failed to parse service element: " + e.getMessage(), e );
     }
   }
 
@@ -154,7 +154,8 @@ public class AccessElementParser
 //    }
 //    else
     {
-      throw new CatalogParserException( "Unknown start element [" + startElement.getLocation() + "--" + startElement + "].");
+      //if ( !isChildElement( startElement ) )
+        StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );
     }
   }
 }

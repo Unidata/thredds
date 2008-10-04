@@ -20,6 +20,8 @@ import ucar.nc2.units.DateFormatter;
  */
 public class CatalogElementWriter implements AbstractElementWriter
 {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
   // ToDo How wire catalog elements together?
 //  public static enum CatalogElementWriterFactory implements AbstractElementWriterFactory
 //  {
@@ -40,16 +42,30 @@ public class CatalogElementWriter implements AbstractElementWriter
 
   public CatalogElementWriter() {}
 
-  public void writeElement( Catalog catalog, XMLStreamWriter writer )
+  public void writeElement( Catalog catalog, XMLStreamWriter writer, boolean isDocRoot )
           throws ThreddsXmlWriterException
   {
     try
     {
-      writer.writeStartElement( CatalogElementUtils.ELEMENT_NAME );
-      writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
-                             CatalogNamespace.CATALOG_1_0.getNamespaceUri() );
-      writer.writeNamespace( CatalogNamespace.XLINK.getStandardPrefix(),
-                             CatalogNamespace.XLINK.getNamespaceUri() );
+      if ( isDocRoot )
+      {
+        writer.writeStartDocument();
+        writer.writeCharacters( "\n" );
+      }
+      boolean isEmptyElement = catalog.getServices().isEmpty()
+                               && catalog.getProperties().isEmpty()
+                               && catalog.getDatasets().isEmpty();
+      if ( isEmptyElement )
+        writer.writeEmptyElement( CatalogElementUtils.ELEMENT_NAME );
+      else
+        writer.writeStartElement( CatalogElementUtils.ELEMENT_NAME );
+      if ( isDocRoot )
+      {
+        writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
+                               CatalogNamespace.CATALOG_1_0.getNamespaceUri() );
+        writer.writeNamespace( CatalogNamespace.XLINK.getStandardPrefix(),
+                               CatalogNamespace.XLINK.getNamespaceUri() );
+      }
       writer.writeAttribute( CatalogElementUtils.NAME_ATTRIBUTE_NAME, catalog.getName() );
       writer.writeAttribute( CatalogElementUtils.VERSION_ATTRIBUTE_NAME, catalog.getVersion() );
 
@@ -64,19 +80,27 @@ public class CatalogElementWriter implements AbstractElementWriter
         writer.writeAttribute( CatalogElementUtils.LAST_MODIFIED_ATTRIBUTE_NAME,
                                df.toDateTimeStringISO( catalog.getLastModified() ));
       }
-
+      writer.writeCharacters( "\n" );
       for ( Service curService : catalog.getServices() )
-      {
-        new ServiceElementWriter().writeElement( curService, writer );
-      }
+        new ServiceElementWriter().writeElement( curService, writer, false );
       for ( Property curProperty : catalog.getProperties() )
+        new PropertyElementWriter().writeElement( curProperty, writer, false );
+
+      if ( ! isEmptyElement )
       {
-        new PropertyElementWriter().writeElement( curProperty, writer );
+        writer.writeEndElement();
+        writer.writeCharacters( "\n" );
       }
+      if ( isDocRoot)
+        writer.writeEndDocument();
+      writer.flush();
+      if ( isDocRoot )
+        writer.close();
     }
     catch ( XMLStreamException e )
     {
-      throw new ThreddsXmlWriterException( "Failed while writing to XMLStreamWriter.", e );
+      log.error( "writeElement(): Failed while writing to XMLStreamWriter: " + e.getMessage());
+      throw new ThreddsXmlWriterException( "Failed while writing to XMLStreamWriter: " + e.getMessage(), e );
     }
   }
 }

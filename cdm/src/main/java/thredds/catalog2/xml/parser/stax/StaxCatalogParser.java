@@ -127,11 +127,13 @@ public class StaxCatalogParser implements CatalogParser
     }
     catch ( XMLStreamException e )
     {
-      throw new CatalogParserException( "Failed to parse catalog document.", e );
+      log.error( "readXML(): Failed to parse catalog document: " + e.getMessage(), e );
+      throw new CatalogParserException( "Failed to parse catalog document: " + e.getMessage(), e );
     }
     catch ( BuildException e )
     {
-      throw new CatalogParserException( "Failed to parse catalog document.", e );
+      log.error( "readXML(): Failed to parse catalog document: " + e.getMessage(), e );
+      throw new CatalogParserException( "Failed to parse catalog document: " + e.getMessage(), e );
     }
   }
 
@@ -170,7 +172,8 @@ public class StaxCatalogParser implements CatalogParser
       }
       catch ( FileNotFoundException e )
       {
-        throw new CatalogParserException( "Couldn't find file []: " + e.getMessage());
+        log.error( "parse(): Couldn't find file []: " + e.getMessage(), e );
+        throw new CatalogParserException( "Couldn't find file []: " + e.getMessage(), e);
       }
       s = new StreamSource( is, baseUri.toString() );
     }
