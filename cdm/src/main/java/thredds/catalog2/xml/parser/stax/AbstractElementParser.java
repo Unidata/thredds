@@ -30,7 +30,7 @@ public abstract class AbstractElementParser
                                   elementNameLocalPart );
   }
 
-  public boolean isRecognizedElement( XMLEvent event )
+  public boolean isSelfElement( XMLEvent event )
   {
     QName elemName = null;
     if ( event.isStartElement() )
@@ -77,7 +77,7 @@ public abstract class AbstractElementParser
         }
         else if ( event.isEndElement() )
         {
-          if ( this.isRecognizedElement( event.asEndElement() ) )
+          if ( this.isSelfElement( event.asEndElement() ) )
           {
             return builder;
           }

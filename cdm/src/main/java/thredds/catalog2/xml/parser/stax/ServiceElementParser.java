@@ -42,7 +42,7 @@ public class ServiceElementParser
   private final static QName suffixAttName = new QName( XMLConstants.NULL_NS_URI,
                                                              AbstractServiceElement.SUFFIX_ATTRIBUTE_NAME );
 
-  public static boolean isRecognizedElement( XMLEvent event )
+  public static boolean isSelfElement( XMLEvent event )
   {
     QName elemName = null;
     if ( event.isStartElement() )
@@ -105,7 +105,7 @@ public class ServiceElementParser
         }
         else if ( event.isEndElement() )
         {
-          if ( isRecognizedElement( event.asEndElement() ) )
+          if ( isSelfElement( event.asEndElement() ) )
           {
             reader.next();
             break;
@@ -181,12 +181,12 @@ public class ServiceElementParser
   private void handleStartElement( StartElement startElement, ServiceBuilder builder )
           throws CatalogParserException
   {
-    if ( ServiceElementParser.isRecognizedElement( startElement ) )
+    if ( ServiceElementParser.isSelfElement( startElement ) )
     {
       ServiceElementParser serviceElemParser = new ServiceElementParser( reader, builder );
       serviceElemParser.parse();
     }
-    else if ( PropertyElementParser.isRecognizedElement( startElement ))
+    else if ( PropertyElementParser.isSelfElement( startElement ))
     {
       PropertyElementParser parser = new PropertyElementParser( reader, builder);
       parser.parse();

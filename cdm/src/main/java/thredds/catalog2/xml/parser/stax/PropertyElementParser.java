@@ -32,7 +32,7 @@ public class PropertyElementParser
   private final static QName valueAttName = new QName( XMLConstants.NULL_NS_URI,
                                                        PropertyElementUtils.VALUE_ATTRIBUTE_NAME );
 
-  public static boolean isRecognizedElement( XMLEvent event )
+  public static boolean isSelfElement( XMLEvent event )
   {
     QName elemName = null;
     if ( event.isStartElement() )
@@ -47,8 +47,9 @@ public class PropertyElementParser
     return false;
   }
 
-  public boolean isRecognizedChildElement( XMLEvent event )
-  { return true; }
+  public boolean isChildElement( XMLEvent event )
+  { return false; //property doesn't contain any children
+  }
 
   private final XMLEventReader reader;
   private final CatalogBuilder catBuilder;
@@ -86,7 +87,7 @@ public class PropertyElementParser
         }
         else if ( event.isEndElement() )
         {
-          if ( isRecognizedElement( event.asEndElement() ) )
+          if ( isSelfElement( event.asEndElement() ) )
           {
             reader.next();
             break;
@@ -137,7 +138,7 @@ public class PropertyElementParser
   private void handleStartElement( StartElement startElement )
           throws CatalogParserException
   {
-    if ( isRecognizedChildElement( startElement ) )
+    if ( ! isChildElement( startElement ) )
       StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );
   }
 }

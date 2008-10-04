@@ -147,7 +147,7 @@ public class AccessElementParser
   private void handleStartElement( StartElement startElement, AccessBuilder builder )
           throws CatalogParserException
   {
-//    if ( ThreddsMetadataElementParser.DataSizeElementParser.isRecognizedElement( startElement ) )
+//    if ( ThreddsMetadataElementParser.DataSizeElementParser.isSelfElement( startElement ) )
 //    {
 //      ThreddsMetadataElementParser.DataSizeElementParser parser = new ServiceElementParser( reader, builder );
 //      parser.parse();

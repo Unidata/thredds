@@ -12,21 +12,14 @@ import thredds.util.HttpUriResolverFactory;
 
 import java.net.URI;
 import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
 
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.Location;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.namespace.QName;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * _more_
@@ -92,7 +85,7 @@ public class StaxCatalogParser implements CatalogParser
         }
         else if ( event.isStartElement())
         {
-          if ( CatalogElementParser.isRecognizedElement( event.asStartElement() ))
+          if ( CatalogElementParser.isSelfElement( event.asStartElement() ))
           {
             CatalogElementParser catElemParser = new CatalogElementParser( source.getSystemId(), reader, catBuilderFac);
             catBuilder = catElemParser.parse();
@@ -107,7 +100,7 @@ public class StaxCatalogParser implements CatalogParser
         }
         else if ( event.isEndElement())
         {
-          if ( CatalogElementParser.isRecognizedElement( event.asEndElement() ) )
+          if ( CatalogElementParser.isSelfElement( event.asEndElement() ) )
           {
             break;
           }

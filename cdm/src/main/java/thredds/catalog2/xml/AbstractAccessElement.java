@@ -8,8 +8,8 @@ package thredds.catalog2.xml;
  */
 public abstract class AbstractAccessElement
 {
-  public static final String THREDDS_ACCESS_ELEMENT_NAME = "access";
-  public static final String THREDDS_URL_PATH_ATTRIBUTE_NAME = "urlPath";
-  public static final String THREDDS_SERVICE_NAME_ATTRIBUTE_NAME = "serviceName";
-  public static final String THREDDS_DATA_FORMAT_ATTRIBUTE_NAME = "dataFormat";
+  public static final String ELEMENT_NAME = "access";
+  public static final String URL_PATH_ATTRIBUTE_NAME = "urlPath";
+  public static final String SERVICE_NAME_ATTRIBUTE_NAME = "serviceName";
+  public static final String DATA_FORMAT_ATTRIBUTE_NAME = "dataFormat";
 }
