@@ -2045,7 +2045,7 @@ class Nidsheader{
 
       /* thredds global att */
       ncfile.addAttribute(null, new Attribute("title", "Nexrad Level 3 Data"));
-      ncfile.addAttribute(null, new Attribute("keywords", "WSR-88D; NIDS; N0R; N1R; N2R; N3R; N0V; N0S; N1S; N2S; NVL; NTP; N1P; N0Z; NET"));
+      ncfile.addAttribute(null, new Attribute("keywords", "WSR-88D; NIDS")); // N0R; N1R; N2R; N3R; N0V; N0S; N1S; N2S; NVL; NTP; N1P; N0Z; NET"));
       ncfile.addAttribute(null, new Attribute("creator_name", "NOAA/NWS"));
       ncfile.addAttribute(null, new Attribute("creator_url", "http://www.ncdc.noaa.gov/oa/radar/radarproducts.html"));
       ncfile.addAttribute(null, new Attribute("naming_authority", "NOAA/NCDC"));
