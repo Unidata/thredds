@@ -63,11 +63,17 @@ public class BtValidateController extends AbstractCommandController {
     String fname = StringUtil.unescape(bean.getFilename());
     File dest = diskCache.getCacheFile(fname);
 
-    Document doc = makeXml(dest, fname);
-    if (bean.isXml()) {
-      return new ModelAndView("xmlView", "doc", doc);
-    } else {
-      return new ModelAndView("xsltView", "source", new JDOMSource(doc));
+    try {
+      Document doc = makeXml(dest, fname);
+      if (bean.isXml()) {
+        return new ModelAndView("xmlView", "doc", doc);
+      } else {
+        return new ModelAndView("xsltView", "source", new JDOMSource(doc));
+      }
+    } catch (Exception e) {
+      logger.warn("Exception on file " + fname, e);
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "File=" + fname);
+      return null;
     }
   }
 
@@ -96,7 +102,13 @@ public class BtValidateController extends AbstractCommandController {
         else
           bufrMessage.setAttribute("dds", "ok");
 
-        int nbitsCounted = m.getTotalBits();
+        int nbitsCounted = -1;
+        try {
+          nbitsCounted = m.getTotalBits();
+        } catch (Exception e) {
+          // ok if bit counting fails
+        }
+
         int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
 
         boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number of bytes

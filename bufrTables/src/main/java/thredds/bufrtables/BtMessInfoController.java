@@ -234,14 +234,19 @@ public class BtMessInfoController extends AbstractController {
       }
 
       if (ncd == null) {
-        res.sendError(HttpServletResponse.SC_NOT_FOUND, "message " + messPos + " not found in " + cacheName);
+        res.sendError(HttpServletResponse.SC_NOT_FOUND, "message at pos=" + messPos + " not found in " + cacheName);
         return;
       }
 
       res.setContentType("text/xml; charset=UTF-8");
-      OutputStream out = res.getOutputStream();
-      new Bufr2Xml(message, ncd, out);
-      out.flush();
+      try {
+        OutputStream out = res.getOutputStream();
+        new Bufr2Xml(message, ncd, out);
+        out.flush();
+      } catch (Exception e) {
+        logger.warn("Exception on file "+cacheName,e);
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "message at pos=" + messPos + " cant be read, filename= " + cacheName);
+      }
 
     } finally {
       if (ncd != null) ncd.close();

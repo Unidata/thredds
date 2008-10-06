@@ -22,6 +22,7 @@
             <th>date</th>
             <th>dds</th>
             <th>bitCount</th>
+            <th>table</th>
           </tr>
           <xsl:for-each select="bufrValidation/bufrMessage">
             <tr>
@@ -48,6 +49,9 @@
               </td>
               <td>
                 <a href="mess/{/bufrValidation/@fileName}/{@pos}/bitCount.txt"><xsl:value-of select="@size"/></a>
+              </td>       
+              <td>
+                <a href="mess/{/bufrValidation/@fileName}/{@pos}/table.txt"><xsl:value-of select="@size"/></a>
               </td>       
             </tr>
           </xsl:for-each>

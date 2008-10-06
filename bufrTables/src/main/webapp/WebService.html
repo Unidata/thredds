@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>BUFR web service</title>
+</head>
+
+<body>
+<hr width="100%" />
+<h1>Using BUFR Validator as a Web Service </h1>
+<p>You can use the BUFR Validator  from a software program that sends URLs and gets back XML. The BUFR Validator is a web service using <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST design principles</a>. </p>
+<h3>Validation</h3>
+<p>The file to be validated is uploaded to the BUFR validation service, and kept on the server for a period of time (currently about an hour). The Forms based validation uses multipart-mime file uploading, which your software can also use if you want. An easier way to use the service is to place the file on your web server, and send the URL. An example:</p>
+<blockquote>
+  <pre><strong> http://motherlode.ucar.edu:8080/bufrTables/validate/get?url=http%3A%2F%2Fwww.unidata.ucar.edu%2Fstaff%2Fcaron%2Ftest.bufr&amp;xml=true&amp;username=myName</strong></pre>
+</blockquote>
+  <p>The validation service has the following parts 
+  in the URL:
+  \</p>
+  <ul>
+    <li>The server name, in this case, it always starts with <strong>http://motherlode.ucar.edu:8080/bufrTables/</strong></li>
+    <li>The service name: <strong>validate/get </strong></li>
+    <li>Other information is sent as query parameters:
+      <ul>
+        <li><strong>url=myFileUrl</strong> is the URL of your file on your server. This must be </li>
+        <li><strong>xml=true</strong> so that you get back XML instead of HTML</li>
+        <li><strong>username=myName</strong>  makes sure you dont accidentally collide with anybody else using the service. just make myName something unique. </li>
+      </ul>
+    </li>
+  </ul>
+<blockquote>
+  <pre><strong> http://motherlode.ucar.edu:8080/bufrTables/validate/get
+	url=myURL
+	xml=true
+	username=myName</strong></pre>
+</blockquote>
+<p>  Example result:
+</p>
+<blockquote>
+  <pre>&lt;bufrValidation fileName=&quot;anon/http--www.unidata.ucar.edu-staff-caron-test.bufr&quot; fileSize=&quot;898&quot;&gt;<br />&minus;<br />&lt;bufrMessage status=&quot;ok&quot; record=&quot;0&quot; pos=&quot;30&quot; dds=&quot;ok&quot; size=&quot;fail&quot; nobs=&quot;5&quot;&gt;<br />&lt;ByteCount&gt;countBytes 782 != 780 dataSize&lt;/ByteCount&gt;<br />&lt;BitCount&gt;countBits 6216 != 6208 dataSizeBits&lt;/BitCount&gt;<br />&lt;WMOheader&gt;IUSV51 KWBC&lt;/WMOheader&gt;<br />&lt;center&gt;7.0 (US National Weather Service (NCEP))&lt;/center&gt;<br />&lt;category&gt;Vertical soundings (other than satellite) (2.0.0)&lt;/category&gt;<br />&lt;date&gt;2008-07-08T00:00:00Z&lt;/date&gt;<br />&lt;/bufrMessage&gt;<br />&lt;/bufrValidation&gt;</pre>
+</blockquote>
+<blockquote>
+  <pre></pre>
+</blockquote>
+<hr width="100%" />
+<address>
+<a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0" /></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 13, 2008
+</address>
+</body>
+</html>
