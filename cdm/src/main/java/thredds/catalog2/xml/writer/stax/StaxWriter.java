@@ -23,6 +23,14 @@ public class StaxWriter
   private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   private static final String defaultCharEncoding = "UTF-8";
+  private static final String indentString = "  ";
+  public static String getIndentString ( int nestLevel )
+  {
+    StringBuilder sb = new StringBuilder();
+    for ( int i = 0; i < nestLevel; i++)
+      sb.append( indentString );
+    return sb.toString();
+  }
 
   private final XMLOutputFactory factory;
   public StaxWriter()
@@ -41,7 +49,7 @@ public class StaxWriter
     OutputStream os = new FileOutputStream( file);
     XMLStreamWriter xmlStreamWriter = this.getXmlStreamWriter( os );
     CatalogElementWriter catalogWriter = new CatalogElementWriter();
-    catalogWriter.writeElement( catalog, xmlStreamWriter, true );
+    catalogWriter.writeElement( catalog, xmlStreamWriter, 0 );
     os.close();
   }
 
@@ -50,7 +58,7 @@ public class StaxWriter
   {
     XMLStreamWriter xmlStreamWriter = getXmlStreamWriter( writer );
     CatalogElementWriter catalogWriter = new CatalogElementWriter();
-    catalogWriter.writeElement( catalog, xmlStreamWriter, true );
+    catalogWriter.writeElement( catalog, xmlStreamWriter, 0 );
   }
 
   public void writeCatalog( Catalog catalog, OutputStream os )
@@ -58,7 +66,7 @@ public class StaxWriter
   {
     XMLStreamWriter xmlStreamWriter = getXmlStreamWriter( os );
     CatalogElementWriter catalogWriter = new CatalogElementWriter();
-    catalogWriter.writeElement( catalog, xmlStreamWriter, true );
+    catalogWriter.writeElement( catalog, xmlStreamWriter, 0 );
   }
 
   public void writeDataset( Dataset dataset, File file )

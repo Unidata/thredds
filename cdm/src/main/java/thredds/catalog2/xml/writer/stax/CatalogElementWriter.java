@@ -42,16 +42,20 @@ public class CatalogElementWriter implements AbstractElementWriter
 
   public CatalogElementWriter() {}
 
-  public void writeElement( Catalog catalog, XMLStreamWriter writer, boolean isDocRoot )
+  public void writeElement( Catalog catalog, XMLStreamWriter writer, int nestLevel )
           throws ThreddsXmlWriterException
   {
+    String indentString = StaxWriter.getIndentString( nestLevel );
     try
     {
-      if ( isDocRoot )
+      if ( nestLevel == 0 )
       {
         writer.writeStartDocument();
         writer.writeCharacters( "\n" );
       }
+      else
+        writer.writeCharacters( indentString );
+      
       boolean isEmptyElement = catalog.getServices().isEmpty()
                                && catalog.getProperties().isEmpty()
                                && catalog.getDatasets().isEmpty();
@@ -59,7 +63,7 @@ public class CatalogElementWriter implements AbstractElementWriter
         writer.writeEmptyElement( CatalogElementUtils.ELEMENT_NAME );
       else
         writer.writeStartElement( CatalogElementUtils.ELEMENT_NAME );
-      if ( isDocRoot )
+      if ( nestLevel == 0 )
       {
         writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
                                CatalogNamespace.CATALOG_1_0.getNamespaceUri() );
@@ -82,19 +86,20 @@ public class CatalogElementWriter implements AbstractElementWriter
       }
       writer.writeCharacters( "\n" );
       for ( Service curService : catalog.getServices() )
-        new ServiceElementWriter().writeElement( curService, writer, false );
+        new ServiceElementWriter().writeElement( curService, writer, nestLevel + 1 );
       for ( Property curProperty : catalog.getProperties() )
-        new PropertyElementWriter().writeElement( curProperty, writer, false );
+        new PropertyElementWriter().writeElement( curProperty, writer, nestLevel + 1 );
 
       if ( ! isEmptyElement )
       {
+        writer.writeCharacters( indentString );
         writer.writeEndElement();
         writer.writeCharacters( "\n" );
       }
-      if ( isDocRoot)
+      if ( nestLevel == 0)
         writer.writeEndDocument();
       writer.flush();
-      if ( isDocRoot )
+      if ( nestLevel == 0 )
         writer.close();
     }
     catch ( XMLStreamException e )

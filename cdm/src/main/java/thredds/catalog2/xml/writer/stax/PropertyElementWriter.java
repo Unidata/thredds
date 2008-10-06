@@ -20,18 +20,22 @@ public class PropertyElementWriter implements AbstractElementWriter
 
   public PropertyElementWriter() {}
 
-  public void writeElement( Property property, XMLStreamWriter writer, boolean isDocRoot )
+  public void writeElement( Property property, XMLStreamWriter writer, int nestLevel )
           throws ThreddsXmlWriterException
   {
+    String indentString = StaxWriter.getIndentString( nestLevel );
     try
     {
-      if ( isDocRoot )
+      if ( nestLevel == 0 )
       {
         writer.writeStartDocument();
         writer.writeCharacters( "\n" );
       }
+      else
+        writer.writeCharacters( indentString );
+
       writer.writeEmptyElement( PropertyElementUtils.ELEMENT_NAME );
-      if ( isDocRoot )
+      if ( nestLevel == 0 )
       {
         writer.writeNamespace( CatalogNamespace.CATALOG_1_0.getStandardPrefix(),
                                CatalogNamespace.CATALOG_1_0.getNamespaceUri() );
@@ -42,10 +46,10 @@ public class PropertyElementWriter implements AbstractElementWriter
       writer.writeAttribute( PropertyElementUtils.VALUE_ATTRIBUTE_NAME, property.getValue() );
 
       writer.writeCharacters( "\n" );
-      if ( isDocRoot )
+      if ( nestLevel == 0 )
         writer.writeEndDocument();
       writer.flush();
-      if ( isDocRoot )
+      if ( nestLevel == 0 )
         writer.close();
     }
     catch ( XMLStreamException e )
