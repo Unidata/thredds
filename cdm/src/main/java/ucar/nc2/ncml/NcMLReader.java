@@ -249,6 +249,7 @@ public class NcMLReader {
 
   /**
    * Read NcML doc from a Reader, and construct a NetcdfDataset.
+   * eg: NcMLReader.readNcML(new StringReader(ncml), location, null);
    *
    * @param r        the Reader containing the NcML document
    * @param ncmlLocation         the URL location string of the NcML document, used to resolve reletive path of the referenced dataset,

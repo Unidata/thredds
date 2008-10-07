@@ -24,6 +24,7 @@ package ucar.nc2.ncml;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 
 import ucar.ma2.InvalidRangeException;
@@ -39,23 +40,37 @@ public class TestOffAggExistingSSTA extends TestCase {
     super(name);
   }
 
+  String ncml =
+    "<?xml version='1.0' encoding='UTF-8'?>\n" +
+    "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+    "    <aggregation dimName='time' type='joinExisting' recheckEvery='15 min'>\n" +
+    "      <variableAgg name='ATssta' />\n" +
+    "      <scan dateFormatMark='AT#yyyyDDD_HHmmss' location='//zero/share/testdata/ncml/nc/pfeg/' suffix='.nc' />\n" +
+    "    </aggregation>\n" +
+    "</netcdf>";
+
   public void testSSTA() throws IOException, InvalidRangeException {
     String filename = "file:"+TestNcML.topDir + "offsite/aggExistingSSTA.xml";
 
     RandomAccessFile.setDebugLeaks( true);
     List<String> openfiles = RandomAccessFile.getOpenFiles();
-    int count = RandomAccessFile.getOpenFiles().size();
+    int count = openfiles.size();
+    System.out.println("count files="+count);
 
     NetcdfDataset.disableNetcdfFileCache();
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestNcmlAggExisting.open "+ filename);
-    System.out.println(" "+ncfile);
+    //System.out.println(" "+ncfile);
 
     Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
+
+    int count1 = RandomAccessFile.getOpenFiles().size();
+    System.out.println("count files="+count1);
 
     ncfile.close();
 
     int count2 = RandomAccessFile.getOpenFiles().size();
+    System.out.println("count files="+count2);
     assert count == count2 : "openFile count "+count +"!="+ count2;
 
   }

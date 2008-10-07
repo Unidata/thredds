@@ -237,9 +237,9 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" exported="" name="Spring" level="application" />
-    <orderEntry type="library" exported="" name="JSTL" level="application" />
     <orderEntry type="module" module-name="bufr" exported="" />
+    <orderEntry type="library" name="JSTL" level="project" />
+    <orderEntry type="library" name="Spring" level="project" />
     <orderEntryProperties />
   </component>
 </module>

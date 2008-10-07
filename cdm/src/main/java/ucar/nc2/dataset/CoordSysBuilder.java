@@ -1086,16 +1086,18 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       // find referenced coordinate axes
       List<CoordinateAxis> axesList = new ArrayList<CoordinateAxis>();
-      StringTokenizer stoker = new StringTokenizer(coordAxes); // _CoordinateAxes attribute
-      while (stoker.hasMoreTokens()) {
-        String vname = stoker.nextToken();
-        VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
-        if (ap != null) {
-          CoordinateAxis axis = ap.makeIntoCoordinateAxis();
-          if (!axesList.contains(axis)) axesList.add(axis);
-        } else {
-          parseInfo.append(" Cant find axes ").append(vname).append(" for Coordinate System ").append(v.getName()).append("\n");
-          userAdvice.append("Cant find axes ").append(vname).append(" for Coordinate System ").append(v.getName()).append("\n");
+      if (coordAxes != null) {
+        StringTokenizer stoker = new StringTokenizer(coordAxes); // _CoordinateAxes attribute
+        while (stoker.hasMoreTokens()) {
+          String vname = stoker.nextToken();
+          VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+          if (ap != null) {
+            CoordinateAxis axis = ap.makeIntoCoordinateAxis();
+            if (!axesList.contains(axis)) axesList.add(axis);
+          } else {
+            parseInfo.append(" Cant find axes ").append(vname).append(" for Coordinate System ").append(v.getName()).append("\n");
+            userAdvice.append("Cant find axes ").append(vname).append(" for Coordinate System ").append(v.getName()).append("\n");
+          }
         }
       }
 

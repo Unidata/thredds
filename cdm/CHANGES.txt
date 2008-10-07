@@ -52,6 +52,7 @@ This code is ALPHA
     NIDS: raster,  DPA read bug
     BUFR tables cleanup
     add Grib GDS type 87
+    NCDumpW -ncml -vall now works
   24: cleanup error messages when catref or show catalog service fails to open remote catalog.
     HTTPRandomAccessFile tolerates lack of "Accept-Ranges" header
     bug in IO.copyUrlB buffering - was very slow, prone to hang

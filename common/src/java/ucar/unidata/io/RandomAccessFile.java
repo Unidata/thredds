@@ -96,6 +96,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   static protected boolean debugLeaks = false;
+  static protected boolean showOpen = false;
   static protected boolean debugAccess = false;
   static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
 
@@ -214,6 +215,8 @@ public class RandomAccessFile implements DataInput, DataOutput {
     init(bufferSize);
     if (debugLeaks) {
       openFiles.add(location);
+      if (showOpen)
+        System.out.println("  open "+location);
     }
   }
 
@@ -248,8 +251,10 @@ public class RandomAccessFile implements DataInput, DataOutput {
    * @throws IOException if an I/O error occurrs.
    */
   public void close() throws IOException {
-    if (debugLeaks)
+    if (debugLeaks) {
       openFiles.remove(location);
+      if (showOpen) System.out.println("  close "+location);
+    }
 
     if (file == null)
       return;

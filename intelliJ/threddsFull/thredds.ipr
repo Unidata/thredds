@@ -362,6 +362,9 @@
     <option name="GENERATE_IIOP_STUBS" value="false" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
+  <component name="SvnBranchConfigurationManager">
+    <option name="myVersion" value="123" />
+  </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../common" vcs="svn" />
@@ -382,6 +385,27 @@
     <option name="flattenInnerClasses" value="true" />
     <option name="cycleTableSpecificationString" value="" />
     <option name="shortCycleTableSpecificationString" value="" />
+  </component>
+  <component name="libraryTable">
+    <library name="JSTL">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/standard.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/jstl.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Spring">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/spring-2.5.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/spring-webmvc-2.5.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/source/spring-sources-2.5.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/source/spring-webmvc-sources-2.5.jar!/" />
+      </SOURCES>
+    </library>
   </component>
 </project>
 
