@@ -5,7 +5,7 @@ import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.util.ServiceElementUtils;
-import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog.ServiceType;
 
 import javax.xml.stream.events.StartElement;
@@ -62,7 +62,7 @@ public class ServiceElementParser
   private final CatalogBuilderFactory catBuilderFactory;
 
   public ServiceElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.catBuilder = catBuilder;
@@ -71,7 +71,7 @@ public class ServiceElementParser
   }
 
   public ServiceElementParser( XMLEventReader reader,  ServiceBuilder serviceBuilder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.catBuilder = null;
@@ -80,7 +80,7 @@ public class ServiceElementParser
   }
 
   public ServiceElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.catBuilder = null;
@@ -89,7 +89,7 @@ public class ServiceElementParser
   }
 
   public ServiceBuilder parse()
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     try
     {
@@ -127,12 +127,12 @@ public class ServiceElementParser
     catch ( XMLStreamException e )
     {
       log.error( "parse(): Failed to parse service element: " + e.getMessage(), e );
-      throw new CatalogParserException( "Failed to parse service element: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Failed to parse service element: " + e.getMessage(), e );
     }
   }
 
   private ServiceBuilder parseElement( XMLEvent event )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     if ( !event.isStartElement() )
       throw new IllegalArgumentException( "Event must be start element." );
@@ -152,7 +152,7 @@ public class ServiceElementParser
     catch ( URISyntaxException e )
     {
       log.error( "parseElement(): Bad service base URI [" + baseUriString + "]: " + e.getMessage(), e );
-      throw new CatalogParserException( "Bad service base URI [" + baseUriString + "]", e );
+      throw new ThreddsXmlParserException( "Bad service base URI [" + baseUriString + "]", e );
     }
     ServiceBuilder serviceBuilder = null;
     if ( this.catBuilder != null )
@@ -162,7 +162,7 @@ public class ServiceElementParser
     else if ( catBuilderFactory != null )
       serviceBuilder = catBuilderFactory.newServiceBuilder( name, serviceType, baseUri );
     else
-      throw new CatalogParserException( "" );
+      throw new ThreddsXmlParserException( "" );
 
     Attribute suffixAtt = startElement.getAttributeByName( suffixAttName );
     if ( suffixAtt != null )
@@ -180,7 +180,7 @@ public class ServiceElementParser
   }
 
   private void handleStartElement( StartElement startElement, ServiceBuilder builder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     if ( ServiceElementParser.isSelfElement( startElement ) )
     {

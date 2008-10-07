@@ -2,7 +2,6 @@ package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
 import thredds.catalog2.xml.util.CatalogNamespace;
-import thredds.catalog2.xml.util.DatasetElementUtils;
 import thredds.catalog2.xml.util.CatalogRefElementUtils;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 
@@ -12,7 +11,8 @@ import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.namespace.QName;
-import javax.xml.XMLConstants;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * _more_
@@ -20,20 +20,19 @@ import javax.xml.XMLConstants;
  * @author edavis
  * @since 4.0
  */
-public class DatasetNodeElementParser
+public class CatalogRefElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   protected final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                        DatasetElementUtils.ELEMENT_NAME );
-  protected final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                        DatasetElementUtils.NAME_ATTRIBUTE_NAME );
-  protected final static QName idAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                      DatasetElementUtils.ID_ATTRIBUTE_NAME );
+                                                        CatalogRefElementUtils.ELEMENT_NAME );
+  protected final static QName nameAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                                                        CatalogRefElementUtils.XLINK_TITLE_ATTRIBUTE_NAME );
+  protected final static QName hrefAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                                                        CatalogRefElementUtils.XLINK_HREF_ATTRIBUTE_NAME );
+  protected final static QName typeAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                                                        CatalogRefElementUtils.XLINK_TYPE_ATTRIBUTE_NAME );
 
-
-  private final static QName catRefElementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                         CatalogRefElementUtils.ELEMENT_NAME );
 
   public static boolean isSelfElement( XMLEvent event )
   {
@@ -47,10 +46,6 @@ public class DatasetNodeElementParser
 
     if ( elemName.equals( elementName ) )
       return true;
-    else if ( elemName.equals( CatalogRefElementParser.elementName ) )
-    {
-      return true;
-    }
     return false;
   }
 
@@ -59,7 +54,7 @@ public class DatasetNodeElementParser
   private final DatasetNodeBuilder datasetNodeBuilder;
   private final CatalogBuilderFactory catBuilderFactory;
 
-  public DatasetNodeElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
+  public CatalogRefElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
   {
     this.reader = reader;
@@ -68,7 +63,7 @@ public class DatasetNodeElementParser
     this.catBuilderFactory = null;
   }
 
-  public DatasetNodeElementParser( XMLEventReader reader, DatasetNodeBuilder datasetNodeBuilder )
+  public CatalogRefElementParser( XMLEventReader reader, DatasetNodeBuilder datasetNodeBuilder )
           throws ThreddsXmlParserException
   {
     this.reader = reader;
@@ -77,7 +72,7 @@ public class DatasetNodeElementParser
     this.catBuilderFactory = null;
   }
 
-  public DatasetNodeElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public CatalogRefElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
           throws ThreddsXmlParserException
   {
     this.reader = reader;
@@ -139,26 +134,38 @@ public class DatasetNodeElementParser
     // Get required attributes.
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );
     String name = nameAtt.getValue();
+    Attribute hrefAtt = startElement.getAttributeByName( hrefAttName );
+    String href = hrefAtt.getValue();
+    URI hrefUri = null;
+    try
+    {
+      hrefUri = new URI( href );
+    }
+    catch ( URISyntaxException e )
+    {
+      log.error( "parseElement(): Bad catalog base URI [" + href + "]: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Bad catalog base URI [" + href + "]: " + e.getMessage(), e );
+    }
 
     // Construct builder.
-    DatasetBuilder datasetBuilder = null;
+    CatalogRefBuilder catalogRefBuilder = null;
     if ( this.catBuilder != null )
-      datasetBuilder = this.catBuilder.addDataset( name );
+      catalogRefBuilder = this.catBuilder.addCatalogRef( name, hrefUri );
     else if ( this.datasetNodeBuilder != null )
-      datasetBuilder = this.datasetNodeBuilder.addDataset( name );
+      catalogRefBuilder = this.datasetNodeBuilder.addCatalogRef( name, hrefUri );
     else if ( catBuilderFactory != null )
-      datasetBuilder = catBuilderFactory.newDatasetBuilder( name );
+      catalogRefBuilder = catBuilderFactory.newCatalogRefBuilder( name, hrefUri );
     else
       throw new ThreddsXmlParserException( "" );
 
     // Set optional attributes
-    Attribute idAtt = startElement.getAttributeByName( idAttName );
+    Attribute idAtt = startElement.getAttributeByName( DatasetNodeElementParser.idAttName );
     if ( idAtt != null )
     {
-      datasetBuilder.setId( idAtt.getValue() );
+      catalogRefBuilder.setId( idAtt.getValue() );
     }
 
-    return datasetBuilder;
+    return catalogRefBuilder;
   }
 
   private void handleStartElement( StartElement startElement, DatasetNodeBuilder builder )

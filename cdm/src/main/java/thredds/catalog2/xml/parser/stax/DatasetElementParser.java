@@ -4,8 +4,7 @@ import thredds.catalog2.builder.*;
 import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.util.DatasetElementUtils;
 import thredds.catalog2.xml.util.CatalogRefElementUtils;
-import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog.ServiceType;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
@@ -14,8 +13,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.namespace.QName;
 import javax.xml.XMLConstants;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * _more_
@@ -73,7 +70,7 @@ public class DatasetElementParser
   private final CatalogBuilderFactory catBuilderFactory;
 
   public DatasetElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.catBuilder = catBuilder;
@@ -82,7 +79,7 @@ public class DatasetElementParser
   }
 
   public DatasetElementParser( XMLEventReader reader,  DatasetBuilder datasetBuilder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.catBuilder = null;
@@ -91,7 +88,7 @@ public class DatasetElementParser
   }
 
   public DatasetElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.catBuilder = null;
@@ -100,7 +97,7 @@ public class DatasetElementParser
   }
 
   public DatasetBuilder parse()
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     try
     {
@@ -138,12 +135,12 @@ public class DatasetElementParser
     catch ( XMLStreamException e )
     {
       log.error( "parse(): Failed to parse service element: " + e.getMessage(), e );
-      throw new CatalogParserException( "Failed to parse service element: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Failed to parse service element: " + e.getMessage(), e );
     }
   }
 
   private DatasetBuilder parseElement( XMLEvent event )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     if ( !event.isStartElement() )
       throw new IllegalArgumentException( "Event must be start element." );
@@ -160,7 +157,7 @@ public class DatasetElementParser
     else if ( catBuilderFactory != null )
       datasetBuilder = catBuilderFactory.newDatasetBuilder( name );
     else
-      throw new CatalogParserException( "" );
+      throw new ThreddsXmlParserException( "" );
 
     Attribute idAtt = startElement.getAttributeByName( idAttName );
     if ( idAtt != null )
@@ -182,7 +179,7 @@ public class DatasetElementParser
   }
 
   private void handleStartElement( StartElement startElement, DatasetBuilder builder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     if ( AccessElementParser.isSelfElement( startElement ))
     {

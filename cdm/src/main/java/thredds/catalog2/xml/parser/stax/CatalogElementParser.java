@@ -3,7 +3,7 @@ package thredds.catalog2.xml.parser.stax;
 import thredds.catalog2.builder.CatalogBuilderFactory;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.xml.util.CatalogNamespace;
-import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.util.CatalogElementUtils;
 
 import javax.xml.stream.events.StartElement;
@@ -58,7 +58,7 @@ public class CatalogElementParser
   private final CatalogBuilderFactory catBuilderFactory;
 
   public CatalogElementParser( String docBaseUriString, XMLEventReader reader,  CatalogBuilderFactory catBuilderFactory )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.docBaseUriString = docBaseUriString;
     this.reader = reader;
@@ -66,7 +66,7 @@ public class CatalogElementParser
   }
 
   public CatalogBuilder parse()
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     try
     {
@@ -104,12 +104,12 @@ public class CatalogElementParser
     catch ( XMLStreamException e )
     {
       log.error( "parse(): Failed to parse catalog element: " + e.getMessage(), e);
-      throw new CatalogParserException( "Failed to parse catalog element: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Failed to parse catalog element: " + e.getMessage(), e );
     }
   }
 
   private CatalogBuilder parseElement( XMLEvent event )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     if ( !event.isStartElement() )
       throw new IllegalArgumentException( "Event must be start element." );
@@ -131,13 +131,13 @@ public class CatalogElementParser
     catch ( URISyntaxException e )
     {
       log.error( "parseElement(): Bad catalog base URI [" + docBaseUriString + "]: " + e.getMessage(), e );
-      throw new CatalogParserException( "Bad catalog base URI [" + docBaseUriString + "]: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Bad catalog base URI [" + docBaseUriString + "]: " + e.getMessage(), e );
     }
     return catBuilderFactory.newCatalogBuilder( nameString, docBaseUri, versionString, expiresDate, lastModifiedDate );
   }
 
   private void handleStartElement( StartElement startElement, CatalogBuilder catalogBuilder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     if ( ServiceElementParser.isSelfElement( startElement ) )
     {

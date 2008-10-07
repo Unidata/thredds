@@ -1,7 +1,7 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.xml.parser.CatalogParser;
-import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.Catalog;
 import thredds.catalog2.simpleImpl.CatalogBuilderFactoryImpl;
 import thredds.catalog2.builder.CatalogBuilder;
@@ -62,7 +62,7 @@ public class StaxCatalogParser implements CatalogParser
 //  }
 
   private Catalog readXML( Source source )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     try
     {
@@ -128,17 +128,17 @@ public class StaxCatalogParser implements CatalogParser
     catch ( XMLStreamException e )
     {
       log.error( "readXML(): Failed to parse catalog document: " + e.getMessage(), e );
-      throw new CatalogParserException( "Failed to parse catalog document: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
     }
     catch ( BuildException e )
     {
       log.error( "readXML(): Failed to parse catalog document: " + e.getMessage(), e );
-      throw new CatalogParserException( "Failed to parse catalog document: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
     }
   }
 
   public Catalog parse( URI uri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver( uri );
     InputStream is = null;
@@ -149,7 +149,7 @@ public class StaxCatalogParser implements CatalogParser
     }
     catch ( IOException e )
     {
-      throw new CatalogParserException( "", e );
+      throw new ThreddsXmlParserException( "", e );
     }
 
     Source s = new StreamSource( is, uri.toString() );
@@ -157,7 +157,7 @@ public class StaxCatalogParser implements CatalogParser
   }
 
   public Catalog parse( File file, URI baseUri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     if ( file == null ) throw new IllegalArgumentException( "File must not be null.");
     Source s = null;
@@ -173,7 +173,7 @@ public class StaxCatalogParser implements CatalogParser
       catch ( FileNotFoundException e )
       {
         log.error( "parse(): Couldn't find file []: " + e.getMessage(), e );
-        throw new CatalogParserException( "Couldn't find file []: " + e.getMessage(), e);
+        throw new ThreddsXmlParserException( "Couldn't find file []: " + e.getMessage(), e);
       }
       s = new StreamSource( is, baseUri.toString() );
     }
@@ -181,39 +181,39 @@ public class StaxCatalogParser implements CatalogParser
   }
 
   public Catalog parse( Reader reader, URI baseUri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     Source source = new StreamSource( reader, baseUri.toString() );
     return readXML( source);
   }
 
   public Catalog parse( InputStream is, URI baseUri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     Source source = new StreamSource( is, baseUri.toString() );
     return readXML( source );
   }
 
   public CatalogBuilder parseIntoBuilder( URI uri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     return null;
   }
 
   public CatalogBuilder parseIntoBuilder( File file, URI baseUri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     return null;
   }
 
   public CatalogBuilder parseIntoBuilder( Reader reader, URI baseUri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     return null;
   }
 
   public CatalogBuilder parseIntoBuilder( InputStream is, URI baseUri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     return null;
   }

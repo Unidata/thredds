@@ -1,7 +1,7 @@
 package thredds.catalog2.xml.parser.sax;
 
 import thredds.catalog2.xml.parser.CatalogParser;
-import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.Catalog;
 import thredds.catalog2.builder.CatalogBuilder;
@@ -78,7 +78,7 @@ public class SAXCatalogParser implements CatalogParser
   }
 
   private Catalog readXML( InputSource source )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware( true );
@@ -117,19 +117,19 @@ public class SAXCatalogParser implements CatalogParser
     }
     catch ( BuildException e )
     {
-      throw new CatalogParserException( "Catalog builder in bad state.", e);
+      throw new ThreddsXmlParserException( "Catalog builder in bad state.", e);
     }
   }
 
   public Catalog parse( URI uri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     InputSource is = new InputSource( uri.toString() );
     return readXML( is );
   }
 
   public Catalog parse( File file, URI baseUri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     InputSource is = null;
     try
@@ -145,7 +145,7 @@ public class SAXCatalogParser implements CatalogParser
   }
 
   public Catalog parse( Reader reader, URI baseUri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     InputSource is = new InputSource( reader );
     is.setSystemId( baseUri.toString() );
@@ -153,29 +153,29 @@ public class SAXCatalogParser implements CatalogParser
   }
 
   public Catalog parse( InputStream is, URI baseUri )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     InputSource inSource = new InputSource( is );
     inSource.setSystemId( baseUri.toString() );
     return readXML( inSource );
   }
 
-  public CatalogBuilder parseIntoBuilder( URI uri ) throws CatalogParserException
+  public CatalogBuilder parseIntoBuilder( URI uri ) throws ThreddsXmlParserException
   {
     return null;
   }
 
-  public CatalogBuilder parseIntoBuilder( File file, URI baseUri ) throws CatalogParserException
+  public CatalogBuilder parseIntoBuilder( File file, URI baseUri ) throws ThreddsXmlParserException
   {
     return null;
   }
 
-  public CatalogBuilder parseIntoBuilder( Reader reader, URI baseUri ) throws CatalogParserException
+  public CatalogBuilder parseIntoBuilder( Reader reader, URI baseUri ) throws ThreddsXmlParserException
   {
     return null;
   }
 
-  public CatalogBuilder parseIntoBuilder( InputStream is, URI baseUri ) throws CatalogParserException
+  public CatalogBuilder parseIntoBuilder( InputStream is, URI baseUri ) throws ThreddsXmlParserException
   {
     return null;
   }

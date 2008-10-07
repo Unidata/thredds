@@ -5,7 +5,7 @@ import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.DatasetNodeBuilder;
 import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.util.PropertyElementUtils;
-import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
@@ -58,7 +58,7 @@ public class PropertyElementParser
   private final ServiceBuilder serviceBuilder;
 
   public PropertyElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.catBuilder = catBuilder;
@@ -67,7 +67,7 @@ public class PropertyElementParser
   }
 
   public PropertyElementParser( XMLEventReader reader,  DatasetNodeBuilder datasetNodeBuilder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.catBuilder = null;
@@ -76,7 +76,7 @@ public class PropertyElementParser
   }
 
   public PropertyElementParser( XMLEventReader reader,  ServiceBuilder serviceBuilder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.catBuilder = null;
@@ -85,7 +85,7 @@ public class PropertyElementParser
   }
 
   public void parse()
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     try
     {
@@ -123,12 +123,12 @@ public class PropertyElementParser
     catch ( XMLStreamException e )
     {
       log.error( "parse(): Failed to parse service element: " + e.getMessage(), e );
-      throw new CatalogParserException( "Failed to parse service element: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Failed to parse service element: " + e.getMessage(), e );
     }
   }
 
   private void parseElement( XMLEvent event )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     if ( !event.isStartElement() )
       throw new IllegalArgumentException( "Event must be start element." );
@@ -146,13 +146,13 @@ public class PropertyElementParser
     else if ( this.serviceBuilder != null )
       this.serviceBuilder.addProperty( name, value );
     else
-      throw new CatalogParserException( "Unknown builder - for addProperty()." );
+      throw new ThreddsXmlParserException( "Unknown builder - for addProperty()." );
 
     return;
   }
 
   private void handleStartElement( StartElement startElement )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     if ( ! isChildElement( startElement ) )
       StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );

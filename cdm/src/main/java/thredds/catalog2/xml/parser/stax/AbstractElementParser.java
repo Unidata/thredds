@@ -1,7 +1,7 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.ThreddsBuilder;
-import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.util.CatalogNamespace;
 
 import javax.xml.stream.events.XMLEvent;
@@ -47,12 +47,12 @@ public abstract class AbstractElementParser
   }
 
   abstract ThreddsBuilder parseElement( XMLEvent event )
-          throws CatalogParserException;
+          throws ThreddsXmlParserException;
   abstract void handleStartElement( StartElement startElement, ThreddsBuilder builder )
-          throws CatalogParserException;
+          throws ThreddsXmlParserException;
 
   public ThreddsBuilder parse( XMLEventReader reader )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     try
     {
@@ -95,11 +95,11 @@ public abstract class AbstractElementParser
           continue;
         }
       }
-      throw new CatalogParserException( "Unexpected end of document.");
+      throw new ThreddsXmlParserException( "Unexpected end of document.");
     }
     catch ( XMLStreamException e )
     {
-      throw new CatalogParserException( "", e );
+      throw new ThreddsXmlParserException( "", e );
     }
 
   }

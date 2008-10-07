@@ -1,7 +1,7 @@
 package thredds.catalog2.xml.parser.jdom;
 
 import thredds.catalog2.xml.parser.CatalogParser;
-import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.Catalog;
 import thredds.catalog2.builder.CatalogBuilder;
 
@@ -38,22 +38,22 @@ public class JdomCatalogParser implements CatalogParser
     return null;
   }
 
-  public CatalogBuilder parseIntoBuilder( URI uri ) throws CatalogParserException
+  public CatalogBuilder parseIntoBuilder( URI uri ) throws ThreddsXmlParserException
   {
     return null;
   }
 
-  public CatalogBuilder parseIntoBuilder( File file, URI baseUri ) throws CatalogParserException
+  public CatalogBuilder parseIntoBuilder( File file, URI baseUri ) throws ThreddsXmlParserException
   {
     return null;
   }
 
-  public CatalogBuilder parseIntoBuilder( Reader reader, URI baseUri ) throws CatalogParserException
+  public CatalogBuilder parseIntoBuilder( Reader reader, URI baseUri ) throws ThreddsXmlParserException
   {
     return null;
   }
 
-  public CatalogBuilder parseIntoBuilder( InputStream is, URI baseUri ) throws CatalogParserException
+  public CatalogBuilder parseIntoBuilder( InputStream is, URI baseUri ) throws ThreddsXmlParserException
   {
     return null;
   }

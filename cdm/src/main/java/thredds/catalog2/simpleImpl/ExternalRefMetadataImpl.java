@@ -1,6 +1,7 @@
 package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.Property;
+import thredds.catalog2.ThreddsMetadata;
 
 import java.net.URI;
 import java.util.List;
@@ -56,6 +57,12 @@ public class ExternalRefMetadataImpl extends AbstractMetadataImpl
   {
     return false;
   }
+
+  public ThreddsMetadata getThreddsMetadata()
+  {
+    return null;
+  }
+
   //public List<Documentation> getDocumentation();
   public List<Property> getProperties()
   {

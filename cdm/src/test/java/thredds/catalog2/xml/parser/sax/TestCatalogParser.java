@@ -3,7 +3,7 @@ package thredds.catalog2.xml.parser.sax;
 import junit.framework.*;
 import thredds.catalog2.xml.parser.CatalogParserFactory;
 import thredds.catalog2.xml.parser.CatalogParser;
-import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.Catalog;
 
 import java.io.StringReader;
@@ -71,7 +71,7 @@ public class TestCatalogParser extends TestCase
     {
       cat = cp.parse( new StringReader( sb.toString() ), baseUri);
     }
-    catch ( CatalogParserException e )
+    catch ( ThreddsXmlParserException e )
     {
       fail( "Failed to parse catalog: " + e.getMessage());
       return;

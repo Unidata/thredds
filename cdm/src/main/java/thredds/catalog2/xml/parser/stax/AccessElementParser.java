@@ -2,7 +2,7 @@ package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
 import thredds.catalog2.xml.util.CatalogNamespace;
-import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.util.AccessElementUtils;
 import thredds.catalog.DataFormatType;
 
@@ -53,7 +53,7 @@ public class AccessElementParser
   private final CatalogBuilderFactory catBuilderFactory;
 
   public AccessElementParser( XMLEventReader reader, DatasetBuilder datasetBuilder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.datasetBuilder = datasetBuilder;
@@ -61,7 +61,7 @@ public class AccessElementParser
   }
 
   public AccessElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     this.reader = reader;
     this.datasetBuilder = null;
@@ -69,7 +69,7 @@ public class AccessElementParser
   }
 
   public AccessBuilder parse()
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     try
     {
@@ -107,12 +107,12 @@ public class AccessElementParser
     catch ( XMLStreamException e )
     {
       log.error( "parse(): Failed to parse service element: " + e.getMessage(), e );
-      throw new CatalogParserException( "Failed to parse service element: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Failed to parse service element: " + e.getMessage(), e );
     }
   }
 
   private AccessBuilder parseElement( XMLEvent event )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
     if ( !event.isStartElement() )
       throw new IllegalArgumentException( "Event must be start element." );
@@ -124,7 +124,7 @@ public class AccessElementParser
     else if ( catBuilderFactory != null )
       builder = catBuilderFactory.newAccessBuilder();
     else
-      throw new CatalogParserException( "" );
+      throw new ThreddsXmlParserException( "" );
 
     Attribute serviceNameAtt = startElement.getAttributeByName( serviceNameAttName );
     String serviceName = serviceNameAtt.getValue();
@@ -145,7 +145,7 @@ public class AccessElementParser
   }
 
   private void handleStartElement( StartElement startElement, AccessBuilder builder )
-          throws CatalogParserException
+          throws ThreddsXmlParserException
   {
 //    if ( ThreddsMetadataElementParser.DataSizeElementParser.isSelfElement( startElement ) )
 //    {

@@ -23,6 +23,5 @@ public interface Metadata
   public Object getContent();
 
   public boolean isThredds();
-  //public List<Documentation> getDocumentation();
-  public List<Property> getProperties();
+  public ThreddsMetadata getThreddsMetadata();
 }

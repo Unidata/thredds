@@ -1,6 +1,6 @@
 package thredds.catalog2.xml.parser.stax;
 
-import thredds.catalog2.xml.parser.CatalogParserException;
+import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.Location;
@@ -22,7 +22,7 @@ public class StaxCatalogParserUtils
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( StaxCatalogParserUtils.class );
   
-  public static String consumeElementAndAnyContent( XMLEventReader xmlEventReader ) throws CatalogParserException
+  public static String consumeElementAndAnyContent( XMLEventReader xmlEventReader ) throws ThreddsXmlParserException
   {
     if ( xmlEventReader == null )
       throw new IllegalArgumentException( "XMLEventReader may not be null." );
@@ -57,7 +57,7 @@ public class StaxCatalogParserUtils
             // Parser should have had FATAL error for this.
             String msg = "Badly formed XML? End element [" + endElemName.getLocalPart() + "] doesn't match expected start element [" + lastName.getLocalPart() + "].";
             log.error( "consumeElementAndAnyContent(): " + msg );
-            throw new CatalogParserException( "FATAL? " + msg );
+            throw new ThreddsXmlParserException( "FATAL? " + msg );
           }
         }
 
@@ -68,7 +68,7 @@ public class StaxCatalogParserUtils
     }
     catch ( XMLStreamException e )
     {
-      throw new CatalogParserException( "Problem reading unknown element [" + startLocation + "]. Underlying cause: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Problem reading unknown element [" + startLocation + "]. Underlying cause: " + e.getMessage(), e );
     }
 
     return writer.toString();

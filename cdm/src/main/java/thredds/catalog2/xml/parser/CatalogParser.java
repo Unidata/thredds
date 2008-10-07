@@ -17,13 +17,13 @@ import java.io.InputStream;
  */
 public interface CatalogParser
 {
-  public Catalog parse( URI uri) throws CatalogParserException;
-  public Catalog parse( File file, URI baseUri) throws CatalogParserException;
-  public Catalog parse( Reader reader, URI baseUri ) throws CatalogParserException;
-  public Catalog parse( InputStream is, URI baseUri ) throws CatalogParserException;
+  public Catalog parse( URI uri) throws ThreddsXmlParserException;
+  public Catalog parse( File file, URI baseUri) throws ThreddsXmlParserException;
+  public Catalog parse( Reader reader, URI baseUri ) throws ThreddsXmlParserException;
+  public Catalog parse( InputStream is, URI baseUri ) throws ThreddsXmlParserException;
 
-  public CatalogBuilder parseIntoBuilder( URI uri) throws CatalogParserException;
-  public CatalogBuilder parseIntoBuilder( File file, URI baseUri) throws CatalogParserException;
-  public CatalogBuilder parseIntoBuilder( Reader reader, URI baseUri ) throws CatalogParserException;
-  public CatalogBuilder parseIntoBuilder( InputStream is, URI baseUri ) throws CatalogParserException;
+  public CatalogBuilder parseIntoBuilder( URI uri) throws ThreddsXmlParserException;
+  public CatalogBuilder parseIntoBuilder( File file, URI baseUri) throws ThreddsXmlParserException;
+  public CatalogBuilder parseIntoBuilder( Reader reader, URI baseUri ) throws ThreddsXmlParserException;
+  public CatalogBuilder parseIntoBuilder( InputStream is, URI baseUri ) throws ThreddsXmlParserException;
 }

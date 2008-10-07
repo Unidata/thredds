@@ -9,5 +9,7 @@ package thredds.catalog2.xml.util;
 public abstract class CatalogRefElementUtils
 {
   public static final String ELEMENT_NAME = "catalogRef";
-  public static final String TITLE_ATTRIBUTE_NAME = "title";
+  public static final String XLINK_TITLE_ATTRIBUTE_NAME = "title";
+  public static final String XLINK_HREF_ATTRIBUTE_NAME = "href";
+  public static final String XLINK_TYPE_ATTRIBUTE_NAME = "type";
 }
