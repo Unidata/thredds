@@ -18,9 +18,9 @@ import java.util.ArrayList;
  * @author edavis
  * @since 4.0
  */
-public class StaxCatalogParserUtils
+public class StaxThreddsXmlParserUtils
 {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( StaxCatalogParserUtils.class );
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( StaxThreddsXmlParserUtils.class );
   
   public static String consumeElementAndAnyContent( XMLEventReader xmlEventReader ) throws ThreddsXmlParserException
   {

@@ -155,6 +155,6 @@ public class PropertyElementParser
           throws ThreddsXmlParserException
   {
     if ( ! isChildElement( startElement ) )
-      StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.consumeElementAndAnyContent( this.reader );
   }
 }

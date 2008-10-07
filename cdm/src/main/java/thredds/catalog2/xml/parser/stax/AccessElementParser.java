@@ -155,7 +155,7 @@ public class AccessElementParser
 //    else
     {
       //if ( !isChildElement( startElement ) )
-        StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );
+        StaxThreddsXmlParserUtils.consumeElementAndAnyContent( this.reader );
     }
   }
 }

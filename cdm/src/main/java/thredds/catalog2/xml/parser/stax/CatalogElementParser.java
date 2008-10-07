@@ -151,7 +151,7 @@ public class CatalogElementParser
     }
     else
     {
-      StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.consumeElementAndAnyContent( this.reader );
     }
   }
 }

@@ -171,7 +171,7 @@ public class DatasetNodeElementParser
     }
     else
     {
-      StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.consumeElementAndAnyContent( this.reader );
     }
   }
 }

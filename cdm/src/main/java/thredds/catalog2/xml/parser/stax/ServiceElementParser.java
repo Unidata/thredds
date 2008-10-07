@@ -194,7 +194,7 @@ public class ServiceElementParser
     }
     else
     {
-      StaxCatalogParserUtils.consumeElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.consumeElementAndAnyContent( this.reader );
     }
   }
 }
