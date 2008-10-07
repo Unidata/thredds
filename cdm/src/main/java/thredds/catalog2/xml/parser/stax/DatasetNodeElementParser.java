@@ -5,7 +5,6 @@ import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.util.DatasetElementUtils;
 import thredds.catalog2.xml.util.CatalogRefElementUtils;
 import thredds.catalog2.xml.parser.CatalogParserException;
-import thredds.catalog.ServiceType;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
@@ -14,8 +13,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.namespace.QName;
 import javax.xml.XMLConstants;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * _more_
@@ -23,7 +20,7 @@ import java.net.URISyntaxException;
  * @author edavis
  * @since 4.0
  */
-public class DatasetElementParser
+public class DatasetNodeElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
@@ -33,17 +30,7 @@ public class DatasetElementParser
                                                       DatasetElementUtils.NAME_ATTRIBUTE_NAME );
   private final static QName idAttName = new QName( XMLConstants.NULL_NS_URI,
                                                     DatasetElementUtils.ID_ATTRIBUTE_NAME );
-  private final static QName urlPathAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                         DatasetElementUtils.URL_PATH_ATTRIBUTE_NAME );
 
-  private final static QName collectionTypeAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                                DatasetElementUtils.COLLECTION_TYPE_ATTRIBUTE_NAME );
-  private final static QName harvestAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                         DatasetElementUtils.HARVEST_ATTRIBUTE_NAME );
-  private final static QName restrictedAccessAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                                  DatasetElementUtils.RESOURCE_CONTROL_ATTRIBUTE_NAME );
-  private final static QName aliasAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                       DatasetElementUtils.ALIAS_ATTRIBUTE_NAME );
 
   private final static QName catRefElementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                                                          CatalogRefElementUtils.ELEMENT_NAME );
@@ -69,42 +56,42 @@ public class DatasetElementParser
 
   private final XMLEventReader reader;
   private final CatalogBuilder catBuilder;
-  private final DatasetBuilder datasetBuilder;
+  private final DatasetNodeBuilder datasetNodeBuilder;
   private final CatalogBuilderFactory catBuilderFactory;
 
-  public DatasetElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
+  public DatasetNodeElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
           throws CatalogParserException
   {
     this.reader = reader;
     this.catBuilder = catBuilder;
-    this.datasetBuilder = null;
+    this.datasetNodeBuilder = null;
     this.catBuilderFactory = null;
   }
 
-  public DatasetElementParser( XMLEventReader reader,  DatasetBuilder datasetBuilder )
+  public DatasetNodeElementParser( XMLEventReader reader, DatasetNodeBuilder datasetNodeBuilder )
           throws CatalogParserException
   {
     this.reader = reader;
     this.catBuilder = null;
-    this.datasetBuilder = datasetBuilder;
+    this.datasetNodeBuilder = datasetNodeBuilder;
     this.catBuilderFactory = null;
   }
 
-  public DatasetElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public DatasetNodeElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
           throws CatalogParserException
   {
     this.reader = reader;
     this.catBuilder = null;
-    this.datasetBuilder = null;
+    this.datasetNodeBuilder = null;
     this.catBuilderFactory = catBuilderFactory;
   }
 
-  public DatasetBuilder parse()
+  public DatasetNodeBuilder parse()
           throws CatalogParserException
   {
     try
     {
-      DatasetBuilder builder = this.parseElement( reader.nextEvent() );
+      DatasetNodeBuilder builder = this.parseElement( reader.nextEvent() );
 
       while ( reader.hasNext() )
       {
@@ -142,7 +129,7 @@ public class DatasetElementParser
     }
   }
 
-  private DatasetBuilder parseElement( XMLEvent event )
+  private DatasetNodeBuilder parseElement( XMLEvent event )
           throws CatalogParserException
   {
     if ( !event.isStartElement() )
@@ -155,8 +142,8 @@ public class DatasetElementParser
     DatasetBuilder datasetBuilder = null;
     if ( this.catBuilder != null )
       datasetBuilder = this.catBuilder.addDataset( name );
-    else if ( this.datasetBuilder != null )
-      datasetBuilder = this.datasetBuilder.addDataset( name );
+    else if ( this.datasetNodeBuilder != null )
+      datasetBuilder = this.datasetNodeBuilder.addDataset( name );
     else if ( catBuilderFactory != null )
       datasetBuilder = catBuilderFactory.newDatasetBuilder( name );
     else
@@ -168,25 +155,15 @@ public class DatasetElementParser
       datasetBuilder.setId( idAtt.getValue() );
     }
 
-    Attribute urlPathAtt = startElement.getAttributeByName( urlPathAttName );
-    if ( urlPathAtt != null )
-    {
-      //ToDo Need to postpone adding service to access builder till this dataset is finished.
-      //datasetBuilder.getParentCatalogBuilder().getServiceBuilderByName(  )
-      AccessBuilder accessBuilder = datasetBuilder.addAccessBuilder();
-      accessBuilder.setUrlPath( urlPathAtt.getValue() );
-      // Add service in finish() when known.
-    }
-
     return datasetBuilder;
   }
 
-  private void handleStartElement( StartElement startElement, DatasetBuilder builder )
+  private void handleStartElement( StartElement startElement, DatasetNodeBuilder builder )
           throws CatalogParserException
   {
-    if ( AccessElementParser.isSelfElement( startElement ))
+    if ( PropertyElementParser.isSelfElement( startElement ))
     {
-      AccessElementParser parser = new AccessElementParser( reader, builder);
+      PropertyElementParser parser = new PropertyElementParser( reader, builder);
       parser.parse();
     }
     else

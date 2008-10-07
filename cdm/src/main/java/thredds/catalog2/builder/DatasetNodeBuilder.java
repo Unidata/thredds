@@ -27,7 +27,7 @@ public interface DatasetNodeBuilder extends ThreddsBuilder
   public List<MetadataBuilder> getMetadataBuilders();
 
   public CatalogBuilder getParentCatalogBuilder();
-  public DatasetBuilder getParentDatasetBuilder();
+  public DatasetNodeBuilder getParentDatasetBuilder();
 
   public boolean isCollection();
 

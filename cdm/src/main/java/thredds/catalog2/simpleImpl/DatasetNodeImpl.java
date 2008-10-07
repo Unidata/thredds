@@ -24,7 +24,9 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   private List<MetadataBuilder> metadataBuilders;
   private List<Metadata> metadata;
 
+  private CatalogBuilder parentCatalogBuilder;
   private Catalog parentCatalog;
+  protected DatasetNodeBuilder parentBuilder;
   protected DatasetNode parent;
 
   private List<DatasetNodeBuilder> childrenBuilders;
@@ -37,7 +39,9 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   {
     if ( name == null ) throw new IllegalArgumentException( "DatasetNode name must not be null.");
     this.name = name;
+    this.parentCatalogBuilder = parentCatalog;
     this.parentCatalog = (Catalog) parentCatalog;
+    this.parentBuilder = parent;
     this.parent = (DatasetNode) parent;
 
     this.propertyContainer = new PropertyContainer();
@@ -199,13 +203,13 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   public CatalogBuilder getParentCatalogBuilder()
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    return null;
+    return this.parentCatalogBuilder;
   }
 
-  public DatasetBuilder getParentDatasetBuilder()
+  public DatasetNodeBuilder getParentDatasetBuilder()
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    return null;
+    return this.parentBuilder;
   }
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders()

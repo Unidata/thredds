@@ -2,6 +2,7 @@ package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.ServiceBuilder;
+import thredds.catalog2.builder.DatasetNodeBuilder;
 import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.util.PropertyElementUtils;
 import thredds.catalog2.xml.parser.CatalogParserException;
@@ -53,6 +54,7 @@ public class PropertyElementParser
 
   private final XMLEventReader reader;
   private final CatalogBuilder catBuilder;
+  private final DatasetNodeBuilder datasetNodeBuilder;
   private final ServiceBuilder serviceBuilder;
 
   public PropertyElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
@@ -60,6 +62,16 @@ public class PropertyElementParser
   {
     this.reader = reader;
     this.catBuilder = catBuilder;
+    this.datasetNodeBuilder = null;
+    this.serviceBuilder = null;
+  }
+
+  public PropertyElementParser( XMLEventReader reader,  DatasetNodeBuilder datasetNodeBuilder )
+          throws CatalogParserException
+  {
+    this.reader = reader;
+    this.catBuilder = null;
+    this.datasetNodeBuilder = datasetNodeBuilder;
     this.serviceBuilder = null;
   }
 
@@ -68,6 +80,7 @@ public class PropertyElementParser
   {
     this.reader = reader;
     this.catBuilder = null;
+    this.datasetNodeBuilder = null;
     this.serviceBuilder = serviceBuilder;
   }
 
@@ -128,6 +141,8 @@ public class PropertyElementParser
 
     if ( this.catBuilder != null )
       this.catBuilder.addProperty( name, value );
+    else if ( this.datasetNodeBuilder != null )
+      this.datasetNodeBuilder.addProperty( name, value );
     else if ( this.serviceBuilder != null )
       this.serviceBuilder.addProperty( name, value );
     else
