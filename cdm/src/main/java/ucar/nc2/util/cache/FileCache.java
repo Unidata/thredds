@@ -69,6 +69,7 @@ public class FileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static private ScheduledExecutorService exec;
   static private boolean debugPrint = false;
+  static private boolean debugCleanup = true;
 
   /**
     * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.
@@ -176,7 +177,7 @@ public class FileCache {
     // open the file
     ncfile = factory.open(location, buffer_size, cancelTask, spiObject);
     if (log.isDebugEnabled()) log.debug("FileCache.open " + hashKey+" "+ncfile.getLocation());
-    if (debugPrint) System.out.println("FileCache.open " + hashKey+" "+ncfile.getLocation());
+    if (debugPrint) System.out.println("  FileCache.open " + hashKey+" "+ncfile.getLocation());
 
     // user may have canceled
     if ((cancelTask != null) && (cancelTask.isCancel())) {
@@ -203,8 +204,10 @@ public class FileCache {
 
     int count = counter.incrementAndGet();
     if (count > maxElements) {
-      if (hasScheduled.compareAndSet(false, true))
+      if (hasScheduled.compareAndSet(false, true)) {
         exec.schedule(new CleanupTask(), 100, TimeUnit.MILLISECONDS); // immediate cleanup in 100 msec
+        if (debugCleanup) System.out.println("CleanupTask scheduled " + new Date().getTime());
+      }
     }
 
     return ncfile;
@@ -238,7 +241,7 @@ public class FileCache {
       try {
         ncfile.sync();
         if (log.isDebugEnabled()) log.debug("FileCache.aquire from cache " + hashKey+" "+ncfile.getLocation());
-        if (debugPrint) System.out.println("FileCache.aquire from cache " + hashKey+" "+ncfile.getLocation());
+        if (debugPrint) System.out.println("  FileCache.aquire from cache " + hashKey+" "+ncfile.getLocation());
       } catch (IOException e) {
         log.error("FileCache.synch failed on " + ncfile.getLocation() + " " + e.getMessage());
       }
@@ -272,7 +275,7 @@ public class FileCache {
       file.countAccessed++;
       file.isLocked.set(false);
       if (log.isDebugEnabled()) log.debug("FileCache.release " + ncfile.getLocation());
-      if (debugPrint) System.out.println("FileCache.release " + ncfile.getLocation());
+      if (debugPrint) System.out.println("  FileCache.release " + ncfile.getLocation());
       return;
     }
     throw new IOException("FileCache.release does not have file in cache = " + ncfile.getLocation());
@@ -378,6 +381,9 @@ public class FileCache {
     int size = counter.get();
     if (size <= minElements) return;
 
+    log.debug("FileCache.cleanup started at "+new Date());
+    if (debugCleanup) System.out.println("FileCache.cleanup started at "+new Date().getTime());
+
     cleanups.incrementAndGet();
 
     // add unlocked files to the all list
@@ -402,8 +408,10 @@ public class FileCache {
         count++;
       }
     }
-    if (count < minDelete)
+    if (count < minDelete) {
       log.warn("FileCache.cleanup couldnt delete enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
+      if (debugCleanup) System.out.println("FileCache.cleanup couldnt delete enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
+    }
 
     // remove empty cache elements
     synchronized (cache) {
@@ -431,7 +439,8 @@ public class FileCache {
 
     long took = System.currentTimeMillis() - start;
     log.debug("FileCache.cleanup had= " + size + " deleted= " + deleteList.size() + " took=" + took + " msec");
-    //System.out.println("\n*NetcdfFileCache.cleanup started with= " + size + " deleted= " + deleteList.size() + " took=" + took + " msec");
+    if (debugCleanup) System.out.println("FileCache.cleanup had= " + size + " deleted= " + deleteList.size() + " took=" + took + " msec");
+    hasScheduled.set(false);
   }
 
   class CacheElement {
