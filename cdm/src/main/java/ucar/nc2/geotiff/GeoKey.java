@@ -283,6 +283,7 @@ class GeoKey  {
     static public final TagValue ProjCoordTrans_LambertConfConic_1SP = new TagValue(Tag.ProjCoordTransGeoKey, "LambertConfConic_1SP", 9);
     static public final TagValue ProjCoordTrans_Stereographic = new TagValue(Tag.ProjCoordTransGeoKey, "Stereographic", 14);
     static public final TagValue ProjCoordTrans_TransverseMercator = new TagValue(Tag.ProjCoordTransGeoKey, "TransverseMercator", 1);
+    static public final TagValue ProjCoordTrans_AlbersConicalEqualArea = new TagValue(Tag.ProjCoordTransGeoKey, "AlbersConicalEqualArea", 11);
     static public final TagValue ProjCoordTrans_Mercator = new TagValue(Tag.ProjCoordTransGeoKey, "Mercator", 7);  
     // units
     static public final TagValue ProjLinearUnits_METER = new TagValue(Tag.ProjLinearUnitsGeoKey, "Meter", 9001);
