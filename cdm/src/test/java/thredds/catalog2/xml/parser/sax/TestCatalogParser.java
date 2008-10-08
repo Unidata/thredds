@@ -1,7 +1,7 @@
 package thredds.catalog2.xml.parser.sax;
 
 import junit.framework.*;
-import thredds.catalog2.xml.parser.CatalogParserFactory;
+import thredds.catalog2.xml.parser.ThreddsXmlParserFactory;
 import thredds.catalog2.xml.parser.ThreddsXmlParser;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.Catalog;
@@ -53,7 +53,7 @@ public class TestCatalogParser extends TestCase
             .append( "  </dataset>\n" )
             .append( "</catalog>" );
 
-    ThreddsXmlParser cp = CatalogParserFactory.newCatalogParser( true);
+    ThreddsXmlParser cp = ThreddsXmlParserFactory.newCatalogParser( true);
     URI baseUri;
     String baseUriString = "http://test.catalog.parser/cat.xml";
     try

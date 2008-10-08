@@ -8,7 +8,7 @@ import thredds.catalog2.xml.parser.sax.SAXCatalogParser;
  * @author edavis
  * @since 4.0
  */
-public class CatalogParserFactory
+public class ThreddsXmlParserFactory
 {
   public static ThreddsXmlParser newCatalogParser( boolean wantValidating)
   {
@@ -17,9 +17,9 @@ public class CatalogParserFactory
     return catParser;
   }
 
-  private CatalogParserFactory(){}
-  public static CatalogParserFactory newFactory()
-  { return new CatalogParserFactory(); }
+  private ThreddsXmlParserFactory(){}
+  public static ThreddsXmlParserFactory newFactory()
+  { return new ThreddsXmlParserFactory(); }
 
   private boolean wantValidating = false;
 
