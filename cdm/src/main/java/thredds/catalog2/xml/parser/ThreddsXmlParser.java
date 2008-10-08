@@ -2,8 +2,10 @@ package thredds.catalog2.xml.parser;
 
 import thredds.catalog2.Catalog;
 import thredds.catalog2.Dataset;
+import thredds.catalog2.Metadata;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.DatasetBuilder;
+import thredds.catalog2.builder.MetadataBuilder;
 
 import java.net.URI;
 import java.io.File;
@@ -11,7 +13,7 @@ import java.io.Reader;
 import java.io.InputStream;
 
 /**
- * Provide methods for parsing a THREDDS catalog XML document and
+ * Provide methods for parsing THREDDS catalog XML documents and
  * generating a Catalog or CatalogBuilder object.
  *
  * @author edavis
@@ -39,4 +41,13 @@ public interface ThreddsXmlParser
   public DatasetBuilder parseDatasetIntoBuilder( Reader reader, URI baseUri ) throws ThreddsXmlParserException;
   public DatasetBuilder parseDatasetIntoBuilder( InputStream is, URI baseUri ) throws ThreddsXmlParserException;
 
+  public Metadata parseMetadata( URI uri) throws ThreddsXmlParserException;
+  public Metadata parseMetadata( File file, URI baseUri) throws ThreddsXmlParserException;
+  public Metadata parseMetadata( Reader reader, URI baseUri ) throws ThreddsXmlParserException;
+  public Metadata parseMetadata( InputStream is, URI baseUri ) throws ThreddsXmlParserException;
+
+  public MetadataBuilder parseMetadataIntoBuilder( URI uri) throws ThreddsXmlParserException;
+  public MetadataBuilder parseMetadataIntoBuilder( File file, URI baseUri) throws ThreddsXmlParserException;
+  public MetadataBuilder parseMetadataIntoBuilder( Reader reader, URI baseUri ) throws ThreddsXmlParserException;
+  public MetadataBuilder parseMetadataIntoBuilder( InputStream is, URI baseUri ) throws ThreddsXmlParserException;
 }

@@ -3,7 +3,7 @@ package thredds.catalog2.xml.parser;
 import junit.framework.*;
 import thredds.catalog2.xml.parser.CatalogParser;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
-import thredds.catalog2.xml.parser.stax.StaxCatalogParser;
+import thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterFactory;
 import thredds.catalog2.xml.writer.ThreddsXmlWriter;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
@@ -33,7 +33,7 @@ public class TestCatalogParser extends TestCase
   {
     DocumentSource docSource = getMainTestCatalog();
 
-    CatalogParser cp = StaxCatalogParser.newInstance();
+    CatalogParser cp = StaxThreddsXmlParser.newInstance();
     Catalog cat;
     try
     {
@@ -68,7 +68,7 @@ public class TestCatalogParser extends TestCase
   {
     DocumentSource docSource = getTestThreddsMetadata();
 
-    CatalogParser cp = StaxCatalogParser.newInstance();
+    CatalogParser cp = StaxThreddsXmlParser.newInstance();
     Catalog cat;
     try
     {

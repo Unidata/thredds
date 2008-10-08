@@ -3,10 +3,10 @@ package thredds.catalog2.xml.parser.stax;
 import thredds.catalog2.xml.parser.CatalogParser;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.Catalog;
+import thredds.catalog2.Dataset;
+import thredds.catalog2.Metadata;
 import thredds.catalog2.simpleImpl.CatalogBuilderFactoryImpl;
-import thredds.catalog2.builder.CatalogBuilder;
-import thredds.catalog2.builder.CatalogBuilderFactory;
-import thredds.catalog2.builder.BuildException;
+import thredds.catalog2.builder.*;
 import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;
 
@@ -27,7 +27,7 @@ import javax.xml.transform.stream.StreamSource;
  * @author edavis
  * @since 4.0
  */
-public class StaxCatalogParser implements CatalogParser
+public class StaxThreddsXmlParser implements CatalogParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
@@ -37,7 +37,7 @@ public class StaxCatalogParser implements CatalogParser
 //  private boolean isValidating = false;
 //  private Schema schema = null;
 
-  private StaxCatalogParser()
+  private StaxThreddsXmlParser()
   {
     factory = XMLInputFactory.newInstance();
     factory.setProperty( "javax.xml.stream.isCoalescing", Boolean.TRUE );
@@ -47,9 +47,9 @@ public class StaxCatalogParser implements CatalogParser
     reader = null;
   }
 
-  public static StaxCatalogParser newInstance()
+  public static StaxThreddsXmlParser newInstance()
   {
-    return new StaxCatalogParser();
+    return new StaxThreddsXmlParser();
   }
 
 //  public boolean wantValidating( boolean wantValidating )
@@ -137,10 +137,10 @@ public class StaxCatalogParser implements CatalogParser
 //    }
   }
 
-  public Catalog parse( URI uri )
+  public Catalog parse( URI documentUri )
           throws ThreddsXmlParserException
   {
-    HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver( uri );
+    HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver( documentUri );
     InputStream is = null;
     try
     {
@@ -152,7 +152,7 @@ public class StaxCatalogParser implements CatalogParser
       throw new ThreddsXmlParserException( "", e );
     }
 
-    Source s = new StreamSource( is, uri.toString() );
+    Source s = new StreamSource( is, documentUri.toString() );
     try
     {
       return readXML( s ).finish();
@@ -164,12 +164,12 @@ public class StaxCatalogParser implements CatalogParser
     }
   }
 
-  public Catalog parse( File file, URI baseUri )
+  public Catalog parse( File file, URI docBaseUri )
           throws ThreddsXmlParserException
   {
     try
     {
-      return parseIntoBuilder( file, baseUri ).finish();
+      return parseIntoBuilder( file, docBaseUri ).finish();
     }
     catch ( BuildException e )
     {
@@ -178,12 +178,12 @@ public class StaxCatalogParser implements CatalogParser
     }
   }
 
-  public Catalog parse( Reader reader, URI baseUri )
+  public Catalog parse( Reader reader, URI docBaseUri )
           throws ThreddsXmlParserException
   {
     try
     {
-      return parseIntoBuilder( reader, baseUri ).finish();
+      return parseIntoBuilder( reader, docBaseUri ).finish();
     }
     catch ( BuildException e )
     {
@@ -192,12 +192,12 @@ public class StaxCatalogParser implements CatalogParser
     }
   }
 
-  public Catalog parse( InputStream is, URI baseUri )
+  public Catalog parse( InputStream is, URI docBaseUri )
           throws ThreddsXmlParserException
   {
     try
     {
-      return parseIntoBuilder( is, baseUri ).finish();
+      return parseIntoBuilder( is, docBaseUri ).finish();
     }
     catch ( BuildException e )
     {
@@ -206,10 +206,10 @@ public class StaxCatalogParser implements CatalogParser
     }
   }
 
-  public CatalogBuilder parseIntoBuilder( URI uri )
+  public CatalogBuilder parseIntoBuilder( URI documentUri )
           throws ThreddsXmlParserException
   {
-    HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver( uri );
+    HttpUriResolver httpUriResolver = HttpUriResolverFactory.getDefaultHttpUriResolver( documentUri );
     InputStream is = null;
     try
     {
@@ -221,16 +221,16 @@ public class StaxCatalogParser implements CatalogParser
       throw new ThreddsXmlParserException( "", e );
     }
 
-    Source s = new StreamSource( is, uri.toString() );
+    Source s = new StreamSource( is, documentUri.toString() );
     return readXML( s );
   }
 
-  public CatalogBuilder parseIntoBuilder( File file, URI baseUri )
+  public CatalogBuilder parseIntoBuilder( File file, URI docBaseUri )
           throws ThreddsXmlParserException
   {
     if ( file == null ) throw new IllegalArgumentException( "File must not be null." );
     Source s = null;
-    if ( baseUri == null )
+    if ( docBaseUri == null )
       s = new StreamSource( file );
     else
     {
@@ -244,22 +244,102 @@ public class StaxCatalogParser implements CatalogParser
         log.error( "parse(): Couldn't find file []: " + e.getMessage(), e );
         throw new ThreddsXmlParserException( "Couldn't find file []: " + e.getMessage(), e );
       }
-      s = new StreamSource( is, baseUri.toString() );
+      s = new StreamSource( is, docBaseUri.toString() );
     }
     return readXML( s );
   }
 
-  public CatalogBuilder parseIntoBuilder( Reader reader, URI baseUri )
+  public CatalogBuilder parseIntoBuilder( Reader reader, URI docBaseUri )
           throws ThreddsXmlParserException
   {
-    Source source = new StreamSource( reader, baseUri.toString() );
+    Source source = new StreamSource( reader, docBaseUri.toString() );
     return readXML( source );
   }
 
-  public CatalogBuilder parseIntoBuilder( InputStream is, URI baseUri )
+  public CatalogBuilder parseIntoBuilder( InputStream is, URI docBaseUri )
           throws ThreddsXmlParserException
   {
-    Source source = new StreamSource( is, baseUri.toString() );
+    Source source = new StreamSource( is, docBaseUri.toString() );
     return readXML( source );
+  }
+
+  public Dataset parseDataset( URI documentUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Dataset parseDataset( File file, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Dataset parseDataset( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Dataset parseDataset( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public DatasetBuilder parseDatasetIntoBuilder( URI documentUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public DatasetBuilder parseDatasetIntoBuilder( File file, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public DatasetBuilder parseDatasetIntoBuilder( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public DatasetBuilder parseDatasetIntoBuilder( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Metadata parseMetadata( URI documentUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Metadata parseMetadata( File file, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Metadata parseMetadata( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Metadata parseMetadata( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public MetadataBuilder parseMetadataIntoBuilder( URI documentUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public MetadataBuilder parseMetadataIntoBuilder( File file, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public MetadataBuilder parseMetadataIntoBuilder( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public MetadataBuilder parseMetadataIntoBuilder( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
   }
 }
