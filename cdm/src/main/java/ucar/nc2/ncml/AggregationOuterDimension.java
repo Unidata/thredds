@@ -672,11 +672,10 @@ public abstract class AggregationOuterDimension extends Aggregation {
     } */
 
     // read any cached variables that need it
-
     @Override
     protected void cacheVariables(NetcdfFile ncfile) throws IOException {
-      for (CacheVar pv : cacheList) {
-        pv.read(this);
+      for (CacheVar pv : cacheList) {      
+        pv.read(this, ncfile);
       }
     }
 
@@ -795,24 +794,34 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
     // get the Array of data for this var in this dataset
     protected Array read(DatasetOuterDimension dset) throws IOException {
+
+      Array data = getData(dset);
+      if (data != null) return data;
+      if (type == Type.JOIN_NEW) return null;  // ??
+
+      NetcdfFile ncfile = null;
+      try {
+        ncfile = dset.acquireFile(null);
+        return read(dset, ncfile);
+
+      } finally {
+        if (ncfile != null) ncfile.close();
+      }
+    }
+
+    // get the Array of data for this var in this dataset and open ncfile
+    protected Array read(DatasetOuterDimension dset, NetcdfFile ncfile) throws IOException {
       invocation++;
 
       Array data = getData(dset);
       if (data != null) return data;
       if (type == Type.JOIN_NEW) return null;
 
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = dset.acquireFile(null);
-        Variable v = ncfile.findVariable(varName);
-        data = v.read();
-        setData(dset, data);
-        if (debugCache) System.out.println("caching "+varName+" complete data");
-        return data;
-
-      } finally {
-        ncfile.close();
-      }
+      Variable v = ncfile.findVariable(varName);
+      data = v.read();
+      setData(dset, data);
+      if (debugCache) System.out.println("caching "+varName+" complete data");
+      return data;
     }
   }
 

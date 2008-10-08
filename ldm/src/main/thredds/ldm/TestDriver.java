@@ -142,11 +142,12 @@ public class TestDriver {
     long start = System.nanoTime();
 
     //test("D:/bufr/out/RJTD-IUCN53-1.bufr", new MClosure() {
-    //test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
+    test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
     //test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
-    test("D:/bufr/nlode/snap080808/", new MClosure() {
+    //test("D:/bufr/nlode/snap080808/", new MClosure() {
     //test("D:/bufr/dispatch/fslprofilers/fslprofilers-2008-7-28.bufr", new MClosure() {
         public void run(String filename) throws IOException {
+          System.out.println("scan "+filename);
           scan(filename, broker);
         }
       });

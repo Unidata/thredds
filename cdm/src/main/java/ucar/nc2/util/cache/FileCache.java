@@ -69,7 +69,7 @@ public class FileCache {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static private ScheduledExecutorService exec;
   static private boolean debugPrint = false;
-  static private boolean debugCleanup = true;
+  static private boolean debugCleanup = false;
 
   /**
     * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.
@@ -82,37 +82,51 @@ public class FileCache {
 
    /////////////////////////////////////////////////////////////////////////////////////////
 
-  private final int maxElements, minElements;
+  private final int softLimit, minElements, hardLimit;
 
   private final ConcurrentHashMap<Object, CacheElement> cache;
   private final ConcurrentHashMap<Object, CacheElement.CacheFile> files;
-  private final AtomicInteger counter = new AtomicInteger();
-  private final AtomicInteger cleanups = new AtomicInteger();
-  private final AtomicBoolean hasScheduled = new AtomicBoolean(false);
-  private final AtomicBoolean disabled = new AtomicBoolean(false);
+  private final AtomicInteger counter = new AtomicInteger(); // how many elements
+  private final AtomicBoolean hasScheduled = new AtomicBoolean(false); // a cleanup is scheduled
+  private final AtomicBoolean disabled = new AtomicBoolean(false);  // cache is disabled
 
   // debugging and stats
+  private final AtomicInteger cleanups = new AtomicInteger();  // how many cleanups
   private final AtomicInteger hits = new AtomicInteger();
   private final AtomicInteger miss = new AtomicInteger();
 
   /**
-   * Constructor, which also enables.
+   * Constructor.
    *
    * @param minElementsInMemory keep this number in the cache
    * @param maxElementsInMemory trigger a cleanup if it goes over this number.
    * @param period              (secs) do periodic cleanups every this number of seconds.
    */
   public FileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
+    this( minElementsInMemory, maxElementsInMemory, -1, period);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param minElementsInMemory keep this number in the cache
+   * @param softLimit trigger a cleanup if it goes over this number.
+   * @param hardLimit if > 0, never allow more than this many elements. This causes a cleanup to be done in the calling thread.
+   * @param period    if > 0, do periodic cleanups every this number of seconds.
+   */
+  public FileCache(int minElementsInMemory, int softLimit, int hardLimit, int period) {
     this.minElements = minElementsInMemory;
-    this.maxElements = maxElementsInMemory;
+    this.softLimit = softLimit;
+    this.hardLimit = hardLimit;
 
-    cache = new ConcurrentHashMap<Object, CacheElement>(2 * maxElements, 0.75f, 8);
-    files = new ConcurrentHashMap<Object, CacheElement.CacheFile>(4 * maxElements, 0.75f, 8);
+    cache = new ConcurrentHashMap<Object, CacheElement>(2 * softLimit, 0.75f, 8);
+    files = new ConcurrentHashMap<Object, CacheElement.CacheFile>(4 * softLimit, 0.75f, 8);
 
-    if (exec == null)
-      exec = Executors.newSingleThreadScheduledExecutor();
-
-    exec.scheduleAtFixedRate(new CleanupTask(), period, period, TimeUnit.SECONDS);
+    if (period > 0) {
+      if (exec == null)
+        exec = Executors.newSingleThreadScheduledExecutor();
+      exec.scheduleAtFixedRate(new CleanupTask(), period, period, TimeUnit.SECONDS);
+    }
   }
 
   /**
@@ -176,8 +190,8 @@ public class FileCache {
 
     // open the file
     ncfile = factory.open(location, buffer_size, cancelTask, spiObject);
-    if (log.isDebugEnabled()) log.debug("FileCache.open " + hashKey+" "+ncfile.getLocation());
-    if (debugPrint) System.out.println("  FileCache.open " + hashKey+" "+ncfile.getLocation());
+    if (log.isDebugEnabled()) log.debug("FileCache.acquire " + hashKey+" "+ncfile.getLocation());
+    if (debugPrint) System.out.println("  FileCache.acquire " + hashKey+" "+ncfile.getLocation());
 
     // user may have canceled
     if ((cancelTask != null) && (cancelTask.isCancel())) {
@@ -203,10 +217,17 @@ public class FileCache {
     }
 
     int count = counter.incrementAndGet();
-    if (count > maxElements) {
+    if ((count > hardLimit) && (hardLimit > 0)) {
+      boolean wasScheduled = hasScheduled.getAndSet(true); // disable scheduling cleanup
+      if (debugCleanup)
+        System.out.println("CleanupTask due to hard limit time=" + new Date().getTime());
+      cleanup(hardLimit);
+      hasScheduled.getAndSet(wasScheduled); // reset scheduling status
+
+    } else if ((count > softLimit)) { // && (softLimit > 0)) {
       if (hasScheduled.compareAndSet(false, true)) {
         exec.schedule(new CleanupTask(), 100, TimeUnit.MILLISECONDS); // immediate cleanup in 100 msec
-        if (debugCleanup) System.out.println("CleanupTask scheduled " + new Date().getTime());
+        if (debugCleanup) System.out.println("CleanupTask scheduled due to soft limit time=" + new Date().getTime());
       }
     }
 
@@ -374,15 +395,18 @@ public class FileCache {
    * Cleanup the cache, bringing it down to minimum number.
    * Will close the LRU (least recently used) ones first. Will not close locked files.
    * Normally this is done in a background thread, you dont need to call.
+   *
+   * We have to synchronize because hard limit calls this synchronously.
+   * Soft limit is called asynchrounously in the cleanup thread
    */
-  private void cleanup() {
+  private synchronized void cleanup(int maxElements) {
     if (disabled.get()) return;
 
     int size = counter.get();
     if (size <= minElements) return;
 
-    log.debug("FileCache.cleanup started at "+new Date());
-    if (debugCleanup) System.out.println("FileCache.cleanup started at "+new Date().getTime());
+    log.debug("FileCache.cleanup started at "+new Date()+" for cleanup maxElements="+maxElements);
+    if (debugCleanup) System.out.println("FileCache.cleanup started at "+new Date().getTime()+" for cleanup maxElements="+maxElements);
 
     cleanups.incrementAndGet();
 
@@ -409,8 +433,8 @@ public class FileCache {
       }
     }
     if (count < minDelete) {
-      log.warn("FileCache.cleanup couldnt delete enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
-      if (debugCleanup) System.out.println("FileCache.cleanup couldnt delete enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
+      log.warn("FileCache.cleanup couldnt removed enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
+      if (debugCleanup) System.out.println("FileCache.cleanup couldnt removed enough to keep under the maximum= " + maxElements + " due to locked files; currently at = " + (size - count));
     }
 
     // remove empty cache elements
@@ -438,8 +462,10 @@ public class FileCache {
     }
 
     long took = System.currentTimeMillis() - start;
-    log.debug("FileCache.cleanup had= " + size + " deleted= " + deleteList.size() + " took=" + took + " msec");
-    if (debugCleanup) System.out.println("FileCache.cleanup had= " + size + " deleted= " + deleteList.size() + " took=" + took + " msec");
+    log.debug("FileCache.cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
+    if (debugCleanup) System.out.println("FileCache.cleanup had= " + size + " removed= " + deleteList.size() + " took=" + took + " msec");
+
+    // allow scheduling again
     hasScheduled.set(false);
   }
 
@@ -481,7 +507,7 @@ public class FileCache {
         ncfile.setFileCache( FileCache.this);
 
         if (log.isDebugEnabled()) log.debug("FileCache add to cache " + hashKey);
-        if (debugPrint) System.out.println("FileCache add to cache " + hashKey);
+        if (debugPrint) System.out.println("  FileCache add to cache " + hashKey);
       }
 
       String getCacheName() { return ncfile.getLocation(); }
@@ -490,6 +516,8 @@ public class FileCache {
         synchronized (CacheElement.this) {
           list.remove(this);
         }
+        if (log.isDebugEnabled()) log.debug("FileCache.remove " + ncfile.getLocation());
+        if (debugPrint) System.out.println("  FileCache.remove " + ncfile.getLocation());
       }
 
       public String toString() {
@@ -504,7 +532,7 @@ public class FileCache {
 
   private class CleanupTask implements Runnable {
     public void run() {
-      cleanup();
+      cleanup(softLimit);
     }
   }
 

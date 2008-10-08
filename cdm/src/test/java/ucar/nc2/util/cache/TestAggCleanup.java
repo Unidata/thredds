@@ -79,7 +79,7 @@ public class TestAggCleanup extends TestCase {
     List<String> openfiles = RandomAccessFile.getOpenFiles();
     int count = openfiles.size();
     System.out.println("starting files="+count);
-    NetcdfDataset.initNetcdfFileCache(0, 2, 10*60);
+    NetcdfDataset.initNetcdfFileCache(0, 2, 5, 10*60);
 
     for (int i=0; i<10; i++) {
       String ncmli = StringUtil.replace(ncml,'%',Integer.toString(i));

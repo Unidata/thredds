@@ -81,9 +81,15 @@ import org.jdom.Element;
 
  */
 public abstract class Aggregation implements ProxyReader {
-  // JOIN_EXISTING with a DateFormatMark makes it into a JOIN_EXISTING_ONE
-  static public enum Type { FORECAST_MODEL_COLLECTION,  FORECAST_MODEL_SINGLE, JOIN_EXISTING, JOIN_EXISTING_ONE,
-      JOIN_NEW, TILED, UNION }
+
+  static public enum Type {
+    FORECAST_MODEL_COLLECTION,
+    FORECAST_MODEL_SINGLE,
+    JOIN_EXISTING,
+    JOIN_EXISTING_ONE, // JOIN_EXISTING with a DateFormatMark makes it into a JOIN_EXISTING_ONE
+    JOIN_NEW,
+    TILED,
+    UNION }
 
   static protected enum TypicalDataset {RANDOM, LATEST, PENULTIMATE }
   static protected TypicalDataset typicalDatasetMode;
@@ -465,6 +471,7 @@ public abstract class Aggregation implements ProxyReader {
     protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
     protected EnumSet<NetcdfDataset.Enhance> enhance;
+    //protected NetcdfFile ncfile;
 
     /**
      * For subclasses.

@@ -257,6 +257,19 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     defaultNetcdfFileFactory = new MyNetcdfFileFactory();
   }
 
+  /**
+   * Enable file caching. call this before calling acquireFile().
+   * When application terminates, call NetcdfDataset.shutdown().
+   * @param minElementsInMemory keep this number in the cache
+   * @param maxElementsInMemory trigger a cleanup if it goes over this number.
+   * @param hardLimit if > 0, never allow more than this many elements. This causes a cleanup to be done in the calling thread.
+   * @param period              (secs) do periodic cleanups every this number of seconds.
+   */
+  static public void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit, int period) {
+    fileCache = new ucar.nc2.util.cache.FileCache( minElementsInMemory, maxElementsInMemory, hardLimit, period);
+    defaultNetcdfFileFactory = new MyNetcdfFileFactory();
+  }
+
   static public void disableNetcdfFileCache() {
     if (null != fileCache) fileCache.disable();
     fileCache = null;
