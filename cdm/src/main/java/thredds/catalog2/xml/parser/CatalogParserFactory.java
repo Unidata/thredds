@@ -10,7 +10,7 @@ import thredds.catalog2.xml.parser.sax.SAXCatalogParser;
  */
 public class CatalogParserFactory
 {
-  public static CatalogParser newCatalogParser( boolean wantValidating)
+  public static ThreddsXmlParser newCatalogParser( boolean wantValidating)
   {
     SAXCatalogParser catParser = SAXCatalogParser.getInstance();
     catParser.wantValidating( wantValidating );
@@ -31,7 +31,7 @@ public class CatalogParserFactory
     this.wantValidating = wantValidating;
   }
 
-  public CatalogParser getCatalogParser()
+  public ThreddsXmlParser getCatalogParser()
   {
     SAXCatalogParser catParser = SAXCatalogParser.getInstance();
     catParser.wantValidating( this.wantValidating );

@@ -1,11 +1,15 @@
 package thredds.catalog2.xml.parser.sax;
 
-import thredds.catalog2.xml.parser.CatalogParser;
+import thredds.catalog2.xml.parser.ThreddsXmlParser;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.Catalog;
+import thredds.catalog2.Dataset;
+import thredds.catalog2.Metadata;
 import thredds.catalog2.builder.CatalogBuilder;
 import thredds.catalog2.builder.BuildException;
+import thredds.catalog2.builder.DatasetBuilder;
+import thredds.catalog2.builder.MetadataBuilder;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
@@ -23,7 +27,7 @@ import org.xml.sax.SAXException;
  * @author edavis
  * @since 4.0
  */
-public class SAXCatalogParser implements CatalogParser
+public class SAXCatalogParser implements ThreddsXmlParser
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( SAXCatalogParser.class );
 
@@ -176,6 +180,86 @@ public class SAXCatalogParser implements CatalogParser
   }
 
   public CatalogBuilder parseIntoBuilder( InputStream is, URI baseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Dataset parseDataset( URI documentUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Dataset parseDataset( File file, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Dataset parseDataset( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Dataset parseDataset( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public DatasetBuilder parseDatasetIntoBuilder( URI documentUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public DatasetBuilder parseDatasetIntoBuilder( File file, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public DatasetBuilder parseDatasetIntoBuilder( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public DatasetBuilder parseDatasetIntoBuilder( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Metadata parseMetadata( URI documentUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Metadata parseMetadata( File file, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Metadata parseMetadata( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public Metadata parseMetadata( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public MetadataBuilder parseMetadataIntoBuilder( URI documentUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public MetadataBuilder parseMetadataIntoBuilder( File file, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public MetadataBuilder parseMetadataIntoBuilder( Reader reader, URI docBaseUri ) throws ThreddsXmlParserException
+  {
+    return null;
+  }
+
+  public MetadataBuilder parseMetadataIntoBuilder( InputStream is, URI docBaseUri ) throws ThreddsXmlParserException
   {
     return null;
   }

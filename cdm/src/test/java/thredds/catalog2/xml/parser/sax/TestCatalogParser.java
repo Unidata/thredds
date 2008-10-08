@@ -2,7 +2,7 @@ package thredds.catalog2.xml.parser.sax;
 
 import junit.framework.*;
 import thredds.catalog2.xml.parser.CatalogParserFactory;
-import thredds.catalog2.xml.parser.CatalogParser;
+import thredds.catalog2.xml.parser.ThreddsXmlParser;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.Catalog;
 
@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
 public class TestCatalogParser extends TestCase
 {
 
-//  private CatalogParser me;
+//  private ThreddsXmlParser me;
 
   public TestCatalogParser( String name )
   {
@@ -53,7 +53,7 @@ public class TestCatalogParser extends TestCase
             .append( "  </dataset>\n" )
             .append( "</catalog>" );
 
-    CatalogParser cp = CatalogParserFactory.newCatalogParser( true);
+    ThreddsXmlParser cp = CatalogParserFactory.newCatalogParser( true);
     URI baseUri;
     String baseUriString = "http://test.catalog.parser/cat.xml";
     try

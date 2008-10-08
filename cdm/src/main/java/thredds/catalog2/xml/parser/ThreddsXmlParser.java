@@ -20,7 +20,7 @@ import java.io.InputStream;
  * @author edavis
  * @since 4.0
  */
-public interface CatalogParser
+public interface ThreddsXmlParser
 {
   public Catalog parse( URI documentUri) throws ThreddsXmlParserException;
   public Catalog parse( File file, URI docBaseUri) throws ThreddsXmlParserException;

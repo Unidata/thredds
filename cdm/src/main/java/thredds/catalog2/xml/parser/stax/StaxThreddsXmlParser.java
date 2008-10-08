@@ -1,6 +1,6 @@
 package thredds.catalog2.xml.parser.stax;
 
-import thredds.catalog2.xml.parser.CatalogParser;
+import thredds.catalog2.xml.parser.ThreddsXmlParser;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.Catalog;
 import thredds.catalog2.Dataset;
@@ -27,7 +27,7 @@ import javax.xml.transform.stream.StreamSource;
  * @author edavis
  * @since 4.0
  */
-public class StaxThreddsXmlParser implements CatalogParser
+public class StaxThreddsXmlParser implements ThreddsXmlParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
