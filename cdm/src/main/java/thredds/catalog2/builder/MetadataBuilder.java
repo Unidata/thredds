@@ -2,6 +2,8 @@ package thredds.catalog2.builder;
 
 import thredds.catalog2.Metadata;
 
+import java.util.List;
+
 /**
  * _more_
  *
@@ -11,5 +13,5 @@ import thredds.catalog2.Metadata;
 public interface MetadataBuilder extends ThreddsBuilder
 {
   public boolean isFinished();
-  public Metadata finish() throws BuildException;
+  public Metadata finish( List<BuilderFinishIssue> issues );
 }

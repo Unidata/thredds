@@ -12,8 +12,8 @@ import java.util.*;
  */
 class PropertyContainer
 {
-  private List<Property> properties;
-  private Map<String, Property> propertiesMap;
+  private final List<Property> properties;
+  private final Map<String, Property> propertiesMap;
 
   PropertyContainer()
   {

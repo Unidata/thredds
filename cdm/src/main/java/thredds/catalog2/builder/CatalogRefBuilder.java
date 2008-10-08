@@ -3,6 +3,7 @@ package thredds.catalog2.builder;
 import thredds.catalog2.CatalogRef;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * _more_
@@ -17,5 +18,5 @@ public interface CatalogRefBuilder
   public void setReference( URI reference );
 
   public boolean isFinished();
-  public CatalogRef finish() throws BuildException;
+  public CatalogRef finish( List<BuilderFinishIssue> issues );
 }

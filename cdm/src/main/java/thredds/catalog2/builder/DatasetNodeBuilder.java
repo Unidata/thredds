@@ -39,5 +39,5 @@ public interface DatasetNodeBuilder extends ThreddsBuilder
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id );
 
   public boolean isFinished();
-  public DatasetNode finish() throws BuildException;
+  public DatasetNode finish( List<BuilderFinishIssue> issues );
 }

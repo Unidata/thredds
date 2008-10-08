@@ -5,6 +5,7 @@ import thredds.catalog2.Property;
 import thredds.catalog2.Service;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.BuildException;
+import thredds.catalog2.builder.BuilderFinishIssue;
 
 import java.net.URI;
 import java.util.*;
@@ -229,19 +230,44 @@ public class ServiceImpl implements Service, ServiceBuilder
     return null;
   }
 
-  public boolean isFinished()
+  private List<BuilderFinishIssue> localIssues;
+  public boolean isFinished( List<BuilderFinishIssue> issues )
   {
-    return this.finished;
+    if ( this.finished )
+      return true;
+
+    this.localIssues = new ArrayList<BuilderFinishIssue>();
+
+    // Check subordinates.
+    for ( ServiceBuilder sb : this.serviceBuilders )
+      sb.isFinished( localIssues);
+
+    // Check that leaf services have a baseUri.
+    if ( this.serviceBuilders.isEmpty() && this.baseUri == null )
+      localIssues.add( new BuilderFinishIssue( "", this));
+
+      // Mark finished.
+      this.finished = true;
+    return this;
   }
 
   public Service finish() throws BuildException
   {
-    if ( this.finished )
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    if ( isFinished( issues ))
+    {
+      this.finished = true;
       return this;
+    }
+
+    throw new BuildException( issues );
 
     // Finish subordinates.
     for ( ServiceBuilder sb : this.serviceBuilders )
       sb.finish();
+
+    // Check that leaf services have a baseUri.
+    if ( this.serviceBuilders.isEmpty() && this.baseUri == null )
 
     // Mark finished.
     this.finished = true;

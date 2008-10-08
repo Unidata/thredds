@@ -84,13 +84,12 @@ public interface ServiceBuilder extends ThreddsBuilder
   public List<ServiceBuilder> getServiceBuilders();
   public ServiceBuilder getServiceBuilderByName( String name );
 
-  public boolean isFinished();
+  public boolean isFinished( List<BuilderFinishIssue> issues );
 
   /**
    * Return the finished Service.
    *
    * @return the finished Service.
-   * @throws IllegalStateException if two of this Service and the contained Services have the same name.
    */
   public Service finish() throws BuildException;
 }

@@ -1,8 +1,9 @@
 package thredds.catalog2.builder;
 
-import thredds.catalog2.Service;
 import thredds.catalog2.Access;
 import thredds.catalog.DataFormatType;
+
+import java.util.List;
 
 /**
  * _more_
@@ -25,5 +26,5 @@ public interface AccessBuilder extends ThreddsBuilder
   public void setDataSize( long bytes );
   
   public boolean isFinished();
-  public Access finish() throws BuildException;
+  public Access finish( List<BuilderFinishIssue> issues );
 }

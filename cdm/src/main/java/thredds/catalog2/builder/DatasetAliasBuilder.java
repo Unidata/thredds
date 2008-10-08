@@ -2,6 +2,8 @@ package thredds.catalog2.builder;
 
 import thredds.catalog2.DatasetAlias;
 
+import java.util.List;
+
 /**
  * _more_
  *
@@ -15,5 +17,5 @@ public interface DatasetAliasBuilder extends DatasetNodeBuilder
   public void setAlias( DatasetNodeBuilder aliasDataset );
 
   public boolean isFinished();
-  public DatasetAlias finish() throws BuildException;
+  public DatasetAlias finish( List<BuilderFinishIssue> issues );
 }

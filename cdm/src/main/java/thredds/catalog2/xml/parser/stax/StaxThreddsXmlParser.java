@@ -61,7 +61,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
 //    return this.isValidating;
 //  }
 
-  private CatalogBuilder readXML( Source source )
+  private CatalogBuilder readCatalogXML( Source source )
           throws ThreddsXmlParserException
   {
     try
@@ -93,7 +93,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
           else
           {
             StaxThreddsXmlParserUtils.consumeElementAndAnyContent( this.reader );
-            log.warn( "parse(): Unrecognized start element [" + event.asStartElement().getName() + "]." );
+            log.warn( "readCatalogXML(): Unrecognized start element [" + event.asStartElement().getName() + "]." );
             reader.next();
             continue;
           }
@@ -106,13 +106,13 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
           }
           else
           {
-            log.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
+            log.error( "readCatalogXML(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
             break;
           }
         }
         else
         {
-          log.debug( "parse(): Unhandled event [" + event.getLocation() + "--" + event + "].");
+          log.debug( "readCatalogXML(): Unhandled event [" + event.getLocation() + "--" + event + "].");
           reader.next();
           continue;
         }
@@ -127,12 +127,12 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     }
     catch ( XMLStreamException e )
     {
-      log.error( "readXML(): Failed to parse catalog document: " + e.getMessage(), e );
+      log.error( "readCatalogXML(): Failed to parse catalog document: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
     }
 //    catch ( BuildException e )
 //    {
-//      log.error( "readXML(): Failed to parse catalog document: " + e.getMessage(), e );
+//      log.error( "readCatalogXML(): Failed to parse catalog document: " + e.getMessage(), e );
 //      throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
 //    }
   }
@@ -155,11 +155,11 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     Source s = new StreamSource( is, documentUri.toString() );
     try
     {
-      return readXML( s ).finish();
+      return readCatalogXML( s ).finish();
     }
     catch ( BuildException e )
     {
-      log.error( "readXML(): Failed to parse catalog document: " + e.getMessage(), e );
+      log.error( "parse(): Failed to parse catalog document: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
     }
   }
@@ -173,7 +173,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     }
     catch ( BuildException e )
     {
-      log.error( "readXML(): Failed to parse catalog document: " + e.getMessage(), e );
+      log.error( "parse(): Failed to parse catalog document: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
     }
   }
@@ -187,7 +187,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     }
     catch ( BuildException e )
     {
-      log.error( "readXML(): Failed to parse catalog document: " + e.getMessage(), e );
+      log.error( "parse(): Failed to parse catalog document: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
     }
   }
@@ -201,7 +201,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     }
     catch ( BuildException e )
     {
-      log.error( "readXML(): Failed to parse catalog document: " + e.getMessage(), e );
+      log.error( "parse(): Failed to parse catalog document: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
     }
   }
@@ -222,7 +222,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     }
 
     Source s = new StreamSource( is, documentUri.toString() );
-    return readXML( s );
+    return readCatalogXML( s );
   }
 
   public CatalogBuilder parseIntoBuilder( File file, URI docBaseUri )
@@ -241,26 +241,26 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
       }
       catch ( FileNotFoundException e )
       {
-        log.error( "parse(): Couldn't find file []: " + e.getMessage(), e );
+        log.error( "parseIntoBuilder(): Couldn't find file []: " + e.getMessage(), e );
         throw new ThreddsXmlParserException( "Couldn't find file []: " + e.getMessage(), e );
       }
       s = new StreamSource( is, docBaseUri.toString() );
     }
-    return readXML( s );
+    return readCatalogXML( s );
   }
 
   public CatalogBuilder parseIntoBuilder( Reader reader, URI docBaseUri )
           throws ThreddsXmlParserException
   {
     Source source = new StreamSource( reader, docBaseUri.toString() );
-    return readXML( source );
+    return readCatalogXML( source );
   }
 
   public CatalogBuilder parseIntoBuilder( InputStream is, URI docBaseUri )
           throws ThreddsXmlParserException
   {
     Source source = new StreamSource( is, docBaseUri.toString() );
-    return readXML( source );
+    return readCatalogXML( source );
   }
 
   public Dataset parseDataset( URI documentUri ) throws ThreddsXmlParserException

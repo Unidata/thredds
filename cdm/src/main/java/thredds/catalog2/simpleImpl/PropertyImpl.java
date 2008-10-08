@@ -10,8 +10,8 @@ import thredds.catalog2.Property;
  */
 public class PropertyImpl implements Property
 {
-  private String name;
-  private String value;
+  private final String name;
+  private final String value;
   public PropertyImpl( String name, String value )
   {
     if ( name == null ) throw new IllegalArgumentException( "Name must not be null.");

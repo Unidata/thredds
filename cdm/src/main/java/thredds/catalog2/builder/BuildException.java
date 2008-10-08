@@ -1,5 +1,8 @@
 package thredds.catalog2.builder;
 
+import java.util.List;
+import java.util.Collections;
+
 /**
  * _more_
  *
@@ -8,29 +11,46 @@ package thredds.catalog2.builder;
  */
 public class BuildException extends Exception
 {
-  private final ThreddsBuilder causeBuilder;
+  private final List<Source> sources;
 
-  public BuildException( ThreddsBuilder causeBuilder )
+  public BuildException( Source component )
   {
     super();
-    this.causeBuilder = causeBuilder;
+    this.sources = Collections.singletonList( component );
   }
 
-  public BuildException( ThreddsBuilder causeBuilder, String message)
+  public BuildException( List<Source> sources )
   {
-    super( message);
-    this.causeBuilder = causeBuilder;
+    super();
+    this.sources = sources;
   }
 
-  public BuildException( ThreddsBuilder causeBuilder, String message, Throwable cause)
+  public List<Source> getSources()
   {
-    super( message, cause);
-    this.causeBuilder = causeBuilder;
+    return Collections.unmodifiableList( sources );
   }
 
-  public BuildException( ThreddsBuilder causeBuilder, Throwable cause)
+  @Override
+  public String getMessage()
   {
-    super( cause);
-    this.causeBuilder = causeBuilder;
+    StringBuilder sb = new StringBuilder();
+    for ( Source bec : this.sources )
+      sb.append( bec.getMessage() ).append( "\n");
+    return sb.toString();
+  }
+
+  public static class Source
+  {
+    private final String message;
+    private final ThreddsBuilder builder;
+
+    public Source( String message, ThreddsBuilder builder )
+    {
+      this.message = message;
+      this.builder = builder;
+    }
+
+    public String getMessage() { return this.message; }
+    public ThreddsBuilder getBuilder() { return this.builder; }
   }
 }
