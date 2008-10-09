@@ -740,10 +740,10 @@ public class GempakFileReader implements GempakConstants {
         /** data type */
         public int ktyprt;
 
-        /** data type */
+        /** number of params */
         public int kparms;
 
-        /** number  of parameters */
+        /** list of params */
         public List<DMParam> params;
 
         /** packing number */
