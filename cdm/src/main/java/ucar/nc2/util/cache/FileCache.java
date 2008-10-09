@@ -218,11 +218,10 @@ public class FileCache {
 
     int count = counter.incrementAndGet();
     if ((count > hardLimit) && (hardLimit > 0)) {
-      boolean wasScheduled = hasScheduled.getAndSet(true); // disable scheduling cleanup
       if (debugCleanup)
         System.out.println("CleanupTask due to hard limit time=" + new Date().getTime());
+      hasScheduled.getAndSet(true); // tell other threads not to schedule another cleanup
       cleanup(hardLimit);
-      hasScheduled.getAndSet(wasScheduled); // reset scheduling status
 
     } else if ((count > softLimit)) { // && (softLimit > 0)) {
       if (hasScheduled.compareAndSet(false, true)) {
@@ -314,7 +313,7 @@ public class FileCache {
    *
    * @param force if true, remove them even if they are currently locked.
    */
-  public void clearCache(boolean force) {
+  public synchronized void clearCache(boolean force) {
     List<CacheElement.CacheFile> deleteList = new ArrayList<CacheElement.CacheFile>(2*cache.size());
 
     if (force) {
