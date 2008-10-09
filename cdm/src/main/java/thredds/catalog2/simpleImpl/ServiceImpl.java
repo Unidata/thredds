@@ -158,14 +158,14 @@ public class ServiceImpl implements Service, ServiceBuilder
   public List<Property> getProperties()
   {
     if ( !this.finished )
-      throw new IllegalStateException( "This Service has escaped from its ServiceBuilder before finish() was called." );
+      throw new IllegalStateException( "This Service has escaped from its ServiceBuilder before build() was called." );
     return this.propertyContainer.getProperties();
   }
 
   public Property getPropertyByName( String name )
   {
     if ( !this.finished )
-      throw new IllegalStateException( "This Service has escaped from its ServiceBuilder before finish() was called." );
+      throw new IllegalStateException( "This Service has escaped from its ServiceBuilder before build() was called." );
     return this.propertyContainer.getPropertyByName( name );
   }
 
@@ -230,7 +230,7 @@ public class ServiceImpl implements Service, ServiceBuilder
     return null;
   }
 
-  public boolean isFinished( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
     if ( this.finished )
       return true;
@@ -239,7 +239,7 @@ public class ServiceImpl implements Service, ServiceBuilder
 
     // Check subordinates.
     for ( ServiceBuilder sb : this.serviceBuilders )
-      sb.isFinished( localIssues);
+      sb.isBuildable( localIssues);
 
     // Check that leaf services have a baseUri.
     if ( this.serviceBuilders.isEmpty() && this.baseUri == null )
@@ -252,10 +252,10 @@ public class ServiceImpl implements Service, ServiceBuilder
     return false;
   }
 
-  public Service finish() throws BuilderException
+  public Service build() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    if ( ! isFinished( issues ))
+    if ( ! isBuildable( issues ))
       throw new BuilderException( issues );
 
     this.finished = true;

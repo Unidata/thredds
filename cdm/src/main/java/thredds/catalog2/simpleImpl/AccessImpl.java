@@ -54,7 +54,7 @@ public class AccessImpl implements Access, AccessBuilder
 
   public Service getService()
   {
-    if ( !this.finished ) throw new IllegalStateException( "This Access has escaped its AccessBuilder before finish() was called." );
+    if ( !this.finished ) throw new IllegalStateException( "This Access has escaped its AccessBuilder before build() was called." );
     return service;
   }
 
@@ -79,7 +79,7 @@ public class AccessImpl implements Access, AccessBuilder
     return dataSize;
   }
 
-  public boolean isFinished( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
     if ( this.finished )
       return true;
@@ -93,7 +93,7 @@ public class AccessImpl implements Access, AccessBuilder
       localIssues.add( new BuilderFinishIssue( "The urlPath may not be null.", this ) );
 
     // Check subordinates.
-    this.service.isFinished( localIssues );
+    this.service.isBuildable( localIssues );
 
     if ( localIssues.isEmpty() )
       return true;
@@ -102,10 +102,10 @@ public class AccessImpl implements Access, AccessBuilder
     return false;
   }
 
-  public Access finish() throws BuilderException
+  public Access build() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    if ( !isFinished( issues ) )
+    if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
 
     this.finished = true;

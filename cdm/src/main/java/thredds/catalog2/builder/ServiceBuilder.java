@@ -84,12 +84,12 @@ public interface ServiceBuilder extends ThreddsBuilder
   public List<ServiceBuilder> getServiceBuilders();
   public ServiceBuilder getServiceBuilderByName( String name );
 
-  public boolean isFinished( List<BuilderFinishIssue> issues );
+  public boolean isBuildable( List<BuilderFinishIssue> issues );
 
   /**
    * Return the finished Service.
    *
    * @return the finished Service.
    */
-  public Service finish() throws BuilderException;
+  public Service build() throws BuilderException;
 }

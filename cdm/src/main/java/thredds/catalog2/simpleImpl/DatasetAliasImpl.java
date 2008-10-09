@@ -38,7 +38,7 @@ public class DatasetAliasImpl
   public DatasetNode getAlias()
   {
     if ( ! this.finished )
-      throw new IllegalStateException( "This DatasetAlias has escaped its DatasetAliasBuilder before finish() was called.");
+      throw new IllegalStateException( "This DatasetAlias has escaped its DatasetAliasBuilder before build() was called.");
     return this.alias;
   }
 
@@ -49,15 +49,15 @@ public class DatasetAliasImpl
   }
 
   @Override
-  public boolean isFinished( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
     if ( this.finished )
       return true;
 
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
-    super.isFinished( issues );
+    super.isBuildable( issues );
 
-    this.alias.isFinished( localIssues );
+    this.alias.isBuildable( localIssues );
 
     // ToDo Check any invariants.
 
@@ -69,10 +69,10 @@ public class DatasetAliasImpl
   }
 
   @Override
-  public DatasetAlias finish() throws BuilderException
+  public DatasetAlias build() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    if ( !isFinished( issues ) )
+    if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
 
     this.finished = true;

@@ -45,7 +45,7 @@ public class ThreddsCatalogHandler extends DefaultHandler
   {
     if ( builder != null )
     {
-      return builder.finish();
+      return builder.build();
     }
     return null;
   }

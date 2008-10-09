@@ -40,13 +40,13 @@ public class CatalogRefImpl
   }
 
   @Override
-  public boolean isFinished( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
     if ( this.finished )
       return true;
 
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
-    super.isFinished( issues );
+    super.isBuildable( issues );
 
     // ToDo Check any invariants.
 
@@ -58,10 +58,10 @@ public class CatalogRefImpl
   }
 
   @Override
-  public CatalogRef finish() throws BuilderException
+  public CatalogRef build() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    if ( !isFinished( issues ) )
+    if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
 
     this.finished = true;

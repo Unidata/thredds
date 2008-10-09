@@ -38,6 +38,6 @@ public interface DatasetNodeBuilder extends ThreddsBuilder
   public List<DatasetNodeBuilder> getDatasetNodeBuilders();
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id );
 
-  public boolean isFinished( List<BuilderFinishIssue> issues );
-  public DatasetNode finish() throws BuilderException;
+  public boolean isBuildable( List<BuilderFinishIssue> issues );
+  public DatasetNode build() throws BuilderException;
 }

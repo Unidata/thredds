@@ -12,6 +12,6 @@ import java.util.List;
  */
 public interface MetadataBuilder extends ThreddsBuilder
 {
-  public boolean isFinished( List<BuilderFinishIssue> issues );
-  public Metadata finish() throws BuilderException;
+  public boolean isBuildable( List<BuilderFinishIssue> issues );
+  public Metadata build() throws BuilderException;
 }

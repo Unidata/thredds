@@ -203,7 +203,7 @@ public class TestServiceImpl extends TestCase
     if ( ! pass ) fail( "No IllegalStateException.");
 
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    boolean isBuildable = sb.isFinished( issues );
+    boolean isBuildable = sb.isBuildable( issues );
     if ( ! isBuildable )
     {
       StringBuilder sb2 = new StringBuilder( "ServiceBuilder not buildable: ");
@@ -215,7 +215,7 @@ public class TestServiceImpl extends TestCase
     Service s = null;
     try
     {
-      s = sb.finish();
+      s = sb.build();
     }
     catch ( BuilderException e )
     {

@@ -172,7 +172,7 @@ public class DatasetElementParser
       //datasetBuilder.getParentCatalogBuilder().getServiceBuilderByName(  )
       AccessBuilder accessBuilder = datasetBuilder.addAccessBuilder();
       accessBuilder.setUrlPath( urlPathAtt.getValue() );
-      // Add service in finish() when known.
+      // Add service in build() when known.
     }
 
     return datasetBuilder;

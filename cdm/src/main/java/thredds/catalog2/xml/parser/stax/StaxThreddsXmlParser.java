@@ -155,7 +155,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     Source s = new StreamSource( is, documentUri.toString() );
     try
     {
-      return readCatalogXML( s ).finish();
+      return readCatalogXML( s ).build();
     }
     catch ( BuilderException e )
     {
@@ -169,7 +169,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
   {
     try
     {
-      return parseIntoBuilder( file, docBaseUri ).finish();
+      return parseIntoBuilder( file, docBaseUri ).build();
     }
     catch ( BuilderException e )
     {
@@ -183,7 +183,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
   {
     try
     {
-      return parseIntoBuilder( reader, docBaseUri ).finish();
+      return parseIntoBuilder( reader, docBaseUri ).build();
     }
     catch ( BuilderException e )
     {
@@ -197,7 +197,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
   {
     try
     {
-      return parseIntoBuilder( is, docBaseUri ).finish();
+      return parseIntoBuilder( is, docBaseUri ).build();
     }
     catch ( BuilderException e )
     {

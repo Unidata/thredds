@@ -150,14 +150,14 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   public List<Service> getServices()
   {
     if ( !finished )
-      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without finish() being called." );
+      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without build() being called." );
     return Collections.unmodifiableList( this.services);
   }
 
   public Service getServiceByName( String name )
   {
     if ( !finished )
-      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
+      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being build()-ed." );
     return this.servicesMap.get( name );
   }
 
@@ -197,14 +197,14 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   public List<Property> getProperties()
   {
     if ( !this.finished )
-      throw new IllegalStateException( "This Catalog has escaped from its CatalogBuilder before finish() was called." );
+      throw new IllegalStateException( "This Catalog has escaped from its CatalogBuilder before build() was called." );
     return this.propertyContainer.getProperties();
   }
 
   public Property getPropertyByName( String name )
   {
     if ( !this.finished )
-      throw new IllegalStateException( "This Catalog has escaped from its CatalogBuilder before finish() was called." );
+      throw new IllegalStateException( "This Catalog has escaped from its CatalogBuilder before build() was called." );
     return this.propertyContainer.getPropertyByName( name );
   }
 
@@ -238,14 +238,14 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   public List<DatasetNode> getDatasets()
   {
     if ( !finished )
-      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
+      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being build()-ed." );
     return Collections.unmodifiableList( this.datasets );
   }
 
   public DatasetNode getDatasetById( String id )
   {
     if ( !finished )
-      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being finish()-ed." );
+      throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being build()-ed." );
     return this.datasetsMapById.get( id );
   }
 
@@ -261,7 +261,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return (DatasetNodeBuilder) this.datasetsMapById.get( id);
   }
 
-  public boolean isFinished( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
     if ( this.finished )
       return true;
@@ -274,9 +274,9 @@ public class CatalogImpl implements Catalog, CatalogBuilder
 
     // Check subordinates.
     for ( ServiceBuilder sb : this.serviceBuilders )
-      sb.isFinished( localIssues );
+      sb.isBuildable( localIssues );
     for ( DatasetNodeBuilder dnb : this.datasetBuilders )
-      dnb.isFinished( localIssues );
+      dnb.isBuildable( localIssues );
     this.propertyContainer.isFinished( localIssues );
 
     if ( localIssues.isEmpty() )
@@ -286,10 +286,10 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return false;
   }
 
-  public Catalog finish() throws BuilderException
+  public Catalog build() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    if ( !isFinished( issues ) )
+    if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
 
     this.finished = true;

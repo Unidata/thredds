@@ -48,14 +48,14 @@ public class DatasetImpl
 
   public List<Access> getAccesses()
   {
-    if ( ! finished ) throw new IllegalStateException( "This Dataset has escaped its DatasetBuilder before finish() was called." );
+    if ( ! finished ) throw new IllegalStateException( "This Dataset has escaped its DatasetBuilder before build() was called." );
     return Collections.unmodifiableList( this.accesses );
   }
 
   public List<Access> getAccessesByType( ServiceType type )
   {
     if ( !finished )
-      throw new IllegalStateException( "This Dataset has escaped its DatasetBuilder before finish() was called." );
+      throw new IllegalStateException( "This Dataset has escaped its DatasetBuilder before build() was called." );
     List<Access> list = new ArrayList<Access>();
     for ( Access a : this.accesses )
     {
@@ -84,17 +84,17 @@ public class DatasetImpl
   }
 
   @Override
-  public boolean isFinished( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
     if ( this.finished )
       return true;
 
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
-    super.isFinished( issues );
+    super.isBuildable( issues );
 
     // Check subordinates.
     for ( AccessBuilder ab : this.accessBuilders )
-      ab.isFinished( localIssues );
+      ab.isBuildable( localIssues );
 
     //ToDo Check invariants
 //    // Check invariants: all access reference a service in the containing catalog.
@@ -114,10 +114,10 @@ public class DatasetImpl
   }
 
   @Override
-  public Dataset finish() throws BuilderException
+  public Dataset build() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    if ( ! isFinished( issues ) )
+    if ( ! isBuildable( issues ) )
       throw new BuilderException( issues );
 
     this.finished = true;

@@ -47,13 +47,13 @@ public interface CatalogBuilder extends ThreddsBuilder
   public List<String> getPropertyNames();
   public String getPropertyValue( String name );
 
-  public boolean isFinished( List<BuilderFinishIssue> issues );
+  public boolean isBuildable( List<BuilderFinishIssue> issues );
   /**
    * Generate the resulting Catalog.
    *
    * @return the resulting Catalog object (immutable?).  
    * @throws IllegalStateException if any Catalog invariants are violated.
    */
-  public Catalog finish() throws BuilderException;
+  public Catalog build() throws BuilderException;
 
 }

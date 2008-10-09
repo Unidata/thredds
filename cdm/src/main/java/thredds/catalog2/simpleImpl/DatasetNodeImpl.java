@@ -87,7 +87,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   public void addProperty( String name, String value )
   {
     if ( this.finished )
-      throw new IllegalStateException( "This DatasetNodeBuilder has been finish()-ed." );
+      throw new IllegalStateException( "This DatasetNodeBuilder has been build()-ed." );
     this.propertyContainer.addProperty( name, value );
   }
 
@@ -108,14 +108,14 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   public List<Property> getProperties()
   {
     if ( !this.finished )
-      throw new IllegalStateException( "This DatasetNode has escaped from its DatasetNodeBuilder before finish() was called." );
+      throw new IllegalStateException( "This DatasetNode has escaped from its DatasetNodeBuilder before build() was called." );
     return this.propertyContainer.getProperties();
   }
 
   public Property getPropertyByName( String name )
   {
     if ( !this.finished )
-      throw new IllegalStateException( "This DatasetNode has escaped from its ServiceBuilder before finish() was called." );
+      throw new IllegalStateException( "This DatasetNode has escaped from its ServiceBuilder before build() was called." );
     return this.propertyContainer.getPropertyByName( name );
   }
 
@@ -224,7 +224,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return null;
   }
 
-  public boolean isFinished( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
     if ( this.finished )
       return true;
@@ -233,9 +233,9 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 
     // Check subordinates.
     for ( MetadataBuilder mb : this.metadataBuilders )
-      mb.isFinished( localIssues);
+      mb.isBuildable( localIssues);
     for ( DatasetNodeBuilder dnb : this.childrenBuilders )
-      dnb.isFinished( localIssues );
+      dnb.isBuildable( localIssues );
 
     // ToDo Check invariants.
 
@@ -246,10 +246,10 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return false;
   }
 
-  public DatasetNode finish() throws BuilderException
+  public DatasetNode build() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    if ( !isFinished( issues ) )
+    if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
 
     this.finished = true;

@@ -1,5 +1,7 @@
 package thredds.catalog2.builder;
 
+import java.util.List;
+
 /**
  * Parent type for all THREDDS builders.
  *
@@ -11,16 +13,17 @@ public interface ThreddsBuilder
   /**
    * Check whether the state of this ThreddsBuilder is such that build() will succeed.
    *
-   * @param issues a list in which to add any issues that come up during isFinished().
-   * @return true if this ThreddsBuilder is in a state where finish() will succeed.
+   * @param issues a list into which any issues that come up during isBuildable() will be add.
+   * @return true if this ThreddsBuilder is in a state where build() will succeed.
    */
-//  public boolean isReadyToBuild( List<BuilderFinishIssue> issues );
+  public boolean isBuildable( List<BuilderFinishIssue> issues );
 
   /**
+   * Generate the object being built by this ThreddsBuilder.
    *
-   * @return
-   * @throws BuilderException if this ThreddsBuilder was not ready to build.
+   * @return the THREDDS catalog object being built by this ThreddsBuilder.
+   * @throws BuilderException if this ThreddsBuilder is not in a valid state.
    */
-//  public ThreddsBuilder build() throws BuilderException;
+  public Object build() throws BuilderException;
 
 }
