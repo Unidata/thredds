@@ -9,29 +9,29 @@ import java.util.Collections;
  * @author edavis
  * @since 4.0
  */
-public class BuildException extends Exception
+public class BuilderException extends Exception
 {
   private final List<BuilderFinishIssue> issues;
 
-  public BuildException( BuilderFinishIssue issue )
+  public BuilderException( BuilderFinishIssue issue )
   {
     super();
     this.issues = Collections.singletonList( issue );
   }
 
-  public BuildException( List<BuilderFinishIssue> issues )
+  public BuilderException( List<BuilderFinishIssue> issues )
   {
     super();
     this.issues = issues;
   }
 
-  public BuildException( BuilderFinishIssue issue, Throwable cause )
+  public BuilderException( BuilderFinishIssue issue, Throwable cause )
   {
     super( cause );
     this.issues = Collections.singletonList( issue );
   }
 
-  public BuildException( List<BuilderFinishIssue> issues, Throwable cause )
+  public BuilderException( List<BuilderFinishIssue> issues, Throwable cause )
   {
     super( cause );
     this.issues = issues;

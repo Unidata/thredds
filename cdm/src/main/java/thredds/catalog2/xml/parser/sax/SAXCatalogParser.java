@@ -7,7 +7,7 @@ import thredds.catalog2.Catalog;
 import thredds.catalog2.Dataset;
 import thredds.catalog2.Metadata;
 import thredds.catalog2.builder.CatalogBuilder;
-import thredds.catalog2.builder.BuildException;
+import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.builder.DatasetBuilder;
 import thredds.catalog2.builder.MetadataBuilder;
 
@@ -119,7 +119,7 @@ public class SAXCatalogParser implements ThreddsXmlParser
     {
       return catHandler.getCatalog();
     }
-    catch ( BuildException e )
+    catch ( BuilderException e )
     {
       throw new ThreddsXmlParserException( "Catalog builder in bad state.", e);
     }

@@ -4,7 +4,7 @@ import thredds.catalog.ServiceType;
 import thredds.catalog2.Property;
 import thredds.catalog2.Service;
 import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.builder.BuildException;
+import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.builder.BuilderFinishIssue;
 
 import java.net.URI;
@@ -252,11 +252,11 @@ public class ServiceImpl implements Service, ServiceBuilder
     return false;
   }
 
-  public Service finish() throws BuildException
+  public Service finish() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( ! isFinished( issues ))
-      throw new BuildException( issues );
+      throw new BuilderException( issues );
 
     this.finished = true;
     return this;

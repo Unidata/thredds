@@ -2,7 +2,7 @@ package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.Property;
 import thredds.catalog2.builder.BuilderFinishIssue;
-import thredds.catalog2.builder.BuildException;
+import thredds.catalog2.builder.BuilderException;
 
 import java.util.*;
 
@@ -81,7 +81,7 @@ class PropertyContainer
     return true;
   }
 
-  public void finish() throws BuildException
+  public void finish() throws BuilderException
   {
     return;
   }

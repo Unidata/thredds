@@ -114,11 +114,11 @@ public class DatasetImpl
   }
 
   @Override
-  public Dataset finish() throws BuildException
+  public Dataset finish() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( ! isFinished( issues ) )
-      throw new BuildException( issues );
+      throw new BuilderException( issues );
 
     this.finished = true;
     return this;

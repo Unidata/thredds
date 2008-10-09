@@ -3,7 +3,7 @@ package thredds.catalog2.simpleImpl;
 import junit.framework.*;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.CatalogBuilderFactory;
-import thredds.catalog2.builder.BuildException;
+import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.builder.BuilderFinishIssue;
 import thredds.catalog2.Property;
 import thredds.catalog2.Service;
@@ -217,7 +217,7 @@ public class TestServiceImpl extends TestCase
     {
       s = sb.finish();
     }
-    catch ( BuildException e )
+    catch ( BuilderException e )
     {
       fail();
     }

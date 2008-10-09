@@ -17,5 +17,5 @@ public interface DatasetAliasBuilder extends DatasetNodeBuilder
   public void setAlias( DatasetNodeBuilder aliasDataset );
 
   public boolean isFinished( List<BuilderFinishIssue> issues );
-  public DatasetAlias finish() throws BuildException;
+  public DatasetAlias finish() throws BuilderException;
 }

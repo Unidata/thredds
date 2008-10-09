@@ -26,5 +26,5 @@ public interface AccessBuilder extends ThreddsBuilder
   public void setDataSize( long bytes );
   
   public boolean isFinished( List<BuilderFinishIssue> issues );
-  public Access finish() throws BuildException;
+  public Access finish() throws BuilderException;
 }

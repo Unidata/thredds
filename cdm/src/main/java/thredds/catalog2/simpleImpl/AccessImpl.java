@@ -102,11 +102,11 @@ public class AccessImpl implements Access, AccessBuilder
     return false;
   }
 
-  public Access finish() throws BuildException
+  public Access finish() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( !isFinished( issues ) )
-      throw new BuildException( issues );
+      throw new BuilderException( issues );
 
     this.finished = true;
     return this;

@@ -69,11 +69,11 @@ public class DatasetAliasImpl
   }
 
   @Override
-  public DatasetAlias finish() throws BuildException
+  public DatasetAlias finish() throws BuilderException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( !isFinished( issues ) )
-      throw new BuildException( issues );
+      throw new BuilderException( issues );
 
     this.finished = true;
     return this;

@@ -1,7 +1,5 @@
 package thredds.catalog2.builder;
 
-import java.util.List;
-
 /**
  * Parent type for all THREDDS builders.
  *
@@ -21,8 +19,8 @@ public interface ThreddsBuilder
   /**
    *
    * @return
-   * @throws BuildException if this ThreddsBuilder was not ready to build.
+   * @throws BuilderException if this ThreddsBuilder was not ready to build.
    */
-//  public ThreddsBuilder build() throws BuildException;
+//  public ThreddsBuilder build() throws BuilderException;
 
 }

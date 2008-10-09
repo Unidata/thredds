@@ -130,7 +130,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
       log.error( "readCatalogXML(): Failed to parse catalog document: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
     }
-//    catch ( BuildException e )
+//    catch ( BuilderException e )
 //    {
 //      log.error( "readCatalogXML(): Failed to parse catalog document: " + e.getMessage(), e );
 //      throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
@@ -157,7 +157,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     {
       return readCatalogXML( s ).finish();
     }
-    catch ( BuildException e )
+    catch ( BuilderException e )
     {
       log.error( "parse(): Failed to parse catalog document: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
@@ -171,7 +171,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     {
       return parseIntoBuilder( file, docBaseUri ).finish();
     }
-    catch ( BuildException e )
+    catch ( BuilderException e )
     {
       log.error( "parse(): Failed to parse catalog document: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
@@ -185,7 +185,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     {
       return parseIntoBuilder( reader, docBaseUri ).finish();
     }
-    catch ( BuildException e )
+    catch ( BuilderException e )
     {
       log.error( "parse(): Failed to parse catalog document: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
@@ -199,7 +199,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
     {
       return parseIntoBuilder( is, docBaseUri ).finish();
     }
-    catch ( BuildException e )
+    catch ( BuilderException e )
     {
       log.error( "parse(): Failed to parse catalog document: " + e.getMessage(), e );
       throw new ThreddsXmlParserException( "Failed to parse catalog document: " + e.getMessage(), e );
