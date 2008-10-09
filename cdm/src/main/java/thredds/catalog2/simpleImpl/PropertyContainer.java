@@ -1,6 +1,8 @@
 package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.Property;
+import thredds.catalog2.builder.BuilderFinishIssue;
+import thredds.catalog2.builder.BuildException;
 
 import java.util.*;
 
@@ -59,5 +61,28 @@ class PropertyContainer
   public Property getPropertyByName( String name )
   {
     return this.propertiesMap.get( name );
+  }
+
+  /**
+   * This class always returns "true" because no action is required to
+   * finish any contained Property classes.
+   *
+   * The reasons for this are:
+   * <ol>
+   * <li>The Property class is immutable and doesn't allow null names or values.</li>
+   * <li>This container stores the properties in a Map by property name (so there are no duplicate names).</li>
+   * </ol>
+   *
+   * @param issues a list in which to add any issues that come up during isFinished()
+   * @return true if this PropertyContainer is in a state where finish() will succeed.
+   */
+  public boolean isFinished( List<BuilderFinishIssue> issues )
+  {
+    return true;
+  }
+
+  public void finish() throws BuildException
+  {
+    return;
   }
 }

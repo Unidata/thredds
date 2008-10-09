@@ -30,5 +30,5 @@ public interface CatalogBuilderFactory
   public MetadataBuilder newMetadataBuilder();
 
   public AccessBuilder newAccessBuilder();
-  public AccessBuilder newAccessBuilder( BuilderFinishIssue issues );
+  public AccessBuilder newAccessBuilder( Access access );
 }

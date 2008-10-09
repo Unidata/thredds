@@ -11,46 +11,43 @@ import java.util.Collections;
  */
 public class BuildException extends Exception
 {
-  private final List<Source> sources;
+  private final List<BuilderFinishIssue> issues;
 
-  public BuildException( Source component )
+  public BuildException( BuilderFinishIssue issue )
   {
     super();
-    this.sources = Collections.singletonList( component );
+    this.issues = Collections.singletonList( issue );
   }
 
-  public BuildException( List<Source> sources )
+  public BuildException( List<BuilderFinishIssue> issues )
   {
     super();
-    this.sources = sources;
+    this.issues = issues;
   }
 
-  public List<Source> getSources()
+  public BuildException( BuilderFinishIssue issue, Throwable cause )
   {
-    return Collections.unmodifiableList( sources );
+    super( cause );
+    this.issues = Collections.singletonList( issue );
+  }
+
+  public BuildException( List<BuilderFinishIssue> issues, Throwable cause )
+  {
+    super( cause );
+    this.issues = issues;
+  }
+
+  public List<BuilderFinishIssue> getSources()
+  {
+    return Collections.unmodifiableList( this.issues );
   }
 
   @Override
   public String getMessage()
   {
     StringBuilder sb = new StringBuilder();
-    for ( Source bec : this.sources )
-      sb.append( bec.getMessage() ).append( "\n");
+    for ( BuilderFinishIssue bfi : this.issues )
+      sb.append( bfi.getMessage() ).append( "\n");
     return sb.toString();
-  }
-
-  public static class Source
-  {
-    private final String message;
-    private final ThreddsBuilder builder;
-
-    public Source( String message, ThreddsBuilder builder )
-    {
-      this.message = message;
-      this.builder = builder;
-    }
-
-    public String getMessage() { return this.message; }
-    public ThreddsBuilder getBuilder() { return this.builder; }
   }
 }

@@ -4,6 +4,9 @@ import thredds.catalog2.DatasetAlias;
 import thredds.catalog2.DatasetNode;
 import thredds.catalog2.builder.*;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * _more_
  *
@@ -46,18 +49,32 @@ public class DatasetAliasImpl
   }
 
   @Override
-  public boolean isFinished()
+  public boolean isFinished( List<BuilderFinishIssue> issues )
   {
-    return this.finished;
+    if ( this.finished )
+      return true;
+
+    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+    super.isFinished( issues );
+
+    this.alias.isFinished( localIssues );
+
+    // ToDo Check any invariants.
+
+    if ( localIssues.isEmpty() )
+      return true;
+
+    issues.addAll( localIssues );
+    return false;
   }
 
   @Override
   public DatasetAlias finish() throws BuildException
   {
-    if ( this.finished )
-      return this;
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    if ( !isFinished( issues ) )
+      throw new BuildException( issues );
 
-    super.finish();
     this.finished = true;
     return this;
   }

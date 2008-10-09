@@ -84,16 +84,17 @@ public class DatasetImpl
   }
 
   @Override
-  public boolean isFinished()
-  {
-    return this.finished;
-  }
-
-  @Override
-  public Dataset finish() throws BuildException
+  public boolean isFinished( List<BuilderFinishIssue> issues )
   {
     if ( this.finished )
-      return this;
+      return true;
+
+    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+    super.isFinished( issues );
+
+    // Check subordinates.
+    for ( AccessBuilder ab : this.accessBuilders )
+      ab.isFinished( localIssues );
 
     //ToDo Check invariants
 //    // Check invariants: all access reference a service in the containing catalog.
@@ -104,11 +105,21 @@ public class DatasetImpl
 //      if ( abs == null )
 //        finishLog.appendBuildErrors( String message );
 //    }
-    // Finish subordinates.
-    for ( AccessBuilder ab : this.accessBuilders )
-      ab.finish();
 
-    super.finish();
+    if ( localIssues.isEmpty() )
+      return true;
+
+    issues.addAll( localIssues );
+    return false;
+  }
+
+  @Override
+  public Dataset finish() throws BuildException
+  {
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    if ( ! isFinished( issues ) )
+      throw new BuildException( issues );
+
     this.finished = true;
     return this;
   }

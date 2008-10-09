@@ -261,24 +261,36 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return (DatasetNodeBuilder) this.datasetsMapById.get( id);
   }
 
-  public boolean isFinished()
+  public boolean isFinished( List<BuilderFinishIssue> issues )
   {
-    return this.finished;
+    if ( this.finished )
+      return true;
+
+    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+
+    // ToDo Check any invariants.
+    // Check invariants
+    // ToDo check that all datasets with Ids have unique Ids
+
+    // Check subordinates.
+    for ( ServiceBuilder sb : this.serviceBuilders )
+      sb.isFinished( localIssues );
+    for ( DatasetNodeBuilder dnb : this.datasetBuilders )
+      dnb.isFinished( localIssues );
+    this.propertyContainer.isFinished( localIssues );
+
+    if ( localIssues.isEmpty() )
+      return true;
+
+    issues.addAll( localIssues );
+    return false;
   }
 
   public Catalog finish() throws BuildException
   {
-    if ( this.finished )
-      return this;
-
-    // Check invariants
-    // ToDo check that all datasets with Ids have unique Ids
-
-    // Finish subordinates.
-    for ( ServiceBuilder sb : this.serviceBuilders )
-      sb.finish();
-    for ( DatasetNodeBuilder dnb : this.datasetBuilders )
-      dnb.finish();
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    if ( !isFinished( issues ) )
+      throw new BuildException( issues );
 
     this.finished = true;
     return this;

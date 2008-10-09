@@ -19,6 +19,6 @@ public interface DatasetBuilder extends DatasetNodeBuilder
   public List<AccessBuilder> getAccessBuilders();
   public List<AccessBuilder> getAccessBuildersByType( ServiceType type );
 
-  public boolean isFinished();
-  public Dataset finish( List<BuilderFinishIssue> issues );
+  public boolean isFinished( List<BuilderFinishIssue> issues );
+  public Dataset finish() throws BuildException;
 }

@@ -224,26 +224,36 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return null;
   }
 
-  public boolean isFinished()
+  public boolean isFinished( List<BuilderFinishIssue> issues )
   {
-    return this.finished;
+    if ( this.finished )
+      return true;
+
+    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+
+    // Check subordinates.
+    for ( MetadataBuilder mb : this.metadataBuilders )
+      mb.isFinished( localIssues);
+    for ( DatasetNodeBuilder dnb : this.childrenBuilders )
+      dnb.isFinished( localIssues );
+
+    // ToDo Check invariants.
+
+    if ( localIssues.isEmpty() )
+      return true;
+
+    issues.addAll( localIssues );
+    return false;
   }
 
   public DatasetNode finish() throws BuildException
   {
-    if ( this.finished )
-      return this;
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    if ( !isFinished( issues ) )
+      throw new BuildException( issues );
 
-    // Check invariants.
-
-    // Finish subordinates.
-    for ( MetadataBuilder mb : this.metadataBuilders )
-      mb.finish();
-    for ( DatasetNodeBuilder dnb : this.childrenBuilders)
-      dnb.finish();
-
-    // Mark as finished.
     this.finished = true;
     return this;
+
   }
 }

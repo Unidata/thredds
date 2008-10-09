@@ -4,6 +4,7 @@ import junit.framework.*;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.CatalogBuilderFactory;
 import thredds.catalog2.builder.BuildException;
+import thredds.catalog2.builder.BuilderFinishIssue;
 import thredds.catalog2.Property;
 import thredds.catalog2.Service;
 import thredds.catalog.ServiceType;
@@ -11,6 +12,7 @@ import thredds.catalog.ServiceType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * _more_
@@ -200,6 +202,16 @@ public class TestServiceImpl extends TestCase
     { fail( "Non-IllegalStateException: " + e.getMessage()); }
     if ( ! pass ) fail( "No IllegalStateException.");
 
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    boolean isBuildable = sb.isFinished( issues );
+    if ( ! isBuildable )
+    {
+      StringBuilder sb2 = new StringBuilder( "ServiceBuilder not buildable: ");
+      for ( BuilderFinishIssue bfi : issues)
+        sb2.append( "\n    ").append( bfi.getMessage());
+      fail( sb2.toString());
+    }
+
     Service s = null;
     try
     {
@@ -209,8 +221,6 @@ public class TestServiceImpl extends TestCase
     {
       fail();
     }
-    assertTrue( "ServiceBuilder not finished after call to finish().",
-                sb.isFinished() );
     List<Property> props = null;
     try
     { props = s.getProperties(); }

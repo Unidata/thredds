@@ -3,10 +3,10 @@ package thredds.catalog2.simpleImpl;
 import thredds.catalog.DataFormatType;
 import thredds.catalog2.Access;
 import thredds.catalog2.Service;
-import thredds.catalog2.builder.AccessBuilder;
-import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.builder.BuildException;
-import thredds.catalog2.builder.ThreddsBuilder;
+import thredds.catalog2.builder.*;
+
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * _more_
@@ -79,22 +79,34 @@ public class AccessImpl implements Access, AccessBuilder
     return dataSize;
   }
 
-  public boolean isFinished()
+  public boolean isFinished( List<BuilderFinishIssue> issues )
   {
-    return this.finished;
+    if ( this.finished )
+      return true;
+
+    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+
+    //ToDo Check invariants
+    if ( this.service == null )
+      localIssues.add( new BuilderFinishIssue( "The Service may not be null.", this ));
+    if ( this.urlPath == null )
+      localIssues.add( new BuilderFinishIssue( "The urlPath may not be null.", this ) );
+
+    // Check subordinates.
+    this.service.isFinished( localIssues );
+
+    if ( localIssues.isEmpty() )
+      return true;
+
+    issues.addAll( localIssues );
+    return false;
   }
 
   public Access finish() throws BuildException
   {
-    if ( this.finished)
-      return this;
-
-    if ( this.service == null )
-      throw new BuildException( (ThreddsBuilder) this, "Access element can't be finished with null service.");
-    if ( this.urlPath == null )
-      throw new BuildException( (ThreddsBuilder) this, "Access element can't be finished with null urlPath." );
-
-    this.service.finish();
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    if ( !isFinished( issues ) )
+      throw new BuildException( issues );
 
     this.finished = true;
     return this;

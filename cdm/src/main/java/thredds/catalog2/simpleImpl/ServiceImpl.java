@@ -230,13 +230,12 @@ public class ServiceImpl implements Service, ServiceBuilder
     return null;
   }
 
-  private List<BuilderFinishIssue> localIssues;
   public boolean isFinished( List<BuilderFinishIssue> issues )
   {
     if ( this.finished )
       return true;
 
-    this.localIssues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
 
     // Check subordinates.
     for ( ServiceBuilder sb : this.serviceBuilders )
@@ -244,32 +243,21 @@ public class ServiceImpl implements Service, ServiceBuilder
 
     // Check that leaf services have a baseUri.
     if ( this.serviceBuilders.isEmpty() && this.baseUri == null )
-      localIssues.add( new BuilderFinishIssue( "", this));
+      localIssues.add( new BuilderFinishIssue( "Non-compound services must have base URI.", this ));
 
-      // Mark finished.
-      this.finished = true;
-    return this;
+    if ( localIssues.isEmpty() )
+      return true;
+
+    issues.addAll( localIssues );
+    return false;
   }
 
   public Service finish() throws BuildException
   {
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    if ( isFinished( issues ))
-    {
-      this.finished = true;
-      return this;
-    }
+    if ( ! isFinished( issues ))
+      throw new BuildException( issues );
 
-    throw new BuildException( issues );
-
-    // Finish subordinates.
-    for ( ServiceBuilder sb : this.serviceBuilders )
-      sb.finish();
-
-    // Check that leaf services have a baseUri.
-    if ( this.serviceBuilders.isEmpty() && this.baseUri == null )
-
-    // Mark finished.
     this.finished = true;
     return this;
   }
