@@ -37,12 +37,10 @@ import java.nio.ByteBuffer;
  * @since Aug 11, 2008
  */
 public class MessageDispatchDDS {
-  public static final String rootDir = "D:/bufr/";
-  public static final String dispatchDir = rootDir + "dispatch/";
-
-  private static final String inputFilename = rootDir + "dispatch.csv";
-  private static final String inputFilenameOut = rootDir + "dispatchOut.csv";
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MessageDispatchDDS.class);
+
+  private String dispatchDir;
+  private String inputFilenameOut;
 
   private Set<Integer> badHashSet = new HashSet<Integer>(200);
   private Map<String, Integer> nameMap = new HashMap<String, Integer>(200);
@@ -63,7 +61,7 @@ public class MessageDispatchDDS {
   boolean showBad = false;
   boolean showConfig = false;
   boolean showResults = false;
-  boolean writeSamples = false;
+  boolean writeSamples = true;
 
   Dump dumper = new Dump();
   WritableByteChannel badWbc;
@@ -72,29 +70,19 @@ public class MessageDispatchDDS {
 
   private final CompletionService<IndexerTask> executor;
 
-  MessageDispatchDDS(CompletionService<IndexerTask> executor) throws IOException {
+  /**
+   * Wired by Spring
+   * @param executor
+   * @param inputFilename leave null for fresh start
+   * @param dispatchDir
+   * @throws IOException
+   */
+  MessageDispatchDDS(CompletionService<IndexerTask> executor, String inputFilename, String dispatchDir) throws IOException {
     this.executor = executor;
+    this.dispatchDir = dispatchDir;
 
-    // read config file
-    File inputFile = new File(inputFilename);
-    if (inputFile.exists()) {
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)));
-      while (true) {
-        String line = dataIS.readLine();
-        if (line == null) break;
-        line = line.trim();
-        if (line.length() == 0) break;
-        if (line.charAt(0) == '#') continue;
-
-        String[] toke = line.split(",");
-        //String hashS = toke[0].substring(2); // remove the "0x"
-        Integer hash = Integer.parseInt(toke[0]);
-        String bitsOk = (toke.length > 8) ? toke[7].trim() : "";
-        typeMap.put(hash, new MessType(hash, toke[1], toke[2], toke[3], bitsOk));
-      }
-    }
-
-    MessageWriter.setRootDir(dispatchDir);
+    File dispatchDirFile = new File(dispatchDir);
+    dispatchDirFile.mkdirs();
 
     if (writeSamples) {
       File file = new File(dispatchDir + "abad.bufr");
@@ -109,6 +97,33 @@ public class MessageDispatchDDS {
       fos = new FileOutputStream(file);
       allWbc = fos.getChannel();
     }
+
+    MessageWriter.setRootDir(dispatchDir);
+
+    // read config file
+    if (inputFilename != null) {
+      File inputFile = new File(inputFilename);
+      if (inputFile.exists()) {
+        BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)));
+        while (true) {
+          String line = dataIS.readLine();
+          if (line == null) break;
+          line = line.trim();
+          if (line.length() == 0) break;
+          if (line.charAt(0) == '#') continue;
+
+          String[] toke = line.split(",");
+          //String hashS = toke[0].substring(2); // remove the "0x"
+          Integer hash = Integer.parseInt(toke[0]);
+          String bitsOk = (toke.length > 8) ? toke[7].trim() : "";
+          typeMap.put(hash, new MessType(hash, toke[1], toke[2], toke[3], bitsOk));
+        }
+      }
+    }
+  }
+
+  public void setInputFilenameOut(String inputFilenameOut) {
+    this.inputFilenameOut = inputFilenameOut;
   }
 
   void dispatch(Message m) {
@@ -256,8 +271,8 @@ public class MessageDispatchDDS {
     Message proto;
     int count, countObs, nbad;
     float countBytes;
-    boolean ignore;
-    boolean checkBad = true; // default is to check for bad bits
+    boolean ignore = false; // completely ignore
+    boolean checkBad = false; // default is to check for bad bits
 
     MessType(int hash, String filename, String name, String index, String bitsOk) {
       this.hash = hash;
@@ -272,7 +287,7 @@ public class MessageDispatchDDS {
       this.index = index.trim();
       if (!ignore && !this.index.equalsIgnoreCase("no")) {
         try {
-          indexer = BerkeleyDBIndexer.factory( fileout, index);
+          indexer = BerkeleyDBIndexer.factory( dispatchDir + fileout, index);
         } catch (Exception e) {
           logger.error("Cant open BerkeleyDBIndexer", e);
         }
@@ -295,8 +310,7 @@ public class MessageDispatchDDS {
       nameMap.put(this.name, 0);
 
       this.fileout = name;
-      this.ignore = fileout.equalsIgnoreCase("ignore");
-      System.out.println(" add <" + name + "> fileout= " + fileout);
+      System.out.println(" add new MessType <" + name + "> fileout= " + fileout);
     }
 
     String extractName(String header) {

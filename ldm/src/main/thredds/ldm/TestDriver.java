@@ -20,13 +20,15 @@
 
 package thredds.ldm;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
 import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.concurrent.*;
 
 /**
  * Class Description.
@@ -40,7 +42,7 @@ public class TestDriver {
     void run(String filename) throws IOException;
   }
 
-  static void test(String filename, MClosure closure) throws IOException {
+  void test(String filename, MClosure closure) throws IOException {
     File f = new File(filename);
     if (!f.exists()) {
       System.out.println(filename + " does not exist");
@@ -57,7 +59,7 @@ public class TestDriver {
     }
   }
 
-  static void test(String filename, String startsWith, MClosure closure) throws IOException {
+  void test(String filename, String startsWith, MClosure closure) throws IOException {
     File f = new File(filename);
     if (!f.exists()) {
       System.out.println(filename + " does not exist");
@@ -74,7 +76,7 @@ public class TestDriver {
     }
   }
 
-  static void testAllInDir(File dir, String startsWith,  MClosure closure) {
+  void testAllInDir(File dir, String startsWith,  MClosure closure) {
     List<File> list = Arrays.asList(dir.listFiles());
     Collections.sort(list);
 
@@ -94,7 +96,7 @@ public class TestDriver {
     }
   }
 
-  static void testAllInDir(File dir, MClosure closure) {
+  void testAllInDir(File dir, MClosure closure) {
     List<File> list = Arrays.asList(dir.listFiles());
     Collections.sort(list);
 
@@ -118,7 +120,7 @@ public class TestDriver {
     }
   }
 
-  static void scan(String filename, MessageBroker broker) throws IOException {
+  void scan(String filename, MessageBroker broker) throws IOException {
     System.out.println("Read from file "+filename);
     FileInputStream fin = new FileInputStream( filename);
 
@@ -135,14 +137,23 @@ public class TestDriver {
     System.out.printf("%s done reading %d in %.1f secs, rate = %.0f msg/sec %n",filename, n, secs, rate);
   }
 
-  public static void main(String args[]) throws IOException, InterruptedException {
-    ExecutorService executor = Executors.newFixedThreadPool(5);
-    final MessageBroker broker = new MessageBroker(executor);
+  TestDriver()  {
+  }
+
+  MessageBroker broker;
+  public void setMessageBroker( MessageBroker broker) {
+    this.broker = broker;
+  }
+
+  void doScan() throws IOException {
+
+    //ExecutorService executor = Executors.newFixedThreadPool(5);
+    //final MessageBroker broker = new MessageBroker(executor);
 
     long start = System.nanoTime();
 
-    //test("D:/bufr/out/RJTD-IUCN53-1.bufr", new MClosure() {
-    test("D:/bufr/nlode/snap080808/20080805_0100.bufr", new MClosure() {
+    //test("D:/bufr/ncepBug2/20081008_0800.bufr", new MClosure() {
+    test("D:/bufr/mlode1008/", new MClosure() {
     //test("D:/bufr/nlode/snap080808/","20080805", new MClosure() {
     //test("D:/bufr/nlode/snap080808/", new MClosure() {
     //test("D:/bufr/dispatch/fslprofilers/fslprofilers-2008-7-28.bufr", new MClosure() {
@@ -167,5 +178,12 @@ public class TestDriver {
 
   }
 
+  public static void main(String args[]) throws IOException, InterruptedException {
+    ApplicationContext springContext =
+        new FileSystemXmlApplicationContext("file:C:/dev/tds/thredds/ldm/src/main/thredds/ldm/application-config.xml");
+
+    TestDriver driver = (TestDriver) springContext.getBean("testDriver");
+    driver.doScan();
+  }
 
 }

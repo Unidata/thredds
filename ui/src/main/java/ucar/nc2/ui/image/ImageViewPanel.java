@@ -5,26 +5,34 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.io.File;
+import java.util.Date;
+import java.util.Random;
 import javax.swing.*;
 import javax.swing.event.*;
 
 import ucar.nc2.dt.image.ImageDatasetFactory;
+import ucar.nc2.dt.image.ImageFactoryRandom;
 import ucar.nc2.dt.GridDatatype;
 import thredds.ui.BAMutil;
 
 /**
  *  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 public class ImageViewPanel extends JPanel {
   private static boolean debug = false;
 
-  private ImageDatasetFactory imageFactory = new ImageDatasetFactory();
+  private ImageDatasetFactory imageDatasetFactory = new ImageDatasetFactory();
+  private ImageFactoryRandom imageFactoryRandom;
+  private String location;
+
   private boolean movieIsPlaying = false;
   private javax.swing.Timer timer;
   private int delay = 4000; // millisescs
   private JSpinner spinner;
+  private Random random = new Random( System.currentTimeMillis());
+  private long start = 0;
 
   private boolean fullscreenMode = false;
 
@@ -42,7 +50,7 @@ public class ImageViewPanel extends JPanel {
 
     AbstractAction prevAction =  new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        setImage( imageFactory.getNextImage(false));
+        setImage( imageDatasetFactory.getNextImage(false));
       }
     };
     BAMutil.setActionProperties( prevAction, "VCRPrevFrame", "previous", false, 'P', -1);
@@ -50,30 +58,43 @@ public class ImageViewPanel extends JPanel {
 
     AbstractAction nextAction =  new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-       setImage( imageFactory.getNextImage(true));
+       setImage( imageDatasetFactory.getNextImage(true));
       }
     };
     BAMutil.setActionProperties( nextAction, "VCRNextFrame", "next", false, 'N', -1);
     BAMutil.addActionToContainer(buttPanel, nextAction);
 
-    AbstractAction playAction = new AbstractAction() {
+    AbstractAction loopAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (movieIsPlaying) {
           if (timer != null) timer.stop();
           movieIsPlaying = false;
+
         } else {
-          movieIsPlaying = true;
+          if (location == null) return;
+          File f = new File(location);
+          if (!f.exists()) return;
+
+          imageFactoryRandom = new ImageFactoryRandom(f.getParentFile());
+
           timer = new Timer(delay, new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-              setImage(imageFactory.getNextImage(true));
+              setImage(imageFactoryRandom.getNextImage());
+              int delayMsecs = delay + random.nextInt() % delay/2;
+              timer.setDelay(delayMsecs);
+              long time = System.currentTimeMillis();
+              long took = time - start;
+              start = time;
+              //System.out.printf(" delay=%d; took=%d%n ",delayMsecs, took);
             }
           });
           timer.start();
+          movieIsPlaying = true;
         }
       }
     };
-    BAMutil.setActionProperties( playAction, "MovieLoop", "loop", true, 'N', -1);
-    BAMutil.addActionToContainer(buttPanel, playAction);
+    BAMutil.setActionProperties( loopAction, "MovieLoop", "loop", true, 'N', -1);
+    BAMutil.addActionToContainer(buttPanel, loopAction);
 
     spinner = new JSpinner( new SpinnerNumberModel(5000, 10, 20000, 1000));
     spinner.addChangeListener( new ChangeListener() {
@@ -135,17 +156,18 @@ public class ImageViewPanel extends JPanel {
 
   public void setImageFromGrid( GridDatatype grid) {
       try {
-        BufferedImage image = imageFactory.openDataset( grid);
+        BufferedImage image = imageDatasetFactory.openDataset( grid);
         setImage( image);
 
       } catch (Exception e2) {
-        javax.swing.JOptionPane.showMessageDialog(null, "Error on dataset\n"+imageFactory.getErrorMessages());
+        javax.swing.JOptionPane.showMessageDialog(null, "Error on dataset\n"+ imageDatasetFactory.getErrorMessages());
         e2.printStackTrace();
       }
   }
 
 
    public boolean setImageFromUrl( String location) {
+     this.location = location;
 
      if (location.startsWith("http")) {
        URL url = null;
@@ -161,16 +183,16 @@ public class ImageViewPanel extends JPanel {
      } else {
 
       try {
-        BufferedImage image = imageFactory.open( location);
+        BufferedImage image = imageDatasetFactory.open( location);
         if (image == null) {
-          javax.swing.JOptionPane.showMessageDialog(null, "Cant open dataset as image = "+location+"\n"+imageFactory.getErrorMessages());
+          javax.swing.JOptionPane.showMessageDialog(null, "Cant open dataset as image = "+location+"\n"+ imageDatasetFactory.getErrorMessages());
           return false;
         }
 
         setImage( image);
 
       } catch (Exception e2) {
-        javax.swing.JOptionPane.showMessageDialog(null, "Error on dataset = "+location+"\n"+imageFactory.getErrorMessages());
+        javax.swing.JOptionPane.showMessageDialog(null, "Error on dataset = "+location+"\n"+ imageDatasetFactory.getErrorMessages());
         e2.printStackTrace();
         return false;
       }

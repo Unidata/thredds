@@ -60,27 +60,28 @@ public class MessageBroker {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MessageBroker.class);
 
   private ExecutorService executor;
+  private BlockingQueue<Future<IndexerTask>> completionQ; // = new ArrayBlockingQueue<Future<IndexerTask>>(1000); // unbounded, threadsafe
   private CompletionService<IndexerTask> completionService;
 
   private Thread messProcessor;
   private Thread indexProcessor;
   private ArrayBlockingQueue<MessageTask> messQ = new ArrayBlockingQueue<MessageTask>(1000); // unbounded, threadsafe
-  private ArrayBlockingQueue<Future<IndexerTask>> completionQ = new ArrayBlockingQueue<Future<IndexerTask>>(1000); // unbounded, threadsafe
 
   private MessageDispatchDDS dispatch;
 
   int bad_msgs = 0;
   int total_msgs = 0;
 
-  public MessageBroker(ExecutorService executor) throws IOException {
+  public MessageBroker(ExecutorService executor, BlockingQueue<Future<IndexerTask>> blockingQueue,
+          CompletionService<IndexerTask> completionService, MessageDispatchDDS dispatcher) throws IOException {
+
     this.executor = executor;
+    this.completionQ = blockingQueue;
+    this.completionService = completionService; // completionService manages Callable objects that write bufr message to files
+    this.dispatch = dispatcher;
 
     //a thread for processing messages as they come off the wire
     messProcessor = new Thread(new MessageProcessor());
-
-    // completionService manages Callable objects that write bufr message to files
-    completionService = new ExecutorCompletionService(executor, completionQ);
-    dispatch = new MessageDispatchDDS(completionService);
 
     // a thread for indexing messages after they have been written
     indexProcessor = new Thread(new IndexProcessor());

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+							http://www.springframework.org/schema/aop
+							http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+  <bean id="executor" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+    <constructor-arg type="int" value="5"/>
+  </bean>
+
+  <bean id="completionQ" class="java.util.concurrent.ArrayBlockingQueue">
+    <constructor-arg type="int" value="1000"/>
+  </bean>
+
+  <bean id="completionService" class="java.util.concurrent.ExecutorCompletionService">
+    <constructor-arg type="java.util.concurrent.Executor" ref="executor"/>
+    <constructor-arg type="java.util.concurrent.BlockingQueue" ref="completionQ"/>
+  </bean>
+
+  <bean id="messageDispatch" class="thredds.ldm.MessageDispatchDDS">
+    <constructor-arg type="java.util.concurrent.CompletionService" ref="completionService"/>
+    <constructor-arg type="java.lang.String" value="null"/>
+    <constructor-arg type="java.lang.String" value="D:/bufr/ncepBug2/dispatch/"/>
+    <property name="inputFilenameOut" value="D:/bufr/ncepBug2/dispatchOut.csv"/>
+  </bean>
+
+  <bean id="messageBroker" class="thredds.ldm.MessageBroker">
+    <constructor-arg type="java.util.concurrent.ExecutorService" ref="executor"/>
+    <constructor-arg type="java.util.concurrent.BlockingQueue" ref="completionQ"/>
+    <constructor-arg type="java.util.concurrent.CompletionService" ref="completionService"/>
+    <constructor-arg type="thredds.ldm.MessageDispatchDDS" ref="messageDispatch"/>
+  </bean>
+
+  <bean id="testDriver" class="thredds.ldm.TestDriver">
+    <property name="messageBroker" ref="messageBroker"/>
+  </bean>
+
+</beans>

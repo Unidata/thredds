@@ -415,7 +415,7 @@ public class BerkeleyDBIndexer implements Indexer {
     try {
       result = m.readValues(indexFlds); // read specific data fields from message
     } catch (Exception e) {
-      System.err.println("Fail on " + m.getHeader());
+      System.err.println("Fail writing index on " + m.getHeader());
       e.printStackTrace();
       return false;
     }
@@ -532,11 +532,11 @@ public class BerkeleyDBIndexer implements Indexer {
     }
     if (showFlds) out.format("%n");
 
-    return new BerkeleyDBIndexer(MessageDispatchDDS.dispatchDir + dir + "/bdb", indexFields);
+    return new BerkeleyDBIndexer(dir + "/bdb", indexFields);
   }
 
   public static void main(String args[]) throws Exception {
-    BerkeleyDBIndexer indexer = new BerkeleyDBIndexer(MessageDispatchDDS.dispatchDir + "fslprofilers/bdb");
+    BerkeleyDBIndexer indexer = new BerkeleyDBIndexer("D:/bufr/dispatch/fslprofilers/bdb");
     //indexer.showStats();
     //indexer.retrieve();   
     Formatter csv = new Formatter(new FileOutputStream("D:/bufr/out/testSecIndex.csv"));
