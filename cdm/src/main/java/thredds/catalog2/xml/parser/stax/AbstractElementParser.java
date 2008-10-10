@@ -2,7 +2,6 @@ package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.ThreddsBuilder;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
-import thredds.catalog2.xml.util.CatalogNamespace;
 
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.StartElement;
@@ -20,17 +19,16 @@ public abstract class AbstractElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  private final QName elementName;
+  protected final XMLEventReader reader;
+  protected final QName elementName;
 
-  AbstractElementParser( String elementNameLocalPart )
+  AbstractElementParser( XMLEventReader reader, QName elementName )
   {
-    if ( elementNameLocalPart == null )
-      throw new IllegalArgumentException( "Element name may not be null.");
-    this.elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                  elementNameLocalPart );
+    this.reader = reader;
+    this.elementName = elementName;
   }
 
-  public boolean isSelfElement( XMLEvent event )
+  protected static boolean isSelfElement( XMLEvent event, QName selfElementName )
   {
     QName elemName = null;
     if ( event.isStartElement() )
@@ -40,66 +38,65 @@ public abstract class AbstractElementParser
     else
       return false;
 
-    if ( elemName.equals( elementName ) )
+    if ( elemName.equals( selfElementName ) )
       return true;
     return false;
-
   }
 
-  abstract ThreddsBuilder parseElement( XMLEvent event )
-          throws ThreddsXmlParserException;
-  abstract void handleStartElement( StartElement startElement, ThreddsBuilder builder )
+  protected abstract boolean isSelfElement( XMLEvent event );
+
+  protected abstract ThreddsBuilder parseStartElement( XMLEvent event )
           throws ThreddsXmlParserException;
 
-  public ThreddsBuilder parse( XMLEventReader reader )
+  protected abstract void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
+          throws ThreddsXmlParserException;
+
+  protected abstract void postProcessing( ThreddsBuilder builder )
+          throws ThreddsXmlParserException;
+
+  public final ThreddsBuilder parse()
           throws ThreddsXmlParserException
   {
     try
     {
-      ThreddsBuilder builder = this.parseElement( reader.nextEvent() );
+      ThreddsBuilder builder = this.parseStartElement( this.reader.nextEvent() );
 
-      while ( reader.hasNext() )
+      while ( this.reader.hasNext() )
       {
-        XMLEvent event = reader.peek();
-        if ( event.isEndDocument() )
+        XMLEvent event = this.reader.peek();
+        if ( event.isStartElement() )
         {
-          reader.next();
-          continue;
-        }
-        else if ( event.isStartDocument() )
-        {
-          reader.next();
-          continue;
-        }
-        else if ( event.isStartElement() )
-        {
-          this.handleStartElement( event.asStartElement(), builder );
+          this.handleChildStartElement( event.asStartElement(), builder );
         }
         else if ( event.isEndElement() )
         {
           if ( this.isSelfElement( event.asEndElement() ) )
           {
-            return builder;
+            this.reader.next();
+            break;
           }
           else
           {
-            log.warn( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
-            reader.next();
+            log.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
+            this.reader.next();
             continue;
           }
         }
         else
         {
           log.debug( "parse(): Unhandled event [" + event.getLocation() + "--" + event + "]." );
-          reader.next();
+          this.reader.next();
           continue;
         }
       }
-      throw new ThreddsXmlParserException( "Unexpected end of document.");
+
+      this.postProcessing( builder );
+      return builder;
     }
     catch ( XMLStreamException e )
     {
-      throw new ThreddsXmlParserException( "", e );
+      log.error( "parse(): Failed to parse " + this.elementName + " element: " + e.getMessage(), e );
+      throw new ThreddsXmlParserException( "Failed to parse " + this.elementName + " element: " + e.getMessage(), e );
     }
 
   }

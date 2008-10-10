@@ -76,12 +76,12 @@ class PropertyContainer
    * @param issues a list in which to add any issues that come up during isFinished()
    * @return true if this PropertyContainer is in a state where finish() will succeed.
    */
-  public boolean isFinished( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
     return true;
   }
 
-  public void finish() throws BuilderException
+  public void build() throws BuilderException
   {
     return;
   }

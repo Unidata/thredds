@@ -85,10 +85,10 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
         }
         else if ( event.isStartElement())
         {
-          if ( CatalogElementParser.isSelfElement( event.asStartElement() ))
+          if ( CatalogElementParser2.isSelfElementStatic( event.asStartElement() ))
           {
-            CatalogElementParser catElemParser = new CatalogElementParser( source.getSystemId(), reader, catBuilderFac);
-            catBuilder = catElemParser.parse();
+            CatalogElementParser2 catElemParser = new CatalogElementParser2( source.getSystemId(), reader, catBuilderFac);
+            catBuilder = (CatalogBuilder) catElemParser.parse();
           }
           else
           {

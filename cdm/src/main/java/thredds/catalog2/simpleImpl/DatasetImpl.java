@@ -116,9 +116,18 @@ public class DatasetImpl
   @Override
   public Dataset build() throws BuilderException
   {
+    if ( this.finished )
+      return this;
+
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( ! isBuildable( issues ) )
       throw new BuilderException( issues );
+
+    super.build();
+
+    // Check subordinates.
+    for ( AccessBuilder ab : this.accessBuilders )
+      ab.build();
 
     this.finished = true;
     return this;

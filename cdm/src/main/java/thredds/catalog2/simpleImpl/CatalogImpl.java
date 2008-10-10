@@ -277,7 +277,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
       sb.isBuildable( localIssues );
     for ( DatasetNodeBuilder dnb : this.datasetBuilders )
       dnb.isBuildable( localIssues );
-    this.propertyContainer.isFinished( localIssues );
+    this.propertyContainer.isBuildable( localIssues );
 
     if ( localIssues.isEmpty() )
       return true;
@@ -288,10 +288,24 @@ public class CatalogImpl implements Catalog, CatalogBuilder
 
   public Catalog build() throws BuilderException
   {
+    if ( this.finished )
+      return this;
+
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
 
+    // ToDo Check any invariants.
+    // Check invariants
+    // ToDo check that all datasets with Ids have unique Ids
+
+    // Check subordinates.
+    for ( ServiceBuilder sb : this.serviceBuilders )
+      sb.build();
+    for ( DatasetNodeBuilder dnb : this.datasetBuilders )
+      dnb.build();
+    this.propertyContainer.build();
+    
     this.finished = true;
     return this;
   }

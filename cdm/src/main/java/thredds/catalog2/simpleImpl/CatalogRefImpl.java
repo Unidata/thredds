@@ -60,9 +60,14 @@ public class CatalogRefImpl
   @Override
   public CatalogRef build() throws BuilderException
   {
+    if ( this.finished )
+      return this;
+
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
+
+    super.build();
 
     this.finished = true;
     return this;

@@ -254,9 +254,16 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   public Service build() throws BuilderException
   {
+    if ( this.finished )
+      return this;
+
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( ! isBuildable( issues ))
       throw new BuilderException( issues );
+
+    // Check subordinates.
+    for ( ServiceBuilder sb : this.serviceBuilders )
+      sb.build();
 
     this.finished = true;
     return this;

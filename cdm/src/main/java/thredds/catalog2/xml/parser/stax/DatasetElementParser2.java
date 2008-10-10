@@ -1,17 +1,16 @@
 package thredds.catalog2.xml.parser.stax;
 
-import thredds.catalog2.builder.*;
 import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.util.DatasetElementUtils;
 import thredds.catalog2.xml.util.CatalogRefElementUtils;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
+import thredds.catalog2.builder.*;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.namespace.QName;
 import javax.xml.XMLConstants;
 
 /**
@@ -20,12 +19,12 @@ import javax.xml.XMLConstants;
  * @author edavis
  * @since 4.0
  */
-public class DatasetElementParser
+public class DatasetElementParser2 extends AbstractElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-
-  private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                      DatasetElementUtils.ELEMENT_NAME );
+  
+  protected final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                                                        DatasetElementUtils.ELEMENT_NAME );
   private final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
                                                       DatasetElementUtils.NAME_ATTRIBUTE_NAME );
   private final static QName idAttName = new QName( XMLConstants.NULL_NS_URI,
@@ -42,115 +41,63 @@ public class DatasetElementParser
   private final static QName aliasAttName = new QName( XMLConstants.NULL_NS_URI,
                                                        DatasetElementUtils.ALIAS_ATTRIBUTE_NAME );
 
-  private final static QName catRefElementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                         CatalogRefElementUtils.ELEMENT_NAME );
-
-  private String defaultServiceName;
-  protected void setDefaultServiceName( String defaultServiceName )
-  {
-    if ( defaultServiceName == null ) return;
-    this.defaultServiceName = defaultServiceName;
-  }
-  protected String getDefaultServiceName()
-  {
-    return this.defaultServiceName;
-  }
-
-  public static boolean isSelfElement( XMLEvent event )
-  {
-    QName elemName = null;
-    if ( event.isStartElement() )
-      elemName = event.asStartElement().getName();
-    else if ( event.isEndElement() )
-      elemName = event.asEndElement().getName();
-    else
-      return false;
-
-    if ( elemName.equals( elementName ) )
-      return true;
-    else if ( elemName.equals( catRefElementName ) )
-    {
-      return true;
-    }
-    return false;
-  }
-
-  private final XMLEventReader reader;
   private final CatalogBuilder catBuilder;
   private final DatasetBuilder datasetBuilder;
   private final CatalogBuilderFactory catBuilderFactory;
 
-  public DatasetElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
+
+  public DatasetElementParser2( XMLEventReader reader, CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
   {
-    this.reader = reader;
+    super( reader, elementName );
     this.catBuilder = catBuilder;
     this.datasetBuilder = null;
     this.catBuilderFactory = null;
   }
 
-  public DatasetElementParser( XMLEventReader reader,  DatasetBuilder datasetBuilder )
+  public DatasetElementParser2( XMLEventReader reader, DatasetBuilder datasetBuilder )
           throws ThreddsXmlParserException
   {
-    this.reader = reader;
+    super( reader, elementName );
     this.catBuilder = null;
     this.datasetBuilder = datasetBuilder;
     this.catBuilderFactory = null;
   }
 
-  public DatasetElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public DatasetElementParser2( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
           throws ThreddsXmlParserException
   {
-    this.reader = reader;
+    super( reader, elementName );
     this.catBuilder = null;
     this.datasetBuilder = null;
     this.catBuilderFactory = catBuilderFactory;
   }
 
-  public DatasetBuilder parse()
-          throws ThreddsXmlParserException
+
+  private String defaultServiceName;
+
+  protected void setDefaultServiceName( String defaultServiceName )
   {
-    try
-    {
-      DatasetBuilder builder = this.parseElement( reader.nextEvent() );
-
-      while ( reader.hasNext() )
-      {
-        XMLEvent event = reader.peek();
-        if ( event.isStartElement() )
-        {
-          handleStartElement( event.asStartElement(), builder );
-        }
-        else if ( event.isEndElement() )
-        {
-          if ( isSelfElement( event.asEndElement() ) )
-          {
-            reader.next();
-            break;
-          }
-          else
-          {
-            log.error( "parse(): Unrecognized end element [" + event.asEndElement().getName() + "]." );
-            break;
-          }
-        }
-        else
-        {
-          reader.next();
-          continue;
-        }
-      }
-
-      return builder;
-    }
-    catch ( XMLStreamException e )
-    {
-      log.error( "parse(): Failed to parse service element: " + e.getMessage(), e );
-      throw new ThreddsXmlParserException( "Failed to parse service element: " + e.getMessage(), e );
-    }
+    if ( defaultServiceName == null ) return;
+    this.defaultServiceName = defaultServiceName;
   }
 
-  private DatasetBuilder parseElement( XMLEvent event )
+  protected String getDefaultServiceName()
+  {
+    return this.defaultServiceName;
+  }
+
+  protected static boolean isSelfElementStatic( XMLEvent event )
+  {
+    return isSelfElement( event, elementName );
+  }
+
+  protected boolean isSelfElement( XMLEvent event )
+  {
+    return isSelfElement( event, elementName );
+  }
+
+  protected DatasetBuilder parseStartElement( XMLEvent event )
           throws ThreddsXmlParserException
   {
     if ( !event.isStartElement() )
@@ -179,22 +126,23 @@ public class DatasetElementParser
     Attribute urlPathAtt = startElement.getAttributeByName( urlPathAttName );
     if ( urlPathAtt != null )
     {
-      //ToDo Need to postpone adding service to access builder till this dataset is finished.
-      //datasetBuilder.getParentCatalogBuilder().getServiceBuilderByName(  )
+      // Add AccessBuilder and set urlPath, set ServiceBuilder in postProcessing().
       AccessBuilder accessBuilder = datasetBuilder.addAccessBuilder();
       accessBuilder.setUrlPath( urlPathAtt.getValue() );
-      // Add service in build() when known.
     }
 
     return datasetBuilder;
   }
 
-  private void handleStartElement( StartElement startElement, DatasetBuilder builder )
-          throws ThreddsXmlParserException
+  protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder ) throws ThreddsXmlParserException
   {
-    if ( AccessElementParser.isSelfElement( startElement ))
+    if ( !( builder instanceof DatasetBuilder ) )
+      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
+    DatasetBuilder datasetBuilder = (DatasetBuilder) builder;
+
+    if ( AccessElementParser2.isSelfElementStatic( startElement ) )
     {
-      AccessElementParser parser = new AccessElementParser( reader, builder);
+      AccessElementParser2 parser = new AccessElementParser2( this.reader, datasetBuilder );
       parser.parse();
     }
     else
@@ -206,7 +154,22 @@ public class DatasetElementParser
   protected void postProcessing( ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
-    // ToDo Use defaultServiceName in any AccessBuilders that don't have a service set
-    DatasetBuilder db = (DatasetBuilder) builder;
+    if ( ! ( builder instanceof DatasetBuilder) )
+      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder.");
+    DatasetBuilder datasetBuilder = (DatasetBuilder) builder;
+
+    // In any AccessBuilders that don't have a ServiceBuilder, set it with the default service.
+    if ( this.defaultServiceName != null
+         && ! datasetBuilder.getAccessBuilders().isEmpty() )
+    {
+      // ToDo This only gets top level services, need findServiceBuilderByName() to crawl services
+      ServiceBuilder defaultServiceBuilder = datasetBuilder.getParentCatalogBuilder().getServiceBuilderByName( this.defaultServiceName );
+
+      for ( AccessBuilder curAB : datasetBuilder.getAccessBuilders() )
+      {
+        if ( curAB.getServiceBuilder() == null )
+          curAB.setServiceBuilder( defaultServiceBuilder );
+      }
+    }
   }
 }

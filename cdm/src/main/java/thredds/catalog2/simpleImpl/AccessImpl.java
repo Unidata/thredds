@@ -104,9 +104,15 @@ public class AccessImpl implements Access, AccessBuilder
 
   public Access build() throws BuilderException
   {
+    if ( this.finished )
+      return this;
+
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
+
+    // Check subordinates.
+    this.service.build();
 
     this.finished = true;
     return this;

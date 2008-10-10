@@ -248,9 +248,18 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 
   public DatasetNode build() throws BuilderException
   {
+    if ( this.finished )
+      return this;
+
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
+
+    // Check subordinates.
+    for ( MetadataBuilder mb : this.metadataBuilders )
+      mb.build();
+    for ( DatasetNodeBuilder dnb : this.childrenBuilders )
+      dnb.build();
 
     this.finished = true;
     return this;
