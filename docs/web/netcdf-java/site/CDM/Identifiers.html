@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>CDM Object Names</title>
+</head>
+
+<body>
+<h1>CDM Object Names </h1>
+<p>A<strong> CDM Object name</strong> refers to the name of a Group, Dimension, Variable, Attribute, or Enum. An object name is a String, a variable length array of Unicode characters. We record here the set of allowable characters for different formats.
+</p>
+<p><strong>NetCDF-4 C library Object names</strong> refer to the name of a Group, Dimension,
+Variable, Attribute, user-defined Type, compound type Member, or
+enumeration type Symbol.</p>
+<p>The CDM has not added user-defined types, and &quot;compound type Member&quot; are considered the same as Variables. Otherwise the two models are the same.</p>
+<hr>
+<h2><strong>Proposed for NetCDF-3 and NetCDF-4 Identifiers: </strong></h2>
+<p wrap="">A netCDF identifier is stored in a netCDF file as <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8</a> <a href="http://en.wikipedia.org/wiki/Unicode">Unicode</a> characters, <a href="http://unicode.org/reports/tr15/">NFC normalized</a>. There are some restrictions on the valid characters used in a netCDF identifier:</p>
+<pre wrap="">
+  ID = ([a-zA-Z0-9_]|{UTF8})([^\x00-\x1F\x7F/]|{UTF8})*
+UTF8 = multibyte UTF8 encoded char</pre>
+<p wrap="">  which says:</p>
+<ul>
+  <li> the first char must be alphanumeric, an underscore, or a UTF8 multibyte encoded char. </li>
+  <li>subsequent characters may be anything except  control characters, forward slash '/', and del. A UTF-8 multibyte encoding always has the high order bit set. So the excluded byte values are 0-31, 47, and 127. </li>
+</ul>
+<p>Also See:</p>
+<ul>
+  <li><a class="moz-txt-link-freetext" href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf.html#File-Format">http://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf.html#File-Format</a>
+      
+</li>
+</ul>
+<h3>CDL</h3>
+<p>Which characters in an identifier must be escaped in CDL? </p>
+<blockquote>
+  <pre>[^\x00-\x1F\x7F/_.@+-a-zA-Z0-9] </pre>
+</blockquote>
+<p>A CDL document is encoded in UTF-8, and the following characters need to be preceeded by a '\' (92) in an identifier:</p>
+<blockquote>
+  <pre> 32-42,44,58-63,91-96,123-126</pre>
+</blockquote>
+<p>Alternatively, we can enumerate the  escaped characters (using the regular expression syntax accepted by lex or flex):</p>
+<blockquote>
+  <pre wrap="">
+idescaped = \\[ !"#$%&amp;'()*,:;&lt;=&gt;?\[\\\]^`{|}~]</pre>
+</blockquote>
+<p wrap="">Then a  CDL representation of an ID can be defined as a combination of regular and escaped chars:</p>
+<blockquote>
+  <pre wrap="">
+ID = ([a-zA-Z_]|{UTF8})([a-zA-Z0-9_.@+-]|{UTF8}|{idescaped})*</pre>
+</blockquote>
+<p><strong>Must vs should ??? </strong></p>
+<blockquote>&nbsp;</blockquote>
+<h3>NcML
+</h3>
+<p>Uses standard XML encoding and escaping. </p>
+<p>The chars '&amp;', '&lt;', '&gt;' must be replaced by these <a href="http://en.wikipedia.org/wiki/XML#Entity_references">entity references</a>: &quot;&amp;amp;&quot;, &quot;&amp;lt;&quot;, &quot;&amp;gt;&quot; In some places the single and double qoute must be replaced by &quot;&amp;apos;&quot; and &quot;&amp;quot;&quot; respectively </p>
+<p>Typically an XML parser/library will handle this transparently. </p>
+<p>&nbsp;</p>
+<h3>CDM Section Specification </h3>
+<ul>
+  <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">CDM Section Specification</a> </li>
+</ul>
+<p>&nbsp; </p>
+<h3>OPeNDAP</h3>
+<p>It appears that OPeNDAP allows the '/' char in an identifier? The first char can also be one of these:</p>
+<blockquote>
+  <pre>[-+/%.\\*]</pre>
+</blockquote>
+<p>From the OPeNDAP lexers:</p>
+<pre>1. from dds.lex and ce_expr.lex
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [-+a-zA-Z0-9_/%.\\*][-+a-zA-Z0-9_/%.\\#*]*
+<br>2. from das.lex
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [-+a-zA-Z0-9_/%.\\*:()][-+a-zA-Z0-9_/%.\\#*:()]*
+<br>&nbsp; (same as dds plus ':','(', and ')' are added)
+<br>3. from gse.lex
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [-+a-zA-Z0-9_/%.\\][-+a-zA-Z0-9_/%.\\#]*
+<br>&nbsp; (same as dds except that '*' is removed)</pre>
+<p>  Their note:<br>
+  <br>
+<em>"...Note that the DAS allows Identifiers to have parens and colons while the DDS and expr scanners don't. It's too hard to disambiguate functions when IDs have parens in them and adding colons makes parsing the array projections hard..." </em></p>
+<p>In a URL, OpenDAP uses <a href="http://en.wikipedia.org/wiki/Percent-encoding">percent encoding</a> (eg %20 for a space character). <br>
+</p>
+<h3>HDF5
+</h3>
+<p>A direct translation of their grammar would appear to be this:</p>
+<blockquote>
+      <pre>
+PathName={AbsolutePathName}|{RelativePathName}
+
+
+Separator=[/]+
+<br>AbsolutePathName={Separator}{RelativePathName}?
+<br>RelativePathName={Component}({Separator}|{RelativePathName})*
+<br>Component=[.]|{Name}
+<br>Name=[.]|({Charx}{Character}*)|{Character}+
+<br>/* Ascii set - '/'
+Character={Charx}|[.]
+<br>/* Ascii set - '.' and '/' */
+Charx=[ !"#$%&amp;'()*+,-0123456789:;&lt;=&gt;?@\[\\\]^`{|}~\x00-\x1e,\x7f]
+
+</pre>
+</blockquote>
+      <hr WIDTH="100%">
+      <h3>Notes</h3>
+      <p>One version of the manual, apparently out of date (<a href="http://www.unidata.ucar.edu/software/netcdf/guidec/guidec-7.html#HEADING7-4">http://www.unidata.ucar.edu/software/netcdf/guidec/guidec-7.html#HEADING7-4</a>) </p>
+<p><em>The names of dimensions, variables and attributes consist of arbitrary sequences of alphanumeric characters (as well as underscore '<code>_</code>' and hyphen '<code>-</code>'), beginning with a letter or underscore. (However names commencing with underscore are reserved for system use.) Case is significant in netCDF names. </em></p>
+<p>That would be: </p>
+<pre>   [a-zA-Z_][a-zA-Z0-9_-]*
+</pre>
+<p>A more up-to-date-version (<a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#The-NetCDF-Data-Model">http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#The-NetCDF-Data-Model</a>) documents the addition of the '.' character in names for netCDF version 3.4 in March, 1998</p>
+<p><em>The names of dimensions, variables and attributes consist of arbitrary sequences of alphanumeric characters (as well as underscore '_', period '.' and hyphen '-'), beginning with a letter or underscore. (However names commencing with underscore are reserved for system use.) Case is significant in netCDF names. A zero-length name is not allowed.</em></p>
+<p>That would be: </p>
+<pre>   [a-zA-Z_][a-zA-Z0-9_.-]*</pre>
+<p><strong>CF Convention 1.0:</strong></p>
+<p><em> Variable, dimension and attribute names should begin with a letter and be composed of letters, digits, and underscores:</em></p>
+<pre>   [a-zA-Z][a-zA-Z0-9_]*</pre>
+<p><strong>From the code: </strong></p>
+<pre wrap=""> 1. netcdf.texi:     [a-zA-Z_][a-zA-Z0-9_-.]*
+ 2. libsrc/string.c: [a-zA-Z_][a-zA-Z0-9_-.+@:()]*
+ 3. ncgen.l:         [a-zA-Z_][a-zA-Z0-9_-.+@#\[\]]*
+</pre>
+<p wrap="">The &quot;extra&quot; chars are: </p>
+<ol>
+  <li>
+    <pre wrap="">The characters '@', ':', '(', and ')' were the ones added for the
+chemists at the German Institute for Stratospheric Chemistry.  The
+inconsistency between these and what's documented in the User Guide is
+intentional.  We told them we would not disallow these characters but
+would also not document them or support them in ncgen.</pre>
+  </li>
+  <li>
+    <pre>
+The '+' char is also in this undocumented set for the chemists, added later (2004/10/04).</pre>
+  </li>
+  <li>
+    <pre>
+The '#', '[', and ']' are a mystery. They should probably be removed</pre>
+  </li>
+</ol>
+<p>&nbsp;</p>
+<hr WIDTH="100%">
+<address>
+    <img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jun 18, 2008
+</address>
+</body>
+</html>

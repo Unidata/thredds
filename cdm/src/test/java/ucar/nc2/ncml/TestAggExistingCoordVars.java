@@ -9,6 +9,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Date;
 
 /** Test NcML AggExisting ways to define coordinate variable calues
@@ -61,10 +62,24 @@ public class TestAggExistingCoordVars extends TestCase {
   }
 
 
+  String aggExisting2 =
+    "<?xml version='1.0' encoding='UTF-8'?>\n" +
+    "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+    "   <variable name='time'>\n" +
+    "     <attribute name='units' value='hours since 2006-06-16 00:00'/>\n" +
+    "     <attribute name='_CoordinateAxisType' value='Time' />\n" +
+    "   </variable>\n" +
+    "  <aggregation type='joinExisting' dimName='time' >\n" +
+    "    <netcdf location='nc/cg/CG2006158_120000h_usfc.nc' ncoords='1' coordValue='12' />\n" +
+    "    <netcdf location='nc/cg/CG2006158_130000h_usfc.nc' ncoords='1' coordValue='13' />\n" +
+    "    <netcdf location='nc/cg/CG2006158_140000h_usfc.nc' ncoords='1' coordValue='14' />\n" +
+    "  </aggregation>\n" +
+    "</netcdf>";
+
   public void testType2() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExisting2.xml";
 
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML( new StringReader(aggExisting2), filename, null);
     System.out.println(" TestNcmlAggExisting.open "+ filename+"\n"+ncfile);
 
     Variable time = ncfile.findVariable("time");

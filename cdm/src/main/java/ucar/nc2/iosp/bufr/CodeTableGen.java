@@ -33,6 +33,11 @@ import java.util.List;
  * @since Jul 10, 2008
  */
 public class CodeTableGen {
+  static String root = "C:/dev/tds/bufr/resources/resources/bufr/codes/";
+  static String orgXml = root + "Code-FlagTables-11-2007.xml";
+  static String trans1 = root + "Code-FlagTables-11-2007.trans1.xml";
+  static String trans2 = root + "Code-FlagTables-11-2007.trans2.xml";
+
   Formatter out;
   BufferedReader dataIS;
   String line;
@@ -170,7 +175,7 @@ public class CodeTableGen {
     org.jdom.Document orgDoc;
     try {
       SAXBuilder builder = new SAXBuilder();
-      orgDoc = builder.build("C:/docs/bufr/wmo/Code-FlagTables-11-2007.xml");
+      orgDoc = builder.build(orgXml);
 
       org.jdom.Document tdoc = new org.jdom.Document();
       Element root = new Element("tdoc");
@@ -246,7 +251,7 @@ public class CodeTableGen {
     org.jdom.Document tdoc;
     try {
       SAXBuilder builder = new SAXBuilder();
-      tdoc = builder.build("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans1.xml");
+      tdoc = builder.build(trans1);
 
       org.jdom.Document ndoc = new org.jdom.Document();
       Element nroot = new Element("ndoc");
@@ -255,12 +260,9 @@ public class CodeTableGen {
       transform2(tdoc.getRootElement(), nroot);
 
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-      Writer pw = new FileWriter("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans2.xml");
+      Writer pw = new FileWriter(trans2);
       fmt.output(ndoc, pw);
       pw = new PrintWriter(System.out);
-      fmt.output(ndoc, pw);
-
-      pw = new FileWriter("C:/dev/tds/bufr/resources/resources/bufr/codes/Code-FlagTables-11-2007.trans2.xml");
       fmt.output(ndoc, pw);
 
     } catch (JDOMException e) {
@@ -327,12 +329,12 @@ public class CodeTableGen {
     }
   }
 
-  // pass 2 - transform the hand-edited XML to its final form
+  // pass 3 - look for problems
   static public void passThree() throws IOException {
     org.jdom.Document tdoc;
     try {
       SAXBuilder builder = new SAXBuilder();
-      tdoc = builder.build("C:/docs/bufr/wmo/Code-FlagTables-11-2007.trans2.xml");
+      tdoc = builder.build(trans2);
 
       /* org.jdom.Document ndoc = new org.jdom.Document();
       Element nroot = new Element("ndoc");
@@ -357,8 +359,8 @@ public class CodeTableGen {
 
 
   static public void main(String args[]) throws IOException {
-    passTwo();
-    //passThree();
+    //passTwo();
+    passThree();
   }
 
 }

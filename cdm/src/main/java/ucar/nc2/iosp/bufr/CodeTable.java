@@ -98,6 +98,7 @@ public class CodeTable {
     }
   }
 
+  ////////////////////////////////////////////////
   private short fxy;
   private String name;
   private Map<Integer,String> map;

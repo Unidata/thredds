@@ -26,7 +26,9 @@ This code is ALPHA
    * parsing of HDF-EOS/HDF5-EOS metadata to identify dimensions.
    * GEMPAK grids
    * NMC Office Note 29/143
-   * BUFR (edition 3) mostly works
+   * BUFR (edition 2-4)
+   * Mcidas AREA
+   * Universal Radar Format
   geoloc
    * Add RotatedPole projection
   ft
@@ -45,6 +47,8 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
+  26: EnhancedScaleMissingImpl: deal with unsigned data and missing values
+    Universal Formal Radar IOSP
   25: opendap parsing bug with signed bytes
     ncml agg fixes
     grib thread-safety
@@ -54,6 +58,8 @@ This code is ALPHA
     add Grib GDS type 87
     NCDumpW -ncml -vall now works
     cache cleanup only worked once (!)
+    agg files were being opened twice under some circumstances
+    FileCache hard limit
   24: cleanup error messages when catref or show catalog service fails to open remote catalog.
     HTTPRandomAccessFile tolerates lack of "Accept-Ranges" header
     bug in IO.copyUrlB buffering - was very slow, prone to hang

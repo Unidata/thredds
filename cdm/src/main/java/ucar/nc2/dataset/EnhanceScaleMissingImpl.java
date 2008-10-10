@@ -63,7 +63,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
   private boolean isUnsigned;
 
-  private boolean debug = false, debugRead = false;
+  private boolean debug = false, debugRead = false, debugMissing = false;
 
   /**
    * Constructor, when you dont want anything done.
@@ -136,46 +136,51 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       }
     }
 
-    ////// missing data : valid_range
-    if (null != (att = forVar.findAttribute("valid_range"))) {
-      if (!att.isString() && att.isArray()) {
-        valid_min = att.getNumericValue(0).doubleValue();
-        valid_max = att.getNumericValue(1).doubleValue();
+    ////// missing data : valid_range. assume here its in units of unpacked data. correct this below
+    Attribute validRangeAtt = null;
+    if (null != (validRangeAtt = forVar.findAttribute("valid_range"))) {
+      if (!validRangeAtt.isString() && validRangeAtt.getLength() > 1) {
+        valid_min = validRangeAtt.getNumericValue(0).doubleValue();
+        valid_max = validRangeAtt.getNumericValue(1).doubleValue();
         hasValidRange = true;
-        validType = att.getDataType();
-        if (hasScaleOffset) forVar.remove(att);
+        validType = validRangeAtt.getDataType();
+        if (hasScaleOffset) forVar.remove(validRangeAtt);
         if (debug) System.out.println("valid_range = " + valid_min + " " + valid_max);
       }
     }
+
+    Attribute validMinAtt = null, validMaxAtt = null;
     if (!hasValidRange) {
-      if (null != (att = forVar.findAttribute("valid_min"))) {
-        if (!att.isString()) {
-          valid_min = att.getNumericValue().doubleValue();
+      if (null != (validMinAtt = forVar.findAttribute("valid_min"))) {
+        if (!validMinAtt.isString()) {
+          valid_min = validMinAtt.getNumericValue().doubleValue();
           hasValidMin = true;
-          validType = att.getDataType();
-          if (hasScaleOffset) forVar.remove(att);
+          validType = validMinAtt.getDataType();
+          if (hasScaleOffset) forVar.remove(validMinAtt);
           if (debug) System.out.println("valid_min = " + valid_min);
         }
       }
-      if (null != (att = forVar.findAttribute("valid_max"))) {
-        if (!att.isString()) {
-          valid_max = att.getNumericValue().doubleValue();
+
+      if (null != (validMaxAtt = forVar.findAttribute("valid_max"))) {
+        if (!validMaxAtt.isString()) {
+          valid_max = validMaxAtt.getNumericValue().doubleValue();
           hasValidMax = true;
-          DataType t = att.getDataType();
+          DataType t = validMaxAtt.getDataType();
           if (rank(t) > rank(validType))
             validType = t;
-          if (hasScaleOffset) forVar.remove(att);
+          if (hasScaleOffset) forVar.remove(validMaxAtt);
           if (debug) System.out.println("valid_min = " + valid_max);
         }
       }
-      if (hasValidMin && hasValidMax)
-        hasValidRange = true;
     }
     boolean hasValidData = hasValidMin || hasValidMax || hasValidRange;
+    if (hasValidMin && hasValidMax)
+      hasValidRange = true;
 
     /// _FillValue
     if ((null != (att = forVar.findAttribute("_FillValue"))) && !att.isString()) {
-      fillValue = att.getNumericValue().doubleValue();
+      double[] values = getValueAsDouble(att);
+      fillValue = values[0];
       hasFillValue = true;
       fillType = att.getDataType();
       if (hasScaleOffset) forVar.remove(att);
@@ -194,27 +199,12 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
           if (debug) System.out.println("String missing_value not parsable as double= " + att.getStringValue());
         }
 
-      } else if (!att.isArray()) {
-        missingValue = new double[1];
-        missingValue[0] = att.getNumericValue().doubleValue();
-        if (debug) System.out.println("missing_datum = " + missingValue[0]);
-        missType = att.getDataType();
-        hasMissingValue = true;
-
       } else {
-        int n = att.getLength();
-        missingValue = new double[n];
-        if (debug) System.out.print("missing_data = ");
-        for (int i = 0; i < n; i++) {
-          missingValue[i] = att.getNumericValue(i).doubleValue();
-          if (debug) System.out.print(" " + missingValue[i]);
-        }
-        if (debug) System.out.println();
+        missingValue = getValueAsDouble(att);
         missType = att.getDataType();
         hasMissingValue = true;
       }
       if (hasScaleOffset) forVar.remove(att);
-
     }
 
     // missing
@@ -246,20 +236,6 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       }
       if (debug) System.out.println("assign dataType = " + convertedDataType);
 
-      // deal with case when theres both missing data and scaled data
-      // fillValue always external (packed) LOOK BOGUS FLOAT COMPARE ??
-      if (hasFillValue) {
-        fillValue = scale * fillValue + offset;
-        if (debug) System.out.println("scale the fillValue");
-      }
-
-      // missingValue always external (packed) LOOK BOGUS FLOAT COMPARE ??
-      if (hasMissingValue) {
-        for (int i = 0; i < missingValue.length; i++)
-          missingValue[i] = scale * missingValue[i] + offset;
-        if (debug) System.out.println("scale the missing values");
-      }
-
       // validData may be external or internal
       if (hasValidData) {
         DataType orgType = forVar.getDataType();
@@ -268,12 +244,22 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         // scale_factor and add_offset) and this is wider than the external data, then it
         // will be interpreted as being in the units of the internal (unpacked) data.
         // Otherwise it is in the units of the external (unpacked) data.
+        // we assumed unpacked data above, redo if its realy packed data
         if (!((rank(validType) == rank(scaleType)) && (rank(scaleType) >= rank(orgType)))) {
-          if (hasValidRange || hasValidMin)
-            valid_min = scale * valid_min + offset;
-          if (hasValidRange || hasValidMax)
-            valid_max = scale * valid_max + offset;
-          if (debug) System.out.println("scale the range");
+          if (validRangeAtt != null) {
+            double[] values = getValueAsDouble(validRangeAtt);
+            valid_min = values[0];
+            valid_max = values[1];
+          } else {
+            if (validMinAtt != null) {
+              double[] values = getValueAsDouble(validMinAtt);
+              valid_min = values[0];
+            }
+            if (validMaxAtt != null) {
+              double[] values = getValueAsDouble(validMaxAtt);
+              valid_max = values[0];
+            }
+          }
         }
       }
     }
@@ -281,6 +267,26 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     if (hasMissing && ((convertedDataType == DataType.DOUBLE) || (convertedDataType == DataType.FLOAT)))
       this.useNaNs = useNaNs;
     if (debug) System.out.println("this.useNaNs = " + this.useNaNs);
+  }
+
+  private double[] getValueAsDouble(Attribute att) {
+    int n = att.getLength();
+    double[] value = new double[n];
+
+    if (debugMissing) System.out.printf("missing_data: ");
+    for (int i=0; i<n; i++) {
+      if (isUnsigned && att.getDataType() == DataType.BYTE)
+        value[i] = convertScaleOffsetMissing( att.getNumericValue(i).byteValue());
+      else if (isUnsigned && att.getDataType() == DataType.SHORT)
+        value[i] = convertScaleOffsetMissing( att.getNumericValue(i).shortValue());
+      else if (isUnsigned && att.getDataType() == DataType.INT)
+        value[i] = convertScaleOffsetMissing( att.getNumericValue(i).intValue());
+      else
+        value[i] = scale * att.getNumericValue(i).doubleValue() + offset;
+      if (debugMissing) System.out.print(" " + value[i]);
+    }
+    if (debugMissing) System.out.println();
+    return value;
   }
 
   private int rank(DataType c) {
@@ -425,12 +431,22 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         (missingDataIsMissing && hasMissingValue());
   }
 
+  /**
+   * Is this a missing value ?
+   * @param val check this value
+   * @return true if missing
+   */
   public boolean isMissing(double val) {
     if (!hasMissing()) return false;
     if (Double.isNaN(val)) return true;
     return isMissing_(val);
   }
 
+   /**
+   * Optimize "Is this a missing value"? Assumes NaNs have already been set if its missing.
+   * @param val check this value
+   * @return true if missing
+   */
   public boolean isMissingFast( double val) {
     if (!hasMissing()) return false;
     if (useNaNs) return Double.isNaN(val); // no need to check again
@@ -439,11 +455,21 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   }
 
   // find data values that match a missing value
-  // assumes that hasMissing() == true
+  /* assumes that hasMissing() == true
   private final boolean isMissing_(double val) {
     return (invalidDataIsMissing && isInvalidData(val)) ||
         (fillValueIsMissing && isFillValue(val)) ||
         (missingDataIsMissing && isMissingValue(val));
+  } */
+
+  private final  boolean isMissing_(double val) {
+    if (missingDataIsMissing && hasMissingValue && isMissingValue(val))
+      return true;
+    if (fillValueIsMissing && hasFillValue && isFillValue(val))
+      return true;
+    if (invalidDataIsMissing)
+      return isInvalidData(val);
+    return false;
   }
 
   public Object getFillValue(DataType dt) {
