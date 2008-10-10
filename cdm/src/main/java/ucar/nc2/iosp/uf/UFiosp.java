@@ -128,7 +128,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         v.addAttribute( new Attribute("signal_below_threshold", firstRay.getDatatypeRangeFoldingThreshhold(datatype)));
         v.addAttribute( new Attribute("scale_factor", firstRay.getDatatypeScaleFactor(datatype)));
         v.addAttribute( new Attribute("add_offset", firstRay.getDatatypeAddOffset(datatype)));
-        v.addAttribute( new Attribute("_unsigned", "true"));
+       // v.addAttribute( new Attribute("_unsigned", "false"));
 
         v.addAttribute( new Attribute("range_folding_threshold" ,firstRay.getDatatypeRangeFoldingThreshhold(datatype)));
 
