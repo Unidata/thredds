@@ -34,16 +34,18 @@ import java.util.Random;
  * @since Oct 9, 2008
  */
 public class ImageFactoryRandom {
-  private java.util.List<File> currentDirFileList;
+  private java.util.List<File> holdList;
+  private java.util.List<File> fileList;
   private Random random = new Random( System.currentTimeMillis());
 
   public ImageFactoryRandom(File topDir) {
     if (!topDir.exists())
       return;
 
-    currentDirFileList = new ArrayList<File>(1000);
-    addToList(topDir, currentDirFileList);
-    System.out.println("nfiles= "+currentDirFileList.size());
+    fileList = new ArrayList<File>(1000);
+    addToList(topDir, fileList);
+    System.out.println("nfiles= "+ fileList.size());
+    holdList = new ArrayList( fileList);
   }
 
   private void addToList(File dir, List<File> list) {
@@ -56,14 +58,19 @@ public class ImageFactoryRandom {
   }
 
   public BufferedImage getNextImage() {
-    int next = Math.abs(random.nextInt()) % currentDirFileList.size();
-    File nextFile = currentDirFileList.get(next);
+    if (holdList.size() == 0)
+      holdList = new ArrayList( fileList);
+
+    int next = Math.abs(random.nextInt()) % holdList.size();
+    File nextFile = holdList.get(next);
+    holdList.remove( nextFile); // random draw without replacement
+
     try {
       System.out.printf("next %d %s %n", next, nextFile);
       return javax.imageio.ImageIO.read(nextFile);
     } catch (IOException e) {
       System.out.println("Failed to open image " + nextFile);
-      currentDirFileList.remove( nextFile);
+      fileList.remove( nextFile);
       return getNextImage();
     }
 
