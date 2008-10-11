@@ -110,7 +110,7 @@ public class CatalogRefElementParser2 extends AbstractElementParser
       throw new ThreddsXmlParserException( "" );
 
     // Set optional attributes
-    Attribute idAtt = startElement.getAttributeByName( DatasetNodeElementParser.idAttName );
+    Attribute idAtt = startElement.getAttributeByName( DatasetNodeElementParser2.idAttName );
     if ( idAtt != null )
     {
       catalogRefBuilder.setId( idAtt.getValue() );
@@ -126,9 +126,9 @@ public class CatalogRefElementParser2 extends AbstractElementParser
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
     CatalogRefBuilder catRefBuilder = (CatalogRefBuilder) builder;
 
-    if ( PropertyElementParser.isSelfElement( startElement ))
+    if ( PropertyElementParser2.isSelfElementStatic( startElement ))
     {
-      PropertyElementParser parser = new PropertyElementParser( reader, catRefBuilder);
+      PropertyElementParser2 parser = new PropertyElementParser2( reader, catRefBuilder);
       parser.parse();
     }
     else

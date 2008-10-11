@@ -100,7 +100,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
         }
         else if ( event.isEndElement())
         {
-          if ( CatalogElementParser.isSelfElement( event.asEndElement() ) )
+          if ( CatalogElementParser2.isSelfElementStatic( event.asEndElement() ) )
           {
             break;
           }

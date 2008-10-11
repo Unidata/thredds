@@ -115,9 +115,9 @@ public class DatasetNodeElementParser2 extends AbstractElementParser
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
     DatasetNodeBuilder dsNodeBuilder = (DatasetNodeBuilder) builder;
 
-    if ( PropertyElementParser.isSelfElement( startElement ))
+    if ( PropertyElementParser2.isSelfElementStatic( startElement ))
     {
-      PropertyElementParser parser = new PropertyElementParser( reader, dsNodeBuilder);
+      PropertyElementParser2 parser = new PropertyElementParser2( reader, dsNodeBuilder);
       parser.parse();
     }
     else
