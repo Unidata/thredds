@@ -2,7 +2,6 @@ package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.util.DatasetElementUtils;
-import thredds.catalog2.xml.util.CatalogRefElementUtils;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 import thredds.catalog2.builder.*;
 
@@ -19,7 +18,7 @@ import javax.xml.XMLConstants;
  * @author edavis
  * @since 4.0
  */
-public class DatasetElementParser2 extends AbstractElementParser
+public class DatasetElementParser extends AbstractElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
   
@@ -46,7 +45,7 @@ public class DatasetElementParser2 extends AbstractElementParser
   private final CatalogBuilderFactory catBuilderFactory;
 
 
-  public DatasetElementParser2( XMLEventReader reader, CatalogBuilder catBuilder )
+  public DatasetElementParser( XMLEventReader reader, CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -55,7 +54,7 @@ public class DatasetElementParser2 extends AbstractElementParser
     this.catBuilderFactory = null;
   }
 
-  public DatasetElementParser2( XMLEventReader reader, DatasetBuilder datasetBuilder )
+  public DatasetElementParser( XMLEventReader reader, DatasetBuilder datasetBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -64,7 +63,7 @@ public class DatasetElementParser2 extends AbstractElementParser
     this.catBuilderFactory = null;
   }
 
-  public DatasetElementParser2( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public DatasetElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -140,9 +139,9 @@ public class DatasetElementParser2 extends AbstractElementParser
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
     DatasetBuilder datasetBuilder = (DatasetBuilder) builder;
 
-    if ( AccessElementParser2.isSelfElementStatic( startElement ) )
+    if ( AccessElementParser.isSelfElementStatic( startElement ) )
     {
-      AccessElementParser2 parser = new AccessElementParser2( this.reader, datasetBuilder );
+      AccessElementParser parser = new AccessElementParser( this.reader, datasetBuilder );
       parser.parse();
     }
     else

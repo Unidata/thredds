@@ -22,7 +22,7 @@ import javax.xml.XMLConstants;
  * @author edavis
  * @since 4.0
  */
-public class PropertyElementParser2 extends AbstractElementParser
+public class PropertyElementParser extends AbstractElementParser
 {
   private org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( getClass() );
@@ -42,7 +42,7 @@ public class PropertyElementParser2 extends AbstractElementParser
   private final DatasetNodeBuilder datasetNodeBuilder;
   private final ServiceBuilder serviceBuilder;
 
-  public PropertyElementParser2( XMLEventReader reader,  CatalogBuilder catBuilder )
+  public PropertyElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName);
@@ -51,7 +51,7 @@ public class PropertyElementParser2 extends AbstractElementParser
     this.serviceBuilder = null;
   }
 
-  public PropertyElementParser2( XMLEventReader reader,  DatasetNodeBuilder datasetNodeBuilder )
+  public PropertyElementParser( XMLEventReader reader,  DatasetNodeBuilder datasetNodeBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -70,7 +70,7 @@ public class PropertyElementParser2 extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  public PropertyElementParser2( XMLEventReader reader,  ServiceBuilder serviceBuilder )
+  public PropertyElementParser( XMLEventReader reader,  ServiceBuilder serviceBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );

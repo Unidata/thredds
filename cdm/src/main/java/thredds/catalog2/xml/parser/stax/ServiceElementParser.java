@@ -13,7 +13,6 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.namespace.QName;
 import javax.xml.XMLConstants;
 import java.net.URI;
@@ -25,7 +24,7 @@ import java.net.URISyntaxException;
  * @author edavis
  * @since 4.0
  */
-public class ServiceElementParser2 extends AbstractElementParser
+public class ServiceElementParser extends AbstractElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
@@ -46,7 +45,7 @@ public class ServiceElementParser2 extends AbstractElementParser
   private final ServiceBuilder serviceBuilder;
   private final CatalogBuilderFactory catBuilderFactory;
 
-  public ServiceElementParser2( XMLEventReader reader,  CatalogBuilder catBuilder )
+  public ServiceElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName);
@@ -55,7 +54,7 @@ public class ServiceElementParser2 extends AbstractElementParser
     this.catBuilderFactory = null;
   }
 
-  public ServiceElementParser2( XMLEventReader reader,  ServiceBuilder serviceBuilder )
+  public ServiceElementParser( XMLEventReader reader,  ServiceBuilder serviceBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -64,7 +63,7 @@ public class ServiceElementParser2 extends AbstractElementParser
     this.catBuilderFactory = null;
   }
 
-  public ServiceElementParser2( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public ServiceElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -138,14 +137,14 @@ public class ServiceElementParser2 extends AbstractElementParser
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
     ServiceBuilder serviceBuilder = (ServiceBuilder) builder;
 
-    if ( ServiceElementParser2.isSelfElementStatic( startElement ) )
+    if ( ServiceElementParser.isSelfElementStatic( startElement ) )
     {
-      ServiceElementParser2 serviceElemParser = new ServiceElementParser2( reader, serviceBuilder );
+      ServiceElementParser serviceElemParser = new ServiceElementParser( reader, serviceBuilder );
       serviceElemParser.parse();
     }
-    else if ( PropertyElementParser2.isSelfElementStatic( startElement ))
+    else if ( PropertyElementParser.isSelfElementStatic( startElement ))
     {
-      PropertyElementParser2 parser = new PropertyElementParser2( reader, serviceBuilder);
+      PropertyElementParser parser = new PropertyElementParser( reader, serviceBuilder);
       parser.parse();
     }
     else

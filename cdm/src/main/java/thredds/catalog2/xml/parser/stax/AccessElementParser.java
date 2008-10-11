@@ -19,7 +19,7 @@ import javax.xml.XMLConstants;
  * @author edavis
  * @since 4.0
  */
-public class AccessElementParser2 extends AbstractElementParser
+public class AccessElementParser extends AbstractElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
@@ -35,7 +35,7 @@ public class AccessElementParser2 extends AbstractElementParser
   private final DatasetBuilder datasetBuilder;
   private final CatalogBuilderFactory catBuilderFactory;
 
-  public AccessElementParser2( XMLEventReader reader, DatasetBuilder datasetBuilder )
+  public AccessElementParser( XMLEventReader reader, DatasetBuilder datasetBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -43,7 +43,7 @@ public class AccessElementParser2 extends AbstractElementParser
     this.catBuilderFactory = null;
   }
 
-  public AccessElementParser2( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public AccessElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );

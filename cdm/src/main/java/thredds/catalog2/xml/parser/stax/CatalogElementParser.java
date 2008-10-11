@@ -11,7 +11,6 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.namespace.QName;
 import javax.xml.XMLConstants;
 import java.util.Date;
@@ -24,7 +23,7 @@ import java.net.URISyntaxException;
  * @author edavis
  * @since 4.0
  */
-public class CatalogElementParser2 extends AbstractElementParser
+public class CatalogElementParser extends AbstractElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
@@ -42,7 +41,7 @@ public class CatalogElementParser2 extends AbstractElementParser
   private final String docBaseUriString;
   private final CatalogBuilderFactory catBuilderFactory;
 
-  public CatalogElementParser2( String docBaseUriString, XMLEventReader reader,  CatalogBuilderFactory catBuilderFactory )
+  public CatalogElementParser( String docBaseUriString, XMLEventReader reader,  CatalogBuilderFactory catBuilderFactory )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -95,19 +94,19 @@ public class CatalogElementParser2 extends AbstractElementParser
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
     CatalogBuilder catalogBuilder = (CatalogBuilder) builder;
 
-    if ( ServiceElementParser2.isSelfElementStatic( startElement ) )
+    if ( ServiceElementParser.isSelfElementStatic( startElement ) )
     {
-      ServiceElementParser2 serviceElemParser = new ServiceElementParser2( this.reader, catalogBuilder );
+      ServiceElementParser serviceElemParser = new ServiceElementParser( this.reader, catalogBuilder );
       serviceElemParser.parse();
     }
-    else if ( PropertyElementParser2.isSelfElementStatic( startElement ) )
+    else if ( PropertyElementParser.isSelfElementStatic( startElement ) )
     {
-      PropertyElementParser2 parser = new PropertyElementParser2( this.reader, catalogBuilder );
+      PropertyElementParser parser = new PropertyElementParser( this.reader, catalogBuilder );
       parser.parse();
     }
-    else if ( DatasetElementParser2.isSelfElementStatic( startElement ) )
+    else if ( DatasetElementParser.isSelfElementStatic( startElement ) )
     {
-      DatasetElementParser2 parser = new DatasetElementParser2( this.reader, catalogBuilder );
+      DatasetElementParser parser = new DatasetElementParser( this.reader, catalogBuilder );
       parser.parse();
     }
     else

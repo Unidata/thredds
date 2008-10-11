@@ -2,6 +2,7 @@ package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
 import thredds.catalog2.xml.util.CatalogNamespace;
+import thredds.catalog2.xml.util.DatasetElementUtils;
 import thredds.catalog2.xml.util.CatalogRefElementUtils;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 
@@ -9,10 +10,8 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.namespace.QName;
-import java.net.URI;
-import java.net.URISyntaxException;
+import javax.xml.XMLConstants;
 
 /**
  * _more_
@@ -20,25 +19,26 @@ import java.net.URISyntaxException;
  * @author edavis
  * @since 4.0
  */
-public class CatalogRefElementParser2 extends AbstractElementParser
+public class DatasetNodeElementParser extends AbstractElementParser
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   protected final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                        CatalogRefElementUtils.ELEMENT_NAME );
-  protected final static QName nameAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                        CatalogRefElementUtils.XLINK_TITLE_ATTRIBUTE_NAME );
-  protected final static QName hrefAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                        CatalogRefElementUtils.XLINK_HREF_ATTRIBUTE_NAME );
-  protected final static QName typeAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                        CatalogRefElementUtils.XLINK_TYPE_ATTRIBUTE_NAME );
+                                                        DatasetElementUtils.ELEMENT_NAME );
+  protected final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
+                                                        DatasetElementUtils.NAME_ATTRIBUTE_NAME );
+  protected final static QName idAttName = new QName( XMLConstants.NULL_NS_URI,
+                                                      DatasetElementUtils.ID_ATTRIBUTE_NAME );
 
+
+  private final static QName catRefElementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
+                                                         CatalogRefElementUtils.ELEMENT_NAME );
 
   private final CatalogBuilder catBuilder;
   private final DatasetNodeBuilder datasetNodeBuilder;
   private final CatalogBuilderFactory catBuilderFactory;
 
-  public CatalogRefElementParser2( XMLEventReader reader,  CatalogBuilder catBuilder )
+  public DatasetNodeElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -47,7 +47,7 @@ public class CatalogRefElementParser2 extends AbstractElementParser
     this.catBuilderFactory = null;
   }
 
-  public CatalogRefElementParser2( XMLEventReader reader, DatasetNodeBuilder datasetNodeBuilder )
+  public DatasetNodeElementParser( XMLEventReader reader, DatasetNodeBuilder datasetNodeBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -56,7 +56,7 @@ public class CatalogRefElementParser2 extends AbstractElementParser
     this.catBuilderFactory = null;
   }
 
-  public CatalogRefElementParser2( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public DatasetNodeElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
@@ -85,50 +85,38 @@ public class CatalogRefElementParser2 extends AbstractElementParser
     // Get required attributes.
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );
     String name = nameAtt.getValue();
-    Attribute hrefAtt = startElement.getAttributeByName( hrefAttName );
-    String href = hrefAtt.getValue();
-    URI hrefUri = null;
-    try
-    {
-      hrefUri = new URI( href );
-    }
-    catch ( URISyntaxException e )
-    {
-      log.error( "parseElement(): Bad catalog base URI [" + href + "]: " + e.getMessage(), e );
-      throw new ThreddsXmlParserException( "Bad catalog base URI [" + href + "]: " + e.getMessage(), e );
-    }
 
     // Construct builder.
-    CatalogRefBuilder catalogRefBuilder = null;
+    DatasetBuilder datasetBuilder = null;
     if ( this.catBuilder != null )
-      catalogRefBuilder = this.catBuilder.addCatalogRef( name, hrefUri );
+      datasetBuilder = this.catBuilder.addDataset( name );
     else if ( this.datasetNodeBuilder != null )
-      catalogRefBuilder = this.datasetNodeBuilder.addCatalogRef( name, hrefUri );
+      datasetBuilder = this.datasetNodeBuilder.addDataset( name );
     else if ( catBuilderFactory != null )
-      catalogRefBuilder = catBuilderFactory.newCatalogRefBuilder( name, hrefUri );
+      datasetBuilder = catBuilderFactory.newDatasetBuilder( name );
     else
       throw new ThreddsXmlParserException( "" );
 
     // Set optional attributes
-    Attribute idAtt = startElement.getAttributeByName( DatasetNodeElementParser2.idAttName );
+    Attribute idAtt = startElement.getAttributeByName( idAttName );
     if ( idAtt != null )
     {
-      catalogRefBuilder.setId( idAtt.getValue() );
+      datasetBuilder.setId( idAtt.getValue() );
     }
 
-    return catalogRefBuilder;
+    return datasetBuilder;
   }
 
   protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
-    if ( !( builder instanceof CatalogRefBuilder ) )
+    if ( !( builder instanceof DatasetNodeBuilder ) )
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
-    CatalogRefBuilder catRefBuilder = (CatalogRefBuilder) builder;
+    DatasetNodeBuilder dsNodeBuilder = (DatasetNodeBuilder) builder;
 
-    if ( PropertyElementParser2.isSelfElementStatic( startElement ))
+    if ( PropertyElementParser.isSelfElementStatic( startElement ))
     {
-      PropertyElementParser2 parser = new PropertyElementParser2( reader, catRefBuilder);
+      PropertyElementParser parser = new PropertyElementParser( reader, dsNodeBuilder);
       parser.parse();
     }
     else
