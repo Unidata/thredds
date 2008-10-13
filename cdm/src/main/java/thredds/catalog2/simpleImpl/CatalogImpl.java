@@ -15,6 +15,8 @@ import java.util.*;
  */
 public class CatalogImpl implements Catalog, CatalogBuilder
 {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
   private String name;
   private URI docBaseUri;
   private String version;
@@ -134,7 +136,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
 
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
   {
-    if ( finished )
+    if ( this.finished )
       throw new IllegalStateException( "This CatalogBuilder has been finished()." );
 
     // Track unique service names, throw llegalStateException if name not unique.
@@ -145,6 +147,25 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     this.services.add( sb );
     this.servicesMap.put( name, sb );
     return sb;
+  }
+
+  public boolean removeService( ServiceBuilder builder )
+  {
+    if ( this.finished )
+      throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    if ( builder == null )
+      throw new IllegalArgumentException( "Given ServiceBuilder may not be null.");
+
+    if ( this.serviceBuilders.remove( builder ) )
+    {
+      if ( ! this.services.remove( builder ))
+        log.warn( "removeService(): failed to remove ServiceBuilder [" + builder.getName() +"] (from list).");
+      if ( null == this.servicesMap.remove( builder.getName() ) )
+        log.warn( "removeService(): failed to remove ServiceBuilder [" + builder.getName() + "] (from map).");
+
+      return true;
+    }
+    return false;
   }
 
   public List<Service> getServices()
