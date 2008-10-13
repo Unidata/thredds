@@ -57,12 +57,13 @@ public class ImageFactoryRandom {
     }
   }
 
+  File nextFile = null;
   public BufferedImage getNextImage() {
     if (holdList.size() == 0)
       holdList = new ArrayList( fileList);
 
     int next = Math.abs(random.nextInt()) % holdList.size();
-    File nextFile = holdList.get(next);
+    nextFile = holdList.get(next);
     holdList.remove( nextFile); // random draw without replacement
 
     try {
@@ -73,6 +74,15 @@ public class ImageFactoryRandom {
       fileList.remove( nextFile);
       return getNextImage();
     }
+
+  }
+
+  // remove last file
+  public void delete() {
+    if (nextFile == null) return;
+    fileList.remove( nextFile);
+    File f = new File("C:/tmp/deleted/"+nextFile.getName());
+    nextFile.renameTo(f);
 
   }
 

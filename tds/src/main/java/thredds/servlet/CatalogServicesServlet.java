@@ -153,6 +153,7 @@ public class CatalogServicesServlet extends HttpServlet {
   public static void handleCatalogServiceRequest(InvCatalogImpl catalog, URI catURI, boolean isHtmlReq, boolean isLocalCat,
                                                  HttpServletRequest req, HttpServletResponse res)
       throws IOException {
+
     // check for fatal errors
     StringBuilder validateMess = new StringBuilder();
     boolean debug = "true".equals(req.getParameter("debug"));

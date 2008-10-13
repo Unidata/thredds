@@ -132,8 +132,13 @@ public class ImageViewPanel extends JPanel {
 
   private class MyKeyEventDispatcher implements java.awt.KeyEventDispatcher {
     public boolean dispatchKeyEvent(KeyEvent e) {
+      System.out.printf(" dispatchKeyEvent=%s code = %d %n",e,e.getKeyCode());
+      if (e.getKeyCode() == 127) {
+        imageFactoryRandom.delete();
+        return false;
+      }
+
       if (fullscreenMode) {
-        System.out.println(" dispatchKeyEvent="+e);
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice device = ge.getDefaultScreenDevice();
         device.setFullScreenWindow(null);
