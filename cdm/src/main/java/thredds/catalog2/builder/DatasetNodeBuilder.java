@@ -32,7 +32,6 @@ public interface DatasetNodeBuilder extends ThreddsBuilder
   public boolean isCollection();
 
   public DatasetBuilder addDataset( String name );
-  public DatasetAliasBuilder addDatasetAlias( String name, DatasetNodeBuilder alias);
   public CatalogRefBuilder addCatalogRef( String name, URI reference);
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders();

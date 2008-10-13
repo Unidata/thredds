@@ -22,8 +22,6 @@ public interface CatalogBuilderFactory
 
   public DatasetBuilder newDatasetBuilder( String name );
   public DatasetBuilder newDatasetBuilder( Dataset dataset );
-  public DatasetAliasBuilder newDatasetAliasBuilder( String name, DatasetNodeBuilder dsToAlias );
-  public DatasetAliasBuilder newDatasetAliasBuilder( DatasetAlias dsAlias);
   public CatalogRefBuilder newCatalogRefBuilder( String name, URI reference );
   public CatalogRefBuilder newCatalogRefBuilder( CatalogRef catRef);
 

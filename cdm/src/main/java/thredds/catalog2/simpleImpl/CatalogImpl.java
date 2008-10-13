@@ -217,15 +217,6 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return db;
   }
 
-  public DatasetAliasBuilder addDatasetAlias( String name, DatasetNodeBuilder alias )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    DatasetAliasImpl dab = new DatasetAliasImpl( name, alias, this, null );
-    this.datasetBuilders.add( dab );
-    this.datasets.add( dab );
-    return dab;
-  }
-
   public CatalogRefBuilder addCatalogRef( String name, URI reference )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );

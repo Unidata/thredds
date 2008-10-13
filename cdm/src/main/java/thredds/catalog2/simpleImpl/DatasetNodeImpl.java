@@ -149,15 +149,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return db;
   }
 
-  public DatasetAliasBuilder addDatasetAlias( String name, DatasetNodeBuilder alias )
-  {
-    if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    DatasetAliasImpl dab = new DatasetAliasImpl( name, alias, (CatalogBuilder) this.getParentCatalog(), this );
-    this.childrenBuilders.add( dab );
-    this.children.add( dab );
-    return dab;
-  }
-
   public CatalogRefBuilder addCatalogRef( String name, URI reference)
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );

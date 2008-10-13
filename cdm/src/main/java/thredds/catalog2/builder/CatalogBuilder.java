@@ -38,7 +38,6 @@ public interface CatalogBuilder extends ThreddsBuilder
 
   public DatasetBuilder addDataset( String name );
   public CatalogRefBuilder addCatalogRef( String name, URI reference );
-  public DatasetAliasBuilder addDatasetAlias( String name, DatasetNodeBuilder alias );
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders();
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id );

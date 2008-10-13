@@ -53,16 +53,6 @@ public class CatalogBuilderFactoryImpl implements CatalogBuilderFactory
     return null;
   }
 
-  public DatasetAliasBuilder newDatasetAliasBuilder( String name, DatasetNodeBuilder dsToAlias )
-  {
-    return new DatasetAliasImpl( name, dsToAlias, null, null );
-  }
-
-  public DatasetAliasBuilder newDatasetAliasBuilder( DatasetAlias dsAlias )
-  {
-    return null;
-  }
-
   public CatalogRefBuilder newCatalogRefBuilder( String name, URI reference )
   {
     return new CatalogRefImpl( name, reference, null, null );
