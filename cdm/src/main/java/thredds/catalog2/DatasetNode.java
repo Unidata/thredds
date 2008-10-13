@@ -13,9 +13,11 @@ import java.util.List;
 public interface DatasetNode
 {
   public String getId();
-  public String getName();
+  public String getIdAuthority();
+  public String getName(); // ToDo Change to getTitle() ???
   public List<Property> getProperties();
   public Property getPropertyByName( String name);
+  public ThreddsMetadata getThreddsMetadata();
   public List<Metadata> getMetadata();
 
   public Catalog getParentCatalog();

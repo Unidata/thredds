@@ -1,6 +1,7 @@
 package thredds.catalog2.builder;
 
 import thredds.catalog2.DatasetNode;
+import thredds.catalog2.ThreddsMetadata;
 
 import java.util.List;
 import java.net.URI;
@@ -25,6 +26,9 @@ public interface DatasetNodeBuilder extends ThreddsBuilder
 
   public MetadataBuilder addMetadata();
   public List<MetadataBuilder> getMetadataBuilders();
+
+  public void setThreddsMetadata( ThreddsMetadata threddsMetadata );
+  public ThreddsMetadata getThreddsMetadata();
 
   public CatalogBuilder getParentCatalogBuilder();
   public DatasetNodeBuilder getParentDatasetBuilder();

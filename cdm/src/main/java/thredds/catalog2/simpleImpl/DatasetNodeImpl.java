@@ -1,10 +1,7 @@
 package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.builder.*;
-import thredds.catalog2.Property;
-import thredds.catalog2.Metadata;
-import thredds.catalog2.Catalog;
-import thredds.catalog2.DatasetNode;
+import thredds.catalog2.*;
 
 import java.util.*;
 import java.net.URI;
@@ -18,9 +15,11 @@ import java.net.URI;
 public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 {
   private String id;
+  private String idAuthority;
   private String name;
   private PropertyContainer propertyContainer;
 
+  private ThreddsMetadata threddsMetadata;
   private List<MetadataBuilder> metadataBuilders;
   private List<Metadata> metadata;
 
@@ -72,6 +71,17 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.id;
   }
 
+  public void setIdAuthority( String idAuthority )
+  {
+    if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    this.idAuthority = idAuthority;
+  }
+
+  public String getIdAuthority()
+  {
+    return this.idAuthority;
+  }
+
   public void setName( String name )
   {
     if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
@@ -117,6 +127,18 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     if ( !this.finished )
       throw new IllegalStateException( "This DatasetNode has escaped from its ServiceBuilder before build() was called." );
     return this.propertyContainer.getPropertyByName( name );
+  }
+
+  public void setThreddsMetadata( ThreddsMetadata threddsMetadata )
+  {
+    if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    this.threddsMetadata = new ThreddsMetadataImpl();
+    return;
+  }
+
+  public ThreddsMetadata getThreddsMetadata()
+  {
+    return this.threddsMetadata;
   }
 
   public MetadataBuilder addMetadata()

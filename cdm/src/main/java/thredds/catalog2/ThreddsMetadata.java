@@ -25,7 +25,8 @@ public interface ThreddsMetadata
   public String getProject();
   public List<String> getDate();
             // ToDo ?How deal with point (created, modified, issued, metadataCreated)
-            // ToDo            vs range (valid, available) 
+            // ToDo            vs range (valid, available)
+  // DateType getDateCreated(); DateRange getValidDate(); ... ? 
 
   public thredds.catalog.ThreddsMetadata.GeospatialCoverage getGeospatialCoverage();
             // ToDo Or change GeospatialCoverage to CRS plus range for each dimension???
