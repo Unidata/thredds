@@ -35,7 +35,7 @@ public class CatalogBuilderFactoryImpl implements CatalogBuilderFactory
 
   public ServiceBuilder newServiceBuilder( String name, ServiceType type, URI baseUri )
   {
-    return new ServiceImpl( name, type, baseUri, null, null );
+    return new ServiceImpl( name, type, baseUri, null );
   }
 
   public ServiceBuilder newServiceBuilder( Service service )

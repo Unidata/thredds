@@ -82,20 +82,6 @@ public class TestServiceImpl extends TestCase
     fail( "No IllegalArgumentException.");
   }
 
-  public void testConstructorBothContainersNotNull()
-  {
-    try
-    { new ServiceImpl( "s1", type, baseUri,
-                       new CatalogImpl( "cat1", docBaseUri, "", null, null ),
-                       new ServiceImpl( "s2", type, baseUri, null, null));
-    }
-    catch( IllegalArgumentException e)
-    { return; }
-    catch( Exception e)
-    { fail( "Unexpected exception: " + e.getMessage() ); }
-    fail( "No IllegalArgumentException." );
-  }
-
   public void testNormal()
   {
     String name = "s1";

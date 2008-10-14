@@ -18,6 +18,8 @@ import java.util.*;
  */
 public class ServiceImpl implements Service, ServiceBuilder
 {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
   private String name;
   private String description;
   private ServiceType type;
@@ -26,22 +28,16 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   private PropertyContainer propertyContainer;
 
-  private List<ServiceBuilder> serviceBuilders;
-  private List<Service> services;
-  private Map<String,Service> servicesMap;
-
-  private Set<String> uniqueServiceNames;
-  private ServiceImpl containerService;
-  private CatalogImpl containerCatalog;
+  private ServiceContainer serviceContainer;
 
   private boolean finished = false;
 
-  protected ServiceImpl( String name, ServiceType type, URI baseUri, CatalogImpl containerCatalog, ServiceImpl containerService )
+  protected ServiceImpl( String name, ServiceType type, URI baseUri, ServiceContainer rootContainer )
   {
     if ( name == null ) throw new IllegalArgumentException( "Name must not be null.");
     if ( type == null ) throw new IllegalArgumentException( "Service type must not be null.");
     if ( baseUri == null ) throw new IllegalArgumentException( "Base URI must not be null.");
-    if ( containerCatalog != null && containerService != null ) throw new IllegalArgumentException( "Both container catalog and service are not null, at least one must be null.");
+
     this.name = name;
     this.description = "";
     this.type = type;
@@ -49,36 +45,7 @@ public class ServiceImpl implements Service, ServiceBuilder
     this.suffix = "";
     this.propertyContainer = new PropertyContainer();
 
-    this.serviceBuilders = new ArrayList<ServiceBuilder>();
-    this.services = new ArrayList<Service>();
-    this.servicesMap = new HashMap<String,Service>();
-
-    this.containerCatalog = containerCatalog;
-    this.containerService = containerService;
-    if ( this.containerCatalog == null && this.containerService == null )
-    {
-      this.containerService = this;
-      this.uniqueServiceNames = new HashSet<String>();
-      this.uniqueServiceNames.add( name );
-    }
-  }
-
-  protected void addUniqueServiceName( String name )
-  {
-    if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
-    if ( ! this.uniqueServiceNames.add( name ) )
-      throw new IllegalStateException( "Given service name [" + name + "] not unique in container service." );
-  }
-
-  protected boolean removeUniqueServiceName( String name )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return this.uniqueServiceNames.add( name );
-  }
-
-  protected boolean containUniqueServiceName( String name )
-  {
-    return this.uniqueServiceNames.contains( name );
+    this.serviceContainer = new ServiceContainer( rootContainer );
   }
 
   public String getName()
@@ -169,65 +136,63 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.propertyContainer.getPropertyByName( name );
   }
 
+  public boolean isServiceNameAlreadyInUse( String name )
+  {
+    return this.serviceContainer.isServiceNameAlreadyInUseGlobally( name );
+  }
+
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
   {
     if ( this.finished )
       throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( this.isServiceNameAlreadyInUse( name ) )
+      throw new IllegalStateException( "Given service name [" + name + "] not unique in catalog." );
 
-    // Track unique service names, throw llegalStateException if name not unique.
-    if ( containerCatalog != null )
-      containerCatalog.addUniqueServiceName( name );
-    else if ( containerService != null )
-      containerService.addUniqueServiceName( name );
-
-    ServiceImpl sb = new ServiceImpl( name, type, baseUri, this.containerCatalog, this.containerService );
-    this.serviceBuilders.add( sb );
-    this.services.add( sb );
-    this.servicesMap.put( name, sb );
+    ServiceImpl sb = new ServiceImpl( name, type, baseUri, this.serviceContainer.getRootServiceContainer() );
+    this.serviceContainer.addService( sb );
     return sb;
   }
 
-//  public ServiceBuilder addService( String name, ServiceType type, URI baseUri, int index )
-//  {
-//     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished().");
-// //    if ( this.getName().equals( name ) || this.servicesMap.containsKey( name ) )
-//      throw new IllegalStateException( "Duplicate service name [" + name + "]." );
-//    ServiceImpl sb = new ServiceImpl( name, type, baseUri );
-//    this.serviceBuilders.add( index, sb );
-//    this.services.add( index, sb );
-//    this.servicesMap.put( name, sb );
-//    return sb;
-//  }
+  public boolean removeService( String name )
+  {
+    if ( this.finished )
+      throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    if ( name == null )
+      return false;
+
+    if ( !this.serviceContainer.removeService( name ) )
+    {
+      log.debug( "removeService(): unknown ServiceBuilder [" + name + "] (not in map)." );
+      return false;
+    }
+
+    return true;
+  }
 
   public List<Service> getServices()
   {
     if ( !this.finished )
       throw new IllegalStateException( "This Service has escaped from its ServiceBuilder without being finished()." );
-    return Collections.unmodifiableList( this.services );
+    return this.serviceContainer.getServices();
   }
 
   public Service getServiceByName( String name )
   {
     if ( !this.finished )
       throw new IllegalStateException( "This Service has escaped from its ServiceBuilder without being finished()." );
-    return this.servicesMap.get( name );
+    return this.serviceContainer.getServiceByName( name );
   }
 
   public List<ServiceBuilder> getServiceBuilders()
   {
     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
-    return Collections.unmodifiableList( this.serviceBuilders );
+    return this.serviceContainer.getServiceBuilders();
   }
 
   public ServiceBuilder getServiceBuilderByName( String name )
   {
     if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
-    for ( ServiceBuilder b : this.serviceBuilders )
-    {
-      if ( b.getName().equals( name ))
-        return b;
-    }
-    return null;
+    return this.serviceContainer.getServiceBuilderByName( name );
   }
 
   public boolean isBuildable( List<BuilderFinishIssue> issues )
@@ -238,11 +203,11 @@ public class ServiceImpl implements Service, ServiceBuilder
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
 
     // Check subordinates.
-    for ( ServiceBuilder sb : this.serviceBuilders )
-      sb.isBuildable( localIssues);
+    this.propertyContainer.isBuildable( localIssues );
+    this.serviceContainer.isBuildable( localIssues );
 
-    // Check that leaf services have a baseUri.
-    if ( this.serviceBuilders.isEmpty() && this.baseUri == null )
+    // Check if this is leaf service that it has a baseUri.
+    if ( this.serviceContainer.isEmpty() && this.baseUri == null )
       localIssues.add( new BuilderFinishIssue( "Non-compound services must have base URI.", this ));
 
     if ( localIssues.isEmpty() )
@@ -262,8 +227,8 @@ public class ServiceImpl implements Service, ServiceBuilder
       throw new BuilderException( issues );
 
     // Check subordinates.
-    for ( ServiceBuilder sb : this.serviceBuilders )
-      sb.build();
+    this.propertyContainer.build();
+    this.serviceContainer.build();
 
     this.finished = true;
     return this;

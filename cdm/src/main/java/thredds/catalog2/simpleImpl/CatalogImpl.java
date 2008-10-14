@@ -23,17 +23,13 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   private Date expires;
   private Date lastModified;
 
-  private List<ServiceBuilder> serviceBuilders;
-  private List<Service> services;
-  private Map<String,Service> servicesMap;
+  private ServiceContainer serviceContainer;
 
   private List<DatasetNodeBuilder> datasetBuilders;
   private List<DatasetNode> datasets;
   private Map<String,DatasetNode> datasetsMapById;
 
   private PropertyContainer propertyContainer;
-
-  private Set<String> uniqueServiceNames;
 
   private boolean finished = false;
 
@@ -47,35 +43,13 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     this.expires = expires;
     this.lastModified = lastModified;
 
-    this.serviceBuilders = new ArrayList<ServiceBuilder>();
-    this.services = new ArrayList<Service>();
-    this.servicesMap = new HashMap<String,Service>();
+    this.serviceContainer = new ServiceContainer( null );
 
     this.datasetBuilders = new ArrayList<DatasetNodeBuilder>();
     this.datasets = new ArrayList<DatasetNode>();
     this.datasetsMapById = new HashMap<String,DatasetNode>();
 
     this.propertyContainer = new PropertyContainer();
-
-    this.uniqueServiceNames = new HashSet<String>();
-  }
-
-  protected void addUniqueServiceName( String name )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished().");
-    if ( ! this.uniqueServiceNames.add( name ) )
-      throw new IllegalStateException( "Given service name [" + name + "] not unique in catalog.");
-  }
-
-  protected boolean removeUniqueServiceName( String name )
-  {
-    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished().");
-    return this.uniqueServiceNames.add( name );
-  }
-
-  protected boolean containUniqueServiceName( String name )
-  {
-    return this.uniqueServiceNames.contains( name );
   }
 
   public void setName( String name )
@@ -134,72 +108,63 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return this.lastModified;
   }
 
+  public boolean isServiceNameAlreadyInUse( String name )
+  {
+    return this.serviceContainer.isServiceNameAlreadyInUseGlobally( name );
+  }
+
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
   {
     if ( this.finished )
       throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    if ( this.isServiceNameAlreadyInUse( name) )
+      throw new IllegalStateException( "Given service name [" + name + "] not unique in catalog." );
 
-    // Track unique service names, throw llegalStateException if name not unique.
-    this.addUniqueServiceName( name );
-
-    ServiceImpl sb = new ServiceImpl( name, type, baseUri, this, null );
-    this.serviceBuilders.add( sb );
-    this.services.add( sb );
-    this.servicesMap.put( name, sb );
+    ServiceImpl sb = new ServiceImpl( name, type, baseUri, this.serviceContainer );
+    this.serviceContainer.addService( sb );
     return sb;
   }
 
-  public boolean removeService( ServiceBuilder builder )
+  public boolean removeService( String name )
   {
     if ( this.finished )
       throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    if ( builder == null )
-      throw new IllegalArgumentException( "Given ServiceBuilder may not be null.");
+    if ( name == null )
+      return false;
 
-    Service service = this.servicesMap.remove( builder.getName() );
-    if ( service == null )
+    if ( ! this.serviceContainer.removeService( name ))
     {
-      log.debug( "removeService(): unknown ServiceBuilder [" + builder.getName() + "] (not in map)." );
+      log.debug( "removeService(): unknown ServiceBuilder [" + name + "] (not in map)." );
       return false;
     }
 
-    if ( this.services.remove( service))
-    {
-      if ( this.serviceBuilders.remove( builder ) )
-        return true;
-      else
-        log.warn( "removeService(): inconsistent failure to remove ServiceBuilder [" + builder.getName() +"] (from builders list).");
-    }
-    else
-      log.warn( "removeService(): inconsistent failure to remove ServiceBuilder [" + builder.getName() + "] (from services list).");
-
-    return false;
+    return true;
   }
 
   public List<Service> getServices()
   {
     if ( !finished )
       throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without build() being called." );
-    return Collections.unmodifiableList( this.services);
+    return this.serviceContainer.getServices();
   }
 
   public Service getServiceByName( String name )
   {
     if ( !finished )
       throw new IllegalStateException( "This Catalog has escaped its CatalogBuilder without being build()-ed." );
-    return this.servicesMap.get( name );
+    return this.serviceContainer.getServiceByName( name );
   }
 
   public List<ServiceBuilder> getServiceBuilders()
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return Collections.unmodifiableList( this.serviceBuilders );
+    return this.serviceContainer.getServiceBuilders();
   }
 
   public ServiceBuilder getServiceBuilderByName( String name )
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    return (ServiceBuilder) this.servicesMap.get( name );
+    return this.serviceContainer.getServiceBuilderByName( name );
   }
 
   public void addProperty( String name, String value )
@@ -320,8 +285,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     // ToDo check that all datasets with Ids have unique Ids
 
     // Check subordinates.
-    for ( ServiceBuilder sb : this.serviceBuilders )
-      sb.isBuildable( localIssues );
+    this.serviceContainer.isBuildable( localIssues );
     for ( DatasetNodeBuilder dnb : this.datasetBuilders )
       dnb.isBuildable( localIssues );
     this.propertyContainer.isBuildable( localIssues );
@@ -347,8 +311,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     // ToDo check that all datasets with Ids have unique Ids
 
     // Check subordinates.
-    for ( ServiceBuilder sb : this.serviceBuilders )
-      sb.build();
+    this.serviceContainer.build();
     for ( DatasetNodeBuilder dnb : this.datasetBuilders )
       dnb.build();
     this.propertyContainer.build();

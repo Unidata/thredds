@@ -8,6 +8,7 @@ import thredds.catalog2.builder.BuilderException;
 import java.util.List;
 
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
 /**
  * _more_
@@ -48,7 +49,37 @@ public class ThreddsMetadataImpl
     return null;
   }
 
-  public List<String> getDate()
+  public DateType getDateCreated()
+  {
+    return null;
+  }
+
+  public DateType getDateModified()
+  {
+    return null;
+  }
+
+  public DateType getDateIssued()
+  {
+    return null;
+  }
+
+  public DateRange getDateValid()
+  {
+    return null;
+  }
+
+  public DateRange getDateAvailable()
+  {
+    return null;
+  }
+
+  public DateType getDateMetadataCreated()
+  {
+    return null;
+  }
+
+  public DateType getDateMetadataModified()
   {
     return null;
   }

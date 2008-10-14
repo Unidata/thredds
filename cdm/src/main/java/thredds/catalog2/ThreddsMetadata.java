@@ -6,6 +6,7 @@ import java.net.URI;
 import java.util.List;
 
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 
 /**
  * _more_
@@ -23,10 +24,15 @@ public interface ThreddsMetadata
   public List<Contributor> getPublisher();
 
   public String getProject();
-  public List<String> getDate();
-            // ToDo ?How deal with point (created, modified, issued, metadataCreated)
-            // ToDo            vs range (valid, available)
-  // DateType getDateCreated(); DateRange getValidDate(); ... ? 
+  public DateType getDateCreated();
+  public DateType getDateModified();
+  public DateType getDateIssued();
+
+  public DateRange getDateValid();
+  public DateRange getDateAvailable();
+
+  public DateType getDateMetadataCreated();
+  public DateType getDateMetadataModified();
 
   public thredds.catalog.ThreddsMetadata.GeospatialCoverage getGeospatialCoverage();
             // ToDo Or change GeospatialCoverage to CRS plus range for each dimension???
