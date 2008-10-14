@@ -57,14 +57,45 @@ public class UFiosp extends AbstractIOServiceProvider {
             makeVariable( ncfile, Ray.SPECTRUM, "Spectrum", "Spectrum", "SW", headerParser.spectrumGroup);
         }
 
+        if(headerParser.hasRhoHV && headerParser.rhoHVGroup != null) {
+            makeVariable( ncfile, Ray.RHOHV, "RhoHV", "RhoHV", "RH", headerParser.rhoHVGroup);
+        }
+        if(headerParser.hasKdp && headerParser.kdpGroup != null) {
+            makeVariable( ncfile, Ray.KDP, "KDP", "KDP", "KD", headerParser.kdpGroup);
+        }
+        if(headerParser.hasZdr && headerParser.zdrGroup != null) {
+            makeVariable( ncfile, Ray.ZDR, "ZDR", "ZDR", "DR", headerParser.zdrGroup);
+        }
+        if(headerParser.hasLdrH && headerParser.ldrHGroup != null) {
+            makeVariable( ncfile, Ray.LDRH, "LdrH", "LdrH", "LH", headerParser.ldrHGroup);
+        }
+        if(headerParser.hasLdrV && headerParser.ldrVGroup != null) {
+            makeVariable( ncfile, Ray.LDRV, "LdrV", "LdrV", "LV", headerParser.ldrVGroup);
+        }
+        if(headerParser.hasPhiDP && headerParser.phiDPGroup != null) {
+            makeVariable( ncfile, Ray.PHIDP, "PhiDP", "PhiDP", "PH", headerParser.phiDPGroup);
+        }
+        if(headerParser.hasCorrecteddBZ && headerParser.correcteddBZGroup != null) {
+            makeVariable( ncfile, Ray.CORRECTEDDBZ, "CorrectedDBZ", "CorrectedDBZ", "CZ", headerParser.correcteddBZGroup);
+        }
+
+
         ncfile.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
         ncfile.addAttribute(null, new Attribute("format", headerParser.getDataFormat()));
         //Date d = Cinrad2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
         //ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
-
+        ncfile.addAttribute(null, new Attribute("StationLatitude", new Double(headerParser.getStationLatitude())));
+        ncfile.addAttribute(null, new Attribute("StationLongitude", new Double(headerParser.getStationLongitude())));
+        ncfile.addAttribute(null, new Attribute("StationElevationInMeters", new Double(headerParser.getStationElevation())));
         ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(headerParser.getStartDate())));; //.toDateTimeStringISO(d)));
         ncfile.addAttribute(null, new Attribute("time_coverage_end", formatter.toDateTimeStringISO(headerParser.getEndDate())));
-
+        double latRadiusDegrees = Math.toDegrees( radarRadius / ucar.unidata.geoloc.Earth.getRadius());
+        ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Double(headerParser.getStationLatitude() - latRadiusDegrees)));
+        ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Double(headerParser.getStationLatitude() + latRadiusDegrees)));
+        double cosLat = Math.cos( Math.toRadians(headerParser.getStationLatitude()));
+        double lonRadiusDegrees = Math.toDegrees( radarRadius / cosLat / ucar.unidata.geoloc.Earth.getRadius());
+        ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Double(headerParser.getStationLongitude() - lonRadiusDegrees)));
+        ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Double(headerParser.getStationLongitude() + lonRadiusDegrees)));
         ncfile.addAttribute(null, new Attribute("history", "direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
         ncfile.addAttribute(null, new Attribute("DataType", "Radial"));
 
@@ -87,7 +118,7 @@ public class UFiosp extends AbstractIOServiceProvider {
 
 
     private DateFormatter formatter = new DateFormatter();
-   // private double radarRadius;
+    private double radarRadius = 100000.0;
     public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName,
                                  String abbrev, List groups) throws IOException {
         int nscans = groups.size();
@@ -123,7 +154,7 @@ public class UFiosp extends AbstractIOServiceProvider {
 
         v.addAttribute( new Attribute("units", firstRay.getDatatypeUnits(datatype)));
         v.addAttribute( new Attribute("long_name", longName));
-
+        v.addAttribute( new Attribute("abbrev", abbrev));
         v.addAttribute( new Attribute("missing_value", firstRay.getMissingData()));
         v.addAttribute( new Attribute("signal_below_threshold", firstRay.getDatatypeRangeFoldingThreshhold(datatype)));
         v.addAttribute( new Attribute("scale_factor", firstRay.getDatatypeScaleFactor(datatype)));
@@ -355,17 +386,14 @@ public class UFiosp extends AbstractIOServiceProvider {
     }
 
 
-
-
-
     public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
       //String fileIn = "/home/yuanho/dev/netcdf-java-2.2/src/ucar/nc2/n0r_20040823_2215";    // uncompressed
-      String fileIn = "/home/yuanho/Desktop/ufData/KTLX__sur_20080624.214247.uf";
-   //   ucar.nc2.NetcdfFile.registerIOProvider( ucar.nc.iosp.uf.UFiosp.class);
-      ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);
-
+        String fileIn = "/home/yuanho/Desktop/ufData/KTLX__sur_20080624.214247.uf";
+      //   ucar.nc2.NetcdfFile.registerIOProvider( ucar.nc.iosp.uf.UFiosp.class);
+        ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);
       
-      ncf.close();
+
+        ncf.close();
 
 
     }

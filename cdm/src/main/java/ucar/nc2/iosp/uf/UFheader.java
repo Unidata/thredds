@@ -17,8 +17,8 @@ import java.util.*;
 public class UFheader {
     ucar.unidata.io.RandomAccessFile raf;
     ucar.nc2.NetcdfFile ncfile;
-    static final boolean littleEndianData = false;
-    String dataFormat = "ARCHIVE2";  // temp setting
+    static final boolean littleEndianData = true;
+    String dataFormat = "UNIVERSALFORMAT";  // temp setting
     boolean hasVelocity = false;
     boolean hasSpectrum = false;
     boolean hasZdr  = false;
@@ -189,7 +189,7 @@ public class UFheader {
         HashMap groupHash = new HashMap(600);
         for (int i = 0; i < rays.size(); i++) {
           Ray r = (Ray) rays.get(i);
-          Integer groupNo = new Integer(r.uf_header2.elevation);
+          Integer groupNo = new Integer(r.uf_header2.sweepNumber); //.elevation);
 
           ArrayList group = (ArrayList) groupHash.get(groupNo);
           if (null == group) {
@@ -199,7 +199,7 @@ public class UFheader {
 
           group.add(r);
         }
-
+        
         // sort the groups by elevation_num
         ArrayList groups = new ArrayList(groupHash.values());
         Collections.sort(groups, new GroupComparator());
@@ -212,6 +212,56 @@ public class UFheader {
         }
 
         return groups;
+    }
+
+    public float getMeanElevation(int datatype, int eNum){
+        ArrayList gp = (ArrayList)getGroup(datatype);
+        float meanEle = getMeanElevation(gp);
+        return meanEle;
+    }
+
+    public float getMeanElevation(ArrayList<Ray> gList){
+        float sum = 0;
+        int size = 0;
+
+        Iterator it = gList.iterator();
+        while(it.hasNext()){
+            Ray r = (Ray)it.next();
+            sum += r.getElevation();
+            size++;
+        }
+
+        return sum/size;
+    }
+
+    public List getGroup(int dataType){
+        switch(dataType) {
+
+            case Ray.VELOCITY:
+                return velocityGroup;
+            case Ray.SPECTRUM:
+                return spectrumGroup;
+            case Ray.ZDR:
+                return zdrGroup;
+            case Ray.CORRECTEDDBZ:
+                return correcteddBZGroup;
+            case Ray.TOTALDBZ:
+                return  totaldBZGroup;
+            case Ray.RHOHV:
+                return rhoHVGroup;
+            case Ray.PHIDP:
+                return  phiDPGroup;
+            case Ray.KDP:
+                return kdpGroup;
+            case Ray.LDRH:
+                return ldrHGroup;
+            case Ray.LDRV:
+                return ldrVGroup;
+
+            default:
+                return null;
+        }
+
     }
 
     public int getMaxRadials() {
@@ -233,10 +283,24 @@ public class UFheader {
     public float getHorizontalBeamWidth(){
         return firstRay.getHorizontalBeamWidth();
     }
+
     public String getStationId(){
         return firstRay.uf_header2.siteName;
     }
 
+    public float getStationLatitude(){
+        return firstRay.getLatitude();
+    }
+
+    public float getStationLongitude(){
+        return firstRay.getLongtitude();
+    }
+
+    public float getStationElevation() {
+        return firstRay.getElevation();
+    }
+
+    
     public short getMissingData() {
         return firstRay.getMissingData();
     }

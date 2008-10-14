@@ -22,7 +22,7 @@ public class Ray {
     long rayOffset;
     static final int UF_MANDATORY_HEADER2_LEN = 90;
     static final int UF_FIELD_HEADER2_LEN = 50;
-    static final boolean littleEndianData = false;
+    static final boolean littleEndianData = true;
     boolean debug = false;
 
      /**   moment identifier */
@@ -76,12 +76,14 @@ public class Ray {
 
         uf_header2 = new  UF_mandatory_header2(data);
 
-/*         if(uf_header2.offset2StartOfOptionalHeader > 0){
+        if(uf_header2.offset2StartOfOptionalHeader > 0 &&
+                (uf_header2.dataHeaderPosition == uf_header2.offset2StartOfOptionalHeader + 14)){
             data = new byte[28];
             bos.get(data);
             uf_opt_header = new UF_optional_header(data);
         }
-*/      data_msecs = setDateMesc();
+
+        data_msecs = setDateMesc();
         byte [] b2 = new byte[2];
         bos.get(b2);
         numberOfFields = getShort(b2, 0);
@@ -238,6 +240,13 @@ public class Ray {
           case TOTALDBZ : return "Reflectivity";
           case VELOCITY : return "RadialVelocity";
           case SPECTRUM : return "SpectrumWidth";
+          case ZDR:
+          case RHOHV:
+          case PHIDP:
+          case KDP:
+          case LDRH:
+          case LDRV:
+           return "unknown";
           default : throw new IllegalArgumentException();
         }
     }
@@ -245,12 +254,21 @@ public class Ray {
    static public String getDatatypeUnits(int datatype) {
      switch (datatype) {
        case TOTALDBZ :
+       case CORRECTEDDBZ:
            return "dBZ";
 
        case VELOCITY :
 
        case SPECTRUM :
            return "m/s";
+
+       case ZDR:
+       case RHOHV:
+       case PHIDP:
+       case KDP:
+       case LDRH:
+       case LDRV:
+           return "unknown";
      }
      throw new IllegalArgumentException();
    }
@@ -639,13 +657,18 @@ public class Ray {
 
     }
 
-    protected short getShort(byte[] bytes, int offset) {
+    protected short getShort1(byte[] bytes, int offset) {
         int ndx0 = offset + (littleEndianData ? 1 : 0);
         int ndx1 = offset + (littleEndianData ? 0 : 1);
         // careful that we only allow sign extension on the highest order byte
         return (short)(bytes[ndx0] << 8 | (bytes[ndx1] & 0xff));
     }
 
+    protected short getShort(byte[] bytes, int offset) {
+
+        // careful that we only allow sign extension on the highest order byte
+        return (short) bytesToShort(bytes[offset], bytes[offset+1], false);
+    }
 
     public static int bytesToShort(byte a, byte b, boolean swapBytes) {
         // again, high order bit is expressed left into 32-bit form
