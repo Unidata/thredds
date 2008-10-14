@@ -25,6 +25,13 @@ class PropertyContainer
     this.propertiesMap = null;
   }
 
+  public boolean isEmpty()
+  {
+    if ( this.propertiesMap == null )
+      return true;
+    return this.propertiesMap.isEmpty();
+  }
+
   /**
    * Add a Property with the given name and value to this container.
    *

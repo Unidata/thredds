@@ -118,7 +118,7 @@ public class TestServiceImpl extends TestCase
                 sb.getSuffix().equals( suffix ) );
   }
 
-  public void testContainerDatasetNonuniqueDatasetName()
+  public void testServiceContainerNonuniqueServiceName()
   {
     ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
     sb.addService( "s2", type, baseUri );
@@ -132,14 +132,14 @@ public class TestServiceImpl extends TestCase
     fail( "No IllegalStateException.");
   }
 
-  public void testContainerDatasetNonuniqueDatasetNameNested()
+  public void testServiceContainerNonuniqueServiceNameNested()
   {
     ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
     sb.addService( "s2", type, baseUri );
     ServiceImpl sb3 = (ServiceImpl) sb.addService( "s3", type, baseUri );
     sb3.addService( "s3.1", type, baseUri );
     try
-    { sb3.addService( "s3.2", type, baseUri ); }
+    { sb3.addService( "s2", type, baseUri ); }
     catch ( IllegalStateException e )
     { return; }
     catch ( Exception e )
@@ -147,7 +147,7 @@ public class TestServiceImpl extends TestCase
     fail( "No IllegalStateException.");
   }
 
-  public void testContainerDatasetNonuniqueDatasetNameNestedTwoLevels()
+  public void testServiceContainerNonuniqueServiceNameNestedTwoLevels()
   {
     ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
     sb.addService( "s2", type, baseUri );
