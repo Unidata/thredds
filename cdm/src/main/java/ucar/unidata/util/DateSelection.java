@@ -21,22 +21,12 @@
  */
 
 
-
-
-
-
-
-
-
-
 package ucar.unidata.util;
-
 
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 
 
 /**
@@ -116,7 +106,9 @@ public class DateSelection {
     /** The total count of times we want */
     private int count = MAX_COUNT;
 
+    /** maximum count */
     public static final int MAX_COUNT = Integer.MAX_VALUE;
+
     /** How many times do we choose within a given interval range */
     private int numTimesInRange = 1;
 
@@ -124,11 +116,57 @@ public class DateSelection {
     /** This can hold a set of absolute times. If non-null then these times override any of the query information */
     private List times;
 
+    /** flag for using the latest */
+    private boolean doLatest = false;
+
+    /** flag for using all */
+    private boolean doAll = false;
+
+    /** now  time */
+    private Date nowTime;
 
     /**
      * ctor
      */
     public DateSelection() {}
+
+    /**
+     * ctor
+     * @param doLatest Do the count latest ones
+     * @param count the count
+     */
+    public DateSelection(boolean doLatest, int count) {
+        this.doLatest = doLatest;
+        this.count    = count;
+    }
+
+
+    /**
+     * ctor
+     * @param doAll Get all available.
+     */
+
+    public DateSelection(boolean doAll) {
+        this.doAll = doAll;
+    }
+
+
+
+    /**
+     * Construct a DateSelection
+     *
+     * @param startMode  starting time mode
+     * @param startOffset  offset from start time
+     * @param endMode end time mode
+     * @param endOffset offset from end time
+     */
+    public DateSelection(int startMode, double startOffset, int endMode,
+                         double endOffset) {
+        this.startMode   = startMode;
+        this.startOffset = startOffset;
+        this.endMode     = endMode;
+        this.endOffset   = endOffset;
+    }
 
     /**
      * ctor
@@ -161,6 +199,9 @@ public class DateSelection {
 
         this.startFixedTime = that.startFixedTime;
         this.endFixedTime   = that.endFixedTime;
+
+        this.doLatest       = that.doLatest;
+        this.nowTime        = that.nowTime;
 
         this.startOffset    = that.startOffset;
         this.endOffset      = that.endOffset;
@@ -422,10 +463,18 @@ public class DateSelection {
     /**
      * Construct and return the start and end time range
      *
-     * @return time range
+     * @return time range. If in doLatest or doAll mode this returns null
      */
     public Date[] getRange() {
-        double now   = (double) (System.currentTimeMillis());
+        if (doLatest) {
+            return null;
+        }
+        if (doAll) {
+            return null;
+        }
+        double now   = (double) (((nowTime != null)
+                                  ? nowTime.getTime()
+                                  : System.currentTimeMillis()));
         double start = 0;
         double end   = 0;
 
@@ -1064,6 +1113,86 @@ public class DateSelection {
         }
         System.err.println(range[0] + " --  " + range[1]);
     }
+
+    /**
+     *  Set the DoLatest property.
+     *
+     *  @param value The new value for DoLatest
+     */
+    public void setDoLatest(boolean value) {
+        doLatest = value;
+    }
+
+
+    /**
+     * Select the most recent thing
+     *
+     * @return select the most recent thing
+     */
+    public boolean isLatest() {
+        return doLatest;
+    }
+
+    /**
+     *  Get the DoLatest property.
+     *
+     *  @return The DoLatest
+     */
+    public boolean getDoLatest() {
+        return doLatest;
+    }
+
+    /**
+     * Set the DoAll property.
+     *
+     * @param value The new value for DoAll
+     */
+    public void setDoAll(boolean value) {
+        doAll = value;
+    }
+
+    /**
+     * Select all things
+     *
+     * @return select all things
+     */
+    public boolean isAll() {
+        return doAll;
+    }
+
+    /**
+     * Get the DoAll property.
+     *
+     * @return The DoAll
+     */
+    public boolean getDoAll() {
+        return doAll;
+    }
+
+
+
+
+    /**
+     *  Set the NowTime property.
+     *
+     *  @param value The new value for NowTime
+     */
+    public void setNowTime(Date value) {
+        nowTime = value;
+    }
+
+    /**
+     *  Get the NowTime property.
+     *
+     *  @return The NowTime
+     */
+    public Date getNowTime() {
+        return nowTime;
+    }
+
+
+
+
 
     /**
      * test main

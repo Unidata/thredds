@@ -21,6 +21,7 @@
  */
 
 
+
 package ucar.unidata.util;
 
 
@@ -41,6 +42,12 @@ import java.util.TimeZone;
  * @since May 4, 2007 1:01:53 PM
  */
 public class DateUtil {
+
+    /** _more_          */
+    public static final String[] MONTH_NAMES = {
+        "January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"
+    };
 
     /** milliseconds in  a millisecond */
     public static final long MILLIS = 1;
@@ -135,9 +142,11 @@ public class DateUtil {
 
 
     /** A set of common date formats */
-    private static final String[] formats = { "yyyy-MM-dd'T'HH:mm:ss",
-            "yyyy-MM-dd HH:mm:ss", "yyyyMMdd'T'HHmmss", "yyyy-MM-dd",
-            "EEE MMM dd HH:mm:ss Z yyyy" };
+    private static final String[] formats = {
+        "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "yyyy/MM/dd HH:mm:ss",
+        "yyyyMMdd'T'HHmmss", "yyyy-MM-dd", "yyyy/MM/dd",
+        "EEE MMM dd HH:mm:ss Z yyyy", "yyyy-MM", "yyyy/MM", "yyyy"
+    };
 
     /** The SimpleDateFormat objects we make from the above formats */
     private static SimpleDateFormat[] sdfs;
