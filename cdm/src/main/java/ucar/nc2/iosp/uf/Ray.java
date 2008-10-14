@@ -346,16 +346,16 @@ public class Ray {
     }
     public int getGateSize(int datatype) {
         switch (datatype) {
-            case VELOCITY : return vr_field_header.startRange;
-            case SPECTRUM : return sw_field_header.startRange;
-            case ZDR : return dr_field_header.startRange;
-            case CORRECTEDDBZ : return cz_field_header.startRange;
-            case TOTALDBZ : return dz_field_header.startRange;
-            case RHOHV : return rh_field_header.startRange;
-            case PHIDP : return ph_field_header.startRange;
-            case KDP : return kd_field_header.startRange;
-            case LDRH : return lh_field_header.startRange;
-            case LDRV : return lv_field_header.startRange;
+            case VELOCITY : return vr_field_header.binSpacing;
+            case SPECTRUM : return sw_field_header.binSpacing;
+            case ZDR : return dr_field_header.binSpacing;
+            case CORRECTEDDBZ : return cz_field_header.binSpacing;
+            case TOTALDBZ : return dz_field_header.binSpacing;
+            case RHOHV : return rh_field_header.binSpacing;
+            case PHIDP : return ph_field_header.binSpacing;
+            case KDP : return kd_field_header.binSpacing;
+            case LDRH : return lh_field_header.binSpacing;
+            case LDRV : return lv_field_header.binSpacing;
 
             default : throw new IllegalArgumentException();
         }
@@ -470,7 +470,7 @@ public class Ray {
         short   hour;
         short   minute;
         short   second;
-        String timeZone;            // “UT” for universal  char[2]
+        String timeZone;            // UT for universal  char[2]
         short   azimuth;            // (degrees*64) of midpoint of sample
         short   elevation;          // (degrees*64)
         short   sweepMode;
