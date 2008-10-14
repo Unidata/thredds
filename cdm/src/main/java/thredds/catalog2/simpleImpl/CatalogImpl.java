@@ -156,15 +156,23 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     if ( builder == null )
       throw new IllegalArgumentException( "Given ServiceBuilder may not be null.");
 
-    if ( this.serviceBuilders.remove( builder ) )
+    Service service = this.servicesMap.remove( builder.getName() );
+    if ( service == null )
     {
-      if ( ! this.services.remove( builder ))
-        log.warn( "removeService(): failed to remove ServiceBuilder [" + builder.getName() +"] (from list).");
-      if ( null == this.servicesMap.remove( builder.getName() ) )
-        log.warn( "removeService(): failed to remove ServiceBuilder [" + builder.getName() + "] (from map).");
-
-      return true;
+      log.debug( "removeService(): unknown ServiceBuilder [" + builder.getName() + "] (not in map)." );
+      return false;
     }
+
+    if ( this.services.remove( service))
+    {
+      if ( this.serviceBuilders.remove( builder ) )
+        return true;
+      else
+        log.warn( "removeService(): inconsistent failure to remove ServiceBuilder [" + builder.getName() +"] (from builders list).");
+    }
+    else
+      log.warn( "removeService(): inconsistent failure to remove ServiceBuilder [" + builder.getName() + "] (from services list).");
+
     return false;
   }
 
@@ -199,6 +207,14 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     if ( this.finished )
       throw new IllegalStateException( "This CatalogBuilder has been finished()." );
     this.propertyContainer.addProperty( name, value );
+  }
+
+  public boolean removeProperty( String name )
+  {
+    if ( this.finished )
+      throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+
+    return this.propertyContainer.removeProperty( name );
   }
 
   public List<String> getPropertyNames()
@@ -245,6 +261,25 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     this.datasetBuilders.add( crb );
     this.datasets.add( crb );
     return crb;
+  }
+
+  public boolean removeDataset( DatasetNodeBuilder builder )
+  {
+    if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    if ( builder == null )
+      throw new IllegalArgumentException( "DatasetNodeBuilder may not be null.");
+
+    if ( this.datasetBuilders.remove( builder ))
+    {
+      if ( this.datasets.remove( builder ))
+        return true;
+      else
+        log.warn( "removeDataset(): inconsistent failure to remove DatasetNodeBuilder [" + builder.getName() + "] (from object list)." );
+    }
+    else
+      log.warn( "removeDataset(): inconsistent failure to remove DatasetNodeBuilder [" + builder.getName() + "] (from builder list)." );
+
+    return false;
   }
 
   public List<DatasetNode> getDatasets()

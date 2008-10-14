@@ -14,6 +14,8 @@ import java.util.*;
  */
 class PropertyContainer
 {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
   private final List<Property> properties;
   private final Map<String, Property> propertiesMap;
 
@@ -41,6 +43,22 @@ class PropertyContainer
 
     this.propertiesMap.put( name, property );
     return;
+  }
+
+  public boolean removeProperty( String name )
+  {
+    if ( name == null )
+      throw new IllegalArgumentException( "Given name may not be null." );
+
+    Property property = this.propertiesMap.remove( name );
+    if ( property == null )
+      return false;
+
+    if ( this.properties.remove( property ))
+      return true;
+
+    log.warn( "removeProperty(): inconsistent failure to remove Property [" + name + "] (from list).");
+    return false;
   }
 
   public List<String> getPropertyNames()
