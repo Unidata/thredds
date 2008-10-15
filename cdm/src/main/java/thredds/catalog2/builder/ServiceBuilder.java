@@ -37,9 +37,11 @@ public interface ServiceBuilder extends ThreddsBuilder
    * @throws IllegalArgumentException if the name or value are null.
    */
   public void addProperty( String name, String value );
+  public boolean removeProperty( String name );
   public List<String> getPropertyNames();
   public String getPropertyValue( String name );
 
+  public boolean isServiceNameAlreadyInUseGlobally( String name );
   /**
    * Add a new Service object with the given name, type, and base uri to this
    * Service returning a ServiceBuilder object to allow full construction and
@@ -58,6 +60,7 @@ public interface ServiceBuilder extends ThreddsBuilder
    * @throws IllegalStateException this ServiceBuilder has already been finished or the top container of this ServiceBuilder already contains a ServiceBuilder with the given name.
    */
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri );
+  public boolean removeService( String name );
 
 //  /**
 //   * Add a new Service object with the given name, type, and base uri to this

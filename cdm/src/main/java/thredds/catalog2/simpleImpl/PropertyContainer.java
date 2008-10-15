@@ -17,11 +17,11 @@ class PropertyContainer
 
   private Map<String, Property> propertiesMap;
 
-  private boolean canModify;
+  private boolean built;
 
   PropertyContainer()
   {
-    this.canModify = true;
+    this.built = false;
     this.propertiesMap = null;
   }
 
@@ -30,6 +30,13 @@ class PropertyContainer
     if ( this.propertiesMap == null )
       return true;
     return this.propertiesMap.isEmpty();
+  }
+
+  public int size()
+  {
+    if ( this.propertiesMap == null )
+      return 0;
+    return this.propertiesMap.size();
   }
 
   /**
@@ -42,11 +49,11 @@ class PropertyContainer
    */
   public void addProperty( String name, String value )
   {
-    if ( ! this.canModify )
+    if ( this.built )
       throw new IllegalStateException( "This PropertyContainer has been built.");
 
     if ( this.propertiesMap == null )
-      this.propertiesMap = new HashMap<String, Property>();
+      this.propertiesMap = new LinkedHashMap<String, Property>();
 
     PropertyImpl property = new PropertyImpl( name, value );
     if ( null != this.propertiesMap.put( name, property ))
@@ -66,7 +73,7 @@ class PropertyContainer
    */
   public boolean removeProperty( String name )
   {
-    if ( ! this.canModify )
+    if ( this.built )
       throw new IllegalStateException( "This PropertyContainer has been built." );
 
     if ( name == null )
@@ -161,7 +168,7 @@ class PropertyContainer
    */
   public void build()
   {
-    this.canModify = false;
+    this.built = true;
     return;
   }
 }

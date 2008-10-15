@@ -19,37 +19,45 @@ public class TestPropertyImpl extends TestCase
     super( name );
   }
 
-  public void testProperty()
+  public void testCtorNullArgs()
   {
-    String name = "a name";
-    String value = "a value";
-    boolean pass = false;
     try
     { new PropertyImpl( null, null ); }
     catch ( IllegalArgumentException e )
-    { pass = true; }
+    { return; }
     catch ( Exception e )
-    { fail( "Non-IllegalArgumentException: " + e.getMessage()); }
-    if ( ! pass ) fail( "No IllegalArgumentException.");
+    { fail( "Non-IllegalArgumentException: " + e.getMessage() ); }
+    fail( "No IllegalArgumentException." );
+  }
 
-    pass = false;
-    try
-    { new PropertyImpl( name, null ); }
-    catch ( IllegalArgumentException e )
-    { pass = true; }
-    catch ( Exception e )
-    { fail( "Non-IllegalArgumentException: " + e.getMessage()); }
-    if ( ! pass ) fail( "No IllegalArgumentException.");
-
-    pass = false;
+  public void testCtorNullName()
+  {
+    String value = "a value";
     try
     { new PropertyImpl( null, value ); }
     catch ( IllegalArgumentException e )
-    { pass = true; }
+    { return; }
     catch ( Exception e )
-    { fail( "Non-IllegalArgumentException: " + e.getMessage()); }
-    if ( ! pass ) fail( "No IllegalArgumentException.");
+    { fail( "Non-IllegalArgumentException: " + e.getMessage() ); }
+    fail( "No IllegalArgumentException." );
+  }
 
+  public void testCtorNullValue()
+  {
+    String name = "a name";
+    try
+    { new PropertyImpl( name, null ); }
+    catch ( IllegalArgumentException e )
+    { return; }
+    catch ( Exception e )
+    { fail( "Non-IllegalArgumentException: " + e.getMessage() ); }
+    fail( "No IllegalArgumentException." );
+  }
+
+  public void testNormal()
+  {
+    String name = "a name";
+    String value = "a value";
     Property p = null;
     try
     { p = new PropertyImpl( name, value ); }

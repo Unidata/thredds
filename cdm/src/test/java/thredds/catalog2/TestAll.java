@@ -4,6 +4,7 @@ import junit.framework.*;
 import thredds.catalog2.simpleImpl.TestCatalogImpl;
 import thredds.catalog2.simpleImpl.TestPropertyImpl;
 import thredds.catalog2.simpleImpl.TestServiceImpl;
+import thredds.catalog2.simpleImpl.TestPropertyContainer;
 import thredds.catalog2.xml.parser.TestCatalogParser;
 
 /**
@@ -22,10 +23,13 @@ public class TestAll extends TestCase
   public static Test suite()
   {
     TestSuite suite = new TestSuite();
-    suite.addTestSuite( TestCatalogImpl.class );
+    // Tests in thredds.catalog2.simpleImpl
     suite.addTestSuite( TestPropertyImpl.class );
+    suite.addTestSuite( TestPropertyContainer.class );
     suite.addTestSuite( TestServiceImpl.class );
+    suite.addTestSuite( TestCatalogImpl.class );
 
+    // Tests in thredds.catalog2.xml
     suite.addTestSuite( TestCatalogParser.class );
 
     return suite;

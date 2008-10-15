@@ -132,6 +132,13 @@ class ServiceContainer
     return this.servicesMap.isEmpty();
   }
   
+  public int size()
+  {
+    if ( this.servicesMap == null )
+      return 0;
+    return this.servicesMap.size();
+  }
+
   /**
    * Add a ServiceImpl to this container.
    *
@@ -145,7 +152,7 @@ class ServiceContainer
       throw new IllegalStateException( "This ServiceContainer has been built.");
 
     if ( this.servicesMap == null )
-      this.servicesMap = new HashMap<String, ServiceImpl>();
+      this.servicesMap = new LinkedHashMap<String, ServiceImpl>();
 
     // Track ServiceImpls by globally unique service names, throw llegalStateException if name not unique.
     if ( ! this.addServiceByGloballyUniqueName( service ))
@@ -245,17 +252,11 @@ class ServiceContainer
   }
 
   /**
-   * This method always returns "true" because no action is required to
-   * finish any contained Property classes.
+   * Check whether contained ServiceBuilders are all in a state such that
+   * calling their build() will succeed.
    *
-   * The reasons for this are:
-   * <ol>
-   * <li>The Property class is immutable and doesn't allow null names or values.</li>
-   * <li>This container stores the properties in a Map by property name (so there are no duplicate names).</li>
-   * </ol>
-   *
-   * @param issues a list in which to add any issues that come up during isFinished()
-   * @return true if this PropertyContainer is in a state where finish() will succeed.
+   * @param issues a list into which any issues that come up during isBuildable() will be add.
+   * @return true if this ServiceContainer is in a state where build() will succeed.
    */
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
@@ -265,8 +266,9 @@ class ServiceContainer
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
 
     // Check on contained ServiceImpl objects.
-    for ( ServiceBuilder sb : this.servicesMap.values() )
-      sb.isBuildable( localIssues );
+    if ( this.servicesMap != null )
+      for ( ServiceBuilder sb : this.servicesMap.values() )
+        sb.isBuildable( localIssues );
 
     if ( localIssues.isEmpty() )
       return true;
@@ -276,10 +278,9 @@ class ServiceContainer
   }
 
   /**
-   * Mark this PropertyContainer as unmodifiable and return "true".
+   * Call build() on all contained services.
    *
-   * No validation is required
-   * (see {@link #isBuildable(java.util.List< thredds.catalog2.builder.BuilderFinishIssue>) isBuildable(issues)})
+   * @throws BuilderException if any of the contained services are not in a valid state.
    */
   public void build()
           throws BuilderException
@@ -292,8 +293,9 @@ class ServiceContainer
       throw new BuilderException( issues );
 
     // Build contained ServiceImpl objects.
-    for ( ServiceBuilder sb : this.servicesMap.values() )
-      sb.build();
+    if ( this.servicesMap != null )
+      for ( ServiceBuilder sb : this.servicesMap.values() )
+        sb.build();
 
     this.canModify = false;
     return;

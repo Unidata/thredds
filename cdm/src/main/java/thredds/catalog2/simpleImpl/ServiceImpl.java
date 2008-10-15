@@ -30,7 +30,7 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   private ServiceContainer serviceContainer;
 
-  private boolean finished = false;
+  private boolean built = false;
 
   protected ServiceImpl( String name, ServiceType type, URI baseUri, ServiceContainer rootContainer )
   {
@@ -55,7 +55,7 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   public void setDescription( String description )
   {
-    if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( this.built ) throw new IllegalStateException( "This ServiceBuilder has been built." );
     this.description = description != null ? description : "";
   }
 
@@ -66,7 +66,7 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   public void setType( ServiceType type )
   {
-    if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( this.built ) throw new IllegalStateException( "This ServiceBuilder has been built." );
     if ( type == null )
       throw new IllegalArgumentException( "Service type must not be null." );
     this.type = type;
@@ -79,7 +79,7 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   public void setBaseUri( URI baseUri )
   {
-    if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( this.built ) throw new IllegalStateException( "This ServiceBuilder has been built." );
     if ( baseUri == null )
       throw new IllegalArgumentException( "Base URI must not be null." );
     this.baseUri = baseUri;
@@ -92,7 +92,7 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   public void setSuffix( String suffix )
   {
-    if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( this.built ) throw new IllegalStateException( "This ServiceBuilder has been built." );
     this.suffix = suffix != null ? suffix : "";
   }
 
@@ -103,49 +103,56 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   public void addProperty( String name, String value )
   {
-    if ( this.finished )
-      throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( this.built )
+      throw new IllegalStateException( "This ServiceBuilder has been built." );
     this.propertyContainer.addProperty( name, value );
+  }
+
+  public boolean removeProperty( String name )
+  {
+    if ( this.built )
+      throw new IllegalStateException( "This ServiceBuilder has been built." );
+    return this.propertyContainer.removeProperty( name );
   }
 
   public List<String> getPropertyNames()
   {
-    if ( this.finished )
-      throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( this.built )
+      throw new IllegalStateException( "This ServiceBuilder has been built." );
     return this.propertyContainer.getPropertyNames();
   }
 
   public String getPropertyValue( String name )
   {
-    if ( this.finished )
-      throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( this.built )
+      throw new IllegalStateException( "This ServiceBuilder has been built." );
     return this.propertyContainer.getPropertyValue( name );
   }
 
   public List<Property> getProperties()
   {
-    if ( !this.finished )
+    if ( !this.built )
       throw new IllegalStateException( "This Service has escaped from its ServiceBuilder before build() was called." );
     return this.propertyContainer.getProperties();
   }
 
   public Property getPropertyByName( String name )
   {
-    if ( !this.finished )
+    if ( !this.built )
       throw new IllegalStateException( "This Service has escaped from its ServiceBuilder before build() was called." );
     return this.propertyContainer.getPropertyByName( name );
   }
 
-  public boolean isServiceNameAlreadyInUse( String name )
+  public boolean isServiceNameAlreadyInUseGlobally( String name )
   {
     return this.serviceContainer.isServiceNameAlreadyInUseGlobally( name );
   }
 
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
   {
-    if ( this.finished )
-      throw new IllegalStateException( "This ServiceBuilder has been finished()." );
-    if ( this.isServiceNameAlreadyInUse( name ) )
+    if ( this.built )
+      throw new IllegalStateException( "This ServiceBuilder has been built." );
+    if ( this.isServiceNameAlreadyInUseGlobally( name ) )
       throw new IllegalStateException( "Given service name [" + name + "] not unique in catalog." );
 
     ServiceImpl sb = new ServiceImpl( name, type, baseUri, this.serviceContainer.getRootServiceContainer() );
@@ -155,12 +162,12 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   public boolean removeService( String name )
   {
-    if ( this.finished )
-      throw new IllegalStateException( "This CatalogBuilder has been finished()." );
+    if ( this.built )
+      throw new IllegalStateException( "This CatalogBuilder has been built." );
     if ( name == null )
       return false;
 
-    if ( !this.serviceContainer.removeService( name ) )
+    if ( ! this.serviceContainer.removeService( name ) )
     {
       log.debug( "removeService(): unknown ServiceBuilder [" + name + "] (not in map)." );
       return false;
@@ -171,33 +178,39 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   public List<Service> getServices()
   {
-    if ( !this.finished )
-      throw new IllegalStateException( "This Service has escaped from its ServiceBuilder without being finished()." );
+    if ( !this.built )
+      throw new IllegalStateException( "This Service has escaped from its ServiceBuilder without being built." );
     return this.serviceContainer.getServices();
   }
 
   public Service getServiceByName( String name )
   {
-    if ( !this.finished )
-      throw new IllegalStateException( "This Service has escaped from its ServiceBuilder without being finished()." );
+    if ( !this.built )
+      throw new IllegalStateException( "This Service has escaped from its ServiceBuilder without being built." );
     return this.serviceContainer.getServiceByName( name );
   }
 
   public List<ServiceBuilder> getServiceBuilders()
   {
-    if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( this.built ) throw new IllegalStateException( "This ServiceBuilder has been built." );
     return this.serviceContainer.getServiceBuilders();
   }
 
   public ServiceBuilder getServiceBuilderByName( String name )
   {
-    if ( this.finished ) throw new IllegalStateException( "This ServiceBuilder has been finished()." );
+    if ( this.built ) throw new IllegalStateException( "This ServiceBuilder has been built." );
     return this.serviceContainer.getServiceBuilderByName( name );
   }
 
+  /**
+   * Check whether the state of this ServiceBuilder is such that build() will succeed.
+   *
+   * @param issues a list into which any issues that come up during isBuildable() will be add.
+   * @return true if this ServiceBuilder is in a state where build() will succeed.
+   */
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
-    if ( this.finished )
+    if ( this.built )
       return true;
 
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
@@ -217,9 +230,15 @@ public class ServiceImpl implements Service, ServiceBuilder
     return false;
   }
 
+  /**
+   * Generate the Service being built by this ServiceBuilder.
+   *
+   * @return the Service
+   * @throws BuilderException if this ServiceBuilder is not in a valid state.
+   */
   public Service build() throws BuilderException
   {
-    if ( this.finished )
+    if ( this.built )
       return this;
 
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
@@ -230,7 +249,7 @@ public class ServiceImpl implements Service, ServiceBuilder
     this.propertyContainer.build();
     this.serviceContainer.build();
 
-    this.finished = true;
+    this.built = true;
     return this;
   }
 }

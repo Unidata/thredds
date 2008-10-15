@@ -2,11 +2,10 @@ package thredds.catalog2.simpleImpl;
 
 import junit.framework.*;
 import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.builder.CatalogBuilderFactory;
-import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.builder.BuilderFinishIssue;
-import thredds.catalog2.Property;
+import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.Service;
+import thredds.catalog2.Property;
 import thredds.catalog.ServiceType;
 
 import java.net.URI;
@@ -26,8 +25,6 @@ public class TestServiceImpl extends TestCase
   private URI docBaseUri;
   private ServiceType type;
 
-  private CatalogBuilderFactory catBuildFactory;
-
   public TestServiceImpl( String name )
   {
     super( name );
@@ -40,17 +37,15 @@ public class TestServiceImpl extends TestCase
     { baseUri = new URI( "http://server/thredds/dodsC/" );
       docBaseUri = new URI( "http://server/thredds/aCat.xml"); }
     catch ( URISyntaxException e )
-    { fail(); }
+    { fail( "Bad URI syntax: " + e.getMessage()); }
 
     type = ServiceType.OPENDAP;
-
-    catBuildFactory = new CatalogBuilderFactoryImpl();
   }
 
   public void testConstructorNullName()
   {
     try
-    { catBuildFactory.newServiceBuilder( null, type, baseUri ); }
+    { new ServiceImpl( null, type, baseUri, null ); }
     catch ( IllegalArgumentException e )
     { return; }
     catch ( Exception e )
@@ -61,8 +56,7 @@ public class TestServiceImpl extends TestCase
   public void testConstructorNullType()
   {
     try
-    {
-      catBuildFactory.newServiceBuilder( "s1", null, baseUri ); }
+    { new ServiceImpl( "s1", null, baseUri, null ); }
     catch ( IllegalArgumentException e )
     { return; }
     catch ( Exception e )
@@ -74,7 +68,7 @@ public class TestServiceImpl extends TestCase
   {
     try
     {
-      catBuildFactory.newServiceBuilder( "s1", type, null ); }
+      new ServiceImpl( "s1", type, null, null ); }
     catch ( IllegalArgumentException e )
     { return; }
     catch ( Exception e )
@@ -82,10 +76,10 @@ public class TestServiceImpl extends TestCase
     fail( "No IllegalArgumentException.");
   }
 
-  public void testNormal()
+  public void testCtorGetSet()
   {
     String name = "s1";
-    ServiceBuilder sb = catBuildFactory.newServiceBuilder( name, type, baseUri );
+    ServiceBuilder sb = new ServiceImpl( name, type, baseUri, null );
 
     assertTrue( "Name [" + sb.getName() + "] not as expected [" + name + "].",
                 sb.getName().equals( name));
@@ -120,9 +114,11 @@ public class TestServiceImpl extends TestCase
 
   public void testServiceContainerNonuniqueServiceName()
   {
-    ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
+    ServiceBuilder sb = new ServiceImpl( "s1", type, baseUri, null );
     sb.addService( "s2", type, baseUri );
     sb.addService( "s3", type, baseUri );
+    assertTrue( "Failed to discover that service name [s2] already in use globally.",
+                sb.isServiceNameAlreadyInUseGlobally( "s2" ) );
     try
     { sb.addService( "s2", type, baseUri ); }
     catch ( IllegalStateException e )
@@ -134,10 +130,12 @@ public class TestServiceImpl extends TestCase
 
   public void testServiceContainerNonuniqueServiceNameNested()
   {
-    ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
+    ServiceBuilder sb = new ServiceImpl( "s1", type, baseUri, null );
     sb.addService( "s2", type, baseUri );
     ServiceImpl sb3 = (ServiceImpl) sb.addService( "s3", type, baseUri );
     sb3.addService( "s3.1", type, baseUri );
+    assertTrue( "Failed to discover that service name [s2] already in use globally.",
+                sb3.isServiceNameAlreadyInUseGlobally( "s2" ) );
     try
     { sb3.addService( "s2", type, baseUri ); }
     catch ( IllegalStateException e )
@@ -149,12 +147,14 @@ public class TestServiceImpl extends TestCase
 
   public void testServiceContainerNonuniqueServiceNameNestedTwoLevels()
   {
-    ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
+    ServiceBuilder sb = new ServiceImpl( "s1", type, baseUri, null );
     sb.addService( "s2", type, baseUri );
     ServiceBuilder sb3 = (ServiceImpl) sb.addService( "s3", type, baseUri );
     sb3.addService( "s3.1", type, baseUri );
     ServiceBuilder sb3_2 = (ServiceImpl) sb3.addService( "s3.2", type, baseUri );
     sb3_2.addService( "s3.2.1", type, baseUri );
+    assertTrue( "Failed to discover that service name [s2] already in use globally.",
+                sb3_2.isServiceNameAlreadyInUseGlobally( "s2" ));
     try
     { sb3_2.addService( "s2", type, baseUri ); }
     catch ( IllegalStateException e )
@@ -164,58 +164,174 @@ public class TestServiceImpl extends TestCase
     fail( "No IllegalStateException.");
   }
 
-  public void testProperties()
+  public void testAddGetRemoveServices()
   {
-    ServiceBuilder sb = catBuildFactory.newServiceBuilder( "s1", type, baseUri );
-    String nameProp1 = "p1";
-    String valueProp1 = "p1.v";
-    sb.addProperty( nameProp1, valueProp1 );
-    sb.addProperty( "p2", "p2.v" );
-    sb.addProperty( "p3", "p3.v" );
-    assertTrue( "Property(" + nameProp1 + ") value [" + sb.getPropertyValue( nameProp1 )+ "] not as expected [" + valueProp1 + "].",
-                sb.getPropertyValue( nameProp1 ).equals( valueProp1));
-    String newValueProp1 = "p1.vNew";
-    sb.addProperty( nameProp1, newValueProp1 );
-    assertTrue( "Property(" + nameProp1 + ") new value [" + sb.getPropertyValue( nameProp1 ) + "] not as expected [" + newValueProp1 + "].",
-                sb.getPropertyValue( nameProp1 ).equals( newValueProp1 ) );
+    ServiceBuilder sb = new ServiceImpl( "s1n", type, baseUri, null );
+    String s1_1n = "s1_1n";
+    ServiceBuilder sb1_1 = sb.addService( s1_1n, type, baseUri );
+    String s1_2n = "s1_2n";
+    ServiceBuilder sb1_2 = sb.addService( s1_2n, type, baseUri );
+    sb1_2.addService( "s1_2_1n", type, baseUri );
+    ServiceBuilder sb1_2_2 = sb1_2.addService( "s1_2_2n", type, baseUri );
+    sb1_2_2.addService( "s1_2_2_1", type, baseUri );
 
-    boolean pass = false;
+    List<ServiceBuilder> sbList = sb.getServiceBuilders();
+    assertTrue( sbList.size() == 2 );
+    assertTrue( sbList.get( 0).getName().equals( s1_1n ));
+    assertTrue( sbList.get( 1).getName().equals( s1_2n));
+
+    assertTrue( sb.getServiceBuilderByName( s1_1n ).equals( sb1_1 ));
+    assertTrue( sb.getServiceBuilderByName( s1_2n ).equals( sb1_2 ));
+
+    assertTrue( sb.isServiceNameAlreadyInUseGlobally( s1_2n ));
+
+    // Test removal of service
+    assertTrue( sb.removeService( s1_1n ) );
+    assertNull( "Found removed service [" + s1_1n + "].",
+                sb.getServiceBuilderByName( s1_1n ) );
+
+    // Test that non-build getters fail.
+    Service s = (Service) sb;
     try
-    { ((ServiceImpl) sb).getProperties(); }
-    catch ( IllegalStateException e )
-    { pass = true; }
+    { s.getServices(); }
+    catch ( IllegalStateException ise )
+    {
+      try
+      { s.getServiceByName( s1_1n); }
+      catch ( IllegalStateException ise2 )
+      { return; }
+      catch ( Exception e )
+      { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+    }
     catch ( Exception e )
-    { fail( "Non-IllegalStateException: " + e.getMessage()); }
-    if ( ! pass ) fail( "No IllegalStateException.");
+    { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage()); }
+
+  }
+  public void testAddGetReplaceRemoveProperties()
+  {
+    ServiceBuilder sb = new ServiceImpl( "s1", type, baseUri, null );
+    String p1n = "p1";
+    String p1v = "p1.v";
+    sb.addProperty( p1n, p1v );
+    String p2n = "p2";
+    String p2v = "p2.v";
+    sb.addProperty( p2n, p2v );
+    String p3n = "p3";
+    String p3v = "p3.v";
+    sb.addProperty( p3n, p3v );
+
+    // Test getPropertyNames()
+    List<String> propNames = sb.getPropertyNames();
+    assertTrue( propNames.size() == 3);
+    assertTrue( propNames.get( 0 ).equals( p1n ));
+    assertTrue( propNames.get( 1 ).equals( p2n ));
+    assertTrue( propNames.get( 2 ).equals( p3n ));
+
+    // Test getPropertyValue()
+    String testValue = sb.getPropertyValue( p1n );
+    assertTrue( "Property [" + p1n + "]/[" + testValue + "] not as expected ["+p1n+"]/[" + p1v + "].",
+                testValue.equals( p1v ) );
+    testValue = sb.getPropertyValue( p2n );
+    assertTrue( "Property [" + p2n + "]/[" + testValue + "] not as expected ["+p2n+"]/[" + p2v + "].",
+                testValue.equals( p2v ) );
+    testValue = sb.getPropertyValue( p3n );
+    assertTrue( "Property [" + p3n + "]/[" + testValue + "] not as expected ["+p3n+"]/[" + p3v + "].",
+                testValue.equals( p3v ) );
+
+    // Test replacement.
+    String p1vNew = "p1.vNew";
+    sb.addProperty( p1n, p1vNew );
+    testValue = sb.getPropertyValue( p1n );
+    assertTrue( "Property [" + p1n + "]/[" + testValue + "] not as expected ["+p1n+"]/[" + p1vNew + "].",
+                testValue.equals( p1vNew ) );
+
+    // Test removal of property.
+    assertTrue( sb.removeProperty( p1n ));
+    assertNull( sb.getPropertyValue( p1n ));
+
+    // Test that non-build getters fail.
+    Service s = (Service) sb;
+    try
+    { s.getProperties(); }
+    catch ( IllegalStateException ise )
+    {
+      try
+      { s.getPropertyByName( p1n); }
+      catch ( IllegalStateException ise2 )
+      { return; }
+      catch ( Exception e )
+      { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+    }
+    catch ( Exception e )
+    { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+  }
+
+  // Set, add, build and test that non-build getters succeed and build add/getters/remove fail.
+  public void testBuildGet()
+  {
+    ServiceBuilder sb = new ServiceImpl( "s1", type, baseUri, null );
+
+    sb.setDescription( "description" );
+    sb.setSuffix( "suffix" );
+
+    String p1n = "p1";
+    String p1v = "p1.v";
+    sb.addProperty( p1n, p1v );
+    String p2n = "p2";
+    String p2v = "p2.v";
+    sb.addProperty( p2n, p2v );
+    String p3n = "p3";
+    String p3v = "p3.v";
+    sb.addProperty( p3n, p3v );
+
+    String s1_1n = "s1_1n";
+    ServiceBuilder sb1_1 = sb.addService( s1_1n, type, baseUri );
+    String s1_2n = "s1_2n";
+    ServiceBuilder sb1_2 = sb.addService( s1_2n, type, baseUri );
+    sb1_2.addService( "s1_2_1n", type, baseUri );
+    ServiceBuilder sb1_2_2 = sb1_2.addService( "s1_2_2n", type, baseUri );
+    sb1_2_2.addService( "s1_2_2_1", type, baseUri );
 
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    boolean isBuildable = sb.isBuildable( issues );
-    if ( ! isBuildable )
+    if ( ! sb.isBuildable( issues ))
     {
-      StringBuilder sb2 = new StringBuilder( "ServiceBuilder not buildable: ");
-      for ( BuilderFinishIssue bfi : issues)
-        sb2.append( "\n    ").append( bfi.getMessage());
-      fail( sb2.toString());
+      StringBuilder stringBuilder = new StringBuilder( "Not in buildable state: ");
+      for ( BuilderFinishIssue bfi : issues )
+        stringBuilder.append( "\n    ").append( bfi.getMessage()).append(" [").append( bfi.getBuilder().getClass().getName()).append( "]");
+      fail( stringBuilder.toString());
     }
-
     Service s = null;
     try
-    {
-      s = sb.build();
-    }
+    { s = sb.build(); }
     catch ( BuilderException e )
-    {
-      fail();
-    }
-    List<Property> props = null;
-    try
-    { props = s.getProperties(); }
-    catch ( IllegalStateException e )
-    { fail( "Unexpected IllegalStateException: " + e.getMessage() ); }
-    catch ( Exception e )
-    { fail( "Non-IllegalStateException: " + e.getMessage()); }
+    { fail( "Build failed: " + e.getMessage()); }
 
-    assertTrue( "Size of property list [" + props.size() + "] not as expected [3]",
-                props.size() == 3);
+    // Test getProperties()
+    List<Property> propList = s.getProperties();
+    assertTrue( propList.size() == 3 );
+    assertTrue( propList.get( 0).getName().equals( p1n));
+    assertTrue( propList.get( 1).getName().equals( p2n));
+    assertTrue( propList.get( 2).getName().equals( p3n));
+
+    assertTrue( s.getPropertyByName( p1n ).getName().equals( p1n));
+
+    List<Service> sList = s.getServices();
+    assertTrue( sList.size() == 2);
+    assertTrue( sList.get( 0) == sb1_1 );
+    assertTrue( sList.get( 1) == sb1_2 );
+
+    assertTrue( s.getServiceByName( s1_1n ) == sb1_1);
+
+    fail( "testBuildGet() not fully implemented." );
+
+    // Should all fail
+    sb.addProperty( "f", "" );
+    sb.addService( "a", type, baseUri );
+    sb.getPropertyNames();
+    sb.getPropertyValue( p1n );
+    sb.getServiceBuilders();
+    sb.getServiceBuilderByName( s1_1n );
+
+
   }
 }
