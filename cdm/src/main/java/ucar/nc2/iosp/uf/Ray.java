@@ -7,6 +7,8 @@ import ucar.ma2.IndexIterator;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.io.IOException;
 
 /**
@@ -26,17 +28,6 @@ public class Ray {
     boolean debug = false;
 
      /**   moment identifier */
-    public static final int VELOCITY = 1;
-    public static final int SPECTRUM = 2;
-    public static final int ZDR = 3;
-    public static final int CORRECTEDDBZ = 4;
-    public static final int TOTALDBZ = 5;
-    public static final int RHOHV = 6;
-    public static final int PHIDP = 7;
-    public static final int KDP = 8;
-    public static final int LDRH = 9;
-    public static final int LDRV = 10;
-
     long data_msecs = 0;
 
     UF_mandatory_header2 uf_header2;
@@ -44,31 +35,14 @@ public class Ray {
     short      numberOfFields;   // in this ray
     short      numberOfRecords;  // in this ray
     short      numberOfFieldsInRecord;   // in this record
-    boolean hasVR = false;
-    boolean hasSW = false;
-    boolean hasDR = false;
-    boolean hasCZ = false;
-    boolean hasDZ = false;
-    boolean hasRH = false;
-    boolean hasPH = false;
-    boolean hasKD = false;
-    boolean hasLH = false;
-    boolean hasLV = false;
-    UF_field_header2 vr_field_header;
-    UF_field_header2 sw_field_header;
-    UF_field_header2 dr_field_header;
-    UF_field_header2 cz_field_header;
-    UF_field_header2 dz_field_header;
-    UF_field_header2 rh_field_header;
-    UF_field_header2 ph_field_header;
-    UF_field_header2 kd_field_header;
-    UF_field_header2 lh_field_header;
-    UF_field_header2 lv_field_header;
+
+    HashMap<String, UF_field_header2>  field_header_map;
+
 
     public Ray( ByteBuffer bos, int raySize, long rayOffset) {
         this.raySize = raySize;
         this.rayOffset = rayOffset;
-        
+        field_header_map = new HashMap();
         bos.position(0);
 
         byte[] data = new byte[UF_MANDATORY_HEADER2_LEN];
@@ -77,12 +51,13 @@ public class Ray {
         uf_header2 = new  UF_mandatory_header2(data);
 
         if(uf_header2.offset2StartOfOptionalHeader > 0 &&
-                (uf_header2.dataHeaderPosition == uf_header2.offset2StartOfOptionalHeader + 14)){
+                (uf_header2.dataHeaderPosition != uf_header2.offset2StartOfOptionalHeader)){
             data = new byte[28];
             bos.get(data);
             uf_opt_header = new UF_optional_header(data);
         }
-
+        int position = uf_header2.dataHeaderPosition*2 -2;
+        bos.position(position);
         data_msecs = setDateMesc();
         byte [] b2 = new byte[2];
         bos.get(b2);
@@ -96,122 +71,14 @@ public class Ray {
             bos.get(b2);
             //int type = getShort(b2, 0);
             String type = new String(b2);
-            if(type.equalsIgnoreCase("VR")){
-                hasVR = true;
-                bos.get(b2);
-                int offs = getShort(b2, 0);
-                int position0 = bos.position();
-                bos.position(offs*2 - 2);
-                bos.get(data);
-                vr_field_header = new UF_field_header2(data);
-
-                 // test the data part
-                int dataOffset = vr_field_header.dataOffset;
-                byte [] testData = new byte[2*vr_field_header.binCount];
-                bos.position(dataOffset*2 - 2);
-                bos.get(testData);
-
-                bos.position(position0);
-            }
-            else if(type.equalsIgnoreCase("SW")){
-                hasSW = true;
-                bos.get(b2);
-                int offs = getShort(b2, 0);
-                int position0 = bos.position();
-                bos.position(offs*2 - 2);
-                bos.get(data);
-                sw_field_header = new UF_field_header2(data);
-                bos.position(position0);
-            }
-            else if(type.equalsIgnoreCase("DR")){
-                hasDR = true;
-                bos.get(b2);
-                int offs = getShort(b2, 0);
-                int position0 = bos.position();
-                bos.position(offs*2 - 2);
-                bos.get(data);
-                dr_field_header = new UF_field_header2(data);
-                bos.position(position0);
-            }
-            else if(type.equalsIgnoreCase("CZ")){
-                hasCZ = true;
-                bos.get(b2);
-                int offs = getShort(b2, 0);
-                int position0 = bos.position();
-                bos.position(offs*2 - 2);
-                bos.get(data);
-                cz_field_header = new UF_field_header2(data);
-                bos.position(position0);
-            }
-            else if(type.equalsIgnoreCase("DZ")){
-                hasDZ = true;
-                bos.get(b2);
-                int offs = getShort(b2, 0);
-                int position0 = bos.position();
-                bos.position(offs*2 - 2);
-                bos.get(data);
-                dz_field_header = new UF_field_header2(data);
-
-
-                 // test the data part
-                int dataOffset = dz_field_header.dataOffset;
-                byte [] testData = new byte[2*dz_field_header.binCount];
-                bos.position(dataOffset*2 -2);
-                bos.get(testData);
-                short[] tmp = byte2short(testData, 2*dz_field_header.binCount);
-                bos.position(position0);
-            }
-            else if(type.equalsIgnoreCase("RH")){
-                hasRH = true;
-                bos.get(b2);
-                int offs = getShort(b2, 0);
-                int position0 = bos.position();
-                bos.position(offs*2 - 2);
-                bos.get(data);
-                rh_field_header = new UF_field_header2(data);
-                bos.position(position0);
-            }
-            else if(type.equalsIgnoreCase("PH")){
-                hasPH = true;
-                bos.get(b2);
-                int offs = getShort(b2, 0);
-                int position0 = bos.position();
-                bos.position(offs*2 - 2);
-                bos.get(data);
-                ph_field_header = new UF_field_header2(data);
-                bos.position(position0);
-            }
-            else if(type.equalsIgnoreCase("KD")){
-                hasKD = true;
-                bos.get(b2);
-                int offs = getShort(b2, 0);
-                int position0 = bos.position();
-                bos.position(offs*2 - 2);
-                bos.get(data);
-                kd_field_header = new UF_field_header2(data);
-                bos.position(position0);
-            }
-            else if(type.equalsIgnoreCase("LH")){
-                hasLH = true;
-                bos.get(b2);
-                int offs = getShort(b2, 0);
-                int position0 = bos.position();
-                bos.position(offs*2 - 2);
-                bos.get(data);
-                lh_field_header = new UF_field_header2(data);
-                bos.position(position0);
-            }
-            else if(type.equalsIgnoreCase("LV")){
-                hasLV = true;
-                bos.get(b2);
-                int offs = getShort(b2, 0);
-                int position0 = bos.position();
-                bos.position(offs*2 - 2);
-                bos.get(data);
-                lv_field_header = new UF_field_header2(data);
-                bos.position(position0);
-            }
-
+            bos.get(b2);
+            int offs = getShort(b2, 0);
+            int position0 = bos.position();
+            bos.position(offs*2 - 2);
+            bos.get(data);
+            UF_field_header2 field_header = new UF_field_header2(data);
+            bos.position(position0);
+            field_header_map.put(type, field_header);
 
         }
     }
@@ -220,165 +87,106 @@ public class Ray {
         return raySize;
     }
 
-    public int getGateCount(int dataType) {
-        switch (dataType) {
-            case VELOCITY : return vr_field_header.binCount;
-            case SPECTRUM : return sw_field_header.binCount;
-            case ZDR : return dr_field_header.binCount;
-            case CORRECTEDDBZ : return cz_field_header.binCount;
-            case TOTALDBZ : return dz_field_header.binCount;
-            case RHOHV : return rh_field_header.binCount;
-            case PHIDP : return ph_field_header.binCount;
-            case KDP : return kd_field_header.binCount;
-            case LDRH : return lh_field_header.binCount;
-            case LDRV : return lv_field_header.binCount;
-            default : throw new IllegalArgumentException();
-        }
-    }
-    static public String getDatatypeName( int datatype) {
-        switch (datatype) {
-          case TOTALDBZ : return "Reflectivity";
-          case VELOCITY : return "RadialVelocity";
-          case SPECTRUM : return "SpectrumWidth";
-          case ZDR:
-          case RHOHV:
-          case PHIDP:
-          case KDP:
-          case LDRH:
-          case LDRV:
-           return "unknown";
-          default : throw new IllegalArgumentException();
-        }
+    public int getGateCount(String abbrev) {
+        UF_field_header2 header = field_header_map.get(abbrev);
+        return header.binCount;
     }
 
-   static public String getDatatypeUnits(int datatype) {
-     switch (datatype) {
-       case TOTALDBZ :
-       case CORRECTEDDBZ:
-           return "dBZ";
+    public String getDatatypeName(String abbrev) {
+        if( abbrev.equals("ZN") || abbrev.equals("ZS"))
+          return "Reflectivity";
+        else if (abbrev.equals("ZF") || abbrev.equals("ZX") || abbrev.equals("DR"))
+          return "Reflectivity";
+        else if(abbrev.equals("VR") || abbrev.equals("DN") || abbrev.equals("DS") || abbrev.equals("DF") ||abbrev.equals("DX") )
+          return "RadialVelocity";
+        else if(abbrev.equals("VN") || abbrev.equals("VF") )
+          return "CorrectedRadialVelocity";
+        else if(abbrev.equals("SW") || abbrev.equals("WS") || abbrev.equals("WF") || abbrev.equals("WX") || abbrev.equals("WN"))
+          return "SpectrumWidth";
+        else if(abbrev.equals("PN") || abbrev.equals("PS") || abbrev.equals("PF") || abbrev.equals("PX"))
+          return "Power";
+        else if(abbrev.equals("MN") || abbrev.equals("MS") || abbrev.equals("MF") || abbrev.equals("MX"))
+          return "Power";
+        else if(abbrev.equals("PH"))
+            return "PhiDP";
+        else if(abbrev.equals("RH"))
+            return "RhoHV";
+        else if(abbrev.equals("LH"))
+            return "LdrH";
+        else if(abbrev.equals("KD"))
+            return "KDP";
+        else if(abbrev.equals("LV"))
+            return "LdrV" ;
+        else if(abbrev.equals("DR"))
+            return "ZDR";
+        else if(abbrev.equals("CZ"))
+            return "CorrecteddBZ";
+        else if(abbrev.equals("DZ"))
+            return "TotalReflectivity";
+        else if(abbrev.equals("DR"))
+            return "ZDR";
+        else
+          return abbrev;
 
-       case VELOCITY :
+    }
 
-       case SPECTRUM :
-           return "m/s";
+   public String getDatatypeUnits(String abbrev) {
+       if(abbrev.equals("CZ") || abbrev.equals("DZ") || abbrev.equals("ZN") || abbrev.equals("ZS"))
+          return "dBZ";
+        else if (abbrev.equals("ZF") || abbrev.equals("ZX"))
+          return "dBZ";
+        else if(abbrev.equals("VR") || abbrev.equals("DN") || abbrev.equals("DS") || abbrev.equals("DF") ||abbrev.equals("DX") )
+          return "m/s";
+        else if(abbrev.equals("VN") || abbrev.equals("VF") )
+          return "m/s";
+        else if(abbrev.equals("SW") || abbrev.equals("WS") || abbrev.equals("WF") || abbrev.equals("WX") || abbrev.equals("WN"))
+          return "m/s";
+        else if(abbrev.equals("PN") || abbrev.equals("PS") || abbrev.equals("PF") || abbrev.equals("PX"))
+          return "dBM";
+        else if(abbrev.equals("MN") || abbrev.equals("MS") || abbrev.equals("MF") || abbrev.equals("MX"))
+          return "dBM";
 
-       case ZDR:
-       case RHOHV:
-       case PHIDP:
-       case KDP:
-       case LDRH:
-       case LDRV:
-           return "unknown";
-     }
-     throw new IllegalArgumentException();
+        else
+          return abbrev;
+
    }
 
-    public short getDatatypeRangeFoldingThreshhold(int datatype) {
-        switch (datatype) {
-            case VELOCITY : return vr_field_header.thresholdValue;
-            case SPECTRUM : return sw_field_header.thresholdValue;
-            case ZDR : return dr_field_header.thresholdValue;
-            case CORRECTEDDBZ : return cz_field_header.thresholdValue;
-            case TOTALDBZ : return dz_field_header.thresholdValue;
-            case RHOHV : return rh_field_header.thresholdValue;
-            case PHIDP : return ph_field_header.thresholdValue;
-            case KDP : return kd_field_header.thresholdValue;
-            case LDRH : return lh_field_header.thresholdValue;
-            case LDRV : return lv_field_header.thresholdValue;
+    public short getDatatypeRangeFoldingThreshhold(String abbrev) {
+        UF_field_header2 header = field_header_map.get(abbrev);
+        return header.thresholdValue;
 
-            default : throw new IllegalArgumentException();
-        }
     }
 
-    public float getDatatypeScaleFactor(int datatype) {
-        switch (datatype) {
-            case VELOCITY : return 1.f/vr_field_header.scaleFactor;
-            case SPECTRUM : return 1.f/sw_field_header.scaleFactor;
-            case ZDR : return 1.f/dr_field_header.scaleFactor;
-            case CORRECTEDDBZ : return 1.f/cz_field_header.scaleFactor;
-            case TOTALDBZ : return 1.f/dz_field_header.scaleFactor;
-            case RHOHV : return 1.f/rh_field_header.scaleFactor;
-            case PHIDP : return 1.f/ph_field_header.scaleFactor;
-            case KDP : return 1.f/kd_field_header.scaleFactor;
-            case LDRH : return 1.f/lh_field_header.scaleFactor;
-            case LDRV : return 1.f/lv_field_header.scaleFactor;
+    public float getDatatypeScaleFactor(String abbrev) {
+        UF_field_header2 header = field_header_map.get(abbrev);
+        return header.scaleFactor;
 
-            default : throw new IllegalArgumentException();
-        }
     }
 
-    public float getDatatypeAddOffset(int datatype) {
+    public float getDatatypeAddOffset(String abbrev) {
         return 0.0f;
 
-   /*     switch (datatype) {
-            case VELOCITY : return vr_field_header.scale;
-            case SPECTRUM : return sw_field_header.scale;
-            case ZDR : return dr_field_header.scale;
-            case CORRECTEDDBZ : return cz_field_header.scale;
-            case TOTALDBZ : return dz_field_header.scale;
-            case RHOHV : return rh_field_header.scale;
-            case PHIDP : return ph_field_header.scale;
-            case KDP : return kd_field_header.scale;
-            case LDRH : return lh_field_header.scale;
-            case LDRV : return lv_field_header.scale;         
-
-            default : throw new IllegalArgumentException();
-        }   */
-    }
-
-
-    public int getGateStart(int datatype) {
-        switch (datatype) {
-            case VELOCITY : return vr_field_header.startRange;
-            case SPECTRUM : return sw_field_header.startRange;
-            case ZDR : return dr_field_header.startRange;
-            case CORRECTEDDBZ : return cz_field_header.startRange;
-            case TOTALDBZ : return dz_field_header.startRange;
-            case RHOHV : return rh_field_header.startRange;
-            case PHIDP : return ph_field_header.startRange;
-            case KDP : return kd_field_header.startRange;
-            case LDRH : return lh_field_header.startRange;
-            case LDRV : return lv_field_header.startRange;
-
-            default : throw new IllegalArgumentException();
-        }
 
     }
 
-    public int getDataOffset(int datatype) {
-        switch (datatype) {
-            case VELOCITY : return vr_field_header.dataOffset;
-            case SPECTRUM : return sw_field_header.dataOffset;
-            case ZDR : return dr_field_header.dataOffset;
-            case CORRECTEDDBZ : return cz_field_header.dataOffset;
-            case TOTALDBZ : return dz_field_header.dataOffset;
-            case RHOHV : return rh_field_header.dataOffset;
-            case PHIDP : return ph_field_header.dataOffset;
-            case KDP : return kd_field_header.dataOffset;
-            case LDRH : return lh_field_header.dataOffset;
-            case LDRV : return lv_field_header.dataOffset;
 
-            default : throw new IllegalArgumentException();
-        }
+    public int getGateStart(String abbrev) {
+        UF_field_header2 header = field_header_map.get(abbrev);
+        return header.startRange;
 
     }
-    public int getGateSize(int datatype) {
-        switch (datatype) {
-            case VELOCITY : return vr_field_header.binSpacing;
-            case SPECTRUM : return sw_field_header.binSpacing;
-            case ZDR : return dr_field_header.binSpacing;
-            case CORRECTEDDBZ : return cz_field_header.binSpacing;
-            case TOTALDBZ : return dz_field_header.binSpacing;
-            case RHOHV : return rh_field_header.binSpacing;
-            case PHIDP : return ph_field_header.binSpacing;
-            case KDP : return kd_field_header.binSpacing;
-            case LDRH : return lh_field_header.binSpacing;
-            case LDRV : return lv_field_header.binSpacing;
 
-            default : throw new IllegalArgumentException();
-        }
+    public int getDataOffset(String abbrev) {
+        UF_field_header2 header = field_header_map.get(abbrev);
+        return header.dataOffset;
 
     }
+    public int getGateSize(String abbrev) {
+        UF_field_header2 header = field_header_map.get(abbrev);
+        return header.binSpacing;
+
+    }
+
     public float getElevation(){
         return uf_header2.elevation/64.f;
     }
@@ -403,29 +211,10 @@ public class Ray {
         return uf_header2.longitudeD + (uf_header2.longitudeM + uf_header2.longitudeS/(64*60.f))/60.f;
     }
 
-    public float getHorizontalBeamWidth() {
-        if(vr_field_header != null)
-            return  vr_field_header.HorizontalBeamWidth/64.f;
-        else if(sw_field_header != null)
-            return  sw_field_header.HorizontalBeamWidth/64.f;
-        else if(dr_field_header != null)
-            return dr_field_header.HorizontalBeamWidth/64.f;
-        else if(cz_field_header != null)
-            return cz_field_header.HorizontalBeamWidth/64.f;
-        else if(dz_field_header != null)
-            return dz_field_header.HorizontalBeamWidth/64.f;
-        else if(rh_field_header != null)
-            return rh_field_header.HorizontalBeamWidth/64.f;
-        else if(ph_field_header != null)
-            return ph_field_header.HorizontalBeamWidth/64.f;
-        else if(kd_field_header != null)
-            return kd_field_header.HorizontalBeamWidth/64.f;
-        else if(lh_field_header != null)
-            return lh_field_header.HorizontalBeamWidth/64.f;
-        else if(lv_field_header != null)
-            return lv_field_header.HorizontalBeamWidth/64.f;
-        else
-            return 0.0f;
+    public float getHorizontalBeamWidth(String abbrev) {
+        UF_field_header2 header = field_header_map.get(abbrev);
+        return header.HorizontalBeamWidth/64.f;
+
     }
 
     public int getYear(int year) {
@@ -713,17 +502,17 @@ public class Ray {
   /**
    * Read data from this ray.
    * @param raf read from this file
-   * @param datatype which data type we want
+   * @param abbrev which data type we want
    * @param gateRange handles the possible subset of data to return
    * @param ii put the data here
    * @throws java.io.IOException
        */
-    public void readData(RandomAccessFile raf, int datatype, Range gateRange, IndexIterator ii) throws IOException {
+    public void readData(RandomAccessFile raf, String abbrev, Range gateRange, IndexIterator ii) throws IOException {
         long offset = rayOffset;
-        offset += (getDataOffset( datatype) * 2 - 2) ;
+        offset += (getDataOffset( abbrev) * 2 - 2) ;
         raf.seek(offset);
         byte[] b2 = new byte[2];
-        int dataCount = getGateCount( datatype);
+        int dataCount = getGateCount( abbrev);
         byte[] data = new byte[dataCount*2];
         raf.readFully(data);
         short[] tmp = byte2short(data, 2*dataCount);

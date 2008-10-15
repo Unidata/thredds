@@ -19,30 +19,10 @@ public class UFheader {
     ucar.nc2.NetcdfFile ncfile;
     static final boolean littleEndianData = true;
     String dataFormat = "UNIVERSALFORMAT";  // temp setting
-    boolean hasVelocity = false;
-    boolean hasSpectrum = false;
-    boolean hasZdr  = false;
-    boolean hasCorrecteddBZ  = false;
-    boolean hasTotaldBZ  = false;
-    boolean hasRhoHV  = false;
-    boolean hasPhiDP  = false;
-    boolean hasKdp  = false;
-    boolean hasLdrH  = false;
-    boolean hasLdrV  = false;
-
     Ray firstRay = null;
 
-    List<Ray> velocityGroup = new ArrayList<Ray>();
-    List<Ray> spectrumGroup = new ArrayList<Ray>();
-    List<Ray> zdrGroup = new ArrayList<Ray>();
-    List<Ray> correcteddBZGroup = new ArrayList<Ray>();
-    List<Ray> totaldBZGroup = new ArrayList<Ray>();
-    List<Ray> rhoHVGroup = new ArrayList<Ray>();
-    List<Ray> phiDPGroup = new ArrayList<Ray>();
-    List<Ray> kdpGroup = new ArrayList<Ray>();
-    List<Ray> ldrHGroup = new ArrayList<Ray>();
-    List<Ray> ldrVGroup = new ArrayList<Ray>();
 
+    HashMap variableGroup;
     private int max_radials = 0;
     private int min_radials = Integer.MAX_VALUE;
 
@@ -81,17 +61,8 @@ public class UFheader {
     void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile ) throws IOException {
         this.raf = raf;
         this.ncfile = ncfile;
+        variableGroup = new HashMap();
 
-        List<Ray> velocityList = new ArrayList<Ray>();
-        List<Ray> spectrumList = new ArrayList<Ray>();
-        List<Ray> zdrList = new ArrayList<Ray>();
-        List<Ray> correcteddBZList = new ArrayList<Ray>();
-        List<Ray> totaldBZList = new ArrayList<Ray>();
-        List<Ray> rhoHVList = new ArrayList<Ray>();
-        List<Ray> phiDPList = new ArrayList<Ray>();
-        List<Ray> kdpList = new ArrayList<Ray>();
-        List<Ray> ldrHList = new ArrayList<Ray>();
-        List<Ray> ldrVList = new ArrayList<Ray>();
 
         raf.seek(0);
         raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -120,63 +91,31 @@ public class UFheader {
             ByteBuffer bos = ByteBuffer.wrap(buffer);
 
             Ray r = new Ray(bos, rsize, offset);
-
             if(firstRay == null) firstRay = r;
-            if(r.hasVR)velocityList.add(r);
-            if(r.hasSW)spectrumList.add(r);
-            if(r.hasDR)zdrList.add(r);
-            if(r.hasCZ)correcteddBZList.add(r);
-            if(r.hasDZ)totaldBZList.add(r);
-            if(r.hasRH)rhoHVList.add(r);
-            if(r.hasPH)phiDPList.add(r);
-            if(r.hasKD)kdpList.add(r);
-            if(r.hasLH)ldrHList.add(r);
-            if(r.hasLV)ldrVList.add(r);
             rayNumber ++;
+
+            HashMap rayMap = r.field_header_map;
+            Set kSet = rayMap.keySet();
+            for(Iterator it = kSet.iterator(); it.hasNext();) {
+                String ab = (String)it.next();
+                ArrayList group = (ArrayList) variableGroup.get(ab);
+                if (null == group) {
+                    group = new ArrayList();
+                    variableGroup.put(ab, group);
+                }
+                group.add(r);
+            }
 
           //  System.out.println("Ray Number = " + rayNumber);
 
         }
-
-        if(velocityList.size() > 0) {
-            hasVelocity = true;
-            velocityGroup = sortScans("velocity", velocityList);
-        }
-        if(spectrumList.size() > 0) {
-            hasSpectrum = true;
-            spectrumGroup = sortScans("spectrum", spectrumList);
-        }
-        if(zdrList.size()> 0) {
-            hasZdr  = true;
-            zdrGroup = sortScans("zdr", zdrList);
-        }
-        if(correcteddBZList.size() > 0) {
-            hasCorrecteddBZ  = true;
-            correcteddBZGroup = sortScans("correctedDBZ", correcteddBZList);
-        }
-        if(totaldBZList.size() > 0) {
-            hasTotaldBZ  = true;
-            totaldBZGroup  = sortScans("totalDBZ", totaldBZList);
-        }
-        if(rhoHVList.size() > 0) {
-            hasRhoHV  = true;
-            rhoHVGroup  = sortScans("rhoHV", rhoHVList);
-        }
-        if(phiDPList.size() > 0) {
-            hasPhiDP  = true;
-            phiDPGroup = sortScans("phiDP", phiDPList);
-        }
-        if(kdpList.size() > 0) {
-            hasKdp  = true;
-            kdpGroup = sortScans("kdp", kdpList);
-        }
-        if(ldrHList.size() > 0) {
-            hasLdrH  = true;
-            ldrHGroup = sortScans("ldrH", ldrHList);
-        }
-        if(ldrVList.size() > 0) {
-            hasLdrV  = true;
-            ldrVGroup = sortScans("ldrV", ldrVList);
+        Set vSet = variableGroup.keySet();
+        for(Iterator it = vSet.iterator(); it.hasNext();) {
+            String key = (String)it.next();
+            ArrayList group = (ArrayList) variableGroup.get(key);
+            ArrayList sgroup = sortScans(key, group);
+            //variableGroup.remove(key);
+            variableGroup.put(key, sgroup);
         }
 
         //System.out.println("Herr " +velocityList.size());
@@ -214,8 +153,8 @@ public class UFheader {
         return groups;
     }
 
-    public float getMeanElevation(int datatype, int eNum){
-        ArrayList gp = (ArrayList)getGroup(datatype);
+    public float getMeanElevation(String key, int eNum){
+        ArrayList gp = (ArrayList)getGroup(key);
         float meanEle = getMeanElevation(gp);
         return meanEle;
     }
@@ -234,34 +173,8 @@ public class UFheader {
         return sum/size;
     }
 
-    public List getGroup(int dataType){
-        switch(dataType) {
-
-            case Ray.VELOCITY:
-                return velocityGroup;
-            case Ray.SPECTRUM:
-                return spectrumGroup;
-            case Ray.ZDR:
-                return zdrGroup;
-            case Ray.CORRECTEDDBZ:
-                return correcteddBZGroup;
-            case Ray.TOTALDBZ:
-                return  totaldBZGroup;
-            case Ray.RHOHV:
-                return rhoHVGroup;
-            case Ray.PHIDP:
-                return  phiDPGroup;
-            case Ray.KDP:
-                return kdpGroup;
-            case Ray.LDRH:
-                return ldrHGroup;
-            case Ray.LDRV:
-                return ldrVGroup;
-
-            default:
-                return null;
-        }
-
+    public List getGroup(String key){
+        return (ArrayList)variableGroup.get(key);
     }
 
     public int getMaxRadials() {
@@ -280,8 +193,8 @@ public class UFheader {
         return firstRay.getDate();
     }
 
-    public float getHorizontalBeamWidth(){
-        return firstRay.getHorizontalBeamWidth();
+    public float getHorizontalBeamWidth(String ab){
+        return firstRay.getHorizontalBeamWidth(ab);
     }
 
     public String getStationId(){

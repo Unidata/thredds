@@ -13,9 +13,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.ma2.*;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,39 +43,17 @@ public class UFiosp extends AbstractIOServiceProvider {
         headerParser = new UFheader();
         headerParser.read(myRaf, ncfile);
         //myInfo = headerParser.getVarInfo();
-        if( headerParser.hasTotaldBZ && headerParser.totaldBZGroup != null) {
-            makeVariable( ncfile, Ray.TOTALDBZ, "Reflectivity", "TotalReflectivity", "DZ", headerParser.totaldBZGroup);
+        HashMap variables = headerParser.variableGroup;
+
+        Set vSet = variables.keySet();
+        for(Iterator it = vSet.iterator(); it.hasNext();) {
+            String key = (String)it.next();
+            ArrayList group = (ArrayList) variables.get(key);
+            List<Ray> firstGroup = (List)group.get(0);
+            Ray ray0 = (Ray)firstGroup.get(0);
+            makeVariable( ncfile, ray0.getDatatypeName(key),ray0.getDatatypeName(key) , key, group);
         }
 
-        if(headerParser.hasVelocity && headerParser.velocityGroup != null) {
-            makeVariable( ncfile, Ray.VELOCITY, "RadialVelocity", "RadialVelocity", "VR", headerParser.velocityGroup);
-        }
-
-        if(headerParser.hasSpectrum && headerParser.spectrumGroup != null) {
-            makeVariable( ncfile, Ray.SPECTRUM, "Spectrum", "Spectrum", "SW", headerParser.spectrumGroup);
-        }
-
-        if(headerParser.hasRhoHV && headerParser.rhoHVGroup != null) {
-            makeVariable( ncfile, Ray.RHOHV, "RhoHV", "RhoHV", "RH", headerParser.rhoHVGroup);
-        }
-        if(headerParser.hasKdp && headerParser.kdpGroup != null) {
-            makeVariable( ncfile, Ray.KDP, "KDP", "KDP", "KD", headerParser.kdpGroup);
-        }
-        if(headerParser.hasZdr && headerParser.zdrGroup != null) {
-            makeVariable( ncfile, Ray.ZDR, "ZDR", "ZDR", "DR", headerParser.zdrGroup);
-        }
-        if(headerParser.hasLdrH && headerParser.ldrHGroup != null) {
-            makeVariable( ncfile, Ray.LDRH, "LdrH", "LdrH", "LH", headerParser.ldrHGroup);
-        }
-        if(headerParser.hasLdrV && headerParser.ldrVGroup != null) {
-            makeVariable( ncfile, Ray.LDRV, "LdrV", "LdrV", "LV", headerParser.ldrVGroup);
-        }
-        if(headerParser.hasPhiDP && headerParser.phiDPGroup != null) {
-            makeVariable( ncfile, Ray.PHIDP, "PhiDP", "PhiDP", "PH", headerParser.phiDPGroup);
-        }
-        if(headerParser.hasCorrecteddBZ && headerParser.correcteddBZGroup != null) {
-            makeVariable( ncfile, Ray.CORRECTEDDBZ, "CorrectedDBZ", "CorrectedDBZ", "CZ", headerParser.correcteddBZGroup);
-        }
 
 
         ncfile.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
@@ -111,7 +87,7 @@ public class UFiosp extends AbstractIOServiceProvider {
 
 
        // ncfile.addAttribute(null, new Attribute("VolumeCoveragePattern", new Integer(headerParser.getVCP())));
-        ncfile.addAttribute(null, new Attribute("HorizonatalBeamWidthInDegrees", new Double(headerParser.getHorizontalBeamWidth())));
+       // ncfile.addAttribute(null, new Attribute("HorizonatalBeamWidthInDegrees", new Double(headerParser.getHorizontalBeamWidth(abbrev))));
 
         ncfile.finish();
     }
@@ -119,7 +95,7 @@ public class UFiosp extends AbstractIOServiceProvider {
 
     private DateFormatter formatter = new DateFormatter();
     private double radarRadius = 100000.0;
-    public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName,
+    public Variable makeVariable(NetcdfFile ncfile, String shortName, String longName,
                                  String abbrev, List groups) throws IOException {
         int nscans = groups.size();
 
@@ -130,7 +106,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         // get representative record
         List<Ray> firstGroup = (List)groups.get(0);
         Ray firstRay = firstGroup.get(0);
-        int ngates = firstRay.getGateCount(datatype);
+        int ngates = firstRay.getGateCount(abbrev);
 
         String scanDimName = "scan"+abbrev;
         String gateDimName = "gate"+abbrev;
@@ -147,21 +123,21 @@ public class UFiosp extends AbstractIOServiceProvider {
         dims.add( radialDim);
         dims.add( gateDim);
 
-        Variable v = new Variable(ncfile, null, null, shortName);
+        Variable v = new Variable(ncfile, null, null, shortName+abbrev);
         v.setDataType(DataType.SHORT);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
 
-        v.addAttribute( new Attribute("units", firstRay.getDatatypeUnits(datatype)));
+        v.addAttribute( new Attribute("units", firstRay.getDatatypeUnits(abbrev)));
         v.addAttribute( new Attribute("long_name", longName));
         v.addAttribute( new Attribute("abbrev", abbrev));
         v.addAttribute( new Attribute("missing_value", firstRay.getMissingData()));
-        v.addAttribute( new Attribute("signal_below_threshold", firstRay.getDatatypeRangeFoldingThreshhold(datatype)));
-        v.addAttribute( new Attribute("scale_factor", firstRay.getDatatypeScaleFactor(datatype)));
-        v.addAttribute( new Attribute("add_offset", firstRay.getDatatypeAddOffset(datatype)));
+        v.addAttribute( new Attribute("signal_below_threshold", firstRay.getDatatypeRangeFoldingThreshhold(abbrev)));
+        v.addAttribute( new Attribute("scale_factor", firstRay.getDatatypeScaleFactor(abbrev)));
+        v.addAttribute( new Attribute("add_offset", firstRay.getDatatypeAddOffset(abbrev)));
        // v.addAttribute( new Attribute("_unsigned", "false"));
 
-        v.addAttribute( new Attribute("range_folding_threshold" ,firstRay.getDatatypeRangeFoldingThreshhold(datatype)));
+        v.addAttribute( new Attribute("range_folding_threshold" ,firstRay.getDatatypeRangeFoldingThreshhold(abbrev)));
 
         List<Dimension> dim2 = new ArrayList<Dimension>();
         dim2.add( scanDim);
@@ -215,7 +191,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         gateVar.setDataType(DataType.FLOAT);
         gateVar.setDimensions(gateDimName);
         Array data = Array.makeArray( DataType.FLOAT, ngates,
-            (double) firstRay.getGateStart(datatype), (double) firstRay.getGateSize(datatype));
+            (double) firstRay.getGateStart(abbrev), (double) firstRay.getGateSize(abbrev));
         gateVar.setCachedData( data, false);
         ncfile.addVariable(null, gateVar);
   //      radarRadius = firstRay.getGateStart(datatype) + ngates * firstRay.getGateSize(datatype);
@@ -240,7 +216,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         ngateVar.addAttribute( new Attribute("long_name", "number of valid gates in this scan"));
         ncfile.addVariable(null, ngateVar);
 
-        makeCoordinateDataWithMissing( datatype, timeVar, elevVar, aziVar, nradialsVar, ngateVar, groups);
+        makeCoordinateDataWithMissing(abbrev, timeVar, elevVar, aziVar, nradialsVar, ngateVar, groups);
 
         // back to the data variable
         String coordinates = timeCoordName+" "+elevCoordName +" "+ aziCoordName+" "+gateCoordName;
@@ -259,13 +235,13 @@ public class UFiosp extends AbstractIOServiceProvider {
             }
         }
 
-        Vgroup vg = new Vgroup(datatype, map);
+        Vgroup vg = new Vgroup(abbrev, map);
         v.setSPobject( vg);
 
         return v;
     }
     
-    private void makeCoordinateDataWithMissing(int datatype, Variable time, Variable elev, Variable azi, Variable nradialsVar,
+    private void makeCoordinateDataWithMissing(String abbrev, Variable time, Variable elev, Variable azi, Variable nradialsVar,
                                     Variable ngatesVar, List groups) {
 
       Array timeData = Array.factory( time.getDataType().getPrimitiveClassType(), time.getShape());
@@ -321,7 +297,7 @@ public class UFiosp extends AbstractIOServiceProvider {
             }
 
             nradialsIter.setIntNext( nradials);
-            ngatesIter.setIntNext( first.getGateCount( datatype));
+            ngatesIter.setIntNext( first.getGateCount(abbrev));
         }
       } catch(java.lang.ArrayIndexOutOfBoundsException  ae) {
 
@@ -343,10 +319,10 @@ public class UFiosp extends AbstractIOServiceProvider {
 
     private class Vgroup {
         Ray[][] map;
-        int datatype;
+        String abbrev;
 
-        Vgroup( int datatype, Ray[][] map) {
-            this.datatype = datatype;
+        Vgroup( String abbrev, Ray[][] map) {
+            this.abbrev = abbrev;
             this.map = map;
         }
     }
@@ -363,26 +339,26 @@ public class UFiosp extends AbstractIOServiceProvider {
 
         for (int i=scanRange.first(); i<=scanRange.last(); i+= scanRange.stride()) {
           Ray[] mapScan = vgroup.map[i];
-          readOneScan(mapScan, radialRange, gateRange, vgroup.datatype, ii);
+          readOneScan(mapScan, radialRange, gateRange, vgroup.abbrev, ii);
         }
 
         return data;
     }
 
-    private void readOneScan(Ray[] mapScan, Range radialRange, Range gateRange, int datatype, IndexIterator ii) throws IOException {
+    private void readOneScan(Ray[] mapScan, Range radialRange, Range gateRange, String abbrev, IndexIterator ii) throws IOException {
         for (int i=radialRange.first(); i<=radialRange.last(); i+= radialRange.stride()) {
           Ray r = mapScan[i];
-          readOneRadial(r, datatype, gateRange, ii);
+          readOneRadial(r, abbrev, gateRange, ii);
         }
     }
 
-    private void readOneRadial(Ray r, int datatype, Range gateRange, IndexIterator ii) throws IOException {
+    private void readOneRadial(Ray r, String abbrev, Range gateRange, IndexIterator ii) throws IOException {
         if (r == null) {
           for (int i=gateRange.first(); i<=gateRange.last(); i+= gateRange.stride())
             ii.setShortNext(headerParser.getMissingData());
           return;
         }
-        r.readData(myRaf, datatype, gateRange, ii);
+        r.readData(myRaf, abbrev, gateRange, ii);
     }
 
 
