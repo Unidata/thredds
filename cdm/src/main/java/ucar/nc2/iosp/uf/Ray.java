@@ -159,7 +159,7 @@ public class Ray {
 
     public float getDatatypeScaleFactor(String abbrev) {
         UF_field_header2 header = field_header_map.get(abbrev);
-        return header.scaleFactor;
+        return 1.0f/header.scaleFactor;
 
     }
 
