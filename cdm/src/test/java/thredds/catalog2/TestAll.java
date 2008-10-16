@@ -1,10 +1,7 @@
 package thredds.catalog2;
 
 import junit.framework.*;
-import thredds.catalog2.simpleImpl.TestCatalogImpl;
-import thredds.catalog2.simpleImpl.TestPropertyImpl;
-import thredds.catalog2.simpleImpl.TestServiceImpl;
-import thredds.catalog2.simpleImpl.TestPropertyContainer;
+import thredds.catalog2.simpleImpl.*;
 import thredds.catalog2.xml.parser.TestCatalogParser;
 
 /**
@@ -27,6 +24,8 @@ public class TestAll extends TestCase
     suite.addTestSuite( TestPropertyImpl.class );
     suite.addTestSuite( TestPropertyContainer.class );
     suite.addTestSuite( TestServiceImpl.class );
+    suite.addTestSuite( TestServiceContainer.class );
+    suite.addTestSuite( TestAccessImpl.class );
     suite.addTestSuite( TestCatalogImpl.class );
 
     // Tests in thredds.catalog2.xml

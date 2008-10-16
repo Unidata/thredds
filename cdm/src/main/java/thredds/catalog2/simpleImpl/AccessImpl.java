@@ -47,8 +47,10 @@ public class AccessImpl implements Access, AccessBuilder
 
   public void setDataSize( long dataSize )
   {
-    if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
-    if ( dataSize > -1 ) throw new IllegalArgumentException( "Value must be zero or greater, or -1 if unknown.");
+    if ( this.finished )
+      throw new IllegalStateException( "This AccessBuilder has been finished()." );
+    if ( dataSize < -1 )
+      throw new IllegalArgumentException( "Value must be zero or greater, or -1 if unknown.");
     this.dataSize = dataSize;
   }
 

@@ -292,6 +292,7 @@ public class TestServiceImpl extends TestCase
     ServiceBuilder sb1_2_2 = sb1_2.addService( "s1_2_2n", type, baseUri );
     sb1_2_2.addService( "s1_2_2_1", type, baseUri );
 
+    // Check if buildable
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( ! sb.isBuildable( issues ))
     {
@@ -300,13 +301,15 @@ public class TestServiceImpl extends TestCase
         stringBuilder.append( "\n    ").append( bfi.getMessage()).append(" [").append( bfi.getBuilder().getClass().getName()).append( "]");
       fail( stringBuilder.toString());
     }
+
+    // Build
     Service s = null;
     try
     { s = sb.build(); }
     catch ( BuilderException e )
     { fail( "Build failed: " + e.getMessage()); }
 
-    // Test getProperties()
+    // Test that Service methods succeed after build.
     List<Property> propList = s.getProperties();
     assertTrue( propList.size() == 3 );
     assertTrue( propList.get( 0).getName().equals( p1n));
@@ -322,16 +325,76 @@ public class TestServiceImpl extends TestCase
 
     assertTrue( s.getServiceByName( s1_1n ) == sb1_1);
 
-    fail( "testBuildGet() not fully implemented." );
-
-    // Should all fail
-    sb.addProperty( "f", "" );
-    sb.addService( "a", type, baseUri );
-    sb.getPropertyNames();
-    sb.getPropertyValue( p1n );
-    sb.getServiceBuilders();
-    sb.getServiceBuilderByName( s1_1n );
-
-
+    // Test that ServiceBuilder methods fail after build.
+    try
+    { sb.setType( ServiceType.ADDE ); }
+    catch ( IllegalStateException ise1 )
+    {
+      try
+      { sb.setBaseUri( docBaseUri ); }
+      catch ( IllegalStateException ise2)
+      {
+        try
+        { sb.setDescription( "fred" ); }
+        catch ( IllegalStateException ise3 )
+        {
+          try
+          { sb.setSuffix( "suf" ); }
+          catch ( IllegalStateException ise4 )
+          {
+            try
+            { sb.addProperty( "f", "" ); }
+            catch ( IllegalStateException ise5 )
+            {
+              try
+              { sb.addService( "a", type, baseUri ); }
+              catch ( IllegalStateException ise6 )
+              {
+                try
+                { sb.getPropertyNames(); }
+                catch ( IllegalStateException ise7 )
+                {
+                  try
+                  { sb.getPropertyValue( p1n ); }
+                  catch ( IllegalStateException ise8 )
+                  {
+                    try
+                    { sb.getServiceBuilders(); }
+                    catch ( IllegalStateException ise9 )
+                    {
+                      try
+                      { sb.getServiceBuilderByName( s1_1n ); }
+                      catch ( IllegalStateException ise10 )
+                      { return; }
+                      catch ( Exception e )
+                      { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+                    }
+                    catch ( Exception e )
+                    { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+                  }
+                  catch ( Exception e )
+                  { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+                }
+                catch ( Exception e )
+                { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+              }
+              catch ( Exception e )
+              { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+            }
+            catch ( Exception e )
+            { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+          }
+          catch ( Exception e )
+          { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+        }
+        catch ( Exception e )
+        { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+      }
+      catch ( Exception e )
+      { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+    }
+    catch ( Exception e )
+    { fail( "Unexpected non-IllegalStateException exception thrown: " + e.getMessage() ); }
+    fail( "No exception thrown.");
   }
 }
