@@ -55,6 +55,7 @@ public class TypedDatasetFactory {
     registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.Dorade2Dataset.class);
     registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.LevelII2Dataset.class);
     registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.Nids2Dataset.class);
+    registerFactory(FeatureType.RADIAL, ucar.nc2.dt.radial.UF2Dataset.class);
 
     registerFactory(FeatureType.TRAJECTORY, ucar.nc2.dt.trajectory.RafTrajectoryObsDataset.class);
     registerFactory(FeatureType.TRAJECTORY, ucar.nc2.dt.trajectory.UnidataTrajectoryObsDataset.class);

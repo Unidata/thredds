@@ -34,7 +34,7 @@ import java.util.Date;
 public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
   /* definition of data format for level2*/
   public static final String LevelII = "Level II";
-
+  public static final String UF = "Universal Format";
   /**
    * @return radar id
    */
