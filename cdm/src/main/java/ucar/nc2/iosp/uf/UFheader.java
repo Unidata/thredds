@@ -32,9 +32,16 @@ public class UFheader {
         {
             raf.seek(0);
             raf.order(RandomAccessFile.BIG_ENDIAN);
+            byte [] b6 = new byte[6];
             byte [] b4 = new byte[4];
-            raf.read(b4, 0, 4);
 
+            raf.read(b6, 0, 6);
+            String ufStr = new String(b6, 4, 2);
+            if(!ufStr.equals("UF"))
+                return false;
+            //if ufStr is UF, then a further checking apply
+            raf.seek(0);
+            raf.read(b4, 0, 6);
             int rsize = bytesToInt(b4, false);
 
             byte [] buffer = new byte[rsize];
