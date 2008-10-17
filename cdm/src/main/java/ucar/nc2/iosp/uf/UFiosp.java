@@ -84,7 +84,7 @@ public class UFiosp extends AbstractIOServiceProvider {
             "spectrum width."));
 
         ncfile.addAttribute(null, new Attribute("keywords", "WSR-88D; NEXRAD; Radar Level II; reflectivity; mean radial velocity; spectrum width"));
-
+        ncfile.addAttribute(null, new Attribute("SweepMode", new Short(headerParser.getSweepMode())));
 
        // ncfile.addAttribute(null, new Attribute("VolumeCoveragePattern", new Integer(headerParser.getVCP())));
        // ncfile.addAttribute(null, new Attribute("HorizonatalBeamWidthInDegrees", new Double(headerParser.getHorizontalBeamWidth(abbrev))));

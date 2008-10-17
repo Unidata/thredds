@@ -208,6 +208,10 @@ public class UFheader {
         return firstRay.uf_header2.siteName;
     }
 
+    public Short getSweepMode(){
+        return firstRay.uf_header2.sweepMode;
+    }
+
     public float getStationLatitude(){
         return firstRay.getLatitude();
     }
