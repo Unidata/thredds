@@ -42,6 +42,7 @@ public class TestPropertyContainer extends TestCase
     if ( value != null )
       fail( "New property container holds unexpected property value [name]/["+value+"].");
   }
+
   public void testAddGetReplaceRemoveIsEmpty()
   {
     PropertyContainer pc = new PropertyContainer();
@@ -118,7 +119,6 @@ public class TestPropertyContainer extends TestCase
     size = pc.size();
     assertTrue( "Property container empty due to removes has size()!=0 [" + size + "]",
                 size == 0 );
-
   }
 
   /**

@@ -21,34 +21,34 @@ public class AccessImpl implements Access, AccessBuilder
   private DataFormatType dataFormat;
   private long dataSize;
 
-  private boolean finished = false;
+  private boolean isBuilt = false;
 
   protected AccessImpl() {}
 
   public void setServiceBuilder( ServiceBuilder service )
   {
-    if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
+    if ( this.isBuilt ) throw new IllegalStateException( "This AccessBuilder has been built." );
     if ( service == null ) throw new IllegalArgumentException( "Service must not be null." );
     this.service = (ServiceImpl) service;
   }
 
   public void setUrlPath( String urlPath )
   {
-    if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
+    if ( this.isBuilt ) throw new IllegalStateException( "This AccessBuilder has been built." );
     if ( urlPath == null ) throw new IllegalArgumentException( "Path must not be null." );
     this.urlPath = urlPath;
   }
 
   public void setDataFormat( DataFormatType dataFormat )
   {
-    if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
+    if ( this.isBuilt ) throw new IllegalStateException( "This AccessBuilder has been built." );
     this.dataFormat = dataFormat != null ? dataFormat : DataFormatType.NONE;
   }
 
   public void setDataSize( long dataSize )
   {
-    if ( this.finished )
-      throw new IllegalStateException( "This AccessBuilder has been finished()." );
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This AccessBuilder has been built." );
     if ( dataSize < -1 )
       throw new IllegalArgumentException( "Value must be zero or greater, or -1 if unknown.");
     this.dataSize = dataSize;
@@ -56,13 +56,13 @@ public class AccessImpl implements Access, AccessBuilder
 
   public Service getService()
   {
-    if ( !this.finished ) throw new IllegalStateException( "This Access has escaped its AccessBuilder before build() was called." );
+    if ( !this.isBuilt ) throw new IllegalStateException( "This Access has escaped its AccessBuilder before build() was called." );
     return service;
   }
 
   public ServiceBuilder getServiceBuilder()
   {
-    if ( this.finished ) throw new IllegalStateException( "This AccessBuilder has been finished()." );
+    if ( this.isBuilt ) throw new IllegalStateException( "This AccessBuilder has been built." );
     return service;
   }
 
@@ -83,7 +83,7 @@ public class AccessImpl implements Access, AccessBuilder
 
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
-    if ( this.finished )
+    if ( this.isBuilt )
       return true;
 
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
@@ -106,7 +106,7 @@ public class AccessImpl implements Access, AccessBuilder
 
   public Access build() throws BuilderException
   {
-    if ( this.finished )
+    if ( this.isBuilt )
       return this;
 
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
@@ -116,7 +116,7 @@ public class AccessImpl implements Access, AccessBuilder
     // Check subordinates.
     this.service.build();
 
-    this.finished = true;
+    this.isBuilt = true;
     return this;
   }
 }

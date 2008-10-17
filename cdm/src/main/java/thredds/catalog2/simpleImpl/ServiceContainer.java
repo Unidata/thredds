@@ -36,11 +36,11 @@ class ServiceContainer
    */
   private Map<String, ServiceImpl> servicesByGloballyUniqueName;
 
-  private boolean canModify;
+  private boolean isBuilt;
 
   ServiceContainer( ServiceContainer rootContainer )
   {
-    this.canModify = true;
+    this.isBuilt = false;
     this.servicesMap = null;
 
     this.rootContainer = rootContainer;
@@ -62,7 +62,7 @@ class ServiceContainer
 
   protected boolean addServiceByGloballyUniqueName( ServiceImpl service )
   {
-    if ( ! this.canModify )
+    if ( this.isBuilt )
       throw new IllegalStateException( "This ServiceContainer has been built." );
     if ( service == null )
       return false;
@@ -90,7 +90,7 @@ class ServiceContainer
 
   protected boolean removeServiceByGloballyUniqueName( String name )
   {
-    if ( ! this.canModify )
+    if ( this.isBuilt )
       throw new IllegalStateException( "This ServiceContainer has been built." );
     if ( name == null )
       return false;
@@ -148,7 +148,7 @@ class ServiceContainer
    */
   public void addService( ServiceImpl service )
   {
-    if ( ! this.canModify )
+    if ( this.isBuilt )
       throw new IllegalStateException( "This ServiceContainer has been built.");
 
     if ( this.servicesMap == null )
@@ -174,7 +174,7 @@ class ServiceContainer
    */
   public boolean removeService( String name )
   {
-    if ( ! this.canModify )
+    if ( this.isBuilt )
       throw new IllegalStateException( "This ServiceContainer has been built." );
 
     if ( name == null )
@@ -198,7 +198,7 @@ class ServiceContainer
 
   public List<Service> getServices()
   {
-    if ( this.canModify )
+    if ( ! this.isBuilt )
       throw new IllegalStateException( "This Service has escaped from its ServiceBuilder without being finished()." );
 
     if ( this.servicesMap == null )
@@ -221,7 +221,7 @@ class ServiceContainer
 
   public Service getServiceByName( String name )
   {
-    if ( this.canModify )
+    if ( ! this.isBuilt )
       throw new IllegalStateException( "This Service has escaped from its ServiceBuilder without being finished()." );
     if ( name == null )
       return null;
@@ -232,7 +232,7 @@ class ServiceContainer
 
   public List<ServiceBuilder> getServiceBuilders()
   {
-    if ( ! this.canModify )
+    if ( this.isBuilt )
       throw new IllegalStateException( "This ServiceBuilder has been finished()." );
     if ( this.servicesMap == null )
       return Collections.emptyList();
@@ -241,7 +241,7 @@ class ServiceContainer
 
   public ServiceBuilder getServiceBuilderByName( String name )
   {
-    if ( ! this.canModify )
+    if ( this.isBuilt )
       throw new IllegalStateException( "This ServiceBuilder has been finished()." );
     if ( name == null )
       return null;
@@ -260,7 +260,7 @@ class ServiceContainer
    */
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
-    if ( ! this.canModify )
+    if ( this.isBuilt )
       return true;
 
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
@@ -285,7 +285,7 @@ class ServiceContainer
   public void build()
           throws BuilderException
   {
-    if ( ! this.canModify )
+    if ( this.isBuilt )
       return;
 
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
@@ -297,7 +297,7 @@ class ServiceContainer
       for ( ServiceBuilder sb : this.servicesMap.values() )
         sb.build();
 
-    this.canModify = false;
+    this.isBuilt = true;
     return;
   }
 }

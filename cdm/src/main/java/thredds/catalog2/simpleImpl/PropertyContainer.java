@@ -17,11 +17,11 @@ class PropertyContainer
 
   private Map<String, Property> propertiesMap;
 
-  private boolean built;
+  private boolean isBuilt;
 
   PropertyContainer()
   {
-    this.built = false;
+    this.isBuilt = false;
     this.propertiesMap = null;
   }
 
@@ -49,7 +49,7 @@ class PropertyContainer
    */
   public void addProperty( String name, String value )
   {
-    if ( this.built )
+    if ( this.isBuilt )
       throw new IllegalStateException( "This PropertyContainer has been built.");
 
     if ( this.propertiesMap == null )
@@ -73,7 +73,7 @@ class PropertyContainer
    */
   public boolean removeProperty( String name )
   {
-    if ( this.built )
+    if ( this.isBuilt )
       throw new IllegalStateException( "This PropertyContainer has been built." );
 
     if ( name == null )
@@ -168,7 +168,7 @@ class PropertyContainer
    */
   public void build()
   {
-    this.built = true;
+    this.isBuilt = true;
     return;
   }
 }

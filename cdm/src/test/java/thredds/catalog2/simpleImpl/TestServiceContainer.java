@@ -143,7 +143,7 @@ public class TestServiceContainer extends TestCase
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
     if ( !sc.isBuildable( issues ) )
     {
-      StringBuilder stringBuilder = new StringBuilder( "Not in buildable state: " );
+      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
       for ( BuilderFinishIssue bfi : issues )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
