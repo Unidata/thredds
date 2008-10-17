@@ -41,7 +41,7 @@ public class UFheader {
                 return false;
             //if ufStr is UF, then a further checking apply
             raf.seek(0);
-            raf.read(b4, 0, 6);
+            raf.read(b4, 0, 4);
             int rsize = bytesToInt(b4, false);
 
             byte [] buffer = new byte[rsize];
