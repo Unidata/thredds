@@ -25,7 +25,9 @@ public class TestAll extends TestCase
     suite.addTestSuite( TestPropertyContainer.class );
     suite.addTestSuite( TestServiceImpl.class );
     suite.addTestSuite( TestServiceContainer.class );
+    suite.addTestSuite( TestDatasetNodeImpl.class );
     suite.addTestSuite( TestAccessImpl.class );
+    //suite.addTestSuite( TestCatalogRefImpl.class );
     suite.addTestSuite( TestCatalogImpl.class );
 
     // Tests in thredds.catalog2.xml
