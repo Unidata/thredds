@@ -41,7 +41,7 @@ public interface ServiceBuilder extends ThreddsBuilder
   public List<String> getPropertyNames();
   public String getPropertyValue( String name );
 
-  public boolean isServiceNameAlreadyInUseGlobally( String name );
+  public boolean isServiceNameInUseGlobally( String name );
   /**
    * Add a new Service object with the given name, type, and base uri to this
    * Service returning a ServiceBuilder object to allow full construction and

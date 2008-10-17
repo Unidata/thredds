@@ -143,16 +143,16 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.propertyContainer.getPropertyByName( name );
   }
 
-  public boolean isServiceNameAlreadyInUseGlobally( String name )
+  public boolean isServiceNameInUseGlobally( String name )
   {
-    return this.serviceContainer.isServiceNameAlreadyInUseGlobally( name );
+    return this.serviceContainer.isServiceNameInUseGlobally( name );
   }
 
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This ServiceBuilder has been built." );
-    if ( this.isServiceNameAlreadyInUseGlobally( name ) )
+    if ( this.isServiceNameInUseGlobally( name ) )
       throw new IllegalStateException( "Given service name [" + name + "] not unique in catalog." );
 
     ServiceImpl sb = new ServiceImpl( name, type, baseUri, this.serviceContainer.getRootServiceContainer() );

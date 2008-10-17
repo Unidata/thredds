@@ -53,7 +53,7 @@ class ServiceContainer
     return this;
   }
 
-  public boolean isServiceNameAlreadyInUseGlobally( String name )
+  public boolean isServiceNameInUseGlobally( String name )
   {
     if ( this.getServiceByGloballyUniqueName( name ) == null )
       return false;

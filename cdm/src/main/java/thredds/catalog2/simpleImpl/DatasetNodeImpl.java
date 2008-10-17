@@ -97,8 +97,15 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   public void addProperty( String name, String value )
   {
     if ( this.finished )
-      throw new IllegalStateException( "This DatasetNodeBuilder has been build()-ed." );
+      throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
     this.propertyContainer.addProperty( name, value );
+  }
+
+  public boolean removeProperty( String name )
+  {
+    if ( this.finished )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
+    return this.propertyContainer.removeProperty( name );
   }
 
   public List<String> getPropertyNames()
@@ -148,6 +155,13 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return null;
   }
 
+  public boolean removeMetadata( MetadataBuilder metadataBuilder )
+  {
+    if ( this.finished )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
+    return false;
+  }
+
   public List<Metadata> getMetadata()
   {
     if ( !this.finished )
@@ -160,24 +174,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     if ( !this.finished )
       throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
     return Collections.unmodifiableList( this.metadataBuilders );
-  }
-
-  public DatasetBuilder addDataset( String name)
-  {
-    if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    DatasetImpl db = new DatasetImpl( name, (CatalogBuilder) this.getParentCatalog(), this );
-    this.childrenBuilders.add( db );
-    this.children.add( db );
-    return db;
-  }
-
-  public CatalogRefBuilder addCatalogRef( String name, URI reference)
-  {
-    if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    CatalogRefImpl crb = new CatalogRefImpl( name, reference, (CatalogBuilder) this.getParentCatalog(), this );
-    this.childrenBuilders.add( crb );
-    this.children.add( crb );
-    return crb;
   }
 
   public Catalog getParentCatalog()
@@ -196,7 +192,33 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 
   public boolean isCollection()
   {
-    return ! this.childrenBuilders.isEmpty();
+    return !this.childrenBuilders.isEmpty();
+  }
+
+  public DatasetBuilder addDataset( String name)
+  {
+    if ( this.finished ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    DatasetImpl db = new DatasetImpl( name, (CatalogBuilder) this.getParentCatalog(), this );
+    this.childrenBuilders.add( db );
+    this.children.add( db );
+    return db;
+  }
+
+  public CatalogRefBuilder addCatalogRef( String name, URI reference)
+  {
+    if ( this.finished )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    CatalogRefImpl crb = new CatalogRefImpl( name, reference, (CatalogBuilder) this.getParentCatalog(), this );
+    this.childrenBuilders.add( crb );
+    this.children.add( crb );
+    return crb;
+  }
+
+  public boolean removeDatasetNode( DatasetNodeBuilder datasetBuilder )
+  {
+    if ( this.finished )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
+    return false;
   }
 
   public List<DatasetNode> getDatasets()

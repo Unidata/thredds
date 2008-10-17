@@ -108,16 +108,16 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return this.lastModified;
   }
 
-  public boolean isServiceNameAlreadyInUse( String name )
+  public boolean isServiceNameInUseGlobally( String name )
   {
-    return this.serviceContainer.isServiceNameAlreadyInUseGlobally( name );
+    return this.serviceContainer.isServiceNameInUseGlobally( name );
   }
 
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri )
   {
     if ( this.finished )
       throw new IllegalStateException( "This CatalogBuilder has been finished()." );
-    if ( this.isServiceNameAlreadyInUse( name) )
+    if ( this.isServiceNameInUseGlobally( name) )
       throw new IllegalStateException( "Given service name [" + name + "] not unique in catalog." );
 
     ServiceImpl sb = new ServiceImpl( name, type, baseUri, this.serviceContainer );

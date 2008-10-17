@@ -118,7 +118,7 @@ public class TestServiceImpl extends TestCase
     sb.addService( "s2", type, baseUri );
     sb.addService( "s3", type, baseUri );
     assertTrue( "Failed to discover that service name [s2] already in use globally.",
-                sb.isServiceNameAlreadyInUseGlobally( "s2" ) );
+                sb.isServiceNameInUseGlobally( "s2" ) );
     try
     { sb.addService( "s2", type, baseUri ); }
     catch ( IllegalStateException e )
@@ -135,7 +135,7 @@ public class TestServiceImpl extends TestCase
     ServiceImpl sb3 = (ServiceImpl) sb.addService( "s3", type, baseUri );
     sb3.addService( "s3.1", type, baseUri );
     assertTrue( "Failed to discover that service name [s2] already in use globally.",
-                sb3.isServiceNameAlreadyInUseGlobally( "s2" ) );
+                sb3.isServiceNameInUseGlobally( "s2" ) );
     try
     { sb3.addService( "s2", type, baseUri ); }
     catch ( IllegalStateException e )
@@ -154,7 +154,7 @@ public class TestServiceImpl extends TestCase
     ServiceBuilder sb3_2 = (ServiceImpl) sb3.addService( "s3.2", type, baseUri );
     sb3_2.addService( "s3.2.1", type, baseUri );
     assertTrue( "Failed to discover that service name [s2] already in use globally.",
-                sb3_2.isServiceNameAlreadyInUseGlobally( "s2" ));
+                sb3_2.isServiceNameInUseGlobally( "s2" ));
     try
     { sb3_2.addService( "s2", type, baseUri ); }
     catch ( IllegalStateException e )
@@ -183,7 +183,7 @@ public class TestServiceImpl extends TestCase
     assertTrue( sb.getServiceBuilderByName( s1_1n ).equals( sb1_1 ));
     assertTrue( sb.getServiceBuilderByName( s1_2n ).equals( sb1_2 ));
 
-    assertTrue( sb.isServiceNameAlreadyInUseGlobally( s1_2n ));
+    assertTrue( sb.isServiceNameInUseGlobally( s1_2n ));
 
     // Test removal of service
     assertTrue( sb.removeService( s1_1n ) );
