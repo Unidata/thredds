@@ -19,6 +19,10 @@ import ucar.nc2.units.DateType;
 public class ThreddsMetadataImpl
         implements ThreddsMetadata, ThreddsMetadataBuilder
 {
+  public ThreddsMetadataImpl()
+  {
+  }
+
   public List<Documentation> getDocumentation()
   {
     return null;

@@ -68,4 +68,5 @@ public interface Service
   public List<Service> getServices();
 
   public Service getServiceByName( String name );
+  public Service findServiceByNameGlobally( String name );
 }

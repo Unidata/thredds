@@ -160,20 +160,21 @@ public class ServiceImpl implements Service, ServiceBuilder
     return sb;
   }
 
-  public boolean removeService( String name )
+  public ServiceBuilder removeService( String name )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This CatalogBuilder has been built." );
     if ( name == null )
-      return false;
+      return null;
 
-    if ( ! this.serviceContainer.removeService( name ) )
+    ServiceImpl removedService = this.serviceContainer.removeService( name );
+    if ( null != removedService )
     {
       log.debug( "removeService(): unknown ServiceBuilder [" + name + "] (not in map)." );
-      return false;
+      return null;
     }
 
-    return true;
+    return removedService;
   }
 
   public List<Service> getServices()
@@ -190,6 +191,11 @@ public class ServiceImpl implements Service, ServiceBuilder
     return this.serviceContainer.getServiceByName( name );
   }
 
+  public Service findServiceByNameGlobally( String name )
+  {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
   public List<ServiceBuilder> getServiceBuilders()
   {
     if ( this.isBuilt ) throw new IllegalStateException( "This ServiceBuilder has been built." );
@@ -200,6 +206,11 @@ public class ServiceImpl implements Service, ServiceBuilder
   {
     if ( this.isBuilt ) throw new IllegalStateException( "This ServiceBuilder has been built." );
     return this.serviceContainer.getServiceBuilderByName( name );
+  }
+
+  public ServiceBuilder findServiceBuilderByNameGlobally( String name )
+  {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   /**

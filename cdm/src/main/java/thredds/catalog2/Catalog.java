@@ -32,9 +32,11 @@ public interface Catalog
 
   public List<Service> getServices();
   public Service getServiceByName( String name );
+  public Service findServiceByNameGlobally( String name );
 
   public List<DatasetNode> getDatasets();
   public DatasetNode getDatasetById( String id );
+  public DatasetNode findDatasetByIdGlobally( String id );
 
   public List<Property> getProperties();
   public Property getPropertyByName( String name );

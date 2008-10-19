@@ -47,6 +47,10 @@ public interface DatasetNodeBuilder extends ThreddsBuilder
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders();
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id );
+  public DatasetNodeBuilder findDatasetNodeBuilderByIdGlobally( String id );
+
+  public boolean isDatasetIdInUseGlobally( String id );
+
 
   public boolean isBuildable( List<BuilderFinishIssue> issues );
   public DatasetNode build() throws BuilderException;

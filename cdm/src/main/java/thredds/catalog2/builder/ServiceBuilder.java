@@ -60,7 +60,7 @@ public interface ServiceBuilder extends ThreddsBuilder
    * @throws IllegalStateException this ServiceBuilder has already been finished or the top container of this ServiceBuilder already contains a ServiceBuilder with the given name.
    */
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri );
-  public boolean removeService( String name );
+  public ServiceBuilder removeService( String name );
 
 //  /**
 //   * Add a new Service object with the given name, type, and base uri to this
@@ -86,6 +86,7 @@ public interface ServiceBuilder extends ThreddsBuilder
 //  public ServiceBuilder addService( String name, ServiceType type, URI baseUri, int index );
   public List<ServiceBuilder> getServiceBuilders();
   public ServiceBuilder getServiceBuilderByName( String name );
+  public ServiceBuilder findServiceBuilderByNameGlobally( String name );
 
   public boolean isBuildable( List<BuilderFinishIssue> issues );
 

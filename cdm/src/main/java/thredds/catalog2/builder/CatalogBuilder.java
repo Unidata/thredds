@@ -32,17 +32,21 @@ public interface CatalogBuilder extends ThreddsBuilder
 
   // * @throws IllegalStateException this CatalogBuilder has already been finished or already contains a ServiceBuilder with the given name.
   public ServiceBuilder addService( String name, ServiceType type, URI baseUri );
+  public ServiceBuilder removeService( String name );
   public List<ServiceBuilder> getServiceBuilders();
   public ServiceBuilder getServiceBuilderByName( String name );
-
+  public ServiceBuilder findServiceBuilderByNameGlobally( String name );
 
   public DatasetBuilder addDataset( String name );
   public CatalogRefBuilder addCatalogRef( String name, URI reference );
+  public boolean removeDataset( DatasetNodeBuilder datasetNodeBuilder );
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders();
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id );
+  public DatasetNodeBuilder findDatasetNodeBuilderByIdGlobally( String id );
 
   public void addProperty( String name, String value );
+  public boolean removeProperty( String name );
   public List<String> getPropertyNames();
   public String getPropertyValue( String name );
 

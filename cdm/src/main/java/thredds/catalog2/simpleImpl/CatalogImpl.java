@@ -125,20 +125,21 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return sb;
   }
 
-  public boolean removeService( String name )
+  public ServiceBuilder removeService( String name )
   {
     if ( this.finished )
       throw new IllegalStateException( "This CatalogBuilder has been finished()." );
     if ( name == null )
-      return false;
+      return null;
 
-    if ( ! this.serviceContainer.removeService( name ))
+    ServiceImpl removedService = this.serviceContainer.removeService( name );
+    if ( removedService == null )
     {
       log.debug( "removeService(): unknown ServiceBuilder [" + name + "] (not in map)." );
-      return false;
+      return null;
     }
 
-    return true;
+    return removedService;
   }
 
   public List<Service> getServices()
@@ -155,6 +156,11 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return this.serviceContainer.getServiceByName( name );
   }
 
+  public Service findServiceByNameGlobally( String name )
+  {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
   public List<ServiceBuilder> getServiceBuilders()
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
@@ -165,6 +171,11 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
     return this.serviceContainer.getServiceBuilderByName( name );
+  }
+
+  public ServiceBuilder findServiceBuilderByNameGlobally( String name )
+  {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   public void addProperty( String name, String value )
@@ -261,6 +272,11 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return this.datasetsMapById.get( id );
   }
 
+  public DatasetNode findDatasetByIdGlobally( String id )
+  {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
   public List<DatasetNodeBuilder> getDatasetNodeBuilders()
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
@@ -271,6 +287,11 @@ public class CatalogImpl implements Catalog, CatalogBuilder
   {
     if ( finished ) throw new IllegalStateException( "This CatalogBuilder has been finished()." );
     return (DatasetNodeBuilder) this.datasetsMapById.get( id);
+  }
+
+  public DatasetNodeBuilder findDatasetNodeBuilderByIdGlobally( String id )
+  {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   public boolean isBuildable( List<BuilderFinishIssue> issues )

@@ -186,7 +186,7 @@ public class TestServiceImpl extends TestCase
     assertTrue( sb.isServiceNameInUseGlobally( s1_2n ));
 
     // Test removal of service
-    assertTrue( sb.removeService( s1_1n ) );
+    assertTrue( null != sb.removeService( s1_1n ) );
     assertNull( "Found removed service [" + s1_1n + "].",
                 sb.getServiceBuilderByName( s1_1n ) );
 

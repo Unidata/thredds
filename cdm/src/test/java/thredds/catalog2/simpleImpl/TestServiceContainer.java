@@ -113,7 +113,7 @@ public class TestServiceContainer extends TestCase
     assertNull( "New service container has unexpected globally unique name [name].",
                 sc.getServiceByGloballyUniqueName( "name" ));
 
-    assertFalse( "New service container succeeded in removing serivce [name].",
+    assertNull( "New (empty) service container succeeded in removing serivce [name].",
                  sc.removeService( "name" ));
     assertFalse( "New service container succeeded in removing service by globally unique name [name].",
                  sc.removeServiceByGloballyUniqueName( "name" ));

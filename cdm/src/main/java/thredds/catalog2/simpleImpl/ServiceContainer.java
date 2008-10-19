@@ -172,20 +172,20 @@ class ServiceContainer
    * @throws IllegalArgumentException if name is null.
    * @throws IllegalStateException if build() has been called on this ServiceContainer.
    */
-  public boolean removeService( String name )
+  public ServiceImpl removeService( String name )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This ServiceContainer has been built." );
 
     if ( name == null )
-      return false;
+      return null;
 
     if ( this.servicesMap == null )
-      return false;
+      return null;
 
     ServiceImpl removedService = this.servicesMap.remove( name );
     if ( removedService == null )
-      return false;
+      return null;
 
     if ( ! this.removeServiceByGloballyUniqueName( name ) )
     {
@@ -193,7 +193,7 @@ class ServiceContainer
       log.error( "removeService(): " + msg );
       throw new IllegalStateException( msg );
     }
-    return true;
+    return removedService;
   }
 
   public List<Service> getServices()
