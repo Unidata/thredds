@@ -221,8 +221,9 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 
   public DatasetBuilder addDataset( String name)
   {
-    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    DatasetImpl db = new DatasetImpl( name, (CatalogBuilder) this.getParentCatalog(), this );
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    DatasetImpl db = new DatasetImpl( name, this.getParentCatalogBuilder(), this );
     this.childrenBuilders.add( db );
     this.children.add( db );
     return db;
@@ -232,7 +233,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    CatalogRefImpl crb = new CatalogRefImpl( name, reference, (CatalogBuilder) this.getParentCatalog(), this );
+    CatalogRefImpl crb = new CatalogRefImpl( name, reference, this.getParentCatalogBuilder(), this );
     this.childrenBuilders.add( crb );
     this.children.add( crb );
     return crb;

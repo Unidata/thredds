@@ -57,16 +57,20 @@ public class TestDatasetNodeImpl extends TestCase
   protected void setUp()
   {
     String parentCatName = "parent catalog";
-    URI parentCatUri = null;
+    URI parentCatDocBaseUri = null;
+    try
+    { parentCatDocBaseUri = new URI( "http://server/thredds/aCat.xml"); }
+    catch ( URISyntaxException e )
+    { fail( "Bad URI syntax: " + e.getMessage()); }
     String parentCatVer = "version";
-    parentCatalog = new CatalogImpl( parentCatName, parentCatUri, parentCatVer, null, null);
+    parentCatalog = new CatalogImpl( parentCatName, parentCatDocBaseUri, parentCatVer, null, null);
 
     String parentDsName = "parent dataset";
     parentDataset = parentCatalog.addDataset( parentDsName );
 
-    String id = "id";
-    String idAuthority = "idAuthority";
-    String name = "name";
+    id = "id";
+    idAuthority = "idAuthority";
+    name = "name";
 
     p1n = "p1";
     p1v = "p1.v";

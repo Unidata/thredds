@@ -168,7 +168,7 @@ public class ServiceImpl implements Service, ServiceBuilder
       return null;
 
     ServiceImpl removedService = this.serviceContainer.removeService( name );
-    if ( null != removedService )
+    if ( null == removedService )
     {
       log.debug( "removeService(): unknown ServiceBuilder [" + name + "] (not in map)." );
       return null;
