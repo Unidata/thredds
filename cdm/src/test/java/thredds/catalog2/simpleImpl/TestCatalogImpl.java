@@ -35,7 +35,7 @@ public class TestCatalogImpl extends TestCase
     { baseUri = new URI( "http://server/thredds/dodsC/" );
       docBaseUri = new URI( "http://server/thredds/aCat.xml" ); }
     catch ( URISyntaxException e )
-    { fail(); }
+    { fail("Bad URI syntax: " + e.getMessage()); }
 
     type = ServiceType.OPENDAP;
   }
