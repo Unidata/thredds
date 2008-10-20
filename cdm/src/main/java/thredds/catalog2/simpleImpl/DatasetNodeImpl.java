@@ -23,65 +23,100 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   private List<MetadataBuilder> metadataBuilders;
   private List<Metadata> metadata;
 
-  private CatalogBuilder parentCatalogBuilder;
-  private Catalog parentCatalog;
-  protected DatasetNodeBuilder parentBuilder;
-  protected DatasetNode parent;
+  private CatalogImpl parentCatalog;
+  protected DatasetNodeImpl parent;
+  private DatasetNodeContainer parentDatasetContainer;
 
-  private List<DatasetNodeBuilder> childrenBuilders;
-  private List<DatasetNode> children;
-  private Map<String,DatasetNode> childrenIdMap;
+  private DatasetNodeContainer datasetContainer;
 
   private boolean isBuilt = false;
 
-  protected DatasetNodeImpl( String name, CatalogBuilder parentCatalog, DatasetNodeBuilder parent )
+  protected DatasetNodeImpl( String name, CatalogImpl parentCatalog, DatasetNodeImpl parent )
   {
-    if ( name == null ) throw new IllegalArgumentException( "DatasetNode name must not be null.");
+    if ( name == null )
+      throw new IllegalArgumentException( "DatasetNode name must not be null.");
     this.name = name;
-    this.parentCatalogBuilder = parentCatalog;
-    this.parentCatalog = (Catalog) parentCatalog;
-    this.parentBuilder = parent;
-    this.parent = (DatasetNode) parent;
+    this.parentCatalog = parentCatalog;
+    this.parent = parent;
 
     this.propertyContainer = new PropertyContainer();
 
     this.metadataBuilders = new ArrayList<MetadataBuilder>();
     this.metadata = new ArrayList<Metadata>();
 
-    this.childrenBuilders = new ArrayList<DatasetNodeBuilder>();
-    this.children = new ArrayList<DatasetNode>();
-    this.childrenIdMap = new HashMap<String, DatasetNode>();
+    if ( this.parent != null )
+      this.parentDatasetContainer = this.parent.getDatasetNodeContainer();
+    else if ( this.parentCatalog != null )
+      this.parentDatasetContainer = this.parentCatalog.getDatasetNodeContainer();
+    else
+      this.parentDatasetContainer = null;
+
+    DatasetNodeContainer rootContainer = this.parentDatasetContainer != null ? this.parentDatasetContainer.getRootContainer() : null;
+    this.datasetContainer = new DatasetNodeContainer( rootContainer );
+  }
+
+  DatasetNodeContainer getDatasetNodeContainer()
+  {
+    return datasetContainer;
   }
 
   public void setId( String id )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeBuilder has been finished().");
+
+    // If this dataset has prior ID ...
     if ( this.id != null )
     {
+      // If the new ID and old ID are different ...
       if ( ! this.id.equals(  id ))
       {
-        // If new id is null, set it and done
+        // If new id already in use, throw IllegalStateException.
+        if ( this.isDatasetIdInUseGlobally( id ) )
+          throw new IllegalStateException();
+
+        // Remove the global and local mapping for old ID.
+        if ( this.parentDatasetContainer != null )
+        {
+          this.parentDatasetContainer.removeDatasetNodeByGloballyUniqueId( this.id );
+          this.parentDatasetContainer.removeDatasetNodeFromLocalById( this.id );
+        }
+
+        // If new id is null: set this ID to null and done.
         if ( id == null )
         {
           this.id = null;
           return;
         }
-        // If new id not null, Check if the new id is already in use globally. If so, throw IllegalStateException.
 
-        // remove old id from global unique id Map
-
-        // add new id to global unique id Map
+        // If new id not null, set this ID to new ID and add to global and local ID Map.
+        this.id = id;
+        if ( this.parentDatasetContainer != null )
+        {
+          this.parentDatasetContainer.addDatasetNodeByGloballyUniqueId( this );
+          this.parentDatasetContainer.addDatasetNodeToLocalById( this );
+        }
       }
-      else { /* same id, do nothing */ }
+      else { /* New ID same as old ID: no change, do nothing */ }
     }
+    // Else if this dataset has NO prior ID ...
     else
     {
       // if new id is null, so is old, no change
       if ( id == null )
         return;
-      // if new id not null, set and add to global unique id Map
+
+      // If new id already in use, throw IllegalStateException.
+      if ( this.isDatasetIdInUseGlobally( id ) )
+        throw new IllegalStateException();
+
+      // If new id not null, set this ID to new ID and add to global and local ID Map.
       this.id = id;
+      if ( this.parentDatasetContainer != null )
+      {
+        this.parentDatasetContainer.addDatasetNodeByGloballyUniqueId( this );
+        this.parentDatasetContainer.addDatasetNodeToLocalById( this );
+      }
     }
   }
 
@@ -209,84 +244,82 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.parent;
   }
 
+  public CatalogBuilder getParentCatalogBuilder()
+  {
+    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    return this.parentCatalog;
+  }
+
+  public DatasetNodeBuilder getParentDatasetBuilder()
+  {
+    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    return this.parent;
+  }
+
   public boolean isCollection()
   {
-    return !this.childrenBuilders.isEmpty();
+    return ! this.datasetContainer.isEmpty();
   }
 
   public boolean isDatasetIdInUseGlobally( String id )
   {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return this.datasetContainer.isDatasetNodeIdInUseGlobally( id );
   }
 
   public DatasetBuilder addDataset( String name)
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    DatasetImpl db = new DatasetImpl( name, this.getParentCatalogBuilder(), this );
-    this.childrenBuilders.add( db );
-    this.children.add( db );
-    return db;
+    DatasetImpl ds = new DatasetImpl( name, this.parentCatalog, this );
+    this.datasetContainer.addDatasetNode( ds );
+    return ds;
   }
 
   public CatalogRefBuilder addCatalogRef( String name, URI reference)
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    CatalogRefImpl crb = new CatalogRefImpl( name, reference, this.getParentCatalogBuilder(), this );
-    this.childrenBuilders.add( crb );
-    this.children.add( crb );
-    return crb;
+    CatalogRefImpl catRef = new CatalogRefImpl( name, reference, this.parentCatalog, this );
+    this.datasetContainer.addDatasetNode( catRef );
+    return catRef;
   }
 
   public boolean removeDatasetNode( DatasetNodeBuilder datasetBuilder )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
-    return false;
+    return this.datasetContainer.removeDatasetNode( (DatasetNodeImpl) datasetBuilder );
   }
 
   public List<DatasetNode> getDatasets()
   {
     if ( !this.isBuilt )
       throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
-    return Collections.unmodifiableList( this.children);
+    return this.datasetContainer.getDatasets();
   }
 
   public DatasetNode getDatasetById( String id )
   {
     if ( !this.isBuilt )
       throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
-    return this.childrenIdMap.get( id);
-  }
-
-  public CatalogBuilder getParentCatalogBuilder()
-  {
-    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    return this.parentCatalogBuilder;
-  }
-
-  public DatasetNodeBuilder getParentDatasetBuilder()
-  {
-    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    return this.parentBuilder;
+    return this.datasetContainer.getDatasetById( id);
   }
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders()
   {
     if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    return null;
+    return this.datasetContainer.getDatasetNodeBuilders();
   }
 
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id )
   {
     if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    return null;
+    return this.datasetContainer.getDatasetNodeBuilderById( id );
   }
 
   public DatasetNodeBuilder findDatasetNodeBuilderByIdGlobally( String id )
   {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return this.datasetContainer.getDatasetNodeByGloballyUniqueId( id );
   }
 
   public boolean isBuildable( List<BuilderFinishIssue> issues )
@@ -299,8 +332,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     // Check subordinates.
     for ( MetadataBuilder mb : this.metadataBuilders )
       mb.isBuildable( localIssues);
-    for ( DatasetNodeBuilder dnb : this.childrenBuilders )
-      dnb.isBuildable( localIssues );
+    this.datasetContainer.isBuildable( localIssues );
 
     // ToDo Check invariants.
 
@@ -323,8 +355,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     // Check subordinates.
     for ( MetadataBuilder mb : this.metadataBuilders )
       mb.build();
-    for ( DatasetNodeBuilder dnb : this.childrenBuilders )
-      dnb.build();
+    this.datasetContainer.build();
 
     this.isBuilt = true;
     return this;

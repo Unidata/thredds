@@ -46,7 +46,7 @@ class ServiceContainer
     this.rootContainer = rootContainer;
   }
 
-  public ServiceContainer getRootServiceContainer()
+  ServiceContainer getRootServiceContainer()
   {
     if ( this.rootContainer != null )
       return this.rootContainer;

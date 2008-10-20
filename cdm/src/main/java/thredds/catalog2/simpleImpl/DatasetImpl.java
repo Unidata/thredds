@@ -19,86 +19,102 @@ public class DatasetImpl
         extends DatasetNodeImpl
         implements Dataset, DatasetBuilder
 {
-  private List<AccessBuilder> accessBuilders;
-  private List<Access> accesses;
+  private List<AccessImpl> accessImplList;
 
-  private boolean finished = false;
+  private boolean isBuilt = false;
 
-  protected DatasetImpl( String name, CatalogBuilder parentCatalog, DatasetNodeBuilder parent )
+  protected DatasetImpl( String name, CatalogImpl parentCatalog, DatasetNodeImpl parent )
   {
     super( name, parentCatalog, parent);
-
-    this.accessBuilders = new ArrayList<AccessBuilder>();
-    this.accesses = new ArrayList<Access>();
   }
 
   public AccessBuilder addAccessBuilder()
   {
-    if ( finished ) throw new IllegalStateException( "This DatasetBuilder has been finished().");
+    if ( isBuilt )
+      throw new IllegalStateException( "This DatasetBuilder has been built.");
     AccessImpl a = new AccessImpl();
-    this.accessBuilders.add( a );
-    this.accesses.add( a );
+    if ( this.accessImplList == null )
+      this.accessImplList = new ArrayList<AccessImpl>();
+    this.accessImplList.add( a );
     return a;
+  }
+
+  public boolean removeAccessBuilder( AccessBuilder accessBuilder )
+  {
+    if ( isBuilt )
+      throw new IllegalStateException( "This DatasetBuilder has been built." );
+
+    if ( this.accessImplList == null )
+      return false;
+    return this.accessImplList.remove( accessBuilder );
   }
 
   public boolean isAccessible()
   {
-    return ! this.accessBuilders.isEmpty();
+    if ( this.accessImplList == null )
+      return false;
+    return ! this.accessImplList.isEmpty();
   }
 
   public List<Access> getAccesses()
   {
-    if ( ! finished ) throw new IllegalStateException( "This Dataset has escaped its DatasetBuilder before build() was called." );
-    return Collections.unmodifiableList( this.accesses );
+    if ( !isBuilt )
+      throw new IllegalStateException( "This Dataset has escaped its DatasetBuilder before build() was called." );
+    if ( this.accessImplList == null )
+      return Collections.emptyList();
+    return Collections.unmodifiableList( new ArrayList<Access>(this.accessImplList ));
   }
 
   public List<Access> getAccessesByType( ServiceType type )
   {
-    if ( !finished )
+    if ( !isBuilt )
       throw new IllegalStateException( "This Dataset has escaped its DatasetBuilder before build() was called." );
     List<Access> list = new ArrayList<Access>();
-    for ( Access a : this.accesses )
-    {
-      if ( a.getService().getType().equals( type ))
-        list.add( a );
-    }
+    if ( this.accessImplList != null )
+      for ( Access a : this.accessImplList )
+        if ( a.getService().getType().equals( type ))
+          list.add( a );
     return list;
   }
 
   public List<AccessBuilder> getAccessBuilders()
   {
-    if ( finished ) throw new IllegalStateException( "This DatasetBuilder has been finished()." );
-    return Collections.unmodifiableList( this.accessBuilders );
+    if ( isBuilt )
+      throw new IllegalStateException( "This DatasetBuilder has been built." );
+    if ( this.accessImplList == null )
+      return Collections.emptyList();
+    return Collections.unmodifiableList( new ArrayList<AccessBuilder>( this.accessImplList ));
   }
 
   public List<AccessBuilder> getAccessBuildersByType( ServiceType type )
   {
-    if ( finished ) throw new IllegalStateException( "This DatasetBuilder has been finished()." );
+    if ( isBuilt )
+      throw new IllegalStateException( "This DatasetBuilder has been built." );
     List<AccessBuilder> list = new ArrayList<AccessBuilder>();
-    for ( AccessBuilder a : this.accessBuilders )
-    {
-      if ( a.getServiceBuilder().getType().equals( type ) )
-        list.add( a );
-    }
+    if ( this.accessImplList != null )
+      for ( AccessBuilder a : this.accessImplList )
+        if ( a.getServiceBuilder().getType().equals( type ) )
+          list.add( a );
     return list;
   }
 
   @Override
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
-    if ( this.finished )
+    if ( this.isBuilt )
       return true;
 
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
     super.isBuildable( issues );
 
     // Check subordinates.
-    for ( AccessBuilder ab : this.accessBuilders )
-      ab.isBuildable( localIssues );
+    if ( this.accessImplList != null )
+      for ( AccessBuilder ab : this.accessImplList )
+        ab.isBuildable( localIssues );
 
     //ToDo Check invariants
 //    // Check invariants: all access reference a service in the containing catalog.
-//    for ( AccessBuilder ab : this.accessBuilders )
+//    for ( AccessBuilder ab : this.accessImplList )
 //    {
 //      String serviceName = ab.getServiceBuilder().getName();
 //      Service abs = ((CatalogSearch)this.getParentCatalogBuilder()).findServiceByName( serviceName);
@@ -116,7 +132,7 @@ public class DatasetImpl
   @Override
   public Dataset build() throws BuilderException
   {
-    if ( this.finished )
+    if ( this.isBuilt )
       return this;
 
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
@@ -126,10 +142,11 @@ public class DatasetImpl
     super.build();
 
     // Check subordinates.
-    for ( AccessBuilder ab : this.accessBuilders )
-      ab.build();
+    if ( this.accessImplList != null )
+      for ( AccessBuilder ab : this.accessImplList )
+        ab.build();
 
-    this.finished = true;
+    this.isBuilt = true;
     return this;
   }
 }

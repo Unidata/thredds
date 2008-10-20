@@ -18,9 +18,9 @@ public class CatalogRefImpl
         implements CatalogRef, CatalogRefBuilder
 {
   private URI reference;
-  private boolean finished = false;
+  private boolean isBuilt = false;
 
-  protected CatalogRefImpl( String name, URI reference, CatalogBuilder parentCatalog, DatasetNodeBuilder parent )
+  protected CatalogRefImpl( String name, URI reference, CatalogImpl parentCatalog, DatasetNodeImpl parent )
   {
     super( name, parentCatalog, parent);
     if ( reference == null ) throw new IllegalArgumentException( "CatalogRef reference URI must not be null." );
@@ -29,7 +29,7 @@ public class CatalogRefImpl
 
   public void setReference( URI reference )
   {
-    if ( this.finished ) throw new IllegalStateException( "This CatalogRefBuilder has been finished().");
+    if ( this.isBuilt ) throw new IllegalStateException( "This CatalogRefBuilder has been built.");
     if ( reference == null ) throw new IllegalArgumentException( "CatalogRef reference URI must not be null." );
     this.reference = reference;
   }
@@ -42,7 +42,7 @@ public class CatalogRefImpl
   @Override
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
-    if ( this.finished )
+    if ( this.isBuilt )
       return true;
 
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
@@ -60,7 +60,7 @@ public class CatalogRefImpl
   @Override
   public CatalogRef build() throws BuilderException
   {
-    if ( this.finished )
+    if ( this.isBuilt )
       return this;
 
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
@@ -69,7 +69,7 @@ public class CatalogRefImpl
 
     super.build();
 
-    this.finished = true;
+    this.isBuilt = true;
     return this;
   }
 }

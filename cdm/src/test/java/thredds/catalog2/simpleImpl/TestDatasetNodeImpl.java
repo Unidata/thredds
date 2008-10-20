@@ -7,11 +7,9 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
 
-import thredds.catalog.ServiceType;
-import thredds.catalog.DataFormatType;
 import thredds.catalog2.builder.*;
-import thredds.catalog2.Access;
 import thredds.catalog2.DatasetNode;
+import thredds.catalog2.Property;
 
 /**
  * _more_
@@ -23,7 +21,7 @@ public class TestDatasetNodeImpl extends TestCase
 {
   private CatalogImpl parentCatalog;
   private String parentCatName;
-  private URI parentCatUri;
+  private URI parentCatDocBaseUri;
   private String parentCatVer;
 
   private DatasetNodeBuilder parentDataset;
@@ -48,6 +46,8 @@ public class TestDatasetNodeImpl extends TestCase
   private String childDsNodeName2;
   private String childDsNodeId1;
   private String childDsNodeId2;
+  private String childDsNodeId1_new;
+  private String childDsNodeId2_new;
 
   public TestDatasetNodeImpl( String name )
   {
@@ -56,16 +56,16 @@ public class TestDatasetNodeImpl extends TestCase
 
   protected void setUp()
   {
-    String parentCatName = "parent catalog";
-    URI parentCatDocBaseUri = null;
+    parentCatName = "parent catalog";
+    parentCatDocBaseUri = null;
     try
     { parentCatDocBaseUri = new URI( "http://server/thredds/aCat.xml"); }
     catch ( URISyntaxException e )
     { fail( "Bad URI syntax: " + e.getMessage()); }
-    String parentCatVer = "version";
+    parentCatVer = "version";
     parentCatalog = new CatalogImpl( parentCatName, parentCatDocBaseUri, parentCatVer, null, null);
 
-    String parentDsName = "parent dataset";
+    parentDsName = "parent dataset";
     parentDataset = parentCatalog.addDataset( parentDsName );
 
     id = "id";
@@ -83,6 +83,8 @@ public class TestDatasetNodeImpl extends TestCase
     childDsNodeName2 = "child ds 2";
     childDsNodeId1 = "id1";
     childDsNodeId2 = "id2";
+    childDsNodeId1_new = "id1_new";
+    childDsNodeId2_new = "id2_new";
   }
 
   private void initBuilder()
@@ -99,47 +101,19 @@ public class TestDatasetNodeImpl extends TestCase
 
     childDsNodeBuilder1 = dsNodeBldr.addDataset( childDsNodeName1 );
     childDsNodeBuilder2 = dsNodeBldr.addDataset( childDsNodeName2 );
-    childDsNodeBuilder1.setId( childDsNodeId1 );
-    childDsNodeBuilder2.setId( childDsNodeId2 );
   }
 
-  private void callBuildOnBuilder()
+  private void checkBuilderGet()
   {
-    // Check if buildable
-    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    if ( !dsNodeImpl.isBuildable( issues ) )
-    {
-      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderFinishIssue bfi : issues )
-        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
-      fail( stringBuilder.toString() );
-    }
-
-    // Build
-    try
-    { dsNode = dsNodeImpl.build(); }
-    catch ( BuilderException e )
-    { fail( "Build failed: " + e.getMessage() ); }
-  }
-
-  public void testCtorBuilderSetGet()
-  {
-    // Setup.
-    dsNodeImpl = new DatasetNodeImpl( name, null, null );
-    dsNodeBldr = dsNodeImpl;
-
-    this.initBuilder();
-
-    // Tests.
     String s = dsNodeBldr.getId();
-    assertTrue( "getId() ["+s+"] not as expected ["+id+"].",
-                s.equals(  id ));
+    assertTrue( "getId() [" + s + "] not as expected [" + id + "].",
+                s.equals( id ) );
     s = dsNodeBldr.getIdAuthority();
-    assertTrue( "getIdAuthority() ["+s+"] not as expected ["+idAuthority+"].",
-                s.equals( idAuthority));
+    assertTrue( "getIdAuthority() [" + s + "] not as expected [" + idAuthority + "].",
+                s.equals( idAuthority ) );
     s = dsNodeBldr.getName();
-    assertTrue( "getName() ["+s+"] not as expected ["+name+"].",
-                s.equals(  name ));
+    assertTrue( "getName() [" + s + "] not as expected [" + name + "].",
+                s.equals( name ) );
 
     List<String> propertyNameList = dsNodeBldr.getPropertyNames();
     assertTrue( propertyNameList.size() == 3 );
@@ -155,71 +129,252 @@ public class TestDatasetNodeImpl extends TestCase
     // ToDo dsNodeBldr.getMetadataBuilders();
 
     List<DatasetNodeBuilder> dsNodeBuilderList = dsNodeBldr.getDatasetNodeBuilders();
-    assertTrue( "Number of child datasets ["+dsNodeBuilderList.size()+"] not as expected [2].",
-                dsNodeBuilderList.size() == 2);
+    assertTrue( "Number of child datasets [" + dsNodeBuilderList.size() + "] not as expected [2].",
+                dsNodeBuilderList.size() == 2 );
     assertTrue( dsNodeBuilderList.get( 0 ) == childDsNodeBuilder1 );
     assertTrue( dsNodeBuilderList.get( 1 ) == childDsNodeBuilder2 );
 
-    assertTrue( dsNodeBldr.getDatasetNodeBuilderById( childDsNodeId1 ) == childDsNodeBuilder1 );
-    assertTrue( dsNodeBldr.getDatasetNodeBuilderById( childDsNodeId2 ) == childDsNodeBuilder2 );
-
-    assertNull( dsNodeBldr.getParentCatalogBuilder() );
-    assertNull( dsNodeBldr.getParentDatasetBuilder() );
+    assertNull( dsNodeBldr.getDatasetNodeBuilderById( childDsNodeId1 ) );
+    assertNull( dsNodeBldr.getDatasetNodeBuilderById( childDsNodeId2 ) );
 
     String newName = "new name";
     dsNodeBldr.setName( newName );
     s = dsNodeBldr.getName();
     assertTrue( "Renamed getName() [" + s + "] not as expected [" + newName + "].",
                 s.equals( newName ) );
+  }
 
-    String newId1 = "newID1";
-    String newId2 = "newID1";
-    childDsNodeBuilder1.setId( newId1 );
-    childDsNodeBuilder1.getId().equals( newId1 );
-    childDsNodeBuilder2.setId( newId2 );
-    childDsNodeBuilder2.getId().equals( newId2 );
+  private void checkDsNodeIdSetGetAndGlobal()
+  {
+    childDsNodeBuilder1.setId( childDsNodeId1 );
+    childDsNodeBuilder2.setId( childDsNodeId2 );
+
+    assertTrue( childDsNodeBuilder1.getId().equals( childDsNodeId1 ) );
+    assertTrue( childDsNodeBuilder2.getId().equals( childDsNodeId2 ) );
+    assertTrue( childDsNodeBuilder1.isDatasetIdInUseGlobally( childDsNodeId1 ) );
+    assertTrue( childDsNodeBuilder1.isDatasetIdInUseGlobally( childDsNodeId2 ) );
+    assertNull( childDsNodeBuilder1.getDatasetNodeBuilderById( childDsNodeId1 ));
+    assertNull( childDsNodeBuilder1.getDatasetNodeBuilderById( childDsNodeId2 ));
+    assertTrue( childDsNodeBuilder1.findDatasetNodeBuilderByIdGlobally( childDsNodeId1 ) == childDsNodeBuilder1 );
+    assertTrue( childDsNodeBuilder1.findDatasetNodeBuilderByIdGlobally( childDsNodeId2 ) == childDsNodeBuilder2 );
+
+    childDsNodeBuilder1.setId( childDsNodeId1_new );
+    childDsNodeBuilder2.setId( childDsNodeId2_new );
+    assertTrue( childDsNodeBuilder1.getId().equals( childDsNodeId1_new ) );
+    assertTrue( childDsNodeBuilder2.getId().equals( childDsNodeId2_new ) );
+    assertFalse( childDsNodeBuilder1.isDatasetIdInUseGlobally( childDsNodeId1 ) );
+    assertFalse( childDsNodeBuilder1.isDatasetIdInUseGlobally( childDsNodeId2 ) );
+    assertTrue( childDsNodeBuilder1.isDatasetIdInUseGlobally( childDsNodeId1_new ) );
+    assertTrue( childDsNodeBuilder1.isDatasetIdInUseGlobally( childDsNodeId2_new ) );
+    assertNull( childDsNodeBuilder1.getDatasetNodeBuilderById( childDsNodeId1 ) );
+    assertNull( childDsNodeBuilder1.getDatasetNodeBuilderById( childDsNodeId2 ) );
+    assertTrue( childDsNodeBuilder1.findDatasetNodeBuilderByIdGlobally( childDsNodeId1_new ) == childDsNodeBuilder1 );
+    assertTrue( childDsNodeBuilder1.findDatasetNodeBuilderByIdGlobally( childDsNodeId2_new ) == childDsNodeBuilder2 );
+  }
+
+  private void callBuildOnBuilder()
+  {
+    // Check if buildable
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    if ( ! dsNodeBldr.isBuildable( issues ) )
+    {
+      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
+      for ( BuilderFinishIssue bfi : issues )
+        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
+      fail( stringBuilder.toString() );
+    }
+
+    // Build
+    try
+    { dsNode = dsNodeBldr.build(); }
+    catch ( BuilderException e )
+    { fail( "Build failed: " + e.getMessage() ); }
+  }
+
+  public void testCtorBuilderSetGet()
+  {
+    dsNodeImpl = new DatasetNodeImpl( name, null, null );
+    dsNodeBldr = dsNodeImpl;
+
+    this.initBuilder();
+
+    // Tests.
+    checkBuilderGet();
+    assertNull( dsNodeBldr.getParentCatalogBuilder() );
+    assertNull( dsNodeBldr.getParentDatasetBuilder() );
+
+  }
+
+  public void testCtorBuilderSetId()
+  {
+    dsNodeImpl = new DatasetNodeImpl( name, null, null );
+    dsNodeBldr = dsNodeImpl;
+
+    this.initBuilder();
+
+    checkDsNodeIdSetGetAndGlobal();
   }
 
   public void testChildDatasetNodeBuilderGetSet()
+  {
+    dsNodeBldr = parentDataset.addDataset( name );
+
+    this.initBuilder();
+
+    // Tests.
+    checkBuilderGet();
+    assertTrue( dsNodeBldr.getParentCatalogBuilder() == parentCatalog );
+    assertTrue( dsNodeBldr.getParentDatasetBuilder() == parentDataset );
+
+  }
+
+  public void testChildDatasetNodeBuilderSetId()
+  {
+    dsNodeBldr = parentDataset.addDataset( name );
+
+    this.initBuilder();
+
+    checkDsNodeIdSetGetAndGlobal();
+  }
+
+  public void testBuilderRemove()
   {
     // Setup
     dsNodeBldr = parentDataset.addDataset( name );
 
     this.initBuilder();
 
-    // test similar to above
+    assertTrue( dsNodeBldr.removeProperty( p1n ));
+    assertNull( dsNodeBldr.getPropertyValue( p1n ));
 
-    // test when id of child dataset is changed.
+    assertTrue( dsNodeBldr.removeDatasetNode( childDsNodeBuilder1 ));
+    assertNull( dsNodeBldr.getDatasetNodeBuilderById( childDsNodeId1 ));
+    assertFalse( dsNodeBldr.isDatasetIdInUseGlobally( childDsNodeId1 ));
   }
 
-  public void testBuilderRemove()
+  public void testBuilderIllegalStateExceptionOnProperty()
   {
+    dsNodeBldr = parentDataset.addDataset( name );
+    this.initBuilder();
 
+    dsNode = (DatasetNodeImpl) dsNodeBldr;
+
+    try
+    {
+      // Should throw IllegalStateException
+      dsNode.getProperties();
+    }
+    catch ( IllegalStateException ise1 )
+    {
+      try
+      {
+        // Should throw IllegalStateException
+        dsNode.getPropertyByName( p1n );
+      }
+      catch ( IllegalStateException ise2 )
+      { return; }
+      catch ( Exception e )
+      { fail( "Unexpected non-IllegalStateException: " + e.getMessage()); }
+    }
+    catch ( Exception e)
+    { fail( "Unexpected non-IllegalStateException: " + e.getMessage()); }
+    fail( "No IllegalStateException thrown.");
   }
 
-  public void testBuilderIllegalStateException()
+  public void testBuilderIllegalStateExceptionOnDataset()
   {
-    fail( "testBuilderIllegalStateException() not implemented.");
+    dsNodeBldr = parentDataset.addDataset( name );
+    this.initBuilder();
+
+    dsNode = (DatasetNodeImpl) dsNodeBldr;
+
+    try
+    {
+      // Should throw IllegalStateException
+      dsNode.getDatasets();
+    }
+    catch ( IllegalStateException ise1 )
+    {
+      try
+      {
+        // Should throw IllegalStateException
+        dsNode.getDatasetById( childDsNodeId1 );
+      }
+      catch ( IllegalStateException ise2 )
+      { return; }
+      catch ( Exception e )
+      { fail( "Unexpected non-IllegalStateException: " + e.getMessage() ); }
+    }
+    catch ( Exception e )
+    { fail( "Unexpected non-IllegalStateException: " + e.getMessage() ); }
+    fail( "No IllegalStateException thrown." );
   }
 
   public void testBuild()
   {
-    dsNodeImpl = new DatasetNodeImpl( this.name, null, null );
+    dsNodeBldr = parentDataset.addDataset( name );
 
     this.initBuilder();
-
-    // do some stuff here
 
     this.callBuildOnBuilder();
   }
 
   public void testPostBuildGetters()
   {
-    fail( "testPistBuildGetters() is not implemented.");
+    dsNodeBldr = parentDataset.addDataset( name );
+
+    this.initBuilder();
+
+    childDsNodeBuilder1.setId( childDsNodeId1 );
+    childDsNodeBuilder2.setId( childDsNodeId2 );
+
+    this.callBuildOnBuilder();
+
+    List<Property> pl = dsNode.getProperties();
+    assertTrue( pl.size() == 3 );
+    assertTrue( pl.get( 0 ).getName().equals( p1n ) );
+    assertTrue( pl.get( 1 ).getName().equals( p2n ) );
+    assertTrue( pl.get( 2 ).getName().equals( p3n ) );
+
+    assertTrue( dsNode.getPropertyByName( p1n ).getName().equals( p1n ) );
+    assertTrue( dsNode.getPropertyByName( p2n ).getName().equals( p2n ) );
+    assertTrue( dsNode.getPropertyByName( p3n ).getName().equals( p3n ) );
+
+    List<DatasetNode> dl = dsNode.getDatasets();
+    assertTrue( dl.size() == 2 );
+    assertTrue( dl.get( 0 ) == childDsNodeBuilder1 );
+    assertTrue( dl.get( 1 ) == childDsNodeBuilder2 );
+
+    assertTrue( dsNode.getDatasetById( childDsNodeId1 ) == childDsNodeBuilder1 );
+    assertTrue( dsNode.getDatasetById( childDsNodeId2 ) == childDsNodeBuilder2 );
   }
 
-  public void testPostBuildIllegalStateException()
+  public void testPostBuildIllegalStateExceptionOnDataset()
   {
-    fail( "testPostBuildIllegalStateException() is not implemented.");
+    dsNodeBldr = parentDataset.addDataset( name );
+
+    this.initBuilder();
+    this.callBuildOnBuilder();
+
+    try
+    {
+      // Should throw IllegalStateException
+      dsNodeBldr.getDatasetNodeBuilders();
+    }
+    catch ( IllegalStateException ise1 )
+    {
+      try
+      {
+        // Should throw IllegalStateException
+        dsNodeBldr.getDatasetNodeBuilderById( childDsNodeId1 );
+      }
+      catch ( IllegalStateException ise2 )
+      { return; }
+      catch ( Exception e )
+      { fail( "Unexpected non-IllegalStateException: " + e.getMessage() ); }
+    }
+    catch ( Exception e )
+    { fail( "Unexpected non-IllegalStateException: " + e.getMessage() ); }
+    fail( "No IllegalStateException thrown." );
   }
 }

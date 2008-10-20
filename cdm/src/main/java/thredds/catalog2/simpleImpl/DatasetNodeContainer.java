@@ -48,7 +48,7 @@ class DatasetNodeContainer
     this.rootContainer = rootContainer;
   }
 
-  public DatasetNodeContainer getRootContainer()
+  DatasetNodeContainer getRootContainer()
   {
     if ( this.rootContainer != null )
       return this.rootContainer;
@@ -62,7 +62,7 @@ class DatasetNodeContainer
     return true;
   }
 
-  protected boolean addDatasetNodeByGloballyUniqueId( DatasetNodeImpl datasetNode )
+  boolean addDatasetNodeByGloballyUniqueId( DatasetNodeImpl datasetNode )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeContainer has been built." );
@@ -111,6 +111,34 @@ class DatasetNodeContainer
         return false;
       return true;
     }
+  }
+
+  boolean addDatasetNodeToLocalById( DatasetNodeImpl datasetNode )
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This DatasetNodeContainer has been built." );
+    if ( datasetNode == null )
+      return false;
+    if ( datasetNode.getId() == null )
+      return false;
+
+    if ( this.localIdList == null )
+      this.localIdList = new ArrayList<String>();
+
+    return this.localIdList.add( datasetNode.getId() );
+  }
+
+  protected boolean removeDatasetNodeFromLocalById( String id )
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This DatasetNodeContainer has been built." );
+    if ( id == null )
+      return false;
+
+    if ( this.localIdList == null )
+      return false;
+
+    return this.localIdList.remove( id );
   }
 
   protected DatasetNodeImpl getDatasetNodeByGloballyUniqueId( String id )
@@ -202,7 +230,7 @@ class DatasetNodeContainer
     String id = datasetNode.getId();
     if ( id != null )
     {
-      if ( this.localIdList.remove( id ) )
+      if ( this.localIdList != null && this.localIdList.remove( id ) )
       {
         if ( ! this.removeDatasetNodeByGloballyUniqueId( id ) )
         {
@@ -234,7 +262,7 @@ class DatasetNodeContainer
     if ( this.datasetNodeImplList == null )
       return null;
 
-    if ( this.localIdList.contains( id ) )
+    if ( this.localIdList != null && this.localIdList.contains( id ) )
       return this.getDatasetNodeByGloballyUniqueId( id );
     return null;
   }
@@ -257,7 +285,7 @@ class DatasetNodeContainer
     if ( this.datasetNodeImplList == null )
       return null;
 
-    if ( this.localIdList.contains( id ) )
+    if ( this.localIdList != null && this.localIdList.contains( id ) )
       return this.getDatasetNodeByGloballyUniqueId( id );
     return null;
   }
