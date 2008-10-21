@@ -296,13 +296,31 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res, Pr
             }
 
             if( qp.hasDateRange ) {
+              if( qp.time_start.getDate() == null || qp.time_start.isBlank() ||
+                qp.time_end.getDate() == null || qp.time_end.isBlank() ) {
+                pw.println("time_start=" + qp.time_start.toString()
+                        +"&amp;time_end=" + qp.time_end.toString() +"\">");
+                pw.println( "<documentation>need ISO time</documentation>\n" );
+                pw.println("    </dataset>");
+                pw.println("</catalog>");
+                return;
+              } else {
                 pw.println("time_start=" + qp.time_start.toDateTimeStringISO()
                         +"&amp;time_end=" + qp.time_end.toDateTimeStringISO() +"\">");
+              }
             } else if( latest ) {
                 pw.println("time=present\">");
                 //pw.println("\">");
             } else if( qp.hasTimePoint ) {
+              if( qp.time.getDate() == null || qp.time.isBlank()) {
+                pw.println("time=" + qp.time.toString() +"\">");
+                pw.println( "<documentation>need ISO time</documentation>\n" );
+                pw.println("    </dataset>");
+                pw.println("</catalog>");
+                return;
+              } else {
                 pw.println("time=" + qp.time.toDateTimeStringISO() +"\">");
+              }
             } else {
                 pw.println( "\">" );
             }
@@ -334,6 +352,9 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res, Pr
             pw.println( "<documentation>\n" );
             pw.println( "Request not implemented: "+ pathInfo );
             pw.println( "</documentation>\n" );
+            pw.println( "<documentation>need ISO time</documentation>\n" );
+            pw.println("    </dataset>");
+            pw.println("</catalog>");
             return;
         }
 //
@@ -419,6 +440,8 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res, Pr
             for (String station : qp.stns ) {
                 String sDir = tdir +'/'+ station ;
                 files = new File( sDir );
+                if( ! files.exists())
+                  continue;
                 String[] sdirs = files.list();
                 if( sdirs == null)
                     continue;
@@ -485,6 +508,8 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res, Pr
                     for (String station : qp.stns ) {
                         String sDir = vDir +'/'+ station ;
                         files = new File( sDir );
+                        if( ! files.exists())
+                          continue;
                         String[] sdirs = files.list();
                         if( sdirs == null)
                             continue;
@@ -705,4 +730,20 @@ public void radarNexradQuery(HttpServletRequest req, HttpServletResponse res, Pr
         }
     }
 
+   /**
+   *
+   * @param args
+   * @throws IOException
+   */
+   public static void main(String args[]) throws IOException {
+
+    // Function References
+    String tableName;
+    if (args.length == 1) {
+      tableName = args[0];
+    } else {
+      tableName = "B3L-059-003-ABD.diff";
+      tableName = "B4M-000-014-ABD";
+    }
+  }
 } // end RadarNexradServer
