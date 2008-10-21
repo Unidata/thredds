@@ -1,8 +1,12 @@
 package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.Metadata;
+import thredds.catalog2.builder.MetadataBuilder;
+import thredds.catalog2.builder.BuilderException;
+import thredds.catalog2.builder.BuilderFinishIssue;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * _more_
@@ -10,7 +14,7 @@ import java.net.URI;
  * @author edavis
  * @since 4.0
  */
-public class MetadataImpl implements Metadata
+public class MetadataImpl implements Metadata, MetadataBuilder
 {
   private final boolean isContainedContent;
 
@@ -66,5 +70,20 @@ public class MetadataImpl implements Metadata
     if ( ! this.isContainedContent )
       throw new IllegalStateException( "Use external reference to obtain metadata content." );
     return this.content;
+  }
+
+  public boolean isBuilt()
+  {
+    return false;
+  }
+
+  public boolean isBuildable( List<BuilderFinishIssue> issues )
+  {
+    return true;
+  }
+
+  public Metadata build() throws BuilderException
+  {
+    return this;
   }
 }

@@ -81,6 +81,11 @@ public class AccessImpl implements Access, AccessBuilder
     return dataSize;
   }
 
+  public boolean isBuilt()
+  {
+    return this.isBuilt;
+  }
+
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
     if ( this.isBuilt )

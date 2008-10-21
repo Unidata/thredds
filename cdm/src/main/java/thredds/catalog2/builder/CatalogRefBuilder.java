@@ -17,6 +17,5 @@ public interface CatalogRefBuilder
   public URI getReference();
   public void setReference( URI reference );
 
-  public boolean isBuildable( List<BuilderFinishIssue> issues );
   public CatalogRef build() throws BuilderException;
 }

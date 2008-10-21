@@ -98,6 +98,11 @@ public class DatasetImpl
     return list;
   }
 
+  public boolean isBuilt()
+  {
+    return this.isBuilt;
+  }
+
   @Override
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {

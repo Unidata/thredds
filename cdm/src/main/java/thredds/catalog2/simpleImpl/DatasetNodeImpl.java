@@ -322,6 +322,11 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.datasetContainer.getDatasetNodeByGloballyUniqueId( id );
   }
 
+  public boolean isBuilt()
+  {
+    return this.isBuilt;
+  }
+
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
     if ( this.isBuilt )

@@ -193,7 +193,9 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   public Service findServiceByNameGlobally( String name )
   {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    if ( ! this.isBuilt)
+      throw new IllegalStateException( "This Service has escaped its Builder before being built.");
+    return this.serviceContainer.getServiceByGloballyUniqueName( name );
   }
 
   public List<ServiceBuilder> getServiceBuilders()
@@ -210,7 +212,14 @@ public class ServiceImpl implements Service, ServiceBuilder
 
   public ServiceBuilder findServiceBuilderByNameGlobally( String name )
   {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This ServiceBuilder has been built." );
+    return this.serviceContainer.getServiceByGloballyUniqueName( name );
+  }
+
+  public boolean isBuilt()
+  {
+    return this.isBuilt;
   }
 
   /**

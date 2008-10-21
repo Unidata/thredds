@@ -51,7 +51,5 @@ public interface DatasetNodeBuilder extends ThreddsBuilder
 
   public boolean isDatasetIdInUseGlobally( String id );
 
-
-  public boolean isBuildable( List<BuilderFinishIssue> issues );
   public DatasetNode build() throws BuilderException;
 }

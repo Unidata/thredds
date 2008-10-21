@@ -3,6 +3,7 @@ package thredds.catalog2.builder;
 import thredds.catalog2.Metadata;
 
 import java.util.List;
+import java.net.URI;
 
 /**
  * _more_
@@ -12,6 +13,13 @@ import java.util.List;
  */
 public interface MetadataBuilder extends ThreddsBuilder
 {
-  public boolean isBuildable( List<BuilderFinishIssue> issues );
+  public boolean isContainedContent();
+
+  public String getTitle();
+
+  public URI getExternalReference();
+
+  public String getContent();
+
   public Metadata build() throws BuilderException;
 }

@@ -50,7 +50,6 @@ public interface CatalogBuilder extends ThreddsBuilder
   public List<String> getPropertyNames();
   public String getPropertyValue( String name );
 
-  public boolean isBuildable( List<BuilderFinishIssue> issues );
   /**
    * Generate the resulting Catalog.
    *

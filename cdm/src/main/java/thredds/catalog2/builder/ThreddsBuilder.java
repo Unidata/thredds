@@ -11,6 +11,12 @@ import java.util.List;
 public interface ThreddsBuilder
 {
   /**
+   * Check whether this ThreddsBuilder has been built.
+   *
+   * @return true if this ThreddsBuilder has already been built, false otherwise.
+   */
+  public boolean isBuilt();
+  /**
    * Check whether the state of this ThreddsBuilder is such that build() will succeed.
    *
    * @param issues a list into which any issues that come up during isBuildable() will be add.
