@@ -84,7 +84,7 @@ public class TestThreddsMetadataImpl extends TestCase
     try
     {
       timeDuration2Days = new TimeDuration( "P2D" );
-      timeDuration2Days = new TimeDuration( "P3D" );
+      timeDuration3Days = new TimeDuration( "P3D" );
     }
     catch ( ParseException e )
     { fail( "Failed to parse \"P2D\": " + e.getMessage() ); }

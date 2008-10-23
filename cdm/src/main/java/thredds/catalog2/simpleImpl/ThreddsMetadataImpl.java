@@ -514,8 +514,9 @@ public class ThreddsMetadataImpl
     List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
 
     // Check subordinates.
-    for ( DocumentationImpl doc : this.docs )
-      doc.isBuildable( localIssues );
+    if ( this.docs != null )
+      for ( DocumentationImpl doc : this.docs )
+        doc.isBuildable( localIssues );
     // ToDo keywords
     // ToDo ...
 
@@ -537,8 +538,9 @@ public class ThreddsMetadataImpl
       throw new BuilderException( issues );
 
     // Check subordinates.
-    for ( DocumentationImpl doc : this.docs )
-      doc.build();
+    if ( this.docs != null )
+      for ( DocumentationImpl doc : this.docs )
+        doc.build();
     // ToDo keywords
     // ToDo ...
 
