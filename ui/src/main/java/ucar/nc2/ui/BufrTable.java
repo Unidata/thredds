@@ -153,8 +153,8 @@ public class BufrTable extends JPanel {
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         Message m = mb.m;
 
+        Formatter out = new Formatter();
         try {
-          Formatter out = new Formatter();
           int nbitsCounted = m.calcTotalBits(out);
           int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
           boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number
@@ -174,6 +174,7 @@ public class BufrTable extends JPanel {
         } catch (Exception ex) {
           ByteArrayOutputStream bos = new ByteArrayOutputStream();
           ex.printStackTrace(new PrintStream(bos));
+          infoTA.appendLine(out.toString());
           infoTA.appendLine(bos.toString());
         }
 
@@ -371,6 +372,14 @@ public class BufrTable extends JPanel {
       }
     }
 
+    public String getLocal() {
+      try {
+        return m.usesLocalTable() ? "true" : "false";
+      } catch (Exception e) {
+        return "exception";
+      }
+    }
+
   }
 
   public class DdsBean {
@@ -413,6 +422,10 @@ public class BufrTable extends JPanel {
 
     public int getSeq() {
       return seq;
+    }
+
+    public String getLocal() {
+      return dds.isLocal() ? "true" : "false";
     }
 
   }

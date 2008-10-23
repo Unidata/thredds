@@ -23,6 +23,7 @@ package ucar.nc2.util.memory;
 import ucar.nc2.*;
 import ucar.nc2.ncml.TestNcML;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasetInfo;
 import ucar.ma2.Array;
 
 import java.util.*;
@@ -148,11 +149,13 @@ public class MemoryCounterAgentTest {
   }
 
   static void testNcd() throws IOException {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset("C:/data/test2.nc");
+    String filename = "C:/data/test2.nc";
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(filename);
     measureSize("C:/data/test2.nc", ncfile, null, true);
 
-    measureSize("info", ncfile.getInfo(), null, true);
-    StringBuilder pifo = ncfile.getInfo().getParseInfo();
+    NetcdfDatasetInfo info = new NetcdfDatasetInfo(filename);
+    measureSize("info", info, null, true);
+    String pifo = info.getParseInfo();
     System.out.println("info= " + pifo);
     ncfile.close();
   }

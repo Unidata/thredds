@@ -44,43 +44,42 @@ import java.io.OutputStream;
  */
 public class NetcdfDatasetInfo {
   private NetcdfDataset ds;
-  private StringBuilder parseInfo = new StringBuilder();
-  private StringBuilder userAdvice = new StringBuilder();
-  private String coordSysBuilderName;
+  private CoordSysBuilderIF builder;
 
-  NetcdfDatasetInfo( NetcdfDataset ds) {
-    this.ds = ds;
+  public NetcdfDatasetInfo( String location) throws IOException {
+    ds = NetcdfDataset.openDataset(location, false, null);
+    builder = CoordSysBuilder.addCoordinateSystems(ds, null);
+    //info.setCoordSysBuilderName(conventionName);
+    //info.addParseInfo(parseInfo.toString());
+    //info.addUserAdvice(userAdvice.toString());
+  }
+
+  public void close() throws IOException {
+    if (ds != null) ds.close();
   }
 
   /**
    * Detailed information when the coordinate systems were parsed
-   * @return StringBuilder containing parsing info
+   * @return String containing parsing info
    */
-  public StringBuilder getParseInfo( ) {
-    return parseInfo;
+  public String getParseInfo( ) {
+    return (builder == null) ? "" : builder.getParseInfo();
   }
   /**
    * Specific advice to a user about problems with the coordinate information in the file.
-   * @return StringBuilder containing advice to a user about problems with the coordinate information in the file.
+   * @return String containing advice to a user about problems with the coordinate information in the file.
    */
-  public StringBuilder getUserAdvice( ) {
-    return userAdvice;
+  public String getUserAdvice( ) {
+    return (builder == null) ? "" : builder.getUserAdvice();
   }
-
-  void addParseInfo( String info) {
-    parseInfo.append(info);
-  }
-  void addUserAdvice( String advice) {
-    userAdvice.append(advice);
-  }
-
-  void setCoordSysBuilderName( String coordSysBuilderName) { this.coordSysBuilderName = coordSysBuilderName; }
 
   /**
    * Get the name of the CoordSysBuilder that parses this file.
    * @return the name of the CoordSysBuilder that parses this file.
    */
-  public String getCoordSysBuilderName( ) { return coordSysBuilderName; }
+  public String getConventionUsed( ) {
+    return (builder == null) ? "None" : builder.getConventionUsed();
+  }
 
   /** Write the information as an XML document
    * @return String contining netcdfDatasetInfo XML
@@ -114,8 +113,7 @@ public class NetcdfDatasetInfo {
     Element rootElem = new Element("netcdfDatasetInfo");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", ds.getLocation());
-    if (coordSysBuilderName != null)
-      rootElem.addContent( new Element("convention").setAttribute("name", coordSysBuilderName));
+    rootElem.addContent( new Element("convention").setAttribute("name", getConventionUsed()));
 
     int nDataVariables = 0;
     int nOtherVariables = 0;
@@ -235,8 +233,9 @@ public class NetcdfDatasetInfo {
         rootElem.addContent( new Element("userAdvice").addContent( "No gridded data variables were found."));
     }
 
+    String userAdvice = getUserAdvice();
     if (userAdvice.length() > 0) {
-      StringTokenizer toker = new StringTokenizer(userAdvice.toString(), "\n");
+      StringTokenizer toker = new StringTokenizer(userAdvice, "\n");
       while (toker.hasMoreTokens())
         rootElem.addContent( new Element("userAdvice").addContent( toker.nextToken()));
     }
@@ -293,8 +292,7 @@ public class NetcdfDatasetInfo {
   public static void main(String args[]) throws IOException {
     String url = "C:/data/badmodels/RUC_CONUS_80km_20051211_1900.nc";
 
-    NetcdfDataset ncd = NetcdfDataset.openDataset(url);
-    NetcdfDatasetInfo info = ncd.getInfo();
+    NetcdfDatasetInfo info = new NetcdfDatasetInfo(url);
     String infoString = info.writeXML();
     System.out.println(infoString);
   }

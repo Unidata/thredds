@@ -102,6 +102,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     registerConvention(_Coordinate.Convention, CoordSysBuilder.class);
 
     registerConvention("CF-1.0", CF1Convention.class);
+    registerConvention("CF-1.1", CF1Convention.class);
+    registerConvention("CF-1.2", CF1Convention.class);
+    registerConvention("CF-1.3", CF1Convention.class);
+
     registerConvention("COARDS", COARDSConvention.class);
     registerConvention("NCAR-CSM", CSMConvention.class);
     registerConvention("Unidata Observation Dataset v1.0", UnidataObsConvention.class);
@@ -217,9 +221,11 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    *
    * @param ds         the NetcdfDataset to modify
    * @param cancelTask allow user to bail out.
+   * @return the builder used
+   *
    * @throws java.io.IOException on io error
    */
-  static public void addCoordinateSystems(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+  static public CoordSysBuilderIF addCoordinateSystems(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
     if (convName == null)
@@ -235,7 +241,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         CoordSysBuilder csb = new CoordSysBuilder();
         NcMLReader.wrapNcML(ds, convNcML, cancelTask);
         csb.buildCoordinateSystems(ds);
-        return;
+        return csb;
       }
     }
 
@@ -313,11 +319,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     CoordSysBuilderIF builder;
     try {
       builder = (CoordSysBuilderIF) convClass.newInstance();
-      if (builder == null) return;
-    } catch (InstantiationException e) {
-      return;
-    } catch (IllegalAccessException e) {
-      return;
+    } catch (Exception e) {
+      log.error("failed on CoordSysBuilderIF for "+convClass.getName(), e);
+      return null;
     }
 
     if (usingDefault) {
@@ -332,6 +336,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     builder.augmentDataset(ds, cancelTask);
     builder.buildCoordinateSystems(ds);
+
+    return builder;
   }
 
   static private class Convention {
@@ -346,7 +352,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  protected String conventionName = _Coordinate.Convention; // name of Convention
+  protected String conventionName = _Coordinate.Convention; // default name of Convention, override in subclass
   protected List<VarProcess> varList = new ArrayList<VarProcess>(); // varProcess objects
   protected Map<Dimension,List<VarProcess>> coordVarMap = new HashMap<Dimension,List<VarProcess>>();
   protected StringBuilder parseInfo = new StringBuilder();
@@ -365,6 +371,15 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   public void addUserAdvice(String advice) {
     userAdvice.append(advice);
   }
+
+  public String getParseInfo( ) {
+    return parseInfo.toString();
+  }
+
+  public String getUserAdvice( ) {
+    return userAdvice.toString();
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // subclasses can override any of these routines
 
@@ -429,11 +444,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     // assign Coordinate Transforms
     assignCoordinateTransforms(ncDataset);
-
-    NetcdfDatasetInfo info = ncDataset.getInfo();
-    info.setCoordSysBuilderName(conventionName);
-    info.addParseInfo(parseInfo.toString());
-    info.addUserAdvice(userAdvice.toString());
 
     if (debug) System.out.println("parseInfo = \n" + parseInfo.toString());
   }

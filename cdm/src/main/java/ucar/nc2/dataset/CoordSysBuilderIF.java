@@ -43,6 +43,18 @@ public interface CoordSysBuilderIF {
   public String getConventionUsed();
 
   /**
+   * Detailed information when the coordinate systems were parsed
+   * @return String containing parsing info
+   */
+  public String getParseInfo();
+
+  /**
+   * Specific advice to a user about problems with the coordinate information in the file.
+   * @return String containing advice to a user about problems with the coordinate information in the file.
+   */
+  public String getUserAdvice();
+
+  /**
    * Make changes to the dataset, like adding new variables, attribuites, etc.
    *
    * @param ncDataset modify this dataset
@@ -60,55 +72,5 @@ public interface CoordSysBuilderIF {
   /** Give advice for a user trying to figure out why things arent working
    * @param advice add this advice to the User Advice String
    */
-  public void addUserAdvice( String advice);
+  public void addUserAdvice( String advice);  
 }
-
-
-
- /*
- public void buildCoordinateSystems(NetcdfDataset ncDataset) {
-
-    // Bookeeping info for each variable is kept in the VarProcess inner class
-    addVariables(ncDataset, ncDataset.getVariables(), varList);
-       // Identify Coordinate Variables from AxisType, Alias
-       varProcessList.add( new VarProcess(ncDataset, v));
-
-    // identify which variables are coordinate axes from coordAxes, coordinates attributes
-    findCoordinateAxes(ncDataset);
-       findCoordinateAxes(vp, vp.coordAxes);
-       findCoordinateAxes(vp, vp.coordinates);
-
-    // identify which variables are used to describe coordinate system
-    findCoordinateSystems(ncDataset);
-
-    // identify which variables are used to describe coordinate transforms
-    findCoordinateTransforms(ncDataset);
-
-    // turn Variables into CoordinateAxis
-    makeCoordinateAxes(ncDataset);
-
-    // make Coordinate Systems for all Coordinate Systems Variables
-    makeCoordinateSystems(ncDataset);
-       if (vp.isCoordinateSystem) vp.makeCoordinateSystem();
-          named by  _Coordinate.coordAxes
-
-    // assign explicit CoordinateSystem objects to variables
-    assignExplicitCoordinateSystems(ncDataset);
-       getAxes() named by  _Coordinate.coordAxes
-
-    // assign implicit CoordinateSystem objects to variables
-    makeCoordinateSystemsImplicit(ncDataset);
-       vp.findCoordinateAxes(true) coordAxes, coordinates, isCoordinateVariable, alias
-
-    // optionally assign implicit CoordinateSystem objects to variables that dont have one yet
-    if (useMaximalCoordSys)
-      makeCoordinateSystemsMaximal(ncDataset);
-
-    // make Coordinate Transforms
-    makeCoordinateTransforms(ncDataset);
-
-    // assign Coordinate Transforms
-    assignCoordinateTransforms(ncDataset);
-  }
-
-   */

@@ -1226,14 +1226,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return sbuff.toString();
   }
 
-  /**
+  /*
    * Debugging: get the information from parsing
    *
    * @return NetcdfDatasetInfo object
-   */
+   *
   public NetcdfDatasetInfo getInfo() {
     return new NetcdfDatasetInfo(this);
-  }
+  } */
 
   void dumpClasses(Group g, PrintStream out) {
 

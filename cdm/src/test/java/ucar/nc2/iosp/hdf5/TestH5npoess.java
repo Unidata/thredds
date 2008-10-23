@@ -67,7 +67,7 @@ public class TestH5npoess extends TestCase {
 
   public void testNPoess() {
     //TestH5read.readAllDir( "C:/data/npoess/ExampleFiles/");
-    TestH5read.readAllDir( "C:/data/HDF5Files");
+    TestH5read.readAllDir( "D:/npoess");
   }
 
 }

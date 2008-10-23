@@ -1,5 +1,5 @@
 /*
- * Copyright 1997-2007 Unidata Program Center/University Corporation for
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
  * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
  * support@unidata.ucar.edu.
  *
@@ -17,13 +17,52 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.dt;
 
-/** A PointCollection of PointObsDatatype.
- * All getData() methods return List of PointObsDatatype.
+package ucar.nc2.ft.point.writer;
+
+import ucar.ma2.DataType;
+
+/**
+ * Point Data Variables for CFPointWriter
  *
  * @author caron
+ * @since Oct 22, 2008
  */
-public interface PointObsDataset extends ucar.nc2.dt.TypedDataset, ucar.nc2.dt.PointCollection {
+public class PointObVar {
+  private String name;
+  private String units;
+  private String desc;
+  private DataType dtype;
 
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getUnits() {
+    return units;
+  }
+
+  public void setUnits(String units) {
+    this.units = units;
+  }
+
+  public String getDesc() {
+    return desc;
+  }
+
+  public void setDesc(String desc) {
+    this.desc = desc;
+  }
+
+  public DataType getDataType() {
+    return dtype;
+  }
+
+  public void setDataType(DataType dtype) {
+    this.dtype = dtype;
+  }
 }

@@ -117,7 +117,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     // validate the uri String
     try {
       URI uri = new URI(urlString);
-      urlString= uri.toASCIIString(); // LOOK do we want just toString() ? Is this useful "input validation" ?
+      urlString = uri.toASCIIString(); // LOOK do we want just toString() ? Is this useful "input validation" ?
     } catch (URISyntaxException e) {
        ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "URISyntaxException on URU parameter");
@@ -127,36 +127,17 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     String xml = req.getParameter("xml");
     boolean wantXml = (xml != null) && xml.equals("true");
 
-    NetcdfDataset ncd = null;
     try {
-      try {
-        ncd = NetcdfDataset.openDataset(urlString, true, null);
+      int len = showValidatorResults(res, urlString, wantXml);
+      log.info( "URL = " + urlString);
+      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
 
-      } catch (IOException e) {
-        ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-        return;
-      }
-
-      try {
-        int len = showValidatorResults(res, ncd, wantXml);
-        log.info( "URL = " + urlString);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
-
-      } catch (Exception e) {
-        log.error("Validator internal error", e);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
-        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Validator internal error");
-      }
-
-    } finally {
-      if (null != ncd)
-        try {
-          ncd.close();
-        } catch (IOException ioe) {
-          log.error( "Failed to close = " + urlString);
-        }
+    } catch (Exception e) {
+      log.error("Validator internal error", e);
+      ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Validator internal error");
     }
+
   }
 
   /**
@@ -240,21 +221,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     uploadedFile.getParentFile().mkdirs();
     item.write(uploadedFile);
 
-    NetcdfDataset ncd = null;
-    int len = -1;
-    try {
-      ncd = NetcdfDataset.openDataset(uploadedFile.getPath());
-      ncd.setLocation(filename);
-      len = showValidatorResults(res, ncd, wantXml);
-
-    } finally {
-      if (null != ncd)
-        try {
-          ncd.close();
-        } catch (IOException ioe) {
-          log.error("Failed to close = " + uploadedFile.getPath());
-        }
-    }
+    int len = showValidatorResults(res, uploadedFile.getPath(), wantXml);
 
     if (deleteImmediately) {
       try {
@@ -273,9 +240,12 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     ServletUtil.logServerAccess(HttpServletResponse.SC_OK, len);
   }
 
-  private int showValidatorResults(HttpServletResponse res, NetcdfDataset ncd, boolean wantXml) throws Exception {
+  private int showValidatorResults(HttpServletResponse res, String location, boolean wantXml) throws Exception {
 
-      NetcdfDatasetInfo info = ncd.getInfo();
+    NetcdfDatasetInfo info = null;
+    try {
+      info = new NetcdfDatasetInfo( location);
+
     String infoString;
 
     if (wantXml) {
@@ -302,6 +272,15 @@ public class CoordSysValidatorServlet extends AbstractServlet {
     out.flush();
 
     return infoString.length();
+
+    } finally {
+      if (null != info)
+        try {
+          info.close();
+        } catch (IOException ioe) {
+          log.error("Failed to close = " + location);
+        }
+    }
   }
 
   private InputStream getXSLT() {

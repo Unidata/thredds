@@ -331,9 +331,21 @@ public class TestAll {
   ////////////////////////////////////////////////
 
   public interface Act {
+    /**
+     * @param filename file to act on
+     * @return count
+     * @throws IOException  on IO error
+     */
     int doAct( String filename) throws IOException;
   }
 
+  /**
+   * @param dirName recurse into this directory
+   * @param ff for files that pass this filter, may be null
+   * @param act perform this acction
+   * @return count
+   * @throws IOException on IO error
+   */
   public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
     int count = 0;
 

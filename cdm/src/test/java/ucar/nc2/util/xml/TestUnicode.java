@@ -52,7 +52,7 @@ public class TestUnicode extends TestCase {
     super(name);
   }
 
-  public void testCharsets() {
+  static public void testCharsets() {
     Map<String,Charset> map = Charset.availableCharsets();
     for (String key : map.keySet()) {
       Charset cs = map.get(key);
@@ -254,7 +254,12 @@ public class TestUnicode extends TestCase {
 
 
   public static void main(String args[]) throws IOException {
-    String helloGreek = new TestUnicode("dumm").makeString(helloGreekCode, true);
+    //String helloGreek = new TestUnicode("dumm").makeString(helloGreekCode, true);
+
+    //testCharsets();
+    write("hello", null);
+    write("hello", "UTF-8");
+    write("hello", "EUC-JP");
 
     //String filename = "C:/data/unicode/UTF-8-demo.html";
     //String filename = "C:/data/unicode/russian.txt";

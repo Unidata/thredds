@@ -89,7 +89,6 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
     return FeatureType.POINT;
   }
 
-
   public Class getDataClass() {
     return PointObsDatatype.class;
   }
@@ -109,7 +108,6 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
   public List getData( ucar.unidata.geoloc.LatLonRect boundingBox, Date start, Date end) throws IOException {
     return getData( boundingBox, start, end, null);
   }
-
 
   protected DateFormatter formatter;
   protected double getTime(Variable timeVar, StructureData sdata) throws ParseException {

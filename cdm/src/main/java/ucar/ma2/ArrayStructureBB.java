@@ -413,8 +413,12 @@ public class ArrayStructureBB extends ArrayStructure {
 
     int offset = calcOffsetSetOrder(recnum, m);
     int index = bbuffer.getInt(offset);
+    if (heap == null) {
+      System.out.println("ArrayStructureBB null heap");
+      return null;
+    }
     if (index > heap.size())
-      System.out.println("HEY index");
+      System.out.println("HEY index "+index);
     return (ArraySequence) heap.get(index);
   }
 

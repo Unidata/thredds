@@ -217,8 +217,8 @@ public class GridDataset {
     buff.append( "\n\n----------------------------------------------------\n");
     buff.append( getInfo());
     buff.append( "\n\n----------------------------------------------------\n");
-    buff.append( ds.getInfo().getParseInfo());
-    buff.append( "\n\n----------------------------------------------------\n");
+    //buff.append( ds.getInfo().getParseInfo());
+    //buff.append( "\n\n----------------------------------------------------\n");
     buff.append( parseInfo.toString());
 
     return buff.toString();

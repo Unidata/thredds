@@ -316,7 +316,15 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
     StringBuilder buff = new StringBuilder(5000);
     buff.append(getInfo());
     buff.append("\n\n----------------------------------------------------\n");
-    buff.append(ds.getInfo().getParseInfo());
+    NetcdfDatasetInfo info = null;
+    try {
+      info = new NetcdfDatasetInfo( ds.getLocation());
+      buff.append(info.getParseInfo());
+    } catch (IOException e) {
+      buff.append("NetcdfDatasetInfo failed");
+    } finally {
+      if (info != null) try { info.close(); } catch (IOException ee) {} // do nothing      
+    }
     buff.append("\n\n----------------------------------------------------\n");
     buff.append(parseInfo.toString());
     buff.append(ds.toString());

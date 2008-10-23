@@ -40,8 +40,9 @@ import ucar.unidata.util.StringUtil;
  */
 public class CompareTableB {
 
-  String bmt = "file:C:/doc/bufr/britMet/BUFR_B_080731.xml";
+  String bmt = "file:C:/dev/tds/bufr/resources/source/britMet/BUFR_B_080731.xml";
   String robbt = "C:/dev/tds/bufr/resources/resources/bufr/tables/B4M-000-013-B";
+  
   String diffTableDir = "C:/dev/tds/bufr/resources/resources/bufr/tables/";
   String[] diffTable = {
           "B2M-000-002-B.diff",
@@ -56,7 +57,7 @@ public class CompareTableB {
           "B3M-000-011-B.diff",
           "B3M-000-012-B.diff"};
 
-  String robbxml = "file:C:\\dev\\tds\\bufr\\resources\\resources\\source\\wmo\\xml/B4M-000-013-B.xml";
+  //String robbxml = "file:C:\\dev\\tds\\bufr\\resources\\resources\\source\\wmo\\xml/B4M-000-013-B.xml";
 
   Pattern pattern = Pattern.compile("(.*)\\([sS]ee [nN]ote.*");
 
@@ -313,6 +314,6 @@ public class CompareTableB {
 
   static public void main( String args[]) throws IOException {
     CompareTableB ct = new CompareTableB();
-    ct.compareDiff();
+    ct.compareBrit();
   }
 }

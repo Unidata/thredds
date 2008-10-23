@@ -118,7 +118,8 @@ public abstract class TypedDatasetImpl implements TypedDataset {
     sbuff.append("  start= ").append(formatter.toDateTimeString(getStartDate())).append("\n");
     sbuff.append("  end  = ").append(formatter.toDateTimeString(getEndDate())).append("\n");
     sbuff.append("  bb   = ").append(getBoundingBox()).append("\n");
-    sbuff.append("  bb   = ").append(getBoundingBox().toString2()).append("\n");
+    if (getBoundingBox() != null )
+      sbuff.append("  bb   = ").append(getBoundingBox().toString2()).append("\n");
 
     sbuff.append("  has netcdf = ").append(getNetcdfFile() != null).append("\n");
     List<Attribute> ga = getGlobalAttributes();

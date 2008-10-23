@@ -47,8 +47,10 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
-  26: EnhancedScaleMissingImpl: deal with unsigned data and missing values
+  26: ucar.nc2.ft.point.writer.CFPointObWriter, WriterCFPointObsDataset for writig point obs data in proposed CF format.
+    EnhancedScaleMissingImpl: deal with unsigned data and missing values
     Universal Formal Radar IOSP
+    NetcdfDatasetInfo must reopen dataset, capture CoordSysBuilder info, so that normal case doesnt retain unneeded objects
   25: opendap parsing bug with signed bytes
     ncml agg fixes
     grib thread-safety
