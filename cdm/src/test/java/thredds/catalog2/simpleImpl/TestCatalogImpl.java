@@ -60,6 +60,9 @@ public class TestCatalogImpl extends TestCase
     cal.add( Calendar.YEAR, 1 );
     Date expiresTime = cal.getTime();
     CatalogBuilder cb = new CatalogImpl( name, docBaseUri, verString, expiresTime, lastModTime );
+
+    assertFalse( cb.isBuilt() );
+
     assertTrue( "Name [" + cb.getName() + "] not as expected [" + name + "].",
                 cb.getName().equals( name ) );
     assertTrue( "BaseUri [" + cb.getDocBaseUri() + "] not as expected [" + docBaseUri + "].",

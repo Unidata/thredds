@@ -61,6 +61,8 @@ public class TestAccessImpl extends TestCase
   {
     AccessImpl access = new AccessImpl();
 
+    assertFalse( access.isBuilt() );
+
     access.setServiceBuilder( serviceBuilder );
     access.setUrlPath( urlPath );
     access.setDataSize( dataSize );
@@ -123,6 +125,8 @@ public class TestAccessImpl extends TestCase
     { access = accessImpl.build(); }
     catch ( BuilderException e )
     { fail( "Build failed: " + e.getMessage() ); }
+
+    assertTrue( accessImpl.isBuilt());
   }
 
   public void testPostBuildGetters()

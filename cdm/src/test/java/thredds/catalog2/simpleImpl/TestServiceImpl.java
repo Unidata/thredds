@@ -80,6 +80,7 @@ public class TestServiceImpl extends TestCase
   {
     String name = "s1";
     ServiceBuilder sb = new ServiceImpl( name, type, baseUri, null );
+    assertFalse( sb.isBuilt());
 
     assertTrue( "Name [" + sb.getName() + "] not as expected [" + name + "].",
                 sb.getName().equals( name));
@@ -308,6 +309,8 @@ public class TestServiceImpl extends TestCase
     { s = sb.build(); }
     catch ( BuilderException e )
     { fail( "Build failed: " + e.getMessage()); }
+
+    assertTrue( sb.isBuilt() );
 
     // Test that Service methods succeed after build.
     List<Property> propList = s.getProperties();

@@ -68,6 +68,7 @@ public class TestServiceContainer extends TestCase
   private void optionalSetUp()
   {
     sc = new ServiceContainer( null );
+    assertFalse( sc.isBuilt());
 
     si1 = new ServiceImpl( s1n, type, baseUri1, null );
     sb1 = si1;
@@ -153,6 +154,8 @@ public class TestServiceContainer extends TestCase
     { sc.build(); }
     catch ( BuilderException e )
     { fail( "Build failed: " + e.getMessage() ); }
+
+    assertTrue( sc.isBuilt() );
 
     // Test build getters.
 

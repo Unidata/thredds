@@ -142,6 +142,11 @@ class PropertyContainer
     return this.propertiesMap.get( name );
   }
 
+  public boolean isBuilt()
+  {
+    return this.isBuilt;
+  }
+
   /**
    * This method always returns "true" because no action is required to
    * finish any contained Property classes.

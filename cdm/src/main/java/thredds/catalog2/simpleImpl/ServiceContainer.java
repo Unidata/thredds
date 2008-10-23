@@ -251,6 +251,11 @@ class ServiceContainer
     return this.servicesMap.get( name );
   }
 
+  public boolean isBuilt()
+  {
+    return this.isBuilt;
+  }
+  
   /**
    * Check whether contained ServiceBuilders are all in a state such that
    * calling their build() will succeed.

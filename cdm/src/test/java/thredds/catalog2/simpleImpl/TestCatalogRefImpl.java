@@ -66,6 +66,8 @@ public class TestCatalogRefImpl extends TestCase
 
   public void testGetSet()
   {
+    assertFalse( catRefBldr.isBuilt());
+
     assertTrue( catRefBldr.getName().equals( catRefName ));
     assertTrue( catRefBldr.getReference().equals( catRefUri ));
 
@@ -90,6 +92,8 @@ public class TestCatalogRefImpl extends TestCase
     { catRef = catRefBldr.build(); }
     catch ( BuilderException e )
     { fail( "Build failed: " + e.getMessage() ); }
+
+    assertTrue( catRefBldr.isBuilt() );
 
     // Test getters of resulting CatalogRef.
     assertTrue( catRef.getName().equals( catRefName ) );

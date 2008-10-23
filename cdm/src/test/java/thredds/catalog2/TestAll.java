@@ -26,6 +26,8 @@ public class TestAll extends TestCase
     suite.addTestSuite( TestServiceImpl.class );
     suite.addTestSuite( TestServiceContainer.class );
     suite.addTestSuite( TestAccessImpl.class );
+    suite.addTestSuite( TestMetadataImpl.class );
+    suite.addTestSuite( TestThreddsMetadataImpl.class );
     suite.addTestSuite( TestDatasetNodeImpl.class );
     suite.addTestSuite( TestDatasetImpl.class );
     suite.addTestSuite( TestCatalogRefImpl.class );

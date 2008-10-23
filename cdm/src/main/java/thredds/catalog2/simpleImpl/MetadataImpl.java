@@ -74,7 +74,7 @@ public class MetadataImpl implements Metadata, MetadataBuilder
 
   public boolean isBuilt()
   {
-    return false;
+    return true;
   }
 
   public boolean isBuildable( List<BuilderFinishIssue> issues )

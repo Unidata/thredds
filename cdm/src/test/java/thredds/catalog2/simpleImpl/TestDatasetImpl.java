@@ -4,6 +4,7 @@ import junit.framework.*;
 import thredds.catalog2.builder.*;
 import thredds.catalog2.Dataset;
 import thredds.catalog2.Access;
+import thredds.catalog2.DatasetNode;
 import thredds.catalog.ServiceType;
 import thredds.catalog.DataFormatType;
 
@@ -25,8 +26,13 @@ public class TestDatasetImpl extends TestCase
   private URI parentCatDocBaseUri;
   private String parentCatVer;
 
-  private DatasetNodeBuilder parentDataset;
+  private DatasetNodeBuilder parentDatasetBldr;
+  private DatasetNode parentDataset;
   private String parentDsName;
+
+  private CatalogRefBuilder catRefBldr;
+  private String catRefTitle;
+  private URI catRefUri;
 
   private DatasetImpl dsImpl;
   private DatasetBuilder dsBuilder;
@@ -55,6 +61,7 @@ public class TestDatasetImpl extends TestCase
     try
     {
       parentCatDocBaseUri = new URI( "http://server/thredds/aCat.xml" );
+      catRefUri = new URI( "http://server/thredds/anotherCat.xml");
       sbu1 = new URI( "http://server/thredds/dodsC/");
       sbu2 = new URI( "http://server/thredds/wcs/");
     }
@@ -75,10 +82,13 @@ public class TestDatasetImpl extends TestCase
     sb2 = parentCatalog.addService( sn2, sType2,  sbu2);
 
     parentDsName = "parent dataset";
-    parentDataset = parentCatalog.addDataset( parentDsName );
+    parentDatasetBldr = parentCatalog.addDataset( parentDsName );
 
     dsName = "dataset name";
-    dsBuilder = parentDataset.addDataset( "dsName" );
+    dsBuilder = parentDatasetBldr.addDataset( "dsName" );
+
+    catRefTitle = "Catalog Ref";
+    catRefBldr = parentDatasetBldr.addCatalogRef( catRefTitle, catRefUri  );
 
     ab1 = dsBuilder.addAccessBuilder();
 
@@ -105,6 +115,10 @@ public class TestDatasetImpl extends TestCase
 
   public void testBuilderGet()
   {
+    assertFalse( parentDatasetBldr.isBuilt() );
+    assertFalse( catRefBldr.isBuilt() );
+    assertFalse( dsBuilder.isBuilt() );
+
     List<AccessBuilder> abl = dsBuilder.getAccessBuilders();
     assertTrue( abl.size() == 2 );
     assertTrue( abl.get( 0) == ab1);
@@ -158,7 +172,7 @@ public class TestDatasetImpl extends TestCase
   {
     // Check if buildable
     List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
-    if ( ! dsBuilder.isBuildable( issues ) )
+    if ( ! parentDatasetBldr.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
       for ( BuilderFinishIssue bfi : issues )
@@ -168,9 +182,14 @@ public class TestDatasetImpl extends TestCase
 
     // Build
     try
-    { ds = dsBuilder.build(); }
+    { parentDataset = parentDatasetBldr.build(); }
     catch ( BuilderException e )
     { fail( "Build failed: " + e.getMessage() ); }
+
+    assertFalse( parentDatasetBldr.isBuilt() );
+    assertFalse( catRefBldr.isBuilt() );
+    assertFalse( dsBuilder.isBuilt() );
+    ds = (Dataset) dsBuilder;
 
     // Test getters of resulting Dataset.
     assertTrue( ds.isAccessible() );

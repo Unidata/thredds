@@ -89,6 +89,8 @@ public class TestDatasetNodeImpl extends TestCase
 
   private void initBuilder()
   {
+    assertFalse( dsNodeBldr.isBuilt() );
+
     dsNodeBldr.setId( id );
     dsNodeBldr.setIdAuthority( idAuthority );
 
@@ -189,6 +191,9 @@ public class TestDatasetNodeImpl extends TestCase
     { dsNode = dsNodeBldr.build(); }
     catch ( BuilderException e )
     { fail( "Build failed: " + e.getMessage() ); }
+
+    assertTrue( dsNodeBldr.isBuilt() );
+
   }
 
   public void testCtorBuilderSetGet()

@@ -23,6 +23,8 @@ public class TestPropertyContainer extends TestCase
   public void testNewContainer()
   {
     PropertyContainer pc = new PropertyContainer();
+    assertFalse( pc.isBuilt() );
+
     assertTrue( "New property container not empty.",
                 pc.isEmpty());
     int size = pc.size();
@@ -183,6 +185,8 @@ public class TestPropertyContainer extends TestCase
     pc.addProperty( name3, value3 );
 
     pc.build();
+    assertTrue( pc.isBuilt() );
+
 
     try
     {

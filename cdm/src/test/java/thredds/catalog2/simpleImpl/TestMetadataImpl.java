@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 import thredds.catalog2.builder.BuilderFinishIssue;
+import thredds.catalog2.builder.BuilderException;
+import thredds.catalog2.Metadata;
 
 /**
  * _more_
@@ -17,12 +19,14 @@ import thredds.catalog2.builder.BuilderFinishIssue;
  */
 public class TestMetadataImpl extends TestCase
 {
+  private MetadataImpl mdImpl1;
+  private Metadata md1;
+  private MetadataImpl mdImpl2;
+  private Metadata md2;
 
   private URI uri;
   private String title;
   private String content;
-
-//  private MetadataImpl me;
 
   public TestMetadataImpl( String name )
   {
@@ -37,30 +41,42 @@ public class TestMetadataImpl extends TestCase
     { fail("Bad URI syntax: " + e.getMessage()); return; }
     this.title = "metadata title";
     this.content = "<x>some content</x>";
+
+    mdImpl1 = new MetadataImpl( this.title, this.uri );
+    mdImpl2 = new MetadataImpl( this.content );
   }
 
   public void testCtorGet()
   {
-    MetadataImpl md1 = new MetadataImpl( this.title, this.uri );
-    assertFalse( md1.isContainedContent());
-    assertTrue( md1.getTitle().equals(  this.title ));
-    assertTrue( md1.getExternalReference().equals( this.uri ));
+    // MetadataImpl is immutible so isBuilt() alwasys true.
+    assertTrue( mdImpl1.isBuilt() );
 
-    MetadataImpl md2 = new MetadataImpl( this.content);
-    assertTrue( md2.isContainedContent());
-    assertTrue( md2.getContent().equals( this.content));
+    assertFalse( mdImpl1.isContainedContent());
+    assertTrue( mdImpl1.getTitle().equals(  this.title ));
+    assertTrue( mdImpl1.getExternalReference().equals( this.uri ));
 
-    // Test non-Builder gets before build, should all throw IllegalStateExceptions
+    assertTrue( mdImpl2.isContainedContent());
+    assertTrue( mdImpl2.getContent().equals( this.content));
+  }
+
+  public void testBuilderIllegalState()
+  {
+    // Test getContent() when isContainedContent()==false;
+    // Should throw IllegalStateException.
     try
-    { md1.getContent(); }
+    { mdImpl1.getContent(); }
     catch ( IllegalStateException ise1 )
     {
+      // Test getTitle() when isContainedContent()==true;
+      // Should throw IllegalStateException.
       try
-      { md2.getTitle(); }
+      { mdImpl2.getTitle(); }
       catch ( IllegalStateException ise2 )
       {
+        // Test ExternalReference() when isContainedContent()==true;
+        // Should throw IllegalStateException.
         try
-        { md2.getExternalReference(); }
+        { mdImpl2.getExternalReference(); }
         catch ( IllegalStateException ise3 )
         {
           return;
@@ -74,5 +90,85 @@ public class TestMetadataImpl extends TestCase
     catch( Exception e )
     { fail( "Unexpected non-IllegalStateException."); }
     fail( "Did not throw expected IllegalStateException." );
+  }
+
+  public void testBuild()
+  {
+    // Check if buildable
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    if ( ! mdImpl1.isBuildable( issues ) )
+    {
+      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
+      for ( BuilderFinishIssue bfi : issues )
+        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
+      fail( stringBuilder.toString() );
+    }
+    if ( ! mdImpl2.isBuildable( issues ) )
+    {
+      StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
+      for ( BuilderFinishIssue bfi : issues )
+        stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
+      fail( stringBuilder.toString() );
+    }
+
+    // Build
+    try
+    { md1 = mdImpl1.build(); }
+    catch ( BuilderException e )
+    { fail( "Build failed: " + e.getMessage() ); }
+
+    try
+    { md2 = mdImpl2.build(); }
+    catch ( BuilderException e )
+    { fail( "Build failed: " + e.getMessage() ); }
+  }
+
+  public void testBuiltGet()
+  {
+    // *** Build doesn't do anything since MetadataImpl is immutable. ***
+//    this.testBuild();
+//
+//    assertFalse( md1.isContainedContent() );
+//    assertTrue( md1.getTitle().equals( this.title ) );
+//    assertTrue( md1.getExternalReference().equals( this.uri ) );
+//
+//    assertTrue( md2.isContainedContent() );
+//    assertTrue( md2.getContent().equals( this.content ) );
+  }
+
+  public void testBuiltGetIllegalState()
+  {
+    // *** Build doesn't do anything since MetadataImpl is immutable. ***
+//    this.testBuild();
+//
+//    // Test getContent() when isContainedContent()==false;
+//    // Should throw IllegalStateException.
+//    try
+//    { md1.getContent(); }
+//    catch ( IllegalStateException ise1 )
+//    {
+//      // Test getTitle() when isContainedContent()==true;
+//      // Should throw IllegalStateException.
+//      try
+//      { md2.getTitle(); }
+//      catch ( IllegalStateException ise2 )
+//      {
+//        // Test getExternalReference() when isContainedContent()==true;
+//        // Should throw IllegalStateException.
+//        try
+//        { md2.getExternalReference(); }
+//        catch ( IllegalStateException ise3 )
+//        {
+//          return;
+//        }
+//        catch( Exception e )
+//        { fail( "Unexpected non-IllegalStateException."); }
+//      }
+//      catch( Exception e )
+//      { fail( "Unexpected non-IllegalStateException."); }
+//    }
+//    catch( Exception e )
+//    { fail( "Unexpected non-IllegalStateException."); }
+//    fail( "Did not throw expected IllegalStateException." );
   }
 }
