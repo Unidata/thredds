@@ -22,7 +22,7 @@ public class StaxThreddsXmlParserUtils
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( StaxThreddsXmlParserUtils.class );
   
-  public static String consumeElementAndAnyContent( XMLEventReader xmlEventReader ) throws ThreddsXmlParserException
+  public static String readElementAndAnyContent( XMLEventReader xmlEventReader ) throws ThreddsXmlParserException
   {
     if ( xmlEventReader == null )
       throw new IllegalArgumentException( "XMLEventReader may not be null." );
@@ -56,7 +56,7 @@ public class StaxThreddsXmlParserUtils
           {
             // Parser should have had FATAL error for this.
             String msg = "Badly formed XML? End element [" + endElemName.getLocalPart() + "] doesn't match expected start element [" + lastName.getLocalPart() + "].";
-            log.error( "consumeElementAndAnyContent(): " + msg );
+            log.error( "readElementAndAnyContent(): " + msg );
             throw new ThreddsXmlParserException( "FATAL? " + msg );
           }
         }

@@ -12,7 +12,6 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.namespace.QName;
 import javax.xml.XMLConstants;
 
@@ -107,7 +106,7 @@ public class PropertyElementParser extends AbstractElementParser
           throws ThreddsXmlParserException
   {
     if ( ! isChildElement( startElement ) )
-      StaxThreddsXmlParserUtils.consumeElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
   }
 
   protected void postProcessing( ThreddsBuilder builder )

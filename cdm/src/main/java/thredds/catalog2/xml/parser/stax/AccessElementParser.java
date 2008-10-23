@@ -106,7 +106,7 @@ public class AccessElementParser extends AbstractElementParser
 //    else
     {
       //if ( !isChildElement( startElement ) )
-        StaxThreddsXmlParserUtils.consumeElementAndAnyContent( this.reader );
+        StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
     }
   }
 

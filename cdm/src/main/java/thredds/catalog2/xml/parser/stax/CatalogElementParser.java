@@ -111,7 +111,7 @@ public class CatalogElementParser extends AbstractElementParser
     }
     else
     {
-      StaxThreddsXmlParserUtils.consumeElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
     }
   }
 

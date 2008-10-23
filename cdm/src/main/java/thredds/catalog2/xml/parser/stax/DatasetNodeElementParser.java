@@ -121,7 +121,7 @@ public class DatasetNodeElementParser extends AbstractElementParser
     }
     else
     {
-      StaxThreddsXmlParserUtils.consumeElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
     }
   }
 
