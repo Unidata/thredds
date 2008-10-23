@@ -186,9 +186,9 @@ public class TestDatasetImpl extends TestCase
     catch ( BuilderException e )
     { fail( "Build failed: " + e.getMessage() ); }
 
-    assertFalse( parentDatasetBldr.isBuilt() );
-    assertFalse( catRefBldr.isBuilt() );
-    assertFalse( dsBuilder.isBuilt() );
+    assertTrue( parentDatasetBldr.isBuilt() );
+    assertTrue( catRefBldr.isBuilt() );
+    assertTrue( dsBuilder.isBuilt() );
     ds = (Dataset) dsBuilder;
 
     // Test getters of resulting Dataset.

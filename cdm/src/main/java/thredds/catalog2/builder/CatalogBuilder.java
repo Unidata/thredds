@@ -53,9 +53,10 @@ public interface CatalogBuilder extends ThreddsBuilder
   /**
    * Generate the resulting Catalog.
    *
-   * @return the resulting Catalog object (immutable?).  
+   * @return the resulting Catalog object.  
    * @throws IllegalStateException if any Catalog invariants are violated.
    */
+  @Override
   public Catalog build() throws BuilderException;
 
 }

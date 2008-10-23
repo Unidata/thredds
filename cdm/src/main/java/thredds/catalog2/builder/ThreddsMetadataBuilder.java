@@ -5,7 +5,9 @@ import java.util.List;
 
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.constants.FeatureType;
 import thredds.catalog2.ThreddsMetadata;
+import thredds.catalog.DataFormatType;
 
 /**
  * _more_
@@ -75,14 +77,17 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
   public void setDataSizeInBytes( long dataSizeInBytes );
   public long getDataSizeInBytes();
 
-  public void setDataFormat( String dataFormat);
-  public String getDataFormat();
+  public void setDataFormat( DataFormatType dataFormat);
+  public DataFormatType getDataFormat();
 
-  public void setDataType( String dataType );
-  public String getDataType();
+  public void setDataType( FeatureType dataType );
+  public FeatureType getDataType();
 
   public void setCollectionType( String collectionType );
   public String getCollectionType();
+
+  @Override
+  ThreddsMetadata build() throws BuilderException;
 
   public interface DocumentationBuilder extends ThreddsBuilder
   {

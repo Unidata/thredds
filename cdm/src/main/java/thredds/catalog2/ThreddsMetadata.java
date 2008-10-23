@@ -5,6 +5,8 @@ import java.util.List;
 
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
+import ucar.nc2.constants.FeatureType;
+import thredds.catalog.DataFormatType;
 
 /**
  * _more_
@@ -37,8 +39,8 @@ public interface ThreddsMetadata
   public List<Variable> getVariables();
 
   public long getDataSizeInBytes();
-  public String getDataFormat();
-  public String getDataType();
+  public DataFormatType getDataFormat();
+  public FeatureType getDataType();
   public String getCollectionType(); // ?????
 
   public interface Documentation

@@ -17,5 +17,6 @@ public interface CatalogRefBuilder
   public URI getReference();
   public void setReference( URI reference );
 
+  @Override
   public CatalogRef build() throws BuilderException;
 }

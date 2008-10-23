@@ -27,6 +27,12 @@ public class TestDatasetNodeImpl extends TestCase
   private DatasetNodeBuilder parentDataset;
   private String parentDsName;
 
+  private CatalogRefBuilder catRefBldr;
+  private String catRefId;
+  private String catRefTitle;
+  private URI catRefUri;
+
+
   private DatasetNodeImpl dsNodeImpl;
   private DatasetNode dsNode;
   private DatasetNodeBuilder dsNodeBldr;
@@ -59,7 +65,9 @@ public class TestDatasetNodeImpl extends TestCase
     parentCatName = "parent catalog";
     parentCatDocBaseUri = null;
     try
-    { parentCatDocBaseUri = new URI( "http://server/thredds/aCat.xml"); }
+    { parentCatDocBaseUri = new URI( "http://server/thredds/aCat.xml");
+      catRefUri = new URI( "http://server/thredds/anotherCat.xml" );
+    }
     catch ( URISyntaxException e )
     { fail( "Bad URI syntax: " + e.getMessage()); }
     parentCatVer = "version";
@@ -67,6 +75,9 @@ public class TestDatasetNodeImpl extends TestCase
 
     parentDsName = "parent dataset";
     parentDataset = parentCatalog.addDataset( parentDsName );
+
+    catRefId = "catRef1";
+    catRefTitle = "Catalog Ref";
 
     id = "id";
     idAuthority = "idAuthority";
@@ -89,6 +100,7 @@ public class TestDatasetNodeImpl extends TestCase
 
   private void initBuilder()
   {
+    assertFalse( parentDataset.isBuilt() );
     assertFalse( dsNodeBldr.isBuilt() );
 
     dsNodeBldr.setId( id );
@@ -103,6 +115,8 @@ public class TestDatasetNodeImpl extends TestCase
 
     childDsNodeBuilder1 = dsNodeBldr.addDataset( childDsNodeName1 );
     childDsNodeBuilder2 = dsNodeBldr.addDataset( childDsNodeName2 );
+
+    catRefBldr = dsNodeBldr.addCatalogRef( catRefTitle, catRefUri );
   }
 
   private void checkBuilderGet()
@@ -132,12 +146,14 @@ public class TestDatasetNodeImpl extends TestCase
 
     List<DatasetNodeBuilder> dsNodeBuilderList = dsNodeBldr.getDatasetNodeBuilders();
     assertTrue( "Number of child datasets [" + dsNodeBuilderList.size() + "] not as expected [2].",
-                dsNodeBuilderList.size() == 2 );
+                dsNodeBuilderList.size() == 3 );
     assertTrue( dsNodeBuilderList.get( 0 ) == childDsNodeBuilder1 );
     assertTrue( dsNodeBuilderList.get( 1 ) == childDsNodeBuilder2 );
+    assertTrue( dsNodeBuilderList.get( 2 ) == catRefBldr );
 
     assertNull( dsNodeBldr.getDatasetNodeBuilderById( childDsNodeId1 ) );
     assertNull( dsNodeBldr.getDatasetNodeBuilderById( childDsNodeId2 ) );
+    assertNull( dsNodeBldr.getDatasetNodeBuilderById( catRefId ) );
 
     String newName = "new name";
     dsNodeBldr.setName( newName );
@@ -150,15 +166,23 @@ public class TestDatasetNodeImpl extends TestCase
   {
     childDsNodeBuilder1.setId( childDsNodeId1 );
     childDsNodeBuilder2.setId( childDsNodeId2 );
+    catRefBldr.setId( catRefId );
 
     assertTrue( childDsNodeBuilder1.getId().equals( childDsNodeId1 ) );
     assertTrue( childDsNodeBuilder2.getId().equals( childDsNodeId2 ) );
+    assertTrue( catRefBldr.getId().equals( catRefId ) );
+
     assertTrue( childDsNodeBuilder1.isDatasetIdInUseGlobally( childDsNodeId1 ) );
     assertTrue( childDsNodeBuilder1.isDatasetIdInUseGlobally( childDsNodeId2 ) );
+    assertTrue( childDsNodeBuilder1.isDatasetIdInUseGlobally( catRefId ) );
+
     assertNull( childDsNodeBuilder1.getDatasetNodeBuilderById( childDsNodeId1 ));
     assertNull( childDsNodeBuilder1.getDatasetNodeBuilderById( childDsNodeId2 ));
+    assertNull( childDsNodeBuilder1.getDatasetNodeBuilderById( catRefId ));
+
     assertTrue( childDsNodeBuilder1.findDatasetNodeBuilderByIdGlobally( childDsNodeId1 ) == childDsNodeBuilder1 );
     assertTrue( childDsNodeBuilder1.findDatasetNodeBuilderByIdGlobally( childDsNodeId2 ) == childDsNodeBuilder2 );
+    assertTrue( childDsNodeBuilder1.findDatasetNodeBuilderByIdGlobally( catRefId ) == catRefBldr );
 
     childDsNodeBuilder1.setId( childDsNodeId1_new );
     childDsNodeBuilder2.setId( childDsNodeId2_new );
@@ -192,8 +216,11 @@ public class TestDatasetNodeImpl extends TestCase
     catch ( BuilderException e )
     { fail( "Build failed: " + e.getMessage() ); }
 
+    assertFalse( parentDataset.isBuilt());
     assertTrue( dsNodeBldr.isBuilt() );
-
+    assertTrue( childDsNodeBuilder1.isBuilt());
+    assertTrue( childDsNodeBuilder2.isBuilt());
+    assertTrue( catRefBldr.isBuilt());
   }
 
   public void testCtorBuilderSetGet()
@@ -255,6 +282,10 @@ public class TestDatasetNodeImpl extends TestCase
     assertTrue( dsNodeBldr.removeDatasetNode( childDsNodeBuilder1 ));
     assertNull( dsNodeBldr.getDatasetNodeBuilderById( childDsNodeId1 ));
     assertFalse( dsNodeBldr.isDatasetIdInUseGlobally( childDsNodeId1 ));
+
+    assertTrue( dsNodeBldr.removeDatasetNode( catRefBldr ));
+    assertNull( dsNodeBldr.getDatasetNodeBuilderById( catRefId ));
+    assertFalse( dsNodeBldr.isDatasetIdInUseGlobally( catRefId ));
   }
 
   public void testBuilderIllegalStateExceptionOnProperty()
@@ -332,6 +363,7 @@ public class TestDatasetNodeImpl extends TestCase
 
     childDsNodeBuilder1.setId( childDsNodeId1 );
     childDsNodeBuilder2.setId( childDsNodeId2 );
+    catRefBldr.setId( catRefId );
 
     this.callBuildOnBuilder();
 
@@ -346,12 +378,14 @@ public class TestDatasetNodeImpl extends TestCase
     assertTrue( dsNode.getPropertyByName( p3n ).getName().equals( p3n ) );
 
     List<DatasetNode> dl = dsNode.getDatasets();
-    assertTrue( dl.size() == 2 );
+    assertTrue( dl.size() == 3 );
     assertTrue( dl.get( 0 ) == childDsNodeBuilder1 );
     assertTrue( dl.get( 1 ) == childDsNodeBuilder2 );
+    assertTrue( dl.get( 2 ) == catRefBldr );
 
     assertTrue( dsNode.getDatasetById( childDsNodeId1 ) == childDsNodeBuilder1 );
     assertTrue( dsNode.getDatasetById( childDsNodeId2 ) == childDsNodeBuilder2 );
+    assertTrue( dsNode.getDatasetById( catRefId ) == catRefBldr );
   }
 
   public void testPostBuildIllegalStateExceptionOnDataset()

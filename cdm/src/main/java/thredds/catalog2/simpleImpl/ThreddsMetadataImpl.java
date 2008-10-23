@@ -4,6 +4,7 @@ import thredds.catalog2.ThreddsMetadata;
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
 import thredds.catalog2.builder.BuilderFinishIssue;
 import thredds.catalog2.builder.BuilderException;
+import thredds.catalog.DataFormatType;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.net.URISyntaxException;
 
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
+import ucar.nc2.constants.FeatureType;
 
 /**
  * _more_
@@ -45,8 +47,8 @@ public class ThreddsMetadataImpl
 
   private List<VariableImpl> variables;
   private long dataSizeInBytes;
-  private String dataFormat;
-  private String dataType;
+  private DataFormatType dataFormat;
+  private FeatureType dataType;
   private String collectionType;
 
   public ThreddsMetadataImpl()
@@ -463,26 +465,26 @@ public class ThreddsMetadataImpl
     return this.dataSizeInBytes;
   }
 
-  public void setDataFormat( String dataFormat )
+  public void setDataFormat( DataFormatType dataFormat )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
     this.dataFormat = dataFormat;
   }
 
-  public String getDataFormat()
+  public DataFormatType getDataFormat()
   {
     return this.dataFormat;
   }
 
-  public void setDataType( String dataType )
+  public void setDataType( FeatureType dataType )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This Builder has been built." );
     this.dataType = dataType;
   }
 
-  public String getDataType()
+  public FeatureType getDataType()
   {
     return this.dataType;
   }
@@ -506,12 +508,42 @@ public class ThreddsMetadataImpl
 
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
+    if ( this.isBuilt )
+      return true;
+
+    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+
+    // Check subordinates.
+    for ( DocumentationImpl doc : this.docs )
+      doc.isBuildable( localIssues );
+    // ToDo keywords
+    // ToDo ...
+
+
+    if ( localIssues.isEmpty() )
+      return true;
+
+    issues.addAll( localIssues );
     return false;
   }
 
   public ThreddsMetadata build() throws BuilderException
   {
-    return null;
+    if ( this.isBuilt )
+      return this;
+
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    if ( ! isBuildable( issues ) )
+      throw new BuilderException( issues );
+
+    // Check subordinates.
+    for ( DocumentationImpl doc : this.docs )
+      doc.build();
+    // ToDo keywords
+    // ToDo ...
+
+    this.isBuilt = true;
+    return this;
   }
 
   public static class DocumentationImpl

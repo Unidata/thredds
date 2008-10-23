@@ -364,6 +364,5 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
 
     this.isBuilt = true;
     return this;
-
   }
 }
