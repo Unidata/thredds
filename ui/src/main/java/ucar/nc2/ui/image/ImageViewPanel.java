@@ -150,7 +150,7 @@ public class ImageViewPanel extends JPanel {
 
       // deregister yourself
       KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher( this);
-      return false;  //To change body of implemented methods use File | Settings | File Templates.
+      return false;
     }
   }
 
@@ -179,7 +179,7 @@ public class ImageViewPanel extends JPanel {
        try {
          url = new URL( location);
        } catch (MalformedURLException e) {
-         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+         e.printStackTrace();
        }
 
        // uses ImageIO.createImageInputStream()

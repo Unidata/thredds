@@ -181,6 +181,7 @@ public class ImageDatasetFactory {
 
     File nextFile = currentDirFileList.get(currentDirFileNo);
     try {
+      System.out.println("Open image "+nextFile);
       return javax.imageio.ImageIO.read(nextFile);
     } catch (IOException e) {
       System.out.println("Failed to open image "+nextFile);
