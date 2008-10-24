@@ -1,0 +1,317 @@
+/*
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+package ucar.nc2.iosp.bufr;
+
+import ucar.unidata.io.RandomAccessFile;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Date;
+import java.io.IOException;
+
+
+/**
+ * A class representing the IdentificationSection (section 1) of a BUFR record.
+ * @author Robb Kambic
+ * @author caron
+ */
+
+public class BufrIdentificationSection {
+
+  /**
+   * Master Table number.
+   */
+  private final int master_table;
+
+  /**
+   * Identification of subcenter .
+   */
+  private final int subcenter_id;
+
+  /**
+   * Identification of center.
+   */
+  private final int center_id;
+
+  /**
+   * Update Sequence Number.
+   */
+  private final int update_sequence;
+
+  /**
+   * Optional section exists.
+   */
+  private final boolean hasOptionalSection;
+  private int optionalSectionLen;
+  private long optionalSectionPos;
+
+  /**
+   * Data category.
+   */
+  private final int category;
+
+  /**
+   * Data sub category.
+   */
+  private final int subCategory;
+
+  private final int localSubCategory; // edition >= 4
+
+  /**
+   * Table Version numbers.
+   */
+  private final int master_table_version;
+  private final int local_table_version;
+
+  /**
+   * Time of the obs (nominal)
+   */
+  private final int year, month, day, hour, minute, second;
+  private Date refTime;
+
+  private final byte[] localUse;
+
+  // *** constructors *******************************************************
+
+  /**
+   * Constructs a <tt>BufrIdentificationSection</tt> object from a raf.
+   *
+   * @param raf RandomAccessFile with Section 1 content
+   * @param is  the BufrIndicatorSection, needed for the bufr edition number
+   * @throws IOException if raf contains no valid BUFR file
+   */
+  public BufrIdentificationSection(RandomAccessFile raf, BufrIndicatorSection is)
+          throws IOException {
+
+    // section 1 octet 1-3 (length of section)
+    int length = BufrNumbers.int3(raf);
+
+    //System.out.println( "IdentificationSection length=" + length );
+
+    // master table octet 4
+    master_table = raf.read();
+    //System.out.println( "master tbl=" + master_table );
+
+    if (is.getBufrEdition() < 4) {
+
+      if (is.getBufrEdition() == 2) {
+        subcenter_id = 255;
+        // Center  octet 5-6
+        center_id = BufrNumbers.int2(raf);
+
+      } else { // edition 3
+        // Center  octet 5
+        subcenter_id = raf.read();
+        //System.out.println( "subcenter_id=" + subcenter_id );
+        // Center  octet 6
+        center_id = raf.read();
+        //System.out.println( "center_id=" + center_id );
+      }
+
+      // Update sequence number  octet 7
+      update_sequence = raf.read();
+      //System.out.println( "update=" + update );
+
+      // Optional section octet 8
+      int optional = raf.read();
+      hasOptionalSection = (optional & 0x80) != 0;
+      //System.out.println( "optional=" + optional );
+
+      // Category  octet 9
+      category = raf.read();
+      //System.out.println( "category=" + category );
+
+      // Category  octet 10
+      subCategory = raf.read();
+      //System.out.println( "subCategory=" + subCategory );
+
+      localSubCategory = -1; // not used
+
+      // master table version octet 11
+      master_table_version = raf.read();
+      //System.out.println( "master tbl_version=" + master_table_version );
+
+      // local table version octet 12
+      local_table_version = raf.read();
+      //System.out.println( "local tbl_version=" + local_table_version );
+
+      // octets 13-17 (reference time of forecast)
+      int lyear = raf.read();
+      if (lyear > 100)
+        lyear -= 100;
+      year = lyear + 2000;
+      month = raf.read() - 1;
+      day = raf.read();
+      hour = raf.read();
+      minute = raf.read();
+      second = 0;
+
+      int n = length - 17;
+      localUse = new byte[n];
+      raf.read(localUse);
+    }
+    // BUFR Edition 4 and above are slightly different
+    else {
+      //    	 Center  octet 5 - 6
+      center_id = BufrNumbers.int2(raf);
+
+      // Sub Center  octet 7-8
+      subcenter_id = BufrNumbers.int2(raf);
+
+      //	    Update sequence number  octet 9
+      update_sequence = raf.read();
+
+      // Optional section octet 10
+      int optional = raf.read();
+      hasOptionalSection = (optional & 0x40) != 0;
+
+      //	    Category  octet 11
+      category = raf.read();
+
+      // International Sub Category  octet 12
+      subCategory = raf.read();
+
+      // Local Sub Category Octet 13 - just read this for now
+      localSubCategory = raf.read();
+
+      //	    master table version octet 14
+      master_table_version = raf.read();
+
+      // local table version octet 15
+      local_table_version = raf.read();
+      //	    octets 16-22 (reference time of forecast)
+
+      // Octet 16-17 is the 4-digit year
+      year = BufrNumbers.int2(raf);
+      month = raf.read();
+      day = raf.read();
+      hour = raf.read();
+      minute = raf.read();
+      second = raf.read();
+
+      int n = length - 22;
+      localUse = new byte[n];
+      raf.read(localUse);
+    }
+
+    // read in optional section
+    if (hasOptionalSection) {
+      int optionalLen = BufrNumbers.int3(raf);
+      if (optionalLen % 2 != 0) optionalLen++;
+      optionalSectionLen = optionalLen - 4;
+      raf.skipBytes(1);
+      optionalSectionPos = raf.getFilePointer();
+    }
+  } // end if BufrIdentificationSection
+
+  /**
+   * Identification of center.
+   *
+   * @return center id as int
+   */
+  public final int getCenter_id() {
+    return center_id;
+  }
+
+  /**
+    * Identification of subcenter.
+    *
+    * @return subcenter as int
+    */
+   public final int getSubCenter_id() {
+     return subcenter_id;
+   }
+
+  /**
+    * Get update sequence.
+    *
+    * @return update_sequence
+    */
+   public final int getUpdateSequence() {
+     return update_sequence;
+   }
+
+   /**
+   * local table version number.
+   *
+   * @return local_table as int
+   */
+   public final int getLocal_table() {
+     return local_table_version;
+   }
+
+  public final byte[] getOptionalSection(RandomAccessFile raf) throws IOException {
+    if (!hasOptionalSection) return null;
+
+    byte[] optionalSection = new byte[optionalSectionLen - 4];
+    raf.seek(optionalSectionPos);
+    raf.read(optionalSection);
+    return optionalSection;
+  }
+
+  /**
+   * return record header time as a Date
+   *
+   * @return referenceTime
+   */
+  public final Date getReferenceTime() {
+    if (refTime == null) {
+      Calendar cal = new GregorianCalendar(year, month, day, hour, minute, second);
+      refTime = cal.getTime();
+    }
+    return refTime;
+  }
+
+  public final int getCategory() {
+    return category;
+  }
+
+  public final int getSubCategory() {
+    return subCategory;
+  }
+
+  public final int getLocalSubCategory() {
+    return localSubCategory;
+  }
+
+  public final int getMasterTableId() {
+    return master_table;
+  }
+
+  public final int getMasterTableVersion() {
+    return master_table_version;
+  }
+
+  public final int getLocalTableVersion() {
+    return local_table_version;
+  }
+
+  /**
+   * last bytes of the id section are "reserved for local use by ADP centers.
+   *
+   * @return local use bytes, if any.
+   */
+  public final byte[] getLocalUseBytes() {
+    return localUse;
+  }
+
+
+
+}

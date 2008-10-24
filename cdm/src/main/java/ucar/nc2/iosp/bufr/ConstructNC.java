@@ -19,8 +19,8 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import ucar.bufr.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.bufr.tables.CodeTable;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
@@ -70,7 +70,7 @@ class ConstructNC {
       // log.warn("unknown category=" + category);
     }
 
-    String centerName = proto.ids.getCenterName();
+    String centerName = proto.getCenterName();
 
     // global Attributes
     ncfile.addAttribute(null, new Attribute("history", "direct read of BUFR data by CDM version 4.0"));
@@ -282,21 +282,21 @@ class ConstructNC {
         v.setDataType(DataType.BYTE);
         if (nbits == 8) {
           v.addAttribute(new Attribute("_unsigned", "true"));
-          v.addAttribute(new Attribute("missing_value", (short) BufrDataSection.missing_value[nbits]));
+          v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missing_value[nbits]));
         } else
-          v.addAttribute(new Attribute("missing_value", (byte) BufrDataSection.missing_value[nbits]));
+          v.addAttribute(new Attribute("missing_value", (byte) BufrNumbers.missing_value[nbits]));
 
       } else if (nbytes == 2) {
         v.setDataType(DataType.SHORT);
         if (nbits == 16) {
           v.addAttribute(new Attribute("_unsigned", "true"));
-          v.addAttribute(new Attribute("missing_value", BufrDataSection.missing_value[nbits]));
+          v.addAttribute(new Attribute("missing_value", BufrNumbers.missing_value[nbits]));
         } else
-          v.addAttribute(new Attribute("missing_value", (short) BufrDataSection.missing_value[nbits]));
+          v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missing_value[nbits]));
 
       } else {
         v.setDataType(DataType.INT);
-        v.addAttribute(new Attribute("missing_value", BufrDataSection.missing_value[nbits]));
+        v.addAttribute(new Attribute("missing_value", BufrNumbers.missing_value[nbits]));
       }
 
       // value = scale_factor * packed + add_offset

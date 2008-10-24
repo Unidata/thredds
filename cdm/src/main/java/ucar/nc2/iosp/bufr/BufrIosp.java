@@ -19,13 +19,9 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import ucar.bufr.*;
-import ucar.bufr.Index;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 
@@ -35,7 +31,6 @@ import java.io.*;
 import java.util.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.text.ParseException;
 
 /**
  * IOSP for BUFR data
@@ -52,25 +47,17 @@ public class BufrIosp extends AbstractIOServiceProvider {
   static private boolean debugSize = false;
   static private boolean debugOpen = false;
 
-  static private boolean forceNewIndex = false; // force that a new index file is written
-  static private boolean extendIndex = false; // check if index needs to be extended
-
-  static public void setExtendIndex(boolean b) {
-    extendIndex = b;
-  }
-
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugOpen = debugFlag.isSet("Bufr/open");
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private NetcdfFile ncfile;
   private RandomAccessFile raf;
   private Formatter parseInfo;
   private ConstructNC construct;
   private Message protoMessage;
-  private DateFormatter dateFormatter = new DateFormatter();
+  // private DateFormatter dateFormatter = new DateFormatter();
 
   private List<Message> msgs = new ArrayList<Message>();
   private int[] obsStart; // for each message, the starting observation index
@@ -81,7 +68,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
-    this.ncfile = ncfile;
 
     long start = System.nanoTime();
     if (debugOpen) {
@@ -439,7 +425,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
       // workaround for misformed messages
       if (dataWidth > dkey.bitWidth) {
-        int missingVal = ucar.bufr.BufrNumbers.missing_value[dkey.bitWidth];
+        int missingVal = BufrNumbers.missing_value[dkey.bitWidth];
         if ((value & missingVal) != value) // overflow
           value = missingVal;     // replace with missing value
       }
@@ -498,7 +484,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     return ama;
   }
 
-  private long getTime(Index.BufrObs obs) {
+  /* private long getTime(Index.BufrObs obs) {
     if (obs.time == 0)
       try {
         Date date = dateFormatter.isoDateTimeFormat(obs.getIsoDate());
@@ -507,7 +493,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
         e.printStackTrace();
       }
     return obs.time;
-  }
+  } */
 
   // read in the data into an ArrayStructureBB
   private ArraySequence makeArraySequence(BitReader reader, BitCounterUncompressed bitCounterNested, MemberDD mdd) throws IOException {
@@ -598,7 +584,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   public String getDetailInfo() {
     Formatter ff = new Formatter();
     try {
-      new Dump().dump(ff, protoMessage);
+      protoMessage.dump(ff);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -607,82 +593,5 @@ public class BufrIosp extends AbstractIOServiceProvider {
     return ff.toString();
   }
 
-  /**
-   * main.
-   */
-  public static void main(String args[]) throws Exception, IOException,
-      InstantiationException, IllegalAccessException {
 
-    //String fileIn = "C:/data/dt2/point/bufr/IUA_CWAO_20060202_12.bufr";
-    //String fileIn = "C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr";
-    //String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
-    //String fileIn = "R:/testdata/bufr/edition3/idd/profiler/PROFILER_1.bufr";
-    String fileIn = "D:/motherlode/bufr/cat.out";
-    NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
-    System.out.println(ncf.toString());
-
-    /* Structure s = (Structure) ncf.findVariable(obsRecord);
-    StructureData sdata = s.readStructure(2);
-    PrintWriter pw = new PrintWriter(System.out);
-    NCdumpW.printStructureData(pw, sdata);  */
-    new WriteT41_ncFlat(ncf, "D:/motherlode/bufr/cat2.nc", true);
-
-    //Variable v = ncf.findVariable("recordIndex");
-    //NCdumpW.printArray(v.read(), "recordIndex", pw, null);
-
-    /* ucar.nc2.Variable v;
-
-    v = ncf.findVariable("trajectory_id");
-    if (v != null) {
-      Array data = v.read();
-      NCdump.printArray(data, v.getName(), System.out, null);
-    }
-    v = ncf.findVariable("station_id");
-    if (v != null) {
-      Array data = v.read();
-      NCdump.printArray(data, v.getName(), System.out, null);
-    }
-    v = ncf.findVariable("firstChild");
-    if (v != null) {
-      Array data = v.read();
-      NCdump.printArray(data, v.getName(), System.out, null);
-    }
-    v = ncf.findVariable("numChildren");
-    if (v != null) {
-      Array data = v.read();
-      NCdump.printArray(data, v.getName(), System.out, null);
-    }
-    System.out.println();
-
-    v = ncf.findVariable("record");
-    //ucar.nc2.Variable v = ncf.findVariable("Latitude");
-    //ucar.nc2.Variable v = ncf.findVariable("time");
-    //System.out.println();
-    //System.out.println( v.toString());
-
-    if (v instanceof Structure) {
-      Structure s = (Structure) v;
-      StructureDataIterator iter = s.getStructureIterator();
-      int count = 0;
-      PrintWriter pw = new PrintWriter( System.out);
-      while (iter.hasNext()) {
-        System.out.println("record "+count);
-        NCdumpW.printStructureData(pw, iter.next());
-        count++;
-      }
-      Array data = v.read();
-      NCdump.printArray(data, "record", System.out, null);
-    } else {
-      Array data = v.read();
-      int[] length = data.getShape();
-      System.out.println();
-      System.out.println("v2 length =" + length[0]);
-
-      IndexIterator ii = data.getIndexIterator();
-      for (; ii.hasNext();) {
-        System.out.println(ii.getFloatNext());
-      }
-    }
-    ncf.close();  */
-  }
 } // end BufrIosp
