@@ -51,6 +51,5 @@ public interface DatasetNodeBuilder extends ThreddsBuilder
 
   public boolean isDatasetIdInUseGlobally( String id );
 
-  @Override
   public DatasetNode build() throws BuilderException;
 }

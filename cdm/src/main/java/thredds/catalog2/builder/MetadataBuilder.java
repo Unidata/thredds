@@ -21,6 +21,5 @@ public interface MetadataBuilder extends ThreddsBuilder
 
   public String getContent();
 
-  @Override
   public Metadata build() throws BuilderException;
 }

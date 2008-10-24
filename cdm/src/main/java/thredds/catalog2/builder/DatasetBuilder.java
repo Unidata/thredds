@@ -20,6 +20,5 @@ public interface DatasetBuilder extends DatasetNodeBuilder
   public List<AccessBuilder> getAccessBuilders();
   public List<AccessBuilder> getAccessBuildersByType( ServiceType type );
 
-  @Override
   public Dataset build() throws BuilderException;
 }

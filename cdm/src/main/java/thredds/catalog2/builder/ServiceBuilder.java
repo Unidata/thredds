@@ -95,6 +95,5 @@ public interface ServiceBuilder extends ThreddsBuilder
    *
    * @return the finished Service.
    */
-  @Override
   public Service build() throws BuilderException;
 }

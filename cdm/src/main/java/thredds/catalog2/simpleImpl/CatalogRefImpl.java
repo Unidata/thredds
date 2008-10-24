@@ -62,7 +62,6 @@ public class CatalogRefImpl
     return false;
   }
 
-  @Override
   public CatalogRef build() throws BuilderException
   {
     if ( this.isBuilt )

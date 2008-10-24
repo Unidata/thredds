@@ -134,7 +134,6 @@ public class DatasetImpl
     return false;
   }
 
-  @Override
   public Dataset build() throws BuilderException
   {
     if ( this.isBuilt )

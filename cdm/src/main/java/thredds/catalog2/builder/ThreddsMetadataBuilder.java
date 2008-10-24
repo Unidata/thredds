@@ -86,7 +86,6 @@ public interface ThreddsMetadataBuilder extends ThreddsBuilder
   public void setCollectionType( String collectionType );
   public String getCollectionType();
 
-  @Override
   ThreddsMetadata build() throws BuilderException;
 
   public interface DocumentationBuilder extends ThreddsBuilder

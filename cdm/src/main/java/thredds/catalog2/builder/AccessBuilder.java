@@ -25,6 +25,5 @@ public interface AccessBuilder extends ThreddsBuilder
   public long getDataSize();
   public void setDataSize( long bytes );
 
-  @Override
   public Access build() throws BuilderException;
 }
