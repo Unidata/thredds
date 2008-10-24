@@ -7,36 +7,7 @@
 <div class="head">
   <address>
   </address>
-  <hr>
-  <h2> Tomcat Directories</h2>
-<p>We've already looked in a few of the directories under the <code>${TOMCAT_HOME}</code> directory:<br>
-</p>
-<ul>
-  <li>The <code>bin/</code> directory contains the Tomcat starup and shutdown scripts:</li>
-  <ul>
-    <li><code>starup.sh</code></li>
-    <li><code>shutdown.sh</code></li>
-  </ul>
-  <li>The <code>webapps/</code> directory contains the software for each web application installed in Tomcat. For the TDS, we have:<br>
-  </li>
-  <ul>
-    <li>the <code>thredds.war</code> distribution file; and</li>
-    <li>the <code>thredds/</code> directory where the distribution is unpacked [Note: This directory is overwritten each time a new TDS is deployed.]<br>
-    </li>
-  </ul>
-</ul>
-<p>Another directory under <code>${TOMCAT_HOME}</code> we'll be looking at soon:<code></code><br>
-</p>
-<ul>
-  <li>The <code>logs/</code> directory contains the Tomcat log files:</li>
-  <ul>
-    <li><code>catalina.out</code> - standard output from all web applications<br>
-    </li>
-  </ul>
-</ul>
-<p>We will go into more detail on the <a href="DirectoryLayout.html#Tomcat">Tomcat directories</a> later.<br>
-</p>
-<h2>TDS Directories</h2>
+  <hr><h2>TDS Configuration Directory</h2>
 <p>All TDS configuration information is stored in a directory that is
 created the first time the TDS is run. The configuration directory, <code>${TOMCAT_HOME}/content/thredds</code>,
 is created and populated with default files the first time a TDS
@@ -45,10 +16,10 @@ upgraded or re-deployed. All your configuration, modifications, and
 additions should be made in this directory. Do not place files
 containing passwords or anything else with security issues in this
 directory.Typically you will only be adding and modifying catalogs and configuration files. </p>
-<p>We will go into more detail on the <a href="DirectoryLayout.html#TDS">TDS directories</a> later. For now, we will be focus on the following subset of the content directory:<br>
+<p>For now, we will be focus on the following subset of the content directory:<br>
 </p>
 <ul>
-  <li><code>content/thredds/</code></li>
+  <li><code>${TOMCAT_HOME}/</code><code>content/thredds/</code></li>
   <ul>
     <li><code>.INIT</code> - the presence of this file indicates whether the default files have been copied - <em><strong>it is important not to delete this file</strong></em>.</li>
     <li><code>catalog.xml </code> - the main TDS configuration catalog (root catalog for TDS configuration) <br>
