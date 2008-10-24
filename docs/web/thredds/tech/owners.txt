@@ -1,3 +1,61 @@
+Oct 2008
+
+caron@BERT /cygdrive/c/dev/tds/thredds/docs/web/thredds/tech
+-rwx------+ 1 caron Domain Users   312 Jul 25  2007 index.html			redirect to TDS.html
+-rwx------+ 1 caron Domain Users 33448 Jul 25  2007 TechSummary.htm     old - need to update
+-rwx------+ 1 caron Domain Users 10756 Jul 25  2007 indexOld.html		old - but leave for now
+-rwx------+ 1 caron Domain Users  2413 Aug  1  2007 owners.txt			this file
+drwx------+ 3 caron Domain Users     0 Jan  2  2008 server				out of date
+drwx------+ 3 caron Domain Users     0 Jan  2  2008 dqc					out of date
+drwx------+ 4 caron Domain Users     0 Jan  2  2008 catalog				
+drwx------+ 3 caron Domain Users     0 Jan  2  2008 dqcServlet
+drwx------+ 4 caron Domain Users     0 May 29 17:08 cataloggen
+drwx------+ 5 caron Domain Users     0 May 29 17:15 interfaceSpec
+drwx------+ 3 caron Domain Users     0 Sep 22 15:18 internal
+-rwx------+ 1 caron Domain Users 14775 Sep 24 12:30 StatusReport.html	current
+-rwx------+ 1 caron Domain Users  7595 Oct 22 16:01 TDS.html			current
+drwx------+ 5 caron Domain Users     0 Oct 23 15:57 tutorial
+drwx------+ 3 caron Domain Users     0 Oct 24 12:59 images
+drwx------+ 4 caron Domain Users     0 Oct 24 14:45 reference
+
+caron@BERT /cygdrive/c/dev/tds/thredds/docs/web/thredds/tech/tutorial
+$ ls -l -r -t
+total 5460
+-rwx------+ 1 caron Domain Users     857 Oct 28  2006 exampleTDScatalog.xml
+-rwx------+ 1 caron Domain Users    1930 Oct 28  2006 exampleCatalog.xml
+-rwx------+ 1 caron Domain Users  165631 Oct 29  2006 catGenServlet.png
+-rwx------+ 1 caron Domain Users    1916 Oct 30  2006 MetadataStandards.html		used?
+-rwx------+ 1 caron Domain Users    6094 Oct 30  2006 MetadataExtraction.html		?
+-rwx------+ 1 caron Domain Users  170496 Jul 25  2007 TipsnTricksatTDSWorkshop.ppt	ok
+-rwx------+ 1 caron Domain Users  348083 Jul 25  2007 TipsnTricksatTDSWorkshop.pdf	ok
+-rwx------+ 1 caron Domain Users    3024 Jul 25  2007 DirectoryLayout.html			?
+-rwx------+ 1 caron Domain Users    2198 Jul 25  2007 DigitalLibraries.html			?
+-rwx------+ 1 caron Domain Users    4119 Jul 25  2007 GettingStarted.html			used
+-rwx------+ 1 caron Domain Users   10595 Jul 25  2007 EnhancedCatalogs.html			used?
+-rwx------+ 1 caron Domain Users   12933 Jul 25  2007 NcML.htm						used
+-rwx------+ 1 caron Domain Users   16399 Jul 25  2007 CatalogPrimer.html			index - but check if neeeds updating
+-rwx------+ 1 caron Domain Users    4288 Jul 25  2007 TomcatFAQ.html				index - move to reference?
+-rwx------+ 1 caron Domain Users    3740 Jul 26  2007 TroubleShooting.html			used?
+-rwx------+ 1 caron Domain Users 1285632 Jul 26  2007 LEADatTDSWorkshop.ppt			remove
+-rwx------+ 1 caron Domain Users  285002 Jul 26  2007 LEADatTDSWorkshop.pdf			remove
+-rwx------+ 1 caron Domain Users    5433 Jul 26  2007 Performance.html				used?
+-rwx------+ 1 caron Domain Users 2984448 Jul 29  2007 TDSOverview.ppt				used
+-rwx------+ 1 caron Domain Users    6752 Aug  1  2007 schedule.html					remove when index is ready
+-rwx------+ 1 caron Domain Users    2770 Aug  1  2007 TDR2.html						remove
+-rwx------+ 1 caron Domain Users    1907 Aug  1  2007 CatalogGen.html				outdated?
+-rwx------+ 1 caron Domain Users   19329 Aug  3  2007 datasetScan.html				outdated - check ethan
+-rwx------+ 1 caron Domain Users   34440 Aug  3  2007 ConfigCatalogs.html			used
+-rwx------+ 1 caron Domain Users   14618 Aug  3  2007 BasicConfig.html				used
+-rwx------+ 1 caron Domain Users   74927 Aug  7  2007 productionAdvanced.html		?
+-rwx------+ 1 caron Domain Users   41010 Aug  8  2007 BasicTomcatTourAndSecurity.html used
+-rwx------+ 1 caron Domain Users   14187 Dec  7  2007 TDSConfiguration.html			?
+drwx------+ 3 caron Domain Users       0 Jan  2  2008 TomcatTraining
+drwx------+ 5 caron Domain Users       0 Jan  2  2008 IDDconfig
+-rwx------+ 1 caron Domain Users    5472 Oct 22 16:00 index.html					current
+
+======================================================
+Sept 2007
+
 thredds\docs\web\thredds\tech\owners.txt
 
 top directory

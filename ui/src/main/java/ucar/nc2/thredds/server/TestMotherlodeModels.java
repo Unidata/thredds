@@ -112,7 +112,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
 
   public static JPanel main;
   public static void main(String args[]) throws IOException {
-    String server = "http://motherlode.ucar.edu:8080/thredds";
+    String server = "http://newmotherlode.ucar.edu:8080/thredds";
     if (args.length > 0)
       server = args[0];
 
@@ -138,10 +138,10 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
 
     //TestMotherlodeModels problem = new TestMotherlodeModels("problem", server+problemCat, CatalogCrawler.USE_RANDOM_DIRECT, false);
-    //TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
     //TestMotherlodeModels chiz_models = new TestMotherlodeModels("chiz_models", server+chizModels, CatalogCrawler.USE_RANDOM_DIRECT, false);
     //TestMotherlodeModels nc_models = new TestMotherlodeModels("gribtonc", server+gribtonc, CatalogCrawler.USE_RANDOM_DIRECT, false);
-    TestMotherlodeModels localAll = new TestMotherlodeModels("localAll", "http://localhost:8080/thredds/catalog.xml", CatalogCrawler.USE_ALL, false);
+    //TestMotherlodeModels localAll = new TestMotherlodeModels("localAll", "http://localhost:8080/thredds/catalog.xml", CatalogCrawler.USE_ALL, false);
 
     frame.getContentPane().add(main);
     frame.pack();
@@ -149,10 +149,10 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     frame.setVisible(true);
 
     //problem.extract();
-    //all_models.extract();
+    all_models.extract();
     //chiz_models.extract();
     //nc_models.extract();
-    localAll.extract();
+    //localAll.extract();
   }
 
 }

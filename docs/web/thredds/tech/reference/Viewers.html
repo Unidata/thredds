@@ -3,23 +3,63 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Viewers</title>
+<title>TDS Viewer Links</title>
 </head>
 
 <body>
-<h1><img src="../images/unidataLogo.png" width="75" height="75" align="middle">Viewers</h1>
-<div class="head">
-  <address>
-  </address>
-  <hr>
-  <div class="head"></div>
-</div>
-<p>The TDS lists the set of known viewers for a direct dataset the bottom of its HTML web page. You can get your own viewer listed by creating a Java class that tells the TDS what datasets are viewable, and what HTML fragment to include. </p>
-<h2>Create a Viewer implementation class </h2>
-<p>Your class must implement the  <strong>thredds.servlet.Viewer</strong> interface: </p>
+<h1><img src="../images/unidataLogo.png" width="75" height="75" align="middle">Adding Viewer Links</h1>
+<hr>
+<p>The TDS adds <em><strong>Viewer Links</strong></em> to datasets at the bottom of a dataset's HTML web page, for example:</p>
+<p><img src="../images/StaticViewer.jpg" alt="Viewers" width="573" height="488" border="2"></p>
+<p>Currently, the TDS automatically adds a NetCDF-Java Tools link to any direct dataset that has an ID. It adds an IDV link to any dataset that has an OPENDAP service, and has a DataType of <em>GRID</em>.</p>
+<p>You can add your own viewer links in these ways:</p>
+<ol>
+  <li>Adding a property element to each dataset, explicitly listing the URL of the viewer</li>
+  <li>Creating a Java class that tells the TDS what datasets are viewable, and what HTML fragment to include. </li>
+</ol>
+<h2>Adding a property element </h2>
+<p>This method is available in TDS version 3.17+.</p>
+<h3>Adding a static viewer link</h3>
+<p>To add a viewer link to a specific dataset, add a property element to the dataset in the configuration file, for example:</p>
+<pre>  &lt;dataset name=&quot;Test Viewer&quot; ID=&quot;testViewer&quot; serviceName=&quot;dapService&quot; urlPath=&quot;test/testData.nc&quot; dataType=&quot;Grid&quot;&gt;<br>    <strong>&lt;property name=&quot;viewer&quot; value=&quot;http://www.unidata.ucar.edu/staff/caron/,MyViewer&quot;/&gt;</strong><br>  &lt;/dataset&gt;</pre>
+<p>  The name of the property must be <strong>&quot;viewer&quot;</strong>and the value must be the viewer link, a comma, and then the viewer name. The actual HTML fragment that is placed into the web page is<br>
+</p>
+<pre>    &lt;a href='&quot;+<strong>viewerLink</strong>+&quot;'&gt;&quot;+<strong>viewerName</strong>+&quot;&lt;/a&gt;<br>
+
+
+</pre>
+<h3>Using inheritence to add viewer links to many datasets</h3>
+<p>By placing the property in an inherited metadata element, one can make it appear on all children of the dataset. This is espcially useful in conjuction with the datasetScan element. For example:</p>
+<pre>&lt;datasetScan name=&quot;Test all files in a directory&quot; ID=&quot;testDatasetScan&quot; path=&quot;testAll&quot; location=&quot;content/testdata&quot;&gt;
+<strong>  &lt;metadata inherited=&quot;true&quot;&gt;</strong>
+    &lt;serviceName&gt;allServices&lt;/serviceName&gt;
+    &lt;dataType&gt;Grid&lt;/dataType&gt;    <strong>
+    &lt;property name=&quot;viewer&quot; value=&quot;http://www.unidata.ucar.edu/staff/caron/,MyViewer&quot;/&gt;</strong><br>  &lt;/metadata&gt;
+&lt;/datasetScan&gt;</pre>
+<h3>Adding the Dataset URL to the Viewer Link</h3>
+<p>You may need to include the dataset URL into the viewer link. If there is a single service for the dataset, you can place &quot;<strong>{url}</strong>&quot; into your viewer link, and the Dataset's access URL will be substituted for it:</p>
+<pre>  &lt;dataset name=&quot;Test Viewer2&quot; ID=&quot;testViewer2&quot; serviceName=&quot;dapService&quot; urlPath=&quot;test/testData.nc&quot; dataType=&quot;Grid&quot;<br>    &lt;property name=&quot;viewer&quot; value=&quot;http://localhost:8080/thredds/cdmValidate?URL=<strong>{url}</strong>,Validation Service&quot;/&gt;<br>  &lt;/dataset&gt;<br></pre>
+<p>will create a URL like:</p>
+<pre>  http://localhost:8080/thredds/cdmValidate?URL=http://localhost:8080/thredds/dodsC/test/testData.nc
+ </pre>
+<h3>Selecting one of the Dataset access URLs</h3>
+<p>When a Dataset has more than one kind of access, each access will have a seperate URL. Use the service name inside of curly brackets to select which access URL to use: </p>
+<pre>&lt;datasetScan name=&quot;Test all files in a directory&quot; ID=&quot;testDatasetScan&quot; path=&quot;testAll&quot; location=&quot;content/testdata&quot;&gt;
+  &lt;metadata inherited=&quot;true&quot;&gt;
+    &lt;serviceName&gt;allServices&lt;/serviceName&gt;
+    &lt;dataType&gt;Grid&lt;/dataType&gt;    
+    &lt;property name=&quot;viewer&quot; value=&quot;http://localhost:8080/thredds/cdmValidate?URL=<strong>{HTTPService}</strong>,Validation Service&quot;/&gt;<br>  &lt;/metadata&gt;
+&lt;/datasetScan&gt;
+
+</pre>
+<hr>
+<br>
+<h2>Create a  Viewer implementation Java class </h2>
+<p>This method is available in TDS version 3.14+.</p>
+<p>This technique gives you full control over whether your viewer link appears, and what the URL looks like. You must create a Java  class which implements the <strong>thredds.servlet.Viewer</strong> interface: </p>
 <pre>public interface <strong>Viewer</strong> {
-<strong>1)</strong> public boolean <strong>isViewable</strong>( thredds.catalog.InvDatasetImpl dataset);
-<strong>2)</strong> public String <strong>getViewerLinkHtml</strong>( InvDatasetImpl ds, HttpServletRequest req);
+<strong> (1)</strong> public boolean <strong>isViewable</strong>( thredds.catalog.InvDatasetImpl dataset);
+<strong> (2)</strong> public String <strong>getViewerLinkHtml</strong>( InvDatasetImpl ds, HttpServletRequest req);
 }</pre>
 <ol>
   <li>  Your class is passed a <strong>thredds.catalog.InvDatasetImpl</strong> object, and it  returns true if it is viewable by your viewer.</li>
@@ -66,7 +106,6 @@ public class IDV implements Viewer {</pre>
     </blockquote>
   </li>
 </ol>
-<h2>Creating the Viewer Link </h2>
 <h3>Referencing an external URL</h3>
 <p>If the viewer you want to reference is not part of the TDS, just make the href  absolute, eg:</p>
 <pre> &lt;a href='http://my.server/viewer?<strong>url=http://motherlode.ucar.edu:8080/thredds/dodsC/model/data.grib2</strong>'&gt;My Server&lt;/a&gt;</pre>
@@ -100,7 +139,7 @@ public class IDV implements Viewer {</pre>
    <strong>&lt;argument&gt;type:opendap.grid:{url}&lt;/argument&gt;</strong>
   &lt;/application-desc&gt;</pre>
 <pre>&lt;/jnlp&gt;</pre>
-<h2>  Loading your class at runtime</h2>
+<h3>  Loading your class at runtime</h3>
 <p>You must place your Viewer class into  <strong>the ${tomcat_home}/webapps/thredds/WEB-INF/lib </strong>or<strong> classes </strong>directory<strong>. </strong>(Previous instructions to place it into  the <strong>${tomcat_home}/shared</strong> directory doesn't work, because of classloader problems). </p>
 <p>Then tell the TDS to load it by adding a line to the <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong> file, for example:</p>
 <pre>  &lt;viewer&gt;my.package.MyViewer&lt;/viewer&gt;</pre>
@@ -108,7 +147,7 @@ public class IDV implements Viewer {</pre>
 <strong><br>
 </strong>
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jan 31, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 23, 2008
 </address>
 <p>&nbsp;</p>
 </body>

@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.List;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -51,6 +52,7 @@ public class ViewServlet extends AbstractServlet {
     viewerList = new ArrayList<Viewer>();
     registerViewer( new IDV());
     registerViewer( new Nj22ToolsUI());
+    registerViewer( new StaticView());
   }
 
  static public void registerViewer( String className) {
@@ -219,6 +221,41 @@ public class ViewServlet extends AbstractServlet {
       return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
     }
 
+  }
+
+  private static class StaticView implements Viewer {
+
+    public  boolean isViewable( InvDatasetImpl ds) {
+      return null != ds.findProperty("viewer");
+    }
+
+    public String  getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req) {
+      String viewer = ds.findProperty("viewer");
+      String[] parts = viewer.split(",");
+      String link = StringUtil.quoteHtmlContent( sub(parts[0], ds));
+      return "<a href='"+link+"'>"+parts[1]+"</a>";
+    }
+
+    public String sub(String org, InvDatasetImpl ds) {
+      List<InvAccess> access = ds.getAccess();
+      if (access.size() == 0) return org;
+
+      // look through all access for {serviceName}
+      for (InvAccess acc : access) {
+        String sname = "{"+acc.getService().getServiceType()+"}";
+        if (org.indexOf(sname) >= 0) {
+          return StringUtil.substitute(org, sname, acc.getStandardUri().toString());
+        }
+      }
+
+      String sname = "{url}";
+      if (org.indexOf(sname) >= 0) {
+        InvAccess acc = access.get(0);
+        return StringUtil.substitute(org, sname, acc.getStandardUri().toString());
+      }
+
+      return org;
+    }
   }
 
 }

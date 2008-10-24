@@ -9,6 +9,10 @@ Changes in version 4.0
   * commons-fileUpload 1.2.1
   * commons-io 1.4
 
+Changes in version 3.17
+ Features
+  * static views with <property> elements
+
 Changes in version 3.16
  Features
   * can turn off NetcdfFileCache, NetcdfDatasetCache, FileCache by setting max <= 0
