@@ -21,8 +21,8 @@
 package ucar.nc2.util.xml;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.bufr.MessageScanner;
-import ucar.bufr.Message;
+import ucar.nc2.iosp.bufr.MessageScanner;
+import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;

@@ -103,7 +103,7 @@ public class MessageScanner {
 
     long dataPos = raf.getFilePointer();
     int dataLength = BufrNumbers.uint3(raf);
-    DataSection dataSection = new DataSection(dataPos, dataLength);
+    BufrDataSection dataSection = new BufrDataSection(dataPos, dataLength);
     lastPos = dataPos + dataLength + 4; // position to the end message plus 1
     nbytes +=  lastPos - startPos;
 

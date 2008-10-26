@@ -77,4 +77,10 @@ public class TestRegexp extends TestCase {
       System.out.println(" "+i+ " "+matcher.group(i));
   }
 
+  public void testSplit() {
+    String[] split = "what is  it".split("[ ]+");
+    for (String s : split)
+      System.out.println("("+s+")");
+  }
+
 }

@@ -19,60 +19,46 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
-import java.util.Map;
-import java.util.Formatter;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Robb Kambic
- * Date: Oct 6, 2008
- * Time: 8:40:01 AM
- * To change this template use File | Settings | File Templates.
+ * BUFR Table A - Data categories
+ *
+ * @author caron
+ * @since Sep 25, 2008
  */
-public class BufrTableA implements TableADataCategory
-{
-  String name;
-  String location;
-  Map<Short, String> map;
+public class TableA {
+  private String name;
+  private String location;
+  private Map<Short, String> map = new HashMap<Short, String>(100);
 
-  public BufrTableA(String name, String location, Map<Short, String> map ) {
-    this.name = name;
-    this.location = location;
-    this.map = map;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getLocation() {
-    return location;
-  }
-
-  public void setLocation(String location) {
-    this.location = location;
-  }
-
-  public Map<Short, String> getMap() {
-    return map;
-  }
-
-  public void setMap(Map<Short, String> map) {
-    this.map = map;
-  }
-
-  public String getDataCategory( short cat ) {
-    return map.get( Short.valueOf( cat ) );
-  }
-
-
-
+  public String getName() { return name; }
+  public String getLocation() { return location; }
   public void show( Formatter out) {
+    Collection<Short> keys = map.keySet();
+    List<Short> sortKeys = new ArrayList(keys);
+    Collections.sort( sortKeys);
 
+    for (Short key : sortKeys) {
+      out.format(" %3d : %s %n", key, map.get(key));
+    }
   }
-   
+
+  public String getDataCategory(short cat) {
+    String catName = map.get(cat);
+    return (catName == null) ? "Unknown Data Category ("+cat+")" : catName;
+  }
+
+  TableA(String name, String location, Map<Short, String> map) {
+    this.name = name;
+    this.location = location;
+    this.map = map;
+  }
+
 }

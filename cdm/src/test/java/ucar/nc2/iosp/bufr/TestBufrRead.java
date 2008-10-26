@@ -23,12 +23,8 @@ package ucar.nc2.iosp.bufr;
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.bufr.*;
 
 import java.io.*;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.regex.Matcher;
 
 import junit.framework.TestCase;
 
@@ -43,7 +39,7 @@ public class TestBufrRead extends TestCase {
   public void testReadAll() throws IOException {
     //readandCountAllInDir(testDir, null);
     int count = 0;
-    count += TestAll.readAllDir("R:/testdata/bufr/edition3/", new MyFileFilter());
+    count += TestAll.readAllDir("C:/data/bufr2/mlode/", new MyFileFilter());
     System.out.println("***READ " + count + " files");
   }
 
@@ -74,11 +70,14 @@ public class TestBufrRead extends TestCase {
 
     // Reading of Bufr files must be inside a try-catch block
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-    BufrInput bi = new BufrInput(raf);
-    bi.scan(oneRecord, getData);
-    int totalObs = bi.getTotalObs();
-    System.out.println("Total number observations =" + totalObs);
+    MessageScanner scan = new MessageScanner(raf);
+    while (scan.hasNext()) {
+      Message m = scan.next();
+      if (m == null) continue;
+      int totalObs = m.getNumberDatasets();
+      System.out.println("Total number observations =" + totalObs);
+      break;
+    }
     return 1;
   }
 

@@ -80,6 +80,10 @@ public class BitCounterCompressed {
     nested = new BitCounterCompressed[innerDimensionSize][dkey.getSubKeys().size()];
   }
 
+  /**
+   * Number of nested fields
+   * @return 1 if no nested fields, otherwise count of nested fields
+   */
   public int ncounters() {
     if (nested == null)
       return 1;

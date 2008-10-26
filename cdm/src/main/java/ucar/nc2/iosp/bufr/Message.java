@@ -20,8 +20,8 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.iosp.bufr.tables.TableBdescriptor;
-import ucar.nc2.iosp.bufr.tables.CommonCodeTableC1;
+import ucar.nc2.iosp.bufr.tables.TableCenters;
+import ucar.nc2.iosp.bufr.tables.TableB;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -42,7 +42,7 @@ public class Message {
   public BufrIndicatorSection is;
   public BufrIdentificationSection ids;
   public BufrDataDescriptionSection dds;
-  public DataSection dataSection;
+  public BufrDataSection dataSection;
 
   private RandomAccessFile raf;
   private TableLookup lookup;
@@ -59,7 +59,7 @@ public class Message {
   //private boolean showCountCompressedValues = true;
   //private boolean showCountDetail = false;
 
-  public Message(RandomAccessFile raf, BufrIndicatorSection is, BufrIdentificationSection ids, BufrDataDescriptionSection dds, DataSection dataSection) throws IOException {
+  public Message(RandomAccessFile raf, BufrIndicatorSection is, BufrIdentificationSection ids, BufrDataDescriptionSection dds, BufrDataSection dataSection) throws IOException {
     this.raf = raf;
     this.is = is;
     this.ids = ids;
@@ -81,55 +81,32 @@ public class Message {
     return dds.getNumberDatasets();
   }
 
-  public TableLookup getTableLookup() {
-    return lookup;
-  }
-
-  /**
-   * Get the message category/subcategory as a String, from the identifier section of the message.
-   *
-   * @return he message category
-   * @throws IOException on read error
-   */
-  public String getCategoryFullName() throws IOException {
-    try {
-      String catName = lookup.getCategory(ids.getCategory());
-      String subcatName = lookup.getSubCategory(ids.getCategory(), ids.getSubCategory());
-      //String subcatName = ids.getSubCategory_idName(ids.getCategory(), ids.getSubCategory());
-      boolean hasSubName = !subcatName.equalsIgnoreCase("Unknown");
-      if (hasSubName)
-        return catName + " / " + subcatName + " (" + ids.getCategory() + "." + ids.getSubCategory() + "." + ids.getLocalSubCategory() + ")";
-      else
-        return catName + " (" + ids.getCategory() + "." + ids.getSubCategory() + "." + ids.getLocalSubCategory() + ")";
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.out.println("***BAD getMasterTableFilename=" + lookup.getWmoTableName());
-      return " (" + ids.getCategory() + "." + ids.getSubCategory() + ")";
-    }
-  }
-
   public String getCategoryName() throws IOException {
-    return lookup.getCategory( ids.getCategory());
+    return lookup.getDataCategory( ids.getCategory());
   }
 
   public String getCategoryNo() throws IOException {
-    return ids.getCategory() + "." + ids.getSubCategory() + "." + ids.getLocalSubCategory();
+    String result = ids.getCategory() + "." + ids.getSubCategory();
+    if (ids.getLocalSubCategory() >= 0) result += "." + ids.getLocalSubCategory();
+    return result;
   }
 
   public String getCenterName() {
-    String name = ids.getCenter_id() == 7 ? CommonCodeTableC1.getNCEPSubCenterName(ids.getSubCenter_id()) :
-      CommonCodeTableC1.getCenterName(ids.getCenter_id());
-    return ids.getCenter_id() + "." + ids.getSubCenter_id() + " (" + name + ")";
+    String name = ids.getCenterId() == 7 ? TableCenters.getNCEPSubCenterName(ids.getSubCenterId()) :
+      TableCenters.getCenterName(ids.getCenterId());
+    return ids.getCenterId() + "." + ids.getSubCenterId() + " (" + name + ")";
   }
 
   public String getCenterNo() {
-    return ids.getCenter_id() + "." + ids.getSubCenter_id();
+    return ids.getCenterId() + "." + ids.getSubCenterId();
   }
 
   public String getTableName() {
-    return ids.getMasterTableId() + "." + ids.getMasterTableVersion() + "." + ids.getLocal_table();
+    return ids.getMasterTableId() + "." + ids.getMasterTableVersion() + "." + ids.getLocalTableVersion();
   }
+
+
+  ///////////////////////////////////////////////////////////////////////////
 
   // the WMO header is in here somewhere when the message comes over the IDD
   public void setHeader(String header) {
@@ -166,6 +143,15 @@ public class Message {
   }
 
   /**
+   * Get the byte length of the entire BUFR record.
+   *
+   * @return length in bytes of BUFR record
+   */
+  public long getMessageSize() {
+    return is.getBufrLength();
+  }
+
+  /**
    * Get the root of the DataDescriptor tree.
    *
    * @return root DataDescriptor
@@ -190,8 +176,6 @@ public class Message {
     return false;
   }
 
-
-
   /**
    * Check if all descriptors were found in the tables.
    *
@@ -204,7 +188,7 @@ public class Message {
   }
 
   public void showMissingFields(Formatter out) throws IOException {
-    showMissingFields(dds.getDescList(), out);
+    showMissingFields(dds.getDataDescriptors(), out);
   }
 
   private void showMissingFields(List<Short> ddsList, Formatter out) throws IOException {
@@ -212,18 +196,18 @@ public class Message {
       int f = (fxy & 0xC000) >> 14;
       if (f == 3) {
         List<Short> sublist = lookup.getDescriptorsTableD(fxy);
-        if (sublist == null) out.format("%s, ", BufrDataDescriptionSection.getDescName(fxy));
+        if (sublist == null) out.format("%s, ", Descriptor.makeString(fxy));
         else showMissingFields(sublist, out);
 
       } else if (f == 0) {  // skip the 2- operators for now
-        TableBdescriptor b = lookup.getDescriptorTableB(fxy);
-        if (b == null) out.format("%s, ", BufrDataDescriptionSection.getDescName(fxy));
+        TableB.Descriptor b = lookup.getDescriptorTableB(fxy);
+        if (b == null) out.format("%s, ", Descriptor.makeString(fxy));
       }
     }
   }
 
-  public long getMessageSize() {
-    return is.getBufrLength();
+  TableLookup getTableLookup() {
+    return lookup;
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -343,7 +327,7 @@ public class Message {
    * @param row    which row of the table
    * @param fldno track fldno to compare with EU output
 
-   * @throws IOException
+   * @throws IOException on read error
    */
   private int countBitsUncompressed(Formatter out, BitReader reader, List<DataDescriptor> dkeys, BitCounterUncompressed tc,
           int row, String where, int indent, int fldno) throws IOException {
@@ -455,18 +439,14 @@ public class Message {
     return msg_nbits;
   }
 
-  /**
-   * Number of flds, including nested
-   *
-   * @return
-   */
-  int ncounters() {
+
+  /* int ncounters() {
     if (counterFlds == null) return 0;
     int ncounters = 0;
     for (BitCounterCompressed counter : counterFlds)
       if (counter != null) ncounters += counter.ncounters();
     return ncounters;
-  }
+  } */
 
   public BitCounterCompressed[] getCounterFlds() throws IOException {
     if (counterFlds == null)
@@ -533,7 +513,7 @@ public class Message {
           BitCounterCompressed[] nested = counter.getNestedCounters(i);
           bitOffset = countBitsCompressed(out, reader, nested, bitOffset, n, dkey); // count subfields
         }
-        if (null != out) out.format("--back %n", dkey.getFxyName(), bitOffset);
+        if (null != out) out.format("--back %s %d %n", dkey.getFxyName(), bitOffset);
 
         continue;
       }
@@ -550,7 +530,7 @@ public class Message {
           BitCounterCompressed[] nested = counter.getNestedCounters(i);
           bitOffset = countBitsCompressed(out, reader, nested, bitOffset, n, dkey); // count subfields
         }
-        if (null != out) out.format("--back %n", dkey.getFxyName(), bitOffset);
+        if (null != out) out.format("--back %s %d %n", dkey.getFxyName(), bitOffset);
 
         continue;
       }
@@ -615,7 +595,7 @@ public class Message {
    * Get values of selected fields. Must be in the top row (not nested).
    * @param indexFlds index of desired field in the dds
    * @return field values as Object[nobs][nfields]
-   * @throws IOException
+   * @throws IOException on read error
    */
   public Object[][] readValues(List<Integer> indexFlds) throws IOException {
     getRootDataDescriptor();
@@ -727,8 +707,8 @@ public class Message {
    */
   public int hashCode() {
     int result = 17;
-    result += 37 * result + dds.getDescList().hashCode();
-    result += 37 * result + ids.getCenter_id();
+    result += 37 * result + dds.getDataDescriptors().hashCode();
+    result += 37 * result + ids.getCenterId();
     //result += 37 * result + ids.getSubCenter_id();
     result += 37 * result + ids.getCategory();
     result += 37 * result + ids.getSubCategory();
@@ -744,8 +724,8 @@ public class Message {
   public boolean equals(Object obj) {
     if (!(obj instanceof Message)) return false;
     Message o = (Message) obj;
-    if (!dds.getDescList().equals(o.dds.getDescList())) return false;
-    if (ids.getCenter_id() != o.ids.getCenter_id()) return false;
+    if (!dds.getDataDescriptors().equals(o.dds.getDataDescriptors())) return false;
+    if (ids.getCenterId() != o.ids.getCenterId()) return false;
     //if (ids.getSubCenter_id() != o.ids.getSubCenter_id()) return false;
     if (ids.getCategory() != o.ids.getCategory()) return false;
     if (ids.getSubCategory() != o.ids.getSubCategory()) return false;
@@ -773,7 +753,7 @@ public class Message {
             startPos, is.getBufrLength(), (startPos + is.getBufrLength()),
             startData, dataSection.dataLength, startData +dataSection.dataLength);
 
-    dumpDesc(out, dds.getDescriptors(), lookup, 4);
+    dumpDesc(out, dds.getDataDescriptors(), lookup, 4);
 
     out.format("%n  CDM Nested Table=\n");
     DataDescriptor root = new DataDescriptorTreeConstructor().factory(lookup, dds);
@@ -785,14 +765,16 @@ public class Message {
             nbits, nbytes, root.getByteWidthCDM(), root.isVarLength(), m.dds.isCompressed()); */
   }
 
-  private void dumpDesc(Formatter out, List<String> desc, TableLookup table, int indent) {
+  private void dumpDesc(Formatter out, List<Short> desc, TableLookup table, int indent) {
     if (desc == null) return;
 
-    for (String key : desc) {
+    for (Short fxy : desc) {
       for (int i = 0; i < indent; i++) out.format(" ");
-      out.format("%-8s: %s\n", key, DataDescriptor.toString(key, table));
-      if (key.startsWith("3-")) {
-        List<String> sublist = table.getDescriptorsTableD(key);
+      Descriptor.show(out, fxy, table);
+      out.format("%n");
+      int f = (fxy & 0xC000) >> 14;
+      if (f == 3) {
+        List<Short> sublist = table.getDescriptorsTableD(fxy);
         dumpDesc(out, sublist, table, indent + 2);
       }
     }
@@ -805,8 +787,43 @@ public class Message {
       if (key.getSubKeys() != null)
         dumpKeys(out, key, indent + 2);
     }
-    //for (int i = 0; i < indent; i++) out.format(" ");
-    //out.format("totalBits = %d netcdfBits= %d\n\n", tree.countBits(), 8 * tree.getByteWidthCDM());
+  }
+
+  public String getCategoryFullName() throws IOException {
+    try {
+      String catName = lookup.getDataCategory(ids.getCategory());
+      String subcatName = lookup.getSubCategory(ids.getCategory(), ids.getSubCategory());
+      //String subcatName = ids.getSubCategory_idName(ids.getCategory(), ids.getSubCategory());
+      boolean hasSubName = !subcatName.equalsIgnoreCase("Unknown");
+      if (hasSubName)
+        return catName + " / " + subcatName + " (" + ids.getCategory() + "." + ids.getSubCategory() + "." + ids.getLocalSubCategory() + ")";
+      else
+        return catName + " (" + ids.getCategory() + "." + ids.getSubCategory() + "." + ids.getLocalSubCategory() + ")";
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.out.println("***BAD getMasterTableFilename=" + lookup.getWmoTableName());
+      return " (" + ids.getCategory() + "." + ids.getSubCategory() + ")";
+    }
+  }
+
+  public void dumpHeader(Formatter out) throws IOException {
+
+    out.format(" BUFR edition %d time= %s wmoHeader=%s %n", is.getBufrEdition(), ids.getReferenceTime(), getHeader());
+    out.format("   Category= %d %s %s %n", ids.getCategory(), getCategoryName(), getCategoryNo());
+    out.format("   Center= %s %s %n", getCenterName(), getCenterNo());
+    out.format("   Table= %d.%d local= %d wmoTable= %s localTable= %s %n",
+            ids.getMasterTableId(), ids.getMasterTableVersion(), ids.getLocalTableVersion(), lookup.getWmoTableName(),
+            lookup.getLocalTableName());
+
+    out.format("  DDS nsubsets=%d type=0x%x isObs=%b isCompressed=%b\n", dds.getNumberDatasets(), dds.getDataType(),
+            dds.isObserved(), dds.isCompressed());
+  }
+
+  public void dumpHeaderShort(Formatter out) throws IOException {
+    out.format(" %s, Cat= %s, Center= %s (%s), Table= %d.%d.%d %n", getHeader(),
+            getCategoryName(), getCenterName(), getCenterNo(),
+            ids.getMasterTableId(), ids.getMasterTableVersion(), ids.getLocalTableVersion());
   }
 
 }

@@ -29,6 +29,8 @@ import java.io.IOException;
 
 /**
  * A class representing the IdentificationSection (section 1) of a BUFR record.
+ * Handles editions 2,3,4.
+ *
  * @author Robb Kambic
  * @author caron
  */
@@ -98,7 +100,7 @@ public class BufrIdentificationSection {
    * @throws IOException if raf contains no valid BUFR file
    */
   public BufrIdentificationSection(RandomAccessFile raf, BufrIndicatorSection is)
-          throws IOException {
+      throws IOException {
 
     // section 1 octet 1-3 (length of section)
     int length = BufrNumbers.int3(raf);
@@ -166,9 +168,8 @@ public class BufrIdentificationSection {
       int n = length - 17;
       localUse = new byte[n];
       raf.read(localUse);
-    }
-    // BUFR Edition 4 and above are slightly different
-    else {
+
+    } else {  // BUFR Edition 4 and above are slightly different
       //    	 Center  octet 5 - 6
       center_id = BufrNumbers.int2(raf);
 
@@ -211,59 +212,43 @@ public class BufrIdentificationSection {
       raf.read(localUse);
     }
 
-    // read in optional section
+    // skip optional section, but store position so can read if caller wants it
     if (hasOptionalSection) {
       int optionalLen = BufrNumbers.int3(raf);
       if (optionalLen % 2 != 0) optionalLen++;
       optionalSectionLen = optionalLen - 4;
       raf.skipBytes(1);
       optionalSectionPos = raf.getFilePointer();
+
+      raf.skipBytes(optionalSectionLen);
     }
-  } // end if BufrIdentificationSection
+  }
 
   /**
    * Identification of center.
    *
    * @return center id as int
    */
-  public final int getCenter_id() {
+  public final int getCenterId() {
     return center_id;
   }
 
   /**
-    * Identification of subcenter.
-    *
-    * @return subcenter as int
-    */
-   public final int getSubCenter_id() {
-     return subcenter_id;
-   }
+   * Identification of subcenter.
+   *
+   * @return subcenter as int
+   */
+  public final int getSubCenterId() {
+    return subcenter_id;
+  }
 
   /**
-    * Get update sequence.
-    *
-    * @return update_sequence
-    */
-   public final int getUpdateSequence() {
-     return update_sequence;
-   }
-
-   /**
-   * local table version number.
+   * Get update sequence.
    *
-   * @return local_table as int
+   * @return update_sequence
    */
-   public final int getLocal_table() {
-     return local_table_version;
-   }
-
-  public final byte[] getOptionalSection(RandomAccessFile raf) throws IOException {
-    if (!hasOptionalSection) return null;
-
-    byte[] optionalSection = new byte[optionalSectionLen - 4];
-    raf.seek(optionalSectionPos);
-    raf.read(optionalSection);
-    return optionalSection;
+  public final int getUpdateSequence() {
+    return update_sequence;
   }
 
   /**
@@ -312,6 +297,14 @@ public class BufrIdentificationSection {
     return localUse;
   }
 
+  public final byte[] getOptionalSection(RandomAccessFile raf) throws IOException {
+    if (!hasOptionalSection) return null;
+
+    byte[] optionalSection = new byte[optionalSectionLen - 4];
+    raf.seek(optionalSectionPos);
+    raf.read(optionalSection);
+    return optionalSection;
+  }
 
 
 }

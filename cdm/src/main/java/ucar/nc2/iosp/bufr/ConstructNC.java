@@ -20,8 +20,9 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.*;
-import ucar.nc2.iosp.bufr.tables.CodeTable;
+import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
@@ -81,8 +82,8 @@ class ConstructNC {
     ncfile.addAttribute(null, new Attribute("BUFR:subCategory", proto.ids.getSubCategory()));
     ncfile.addAttribute(null, new Attribute("BUFR:localSubCategory", proto.ids.getLocalSubCategory()));
     ncfile.addAttribute(null, new Attribute("BUFR:centerName", centerName));
-    ncfile.addAttribute(null, new Attribute("BUFR:center", proto.ids.getCenter_id()));
-    ncfile.addAttribute(null, new Attribute("BUFR:subCenter", proto.ids.getCenter_id()));
+    ncfile.addAttribute(null, new Attribute("BUFR:center", proto.ids.getCenterId()));
+    ncfile.addAttribute(null, new Attribute("BUFR:subCenter", proto.ids.getCenterId()));
     //ncfile.addAttribute(null, new Attribute("BUFR:tableName", proto.ids.getMasterTableFilename()));
     ncfile.addAttribute(null, new Attribute("BUFR:table", proto.ids.getMasterTableId()));
     ncfile.addAttribute(null, new Attribute("BUFR:tableVersion", proto.ids.getMasterTableVersion()));
@@ -252,11 +253,11 @@ class ConstructNC {
         e.printStackTrace();
       }
 
-    } else if ((dataDesc.type == 2) && CodeTable.hasTable(dataDesc.fxy)) {
+    } else if ((dataDesc.type == 2) && CodeFlagTables.hasTable(dataDesc.fxy)) {
       int nbits = dataDesc.bitWidth;
       int nbytes = (nbits % 8 == 0) ? nbits / 8 : nbits / 8 + 1;
 
-      CodeTable ct = CodeTable.getTable(dataDesc.fxy);
+      CodeFlagTables ct = CodeFlagTables.getTable(dataDesc.fxy);
       if (nbytes == 1)
         v.setDataType(DataType.ENUM1);
       else if (nbytes == 2)
@@ -399,7 +400,8 @@ class ConstructNC {
       else
         u = "hours";
       try {
-        dateUnit = new DateUnit(u + " since " +proto.ids.getReferenceTime());
+        DateFormatter format = new DateFormatter();
+        dateUnit = new DateUnit(u + " since " +format.toDateTimeStringISO(proto.ids.getReferenceTime()));
       } catch (Exception e) {
         log.error("BufrIosp failed to create date unit", e);
         hasTime = false;

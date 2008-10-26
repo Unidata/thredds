@@ -20,9 +20,12 @@
 package ucar.nc2.iosp.bufr.tables;
 
 import ucar.nc2.iosp.bufr.BufrDataDescriptionSection;
+import ucar.nc2.iosp.bufr.Descriptor;
+import ucar.unidata.util.StringUtil;
 
 import java.lang.*;     // Standard java functions
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.io.InputStream;
@@ -40,18 +43,17 @@ import java.net.URL;
  */
 
 public class BufrTables {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrTables.class);
 
   /**
    * Pattern to get categories.
    */
-  private static final Pattern category =
-      Pattern.compile("^\\s*(\\w+)\\s+(.*)");
+  private static final Pattern category = Pattern.compile("^\\s*(\\w+)\\s+(.*)");
 
   /**
    * Pattern to get 3 integers from beginning of line.
    */
-  private static final Pattern threeInts =
-      Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)");
+  private static final Pattern threeInts = Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)");
 
   /**
    * Pattern to get check for -1 sequence terminator.
@@ -63,21 +65,10 @@ public class BufrTables {
    */
   private static final boolean debugTable = false;
 
-  /**
-   * tableA HashMap to store multple BUFR tables used by the BUFR file reads.
-   */
-  //public static final Map<String, Map<String, String>> tablesA = new HashMap<String, Map<String, String>>();
-  public static final Map<String, TableADataCategory> tablesA = new HashMap<String, TableADataCategory>();
-  /**
-   * tableB HashMap to store multple BUFR tables used by the BUFR file reads.
-   */
-  //public static final Map<String, Map<String, DescriptorTableB>> tablesB = new HashMap<String, Map<String, DescriptorTableB>>();
-  public static final Map<String, TableB> tablesB = new HashMap<String,TableB>();
-  /**
-   * tableD HashMap to store multple BUFR tables used by the BUFR file reads.
-   */
-  //public static final Map<String, Map<String, DescriptorTableD>> tablesD = new HashMap<String, Map<String, DescriptorTableD>>();
-  public static final Map<String, TableD> tablesD = new HashMap<String, TableD>();
+  //private static TableA tableA;
+  private static Map<String, TableA> tablesA = new ConcurrentHashMap<String, TableA>();
+  private static Map<String, TableB> tablesB = new ConcurrentHashMap<String, TableB>();
+  private static Map<String, TableD> tablesD = new ConcurrentHashMap<String, TableD>();
 
   private static final String RESOURCE_PATH = "resources/bufr/tables/";
 
@@ -86,7 +77,7 @@ public class BufrTables {
    *
    * @param location URL or local filename of BUFR table file
    * @return InputStream
-   * @throws IOException
+   * @throws IOException on read error
    */
   private static InputStream open(String location) throws IOException {
     InputStream ios = null;
@@ -106,34 +97,47 @@ public class BufrTables {
     return ios;
   }
 
-  static public TableADataCategory getTableA(String tablename, boolean WMO) throws IOException {
-    if (!tablesA.containsKey(tablename))
-      readTableA(tablename, WMO);
-    return tablesA.get(tablename);
+  static public TableA getTableA(String tablename) throws IOException {
+    TableA a = tablesA.get(tablename);
+    if (a == null) {
+      a = readTableA(tablename);
+      tablesA.put(tablename, a);
+    }
+    return a;
   }
 
-  static public TableB getTableB(String tablename, boolean WMO) throws IOException {
-    if (!tablesB.containsKey(tablename))
-      readTableB(tablename, WMO);
-    return tablesB.get(tablename);
+  static public boolean hasTableB(String tablename) {
+    return tablesB.get(tablename) != null;
   }
 
-  static public TableD getTableD(String tablename, boolean WMO) throws IOException {
-    if (!tablesD.containsKey(tablename))
-      readTableD(tablename, WMO);
-    return tablesD.get(tablename);
+  static public TableB getTableB(String tablename) throws IOException {
+    TableB b = tablesB.get(tablename);
+    if (b == null) {
+      b = readTableB(tablename);
+      tablesB.put(tablename, b);
+    }
+    return b;
   }
 
-  /**
-   * reads in table A descriptors.
-   *
-   * @param tablename
-   * @throws IOException
-   */
-  public synchronized static void readTableA(String tablename, boolean WMO) throws IOException {
+  static public TableD getTableD(String tablename) throws IOException {
+    TableD d = tablesD.get(tablename);
+    if (d == null) {
+      d = readTableD(tablename);
+      tablesD.put(tablename, d);
+    }
+    return d;
+  }
 
-    // check if table has already been processed
-    if (tablesA.containsKey(tablename)) return;
+  static void addTableB(String tablename, TableB b) {
+    tablesB.put(tablename, b);
+  }
+
+  static void addTableD(String tablename, TableD d) {
+    tablesD.put(tablename, d);
+  }
+
+
+  private static TableA readTableA(String tablename) throws IOException {
 
     InputStream ios = open(tablename);
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
@@ -149,54 +153,29 @@ public class BufrTables {
       // check for comment lines
       if (line.startsWith("#") || line.length() == 0)
         continue;
+
       m = category.matcher(line);
       if (m.find()) {
         if (m.group(2).equals("RESERVED")) continue;
-        //if( m.group(2).equals( "FOR EXPERIMENTAL USE" ) ) continue;
+        if (m.group(2).equals("FOR EXPERIMENTAL USE")) continue;
         String cat = m.group(2).trim();
-        //categories.put(m.group(1), cat);
-        categories.put( Short.valueOf( m.group(1) ), cat);
-        //System.out.println( "key, category = " + m.group(1) +", "+  cat );
+        categories.put(Short.valueOf(m.group(1)), cat);
 
       }
     }
     dataIS.close();
-    //tablesA.put(tablename, categories);
-    TableADataCategory a = new BufrTableA(tablename, null,  categories );
-    tablesA.put(tablename, a);
+
+    return new TableA(tablename, tablename, categories);
   }
 
-  /**
-   * reads in table B descriptors.
-   *
-   * @param tablename
-   * @throws IOException
-   */
-  public synchronized static void readTableB(String tablename, boolean WMO) throws IOException {
+  private static TableB readTableB(String tablename) throws IOException {
 
-    // check if table has already been processed
-    if (tablesB.containsKey(tablename)) return;
-
-    //System.out.println("Table B tablename =" + tablename);
-    
     InputStream ios = open(tablename);
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
 
-    //Map<String, DescriptorTableB> descriptors = new HashMap<String, DescriptorTableB>();
-    //Map<Short, DescriptorTableB> descriptors = new HashMap<Short, DescriptorTableB>();
-    Map<Short, TableBdescriptor> descriptors = new HashMap<Short, TableBdescriptor>();
-
-    // add time observation, place holder descriptor to all tables
-    DescriptorTableB d;
-    //d = new DescriptorTableB("0-0-7", "0", "0", "0", "CCITT_IA5", "bogus entry no width");
-    //descriptors.put(d.getKey(), d);
-    //d = new DescriptorTableB("0-21-192", "0", "0", "7", "dB", "Spectral peak power 0th moment");
-    //descriptors.put(d.getKey(), d);
-    //d = new DescriptorTableB("0-63-255", "0", "0", "1", "Numeric", "bit pad", false);
-    //descriptors.put(d.getKey(), d);
+    TableB b = new TableB(tablename, tablename);
 
     // read table B looking for descriptors
-    Matcher m;
     while (true) {
       String line = dataIS.readLine();
       if (line == null) break;
@@ -204,154 +183,118 @@ public class BufrTables {
         continue;
       //System.out.println("Table B line =" + line);
 
-      StringTokenizer stoke = new StringTokenizer(line, ";");
-      String f = stoke.nextToken();
-      String x = stoke.nextToken();
-      String y = stoke.nextToken();
-      String key = f.trim() + "-" + x.trim() + "-" + y.trim();
-      String scale = stoke.nextToken();
-      String refVal = stoke.nextToken();
-      String width = stoke.nextToken();
-      String units = stoke.nextToken();
-      String name = stoke.nextToken();
-      if (debugTable) {
-        System.out.println("Table B line =" + line);
-        System.out.println("key = " + key);
-        System.out.println("scale = " + scale);
-        System.out.println("refVal = " + refVal);
-        System.out.println("width = " + width);
-        System.out.println("units = " + units);
-        System.out.println("name = " + name);
+      try {
+        String[] split = line.split("; ");
+        short x = Short.parseShort(split[1].trim());
+        short y = Short.parseShort(split[2].trim());
+        int scale = Integer.parseInt(split[3].trim());
+        int refVal = Integer.parseInt(split[4].trim());
+        int width = Integer.parseInt(split[5].trim());
+
+        b.addDescriptor(x, y, scale, refVal, width, split[7].trim(), split[6].trim());
+      } catch (Exception e) {
+        log.error("Bad table " + tablename + " entry=<" + line + ">", e);
       }
-      //System.out.println("key ="+ key );
-      d = new DescriptorTableB(key, scale, refVal, width, units, name, WMO);
-      //descriptors.put(d.getKey(), d);
-      short id = BufrDataDescriptionSection.getDesc(key);
-      descriptors.put(Short.valueOf( id ), d);
     }
     dataIS.close();
-    String pre = "";
-    if( WMO )
-      pre = "Lastest WMO table ";
-    BufrTableB b = new BufrTableB( pre + tablename, null, descriptors );
-    //tablesB.put(tablename, descriptors);
-    tablesB.put(tablename, b);
+
+    return b;
   }
 
-  /**
-   * reads in table D descriptors.
-   *
-   * @param tablename
-   * @throws IOException
+  /* Note Robb has this cleanup in DescriptorTableB
+        desc = desc.replaceFirst( "\\w+\\s+TABLE B ENTRY( - )?", "" );
+      desc = desc.trim();
+      this.description = desc;
+      desc = desc.replaceAll( "\\s*\\(.*\\)", "" );
+      desc = desc.replaceAll( "\\*", "" );
+      desc = desc.replaceAll( "\\s+", "_" );
+      desc = desc.replaceAll( "\\/", "_or_" );
+      desc = desc.replaceFirst( "1-", "One-" );
+      desc = desc.replaceFirst( "2-", "Two-" );
    */
-  public synchronized static void readTableD(String tablename, boolean WMO) throws IOException {
 
-    // check if table has already been processed
-    if (tablesD.containsKey(tablename)) return;
+  private static TableD readTableD(String tablename) throws IOException {
 
     InputStream ios = open(tablename);
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
-    DescriptorTableD d;
-    //Map<String, DescriptorTableD> sequences = new HashMap<String, DescriptorTableD>();
-    Map<Short, TableDdescriptor> sequences = new HashMap<Short, TableDdescriptor>();
+    int count = 0;
+
+    TableD d = new TableD(tablename, tablename);
 
     // read table D to store sequences and their descriptors
-    Matcher m;
     while (true) {
       String line = dataIS.readLine();
       if (line == null) break;
+      count++;
       // check for comment lines
       if (line.startsWith("#") || line.length() == 0)
         continue;
-      m = threeInts.matcher(line);
-      // sequence found
-      if (m.find()) {
-        String key = m.group(1) + "-" + m.group(2) + "-" + m.group(3);
-        if (debugTable) {
-          System.out.println("key = " + key);
+
+      String[] split = line.split("[ ]+"); // 1 or more whitespace
+      try {
+        short seqF = Short.parseShort(split[0]);
+        short seqX = Short.parseShort(split[1]);
+        short seqY = Short.parseShort(split[2]);
+        assert seqF == 3;
+
+        String seqName = "";
+        if (split.length > 3) {
+          StringBuilder sb = new StringBuilder(40);
+          for (int i = 3; i < split.length; i++)
+            sb.append(split[i]).append(" ");
+          seqName = sb.toString();
+          seqName = StringUtil.remove( seqName, "()");
         }
-        List al = new ArrayList<String>();
+
+        List<Short> seq = new ArrayList<Short>();
         // look for descriptors within sequence terminated by -1
         while (true) {
           line = dataIS.readLine();
           if (line == null) break;
+          count++;
           // check for comment lines
           if (line.startsWith("#") || line.length() == 0)
             continue;
-          m = threeInts.matcher(line);
+
+          Matcher m = threeInts.matcher(line);
           // descriptor found
           if (m.find()) {
-            String dkey = m.group(1) + "-" + m.group(2) + "-" + m.group(3);
-            if (debugTable) {
-              System.out.println("dkey = " + dkey);
-            }
-            al.add(dkey);
+            short f = Short.parseShort(m.group(1));
+            short x = Short.parseShort(m.group(2));
+            short y = Short.parseShort(m.group(3));
+            seq.add(Descriptor.getFxy(f, x, y));
+
           } else {
             m = negOne.matcher(line);
             if (m.find()) {
               // store this sequence
-              d = new DescriptorTableD("", key, al, WMO);
-              //sequences.put(key, al);
-              //sequences.put(key, d);
-              short id = BufrDataDescriptionSection.getDesc(key);
-              sequences.put( Short.valueOf( id ), d);
+              d.addDescriptor(seqX, seqY, seqName, seq);
               break;
             }
           }
         }
+      } catch (Exception e) {
+        log.warn("TableD " + tablename + " Failed on line " + count + " = " + line+"\n "+e);
+        e.printStackTrace();
       }
     }
     dataIS.close();
-    String pre = "";
-    if( WMO )
-      pre = "Lastest WMO table ";
-    BufrTableD td = new BufrTableD( pre + tablename, null, sequences );
-    //tablesD.put(tablename, sequences);
-    tablesD.put(tablename, td);
+
+    return d;
   }
 
-   /**
-   * Checks reading in a set of BUFR tables.
-   *
-   * @param args tablename
-   * @throws IOException
-   */
+  // debug
   public static void main(String args[]) throws IOException {
+    Formatter out = new Formatter(System.out);
 
-    // Function References
-    String tableName;
-    if (args.length == 1) {             
-      tableName = args[0];
-    } else {
-      tableName = "B3L-059-003-ABD.diff";
-      //tableName = "B4M-000-014-ABD";
-    }
+   TableA tableA = BufrTables.getTableA("B4M-000-013-A");
+   tableA.show(out);
 
-    // only can be element descriptors in tableB
-    TableB tableB = BufrTables.getTableB(tableName.replace( "-ABD", "-B"), false);
-    TableBdescriptor b;
-    ArrayList<Short> v = new ArrayList( tableB.getMap().keySet());
-    Collections.sort( v );
-    System.out.println("Elements Descriptors from table "+ tableB.getName() +"\n");
-    for ( Short id : v ) {
-        b = tableB.getDescriptor( id);
-        System.out.println("FXY ="+ b.getFxy() +" name ="+ b.getName() +" isWMO ="+ b.isWMO());
-    }
+   //TableB tableB = BufrTables.getTableB("B3L-059-003-B.diff");
+   //tableB.show(out);
 
-    // sequences can be other sequences as well as element descriptors
-    System.out.println();
-    TableD tableD = BufrTables.getTableD(tableName.replace( "-ABD", "-D"), false);
-    TableDdescriptor d;
-    List<String> al;
-    v = new ArrayList( tableD.getMap().keySet());
-    Collections.sort( v );
-    System.out.println("Sequences from table "+ tableB.getName() +"\n");
-    for ( Short id : v ) {
-        d = tableD.getDescriptor(id);
-        al = d.getDescList();
-        System.out.println("FXY " + d.getFxy() +" isWMO ="+ d.isWMO());
-        System.out.println("List =" + al);
-    }
+   // TableD tableD = BufrTables.getTableD("B4M-000-013-D");
+    //tableD.show(out);
 
   }
 }

@@ -23,10 +23,9 @@ package ucar.nc2.ui;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.bufr.Message;
-import ucar.bufr.MessageScanner;
-import ucar.bufr.Dump;
-import ucar.bufr.DataDescriptor;
+import ucar.nc2.iosp.bufr.Message;
+import ucar.nc2.iosp.bufr.MessageScanner;
+import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -34,7 +33,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.Attribute;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
-import ucar.ma2.DataType;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -121,7 +119,7 @@ public class BufrTable extends JPanel {
             f.format("%n%n");
           }
 
-          new Dump().dump(f, vb.m);
+          vb.m.dump(f);
         } catch (IOException e1) {
           JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
           e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -352,7 +350,7 @@ public class BufrTable extends JPanel {
       return m.dds.isCompressed() ? "true" : "false";
     }
 
-    public String getDate() {
+    public Date getDate() {
       return m.ids.getReferenceTime();
     }
 

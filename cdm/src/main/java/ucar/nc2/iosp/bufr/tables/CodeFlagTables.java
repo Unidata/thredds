@@ -33,11 +33,11 @@ import ucar.unidata.util.StringUtil;
  * @author caron
  * @since Jul 12, 2008
  */
-public class CodeTable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeTable.class);
-  static private Map<Short, CodeTable> tableMap;
+public class CodeFlagTables {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeFlagTables.class);
+  static private Map<Short, CodeFlagTables> tableMap;
 
-  static public CodeTable getTable(short id) {
+  static public CodeFlagTables getTable(short id) {
     if (tableMap == null) init();
     return tableMap.get(id);
   }
@@ -48,9 +48,9 @@ public class CodeTable {
   }
 
   static void init() {
-    tableMap = new HashMap<Short, CodeTable>(100);
-    String filename = "/resources/bufr/codes/Code-FlagTables-11-2007.trans2.xml";
-    InputStream is = CodeTable.class.getResourceAsStream(filename);
+    tableMap = new HashMap<Short, CodeFlagTables>(100);
+    String filename = "/resources/bufr/codes/Code-FlagTables.xml";
+    InputStream is = CodeFlagTables.class.getResourceAsStream(filename);
 
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -71,7 +71,7 @@ public class CodeTable {
 
         String name = elem.getAttributeValue("name");
         String desc = elem.getAttributeValue("desc");
-        CodeTable ct = new CodeTable(name, desc);
+        CodeFlagTables ct = new CodeFlagTables(name, desc);
         tableMap.put(ct.fxy, ct);
         // System.out.printf(" added %s == %s %n", ct.id, desc);
 
@@ -103,7 +103,7 @@ public class CodeTable {
   private String name;
   private Map<Integer,String> map;
 
-  private CodeTable(String id, String name) {
+  private CodeFlagTables(String id, String name) {
     this.fxy = getFxy(id);
     this.name = StringUtil.replace( name, ' ', "_");
     map = new HashMap<Integer,String>(20);

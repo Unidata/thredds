@@ -30,7 +30,6 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.Integer;
 
 /**
  * A class that represents the Data Description Section (4) of a BUFR record.
@@ -139,39 +138,23 @@ public class BufrDataDescriptionSection {
   }
 
   /**
-   * get list of data descriptors
+   * get list of data descriptors as Shorts
    *
    * @return descriptors as List<Short>
    */
-  public final List<Short> getDescList() {
+  public final List<Short> getDataDescriptors() {
     return descriptors;
   }
 
   /**
-   * get list of data descriptors
+   * get list of data descriptors as Strings
    *
    * @return descriptors as List<String>
    */
   public final List<String> getDescriptors() {
     List<String> desc = new ArrayList<String>();
     for (short fxy : descriptors)
-      desc.add(getDescName(fxy));
+      desc.add(Descriptor.makeString(fxy));
     return desc;
   }
-
-  static public String getDescName(short fxy) {
-    int f = (fxy & 0xC000) >> 14;
-    int x = (fxy & 0x3F00) >> 8;
-    int y = fxy & 0xFF;
-    return f+"-"+x+"-"+y;
-  }
-
-  static public short getDesc(String name) {
-    String[] tok = name.split("-");
-    int f = (tok.length > 0) ? Integer.parseInt(tok[0]) : 0;
-    int x = (tok.length > 1) ? Integer.parseInt(tok[1]) : 0;
-    int y = (tok.length > 2) ? Integer.parseInt(tok[2]) : 0;
-    return (short) ((f << 14) + (x << 8) + (y));
-  }
-
 }

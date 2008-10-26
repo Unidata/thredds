@@ -19,20 +19,143 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
-import java.util.Formatter;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Class Description.
+ * BUFR Table B - Data descriptors
  *
  * @author caron
  * @since Sep 25, 2008
  */
-public interface TableB {
-  String getName();
-  String getLocation();
-  void show( Formatter out);
+public class TableB {
+  private String name;
+  private String location;
+  private Map<Short, Descriptor> map = new HashMap<Short, Descriptor>();
 
-  Map<Short, TableBdescriptor> getMap();
-  TableBdescriptor getDescriptor(short fxy);
+  public TableB(String name, String location) {
+    this.name = name;
+    this.location = location;
+  }
+
+  void addDescriptor(short x, short y, int scale, int refVal, int width, String name, String units) {
+    short id = (short) ((x << 8) + y);
+    map.put( id, new Descriptor( x,  y,  scale,  refVal,  width,  name,  units));
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getLocation() {
+    return location;
+  }
+
+  public Descriptor getDescriptor(short id) {
+      return map.get( id );
+  }
+
+  public void show( Formatter out) {
+    Collection<Short> keys = map.keySet();
+    List<Short> sortKeys = new ArrayList(keys);
+    Collections.sort( sortKeys);
+
+    out.format("Table B %s %n",name);
+    for (Short key : sortKeys) {
+      Descriptor dd = map.get(key);
+      dd.show(out);
+    }
+  }
+
+  // inner class
+  public class Descriptor {
+
+    private final short x, y;
+    private final int scale;
+    private final int refVal;
+    private final int width;
+    private final String units;
+    private final String name;
+    private final boolean numeric;
+
+    Descriptor(short x, short y, int scale, int refVal, int width, String name, String units) {
+      this.x = x;
+      this.y = y;
+      this.scale = scale;
+      this.refVal = refVal;
+      this.width = width;
+      this.name = name;
+      this.units = units;
+
+      this.numeric = !units.equals("CCITT_IA5") && !units.equals("CCITT IA5");
+    }
+
+
+    /**
+     * scale of descriptor.
+     *
+     * @return scale
+     */
+    public int getScale() { return scale; }
+
+    /**
+     * refVal of descriptor.
+     *
+     * @return refVal
+     */
+    public int getRefVal() { return refVal; }
+
+    /**
+     * width of descriptor.
+     *
+     * @return width
+     */
+    public int getWidth() { return width; }
+
+    /**
+     * units of descriptor.
+     *
+     * @return units
+     */
+    public String getUnits() { return units; }
+
+    /**
+     * short name of descriptor.
+     *
+     * @return name
+     */
+    public String getName() { return name; }
+
+    /**
+     * Get fxy as a short
+     *
+     * @return fxy encoded as a short
+     */
+    public short getId() {
+      return (short) ((x << 8) + y);
+    }
+
+    /**
+     * Get fxy as a String, eg 0-5-22
+     *
+     * @return fxy encoded as a String
+     */
+    public String getFxy() {
+      return "0-"+x+"-"+y;
+    }
+  
+    /**
+     * is descriptor numeric or String
+     *
+     * @return true if numeric
+     */
+    public boolean isNumeric() { return numeric; }
+
+    public String toString() { return getFxy()+": "+getName(); }
+
+    void show(Formatter out) {
+      out.format(" %8s scale=%d refVal=%d width=%d name=(%s) units=(%s) numeric=%s %n",
+          getFxy(), scale, refVal, width, name, units, numeric);
+    }
+  }
+
 }

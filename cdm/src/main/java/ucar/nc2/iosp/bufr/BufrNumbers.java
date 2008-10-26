@@ -30,7 +30,7 @@ import java.io.IOException;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
- * A class that contains several static methods for converting multiple
+ * A class that contains static methods for converting multiple
  * bytes into one float or integer.
  *
  * @author Robb Kambic

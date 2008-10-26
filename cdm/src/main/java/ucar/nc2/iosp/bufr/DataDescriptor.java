@@ -19,8 +19,8 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import ucar.nc2.iosp.bufr.tables.TableBdescriptor;
-import ucar.nc2.iosp.bufr.tables.TableDdescriptor;
+import ucar.nc2.iosp.bufr.tables.TableC;
+import ucar.nc2.iosp.bufr.tables.TableB;
 
 import java.util.List;
 
@@ -37,27 +37,10 @@ import java.util.List;
  */
 public class DataDescriptor {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataDescriptor.class);
-  static private final String[] descType = {"tableB", "replication", "tableC-operators", "tableD"};
-
-  static public String toString(String id, TableLookup lookup) {
-    if (id.startsWith("0-")) {
-      TableBdescriptor d = lookup.getDescriptorTableB(id);
-      return d == null ? "**NOT FOUND!!" : d.toString();
-    } else if (id.startsWith("1-"))
-      return descType[1];
-    else if (id.startsWith("2-"))
-      return descType[2];
-    else if (id.startsWith("3-")) {
-      //List<String> sublist = lookup.getDescriptorsTableD(id);
-      TableDdescriptor d = lookup.getDescriptorTableD(id);
-      return (d == null) ? "**NOT FOUND!!" : descType[3] ; // +" isWMO ="+ d.isWMO();
-    }
-    return null;
-  }  
 
   ////////////////////////////////
 
-  // from the DescriptorTableB
+  // from the TableB.Descriptor
   public short fxy;
   public int f, x, y;
   public String name, units;
@@ -87,7 +70,7 @@ public class DataDescriptor {
     this.x = (fxy & 0x3F00) >> 8;
     this.y = fxy & 0xFF;
 
-    TableBdescriptor db = null;
+    TableB.Descriptor db = null;
     if (f == 0) {
       db = lookup.getDescriptorTableB( fxy);
       bad = (db == null);
@@ -99,7 +82,7 @@ public class DataDescriptor {
       this.type = 3; // compound
   }
 
-  private void setDescriptor(TableBdescriptor d) {
+  private void setDescriptor(TableB.Descriptor d) {
     this.name = d.getName().trim();
     this.units = d.getUnits().trim();
     this.refVal = d.getRefVal();
@@ -252,7 +235,7 @@ public class DataDescriptor {
       }
 
     } else if (f == 1) {
-      sbuff.append(id).append(": ").append(descType[f]);
+      sbuff.append(id).append(": ").append( "Replication");
       if (replication != 1)
         sbuff.append(" count=").append(replication);
       if (replicationCountSize != 0)
@@ -261,12 +244,12 @@ public class DataDescriptor {
         sbuff.append(" repetitionCountSize=").append(repetitionCountSize);
 
     } else if (f == 2) {
-      String desc = TableLookup.getTableCOperatorName(x);
-      if (desc == null) desc = descType[f];
+      String desc = TableC.getOperatorName(x);
+      if (desc == null) desc = "Operator";
       sbuff.append(id).append(": ").append(desc);
 
     } else
-      sbuff.append(id).append(": ").append(descType[f]);
+      sbuff.append(id).append(": ").append( name);
 
     return sbuff.toString();
   }

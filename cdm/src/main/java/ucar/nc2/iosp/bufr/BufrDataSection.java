@@ -17,22 +17,19 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package ucar.nc2.iosp.bufr.tables;
-
-import java.util.Formatter;
-import java.util.Map;
+package ucar.nc2.iosp.bufr;
 
 /**
- * Class Description.
- *
+ * Represents  Section 4 of a BUFR message.
  * @author caron
- * @since Sep 25, 2008
+ * @since May 10, 2008
  */
-public interface TableADataCategory {
-  String getName();
-  String getLocation();
-  void show( Formatter out);
+public class BufrDataSection {
+  public long dataPos;
+  public int dataLength;
 
-  Map<Short, String> getMap();
-  String getDataCategory(short cat);
+  public BufrDataSection(long dataPos, int dataLength) {
+    this.dataPos = dataPos;
+    this.dataLength = dataLength;
+  }
 }

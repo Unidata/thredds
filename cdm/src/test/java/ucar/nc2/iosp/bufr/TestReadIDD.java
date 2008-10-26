@@ -27,8 +27,6 @@ import java.io.IOException;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.bufr.MessageScanner;
-import ucar.bufr.Message;
 import ucar.ma2.*;
 
 /**

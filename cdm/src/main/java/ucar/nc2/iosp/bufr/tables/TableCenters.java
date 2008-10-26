@@ -28,7 +28,7 @@ package ucar.nc2.iosp.bufr.tables;
  * @author caron
  * @since Oct 24, 2008
  */
-public class CommonCodeTableC1 {
+public class TableCenters {
   
   /**
    * Name of Identification of center.

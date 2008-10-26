@@ -40,7 +40,7 @@ public class DataDescriptorTreeConstructor {
     root = new DataDescriptor();
 
     // convert ids to keys
-    List<DataDescriptor> keys = convert(dds.getDescList(), lookup);
+    List<DataDescriptor> keys = convert(dds.getDataDescriptors(), lookup);
 
     // make replicated keys into subKeys, constituting a tree
     List<DataDescriptor> tree = replicate(keys);
