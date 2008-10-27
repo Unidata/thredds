@@ -47,7 +47,6 @@ import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
@@ -154,18 +153,18 @@ public class BufrTable extends JPanel {
         Formatter out = new Formatter();
         try {
           int nbitsCounted = m.calcTotalBits(out);
-          int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
-          boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number
+          int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
+          boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number
 
           infoTA.clear();
           if (!ok) out.format("*** BAD BIT COUNT %n");
-          long last = m.dataSection.dataPos + m.dataSection.dataLength;
+          long last = m.dataSection.getDataPos() + m.dataSection.getDataLength();
           DataDescriptor root = m.getRootDataDescriptor();
           out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
               m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
               nbitsCounted, nbitsGiven);
           out.format(" countBits= %d givenBits=%d %n", nbitsCounted, nbitsGiven);
-          out.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.dataLength);
+          out.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
           out.format("%n");
           infoTA.appendLine(out.toString());
 
@@ -269,12 +268,11 @@ public class BufrTable extends JPanel {
   private NetcdfDataset getBufrMessageAsDataset(Message m) throws IOException {
     byte[] mbytes = scan.getMessageBytes(m);
     NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes);
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
-    return ncd;
+    return new NetcdfDataset(ncfile);
   }
 
   private int setDataDescriptors(java.util.List<DdsBean> beanList, DataDescriptor dds, int seqno) {
-    for (DataDescriptor key : dds.subKeys) {
+    for (DataDescriptor key : dds.getSubKeys()) {
       beanList.add(new DdsBean(key, seqno++));
       if (key.getSubKeys() != null)
         seqno = setDataDescriptors(beanList, key, seqno);
@@ -399,11 +397,11 @@ public class BufrTable extends JPanel {
     }
 
     public String getName() {
-      return dds.name;
+      return dds.getName();
     }
 
     public String getUnits() {
-      return dds.units;
+      return dds.getUnits();
     }
 
     public int getBitWidth() {
@@ -411,11 +409,11 @@ public class BufrTable extends JPanel {
     }
 
     public int getScale() {
-      return dds.scale;
+      return dds.getScale();
     }
 
     public int getReference() {
-      return dds.refVal;
+      return dds.getRefVal();
     }
 
     public int getSeq() {

@@ -112,12 +112,12 @@ public class BerkeleyDBIndexer implements Indexer {
     List<DataDescriptor> ddsList = root.getSubKeys();
     for (int index = 0; index < ddsList.size(); index++) {
       DataDescriptor dds = ddsList.get(index);
-      DataFld fld = findKey(dds.fxy);
+      DataFld fld = findKey(dds.getFxy());
       if ((fld != null) && (fld.index < 0)) {
         fld.index = index;
-        fld.fldName = dds.name;
-        if (dds.type == 0) {
-          fld.dtype = (dds.scale == 0) ? DataType.INT : DataType.FLOAT;
+        fld.fldName = dds.getName();
+        if (dds.getType() == 0) {
+          fld.dtype = (dds.getScale() == 0) ? DataType.INT : DataType.FLOAT;
         } else {
           fld.dtype = DataType.STRING;
         }
@@ -125,9 +125,7 @@ public class BerkeleyDBIndexer implements Indexer {
     }
 
     indexFlds = new ArrayList<Integer>(dataflds.size());
-    Iterator<DataFld> iter = dataflds.iterator();
-    while (iter.hasNext()) {
-      DataFld fld = iter.next();
+    for (DataFld fld : dataflds) {
       indexFlds.add(fld.index);
     }
 
@@ -332,7 +330,7 @@ public class BerkeleyDBIndexer implements Indexer {
     public String toString() {
       Date d = new Date(date);
       Formatter out = new Formatter();
-      out.format("%s", dateFormatter.toDateTimeStringISO(new Date(date)));
+      out.format("%s", dateFormatter.toDateTimeStringISO(d));
       for (Object data : flds)
         out.format(", %s", data);
       return out.toString();

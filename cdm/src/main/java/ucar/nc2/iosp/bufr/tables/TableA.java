@@ -55,6 +55,10 @@ public class TableA {
     return (catName == null) ? "Unknown Data Category ("+cat+")" : catName;
   }
 
+  public String getCategory(short cat) {
+    return map.get(cat);
+  }
+
   TableA(String name, String location, Map<Short, String> map) {
     this.name = name;
     this.location = location;

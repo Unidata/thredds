@@ -39,7 +39,7 @@ public class DataDescriptorTreeConstructor {
   public DataDescriptor factory(TableLookup lookup, BufrDataDescriptionSection dds) {
     root = new DataDescriptor();
 
-    // convert ids to keys
+    // convert ids to DataDescriptor
     List<DataDescriptor> keys = convert(dds.getDataDescriptors(), lookup);
 
     // make replicated keys into subKeys, constituting a tree
@@ -58,6 +58,7 @@ public class DataDescriptorTreeConstructor {
     return root;
   }
 
+  // convert ids to DataDescriptors, expand table D
   private List<DataDescriptor> convert(List<Short> keyDesc, TableLookup lookup) {
     if (keyDesc == null) return null;
 

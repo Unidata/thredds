@@ -195,6 +195,8 @@ public class Structure extends Variable {
     boolean found = false;
     for (int i = 0; i < members.size(); i++) {
       Variable v =  members.get(i);
+      if (v.getShortName() == null)
+          System.out.println("HEY");
       if (v.getShortName().equals( newVar.getShortName())) {
         members.set( i, newVar);
         found = true;

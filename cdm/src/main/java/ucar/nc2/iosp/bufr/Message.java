@@ -216,9 +216,9 @@ public class Message {
   public boolean isBitCountOk() throws IOException {
     getRootDataDescriptor();
     int nbitsCounted = getTotalBits();
-    int nbitsGiven = 8 * (dataSection.dataLength - 4);
+    int nbitsGiven = 8 * (dataSection.getDataLength() - 4);
     int nbytesCounted = getCountedDataBytes();
-    int nbytesGiven = dataSection.dataLength;
+    int nbytesGiven = dataSection.getDataLength();
     return Math.abs(nbytesCounted - nbytesGiven) <= 1; // radiosondes dataLen not even number of bytes
   }
 
@@ -299,7 +299,7 @@ public class Message {
 
   // count the bits in an uncompressed message
   private int countBitsUncompressed(Formatter out) throws IOException {
-    BitReader reader = new BitReader(raf, dataSection.dataPos + 4);
+    BitReader reader = new BitReader(raf, dataSection.getDataPos() + 4);
 
     int n = getNumberDatasets();
     counterDatasets = new BitCounterUncompressed[n]; // one for each dataset
@@ -429,7 +429,7 @@ public class Message {
 
   // count the bits in a compressd message
   private int countBitsCompressed(Formatter out) throws IOException {
-    BitReader reader = new BitReader(raf, dataSection.dataPos + 4);
+    BitReader reader = new BitReader(raf, dataSection.getDataPos() + 4);
     counterFlds = new BitCounterCompressed[root.subKeys.size()];
     countBitsCompressed(out, reader, counterFlds, 0, getNumberDatasets(), root);
 
@@ -599,7 +599,7 @@ public class Message {
    */
   public Object[][] readValues(List<Integer> indexFlds) throws IOException {
     getRootDataDescriptor();
-    BitReader reader = new BitReader(raf, dataSection.dataPos + 4);
+    BitReader reader = new BitReader(raf, dataSection.getDataPos() + 4);
 
     int n = getNumberDatasets();
     Object[][] result = new Object[n][indexFlds.size()];
@@ -748,10 +748,10 @@ public class Message {
             dds.isObserved(), dds.isCompressed());
 
     long startPos = is.getStartPos();
-    long startData = dataSection.dataPos;
+    long startData = dataSection.getDataPos();
     out.format("  startPos=%d len=%d endPos=%d dataStart=%d dataLen=%d dataEnd=%d %n",
             startPos, is.getBufrLength(), (startPos + is.getBufrLength()),
-            startData, dataSection.dataLength, startData +dataSection.dataLength);
+            startData, dataSection.getDataLength(), startData +dataSection.getDataLength());
 
     dumpDesc(out, dds.getDataDescriptors(), lookup, 4);
 

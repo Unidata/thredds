@@ -25,11 +25,21 @@ package ucar.nc2.iosp.bufr;
  * @since May 10, 2008
  */
 public class BufrDataSection {
-  public long dataPos;
-  public int dataLength;
+  private long dataPos;
+  private int dataLength;
 
   public BufrDataSection(long dataPos, int dataLength) {
     this.dataPos = dataPos;
     this.dataLength = dataLength;
   }
+
+  public long getDataPos() {
+    return dataPos;
+  }
+
+  public int getDataLength() {
+    return dataLength;
+  }
+
+  
 }

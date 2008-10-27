@@ -103,7 +103,7 @@ public class Scanner {
       long startPos = m.is.getStartPos();
       out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d\n",
               count, m.ids.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
-              (m.dataSection.dataPos + m.dataSection.dataLength));
+              (m.dataSection.getDataPos() + m.dataSection.getDataLength()));
       out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
               m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
 
@@ -136,7 +136,7 @@ public class Scanner {
         long startPos = m.is.getStartPos();
         out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d hash=[0x%x]\n",
                 count, m.ids.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
-                (m.dataSection.dataPos + m.dataSection.dataLength), m.hashCode());
+                (m.dataSection.getDataPos() + m.dataSection.getDataLength()), m.hashCode());
         out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
                 m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
       }
@@ -231,16 +231,16 @@ public class Scanner {
 
       m.calcTotalBits(formatter);
       int nbitsCounted = m.getTotalBits();
-      int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
+      int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
 
-      boolean ok = Math.abs(m.getCountedDataBytes()- m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number of bytes
+      boolean ok = Math.abs(m.getCountedDataBytes()- m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number of bytes
 
       if (!ok) out.format("*** BAD ");
-        long last = m.dataSection.dataPos + m.dataSection.dataLength;
+        long last = m.dataSection.getDataPos() + m.dataSection.getDataLength();
         out.format("Message %d nds=%d compressed=%s vlen=%s countBits= %d givenBits=%d data start=0x%x end=0x%x",
                 count, m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
-                nbitsCounted, nbitsGiven, m.dataSection.dataPos, last);
-        out.format(" countBytes= %d dataSize=%d", m.getCountedDataBytes(), m.dataSection.dataLength);
+                nbitsCounted, nbitsGiven, m.dataSection.getDataPos(), last);
+        out.format(" countBytes= %d dataSize=%d", m.getCountedDataBytes(), m.dataSection.getDataLength());
         out.format("%n");
       
       /* if (m.getCountedDataBytes() != m.dataSection.dataLength) {

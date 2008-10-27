@@ -41,25 +41,25 @@ public class DataDescriptor {
   ////////////////////////////////
 
   // from the TableB.Descriptor
-  public short fxy;
-  public int f, x, y;
-  public String name, units;
-  public boolean bad;  // no descriptor found
+  short fxy;
+  int f, x, y;
+  String name, units;
+  boolean bad;  // no descriptor found
 
   // may get modified by TableC operators
-  public int scale;
-  public int refVal;
-  public int bitWidth;
-  public int type; // 0 = isNumeric, 1 = isString, 2 = isEnum, 3 = compound;
+  int scale;
+  int refVal;
+  int bitWidth;
+  int type; // 0 = isNumeric, 1 = isString, 2 = isEnum, 3 = compound;
 
   // replication info
-  public List<DataDescriptor> subKeys;
-  public int replication = 1; // number of replications, essentially dk.y when sk.f == 1
-  public int replicationCountSize; // for delayed replication : size of count in bits
+  List<DataDescriptor> subKeys;
+  int replication = 1; // number of replications, essentially dk.y when sk.f == 1
+  int replicationCountSize; // for delayed replication : size of count in bits
   int repetitionCountSize; // for delayed repetition
 
   AssociatedField assField; // associated field == 02 04 Y, Y number of extra bits
-  public Object refersTo; // temporary place to put a sequence object
+  Object refersTo; // temporary place to put a sequence object
 
   DataDescriptor() {
   }
@@ -143,6 +143,31 @@ public class DataDescriptor {
   public String getFxyName() {
     return f +"-"+x+"-"+y;
   }
+
+
+  public short getFxy() {
+    return fxy;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public int getType() {
+    return type;
+  }
+
+  public int getScale() {
+    return scale;
+  }
+
+  public int getRefVal() {
+    return refVal;
+  }
+
+  public String getUnits() {
+    return units;
+  }  
 
   /**
    * Transfer info from the "proto message" to another message with the exact same structure.

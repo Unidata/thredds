@@ -114,8 +114,8 @@ public class TimeBufr2Xml {
       }
 
       int nbitsCounted = m.getTotalBits();
-      if (!(Math.abs(m.getCountedDataBytes()- m.dataSection.dataLength) <= 1)) {
-        out.format("**BitCount Fails expect=%d != dataLength=%d%n", m.getCountedDataBytes(), m.dataSection.dataLength);
+      if (!(Math.abs(m.getCountedDataBytes()- m.dataSection.getDataLength()) <= 1)) {
+        out.format("**BitCount Fails expect=%d != dataLength=%d%n", m.getCountedDataBytes(), m.dataSection.getDataLength());
         bad++;
         continue;
       }

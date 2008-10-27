@@ -248,7 +248,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       bb.putInt(0); // placeholder
     }
 
-    BitReader reader = new BitReader(raf, m.dataSection.dataPos + 4);
+    BitReader reader = new BitReader(raf, m.dataSection.getDataPos() + 4);
     if (m.dds.isCompressed()) {
       BitCounterCompressed[] bitCounter = m.getCounterFlds();      
       readDataCompressed(reader, m.getRootDataDescriptor(), obsOffsetInMessage, bitCounter, bb);

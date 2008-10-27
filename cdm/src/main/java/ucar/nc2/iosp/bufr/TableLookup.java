@@ -72,7 +72,7 @@ public final class TableLookup {
 
     // check tablelookup for special local table
     // create key from category and possilbly center id
-    localTableName = tablelookup.getDataCategory( makeLookupKey(ids.getCategory(), ids.getCenterId()));
+    localTableName = tablelookup.getCategory( makeLookupKey(ids.getCategory(), ids.getCenterId()));
 
     if (localTableName == null) {
       this.localTableB = wmoTableB;
