@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1>BUFR Issues</h1>
+<hr width="100%" />
+<h2>1. Use of BUFR Tables </h2>
+<h3>1. Use of <strong>standard WMO data descriptor ranges in local tables </strong></h3>
+<p>For both table B and table D, the areas x &lt; 48, and y &lt; 192 are reserved for  standard WMO tables. We sometimes see local tables using descriptors in this range. We assume that this is incorrect, and BUFR records that rely on this kind of <em>local override</em> will fail, at least in the CDM BUFR library.</p>
+<h3>2.  Incorrect use of master table version numbers </h3>
+<p>We sometimes see BUFR records where the  version number of the master table is incorrectly specified, typically assuming elements from a later version of the master table.. We assume that all versions of the master table are backwards compatible up to version 13. Therefore, we use version 13 table no matter what the BUFR record says, and so we tolerate the incorrect encoding of the master table version.</p>
+<p>Starting with version 14, master tables will no longer be backwards compatible, therefore data providers must correctly encode the master table version for versions 14 and greater.</p>
+<hr width="100%" />
+<h2>2. Errors in the <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/BufrTabB-11-2007.pdf">WMO Master Table  version 13</a></h2>
+<h3><strong>0-22-39</strong> </h3>
+<p>has bit width 13, apparently it should be bit width 12. </p>
+<h3 wrap="">3 02 044</h3>
+<pre wrap="">3 02 044 (Evaporation data)  
+   0 04 024 Time period in hours
+   0 02 004 Type of instrument for evaporation or crop type for evapotranspiration
+   0 13 003 Relative humidity 
+</pre>
+<p wrap="">  however it should be: </p>
+<pre wrap="">
+   0 04 024 Time period in hours
+   0 02 004 Type of instrument for evaporation or crop type for evapotranspiration
+   <strong>0 13 033 Evaporation /evapotranspiration</strong></pre>
+<hr width="100%" />
+<h2 wrap="">3. BUFR Record encoding ambiguities</h2>
+<p wrap="">1. </p>
+<p>&nbsp; </p>
+<hr width="100%" />
+<p><a href="index.html">BUFR Tables Home page</a></p>
+<p>&nbsp;</p>
+<address>
+<a href="NetcdfUsers.htm"><img src="nc.gif" alt="vv" width="64" height="64" border="0" /></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 26, 2008
+</address>
+</body>
+</html>

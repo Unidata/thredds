@@ -15,7 +15,7 @@ body {
 <body nosave>
 <h1> BUFR Tables Home </h1>
 <h3>Background</h3>
-<p>Unidata is developing a 100% Java library for reading BUFR records, as part of the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">Netcdf-Java / CDM </a>(Common Data Model) library. For BUFR to be used across institutions or to archive data, we  need  canonical, standardized, machine-readable BUFR tables, shared between producer and client software. A missing table entry makes an entire BUFR message unreadable. An incorrect entry may make the BUFR record unreadable, or  worse, silently give incorrect data values. </p>
+<p>Unidata is developing a 100% Java library for reading BUFR records (editions 2,3,4), as part of the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">Netcdf-Java / CDM </a>(Common Data Model) library. For BUFR to be used across institutions or to archive data, we  need  canonical, standardized, machine-readable BUFR tables, shared between producer and client software. A missing table entry makes an entire BUFR message unreadable. An incorrect entry may make the BUFR record unreadable, or  worse, silently give incorrect data values. </p>
 <p>We are publishing our BUFR tables in machine-readable format along with a <a href="validate.html">validation service</a> that allows users to upload BUFR records and test them against our reader. In this way we hope  that centers/users will help verify that our tables and software are correct, validate their BUFR formats, and contribute their own local tables as needed. Ideally a canonical repository of machine-readable BUFR tables will eventually be  hosted by the WMO. </p>
 <h3>Standard WMO Tables </h3>
 <p>Specific areas of the WMO tables B and D are reserved for <em><strong>local data descriptors</strong></em>, namely categories 48-63 inclusive, and entries 192-255 inclusive (cf p L3-49 of the <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Guides/BUFRCREXPreface_en.html">BUFR Guide</a>). All other entries in tables B and D are  reserved for globally shared descriptors, which we call <strong><em> standard WMO data descriptors</em></strong>. The <a href="http://www.wmo.int/pages/prog/www/WMOCodes/OperationalCodes.html">standard WMO tables</a> are available from the WMO in Microsoft Word and PDF format. Extracting   tables from these formats is an error-prone and time-consuming process, that is to say, neither Word nor PDF is  machine readable  in this context. </p>
@@ -37,6 +37,8 @@ body {
   <li><a href="http://www.unidata.ucar.edu/support/mailinglist/mailing-list-form.html">Add or remove</a> yourself to the <strong>bufrtables</strong> email list</li>
   <li><a href="http://www.unidata.ucar.edu/mailing_lists/archives/bufrtables/">Archives</a><a href="http://www.unidata.ucar.edu/mailing_lists/archives/bufrtables/"></a></li>
 </ul>
+<h3>Issues</h3>
+<p>A <a href="issues.html">page</a> describing the issues we have seen so far trying to decode BUFR records, updated as we find them. </p>
 <hr />
 <h2>Useful links</h2>
 <h3>WMO</h3>
@@ -84,7 +86,7 @@ body {
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated on Sep 13, 2008 
+and was last updated on Oct 26, 2008 
 </address>
 
 </body>

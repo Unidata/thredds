@@ -791,9 +791,9 @@ public class Scanner {
     // */
 
     /* dump messages
-    test("C:/data/bufr/", new MClosure() {
+    test("C:/data/bufr/eumetsat/MSG2-SEVI-MSGCLDS-0101-0101-20080405114500.000000000Z-909326.bfr", new MClosure() {
       public void run(String filename) throws IOException {
-        scan(filename, -1);
+        scan(filename, 0);
       }
     }); // */
 
@@ -825,7 +825,7 @@ public class Scanner {
      }); // */
 
     // extract unique DDS  // 20080707_1900.bufr
-     test("C:/data/bufr/problems/complete/", new MClosure() {
+     test("C:/data/bufr/eumetsat/MSG2-SEVI-MSGCLDS-0101-0101-20080405114500.000000000Z-909326.bfr", new MClosure() {
        public void run(String filename) throws IOException {
          scanMessageDDS(filename);
        }

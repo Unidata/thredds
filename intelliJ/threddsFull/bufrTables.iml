@@ -55,7 +55,7 @@
             <attribute name="URI" value="/WEB-INF/lib" />
           </containerElement>
           <containerElement type="library" name="Spring" level="project">
-            <attribute name="method" value="0" />
+            <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib" />
           </containerElement>
           <containerElement type="library" name="stax" level="module">
