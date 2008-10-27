@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>THREDDS Data Server Administration Tutorial</title></head>
-
 <body>
 <h1><img src="../images/THREDDSlogo.jpg" name="graphics1" alt="THREDDS" align="bottom" border="0" height="54" width="67"> THREDDS Data Server Administration Tutorial</h1>
 <hr>
@@ -27,31 +26,31 @@
 </ul>
 <h3>10:15 (Ethan) <a href="BasicConfig.html">Basic TDS Configuration</a></h3>
 <ul>
-  <li> TDS directory structure</li>
-  <li>TDS Configuration Catalog</li>
+  <li>Review THREDDS Catalogs</li><ul><li>accessible dataset (urlPath vs access?)</li><li>container dataset and catalogRef (local &amp; remote catRefs)</li><li>service elements: basics, [*] types supported, &amp; [*] base value for supported types</li><li>[*] metadata: thredds, links, contained, &amp; inherited</li></ul>
+  <li>TDS Configuration Catalogs</li>
   <ul>
-    <li>Overview</li>
+    <li>Overview</li><li>Configuration directory</li><li>Root catalog</li>
     <li>Examples: Fix enhanced catalog; add model data</li>
   </ul>
-  <li>View catalogs and datasets in <a href="http://www.unidata.ucar.edu/software/idv/">IDV</a></li>
+  
 </ul>
 <h3>10:45 Break</h3>
 <h3>11:00 (Jenn) <a href="BasicTomcatTourAndSecurity.html">Basic Tomcat Tour and Tomcat Security</a></h3>
 <ul>
   <li> <a href="BasicTomcatTourAndSecurity.html#ImportantDirs"> Important Tomcat Directories: webapps, logs, content, conf </a></li>
   <li> <a href="BasicTomcatTourAndSecurity.html#conf/server.xml"> The Server Configuration file <code>conf/server.xml</code></a></li>
-  <li><a href="BasicTomcatTourAndSecurity.html#tomcat security"> Tomcat Security</a> </li>
+  <li><a href="BasicTomcatTourAndSecurity.html#tomcat%20security"> Tomcat Security</a> </li>
   <ul>
     <li><a href="BasicTomcatTourAndSecurity.html#authentication"> Using Authentication to Restrict Access to Tomcat Applications </a></li>
     <ul>
-      <li><a href="BasicTomcatTourAndSecurity.html#Tomcat Manager">The Tomcat Manger Application</a></li>
+      <li><a href="BasicTomcatTourAndSecurity.html#Tomcat%20Manager">The Tomcat Manger Application</a></li>
       <li><a href="BasicTomcatTourAndSecurity.html#tomcat-users">tomcat-users.xml</a></li>
     </ul>
-    <li><a href="BasicTomcatTourAndSecurity.html#digested passwords"> Using Digested Passwords </a></li>
-    <li><a href="BasicTomcatTourAndSecurity.html#ssl encryption"> Using SSL Encryption</a></li>
-    <li><a href="BasicTomcatTourAndSecurity.html#ssl tds remote mgmt"> Enable SSL for TDS Remote Management</a></li>
-    <li><a href="BasicTomcatTourAndSecurity.html#tds no ssl"> Running TDS Without SSL</a></li>
-    <li><a href="BasicTomcatTourAndSecurity.html#ssl for mgr app"> Enable SSL for the Manager Application</a></li>
+    <li><a href="BasicTomcatTourAndSecurity.html#digested%20passwords"> Using Digested Passwords </a></li>
+    <li><a href="BasicTomcatTourAndSecurity.html#ssl%20encryption"> Using SSL Encryption</a></li>
+    <li><a href="BasicTomcatTourAndSecurity.html#ssl%20tds%20remote%20mgmt"> Enable SSL for TDS Remote Management</a></li>
+    <li><a href="BasicTomcatTourAndSecurity.html#tds%20no%20ssl"> Running TDS Without SSL</a></li>
+    <li><a href="BasicTomcatTourAndSecurity.html#ssl%20for%20mgr%20app"> Enable SSL for the Manager Application</a></li>
   </ul>
 </ul>
 <h3>12:00 Lunch</h3>
@@ -63,22 +62,9 @@
   <li>Netcdf Subset Service</li>
   <li>LAS</li>
 </ul>
-<h3>1:30 (Ethan) TDS Configuration Catalogs - Details</h3>
+<h3>1:30 (Ethan) <a href="ConfigCatalogs.html">TDS Configuration Catalogs - Details</a></h3>
 <ul>
-  <li>debug: reinit, dataRoot</li>
-  <li><a href="ConfigCatalogs.html">TDS Configuration Catalogs</a></li>
-  <ul>
-    <li>Overview</li>
-    <li>Serving Datasets</li>
-    <ul>
-      <li>Associating a Dataset with a <code>service</code> Element</li>
-      <li><code>datasetRoot</code> Element</li>
-      <li><code>datasetScan</code> Element</li>
-      <li><code>service</code> Element</li>
-    </ul>
-    <li>More <code>datasetScan</code> Element</li>
-  </ul>
-  <li>Using OPeNDAP service for testing/debugging</li>
+  <li>More THREDDS Catalogs</li><ul><li>Supported services: types and required base URL</li><li>Compound services</li><li>Metadata: thredds, links, contained, &amp; inherited</li></ul><li>TDS Root Catalogs</li><ul><li>catalog.xml</li><li>catalogRef linked tree of config catalogs</li><li>Additional catalogs (listed in threddsConfig.xml)</li><li>Debug page: list of static catalogs; catalogErrors.log</li></ul><li>Overview of Dataset Root and Scan</li><ul><li>Provides mapping between dataset URL and&nbsp;dataset directory.</li><li>Static (root) and scanning</li><li>Manage data roots:</li><ul><li>Rules (e.g., path must be unique to TDS)</li><li>Debug page: list of data roots</li></ul><li>Basic&nbsp;exercise</li><ul><li>path/location only (no filter?)</li><li>Debug page: reinitialize</li><li>Using OPeNDAP service for testing/debugging</li></ul></ul><li>Dataset Scan details</li><ul><li>Filtering datasets</li><li>Dataset IDs: default and specifying</li><li>Dataset Names</li><li>Sorting</li><li>Proxy Datasets (latest)</li><li>Dataset Size</li><li>TimeCoverage Metadata</li></ul>
 </ul>
 <h3>3:00 Break</h3>
 <h3>3:15 (Jenn) Server Logging and Statistics</h3>
@@ -110,8 +96,8 @@
 </ul>
 <h3>9:30 (Ethan) Advanced TDS management</h3>
 <ul>
-  <li><a href="Performance.html">Performance Tips</a></li>
-  <li><a href="TroubleShooting.html">TroubleShooting Problems</a></li>
+  <li>threddsConfig.xml</li><li><a href="Performance.html">Performance Tips</a></li><ul><li>-server -Xmx</li><li>cache configuration</li><li>Depends on expected load and server hardware</li><li>load testing?</li><li>Better hardware (newmotherlode, zfs)</li></ul>
+  <li><a href="TroubleShooting.html">TroubleShooting Problems</a></li><li>More datasetScan??? (more regular expressions)</li>
 </ul>
 <h3>10:00 Break</h3>
 <h3>10:15 (John) Viewer Links</h3>
@@ -122,8 +108,8 @@
 </ul>
 <h3>11:00 (Ethan) Metadata</h3>
 <ul>
-  <li><a href="MetadataStandards.html">Metadata standards</a> </li>
-  <li><a href="EnhancedCatalogs.html">Annotated Example</a></li>
+  <li>THREDDS Metadata</li><li>Example Sites:</li><ul><li>WHOI (?)</li><li>USGS (?)</li><li>PMFL (?)</li><li>topcatalog.xml (?)</li></ul>
+  <li><a href="EnhancedCatalogs.html">Annotated Example</a></li><li><a href="MetadataStandards.html">Metadata standards</a> (???)</li>
 </ul>
 <h3>11:30 (John) Preview of TDS 4.0</h3>
 <ul>
@@ -149,7 +135,7 @@
 </ul>
 <h3>5:00 Day Two Finish</h3>
 <hr>
-<p><img src="../images/thread.png" width="110" height="108">This document is maintained by John Caron and was last updated on Oct 22, 2008</p>
+<p><img src="../images/thread.png" height="108" width="110">This document is maintained by John Caron and was last updated on Oct 22, 2008</p>
 <p>&nbsp;</p>
 <p>&nbsp;  </p>
 </body></html>
