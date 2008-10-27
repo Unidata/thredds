@@ -66,7 +66,7 @@ public class Descriptor {
 
     if (f == 0) {
       TableB.Descriptor b = lookup.getDescriptorTableB( fxy);
-      if (b == null) out.format("**NOT FOUND!!");
+      if (b == null) out.format("%-8s: NOT FOUND!!", makeString(fxy) );
       else out.format("%-8s: %s", b.getFxy(), b.getName());
 
     } else if (f == 1)
@@ -78,7 +78,7 @@ public class Descriptor {
 
     } else if (f == 3) {
       TableD.Descriptor d = lookup.getDescriptorTableD( fxy);
-      if (d == null) out.format("**NOT FOUND!!");
+      if (d == null) out.format("%-8s: NOT FOUND!!", makeString(fxy) );
       else out.format("%-8s: %s", d.getFxy(), d.getName());
     }
   }

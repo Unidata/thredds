@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import ucar.bufr.*;
+import ucar.nc2.iosp.bufr.*;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 
@@ -230,7 +230,7 @@ public class MessageBroker {
 
       long dataPos = raf.getFilePointer();
       int dataLength = BufrNumbers.uint3(raf);
-      DataSection dataSection = new DataSection(dataPos, dataLength);
+      BufrDataSection dataSection = new BufrDataSection(dataPos, dataLength);
 
       if ((is.getBufrEdition() > 4) || (is.getBufrEdition() < 2)) {
         System.out.println("Edition " + is.getBufrEdition() + " is not supported");

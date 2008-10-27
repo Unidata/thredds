@@ -48,11 +48,11 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.bufr.MessageScanner;
-import ucar.bufr.Message;
-import ucar.bufr.Dump;
-import ucar.bufr.DataDescriptor;
+import ucar.nc2.iosp.bufr.MessageScanner;
+import ucar.nc2.iosp.bufr.Message;
+import ucar.nc2.iosp.bufr.DataDescriptor;
 
 /**
  * @author caron
@@ -199,7 +199,7 @@ public class BtServlet extends HttpServlet {
         m.showMissingFields(f);
         f.format("%n%n");
       }
-      new Dump().dump(f, m);
+      m.dump(f);
       f.flush();
 
     } finally {
@@ -473,6 +473,7 @@ public class BtServlet extends HttpServlet {
   private Document readBufr(File file, String cacheName) throws IOException {
     long start = System.nanoTime();
     RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
+    DateFormatter format = new DateFormatter();
 
     Element rootElem = new Element("bufrValidation");
     Document doc = new Document(rootElem);
@@ -512,7 +513,7 @@ public class BtServlet extends HttpServlet {
       bufrMessage.addContent(new Element("WMOheader").setText(extractWMO(m.getHeader())));
       bufrMessage.addContent(new Element("center").setText(m.getCenterName()));
       bufrMessage.addContent(new Element("category").setText(m.getCategoryFullName()));
-      bufrMessage.addContent(new Element("date").setText(m.ids.getReferenceTime()));
+      bufrMessage.addContent(new Element("date").setText( format.toDateTimeString(m.ids.getReferenceTime())));
       count++;
     }
     raf.close();

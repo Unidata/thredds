@@ -132,26 +132,28 @@ public class Scanner {
         out.format("**INCOMPLETE ");
       }
 
-      long startPos = m.is.getStartPos();
-      out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d hash=[0x%x]\n",
-              count, m.ids.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
-              (m.dataSection.dataPos + m.dataSection.dataLength), m.hashCode());
-      out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
-              m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
+      if (mode >= 0) {
+        long startPos = m.is.getStartPos();
+        out.format(" msg= %d time=%s starts=%d len=%d end=%d dataEnd=%d hash=[0x%x]\n",
+                count, m.ids.getReferenceTime(), startPos, m.is.getBufrLength(), (startPos + m.is.getBufrLength()),
+                (m.dataSection.dataPos + m.dataSection.dataLength), m.hashCode());
+        out.format("  ndatasets=%d isCompressed=%s datatype=0x%x header=%s\n",
+                m.getNumberDatasets(), m.dds.isCompressed(), m.dds.getDataType(), m.getHeader());
+      }
 
-      if (mode == 1)
+      if (mode == 2)
         m.dump(out);
-      else if (mode == 2)
+      else if (mode == 1)
         m.dumpHeader(out);
 
-      out.format("%n");
+      if (mode >= 0) out.format("%n");
       count++;
     }
     raf.close();
 
     long took = (System.nanoTime() - start);
     double rate = (took > 0) ? ((double) (1000 * 1000) * count / took) : 0.0;
-    out.format("nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec\n", count, scan.getTotalObs(), took / (1000 * 1000), rate);
+    out.format(" nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec\n", count, scan.getTotalObs(), took / (1000 * 1000), rate);
     return scan.getTotalObs();
   }
 
@@ -483,7 +485,7 @@ public class Scanner {
   static String extractWMO(String header) {
     Matcher matcher = wmoPattern.matcher( header);
     if (!matcher.matches()) {
-      out.format("***header failed= %s\n", header);
+      //out.format("***header failed= %s\n", header);
       return null;
     }
     return matcher.group(1);
@@ -789,9 +791,9 @@ public class Scanner {
     // */
 
     /* dump messages
-    test("C:/data/bufr2/asampleAll.bufr", new MClosure() {
+    test("C:/data/bufr/", new MClosure() {
       public void run(String filename) throws IOException {
-        scan(filename, 1);
+        scan(filename, -1);
       }
     }); // */
 
@@ -823,13 +825,13 @@ public class Scanner {
      }); // */
 
     // extract unique DDS  // 20080707_1900.bufr
-     test("C:/data/bufr2/asampleAll.bufr", new MClosure() {
+     test("C:/data/bufr/problems/complete/", new MClosure() {
        public void run(String filename) throws IOException {
          scanMessageDDS(filename);
        }
      });
-    Formatter messCsv = new Formatter( new FileOutputStream("C:/data/bufr2/out/mess.csv"));
-    Formatter ddsCsv = new Formatter( new FileOutputStream("C:/data/bufr2/out/dds.csv"));
+    Formatter messCsv = new Formatter( new FileOutputStream("C:/data/bufr/mess.csv"));
+    Formatter ddsCsv = new Formatter( new FileOutputStream("C:/data/bufr/dds.csv"));
     showDDS(messCsv, ddsCsv);
     //showDDS(null, null);
     ddsCsv.close();

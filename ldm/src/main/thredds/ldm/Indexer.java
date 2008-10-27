@@ -20,7 +20,7 @@
 
 package thredds.ldm;
 
-import ucar.bufr.Message;
+import ucar.nc2.iosp.bufr.Message;
 
 import java.io.IOException;
 

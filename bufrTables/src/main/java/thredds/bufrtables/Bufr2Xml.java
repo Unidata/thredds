@@ -19,14 +19,11 @@
  */
 package thredds.bufrtables;
 
-import ucar.unidata.io.RandomAccessFile;
-import ucar.bufr.MessageScanner;
-import ucar.bufr.Message;
+import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.ma2.*;
 
@@ -34,14 +31,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLOutputFactory;
 import java.io.IOException;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Formatter;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * @author caron

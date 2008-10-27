@@ -20,8 +20,7 @@
 
 package thredds.ldm;
 
-import ucar.bufr.Message;
-import ucar.bufr.Dump;
+import ucar.nc2.iosp.bufr.Message;
 
 import java.io.*;
 import java.util.*;
@@ -63,7 +62,6 @@ public class MessageDispatchDDS {
   boolean showResults = false;
   boolean writeSamples = true;
 
-  Dump dumper = new Dump();
   WritableByteChannel badWbc;
   WritableByteChannel sampleWbc;
   WritableByteChannel allWbc;
@@ -318,13 +316,14 @@ public class MessageDispatchDDS {
     }
 
     boolean scheduleWrite(Message m) {
-      Calendar mcal = m.ids.getReferenceTimeCal();
-      int day = mcal.get(Calendar.DAY_OF_MONTH);
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(m.ids.getReferenceTime());
+      int day = cal.get(Calendar.DAY_OF_MONTH);
       String writerName = fileout + "-" + day;
       MessageWriter writer = writers.get(writerName);
       if (writer == null) {
         try {
-          writer = new MessageWriter(executor, indexer, fileno, fileout, mcal);
+          writer = new MessageWriter(executor, indexer, fileno, fileout, cal);
           writers.put(writerName, writer);
           fileno++;
           

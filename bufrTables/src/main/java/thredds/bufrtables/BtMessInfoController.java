@@ -29,10 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
-import ucar.bufr.Message;
-import ucar.bufr.Dump;
-import ucar.bufr.DataDescriptor;
-import ucar.bufr.MessageScanner;
+import ucar.nc2.iosp.bufr.Message;
+import ucar.nc2.iosp.bufr.DataDescriptor;
+import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.util.Formatter;
@@ -127,7 +126,7 @@ public class BtMessInfoController extends AbstractController {
         m.showMissingFields(f);
         f.format("%n%n");
       }
-      new Dump().dump(f, m);
+      m.dump(f);
       f.flush();
 
     } finally {

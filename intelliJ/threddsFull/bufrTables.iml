@@ -27,8 +27,8 @@
             <attribute name="URI" value="&lt;N/A&gt;" />
           </containerElement>
           <containerElement type="module" name="bufr">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="&lt;N/A&gt;" />
           </containerElement>
           <containerElement type="module" name="bufrTables">
             <attribute name="method" value="1" />
@@ -50,12 +50,12 @@
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
-          <containerElement type="library" name="JSTL" level="application">
-            <attribute name="method" value="1" />
+          <containerElement type="library" name="JSTL" level="project">
+            <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/lib" />
           </containerElement>
-          <containerElement type="library" name="Spring" level="application">
-            <attribute name="method" value="1" />
+          <containerElement type="library" name="Spring" level="project">
+            <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/lib" />
           </containerElement>
           <containerElement type="library" name="stax" level="module">
@@ -237,7 +237,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="bufr" exported="" />
+    <orderEntry type="module" module-name="bufr" />
     <orderEntry type="library" name="JSTL" level="project" />
     <orderEntry type="library" name="Spring" level="project" />
     <orderEntryProperties />

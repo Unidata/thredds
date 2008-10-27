@@ -107,11 +107,11 @@ public class MessageScanner {
     lastPos = dataPos + dataLength + 4; // position to the end message plus 1
     nbytes +=  lastPos - startPos;
 
-    // length consistency checks
+    /* length consistency checks
     if (is.getBufrLength() > MAX_MESSAGE_SIZE) {
-      log.warn("Illegal length - BUFR message at pos "+start+" header= "+header);
+      log.warn("Illegal length - BUFR message at pos "+start+" header= "+cleanup(header)+" size= "+is.getBufrLength());
       return null;
-    }
+    } */
 
     if (is.getBufrEdition() > 4) {
       log.warn("Illegal edition - BUFR message at pos " + start + " header= " + cleanup(header));

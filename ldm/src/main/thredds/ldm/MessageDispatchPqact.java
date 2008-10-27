@@ -20,8 +20,7 @@
 
 package thredds.ldm;
 
-import ucar.bufr.Message;
-import ucar.bufr.Dump;
+import ucar.nc2.iosp.bufr.Message;
 
 import java.io.*;
 import java.util.*;
@@ -50,10 +49,8 @@ public class MessageDispatchPqact {
 
   boolean showMatch = false;
 
-  Dump dumper = new Dump();
   Formatter out = new Formatter(System.out);
   WritableByteChannel unmatchWbc;
-
 
   void dispatch(Message m) {
     total_msgs++;
@@ -206,8 +203,8 @@ public class MessageDispatchPqact {
       } else if (m.hashCode() != first.hashCode() && !ignore) {
         try {
           out.format(" DDS doesnt match pqact= %s %n", pats);
-          dumper.dumpHeader(out, first);
-          dumper.dumpHeader(out, m);
+          first.dumpHeader(out);
+          m.dumpHeader(out);
           out.format("%n");
           mixedDDS++;
         } catch (IOException e) {

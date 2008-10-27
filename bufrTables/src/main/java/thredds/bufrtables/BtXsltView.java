@@ -20,17 +20,6 @@
 package thredds.bufrtables;
 
 import org.springframework.web.servlet.view.xslt.AbstractXsltView;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.transform.JDOMSource;
-
-import javax.xml.transform.Source;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
-
-import ucar.bufr.Message;
 
 /**
  * Create an XML doc out of the list of BUFR messages.

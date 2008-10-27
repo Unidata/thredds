@@ -29,9 +29,10 @@ import com.sleepycat.bind.tuple.TupleInput;
 import java.io.*;
 import java.util.*;
 
-import ucar.bufr.Message;
-import ucar.bufr.BufrDataDescriptionSection;
-import ucar.bufr.DataDescriptor;
+import ucar.nc2.iosp.bufr.Message;
+import ucar.nc2.iosp.bufr.BufrDataDescriptionSection;
+import ucar.nc2.iosp.bufr.DataDescriptor;
+import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.DataType;
 
@@ -63,13 +64,13 @@ public class BerkeleyDBIndexer implements Indexer {
     setup(dirName, false);
 
     // add time fields
-    dataflds.add(new DataFld(BufrDataDescriptionSection.getDesc("0-4-1")));
-    dataflds.add(new DataFld(BufrDataDescriptionSection.getDesc("0-4-2")));
-    dataflds.add(new DataFld(BufrDataDescriptionSection.getDesc("0-4-3")));
-    dataflds.add(new DataFld(BufrDataDescriptionSection.getDesc("0-4-4")));
-    dataflds.add(new DataFld(BufrDataDescriptionSection.getDesc("0-4-5")));
-    dataflds.add(new DataFld(BufrDataDescriptionSection.getDesc("0-4-6")));
-    dataflds.add(new DataFld(BufrDataDescriptionSection.getDesc("0-4-43")));
+    dataflds.add(new DataFld(Descriptor.getFxy("0-4-1")));
+    dataflds.add(new DataFld(Descriptor.getFxy("0-4-2")));
+    dataflds.add(new DataFld(Descriptor.getFxy("0-4-3")));
+    dataflds.add(new DataFld(Descriptor.getFxy("0-4-4")));
+    dataflds.add(new DataFld(Descriptor.getFxy("0-4-5")));
+    dataflds.add(new DataFld(Descriptor.getFxy("0-4-6")));
+    dataflds.add(new DataFld(Descriptor.getFxy("0-4-43")));
 
     for (short fxy : indexFlds)
       dataflds.add(new DataFld(fxy));
@@ -92,7 +93,7 @@ public class BerkeleyDBIndexer implements Indexer {
     DataFld(String line) {
       String[] toke = line.split(",");
       this.descName = toke[0];
-      this.fxy = BufrDataDescriptionSection.getDesc(descName);
+      this.fxy = Descriptor.getFxy(descName);
       this.fldName = toke[1];
       this.dtype = DataType.getType(toke[2]);
       if (toke.length > 3)
@@ -101,7 +102,7 @@ public class BerkeleyDBIndexer implements Indexer {
 
     DataFld(short fxy) {
       this.fxy = fxy;
-      this.descName = BufrDataDescriptionSection.getDescName(fxy);
+      this.descName = Descriptor.makeString(fxy);
     }
   }
 
@@ -513,7 +514,7 @@ public class BerkeleyDBIndexer implements Indexer {
       System.out.println("sec stats\n"+dstats);
 
     } catch (DatabaseException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();  
     }
   }
 
@@ -526,9 +527,9 @@ public class BerkeleyDBIndexer implements Indexer {
     if (showFlds) out.format("BerkeleyDBIndexer dir= %s indexFlds= ", dir);
     for (String s : tokes) {
       if (s.length() == 0) continue;
-      short fxy = BufrDataDescriptionSection.getDesc("0-" + s);
+      short fxy = Descriptor.getFxy("0-" + s);
       indexFields.add(fxy);
-      if (showFlds) out.format("%s ", BufrDataDescriptionSection.getDescName(fxy));
+      if (showFlds) out.format("%s ", Descriptor.makeString(fxy));
     }
     if (showFlds) out.format("%n");
 

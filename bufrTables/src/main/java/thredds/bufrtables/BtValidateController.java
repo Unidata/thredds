@@ -19,31 +19,22 @@
  */
 package thredds.bufrtables;
 
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.validation.BindException;
 import org.jdom.Element;
 import org.jdom.Document;
 import org.jdom.transform.JDOMSource;
 import ucar.nc2.util.DiskCache2;
-import ucar.bufr.Message;
-import ucar.bufr.MessageScanner;
+import ucar.nc2.iosp.bufr.Message;
+import ucar.nc2.iosp.bufr.MessageScanner;
+import ucar.nc2.units.DateFormatter;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.Source;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * @author caron
@@ -78,7 +69,7 @@ public class BtValidateController extends AbstractCommandController {
   }
 
   protected Document makeXml(File f, String filename) throws Exception {
-
+    DateFormatter format = new DateFormatter();
     Element rootElem = new Element("bufrValidation");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("fileName", filename);
@@ -126,7 +117,7 @@ public class BtValidateController extends AbstractCommandController {
         bufrMessage.addContent(new Element("WMOheader").setText(m.extractWMO()));
         bufrMessage.addContent(new Element("center").setText(m.getCenterName()));
         bufrMessage.addContent(new Element("category").setText(m.getCategoryFullName()));
-        bufrMessage.addContent(new Element("date").setText(m.ids.getReferenceTime()));
+        bufrMessage.addContent(new Element("date").setText(format.toDateTimeString(m.ids.getReferenceTime())));
         count++;
       }
       return doc;
