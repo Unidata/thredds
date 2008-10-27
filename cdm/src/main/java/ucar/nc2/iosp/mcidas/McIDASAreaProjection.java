@@ -378,6 +378,10 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
                 || ProjectionPointImpl.isInfinite(pt2)) {
             return true;
         }
+        if (Double.isNaN(pt1.getX()) || Double.isNaN(pt1.getY())
+                || Double.isNaN(pt2.getX()) || Double.isNaN(pt2.getY())) {
+            return true;
+        }
         // opposite signed X values, larger then 5000 km
         return (pt1.getX() * pt2.getX() < 0)
                && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
