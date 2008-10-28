@@ -662,6 +662,8 @@ public class InvCatalogFactory {
    */
   public static void main(String[] args) throws Exception {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
+    doOne(catFactory, "file:D:/catalog/gom_interop_catalog.xml", false);
+    Thread.currentThread().sleep(10 * 10000);
     //InvCatalogFactory catFactoryNo = InvCatalogFactory.getDefaultFactory(false);
 
     // 0.6
@@ -679,7 +681,6 @@ public class InvCatalogFactory {
 
     // 1.1
     //doOne(catFactory, "file:C:/data/catalog/obsData.xml", false);
-    doOne(catFactory, "file:C:/temp/colaCatalog.xml", false);
     /* InvCatalogImpl cat = doOne(catFactory, "file:///C:/dev/thredds/resourceswar/initialContent/dodsC/catalog3.xml");
 InvDatasetScan dsScan = (InvDatasetScan) cat.findDatasetByID("testScan");
 InvCatalogImpl catScan = dsScan.makeCatalogForDirectory("reqURL", "model/test/", "serviceId", "latestServiceId");

@@ -10,14 +10,27 @@
 <h1><img src="../images/THREDDSlogo.jpg" width="67" height="54">Server Performance </h1>
 
   <hr>
+  <h2>Hardware</h2>
+  <p>Throw more $$ at this problem,  hardware is darn cheap these days. </p>
+  <p>It would be highly unusual for  the TDS not to be I/O bound, so buying a high-performance disk subsystem is much better than buying  fast CPUs. Slower, more energy efficient multicore processors are optimized for web server loads. </p>
+  <p>Typically disk access is faster on a local drive than on an NFS mounted drive. High performance disk subsystems like RAID or SANs can also significantly improve TDS throughput. You might also consider ZFS software RAID.</p>
+  <p>&nbsp;</p>
   <h2>Operating System Configuration</h2>
-  <h3>Setting the number of file handles</h3>
+  <h3>Use a high-performance file system</h3>
+  <p>If you have system admin resources, examine the possible file systems available for your OS, eg on Linux or Solaris. We are using the <a href="http://en.wikipedia.org/wiki/ZFS">ZFS file system</a> on Solaris-X86 and it is very fast. We use ZFS software RAID, so check it out before buying hardware RAID.</p>
+  <p><strong>Resources:</strong></p>
+  <p>&nbsp;&nbsp;&nbsp; <a href="http://www.solarisinternals.com/wiki/index.php/ZFS_Evil_Tuning_Guide">http://www.solarisinternals.com/wiki/index.php/ZFS_Evil_Tuning_Guide</a> <br>
+  &nbsp;&nbsp;&nbsp; <a href="http://blogs.sun.com/realneel/entry/zfs_and_databases">http://blogs.sun.com/realneel/entry/zfs_and_databases</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="http://www.solarisinternals.com/wiki/index.php/ZFS_Best_Practices_Guide">http://www.solarisinternals.com/wiki/index.php/ZFS_Best_Practices_Guide</a><br>
+</p>
+<h3>Setting the number of file handles</h3>
   <p> The OS typically limits the number of open file handles per process. To check this value on Unix, use:</p>
   <pre> ulimit -n </pre>
   <p>If you are using the default <a href="ThreddsConfigXMLFile.html#FileHandles">TDS configuration values</a>, this value should be 1024 or greater. Otherwise you can tune this number based on your own settings. For example, to set this value to 2048 in the <em><strong>tomcat startup.sh</strong></em> script:</p>
   <pre> ulimit -n 2048</pre>
   <p>This affects the number of files to keep in the <a href="#cache">NetcdfFile cache</a>. </p>
-  <h2>Java Virtual Machine </h2>
+  <p>&nbsp;</p>
+<h2>Java Virtual Machine </h2>
   <p>We recommend the latest version of JDK 1.6. This seems to have performance improvements over 1.5, especially with the <em><strong>-server</strong></em> option. </p>
 
 <ul>
@@ -27,11 +40,18 @@
 <p>To do so, set the Java runtime parameters with the environmental variable JAVA_OPTS. For example, add the following to <strong>${tomcat_home}/bin/startup.sh</strong> : </p>
 <blockquote>
   <pre>JAVA_OPTS="-server -Xmx1024m -Xms256m"
-export JAVA_OPTS</pre></blockquote>
-<p>starts Tomcat with the Server JVM, and gives it 256 Mbytes of memory to start with, and allows a maximum of 1024 Mbytes. These are suggested numbers, use more if you can. The maximum you can give seems to be around 1500m. You need to restart Tomcat for these options to take effect.</p>
+export JAVA_OPT</pre></blockquote>
+<p>starts Tomcat with the Server JVM, and gives it 256 Mbytes of memory to start with, and allows a maximum of 1024 Mbytes. These are suggested numbers, use more if you can. The maximum you can use for 32-bit JVMs seems to be around 1500m. You need to restart Tomcat for these options to take effect.</p>
+<h3>Other Resources</h3>
+<ul>
+  <li><a href="http://www.javaperformancetuning.com/">Java Performance Tuning</a> website with tuning tips</li>
+  <li><a href="http://java.sun.com/performance/reference/whitepapers/tuning.html">Java Tuning White Paper</a> whitepaper from Sun (2005)</li>
+  <li><a href="http://oreilly.com/catalog/9780596003777/?CMP=OTC-KW7501011010&ATT=javapt2">Java performance tuning</a>, Jack Shirazi (O'Reilly, 2003), classic book, a bit dated.</li>
+</ul>
+<p>&nbsp;</p>
 <h2>Tomcat</h2>
 <h3>Version</h3>
-<p>We recommend the latest stable version of Tomcat 6.0, which  has better stability and performance than Tomcat 5.x. This requires JDK 1.5 or above. </p>
+<p>We recommend the latest stable version of Tomcat 6, which  has better stability and performance than Tomcat 5.x. This requires JDK 1.5 or above. </p>
 <h3>Automatic Startup </h3>
 <p>In a production environment, Tomcat should be automatically restarted when the machine starts. How to do this depends on what OS you are running. This <a href="http://wiki.apache.org/jakarta-tomcat/HowTo">FAQ</a> has a bit of info. </p>
 <h3>Miscellaneous</h3>
@@ -40,11 +60,19 @@ export JAVA_OPTS</pre></blockquote>
   <li>This sets up a <strong>robots<a name="robots"></a>.txt</strong> file to keep crawlers from wasting bandwidth.</li>
   <li> The <strong>favicon.ico</strong> file is mostly a convenience to keep browsers from constantly asking for it (substitute your own icon if you like!). </li>
 </ol>
-<h3>Resources</h3>
+<h3>Compression</h3>
+<p>Compression is usually a big win, especially for bandwidth-limited sites. Deciding when and what to compress depends on a lot of factors, however. We are using the following settings in  server.xml:</p>
+<pre>    &lt;!-- non-SSL HTTP/1.1 Connector on port 8080 --&gt;<br>    &lt;Connector port=&quot;8080&quot;<br>               protocol=&quot;HTTP/1.1&quot;<br>               maxThreads=&quot;50&quot;<br>               connectionTimeout=&quot;20000&quot;<br>               redirectPort=&quot;8443&quot;<br>               <strong>compression=&quot;1000&quot;<br>               compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-stream&quot;</strong> /&gt;<br></pre>
+<p>This says to compress (gzip) when the number of bytes is &gt;= 1000, for the named mime-types. See Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/http.html">HTTP Connector reference</a> page for more details.</p>
+<h3>Other Resources</h3>
 <ul>
   <li><a href="http://jakarta.apache.org/tomcat/faq/performance.html">Tomcat Performance FAQ </a></li>
   <li> <a href="http://jakarta.apache.org/tomcat/articles/performance.pdf">Tomcat Performance</a> paper by Peter Lin </li>
+  <li><a href="http://kinetic.more.net/web/javaserver/resources/wpapers/printer/performance.pdf">Tomcat Performance Tuning</a> paper at Apache Con 2003</li>
+  <li><a href="http://www.webperformanceinc.com/library/reports/ServletReport/index.html">Servlet Container Benchmarking</a> (2004)</li>
+  <li><a href="http://oreilly.com/catalog/9780596101060/chapter/ch04.pdf">Tomcat Tuning</a> free online chapter in <a href="http://oreilly.com/catalog/9780596101060/index.html">Tomcat: The Definitive Guide</a> (2007). Check out the timings between Tomcat and Apache.</li>
 </ul>
+<p>&nbsp;</p>
 <h2>Thredds Data Server </h2>
 <h3><a name="cache"></a>File Handles and Caching </h3>
 <p>The TDS caches file handles to minimize OS overhead. Currently this defaults to allow 200 - 400 open files for OPeNDAP and WCS, and 25 - 40 for HTTP file serving. This means that your OS must allow at least that many file handles per process, else you can get a &quot;out of file handles&quot; message, and the server may freeze up. </p>
@@ -57,11 +85,9 @@ export JAVA_OPTS</pre></blockquote>
 <p>The OPeNDAP-Java layer of the server currently has to read the entire data request into memory before sending it to the client (we hope to get a streaming I/O solution working eventually). Generally clients only request subsets of large files, but if you need to support large data requests, make sure that the <em><strong>-Xmx</strong></em> parameter above is set accordingly. </p>
 <h3>Pre-indexing GRIB files</h3>
 <p>If you are serving GRIB files through any of the subsetting services (OPENDAP, WCS, etc), the CDM must write an index the first time it tries to read it. This can take several minutes for very large GRIB files. By <a href="IDDconfig/tdsidd.html#grib">indexing GRIB files</a> before they are accessed, users get much faster response time.</p>
-<h2>Data File Disk Access</h2>
-<p>Generally the TDS will be I/O bound, and its speed will be determined by the speed of its disk access. Typically disk access is faster on a local drive than on an NFS mounted drive. High performance disk subsystems like RAID or SANs can also significantly improve TDS throughput. However, its best to measure performance of alternate hardware configurations.</p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 25, 2008
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 22, 2008
 </address>
 <h3>&nbsp;</h3>
 </body>

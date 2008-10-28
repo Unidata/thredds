@@ -6,7 +6,7 @@
 </head>
 
 <body>
-<h1>BUFR Issues</h1>
+<h1>BUFR Decoding Issues</h1>
 <hr width="100%" />
 <h2>1. Use of BUFR Tables </h2>
 <h3>1. Use of <strong>standard WMO data descriptor ranges in local tables </strong></h3>
@@ -31,7 +31,26 @@
    <strong>0 13 033 Evaporation /evapotranspiration</strong></pre>
 <hr width="100%" />
 <h2 wrap="">3. BUFR Record encoding ambiguities</h2>
-<p wrap="">1. </p>
+<h3 wrap="">1.Compression with delayed replication</h3>
+<p wrap="">From <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/FM94REG-11-2007.pdf">FM94REG-11-2007.pdf</a>:  </p>
+<p wrap="">&quot;The binary data in compressed form may be described as follows:</p>
+<pre wrap="">
+   Ro1, NBINC1, I11, I12, . . . I1n
+   Ro2, NBINC2, I21, I22, . . . I2n
+   ... 
+   Ros, NBINCs, Is1, Is2, . . . Isn
+</pre>
+<p wrap="">  where Ro1, Ro2, . . . Ros are local reference values for the set of values for each data element (number of bits as Table B). NBINC1 . . . NBINCs contain, as 6-bit quantities, the number of bits occupied by the increments (I11 . . . I1n) . . . (Is1 . . . Isn). s is the number of data elements per data subset and n is the number of data subsets per BUFR message.&quot;    </p>
+<p wrap="">What happens if we combine compression with replication?</p>
+<p wrap="">Let C be the entire compressed block for one dataset, as above. Then regular replication just repeats C for each dataset in the replication:</p>
+<pre wrap="">  C1, C2,... Cm</pre>
+<p wrap="">One might guess that delayed replication would look just like regular replication preceded by the replication count, that is:</p>
+<pre wrap="">  m, C1, C2,... Cm</pre>
+<p wrap="">where m is the replication count using the number of bits specified in the replication descriptor element. However, for some BUFR records, I am seeing an extra 6 bits, that is:</p>
+<pre wrap="">  m, x, C1, C2,... Cm</pre>
+<p wrap="">Where x appears to be 6 zero bits. </p>
+<p wrap="">There is no description of how compression with delayed replication is encoded in <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/FM94REG-11-2007.pdf">FM94REG-11-2007.pdf</a>. The <a href="http://www.ecmwf.int/products/data/d/check/">ECMWF BUFR/CREX format checker</a> decodes <a href="bufrData/LNDSYN.bufr">this example of compression with delayed replication</a> correctly, so it must be assuming the extra 6 bits. Do other decoders? This should be clarified in the official documentation.</p>
+<p wrap="">&nbsp;</p>
 <p>&nbsp; </p>
 <hr width="100%" />
 <p><a href="index.html">BUFR Tables Home page</a></p>
