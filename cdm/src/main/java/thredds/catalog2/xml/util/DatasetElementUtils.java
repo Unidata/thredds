@@ -6,8 +6,10 @@ package thredds.catalog2.xml.util;
  * @author edavis
  * @since 4.0
  */
-public abstract class DatasetElementUtils
+public class DatasetElementUtils
 {
+  private DatasetElementUtils() {}
+  
   public static final String ELEMENT_NAME = "dataset";
   public static final String NAME_ATTRIBUTE_NAME = "name";
   public static final String ID_ATTRIBUTE_NAME = "ID";

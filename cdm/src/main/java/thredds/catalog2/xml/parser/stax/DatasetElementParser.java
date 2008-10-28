@@ -72,7 +72,6 @@ public class DatasetElementParser extends AbstractElementParser
     this.catBuilderFactory = catBuilderFactory;
   }
 
-
   private String defaultServiceName;
 
   protected void setDefaultServiceName( String defaultServiceName )
@@ -102,6 +101,8 @@ public class DatasetElementParser extends AbstractElementParser
     if ( !event.isStartElement() )
       throw new IllegalArgumentException( "Event must be start element." );
     StartElement startElement = event.asStartElement();
+    if ( ! startElement.equals( elementName ))
+      throw new IllegalArgumentException( "Start element is not 'dataset' element.");
 
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );
     String name = nameAtt.getValue();

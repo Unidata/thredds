@@ -19,63 +19,20 @@ import javax.xml.XMLConstants;
  * @author edavis
  * @since 4.0
  */
-public class DatasetNodeElementParser extends AbstractElementParser
+public class DatasetNodeElementParser
 {
+  private DatasetNodeElementParser() {}
+
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-  protected final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                        DatasetElementUtils.ELEMENT_NAME );
   protected final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
                                                         DatasetElementUtils.NAME_ATTRIBUTE_NAME );
   protected final static QName idAttName = new QName( XMLConstants.NULL_NS_URI,
                                                       DatasetElementUtils.ID_ATTRIBUTE_NAME );
+  protected final static QName authorityAttName = new QName( XMLConstants.NULL_NS_URI,
+                                                             DatasetElementUtils.AUTHORITY_ATTRIBUTE_NAME );
 
-
-  private final static QName catRefElementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
-                                                         CatalogRefElementUtils.ELEMENT_NAME );
-
-  private final CatalogBuilder catBuilder;
-  private final DatasetNodeBuilder datasetNodeBuilder;
-  private final CatalogBuilderFactory catBuilderFactory;
-
-  public DatasetNodeElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
-          throws ThreddsXmlParserException
-  {
-    super( reader, elementName );
-    this.catBuilder = catBuilder;
-    this.datasetNodeBuilder = null;
-    this.catBuilderFactory = null;
-  }
-
-  public DatasetNodeElementParser( XMLEventReader reader, DatasetNodeBuilder datasetNodeBuilder )
-          throws ThreddsXmlParserException
-  {
-    super( reader, elementName );
-    this.catBuilder = null;
-    this.datasetNodeBuilder = datasetNodeBuilder;
-    this.catBuilderFactory = null;
-  }
-
-  public DatasetNodeElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
-          throws ThreddsXmlParserException
-  {
-    super( reader, elementName );
-    this.catBuilder = null;
-    this.datasetNodeBuilder = null;
-    this.catBuilderFactory = catBuilderFactory;
-  }
-
-  protected static boolean isSelfElementStatic( XMLEvent event )
-  {
-    return isSelfElement( event, elementName );
-  }
-
-  protected boolean isSelfElement( XMLEvent event )
-  {
-    return isSelfElement( event, elementName );
-  }
-
-  protected DatasetNodeBuilder parseStartElement( XMLEvent event )
+  public void parseStartElement( XMLEvent event, DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
     if ( !event.isStartElement() )
@@ -86,42 +43,44 @@ public class DatasetNodeElementParser extends AbstractElementParser
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );
     String name = nameAtt.getValue();
 
-    // Construct builder.
-    DatasetBuilder datasetBuilder = null;
-    if ( this.catBuilder != null )
-      datasetBuilder = this.catBuilder.addDataset( name );
-    else if ( this.datasetNodeBuilder != null )
-      datasetBuilder = this.datasetNodeBuilder.addDataset( name );
-    else if ( catBuilderFactory != null )
-      datasetBuilder = catBuilderFactory.newDatasetBuilder( name );
-    else
-      throw new ThreddsXmlParserException( "" );
-
     // Set optional attributes
     Attribute idAtt = startElement.getAttributeByName( idAttName );
     if ( idAtt != null )
     {
-      datasetBuilder.setId( idAtt.getValue() );
+      dsNodeBuilder.setId( idAtt.getValue() );
+    }
+    Attribute authAtt = startElement.getAttributeByName( authorityAttName );
+    if ( authAtt != null )
+    {
+      dsNodeBuilder.setIdAuthority( authAtt.getValue() );
     }
 
-    return datasetBuilder;
+    return;
   }
 
-  protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
+  public void handleChildStartElementBasic( StartElement startElement,
+                                            XMLEventReader reader,
+                                            DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
-    if ( !( builder instanceof DatasetNodeBuilder ) )
-      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
-    DatasetNodeBuilder dsNodeBuilder = (DatasetNodeBuilder) builder;
-
     if ( PropertyElementParser.isSelfElementStatic( startElement ))
     {
       PropertyElementParser parser = new PropertyElementParser( reader, dsNodeBuilder);
       parser.parse();
     }
+    if ( MetadataElementParser.isSelfElementStatic( startElement ))
+    {
+      MetadataElementParser parser = new MetadataElementParser( reader, dsNodeBuilder);
+      parser.parse();
+    }
+//    if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ))
+//    {
+//      ThreddsMetadataElementParser parser = new ThreddsMetadataElementParser( reader, dsNodeBuilder);
+//      parser.parse();
+//    }
     else
     {
-      StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
+      StaxThreddsXmlParserUtils.readElementAndAnyContent( reader );
     }
   }
 
