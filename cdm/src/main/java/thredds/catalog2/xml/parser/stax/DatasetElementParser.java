@@ -119,8 +119,8 @@ public class DatasetElementParser extends AbstractElementParser
     else
       throw new ThreddsXmlParserException( "" );
 
-    DatasetNodeElementParser.parseStartElementIdAttribute( startElement, datasetBuilder );
-    DatasetNodeElementParser.parseStartElementIdAuthorityAttribute( startElement, datasetBuilder );
+    DatasetNodeElementParserUtils.parseStartElementIdAttribute( startElement, datasetBuilder );
+    DatasetNodeElementParserUtils.parseStartElementIdAuthorityAttribute( startElement, datasetBuilder );
 
     Attribute serviceNameAtt = startElement.getAttributeByName( serviceNameAttName );
     if ( serviceNameAtt != null )
@@ -143,9 +143,9 @@ public class DatasetElementParser extends AbstractElementParser
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
     DatasetBuilder datasetBuilder = (DatasetBuilder) builder;
 
-    if ( DatasetNodeElementParser.handleBasicChildStartElement( startElement, this.reader, datasetBuilder ))
+    if ( DatasetNodeElementParserUtils.handleBasicChildStartElement( startElement, this.reader, datasetBuilder ))
       return;
-    else if ( DatasetNodeElementParser.handleCollectionChildStartElement( startElement, this.reader, datasetBuilder ))
+    else if ( DatasetNodeElementParserUtils.handleCollectionChildStartElement( startElement, this.reader, datasetBuilder ))
       return;
     else if ( AccessElementParser.isSelfElementStatic( startElement ) )
     {

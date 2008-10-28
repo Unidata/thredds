@@ -10,9 +10,8 @@ import java.util.ArrayList;
 import thredds.catalog.ServiceType;
 import thredds.catalog.DataFormatType;
 import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.builder.BuilderFinishIssue;
+import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
-import thredds.catalog2.Service;
 import thredds.catalog2.Access;
 
 /**
@@ -110,11 +109,11 @@ public class TestAccessImpl extends TestCase
     accessImpl.setDataFormat( formatType );
 
     // Check if buildable
-    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
     if ( ! accessImpl.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderFinishIssue bfi : issues )
+      for ( BuilderIssue bfi : issues )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
     }

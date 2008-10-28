@@ -201,11 +201,11 @@ public class TestDatasetNodeImpl extends TestCase
   private void callBuildOnBuilder()
   {
     // Check if buildable
-    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
     if ( ! dsNodeBldr.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderFinishIssue bfi : issues )
+      for ( BuilderIssue bfi : issues )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
     }

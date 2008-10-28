@@ -6,12 +6,12 @@ package thredds.catalog2.builder;
  * @author edavis
  * @since 4.0
  */
-public class BuilderFinishIssue
+public class BuilderIssue
 {
   private final String message;
   private final ThreddsBuilder builder;
 
-  public BuilderFinishIssue( String message, ThreddsBuilder builder )
+  public BuilderIssue( String message, ThreddsBuilder builder )
   {
     this.message = message;
     this.builder = builder;

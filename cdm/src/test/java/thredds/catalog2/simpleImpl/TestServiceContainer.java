@@ -2,7 +2,7 @@ package thredds.catalog2.simpleImpl;
 
 import junit.framework.*;
 import thredds.catalog2.builder.ServiceBuilder;
-import thredds.catalog2.builder.BuilderFinishIssue;
+import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
 import thredds.catalog.ServiceType;
 
@@ -141,11 +141,11 @@ public class TestServiceContainer extends TestCase
   public void testNewContainerBuild()
   {
     sc = new ServiceContainer( null );
-    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
     if ( !sc.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderFinishIssue bfi : issues )
+      for ( BuilderIssue bfi : issues )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
     }

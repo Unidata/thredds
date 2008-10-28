@@ -296,12 +296,12 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     return this.isBuilt;
   }
 
-  public boolean isBuildable( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderIssue> issues )
   {
     if ( this.isBuilt )
       return true;
 
-    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
 
     // ToDo Check any invariants.
     // Check invariants
@@ -323,7 +323,7 @@ public class CatalogImpl implements Catalog, CatalogBuilder
     if ( this.isBuilt )
       return this;
 
-    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
     if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
 

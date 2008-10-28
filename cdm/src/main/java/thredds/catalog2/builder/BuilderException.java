@@ -11,33 +11,33 @@ import java.util.Collections;
  */
 public class BuilderException extends Exception
 {
-  private final List<BuilderFinishIssue> issues;
+  private final List<BuilderIssue> issues;
 
-  public BuilderException( BuilderFinishIssue issue )
+  public BuilderException( BuilderIssue issue )
   {
     super();
     this.issues = Collections.singletonList( issue );
   }
 
-  public BuilderException( List<BuilderFinishIssue> issues )
+  public BuilderException( List<BuilderIssue> issues )
   {
     super();
     this.issues = issues;
   }
 
-  public BuilderException( BuilderFinishIssue issue, Throwable cause )
+  public BuilderException( BuilderIssue issue, Throwable cause )
   {
     super( cause );
     this.issues = Collections.singletonList( issue );
   }
 
-  public BuilderException( List<BuilderFinishIssue> issues, Throwable cause )
+  public BuilderException( List<BuilderIssue> issues, Throwable cause )
   {
     super( cause );
     this.issues = issues;
   }
 
-  public List<BuilderFinishIssue> getSources()
+  public List<BuilderIssue> getSources()
   {
     return Collections.unmodifiableList( this.issues );
   }
@@ -46,7 +46,7 @@ public class BuilderException extends Exception
   public String getMessage()
   {
     StringBuilder sb = new StringBuilder();
-    for ( BuilderFinishIssue bfi : this.issues )
+    for ( BuilderIssue bfi : this.issues )
       sb.append( bfi.getMessage() ).append( "\n");
     return sb.toString();
   }

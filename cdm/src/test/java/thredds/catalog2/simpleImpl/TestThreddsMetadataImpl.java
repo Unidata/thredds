@@ -2,7 +2,7 @@ package thredds.catalog2.simpleImpl;
 
 import junit.framework.*;
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
-import thredds.catalog2.builder.BuilderFinishIssue;
+import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
 import thredds.catalog2.ThreddsMetadata;
 import thredds.catalog.DataFormatType;
@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.TimeZone;
 import java.text.ParseException;
 
 import ucar.nc2.constants.FeatureType;
@@ -166,11 +165,11 @@ public class TestThreddsMetadataImpl extends TestCase
   private void buildBuilder()
   {
     // Check if buildable
-    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
     if ( ! tmb.isBuildable( issues ) )
     {
       StringBuilder stringBuilder = new StringBuilder( "Not isBuildable(): " );
-      for ( BuilderFinishIssue bfi : issues )
+      for ( BuilderIssue bfi : issues )
         stringBuilder.append( "\n    " ).append( bfi.getMessage() ).append( " [" ).append( bfi.getBuilder().getClass().getName() ).append( "]" );
       fail( stringBuilder.toString() );
     }

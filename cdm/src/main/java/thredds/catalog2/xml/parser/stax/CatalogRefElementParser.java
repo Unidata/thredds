@@ -109,8 +109,8 @@ public class CatalogRefElementParser extends AbstractElementParser
       throw new ThreddsXmlParserException( "" );
 
     // Set optional attributes
-    DatasetNodeElementParser.parseStartElementIdAttribute( startElement, catalogRefBuilder );
-    DatasetNodeElementParser.parseStartElementIdAuthorityAttribute( startElement, catalogRefBuilder );
+    DatasetNodeElementParserUtils.parseStartElementIdAttribute( startElement, catalogRefBuilder );
+    DatasetNodeElementParserUtils.parseStartElementIdAuthorityAttribute( startElement, catalogRefBuilder );
 
     return catalogRefBuilder;
   }
@@ -121,7 +121,9 @@ public class CatalogRefElementParser extends AbstractElementParser
     if ( !( builder instanceof CatalogRefBuilder ) )
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
 
-    if ( ! DatasetNodeElementParser.handleBasicChildStartElement( startElement, this.reader, (CatalogRefBuilder) builder ))
+    if ( DatasetNodeElementParserUtils.handleBasicChildStartElement( startElement, this.reader, (CatalogRefBuilder) builder ))
+      return;
+    else
       StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
   }
 

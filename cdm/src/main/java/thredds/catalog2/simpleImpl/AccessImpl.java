@@ -86,18 +86,18 @@ public class AccessImpl implements Access, AccessBuilder
     return this.isBuilt;
   }
 
-  public boolean isBuildable( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderIssue> issues )
   {
     if ( this.isBuilt )
       return true;
 
-    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
 
     //ToDo Check invariants
     if ( this.service == null )
-      localIssues.add( new BuilderFinishIssue( "The Service may not be null.", this ));
+      localIssues.add( new BuilderIssue( "The Service may not be null.", this ));
     if ( this.urlPath == null )
-      localIssues.add( new BuilderFinishIssue( "The urlPath may not be null.", this ) );
+      localIssues.add( new BuilderIssue( "The urlPath may not be null.", this ) );
 
     // Check subordinates.
     this.service.isBuildable( localIssues );
@@ -114,7 +114,7 @@ public class AccessImpl implements Access, AccessBuilder
     if ( this.isBuilt )
       return this;
 
-    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
     if ( !isBuildable( issues ) )
       throw new BuilderException( issues );
 

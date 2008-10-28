@@ -5,7 +5,7 @@ import thredds.catalog2.Property;
 import thredds.catalog2.Service;
 import thredds.catalog2.builder.ServiceBuilder;
 import thredds.catalog2.builder.BuilderException;
-import thredds.catalog2.builder.BuilderFinishIssue;
+import thredds.catalog2.builder.BuilderIssue;
 
 import java.net.URI;
 import java.util.*;
@@ -228,12 +228,12 @@ public class ServiceImpl implements Service, ServiceBuilder
    * @param issues a list into which any issues that come up during isBuildable() will be add.
    * @return true if this ServiceBuilder is in a state where build() will succeed.
    */
-  public boolean isBuildable( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderIssue> issues )
   {
     if ( this.isBuilt )
       return true;
 
-    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
 
     // Check subordinates.
     this.propertyContainer.isBuildable( localIssues );
@@ -241,7 +241,7 @@ public class ServiceImpl implements Service, ServiceBuilder
 
     // Check if this is leaf service that it has a baseUri.
     if ( this.serviceContainer.isEmpty() && this.baseUri == null )
-      localIssues.add( new BuilderFinishIssue( "Non-compound services must have base URI.", this ));
+      localIssues.add( new BuilderIssue( "Non-compound services must have base URI.", this ));
 
     if ( localIssues.isEmpty() )
       return true;
@@ -261,7 +261,7 @@ public class ServiceImpl implements Service, ServiceBuilder
     if ( this.isBuilt )
       return this;
 
-    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
     if ( ! isBuildable( issues ))
       throw new BuilderException( issues );
 

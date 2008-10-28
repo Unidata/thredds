@@ -2,7 +2,7 @@ package thredds.catalog2.simpleImpl;
 
 import thredds.catalog2.ThreddsMetadata;
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
-import thredds.catalog2.builder.BuilderFinishIssue;
+import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.BuilderException;
 import thredds.catalog.DataFormatType;
 
@@ -506,12 +506,12 @@ public class ThreddsMetadataImpl
     return this.isBuilt;
   }
 
-  public boolean isBuildable( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderIssue> issues )
   {
     if ( this.isBuilt )
       return true;
 
-    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
 
     // Check subordinates.
     if ( this.docs != null )
@@ -533,7 +533,7 @@ public class ThreddsMetadataImpl
     if ( this.isBuilt )
       return this;
 
-    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
     if ( ! isBuildable( issues ) )
       throw new BuilderException( issues );
 
@@ -615,7 +615,7 @@ public class ThreddsMetadataImpl
       return true;
     }
 
-    public boolean isBuildable( List<BuilderFinishIssue> issues )
+    public boolean isBuildable( List<BuilderIssue> issues )
     {
       return true;
     }
@@ -656,7 +656,7 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderFinishIssue> issues )
+    public boolean isBuildable( List<BuilderIssue> issues )
     {
       return false;
     }
@@ -732,7 +732,7 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderFinishIssue> issues )
+    public boolean isBuildable( List<BuilderIssue> issues )
     {
       return true;
     }
@@ -824,7 +824,7 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderFinishIssue> issues )
+    public boolean isBuildable( List<BuilderIssue> issues )
     {
       return true;
     }
@@ -945,7 +945,7 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderFinishIssue> issues )
+    public boolean isBuildable( List<BuilderIssue> issues )
     {
       return false;
     }
@@ -1039,7 +1039,7 @@ public class ThreddsMetadataImpl
       return this.isBuilt;
     }
 
-    public boolean isBuildable( List<BuilderFinishIssue> issues )
+    public boolean isBuildable( List<BuilderIssue> issues )
     {
       return true;
     }

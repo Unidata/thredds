@@ -88,7 +88,7 @@ public interface ServiceBuilder extends ThreddsBuilder
   public ServiceBuilder getServiceBuilderByName( String name );
   public ServiceBuilder findServiceBuilderByNameGlobally( String name );
 
-  public boolean isBuildable( List<BuilderFinishIssue> issues );
+  public boolean isBuildable( List<BuilderIssue> issues );
 
   /**
    * Return the finished Service.

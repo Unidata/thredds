@@ -104,12 +104,12 @@ public class DatasetImpl
   }
 
   @Override
-  public boolean isBuildable( List<BuilderFinishIssue> issues )
+  public boolean isBuildable( List<BuilderIssue> issues )
   {
     if ( this.isBuilt )
       return true;
 
-    List<BuilderFinishIssue> localIssues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
     super.isBuildable( issues );
 
     // Check subordinates.
@@ -139,7 +139,7 @@ public class DatasetImpl
     if ( this.isBuilt )
       return this;
 
-    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    List<BuilderIssue> issues = new ArrayList<BuilderIssue>();
     if ( ! isBuildable( issues ) )
       throw new BuilderException( issues );
 
