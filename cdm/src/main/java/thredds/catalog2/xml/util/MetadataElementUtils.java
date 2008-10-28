@@ -11,7 +11,7 @@ public class MetadataElementUtils
   private MetadataElementUtils() {}
 
   public static final String ELEMENT_NAME = "metadata";
-  public static final String TITLE_ATTRIBUTE_NAME = "xlink:title";
-  public static final String EXTERNAL_REFERENCE_ATTRIBUTE_NAME = "xlink:href";
+  public static final String XLINK_TITLE_ATTRIBUTE_NAME = "title";
+  public static final String XLINK_REFERENCE_ATTRIBUTE_NAME = "href";
   public static final String DATA_FORMAT_ATTRIBUTE_NAME = "dataFormat";
 }

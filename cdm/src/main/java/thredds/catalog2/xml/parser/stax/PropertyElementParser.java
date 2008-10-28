@@ -59,6 +59,15 @@ public class PropertyElementParser extends AbstractElementParser
     this.serviceBuilder = null;
   }
 
+  public PropertyElementParser( XMLEventReader reader, ServiceBuilder serviceBuilder )
+          throws ThreddsXmlParserException
+  {
+    super( reader, elementName );
+    this.catBuilder = null;
+    this.datasetNodeBuilder = null;
+    this.serviceBuilder = serviceBuilder;
+  }
+
   protected static boolean isSelfElementStatic( XMLEvent event )
   {
     return isSelfElement( event, elementName );
@@ -69,21 +78,14 @@ public class PropertyElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  public PropertyElementParser( XMLEventReader reader,  ServiceBuilder serviceBuilder )
-          throws ThreddsXmlParserException
-  {
-    super( reader, elementName );
-    this.catBuilder = null;
-    this.datasetNodeBuilder = null;
-    this.serviceBuilder = serviceBuilder;
-  }
-
   protected ThreddsBuilder parseStartElement( XMLEvent event )
           throws ThreddsXmlParserException
   {
     if ( !event.isStartElement() )
       throw new IllegalArgumentException( "Event must be start element." );
     StartElement startElement = event.asStartElement();
+    if ( ! startElement.getName().equals( elementName ) )
+      throw new IllegalArgumentException( "Start element must be a 'property' element.");
 
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );
     String name = nameAtt.getValue();

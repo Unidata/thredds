@@ -3,16 +3,15 @@ package thredds.catalog2.xml.parser.stax;
 import thredds.catalog2.builder.*;
 import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
-import thredds.catalog2.xml.util.AccessElementUtils;
 import thredds.catalog2.xml.util.MetadataElementUtils;
-import thredds.catalog.DataFormatType;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.namespace.QName;
-import javax.xml.XMLConstants;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * _more_
@@ -27,9 +26,9 @@ public class MetadataElementParser extends AbstractElementParser
   private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                                                       MetadataElementUtils.ELEMENT_NAME );
   private final static QName titleAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                       MetadataElementUtils.TITLE_ATTRIBUTE_NAME );
+                                                       MetadataElementUtils.XLINK_TITLE_ATTRIBUTE_NAME );
   private final static QName externalRefAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                             MetadataElementUtils.EXTERNAL_REFERENCE_ATTRIBUTE_NAME );
+                                                             MetadataElementUtils.XLINK_REFERENCE_ATTRIBUTE_NAME );
 
   private final DatasetNodeBuilder datasetBuilder;
   private final CatalogBuilderFactory catBuilderFactory;
@@ -78,13 +77,33 @@ public class MetadataElementParser extends AbstractElementParser
       throw new ThreddsXmlParserException( "" );
 
     Attribute titleAtt = startElement.getAttributeByName( titleAttName );
-    String title = titleAtt.getValue();
     Attribute externalRefAtt = startElement.getAttributeByName( externalRefAttName );
-    // ToDo
+    if ( titleAtt == null && externalRefAtt == null )
+    {
+      builder.setContainedContent( true );
+      return builder;
+    }
+    if ( titleAtt == null || externalRefAtt == null )
+      throw new ThreddsXmlParserException( "MetadataBuilder with link has a null title or link URL ");
+    String title = titleAtt.getValue();
+    String uriString = externalRefAtt.getValue();
+    URI uri = null;
+    try
+    {
+      uri = new URI( uriString );
+    }
+    catch ( URISyntaxException e )
+    {
+      throw new ThreddsXmlParserException( "MetadataBuilder with link has link with bad URI syntax.", e);
+    }
+
+    builder.setContainedContent( false );
+    builder.setTitle( title );
+    builder.setExternalReference( uri );
 
     return builder;
   }
-
+  private StringBuilder content = null;
   protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
@@ -95,14 +114,22 @@ public class MetadataElementParser extends AbstractElementParser
 //    }
 //    else
     {
+      if ( this.content == null )
+        this.content = new StringBuilder();
       //if ( !isChildElement( startElement ) )
-        StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
+      this.content.append( StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader ));
     }
   }
 
   protected void postProcessing( ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
+    if ( ! ( builder instanceof MetadataBuilder ) )
+      throw new IllegalArgumentException( "Builder must be a MetadataBuilder.");
+    MetadataBuilder mdBldr = (MetadataBuilder) builder;
+    if ( this.content != null )
+      mdBldr.setContent( this.content.toString() );
+    
     return;
   }
 }

@@ -7,6 +7,7 @@ import thredds.catalog2.builder.BuilderFinishIssue;
 
 import java.net.URI;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * _more_
@@ -16,11 +17,25 @@ import java.util.List;
  */
 public class MetadataImpl implements Metadata, MetadataBuilder
 {
-  private final boolean isContainedContent;
+  private boolean isContainedContent;
 
-  public final String title;
-  public final URI externalReference;
-  public final String content;
+  private String title;
+  private URI externalReference;
+  private String content;
+
+  private boolean isBuilt;
+
+  public MetadataImpl()
+  {
+    this.isContainedContent = true;
+    this.isBuilt = false;
+  }
+
+  public MetadataImpl( boolean isContainedContent )
+  {
+    this.isContainedContent = isContainedContent;
+    this.isBuilt = false;
+  }
 
   public MetadataImpl( String title, URI externalReference )
   {
@@ -33,6 +48,8 @@ public class MetadataImpl implements Metadata, MetadataBuilder
     this.title = title;
     this.externalReference = externalReference;
     this.content = null;
+
+    this.isBuilt = false;
   }
 
   public MetadataImpl( String content )
@@ -44,11 +61,32 @@ public class MetadataImpl implements Metadata, MetadataBuilder
     this.title = null;
     this.externalReference = null;
     this.content = content;
+
+    this.isBuilt = false;
+  }
+
+  public void setContainedContent( boolean isContainedContent )
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This Builder has already been built.");
+    this.isContainedContent = isContainedContent;
   }
 
   public boolean isContainedContent()
   {
     return this.isContainedContent;
+  }
+
+  public void setTitle( String title)
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This Builder has already been built." );
+    if ( this.isContainedContent )
+      throw new IllegalStateException( "This MetadataBuilder contains content, cannot set title." );
+    if ( title == null )
+      throw new IllegalArgumentException( "Title may not be null." );
+
+    this.title = title;
   }
 
   public String getTitle()
@@ -58,6 +96,18 @@ public class MetadataImpl implements Metadata, MetadataBuilder
     return this.title;
   }
 
+  public void setExternalReference( URI externalReference )
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This Builder has already been built." );
+    if ( this.isContainedContent )
+      throw new IllegalStateException( "This MetadataBuilder contains content, cannot set external reference." );
+    if ( externalReference == null )
+      throw new IllegalArgumentException( "External reference may not be null.");
+
+    this.externalReference = externalReference;
+  }
+
   public URI getExternalReference()
   {
     if ( this.isContainedContent )
@@ -65,25 +115,71 @@ public class MetadataImpl implements Metadata, MetadataBuilder
     return this.externalReference;
   }
 
+  public void setContent( String content )
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This Builder has already been built." );
+    if ( ! this.isContainedContent )
+      throw new IllegalStateException( "This MetadataBuilder has external reference, cannot set content." );
+    if ( externalReference == null )
+      throw new IllegalArgumentException( "External reference may not be null." );
+
+  }
+
   public String getContent()
   {
     if ( ! this.isContainedContent )
-      throw new IllegalStateException( "Use external reference to obtain metadata content." );
+      throw new IllegalStateException( "Metadata with external reference has no content, dereference external reference to obtain metadata content." );
     return this.content;
   }
 
   public boolean isBuilt()
   {
-    return true;
+    return this.isBuilt;
   }
 
   public boolean isBuildable( List<BuilderFinishIssue> issues )
   {
+    if ( this.isBuilt )
+      return true;
+
+    if ( this.isContainedContent )
+    {
+      if ( this.content == null )
+      {
+        issues.add( new BuilderFinishIssue( "MetadataBuilder contains null content.", this ));
+        return false;
+      }
+    }
+    else
+      if ( this.title == null || this.externalReference == null )
+      {
+        issues.add( new BuilderFinishIssue( "MetadataBuilder with link has null title and/or link URI.", this ) );
+        return false;
+      }
+
     return true;
   }
 
   public Metadata build() throws BuilderException
   {
+    if ( this.isBuilt )
+      return this;
+
+    List<BuilderFinishIssue> issues = new ArrayList<BuilderFinishIssue>();
+    if ( ! this.isBuildable( issues ))
+      throw new BuilderException( issues);
+
+    // Clean up.
+    if ( this.isContainedContent )
+    {
+      this.title = null;
+      this.externalReference = null;
+    }
+    else
+      this.content = null;
+
+    this.isBuilt = true;
     return this;
   }
 }

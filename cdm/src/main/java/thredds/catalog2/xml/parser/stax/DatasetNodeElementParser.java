@@ -32,61 +32,74 @@ public class DatasetNodeElementParser
   protected final static QName authorityAttName = new QName( XMLConstants.NULL_NS_URI,
                                                              DatasetElementUtils.AUTHORITY_ATTRIBUTE_NAME );
 
-  public void parseStartElement( XMLEvent event, DatasetNodeBuilder dsNodeBuilder )
-          throws ThreddsXmlParserException
+  public static void parseStartElementNameAttribute( StartElement startElement,
+                                                     DatasetNodeBuilder dsNodeBuilder )
   {
-    if ( !event.isStartElement() )
-      throw new IllegalArgumentException( "Event must be start element." );
-    StartElement startElement = event.asStartElement();
-
-    // Get required attributes.
-    Attribute nameAtt = startElement.getAttributeByName( nameAttName );
-    String name = nameAtt.getValue();
-
-    // Set optional attributes
-    Attribute idAtt = startElement.getAttributeByName( idAttName );
-    if ( idAtt != null )
-    {
-      dsNodeBuilder.setId( idAtt.getValue() );
-    }
-    Attribute authAtt = startElement.getAttributeByName( authorityAttName );
-    if ( authAtt != null )
-    {
-      dsNodeBuilder.setIdAuthority( authAtt.getValue() );
-    }
-
-    return;
+    Attribute att = startElement.getAttributeByName( nameAttName );
+    if ( att != null )
+      dsNodeBuilder.setName( att.getValue() );
   }
 
-  public void handleChildStartElementBasic( StartElement startElement,
-                                            XMLEventReader reader,
-                                            DatasetNodeBuilder dsNodeBuilder )
+  public static void parseStartElementIdAttribute( StartElement startElement,
+                                                   DatasetNodeBuilder dsNodeBuilder )
+  {
+    Attribute att = startElement.getAttributeByName( idAttName );
+    if ( att != null )
+      dsNodeBuilder.setId( att.getValue() );
+  }
+
+  public static void parseStartElementIdAuthorityAttribute( StartElement startElement,
+                                                            DatasetNodeBuilder dsNodeBuilder )
+  {
+    Attribute att = startElement.getAttributeByName( authorityAttName );
+    if ( att != null )
+      dsNodeBuilder.setId( att.getValue() );
+  }
+
+  public static boolean handleBasicChildStartElement( StartElement startElement,
+                                                      XMLEventReader reader,
+                                                      DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
     if ( PropertyElementParser.isSelfElementStatic( startElement ))
     {
       PropertyElementParser parser = new PropertyElementParser( reader, dsNodeBuilder);
       parser.parse();
+      return true;
     }
-    if ( MetadataElementParser.isSelfElementStatic( startElement ))
+    else if ( MetadataElementParser.isSelfElementStatic( startElement ))
     {
       MetadataElementParser parser = new MetadataElementParser( reader, dsNodeBuilder);
       parser.parse();
+      return true;
     }
-//    if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ))
+//    else if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ))
 //    {
 //      ThreddsMetadataElementParser parser = new ThreddsMetadataElementParser( reader, dsNodeBuilder);
 //      parser.parse();
+//      return true;    
 //    }
     else
-    {
-      StaxThreddsXmlParserUtils.readElementAndAnyContent( reader );
-    }
+      return false;
   }
-
-  protected void postProcessing( ThreddsBuilder builder )
+  public static boolean handleCollectionChildStartElement( StartElement startElement,
+                                                           XMLEventReader reader,
+                                                           DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
-    return;
+    if ( DatasetElementParser.isSelfElementStatic( startElement ))
+    {
+      DatasetElementParser parser = new DatasetElementParser( reader, dsNodeBuilder);
+      parser.parse();
+      return true;
+    }
+    else if ( CatalogRefElementParser.isSelfElementStatic( startElement ))
+    {
+      CatalogRefElementParser parser = new CatalogRefElementParser( reader, dsNodeBuilder);
+      parser.parse();
+      return true;
+    }
+    else
+      return false;
   }
 }

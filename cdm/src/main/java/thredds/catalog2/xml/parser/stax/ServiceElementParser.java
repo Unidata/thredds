@@ -88,6 +88,8 @@ public class ServiceElementParser extends AbstractElementParser
     if ( !event.isStartElement() )
       throw new IllegalArgumentException( "Event must be start element." );
     StartElement startElement = event.asStartElement();
+    if ( !startElement.getName().equals( elementName ) )
+      throw new IllegalArgumentException( "Start element must be a 'service' element." );
 
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );
     String name = nameAtt.getValue();

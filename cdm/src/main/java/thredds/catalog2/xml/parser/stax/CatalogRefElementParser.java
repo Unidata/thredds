@@ -25,7 +25,7 @@ public class CatalogRefElementParser extends AbstractElementParser
 
   protected final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                                                         CatalogRefElementUtils.ELEMENT_NAME );
-  protected final static QName nameAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+  protected final static QName titleAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
                                                         CatalogRefElementUtils.XLINK_TITLE_ATTRIBUTE_NAME );
   protected final static QName hrefAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
                                                         CatalogRefElementUtils.XLINK_HREF_ATTRIBUTE_NAME );
@@ -82,8 +82,8 @@ public class CatalogRefElementParser extends AbstractElementParser
     StartElement startElement = event.asStartElement();
 
     // Get required attributes.
-    Attribute nameAtt = startElement.getAttributeByName( nameAttName );
-    String name = nameAtt.getValue();
+    Attribute titleAtt = startElement.getAttributeByName( titleAttName );
+    String title = titleAtt.getValue();
     Attribute hrefAtt = startElement.getAttributeByName( hrefAttName );
     String href = hrefAtt.getValue();
     URI hrefUri = null;
@@ -100,40 +100,29 @@ public class CatalogRefElementParser extends AbstractElementParser
     // Construct builder.
     CatalogRefBuilder catalogRefBuilder = null;
     if ( this.catBuilder != null )
-      catalogRefBuilder = this.catBuilder.addCatalogRef( name, hrefUri );
+      catalogRefBuilder = this.catBuilder.addCatalogRef( title, hrefUri );
     else if ( this.datasetNodeBuilder != null )
-      catalogRefBuilder = this.datasetNodeBuilder.addCatalogRef( name, hrefUri );
+      catalogRefBuilder = this.datasetNodeBuilder.addCatalogRef( title, hrefUri );
     else if ( catBuilderFactory != null )
-      catalogRefBuilder = catBuilderFactory.newCatalogRefBuilder( name, hrefUri );
+      catalogRefBuilder = catBuilderFactory.newCatalogRefBuilder( title, hrefUri );
     else
       throw new ThreddsXmlParserException( "" );
 
     // Set optional attributes
-    Attribute idAtt = startElement.getAttributeByName( DatasetNodeElementParser.idAttName );
-    if ( idAtt != null )
-    {
-      catalogRefBuilder.setId( idAtt.getValue() );
-    }
+    DatasetNodeElementParser.parseStartElementIdAttribute( startElement, catalogRefBuilder );
+    DatasetNodeElementParser.parseStartElementIdAuthorityAttribute( startElement, catalogRefBuilder );
 
     return catalogRefBuilder;
   }
-
+  private StringBuilder unknownContent = null;
   protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
     if ( !( builder instanceof CatalogRefBuilder ) )
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
-    CatalogRefBuilder catRefBuilder = (CatalogRefBuilder) builder;
 
-    if ( PropertyElementParser.isSelfElementStatic( startElement ))
-    {
-      PropertyElementParser parser = new PropertyElementParser( reader, catRefBuilder);
-      parser.parse();
-    }
-    else
-    {
+    if ( ! DatasetNodeElementParser.handleBasicChildStartElement( startElement, this.reader, (CatalogRefBuilder) builder ))
       StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
-    }
   }
 
   protected void postProcessing( ThreddsBuilder builder )

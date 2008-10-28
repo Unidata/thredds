@@ -67,6 +67,8 @@ public class AccessElementParser extends AbstractElementParser
     if ( !event.isStartElement() )
       throw new IllegalArgumentException( "Event must be start element." );
     StartElement startElement = event.asStartElement();
+    if ( !startElement.getName().equals( elementName ) )
+      throw new IllegalArgumentException( "Start element must be an 'access' element." );
 
     AccessBuilder builder = null;
     if ( this.datasetBuilder != null )
