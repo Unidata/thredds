@@ -59,13 +59,10 @@ public class MetadataElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected MetadataBuilder parseStartElement( XMLEvent event )
+  protected MetadataBuilder parseStartElement( StartElement startElement )
           throws ThreddsXmlParserException
   {
-    if ( !event.isStartElement() )
-      throw new IllegalArgumentException( "Event must be start element." );
-    StartElement startElement = event.asStartElement();
-    if ( ! startElement.equals( elementName ))
+    if ( ! startElement.getName().equals( elementName ))
       throw new IllegalArgumentException( "Start element is not 'metadata' element.");
 
     MetadataBuilder builder = null;

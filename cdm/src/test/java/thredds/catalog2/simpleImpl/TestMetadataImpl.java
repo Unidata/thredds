@@ -48,8 +48,7 @@ public class TestMetadataImpl extends TestCase
 
   public void testCtorGet()
   {
-    // MetadataImpl is immutible so isBuilt() alwasys true.
-    assertTrue( mdImpl1.isBuilt() );
+    assertFalse( mdImpl1.isBuilt() );
 
     assertFalse( mdImpl1.isContainedContent());
     assertTrue( mdImpl1.getTitle().equals(  this.title ));

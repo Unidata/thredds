@@ -78,12 +78,9 @@ public class PropertyElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected ThreddsBuilder parseStartElement( XMLEvent event )
+  protected ThreddsBuilder parseStartElement( StartElement startElement )
           throws ThreddsXmlParserException
   {
-    if ( !event.isStartElement() )
-      throw new IllegalArgumentException( "Event must be start element." );
-    StartElement startElement = event.asStartElement();
     if ( ! startElement.getName().equals( elementName ) )
       throw new IllegalArgumentException( "Start element must be a 'property' element.");
 

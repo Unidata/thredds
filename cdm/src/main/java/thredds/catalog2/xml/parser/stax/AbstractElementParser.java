@@ -45,7 +45,7 @@ public abstract class AbstractElementParser
 
   protected abstract boolean isSelfElement( XMLEvent event );
 
-  protected abstract ThreddsBuilder parseStartElement( XMLEvent event )
+  protected abstract ThreddsBuilder parseStartElement( StartElement startElement )
           throws ThreddsXmlParserException;
 
   protected abstract void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
@@ -59,11 +59,14 @@ public abstract class AbstractElementParser
   {
     try
     {
-      ThreddsBuilder builder = this.parseStartElement( this.reader.nextEvent() );
+      XMLEvent event = this.reader.nextEvent();
+      if ( ! event.isStartElement() )
+        throw new ThreddsXmlParserException( "Next XML event not a start element.");
+      ThreddsBuilder builder = this.parseStartElement( event.asStartElement() );
 
       while ( this.reader.hasNext() )
       {
-        XMLEvent event = this.reader.peek();
+        event = this.reader.peek();
         if ( event.isStartElement() )
         {
           this.handleChildStartElement( event.asStartElement(), builder );

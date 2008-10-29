@@ -25,12 +25,12 @@ public class CatalogRefElementParser extends AbstractElementParser
 
   protected final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                                                         CatalogRefElementUtils.ELEMENT_NAME );
-  protected final static QName titleAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                        CatalogRefElementUtils.XLINK_TITLE_ATTRIBUTE_NAME );
-  protected final static QName hrefAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                        CatalogRefElementUtils.XLINK_HREF_ATTRIBUTE_NAME );
-  protected final static QName typeAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
-                                                        CatalogRefElementUtils.XLINK_TYPE_ATTRIBUTE_NAME );
+  protected final static QName xlinkTitleAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                                                              CatalogRefElementUtils.XLINK_TITLE_ATTRIBUTE_NAME );
+  protected final static QName xlinkHrefAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                                                             CatalogRefElementUtils.XLINK_HREF_ATTRIBUTE_NAME );
+  protected final static QName xlinkTypeAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                                                             CatalogRefElementUtils.XLINK_TYPE_ATTRIBUTE_NAME );
 
 
   private final CatalogBuilder catBuilder;
@@ -74,17 +74,16 @@ public class CatalogRefElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected DatasetNodeBuilder parseStartElement( XMLEvent event )
+  protected DatasetNodeBuilder parseStartElement( StartElement startElement )
           throws ThreddsXmlParserException
   {
-    if ( !event.isStartElement() )
-      throw new IllegalArgumentException( "Event must be start element." );
-    StartElement startElement = event.asStartElement();
+    if ( ! startElement.getName().equals( elementName ))
+      throw new IllegalArgumentException( "Start element not 'catalogRef' element.");
 
     // Get required attributes.
-    Attribute titleAtt = startElement.getAttributeByName( titleAttName );
+    Attribute titleAtt = startElement.getAttributeByName( xlinkTitleAttName );
     String title = titleAtt.getValue();
-    Attribute hrefAtt = startElement.getAttributeByName( hrefAttName );
+    Attribute hrefAtt = startElement.getAttributeByName( xlinkHrefAttName );
     String href = hrefAtt.getValue();
     URI hrefUri = null;
     try
@@ -114,7 +113,6 @@ public class CatalogRefElementParser extends AbstractElementParser
 
     return catalogRefBuilder;
   }
-  private StringBuilder unknownContent = null;
   protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {

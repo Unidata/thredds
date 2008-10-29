@@ -59,20 +59,19 @@ public class CatalogElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected CatalogBuilder parseStartElement( XMLEvent event )
+  protected CatalogBuilder parseStartElement( StartElement startElement )
           throws ThreddsXmlParserException
   {
-    if ( !event.isStartElement() )
-      throw new IllegalArgumentException( "Event must be start element." );
-    StartElement startCatElem = event.asStartElement();
+    if ( ! startElement.getName().equals( elementName ))
+      throw new IllegalArgumentException( "Start element not 'catalog' element.");
 
-    Attribute nameAtt = startCatElem.getAttributeByName( nameAttName );
+    Attribute nameAtt = startElement.getAttributeByName( nameAttName );
     String nameString = nameAtt.getValue();
-    Attribute versionAtt = startCatElem.getAttributeByName( versionAttName );
+    Attribute versionAtt = startElement.getAttributeByName( versionAttName );
     String versionString = versionAtt.getValue();
-    Attribute expiresAtt = startCatElem.getAttributeByName( expiresAttName );
+    Attribute expiresAtt = startElement.getAttributeByName( expiresAttName );
     Date expiresDate = null;
-    Attribute lastModifiedAtt = startCatElem.getAttributeByName( lastModifiedAttName );
+    Attribute lastModifiedAtt = startElement.getAttributeByName( lastModifiedAttName );
     Date lastModifiedDate = null;
     URI docBaseUri = null;
     try

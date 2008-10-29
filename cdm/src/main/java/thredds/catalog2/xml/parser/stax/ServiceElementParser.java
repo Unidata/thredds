@@ -82,12 +82,9 @@ public class ServiceElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected ServiceBuilder parseStartElement( XMLEvent event )
+  protected ServiceBuilder parseStartElement( StartElement startElement )
           throws ThreddsXmlParserException
   {
-    if ( !event.isStartElement() )
-      throw new IllegalArgumentException( "Event must be start element." );
-    StartElement startElement = event.asStartElement();
     if ( !startElement.getName().equals( elementName ) )
       throw new IllegalArgumentException( "Start element must be a 'service' element." );
 

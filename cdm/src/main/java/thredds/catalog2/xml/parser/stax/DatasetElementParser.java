@@ -39,8 +39,6 @@ public class DatasetElementParser extends AbstractElementParser
                                                          DatasetElementUtils.HARVEST_ATTRIBUTE_NAME );
   private final static QName restrictedAccessAttName = new QName( XMLConstants.NULL_NS_URI,
                                                                   DatasetElementUtils.RESOURCE_CONTROL_ATTRIBUTE_NAME );
-  private final static QName aliasAttName = new QName( XMLConstants.NULL_NS_URI,
-                                                       DatasetElementUtils.ALIAS_ATTRIBUTE_NAME );
 
   private final CatalogBuilder catBuilder;
   private final DatasetNodeBuilder datasetNodeBuilder;
@@ -97,13 +95,10 @@ public class DatasetElementParser extends AbstractElementParser
     return isSelfElement( event, elementName );
   }
 
-  protected DatasetBuilder parseStartElement( XMLEvent event )
+  protected DatasetBuilder parseStartElement( StartElement startElement )
           throws ThreddsXmlParserException
   {
-    if ( !event.isStartElement() )
-      throw new IllegalArgumentException( "Event must be start element." );
-    StartElement startElement = event.asStartElement();
-    if ( ! startElement.equals( elementName ))
+    if ( ! startElement.getName().equals( elementName ))
       throw new IllegalArgumentException( "Start element is not 'dataset' element.");
 
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );

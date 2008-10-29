@@ -13,8 +13,7 @@ public class DatasetElementUtils
   public static final String ELEMENT_NAME = "dataset";
   public static final String NAME_ATTRIBUTE_NAME = "name";
   public static final String ID_ATTRIBUTE_NAME = "ID";
-  public static final String ALIAS_ATTRIBUTE_NAME = "alias";
-  
+
   /**
    * @deprecated Use metadata/authority element instead.
    */
