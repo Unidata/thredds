@@ -104,12 +104,13 @@ public class CatalogElementParser extends AbstractElementParser
       parser.parse();
     }
     else if ( DatasetElementParser.isSelfElementStatic( startElement ) )
-    {
-      DatasetElementParser parser = new DatasetElementParser( this.reader, catalogBuilder );
+    { // ToDo Not sure about the null parameter?
+      DatasetElementParser parser = new DatasetElementParser( this.reader, catalogBuilder, null );
       parser.parse();
     }
     else
     {
+      // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
       StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
     }
   }

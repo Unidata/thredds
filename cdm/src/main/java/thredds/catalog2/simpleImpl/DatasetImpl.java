@@ -32,7 +32,7 @@ public class DatasetImpl
   {
     if ( isBuilt )
       throw new IllegalStateException( "This DatasetBuilder has been built.");
-    AccessImpl a = new AccessImpl();
+    AccessImpl a = new AccessImpl( this);
     if ( this.accessImplList == null )
       this.accessImplList = new ArrayList<AccessImpl>();
     this.accessImplList.add( a );

@@ -44,32 +44,45 @@ public class DatasetElementParser extends AbstractElementParser
   private final DatasetNodeBuilder datasetNodeBuilder;
   private final CatalogBuilderFactory catBuilderFactory;
 
+  private final DatasetNodeElementParserUtils datasetNodeElementParserUtils;
 
-  public DatasetElementParser( XMLEventReader reader, CatalogBuilder catBuilder )
+  public DatasetElementParser( XMLEventReader reader,
+                               CatalogBuilder catBuilder,
+                               DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
     this.catBuilder = catBuilder;
     this.datasetNodeBuilder = null;
     this.catBuilderFactory = null;
+
+    this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils);
   }
 
-  public DatasetElementParser( XMLEventReader reader, DatasetNodeBuilder datasetNodeBuilder )
+  public DatasetElementParser( XMLEventReader reader,
+                               DatasetNodeBuilder datasetNodeBuilder,
+                               DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
     this.catBuilder = null;
     this.datasetNodeBuilder = datasetNodeBuilder;
     this.catBuilderFactory = null;
+
+    this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils);
   }
 
-  public DatasetElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public DatasetElementParser( XMLEventReader reader,
+                               CatalogBuilderFactory catBuilderFactory,
+                               DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
     this.catBuilder = null;
     this.datasetNodeBuilder = null;
     this.catBuilderFactory = catBuilderFactory;
+
+    this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils);
   }
 
   private String defaultServiceName;
@@ -114,8 +127,8 @@ public class DatasetElementParser extends AbstractElementParser
     else
       throw new ThreddsXmlParserException( "" );
 
-    DatasetNodeElementParserUtils.parseStartElementIdAttribute( startElement, datasetBuilder );
-    DatasetNodeElementParserUtils.parseStartElementIdAuthorityAttribute( startElement, datasetBuilder );
+    this.datasetNodeElementParserUtils.parseStartElementIdAttribute( startElement, datasetBuilder );
+    this.datasetNodeElementParserUtils.parseStartElementIdAuthorityAttribute( startElement, datasetBuilder );
 
     Attribute serviceNameAtt = startElement.getAttributeByName( serviceNameAttName );
     if ( serviceNameAtt != null )
@@ -138,9 +151,9 @@ public class DatasetElementParser extends AbstractElementParser
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
     DatasetBuilder datasetBuilder = (DatasetBuilder) builder;
 
-    if ( DatasetNodeElementParserUtils.handleBasicChildStartElement( startElement, this.reader, datasetBuilder ))
+    if ( this.datasetNodeElementParserUtils.handleBasicChildStartElement( startElement, this.reader, datasetBuilder ))
       return;
-    else if ( DatasetNodeElementParserUtils.handleCollectionChildStartElement( startElement, this.reader, datasetBuilder ))
+    else if ( this.datasetNodeElementParserUtils.handleCollectionChildStartElement( startElement, this.reader, datasetBuilder ))
       return;
     else if ( AccessElementParser.isSelfElementStatic( startElement ) )
     {
@@ -149,6 +162,7 @@ public class DatasetElementParser extends AbstractElementParser
       return;
     }
     else
+      // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
       StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
   }
 
@@ -171,5 +185,7 @@ public class DatasetElementParser extends AbstractElementParser
           curAB.setServiceBuilder( defaultServiceBuilder );
       }
     }
+
+    // ToDo Deal with inherited metadata
   }
 }

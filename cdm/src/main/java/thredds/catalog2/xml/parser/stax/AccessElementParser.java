@@ -33,22 +33,12 @@ public class AccessElementParser extends AbstractElementParser
                                                             AccessElementUtils.DATA_FORMAT_ATTRIBUTE_NAME );
 
   private final DatasetBuilder datasetBuilder;
-  private final CatalogBuilderFactory catBuilderFactory;
 
   public AccessElementParser( XMLEventReader reader, DatasetBuilder datasetBuilder )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
     this.datasetBuilder = datasetBuilder;
-    this.catBuilderFactory = null;
-  }
-
-  public AccessElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
-          throws ThreddsXmlParserException
-  {
-    super( reader, elementName );
-    this.datasetBuilder = null;
-    this.catBuilderFactory = catBuilderFactory;
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
@@ -70,15 +60,14 @@ public class AccessElementParser extends AbstractElementParser
     AccessBuilder builder = null;
     if ( this.datasetBuilder != null )
       builder = this.datasetBuilder.addAccessBuilder();
-    else if ( catBuilderFactory != null )
-      builder = catBuilderFactory.newAccessBuilder();
     else
       throw new ThreddsXmlParserException( "" );
 
     Attribute serviceNameAtt = startElement.getAttributeByName( serviceNameAttName );
     String serviceName = serviceNameAtt.getValue();
     // ToDo This only gets top level services, need findServiceBuilderByName() to crawl services
-    ServiceBuilder serviceBuilder = this.datasetBuilder.getParentCatalogBuilder().getServiceBuilderByName( serviceName );
+    ServiceBuilder serviceBuilder = this.datasetBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( serviceName );
+
     Attribute urlPathAtt = startElement.getAttributeByName( urlPathAttName );
     String urlPath = urlPathAtt.getValue();
 
@@ -97,16 +86,8 @@ public class AccessElementParser extends AbstractElementParser
   protected void handleChildStartElement( StartElement startElement, ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
-//    if ( ThreddsMetadataElementParser.DataSizeElementParser.isSelfElement( startElement ) )
-//    {
-//      ThreddsMetadataElementParser.DataSizeElementParser parser = new ServiceElementParser( reader, builder );
-//      parser.parse();
-//    }
-//    else
-    {
-      //if ( !isChildElement( startElement ) )
-        StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
-    }
+    // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
+    StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
   }
 
   protected void postProcessing( ThreddsBuilder builder )

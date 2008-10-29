@@ -67,14 +67,4 @@ public class CatalogBuilderFactoryImpl implements CatalogBuilderFactory
   {
     return null;
   }
-
-  public AccessBuilder newAccessBuilder()
-  {
-    return new AccessImpl();
-  }
-
-  public AccessBuilder newAccessBuilder( Access access )
-  {
-    return null;
-  }
 }

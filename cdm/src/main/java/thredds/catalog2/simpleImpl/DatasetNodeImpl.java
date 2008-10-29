@@ -19,9 +19,8 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   private String name;
   private PropertyContainer propertyContainer;
 
-  private ThreddsMetadata threddsMetadata;
-  private List<MetadataBuilder> metadataBuilders;
-  private List<Metadata> metadata;
+  private ThreddsMetadataImpl threddsMetadataImpl;
+  private List<MetadataImpl> metadataImplList;
 
   private CatalogImpl parentCatalog;
   protected DatasetNodeImpl parent;
@@ -40,9 +39,6 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     this.parent = parent;
 
     this.propertyContainer = new PropertyContainer();
-
-    this.metadataBuilders = new ArrayList<MetadataBuilder>();
-    this.metadata = new ArrayList<Metadata>();
 
     if ( this.parent != null )
       this.parentDatasetContainer = this.parent.getDatasetNodeContainer();
@@ -190,69 +186,98 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     return this.propertyContainer.getPropertyByName( name );
   }
 
-  public void setThreddsMetadata( ThreddsMetadata threddsMetadata )
+  public ThreddsMetadataBuilder setNewThreddsMetadataBuilder()
   {
-    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    this.threddsMetadata = new ThreddsMetadataImpl();
-    return;
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
+    this.threddsMetadataImpl = new ThreddsMetadataImpl();
+    return this.threddsMetadataImpl;
+  }
+
+  public boolean removeThreddsMetadataBuilder()
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
+    this.threddsMetadataImpl = null;
+    return true;
+  }
+
+  public ThreddsMetadataBuilder getThreddsMetadataBuilder()
+  {
+    if ( this.isBuilt )
+      throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
+    return this.threddsMetadataImpl;
   }
 
   public ThreddsMetadata getThreddsMetadata()
   {
-    return this.threddsMetadata;
+    if ( ! this.isBuilt )
+      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being built." );
+    return this.threddsMetadataImpl;
   }
 
   public MetadataBuilder addMetadata()
   {
-    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
-    //MetadataBuilder mb = new MetadataImpl();
-    return null;
+    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
+    MetadataImpl mbi = new MetadataImpl();
+    if ( this.metadataImplList == null )
+      this.metadataImplList = new ArrayList<MetadataImpl>();
+    this.metadataImplList.add( mbi );
+    return mbi;
   }
 
   public boolean removeMetadata( MetadataBuilder metadataBuilder )
   {
     if ( this.isBuilt )
       throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
-    return false;
+    if ( metadataBuilder == null )
+      return false;
+    if ( this.metadataImplList == null )
+      return false;
+    return this.metadataImplList.remove( metadataBuilder );
   }
 
   public List<Metadata> getMetadata()
   {
     if ( !this.isBuilt )
-      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
-    return Collections.unmodifiableList( this.metadata );
+      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being built." );
+    if ( this.metadataImplList == null )
+      return Collections.emptyList();
+    return Collections.unmodifiableList( new ArrayList<Metadata>( this.metadataImplList ) );
   }
 
   public List<MetadataBuilder> getMetadataBuilders()
   {
     if ( !this.isBuilt )
-      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
-    return Collections.unmodifiableList( this.metadataBuilders );
+      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being built." );
+    if ( this.metadataImplList == null )
+      return Collections.emptyList();
+    return Collections.unmodifiableList( new ArrayList<MetadataBuilder>( this.metadataImplList) );
   }
 
   public Catalog getParentCatalog()
   {
     if ( !this.isBuilt )
-      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
+      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being built." );
     return this.parentCatalog;
   }
 
   public DatasetNode getParent()
   {
     if ( !this.isBuilt )
-      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
+      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being built." );
     return this.parent;
   }
 
   public CatalogBuilder getParentCatalogBuilder()
   {
-    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
     return this.parentCatalog;
   }
 
   public DatasetNodeBuilder getParentDatasetBuilder()
   {
-    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
     return this.parent;
   }
 
@@ -269,7 +294,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   public DatasetBuilder addDataset( String name)
   {
     if ( this.isBuilt )
-      throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+      throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
     DatasetImpl ds = new DatasetImpl( name, this.parentCatalog, this );
     this.datasetContainer.addDatasetNode( ds );
     return ds;
@@ -278,7 +303,7 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   public CatalogRefBuilder addCatalogRef( String name, URI reference)
   {
     if ( this.isBuilt )
-      throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+      throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
     CatalogRefImpl catRef = new CatalogRefImpl( name, reference, this.parentCatalog, this );
     this.datasetContainer.addDatasetNode( catRef );
     return catRef;
@@ -294,26 +319,26 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
   public List<DatasetNode> getDatasets()
   {
     if ( !this.isBuilt )
-      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
+      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being built." );
     return this.datasetContainer.getDatasets();
   }
 
   public DatasetNode getDatasetById( String id )
   {
     if ( !this.isBuilt )
-      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being finished()." );
+      throw new IllegalStateException( "This DatasetNode has escaped its DatasetNodeBuilder before being built." );
     return this.datasetContainer.getDatasetById( id);
   }
 
   public List<DatasetNodeBuilder> getDatasetNodeBuilders()
   {
-    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
     return this.datasetContainer.getDatasetNodeBuilders();
   }
 
   public DatasetNodeBuilder getDatasetNodeBuilderById( String id )
   {
-    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been finished()." );
+    if ( this.isBuilt ) throw new IllegalStateException( "This DatasetNodeBuilder has been built." );
     return this.datasetContainer.getDatasetNodeBuilderById( id );
   }
 
@@ -335,8 +360,9 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
     List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
 
     // Check subordinates.
-    for ( MetadataBuilder mb : this.metadataBuilders )
-      mb.isBuildable( localIssues);
+    if ( this.metadataImplList != null )
+      for ( MetadataBuilder mb : this.metadataImplList )
+        mb.isBuildable( localIssues);
     this.datasetContainer.isBuildable( localIssues );
 
     // ToDo Check invariants.
@@ -358,8 +384,9 @@ public class DatasetNodeImpl implements DatasetNode, DatasetNodeBuilder
       throw new BuilderException( issues );
 
     // Check subordinates.
-    for ( MetadataBuilder mb : this.metadataBuilders )
-      mb.build();
+    if ( this.metadataImplList != null )
+      for ( MetadataBuilder mb : this.metadataImplList )
+        mb.build();
     this.datasetContainer.build();
 
     this.isBuilt = true;

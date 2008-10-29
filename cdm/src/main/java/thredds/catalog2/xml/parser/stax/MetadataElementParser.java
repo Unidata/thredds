@@ -25,6 +25,10 @@ public class MetadataElementParser extends AbstractElementParser
 
   private final static QName elementName = new QName( CatalogNamespace.CATALOG_1_0.getNamespaceUri(),
                                                       MetadataElementUtils.ELEMENT_NAME );
+
+  private final static QName inheritedAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
+                                                           MetadataElementUtils.INHERITED_ATTRIBUTE_NAME );
+
   private final static QName titleAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
                                                        MetadataElementUtils.XLINK_TITLE_ATTRIBUTE_NAME );
   private final static QName externalRefAttName = new QName( CatalogNamespace.XLINK.getNamespaceUri(),
@@ -33,20 +37,32 @@ public class MetadataElementParser extends AbstractElementParser
   private final DatasetNodeBuilder datasetBuilder;
   private final CatalogBuilderFactory catBuilderFactory;
 
-  public MetadataElementParser( XMLEventReader reader, DatasetNodeBuilder datasetNodeBuilder )
+  private final DatasetNodeElementParserUtils datasetNodeElementParserUtils;
+
+  private boolean isMetadataElementInherited;
+
+  public MetadataElementParser( XMLEventReader reader,
+                                DatasetNodeBuilder datasetNodeBuilder,
+                                DatasetNodeElementParserUtils datasetNodeElementParserUtils )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
     this.datasetBuilder = datasetNodeBuilder;
     this.catBuilderFactory = null;
+    this.datasetNodeElementParserUtils = datasetNodeElementParserUtils;
+    this.isMetadataElementInherited = false;
   }
 
-  public MetadataElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public MetadataElementParser( XMLEventReader reader,
+                                CatalogBuilderFactory catBuilderFactory,
+                                DatasetNodeElementParserUtils datasetNodeElementParserUtils)
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
     this.datasetBuilder = null;
     this.catBuilderFactory = catBuilderFactory;
+    this.datasetNodeElementParserUtils = datasetNodeElementParserUtils;
+    this.isMetadataElementInherited = false;
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
@@ -57,6 +73,11 @@ public class MetadataElementParser extends AbstractElementParser
   protected boolean isSelfElement( XMLEvent event )
   {
     return isSelfElement( event, elementName );
+  }
+
+  public boolean doesMetadataElementGetInherited()
+  {
+    return this.isMetadataElementInherited;
   }
 
   protected MetadataBuilder parseStartElement( StartElement startElement )
@@ -72,6 +93,11 @@ public class MetadataElementParser extends AbstractElementParser
       builder = catBuilderFactory.newMetadataBuilder();
     else
       throw new ThreddsXmlParserException( "" );
+
+    // Determine if this metadata element gets inherited.
+    Attribute inheritedAtt = startElement.getAttributeByName( inheritedAttName );
+    if ( inheritedAtt != null && inheritedAtt.getValue().equalsIgnoreCase( "true" ))
+      this.isMetadataElementInherited = true;
 
     Attribute titleAtt = startElement.getAttributeByName( titleAttName );
     Attribute externalRefAtt = startElement.getAttributeByName( externalRefAttName );
@@ -114,6 +140,7 @@ public class MetadataElementParser extends AbstractElementParser
       if ( this.content == null )
         this.content = new StringBuilder();
       //if ( !isChildElement( startElement ) )
+      // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
       this.content.append( StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader ));
     }
   }

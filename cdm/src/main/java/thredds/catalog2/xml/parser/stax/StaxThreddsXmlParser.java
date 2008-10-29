@@ -92,6 +92,7 @@ public class StaxThreddsXmlParser implements ThreddsXmlParser
           }
           else
           {
+            // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
             StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
             log.warn( "readCatalogXML(): Unrecognized start element [" + event.asStartElement().getName() + "]." );
             reader.next();

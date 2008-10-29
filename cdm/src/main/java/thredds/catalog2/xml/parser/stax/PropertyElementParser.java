@@ -105,6 +105,7 @@ public class PropertyElementParser extends AbstractElementParser
           throws ThreddsXmlParserException
   {
     if ( ! isChildElement( startElement ) )
+      // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
       StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
   }
 

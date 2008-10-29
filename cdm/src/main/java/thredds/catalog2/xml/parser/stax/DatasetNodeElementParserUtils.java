@@ -21,8 +21,6 @@ import javax.xml.XMLConstants;
  */
 public class DatasetNodeElementParserUtils
 {
-  private DatasetNodeElementParserUtils() {}
-
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   protected final static QName nameAttName = new QName( XMLConstants.NULL_NS_URI,
@@ -32,7 +30,39 @@ public class DatasetNodeElementParserUtils
   protected final static QName authorityAttName = new QName( XMLConstants.NULL_NS_URI,
                                                              DatasetElementUtils.AUTHORITY_ATTRIBUTE_NAME );
 
-  public static void parseStartElementNameAttribute( StartElement startElement,
+  private final DatasetNodeElementParserUtils datasetNodeElementParserUtils;
+
+  private ThreddsMetadataElementParser threddsMetadataElementParser;
+
+  DatasetNodeElementParserUtils( DatasetNodeElementParserUtils datasetNodeElementParserUtils )
+  {
+    this.datasetNodeElementParserUtils = datasetNodeElementParserUtils;
+  }
+
+  private String defaultServiceNameThatGetsInherited;
+
+  protected void setDefaultServiceNameThatGetsInherited( String defaultServiceNameThatGetsInherited )
+  {
+    this.defaultServiceNameThatGetsInherited = defaultServiceNameThatGetsInherited;
+  }
+
+  protected String getDefaultServiceNameThatGetsInherited()
+  {
+    return this.defaultServiceNameThatGetsInherited;
+  }
+
+  private String idAuthorityThatGetsInherited;
+  public void setIdAuthorityThatGetsInherited( String idAuthorityThatGetsInherited)
+  {
+    this.idAuthorityThatGetsInherited = idAuthorityThatGetsInherited;
+  }
+
+  public String getIdAuthorityThatGetsInherited()
+  {
+    return this.idAuthorityThatGetsInherited;
+  }
+
+  public void parseStartElementNameAttribute( StartElement startElement,
                                                      DatasetNodeBuilder dsNodeBuilder )
   {
     Attribute att = startElement.getAttributeByName( nameAttName );
@@ -40,7 +70,7 @@ public class DatasetNodeElementParserUtils
       dsNodeBuilder.setName( att.getValue() );
   }
 
-  public static void parseStartElementIdAttribute( StartElement startElement,
+  public void parseStartElementIdAttribute( StartElement startElement,
                                                    DatasetNodeBuilder dsNodeBuilder )
   {
     Attribute att = startElement.getAttributeByName( idAttName );
@@ -48,7 +78,7 @@ public class DatasetNodeElementParserUtils
       dsNodeBuilder.setId( att.getValue() );
   }
 
-  public static void parseStartElementIdAuthorityAttribute( StartElement startElement,
+  public void parseStartElementIdAuthorityAttribute( StartElement startElement,
                                                             DatasetNodeBuilder dsNodeBuilder )
   {
     Attribute att = startElement.getAttributeByName( authorityAttName );
@@ -56,7 +86,7 @@ public class DatasetNodeElementParserUtils
       dsNodeBuilder.setId( att.getValue() );
   }
 
-  public static boolean handleBasicChildStartElement( StartElement startElement,
+  public boolean handleBasicChildStartElement( StartElement startElement,
                                                       XMLEventReader reader,
                                                       DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
@@ -69,37 +99,44 @@ public class DatasetNodeElementParserUtils
     }
     else if ( MetadataElementParser.isSelfElementStatic( startElement ))
     {
-      MetadataElementParser parser = new MetadataElementParser( reader, dsNodeBuilder);
+      MetadataElementParser parser = new MetadataElementParser( reader, dsNodeBuilder, this );
       parser.parse();
       return true;
     }
-//    else if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ))
-//    {
-//      ThreddsMetadataElementParser parser = new ThreddsMetadataElementParser( reader, dsNodeBuilder);
-//      parser.parse();
-//      return true;    
-//    }
+    else if ( ThreddsMetadataElementParser.isSelfElementStatic( startElement ))
+    {
+      if ( this.threddsMetadataElementParser == null )
+        this.threddsMetadataElementParser = new ThreddsMetadataElementParser( reader, dsNodeBuilder, this);
+      this.threddsMetadataElementParser.parse();
+      return true;
+    }
     else
       return false;
   }
-  public static boolean handleCollectionChildStartElement( StartElement startElement,
+  public boolean handleCollectionChildStartElement( StartElement startElement,
                                                            XMLEventReader reader,
                                                            DatasetNodeBuilder dsNodeBuilder )
           throws ThreddsXmlParserException
   {
     if ( DatasetElementParser.isSelfElementStatic( startElement ))
     {
-      DatasetElementParser parser = new DatasetElementParser( reader, dsNodeBuilder);
+      DatasetElementParser parser = new DatasetElementParser( reader, dsNodeBuilder, this);
       parser.parse();
       return true;
     }
     else if ( CatalogRefElementParser.isSelfElementStatic( startElement ))
     {
-      CatalogRefElementParser parser = new CatalogRefElementParser( reader, dsNodeBuilder);
+      CatalogRefElementParser parser = new CatalogRefElementParser( reader, dsNodeBuilder, this);
       parser.parse();
       return true;
     }
     else
       return false;
   }
+
+  public void postProcessing( ThreddsBuilder builder )
+  {
+    // ToDo Deal with inherited metadata. Crawl up DatasetNodeBuilder heirarchy and gather inherited metadata. 
+  }
+
 }

@@ -28,8 +28,9 @@ public interface DatasetNodeBuilder extends ThreddsBuilder
   public List<String> getPropertyNames();
   public String getPropertyValue( String name );
 
-  public void setThreddsMetadata( ThreddsMetadata threddsMetadata );
-  public ThreddsMetadata getThreddsMetadata();
+  public ThreddsMetadataBuilder setNewThreddsMetadataBuilder();
+  public boolean removeThreddsMetadataBuilder();
+  public ThreddsMetadataBuilder getThreddsMetadataBuilder();
 
   public MetadataBuilder addMetadata();
   public boolean removeMetadata( MetadataBuilder metadataBuilder );

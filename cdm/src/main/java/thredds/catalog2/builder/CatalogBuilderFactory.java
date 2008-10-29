@@ -26,7 +26,4 @@ public interface CatalogBuilderFactory
   public CatalogRefBuilder newCatalogRefBuilder( CatalogRef catRef);
 
   public MetadataBuilder newMetadataBuilder();
-
-  public AccessBuilder newAccessBuilder();
-  public AccessBuilder newAccessBuilder( Access access );
 }

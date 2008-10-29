@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public class AccessImpl implements Access, AccessBuilder
 {
+  private final DatasetImpl parentDs;
   private ServiceImpl service;
   private String urlPath;
   private DataFormatType dataFormat;
@@ -23,7 +24,10 @@ public class AccessImpl implements Access, AccessBuilder
 
   private boolean isBuilt = false;
 
-  protected AccessImpl() {}
+  protected AccessImpl( DatasetImpl parentDataset )
+  {
+    this.parentDs = parentDataset;
+  }
 
   public void setServiceBuilder( ServiceBuilder service )
   {
@@ -93,14 +97,14 @@ public class AccessImpl implements Access, AccessBuilder
 
     List<BuilderIssue> localIssues = new ArrayList<BuilderIssue>();
 
-    //ToDo Check invariants
     if ( this.service == null )
-      localIssues.add( new BuilderIssue( "The Service may not be null.", this ));
+      localIssues.add( new BuilderIssue( "Dataset[\"" + parentDs.getName() + "\"] not accessible[\"" + this.urlPath + "\"] due to null service.", this ) );
     if ( this.urlPath == null )
-      localIssues.add( new BuilderIssue( "The urlPath may not be null.", this ) );
+      localIssues.add( new BuilderIssue( "Dataset[\"" + parentDs.getName() + "\"] not accessible[\"" + this.service != null ? this.service.getName() : "" + "\"] due to null urlPath.", this ) );
 
     // Check subordinates.
-    this.service.isBuildable( localIssues );
+    if ( this.service != null )
+      this.service.isBuildable( localIssues );
 
     if ( localIssues.isEmpty() )
       return true;

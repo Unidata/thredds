@@ -37,31 +37,43 @@ public class CatalogRefElementParser extends AbstractElementParser
   private final DatasetNodeBuilder datasetNodeBuilder;
   private final CatalogBuilderFactory catBuilderFactory;
 
-  public CatalogRefElementParser( XMLEventReader reader,  CatalogBuilder catBuilder )
+  private final DatasetNodeElementParserUtils datasetNodeElementParserUtils;
+
+
+  public CatalogRefElementParser( XMLEventReader reader,
+                                  CatalogBuilder catBuilder,
+                                  DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
     this.catBuilder = catBuilder;
     this.datasetNodeBuilder = null;
     this.catBuilderFactory = null;
+    this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils );
   }
 
-  public CatalogRefElementParser( XMLEventReader reader, DatasetNodeBuilder datasetNodeBuilder )
+  public CatalogRefElementParser( XMLEventReader reader,
+                                  DatasetNodeBuilder datasetNodeBuilder,
+                                  DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
     this.catBuilder = null;
     this.datasetNodeBuilder = datasetNodeBuilder;
     this.catBuilderFactory = null;
+    this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils );
   }
 
-  public CatalogRefElementParser( XMLEventReader reader, CatalogBuilderFactory catBuilderFactory )
+  public CatalogRefElementParser( XMLEventReader reader,
+                                  CatalogBuilderFactory catBuilderFactory,
+                                  DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
           throws ThreddsXmlParserException
   {
     super( reader, elementName );
     this.catBuilder = null;
     this.datasetNodeBuilder = null;
     this.catBuilderFactory = catBuilderFactory;
+    this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils );
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
@@ -108,8 +120,8 @@ public class CatalogRefElementParser extends AbstractElementParser
       throw new ThreddsXmlParserException( "" );
 
     // Set optional attributes
-    DatasetNodeElementParserUtils.parseStartElementIdAttribute( startElement, catalogRefBuilder );
-    DatasetNodeElementParserUtils.parseStartElementIdAuthorityAttribute( startElement, catalogRefBuilder );
+    this.datasetNodeElementParserUtils.parseStartElementIdAttribute( startElement, catalogRefBuilder );
+    this.datasetNodeElementParserUtils.parseStartElementIdAuthorityAttribute( startElement, catalogRefBuilder );
 
     return catalogRefBuilder;
   }
@@ -119,15 +131,17 @@ public class CatalogRefElementParser extends AbstractElementParser
     if ( !( builder instanceof CatalogRefBuilder ) )
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder." );
 
-    if ( DatasetNodeElementParserUtils.handleBasicChildStartElement( startElement, this.reader, (CatalogRefBuilder) builder ))
+    if ( this.datasetNodeElementParserUtils.handleBasicChildStartElement( startElement, this.reader, (CatalogRefBuilder) builder ))
       return;
     else
+      // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
       StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
   }
 
   protected void postProcessing( ThreddsBuilder builder )
           throws ThreddsXmlParserException
   {
+    // ToDo Deal with inherited metadata
     return;
   }
 }

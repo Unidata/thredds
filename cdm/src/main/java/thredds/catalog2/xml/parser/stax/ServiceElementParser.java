@@ -148,6 +148,7 @@ public class ServiceElementParser extends AbstractElementParser
     }
     else
     {
+      // ToDo Save the results in a ThreddsXmlParserIssue (Warning) and report.
       StaxThreddsXmlParserUtils.readElementAndAnyContent( this.reader );
     }
   }

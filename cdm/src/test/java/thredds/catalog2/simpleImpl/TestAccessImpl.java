@@ -58,7 +58,7 @@ public class TestAccessImpl extends TestCase
 
   public void testCtorAndBuilderSetGet()
   {
-    AccessImpl access = new AccessImpl();
+    AccessImpl access = new AccessImpl( null);
 
     assertFalse( access.isBuilt() );
 
@@ -82,7 +82,7 @@ public class TestAccessImpl extends TestCase
 
   public void testBuilderIllegalStateException()
   {
-    AccessImpl accessImpl = new AccessImpl();
+    AccessImpl accessImpl = new AccessImpl( null);
 
     accessImpl.setServiceBuilder( serviceBuilder );
     accessImpl.setUrlPath( urlPath );
@@ -101,7 +101,7 @@ public class TestAccessImpl extends TestCase
 
   public void testBuild()
   {
-    AccessImpl accessImpl = new AccessImpl();
+    AccessImpl accessImpl = new AccessImpl( null);
 
     accessImpl.setServiceBuilder( serviceBuilder );
     accessImpl.setUrlPath( urlPath );
@@ -130,7 +130,7 @@ public class TestAccessImpl extends TestCase
 
   public void testPostBuildGetters()
   {
-    AccessImpl accessImpl = new AccessImpl();
+    AccessImpl accessImpl = new AccessImpl( null);
 
     accessImpl.setServiceBuilder( serviceBuilder );
     accessImpl.setUrlPath( urlPath );
@@ -151,7 +151,7 @@ public class TestAccessImpl extends TestCase
 
   public void testPostBuildIllegalStateException()
   {
-    AccessImpl accessImpl = new AccessImpl();
+    AccessImpl accessImpl = new AccessImpl( null);
 
     accessImpl.setServiceBuilder( serviceBuilder );
     accessImpl.setUrlPath( urlPath );
