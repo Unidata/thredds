@@ -3,7 +3,7 @@
   <head>
    <title>TDS Tutorial: Getting Started</title>
     <style type="text/css">
-     pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 60%;}
+     pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 70%;}
      code {font-size: 11pt;}
      dl {margin: 10px 5px 5px 15px;)
    </style>
@@ -109,6 +109,13 @@ drwxr-xr-x  9 thredds Unidata 4096 2008-10-17 16:00 apache-tomcat-6.0.18
 /home/thredds/apache-tomcat-6.0.18
 </pre>
      </ol> 
+     <p>Troubleshooting:</p>
+       <ul>
+        <li>Make sure you have the needed permissions to perform the installation.</li>
+       </ul>
+
+
+
      <p>Note: Tomcat has already been installed on your workshop computer at <code>/opt/apache-tomcat-6.0.18</code></p>
 
 
@@ -119,18 +126,18 @@ drwxr-xr-x  9 thredds Unidata 4096 2008-10-17 16:00 apache-tomcat-6.0.18
    <h2>Tomcat directory structure: quick tour</h2>
    <dl>
     <dt><h3>Exploring <code>$TOMCAT_HOME</code></h3></dt>
-     <p>Move into the new tomcat directory and have a look at the directory structure:</p>
+     <p>Move into the new Tomcat directory and have a look at the directory structure:</p>
 <pre>
 <b>-bash-3.2$</b> cd apache-tomcat-6.0.18/
 <b>-bash-3.2$</b> ls -l --group-directories-first
 total 88
-drwxr-xr-x 2 thredds Unidata  4096 2008-10-28 16:45 bin
-drwxr-xr-x 2 thredds Unidata  4096 2008-10-28 16:52 conf
-drwxr-xr-x 2 thredds Unidata  4096 2008-10-28 16:45 lib
-drwxr-xr-x 2 thredds Unidata  4096 2008-10-28 16:47 logs
-drwxr-xr-x 2 thredds Unidata  4096 2008-10-28 16:45 temp
+drwxr-xr-x 2 thredds Unidata  4096 2008-11-06 16:45 bin
+drwxr-xr-x 2 thredds Unidata  4096 2008-11-06 16:52 conf
+drwxr-xr-x 2 thredds Unidata  4096 2008-11-06 16:45 lib
+drwxr-xr-x 2 thredds Unidata  4096 2008-11-06 16:47 logs
+drwxr-xr-x 2 thredds Unidata  4096 2008-11-06 16:45 temp
 drwxr-xr-x 7 thredds Unidata  4096 2008-07-21 18:01 webapps
-drwxr-xr-x 3 thredds Unidata  4096 2008-10-28 16:47 work
+drwxr-xr-x 3 thredds Unidata  4096 2008-11-06 16:47 work
 -rw-r--r-- 1 thredds Unidata 37951 2008-07-21 18:01 LICENSE
 -rw-r--r-- 1 thredds Unidata   556 2008-07-21 18:01 NOTICE
 -rw-r--r-- 1 thredds Unidata  7317 2008-07-21 18:01 RELEASE-NOTES
@@ -160,7 +167,7 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-10-28 16:47 work
         </ul>
       <p><code>logs/</code> - Log files are here by default.</p> 
         <ul>
-         <li>Log files are your first stop for troubleshooting tomcat and TDS issues.</li>
+         <li><i><b>The log files should be your first stop for troubleshooting Tomcat and TDS issues.</b></i></li>
          <li>Logs files may contain useful information for assessing the security of your system.</li>
          <li>We will be examining in further detail:</p>
          <ul>
@@ -201,17 +208,19 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-10-28 16:47 work
 
      <p>Troubleshooting:</p>
        <ul>
-        <li>Check the logs generated in <code>$TOMCAT_HOME/logs</code> for clues about why tomcat failed to start.</li>
+        <li>Check the logs mostly recently generated in <code>$TOMCAT_HOME/logs</code> for clues about why Tomcat failed to start.</li>
+        <li>Pay particular attention to what is being reported in Tomcat's main log file: <code>$TOMCAT_HOME/logs/catalina.out</code>.</li>
+
        </ul>
 
 
 
 
 
-    <dt><h3>Set the <code>JAVA_HOME</code>, <code>JAVA_OPTS</code> and <code>CATALINA_HOME</code> environment variables</h3></dt>
-    <p>We are going to modify the <code>startup.sh</code> and <code>shutdown.sh</code> scripts in the Tomcat <code>/bin</code> directory:</p>
+    <dt><h3>Set the <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code> environment variables</h3></dt>
+    <p>We are going to modify the <code>startup.sh</code> and <code>shutdown.sh</code> scripts in the Tomcat <code>/bin</code> directory to:</p>
     <ol>
-     <li>to allow Tomcat to reference/find the location of <code>$JAVA_HOME</code> and <code>$TOMCAT_HOME</code> (aka <code>$CATALINA_HOME</code>) during startup and shutdown; and </li>
+     <li>allow Tomcat to reference/find the location of <code>$JAVA_HOME</code> and <code>$TOMCAT_HOME</code> (aka <code>$CATALINA_HOME</code>) during startup and shutdown; and </li>
      <li>increase the amount of memory allocated to the JVM to enhance performance by setting <code>$JAVA_OPTS</code>.</li>
     </ol>
     <p></p>
@@ -254,7 +263,7 @@ esac
 
    <h2>Deploying the TDS</h2>
    <dl>
-    <dt><h3><code>thredds.war</code></h3></dt>
+    <dt><h3>Installing <code>thredds.war</code></h3></dt>
       <p><a href="/downloads/thredds/index.jsp">Download</a> the TDS WAR file and save it in the Tomcat <code>webapps/</code>  directory.</p>
 <pre>
 <b>-bash-3.2$</b> cp thredds.war $TOMCAT_HOME/webapps
@@ -262,23 +271,24 @@ esac
 
 <b>-bash-3.2$</b> ll
 total 10284
-drwxr-xr-x 11 thredds Unidata     4096 2008-10-28 16:45 docs
-drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 examples
-drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 host-manager
-drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 manager
-drwxr-xr-x  3 thredds Unidata     4096 2008-10-28 16:45 ROOT
--rw-r--r--  1 thredds Unidata 10491917 2008-10-28 17:08 thredds.war
+drwxr-xr-x 11 thredds Unidata     4096 2008-11-06 16:45 docs
+drwxr-xr-x  5 thredds Unidata     4096 2008-11-06 16:45 examples
+drwxr-xr-x  5 thredds Unidata     4096 2008-11-06 16:45 host-manager
+drwxr-xr-x  5 thredds Unidata     4096 2008-11-06 16:45 manager
+drwxr-xr-x  3 thredds Unidata     4096 2008-11-06 16:45 ROOT
+-rw-r--r--  1 thredds Unidata 10491917 2008-11-06 17:08 thredds.war
 </pre>
        <p>About WAR files:</p>
        <ul>
         <li>WAR is short for Web ARchive</li>
         <li><i>If configured</i> Tomcat will automatically unpack the WAR distribution into directory of the same name upon deployment</li>
-        <li>Note: the unpacked directory is overwritten each time the application is deployed.</li>
+        <li>Note: the unpacked directory is overwritten each time a new WAR file is deployed.</li>
+        <li>If there is an error in the deployment it will report in <code>$TOMCAT_HOME/logs/catalina.out</code>. </li>
       </ul>
 
 
 
-    <dt><h3>Browse distribution test catalogs &amp; datasets</h3></dt>
+    <dt><h3>Deploy &amp; test the TDS installation</h3></dt>
      <ul>
       <li>Start Tomcat and confirm the <code>thredds.war</code> file was unpacked in the <code>webapps/</code> directory.</li>
 <pre>
@@ -287,16 +297,20 @@ drwxr-xr-x  3 thredds Unidata     4096 2008-10-28 16:45 ROOT
 
 <b>-bash-3.2$</b> ls -l webapps
 total 10288
-drwxr-xr-x 11 thredds Unidata     4096 2008-10-28 16:45 docs
-drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 examples
-drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 host-manager
-drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 manager
-drwxr-xr-x  3 thredds Unidata     4096 2008-10-28 16:45 ROOT
-drwxr-xr-x  7 thredds Unidata     4096 2008-10-28 17:15 thredds
--rw-r--r--  1 thredds Unidata 10491917 2008-10-28 17:08 thredds.war
+drwxr-xr-x 11 thredds Unidata     4096 2008-11-06 16:45 docs
+drwxr-xr-x  5 thredds Unidata     4096 2008-11-06 16:45 examples
+drwxr-xr-x  5 thredds Unidata     4096 2008-11-06 16:45 host-manager
+drwxr-xr-x  5 thredds Unidata     4096 2008-11-06 16:45 manager
+drwxr-xr-x  3 thredds Unidata     4096 2008-11-06 16:45 ROOT
+drwxr-xr-x  7 thredds Unidata     4096 2008-11-06 17:15 thredds
+-rw-r--r--  1 thredds Unidata 10491917 2008-11-06 17:08 thredds.war
 </pre>   
 
+
       <li>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed.</li>
+
+
+
      </ul>
 
    </dl>
@@ -311,27 +325,43 @@ drwxr-xr-x  7 thredds Unidata     4096 2008-10-28 17:15 thredds
       <li>Once deployed, browse the test catalogs &amp; datasets that come with the distribution.</li>
      </ol>
 
-    <dt><h3>Extra credit: Have a look at the log files generated by Tomcat</h3></dt>
+    <dt><h3>Exercise 2. Look at the log files</h3></dt>
      <ol>
-      <li>Poke around <code>$TOMCAT_HOME/logs</code> and see the type of information that is being logged.</li>
+      <li>Look at the different types of log files being generated in <code>$TOMCAT_HOME/logs</code>.</li>
+       <ul>
+        <li>Move into <code>$TOMCAT_HOME/logs</code> and see the type of information that is being logged:</li>
+<pre>
+<b>-bash-3.2$</b> cd $TOMCAT_HOME/logs
+<b>-bash-3.2$</b> ls -l
+total 28
+-rw-r--r-- 1 thredds Unidata     0 2008-11-06 16:47 admin.2008-11-06.log
+-rw-r--r-- 1 thredds Unidata 10050 2008-11-06 20:16 catalina.2008-11-06.log
+-rw-r--r-- 1 thredds Unidata 10610 2008-11-06 20:16 catalina.out
+-rw-r--r-- 1 thredds Unidata     0 2008-11-06 16:47 host-manager.2008-11-06.log
+-rw-r--r-- 1 thredds Unidata  2760 2008-11-06 20:16 localhost.2008-11-06.log
+-rw-r--r-- 1 thredds Unidata     0 2008-11-06 16:47 manager.2008-11-06.log
+</pre>   
+        <li>Do you see a correspondance between some of the web applications in the <code>$TOMCAT_HOME/webapps</code> directory and the naming of certain log files?</li>
+        <li>Is there a difference in information being logged to <code>catalina.out</code> verses <code>catalina.2008-11-06.log</code>?</li>
+        <li>Are some log files more <i>verbose</i> than others?</li>
+
+       </ul>
+       <p></p>
+       <li>Examine Tomcat's main log file: <code>catalina.out</code> </li>
+        <ul>
+         <li>Open another terminal window (hereafter refered to as terminal #2) and run the following command in the new terminal:</li>
+<pre>
+<b>-bash-3.2$</b> tail -f $TOMCAT_HOME/logs/catalina.out
+</pre>   
+         <li>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</li>
+         <li>Is it only errors messages being reported to <code>catalina.out</code>?</li>
+        </ul>
+
+
+
      </ol>
 
-
-    <dt><h3>Extra credit: Who is running Tomcat?</h3></dt>
-    <ol>
-     <li>Using the <code>ps</code> command, look to see what user is running the Tomcat process after it has been started.</li>
-<pre>
-<b>-bash-3.2$</b> ps -ef | grep tomcat
-</pre>   
-     If unfamiliar with the <code>ps</code> command, look at the man page for <code>ps</code>: 
-<pre>
-<b>-bash-3.2$</b> man ps
-</pre>   
-     <li>Why would we want to run Tomcat as an <a href="../reference/TomcatUserAndGroup.html">unprivileged user</a>?</li>
-
-    </ol>
-     
-
+ 
    </dl>
 
 
