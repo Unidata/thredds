@@ -317,23 +317,6 @@ drwxr-xr-x  7 thredds Unidata     4096 2008-10-28 17:15 thredds
      </ol>
 
 
-   
-    <dt><h3>Extra credit: Why did we set <code>JAVA_HOME</code> and <code>CATALINA_HOME</code> in the Tomcat startup and shutdown scripts?</h3></dt>
-    <ol>
-     <li>Stop Tomcat and comment out the <code>JAVA_HOME</code> and <code>CATALINA_HOME</code> information in the Tomcat startup and shutdown scripts.</li>
-     <li>Verify that <code>$TOMCAT_HOME</code> and <code>$JAVA_HOME</code> have been set in your shell session by using the <code>echo</code> command.</li>
-     <li>Start Tomcat and notice what paths were specified in the output sent to <code>STDOUT</code>.</li>
- 
-     <li>Stop Tomcat and open a second terminal window.</li>
-     <li>In terminal window #2, echo <code>$TOMCAT_HOME</code> and <code>$JAVA_HOME</code> to verify neither of these are set in this shell session</li>
-     <li>Start Tomcat in the second terminal window and notice what paths were specified in the output sent to <code>STDOUT</code>.  Did you see a change?</li>
-     <li>Stop Tomcat in the second terminal window.</li>
-     <li>Uncomment the <code>JAVA_HOME</code> and <code>CATALINA_HOME</code> information in the Tomcat startup and shutdown scripts and restart Tomcat.</li>
-
-
-    </ol>
-
-
     <dt><h3>Extra credit: Who is running Tomcat?</h3></dt>
     <ol>
      <li>Using the <code>ps</code> command, look to see what user is running the Tomcat process after it has been started.</li>
