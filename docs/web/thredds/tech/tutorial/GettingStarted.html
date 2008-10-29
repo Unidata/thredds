@@ -1,125 +1,365 @@
-<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html><head>
-   
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <title>Getting Started</title>
-</head>
-<body>
-<h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">Getting Started </h1>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+ <html>
+  <head>
+   <title>TDS Tutorial: Getting Started</title>
+    <style type="text/css">
+     pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 60%;}
+     code {font-size: 11pt;}
+     dl {margin: 10px 5px 5px 15px;)
+   </style>
 
-<div class="head">
-  <address>
-  </address>
-  <hr>
+  </head>
+  <body>
+   <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Tutorial: Getting Started</h1>
+   <hr>
   
-  <h2>Install Java</h2>
-<p>The TDS requires Java 1.5 or above, we recommend the current verison of 1.6 and use it on our development servers.<br>
-</p>
-<p>Current versions of the JRE and JDK are available from the Java web page, <a href="http://java.sun.com/">http://java.sun.com/</a>.<br>
-</p>
-<p>The Java SE Developer Kit (JDK) 1.5.0_12 is already installed on the workshop computers at <code>/usr/java/jdk1.5.0_12.<br>
-</code></p>
-<ol>
-  <li>Set <code>JAVA_HOME</code> environment variable</li>
-  <ul>
-    <li><code>set JAVA_HOME /usr/java/jdk1.5.0_12</code><br>
-    </li>
-  </ul>
-</ol>
-<h2>Install Tomcat</h2>
-<p>Current versions of Tomcat are available from the Tomcat web page, <a href="http://tomcat.apache.org/">http://tomcat.apache.org/</a>.<br>
-</p>
-<p>Install Tomcat 6.0:<br>
-</p>
-<ol>
-  <li>Move to installation location</li>
-  <ul>
-    <li><code>cd tds</code></li>
-  </ul>
-  <li>Unpack the Tomcat 6.0.13 archive</li>
-  <ul>
-    <li><code>tar xvzf /opt/apache-tomcat-6.0.13.tar.gz</code></li>
-  </ul>
-  <li>Set <code>TOMCAT_HOME</code> environment variable</li>
-  <ul>
-    <li><code>set TOMCAT_HOME /home/workshop/tds/apache-tomcat-6.0.13</code><br>
-    </li>
-  </ul>
-  <li>Move to Tomcat bin directory</li>
-  <ul>
-    <li><code>cd ${TOMCAT_HOME}/bin</code></li>
-  </ul>
-  <li>Edit startup.sh and shutdown.sh and set environment variables:</li>
-  <ul>
-    <li>Run editor of choice, e.g.</li>
+   <h2>Installing Java &amp; Tomcat</h2>
+
+   <dl>
+    <dt><h3>System requirements</h3></dt>
+     <ul>
+       <li>Sun Java 1.5 or above, (we recommend the latest version of Java 1.6)</li>
+       <li>Apache Tomcat 5.5 or above, (we recommend the latest version of Tomcat 6.0)</li>
+     </ul>
+     <p>Note: while there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using Sun Java and the Apache Tomcat servlet container.</p>
+
+
+
+    <dt><h3>Installing Java</h3></dt>
+     <ol>
+      <li><a href="http://java.sun.com/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun.</li> 
+       <ul>
+        <li>We will be using the Linux x64-bit, non-rpm, self-extracting file for this workshop:</li>
+         <p><code>jdk-6u10-linux-x64.bin</code></p>
+       </ul>
+      <li>Install the JDK as per the Sun <a href="http://java.sun.com/javase/6/webnotes/install/">installation instructions</a>.</li>      
+       <ul>
+        <li>Copy the self-extracting file to the installation directory (our home directory is the installation directory in this example):</li>
+<pre>
+<b>-bash-3.2$</b> cp jdk-6u10-linux-x64.bin ~
+<b>-bash-3.2$</b> cd 
+</pre>
+        <li>If needed, change the permissions on the file to be executable:</li>
+
+<pre>
+<b>-bash-3.2$</b> ls -l jdk-6u10-linux-x64.bin
+-rw-r--r--  1 thredds Unidata 72753411 2008-10-02 16:39 jdk-6u10-linux-x64.bin
+
+<b>-bash-3.2$</b> chmod 755 jdk-6u10-linux-x64.bin
+
+<b>-bash-3.2$</b> ls -l jdk-6u10-linux-x64.bin
+-rwxr-xr-x 1 thredds Unidata 72753411 2008-10-02 16:39 jdk-6u10-linux-x64.bin
+</pre>
+
+        <li>Run self-extracting file and agree to the terms of the code license:</li>
+
+<pre>
+<b>-bash-3.2$</b> ./jdk-6u10-linux-x64.bin
+</pre>
+       </ul>
+      <li>Set the <code>$JAVA_HOME</code> environment variable.</li>   
+<pre>
+<b>-bash-3.2$</b> export JAVA_HOME=/home/thredds/jdk1.6.0_10
+
+<b>-bash-3.2$</b> echo $JAVA_HOME
+/home/thredds/jdk1.6.0_10
+</pre>
+     </ol> 
+     <p>Troubleshooting:</p>
+       <ul>
+        <li>Make sure you have the needed permissions to perform the installation.</li>
+        <li>Check to make sure the JDK self-extracting file has the correct permissions and is executable.</li>
+        <li>Depending on your OS (e.g., Solaris), you may need install <i>both</i> the 32-bit and 64-bit self-extracting files.</li>
+       </ul>
+     <p>Note: the latest version of the JDK 1.6 has already been installed on your workshop computer at <code>/opt/jdk</code></p>
+
+
+
+
+    <dt><h3>Installing Tomcat</h3></dt>
+     <ol>
+      <li><a href="http://tomcat.apache.org/">Download</a> current version of the Tomcat servlet container.</li> 
+       <ul>
+        <li>We will be using the binary tar.gz file for this workshop:</li>
+         <p><code>apache-tomcat-6.0.18.tar.gz</code></p>
+       </ul>
+      <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/setup.html">installation instructions</a>.</li>    
+       <ul>
+        <li>Copy the binary tar.gz file to the installation directory (our home directory is the installation directory in this example):</li>
+<pre>
+<b>-bash-3.2$</b> cp apache-tomcat-6.0.18.tar.gz ~
+<b>-bash-3.2$</b> cd 
+</pre>
+        <li>Unpack the archive to create Tomcat directory:</li>
+
+<pre>
+<b>-bash-3.2$</b> tar xvzf apache-tomcat-6.0.18.tar.gz
+
+<b>-bash-3.2$</b> ls -ld apache-tomcat*
+drwxr-xr-x  9 thredds Unidata 4096 2008-10-17 16:00 apache-tomcat-6.0.18
+-rw-r--r-- 1 thredds Unidata 6142197 2008-07-30 03:51 apache-tomcat-6.0.18.tar.gz
+</pre>   
+       </ul>
+
+      <li>Set the <code>$TOMCAT_HOME</code> environment variable.</li>   
+<pre>
+<b>-bash-3.2$</b> export TOMCAT_HOME=/home/thredds/apache-tomcat-6.0.18
+
+<b>-bash-3.2$</b> echo $TOMCAT_HOME
+/home/thredds/apache-tomcat-6.0.18
+</pre>
+     </ol> 
+     <p>Note: Tomcat has already been installed on your workshop computer at <code>/opt/apache-tomcat-6.0.18</code></p>
+
+
+   </dl>
+
+
+
+   <h2>Tomcat directory structure: quick tour</h2>
+   <dl>
+    <dt><h3>Exploring <code>$TOMCAT_HOME</code></h3></dt>
+     <p>Move into the new tomcat directory and have a look at the directory structure:</p>
+<pre>
+<b>-bash-3.2$</b> cd apache-tomcat-6.0.18/
+<b>-bash-3.2$</b> ls -l --group-directories-first
+total 88
+drwxr-xr-x 2 thredds Unidata  4096 2008-10-28 16:45 bin
+drwxr-xr-x 2 thredds Unidata  4096 2008-10-28 16:52 conf
+drwxr-xr-x 2 thredds Unidata  4096 2008-10-28 16:45 lib
+drwxr-xr-x 2 thredds Unidata  4096 2008-10-28 16:47 logs
+drwxr-xr-x 2 thredds Unidata  4096 2008-10-28 16:45 temp
+drwxr-xr-x 7 thredds Unidata  4096 2008-07-21 18:01 webapps
+drwxr-xr-x 3 thredds Unidata  4096 2008-10-28 16:47 work
+-rw-r--r-- 1 thredds Unidata 37951 2008-07-21 18:01 LICENSE
+-rw-r--r-- 1 thredds Unidata   556 2008-07-21 18:01 NOTICE
+-rw-r--r-- 1 thredds Unidata  7317 2008-07-21 18:01 RELEASE-NOTES
+-rw-r--r-- 1 thredds Unidata  6587 2008-07-21 18:01 RUNNING.txt
+</pre>
+
+
+
+    <dt><h3>Noteworthy directories</h3></dt>
+    <p><code>bin/</code> - Startup, shutdown, and other scripts.</p> 
+        <ul>
+         <li>The *.sh files (for Unix systems) are functional duplicates of the *.bat files (for Windows systems).</li>
+         <li>We will be examining in further detail:</li>
+         <ul>
+          <li><code>startup.sh</code></li>
+          <li><code>shutdown.sh</code></li>
+         </ul>
+        </ul>
+      <p><code>conf/</code> - Tomcat configuration files.</p> 
+        <ul>
+         <li><i>Server-wide</i> configuration including logging, authentication and access control, SSL, performance settings, etc.</li>
+         <li>We will be examining in further detail:</li>
+         <ul>
+          <li><code>server.xml</code></li>
+          <li><code>tomcat-users.xml</code></li>
+         </ul>
+        </ul>
+      <p><code>logs/</code> - Log files are here by default.</p> 
+        <ul>
+         <li>Log files are your first stop for troubleshooting tomcat and TDS issues.</li>
+         <li>Logs files may contain useful information for assessing the security of your system.</li>
+         <li>We will be examining in further detail:</p>
+         <ul>
+          <li><code>catalina.out</code></li>
+          <li><code>access.YYYY-MM-DD.log</code></li>
+         </ul>
+        </ul>
+      <p><code>webapps/</code> - Web applications directories and WAR files.</p>
+        <ul>
+         <li>We will be examining in further detail:</p>
+         <ul>
+          <li><code>manager</code> web application that comes with the Tomcat distribution.</li>
+         </ul>
+         <li>This is where we will be putting the TDS web application.</li>
+        </ul>
+     </dl>
+
+  
+   <h2>Running Tomcat</h2>
+   <dl>
+    <dt><h3>Starting &amp; Stopping Tomcat</h3></dt>
     <ul>
-      <li><code>vi startup.sh shutdown.sh</code></li>
-      <li><code>gedit startup.sh shutdown.sh</code><br>
-        <code></code></li>
-    </ul>
-    <li><code>JAVA_HOME="</code><code>/usr/java/jdk1.5.0_12</code><code>"<br>
-export JAVA_HOME<br>
-J</code><code>AVA_OPTS="-Xmx1024m -Xms512m -server"<br>
-export JAVA_OPTS<br>
-C</code><code>ATALINA_HOME="/home/workshop/tds/apache-tomcat-6.0.13"<br>
-export CATALINA_HOME</code></li>
-  </ul>
-</ol>
-<code></code><code></code>
-<h2>Running Tomcat</h2>
-<ol>
-  <li>cd to Tomcat bin directory</li>
-  <ul>
-    <li><code>cd </code><code>${TOMCAT_HOME}</code><code>/bin</code></li>
-  </ul>
-  <li>Startup Tomcat<br>
-  </li>
-  <ul>
-    <li><code>./startup.sh</code></li>
-  </ul>
-  <li>Open browser window and check that Tomcat is running</li>
-  <ul>
-    <li>URL: <a href="http://localhost:8080/"><code>http://localhost:8080/</code></a></li>
-    <li>You should see the Tomcat start page which begins with the text: 
-      <blockquote>
-  <p><b>If you're seeing this page via a web browser, it means you've setup Tomcat successfully. Congratulations!</b></p></blockquote><br>
-    </li>
-  </ul>
-  <li>Shutdown Tomcat</li>
-  <ul>
-    <li><code>./shutdown.sh</code><br>
-    </li>
-  </ul>
-</ol>
-<h2>Deploy TDS (thredds.war)</h2>
-<p>The THREDDS Data Server (TDS) is available from  the Unidata <a href="../TDS.html#download">TDS home page</a>. <br>
-</p>
-<ol>
-  <li>Download the thredds.war file</li>
-  <ul>
-    <li>Click on the above FTP URL.</li>
-    <li>Click on the thredds.war file and save to the Tomcat webapps directory, <code>${TOMCAT_HOME}/webapps</code>.</li>
-  </ul>
-  <li>Startup Tomcat</li>
-  <ul>
-    <li><code>./startup.sh</code></li>
-  </ul>
-  <li>Test TDS in browser</li>
-  <ul>
-    <li>URL: <a href="http://localhost:8080/thredds/"><code>http://localhost:8080/thredds/</code></a></li>
-    <li>Browse distribution test catalogs and datasets<br>
-    </li>
-  </ul>
-</ol>
-</div>
-<hr width="100%">
-<strong><br>
-</strong>
-<address>
-<img src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was last updated on July 23, 2007. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.<br>
+     <li>Move into the Tomcat bin directory and run the <code>startup.sh</code> script:</li>
+<pre>
+<b>-bash-3.2$</b> cd $TOMCAT_HOME/bin
+<b>-bash-3.2$</b> ./startup.sh
+</pre>   
+     <li>Go to <a href="http://localhost:8080/">http://localhost:8080/</a> in your browser and verify Tomcat is running:</li>
 
-</address>
+     <p><img src="../images/tomcat_default_page.gif" height="400" width="400"></p>
 
-<p>&nbsp;</p>
+     <li>Run the <code>shutdown.sh</code> script to shutdown Tomcat:</li>
+<pre>
+<b>-bash-3.2$</b> ./shutdown.sh
+</pre>   
 
-</body></html>
+     </ul>
+
+     <p>Troubleshooting:</p>
+       <ul>
+        <li>Check the logs generated in <code>$TOMCAT_HOME/logs</code> for clues about why tomcat failed to start.</li>
+       </ul>
+
+
+
+
+
+    <dt><h3>Set the <code>JAVA_HOME</code>, <code>JAVA_OPTS</code> and <code>CATALINA_HOME</code> environment variables</h3></dt>
+    <p>We are going to modify the <code>startup.sh</code> and <code>shutdown.sh</code> scripts in the Tomcat <code>/bin</code> directory:</p>
+    <ol>
+     <li>to allow Tomcat to reference/find the location of <code>$JAVA_HOME</code> and <code>$TOMCAT_HOME</code> (aka <code>$CATALINA_HOME</code>) during startup and shutdown; and </li>
+     <li>increase the amount of memory allocated to the JVM to enhance performance by setting <code>$JAVA_OPTS</code>.</li>
+    </ol>
+    <p></p>
+    <ul>
+     <li>Using your editor of choice (gedit, vi, emacs, etc.), edit <i>both</i> the <code>startup.sh</code> and <code>shutdown.sh</code> scripts:</li>
+<pre>
+<b>-bash-3.2$</b> vi startup.sh
+</pre>
+
+     <li>Add the following environmental variable declarations immediately after the comments section near the top of each file:</li>
+<pre>
+# -----------------------------------------------------------------------------
+# Start Script for the CATALINA Server
+#
+# $Id: startup.sh 562770 2007-08-04 22:13:58Z markt $
+# -----------------------------------------------------------------------------
+
+
+JAVA_HOME="/home/thredds/jdk1.6.0_10"
+export JAVA_HOME
+JAVA_OPTS="-Xmx1024m -Xms512m -server"
+export JAVA_OPTS
+CATALINA_HOME="/home/thredds/apache-tomcat-6.0.18"
+export CATALINA_HOME
+
+
+# Better OS/400 detection: see Bugzilla 31132
+os400=false
+darwin=false
+case "`uname`" in
+CYGWIN*) cygwin=true;;
+OS400*) os400=true;;
+Darwin*) darwin=true;;
+esac
+
+</pre>   
+     </ul>
+  </dl>
+
+
+   <h2>Deploying the TDS</h2>
+   <dl>
+    <dt><h3><code>thredds.war</code></h3></dt>
+      <p><a href="/downloads/thredds/index.jsp">Download</a> the TDS WAR file and save it in the Tomcat <code>webapps/</code>  directory.</p>
+<pre>
+<b>-bash-3.2$</b> cp thredds.war $TOMCAT_HOME/webapps
+<b>-bash-3.2$</b> cd $TOMCAT_HOME/webapps
+
+<b>-bash-3.2$</b> ll
+total 10284
+drwxr-xr-x 11 thredds Unidata     4096 2008-10-28 16:45 docs
+drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 examples
+drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 host-manager
+drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 manager
+drwxr-xr-x  3 thredds Unidata     4096 2008-10-28 16:45 ROOT
+-rw-r--r--  1 thredds Unidata 10491917 2008-10-28 17:08 thredds.war
+</pre>
+       <p>About WAR files:</p>
+       <ul>
+        <li>WAR is short for Web ARchive</li>
+        <li><i>If configured</i> Tomcat will automatically unpack the WAR distribution into directory of the same name upon deployment</li>
+        <li>Note: the unpacked directory is overwritten each time the application is deployed.</li>
+      </ul>
+
+
+
+    <dt><h3>Browse distribution test catalogs &amp; datasets</h3></dt>
+     <ul>
+      <li>Start Tomcat and confirm the <code>thredds.war</code> file was unpacked in the <code>webapps/</code> directory.</li>
+<pre>
+<b>-bash-3.2$</b> cd $TOMCAT_HOME
+<b>-bash-3.2$</b> bin/startup.sh
+
+<b>-bash-3.2$</b> ls -l webapps
+total 10288
+drwxr-xr-x 11 thredds Unidata     4096 2008-10-28 16:45 docs
+drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 examples
+drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 host-manager
+drwxr-xr-x  5 thredds Unidata     4096 2008-10-28 16:45 manager
+drwxr-xr-x  3 thredds Unidata     4096 2008-10-28 16:45 ROOT
+drwxr-xr-x  7 thredds Unidata     4096 2008-10-28 17:15 thredds
+-rw-r--r--  1 thredds Unidata 10491917 2008-10-28 17:08 thredds.war
+</pre>   
+
+      <li>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed.</li>
+     </ul>
+
+   </dl>
+
+
+
+   <h2>Exercises</h2>
+   <dl>
+    <dt><h3>Exercise 1. Deploy your own instance of the THREDDS Data Server</h3></dt>
+     <ol>
+      <li>Using the outline above, install the JDK, Tomcat, and the TDS in <code>/home/thredds</code></li>
+      <li>Once deployed, browse the test catalogs &amp; datasets that come with the distribution.</li>
+     </ol>
+
+    <dt><h3>Extra credit: Have a look at the log files generated by Tomcat</h3></dt>
+     <ol>
+      <li>Poke around <code>$TOMCAT_HOME/logs</code> and see the type of information that is being logged.</li>
+     </ol>
+
+
+   
+    <dt><h3>Extra credit: Why did we set <code>JAVA_HOME</code> and <code>CATALINA_HOME</code> in the Tomcat startup and shutdown scripts?</h3></dt>
+    <ol>
+     <li>Stop Tomcat and comment out the <code>JAVA_HOME</code> and <code>CATALINA_HOME</code> information in the Tomcat startup and shutdown scripts.</li>
+     <li>Verify that <code>$TOMCAT_HOME</code> and <code>$JAVA_HOME</code> have been set in your shell session by using the <code>echo</code> command.</li>
+     <li>Start Tomcat and notice what paths were specified in the output sent to <code>STDOUT</code>.</li>
+ 
+     <li>Stop Tomcat and open a second terminal window.</li>
+     <li>In terminal window #2, echo <code>$TOMCAT_HOME</code> and <code>$JAVA_HOME</code> to verify neither of these are set in this shell session</li>
+     <li>Start Tomcat in the second terminal window and notice what paths were specified in the output sent to <code>STDOUT</code>.  Did you see a change?</li>
+     <li>Stop Tomcat in the second terminal window.</li>
+     <li>Uncomment the <code>JAVA_HOME</code> and <code>CATALINA_HOME</code> information in the Tomcat startup and shutdown scripts and restart Tomcat.</li>
+
+
+    </ol>
+
+
+    <dt><h3>Extra credit: Who is running Tomcat?</h3></dt>
+    <ol>
+     <li>Using the <code>ps</code> command, look to see what user is running the Tomcat process after it has been started.</li>
+<pre>
+<b>-bash-3.2$</b> ps -ef | grep tomcat
+</pre>   
+     If unfamiliar with the <code>ps</code> command, look at the man page for <code>ps</code>: 
+<pre>
+<b>-bash-3.2$</b> man ps
+</pre>   
+     <li>Why would we want to run Tomcat as an <a href="../reference/TomcatUserAndGroup.html">unprivileged user</a>?</li>
+
+    </ol>
+     
+
+   </dl>
+
+
+<p>&nbsp;<p>
+   <hr>
+   <address>
+    <img src="../images/thread.png" height="108" width="110">
+    This document is maintained by Unidata and was last updated on October 28, 2008. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+   </address>
+
+  </body>
+ </html>
+
+
