@@ -225,7 +225,7 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-11-06 16:47 work
     </ol>
     <p></p>
     <ul>
-     <li>Using your editor of choice (gedit, vi, emacs, etc.), edit <i>both</i> the <code>startup.sh</code> and <code>shutdown.sh</code> scripts:</li>
+     <li>Using your text editor of choice (gedit, vi, emacs, etc.), edit <i>both</i> the <code>startup.sh</code> and <code>shutdown.sh</code> scripts:</li>
 <pre>
 <b>-bash-3.2$</b> vi startup.sh
 </pre>
@@ -325,7 +325,55 @@ drwxr-xr-x  7 thredds Unidata     4096 2008-11-06 17:15 thredds
       <li>Once deployed, browse the test catalogs &amp; datasets that come with the distribution.</li>
      </ol>
 
-    <dt><h3>Exercise 2. Look at the log files</h3></dt>
+
+     <dt><h3>Exercise 2. Implement a shortcut: use <code>setenv.sh</code> to declare <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code></h3></dt>
+       <ol>
+        <li>Stop Tomcat and move into the Tomcat <code>bin/</code> directory:</li>
+<pre>
+<b>-bash-3.2$</b> $TOMCAT_HOME/bin/shutdown.sh
+<b>-bash-3.2$</b> cd $TOMCAT_HOME/bin
+</pre>   
+        <li>Using your favorite text editor, create a new file called <code>setenv.sh</code>:</li>
+<pre>
+<b>-bash-3.2$</b> vi setenv.sh
+</pre> 
+        <li>Add the following <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code> environment variable information to the new file:</li>
+
+<pre>
+#!/bin/sh
+#
+# ENVARS for Tomcat and TDS environment
+#
+JAVA_HOME="/home/thredds/jdk1.6.0_10"
+export JAVA_HOME
+JAVA_OPTS="-Xmx1024m -Xms512m -server"
+export JAVA_OPTS
+CATALINA_HOME="/home/thredds/apache-tomcat-6.0.18"
+export CATALINA_HOME
+</pre>
+
+
+        <li>Edit the Tomcat <code>startup.sh</code> and <code>shutdown.sh</code> scripts to remove <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code> environment variable information you added previously.</li>
+        <li>Restart Tomcat and examine the output generated to the terminal window by the startup script:</li>
+<pre>
+<b>-bash-3.2$</b> ./startup.sh
+Using CATALINA_BASE:   /home/thredds/apache-tomcat-6.0.18
+Using CATALINA_HOME:   /home/thredds/apache-tomcat-6.0.18
+Using CATALINA_TMPDIR: /home/thredds/apache-tomcat-6.0.18/temp
+Using JRE_HOME:       /home/thredds/jdk1.6.0_10
+</pre> 
+        <li>Did you notice any difference in the output?</li>
+        <li>Is this what you expected to see?</li>
+        <li>What allows us to use this shortcut?  Hint: have a look at the <code>$TOMCAT_HOME/bin/catalina.sh</code> file:</li>
+<pre>
+<b>-bash-3.2$</b> less catalina.sh
+</pre> 
+
+
+       </ol>
+
+
+    <dt><h3>Exercise 3. Look at the log files</h3></dt>
      <ol>
       <li>Look at the different types of log files being generated in <code>$TOMCAT_HOME/logs</code>.</li>
        <ul>
@@ -355,13 +403,13 @@ total 28
 </pre>   
          <li>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</li>
          <li>Is it only errors messages being reported to <code>catalina.out</code>?</li>
+         <li>What messages is the TDS logging to <code>catalina.out</code>?</li>
+
         </ul>
-
-
-
      </ol>
 
- 
+
+
    </dl>
 
 
