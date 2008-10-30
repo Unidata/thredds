@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+ <html>
+  <head>
+   <title>TDS Tutorial: Basic Tomcat &amp; TDS Security</title>
+    <style type="text/css">
+     pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 80%;}
+     code {font-size: 11pt;}
+     dl {margin: 10px 5px 5px 15px;}
+     table {table-layout: auto; border-collapse: separate; font-size: 10pt;}
+     th {text-align: left; background-color: #E7E7E7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
+     td {text-align: left; background-color: #F7F7F7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
+     table code {font-size: 10pt;}
+ 
+    /* tooltips */
+    a.tooltip {color:#0000FF; text-decoration: none;}
+    a.tooltip b {display:none;}
+    a.tooltip:hover {border:0px; position:relative; z-index:500; text-decoration:none;}
+    a.tooltip:hover b {display:block; position:absolute; top:20px; left:-25px; padding:5px; font-weight:normal; color:#000; border:1px solid #000000; background:#FFFFFF; width:300px;}
+    a.tooltip:hover b em.outer {position:absolute; left:20px; top:-8px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #000000; overflow:hidden; z-index:100;}
+    a.tooltip:hover b em.inner {position:absolute; left:20px; top:-7px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #FFFFFF; overflow:hidden; z-index:100}
+    .clear {clear:both;}
+
+   </style>
+
+  </head>
+  <body>
+   <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Tutorial: Basic Tomcat &amp; TDS Security</h1>
+   <hr>
+   <h2>Main server configuration files</h2>
+
+   <dl>
+    <dt><h3>About <code>server.xml</code> </h3></dt>
+      <ul>
+       <li>XML file</li>
+       <li>Tomcat's main configuration file</li>
+       <li>Changes to <code>server.xml</code> do not take effect until Tomcat is restarted</li>
+       <li>Where we make changes to enhance TDS security</li>
+
+      </ul>
+
+    <dt><h3>Overview of the <code>server.xml</code> elements</h3></dt>
+    <p>Move into the Tomcat <code>conf/</code> directory and examine the <code>server.xml</code> file:</p>
+<pre>
+<b>-bash-3.2$</b> cd $TOMCAT_HOME/conf/
+<b>-bash-3.2$</b> less server.xml
+</pre>  
+
+     <p>Reference the table below to see who the <code>server.xml</code> elements will relate to configuring TDS (mouse-over the element for a description):</p>
+    <table>
+     <tr>
+      <th>  
+       Tag Name
+      </th>
+      <th> 
+       Instances
+      </th> 
+      <th> 
+       How it relates to the TDS
+      </th>
+     </tr>
+
+     <tr>
+      <td> 
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/server.html"><code>&lt;Server&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Server</code> element represents the entire Catalina servlet container as a whole. It is the single outermost element in <code>server.xml</code></b>
+      </td>
+      <td>   
+       1...1
+      </td> 
+      <td> 
+        Not modified unless you want to modify the port number Tomcat listens for a SHUTDOWN command.
+      </td>
+     </tr>
+
+     <tr>
+      <td style="padding-left: 20px"> 
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/globalresources.html"><code>&lt;GlobalNamingResources&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>GlobalNamingResources</code> element defines the global Java Naming and Directory Interface (JNDI) resources for the Server.</b>
+      </td>
+      <td>   
+       0...*
+      </td> 
+      <td> 
+       Needed to contain the <code>UserDatabase</code> that corresponds to the <code>UserDatabaseRealm</code> (used to authenticate users).
+
+      </td>
+     </tr>
+
+     <tr>
+      <td style="padding-left: 40px">  
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/resources.html"><code>&lt;Resource&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Resource</code> element represents a static resource from which classes will be loaded and static files will be served.</b>
+      </td>
+      <td>   
+       0...*
+      </td> 
+      <td> 
+        Editable user database (<code>tomcat-users.xml</code>) that can also be used by <code>UserDatabaseRealm</code> to authenticate users.
+      </td>
+     </tr>
+
+     <tr>
+      <td style="padding-left: 20px"> 
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/service.html"><code>&lt;Service&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Service</code> element represents the combination of one or more <code>Connector</code> components that share a single Engine component for processing incoming requests. The top Tomcat <code>service</code> is named <code>Catalina</code> (hence the log file name of <code>catalina.out</code>).</b>
+      </td>
+      <td>   
+       1...*
+      </td> 
+      <td> 
+        Not modified unless you wish to establish more than one service.
+      </td>
+     </tr>
+
+     <tr>
+      <td style="padding-left: 40px">  
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/connectors.html"><code>&lt;Connector&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Connector</code> element forward requests to the <code>Engine</code> using a specific protocol and returns the results to the requesting client. </b>
+      </td>
+      <td>   
+       1...*
+      </td> 
+      <td> 
+       Used to establish HTTP and SSL connections.  Also will communicate with an HTTP server for proxying requests.
+      </td>
+     </tr>
+
+     <tr>
+      <td style="padding-left: 40px">  
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/engine.html"><code>&lt;Engine&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Engine</code> element represents the entire request processing machinery associated with a particular Catalina <code>Service</code>.</b>
+      </td>
+      <td>   
+       1...1
+      </td> 
+      <td> 
+       Not modified unless you specify a <code>Host</code> other than <code>localhost</code>.
+      </td>
+     </tr>
+
+     <tr>
+      <td style="padding-left: 60px">  
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html"><code>&lt;Realm&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Realm</code> element represents a "database" of usernames, passwords, and roles (groups) assigned to those users. </b>
+      </td>
+      <td>   
+       0...*
+      </td> 
+      <td> 
+        The <code>UserDatabaseRealm</code> uses the <code>UserDatabase</code> configured in the global JNDI <code>Resource</code>.
+      </td>
+     </tr>
+
+
+     <tr>
+      <td style="padding-left: 60px">  
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html"><code>&lt;Valve&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Valve</code> element represents a component that will be inserted into the request processing pipeline for the associated containing element.</b>
+      </td>
+      <td>   
+       0...*
+      </td> 
+      <td> 
+        The <code>RemoteAddrValve</code> is used to filter access to the TDS based on IP address.
+      </td>
+     </tr>
+     <tr>
+      <td style="padding-left: 60px">  
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/host.html"><code>&lt;Host&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Host</code> element represents a virtual host.</b>
+      </td>
+      <td>   
+       1...*
+      </td> 
+      <td> 
+        Not modified unless you specify a <code>Host</code> other than <code>localhost</code>.
+      </td>
+     </tr>
+     <tr>
+      <td style="padding-left: 80px">  
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html"><code>&lt;Realm&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Realm</code> element represents a "database" of usernames, passwords, and roles (groups) assigned to those users. </b>
+      </td>
+      <td>   
+       0...*
+      </td> 
+      <td> 
+       We use the <code>MemoryRealm</code> to configuring Tomcat to use digested passwords.
+      </td>
+     </tr>
+     <tr>
+      <td style="padding-left: 80px">  
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html"><code>&lt;Valve&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Valve</code> element represents a component that will be inserted into the request processing pipeline for the associated containing element.</b>
+      </td>
+      <td>   
+       0...*
+      </td> 
+      <td> 
+        We modify the <code>AccessLogValve</code> to custom the access logs generated by Tomcat.
+      </td>
+     </tr>
+    </table>
+
+    <dt><h3>About <code>tomcat-users.xml</code> </h3></dt>
+      <ul>
+       <li>XML file</li>
+       <li>Native Tomcat storage repository for the <code>UserDatabaseRealm</code> and the <code>MemoryRealm</code></li>
+       <li>Stores user names, passwords and roles</li>
+       <li>Changes to <code>tomcat-users.xml</code> do not take effect until Tomcat is restarted</li>
+       <li>What the TDS uses for user authentication and access control</li>
+
+      </ul>
+
+    <dt><h3>Overview of the <code>tomcat-users.xml</code> elements</h3></dt>
+
+    <p>Reference the table below to see who the <code>tomcat-users.xml</code> elements will relate to configuring TDS (mouse-over the element for a description):</p>
+    <table>
+     <tr>
+      <th>  
+       Tag Name
+      </th>
+      <th> 
+       Instances
+      </th> 
+      <th> 
+       How it relates to the TDS
+      </th>
+     </tr>
+
+     <tr>
+      <td> 
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html"><code>&lt;tomcat-users&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>tomcat-users</code> element represents the single outermost element in <code>tomcat-users.xml</code></b>
+      </td>
+      <td>   
+       1...1
+      </td> 
+      <td> 
+        Not modified.
+      </td>
+     </tr>
+
+     <tr>
+      <td style="padding-left: 20px"> 
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html"><code>&lt;role&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>role</code> element defines one role or group a user can belong to.</b>
+      </td>
+      <td>   
+       1...*
+      </td> 
+      <td> 
+       You will have at least two of these: one for the Tomcat <code>manager</code> application and one for the TDS.
+      </td>
+     </tr>
+
+     <tr>
+      <td style="padding-left: 20px"> 
+        <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html"><code>&lt;user&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>user</code> element represents one valid user.</b>
+      </td>
+      <td>   
+       1...*
+      </td> 
+      <td> 
+        You will need to create an entry for each user who needs access to the Tomcat <code>manager</code> application and/or the restricted areas of the TDS.
+      </td>
+     </tr>   
+    </table>
+
+
+   </dl>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+   <h2>The Tomcat <code>manager</code> application</h2>
+   <dl>
+
+    <dt><h3>About the <code>manager</code> application</h3></dt>
+      <ul>
+       <li>"Free" web application that comes with Tomcat distribution</li>
+       <li>Lives in the <code>$TOMCAT_HOME/webapps/manager</code> directory </li>
+       <li>Allows Tomcat admins to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat</li>
+      </ul>
+
+
+
+    <dt><h3>Tomcat <code>manager</code> application quick tour</h3></dt>
+     <ul>
+      <li>Go to <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a> in your browser to access the Tomcat <code>manager</code> application</li>
+     <p><img src="../images/tomcat_manager.gif" height="449" width="400"></p>
+     </ul>
+    <dt><h3>Uploading &amp; deploying WAR files using the <code>manager</code> application:</h3></dt>
+
+
+       <li>Java's java.lang.OutOfMemoryError: PermGen space failure</li>
+-Xms128M -Xmx256M -XX:MaxPermSize=256M -XX:MaxPermSize=128m
+
+http://tomcat.apache.org/tomcat-6.0-doc/manager-howto.html
+
+
+   </dl>
+
+ 
+   <h2>Tomcat users and roles</h2>
+   <dl>
+    <dt><h3><code>tomcat-users.xml</code></h3></dt>
+    <dt><h3>Restricting access to the <code>manager</code> application</h3></dt>
+    <dt><h3>Restricting access to TDS datasets</h3></dt>
+    <dt><h3>Using digested passwords</h3></dt>
+  </dl>
+
+
+   <h2>Configuring Tomcat &amp; the TDS to use SSL encryption</h2>
+   <dl>
+    <dt><h3>The TDS remote management tool</h3></dt>
+    <dt><h3>Types of SSL certificates</h3></dt>
+    <dt><h3>Configuring Tomcat to use SSL</h3></dt>
+    <dt><h3>Enabling SSL for the Tomcat <code>manager</code> application</h3></dt>
+    <dt><h3>Running the TDS without SSL</h3></dt>
+
+   </dl>
+
+   <h2>Advanced Security Configuration</h2>
+   <dl>
+    <dt><h3>Removing the default Tomcat web applications</h3></dt>
+    <dt><h3>Denying access to the TDS by remote address</h3></dt>
+    <dt><h3>Blocking TDS content from being indexed by web crawlers</h3></dt>
+    <dt><h3>Creating a dedicated <code>tomcat</code> user and group to run the Tomcat daemon</h3></dt>
+    <dt><h3>Blocking non-essential port access at the firewall</h3></dt>
+    <dt><h3>Running Tomcat behind an HTTP server</h3></dt>
+    <dt><h3>Running Tomcat under a JVM security manager</h3></dt>
+   </dl>
+
+   <h2>Exercises</h2>
+   <dl>
+
+    
+    <dt><h3>Exercise 2: Deploy the TDS using the <code>manager</code> application</h3></dt>
+    <dt><h3>Exercise 3: Restrict access to the Tomcat <code>manager</code> application</h3></dt>
+    <dt><h3>Exercise 4: Configure Tomcat to use digested passwords</h3></dt>
+    <dt><h3>Exercise 5: Enable SSL for Tomcat and the TDS</h3></dt>
+    <dt><h3>Exercise 6: Enable SSL for Tomcat <code>manager</code> application</h3></dt>
+    <dt><h3>Exercise 7: Use the <code>RemoteAddressValue</code> to block access from <code>128.117.47.200</code></h3></dt>
+   </dl>
+
+
+
+<p>&nbsp;<p>
+   <hr>
+   <address>
+    <img src="../images/thread.png" height="108" width="110">
+    This document is maintained by Unidata and was last updated on October 28, 2008. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+   </address>
+  </body>
+ </html>
+
+
