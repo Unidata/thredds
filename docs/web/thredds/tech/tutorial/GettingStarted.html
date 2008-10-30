@@ -3,7 +3,7 @@
   <head>
    <title>TDS Tutorial: Getting Started</title>
     <style type="text/css">
-     pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 70%;}
+     pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 80%;}
      code {font-size: 11pt;}
      dl {margin: 10px 5px 5px 15px;)
    </style>
@@ -190,7 +190,7 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-11-06 16:47 work
    <dl>
     <dt><h3>Starting &amp; Stopping Tomcat</h3></dt>
     <ul>
-     <li>Move into the Tomcat bin directory and run the <code>startup.sh</code> script:</li>
+     <li>Move into the Tomcat <code>bin/<code> directory and run the <code>startup.sh</code> script:</li>
 <pre>
 <b>-bash-3.2$</b> cd $TOMCAT_HOME/bin
 <b>-bash-3.2$</b> ./startup.sh
@@ -225,7 +225,7 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-11-06 16:47 work
     </ol>
     <p></p>
     <ul>
-     <li>Using your text editor of choice (gedit, vi, emacs, etc.), edit <i>both</i> the <code>startup.sh</code> and <code>shutdown.sh</code> scripts:</li>
+     <li>Using your text editor of choice (gedit, vi, emacs, nano, etc.), edit <i>both</i> the <code>startup.sh</code> and <code>shutdown.sh</code> scripts:</li>
 <pre>
 <b>-bash-3.2$</b> vi startup.sh
 </pre>
@@ -308,7 +308,7 @@ drwxr-xr-x  7 thredds Unidata     4096 2008-11-06 17:15 thredds
 
 
       <li>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed.</li>
-
+     <p><img src="../images/distribution_catalog.gif" height="379" width="400"></p>
 
 
      </ul>
@@ -409,6 +409,10 @@ total 28
      </ol>
 
 
+    <dt><h3>Exercise 4. <code>$TOMCAT_HOME</code></h3></dt>
+     <ol>
+      <li>Move into <code>$TOMCAT_HOME</code> and list the directory contents.  Do notice anything new?</li>
+     </ol>
 
    </dl>
 
