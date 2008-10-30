@@ -158,6 +158,8 @@ public class DatasetNodeElementParserUtils
 
   private String getInheritedDefaultServiceName( DatasetNodeElementParserUtils selfOrAncestor )
   {
+    if ( selfOrAncestor == null )
+      return null;
     String curDefServiceName = selfOrAncestor.getDefaultServiceNameThatGetsInherited();
     if ( curDefServiceName == null )
       curDefServiceName = this.getInheritedDefaultServiceName( selfOrAncestor.parentDatasetNodeElementParserUtils );
