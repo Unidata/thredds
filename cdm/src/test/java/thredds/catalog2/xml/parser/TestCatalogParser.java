@@ -8,6 +8,7 @@ import thredds.catalog2.xml.writer.ThreddsXmlWriterFactory;
 import thredds.catalog2.xml.writer.ThreddsXmlWriter;
 import thredds.catalog2.xml.writer.ThreddsXmlWriterException;
 import thredds.catalog2.Catalog;
+import thredds.catalog2.Metadata;
 
 import java.io.StringReader;
 import java.net.URI;
@@ -69,10 +70,10 @@ public class TestCatalogParser extends TestCase
     DocumentSource docSource = getTestThreddsMetadata();
 
     ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-    Catalog cat;
+    Metadata md;
     try
     {
-      cat = cp.parse( new StringReader( docSource.getDocAsString() ), docSource.getDocBaseUri());
+      md = cp.parseMetadata( new StringReader( docSource.getDocAsString() ), docSource.getDocBaseUri());
     }
     catch ( ThreddsXmlParserException e )
     {
@@ -80,22 +81,18 @@ public class TestCatalogParser extends TestCase
       return;
     }
 
-    if ( cat != null)
-    {
-      String catName = "Unidata THREDDS Data Server";
-      assertTrue( "Catalog name [" + cat.getName() + "] not as expected [" + catName + "].",
-                  cat.getName().equals( catName ) );
+    assertNotNull( md );
+    assertTrue( md.isContainedContent());
 
-      ThreddsXmlWriter txw = ThreddsXmlWriterFactory.newInstance().createThreddsXmlWriter();
-      try
-      {
-        txw.writeCatalog( cat, System.out );
-      }
-      catch ( ThreddsXmlWriterException e )
-      {
-        e.printStackTrace();
-        fail( "Failed writing catalog to sout: " + e.getMessage());
-      }
+    ThreddsXmlWriter txw = ThreddsXmlWriterFactory.newInstance().createThreddsXmlWriter();
+    try
+    {
+      txw.writeMetadata( md, System.out );
+    }
+    catch ( ThreddsXmlWriterException e )
+    {
+      e.printStackTrace();
+      fail( "Failed writing catalog to sout: " + e.getMessage());
     }
   }
 
@@ -127,7 +124,7 @@ public class TestCatalogParser extends TestCase
             .append( "    <catalogRef xlink:href=\"idd/rtmodel.xml\" xlink:title=\"Unidata Real-time Regional Model\" name=\"\" />\n" )
             .append( "    <catalogRef xlink:href=\"galeon/catalog.xml\" xlink:title=\"Unidata GALEON Experimental Web Coverage Service (WCS) datasets\" name=\"\" />\n" )
             .append( "    <dataset name=\"Test Restricted Dataset\" ID=\"testRestrictedDataset\" urlPath=\"restrict/testData.nc\" restrictAccess=\"tiggeData\">\n" )
-            .append( "      <serviceName>thisDODS</serviceName>\n" )
+            .append( "      <serviceName>odap</serviceName>\n" )
             .append( "      <dataType>Grid</dataType>\n" )
             .append( "    </dataset>\n" )
             .append( "  </dataset>\n" )

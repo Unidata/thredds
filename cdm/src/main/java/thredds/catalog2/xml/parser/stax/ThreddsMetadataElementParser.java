@@ -90,8 +90,8 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
   protected ThreddsMetadataBuilder parseStartElement( StartElement startElement )
           throws ThreddsXmlParserException
   {
-    if ( !startElement.getName().equals( elementName ) )
-      throw new IllegalArgumentException( "Start element must be an 'access' element." );
+    if ( ! this.isSelfElement( startElement ) )
+      throw new IllegalArgumentException( "Start element ["+startElement.getName().getLocalPart()+"] must be one of the THREDDS metadata element." );
 
     if ( this.resultThreddsMetadataBuilder == null )
     {
@@ -104,7 +104,7 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
     if ( ServiceNameElementParser.isSelfElementStatic( startElement ) )
     {
       ServiceNameElementParser parser = new ServiceNameElementParser( this.reader, this.resultThreddsMetadataBuilder, this.parentDatasetNodeElementParserUtils );
-      parser.parse();
+      parser.parseCharacterContent( startElement );
     }
     else
       throw new ThreddsXmlParserException( "");
@@ -159,6 +159,18 @@ public class ThreddsMetadataElementParser extends AbstractElementParser
     protected boolean isSelfElement( XMLEvent event )
     {
       return isSelfElementStatic( event );
+    }
+
+    protected void parseCharacterContent( StartElement startElement )
+            throws ThreddsXmlParserException
+    {
+      if ( !startElement.getName().equals( elementName ) )
+        throw new IllegalArgumentException( "Start element must be an 'serviceName' element." );
+
+      this.serviceName = StaxThreddsXmlParserUtils.readCharacterContent( startElement, this.reader );
+
+      // Set default service name on parent dataset.
+      this.parentDatasetNodeElementParserUtils.setDefaultServiceName( this.serviceName );
     }
 
     private String serviceName;
