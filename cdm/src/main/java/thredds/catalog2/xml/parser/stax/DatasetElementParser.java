@@ -85,17 +85,14 @@ public class DatasetElementParser extends AbstractElementParser
     this.datasetNodeElementParserUtils = new DatasetNodeElementParserUtils( parentDatasetNodeElementParserUtils);
   }
 
-  private String defaultServiceName;
-
   protected void setDefaultServiceName( String defaultServiceName )
   {
-    if ( defaultServiceName == null ) return;
-    this.defaultServiceName = defaultServiceName;
+    this.datasetNodeElementParserUtils.setDefaultServiceName( defaultServiceName );
   }
 
   protected String getDefaultServiceName()
   {
-    return this.defaultServiceName;
+    return this.datasetNodeElementParserUtils.getDefaultServiceName();
   }
 
   protected static boolean isSelfElementStatic( XMLEvent event )
@@ -173,11 +170,13 @@ public class DatasetElementParser extends AbstractElementParser
       throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetBuilder.");
     DatasetBuilder datasetBuilder = (DatasetBuilder) builder;
 
+    this.datasetNodeElementParserUtils.postProcessing( builder );
+
     // In any AccessBuilders that don't have a ServiceBuilder, set it with the default service.
-    if ( this.defaultServiceName != null
+    if ( this.getDefaultServiceName() != null
          && ! datasetBuilder.getAccessBuilders().isEmpty() )
     {
-      ServiceBuilder defaultServiceBuilder = datasetBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( this.defaultServiceName );
+      ServiceBuilder defaultServiceBuilder = datasetBuilder.getParentCatalogBuilder().findServiceBuilderByNameGlobally( this.getDefaultServiceName() );
 
       for ( AccessBuilder curAB : datasetBuilder.getAccessBuilders() )
       {

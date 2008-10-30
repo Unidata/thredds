@@ -6,6 +6,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.events.StartElement;
 import javax.xml.namespace.QName;
 import java.io.Writer;
 import java.io.StringWriter;
@@ -22,7 +23,8 @@ public class StaxThreddsXmlParserUtils
 {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( StaxThreddsXmlParserUtils.class );
   
-  public static String readElementAndAnyContent( XMLEventReader xmlEventReader ) throws ThreddsXmlParserException
+  public static String readElementAndAnyContent( XMLEventReader xmlEventReader )
+          throws ThreddsXmlParserException
   {
     if ( xmlEventReader == null )
       throw new IllegalArgumentException( "XMLEventReader may not be null." );
@@ -69,6 +71,56 @@ public class StaxThreddsXmlParserUtils
     catch ( XMLStreamException e )
     {
       throw new ThreddsXmlParserException( "Problem reading unknown element [" + startLocation + "]. Underlying cause: " + e.getMessage(), e );
+    }
+
+    return writer.toString();
+  }
+  public static String readCharacterContent( StartElement startElement,
+                                             XMLEventReader xmlEventReader )
+          throws ThreddsXmlParserException
+  {
+    if ( startElement == null )
+      throw new IllegalArgumentException( "Start element may not be null." );
+    if ( xmlEventReader == null )
+      throw new IllegalArgumentException( "XMLEventReader may not be null." );
+
+    QName startElementName = startElement.getName();
+    Writer writer = new StringWriter();
+    Location location = null;
+    try
+    {
+      while ( xmlEventReader.hasNext() )
+      {
+        XMLEvent event = xmlEventReader.peek();
+        location = startElement.getLocation();
+
+        if ( event.isCharacters())
+        {
+          event = xmlEventReader.nextEvent();
+          event.writeAsEncodedUnicode( writer );
+        }
+        else if ( event.isEndElement())
+        {
+          if ( event.asEndElement().getName().equals( startElementName ))
+          {
+            return writer.toString();
+          }
+          throw new IllegalStateException( "Badly formed XML? Unexpected end element [" + event.asEndElement().getName().getLocalPart() + "]["+location+"] doesn't match expected start element [" + startElementName.getLocalPart() + "].");
+        }
+        else if ( event.isStartElement() )
+        {
+          throw new IllegalStateException( "Badly formed XML? Unexpected start element [" + event.asStartElement().getName().getLocalPart() + "][" + location + "] when characters expected." );
+        }
+        else
+        {
+          event = xmlEventReader.nextEvent();
+          event.writeAsEncodedUnicode( writer );
+        }
+      }
+    }
+    catch ( XMLStreamException e )
+    {
+      throw new ThreddsXmlParserException( "Problem reading unknown event [" + location + "]. Underlying cause: " + e.getMessage(), e );
     }
 
     return writer.toString();

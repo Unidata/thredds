@@ -1,14 +1,11 @@
 package thredds.catalog2.xml.parser.stax;
 
 import thredds.catalog2.builder.*;
-import thredds.catalog2.xml.util.CatalogNamespace;
 import thredds.catalog2.xml.util.DatasetElementUtils;
-import thredds.catalog2.xml.util.CatalogRefElementUtils;
 import thredds.catalog2.xml.parser.ThreddsXmlParserException;
 
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.namespace.QName;
 import javax.xml.XMLConstants;
@@ -30,25 +27,13 @@ public class DatasetNodeElementParserUtils
   protected final static QName authorityAttName = new QName( XMLConstants.NULL_NS_URI,
                                                              DatasetElementUtils.AUTHORITY_ATTRIBUTE_NAME );
 
-  private final DatasetNodeElementParserUtils datasetNodeElementParserUtils;
+  private final DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils;
 
   private ThreddsMetadataElementParser threddsMetadataElementParser;
 
-  DatasetNodeElementParserUtils( DatasetNodeElementParserUtils datasetNodeElementParserUtils )
+  DatasetNodeElementParserUtils( DatasetNodeElementParserUtils parentDatasetNodeElementParserUtils )
   {
-    this.datasetNodeElementParserUtils = datasetNodeElementParserUtils;
-  }
-
-  private String defaultServiceNameThatGetsInherited;
-
-  protected void setDefaultServiceNameThatGetsInherited( String defaultServiceNameThatGetsInherited )
-  {
-    this.defaultServiceNameThatGetsInherited = defaultServiceNameThatGetsInherited;
-  }
-
-  protected String getDefaultServiceNameThatGetsInherited()
-  {
-    return this.defaultServiceNameThatGetsInherited;
+    this.parentDatasetNodeElementParserUtils = parentDatasetNodeElementParserUtils;
   }
 
   private String idAuthorityThatGetsInherited;
@@ -136,7 +121,46 @@ public class DatasetNodeElementParserUtils
 
   public void postProcessing( ThreddsBuilder builder )
   {
-    // ToDo Deal with inherited metadata. Crawl up DatasetNodeBuilder heirarchy and gather inherited metadata. 
+    if ( !( builder instanceof DatasetNodeBuilder ) )
+      throw new IllegalArgumentException( "Given ThreddsBuilder must be an instance of DatasetNodeBuilder." );
+    DatasetNodeBuilder datasetNodeBuilder = (DatasetNodeBuilder) builder;
+
+    // ToDo Deal with inherited metadata. Crawl up DatasetNodeBuilder heirarchy and gather inherited metadata.
+    if ( this.defaultServiceName == null )
+      this.defaultServiceName = this.getInheritedDefaultServiceName( this );
   }
 
+  /**
+   * The name of the service used by any access of this datasetNode
+   * that does not explicitly specify a service.
+   */
+  private String defaultServiceName;
+  String getDefaultServiceName()
+  { return this.defaultServiceName; }
+
+  void setDefaultServiceName( String defaultServiceName )
+  { this.defaultServiceName = defaultServiceName; }
+
+  /**
+   * The default serviceName
+   */
+  private String defaultServiceNameThatGetsInherited;
+
+  protected void setDefaultServiceNameThatGetsInherited( String defaultServiceNameThatGetsInherited )
+  {
+    this.defaultServiceNameThatGetsInherited = defaultServiceNameThatGetsInherited;
+  }
+
+  protected String getDefaultServiceNameThatGetsInherited()
+  {
+    return this.defaultServiceNameThatGetsInherited;
+  }
+
+  private String getInheritedDefaultServiceName( DatasetNodeElementParserUtils selfOrAncestor )
+  {
+    String curDefServiceName = selfOrAncestor.getDefaultServiceNameThatGetsInherited();
+    if ( curDefServiceName == null )
+      curDefServiceName = this.getInheritedDefaultServiceName( selfOrAncestor.parentDatasetNodeElementParserUtils );
+    return curDefServiceName;
+  }
 }
