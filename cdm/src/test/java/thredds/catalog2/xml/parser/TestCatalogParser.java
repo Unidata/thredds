@@ -30,75 +30,39 @@ public class TestCatalogParser extends TestCase
     super( name );
   }
 
+  // 1) dataset with urlPath and serviceName attributes
+  // 2) dataset with urlPath att and serviceName child element
+  // 3) dataset with urlPath att and child metadata element with child serviceName element
+  // 4) same as 3 but metadata element has inherited="true" attribute
+  // 5) same as 3 but metadata element is in dataset that is parent to dataset with urlPath
+  // 6) 1-5 where serviceName points to single top-level service
+  // 7) 1-5 where serviceName points to compound service
+  // 8) 1-5 where serviceName points to a single service contained in a compound service
+
+  public void testCatalogSingleDatasetAccessAttributes()
+  {
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/TestCatalogParser/testCatalogSingleDatasetAccessAttributes.xml";
+
+    StringBuilder doc = new StringBuilder( "<?xml version='1.0' encoding='UTF-8'?>\n" )
+            .append( "<catalog xmlns='http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0'" )
+            .append( " xmlns:xlink='http://www.w3.org/1999/xlink'" )
+            .append( " version='1.0.1'>\n" )
+            .append( "  <service name='odap' serviceType='OPENDAP' base='/thredds/dodsC/' />\n" )
+            .append( "  <dataset name='Test1' urlPath='test/test1.nc' serviceName='odap' />" )
+            .append( "</catalog>" );
+
+    Catalog cat = this.parseCatalog( doc.toString(), docBaseUriString );
+
+    // ToDo some tests
+
+    writeCatalogXml( cat );
+  }
+
   public void testCatalog()
   {
-    DocumentSource docSource = getMainTestCatalog();
+    String docBaseUriString = "http://test/thredds/catalog2/xml/parser/TestCatalogParser/testCatalog.xml";
 
-    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-    Catalog cat;
-    try
-    {
-      cat = cp.parse( new StringReader( docSource.getDocAsString() ), docSource.getDocBaseUri());
-    }
-    catch ( ThreddsXmlParserException e )
-    {
-      fail( "Failed to parse catalog: " + e.getMessage());
-      return;
-    }
-
-    if ( cat != null)
-    {
-      String catName = "Unidata THREDDS Data Server";
-      assertTrue( "Catalog name [" + cat.getName() + "] not as expected [" + catName + "].",
-                  cat.getName().equals( catName ) );
-
-      ThreddsXmlWriter txw = ThreddsXmlWriterFactory.newInstance().createThreddsXmlWriter();
-      try
-      {
-        txw.writeCatalog( cat, System.out );
-      }
-      catch ( ThreddsXmlWriterException e )
-      {
-        e.printStackTrace();
-        fail( "Failed writing catalog to sout: " + e.getMessage());
-      }
-    }
-  }
-
-  public void testThreddsMetadata()
-  {
-    DocumentSource docSource = getTestThreddsMetadata();
-
-    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
-    Metadata md;
-    try
-    {
-      md = cp.parseMetadata( new StringReader( docSource.getDocAsString() ), docSource.getDocBaseUri());
-    }
-    catch ( ThreddsXmlParserException e )
-    {
-      fail( "Failed to parse catalog: " + e.getMessage());
-      return;
-    }
-
-    assertNotNull( md );
-    assertTrue( md.isContainedContent());
-
-    ThreddsXmlWriter txw = ThreddsXmlWriterFactory.newInstance().createThreddsXmlWriter();
-    try
-    {
-      txw.writeMetadata( md, System.out );
-    }
-    catch ( ThreddsXmlWriterException e )
-    {
-      e.printStackTrace();
-      fail( "Failed writing catalog to sout: " + e.getMessage());
-    }
-  }
-
-  private DocumentSource getMainTestCatalog()
-  {
-    StringBuilder sb = new StringBuilder( "<?xml version='1.0' encoding='UTF-8'?>\n" )
+    StringBuilder doc = new StringBuilder( "<?xml version='1.0' encoding='UTF-8'?>\n" )
             .append( "<catalog xmlns='http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0'" )
             .append( " xmlns:xlink='http://www.w3.org/1999/xlink'" )
             .append( " name='Unidata THREDDS Data Server' version='1.0.1'>\n" )
@@ -130,55 +94,98 @@ public class TestCatalogParser extends TestCase
             .append( "  </dataset>\n" )
             .append( "</catalog>" );
 
-    URI docBaseUri;
-    String docBaseUriString = "http://test.catalog.parser/cat.xml";
-    try
-    {
-      docBaseUri = new URI( docBaseUriString );
-    }
-    catch ( URISyntaxException e )
-    {
-      fail( "Problem with URI [" + docBaseUriString + "] syntax." );
-      return null;
-    }
+    Catalog cat = this.parseCatalog( doc.toString(), docBaseUriString );
 
-    return new DocumentSource( docBaseUri, sb.toString());
+    String catName = "Unidata THREDDS Data Server";
+    assertTrue( "Catalog name [" + cat.getName() + "] not as expected [" + catName + "].",
+                cat.getName().equals( catName ) );
+    // ToDo More testing.
+
+    writeCatalogXml( cat );
   }
 
-  private DocumentSource getTestThreddsMetadata()
+  public void testThreddsMetadata()
   {
-    StringBuilder sb = new StringBuilder( "<?xml version='1.0' encoding='UTF-8'?>\n" )
+    String docBaseUriString = "http://test.catalog.parser/threddsMetadata.xml";
+
+    StringBuilder doc = new StringBuilder( "<?xml version='1.0' encoding='UTF-8'?>\n" )
             .append( "<metadata xmlns='http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0'" )
             .append( "          xmlns:xlink='http://www.w3.org/1999/xlink'>\n" )
-            .append( "  <serviceName>odap</serviceName>\n")
+            .append( "  <serviceName>odap</serviceName>\n" )
             .append( "</metadata>" );
 
-    URI docBaseUri;
-    String docBaseUriString = "http://test.catalog.parser/threddsMetadata.xml";
-    try
-    {
-      docBaseUri = new URI( docBaseUriString );
-    }
-    catch ( URISyntaxException e )
-    {
-      fail( "Problem with URI [" + docBaseUriString + "] syntax." );
-      return null;
-    }
+    Metadata md = this.parseMetadata( doc.toString(), docBaseUriString );
 
-    return new DocumentSource( docBaseUri, sb.toString() );
+    assertTrue( md.isContainedContent());
+
+    this.writeMetadataXml( md );
   }
 
-  private class DocumentSource
+  private Catalog parseCatalog( String docAsString, String docBaseUriString )
   {
-    private final URI docBaseUri;
-    private final String docAsString;
+    URI docBaseUri;
+    try
+    { docBaseUri = new URI( docBaseUriString ); }
+    catch ( URISyntaxException e )
+    { fail( "Syntax problem with URI [" + docBaseUriString + "]." ); return null; }
 
-    DocumentSource( URI docBaseUri, String docAsString )
+    Catalog cat;
+    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+    try
+    { cat = cp.parse( new StringReader( docAsString ), docBaseUri ); }
+    catch ( ThreddsXmlParserException e )
+    { fail( "Failed to parse catalog: " + e.getMessage() ); return null; }
+
+    assertNotNull( "Result of parse was null catalog [" + docBaseUriString + "].",
+                   cat );
+    return cat;
+  }
+
+  private Metadata parseMetadata( String docAsString, String docBaseUriString )
+  {
+    URI docBaseUri;
+    try
+    { docBaseUri = new URI( docBaseUriString ); }
+    catch ( URISyntaxException e )
+    { fail( "Syntax problem with URI [" + docBaseUriString + "]." ); return null; }
+
+    Metadata md;
+    ThreddsXmlParser cp = StaxThreddsXmlParser.newInstance();
+    try
+    { md = cp.parseMetadata( new StringReader( docAsString ), docBaseUri ); }
+    catch ( ThreddsXmlParserException e )
+    { fail( "Failed to parse catalog: " + e.getMessage() ); return null; }
+
+    assertNotNull( "Result of parse was null metadata [" + docBaseUriString + "].",
+                   md );
+    return md;
+  }
+
+  private void writeCatalogXml( Catalog cat )
+  {
+    ThreddsXmlWriter txw = ThreddsXmlWriterFactory.newInstance().createThreddsXmlWriter();
+    try
     {
-      this.docBaseUri = docBaseUri;
-      this.docAsString = docAsString;
+      txw.writeCatalog( cat, System.out );
     }
-    URI getDocBaseUri() { return this.docBaseUri; }
-    String getDocAsString() { return this.docAsString; }
+    catch ( ThreddsXmlWriterException e )
+    {
+      e.printStackTrace();
+      fail( "Failed writing catalog to sout: " + e.getMessage() );
+    }
+  }
+
+  private void writeMetadataXml( Metadata md )
+  {
+    ThreddsXmlWriter txw = ThreddsXmlWriterFactory.newInstance().createThreddsXmlWriter();
+    try
+    {
+      txw.writeMetadata( md, System.out );
+    }
+    catch ( ThreddsXmlWriterException e )
+    {
+      e.printStackTrace();
+      fail( "Failed writing catalog to sout: " + e.getMessage() );
+    }
   }
 }

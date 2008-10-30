@@ -17,6 +17,8 @@ import java.util.Date;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import ucar.nc2.units.DateType;
+
 /**
  * _more_
  *
@@ -66,12 +68,15 @@ public class CatalogElementParser extends AbstractElementParser
       throw new IllegalArgumentException( "Start element not 'catalog' element.");
 
     Attribute nameAtt = startElement.getAttributeByName( nameAttName );
-    String nameString = nameAtt.getValue();
+    String nameString = nameAtt != null ? nameAtt.getValue() : null ;
+
     Attribute versionAtt = startElement.getAttributeByName( versionAttName );
-    String versionString = versionAtt.getValue();
+    String versionString = versionAtt != null ? versionAtt.getValue() : null;
     Attribute expiresAtt = startElement.getAttributeByName( expiresAttName );
+    // ToDo Date expiresDate = expiresAtt != null ? new DateType( expiresAtt.getValue(), null, null).getDate() : null;
     Date expiresDate = null;
     Attribute lastModifiedAtt = startElement.getAttributeByName( lastModifiedAttName );
+    // ToDo Date lastModifiedDate = lastModifiedAtt != null ? new DateType( lastModifiedAtt.getValue(), null, null).getDate() : null;
     Date lastModifiedDate = null;
     URI docBaseUri = null;
     try

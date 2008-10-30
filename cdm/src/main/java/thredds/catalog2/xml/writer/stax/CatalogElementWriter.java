@@ -70,8 +70,10 @@ public class CatalogElementWriter implements AbstractElementWriter
         writer.writeNamespace( CatalogNamespace.XLINK.getStandardPrefix(),
                                CatalogNamespace.XLINK.getNamespaceUri() );
       }
-      writer.writeAttribute( CatalogElementUtils.NAME_ATTRIBUTE_NAME, catalog.getName() );
-      writer.writeAttribute( CatalogElementUtils.VERSION_ATTRIBUTE_NAME, catalog.getVersion() );
+      if ( catalog.getName() != null )
+        writer.writeAttribute( CatalogElementUtils.NAME_ATTRIBUTE_NAME, catalog.getName() );
+      if ( catalog.getVersion() != null )
+        writer.writeAttribute( CatalogElementUtils.VERSION_ATTRIBUTE_NAME, catalog.getVersion() );
 
       DateFormatter df = new DateFormatter();
       if ( catalog.getExpires() != null )

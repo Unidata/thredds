@@ -51,11 +51,11 @@ public class ServiceElementWriter implements AbstractElementWriter
       writer.writeAttribute( ServiceElementUtils.SERVICE_TYPE_ATTRIBUTE_NAME, service.getType().toString() );
       writer.writeAttribute( ServiceElementUtils.BASE_ATTRIBUTE_NAME, service.getBaseUri().toString() );
 
-      if ( service.getSuffix() != null )
+      if ( service.getSuffix() != null && ! service.getSuffix().equals( ""))
       {
         writer.writeAttribute( ServiceElementUtils.SUFFIX_ATTRIBUTE_NAME, service.getSuffix() );
       }
-      if ( service.getDescription() != null )
+      if ( service.getDescription() != null && ! service.getDescription().equals( "" ) )
       {
         writer.writeAttribute( ServiceElementUtils.DESCRIPTION_ATTRIBUTE_NAME, service.getDescription() );
       }
