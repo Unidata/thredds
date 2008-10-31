@@ -1,7 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>TDS</title></head>
+<title>TDS</title>
+</head>
 
 <body>
 <div class="head">
@@ -10,7 +11,7 @@
 </div>
 <h2> Overview</h2>
 <p>The THREDDS Data Server (TDS) is a web server that provides metadata
-and data access for scientific datasets, building on existing
+and data access for scientific datasets, building on these 
 technologies and protocols: </p>
 <ol>
   <li>THREDDS <a href="#Catalogs">Dataset Inventory Catalogs</a>
@@ -21,7 +22,7 @@ statically. </li>
 reads NetCDF, OpenDAP, and HDF5 datasets, as well as other binary
 formats such as GRIB and NEXRAD into a Common Data Model (CDM),
 essentially an (extended) netCDF view of the data. Datasets that can be
-read through the Netcdf-Java library are called CDM datasets.</li>
+read through the Netcdf-Java library are called <em>CDM datasets</em>.</li>
   <li>TDS can use the  <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NetCDF Markup Language</a> (NcML) to modify and create virtual aggregations of CDM datasets. </li>
   <li>An integrated server provides <a href="http://www.opendap.org/">OPeNDAP</a> access to any CDM dataset. OPeNDAP is a widely used, subsetting data access method extending the HTTP protocol. </li>
   <li>An integrated server provides bulk file access through the HTTP protocol. </li>
@@ -33,7 +34,7 @@ files, XML or CSV ascii. <em><strong>This is a prototype, please do not rely on 
 </ol>
 <p>The THREDDS Data Server is implemented in 100% Java, and is
 contained in a single war file, which allows very easy installation
-into the open-source <a href="http://jakarta.apache.org/tomcat/">Tomcat</a>
+into a <a href="http://en.wikipedia.org/wiki/Servlet_container">servlet container</a> such as the open-source <a href="http://jakarta.apache.org/tomcat/">Tomcat</a>
 web server. Configuration is made as simple and as automatic as
 possible, and we have made the server as secure as possible. The
 library is freely available and the source code is released under the
@@ -42,7 +43,7 @@ GNU <a href="http://www.gnu.org/copyleft/lesser.html">Lesser General Public Lice
 <h2>System Requirements</h2>
 <ul>
   <li><a href="http://java.sun.com/">Java</a> 1.5 or above, we recommend the latest version of Java 1.6. </li>
-  <li><a href="http://tomcat.apache.org/">Tomcat</a> 5.5 or above, we recommend the latest version of Tomcat 6.0 </li>
+  <li><a href="http://tomcat.apache.org/">Tomcat</a> 5.5 or above, we recommend the latest version of Tomcat 6.x </li>
 </ul>
 <h2>Download<a name="download"></a></h2>
 <ul>
