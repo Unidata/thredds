@@ -876,8 +876,7 @@ nc_def_var and before nc_enddef. */
 
   int nc_put_var_uint(int ncid, int varid, unsigned IntByReference op);
 
-  int
-  nc_get_var_uint(int ncid, int varid, unsigned IntByReference ip);
+  int nc_get_var_uint(int ncid, int varid, unsigned IntByReference ip);
 
   int nc_put_var_longlong(int ncid, int varid, long*op);
 

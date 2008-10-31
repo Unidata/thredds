@@ -22,6 +22,7 @@ package ucar.nc2.jni.netcdf;
 
 import com.sun.jna.Library;
 import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.NativeLongByReference;
 
 /**
  * JNA access to Netcd4 C Library, using JNI to shared C library.
@@ -65,12 +66,13 @@ public interface NCLibrary extends Library {
 
   int nc_inq_ndims(int ncid, IntByReference ndimsp);
   int nc_inq_unlimdims(int ncid, IntByReference nunlimdimsp, int[] unlimdimidsp);
-  int nc_inq_dim(int ncid, int dimid, byte[] name, IntByReference lenp); // size_t
+  int nc_inq_dim(int ncid, int dimid, byte[] name, NativeLongByReference lenp); // size_t
+  int nc_inq_dimname(int ncid, int dimid, byte[] name);
 
   int nc_inq_natts(int ncid, IntByReference nattsp);
   int nc_inq_attname(int ncid, int varid, int attnum, byte[] name);
   int nc_inq_atttype(int ncid, int varid, String name, IntByReference xtypep);
-  int nc_inq_attlen(int ncid, int varid, String name, IntByReference lenp); // size_t
+  int nc_inq_attlen(int ncid, int varid, String name, NativeLongByReference lenp); // size_t
 
   int nc_get_att_double(int ncid, int varid, String name, double[] ip);
   int nc_get_att_float(int ncid, int varid, String name, float[] ip);
@@ -83,4 +85,14 @@ public interface NCLibrary extends Library {
   int nc_inq_nvars(int ncid, IntByReference nvarsp);
   int nc_inq_var(int ncid, int varid, byte[] name, IntByReference xtypep,
           IntByReference ndimsp, int[] dimidsp, IntByReference nattsp);
+
+  int nc_get_var_text(int ncid, int varid, byte[] op);
+  int nc_get_var_schar(int ncid, int varid, byte[] ip);
+  int nc_get_var_short(int ncid, int varid, short[] ip);
+  int nc_get_var_int(int ncid, int varid, int[] ip);
+  int nc_get_var_longlong(int ncid, int varid, long[] ip);
+  int nc_get_var_float(int ncid, int varid, float[] ip);
+  int nc_get_var_double(int ncid, int varid, double[] ip);
+
+  int nc_get_vars_schar(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip); // size_t, ptrdiff_t
 }

@@ -100,14 +100,14 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../../cdev/jna/jna.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/jna.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/../../../../../cdev/jna/src" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/source/jna-src.zip!/" />
         </SOURCES>
       </library>
     </orderEntry>
