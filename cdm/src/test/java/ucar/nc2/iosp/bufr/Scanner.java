@@ -790,10 +790,10 @@ public class Scanner {
     fos.close();
     // */
 
-    /* dump messages
-    test("C:/data/bufr/eumetsat/MSG2-SEVI-MSGCLDS-0101-0101-20080405114500.000000000Z-909326.bfr", new MClosure() {
+    // dump messages
+    test("R:/testdata/bufr/problems/", new MClosure() {
       public void run(String filename) throws IOException {
-        scan(filename, 0);
+        scan(filename, -1);
       }
     }); // */
 
@@ -824,14 +824,14 @@ public class Scanner {
        }
      }); // */
 
-    // extract unique DDS  // 20080707_1900.bufr
-     test("C:/data/bufr/eumetsat/MSG2-SEVI-MSGCLDS-0101-0101-20080405114500.000000000Z-909326.bfr", new MClosure() {
+    /* extract unique DDS  // 20080707_1900.bufr
+     test("R:/testdata/bufr/problems/", new MClosure() {
        public void run(String filename) throws IOException {
          scanMessageDDS(filename);
        }
      });
-    Formatter messCsv = new Formatter( new FileOutputStream("C:/data/bufr/mess.csv"));
-    Formatter ddsCsv = new Formatter( new FileOutputStream("C:/data/bufr/dds.csv"));
+    Formatter messCsv = new Formatter( new FileOutputStream("R:/testdata/bufr/mess.csv"));
+    Formatter ddsCsv = new Formatter( new FileOutputStream("R:/testdata/bufr/dds.csv"));
     showDDS(messCsv, ddsCsv);
     //showDDS(null, null);
     ddsCsv.close();

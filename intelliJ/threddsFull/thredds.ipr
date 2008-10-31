@@ -38,6 +38,7 @@
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/ui/tools/CatalogSearcher.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/Indexer.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/ui/CatalogIndexer.java" />
+      <file url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/jni/netcdf/Netcd4Clibrary.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />

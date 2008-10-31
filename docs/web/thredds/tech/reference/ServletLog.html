@@ -11,7 +11,7 @@
 <hr>
 <h2>Log4J</h2>
 <p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">Log4J </a> library, currently contained in the NLOG4J library which implements the <a href="http://www.slf4j.org/">SLF4J</a> logging facade, which the Netcdf-Java library uses. Users of the TDS can ignore the SLF4J facade, and need only deal with  log4j. </p>
-<p>The default log4j configuration file  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You can modify this if you want and restart the TDS to have it take efffect. However, it will be overwritten when you install an updated thredds.war file.</p>
+<p>The <a href="log4j.xml.txt">default log4j configuration file</a>  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You can modify this if you want and restart the TDS to have it take efffect. However, it will be overwritten when you install an updated thredds.war file.</p>
 <p>You can change the location of the  log4j configuration file with the <em>log4j-init-file</em> context parameter in the thredds configuration file <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml.</strong> file. For example:</p>
 <pre> &lt;context-param&gt;
    &lt;param-name&gt;<strong>log4j-init-file</strong>&lt;/param-name&gt;
@@ -20,7 +20,7 @@
 </pre>
 <p>The value should be the absolute path to the log4j configuration file. Remember that web.xml  gets overwritten when the thredds.war file is updated.</p>
 <h2>ThreddsServlet logfile</h2>
-<p>The  ThreddsServlet logs roll over every 10MB, keepin the last 10 files. The log4j entry looks like: </p>
+<p>The  ThreddsServlet logs roll over every 10MB, keeping the last 10 files. The log4j entry looks like: </p>
 <pre>  &lt;appender name=&quot;threddsServlet&quot; class=&quot;org.apache.log4j.RollingFileAppender&quot;&gt;<br>    &lt;param name=&quot;File&quot; value=&quot;${logdir}/threddsServlet.log&quot;/&gt;<br>    &lt;param name=&quot;MaxFileSize&quot; value=&quot;10MB&quot;/&gt;<br>    &lt;param name=&quot;MaxBackupIndex&quot; value=&quot;10&quot;/&gt;<br>    &lt;layout class=&quot;org.apache.log4j.PatternLayout&quot;&gt;<br>      &lt;param name=&quot;ConversionPattern&quot; value=&quot;%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n&quot;/&gt;<br>    &lt;/layout&gt;<br>  &lt;/appender&gt;</pre>
 <p>As you can see, the  PatternLayout looks like:</p>
 <pre><strong>  &quot;%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n&quot;</strong></pre>
@@ -121,7 +121,7 @@ log.info( &quot;Request Completed - &quot; + resCode + &quot; - &quot; + resSize
 </pre>
 <hr width="100%">
 <address>
-<img src="../images/thread.png" height="108" width="110">This document is maintained by John Caron and was last updated on July 26, 2007
+<img src="../images/thread.png" height="108" width="110">This document is maintained by John Caron and was last updated on Oct 31, 2008
 </address>
 <p></p>
 </body>

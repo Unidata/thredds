@@ -33,6 +33,7 @@ import java.util.regex.Matcher;
 import java.nio.charset.Charset;
 
 import ucar.unidata.util.StringUtil;
+import ucar.nc2.iosp.bufr.Descriptor;
 
 /**
  * @author caron
@@ -42,7 +43,7 @@ public class CompareTableB {
 
   String bmt = "file:C:/dev/tds/bufr/resources/source/britMet/BUFR_B_080731.xml";
   String robbt = "C:/dev/tds/bufr/resources/resources/bufr/tables/B4M-000-013-B";
-  
+
   String diffTableDir = "C:/dev/tds/bufr/resources/resources/bufr/tables/";
   String[] diffTable = {
           "B2M-000-002-B.diff",
@@ -63,6 +64,7 @@ public class CompareTableB {
 
   //////////////////////////////////////////////////////////////////////
   static Map<Integer, Feature> bmTable = new TreeMap<Integer, Feature>();
+
   public void readBmt() throws IOException {
     org.jdom.Document doc;
     try {
@@ -70,7 +72,7 @@ public class CompareTableB {
       doc = builder.build(bmt);
       Element root = doc.getRootElement();
       int count = makeBmtTable(root.getChildren("featureCatalogue"));
-      System.out.println(" bmt count= "+count);
+      System.out.println(" bmt count= " + count);
 
       /* Format pretty = Format.getPrettyFormat();
 
@@ -101,26 +103,26 @@ public class CompareTableB {
 
         Element bufrElem = feature.getChild("BUFR");
         String units = bufrElem.getChildTextNormalize("BUFR_units");
-        int scale = 0, reference=0, width = 0;
+        int scale = 0, reference = 0, width = 0;
 
         String s = null;
         try {
           s = bufrElem.getChildTextNormalize("BUFR_scale");
-          scale = Integer.parseInt( clean(s));
+          scale = Integer.parseInt(clean(s));
         } catch (NumberFormatException e) {
           System.out.printf(" key %s name '%s' has bad scale='%s'%n", fxy(fxy), name, s);
         }
 
         try {
           s = bufrElem.getChildTextNormalize("BUFR_reference");
-          reference = Integer.parseInt( clean(s));
+          reference = Integer.parseInt(clean(s));
         } catch (NumberFormatException e) {
           System.out.printf(" key %s name '%s' has bad reference='%s' %n", fxy(fxy), name, s);
         }
 
         try {
           s = bufrElem.getChildTextNormalize("BUFR_width");
-          width = Integer.parseInt( clean(s));
+          width = Integer.parseInt(clean(s));
         } catch (NumberFormatException e) {
           System.out.printf(" key %s name '%s' has bad width='%s' %n", fxy(fxy), name, s);
         }
@@ -138,7 +140,7 @@ public class CompareTableB {
 
   //////////////////////////////////////////////////////////////
   public void readTable(String filename, Map<Integer, Feature> map) throws IOException {
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader( new FileInputStream(filename), Charset.forName("UTF8")));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.forName("UTF8")));
     int count = 0;
     while (true) {
       String line = dataIS.readLine();
@@ -147,11 +149,11 @@ public class CompareTableB {
 
       String[] flds = line.split("; ");
       if (flds.length < 8) {
-        System.out.println("BAD line == "+line);
+        System.out.println("BAD line == " + line);
         continue;
       }
 
-      int i=0;
+      int i = 0;
       int f = Integer.parseInt(flds[i++]);
       int x = Integer.parseInt(flds[i++]);
       int y = Integer.parseInt(flds[i++]);
@@ -166,7 +168,7 @@ public class CompareTableB {
       map.put(fxy, feat);
       count++;
     }
-    System.out.println(filename+" count= "+count);
+    System.out.println(filename + " count= " + count);
   }
 
   //////////////////////////////////////////////////////////
@@ -210,13 +212,14 @@ public class CompareTableB {
   }
 
   Map<Integer, List<String>> problems = new TreeMap<Integer, List<String>>();
+
   void addProblem(String fname, Integer key, String p) {
     List<String> list = problems.get(key);
     if (list == null) {
       list = new ArrayList<String>();
       problems.put(key, list);
     }
-    list.add(p +" ("+fname+")");
+    list.add(p + " (" + fname + ")");
   }
 
   public void compare(String fname, Map<Integer, Feature> thisMap, Map<Integer, Feature> thatMap) {
@@ -232,19 +235,18 @@ public class CompareTableB {
         //  System.out.printf("%n key %s units %s != %s %n", fxy(key), f1.units, f2.units);
         if (f1.scale != f2.scale) {
           System.out.printf(" key %s scale %d != %d %n", fxy(key), f1.scale, f2.scale);
-          addProblem(fname, key, "scale "+f1.scale+" != "+f2.scale);
+          addProblem(fname, key, "scale " + f1.scale + " != " + f2.scale);
         }
-        if (f1.reference != f2.reference){
+        if (f1.reference != f2.reference) {
           System.out.printf(" key %s reference %d != %d %n", fxy(key), f1.reference, f2.reference);
-          addProblem(fname, key, "refer "+f1.reference+" != "+f2.reference);
+          addProblem(fname, key, "refer " + f1.reference + " != " + f2.reference);
         }
         if (f1.width != f2.width) {
           System.out.printf(" key %s width %d != %d %n", fxy(key), f1.width, f2.width);
-          addProblem(fname, key, "width "+f1.width+" != "+f2.width);
+          addProblem(fname, key, "width " + f1.width + " != " + f2.width);
         }
       }
     }
-
   }
 
   public void compare2(Map<Integer, Feature> thisMap, Map<Integer, Feature> thatMap) {
@@ -254,12 +256,12 @@ public class CompareTableB {
       if (f2 == null)
         System.out.printf(" No key %s %n", fxy(key));
     }
-
   }
 
   class Feature {
     int fxy, scale, reference, width;
     String name, units;
+
     Feature(int fxy, String name, String units, int scale, int reference, int width) {
       this.fxy = fxy;
       this.name = name.trim();
@@ -270,37 +272,37 @@ public class CompareTableB {
     }
   }
 
-  String fxy( int fxy) {
+  String fxy(int fxy) {
     int f = fxy >> 16;
     int x = (fxy & 0xff00) >> 8;
     int y = (fxy & 0xff);
 
-    return f +"-"+x+"-"+y;
+    return f + "-" + x + "-" + y;
   }
 
-  public void compareDiff( ) throws IOException {
+  public void compareDiff() throws IOException {
     Map<Integer, Feature> wmoMap = new TreeMap<Integer, Feature>();
     readTable(robbt, wmoMap);
 
     for (String fname : diffTable) {
       System.out.printf("=============================================================%n");
       Map<Integer, Feature> diffMap = new TreeMap<Integer, Feature>();
-      readTable(diffTableDir+fname, diffMap);
+      readTable(diffTableDir + fname, diffMap);
 
-      System.out.printf("Compare diff ("+fname+") to standard %n");
+      System.out.printf("Compare diff (" + fname + ") to standard %n");
       compare(fname, diffMap, wmoMap);
     }
 
     Set<Integer> keys = problems.keySet();
     for (Integer key : keys) {
-      System.out.printf("%n%s%n",fxy(key));
+      System.out.printf("%n%s%n", fxy(key));
       List<String> list = problems.get(key);
       for (String p : list)
-        System.out.printf(" %s%n",p);      
+        System.out.printf(" %s%n", p);
     }
   }
 
-  public void compareBrit( ) throws IOException {
+  public void compareBrit() throws IOException {
     readBmt();
 
     Map<Integer, Feature> robbMap = new TreeMap<Integer, Feature>();
@@ -312,8 +314,153 @@ public class CompareTableB {
     compare2(robbMap, bmTable);
   }
 
-  static public void main( String args[]) throws IOException {
+  static public void main2(String args[]) throws IOException {
     CompareTableB ct = new CompareTableB();
     ct.compareBrit();
+  }
+
+  ///////////////////////////////////////////////////
+
+  class DescTrack {
+    short id;
+    List<TableB.Descriptor> descList = new ArrayList<TableB.Descriptor>(10);
+    List<String> whereList = new ArrayList<String>(10);
+
+    DescTrack(short id) {
+      this.id = id;
+    }
+
+    void add(TableB.Descriptor d, String where) {
+      descList.add(d);
+      whereList.add(where);
+    }
+
+    void showSingles() {
+      if (descList.size() < 2) { // skip if only wmo
+        String where0 = whereList.get(0);
+        if (where0.equals("WHO")) return;
+      }
+
+      for (int i = 0; i < descList.size(); i++) {
+        TableB.Descriptor bdesc = descList.get(i);
+        String where = whereList.get(i);
+        System.out.printf(" %s == %s%n", bdesc, where);
+      }
+    }
+
+  }
+
+  class TableName {
+    String filename, name;
+
+    TableName(String name, String filename) {
+      this.name = name;
+      this.filename = filename;
+    }
+  }
+
+  String tableDirName = "C:\\dev\\tds\\bufr\\resources\\resources\\bufr\\tables\\";
+
+  void addToMap(TableName t, Map<Short, DescTrack> mapAll) throws IOException {
+    System.out.printf("Read (" + t.filename + ")%n");
+    TableB tableB = BufrTables.readTableB(tableDirName + t.filename);
+    Collection<TableB.Descriptor> desc = tableB.getDescriptors();
+
+    for (TableB.Descriptor d : desc) {
+      short fxy = d.getId();
+      if (!Descriptor.isWmoRange(fxy)) continue;
+
+      DescTrack f = mapAll.get(fxy);
+      if (f == null) {
+        f = new DescTrack(fxy);
+        mapAll.put(fxy, f);
+      }
+      f.add(d, t.name);
+    }
+  }
+
+
+  public void compareAll() throws IOException {
+    TableName[] tables = new TableName[6];
+    tables[0] = new TableName("WMO", "B4M-000-014-B");
+    tables[1] = new TableName("NCEP", "NCEPtable-B.diff");
+    tables[2] = new TableName("Brazil", "B4L-046-013-B.diff");
+    tables[3] = new TableName("ECMWF", "B4L-098-013-B.diff");
+    tables[4] = new TableName("FNMOC", "B4L-058-013-B.diff");
+    tables[5] = new TableName("Eumetsat", "B3L-254-011-B.diff");
+    int[] want = new int[]{0, 1};
+
+    Map<Short, DescTrack> mapAll = new TreeMap<Short, DescTrack>();
+
+    //for (int i : want) {
+    for (int i = 0; i < tables.length; i++) {
+      addToMap(tables[i], mapAll);
+    }
+
+    Set<Short> keys = mapAll.keySet();
+    List<Short> sortKeys = new ArrayList<Short>(keys);
+    Collections.sort(sortKeys);
+
+    System.out.printf("pass one for differences with WMO%n");
+    for (Short key : sortKeys) {
+      DescTrack dtrack = mapAll.get(key);
+
+      if (dtrack.descList.size() < 2) continue;
+      String where0 = dtrack.whereList.get(0);
+      if (!where0.equals("WMO")) continue; // must have WMO
+
+      TableB.Descriptor wmo = null;
+      System.out.printf("%nFxy=%s%n", Descriptor.makeString(key));
+      for (int i = 0; i < dtrack.descList.size(); i++) {
+        TableB.Descriptor bdesc = dtrack.descList.get(i);
+        String where = dtrack.whereList.get(i);
+        System.out.printf(" %s == %s%n", bdesc, where);
+        if (i == 0) wmo = bdesc;
+        else System.out.printf("**%s%n", compare(wmo, bdesc));
+      }
+    }
+
+
+    System.out.printf("%n===========================%n");
+    System.out.printf("%npass two for addition to WMO%n");
+    for (Short key : sortKeys) {
+      DescTrack dtrack = mapAll.get(key);
+
+      String where0 = dtrack.whereList.get(0);
+      if (where0.equals("WMO")) continue; // must not have WMO
+
+      System.out.printf("%nFxy=%s%n", Descriptor.makeString(key));
+      for (int i = 0; i < dtrack.descList.size(); i++) {
+        TableB.Descriptor bdesc = dtrack.descList.get(i);
+        String where = dtrack.whereList.get(i);
+        System.out.printf(" %s == %s%n", bdesc, where);
+      }
+    }
+  }
+
+  String compare(TableB.Descriptor f1, TableB.Descriptor f2) {
+    StringBuilder sb = new StringBuilder();
+    if (!f1.getUnits().equalsIgnoreCase(f2.getUnits())) {
+      sb.append(" units");
+    }
+
+    if (f1.getScale() != f2.getScale()) {
+      sb.append(" scale");
+    }
+
+    if (f1.getRefVal() != f2.getRefVal()) {
+      sb.append(" refVal");
+    }
+
+    if (f1.getWidth() != f2.getWidth()) {
+      sb.append(" width");
+    }
+
+    return sb.toString();
+  }
+
+  static public void main(String args[]) throws IOException {
+    CompareTableB ct = new CompareTableB();
+    ct.compareAll();
   }
 }

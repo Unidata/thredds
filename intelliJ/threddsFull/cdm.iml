@@ -100,6 +100,17 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../../../cdev/jna/jna.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../../../../cdev/jna/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
 </module>

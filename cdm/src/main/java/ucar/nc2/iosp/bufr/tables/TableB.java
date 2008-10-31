@@ -39,7 +39,7 @@ public class TableB {
 
   void addDescriptor(short x, short y, int scale, int refVal, int width, String name, String units) {
     short id = (short) ((x << 8) + y);
-    map.put( id, new Descriptor( x,  y,  scale,  refVal,  width,  name,  units));
+    map.put(id, new Descriptor(x, y, scale, refVal, width, name, units));
   }
 
   public String getName() {
@@ -51,18 +51,23 @@ public class TableB {
   }
 
   public Descriptor getDescriptor(short id) {
-      return map.get( id );
+    return map.get(id);
   }
 
-  public void show( Formatter out) {
+  Collection<Descriptor> getDescriptors() {
+    return map.values();
+  }
+
+  public void show(Formatter out) {
     Collection<Short> keys = map.keySet();
     List<Short> sortKeys = new ArrayList(keys);
-    Collections.sort( sortKeys);
+    Collections.sort(sortKeys);
 
-    out.format("Table B %s %n",name);
+    out.format("Table B %s %n", name);
     for (Short key : sortKeys) {
       Descriptor dd = map.get(key);
       dd.show(out);
+      out.format("%n");
     }
   }
 
@@ -95,35 +100,45 @@ public class TableB {
      *
      * @return scale
      */
-    public int getScale() { return scale; }
+    public int getScale() {
+      return scale;
+    }
 
     /**
      * refVal of descriptor.
      *
      * @return refVal
      */
-    public int getRefVal() { return refVal; }
+    public int getRefVal() {
+      return refVal;
+    }
 
     /**
      * width of descriptor.
      *
      * @return width
      */
-    public int getWidth() { return width; }
+    public int getWidth() {
+      return width;
+    }
 
     /**
      * units of descriptor.
      *
      * @return units
      */
-    public String getUnits() { return units; }
+    public String getUnits() {
+      return units;
+    }
 
     /**
      * short name of descriptor.
      *
      * @return name
      */
-    public String getName() { return name; }
+    public String getName() {
+      return name;
+    }
 
     /**
      * Get fxy as a short
@@ -140,22 +155,31 @@ public class TableB {
      * @return fxy encoded as a String
      */
     public String getFxy() {
-      return "0-"+x+"-"+y;
+      return "0-" + x + "-" + y;
     }
-  
+
     /**
      * is descriptor numeric or String
      *
      * @return true if numeric
      */
-    public boolean isNumeric() { return numeric; }
+    public boolean isNumeric() {
+      return numeric;
+    }
 
-    public String toString() { return getFxy()+": "+getName(); }
+
+    public String toString() {
+      Formatter out = new Formatter();
+      show(out);
+      return out.toString();
+    }
+    //public String toString() { return getFxy()+": "+getName(); }
 
     void show(Formatter out) {
-      out.format(" %8s scale=%d refVal=%d width=%d name=(%s) units=(%s) numeric=%s %n",
-          getFxy(), scale, refVal, width, name, units, numeric);
+      out.format(" %8s scale=%d refVal=%d width=%d  units=(%s) name=(%s)",
+              getFxy(), scale, refVal, width, units, name);
     }
   }
+
 
 }

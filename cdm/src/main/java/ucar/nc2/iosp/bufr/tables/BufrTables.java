@@ -168,7 +168,7 @@ public class BufrTables {
     return new TableA(tablename, tablename, categories);
   }
 
-  private static TableB readTableB(String tablename) throws IOException {
+  public static TableB readTableB(String tablename) throws IOException {
 
     InputStream ios = open(tablename);
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
@@ -213,7 +213,7 @@ public class BufrTables {
       desc = desc.replaceFirst( "2-", "Two-" );
    */
 
-  private static TableD readTableD(String tablename) throws IOException {
+  public static TableD readTableD(String tablename) throws IOException {
 
     InputStream ios = open(tablename);
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
