@@ -22,6 +22,7 @@ package ucar.nc2.jni.netcdf;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.TestCompare;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 
@@ -39,6 +40,8 @@ import junit.framework.TestCase;
  */
 public class TestReadAll extends TestCase {
   private JniIosp iosp;
+  private boolean showFile = true;
+  private boolean showDetail = false;
 
   public void setUp() {
     iosp = new JniIosp();
@@ -50,12 +53,23 @@ public class TestReadAll extends TestCase {
 
   public void testReadAll() throws IOException {
     int count = 0;
-    count += readAllDir("R:/testdata/grid/netcdf/", new NetcdfFileFilter());
+    count += scanAllDir("C:/testdata/", new NetcdfFileFilter(), new ReadAllData());
     System.out.println("***READ " + count + " files");
   }
 
   public void testReadOne() throws IOException {
-    readAll("R:\\testdata\\grid\\netcdf\\cf\\air.2m.2002.nc");
+    new ReadAllData().doClosure("C:/testdata/netcdf4/tst_enum_data.nc");
+    //new ReadAllData().doClosure("C:/data/test2.nc");
+  }
+
+  public void testCompareAll() throws IOException {
+    int count = 0;
+    count += scanAllDir("C:/data/", new NetcdfFileFilter(), new CompareData());
+    System.out.println("***READ " + count + " files");
+  }
+
+  public void testCompareOne() throws IOException {
+    new CompareData().doClosure("C:/testdata/netcdf4/tst_solar_1.nc");
   }
 
 
@@ -65,36 +79,7 @@ public class TestReadAll extends TestCase {
     }
   }
 
-  public static long startTime;
-
-  private void openAllInDir(String dirName, FileFilter ff) throws IOException {
-    System.out.println("---------------Reading directory " + dirName);
-    File allDir = new File(dirName);
-    File[] allFiles = allDir.listFiles();
-    if (null == allFiles) {
-      System.out.println("---------------INVALID " + dirName);
-      return;
-    }
-
-    for (File f : allFiles) {
-      String name = f.getAbsolutePath();
-      if (f.isDirectory())
-        continue;
-      if ((ff == null) || ff.accept(f)) {
-        System.out.println("  try to open " + name);
-        NetcdfFile ncfile = NetcdfFile.open(name);
-        ncfile.close();
-      }
-    }
-
-    for (File f : allFiles) {
-      if (f.isDirectory())
-        openAllInDir(f.getAbsolutePath(), ff);
-    }
-
-  }
-
-  private int readAllDir(String dirName, FileFilter ff) {
+  private int scanAllDir(String dirName, FileFilter ff, Closure c) {
     int count = 0;
 
     System.out.println("---------------Reading directory " + dirName);
@@ -110,50 +95,104 @@ public class TestReadAll extends TestCase {
       if (f.isDirectory())
         continue;
       if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude"))
-        count += readAll(name);
+        count += c.doClosure(name);
     }
 
     for (File f : allFiles) {
       if (f.isDirectory() && !f.getName().equals("exclude"))
-        count += readAllDir(f.getAbsolutePath(), ff);
+        count += scanAllDir(f.getAbsolutePath(), ff, c);
     }
 
     return count;
   }
 
-  private int readAll(String filename) {
-    System.out.println("\n------Reading filename " + filename);
-    try {
-      NetcdfFile ncfile = iosp.open(filename);
-
-      for (Variable v : ncfile.getVariables()) {
-        if (v.getSize() > max_size) {
-          Section s = makeSubset(v);
-          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
-          v.read(s);
-        } else {
-          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
-          v.read();
-        }
-      }
-      ncfile.close();
-    } catch (Exception e) {
-      e.printStackTrace();
-      assert false;
-    }
-
-    return 1;
+  private interface Closure {
+    int doClosure(String filename);
   }
 
-  static int max_size = 1000 * 1000 * 10;
+  private class CompareData implements Closure {
+    public int doClosure(String filename) {
+      System.out.println("\n------Compare filename " + filename);
+      NetcdfFile ncfile = null;
+      NetcdfFile ncfileC = null;
+      try {
+        ncfileC = iosp.open(filename);
+        ncfile = NetcdfFile.open(filename);
+        TestCompare.compareFiles(ncfile, ncfileC, true, false, false);
 
-  static Section makeSubset(Variable v) throws InvalidRangeException {
-    int[] shape = v.getShape();
-    shape[0] = 1;
-    Section s = new Section(shape);
-    long size = s.computeSize();
-    shape[0] = (int) Math.max(1, max_size / size);
-    return new Section(shape);
+      } catch (Exception e) {
+        e.printStackTrace();
+
+      } finally {
+
+        if (ncfileC != null)
+          try {
+            ncfileC.close();
+          }
+          catch (IOException ioe) {
+            ioe.printStackTrace();
+          }
+
+        if (ncfile != null)
+          try {
+            ncfile.close();
+          }
+          catch (IOException ioe) {
+            ioe.printStackTrace();
+          }
+
+      }
+      return 1;
+    }
+  }
+
+  private class ReadAllData implements Closure {
+    public int doClosure(String filename) {
+      System.out.println("\n------Reading filename " + filename);
+      NetcdfFile ncfile = null;
+      try {
+        ncfile = iosp.open(filename);
+        if (showFile) System.out.println(ncfile.toString());
+
+        for (Variable v : ncfile.getVariables()) {
+          if (v.getSize() > max_size) {
+            Section s = makeSubset(v);
+            if (showDetail)
+              System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
+            v.read(s);
+          } else {
+            if (showDetail)
+              System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
+            v.read();
+          }
+        }
+
+      } catch (Exception e) {
+        e.printStackTrace();
+
+      } finally {
+        if (ncfile != null)
+          try {
+            ncfile.close();
+          }
+          catch (IOException ioe) {
+            ioe.printStackTrace();
+          }
+      }
+
+      return 1;
+    }
+
+    int max_size = 1000 * 1000 * 10;
+
+    Section makeSubset(Variable v) throws InvalidRangeException {
+      int[] shape = v.getShape();
+      shape[0] = 1;
+      Section s = new Section(shape);
+      long size = s.computeSize();
+      shape[0] = (int) Math.max(1, max_size / size);
+      return new Section(shape);
+    }
   }
 
 

@@ -21,6 +21,7 @@
 package ucar.nc2.jni.netcdf;
 
 import com.sun.jna.Library;
+import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.NativeLongByReference;
 
@@ -60,32 +61,68 @@ public interface NCLibrary extends Library {
   static public final int NC_ENUM =	15;	/* used internally for enum types */
   static public final int NC_COMPOUND =	16;	/* used internally for compound types */
 
-  int nc_open(String path, int mode, IntByReference ncidp);
-  String nc_strerror(int ncerr);
-  int nc_close(int ncid);
+  // nc_inq_format
+  static public final int NC_FORMAT_CLASSIC = 1;
+  static public final int NC_FORMAT_64BIT = 2;
+  static public final int NC_FORMAT_NETCDF4 = 3;
+  static public final int NC_FORMAT_NETCDF4_CLASSIC = 4;
 
+  // library
+  String nc_inq_libvers();
+  String nc_strerror(int ncerr);
+
+  // dataset
+  int nc_open(String path, int mode, IntByReference ncidp);
+  int nc_close(int ncid);
+  int nc_inq_format(int ncid, IntByReference formatp);
+
+  // groups
+  int nc_inq_grps(int ncid, IntByReference numgrps, Pointer np); // allow to pass NULL
+  int nc_inq_grps(int ncid, IntByReference numgrps, int[] ncids);
+  int nc_inq_grpname(int ncid, byte[] name);
+
+  // dimension info
   int nc_inq_ndims(int ncid, IntByReference ndimsp);
   int nc_inq_unlimdims(int ncid, IntByReference nunlimdimsp, int[] unlimdimidsp);
   int nc_inq_dim(int ncid, int dimid, byte[] name, NativeLongByReference lenp); // size_t
   int nc_inq_dimname(int ncid, int dimid, byte[] name);
 
+  // attribute info
   int nc_inq_natts(int ncid, IntByReference nattsp);
   int nc_inq_attname(int ncid, int varid, int attnum, byte[] name);
   int nc_inq_atttype(int ncid, int varid, String name, IntByReference xtypep);
   int nc_inq_attlen(int ncid, int varid, String name, NativeLongByReference lenp); // size_t
 
+  // attribute values
   int nc_get_att_double(int ncid, int varid, String name, double[] ip);
   int nc_get_att_float(int ncid, int varid, String name, float[] ip);
   int nc_get_att_int(int ncid, int varid, String name, int[] ip);
+  int nc_get_att_uint(int ncid, int varid, String name, int[] ip);
   int nc_get_att_longlong(int ncid, int varid, String name, long[] ip);
+  int nc_get_att_ulonglong(int ncid, int varid, String name, long[] ip);
   int nc_get_att_schar(int ncid, int varid, String name, byte[] ip);
+  int nc_get_att_uchar(int ncid, int varid, String name, byte[] ip);
   int nc_get_att_short(int ncid, int varid, String name, short[] ip);
+  int nc_get_att_ushort(int ncid, int varid, String name, short[] ip);
   int nc_get_att_text(int ncid, int varid, String name, byte[] ip);
 
+  // variable info
   int nc_inq_nvars(int ncid, IntByReference nvarsp);
+  int nc_inq_varids(int ncid, IntByReference nvars, int[] varids);  
   int nc_inq_var(int ncid, int varid, byte[] name, IntByReference xtypep,
           IntByReference ndimsp, int[] dimidsp, IntByReference nattsp);
 
+  // user types
+  int nc_inq_typeids(int ncid, IntByReference ntypes, Pointer np); // allow to pass NULL
+  int nc_inq_typeids(int ncid, IntByReference ntypes, int[] typeids);
+  int nc_inq_type(int ncid, int xtype, byte[] name, NativeLongByReference sizep); // size_t
+  int nc_inq_user_type(int ncid, int xtype, byte[] name, NativeLongByReference sizep,
+                   IntByReference baseType, NativeLongByReference nfieldsp, IntByReference classp); // size_t
+  int nc_inq_enum(int ncid, int xtype, byte[] name, IntByReference baseType,
+              NativeLongByReference base_sizep, NativeLongByReference num_membersp); //size_t
+  int nc_inq_enum_member(int ncid, int xtype, int idx, byte[] name, IntByReference value); // void *
+
+  // read entire array
   int nc_get_var_text(int ncid, int varid, byte[] op);
   int nc_get_var_schar(int ncid, int varid, byte[] ip);
   int nc_get_var_short(int ncid, int varid, short[] ip);
@@ -94,5 +131,13 @@ public interface NCLibrary extends Library {
   int nc_get_var_float(int ncid, int varid, float[] ip);
   int nc_get_var_double(int ncid, int varid, double[] ip);
 
+  // read array section
+  // working on blueman
   int nc_get_vars_schar(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip); // size_t, ptrdiff_t
+  int nc_get_vars_text(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip); // size_t, ptrdiff_t
+  int nc_get_vars_short(int ncid, int varid, long[] startp, long[] countp, int[] stridep, short[] ip); // size_t, ptrdiff_t
+  int nc_get_vars_int(int ncid, int varid, long[] startp, long[] countp, int[] stridep, int[] ip); // size_t, ptrdiff_t
+  int nc_get_vars_longlong(int ncid, int varid, long[] startp, long[] countp, int[] stridep, long[] ip); // size_t, ptrdiff_t
+  int nc_get_vars_float(int ncid, int varid, long[] startp, long[] countp, int[] stridep, float[] ip); // size_t, ptrdiff_t
+  int nc_get_vars_double(int ncid, int varid, long[] startp, long[] countp, int[] stridep, double[] ip); // size_t, ptrdiff_t
 }

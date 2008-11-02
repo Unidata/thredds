@@ -1,0 +1,923 @@
+/*
+ * Copyright 1997-2008 Unidata Program Center/University Corporation for
+ * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
+ * support@unidata.ucar.edu.
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or (at
+ * your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+package ucar.nc2.jni.netcdf;
+
+import com.sun.jna.Library;
+import com.sun.jna.ptr.IntByReference;
+
+/**
+ * JNA access to Netcd4 C Library, using JNI to shared C library.
+ *
+ * @author caron
+ * @since Oct 30, 2008
+ */
+public interface Netcd4Clibrary extends Library {
+
+  static public final int NC_MAX_DIMS = 1024;   /* max dimensions per file */
+  static public final int NC_MAX_ATTRS = 8192;   /* max global or per variable attributes */
+  static public final int NC_MAX_VARS = 8192;   /* max variables per file */
+  static public final int NC_MAX_NAME = 256;   /* max length of a name */
+  static public final int NC_MAX_VAR_DIMS = NC_MAX_DIMS; /* max per variable dimensions */
+
+  String nc_inq_libvers();
+
+  String nc_strerror(int ncerr);
+
+  int nc__create(String path, int cmode, size_t initialsz, size_t* chunksizehintp, IntByReference ncidp);
+
+  int nc_create(String path, int cmode, IntByReference ncidp);
+
+  int nc__open(String path, int mode, size_t* chunksizehintp, IntByReference ncidp);
+
+  int nc_open(String path, int mode, IntByReference ncidp);
+
+  // MPI
+  //int nc_create_par(String path, int cmode, MPI_Comm comm, MPI_Info info, IntByReference ncidp);
+
+  //int nc_open_par(String path, int mode, MPI_Comm comm, MPI_Info info, IntByReference ncidp);
+
+  /* Use these with nc_var_par_access(). */
+  static public final int NC_INDEPENDENT = 0;
+  static public final int NC_COLLECTIVE = 1;
+
+  int nc_var_par_access(int ncid, int varid, int par_access);
+
+  // Given an ncid and group name (NULL gets root group), return locid.
+  int nc_inq_ncid(int ncid, String name, IntByReference grp_ncid);
+
+  // Given a location id, return the number of groups it contains, and an array of their locids.
+  int nc_inq_grps(int ncid, IntByReference numgrps, int[] ncids);
+
+  // Given locid, find name of group. (Root group is named "".)
+  int nc_inq_grpname(int ncid, byte[] name);
+
+  // Given ncid, find full name and len of full name. (Root group is named "/", with length 1.)
+  int nc_inq_grpname_full(int ncid, size_t* lenp, byte[] full_name);
+
+  // Given ncid, find len of full name.
+  int nc_inq_grpname_len(int ncid, size_t* lenp);
+
+  // Given an ncid, find the ncid of it's parent group.
+  int nc_inq_grp_parent(int ncid, IntByReference parent_ncid);
+
+  // Given a name and parent ncid, find group ncid.
+  int nc_inq_grp_ncid(int ncid, String grp_name, IntByReference grp_ncid);
+
+  // Given a full name and ncid, find group ncid.
+  int nc_inq_grp_full_ncid(int ncid, String full_name, IntByReference grp_ncid);
+
+  // Get a list of ids for all the variables in a group.
+  int nc_inq_varids(int ncid, IntByReference nvars, int[] varids);
+
+  // Find all dimids for a location. This finds all dimensions in a group, or any of it's parents.
+  int nc_inq_dimids(int ncid, IntByReference ndims, int[] dimids, int include_parents);
+
+  // Find all user-defined types for a location. This finds all user-defined types in a group.
+  int nc_inq_typeids(int ncid, IntByReference ntypes, int[] typeids);
+
+  /* Create a group. It's ncid is returned in the new_ncid pointer. */
+  int nc_def_grp(int parent_ncid, String name, IntByReference new_ncid);
+
+/* Here are functions for dealing with compound types. */
+
+  // Create a compound type.
+  int nc_def_compound(int ncid, size_t size, String name, IntByReference typeidp);
+
+  // Insert a named field into a compound type.
+  int nc_insert_compound(int ncid, int xtype, String name, size_t offset, int field_typeid);
+
+  // Insert a named array into a compound type.
+  int nc_insert_array_compound(int ncid, int xtype, String name, size_t offset, int field_typeid,
+          int ndims, IntByReference dim_sizes);
+
+  // Get the name and size of a type.
+  int nc_inq_type(int ncid, int xtype, byte[] name, size_t* size);
+
+  // Get the name, size, and number of fields in a compound type.
+  int nc_inq_compound(int ncid, int xtype, byte[] name, size_t* sizep, size_t* nfieldsp);
+
+  // Get the name of a compound type.
+  int nc_inq_compound_name(int ncid, int xtype, byte[] name);
+
+  // Get the size of a compound type.
+  int nc_inq_compound_size(int ncid, int xtype, size_t* sizep);
+
+  // Get the number of fields in this compound type.
+  int nc_inq_compound_nfields(int ncid, int xtype, size_t* nfieldsp);
+
+  // Given the xtype and the fieldid, get all info about it.
+  int nc_inq_compound_field(int ncid, int xtype, int fieldid, byte[] name,
+          size_t* offsetp, IntByReference field_typeidp, IntByReference ndimsp,
+          IntByReference dim_sizesp);
+
+  // Given the typeid and the fieldid, get the name.
+  int nc_inq_compound_fieldname(int ncid, int xtype, int fieldid, byte[] name);
+
+  // Given the xtype and the name, get the fieldid.
+  int nc_inq_compound_fieldindex(int ncid, int xtype, String name, IntByReference fieldidp);
+
+  // Given the xtype and fieldid, get the offset.
+  int nc_inq_compound_fieldoffset(int ncid, int xtype, int fieldid, size_t*offsetp);
+
+  // Given the xtype and the fieldid, get the type of that field.
+  int nc_inq_compound_fieldtype(int ncid, int xtype, int fieldid, IntByReference field_typeidp);
+
+  // Given the xtype and the fieldid, get the number of dimensions for that field (scalars are 0).
+  int nc_inq_compound_fieldndims(int ncid, int xtype, int fieldid, IntByReference ndimsp);
+
+  // Given the xtype and the fieldid, get the sizes of dimensions for that field. User must have allocated storage for the dim_sizes.
+  int nc_inq_compound_fielddim_sizes(int ncid, int xtype, int fieldid, int[] dim_sizes);
+
+  /* This is the type of arrays of vlens. */
+  typedef struct
+
+  {
+    size_t len; /* Length of VL data (in base type units) */
+    void*p;    /* Pointer to VL data */
+  }
+
+  nc_vlen_t;
+
+  /* Create a variable length type. */
+  int nc_def_vlen(int ncid, String name, int base_typeid, IntByReference xtypep);
+
+  /* Find out about a vlen. */
+  int nc_inq_vlen(int ncid, int xtype, byte[] name, size_t* datum_sizep, IntByReference base_nc_typep);
+
+  /* When you read VLEN type the library will actually allocate the
+* storage space for the data. This storage space must be freed, so
+* pass the pointer back to this function, when you're done with the
+* data, and it will free the vlen memory. */
+  int nc_free_vlen(nc_vlen_t* vl);
+
+  /* Put or get one element in a vlen array. */
+  int nc_put_vlen_element(int ncid, int typeid1, void* vlen_element, size_t len, void* data);
+
+  int nc_get_vlen_element(int ncid, int typeid1, void* vlen_element, size_t*len, void* data);
+
+  /* When you read the string type the library will allocate the storage
+   * space for the data. This storage space must be freed, so pass the
+   * pointer back to this function, when you're done with the data, and
+   * it will free the string memory. */
+  // int nc_free_string(size_t len, String[] data);
+
+  /* Find out about a user defined type. */
+
+  int nc_inq_user_type(int ncid, int xtype, byte[] name, size_t*size,
+          IntByReference base_nc_typep, size_t*nfieldsp, IntByReference classp);
+
+  /* Write an attribute of any type. */
+  int nc_put_att(int ncid, int varid, String name, int xtype, size_t len, void*op);
+
+  /* Read an attribute of any type. */
+  int nc_get_att(int ncid, int varid, byte[] name, void*ip);
+
+/* Enum type. */
+
+  /* Create an enum type. Provide a base type and a name. At the moment
+   * only ints are accepted as base types. */
+  int nc_def_enum(int ncid, int base_typeid, String name, IntByReference typeidp);
+
+  /* Insert a named value into an enum type. The value must fit within
+   * the size of the enum type, the name size must be <= NC_MAX_NAME. */
+  int nc_insert_enum(int ncid, int xtype, String name, void*value);
+
+  /* Get information about an enum type: it's name, base type and the
+   * number of members defined. */
+  int nc_inq_enum(int ncid, int xtype, byte[] name, IntByReference base_nc_typep,
+          size_t*base_sizep, size_t*num_membersp);
+
+  /* Get information about an enum member: a name and value. Name size
+   * will be <= NC_MAX_NAME. */
+  int nc_inq_enum_member(int ncid, int xtype, int idx, byte[] name, void* value);
+
+
+  /* Get enum name from enum value. Name size will be <= NC_MAX_NAME. */
+  int nc_inq_enum_ident(int ncid, int xtype, long value, byte[] identifier);
+
+/* Opaque type. */
+
+  /* Create an opaque type. Provide a size and a name. */
+
+  int nc_def_opaque(int ncid, size_t size, String name, IntByReference xtypep);
+
+  /* Get information about an opaque type. */
+  int nc_inq_opaque(int ncid, int xtype, byte[] name, size_t*sizep);
+
+  /* Write entire var of any type. */
+  int nc_put_var(int ncid, int varid, void*op);
+
+  /* Read entire var of any type. */
+  int nc_get_var(int ncid, int varid, void*ip);
+
+  /* Write one value. */
+  int nc_put_var1(int ncid, int varid, size_t*indexp,
+          void*op);
+
+  /* Read one value. */
+  int nc_get_var1(int ncid, int varid, size_t*indexp, void*ip);
+
+  /* Write an array of values. */
+  int nc_put_vara(int ncid, int varid, size_t*startp,
+          size_t*countp, void*op);
+
+  /* Read an array of values. */
+  int nc_get_vara(int ncid, int varid, size_t*startp,
+          size_t*countp, void*ip);
+
+  /* Write slices of an array of values. */
+  int nc_put_vars(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          void*op);
+
+  /* Read slices of an array of values. */
+  int nc_get_vars(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          void*ip);
+
+  /* Write mapped slices of an array of values. */
+  int nc_put_varm(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, void*op);
+
+  /* Read mapped slices of an array of values. */
+  int nc_get_varm(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, void*ip);
+
+/* Extra netcdf-4 stuff. */
+
+  /* Set compression settings for a variable. Lower is faster, higher is
+* better. Must be called after nc_def_var and before nc_enddef. */
+
+  int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
+          int deflate_level);
+
+  /* Find out compression settings of a var. */
+  int nc_inq_var_deflate(int ncid, int varid, IntByReference shufflep,
+          IntByReference deflatep, IntByReference deflate_levelp);
+
+  /* Set fletcher32 checksum for a var. This must be done after
+nc_def_var and before nc_enddef. */
+  int nc_def_var_fletcher32(int ncid, int varid, int fletcher32);
+
+  /* Inq fletcher32 checksum for a var. */
+  int nc_inq_var_fletcher32(int ncid, int varid, IntByReference fletcher32p);
+
+  /* Define chunking for a variable. This must be done after nc_def_var
+and before nc_enddef. */
+  int nc_def_var_chunking(int ncid, int varid, int contiguous, IntByReference chunksizesp);
+
+  /* Inq chunking stuff for a var. */
+  int nc_inq_var_chunking(int ncid, int varid, IntByReference contiguousp, IntByReference chunksizesp);
+
+  /* Define fill value behavior for a variable. This must be done after
+nc_def_var and before nc_enddef. */
+  int nc_def_var_fill(int ncid, int varid, int no_fill, void*fill_value);
+
+  /* Inq fill value setting for a var. */
+  int nc_inq_var_fill(int ncid, int varid, IntByReference no_fill, void*fill_value);
+
+  /* Define the endianness of a variable. */
+  int nc_def_var_endian(int ncid, int varid, int endinan);
+
+  /* Learn about the endianness of a variable. */
+  int nc_inq_var_endian(int ncid, int varid, IntByReference endinanp);
+
+  /* Set the fill mode (classic or 64-bit offset files only). */
+  int nc_set_fill(int ncid, int fillmode, IntByReference old_modep);
+
+  /* Set the default nc_create format to NC_FORMAT_CLASSIC,
+* NC_FORMAT_64BIT, NC_FORMAT_NETCDF4, NC_FORMAT_NETCDF4_CLASSIC. */
+  int nc_set_default_format(int format, IntByReference old_formatp);
+
+  int nc_redef(int ncid);
+
+  int nc__enddef(int ncid, size_t h_minfree, size_t v_align,
+          size_t v_minfree, size_t r_align);
+
+  int nc_enddef(int ncid);
+
+  int nc_sync(int ncid);
+
+  int nc_abort(int ncid);
+
+  int nc_close(int ncid);
+
+  int nc_inq(int ncid, IntByReference ndimsp, IntByReference nvarsp, IntByReference nattsp, IntByReference unlimdimidp);
+
+  int nc_inq_ndims(int ncid, IntByReference ndimsp);
+
+  int nc_inq_nvars(int ncid, IntByReference nvarsp);
+
+  int nc_inq_natts(int ncid, IntByReference nattsp);
+
+  int nc_inq_unlimdim(int ncid, IntByReference unlimdimidp);
+
+  /* The next function is for NetCDF-4 only */
+  int nc_inq_unlimdims(int ncid, IntByReference nunlimdimsp, int[] unlimdimidsp);
+
+  /* Added in 3.6.1 to return format of netCDF file. */
+  int nc_inq_format(int ncid, IntByReference formatp);
+
+/* Begin _dim */
+
+  int nc_def_dim(int ncid, String name, size_t len, IntByReference idp);
+
+  int nc_inq_dimid(int ncid, byte[] name, IntByReference idp);
+
+  int nc_inq_dim(int ncid, int dimid, byte[] name, size_t*lenp);
+
+  int nc_inq_dimname(int ncid, int dimid, byte[] name);
+
+  int nc_inq_dimlen(int ncid, int dimid, size_t*lenp);
+
+  int nc_rename_dim(int ncid, int dimid, String name);
+
+/* End _dim */
+/* Begin _att */
+
+  int nc_inq_att(int ncid, int varid, String name, IntByReference xtypep, size_t* lenp);
+
+  int nc_inq_attid(int ncid, int varid, String name, IntByReference idp);
+
+  int nc_inq_atttype(int ncid, int varid, String name, IntByReference xtypep);
+
+  int nc_inq_attlen(int ncid, int varid, String name, size_t* lenp);
+
+  int nc_inq_attname(int ncid, int varid, int attnum, byte[] name);
+
+  int nc_copy_att(int ncid_in, int varid_in, String name, int ncid_out, int varid_out);
+
+  int nc_rename_att(int ncid, int varid, String name, String newname);
+
+  int nc_del_att(int ncid, int varid, String name);
+
+/* End _att */
+/* Begin {put,get}_att */
+
+  int nc_put_att_text(int ncid, int varid, String name, size_t len, String op);
+
+  int nc_get_att_text(int ncid, int varid, String name, byte[] ip);
+
+  int nc_put_att_uchar(int ncid, int varid, String name, int xtype, size_t len, String op);
+
+  int nc_get_att_uchar(int ncid, int varid, String name, byte[] ip);
+
+  int nc_put_att_schar(int ncid, int varid, String name, int xtype, size_t len, String op);
+
+  int nc_get_att_schar(int ncid, int varid, String name, byte[] ip);
+
+  int nc_put_att_short(int ncid, int varid, String name, int xtype, size_t len, short[] op);
+
+  int nc_get_att_short(int ncid, int varid, String name, short[] ip);
+
+  int nc_put_att_int(int ncid, int varid, String name, int xtype, size_t len, int[] op);
+
+  int nc_get_att_int(int ncid, int varid, String name, int[] ip);
+
+  //int nc_put_att_long(int ncid, int varid, String name, int xtype, size_t len, int*op);
+
+  //int nc_get_att_long(int ncid, int varid, String name, int*ip);
+
+  int nc_put_att_float(int ncid, int varid, String name, int xtype, size_t len, float[] op);
+
+  int nc_get_att_float(int ncid, int varid, String name, float[] ip);
+
+  int nc_put_att_double(int ncid, int varid, String name, int xtype, size_t len, double[] op);
+
+  int nc_get_att_double(int ncid, int varid, String name, double[] ip);
+
+  int nc_put_att_ubyte(int ncid, int varid, String name, int xtype, size_t len, byte[] op);
+
+  int nc_get_att_ubyte(int ncid, int varid, String name, byte[] ip);
+
+  int nc_put_att_ushort(int ncid, int varid, String name, int xtype, size_t len, short[] op);
+
+  int nc_get_att_ushort(int ncid, int varid, String name, short[] ip);
+
+  int nc_put_att_uint(int ncid, int varid, String name, int xtype, size_t len, int[] op);
+
+  int nc_get_att_uint(int ncid, int varid, String name, int[] ip);
+
+  int nc_put_att_longlong(int ncid, int varid, String name, int xtype, size_t len, long[] op);
+
+  int nc_get_att_longlong(int ncid, int varid, String name, long[] ip);
+
+  int nc_put_att_ulonglong(int ncid, int varid, String name, int xtype, size_t len, long[] op);
+
+  int nc_get_att_ulonglong(int ncid, int varid, String name, long[] ip);
+
+  int nc_put_att_string(int ncid, int varid, String name, size_t len, String[] op);
+
+  int nc_get_att_string(int ncid, int varid, String name, String[] ip);
+
+/* End {put,get}_att */
+/* Begin _var */
+
+  int nc_def_var(int ncid, String name, int xtype, int ndims,
+          IntByReference dimidsp, IntByReference varidp);
+
+  int nc_inq_var(int ncid, int varid, byte[] name, IntByReference xtypep,
+          IntByReference ndimsp, int[] dimidsp, IntByReference nattsp);
+
+  int nc_inq_varid(int ncid, String name, IntByReference varidp);
+
+  int nc_inq_varname(int ncid, int varid, byte[] name);
+
+  int nc_inq_vartype(int ncid, int varid, IntByReference xtypep);
+
+  int nc_inq_varndims(int ncid, int varid, IntByReference ndimsp);
+
+  int nc_inq_vardimid(int ncid, int varid, IntByReference dimidsp);
+
+  int nc_inq_varnatts(int ncid, int varid, IntByReference nattsp);
+
+  int nc_rename_var(int ncid, int varid, String name);
+
+  int nc_copy_var(int ncid_in, int varid, int ncid_out);
+
+/* End _var */
+/* Begin {put,get}_var1 */
+
+  int nc_put_var1_text(int ncid, int varid, size_t* indexp, String op);
+
+  int nc_get_var1_text(int ncid, int varid, size_t* indexp, String ip);
+
+  int nc_put_var1_uchar(int ncid, int varid, size_t* indexp, String op);
+
+  int nc_get_var1_uchar(int ncid, int varid, size_t* indexp, unsigned String ip);
+
+  int nc_put_var1_schar(int ncid, int varid, size_t* indexp, String op);
+
+  int nc_get_var1_schar(int ncid, int varid, size_t* indexp, String ip);
+
+  int nc_put_var1_short(int ncid, int varid, size_t*indexp, short* op);
+
+  int nc_get_var1_short(int ncid, int varid, size_t*indexp, short*ip);
+
+  int nc_put_var1_int(int ncid, int varid, size_t*indexp, IntByReference op);
+
+  int nc_get_var1_int(int ncid, int varid, size_t*indexp, IntByReference ip);
+
+  int nc_put_var1_long(int ncid, int varid, size_t*indexp, int* op);
+
+  int nc_get_var1_long(int ncid, int varid, size_t*indexp, IntByReference ip);
+
+  int nc_put_var1_float(int ncid, int varid, size_t*indexp, float* op);
+
+  int nc_get_var1_float(int ncid, int varid, size_t*indexp, FloatByReference ip);
+
+  int nc_put_var1_double(int ncid, int varid, size_t*indexp, double* op);
+
+  int nc_get_var1_double(int ncid, int varid, size_t*indexp, double*ip);
+
+  int nc_put_var1_ubyte(int ncid, int varid, size_t*indexp,  unsigned String op);
+
+  int nc_get_var1_ubyte(int ncid, int varid, size_t*indexp, unsigned String ip);
+
+  int nc_put_var1_ushort(int ncid, int varid, size_t*indexp, unsigned short*op);
+
+  int nc_get_var1_ushort(int ncid, int varid, size_t*indexp, unsigned short*ip);
+
+  int nc_put_var1_uint(int ncid, int varid, size_t*indexp, unsigned IntByReference op);
+
+  int nc_get_var1_uint(int ncid, int varid, size_t*indexp, unsigned IntByReference ip);
+
+  int nc_put_var1_longlong(int ncid, int varid, size_t*indexp, long*op);
+
+  int nc_get_var1_longlong(int ncid, int varid, size_t*indexp,  long*ip);
+
+  int nc_put_var1_ulonglong(int ncid, int varid, size_t*indexp, unsigned long*op);
+
+  int nc_get_var1_ulonglong(int ncid, int varid, size_t*indexp, unsigned long*ip);
+
+  int nc_put_var1_string(int ncid, int varid, size_t*indexp, String*op);
+
+  int nc_get_var1_string(int ncid, int varid, size_t*indexp, String*ip);
+
+/* End {put,get}_var1 */
+/* Begin {put,get}_vara */
+
+  int nc_put_vara_text(int ncid, int varid,
+          size_t*startp, size_t*countp, String op);
+
+  int nc_get_vara_text(int ncid, int varid,
+          size_t*startp, size_t*countp, String ip);
+
+  int nc_put_vara_uchar(int ncid, int varid,
+          size_t*startp, size_t*countp, unsigned String op);
+
+  int nc_get_vara_uchar(int ncid, int varid, size_t*startp,
+          size_t*countp, unsigned String ip);
+
+  int nc_put_vara_schar(int ncid, int varid, size_t*startp,
+          size_t*countp, signed String op);
+
+  int nc_get_vara_schar(int ncid, int varid, size_t*startp,
+          size_t*countp, signed String ip);
+
+  int nc_put_vara_short(int ncid, int varid, size_t*startp,
+          size_t*countp, short*op);
+
+  int nc_get_vara_short(int ncid, int varid, size_t*startp,
+          size_t*countp, short*ip);
+
+  int nc_put_vara_int(int ncid, int varid, size_t*startp,
+          size_t*countp, IntByReference op);
+
+  int nc_get_vara_int(int ncid, int varid, size_t*startp,
+          size_t*countp, IntByReference ip);
+
+  int nc_put_vara_long(int ncid, int varid, size_t*startp,
+          size_t*countp, int*op);
+
+  int nc_get_vara_long(int ncid, int varid,
+          size_t*startp, size_t*countp, int*ip);
+
+  int nc_put_vara_float(int ncid, int varid,
+          size_t*startp, size_t*countp, float*op);
+
+  int nc_get_vara_float(int ncid, int varid,
+          size_t*startp, size_t*countp, float*ip);
+
+  int nc_put_vara_double(int ncid, int varid, size_t*startp,
+          size_t*countp, double*op);
+
+  int nc_get_vara_double(int ncid, int varid, size_t*startp,
+          size_t*countp, double*ip);
+
+  int nc_put_vara_ubyte(int ncid, int varid, size_t*startp,
+          size_t*countp, unsigned String op);
+
+  int nc_get_vara_ubyte(int ncid, int varid, size_t*startp,
+          size_t*countp, unsigned String ip);
+
+  int nc_put_vara_ushort(int ncid, int varid, size_t*startp,
+          size_t*countp, unsigned short*op);
+
+  int nc_get_vara_ushort(int ncid, int varid, size_t*startp,
+          size_t*countp, unsigned short*ip);
+
+  int nc_put_vara_uint(int ncid, int varid, size_t*startp,
+          size_t*countp, unsigned IntByReference op);
+
+  int nc_get_vara_uint(int ncid, int varid, size_t*startp,
+          size_t*countp, unsigned IntByReference ip);
+
+  int nc_put_vara_longlong(int ncid, int varid, size_t*startp,
+          size_t*countp, long*op);
+
+  int nc_get_vara_longlong(int ncid, int varid, size_t*startp,
+          size_t*countp, long*ip);
+
+  int nc_put_vara_ulonglong(int ncid, int varid, size_t*startp,
+          size_t*countp, unsigned long*op);
+
+  int nc_get_vara_ulonglong(int ncid, int varid, size_t*startp,
+          size_t*countp, unsigned long*ip);
+
+  int nc_put_vara_string(int ncid, int varid, size_t*startp,
+          size_t*countp, String*op);
+
+  int nc_get_vara_string(int ncid, int varid, size_t*startp,
+          size_t*countp, String*ip);
+
+/* End {put,get}_vara */
+/* Begin {put,get}_vars */
+
+  int nc_put_vars_text(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          String op);
+
+  int nc_get_vars_text(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          String ip);
+
+  int nc_put_vars_uchar(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          unsigned String op);
+
+  int nc_get_vars_uchar(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          unsigned String ip);
+
+  int nc_put_vars_schar(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          signed String op);
+
+  int nc_get_vars_schar(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          signed String ip);
+
+  int nc_put_vars_short(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          short*op);
+
+  int nc_get_vars_short(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          short*ip);
+
+  int nc_put_vars_int(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          IntByReference op);
+
+  int nc_get_vars_int(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          IntByReference ip);
+
+  int nc_put_vars_long(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          int*op);
+
+  int nc_get_vars_long(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          int*ip);
+
+  int nc_put_vars_float(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          float*op);
+
+  int nc_get_vars_float(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          float*ip);
+
+  int nc_put_vars_double(int ncid, int varid,
+          size_t*startp, size_t*countp, ptrdiff_t*stridep,
+          double*op);
+
+  int nc_get_vars_double(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          double*ip);
+
+  int nc_put_vars_ubyte(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          unsigned String op);
+
+  int nc_get_vars_ubyte(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          unsigned String ip);
+
+  int nc_put_vars_ushort(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          unsigned short*op);
+
+  int nc_get_vars_ushort(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          unsigned short*ip);
+
+  int nc_put_vars_uint(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          unsigned IntByReference op);
+
+  int nc_get_vars_uint(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          unsigned IntByReference ip);
+
+  int nc_put_vars_longlong(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          long*op);
+
+  int nc_get_vars_longlong(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          long*ip);
+
+  int nc_put_vars_ulonglong(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          unsigned long*op);
+
+  int nc_get_vars_ulonglong(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          unsigned long*ip);
+
+  int nc_put_vars_string(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          String*op);
+
+  int nc_get_vars_string(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          String*ip);
+
+/* End {put,get}_vars */
+/* Begin {put,get}_varm */
+
+  int nc_put_varm_text(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, String op);
+
+  int nc_get_varm_text(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, String ip);
+
+  int nc_put_varm_uchar(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, unsigned String op);
+
+  int nc_get_varm_uchar(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, unsigned String ip);
+
+  int nc_put_varm_schar(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, signed String op);
+
+  int nc_get_varm_schar(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, signed String ip);
+
+  int nc_put_varm_short(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, short*op);
+
+  int nc_get_varm_short(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, short*ip);
+
+  int nc_put_varm_int(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, IntByReference op);
+
+  int nc_get_varm_int(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, IntByReference ip);
+
+  int nc_put_varm_long(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, int*op);
+
+  int nc_get_varm_long(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, int*ip);
+
+  int nc_put_varm_float(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, float*op);
+
+  int nc_get_varm_float(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, float*ip);
+
+  int nc_put_varm_double(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, double*op);
+
+  int nc_get_varm_double(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, double*ip);
+
+  int nc_put_varm_ubyte(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, unsigned String op);
+
+  int nc_get_varm_ubyte(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, unsigned String ip);
+
+  int nc_put_varm_ushort(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, unsigned short*op);
+
+  int nc_get_varm_ushort(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, unsigned short*ip);
+
+  int nc_put_varm_uint(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, unsigned IntByReference op);
+
+  int nc_get_varm_uint(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, unsigned IntByReference ip);
+
+  int nc_put_varm_longlong(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, long*op);
+
+  int nc_get_varm_longlong(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, long*ip);
+
+  int nc_put_varm_ulonglong(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, unsigned long*op);
+
+  int nc_get_varm_ulonglong(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, unsigned long*ip);
+
+  int nc_put_varm_string(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, String*op);
+
+  int nc_get_varm_string(int ncid, int varid, size_t*startp,
+          size_t*countp, ptrdiff_t*stridep,
+          ptrdiff_t*imapp, String*ip);
+
+/* End {put,get}_varm */
+/* Begin {put,get}_var */
+
+  int nc_put_var_text(int ncid, int varid, String op);
+
+  int nc_get_var_text(int ncid, int varid, String ip);
+
+  int nc_put_var_uchar(int ncid, int varid, unsigned String op);
+
+  int nc_get_var_uchar(int ncid, int varid, unsigned String ip);
+
+  int nc_put_var_schar(int ncid, int varid, signed String op);
+
+  int nc_get_var_schar(int ncid, int varid, signed String ip);
+
+  int nc_put_var_short(int ncid, int varid, short*op);
+
+  int nc_get_var_short(int ncid, int varid, short*ip);
+
+  int nc_put_var_int(int ncid, int varid, IntByReference op);
+
+  int nc_get_var_int(int ncid, int varid, IntByReference ip);
+
+  int nc_put_var_long(int ncid, int varid, int*op);
+
+  int nc_get_var_long(int ncid, int varid, int*ip);
+
+  int nc_put_var_float(int ncid, int varid, float*op);
+
+  int nc_get_var_float(int ncid, int varid, float*ip);
+
+  int nc_put_var_double(int ncid, int varid, double*op);
+
+  int nc_get_var_double(int ncid, int varid, double*ip);
+
+  int nc_put_var_ubyte(int ncid, int varid, unsigned String op);
+
+  int nc_get_var_ubyte(int ncid, int varid, unsigned String ip);
+
+  int nc_put_var_ushort(int ncid, int varid, unsigned short*op);
+
+  int nc_get_var_ushort(int ncid, int varid, unsigned short*ip);
+
+  int nc_put_var_uint(int ncid, int varid, unsigned IntByReference op);
+
+  int nc_get_var_uint(int ncid, int varid, unsigned IntByReference ip);
+
+  int nc_put_var_longlong(int ncid, int varid, long*op);
+
+  int nc_get_var_longlong(int ncid, int varid, long*ip);
+
+  int nc_put_var_ulonglong(int ncid, int varid, unsigned long*op);
+
+  int nc_get_var_ulonglong(int ncid, int varid, unsigned long*ip);
+
+  int nc_put_var_string(int ncid, int varid, String*op);
+
+  int nc_get_var_string(int ncid, int varid, String*ip);
+
+
+  /* When using EXTRA_MEM_DEBUG this will total up allocs and frees
+* and make sure everything adds up. Not to be used by users. */
+  void nc_exit();
+
+  /* Set the log level. 0 shows only errors, 1 only major messages,
+* etc., to 5, which shows way too much information. */
+  int nc_set_log_level(int new_level);
+
+  /* Use this to turn off logging by calling
+ nc_log_level(NC_TURN_OFF_LOGGING) */
+  static public final int NC_TURN_OFF_LOGGING = -1;
+
+  /* Show the netCDF library's in-memory metadata for a file. */
+  int nc_show_metadata(int ncid);
+
+  int nc__create_mp(String path, int cmode, size_t initialsz, int basepe,
+          size_t*chunksizehintp, IntByReference ncidp);
+
+  int nc__open_mp(String path, int mode, int basepe,
+          size_t*chunksizehintp, IntByReference ncidp);
+
+  int nc_delete(String path);
+
+  int nc_delete_mp(String path, int basepe);
+
+  int nc_set_base_pe(int ncid, int pe);
+
+  int nc_inq_base_pe(int ncid, IntByReference pe);
+
+}

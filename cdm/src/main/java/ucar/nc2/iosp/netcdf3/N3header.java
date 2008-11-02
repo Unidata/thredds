@@ -281,6 +281,23 @@ public class N3header {
 
   }
 
+  void showDetail(Formatter out) throws IOException {
+    out.format("  dataStart= %d%n", dataStart);
+    out.format("  nonRecordData size= %d %n", recStart-dataStart);
+    out.format("  record Data starts = %d %n", recStart);
+    out.format("  recsize= = %d %n", recsize);
+    out.format("  numrecs= = %d %n", numrecs);
+
+    long calcSize = recStart + recsize * numrecs;
+    out.format("  computedSize = %d %n", calcSize);
+
+    long actual = raf.length();
+    if (actual < calcSize)
+      out.format("  TRUNCATED!! actual size = %d (%d bytes) %n", actual, (calcSize-actual));
+    else if (actual != calcSize)
+      out.format(" actual size larger = %d (%d byte extra) %n", actual, (actual-calcSize));
+  }
+
   synchronized boolean removeRecordStructure() {
     boolean found = false;
     for (Variable v : uvars) {

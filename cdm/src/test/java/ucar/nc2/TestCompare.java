@@ -44,8 +44,8 @@ public class TestCompare {
    }
   
   static public void compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare, boolean _showEach) {
-    System.out.println("Original= "+org.getLocation());
-    System.out.println("Copy= "+copy.getLocation());
+    System.out.println(" Original= "+org.getLocation());
+    System.out.println(" Copy= "+copy.getLocation());
     showCompare = _showCompare;
     showEach = _showEach;
     compareData = _compareData;
@@ -190,7 +190,7 @@ public class TestCompare {
 
   static public void compareData(Array data1, Array data2) {
     assert data1.getSize() == data2.getSize();
-    assert data1.getElementType() == data2.getElementType();
+    assert data1.getElementType() == data2.getElementType() : data1.getElementType()+"!="+ data2.getElementType();
     DataType dt = DataType.getType( data1.getElementType());
 
     IndexIterator iter1 = data1.getIndexIterator();
