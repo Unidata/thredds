@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+ <html>
+  <head>
+   <title>TDS Tutorial: Server Logging &amp; Statistics</title>
+    <style type="text/css">
+     pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 80%;}
+     code {font-size: 11pt;}
+     dl {margin: 10px 5px 5px 15px;}
+     table {table-layout: auto; border-collapse: separate; font-size: 10pt;}
+     th {text-align: left; background-color: #E7E7E7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
+     td {text-align: left; background-color: #F7F7F7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
+     table code {font-size: 10pt;}
+ 
+    /* tooltips */
+    a.tooltip {color:#0000FF; text-decoration: none;}
+    a.tooltip b {display:none;}
+    a.tooltip:hover {border:0px; position:relative; z-index:500; text-decoration:none;}
+    a.tooltip:hover b {display:block; position:absolute; top:20px; left:-25px; padding:5px; font-weight:normal; color:#000; border:1px solid #000000; background:#FFFFFF; width:300px;}
+    a.tooltip:hover b em.outer {position:absolute; left:20px; top:-8px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #000000; overflow:hidden; z-index:100;}
+    a.tooltip:hover b em.inner {position:absolute; left:20px; top:-7px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #FFFFFF; overflow:hidden; z-index:100}
+    .clear {clear:both;}
+
+   </style>
+
+  </head>
+  <body>
+   <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Tutorial: Server Logging &amp; Statistics</h1>
+   <hr>
+   <h2>TDS Access Log</h2>
+
+   <dl>
+    
+    <dt><h3>Exercise 1: Configure the <code>AccessLogValve</code> to create a custom access log for the TDS</h3></dt>
+     <ol>
+      <li>Using your favorite editor open <code>$TOMCAT_HOME/conf/server.xml</code>:</li>
+<pre>
+<b>-bash-3.2$</b> vi server.xml
+</pre>  
+      <li>Locate the <code>AccessLogValve</code> contained in the <code>Host</code> element (should be near the bottom of the file):</li>
+
+<pre>
+&lt;!-- Define the default virtual host
+        Note: XML Schema validation will not work with Xerces 2.2.
+--&gt;
+&lt;Host name="localhost"  appBase="webapps"
+      unpackWARs="true" autoDeploy="true"
+      xmlValidation="false" xmlNamespaceAware="false"&gt;
+
+  .
+  .
+  .
+  
+  &lt;!-- Access log processes all example.
+          Documentation at: /docs/config/valve.html --&gt;
+  &lt;!--
+  &lt;Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"  
+            prefix="localhost_access_log." suffix=".txt" pattern="common" resolveHosts="false"/&gt;
+  --&gt;
+
+&lt;/Host&gt;
+</pre>  
+      <li>Uncomment the <code>AccessLogValve</code> and modify its attributes as follows:</li>
+
+       <ul>
+        <li>Change the <code>prefix</code> and <code>suffix</code> elements to customize the access log name:</li>
+<pre>
+prefix="access." 
+suffix=".log"
+</pre> 
+         
+
+        <li>To provide more useful information about who is accessing the TDS, change the <code>pattern</code> element to customize the format of each log entry:</li>
+<pre>
+pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D"
+</pre> 
+
+       <li>When you are finished with your edits, the <code>AccessLogValve</code> should look something like the following:</li>
+
+<pre>
+&lt;Valve className="org.apache.catalina.valves.AccessLogValve"
+          directory="logs"  
+          prefix="access." 
+          suffix=".log"
+          pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D"
+          resolveHosts="false" /&gt;
+</pre> 
+
+       <li>Changes to <code>server.xml</code> do not take effect until Tomcat is restarted, so restart Tomcat.</li>
+
+
+       <li>Verify an access log with a name of  <code>access.2008-11-06.log</code> has been generated in the $TOMCAT_HOME/logs directory:</li>
+<pre>
+<b>-bash-3.2$</b> echo $TOMCAT_HOME/logs/access*
+/home/thredds/apache-tomcat-6.0.18/logs/access.2008-11-06.log
+</pre>  
+       <li>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser and click on a few links.</li>
+       <li>Now examine the entry format being logged to <code>access.2008-11-06.log</code>:</li>
+<pre>
+<b>-bash-3.2$</b> less access.2008-11-06.log
+128.117.47.200 - - [06/Nov/2008:15:26:42 -0600] "GET /thredds HTTP/1.1" 302 - "null" "Mozilla/5.0 (X11; U; Linux i686
+(x86_64); en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6" 312
+128.117.47.200 - - [06/Nov/2008:15:26:42 -0600] "GET /thredds/catalog.html HTTP/1.1" 200 2273 "null" "Mozilla/5.0 (X11;
+U; Linux i686 (x86_64); en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6" 24
+</pre>
+      </ul>
+   
+     </ol>
+    <dt><h3>Access log format</h3></dt>
+         <p>The TDS access log entry pattern is almost identical to the standard <code>combined</code> logging pattern with an addition: the <code>%D</code> which is used for documenting the <i>Time taken to process the request, in millisat</i> will appear at the end of each log entry:</p>
+
+<pre>
+pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D"
+</pre> 
+         <p>The above pattern makes use of the following codes:</p>
+
+         <ul>
+          <li>%h - Remote host name (or IP address if resolveHosts is false)
+          <li>%l - Remote logical username from identd (always returns '-')
+          <li>%u - Remote user that was authenticated (if any), else '-'
+          <li>%t - Date and time, in Common Log Format
+          <li>%r - First line of the request (method and request URI)
+          <li>%s - HTTP status code of the response
+          <li>%b - Bytes sent, excluding HTTP headers, or '-' if zero
+          <li>%D - Time taken to process the request, in millis
+         </ul>
+  <p>The above pattern translates into:</p>
+<pre>
+128.117.47.200 - - [06/Nov/2008:15:26:42 -0600] "GET /thredds HTTP/1.1" 302 - "null" "Mozilla/5.0 (X11; U; Linux i686
+(x86_64); en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6" 312
+</pre>
+
+
+         <p>References:</p>
+          <ul>
+           <li>Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html">Valve Component Documentation</a> (for information on log pattern configuration)</li>
+            <li><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions</a></li>
+          </ul>
+
+    <dt><h3>Using log information</h3></dt>
+     <p>Log information is useful and can tell you:</p>
+      <ul>
+       <li>Statistics about catalog usage</li>
+       <li>Security concerns</li>
+       <li>User information</li>
+       </li>
+
+    <dt><h3>Exercise 2: Parsing access log information into CSV format</h3></dt>
+     <ol>
+      <li>Locate the <code>logs</code> directory in your home directory which contains a week's worth of log files taken from one of our production servers:</li>
+<pre>
+<b>-bash-3.2$</b> cd
+<b>-bash-3.2$</b> ls -l logs
+total 18304
+-rw-r--r-- 1 thredds Unidata 1289568 2008-11-03 09:33 access.2008-10-25.log
+-rw-r--r-- 1 thredds Unidata 1884429 2008-11-03 09:33 access.2008-10-26.log
+-rw-r--r-- 1 thredds Unidata 2877002 2008-11-03 09:33 access.2008-10-27.log
+-rw-r--r-- 1 thredds Unidata 2452582 2008-11-03 09:33 access.2008-10-28.log
+-rw-r--r-- 1 thredds Unidata 3253728 2008-11-03 09:33 access.2008-10-29.log
+-rw-r--r-- 1 thredds Unidata 3086461 2008-11-03 09:33 access.2008-10-30.log
+-rw-r--r-- 1 thredds Unidata 3856528 2008-11-03 09:33 access.2008-10-31.log
+</pre>  
+      <li>Run the <code>parse_logs.pl</code> script to parse the logs into a file of CSV format.</li>
+<pre>
+<b>-bash-3.2$</b> /opt/bin/parse_logs.pl
+<b>-bash-3.2$</b> ls -l logs
+total 18304
+-rw-r--r-- 1 thredds Unidata 1289568 2008-11-03 09:33 access.2008-10-25.log
+-rw-r--r-- 1 thredds Unidata 1884429 2008-11-03 09:33 access.2008-10-26.log
+-rw-r--r-- 1 thredds Unidata 2877002 2008-11-03 09:33 access.2008-10-27.log
+-rw-r--r-- 1 thredds Unidata 2452582 2008-11-03 09:33 access.2008-10-28.log
+-rw-r--r-- 1 thredds Unidata 3253728 2008-11-03 09:33 access.2008-10-29.log
+-rw-r--r-- 1 thredds Unidata 3086461 2008-11-03 09:33 access.2008-10-30.log
+-rw-r--r-- 1 thredds Unidata 3856528 2008-11-03 09:33 access.2008-10-31.log
+-rw-r--r-- 1 thredds Unidata 1563896258 2008-11-03 09:35 logs.csv
+</pre>  
+      <li>Import the CSV file into an OpenOffice spreedsheet and look at the data.</li>
+<pre>
+<b>-bash-3.2$</b> openoffice.org -writer logs.csv
+</pre>  
+      <ul>
+       <li>What do you notice about the referer data?</li>
+       <li>Do we have many authenticated users?</li>
+      </ul>
+      
+<li>Run the <code>parse_logs.pl</code> script again, but pipe the output into a <code>dig.pl</code> script:</li>
+<pre>
+<b>-bash-3.2$</b> /opt/bin/parse_logs.pl | dig.pl  
+<b>-bash-3.2$</b> ls -l logs
+total 18304
+-rw-r--r-- 1 thredds Unidata 1289568 2008-11-03 09:33 access.2008-10-25.log
+-rw-r--r-- 1 thredds Unidata 1884429 2008-11-03 09:33 access.2008-10-26.log
+-rw-r--r-- 1 thredds Unidata 2877002 2008-11-03 09:33 access.2008-10-27.log
+-rw-r--r-- 1 thredds Unidata 2452582 2008-11-03 09:33 access.2008-10-28.log
+-rw-r--r-- 1 thredds Unidata 3253728 2008-11-03 09:33 access.2008-10-29.log
+-rw-r--r-- 1 thredds Unidata 3086461 2008-11-03 09:33 access.2008-10-30.log
+-rw-r--r-- 1 thredds Unidata 3856528 2008-11-03 09:33 access.2008-10-31.log
+-rw-r--r-- 1 thredds Unidata 1563896258 2008-11-03 09:35 logs.csv
+-rw-r--r-- 1 thredds Unidata 1563896258 2008-11-03 09:35 logs_dig.csv
+</pre>  
+      <ul>
+       <li>Is the added host data more helpful?</li>
+      </ul>
+      
+    </ol>
+
+
+   </dl>
+
+
+
+<p>&nbsp;<p>
+   <hr>
+   <address>
+    <img src="../images/thread.png" height="108" width="110">
+    This document is maintained by Unidata and was last updated on October 28, 2008. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+   </address>
+  </body>
+ </html>
+
+
