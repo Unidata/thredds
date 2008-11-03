@@ -27,41 +27,69 @@
   <body>
    <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Tutorial: Additional Security Configuration</h1>
    <hr>
+    <p>We have compiled a list of a few additional step you should take to help secure Tomcat and your TDS server.  <i>This is not a complete laundry list of security fixes!</i>  Please use it as a starting point when securing your server.</p>
+
+
 
     <dl>
-    <dt><h3>Keep both Tomcat and TDS up-to-date</h3></dt>
-     <p>Running the most current versions of software keeps your environment is guarded against <a href="http://www.securityfocus.com/vulnerabilities"><i>known</i> security vulnerabilities</a>.</p>
+    <dt><h3>Keep Tomcat, Java and the TDS up-to-date</h3></dt>
+     <p>Running the most current versions of software keeps your environment protected against <i>known</i> <a href="http://www.securityfocus.com/vulnerabilities">security vulnerabilities</a>.</p>
+     <p>Resources to help stay informed:</p>
      <ul>
-     <li><a href="http://tomcat.apache.org/security.html">Tomcat security reports</a></li>
-     <li><a href="http://tomcat.apache.org/lists.html"><code>tomcat-users</code> mailing list</a></li>
-     <li><a href="http://www.unidata.ucar.edu/mailing_lists/"><code>thredds</code> mailing list</a></li>
+     <li><a href="http://tomcat.apache.org/security.html">Tomcat security reports</a><br>
+      A complete list of known and documented security vulnerabilities associated with each Tomcat release.</li>
+
+     <li><a href="http://tomcat.apache.org/lists.html"><code>tomcat-users</code> mailing list</a><br>
+     A high-traffic mailing list made up of Tomcat users.  New releases of Tomcat are likely to be announced here.</li>
+     <li><a href="http://java.sun.com/javase/technologies/security/">Java SE Security</a><br>
+     Sun's Java security page which includes a chronology of Java security issues and user forums.</li>
+     <li><a href="http://www.unidata.ucar.edu/mailing_lists/"><code>thredds</code> mailing list</a><br>
+     The THREDDS mailing list where announcements of new releases will be made.</li>
+     <li><a href="http://www.securityfocus.com/vulnerabilities">Buqtraq vunerability database</a><br>
+     SecurityFocus' database of all known vulnerabilities for all different types of software from different vendors.</li>
      </ul>
+
+
+
      <p></p>
     <dt><h3>Removing the default Tomcat web applications</h3></dt>
-     <p>It is generally good practice to remove any un-used web applications out of <code>$TOMCAT_HOME/webapps</code>.</p>
+     <p>It is generally good practice to remove any un-used web applications out of <code>$TOMCAT_HOME/webapps</code>.  Tomcat ships with several default web applications, that you may want to consider removing if they are not being utilized:</p>
+     <ul>
+      <li>The <code>ROOT</code> application is Tomcat's <code>DocumentRoot</code> and contains the server's main web page.  Give thought tot he content that is placed in <code>ROOT/</code>, as it will be readily available.  (Note: if you want to utilize a <code>robots.txt</code> file to restrict crawler activity, <code>ROOT/</code> is the place it will go.)</li>
+      <li>The <code>manager</code> application is used for remote management of web applications. To use this application, you must add a user with role of <code>manager</code> in <code>tomcat-users.xml</code>.  Obviously, if you are not planning to use the <code>manager</code> application, it should be removed.</li>
+      <li>The <code>host-manager</code> application is used for management of virtual hosts. To use this application, you must add a user with role of <code>host-manager</code> in <code>tomcat-users.xml</code>.  If you are not planning to do a lot of virtual hosting in Tomcat this application should be removed.</li>
+      <li>The <code>examples</code> application should probably be removed from a production server to minimize security exposure.</li>
+      <li>The <code>docs</code> are a copy of the <a href="http://tomcat.apache.org/tomcat-6.0-doc/">Tomcat documentation found online</a>.  Unless you have need for a local copy, removing <code>docs</code>  would help to tidy-up <code>$TOMCAT_HOME/webapps</code>.</li>
+      </ul>
+
+
 
     <dt><h3>Denying access to the TDS by remote IP address or host</h3></dt>
-      <p>Use the <code>RemoteHostValve</code> or <code>RemoteAddrValve</code> to restrict access to the TDS:</p>
+      <p>Use the <code>RemoteHostValve</code> or <code>RemoteAddrValve</code> to restrict access to the TDS.  For example, the following <code>Valve</code> declarations show ways to either <i>allow</i> or <i>deny</i> access to content:</p>
 
 <pre>
+&lt;!-- This example denies access based on IP addresses --&gt;
 &lt;Valve className="org.apache.catalina.valves.RemoteAddrValve"
-          deny="128.117.47.201,128.117.47.210" /&gt;
+       deny="128.117.47.201,128.107.157.210,96.33.56.215" /&gt;
 </pre>
 <pre>
+&lt;!-- This example denies access based on host names --&gt;
+&lt;Valve className="org.apache.catalina.valves.RemoteHostValve"
+           deny="www.badguys.com,www.bandwidthhog.net" /&gt;
+</pre>
+<pre>
+&lt;!-- Wildcard characters can with the both valves --&gt;
 &lt;Valve className="org.apache.catalina.valves.RemoteAddrValve"
-          deny="128.117.47.*" /&gt;
+       deny="128.117.47.*" /&gt;
 </pre>
 <pre>
-&lt;Valve className="org.apache.catalina.valves.RemoteHostValve"
-          deny="www.badguys.com,www.annoyingperson.net" /&gt;
-</pre>
-<pre>
-&lt;Valve className="org.apache.catalina.valves.RemoteHostValve"
-          deny="*.bandwidthhog.com" /&gt;
+&lt;!-- This example only allows the specified IPs to access  --&gt;
+&lt;Valve className="org.apache.catalina.valves.RemoteAddrValve"
+          allow="128.117.140.*" /&gt;
 </pre>
 
-
-      <p>Note: These valves rely on incoming ip addresses or hostnames which are vulnerable to spoofing.</p>
+      <p>The last example above would be a good candidate to utilize for adding an extra layer of security to the <code>manager</code> application if you were certain it would only need to be accessed from within a specific range of IP address.</p>
+      <p>Note: These valves rely on incoming IP addresses or hostnames which are vulnerable to spoofing.</p>
       <p>For more information, see the Tomcat <a href="http://www.robotstxt.org/robotstxt.html">Valve Component</a> documentation.</p>
 
  
@@ -120,11 +148,20 @@ drwxr-xr-x 2 tomcat tomcat  4096 2008-10-28 16:45 temp
 drwxr-xr-x 7 tomcat tomcat  4096 2008-10-31 11:45 webapps
 drwxr-xr-x 3 tomcat tomcat  4096 2008-10-28 16:47 work
 </pre>
+<p>Note: the <code>tomcat</code> user and group should not have permission to write or execute in other directories outside of <code>$TOMCAT_HOME</code>.</p>
+
+
       <li>Modify any scripts you have for server <code>init</code> processes to invoke the <code>tomcat</code> user:</li>
 <pre>
 su - tomcat -c /opt/tomcat/bin/startup.sh
 </pre>
      </ul>
+
+
+
+
+
+
 
     <dt><h3>Blocking non-essential port access at the firewall</h3></dt>
  <p>Type the following in your terminal window:</p>
@@ -146,7 +183,18 @@ Connection to localhost closed by foreign host.
 thredds  21715 21682  0 14:02 pts/2    00:00:00 grep tomcat
 </pre>
 
-<p>This example showed  how easy it was issue commands to Tomcat if you know the correct port number.  Be sure work with your systems administrator to block access to all non-essential ports at the firewall.  </p>
+      <p>This example showed  how easy it was issue commands to Tomcat if you know:
+       <ol>
+         <li>the correct port number; and 
+         <li>the command expected on that port.
+        </ol>.  
+     <p>Unless you are on a private network, you need a firewall to restrict who is allowed to access network ports.  We recommend working with you systems/network administrator to block access to all non-essential ports at the firewall. For running the TDS, keep in mind the following:  </p>
+        <ul>
+         <li>Port 8080 should have unrestricted access <i>unless</i> you plan to proxy requests to Tomcat from and HTTP server.</li>
+         <li>If you are allowing any remote management by using the TDS Remote Management Tool or the Tomcat <code>manager</code> application, you must also open up port 8443.</li>
+        </ul>
+
+
     <p>For more information, see: <a href="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables">Linux Firewalls Using iptable</a></p>
 
     <dt><h3>Running Tomcat behind an HTTP server</h3></dt>
@@ -157,8 +205,17 @@ thredds  21715 21682  0 14:02 pts/2    00:00:00 grep tomcat
  </ul>
 
     <dt><h3>Running Tomcat under a JVM Security Manager</h3></dt>
-     <p>The JVM Security Manager that comes with Tomcat imposes a fine-grained security restrcitions to all Java applications running the JVM.  It confines the Java applications in a sandbox, and restricts them from utilizing certain features of the Java language Tomcat normally is able to access.</p>
-     <p>Fore more information about the Security Manager, see the Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/security-manager-howto.html">Security Manager HOW-TO</a> documentation.</p>
+     <p>The JVM Security Manager that comes with Tomcat imposes a fine-grained security restrictions to all Java applications running the JVM.  It confines the Java applications in a sandbox, and restricts them from utilizing certain features of the Java language Tomcat normally is able to access.</p>
+     <p>There are pros and cons to using the Security Manager.  If are hosting untrusted servlets or JSP on your server, then implementing the Security Manager may be a good idea.  Be aware the Security Manager may prevent trusted web applications (like the TDS) from performing certain functions if configured to restrictively.</p>
+     <p>For more information about the Security Manager, see the Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/security-manager-howto.html">Security Manager HOW-TO</a> documentation.</p>
+
+
+ <dt><h3>Online Resources</h3></dt>
+  <ul>
+  <li><a href="http://wiki.apache.org/tomcat/FAQ/Security">Tomcat Security FAQ</a></li>
+  </ul>
+
+
 
     </dl>
 
