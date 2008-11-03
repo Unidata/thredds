@@ -10,12 +10,8 @@
 <body>
 
 <h1><img src="../images/unidataLogo.png" width="75" height="75" align="middle">Tomcat Security</h1>
-<div class="head">
-  <address>
-  </address>
-
-<hr></div>
-
+<p>&nbsp;</p>
+<hr>
 <p>We believe Tomcat to be secure enough for typical scientific uses. There are no known security exploits or weaknesses. However, the  Internet is a wild place, and we are not security experts so <em>caveat emptor</em>. These are  best practices for running Tomcat. </p>
 <h2>Run as Unprivileged User </h2>
 <p>By default, Tomcat runs on port 8080 and therefore does not require root to run. Its important not to run as root. Create a special user, e.g. named &quot;tomcat&quot;, which owns everything under <strong>${tomcat_home}</strong>, and change to that user to run Tomcat. This special user will need read/write access to <strong>${tomcat_home}</strong> and its subdirectories, and read access to your data directories. <em>Don't give the tomcat user any rights in any other directories</em>. If your operating system allows it (e.g. Unix, Linux), you might also not allow the tomcat user to log in, requiring instead that you log in as yourself, then switch to being the tomcat user. </p>
@@ -98,22 +94,19 @@
 </ul>
 <p>You can also use the <em><strong>RemoteHostValve</strong></em> to filter by host name, eg: </p>
 <blockquote>
-  <pre><strong>&lt;Valve className="org.apache.catalina.valves.RemoteHostValve" allow="(*.).ucar.edu"/&gt;
-   </strong></pre>
-</blockquote>
-<h2><br>
-Java Security Manager</h2>
+  <pre><strong>&lt;Valve className="org.apache.catalina.valves.RemoteHostValve" allow="(*.).ucar.edu"/&gt;</strong></pre></blockquote>
+<h2> Java Security Manager</h2>
 <p>An additional level of security can be provided by running Tomcat with the Java Security Manager turned on. This can provide fine-grained security policies, at the cost of complexity in understanding what rights are needed to do any useful work, and how to grant them. This is needed if you allow untrusted servlets or JSPs to execute on your machine. If you are running just the THREDDS Data Server, you probably don't need to deal with this. </p>
 <h3>Resources</h3>
 <ul>
+  <li> <span name="intelliTxt" id="intelliTxt2"><a href="http://oreilly.com/catalog/9780596101060/">Tomcat: The Definitive Guide, edition II (O'Reilly)</a></span> (2007) The security chapter from edition one is online <a href="http://www.oreilly.com/catalog/tomcat/chapter/ch06.pdf">here</a>. </li>
   <li><a href="http://jakarta.apache.org/tomcat/faq/security.html">Tomcat Security FAQ</a> </li>
-  <li><a href="http://www.amazon.com/exec/obidos/tg/detail/-/0672326361/qid=1119911434/sr=8-1/ref=sr_8_xs_ap_i1_xgl14/102-3771289-9904123?v=glance&s=books&n=507846">Tomcat 5 Unleashed </a>is a recent book about all aspects of Tomcat. </li>
-  <li> <a href="http://www.amazon.com/exec/obidos/tg/detail/-/1861008309/ref%3Dpd%5Fsl%5Faw%5Falx-jeb-7-1%5Fbook%5F2595022%5F1/102-3771289-9904123">Apache Tomcat Security Handbook</a> dated but still useful, e.g. to use the Java Security Manager. Chapter 1 is online <a href="http://www.theserverside.com/articles/content/TomcatSecurity/TomcatSecurity.pdf">here</a>. </li>
-  <li> <span name="intelliTxt" id="intelliTxt"><a href="http://www.oreilly.com/catalog/tomcat/">Tomcat: The Definitive Guide (O'Reilly)</a></span> also dated but  useful.The Security chapter is online <a href="http://www.oreilly.com/catalog/tomcat/chapter/ch06.pdf">here</a>. </li>
+  <li><a href="http://www.amazon.com/exec/obidos/tg/detail/-/0672326361/qid=1119911434/sr=8-1/ref=sr_8_xs_ap_i1_xgl14/102-3771289-9904123?v=glance&s=books&n=507846">Tomcat 5 Unleashed </a>(2004)  book about all aspects of Tomcat. </li>
+  <li> <a href="http://www.amazon.com/exec/obidos/tg/detail/-/1861008309/ref%3Dpd%5Fsl%5Faw%5Falx-jeb-7-1%5Fbook%5F2595022%5F1/102-3771289-9904123">Apache Tomcat Security Handbook</a> (2003) dated but still useful, e.g. to use the Java Security Manager. Chapter 1 is online <a href="http://www.theserverside.com/articles/content/TomcatSecurity/TomcatSecurity.pdf">here</a>. </li>
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 27, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 3, 2008
 </address>
 <p>&nbsp;</p>
 </body></html>
