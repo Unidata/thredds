@@ -26,11 +26,15 @@
   <body>
    <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Tutorial: Server Logging &amp; Statistics</h1>
    <hr>
-   <h2>TDS Access Log</h2>
-
+   <h2>The TDS Access Log</h2>
    <dl>
-    
-    <dt><h3>Exercise 1: Configure the <code>AccessLogValve</code> to create a custom access log for the TDS</h3></dt>
+    <dt><h3>Introducing the access log</h3></dt>
+    <ul>
+     <li>The access log records all requests processed by the server.</li>
+     <li>Information it contains is different than other logs in <code>$TOMCAT_HOME/logs</code></li>
+     <li>Used for monitoring who is using your server and as a way of obtaining "feedback" about the activity and performance of the server</li>
+     </ul>
+    <dt><h3>Exercise 1: Configure the <code>AccessLogValve</code> to enable an  access log for the TDS</h3></dt>
      <ol>
       <li>Using your favorite editor open <code>$TOMCAT_HOME/conf/server.xml</code>:</li>
 <pre>
@@ -125,83 +129,207 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
          </ul>
   <p>The above pattern translates into:</p>
 <pre>
-128.117.47.200 - - [06/Nov/2008:15:26:42 -0600] "GET /thredds HTTP/1.1" 302 - "null" "Mozilla/5.0 (X11; U; Linux i686
-(x86_64); en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6" 312
+128.117.140.183 - bob [04/Nov/2008:14:40:46 -0700] "GET /manager/html HTTP/1.1" 200 13022 "http://andy.unidata.ucar.edu:8080/" 
+"Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3" 325
 </pre>
+   <p>Another way of looking at it:</p>
+   <table>
+    <tr>
+     <td>
+      Remote host
+    </td>
+     <td>
+       128.117.140.183 
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Remote logical username from identd
+    </td>
+     <td>
+       -
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Authenticated user
+    </td>
+     <td>
+       bob
+     </td>
+    </tr>
+    <tr>
+     <td>
+       Time and date of request
+    </td>
+     <td>
+       [04/Nov/2008:14:40:46 -0700] 
+     </td>
+    </tr>
+    <tr>
+     <td>
+      HTTP request method
+    </td>
+     <td>
+       GET
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Requested resource
+    </td>
+     <td>
+       /manager/html 
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Protocol used
+    </td>
+     <td>
+       HTTP/1.1
+     </td>
+    </tr>
+    <tr>
+     <td>
+      HTTP server response
+    </td>
+     <td>
+       200
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Bytes transfered
+    </td>
+     <td>
+       13022
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Referer
+    </td>
+     <td>
+       http://localhost:8080/
+     </td>
+    </tr>
+    <tr>
+     <td>
+      User Agent
+    </td>
+     <td>
+       Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Response time (in millis)
+    </td>
+     <td>
+       325
+     </td>
+    </tr>
+   </table>
 
 
-         <p>References:</p>
-          <ul>
-           <li>Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html">Valve Component Documentation</a> (for information on log pattern configuration)</li>
-            <li><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions</a></li>
-          </ul>
+   <p>For information on log pattern configuration, see the Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html">Valve Component</a> Documentation.</li>
+</dl>
 
-    <dt><h3>Using log information</h3></dt>
-     <p>Log information is useful and can tell you:</p>
-      <ul>
-       <li>Statistics about catalog usage</li>
-       <li>Security concerns</li>
-       <li>User information</li>
-       </li>
 
-    <dt><h3>Exercise 2: Parsing access log information into CSV format</h3></dt>
+
+
+   <h2>Looking at log data</h2>
+    <dt><h3>Log management</h3></dt>
+     <p>Storing the information in the access log is only the start of log management. The next step is to analyze this information to produce useful statistics: </p>
+     
+
+
+    <dt><h3>Exercise 2: Looking at raw log data</h3></dt>
      <ol>
-      <li>Locate the <code>logs</code> directory in your home directory which contains a week's worth of log files taken from one of our production servers:</li>
+        <li>Locate the <code>logs</code> directory in your home directory which contains an access log file taken from one of our production servers.</li>
 <pre>
 <b>-bash-3.2$</b> cd
 <b>-bash-3.2$</b> ls -l logs
-total 18304
--rw-r--r-- 1 thredds Unidata 1289568 2008-11-03 09:33 access.2008-10-25.log
--rw-r--r-- 1 thredds Unidata 1884429 2008-11-03 09:33 access.2008-10-26.log
--rw-r--r-- 1 thredds Unidata 2877002 2008-11-03 09:33 access.2008-10-27.log
--rw-r--r-- 1 thredds Unidata 2452582 2008-11-03 09:33 access.2008-10-28.log
--rw-r--r-- 1 thredds Unidata 3253728 2008-11-03 09:33 access.2008-10-29.log
--rw-r--r-- 1 thredds Unidata 3086461 2008-11-03 09:33 access.2008-10-30.log
--rw-r--r-- 1 thredds Unidata 3856528 2008-11-03 09:33 access.2008-10-31.log
+total 6288
+-rw-r--r-- 1 thredds Unidata 6424776 2008-11-04 14:55 access.2008-11-03.log
 </pre>  
-      <li>Run the <code>parse_logs.pl</code> script to parse the logs into a file of CSV format.</li>
+       <li>Have a look at the log file and try to examine the data stored there.  (Kind of hard to sort through it all, isn't it)?</li>
+      </ol>
+    <dt><h3>Exercise 3: Analyzing data subsets with  <code>awk</code> and <code>dig</code></h3></dt>
+       <p>Sometimes we don't need to see the "whole picture" and just need some quick statistics.</p>
+       <ol>
+        <li>How do we find the host that has been accessing our server the most?</li>
+         <ul>
+          <li>Try running the following command:</li>
 <pre>
+<b>-bash-3.2$</b> cat access.2008-11-03.log | awk '{print $1}' | sort | uniq -c | sort -n
+    480 128.117.149.64
+  15482 192.12.209.57
+  16748 192.12.209.93
+</pre>  
+          <p>The output of the access log file is piped into <code>awk</code>, which prints the first "field variable" <code>$1</code>.  The result is sorted, identical lines are counted, and finally sorted again indescending order.</p>
+        <li><code>192.12.209.93</code> is the host that has made the most requests to the server during this particular access log's period.  But who is <code>192.12.209.93</code>?  (IPs are not too meaninful by themselves.)</li>
+         <li>Run <code>dig<code> to find out the host information for <code>192.12.209.93</code>:</li>
+<pre>
+<b>-bash-3.2$</b>  dig +short -x 192.12.209.93
+cise093.cise-nsf.gov.
+</pre>  
+           <li><code>cise093.cise-nsf.gov</code> is the host name for <code>192.12.209.93</code> (a bit more meaningful).</li>
+           <li>Look at the other two IP address from our output.  Without having to run <code>dig</code>, what do you think the domain of <code>192.12.209.57</code> is going to be based on what we have seen so far?</li>
+          <li>Run <code>dig</code> on the other address command to get the host names for the other two remaining IPs to find out.  Where you correct?  What is the host name and domain for the <code>128.117.149.64</code> IP?  </li>
+        </ul>
+
+
+
+        <li>Use the <code>awk</code> command sequence to find out if any authenticated users were responsible for for making these requests:</li>
+<pre>
+<b>-bash-3.2$</b> cat access.2008-11-03.log | awk '{print $3}' | sort | uniq -c | sort -n
+</pre>  
+        <p>What did you find?</p>
+       </ol>
+
+
+
+    <dt><h3>Exercise 4: Using parsed log data</h3></dt>
+     <ol>
+      <li>Have a look at, and then run <code>/opt/bin/parse_logs.pl</code> to parse the access log:</li> 
+<pre>
+<b>-bash-3.2$</b> less /opt/bin/parse_logs.pl
 <b>-bash-3.2$</b> /opt/bin/parse_logs.pl
-<b>-bash-3.2$</b> ls -l logs
-total 18304
--rw-r--r-- 1 thredds Unidata 1289568 2008-11-03 09:33 access.2008-10-25.log
--rw-r--r-- 1 thredds Unidata 1884429 2008-11-03 09:33 access.2008-10-26.log
--rw-r--r-- 1 thredds Unidata 2877002 2008-11-03 09:33 access.2008-10-27.log
--rw-r--r-- 1 thredds Unidata 2452582 2008-11-03 09:33 access.2008-10-28.log
--rw-r--r-- 1 thredds Unidata 3253728 2008-11-03 09:33 access.2008-10-29.log
--rw-r--r-- 1 thredds Unidata 3086461 2008-11-03 09:33 access.2008-10-30.log
--rw-r--r-- 1 thredds Unidata 3856528 2008-11-03 09:33 access.2008-10-31.log
--rw-r--r-- 1 thredds Unidata 1563896258 2008-11-03 09:35 logs.csv
-</pre>  
-      <li>Import the CSV file into an OpenOffice spreedsheet and look at the data.</li>
+</pre> 
+      <li>The resulting file <code>logdata.txt</code> will contain the log data in tab-delimited format:</li> 
 <pre>
-<b>-bash-3.2$</b> openoffice.org -writer logs.csv
-</pre>  
-      <ul>
-       <li>What do you notice about the referer data?</li>
-       <li>Do we have many authenticated users?</li>
-      </ul>
-      
-<li>Run the <code>parse_logs.pl</code> script again, but pipe the output into a <code>dig.pl</code> script:</li>
-<pre>
-<b>-bash-3.2$</b> /opt/bin/parse_logs.pl | dig.pl  
 <b>-bash-3.2$</b> ls -l logs
-total 18304
--rw-r--r-- 1 thredds Unidata 1289568 2008-11-03 09:33 access.2008-10-25.log
--rw-r--r-- 1 thredds Unidata 1884429 2008-11-03 09:33 access.2008-10-26.log
--rw-r--r-- 1 thredds Unidata 2877002 2008-11-03 09:33 access.2008-10-27.log
--rw-r--r-- 1 thredds Unidata 2452582 2008-11-03 09:33 access.2008-10-28.log
--rw-r--r-- 1 thredds Unidata 3253728 2008-11-03 09:33 access.2008-10-29.log
--rw-r--r-- 1 thredds Unidata 3086461 2008-11-03 09:33 access.2008-10-30.log
--rw-r--r-- 1 thredds Unidata 3856528 2008-11-03 09:33 access.2008-10-31.log
--rw-r--r-- 1 thredds Unidata 1563896258 2008-11-03 09:35 logs.csv
--rw-r--r-- 1 thredds Unidata 1563896258 2008-11-03 09:35 logs_dig.csv
+total 6288
+-rw-r--r-- 1 thredds Unidata 6424776 2008-11-04 14:55 access.2008-11-03.log
+-rw-r--r-- 1 thredds Unidata 6424776 2008-11-06 16:07 logdata.txt
 </pre>  
-      <ul>
-       <li>Is the added host data more helpful?</li>
-      </ul>
-      
+      <li>Open the <code>logdata.txt</code> file in OpenOffice:</li> 
+<pre>
+<b>-bash-3.2$</b> openoffice.org --write logdata.txt
+</pre>  
+       <li>Examine the log data</li>
+        <ul>
+         <li>What Requested Resource took the most time to process?</li>
+         <li>What types of Request Methods are recorded?  Did any of the requests that used POST return a status code other than a <code>401</code>? (See <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions</a> for a reference.) </li>
+         <li>What was the most prevelent Referer data?  What were the corresponding User Agents for these values?  Can you explain this?  </li>
+         <li>Any entries that might be of interest from a security point of view?  Is there a common data element amoung these entries?  What do you think caused these entries? </li>
+        </li>
+
+           
+
+
     </ol>
+
+    <dt><h3>Log Analyzers</h3></dt>
+      <p>There are a variety of OpenSource and commercial log analysis packages you may wish to employ.  Below are some resources to help locate a package:</p>
+     <ul>
+      <li><a href="http://www.dmoz.org/Computers/Software/Internet/Site_Management/Log_Analysis/">Log Analysis category at Open Directory Project</a></li>
+      <li><a href="http://counterguide.com/listing/logs.dir.html">List of log analysis tools at Counterguide.com</a></li>
+      <li><a href="http://dir.yahoo.com/Business_and_Economy/Business_to_Business/Communications_and_Networking/Internet_and_World_Wide_Web/Network_Management/Traffic_Management/Log_Analysis_Tools/Titles/">Log Analysis Tools category at Yahoo Directory</a></li>
+
+     </ul>
 
 
    </dl>
