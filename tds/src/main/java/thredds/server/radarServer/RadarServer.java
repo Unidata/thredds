@@ -173,9 +173,11 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
                             if( ids.getPath() == null  )
                                 continue;
                             if( all2 && ids.getPath().contains( "level2")) {
-                                 ids.setXlinkHref( "/thredds/radarServer/"+ ids.getPath() + "/dataset.xml");
+                                 //ids.setXlinkHref( "/thredds/radarServer/"+ ids.getPath() + "/dataset.xml");
+                                 ids.setXlinkHref( ids.getPath() + "/dataset.xml");
                             } else if( all3 && ids.getPath().contains( "level3")) {
-                                 ids.setXlinkHref( "/thredds/radarServer/"+ids.getPath() + "/dataset.xml");
+                                 //ids.setXlinkHref( "/thredds/radarServer/"+ids.getPath() + "/dataset.xml");
+                                 ids.setXlinkHref( ids.getPath() + "/dataset.xml");
                             } else {
                                  delete.add( ds );
                             }
