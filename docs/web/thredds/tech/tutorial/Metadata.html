@@ -1,2 +1,53 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>THREDDS and Metadata</title></head><body><h1>THREDDS and Metadata</h1><hr style="width: 100%; height: 2px;"><h1></h1><h2>Inspect Metadata on&nbsp;Several TDS Sites</h2><p>ajka;ldskfj</p><ul><li>WHOI (?)</li><li>NCDC NOMADS</li><li>motherlode</li><li>USGS (?)</li><li>PMFL (?)</li><li>topcatalog.xml (?)</li></ul><h2>THREDDS Metadata</h2><ul><li>THREDDS Metadata:&nbsp;TDS</li></ul><h2>Exercise: Add Metadata</h2></body></html>
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>THREDDS and Metadata</title>
+
+  <style type="text/css">
+  pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 70%;}
+  code {font-size: 11pt;}
+  dl {margin: 10px 5px 5px 15px;)
+  </style>
+
+</head>
+<body>
+<h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">THREDDS and Metadata</h1>
+<hr style="width: 100%; height: 2px;">
+<h2>Metadata Tour on&nbsp;Several TDS Sites</h2>
+<ul>
+  <li>NOAA NCDC NOMADS - <a href="http://nomads.ncdc.noaa.gov/thredds/catalog.xml">http://nomads.ncdc.noaa.gov/thredds/catalog.xml</a></li>
+  <ul>
+    <li><a href="http://nomads.ncdc.noaa.gov/thredds/catalog/narr/catalog.xml">NARR</a>&nbsp;- <a href="http://nomads.ncdc.noaa.gov/thredds/catalog/narr/200810/20081028/catalog.xml">2008-10-28</a></li>
+  </ul>
+  <li>NOAA Pacific Fisheries Environmtne LabL - <a href="http://oceanwatch.pfeg.noaa.gov/thredds/catalog.xml">http://oceanwatch.pfeg.noaa.gov/thredds/catalog.xml</a></li>
+  <ul>
+    <li><a href="http://oceanwatch.pfeg.noaa.gov/thredds/PaCOOS/CalCOFI/catalog.xml">PaCOOS/CalCOFI</a></li>
+  </ul>
+  <li>USGS Woods Hole Science Center - <a href="http://coast-enviro.er.usgs.gov/thredds/catalog.xml">http://coast-enviro.er.usgs.gov/thredds/catalog.xml</a></li>
+  <ul>
+    <li><a href="http://coast-enviro.er.usgs.gov/thredds/adria_catalog.xml">Adriatic Sea Project</a>&nbsp;</li><li><a href="http://coast-enviro.er.usgs.gov/thredds/bathy_catalog.xml">Bathymetry</a></li>
+  </ul>
+  <li>Unidata IDD Real-time Archive - <a href="http://motherlode.ucar.edu:8080/thredds/catalog.xml">http://motherlode.ucar.edu:8080/thredds/catalog.xml</a></li>
+  <ul>
+    <li><a href="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/CONUS_191km/files/catalog.xml">NCEP GFS CONUS 191km</a></li>
+  </ul>
+</ul>
+
+<h2>THREDDS Metadata</h2>
+<ul>
+  <li>THREDDS Metadata:&nbsp;TDS</li>
+</ul>
+
+<h3>Example Dataset - more inherited Metadata</h3>
+<pre style="margin-left: 40px;"><span style="font-family: mon;"><span style="font-weight: bold;">...<br></span></span><span style="font-weight: bold;"> &nbsp;</span>  &lt;dataset name="TDS Tutorial: example 3"&gt;<br>        &lt;metadata inherited="true"&gt;<span style="font-weight: bold;"><br></span>           &nbsp;&lt;serviceName&gt;odap&lt;/serviceName&gt;<br>            &lt;description&gt;Really great data.&lt;/description&gt;<br>            &lt;keyword&gt;Ocean&lt;/keyword&gt;<br>            &lt;keyword&gt;Temperature&lt;/keyword&gt;<br>            &lt;creator&gt;Ethan&lt;/creator&gt;<br>            &lt;publisher&gt;Ethan&lt;/publisher&gt;<br>            &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;<br>            <span style="font-weight: bold;">&lt;dataFormat&gt;netCDF&lt;/dateFormat&gt;</span><br>        &lt;/metadata&gt;<br><br>        &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc"&gt;<br>          <span style="font-weight: bold;"></span><span style="font-weight: bold;"> </span> &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;<br><span style="font-weight: bold;">           </span> &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;<br><span style="font-weight: bold;">           </span> &lt;dataset name="TDS Tutorial: example data 4" urlPath="test/example4.grib2"&gt;<br>                <span style="font-weight: bold;">&lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;</span><br>            &lt;/dataset&gt;<br>      &nbsp; &lt;/dataset&gt;<br><br>&nbsp;   &lt;/dataset&gt;<br>...</pre>
+
+<p>Notes:</p>
+<ul>
+  <li>Inherited metadata can be overwritten.</li>
+</ul>
+
+<h2>Exercise: Add Metadata</h2>
+
+</body>
+</html>

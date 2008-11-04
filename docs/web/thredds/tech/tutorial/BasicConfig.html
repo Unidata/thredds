@@ -1,12 +1,15 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>TDS Tutorial: TDS Configuration</title>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>TDS Tutorial: TDS Configuration</title>
 
 <style type="text/css">
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 70%;}
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
-</style></head>
+</style>
+</head>
 <body>
 <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Tutorial: TDS Configuration</h1>
 <div class="head">
@@ -57,14 +60,7 @@ access URLs</a>. </p>
 <ul>
 <li>The serviceName element is inherited by each child dataset
 from the containing dataset.</li>
-</ul>
-<h3>Example Dataset - more inherited Metadata</h3>
-<pre style="margin-left: 40px;"><span style="font-family: mon;"><span style="font-weight: bold;">...<br></span></span><span style="font-weight: bold;"> &nbsp;</span>  &lt;dataset name="TDS Tutorial: example 3"&gt;<br>        &lt;metadata inherited="true"&gt;<span style="font-weight: bold;"><br></span>           &nbsp;&lt;serviceName&gt;odap&lt;/serviceName&gt;<br>            &lt;description&gt;Really great data.&lt;/description&gt;<br>            &lt;keyword&gt;Ocean&lt;/keyword&gt;<br>            &lt;keyword&gt;Temperature&lt;/keyword&gt;<br>            &lt;creator&gt;Ethan&lt;/creator&gt;<br>            &lt;publisher&gt;Ethan&lt;/publisher&gt;<br>            &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;<br>            <span style="font-weight: bold;">&lt;dataFormat&gt;netCDF&lt;/dateFormat&gt;</span><br>        &lt;/metadata&gt;<br><br>        &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc"&gt;<br>          <span style="font-weight: bold;"></span><span style="font-weight: bold;"> </span> &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;<br><span style="font-weight: bold;">           </span> &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;<br><span style="font-weight: bold;">           </span> &lt;dataset name="TDS Tutorial: example data 4" urlPath="test/example4.grib2"&gt;<br>                <span style="font-weight: bold;">&lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;</span><br>            &lt;/dataset&gt;<br>      &nbsp; &lt;/dataset&gt;<br><br>&nbsp;   &lt;/dataset&gt;<br>...</pre>
-<p>Notes:</p>
-<ul>
-<li>Inherited metadata can be overwritten.</li>
-</ul>
-<hr size="2" width="100%">
+</ul><hr size="2" width="100%">
 <h2>TDS Configuration Catalogs</h2>
 <p>TDS configuration catalogs are THREDDS catalogs with a few extensions.
 The&nbsp;extensions contain information that allows the TDS to map

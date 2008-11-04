@@ -1,21 +1,38 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>TDS Configuration Catalogs</title>
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <meta content="Ethan Davis" name="author">
+  <title>TDS Configuration Catalogs</title>
 
-<meta content="Ethan Davis" name="author">
 <style type="text/css">
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 70%;}
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
-</style></head>
+</style>
+</head>
 <body>
 <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Configuration Catalogs</h1>
 <br>
 <hr size="2" width="100%">
-<h2>More THREDDS Catalog Review</h2><h3>Names for service Elements must be Unique</h3><h3>Compound <code>service</code> Elements - Serving Datasets with Multiple Methods</h3><p>Datasets can be made available through more than one access method ...</p><h3>TDS Service Specifics</h3><p>Because
-the TDS makes data access services available under certain URL base
-paths, the service elements in TDS configuration catalogs must use
-specific base URLs.</p><h4>OPeNDAP</h4><h4>NetCDF Subset Service</h4><h4>WCS</h4><h4>HTTP Bulk File Service</h4><p>...</p><h3>THREDDS Metadata</h3><h4>Linking to Metadata</h4><p>The</p><pre style="margin-left: 40px;">&lt;metadata xlink:title="some good metadata" xlink:href="http://my.server/md/data1.xml" /&gt;</pre><h4>Linking to Human Readable Metadata</h4><p>The</p><pre style="margin-left: 40px;">&lt;description xlink:title="My Data" xlink:href="http://my.server/md/data1.html" /&gt;</pre><h4>Inherited Metadata</h4><br><hr style="width: 100%; height: 2px;"><h2>TDS Configuration Catalogs<br></h2><h2>TDS Root Catalogs</h2><ul><li>catalog.xml</li><li>catalogRef linked tree of config catalogs</li><li>Additional catalogs (listed in threddsConfig.xml, not listed in root catalog.xml)</li><li>Debug page: list of static catalogs; catalogErrors.log</li></ul><br><h2>Managing <code>datasetRoot</code> and <code>datasetScan</code> Elements</h2><ul><li>More on URL path to location mapping?</li><li>Rules (e.g., path must be unique to TDS)</li><li>Debug page: list of data roots</li></ul><h2>Exercise: Managing multiple roots</h2>Add a few more roots and scans to manage<br><ul><li>Debug page: reinitialize</li><li>Using OPeNDAP service for testing/debugging</li></ul><br><h2>Exercise: Duplicate Roots</h2>What happens when the same path is used? How do you notice it?<br><br><hr style="width: 100%; height: 2px;"><h2>Modifying the <code>datasetScan</code> Element</h2><p>Use the GRIB data for all the exercises ...</p><ul><li>Filtering datasets</li><li>Dataset IDs: default and specifying</li><li>Dataset Names</li><li>Sorting</li><li>Proxy Datasets (latest)</li><li>Dataset Size</li><li>TimeCoverage Metadata</li></ul><br><br><br><br><br><br><br><br><br><br><hr style="width: 100%; height: 2px;"><hr style="width: 100%; height: 2px;">
+<h2>More THREDDS Catalog Review</h2><h3>TDS Restrictions on the&nbsp;<code>service</code> Elements</h3><p>The TDS provides data access services at predefined URL base
+paths. Therefore, service base URLs must start with the following values:</p><p style="margin-left: 40px;"><strong>OPeNDAP</strong></p><pre style="margin-left: 80px;">&lt;service name="odap" serviceType="OPeNDAP" base="<strong>/thredds/dodsC/</strong>" /&gt;</pre><p style="margin-left: 40px;"><strong>NetCDF Subset Service</strong></p><pre style="margin-left: 80px;">&lt;service name="ncss" serviceType="NetcdfSubset" base="<strong>/thredds/ncss/</strong>" /&gt;<br>&lt;service name="ncssG" serviceType="NetcdfSubset" base="<strong>/thredds/ncss/grid/</strong>" /&gt;</pre><p style="margin-left: 40px;"><strong>WCS</strong></p><pre style="margin-left: 80px;"> &lt;service name="wcs" serviceType="WCS" base="<strong>/thredds/wcs/</strong>" /&gt;</pre>
+<p style="margin-left: 40px;"><strong>HTTP Bulk File Service</strong></p><pre style="margin-left: 80px;">&lt;service name="fileServer" serviceType="HTTPServer" base="<strong>/thredds/fileServer/"</strong> /&gt;</pre>
+<h3><code>service</code> Element Names must be Unique in Each Catalog</h3>Within a catalog, the service name is used to reference&nbsp;a <code>service</code>
+element. The service names must therefore be unique in each catalog.
+[Note: It is not necessary that they be unique globally within a TDS.
+Only on a catalog by catalog basis.]<h3>Compound <code>service</code> Elements - Serving Datasets with Multiple Methods</h3><p>Datasets can be made available through more than one access
+method by defining and then referencing a <strong>compound</strong>
+<code>service</code> element. The following:<code></code><code></code><br>
+</p>
+<pre style="margin-left: 40px;"><strong></strong>&lt;service name="<strong>all</strong>" serviceType="Compound" base="" &gt;<br><strong> </strong>   &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>    &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;<br>&lt;/service&gt;<br></pre>
+<p>defines a compound service named "all" which contains
+two
+nested services. Any dataset that reference the compound service will
+have two access methods. For instance:<br>
+</p>
+<pre style="margin-left: 40px;">&lt;dataset name="cool data" urlPath="so/cool/data.nc" &gt;<br>    &lt;serviceName&gt;<strong>all</strong>&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br></pre>
+<p>would result in these two access URLs:<br></p><pre style="margin-left: 40px;"><code>/thredds/dodsC/so/cool/data.nc</code></pre><pre style="margin-left: 40px;"><code>/thredds/wcs/so/cool/data.nc</code></pre><p>Note: The contained services can still be referenced independently. For instance:</p><pre style="margin-left: 40px;">&lt;dataset name="more cool data" urlPath="more/cool/data.nc" &gt;<br>    &lt;serviceName<span style="font-family: mon;"><span style="font-weight: bold;">&gt;</span>odap</span><strong style="font-weight: normal;"></strong>&lt;/serviceName&gt;<br>&lt;/dataset&gt;</pre><p>results in a single access URL:</p><pre style="margin-left: 40px;"><code>/thredds/dodsC/more/cool/data.nc</code></pre><h3>THREDDS Metadata</h3><h4>Linking to&nbsp;Metadata</h4><pre style="margin-left: 40px;">&lt;metadata xlink:title="some good metadata" xlink:href="http://my.server/md/data1.xml" /&gt;</pre><h4>Linking to Human Readable Metadata</h4><pre style="margin-left: 40px;">&lt;description xlink:title="My Data" xlink:href="http://my.server/md/data1.html" /&gt;</pre><h4>Inherited Metadata</h4><br><hr style="width: 100%; height: 2px;"><h2>TDS Configuration Catalogs<br></h2><h2>TDS Root Catalogs</h2><ul><li>catalog.xml</li><li>catalogRef linked tree of config catalogs</li><li>Additional catalogs (listed in threddsConfig.xml, not listed in root catalog.xml)</li><li>Debug page: list of static catalogs; catalogErrors.log</li></ul><br><h2>Managing <code>datasetRoot</code> and <code>datasetScan</code> Elements</h2><ul><li>More on URL path to location mapping?</li><li>Rules (e.g., path must be unique to TDS)</li><li>Debug page: list of data roots</li></ul><h2>Exercise: Managing multiple roots</h2>Add a few more roots and scans to manage<br><ul><li>Debug page: reinitialize</li><li>Using OPeNDAP service for testing/debugging</li></ul><br><h2>Exercise: Duplicate Roots</h2>What happens when the same path is used? How do you notice it?<br><br><hr style="width: 100%; height: 2px;"><h2>Modifying the <code>datasetScan</code> Element</h2><p>Use the GRIB data for all the exercises ...</p><ul><li>Filtering datasets</li><li>Dataset IDs: default and specifying</li><li>Dataset Names</li><li>Sorting</li><li>Proxy Datasets (latest)</li><li>Dataset Size</li><li>TimeCoverage Metadata</li></ul><br><br><br><br><br><br><br><br><br><br><hr style="width: 100%; height: 2px;"><hr style="width: 100%; height: 2px;">
 <h2>Overview</h2>
 <p>THREDDS catalogs were originally designed as simple catalogs
 of
