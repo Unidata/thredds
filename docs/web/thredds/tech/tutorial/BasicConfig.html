@@ -94,8 +94,11 @@ listing could be served with the following:</p>
 <p>The resulting client catalog looks like:</p>
 <pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong></strong><strong>2)</strong>    &lt;catalogRef xlink:title="Test all files in a directory" ID="testDatasetScan" <br>                  xlink:href="/thredds/catalog/<strong>my/test/all</strong>/catalog.xml" name="" /&gt;<br>...</pre>
 <p>The catalog referenced in the <code>catalogRef</code> element looks like:</p>
-<pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong></strong><strong>  </strong>    &lt;dataset name="Test all files in a directory" ID="testDatasetScan" &gt;<br>          &lt;metadata inherited="true"&gt;<br>              &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>          &lt;/metadata&gt;<br>          &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/afile.nc"&gt;<br>          &lt;dataset name="testData.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/testData.nc"&gt;<br>          &lt;dataset name="junk.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/junk.nc"&gt;<br><br>          &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""<br>                      xlink:href="/thredds/catalog/<code>my/test/all</code>/grib/catalog.xml" /&gt;<br>      &lt;/dataset&gt;<br>...</pre>
-<h3>TDS Configuration Directory</h3>
+<pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong></strong><strong>  </strong>    &lt;dataset name="Test all files in a directory" ID="testDatasetScan" &gt;<br>          &lt;metadata inherited="true"&gt;<br>              &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>          &lt;/metadata&gt;<br>          &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/afile.nc"&gt;<br>          &lt;dataset name="testData.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/testData.nc"&gt;<br>          &lt;dataset name="junk.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/junk.nc"&gt;<br><br>          &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""<br>                      xlink:href="/thredds/catalog/<code>my/test/all</code>/grib/catalog.xml" /&gt;<br>      &lt;/dataset&gt;<br>...<br></pre><p>The
+datasetScan element provides for limiting the datasets that are
+included in the scan, changing the names of datasets, sorting datasets,
+etc. We will go into more detail on this later.</p>
+<hr style="width: 100%; height: 2px;"><h3>TDS Configuration Directory</h3>
 <p>All TDS configuration information is stored in a directory
 that is
 created the first time the TDS is run. The configuration directory, <code>${TOMCAT_HOME}/content/thredds</code>,
@@ -139,7 +142,7 @@ We ship a simple test catalog:</p>
 as are all catalogs in the catalog tree defined by <code>catalogRef</code>
 elements. The TDS gathers configuration information on what datasets it
 should serve from the <code>datasetRoot</code> and <code>datasetScan</code>
-elements.<h3>Example: Fix Enhanced Catalog</h3>
+elements.<h3>Exercise: Add content/wcsExample/testdata</h3>
 <ol>
 <li>Drilling down into the "Test Enhanced Catalog" dataset, we
 can see that there are no datasets cataloged.</li>
