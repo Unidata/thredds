@@ -6,8 +6,7 @@
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 70%;}
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
-</style>
-</head>
+</style></head>
 <body>
 <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Tutorial: TDS Configuration</h1>
 <div class="head">
@@ -39,8 +38,8 @@ remote catalog.</li>
 <pre style="margin-left: 40px;">/thredds/dodsC/</pre>
 </li>
 <li>If it is a relative URL, resolve against the catalog's URL:
-<pre style="margin-left: 40px;">http://my.server/thredds/catalog.xml // Catalog URL</pre>
-<pre style="margin-left: 40px;">http://my.server/thredds/dodsC/ // Service base URL</pre>
+<pre style="margin-left: 40px;">http://my.server/thredds/catalog.xml      <var>// Catalog URL</var></pre>
+<pre style="margin-left: 40px;">http://my.server/thredds/dodsC/           <var>// Service base URL</var></pre>
 </li>
 <li>Find the urlPath attribute for the accessible dataset:
 <pre style="margin-left: 40px;">urlPath="test/example3.nc"</pre>
@@ -67,13 +66,35 @@ from the containing dataset.</li>
 </ul>
 <hr size="2" width="100%">
 <h2>TDS Configuration Catalogs</h2>
-<p>TDS configuration catalogs are extensions of THREDDS catalogs
-to provide the TDS with mappings between request URLs and the locations
-of data files on disk.</p><h3><code>datasetRoot</code> Element</h3><pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong>1)</strong>    &lt;datasetRoot path="<strong>test</strong>" location="/my/data/testdata/" /&gt;<br><br><strong>2)</strong>    &lt;dataset name="A Test Dataset" ID="testDataset" <strong></strong>urlPath="<strong>test</strong>/testData.nc" &gt;<br>        &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>      &lt;/dataset&gt;<br>...<br></pre><p>The datasetRoot element above (1) maps the "<strong><code>test</code></strong>" path to the "<strong><code>/my/data/testdata/</code></strong>" directory. The URL to access the dataset (2) is</p><pre style="margin-left: 40px;">http://my.server/thredds/dodsC/<strong>test</strong>/testData.nc</pre><p>When
-the server receives a request for the above URL, it uses the URL path
+<p>TDS configuration catalogs are THREDDS catalogs with a few extensions.
+The&nbsp;extensions contain information that allows the TDS to map
+between incoming URL requests and directories on disk. They also allow
+the TDS to provide a client catalog that provides the names and access
+URLs for the datasets being served but does not expose any
+configuration information.</p><p>The two main extension elements are <code>datasetRoot</code> and <code>datasetScan</code>.</p><h3><code>datasetRoot</code> Element</h3><p>Each <code>datasetRoot</code>
+element defines a single mapping between a URL base path and a
+directory. httpThe URL base path so defined can then be used in accessible
+datasets for files under the mapped directory. For instance, if you
+have a directory /my/data/testdata that contains:</p>
+<pre style="margin-left: 40px;">afile.nc<br>testData.nc<br>junk.nc<br>grib/<br>  data1.grib2<br>  data2.grib2</pre>
+<p>You can serve the "testData.nc" and "grib1/data1.grib2" files with the following:</p>
+<pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong>1)</strong>    &lt;datasetRoot path="<strong>my/test</strong>" location="/my/data/testdata/" /&gt;<br><br><strong>2)</strong>    &lt;dataset name="A Test Dataset" ID="testDataset" <strong></strong>urlPath="<strong>my/test</strong>/testData.nc" &gt;<br>        &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>      &lt;/dataset&gt;<br><strong>3)</strong>    &lt;dataset name="A Test Dataset 2" ID="testDataset2" <strong></strong>urlPath="<strong>my/test</strong>/grib/data1.grib2" &gt;<br>        &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>      &lt;/dataset&gt;...<br></pre>
+<p>The datasetRoot element above (1) maps the "<strong><code>my/test</code></strong>" path to the "<strong><code>/my/data/testdata/</code></strong>" directory. The URLs to access the datasets (2 &amp; 3) are</p>
+<pre style="margin-left: 40px;">http://my.server/thredds/dodsC/<strong>my/test</strong>/testData.nc <br>http://my.server/thredds/dodsC/<strong>my/test</strong>/grib/data1.grib2</pre>
+<p>When
+the server receives a request for one of the above URLs, it uses the URL path
 to look for a matching dataset root. In this case it finds the mapping
 provided by the&nbsp;datasetRoot element above and looks in the
-/my/data/testdata directory for a "testData.nc" file.</p><h3><code>datasetScan</code> Element</h3><pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong></strong><strong>2)</strong>    &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan" <br>                   path="<strong>testAll</strong>" location="/my/data/testdata"&gt;<br>          &lt;metadata inherited="true"&gt;<br>              &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;<br>          &lt;/metadata&gt;<br>      &lt;/datasetScan<br>...</pre><h3></h3><p></p>
+/my/data/testdata directory for the file.</p><p>The client catalog that results from this catalog is the same as the above without the datasetRoot element.</p><h3><code>datasetScan</code> Element</h3><p>Each
+datasetScan element also defines a single mapping between a URL base
+path and a directory. The difference is that all datasets under the
+mapped directory are then accessible. So, all the files in the above
+listing could be served with the following:</p>
+<pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong></strong><strong>2)</strong>    &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan" <br>                   path="<strong>my/test/all</strong>" location="/my/data/testdata"&gt;<br>          &lt;metadata inherited="true"&gt;<br>              &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>          &lt;/metadata&gt;<br>      &lt;/datasetScan&gt;<br>...</pre>
+<p>The resulting client catalog looks like:</p>
+<pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong></strong><strong>2)</strong>    &lt;catalogRef xlink:title="Test all files in a directory" ID="testDatasetScan" <br>                  xlink:href="/thredds/catalog/<strong>my/test/all</strong>/catalog.xml" name="" /&gt;<br>...</pre>
+<p>The catalog referenced in the <code>catalogRef</code> element looks like:</p>
+<pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong></strong><strong>  </strong>    &lt;dataset name="Test all files in a directory" ID="testDatasetScan" &gt;<br>          &lt;metadata inherited="true"&gt;<br>              &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>          &lt;/metadata&gt;<br>          &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/afile.nc"&gt;<br>          &lt;dataset name="testData.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/testData.nc"&gt;<br>          &lt;dataset name="junk.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/junk.nc"&gt;<br><br>          &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""<br>                      xlink:href="/thredds/catalog/<code>my/test/all</code>/grib/catalog.xml" /&gt;<br>      &lt;/dataset&gt;<br>...</pre>
 <h3>TDS Configuration Directory</h3>
 <p>All TDS configuration information is stored in a directory
 that is
