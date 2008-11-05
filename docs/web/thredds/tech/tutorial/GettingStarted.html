@@ -3,9 +3,31 @@
   <head>
    <title>TDS Tutorial: Getting Started</title>
     <style type="text/css">
+
      pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 80%;}
      code {font-size: 11pt;}
-     dl {margin: 10px 5px 5px 15px;)
+     p.pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 80%; font-family: monospace}
+     div.overview {margin-bottom: 30px; background-color: #FFFFFF; border-left: 5px solid #CFCFCF;}
+     div.overview p {margin-top: 0px; margin-left: 10px;}
+     div.overview b {margin-top: 0px; margin-left: 10px; color: #BFBFBF;}
+     p.note {background: transparent url(../images/note.gif) no-repeat 0px 2px; padding-left: 30px; } 
+     .question {background: transparent url(../images/question.gif) no-repeat 0px 0px; padding-left: 90px; list-style: none;} 
+     p.space {margin-bottom: 30px}
+     dl {margin-left: 10px; padding-left: 10px; margin-bottom: 40px;}
+     ul {margin-top: 10px; margin-bottom: 15px;}
+     h3 {margin-top: 0px; margin-bottom: 10px; margin-left: -10px;}
+     table {table-layout: auto; border-collapse: separate; font-size: 10pt;}
+     th {text-align: left; background-color: #E7E7E7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
+     td {text-align: left; background-color: #F7F7F7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
+     table code {font-size: 10pt;}
+     /* tooltips */
+     a.tooltip {color:#0000FF; text-decoration: none;}
+     a.tooltip b {display:none;}
+     a.tooltip:hover {border:0px; position:relative; z-index:500; text-decoration:none;}
+     a.tooltip:hover b {display:block; position:absolute; top:20px; left:-25px; padding:5px; font-weight:normal; color:#000; border:1px solid #000000; background:#FFFFFF; width:300px;}
+     a.tooltip:hover b em.outer {position:absolute; left:20px; top:-8px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #000000; overflow:hidden; z-index:100;}
+     a.tooltip:hover b em.inner {position:absolute; left:20px; top:-7px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #FFFFFF; overflow:hidden; z-index:100}
+     .clear {clear:both;}
    </style>
 
   </head>
@@ -21,18 +43,29 @@
        <li>Sun Java 1.5 or above, (we recommend the latest version of Java 1.6)</li>
        <li>Apache Tomcat 5.5 or above, (we recommend the latest version of Tomcat 6.0)</li>
      </ul>
-     <p>Note: while there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using Sun Java and the Apache Tomcat servlet container.</p>
+     <p class="note"><i>Note</i>: while there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using Sun Java and the Apache Tomcat servlet container.</p>
+    </dl>
 
-
-
+    <dl>
     <dt><h3>Installing Java</h3></dt>
+      <div class="overview">
+       <b>HOW TO INSTRUCTIONS</b>
+       <p>Installing the Sun JDK requires three steps:</p>
+        <ol>
+         <li><a href="#download_java">Download Java from Sun</a></li>
+         <li><a href="#install_java">Install Java</a></li>
+         <li><a href="#set_java_home">Set the <code>$JAVA_HOME</code> environmental variable</a></li>
+        </ol> 
+       </div>
+
+
      <ol>
-      <li><a href="http://java.sun.com/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun.</li> 
+      <li><a name="download_java"></a><a href="http://java.sun.com/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun.</li> 
        <ul>
         <li>We will be using the Linux x64-bit, non-rpm, self-extracting file for this workshop:</li>
          <p><code>jdk-6u10-linux-x64.bin</code></p>
        </ul>
-      <li>Install the JDK as per the Sun <a href="http://java.sun.com/javase/6/webnotes/install/">installation instructions</a>.</li>      
+      <li><a name="install_java"></a>Install the JDK as per the Sun <a href="http://java.sun.com/javase/6/webnotes/install/">installation instructions</a>.</li>      
        <ul>
         <li>Copy the self-extracting file to the installation directory (our home directory is the installation directory in this example):</li>
 <pre>
@@ -56,8 +89,11 @@
 <pre>
 <b>-bash-3.2$</b> ./jdk-6u10-linux-x64.bin
 </pre>
+
+        <p>(If you are prompted to register your Java installation, ignore it.)</p>
+
        </ul>
-      <li>Set the <code>$JAVA_HOME</code> environment variable.</li>   
+      <li><a name="set_java_home"></a>Set the <code>$JAVA_HOME</code> environment variable.</li>   
 <pre>
 <b>-bash-3.2$</b> export JAVA_HOME=/home/thredds/jdk1.6.0_10
 
@@ -71,19 +107,30 @@
         <li>Check to make sure the JDK self-extracting file has the correct permissions and is executable.</li>
         <li>Depending on your OS (e.g., Solaris), you may need install <i>both</i> the 32-bit and 64-bit self-extracting files.</li>
        </ul>
-     <p>Note: the latest version of the JDK 1.6 has already been installed on your workshop computer at <code>/opt/jdk</code></p>
+     <p class="note"><i>Note</i>: the latest version of the JDK 1.6 has already been installed on your workshop computer at <code>/opt/jdk</code></p>
+    </dl>
 
 
-
-
+    <dl>
     <dt><h3>Installing Tomcat</h3></dt>
+      <div class="overview">
+       <b>HOW TO INSTRUCTIONS</b>
+       <p>Installing Tomcat requires three steps:</p>
+        <ol>
+         <li><a href="#download_tomcat">Download Tomcat</a></li>
+         <li><a href="#install_tomcat">Install Tomcat</a></li>
+         <li><a href="#set_tomcat_home">Set the <code>$TOMCAT_HOME</code> environmental variable</a></li>
+        </ol> 
+       </div>
+
+
      <ol>
-      <li><a href="http://tomcat.apache.org/">Download</a> current version of the Tomcat servlet container.</li> 
+      <li><a name="download_tomcat"></a><a href="http://tomcat.apache.org/">Download</a> current version of the Tomcat servlet container.</li> 
        <ul>
-        <li>We will be using the binary tar.gz file for this workshop:</li>
+        <li>We will be using the core binary tar.gz file for this workshop:</li>
          <p><code>apache-tomcat-6.0.18.tar.gz</code></p>
        </ul>
-      <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/setup.html">installation instructions</a>.</li>    
+      <li><a name="install_tomcat"></a>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/setup.html">installation instructions</a>.</li>    
        <ul>
         <li>Copy the binary tar.gz file to the installation directory (our home directory is the installation directory in this example):</li>
 <pre>
@@ -101,7 +148,7 @@ drwxr-xr-x  9 thredds Unidata 4096 2008-10-17 16:00 apache-tomcat-6.0.18
 </pre>   
        </ul>
 
-      <li>Set the <code>$TOMCAT_HOME</code> environment variable.</li>   
+      <li><a name="set_tomcat_home"></a>Set the <code>$TOMCAT_HOME</code> environment variable.</li>   
 <pre>
 <b>-bash-3.2$</b> export TOMCAT_HOME=/home/thredds/apache-tomcat-6.0.18
 
@@ -116,14 +163,14 @@ drwxr-xr-x  9 thredds Unidata 4096 2008-10-17 16:00 apache-tomcat-6.0.18
 
 
 
-     <p>Note: Tomcat has already been installed on your workshop computer at <code>/opt/apache-tomcat-6.0.18</code></p>
+     <p class="note"><i>Note</i>: Tomcat has already been installed on your workshop computer at <code>/opt/apache-tomcat-6.0.18</code></p>
 
 
    </dl>
 
 
 
-   <h2>Tomcat directory structure: quick tour</h2>
+   <h2>Tomcat directory structure quick tour</h2>
    <dl>
     <dt><h3>Exploring <code>$TOMCAT_HOME</code></h3></dt>
      <p>Move into the new Tomcat directory and have a look at the directory structure:</p>
@@ -143,9 +190,10 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-11-06 16:47 work
 -rw-r--r-- 1 thredds Unidata  7317 2008-07-21 18:01 RELEASE-NOTES
 -rw-r--r-- 1 thredds Unidata  6587 2008-07-21 18:01 RUNNING.txt
 </pre>
+      </dl>
 
 
-
+     <dl>
     <dt><h3>Noteworthy directories</h3></dt>
     <p><code>bin/</code> - Startup, shutdown, and other scripts.</p> 
         <ul>
@@ -177,11 +225,11 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-11-06 16:47 work
         </ul>
       <p><code>webapps/</code> - Web applications directories and WAR files.</p>
         <ul>
-         <li>We will be examining in further detail:</p>
+         <li>This is where we will be putting the TDS web application.</li>
+         <li>Other web applications we will be examining in further detail:</p>
          <ul>
           <li><code>manager</code> web application that comes with the Tomcat distribution.</li>
          </ul>
-         <li>This is where we will be putting the TDS web application.</li>
         </ul>
      </dl>
 
@@ -190,12 +238,12 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-11-06 16:47 work
    <dl>
     <dt><h3>Starting &amp; Stopping Tomcat</h3></dt>
     <ul>
-     <li>Move into the Tomcat <code>bin/<code> directory and run the <code>startup.sh</code> script:</li>
+     <li>Move into the Tomcat <code>bin/</code> directory and run the <code>startup.sh</code> script:</li>
 <pre>
 <b>-bash-3.2$</b> cd $TOMCAT_HOME/bin
 <b>-bash-3.2$</b> ./startup.sh
 </pre>   
-     <li>Go to <a href="http://localhost:8080/">http://localhost:8080/</a> in your browser and verify Tomcat is running:</li>
+     <li>Open a new browser window/tab and go to <a href="http://localhost:8080/">http://localhost:8080/</a> to verify Tomcat is running:</li>
 
      <p><img src="../images/tomcat_default_page.gif" height="400" width="400"></p>
 
@@ -212,11 +260,11 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-11-06 16:47 work
         <li>Pay particular attention to what is being reported in Tomcat's main log file: <code>$TOMCAT_HOME/logs/catalina.out</code>.</li>
 
        </ul>
+     </dl>
 
 
 
-
-
+   <dl>
     <dt><h3>Set the <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code> environment variables</h3></dt>
     <p>We are going to modify the <code>startup.sh</code> and <code>shutdown.sh</code> scripts in the Tomcat <code>/bin</code> directory to:</p>
     <ol>
@@ -257,19 +305,37 @@ Darwin*) darwin=true;;
 esac
 
 </pre>   
+
+     
+
      </ul>
+ <ul>
+         <li class="question">Why are we doing this?</li>
+       </ul>
   </dl>
 
 
    <h2>Deploying the TDS</h2>
    <dl>
-    <dt><h3>Installing <code>thredds.war</code></h3></dt>
-      <p><a href="/downloads/thredds/index.jsp">Download</a> the TDS WAR file and save it in the Tomcat <code>webapps/</code>  directory.</p>
-<pre>
-<b>-bash-3.2$</b> cp thredds.war $TOMCAT_HOME/webapps
-<b>-bash-3.2$</b> cd $TOMCAT_HOME/webapps
 
-<b>-bash-3.2$</b> ll
+      <div class="overview">
+       <b>HOW TO INSTRUCTIONS</b>
+       <p>Deploying the TDS requires three steps:</p>
+        <ol>
+         <li><a href="#download_tds">Download the TDS</a></li>
+         <li><a href="#webapps">Put <code>thredds.war</code> in the <code>webapps/</code> directory</a></li>
+         <li><a href="#start">Start Tomcat</a></li>
+        </ol> 
+       </div>
+     <ol>
+      <li><a name="download_tds"></a><a href="/downloads/thredds/index.jsp">Download</a> the TDS WAR file from Unidata's web site.</li>
+      <p><code>thredds.war</code></p>
+      <li><a name="webapps"></a>Put <code>thredds.war</code> in the Tomcat <code>webapps/</code>  directory.</li>
+<pre>
+<b>-bash-3.2$</b> cp thredds.war /home/thredds/apache-tomcat-6.0.18/webapps
+<b>-bash-3.2$</b> cd /home/thredds/apache-tomcat-6.0.18/webapps
+
+<b>-bash-3.2$</b> ls -l
 total 10284
 drwxr-xr-x 11 thredds Unidata     4096 2008-11-06 16:45 docs
 drwxr-xr-x  5 thredds Unidata     4096 2008-11-06 16:45 examples
@@ -287,10 +353,9 @@ drwxr-xr-x  3 thredds Unidata     4096 2008-11-06 16:45 ROOT
       </ul>
 
 
-
-    <dt><h3>Deploy &amp; test the TDS installation</h3></dt>
+     <li><a name="start">Start Tomcat and confirm the TDS has been deployed.</li>
      <ul>
-      <li>Start Tomcat and confirm the <code>thredds.war</code> file was unpacked in the <code>webapps/</code> directory.</li>
+      <li>Start Tomcat and confirm the <code>thredds.war</code> file was unpacked in the <code>webapps/</code> directory:</li>
 <pre>
 <b>-bash-3.2$</b> cd $TOMCAT_HOME
 <b>-bash-3.2$</b> bin/startup.sh
@@ -307,11 +372,12 @@ drwxr-xr-x  7 thredds Unidata     4096 2008-11-06 17:15 thredds
 </pre>   
 
 
-      <li>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed.</li>
+      <li>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed:</li>
      <p><img src="../images/distribution_catalog.gif" height="379" width="400"></p>
-
+      
 
      </ul>
+    </ol>
 
    </dl>
 
@@ -324,8 +390,8 @@ drwxr-xr-x  7 thredds Unidata     4096 2008-11-06 17:15 thredds
       <li>Using the outline above, install the JDK, Tomcat, and the TDS in <code>/home/thredds</code></li>
       <li>Once deployed, browse the test catalogs &amp; datasets that come with the distribution.</li>
      </ol>
-
-
+   </dl>
+   <dl>
      <dt><h3>Exercise 2. Implement a shortcut: use <code>setenv.sh</code> to declare <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code></h3></dt>
        <ol>
         <li>Stop Tomcat and move into the Tomcat <code>bin/</code> directory:</li>
@@ -362,17 +428,19 @@ Using CATALINA_HOME:   /home/thredds/apache-tomcat-6.0.18
 Using CATALINA_TMPDIR: /home/thredds/apache-tomcat-6.0.18/temp
 Using JRE_HOME:       /home/thredds/jdk1.6.0_10
 </pre> 
-        <li>Did you notice any difference in the output?</li>
-        <li>Is this what you expected to see?</li>
-        <li>What allows us to use this shortcut?  Hint: have a look at the <code>$TOMCAT_HOME/bin/catalina.sh</code> file:</li>
+       <ul>
+        <li class="question">Did you notice any difference in the output?</li>
+        <li class="question">Is this what you expected to see?</li>
+        <li class="question">What allows us to use this shortcut?  &nbsp; Hint: have a look at the <code>$TOMCAT_HOME/bin/catalina.sh</code> file:</li>
+        </ul>
 <pre>
 <b>-bash-3.2$</b> less catalina.sh
 </pre> 
 
 
        </ol>
-
-
+    </dl>
+    <dl>
     <dt><h3>Exercise 3. Look at the log files</h3></dt>
      <ol>
       <li>Look at the different types of log files being generated in <code>$TOMCAT_HOME/logs</code>.</li>
@@ -389,10 +457,11 @@ total 28
 -rw-r--r-- 1 thredds Unidata  2760 2008-11-06 20:16 localhost.2008-11-06.log
 -rw-r--r-- 1 thredds Unidata     0 2008-11-06 16:47 manager.2008-11-06.log
 </pre>   
-        <li>Do you see a correspondence between some of the web applications in the <code>$TOMCAT_HOME/webapps</code> directory and the naming of certain log files?</li>
-        <li>Is there a difference in information being logged to <code>catalina.out</code> verses <code>catalina.2008-11-06.log</code>?</li>
-        <li>Are some log files more verbose than others?</li>
-
+       <ul>
+        <li class="question">Do you see a correspondence between some of the web applications in the <code>$TOMCAT_HOME/webapps</code> directory and the naming of certain log files?</li>
+        <li class="question">Is there a difference in information being logged to <code>catalina.out</code> verses <code>catalina.2008-11-06.log</code>?</li>
+        <li class="question">Are some log files more verbose than others?</li>
+         </ul>
        </ul>
        <p></p>
        <li>Examine Tomcat's main log file: <code>catalina.out</code> </li>
@@ -402,16 +471,21 @@ total 28
 <b>-bash-3.2$</b> tail -f $TOMCAT_HOME/logs/catalina.out
 </pre>   
          <li>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</li>
-         <li>Is it only errors messages being reported to <code>catalina.out</code>?</li>
-         <li>What messages is the TDS logging to <code>catalina.out</code>?</li>
+          <ul>
+         <li class="question">Is it only errors messages being reported to <code>catalina.out</code>?</li>
+         <li class="question">What messages is the TDS logging to <code>catalina.out</code>?</li>
+         </ul>
 
         </ul>
      </ol>
-
-
+    </dl>
+   <dl>
     <dt><h3>Exercise 4. <code>$TOMCAT_HOME</code></h3></dt>
      <ol>
-      <li>Move into <code>$TOMCAT_HOME</code> and list the directory contents.  Do notice anything new?</li>
+      <li>Move into <code>$TOMCAT_HOME</code> and list the directory contents. </li>
+       <ul>
+         <li class="question">Do notice anything new?</li>
+       </ul>
      </ol>
 
    </dl>
@@ -421,7 +495,7 @@ total 28
    <hr>
    <address>
     <img src="../images/thread.png" height="108" width="110">
-    This document is maintained by Unidata and was last updated on October 28, 2008. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+    This document is maintained by Unidata and was last updated on November 5, 2008. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
    </address>
 
   </body>
