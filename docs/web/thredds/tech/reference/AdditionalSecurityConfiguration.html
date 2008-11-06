@@ -6,21 +6,27 @@
      pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 80%;}
      code {font-size: 11pt;}
      p.pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 80%; font-family: monospace}
-     dl {margin: 10px 5px 5px 15px;}
+     div.overview {margin-bottom: 30px; background-color: #FFFFFF; border-left: 5px solid #CFCFCF;}
+     div.overview p {margin-top: 0px; margin-left: 10px;}
+     div.overview b {margin-top: 0px; margin-left: 10px; color: #BFBFBF;}
+     p.note {background: transparent url(../images/note.gif) no-repeat 0px 2px; padding-left: 30px; } 
+     .question {background: transparent url(../images/question.gif) no-repeat 0px 0px; padding-left: 90px; list-style: none;} 
+     p.space {margin-bottom: 30px}
+     dl {margin-left: 10px; padding-left: 10px; margin-bottom: 40px;}
+     ul {margin-top: 10px; margin-bottom: 15px;}
+     h3 {margin-top: 0px; margin-bottom: 10px; margin-left: -10px;}
      table {table-layout: auto; border-collapse: separate; font-size: 10pt;}
      th {text-align: left; background-color: #E7E7E7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
      td {text-align: left; background-color: #F7F7F7; border-spacing: 2px; border: 1px solid #CFCFCF; padding: 2px 5px 2px 5px; vertical-align: top;}
      table code {font-size: 10pt;}
- 
-    /* tooltips */
-    a.tooltip {color:#0000FF; text-decoration: none;}
-    a.tooltip b {display:none;}
-    a.tooltip:hover {border:0px; position:relative; z-index:500; text-decoration:none;}
-    a.tooltip:hover b {display:block; position:absolute; top:20px; left:-25px; padding:5px; font-weight:normal; color:#000; border:1px solid #000000; background:#FFFFFF; width:300px;}
-    a.tooltip:hover b em.outer {position:absolute; left:20px; top:-8px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #000000; overflow:hidden; z-index:100;}
-    a.tooltip:hover b em.inner {position:absolute; left:20px; top:-7px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #FFFFFF; overflow:hidden; z-index:100}
-    .clear {clear:both;}
-
+     /* tooltips */
+     a.tooltip {color:#0000FF; text-decoration: none;}
+     a.tooltip b {display:none;}
+     a.tooltip:hover {border:0px; position:relative; z-index:500; text-decoration:none;}
+     a.tooltip:hover b {display:block; position:absolute; top:20px; left:-25px; padding:5px; font-weight:normal; color:#000; border:1px solid #000000; background:#FFFFFF; width:300px;}
+     a.tooltip:hover b em.outer {position:absolute; left:20px; top:-8px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #000000; overflow:hidden; z-index:100;}
+     a.tooltip:hover b em.inner {position:absolute; left:20px; top:-7px; width:0; height:0; display:block; background:transparent; border-left:7px dashed transparent; border-right:7px dashed transparent; border-bottom:7px solid #FFFFFF; overflow:hidden; z-index:100}
+     .clear {clear:both;}
    </style>
 
   </head>
@@ -49,9 +55,9 @@
      SecurityFocus' database of all known vulnerabilities for all different types of software from different vendors.</li>
      </ul>
 
+   </dl>
+    <dl>
 
-
-     <p></p>
     <dt><h3>Removing the default Tomcat web applications</h3></dt>
      <p>It is generally good practice to remove any un-used web applications out of <code>$TOMCAT_HOME/webapps</code>.  Tomcat ships with several default web applications, that you may want to consider removing if they are not being utilized:</p>
      <ul>
@@ -62,6 +68,9 @@
       <li>The <code>docs</code> are a copy of the <a href="http://tomcat.apache.org/tomcat-6.0-doc/">Tomcat documentation found online</a>.  Unless you have need for a local copy, removing <code>docs</code>  would help to tidy-up <code>$TOMCAT_HOME/webapps</code>.</li>
       </ul>
 
+
+   </dl>
+    <dl>
 
 
     <dt><h3>Denying access to the TDS by remote IP address or host</h3></dt>
@@ -89,10 +98,13 @@
 </pre>
 
       <p>The last example above would be a good candidate to utilize for adding an extra layer of security to the <code>manager</code> application if you were certain it would only need to be accessed from within a specific range of IP address.</p>
-      <p>Note: These valves rely on incoming IP addresses or hostnames which are vulnerable to spoofing.</p>
-      <p>For more information, see the Tomcat <a href="http://www.robotstxt.org/robotstxt.html">Valve Component</a> documentation.</p>
+      <p class="note"><i>Note</i>: These valves rely on incoming IP addresses or hostnames which are vulnerable to spoofing.</p>
+      <p class="note">For more information, see the Tomcat <a href="http://www.robotstxt.org/robotstxt.html">Valve Component</a> documentation.</p>
 
  
+   </dl>
+    <dl>
+
     <dt><h3>Blocking TDS content from being indexed by web crawlers</h3></dt>
      <p>Use a <code>robots.txt</code> file to prevent crawlers from indexing content.</p>
      <p>The TDS provides a basic and very restrictive <code>robots.txt</code> file for you to use:</p>
@@ -111,9 +123,12 @@ Disallow: /
 </pre>
 
 
-    <p>Note: not all crawlers obey the <code>robots.txt</code> file.  </p>
-      <p>For more information, see: <a href="http://www.robotstxt.org/robotstxt.html">http://www.robotstxt.org/robotstxt.html</a>.</p>
+    <p class="note"><i>Note</i>: not all crawlers obey the <code>robots.txt</code> file.  </p>
+     <p class="note">For more information, see: <a href="http://www.robotstxt.org/robotstxt.html">http://www.robotstxt.org/robotstxt.html</a>.</p>
 
+
+   </dl>
+    <dl>
 
     <dt><h3>Running Tomcat as a user other than <code>root</code></h3></dt>
 
@@ -148,7 +163,7 @@ drwxr-xr-x 2 tomcat tomcat  4096 2008-10-28 16:45 temp
 drwxr-xr-x 7 tomcat tomcat  4096 2008-10-31 11:45 webapps
 drwxr-xr-x 3 tomcat tomcat  4096 2008-10-28 16:47 work
 </pre>
-<p>Note: the <code>tomcat</code> user and group should not have permission to write or execute in other directories outside of <code>$TOMCAT_HOME</code>.</p>
+<p class="note"><i>Note</i>: the <code>tomcat</code> user and group should not have permission to write or execute in other directories outside of <code>$TOMCAT_HOME</code>.</p>
 
 
       <li>Modify any scripts you have for server <code>init</code> processes to invoke the <code>tomcat</code> user:</li>
@@ -158,6 +173,9 @@ su - tomcat -c /opt/tomcat/bin/startup.sh
      </ul>
 
 
+
+   </dl>
+    <dl>
 
 
 
@@ -195,7 +213,10 @@ thredds  21715 21682  0 14:02 pts/2    00:00:00 grep tomcat
         </ul>
 
 
-    <p>For more information, see: <a href="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables">Linux Firewalls Using iptable</a></p>
+    <p class="note">For more information, see: <a href="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables">Linux Firewalls Using iptable</a></p>
+
+   </dl>
+    <dl>
 
     <dt><h3>Running Tomcat behind an HTTP server</h3></dt>
      <p>It is not uncommon to run Tomcat as an application server behind an  HTTP server.  Tomcat has a couple of different <a href="http://tomcat.apache.org/connectors-doc/">connectors</a> that allow you to set up this configuration:</p>
@@ -203,12 +224,23 @@ thredds  21715 21682  0 14:02 pts/2    00:00:00 grep tomcat
   <li><a href="http://tomcat.apache.org/connectors-doc/">mod_jk</a></li>
   <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/proxy-howto.html">Proxy Support</a></li>
  </ul>
+<a href="http://oreilly.com/catalog/9780596101060/chapter/ch04.pdf">Tomcat Tuning</a> free online chapter in <a href="http://oreilly.com/catalog/9780596101060/index.html">Tomcat: The Definitive Guide</a> (2007). Check out the timings between Tomcat and Apache.</li>
+</ul>
+
+
+
+   </dl>
+    <dl>
+
 
     <dt><h3>Running Tomcat under a JVM Security Manager</h3></dt>
      <p>The JVM Security Manager that comes with Tomcat imposes a fine-grained security restrictions to all Java applications running the JVM.  It confines the Java applications in a sandbox, and restricts them from utilizing certain features of the Java language Tomcat normally is able to access.</p>
      <p>There are pros and cons to using the Security Manager.  If are hosting untrusted servlets or JSP on your server, then implementing the Security Manager may be a good idea.  Be aware the Security Manager may prevent trusted web applications (like the TDS) from performing certain functions if configured to restrictively.</p>
      <p>For more information about the Security Manager, see the Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/security-manager-howto.html">Security Manager HOW-TO</a> documentation.</p>
 
+
+   </dl>
+    <dl>
 
  <dt><h3>Online Resources</h3></dt>
   <ul>
@@ -227,7 +259,7 @@ thredds  21715 21682  0 14:02 pts/2    00:00:00 grep tomcat
    <hr>
    <address>
     <img src="../images/thread.png" height="108" width="110">
-    This document is maintained by Unidata and was last updated on October 28, 2008. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+    This document is maintained by Unidata and was last updated on November 5, 2008. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
    </address>
   </body>
  </html>
