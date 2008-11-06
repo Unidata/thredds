@@ -274,7 +274,7 @@
 
 
    <dl>
-     <dt><h3>Granting yourself access to the Tomcat <code>manager</code> application</h3></dt>
+     <dt><h3>Exercise 1: Modify <code>tomcat-users.xml</code> to grant yourself access to the Tomcat <code>manager</code> application</h3></dt>
 
       <div class="overview">
        <b>HOW TO INSTRUCTIONS</b>
@@ -325,13 +325,7 @@
         <p class="note"><i>Note</i>: to restrict access to parts of the TDS, you will perform the same steps you used to grant yourself access to the <code>manager</code> application.</p>
 
    </dl>
-  <dl>
-<dt><h3>Exercise 1: Modify <code>tomcat-users.xml</code> to grant yourself access to the Tomcat <code>manager</code> application</h3></dt>
-
-    <ol> 
-      <li>Using the steps outlined above, grant yourself access to the Tomcat <code>manager</code> application.</li>
-     </ol>
-</dl>
+ 
 
 
 
@@ -408,7 +402,7 @@ drwxr-xr-x  3 thredds Unidata 4096 2008-10-28 16:45 ROOT
 
 
 
-    <dt><h3>Configuring Tomcat to use digested passwords</h3></dt>
+    <dt><h3>Exercise 3: Configure Tomcat to use digested passwords</h3></dt>
 
       <div class="overview">
        <b>HOW TO INSTRUCTIONS</b>
@@ -500,14 +494,6 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
    </dl>
 
-<dl>
-<dt><h3>Exercise 3: Configure Tomcat to use digested passwords</h3></dt>
-
-    <ol> 
-      <li>Using the steps outlined above, configure Tomcat  to use digested passwords.</li>
-      <li>Test that your configuration changes are working by logging into the  Tomcat <code>manager</code> application.</li>
-     </ol>
-</dl>
 
 
    <h2>Enabling SSL encryption</h2>
@@ -540,8 +526,8 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
       <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></p>
      </dl>
     <dl>
-    <dt><h3>Configuring Tomcat to use SSL with a self-signed certificate</h3></dt>
-
+    <dt><h3>Exercise 4: Create a self-signed certificate and enable SSL in Tomcat.</h3></dt>
+    
       <div class="overview">
        <b>HOW TO INSTRUCTIONS</b>
        <p>Configuring Tomcat to use SSL with a self-signed certificate requires three steps:</p>
@@ -685,14 +671,9 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
 </pre>
      </ol>
   </dl>
-  <dl>
-    <dt><h3>Exercise 4: Create a self-signed certificate and enable SSL in Tomcat.</h3></dt>
-     <ol>
-      <li>Using the steps outlined above, create a self-signed certificate using Java's <code>keytool</code> command and enable SSL in Tomcat by modifying <code>server.xml</code>.</li>
-     </ol>
-</dl>
+
 <dl>
-    <dt><h3>Exercise 5: Grant yourself access to the TDS remote management tool.</h3></dt>
+    <dt><h3>Exercise 5: Grant yourself access to the TDS remote management tool</h3></dt>
       <ol>
         <li>Once again, using your favorite editor, open <code>$TOMCAT_HOME/conf/tomcat-users.xml</code>:</li>
 <pre>
@@ -717,7 +698,7 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
     <dt><h3>Configuring web applications for SSL</h3></dt>
      <p>The missing piece: <code>/WEB-INF/web.xml</code></p>
      <ul>
-      <li class="question">Question: how did we tell Tomcat to use SSL for the TDS remote management tool?</li>
+      <li class="question">How did we tell Tomcat to use SSL for the TDS remote management tool?</li>
      </ul>
      <ul>
       <li>This is specified in the web application deployment descriptor</li>
@@ -763,7 +744,7 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
     <p class="note">For more information on how to configure security requirements for a web application in a deployment descriptor, see: <a href="http://java.sun.com/javaee/5/docs/tutorial/doc/bncbe.html">Defining Security Requirements for Web Applications</a>.</p>
 </dl>
 <dl>
-    <dt><h3>Enabling SSL for the Tomcat <code>manager</code> application</h3></dt>
+    <dt><h3>Exercise 6: Enable SSL for the Tomcat <code>manager</code> application</h3></dt>
       <div class="overview">
        <b>HOW TO INSTRUCTIONS</b>
        <p>Enabling SSL for the  Tomcat <code>manager</code> application requires two steps:</p>
@@ -878,12 +859,6 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
      </ol>
 
    </dl>
-   <dl>
-    <dt><h3>Exercise 6: Enable SSL for the Tomcat <code>manager</code> application</h3></dt>
-   <ol>
-      <li>Using the steps outlined above, enable SSL for the Tomcat <code>manager</code> application.</li>
-     </ol>
-</dl>
 
    <h2>Additional security configuration</h2>
     <p>We have compiled a list of a few <a href="../reference/AdditionalSecurityConfiguration.html">additional step</a> you should take to help secure Tomcat and your TDS server. This is not a complete laundry list of security fixes! Please use it as a starting point when securing your server.</p>
