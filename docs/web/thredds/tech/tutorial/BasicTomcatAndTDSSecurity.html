@@ -49,7 +49,7 @@
     <dt><h3>Overview of the <code>server.xml</code> elements</h3></dt>
     <p>Move into the Tomcat <code>conf/</code> directory and examine the <code>server.xml</code> file:</p>
 <pre>
-<b>-bash-3.2$</b> cd $TOMCAT_HOME/conf/
+<b>-bash-3.2$</b> cd /home/thredds/apache-tomcat-6.0.18/conf/
 <b>-bash-3.2$</b> less server.xml
 </pre>  
 
@@ -264,6 +264,15 @@
      </tr>   
     </table>
    </dl>
+
+<dl>
+     <dt><h3>Accessing the Tomcat <code>manager</code> application</h3></dt>
+<p>Attempt to access the Tomcat <code>manager</code> application in your browser: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a> You will be prompted to login via BASIC authentication, which will only end in failure as we haven't yet created a <code>role</code> or <code>user</code> for the <code>manager</code> application.</p>
+        
+        <p><img src="../images/401.gif" height="353" width="400"></p>
+</dl>
+
+
    <dl>
      <dt><h3>Granting yourself access to the Tomcat <code>manager</code> application</h3></dt>
 
@@ -277,9 +286,7 @@
         </ol> 
        </div>
 
-<p>Attempt to access the Tomcat <code>manager</code> application in your browser: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a> You will be prompted to login via BASIC authentication, which will only end in failure as we haven't yet created a <code>role</code> or <code>user</code> for the <code>manager</code> application.</p>
-        
-        <p><img src="../images/401.gif" height="353" width="400"></p>
+
        <p>To grant yourself access to the <code>manager</code> application, follow these steps:</p>
 
        <ol>
@@ -354,7 +361,7 @@
        <li>Undeploy the TDS from the <code>Applications</code> section of the <code>manager</code> application.</li>
        <li>List the contents of <code>$TOMCAT_HOME/webapps/</code> to verify that both <code>thredds.war</code> and the unpacked <code>thredds/</code> directory are no longer present:</li>
 <pre>
-<b>-bash-3.2$</b> ls -l $TOMCAT_HOME/webapps
+<b>-bash-3.2$</b> ls -l /home/thredds/apache-tomcat-6.0.18/webapps
 total 20
 drwxr-xr-x 11 thredds Unidata 4096 2008-10-28 16:45 docs
 drwxr-xr-x  5 thredds Unidata 4096 2008-10-28 16:45 examples
@@ -469,7 +476,7 @@ drwxr-xr-x  3 thredds Unidata 4096 2008-10-28 16:45 ROOT
      <p>Tomcat provides a script (<code>$TOMCAT_HOME/bin/digest.sh</code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the passwords you made for yourself perviously:</p>
 
 <pre>
-<b>-bash-3.2$</b> $TOMCAT_HOME/bin/digest.sh -a SHA secret
+<b>-bash-3.2$</b> /home/thredds/apache-tomcat-6.0.18/bin/digest.sh -a SHA secret
 secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 </pre>  
 
@@ -482,7 +489,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 &lt;/tomcat-users&gt;
 </pre>  
 
-    <li><a name="restart-digest"></a>Restart Tomcat and verify digest passwords have been successfully enabled by logging into the Tomcat <code>manager</code> application using your password in clear text.</li>
+    <li><a name="restart-digest"></a>Restart Tomcat and verify digest passwords have been successfully enabled by logging into the Tomcat <code>manager</code> application using your password in clear text: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li>
     <p class="note"><i>Note</i>: since we are using BASIC authentication, you will need to close all browser sessions and restart your browser to test whether digested passwords have been enabled.</p>
 
 
@@ -550,8 +557,8 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
         <li>Run the <code>$JAVA_HOME/bin/keytool</code> command:</li>
 
 <pre>
-<b>-bash-3.2$</b> /home/thredds/jdk1.6.0_10/bin/keytool -genkey -alias tomcat -keyalg RSA -validity 365 \ 
--keystore /home/thredds/apache-tomcat-6.0.18/conf/keystore
+<b>-bash-3.2$</b> cd /home/thredds/jdk1.6.0_10/bin/
+<b>-bash-3.2$</b> ./keytool -genkey -alias tomcat -keyalg RSA -keystore /home/thredds/apache-tomcat-6.0.18/conf/keystore
 </pre>
 
      <p>Meaning of the <code>keytool</code> options:</p>
@@ -598,14 +605,6 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
      </tr>
      <tr>
       <td>  
-       -validity 365
-      </td>
-      <td> 
-        The <code>-validity 365</code> option makes this certificate valid for 1 year.
-      </td> 
-     </tr>
-     <tr>
-      <td>  
        -keystore /home/thredds/apache-tomcat-6.0.18/conf/keystore
       </td>
       <td> 
@@ -638,10 +637,9 @@ Is CN=unidata.ucar.edu, OU=THREDDS, O=Unidata, L=Boulder, ST=Colorado, C=US corr
   [no]:  y
 
 Enter key password for <tomcat>
-        (RETURN if same as keystore password): foobar
-Re-enter new password: foobar
+        (RETURN if same as keystore password): 
 </pre>
-
+      <p class="note"><i>Note</i>: the last password (private key password) and keystore password should be the same. If they differ, Tomcat cannot open the keystore and you will get this error: <code>java.io.IOException: Cannot recover key</code>.</p>
       </ul>
       <li><a name="server-ssl"></a>Modify <code>server.xml</code> to enable SSL.</li>
        <ul>
@@ -726,7 +724,7 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
        <li>By convention, servlet containers like Tomcat will read the web application deployment descriptors (<code>&lt;application name&gt;/WEB-INF/web.xml</code>) for initialization parameters and container-managed security constraints upon application deployment.</li>
       <li>The TDS remote management tool has been preconfigured to require SSL encryption to get the remote management page:</li>
 <pre>
-<b>-bash-3.2$</b> less $TOMCAT_HOME/webapps/thredds/WEB-INF/web.xml
+<b>-bash-3.2$</b> less /home/thredds/apache-tomcat-6.0.18/webapps/thredds/WEB-INF/web.xml
 </pre>  
  Near the bottom of the file you will find this entry:
 <pre>
@@ -781,7 +779,7 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
      <ul>
       <li>Using your favorite editor, open the deployment descriptor for the Tomcat <code>manager</code> application:</li>
 <pre>
-<b>-bash-3.2$</b> vi $TOMCAT_HOME/webapps/manager/WEB-INF/web.xml
+<b>-bash-3.2$</b> vi /home/thredds/apache-tomcat-6.0.18/webapps/manager/WEB-INF/web.xml
 </pre>   
         <li>Locate the <code>&lt;security-constraint&gt;</code> element (near the bottom of the file):</li>
 <pre>
