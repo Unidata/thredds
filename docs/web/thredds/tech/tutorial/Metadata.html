@@ -4,11 +4,10 @@
   
 
   <title>THREDDS and Metadata</title><style type="text/css">
-  pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 70%;}
+  pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
   code {font-size: 11pt;}
   dl {margin: 10px 5px 5px 15px;)
   </style></head>
-
 <body>
 <h1><img alt="THREDDS" src="../images/THREDDSlogo.jpg" height="54" width="67">THREDDS and Metadata</h1>
 <hr style="width: 100%; height: 2px;">
@@ -45,9 +44,29 @@
   <li>Inherited metadata can be overwritten.</li>
 </ul>
 
-<hr style="width: 100%; height: 2px;"><h2>Exercise: Add Metadata to NCDC NARR dataset</h2><ol><li>Edit the main TDS configuration catalog as desired:
+<hr style="width: 100%; height: 2px;">
+<h2>Exercise: Add Metadata to NAM, FSL, MODIS, or Suomi data</h2>
+<ol>
+  <li>Edit the main TDS configuration catalog as desired:
     <pre style="margin-left: 40px;"><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>-bash-3.2$</strong> vi catalog.xml                     <var>// Use the editor of your choice</var></pre>
-  </li><li>Add a <code>catalogRef</code> element pointing to the NCDC NARR dataset:<pre style="margin-left: 40px;">&lt;catalogRef xlink:title="NARR at NCDC"<br>          &nbsp; xlink:href="http://nomads.ncdc.noaa.gov/thredds/catalog/narr/catalog.xml" /&gt;</pre></li><li>Reinitialize the TDS configuration catalogs from the Remote Management page  - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li><ul><li>Click on the "Reinitialize" link</li></ul><li>Check the catalogErrors.log&nbsp;-&nbsp;<a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li><li>Check the list of dataset roots -&nbsp;<a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li><li>Browse the catalogs to see how&nbsp;the new&nbsp;<code>catalogRef</code> element looks - <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li><ul><li>Notice that the NARR dataset at NCDC already is doing some automatic metadata generation.</li></ul><li>Add THREDDS metadata to the <code>catalogRef</code> element.</li></ol><hr size="2" width="100%">
+  </li>
+  <li>Add metadata to one or more of the <code>datasetScan</code> elements. Perhaps some items similar to the following:
+    <pre style="margin-left: 40px;">&lt;metadata xlink:title="some XML metadata"<br>          xlink:href="http://motherlode.ucar.edu:8080/thredds/catalog.xml" /&gt;<br>&lt;documentation xlink:title="some html info" xlink:href="http://motherlode.ucar.edu:8080/thredds/catalog.html" /&gt;<br>&lt;keyword&gt;good stuff&lt;/keyword&gt;<br>&lt;publisher&gt;&lt;name&gt;you&lt;/name&gt;&lt;/publisher&gt;<br>&lt;variables&gt;<br>    &lt;variable name="Z" units="gp m"&gt;Geopotential Height&lt;/variable&gt;<br>&lt;/variables&gt;</pre>
+  </li>
+  <li>Reinitialize the TDS configuration catalogs from the Remote Management page  - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
+  </li>
+  <ul>
+    <li>Click on the "Reinitialize" link</li>
+  </ul>
+  <li>Check the catalogErrors.log&nbsp;-&nbsp;<a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
+  </li>
+  <li>Check the list of dataset roots -&nbsp;<a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
+  </li>
+  <li>Browse the catalogs to see how&nbsp;the metadata looks - <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
+  </li>
+</ol>
+
+<hr style="width: 100%; height: 2px;">
 <address><img alt="THREDDS" src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was
 last updated on November 2008. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
 support</a>.

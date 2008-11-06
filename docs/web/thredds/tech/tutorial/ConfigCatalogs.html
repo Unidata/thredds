@@ -5,7 +5,7 @@
   
 
 <title>TDS Configuration Catalogs</title><style type="text/css">
-pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 70%;}
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 </style></head>
@@ -64,13 +64,13 @@ read:</p>
   </li>
   <li>Click on the "Show static catalogs" link - <a href="https://localhost:8443/thredds/debug?catalogs/showStatic"> https://localhost:8443/thredds/debug?catalogs/showStatic</a>:
     <br><br>
-    <div style="margin-left: 40px;"><img style="border: 0pt solid ; width: 428px; height: 406px;" alt="List of Static Catalogs" src="TdsRemoteManager-staticCatalogs.png"></div>
+    <div style="margin-left: 40px;"><img style="border: 0 solid ; width: 428px; height: 406px;" alt="List of Static Catalogs" src="TdsRemoteManager-staticCatalogs.png"></div>
     <br>&nbsp;
   </li>
 </ul>
 
 <h3>Managing <code>datasetRoot</code> and <code>datasetScan</code> Elements</h3>
-<ul></ul>
+
   <p>You can have as many datasetRoot and datasetScan elements as you want, for example </p>
   <pre style="margin-left: 40px;"><strong>&lt;datasetRoot</strong> path="<strong>model</strong>" location="<strong>/data/ncep</strong>" /&gt;<br>&lt;<strong>datasetRoot</strong> path="<strong>obs</strong>" location="<strong>/data/raw/metars</strong>" /&gt;<br>&lt;<strong>datasetRoot</strong> path="<strong>cases/001</strong>" location="<strong>C:/casestudy/data/001</strong>" /&gt;<br><strong>&lt;datasetScan </strong>path<strong>="myData" </strong>location<strong>="/data/ncep/run0023" </strong>name="NCEP/RUN 23"<strong> </strong>serviceName<strong>="</strong>myserver<strong>" /&gt;</strong><br><strong>&lt;datasetScan </strong>path<strong>="myData/gfs" </strong>location<strong>="/pub/ldm/gfs" </strong>name="NCEP/GFS"<strong> </strong>serviceName<strong>="</strong>myserver<strong>" /&gt;</strong>
 </pre>
@@ -347,7 +347,7 @@ could add:<br>
 element. This would result in the following dataset being at the top of
 the "NAM_12km" collection of datasets:<br>
 </p>
-<pre style="margin-left: 40px;"><strong></strong>&lt;dataset name="latestComplete.xml" serviceName="latest" urlPath="latestComplete.xml" /&gt;</pre>
+<pre style="margin-left: 40px;">&lt;dataset name="latestComplete.xml" serviceName="latest" urlPath="latestComplete.xml" /&gt;</pre>
 <p>The <code>latestComplete</code> element includes
 a <code>name</code> attribute which provides the name of
 the proxy dataset, the <code>serviceName</code> attribute
@@ -413,10 +413,10 @@ element.<br>
 </ol>
 <p>Adding<br>
 </p>
-<pre style="margin-left: 40px;"><strong></strong>&lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})f[0-9]{3}.grib2"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</pre>
+<pre style="margin-left: 40px;">&lt;addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})f[0-9]{3}.grib2"<br>                 startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"<br>                 duration="60 hours" /&gt;</pre>
 <p>to a <code>datasetScan</code> element results in
 the following <code>timeCoverage</code> element:</p>
-<pre style="margin-left: 40px;"><strong></strong>&lt;timeCoverage&gt;<br>    &lt;start&gt;2005-07-18T12:00:00&lt;/start&gt;<br>    &lt;duration&gt;60 hours&lt;/duration&gt;<br>&lt;/timeCoverage&gt;<br></pre>
+<pre style="margin-left: 40px;">&lt;timeCoverage&gt;<br>    &lt;start&gt;2005-07-18T12:00:00&lt;/start&gt;<br>    &lt;duration&gt;60 hours&lt;/duration&gt;<br>&lt;/timeCoverage&gt;<br></pre>
 <hr style="width: 100%; height: 2px;"><h3>Exercise: Experiment with the above on the NAM, FSL, MODIS, and Suomi <code>datasetScan</code> Elements </h3><ol><li>Edit the main TDS configuration catalog as desired:
     <pre style="margin-left: 40px;"><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>-bash-3.2$</strong> vi catalog.xml                     <var>// Use the editor of your choice</var></pre>
   </li><li>Reinitialize the TDS configuration catalogs from the Remote Management page  - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li><ul><li>Click on the "Reinitialize" link</li></ul><li>Check the catalogErrors.log&nbsp;-&nbsp;<a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li><li>Check the list of dataset roots -&nbsp;<a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a></li><li>Browse the catalogs to see how&nbsp;the modified <code>datasetScan</code> elements are working - <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code></li><li>Repeat 1-5 making other changes.</li></ol><hr size="2" width="100%">
