@@ -13,9 +13,22 @@ dl {margin: 10px 5px 5px 15px;)
 <h1><img alt="THREDDS" src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Configuration Catalogs</h1>
 <br>
 <hr size="2" width="100%">
-<h2>More THREDDS Catalog Review</h2><h3>TDS Restrictions on the&nbsp;<code>service</code> Elements</h3><p>The TDS provides data access services at predefined URL base
-paths. Therefore, service base URLs must start with the following values:</p><p style="margin-left: 40px;"><strong>OPeNDAP</strong></p><pre style="margin-left: 80px;">&lt;service name="odap" serviceType="OPeNDAP" base="<strong>/thredds/dodsC/</strong>" /&gt;</pre><p style="margin-left: 40px;"><strong>NetCDF Subset Service</strong></p><pre style="margin-left: 80px;">&lt;service name="ncss" serviceType="NetcdfSubset" base="<strong>/thredds/ncss/</strong>" /&gt;<br>&lt;service name="ncssG" serviceType="NetcdfSubset" base="<strong>/thredds/ncss/grid/</strong>" /&gt;</pre><p style="margin-left: 40px;"><strong>WCS</strong></p><pre style="margin-left: 80px;"> &lt;service name="wcs" serviceType="WCS" base="<strong>/thredds/wcs/</strong>" /&gt;</pre>
-<p style="margin-left: 40px;"><strong>HTTP Bulk File Service</strong></p><pre style="margin-left: 80px;">&lt;service name="fileServer" serviceType="HTTPServer" base="<strong>/thredds/fileServer/"</strong> /&gt;</pre>
+<h2>More THREDDS Catalog Review</h2>
+<h3>TDS Restrictions on the&nbsp;<code>service</code> Elements</h3>
+<p>The TDS provides data access services at predefined URL base
+paths. Therefore, service base URLs must start with the following values:</p>
+
+<p style="margin-left: 40px;"><strong>OPeNDAP</strong></p>
+<pre style="margin-left: 80px;">&lt;service name="odap" serviceType="OPeNDAP" base="<strong>/thredds/dodsC/</strong>" /&gt;</pre>
+
+<p style="margin-left: 40px;"><strong>NetCDF Subset Service</strong></p>
+<pre style="margin-left: 80px;">&lt;service name="ncss" serviceType="NetcdfSubset" base="<strong>/thredds/ncss/</strong>" /&gt;</pre>
+
+<p style="margin-left: 40px;"><strong>WCS</strong></p>
+<pre style="margin-left: 80px;"> &lt;service name="wcs" serviceType="WCS" base="<strong>/thredds/wcs/</strong>" /&gt;</pre>
+
+<p style="margin-left: 40px;"><strong>HTTP Bulk File Service</strong></p>
+<pre style="margin-left: 80px;">&lt;service name="fileServer" serviceType="HTTPServer" base="<strong>/thredds/fileServer/"</strong> /&gt;</pre>
 <h3><code>service</code> Element Names must be Unique in Each Catalog</h3>Within a catalog, the service name is used to reference&nbsp;a <code>service</code>
 element. The service names must therefore be unique in each catalog.
 [Note: It is not necessary that they be unique globally within a TDS.
