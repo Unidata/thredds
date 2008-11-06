@@ -221,12 +221,12 @@ thredds  21715 21682  0 14:02 pts/2    00:00:00 grep tomcat
     <dt><h3>Running Tomcat behind an HTTP server</h3></dt>
      <p>It is not uncommon to run Tomcat as an application server behind an  HTTP server.  Tomcat has a couple of different <a href="http://tomcat.apache.org/connectors-doc/">connectors</a> that allow you to set up this configuration:</p>
  <ul>
-  <li><a href="http://tomcat.apache.org/connectors-doc/">mod_jk</a></li>
-  <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/proxy-howto.html">Proxy Support</a></li>
+  <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/connectors.html/">AJP</a></li>
+  <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/proxy-howto.html">mod_proxy on Apache HTTP Server 2.x</a></li>
  </ul>
-<a href="http://oreilly.com/catalog/9780596101060/chapter/ch04.pdf">Tomcat Tuning</a> free online chapter in <a href="http://oreilly.com/catalog/9780596101060/index.html">Tomcat: The Definitive Guide</a> (2007). Check out the timings between Tomcat and Apache.</li>
+  <p class="note">For an interesting analysis on Tomcat performance when run as an application server behind an HTTP server, see the  <a href="http://oreilly.com/catalog/9780596101060/chapter/ch04.pdf">Tomcat Tuning</a> free online chapter in <a href="http://oreilly.com/catalog/9780596101060/index.html">Tomcat: The Definitive Guide</a> (2007). Check out the timings between Tomcat and Apache.</p>
 </ul>
-
+<p class="note">For more information on Tomcat connectors in general, see the Tomcat connector <a href="http://tomcat.apache.org/connectors-doc/">Documentation Index</a>.</p>
 
 
    </dl>
