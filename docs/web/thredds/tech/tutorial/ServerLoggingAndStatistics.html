@@ -276,6 +276,11 @@ total 6288
 -rw-r--r-- 1 thredds Unidata 6424776 2008-11-04 14:55 access.2008-11-03.log
 </pre>  
        <li>Have a look at the log file and try to examine the data stored there.  (Kind of hard to sort through it all, isn't it)?</li>
+<pre>
+<b>-bash-3.2$</b> less access.2008-11-03.log
+</pre>  
+
+
       </ol>
 </dl>
 <dl>
@@ -291,7 +296,7 @@ total 6288
   15482 192.12.209.57
   16748 192.12.209.93
 </pre>  
-          <p>The output of the access log file is piped into <code>awk</code>, which prints the first "field variable" <code>$1</code>.  The result is sorted, identical lines are counted, and finally sorted again indescending order.</p>
+          <p>The output of the access log file is piped into <code>awk</code>, which prints the first "field variable" <code>$1</code>.  The result is sorted, identical lines are counted, and finally sorted again in descending order.</p>
         <li><code>192.12.209.93</code> is the host that has made the most requests to the server during this particular access log's period.</li>
         <ul>
         <li class="question">  But who is <code>192.12.209.93</code>?  (IPs are not too meaninful by themselves.)</li>
@@ -333,15 +338,14 @@ cise093.cise-nsf.gov.
 <b>-bash-3.2$</b> less /opt/bin/parse_logs.pl
 <b>-bash-3.2$</b> /opt/bin/parse_logs.pl
 </pre> 
-      <li>The resulting file <code>logdata.txt</code> will contain the log data in tab-delimited format.</li> 
+      <li>The resulting file <code>logdata.csv</code> will contain the log data in tab-delimited format.</li> 
 <pre>
 <b>-bash-3.2$</b> ls -l logs
 total 6288
 -rw-r--r-- 1 thredds Unidata 6424776 2008-11-04 14:55 access.2008-11-03.log
--rw-r--r-- 1 thredds Unidata 6424776 2008-11-06 16:07 logdata.txt
+-rw-r--r-- 1 thredds Unidata 6901416 2008-11-06 16:07 logdata.csv
 </pre>  
       <li>Open the <code>logdata.txt</code> file in the OpenOffice spreadsheet utility.</li> 
- 
        <li>Examine the log data</li>
         <ul>
          <li class="question">What Requested Resource took the most time to process?</li>
