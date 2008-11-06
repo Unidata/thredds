@@ -176,7 +176,7 @@ drwxr-xr-x  9 thredds Unidata 4096 2008-10-17 16:00 apache-tomcat-6.0.18
      <p>Move into the new Tomcat directory and have a look at the directory structure:</p>
 <pre>
 <b>-bash-3.2$</b> cd apache-tomcat-6.0.18/
-<b>-bash-3.2$</b> ls -l --group-directories-first
+<b>-bash-3.2$</b> ls -l 
 total 88
 drwxr-xr-x 2 thredds Unidata  4096 2008-11-06 16:45 bin
 drwxr-xr-x 2 thredds Unidata  4096 2008-11-06 16:52 conf
@@ -269,7 +269,7 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-11-06 16:47 work
     <p>We are going to modify the <code>startup.sh</code> and <code>shutdown.sh</code> scripts in the Tomcat <code>/bin</code> directory to:</p>
     <ol>
      <li>allow Tomcat to reference/find the location of <code>$JAVA_HOME</code> and <code>$TOMCAT_HOME</code> (aka <code>$CATALINA_HOME</code>) during startup and shutdown; and </li>
-     <li>increase the amount of memory allocated to the JVM to enhance performance by setting <code>$JAVA_OPTS</code>.</li>
+     <li>increase the amount of memory allocated to the JVM to enhance performance by setting <code>$JAVA_OPTS</code> (<code>-Xms</code> is the initial allocated memory, <code>-Xmx</code> the maximum memory, and <code>-server</code> tells the Hostspot compiler to run the JVM in "server" mode).</li>
     </ol>
     <p></p>
     <ul>
@@ -310,7 +310,7 @@ esac
 
      </ul>
  <ul>
-         <li class="question">Why are we doing this?</li>
+         <li class="question">Why are we setting <code>$JAVA_HOME</code> and <code>$CATALINA_HOME</code> if we already have set in our environment?</li>
        </ul>
   </dl>
 
