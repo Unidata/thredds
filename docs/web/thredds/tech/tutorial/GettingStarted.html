@@ -240,7 +240,7 @@ drwxr-xr-x 3 thredds Unidata  4096 2008-11-06 16:47 work
     <ul>
      <li>Move into the Tomcat <code>bin/</code> directory and run the <code>startup.sh</code> script:</li>
 <pre>
-<b>-bash-3.2$</b> cd $TOMCAT_HOME/bin
+<b>-bash-3.2$</b> cd /home/thredds/apache-tomcat-6.0.18/bin
 <b>-bash-3.2$</b> ./startup.sh
 </pre>   
      <li>Open a new browser window/tab and go to <a href="http://localhost:8080/">http://localhost:8080/</a> to verify Tomcat is running:</li>
@@ -357,7 +357,7 @@ drwxr-xr-x  3 thredds Unidata     4096 2008-11-06 16:45 ROOT
      <ul>
       <li>Start Tomcat and confirm the <code>thredds.war</code> file was unpacked in the <code>webapps/</code> directory:</li>
 <pre>
-<b>-bash-3.2$</b> cd $TOMCAT_HOME
+<b>-bash-3.2$</b> cd /home/thredds/apache-tomcat-6.0.18
 <b>-bash-3.2$</b> bin/startup.sh
 
 <b>-bash-3.2$</b> ls -l webapps
@@ -396,8 +396,8 @@ drwxr-xr-x  7 thredds Unidata     4096 2008-11-06 17:15 thredds
        <ol>
         <li>Stop Tomcat and move into the Tomcat <code>bin/</code> directory:</li>
 <pre>
-<b>-bash-3.2$</b> $TOMCAT_HOME/bin/shutdown.sh
-<b>-bash-3.2$</b> cd $TOMCAT_HOME/bin
+<b>-bash-3.2$</b> cd /home/thredds/apache-tomcat-6.0.18/bin
+<b>-bash-3.2$</b> ./shutdown.sh
 </pre>   
         <li>Using your favorite text editor, create a new file called <code>setenv.sh</code>:</li>
 <pre>
@@ -447,7 +447,7 @@ Using JRE_HOME:       /home/thredds/jdk1.6.0_10
        <ul>
         <li>Move into <code>$TOMCAT_HOME/logs</code> and see the type of information that is being logged:</li>
 <pre>
-<b>-bash-3.2$</b> cd $TOMCAT_HOME/logs
+<b>-bash-3.2$</b> cd /home/thredds/apache-tomcat-6.0.18/logs
 <b>-bash-3.2$</b> ls -l
 total 28
 -rw-r--r-- 1 thredds Unidata     0 2008-11-06 16:47 admin.2008-11-06.log
@@ -468,7 +468,7 @@ total 28
         <ul>
          <li>Open another terminal window (hereafter refered to as terminal #2) and run the following command in the new terminal:</li>
 <pre>
-<b>-bash-3.2$</b> tail -f $TOMCAT_HOME/logs/catalina.out
+<b>-bash-3.2$</b> tail -f /home/thredds/apache-tomcat-6.0.18/logs/catalina.out
 </pre>   
          <li>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</li>
           <ul>
