@@ -313,8 +313,12 @@ esac
          <li class="question">Why are we setting <code>$JAVA_HOME</code> and <code>$CATALINA_HOME</code> if we already have set in our environment?</li>
        </ul>
   </dl>
-
-
+   <dl>
+    <dt><h3>Exercise 1. Install Java and Tomcat</h3></dt>
+     <ol>
+      <li>Using the steps outlined in the above sections, install the JDK and Tomcat in <code>/home/thredds</code></li>
+     </ol>
+   </dl>
    <h2>Deploying the TDS</h2>
    <dl>
 
@@ -382,17 +386,15 @@ drwxr-xr-x  7 thredds Unidata     4096 2008-11-06 17:15 thredds
    </dl>
 
 
-
-   <h2>Exercises</h2>
    <dl>
-    <dt><h3>Exercise 1. Deploy your own instance of the THREDDS Data Server</h3></dt>
+    <dt><h3>Exercise 2. Deploy your own instance of the THREDDS Data Server</h3></dt>
      <ol>
-      <li>Using the outline above, install the JDK, Tomcat, and the TDS in <code>/home/thredds</code></li>
+      <li>Deploy the TDS in your newly-installed Tomcat.</li>
       <li>Once deployed, browse the test catalogs &amp; datasets that come with the distribution.</li>
      </ol>
    </dl>
    <dl>
-     <dt><h3>Exercise 2. Implement a shortcut: use <code>setenv.sh</code> to declare <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code></h3></dt>
+     <dt><h3>Exercise 3. Implement a shortcut: use <code>setenv.sh</code> to declare <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code></h3></dt>
        <ol>
         <li>Stop Tomcat and move into the Tomcat <code>bin/</code> directory:</li>
 <pre>
@@ -441,7 +443,7 @@ Using JRE_HOME:       /home/thredds/jdk1.6.0_10
        </ol>
     </dl>
     <dl>
-    <dt><h3>Exercise 3. Look at the log files</h3></dt>
+    <dt><h3>Exercise 4. Look at the log files</h3></dt>
      <ol>
       <li>Look at the different types of log files being generated in <code>$TOMCAT_HOME/logs</code>.</li>
        <ul>
@@ -480,7 +482,7 @@ total 28
      </ol>
     </dl>
    <dl>
-    <dt><h3>Exercise 4. <code>$TOMCAT_HOME</code></h3></dt>
+    <dt><h3>Exercise 5. <code>$TOMCAT_HOME</code></h3></dt>
      <ol>
       <li>Move into <code>$TOMCAT_HOME</code> and list the directory contents. </li>
        <ul>
