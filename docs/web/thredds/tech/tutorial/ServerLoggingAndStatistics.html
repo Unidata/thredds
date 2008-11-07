@@ -39,7 +39,7 @@
     <ul>
      <li>The access log records all requests processed by the server.</li>
      <li>Information it contains is different from other logs in <code>$TOMCAT_HOME/logs</code></li>
-     <li>Used for monitoring who is using your server and as a way of obtaining "feedback" about the activity and performance of the server</li>
+     <li>Used for monitoring who is using your server and as a way of obtaining "feedback" about the activity and performance of the server.</li>
      </ul>
     </dl>
     <dl>
@@ -126,7 +126,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
 
  <dl>
     <dt><h3>Access log format</h3></dt>
-         <p>The TDS access log entry pattern is almost identical to the standard <code>combined</code> logging pattern with an addition: the <code>%D</code> which is used for documenting the <i>Time taken to process the request, in millisat</i> will appear at the end of each log entry:</p>
+         <p>The TDS access log entry pattern is almost identical to the standard <code>combined</code> logging pattern with an addition: the <code>%D</code> which is used for documenting the <i>Time taken to process the request, in millis</i> will appear at the end of each log entry:</p>
 
 <pre>
 pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D"
@@ -315,7 +315,7 @@ cise093.cise-nsf.gov.
 
 
 
-        <li>Use the <code>awk</code> command sequence to find out if any authenticated users were responsible for for making these requests.</li>
+        <li>Use the <code>awk</code> command sequence to find out if any authenticated users were responsible for making these requests.</li>
 <pre>
 <b>-bash-3.2$</b> cat access.2008-11-03.log | awk '{print $3}' | sort | uniq -c | sort -n
 </pre>  
@@ -334,7 +334,7 @@ cise093.cise-nsf.gov.
 <b>-bash-3.2$</b> less /opt/bin/parse_logs.pl
 <b>-bash-3.2$</b> /opt/bin/parse_logs.pl
 </pre> 
-      <li>The resulting file <code>logdata.csv</code> will contain the log data in tab-delimited format.</li> 
+      <li>The resulting file <code>logdata.csv</code> will contain the log data in <i>tab-delimited format</i> that will have a <code>.csv</code> extension. (CSV means <u>C</u>omma <u>S</u>eparated <u>V</u>alues, but the data in this file is tab-delimited for two reasons: 1) Some of the Request Resource fields contain commas; and 2) I couldn't figure out how to get the OpenOffice spreadsheet utility to open a <code>.txt</code> file.)</li> 
 <pre>
 <b>-bash-3.2$</b> ls -l logs
 total 6288
@@ -345,8 +345,8 @@ total 6288
        <li>Examine the log data</li>
         <ul>
          <li class="question">What Requested Resource took the most time to process?</li>
-         <li class="question">What types of Request Methods are recorded?  Did any of the requests that used POST return a status code other than a <code>401</code>? (See <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions</a> for a reference.) </li>
-         <li class="question">What was the most prevelent Referer data?  What were the corresponding User Agents for these values?  Can you explain this?  </li>
+         <li class="question">What types of Request Methods are recorded?  What type of server Response/Status Codes did these Request Methods return?  (See <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions</a> for a reference.) </li>
+         <li class="question">What was the most prevelent Referer data?  What were the corresponding User Agents for these values? </li>
          <li class="question">Are there any entries that might be of interest from a security point of view?  Is there a common data element among these entries?  What do you think caused these entries? </li>
         
     </ol>
