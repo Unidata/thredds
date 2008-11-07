@@ -602,7 +602,12 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
 
       <li>Creating the self-signed certificate identity:</li>
-       (Although it is not obvious, the <code>first and last name</code>, or <code>CN</code>, should be the host name.)
+        <p class="note"><i>Note</i>: while you are filling out the identity fields for your certificate:</p>
+        <ul> 
+         <li>Although it is not obvious, the <code>first and last name</code>, or <code>CN</code>, should be the host name</li>
+         <li>The <code>keystore password</code> (the first password you are prompted to enter) is alway <code>changeit</code></li>
+         <li>The last password (the <code>key password</code>) and <code>keystore password</code> should be the same (<code>changeit</code>). If they differ, Tomcat cannot open the keystore and you will get this error: <code>java.io.IOException: Cannot recover key</code></li>
+        </ul>
 
 <pre>
 Enter keystore password: changeit
@@ -625,7 +630,7 @@ Is CN=unidata.ucar.edu, OU=THREDDS, O=Unidata, L=Boulder, ST=Colorado, C=US corr
 Enter key password for <tomcat>
         (RETURN if same as keystore password): 
 </pre>
-      <p class="note"><i>Note</i>: the last password (private key password) and keystore password should be the same. If they differ, Tomcat cannot open the keystore and you will get this error: <code>java.io.IOException: Cannot recover key</code>.</p>
+    
       </ul>
       <li><a name="server-ssl"></a>Modify <code>server.xml</code> to enable SSL.</li>
        <ul>
@@ -685,7 +690,7 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
 &lt;tomcat-users&gt;
     &lt;role rolename="manager"/&gt;
     &lt;role rolename="tdsConfig"/&gt;
-    &lt;user name="jen" password="secret" roles="manager,tdsConfig"/&gt;
+    &lt;user name="jen" password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" roles="manager,tdsConfig"/&gt;
 &lt;/tomcat-users&gt;
 </pre>  
          </ul>
@@ -747,10 +752,9 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
     <dt><h3>Exercise 6: Enable SSL for the Tomcat <code>manager</code> application</h3></dt>
       <div class="overview">
        <b>HOW TO INSTRUCTIONS</b>
-       <p>Enabling SSL for the  Tomcat <code>manager</code> application requires two steps:</p>
+       <p>Enabling SSL for the  Tomcat <code>manager</code> application requires one step:</p>
         <ol>
          <li><a href="#deployment_descriptor">Modify the <code>manager</code> <code>web.xml</code></a></li>
-         <li><a href="#restart-ssl-manager">Restart Tomcat</a></li>
         </ol> 
        </div>
 
@@ -855,7 +859,7 @@ tcp        0      0 127.0.0.1:8080               0.0.0.0:*                   LIS
 </pre>
 
       </ul>
-     <li><a name="restart-ssl-manager"></a>Restart Tomcat and verify SSL has been enabled for the Tomcat <code>manager</code> application: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li>
+     <li>Verify SSL has been enabled for the Tomcat <code>manager</code> application: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li>
      </ol>
 
    </dl>
