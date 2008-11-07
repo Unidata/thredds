@@ -33,16 +33,12 @@
 
 <hr style="width: 100%; height: 2px;"><h2>THREDDS Metadata</h2>
 <ul>
-  <li><a href="EnhancedCatalogs.html">THREDDS Metadata</a></li>
+  <li><a href="EnhancedCatalogs.html">THREDDS Metadata example</a></li>
+  <li><a href="../catalog/v1.0.2/InvCatalogSpec.html">THREDDS Catalog specification</a>
+    - <a href="../catalog/v1.0.2/InvCatalogSpec.html#threddsMetadataGroup">Metadata Section</a>
+  </li>
 </ul>
 
-<h3>Example Dataset - more inherited Metadata</h3>
-<pre style="margin-left: 40px;">...<br> &nbsp;  &lt;dataset name="TDS Tutorial: example 3"&gt;<br>        &lt;metadata inherited="true"&gt;<span style="font-weight: bold;"><br></span>           &nbsp;&lt;serviceName&gt;odap&lt;/serviceName&gt;<br>            &lt;description&gt;Really great data.&lt;/description&gt;<br>            &lt;keyword&gt;Ocean&lt;/keyword&gt;<br>            &lt;keyword&gt;Temperature&lt;/keyword&gt;<br>            &lt;creator&gt;Ethan&lt;/creator&gt;<br>            &lt;publisher&gt;Ethan&lt;/publisher&gt;<br>            &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;<br>            <span style="font-weight: bold;">&lt;dataFormat&gt;netCDF&lt;/dateFormat&gt;</span><br>        &lt;/metadata&gt;<br><br>        &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc"&gt;<br>            &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;<br><span style="font-weight: bold;">           </span> &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;<br><span style="font-weight: bold;">           </span> &lt;dataset name="TDS Tutorial: example data 4" urlPath="test/example4.grib2"&gt;<br>                <span style="font-weight: bold;">&lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;</span><br>            &lt;/dataset&gt;<br>      &nbsp; &lt;/dataset&gt;<br><br>&nbsp;   &lt;/dataset&gt;<br>...</pre>
-
-<p>Notes:</p>
-<ul>
-  <li>Inherited metadata can be overwritten.</li>
-</ul>
 
 <hr style="width: 100%; height: 2px;">
 <h2>Exercise: Add Metadata to NAM, FSL, MODIS, or Suomi data</h2>
