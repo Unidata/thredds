@@ -5,74 +5,67 @@
 <body>
 <h1><img src="../images/THREDDSlogo.jpg" name="graphics1" alt="THREDDS" align="bottom" border="0" height="54" width="67"> THREDDS Data Server Administration Tutorial</h1>
 <hr>
-<h2>Part One: Managing Tomcat and TDS</h2>
-<h4>TDS Overview <a href="TDSOverview.ppt">(ppt) </a></h4>
-<h4>Getting Started</h4>
+<h3>TDS Overview <a href="TDSOverview.ppt">(ppt) </a> </h3>
+<h3>TDS Services Overview (<a href="TDS%20Data%20Services.ppt">ppt</a>)</h3>
+<h3><a href="GettingStarted.html">Getting Started</a> </h3>
 <ul>
-  <li>    <a href="GettingStarted.html">Getting Started</a></li>
-  <li><a href="BasicConfig.html">Basic TDS Configuration</a></li>
+  <li>Installing Java &amp; Tomcat </li>
+  <li>Tomcat directory structure quick tour</li>
+  <li>Running Tomcat </li>
+  <li>Deploying the TDS </li>
 </ul>
-<h4>Using Tomcat</h4>
+<h3><a href="BasicConfig.html">Basic TDS Configuration</a></h3>
 <ul>
-  <li>    <a href="BasicTomcatTourAndSecurity.html">Tomcat Overview and Tomcat Security</a></li>
+  <li>THREDDS Catalog Review</li>
+  <li>TDS Configuration Catalogs</li>
+  <ul>
+    <li>Overview</li>
+    <li>Configuration directory</li>
+    <li>Root catalog</li>
+  </ul>
+</ul>
+<h3><a href="BasicTomcatAndTDSSecurity.html">Basic Tomcat and TDS Security</a></h3>
+<ul>
+  <li>Main server configuration files</li>
+  <li>The Tomcat <code>manager</code> application</li>
+  <li>Using digested passwords</li>
+  <li>Enabling SSL encryption</li>
+  <li>Additional security configuration</li>
   <li><a href="TomcatFAQ.html">Tomcat FAQ</a></li>
 </ul>
-<h4>TDS Services Overview</h4>
-<ul>
-  <li>FileServer</li>
-  <li>OPeNDAP</li>
-  <li>WCS</li>
-  <li>Netcdf Subset Service</li>
-  <li>LAS</li>
-</ul>
-<h4>THREDDS Catalogs</h4>
-<ul>
-  <li><a href="CatalogPrimer.html">Catalog Primer</a></li>
+<h3>TDS Configuration Catalogs</h3>
+<ul><li><a href="CatalogPrimer.html">Catalog Primer</a></li>
   <li><a href="ConfigCatalogs.html">TDS Configuration Catalogs</a></li>
-  <li><a href="TDSConfiguration.html">TDS Catalog Configuration Tutorial</a> </li>
+  <li><a href="TDSConfiguration.html">TDS Catalog Configuration Tutorial</a></li>
 </ul>
-<h4>Server Logging and Statistics</h4>
+<h3> Configuration and Tools for  TDS</h3>
 <ul>
-  <li>setting up logs</li>
-  <li>awstats</li>
-  <li>scripts</li>
-  <li>nslookup</li>
-</ul>
-<h4> Tools for Debugging TDS</h4>
-<ul>
+  <li><a href="../reference/ThreddsConfigXMLFile.html">TDS Configuration with threddsConfig.xml</a></li>
   <li><a href="../reference/RemoteManagement.html">Using Remote Management</a></li>
   <li><a href="../reference/ServletLog.html">Servlet Logs</a></li>
-  <li><a href="../reference/ThreddsConfigXMLFile.html">TDS Configuration with threddsConfig.xml</a></li>
-  <li><a href="http://www.unidata.ucar.edu/content/software/netcdf-java/v2.2/webstart/index.html">ToolsUI</a></li>
+  <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">ToolsUI</a></li>
 </ul>
-<h4>Miscellaneous </h4>
-<ul><li>TDS Tips <a href="TipsnTricksatTDSWorkshop.pdf">pdf</a></li>
-</ul>
-<p>&nbsp;</p>
-<hr>
-<h2>Part Two: Advanced Uses of TDS</h2>
-<h4>Web Server Security Issues and Discussion</h4>
-<h4>Restricted Dataset Access</h4>
-<h4>Advanced TDS management</h4>
+<h3><a href="ServerLoggingAndStatistics.html">Server Logging and Statistics</a></h3>
+<h3> Advanced Features</h3>
 <ul>
-  <li><a href="Performance.html">Performance Tips</a></li>
-  <li><a href="TroubleShooting.html">TroubleShooting Problems</a></li>
+  <li><a href="../reference/RestrictedAccess.html">Restricting dataset access</a></li>
   <li><a href="../reference/Viewers.html">Viewer Links</a></li>
 </ul>
-<h4>Metadata</h4>
-<ul>
-  <li><a href="MetadataStandards.html">Metadata standards</a> </li>
-  <li><a href="EnhancedCatalogs.html">Annotated Example</a></li>
+<h3>Metadata</h3>
+<ul><li><a href="Metadata.html">THREDDS Metadata</a></li>
 </ul>
-<h4>Using NcML in TDS</h4>
+<h3>Using NcML in TDS</h3>
 <ul>
   <li><a href="NcML.htm">Dataset Modification/Dataset Aggregation</a></li>
-  <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">Forecast Model Aggregation</a></li>
 </ul>
-<h4>&nbsp;</h4>
-<p>&nbsp;</p>
+<h3>Miscellaneous</h3>
+<ul>
+  <li> <a href="../reference/Performance.html">Performance</a></li>
+  <li><a href="TroubleShooting.html">TroubleShooting Problems</a></li>
+</ul>
+<h3>&nbsp;</h3>
 <hr>
-<p><img src="../images/thread.png" width="110" height="108">This document is maintained by John Caron and was last updated on Oct 22, 2008</p>
+<p><img src="../images/thread.png" alt="" width="110" height="108">This document is maintained by John Caron and was last updated on Nov 6, 2008</p>
 <p>&nbsp;</p>
 <p>&nbsp;  </p>
 </body></html>
