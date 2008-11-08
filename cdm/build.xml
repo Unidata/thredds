@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeMain" basedir=".">
   <property name="release.version" value="4.0"/>
-  <property name="minor" value="26" />
+  <property name="minor" value="27" />
   <!-- "build.number" is already set for TeamCity builds. -->
   <tstamp>
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
@@ -267,6 +267,7 @@
     <!-- *** -->
     <include name="ucar/**/*.java"/>
     <exclude name="ucar/nc2/dataset/grid/*"/>
+    <exclude name="ucar/nc2/jni/**"/>
     <exclude name="ucar/nc2/util/reflect/*"/>
     <exclude name="ucar/unidata/geoloc/ogc/*"/> <!-- Also needed by TDS. -->
     <!-- include name="dods/**/*.java"/ -->

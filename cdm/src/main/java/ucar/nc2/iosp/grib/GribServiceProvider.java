@@ -125,7 +125,7 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
     if (o instanceof Variable) {
       Variable v = (Variable) o;
       GribVariable pv = (GribVariable) v.getSPobject();
-      return pv.dump();
+      return (pv == null) ? "null GribVariable" : pv.dump();
     }
     return null;
   }

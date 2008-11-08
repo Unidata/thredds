@@ -31,6 +31,9 @@ import java.io.IOException;
 
 /**
  * Manager of factories for FeatureDatasets.
+ * This supercedes ucar.nc2.dt.TypedDatasetFactory
+ * <p> all point fetures are going throuh PointDatasetStandardFactory, which uses TableAna;yzer to deal
+ *   with specific datasets.
  *
  * @author caron
  * @since Mar 19, 2008

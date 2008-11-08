@@ -398,11 +398,17 @@ public class H5iosp extends AbstractIOServiceProvider {
   public String getDetailInfo() {
     ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);
     try {
-      headerParser.read( new PrintStream(ff));
+      NetcdfFile ncfile = new FakeNetcdfFile();
+      H5header detailParser = new H5header(myRaf, ncfile, this);
+      detailParser.read( new PrintStream(ff));
     } catch (IOException e) {
       e.printStackTrace();
     }
     return ff.toString();
   }
+
+  static private class FakeNetcdfFile extends NetcdfFile {
+  }
+
 
 }

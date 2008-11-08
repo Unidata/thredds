@@ -173,13 +173,17 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   protected VariableDS( VariableDS vds) {
     super(vds);
 
-    //this.enhanceMode = vds.enhanceMode;
     this.orgVar = vds.orgVar;
     this.orgDataType = vds.orgDataType;
-    this.scaleMissingProxy = vds.scaleMissingProxy;
+    this.orgName = vds.orgName;
 
-    //decouple coordinate systems
-    this.enhanceProxy = new EnhancementsImpl( this);
+    this.scaleMissingProxy = vds.scaleMissingProxy;
+    this.enhanceProxy = new EnhancementsImpl( this); //decouple coordinate systems
+
+    // LOOK not sure of this
+    this.enhanceMode = vds.enhanceMode;
+    this.needScaleOffsetMissing = vds.needScaleOffsetMissing;
+    this.needEnumConversion = vds.needEnumConversion;
   }
 
   // for section and slice
@@ -456,9 +460,12 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
   // section of regular Variable
   @Override
-  protected Array _read(Section section) throws IOException, InvalidRangeException  {
-    Array result;
+  protected Array _read(Section section) throws IOException, InvalidRangeException  {    
+    // really a full read
+    if ((null == section) || section.computeSize() == getSize())
+      return _read();
     
+    Array result;
     // has a pre-reader proxy
     if (preReader != null)
       return preReader.read(this, section, null);

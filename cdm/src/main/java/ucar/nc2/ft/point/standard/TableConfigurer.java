@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
+ * To analyze specific datasets, implement a TableConfigurer, whose job is to
+ *   create TableConfig, used by TableAnalyzer.
  * @author caron
  * @since Apr 23, 2008
  */

@@ -58,6 +58,20 @@ public class CoordinateAxis1D extends CoordinateAxis {
     setIsLayer();
   }
 
+  public CoordinateAxis makeCopy() {
+    CoordinateAxis1D axis = new CoordinateAxis1D( ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
+            getUnitsString(), getDescription());
+    axis.cache = new Variable.Cache(); // decouple cache 
+    return axis;
+  }
+
+  CoordinateAxis1D(NetcdfDataset ncd, CoordinateAxis1D org) {
+    super( ncd, org.getParentGroup(), org.getShortName(), org.getDataType(), org.getDimensionsString(),
+            org.getUnitsString(), org.getDescription());
+    this.cache = new Variable.Cache(); // decouple cache
+    setIsLayer();
+  }
+
   /** Constructor when theres no underlying variable. You better set the values too!
     * @param ds the containing dataset.
     * @param group the containing group; if null, use rootGroup

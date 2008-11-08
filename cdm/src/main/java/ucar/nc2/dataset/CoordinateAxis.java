@@ -117,6 +117,13 @@ public class CoordinateAxis extends VariableDS {
     this.ncd = ds;
   }
 
+  public CoordinateAxis makeCopy() {
+    CoordinateAxis axis = new CoordinateAxis( ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
+            getUnitsString(), getDescription());
+    axis.cache = new Variable.Cache(); // decouple cache
+    return axis;
+  }
+
   // for section and slice
   @Override
   protected Variable copy() {

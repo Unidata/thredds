@@ -252,9 +252,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       ProjectionImpl p = cs.getProjection();
       if (!(p instanceof RotatedPole)) {
-        // LOOK shold we make a copy of the axes here, so original CS stays intact ??
-        convertUnits(horizXaxis);
-        convertUnits(horizYaxis);
+        // make a copy of the axes if they need to change
+        horizXaxis = convertUnits(horizXaxis);
+        horizYaxis = convertUnits(horizYaxis);
       }
     } else if (cs.isLatLon()) {
       horizXaxis = lonAxis = cs.getLonAxis();
@@ -463,7 +463,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     makeTimes();
   }
 
-  private void convertUnits(CoordinateAxis axis) {
+  private CoordinateAxis convertUnits(CoordinateAxis axis) {
     String units = axis.getUnitsString();
     SimpleUnit axisUnit = SimpleUnit.factory(units);
     double factor;
@@ -471,23 +471,25 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       factor = axisUnit.convertTo(1.0, SimpleUnit.kmUnit);
     } catch (IllegalArgumentException e) {
       log.warn("convertUnits failed", e);
-      return;
+      return axis;
     }
-    if (factor == 1.0) return;
+    if (factor == 1.0) return axis;
 
     Array data;
     try {
       data = axis.read();
     } catch (IOException e) {
       log.warn("convertUnits read failed", e);
-      return;
+      return axis;
     }
     IndexIterator ii = data.getIndexIterator();
     while (ii.hasNext())
       ii.setDoubleCurrent(factor * ii.getDoubleNext());
 
-    axis.setCachedData(data, false);
-    axis.setUnitsString("km");
+    CoordinateAxis newAxis = axis.makeCopy();
+    newAxis.setCachedData(data, false);
+    newAxis.setUnitsString("km");
+    return newAxis;
   }
 
   //private VerticalTransform vt = null;

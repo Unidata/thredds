@@ -336,6 +336,7 @@ public class NcMLReader {
       buffer_size = Integer.parseInt(bufferSizeS);
 
     // open the referenced dataset - do NOT use acquire, and dont enhance
+    // LOOK : shouldnt enhance be controlled by enhance attribute on the netccdf element ?
     NetcdfDataset refds = null;
     if (referencedDatasetUri != null) {
       if (iospS != null) {
@@ -348,6 +349,7 @@ public class NcMLReader {
         refds = new NetcdfDataset(ncfile, false);
       } else {
         refds = NetcdfDataset.openDataset(referencedDatasetUri, false, buffer_size, cancelTask, iospParam);
+        refds.setEnhanceProcessed(false); // hasnt had enhance applied to it yet - wait till ncml mods have been applied
       }
     }
 
@@ -434,6 +436,8 @@ public class NcMLReader {
 
     // enhance means do scale/offset and/or add CoordSystems
     EnumSet<NetcdfDataset.Enhance> mode = NetcdfDataset.parseEnhanceMode(netcdfElem.getAttributeValue("enhance"));
+    //if (mode == null)
+    //  mode = NetcdfDataset.getEnhanceDefault();
     targetDS.enhance(mode);
 
     // optionally add record structure to netcdf-3

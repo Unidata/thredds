@@ -169,13 +169,19 @@ public class GeoGridTable extends JPanel {
         for (int i = 0; i < axes.size(); i++) {
           CoordinateAxis axis = axes.get(i);
           GeoAxisBean axisBean = new GeoAxisBean(axis);
-          if (!axisList.contains(axisBean))
+          if (!contains(axisList, axisBean.getName()))
             axisList.add(axisBean);
         }
       }
       csTable.setBeans( csList);
       axisTable.setBeans( axisList);
     }
+  }
+
+  private boolean contains(List<GeoAxisBean> axisList, String name) {
+    for (GeoAxisBean axis : axisList)
+      if (axis.getName().equals(name)) return true;
+    return false;
   }
 
   public GridDataset getGridDataset() { return gridDataset; }

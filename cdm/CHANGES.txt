@@ -47,6 +47,9 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
+  27:
+    bugs in enhance handling and NcML
+    JNI interface to netcdf4 C library, for testing
   26: ucar.nc2.ft.point.writer.CFPointObWriter, WriterCFPointObsDataset for writig point obs data in proposed CF format.
     EnhancedScaleMissingImpl: deal with unsigned data and missing values
     Universal Formal Radar IOSP

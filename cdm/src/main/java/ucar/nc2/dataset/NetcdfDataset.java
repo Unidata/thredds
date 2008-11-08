@@ -117,6 +117,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static private EnumSet<Enhance> EnhanceAll = EnumSet.of(Enhance.ScaleMissing, Enhance.CoordSystems, Enhance.ConvertEnums);
   static public EnumSet<Enhance> getEnhanceAll() { return EnumSet.copyOf( EnhanceAll); }
   static public EnumSet<Enhance> getEnhanceNone() { return EnumSet.noneOf(Enhance.class); }
+  static public EnumSet<Enhance> getEnhanceDefault() { return EnumSet.copyOf( defaultEnhanceMode); }
   static protected EnumSet<Enhance> defaultEnhanceMode = EnhanceAll;
 
   /**
@@ -358,7 +359,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     NetcdfDataset ds;
     if (ncfile instanceof NetcdfDataset) {
       ds = (NetcdfDataset) ncfile;
-      enhance(ds, enhanceMode, cancelTask); // enhance "in place", eg modify the NetcdfDataset
+      enhance(ds, enhanceMode, cancelTask); // enhance "in place", ie modify the NetcdfDataset
     } else {
       ds = new NetcdfDataset(ncfile, enhanceMode); // enhance when wrapping
     }
@@ -378,7 +379,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Possible remove all direct access to Variable.enhance
    */
   static private void enhance(NetcdfDataset ds, EnumSet<Enhance> mode, CancelTask cancelTask) throws IOException {
-    ds.enhanceMode = (mode == null) ? EnumSet.noneOf(Enhance.class) : EnumSet.copyOf(mode);
+    if (ds.isEnhanceProcessed) return;
+    if (mode == null) return;
+
+    ds.enhanceMode = EnumSet.copyOf(mode);
 
     // enhance scale/offset first, so its transferred to CoordinateAxes in next section
     for (Variable v : ds.getVariables()) {
@@ -395,6 +399,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     ds.finish(); // recalc the global lists
+    ds.isEnhanceProcessed = true;
   }
 
    /**
@@ -667,6 +672,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private List<CoordinateAxis> coordAxes = new ArrayList<CoordinateAxis>();
   private List<CoordinateTransform> coordTransforms = new ArrayList<CoordinateTransform>();
   private boolean coordSysWereAdded = false;
+  private boolean isEnhanceProcessed = false;
 
   private EnumSet<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
 
@@ -1072,7 +1078,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return "";
   }
 
-  ///////////////////////////////////////////////////////////////////////////////////
+  public boolean isEnhanceProcessed() {
+    return isEnhanceProcessed;
+  }
+
+  public void setEnhanceProcessed(boolean enhanceProcessed) {
+    isEnhanceProcessed = enhanceProcessed;
+  }
+
+///////////////////////////////////////////////////////////////////////////////////
   // constructor methods
 
   /**

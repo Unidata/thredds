@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
+ * This encapsolates the info needed by TableAnalyzer to handle point feature "nested table" datasets.
+ * A TableConfigurer creates one of these for a specific dataset convention.
+ * <p> a TableConfig has a tree of TableConfigs, representing the join of parent and children tables.
+ *
  * @author caron
  * @since Apr 23, 2008
  */
