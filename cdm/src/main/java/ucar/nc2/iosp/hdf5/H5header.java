@@ -913,10 +913,10 @@ class H5header {
           v.setDimensionsAnonymous(shape);
         }
 
-        /* } else if ((mdt.type == 9) && !mdt.isVString) { // variable length (not a string)
-       List<Dimension> dimList = new ArrayList<Dimension>(1);
-       dimList.add(Dimension.VLEN);
-       v.setDimensions(dimList);
+      /*} else if ((mdt.type == 9) && !mdt.isVString) { // variable length (not a string)
+       //List<Dimension> dimList = new ArrayList<Dimension>(1);
+       //dimList.add(Dimension.VLEN);
+       v.setVariableLength(true);
 
      /* } else if (mdt.type == 10) { // array
        v.setShapeWithAnonDimensions(mdt.dim); */
@@ -934,6 +934,10 @@ class H5header {
     DataType dt = vinfo.getNCDataType();
     if (dt == null) return false;
     v.setDataType(dt);
+
+    if ((mdt.type == 9) && !mdt.isVString) { // variable length (not a string)
+       v.setVariableLength(true);
+    }
 
     if (dt.isEnum()) {
       Group ncGroup = v.getParentGroup();

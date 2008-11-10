@@ -42,12 +42,11 @@ public enum DataType {
   STRING("String", 4),     // 32-bit index
   STRUCTURE("Structure", 1), // size meaningless
 
-  // netcdf4 types
-  OPAQUE("opaque", 1), // LOOK KEEP??
-
   ENUM1("enum1", 1), // byte
   ENUM2("enum2", 2), // short
-  ENUM4("enum4", 4); // int
+  ENUM4("enum4", 4), // int
+
+  OPAQUE("opaque", 1); // byte blobs
 
   private String niceName;
   private int size;
@@ -58,7 +57,7 @@ public enum DataType {
 
   /**
    * Find the DataType that matches this name.
-   * @param name find DataTYpe with this name.
+   * @param name find DataType with this name.
    * @return DataType or null if no match.
    */
   public static DataType getType(String name) {
@@ -192,7 +191,7 @@ public enum DataType {
   }
 
   /**
-   * Is tis an enumeration types?
+   * Is this an enumeration types?
    * @return true if ENUM1, 2, or 4
    */
   public boolean isEnum() {

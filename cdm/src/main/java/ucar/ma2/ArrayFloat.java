@@ -194,32 +194,32 @@ public class ArrayFloat extends Array {
   }
 
     // package private : mostly for iterators
-  double getDouble(int index) {return (double) storage[index]; }
-  void setDouble(int index, double value) { storage[index] = (float) value; }
+  public double getDouble(int index) {return (double) storage[index]; }
+  public void setDouble(int index, double value) { storage[index] = (float) value; }
 
-  float getFloat(int index) { return storage[index]; }
-  void setFloat(int index, float value) { storage[index] = value;}
+  public float getFloat(int index) { return storage[index]; }
+  public void setFloat(int index, float value) { storage[index] = value;}
 
-  long getLong(int index) {return (long) storage[index];}
-  void setLong(int index, long value) { storage[index] = (float) value;}
+  public long getLong(int index) {return (long) storage[index];}
+  public void setLong(int index, long value) { storage[index] = (float) value;}
 
-  int getInt(int index) { return (int) storage[index]; }
-  void setInt(int index, int value) { storage[index] = (float) value;}
+  public int getInt(int index) { return (int) storage[index]; }
+  public void setInt(int index, int value) { storage[index] = (float) value;}
 
-  short getShort(int index) { return (short) storage[index]; }
-  void setShort(int index, short value) { storage[index] = (float) value; }
+  public short getShort(int index) { return (short) storage[index]; }
+  public void setShort(int index, short value) { storage[index] = (float) value; }
 
-  byte getByte(int index) { return (byte) storage[index]; }
-  void setByte(int index, byte value) {storage[index] = (float) value;}
+  public byte getByte(int index) { return (byte) storage[index]; }
+  public void setByte(int index, byte value) {storage[index] = (float) value;}
 
-  char getChar(int index) { return (char) storage[index];}
-  void setChar(int index, char value) { storage[index] = (float) value; }
+  public char getChar(int index) { return (char) storage[index];}
+  public void setChar(int index, char value) { storage[index] = (float) value; }
 
-  boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
-  void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
+  public boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
+  public void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
 
-  Object getObject(int index) { return getFloat(index); }
-  void setObject(int index, Object value) { storage[index] = ((Number)value).floatValue(); }
+  public Object getObject(int index) { return getFloat(index); }
+  public void setObject(int index, Object value) { storage[index] = ((Number)value).floatValue(); }
 
   /** Concrete implementation of Array specialized for floats, rank 0. */
   public static class D0 extends ArrayFloat {

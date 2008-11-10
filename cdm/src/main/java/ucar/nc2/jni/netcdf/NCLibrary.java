@@ -102,6 +102,7 @@ public interface NCLibrary extends Library {
   int nc_get_att_ulonglong(int ncid, int varid, String name, long[] ip);
   int nc_get_att_schar(int ncid, int varid, String name, byte[] ip);
   int nc_get_att_uchar(int ncid, int varid, String name, byte[] ip);
+  int nc_get_att_ubyte(int ncid, int varid, String name, byte[] ip);
   int nc_get_att_short(int ncid, int varid, String name, short[] ip);
   int nc_get_att_ushort(int ncid, int varid, String name, short[] ip);
   int nc_get_att_text(int ncid, int varid, String name, byte[] ip);
@@ -121,15 +122,19 @@ public interface NCLibrary extends Library {
   int nc_inq_enum(int ncid, int xtype, byte[] name, IntByReference baseType,
               NativeLongByReference base_sizep, NativeLongByReference num_membersp); //size_t
   int nc_inq_enum_member(int ncid, int xtype, int idx, byte[] name, IntByReference value); // void *
+  int nc_inq_opaque(int ncid, int xtype, byte[] name, NativeLongByReference sizep);
 
   // read entire array
+  int nc_get_var(int ncid, int varid,  byte[] ip);
   int nc_get_var_text(int ncid, int varid, byte[] op);
   int nc_get_var_schar(int ncid, int varid, byte[] ip);
+  int nc_get_var_ubyte(int ncid, int varid,  byte[] ip);  
   int nc_get_var_short(int ncid, int varid, short[] ip);
   int nc_get_var_int(int ncid, int varid, int[] ip);
   int nc_get_var_longlong(int ncid, int varid, long[] ip);
   int nc_get_var_float(int ncid, int varid, float[] ip);
   int nc_get_var_double(int ncid, int varid, double[] ip);
+  int nc_get_var_string(int ncid, int varid, String[] sarray);
 
   // read array section
   // working on blueman

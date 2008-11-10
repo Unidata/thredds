@@ -121,6 +121,38 @@ public class MAMath {
   }
 
   /**
+   * Convert unsigned data to signed data of a wider type.
+   *
+   * @param unsigned must be of type byte, short or int
+   * @return converted data of type short, int, or long
+   */
+  public static Array convertUnsigned( Array unsigned) {
+    if (unsigned.getElementType().equals(byte.class)) {
+      Array result = Array.factory(DataType.SHORT, unsigned.getShape());
+      IndexIterator ii = result.getIndexIterator();
+      while (unsigned.hasNext())
+        ii.setShortNext( DataType.unsignedByteToShort(unsigned.nextByte()));
+      return result;
+
+    } else if (unsigned.getElementType().equals(short.class)) {
+      Array result = Array.factory(DataType.INT, unsigned.getShape());
+      IndexIterator ii = result.getIndexIterator();
+      while (unsigned.hasNext())
+        ii.setIntNext( DataType.unsignedShortToInt(unsigned.nextShort()));
+      return result;
+
+    } else if (unsigned.getElementType().equals(int.class)) {
+      Array result = Array.factory(DataType.LONG, unsigned.getShape());
+      IndexIterator ii = result.getIndexIterator();
+      while (unsigned.hasNext())
+        ii.setLongNext( DataType.unsignedIntToLong(unsigned.nextInt()));
+      return result;
+    }
+
+    throw new IllegalArgumentException("Cant convertUnsigned type= "+unsigned.getElementType());
+  }
+
+  /**
    * Copy using iterators. Will copy until !from.hasNext().
    *
    * @param dataType use this operation type (eg DataType.DOUBLE uses getDoubleNext())

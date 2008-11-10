@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>CDM Data Types</title>
+</head>
+
+<body>
+<h1>CDM Data Types</h1>
+<p>This document explains how  CDM data types are mapped into  Netcdf-Java objects</p>
+<hr width="100%" />
+<h2>Overview</h2>
+<p>An <strong>Array</strong> contains the actual data for a Variable after it is read from the disk or network. All data access can be done in a general way through the method </p>
+<pre><strong>  Array data = Variable.read(); </strong></pre>
+<p>When a Variable has a variable length dimension, <strong>Variable.isVariableLength()</strong> is true and a <strong>ArrayObject</strong> with the appropriate element type is returned. Otherwise the Array is rectangular, and you can count on the following being returned from  <strong>Variable.read()</strong>:</p>
+<table width="452" border="1">
+  <tr>
+    <th width="109" scope="col">DataType</th>
+    <th width="151" scope="col">Array subclass </th>
+    <th width="170" scope="col">Array.getElementType </th>
+  </tr>
+  <tr>
+    <td>BYTE</td>
+    <td>ArrayByte</td>
+    <td>byte.class</td>
+  </tr>
+  <tr>
+    <td>SHORT</td>
+    <td>ArrayShort</td>
+    <td>short.class</td>
+  </tr>
+  <tr>
+    <td>INT</td>
+    <td>ArrayInt</td>
+    <td>int.class</td>
+  </tr>
+  <tr>
+    <td>LONG</td>
+    <td>ArrayLong</td>
+    <td>long.class</td>
+  </tr>
+  <tr>
+    <td>FLOAT</td>
+    <td>ArrayFloat</td>
+    <td>float.class</td>
+  </tr>
+  <tr>
+    <td>DOUBLE</td>
+    <td>ArrayDouble</td>
+    <td>double.class</td>
+  </tr>
+  <tr>
+    <td>CHAR</td>
+    <td>ArrayChar</td>
+    <td>char.class</td>
+  </tr>
+  <tr>
+    <td>STRING</td>
+    <td>ArrayObject</td>
+    <td>String.class</td>
+  </tr>
+  <tr>
+    <td>STRUCTURE</td>
+    <td>ArrayStructure</td>
+    <td>StructureData.class</td>
+  </tr>
+  <tr>
+    <td>SEQUENCE</td>
+    <td>n/a</td>
+    <td>ArraySequence.class</td>
+  </tr>
+  <tr>
+    <td>ENUM1</td>
+    <td>ArrayByte</td>
+    <td>byte.class</td>
+  </tr>
+  <tr>
+    <td>ENUM2</td>
+    <td>ArrayShort</td>
+    <td>short.class</td>
+  </tr>
+  <tr>
+    <td>ENUM4</td>
+    <td>ArrayInt</td>
+    <td>int.class</td>
+  </tr>
+  <tr>
+    <td>OPAQUE</td>
+    <td>ArrayObject</td>
+    <td>byte.class</td>
+  </tr>
+</table>
+<p>&nbsp; </p>
+<h2>Integer Types</h2>
+<p>The CDM integer types are <strong>byte, short, int, </strong>and<strong> long</strong>. Each are mapped to the corresponding Java primitive type. </p>
+<p>Java does not have unsigned types, and because  we do not automatically widen unsigned integers, handling unsigned values requires some attention. Unsigned integer types are stored in the corresponding signed types. You can detect this by calling <strong>Array.isUnsigned()</strong> or <strong>Variable.isUnsigned().</strong> An unsigned Variable will have an attribute <strong>_unsigned</strong> whose String value is <strong>true</strong>. </p>
+<p>You may use static methods in <strong>ucar.ma2.DataType</strong> to convert one value at a time: </p>
+<pre>
+  static public long <strong>unsignedIntToLong</strong>(int i);
+  static public int <strong>unsignedShortToInt</strong>(short s);
+  static public short <strong>unsignedByteToShort</strong>(byte b);
+</pre>
+<p>You may use this static method in <strong>ucar.ma2.MAMath </strong> to widen all the values in an Array:</p>
+<pre><strong>   public static Array convertUnsigned( Array unsigned);</strong></pre>
+<p>Theres not much to do in a general way with unsigned longs, as there is no primitive type that can hold 64 bits of precision. </p>
+<p>ArrayByte, ArrayShort and ArrayInt will widen an unsigned value when  casting to wider type like float or double. </p>
+<h2>Floating Point Types</h2>
+<p>The CDM integer types are <strong>float and double </strong><strong></strong>. Each are mapped to the corresponding Java primitive type. </p>
+<h3>Char and String Types</h3>
+<p>A <strong>String</strong> is a variable length array of <a href="http://unicode.org/">Unicode</a> characters. When reading/writing a String to a  file or other external representation, the characters are by default <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8 encoded</a> (note that ASCII is a subset of UTF-8). Libraries may use different internal representations, for example the Java library uses UTF-16 encoding. </p>
+<p>The <strong>char</strong> type contains uninterpreted  characters, one character per byte. Typically these contain 7-bit ASCII characters. </p>
+<h3>Structure</h3>
+<p>A <strong>Structure</strong> is a type of Variable that contains other Variables, analogous to a <strong><em>struct</em></strong> in C, or a <em><strong>row</strong></em> in a relational database. In general, the data in a Structure are physically stored close together on disk, so that it is efficient to retrieve all of the data in a Structure at the same time. A Variable contained in a Structure is a <strong>member Variable</strong>, and can only be read in the context of its containing Structure. </p>
+<p>The member data of a Structure is returned in a <strong>StructureData</strong> object. Since a Structure may be multidimensional, <strong>Structure.read() </strong>returns an <strong>ArrayStructure,</strong> a subclass of Array which contains an array of StructureData objects. Alternatively, one can call <strong>Structure.getStructureIterator() </strong>and iterate through the <strong>StructureData</strong> in canonical order. This potentially is a very efficient way to access the data, since the data does not have to all be memory resident at the same time. </p>
+<h3>Sequence</h3>
+<p>A <strong>Sequence</strong> is a variable length, one dimensional Structure whose length is not known until you actually read the data. To access the data in a Sequence, you must use <strong>Structure.getStructureIterator(), </strong>ie you cannot call Sequence.read(). Sequences make the moset sense as members of a Structure. </p>
+<h3>Enumeration</h3>
+<p>An <strong>enum</strong> type is an mapping of integer values to Strings. The mapping itself is stored in an <strong>EnumTypedef</strong> object in the <strong>Group</strong>, and so is shared across all Variables that use that enumeration. </p>
+<p>A enumeration Variable will have DataType <strong>ENUM1</strong>, <strong>ENUM2</strong>, or <strong>ENUM4</strong>, depending on whether the the enum value is stored in 1, 2, or 4 bytes. The raw values are returned as byte, short, or integer array. One can convert these raw values to the corresponding String <em>enumeration values</em> in a way that does not depend on their internal representation, for example: </p>
+<pre> if (var.getDataType().isEnum()) {
+    Array rawValues = var.read();
+    Array enumValues = Array.factory(DataType.STRING, rawValues.getShape());
+    IndexIterator ii = enumValues.getIndexIterator();
+
+
+    // use implicit Array iterator
+
+    while (rawValues.hasNext()) {
+      String sval = var.<strong>lookupEnumString</strong>(rawValues.nextInt());
+      ii.setObjectNext(sval);
+    }
+  } 
+</pre>
+<p>When wrapping a NetcdfFile with a NetcdfDataset, by default enumerations will be converted to their String values, and the type of the Variable will be changed to String. This conversion is controlled by the <strong>enhanceMode</strong> parameter on  NetcdfDataset.open:</p>
+<pre><strong> static public NetcdfDataset openDataset(String location, EnumSet&lt;Enhance&gt; enhanceMode, int buffer_size, CancelTask cancelTask, Object spiObject);</strong></pre>
+<p>or by setting the default enhanceMode: </p>
+<pre> <strong>static public void setDefaultEnhanceMode(EnumSet&lt;Enhance&gt; mode);</strong></pre>
+<p>If you want to turn enum conversion off, create your own EnumSet enhanceMode, for example this  leaves the other default enhancements on:  </p>
+<pre><strong> EnumSet&lt;Enhance&gt; myEnhanceMode = EnumSet.of(Enhance.ScaleMissing, Enhance.CoordSystems);
+ </strong></pre>
+<h3>Opaque</h3>
+<p>An <strong>opaque</strong> type stores uninterpreted blobs of bytes. The length of the blob is not known until it is read. An array of opaque objects may have different lengths for each of the objects. </p>
+<p>&nbsp; </p>
+<hr width="100%" />
+<address>
+</address>
+<address>
+<img src="../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 09, 2008
+</address>
+</body>
+</html>

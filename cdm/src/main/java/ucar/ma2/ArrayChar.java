@@ -147,13 +147,6 @@ public class ArrayChar extends Array {
     storage[i.currentElement()] = value;
   }
 
-  /* double
-  public double getDouble(int[] index) {
-    return (double) storage[indexCalc.element(index)];
-  }
-  public void setDouble(int[] index, double value) {
-    storage[indexCalc.element(index)] = (char) value;
-  }  */
   public double getDouble(Index i) {
     return (double) storage[i.currentElement()];
   }
@@ -162,13 +155,6 @@ public class ArrayChar extends Array {
     storage[i.currentElement()] = (char) value;
   }
 
-  /* float
-  public float getFloat(int[] index) {
-    return (float) storage[indexCalc.element(index)];
-  }
-  public void setFloat(int[] index, float value) {
-    storage[indexCalc.element(index)] = (char) value;
-  }  */
   public float getFloat(Index i) {
     return (float) storage[i.currentElement()];
   }
@@ -177,13 +163,6 @@ public class ArrayChar extends Array {
     storage[i.currentElement()] = (char) value;
   }
 
-  /* long
-  public long getLong(int[] index) {
-    return (long) storage[indexCalc.element(index)];
-  }
-  public void setLong(int[] index, long value) {
-    storage[indexCalc.element(index)] = (char) value;
-  } */
   public long getLong(Index i) {
     return (long) storage[i.currentElement()];
   }
@@ -192,13 +171,6 @@ public class ArrayChar extends Array {
     storage[i.currentElement()] = (char) value;
   }
 
-  /* int
-  public int getInt(int[] index) {
-    return (int) storage[indexCalc.element(index)];
-  }
-  public void setInt(int[] index, int value) {
-    storage[indexCalc.element(index)] = (char) value;
-  } */
   public int getInt(Index i) {
     return (int) storage[i.currentElement()];
   }
@@ -207,13 +179,6 @@ public class ArrayChar extends Array {
     storage[i.currentElement()] = (char) value;
   }
 
-  /* short
-  public short getShort(int[] index) {
-    return (short) storage[indexCalc.element(index)];
-  }
-  public void setShort(int[] index, short value) {
-    storage[indexCalc.element(index)] = (char) value;
-  } */
   public short getShort(Index i) {
     return (short) storage[i.currentElement()];
   }
@@ -222,13 +187,6 @@ public class ArrayChar extends Array {
     storage[i.currentElement()] = (char) value;
   }
 
-  /* byte
-  public byte getByte(int[] index) {
-    return (byte) storage[indexCalc.element(index)];
-  }
-  public void setByte(int[] index, byte value) {
-    storage[indexCalc.element(index)] = (char) value;
-  } */
   public byte getByte(Index i) {
     return (byte) storage[i.currentElement()];
   }
@@ -237,13 +195,6 @@ public class ArrayChar extends Array {
     storage[i.currentElement()] = (char) value;
   }
 
-  /* char
-  public char getChar(int[] index) {
-    return (char) storage[indexCalc.element(index)];
-  }
-  public void setChar(int[] index, char value) {
-    storage[indexCalc.element(index)] = (char) value;
-  } */
   public char getChar(Index i) {
     return storage[i.currentElement()];
   }
@@ -452,75 +403,75 @@ public class ArrayChar extends Array {
 
 
   // package private : mostly for iterators
-  double getDouble(int index) {
+  public double getDouble(int index) {
     return (double) storage[index];
   }
 
-  void setDouble(int index, double value) {
+  public void setDouble(int index, double value) {
     storage[index] = (char) value;
   }
 
-  float getFloat(int index) {
+  public float getFloat(int index) {
     return storage[index];
   }
 
-  void setFloat(int index, float value) {
+  public void setFloat(int index, float value) {
     storage[index] = (char) value;
   }
 
-  long getLong(int index) {
+  public long getLong(int index) {
     return (long) storage[index];
   }
 
-  void setLong(int index, long value) {
+  public void setLong(int index, long value) {
     storage[index] = (char) value;
   }
 
-  int getInt(int index) {
+  public int getInt(int index) {
     return (int) storage[index];
   }
 
-  void setInt(int index, int value) {
+  public void setInt(int index, int value) {
     storage[index] = (char) value;
   }
 
-  short getShort(int index) {
+  public short getShort(int index) {
     return (short) storage[index];
   }
 
-  void setShort(int index, short value) {
+  public void setShort(int index, short value) {
     storage[index] = (char) value;
   }
 
-  byte getByte(int index) {
+  public byte getByte(int index) {
     return (byte) storage[index];
   }
 
-  void setByte(int index, byte value) {
+  public void setByte(int index, byte value) {
     storage[index] = (char) value;
   }
 
-  char getChar(int index) {
+  public char getChar(int index) {
     return storage[index];
   }
 
-  void setChar(int index, char value) {
+  public void setChar(int index, char value) {
     storage[index] = value;
   }
 
-  boolean getBoolean(int index) {
+  public boolean getBoolean(int index) {
     throw new ForbiddenConversionException();
   }
 
-  void setBoolean(int index, boolean value) {
+  public void setBoolean(int index, boolean value) {
     throw new ForbiddenConversionException();
   }
 
-  Object getObject(int index) {
+  public Object getObject(int index) {
     return getChar(index);
   }
 
-  void setObject(int index, Object value) {
+  public void setObject(int index, Object value) {
     storage[index] = (Character) value;
   }
 

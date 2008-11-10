@@ -19,115 +19,259 @@
  */
 package ucar.ma2;
 
-  /**
-    Iteration through each element of an Array in "canonical order".
-    The user obtains this by calling getIndexIterator() on an Array.
-
-    Canonical order for A[i][j][k] has k varying fastest, then j, then i.<br>
-    <p> Example: Replace array with its square:
-    <br>
-    <pre>
-    IndexIterator iter = A.getIndexIterator();
-    while (iter.hasNext()) {
-      double val = iter.getDoubleNext();
-      iter.setDoubleCurrent( val * val);
-    }
-    </pre>
-
-    Note that canonical order may not be physical order.
-
+/**
+ * Iteration through each element of an Array in "canonical order".
+ * The user obtains this by calling getIndexIterator() on an Array.
+ * <p/>
+ * Canonical order for A[i][j][k] has k varying fastest, then j, then i.<br>
+ * <p> Example: Replace array with its square:
+ * <br>
+ * <pre>
+ * IndexIterator iter = A.getIndexIterator();
+ * while (iter.hasNext()) {
+ * double val = iter.getDoubleNext();
+ * iter.setDoubleCurrent( val * val);
+ * }
+ * </pre>
+ * <p/>
+ * Note that canonical order may not be physical order.
+ *
  * @author caron
  */
 
-public interface IndexIterator  {
+public interface IndexIterator {
 
-  /** Return true if there are more elements in the iteration. */
+  /**
+   * Return true if there are more elements in the iteration.
+   * @return true if there are more elements in the iteration.
+   */
   public boolean hasNext();
 
-  /** Get next value as a double */
+  /**
+   * Get next value as a double
+   * @return next value as a double
+   */
   public double getDoubleNext();
-  /** Set next value with a double */
+
+  /**
+   * Set next value with a double
+   * @param val the next value as a double
+   */
   public void setDoubleNext(double val);
-  /** Get current value as a double */
+
+  /**
+   * Get current value as a double
+   * @return current value as a double
+   */
   public double getDoubleCurrent();
-  /** Set current value with a double */
+
+  /**
+   * Set current value with a double
+   * @param val the current value as a double
+   */
   public void setDoubleCurrent(double val);
 
-  /** Get next value as a float */
+  /**
+   * Get next value as a float
+   * @return next value as a float
+   */
   public float getFloatNext();
-  /** Set next value with a float */
+
+  /**
+   * Set next value with a float
+   * @param val the  next value as a float
+   */
   public void setFloatNext(float val);
-  /** Get current value as a float */
+
+  /**
+   * Get current value as a float
+   * @return current value as a float
+   */
   public float getFloatCurrent();
-  /** Set current value with a float */
+
+  /**
+   * Set current value with a float
+   * @param val the  current value as a float
+   */
   public void setFloatCurrent(float val);
 
-  /** Get next value as a long */
+  /**
+   * Get next value as a long
+   * @return next value as a long
+   */
   public long getLongNext();
-  /** Set next value with a long */
+
+  /**
+   * Set next value with a long
+   * @param val the  next value as a long
+   */
   public void setLongNext(long val);
-  /** Get current value as a long */
+
+  /**
+   * Get current value as a long
+   * @return current value as a long
+   */
   public long getLongCurrent();
-  /** Set current value with a long */
+
+  /**
+   * Set current value with a long
+   * @param val the  current value as a long
+   */
   public void setLongCurrent(long val);
 
-  /** Get next value as a int */
+  /**
+   * Get next value as a int
+   * @return next value as a int
+   */
   public int getIntNext();
-  /** Set next value with a int */
+
+  /**
+   * Set next value with a int
+   * @param val the  next value as a int
+   */
   public void setIntNext(int val);
-  /** Get current value as a int */
+
+  /**
+   * Get current value as a int
+   * @return current value as a int
+   */
   public int getIntCurrent();
-  /** Set current value with a int */
+
+  /**
+   * Set current value with a int
+   * @param val the  current value as a int
+   */
   public void setIntCurrent(int val);
 
-  /** Get next value as a short */
+  /**
+   * Get next value as a short
+   * @return next value as a short
+   */
   public short getShortNext();
-  /** Set next value with a short */
+
+  /**
+   * Set next value with a short
+   * @param val the  next value as a short
+   */
   public void setShortNext(short val);
-  /** Get current value as a short */
+
+  /**
+   * Get current value as a short
+   * @return current value as a short
+   */
   public short getShortCurrent();
-  /** Set current value with a short */
+
+  /**
+   * Set current value with a short
+   * @param val the  current value as a short
+   */
   public void setShortCurrent(short val);
 
-  /** Get next value as a byte */
+  /**
+   * Get next value as a byte
+   * @return next value as a byte
+   */
   public byte getByteNext();
-  /** Set next value with a byte */
+
+  /**
+   * Set next value with a byte
+   * @param val the  next value as a byte
+   */
   public void setByteNext(byte val);
-  /** Get current value as a byte */
+
+  /**
+   * Get current value as a byte
+   * @return current value as a byte
+   */
   public byte getByteCurrent();
-  /** Set current value with a byte */
+
+  /**
+   * Set current value with a byte
+   * @param val the  current value as a byte
+   */
   public void setByteCurrent(byte val);
 
-  /** Get next value as a char */
+  /**
+   * Get next value as a char
+   * @return next value as a char
+   */
   public char getCharNext();
-  /** Set next value with a char */
+
+  /**
+   * Set next value with a char
+   * @param val the  next value as a char
+   */
   public void setCharNext(char val);
-  /** Get current value as a char */
+
+  /**
+   * Get current value as a char
+   * @return current value as a char
+   */
   public char getCharCurrent();
-  /** Set current value with a char */
+
+  /**
+   * Set current value with a char
+   * @param val the  current value as a char
+   */
   public void setCharCurrent(char val);
 
-  /** Get next value as a boolean */
+  /**
+   * Get next value as a boolean
+   * @return next value as a boolean
+   */
   public boolean getBooleanNext();
-  /** Set next value with a boolean */
+
+  /**
+   * Set next value with a boolean
+   * @param val the  next value as a boolean
+   */
   public void setBooleanNext(boolean val);
-  /** Get current value as a boolean */
+
+  /**
+   * Get current value as a boolean
+   * @return current value as a boolean
+   */
   public boolean getBooleanCurrent();
-  /** Set current value with a boolean */
+
+  /**
+   * Set current value with a boolean
+   * @param val the  current value as a boolean
+   */
   public void setBooleanCurrent(boolean val);
 
-  /** Get next value as an Object */
+  /**
+   * Get next value as an Object
+   * @return next value as an Object
+   */
   public Object getObjectNext();
-  /** Set next value with a Object */
+
+  /**
+   * Set next value with a Object
+   * @param val the  next value as a Object
+   */
   public void setObjectNext(Object val);
-  /** Get current value as a Object */
+
+  /**
+   * Get current value as a Object
+   * @return current value as a Object
+   */
   public Object getObjectCurrent();
-  /** Set current value with a Object */
+
+  /**
+   * Set current value with a Object
+   * @param val the current value as a Object
+   */
   public void setObjectCurrent(Object val);
 
-  /** Get next value as an Object */
+  /**
+   * Get next value as an Object
+   * @return next value as an Object
+   */
   public Object next();
 
-  /** get the current counter, use for debugging */
+  /**
+   * Get the current counter, use for debugging
+   * @return the current counter, use for debugging
+   */
   public int[] getCurrentCounter();
 }

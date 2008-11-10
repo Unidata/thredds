@@ -19,10 +19,7 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
+import ucar.ma2.*;
 
 import java.util.List;
 
@@ -129,7 +126,7 @@ public class Attribute {
 
     if ((svalue != null) && (index == 0)) return svalue;
 
-    return (String) values.getObject(ima().set0(index));
+    return (String) values.getObject(index);
   }
 
   /**
@@ -166,17 +163,17 @@ public class Attribute {
 
     // LOOK can attributes be enum valued? for now, no
     if (dataType == DataType.BYTE)
-      return values.getByte(ima().set0(index));
+      return values.getByte(index);
     else if (dataType == DataType.SHORT)
-      return values.getShort(ima().set0(index));
+      return values.getShort(index);
     else if (dataType == DataType.INT)
-      return values.getInt(ima().set0(index));
+      return values.getInt(index);
     else if (dataType == DataType.FLOAT)
-      return values.getFloat(ima().set0(index));
+      return values.getFloat(index);
     else if (dataType == DataType.DOUBLE)
-      return values.getDouble(ima().set0(index));
+      return values.getDouble(index);
     else if (dataType == DataType.LONG)
-      return values.getLong(ima().set0(index));
+      return values.getLong(index);
 
     return null;
   }
@@ -334,7 +331,7 @@ public class Attribute {
    * Construct attribute with list of String or Number values.
    *
    * @param name   name of attribute
-   * @param values list of values. must be String or Number, and have at least 1 member
+   * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    */
   public Attribute(String name, List values) {
     this.name = name;
@@ -457,11 +454,5 @@ public class Attribute {
     this.dataType = DataType.getType( arr.getElementType());
     hashCode = 0;
   }
-
-  private Index ima;
-  private Index ima() {
-    if (ima == null) ima = values.getIndex();
-    return ima;
-  } 
 
 }

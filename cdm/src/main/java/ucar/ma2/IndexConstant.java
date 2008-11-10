@@ -22,7 +22,7 @@ package ucar.ma2;
 /**
  * An Index into an Array that always returns 0. It can have any shape, so it allows you to create a
  * constant Array of any shape.
- *  *
+ *  
  * @author caron
  */
  // LOOK : need to override section, etc !!

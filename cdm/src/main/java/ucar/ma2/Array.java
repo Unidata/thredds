@@ -90,7 +90,7 @@ public abstract class Array {
 
 
   /**
-   * Generate new Array with given type and shape and an Index that allways return 0.
+   * Generate new Array with given type and shape and an Index that always return 0.
    * @param classType element Class type, eg double.class.
    * @param shape shape of the array.
    * @param storage primitive array of correct type of length 1
@@ -336,6 +336,8 @@ public abstract class Array {
   /////////////////////////////////////////////////////
   protected final Index indexCalc;
   protected final int rank;
+  protected boolean unsigned;
+  private IndexIterator ii; // local iterator
 
   // for subclasses only
   protected Array(int [] shape) {
@@ -353,6 +355,11 @@ public abstract class Array {
    * @return an Index for this Array
    */
   public Index getIndex() { return (Index) indexCalc.clone(); }
+
+  /** Get an Index object used for indexed access of this Array.
+   * @return an Index for this Array
+   */
+  public Index getIndexPrivate() { return indexCalc; }
 
   /** Get an index iterator for traversing the array in canonical order.
    * @see IndexIterator
@@ -665,6 +672,14 @@ public abstract class Array {
   }
 
   //////////////////////////////////////////////////////////////
+  public boolean isUnsigned() {
+    return unsigned;
+  }
+
+  public void setUnsigned(boolean unsigned) {
+    this.unsigned = unsigned;
+  }
+
   /*
    * Set the name of one of the indices.
    * @param dim which index?
@@ -682,13 +697,6 @@ public abstract class Array {
   public String getIndexName( int dim) {
     return indexCalc.getIndexName( dim);
   } */
-
-  /** This is present so that Array is-a MultiArray: equivalent to sectionNoReduce().
-  public Array read(int [] origin, int [] shape) throws InvalidRangeException {
-    return sectionNoReduce(origin, shape);
-  }
-  /** This is present so that Array is-a MultiArray: returns itself.
-  public Array read() { return this; } */
 
       ///////////////////////////////////////////////////
     /* these are the type-specific element accessors */
@@ -811,27 +819,26 @@ public abstract class Array {
      */
   abstract  public void setObject(Index ima, Object value);
 
-  // package private
   //// these are for optimized access with no need to check index values
   //// elem is the index into the backing data
-  abstract double getDouble(int elem);
-  abstract void setDouble(int elem, double val);
-  abstract float getFloat(int elem);
-  abstract void setFloat(int elem, float val);
-  abstract long getLong(int elem);
-  abstract void setLong(int elem, long value);
-  abstract int getInt(int elem);
-  abstract void setInt(int elem, int value);
-  abstract short getShort(int elem);
-  abstract void setShort(int elem, short value);
-  abstract byte getByte(int elem);
-  abstract void setByte(int elem, byte value);
-  abstract char getChar(int elem);
-  abstract void setChar(int elem, char value);
-  abstract boolean getBoolean(int elem);
-  abstract void setBoolean(int elem, boolean value);
-  abstract Object getObject(int elem);
-  abstract void setObject(int elem, Object value);  
+  abstract public double getDouble(int elem);
+  abstract public void setDouble(int elem, double val);
+  abstract public float getFloat(int elem);
+  abstract public void setFloat(int elem, float val);
+  abstract public long getLong(int elem);
+  abstract public void setLong(int elem, long value);
+  abstract public int getInt(int elem);
+  abstract public void setInt(int elem, int value);
+  abstract public short getShort(int elem);
+  abstract public void setShort(int elem, short value);
+  abstract public byte getByte(int elem);
+  abstract public void setByte(int elem, byte value);
+  abstract public char getChar(int elem);
+  abstract public void setChar(int elem, char value);
+  abstract public boolean getBoolean(int elem);
+  abstract public void setBoolean(int elem, boolean value);
+  abstract public Object getObject(int elem);
+  abstract public void setObject(int elem, Object value);
 
   public String toString() {
     StringBuilder sbuff = new StringBuilder();
@@ -942,6 +949,6 @@ public abstract class Array {
   public void resetLocalIterator() {
     ii = null;
   }
-  private IndexIterator ii; // local iterator
+
 }
 

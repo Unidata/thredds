@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
-import java.util.Formatter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -192,8 +191,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     if (typeInfo.hdfType == 8) { // enum
       Object data = IospHelper.readDataFill( myRaf, layout, dataType, fillValue, byteOrder);
-      Array codesArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
-      return codesArray;
+      return Array.factory(dataType.getPrimitiveClassType(), shape, data);
 
       /* LOOK should it return the string, or the integer ??
       // now transform into a String array

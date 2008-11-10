@@ -129,13 +129,6 @@ public class ArrayLong extends Array {
     storage[i.currentElement()] = value;
   }
 
-  /* double
-  public double getDouble(int[] index) {
-    return (double) storage[indexCalc.element(index)];
-  }
-  public void setDouble(int[] index, double value) {
-    storage[indexCalc.element(index)] = (long) value;
-  } */
   public double getDouble(Index i) {
     return (double) storage[i.currentElement()];
   }
@@ -143,13 +136,6 @@ public class ArrayLong extends Array {
     storage[i.currentElement()] = (long) value;
   }
 
-  /* float
-  public float getFloat(int[] index) {
-    return (float) storage[indexCalc.element(index)];
-  }
-  public void setFloat(int[] index, float value) {
-    storage[indexCalc.element(index)] = (long) value;
-  } */
   public float getFloat(Index i) {
     return (float) storage[i.currentElement()];
   }
@@ -157,13 +143,6 @@ public class ArrayLong extends Array {
     storage[i.currentElement()] = (long) value;
   }
 
-  /* long
-  public long getLong(int[] index) {
-    return (long) storage[indexCalc.element(index)];
-  }
-  public void setLong(int[] index, long value) {
-    storage[indexCalc.element(index)] = (long) value;
-  } */
   public long getLong(Index i) {
     return storage[i.currentElement()];
   }
@@ -171,13 +150,6 @@ public class ArrayLong extends Array {
     storage[i.currentElement()] = value;
   }
 
-  /* int
-  public int getInt(int[] index) {
-    return (int) storage[indexCalc.element(index)];
-  }
-  public void setInt(int[] index, int value) {
-    storage[indexCalc.element(index)] = (long) value;
-  }  */
   public int getInt(Index i) {
     return (int) storage[i.currentElement()];
   }
@@ -185,13 +157,6 @@ public class ArrayLong extends Array {
     storage[i.currentElement()] = (long) value;
   }
 
-  /* short
-  public short getShort(int[] index) {
-    return (short) storage[indexCalc.element(index)];
-  }
-  public void setShort(int[] index, short value) {
-    storage[indexCalc.element(index)] = (long) value;
-  } */
   public short getShort(Index i) {
     return (short) storage[i.currentElement()];
   }
@@ -199,13 +164,6 @@ public class ArrayLong extends Array {
     storage[i.currentElement()] = (long) value;
   }
 
-  /* byte
-  public byte getByte(int[] index) {
-    return (byte) storage[indexCalc.element(index)];
-  }
-  public void setByte(int[] index, byte value) {
-    storage[indexCalc.element(index)] = (long) value;
-  } */
   public byte getByte(Index i) {
     return (byte) storage[i.currentElement()];
   }
@@ -213,13 +171,6 @@ public class ArrayLong extends Array {
     storage[i.currentElement()] = (long) value;
   }
 
-  /* char
-  public char getChar(int[] index) {
-    return (char) storage[indexCalc.element(index)];
-  }
-  public void setChar(int[] index, char value) {
-    storage[indexCalc.element(index)] = (long) value;
-  } */
   public char getChar(Index i) {
     return (char) storage[i.currentElement()];
   }
@@ -236,13 +187,6 @@ public class ArrayLong extends Array {
      throw new ForbiddenConversionException();
   }
 
-  /* Object
-  public Object getObject(int [] index) {
-    return new Long(storage[indexCalc.element(index)]);
-  }
-  public void setObject(int [] index, Object value) {
-    storage[indexCalc.element(index)] = ((Number)value).longValue();
-  }  */
   public Object getObject(Index i) {
     return storage[i.currentElement()];
   }
@@ -251,32 +195,32 @@ public class ArrayLong extends Array {
   }
 
     // package private : mostly for iterators
-  double getDouble(int index) {return (double) storage[index]; }
-  void setDouble(int index, double value) { storage[index] = (long) value; }
+  public double getDouble(int index) {return (double) storage[index]; }
+  public void setDouble(int index, double value) { storage[index] = (long) value; }
 
-  float getFloat(int index) { return storage[index]; }
-  void setFloat(int index, float value) { storage[index] = (long) value;}
+  public float getFloat(int index) { return storage[index]; }
+  public void setFloat(int index, float value) { storage[index] = (long) value;}
 
-  long getLong(int index) {return storage[index];}
-  void setLong(int index, long value) { storage[index] = value;}
+  public long getLong(int index) {return storage[index];}
+  public void setLong(int index, long value) { storage[index] = value;}
 
-  int getInt(int index) { return (int) storage[index]; }
-  void setInt(int index, int value) { storage[index] = (long) value;}
+  public int getInt(int index) { return (int) storage[index]; }
+  public void setInt(int index, int value) { storage[index] = (long) value;}
 
-  short getShort(int index) { return (short) storage[index]; }
-  void setShort(int index, short value) { storage[index] = (long) value; }
+  public short getShort(int index) { return (short) storage[index]; }
+  public void setShort(int index, short value) { storage[index] = (long) value; }
 
-  byte getByte(int index) { return (byte) storage[index]; }
-  void setByte(int index, byte value) {storage[index] = (long) value;}
+  public byte getByte(int index) { return (byte) storage[index]; }
+  public void setByte(int index, byte value) {storage[index] = (long) value;}
 
-  char getChar(int index) { return (char) storage[index];}
-  void setChar(int index, char value) { storage[index] = (long) value; }
+  public char getChar(int index) { return (char) storage[index];}
+  public void setChar(int index, char value) { storage[index] = (long) value; }
 
-  boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
-  void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
+  public boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
+  public void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
 
-  Object getObject(int index) { return getLong(index); }
-  void setObject(int index, Object value) { storage[index] = ((Number)value).longValue(); }
+  public Object getObject(int index) { return getLong(index); }
+  public void setObject(int index, Object value) { storage[index] = ((Number)value).longValue(); }
 
   /** Concrete implementation of Array specialized for longs, rank 0. */
   public static class D0 extends ArrayLong {

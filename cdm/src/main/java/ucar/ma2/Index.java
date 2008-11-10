@@ -36,6 +36,91 @@ import java.util.List;
 public class Index implements Cloneable {
   public static final Index0D scalarIndex = new Index0D(); // immutable, so can be shared
 
+  /**
+   * Generate a subclass of Index optimized for this array's rank
+   * @param shape use this shape
+   * @return a subclass of Index optimized for this array's rank
+   */
+  static public Index factory(int[] shape) {
+    int rank = shape.length;
+    switch (rank) {
+      case 0:
+        return scalarIndex;
+      case 1:
+        return new Index1D(shape);
+      case 2:
+        return new Index2D(shape);
+      case 3:
+        return new Index3D(shape);
+      case 4:
+        return new Index4D(shape);
+      case 5:
+        return new Index5D(shape);
+      case 6:
+        return new Index6D(shape);
+      case 7:
+        return new Index7D(shape);
+      default:
+        return new Index(shape);
+    }
+  }
+
+  private static Index factory(int rank) {
+    switch (rank) {
+      case 0:
+        return scalarIndex;
+      case 1:
+        return new Index1D();
+      case 2:
+        return new Index2D();
+      case 3:
+        return new Index3D();
+      case 4:
+        return new Index4D();
+      case 5:
+        return new Index5D();
+      case 6:
+        return new Index6D();
+      case 7:
+        return new Index7D();
+      default:
+        return new Index(rank);
+    }
+  }
+
+  /**
+   * Compute total number of elements in the array.
+   *
+   * @param shape length of array in each dimension.
+   * @return total number of elements in the array.
+   */
+  static public long computeSize(int[] shape) {
+    long product = 1;
+    for (int ii = shape.length - 1; ii >= 0; ii--)
+      product *= shape[ii];
+    return product;
+  }
+
+  /**
+   * Compute standard strides based on array's shape.
+   *
+   * @param shape  length of array in each dimension.
+   * @param stride put result here
+   * @return standard strides based on array's shape.
+   */
+  static private long computeStrides(int[] shape, int[] stride) {
+    long product = 1;
+    for (int ii = shape.length - 1; ii >= 0; ii--) {
+      final int thisDim = shape[ii];
+      if (thisDim < 0)
+        throw new NegativeArraySizeException();
+      stride[ii] = (int) product;
+      product *= thisDim;
+    }
+    return product;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
   protected int[] shape;
   protected int[] stride;
   protected int rank;
@@ -44,9 +129,7 @@ public class Index implements Cloneable {
   protected int offset; // element = offset + stride[0]*current[0] + ...
   protected boolean fastIterator = true; // use fast iterator if in canonical order
 
-  // LOOK: can we eliminate for the common case?
   protected int[] current; // current element's index, used only for the general case
-  //protected String[] name; // index names (optional)
 
   /**
    * General case Index - use when you want to manipulate current elements yourself
@@ -356,9 +439,6 @@ public class Index implements Cloneable {
   public int getShape(int index) {
     return shape[index];
   }
-
-  /** Get the current element's index as an int [] LOOK why not ?
-   public int [] getCurrentIndex() { return (int []) current.clone(); } */
 
   /**
    * Get an index iterator for traversing the array in canonical order.
@@ -754,70 +834,6 @@ public class Index implements Cloneable {
     return name[dim];
   } */
 
-  ////////////////////// inner class ///////////////////////////
-
-  /* the idea is IteratorFast can do the iteration without an Index
-  public class IteratorFast implements IndexIterator {
-
-    private int currElement = -1;
-    private final Array maa;
-
-    private IteratorFast(Array maa) {
-      this.maa = maa;
-      //System.out.println("IteratorFast");
-    }
-
-    public boolean hasNext() {
-      return currElement < size-1;
-    }
-
-    public boolean hasMore(int howMany) {
-      return currElement < size-howMany;
-    }
-
-    public double getDoubleCurrent() { return maa.getDouble(currElement); }
-    public double getDoubleNext() { return maa.getDouble(++currElement); }
-    public void setDoubleCurrent(double val) { maa.setDouble(currElement, val); }
-    public void setDoubleNext(double val) { maa.setDouble(++currElement, val); }
-
-    public float getFloatCurrent() { return maa.getFloat(currElement); }
-    public float getFloatNext() { return maa.getFloat(++currElement); }
-    public void setFloatCurrent(float val) { maa.setFloat(currElement, val); }
-    public void setFloatNext(float val) { maa.setFloat(++currElement, val); }
-
-    public long getLongCurrent() { return maa.getLong(currElement); }
-    public long getLongNext() { return maa.getLong(++currElement); }
-    public void setLongCurrent(long val) { maa.setLong(currElement, val); }
-    public void setLongNext(long val) { maa.setLong(++currElement, val); }
-
-    public int getIntCurrent() { return maa.getInt(currElement); }
-    public int getIntNext() { return maa.getInt(++currElement); }
-    public void setIntCurrent(int val) { maa.setInt(currElement, val); }
-    public void setIntNext(int val) { maa.setInt(++currElement, val); }
-
-    public short getShortCurrent() { return maa.getShort(currElement); }
-    public short getShortNext() { return maa.getShort(++currElement); }
-    public void setShortCurrent(short val) { maa.setShort(currElement, val); }
-    public void setShortNext(short val) { maa.setShort(++currElement, val); }
-
-    public byte getByteCurrent() { return maa.getByte(currElement); }
-    public byte getByteNext() { return maa.getByte(++currElement); }
-    public void setByteCurrent(byte val) { maa.setByte(currElement, val); }
-    public void setByteNext(byte val) { maa.setByte(++currElement, val); }
-
-    public char getCharCurrent() { return maa.getChar(currElement); }
-    public char getCharNext() { return maa.getChar(++currElement); }
-    public void setCharCurrent(char val) { maa.setChar(currElement, val); }
-    public void setCharNext(char val) { maa.setChar(++currElement, val); }
-
-    public boolean getBooleanCurrent() { return maa.getBoolean(currElement); }
-    public boolean getBooleanNext() { return maa.getBoolean(++currElement); }
-    public void setBooleanCurrent(boolean val) { maa.setBoolean(currElement, val); }
-    public void setBooleanNext(boolean val) { maa.setBoolean(++currElement, val); }
-
-    public Object next() { return maa.getObject(++currElement); }
-  } */
-
   private class IteratorImpl implements IndexIterator {
     private int count = 0;
     private int currElement = 0;
@@ -1030,92 +1046,6 @@ public class Index implements Cloneable {
       currElement = counter.incr();
       maa.setObject(currElement, val);
     }
-  }
-
-  ////////////////////// static /////////////////////////////////
-
-  /**
-   * Generate a subclass of Index optimized for this array's rank
-   * @param shape use this shape
-   * @return a subclass of Index optimized for this array's rank
-   */
-  static public Index factory(int[] shape) {
-    int rank = shape.length;
-    switch (rank) {
-      case 0:
-        return scalarIndex;
-      case 1:
-        return new Index1D(shape);
-      case 2:
-        return new Index2D(shape);
-      case 3:
-        return new Index3D(shape);
-      case 4:
-        return new Index4D(shape);
-      case 5:
-        return new Index5D(shape);
-      case 6:
-        return new Index6D(shape);
-      case 7:
-        return new Index7D(shape);
-      default:
-        return new Index(shape);
-    }
-  }
-
-  private static Index factory(int rank) {
-    switch (rank) {
-      case 0:
-        return scalarIndex;
-      case 1:
-        return new Index1D();
-      case 2:
-        return new Index2D();
-      case 3:
-        return new Index3D();
-      case 4:
-        return new Index4D();
-      case 5:
-        return new Index5D();
-      case 6:
-        return new Index6D();
-      case 7:
-        return new Index7D();
-      default:
-        return new Index(rank);
-    }
-  }
-
-  /**
-   * Compute total number of elements in the array.
-   *
-   * @param shape length of array in each dimension.
-   * @return total number of elements in the array.
-   */
-  static public long computeSize(int[] shape) {
-    long product = 1;
-    for (int ii = shape.length - 1; ii >= 0; ii--)
-      product *= shape[ii];
-    return product;
-  }
-
-  /**
-   * Compute standard strides based on array's shape.
-   *
-   * @param shape  length of array in each dimension.
-   * @param stride put result here
-   * @return standard strides based on array's shape.
-   */
-  static private long computeStrides(int[] shape, int[] stride) {
-    long product = 1;
-    for (int ii = shape.length - 1; ii >= 0; ii--) {
-      final int thisDim = shape[ii];
-      if (thisDim < 0)
-        throw new NegativeArraySizeException();
-      stride[ii] = (int) product;
-      product *= thisDim;
-    }
-    return product;
   }
 
 }

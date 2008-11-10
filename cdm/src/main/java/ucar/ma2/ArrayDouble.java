@@ -194,33 +194,32 @@ public class ArrayDouble extends Array {
   }
 
     // trusted, assumes that individual dimension lengths have been checked
-    // package private for iterators:
-  double getDouble(int index) {return storageD[index]; }
-  void setDouble(int index, double value) { storageD[index] = value; }
+  public double getDouble(int index) {return storageD[index]; }
+  public void setDouble(int index, double value) { storageD[index] = value; }
 
-  float getFloat(int index) { return (float) storageD[index]; }
-  void setFloat(int index, float value) { storageD[index] = (double) value;}
+  public float getFloat(int index) { return (float) storageD[index]; }
+  public void setFloat(int index, float value) { storageD[index] = (double) value;}
 
-  long getLong(int index) {return (long) storageD[index];}
-  void setLong(int index, long value) { storageD[index] = (double) value;}
+  public long getLong(int index) {return (long) storageD[index];}
+  public void setLong(int index, long value) { storageD[index] = (double) value;}
 
-  int getInt(int index) { return (int) storageD[index]; }
-  void setInt(int index, int value) { storageD[index] = (double) value;}
+  public int getInt(int index) { return (int) storageD[index]; }
+  public void setInt(int index, int value) { storageD[index] = (double) value;}
 
-  short getShort(int index) { return (short) storageD[index]; }
-  void setShort(int index, short value) { storageD[index] = (double) value; }
+  public short getShort(int index) { return (short) storageD[index]; }
+  public void setShort(int index, short value) { storageD[index] = (double) value; }
 
-  byte getByte(int index) { return (byte) storageD[index]; }
-  void setByte(int index, byte value) {storageD[index] = (double) value;}
+  public byte getByte(int index) { return (byte) storageD[index]; }
+  public void setByte(int index, byte value) {storageD[index] = (double) value;}
 
-  char getChar(int index) { return (char) storageD[index];}
-  void setChar(int index, char value) { storageD[index] = (double) value; }
+  public char getChar(int index) { return (char) storageD[index];}
+  public void setChar(int index, char value) { storageD[index] = (double) value; }
 
-  boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
-  void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
+  public boolean getBoolean(int index) { throw new ForbiddenConversionException(); }
+  public void setBoolean(int index, boolean value) {throw new ForbiddenConversionException(); }
 
-  Object getObject(int index) { return getDouble(index); }
-  void setObject(int index, Object value) { storageD[index] = ((Number)value).doubleValue(); }
+  public Object getObject(int index) { return getDouble(index); }
+  public void setObject(int index, Object value) { storageD[index] = ((Number)value).doubleValue(); }
 
   /** Concrete implementation of Array specialized for doubles, rank 0. */
   public static class D0 extends ArrayDouble {

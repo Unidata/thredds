@@ -172,16 +172,18 @@ public class Variable implements VariableIF {
     return isVariableLength;
   }
 
-  /* public void setVariableLength(boolean b) {
+  // LOOK PUBLIC !!
+  public void setVariableLength(boolean b) {
     isVariableLength = b;
-  } */
+  }
 
   /**
    * Is this Variable unsigned?. Only meaningful for byte, short, int, long types.
    * Looks for attribute "_unsigned"
    */
   public boolean isUnsigned() {
-    return findAttribute("_unsigned") != null;
+    Attribute att = findAttribute("_unsigned");
+    return (att != null) && att.getStringValue().equals("true");
   }
 
   /**
@@ -639,12 +641,13 @@ public class Variable implements VariableIF {
    * @return the String value
    */
   public String lookupEnumString(int val) {
-    //if (!dataType.isEnum())
-    //  throw new UnsupportedOperationException("Can only call Variable.lookupEnumVal() on enum types");
+    if (!dataType.isEnum())
+      throw new UnsupportedOperationException("Can only call Variable.lookupEnumVal() on enum types");
     return enumTypedef.lookupEnumString(val);
   }
   private EnumTypedef enumTypedef;
 
+  // LOOK PUBLIC !!!
   public void setEnumTypedef(EnumTypedef enumTypedef) {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (!dataType.isEnum())

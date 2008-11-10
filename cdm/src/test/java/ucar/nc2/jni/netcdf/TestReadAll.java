@@ -23,12 +23,15 @@ package ucar.nc2.jni.netcdf;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.TestCompare;
+import ucar.nc2.NCdumpW;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Array;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.FileFilter;
+import java.io.PrintWriter;
 
 import junit.framework.TestCase;
 
@@ -42,6 +45,7 @@ public class TestReadAll extends TestCase {
   private JniIosp iosp;
   private boolean showFile = true;
   private boolean showDetail = false;
+  private boolean showData = false;
 
   public void setUp() {
     iosp = new JniIosp();
@@ -53,12 +57,12 @@ public class TestReadAll extends TestCase {
 
   public void testReadAll() throws IOException {
     int count = 0;
-    count += scanAllDir("C:/testdata/", new NetcdfFileFilter(), new ReadAllData());
+    count += scanAllDir("C:/testdata/netcdf4", new NetcdfFileFilter(), new ReadAllData());
     System.out.println("***READ " + count + " files");
   }
 
   public void testReadOne() throws IOException {
-    new ReadAllData().doClosure("C:/testdata/netcdf4/tst_enum_data.nc");
+    new ReadAllData().doClosure("C:/testdata/netcdf4/tst_vl.nc");
     //new ReadAllData().doClosure("C:/data/test2.nc");
   }
 
@@ -149,10 +153,11 @@ public class TestReadAll extends TestCase {
   private class ReadAllData implements Closure {
     public int doClosure(String filename) {
       System.out.println("\n------Reading filename " + filename);
+      PrintWriter pw = (showData) ? new PrintWriter(System.out) : null;
       NetcdfFile ncfile = null;
       try {
         ncfile = iosp.open(filename);
-        if (showFile) System.out.println(ncfile.toString());
+        if (showFile) System.out.println("\n"+ncfile.toString());
 
         for (Variable v : ncfile.getVariables()) {
           if (v.getSize() > max_size) {
@@ -163,7 +168,9 @@ public class TestReadAll extends TestCase {
           } else {
             if (showDetail)
               System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
-            v.read();
+            Array data = v.read();
+            if (showData)
+              NCdumpW.printArray(data, v.getName(), pw, null);
           }
         }
 

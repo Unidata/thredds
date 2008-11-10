@@ -84,6 +84,8 @@
 </pre>
 <h4>ucar.nc2.Variable</h4>
 <p>The actual data is stored in Variables, which are containers for multidimension arrays of data, as well as Attributes. In the Netcdf-3 data model, Variables can have type <em>DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT, DataType.FLOAT, </em>or<em> DataType.DOUBLE</em>.</p>
+<p>If a variable is  <strong>unsigned</strong> (bytes, shorts or integer data types), you must add the <strong>_unsigned</strong> attribute:</p>
+<pre>   v.addAttribute(new Attribute(&quot;_unsigned&quot;, &quot;true&quot;));</pre>
 <p>Here is an example creating a Variable of type short called &quot;elevation&quot;, adding several attributes to it, and adding it to the NetcdfFile. The Dimensions <em>lat</em> and <em>lon</em> must already have been added. When setting Dimensions, the slowest-varying Dimension goes first (C/Java order). </p>
 <pre> Variable elev = <strong>new Variable(ncfile, null, null, &quot;elevation&quot;);</strong>
    elev.<strong>setDataType</strong>(DataType.SHORT);
@@ -179,7 +181,7 @@
 <p>&nbsp;</p>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Aug 3, 2007
+<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Nov 09, 2008 
 </address>
 <p>&nbsp; </p>
 </body>

@@ -160,33 +160,33 @@ public class ArrayBoolean extends Array {
   public Object getObject(Index i) { return storage[i.currentElement()]; }
   public void setObject(Index i, Object value) { storage[i.currentElement()] = (Boolean) value; }
 
-    // package private : mostly for iterators
-  double getDouble(int index) {throw new ForbiddenConversionException(); }
-  void setDouble(int index, double value) { throw new ForbiddenConversionException(); }
+  // package private : mostly for iterators
+  public double getDouble(int index) {throw new ForbiddenConversionException(); }
+  public void setDouble(int index, double value) { throw new ForbiddenConversionException(); }
 
-  float getFloat(int index) { throw new ForbiddenConversionException(); }
-  void setFloat(int index, float value) { throw new ForbiddenConversionException(); }
+  public float getFloat(int index) { throw new ForbiddenConversionException(); }
+  public void setFloat(int index, float value) { throw new ForbiddenConversionException(); }
 
-  long getLong(int index) {throw new ForbiddenConversionException(); }
-  void setLong(int index, long value) { throw new ForbiddenConversionException(); }
+  public long getLong(int index) {throw new ForbiddenConversionException(); }
+  public void setLong(int index, long value) { throw new ForbiddenConversionException(); }
 
-  int getInt(int index) { throw new ForbiddenConversionException(); }
-  void setInt(int index, int value) { throw new ForbiddenConversionException(); }
+  public int getInt(int index) { throw new ForbiddenConversionException(); }
+  public void setInt(int index, int value) { throw new ForbiddenConversionException(); }
 
-  short getShort(int index) { throw new ForbiddenConversionException(); }
-  void setShort(int index, short value) { throw new ForbiddenConversionException(); }
+  public short getShort(int index) { throw new ForbiddenConversionException(); }
+  public void setShort(int index, short value) { throw new ForbiddenConversionException(); }
 
-  byte getByte(int index) { throw new ForbiddenConversionException(); }
-  void setByte(int index, byte value) {throw new ForbiddenConversionException(); }
+  public byte getByte(int index) { throw new ForbiddenConversionException(); }
+  public void setByte(int index, byte value) {throw new ForbiddenConversionException(); }
 
-  char getChar(int index) { throw new ForbiddenConversionException(); }
-  void setChar(int index, char value) { throw new ForbiddenConversionException(); }
+  public char getChar(int index) { throw new ForbiddenConversionException(); }
+  public void setChar(int index, char value) { throw new ForbiddenConversionException(); }
 
-  boolean getBoolean(int index) { return storage[index]; }
-  void setBoolean(int index, boolean value) {storage[index] = value; }
+  public boolean getBoolean(int index) { return storage[index]; }
+  public void setBoolean(int index, boolean value) {storage[index] = value; }
 
-  Object getObject(int index) { return getBoolean(index); }
-  void setObject(int index, Object value) { storage[index] = (Boolean) value; }
+  public Object getObject(int index) { return getBoolean(index); }
+  public void setObject(int index, Object value) { storage[index] = (Boolean) value; }
 
     /** Concrete implementation of Array specialized for byte, rank 0. */
   public static class D0 extends ArrayBoolean {

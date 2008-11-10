@@ -1534,7 +1534,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException {
     if (showRequest)
       System.out.println("Data request for variable: "+v.getName()+" section= "+ranges);
-    return spi.readData(v, ranges);
+    
+    Array result = spi.readData(v, ranges);
+    result.setUnsigned(v.isUnsigned());
+    return result;
   }
 
   /**

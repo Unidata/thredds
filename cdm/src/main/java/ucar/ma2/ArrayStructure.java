@@ -174,7 +174,7 @@ public abstract class ArrayStructure extends Array {
    * @param index which one to get, specified by an integer.
    * @return object of type StructureData.
    */
-  Object getObject(int index) {
+  public Object getObject(int index) {
     return getStructureData(index);
   }
 
@@ -184,7 +184,7 @@ public abstract class ArrayStructure extends Array {
    * @param index which one to set.
    * @param value must be type StructureData.
    */
-  void setObject(int index, Object value) {
+  public void setObject(int index, Object value) {
     if (sdata == null)
       sdata = new StructureData[nelems];
     sdata[index] = (StructureData) value;
@@ -1043,67 +1043,67 @@ public abstract class ArrayStructure extends Array {
 
   // trusted, assumes that individual dimension lengths have been checked
   // package private : mostly for iterators
-  double getDouble(int index) {
+  public double getDouble(int index) {
     throw new ForbiddenConversionException();
   }
 
-  void setDouble(int index, double value) {
+  public void setDouble(int index, double value) {
     throw new ForbiddenConversionException();
   }
 
-  float getFloat(int index) {
+  public float getFloat(int index) {
     throw new ForbiddenConversionException();
   }
 
-  void setFloat(int index, float value) {
+  public void setFloat(int index, float value) {
     throw new ForbiddenConversionException();
   }
 
-  long getLong(int index) {
+  public long getLong(int index) {
     throw new ForbiddenConversionException();
   }
 
-  void setLong(int index, long value) {
+  public void setLong(int index, long value) {
     throw new ForbiddenConversionException();
   }
 
-  int getInt(int index) {
+  public int getInt(int index) {
     throw new ForbiddenConversionException();
   }
 
-  void setInt(int index, int value) {
+  public void setInt(int index, int value) {
     throw new ForbiddenConversionException();
   }
 
-  short getShort(int index) {
+  public short getShort(int index) {
     throw new ForbiddenConversionException();
   }
 
-  void setShort(int index, short value) {
+  public void setShort(int index, short value) {
     throw new ForbiddenConversionException();
   }
 
-  byte getByte(int index) {
+  public byte getByte(int index) {
     throw new ForbiddenConversionException();
   }
 
-  void setByte(int index, byte value) {
+  public void setByte(int index, byte value) {
     throw new ForbiddenConversionException();
   }
 
-  char getChar(int index) {
+  public char getChar(int index) {
     throw new ForbiddenConversionException();
   }
 
-  void setChar(int index, char value) {
+  public void setChar(int index, char value) {
     throw new ForbiddenConversionException();
   }
 
-  boolean getBoolean(int index) {
+  public boolean getBoolean(int index) {
     throw new ForbiddenConversionException();
   }
 
-  void setBoolean(int index, boolean value) {
+  public void setBoolean(int index, boolean value) {
     throw new ForbiddenConversionException();
   }
 
