@@ -37,11 +37,10 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib2/data/","eta218.wmo", 57, 13, 18, 10);
     doOne("grib2/data/","PMSL_000", 1, 1, 3, 0);
     doOne("grib2/data/","CLDGRIB2.2005040905", 5, 1, 3, 0);
-    //doOne("grib2/data/","LMPEF_CLM_050518_1200.grb", 1, 1, 5, 1);
+    doOne("grib2/data/","LMPEF_CLM_050518_1200.grb", 1, 1, 3, 0);
     doOne("grib2/data/","AVOR_000.grb", 1, 2, 4, 1); //
     doOne("grib2/data/","AVN.5deg.wmo", 117, 13, 15, 12);  // */
-
-    TestReadandCount.doOne(TestAll.upcShareTestDataDir+"ncml/nc/narr/", "narr-a_221_20070411_0600_000.grb", -1, -1, -1, -1);
+    TestReadandCount.doOne(TestAll.upcShareTestDataDir+"ncml/nc/narr/", "narr-a_221_20070411_0600_000.grb", 48, 13, 15, 12);
   }
 
   private void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
@@ -52,6 +51,7 @@ public class TestReadandCountGrib extends TestCase {
    public static void main( String arg[]) throws Exception {
      // new TestReadandCount("dummy").doOne("C:/data/conventions/wrf/","wrf.nc", 33, 5, 7, 7);  // missing TSLB
      new TestReadandCountGrib("dummy").testRead();  // missing TSLB
+     //new TestReadandCount("dummy").doOne(TestAll.upcShareTestDataDir+"grid/grib/grib1/data/","ukm.wmo", 96, 49, 69, 32);
   }
 
 }
