@@ -142,8 +142,10 @@ public class GribHorizCoordSys {
 
   void addToNetcdfFile(NetcdfFile ncfile) {
 
-    if (isLatLon) {
+    if (isLatLon ) {
       double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
+      if(lookup.getProjectionType(gdsIndex) == TableLookup.RotatedLatLon)
+        makeRotatedLatLon();
       if (isGaussian)
         addGaussianLatAxis(ncfile, "lat", "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
       else
@@ -208,7 +210,7 @@ public class GribHorizCoordSys {
     if (Double.isNaN(np)) 
       np = gdsIndex.readDouble("Np");
     if (Double.isNaN(np))
-      throw new IllegalArgumentException("Gaussian LAt/Lon grid must have NumberParallels parameter");
+      throw new IllegalArgumentException("Gaussian Lat/Lon grid must have NumberParallels parameter");
     double startLat = gdsIndex.La1;
     double endLat = gdsIndex.readDouble("La2");
 
@@ -504,6 +506,50 @@ public class GribHorizCoordSys {
       double endy = starty + (getNy()-1) * getDyInKm();
       System.out.println("   should be x=" + endx + " y=" + endy);
     }
+  }
+
+  // RotatedLatLon
+  private void makeRotatedLatLon() {
+    // we have to project in order to find the origin
+    double splat = 0, splon = 0, spangle = 0;
+    String spLat = (String) gdsIndex.params.get("SpLat");
+    if (null != spLat) {
+      splat = Double.parseDouble(spLat);
+    }
+    String spLon = (String) gdsIndex.params.get("SpLon");
+    if (null != spLon) {
+      splon = Double.parseDouble(spLon);
+    }
+    String spAngle = (String) gdsIndex.params.get("Angle");
+    if (null != spAngle) {
+      spangle = Double.parseDouble(spAngle);
+    }
+    proj = new RotatedLatLon( splat, splon, spangle );
+    //proj = new RotatedPole( splat, splon );
+    LatLonPointImpl startLL = new LatLonPointImpl(gdsIndex.La1, gdsIndex.Lo1);
+    ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
+    startx = start.getX();
+    starty = start.getY();
+
+    if (GribServiceProvider.debugProj) {
+      System.out.println("GribHorizCoordSys.makeRotatedLatLon start at latlon " + startLL);
+
+      double Lo2 = gdsIndex.readDouble("Lo2");
+      double La2 = gdsIndex.readDouble("La2");
+      LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
+      System.out.println("GribHorizCoordSys.makeRotatedLatLon end at latlon " + endLL);
+
+      ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
+      System.out.println("   end at proj coord " + endPP);
+
+      double endx = startx + getNx() * getDxInKm();
+      double endy = starty + getNy() * getDyInKm();
+      System.out.println("   should be x=" + endx + " y=" + endy);
+    }
+
+    attributes.add(new Attribute("grid_mapping_name", "rotated_lat_lon"));
+    attributes.add( new Attribute("false_easting", new Double(startx)));
+    attributes.add( new Attribute("false_northing", new Double(starty)));
   }
 
   private void makeSpaceViewOrOthographic() {
