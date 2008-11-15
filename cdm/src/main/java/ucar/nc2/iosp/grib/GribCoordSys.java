@@ -160,7 +160,7 @@ public class GribCoordSys {
     for (int i = 0; i < levels.size(); i++) {
       data[i] = levels.get(i);
     }
-    Array dataArray = Array.factory( DataType.DOUBLE.getClassType(), new int [] {nlevs}, data);
+    Array dataArray = Array.factory( DataType.DOUBLE, new int [] {nlevs}, data);
 
     v.setDimensions( verticalName);
     v.setCachedData(dataArray, false);

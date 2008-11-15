@@ -22,8 +22,12 @@ package ucar.nc2.jni.netcdf;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
+import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.NativeLongByReference;
+
+import java.nio.ByteBuffer;
 
 /**
  * JNA access to Netcd4 C Library, using JNI to shared C library.
@@ -67,6 +71,13 @@ public interface NCLibrary extends Library {
   static public final int NC_FORMAT_NETCDF4 = 3;
   static public final int NC_FORMAT_NETCDF4_CLASSIC = 4;
 
+  static public class Vlen_t extends Structure {
+    public static class ByValue extends Vlen_t implements Structure.ByValue { }
+    public int len; /* Length of VL data (in base type units) */
+    //public int p; /* Length of VL data (in base type units) */
+    //public NativeLong len; /* Length of VL data (in base type units) */
+    public Pointer p;    /* Pointer to VL data */
+  }
   // library
   String nc_inq_libvers();
   String nc_strerror(int ncerr);
@@ -84,6 +95,7 @@ public interface NCLibrary extends Library {
   // dimension info
   int nc_inq_ndims(int ncid, IntByReference ndimsp);
   int nc_inq_unlimdims(int ncid, IntByReference nunlimdimsp, int[] unlimdimidsp);
+  int nc_inq_dimids(int ncid, IntByReference ndims, int[] dimids, int include_parents);
   int nc_inq_dim(int ncid, int dimid, byte[] name, NativeLongByReference lenp); // size_t
   int nc_inq_dimname(int ncid, int dimid, byte[] name);
 
@@ -106,6 +118,8 @@ public interface NCLibrary extends Library {
   int nc_get_att_short(int ncid, int varid, String name, short[] ip);
   int nc_get_att_ushort(int ncid, int varid, String name, short[] ip);
   int nc_get_att_text(int ncid, int varid, String name, byte[] ip);
+  int nc_get_att(int ncid, int varid, String name, Vlen_t[] vlen);    // vlen
+  int nc_get_att(int ncid, int varid, String name, ByteBuffer bbuff); // other user defined types
 
   // variable info
   int nc_inq_nvars(int ncid, IntByReference nvarsp);
@@ -123,6 +137,11 @@ public interface NCLibrary extends Library {
               NativeLongByReference base_sizep, NativeLongByReference num_membersp); //size_t
   int nc_inq_enum_member(int ncid, int xtype, int idx, byte[] name, IntByReference value); // void *
   int nc_inq_opaque(int ncid, int xtype, byte[] name, NativeLongByReference sizep);
+
+  // compound user type
+  int nc_inq_compound(int ncid, int xtype, byte[] name, NativeLongByReference sizep, NativeLongByReference nfieldsp);
+  int nc_inq_compound_field(int ncid, int xtype, int fieldid, byte[] name, 
+	  NativeLongByReference offsetp, IntByReference field_typeidp, IntByReference ndimsp, int[] dims);
 
   // read entire array
   int nc_get_var(int ncid, int varid,  byte[] ip);

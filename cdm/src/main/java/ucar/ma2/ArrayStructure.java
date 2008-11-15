@@ -21,6 +21,7 @@ package ucar.ma2;
 
 import java.io.IOException;
 import java.util.List;
+import java.nio.ByteBuffer;
 
 /**
  * Superclass for implementations of Array of StructureData.
@@ -279,7 +280,7 @@ public abstract class ArrayStructure extends Array {
       float[] pa = getJavaArrayFloat(recno, m);
       return Array.factory(float.class, m.getShape(), pa);
 
-    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
       byte[] pa = getJavaArrayByte(recno, m);
       return Array.factory(byte.class, m.getShape(), pa);
 
@@ -308,6 +309,9 @@ public abstract class ArrayStructure extends Array {
 
     } else if (dataType == DataType.SEQUENCE) {
       return getArraySequence(recno, m);
+
+    } else if (dataType == DataType.OPAQUE) {
+      return getArrayObject(recno, m);
     }
 
     throw new RuntimeException("Dont have implemenation for " + dataType);
@@ -365,8 +369,12 @@ public abstract class ArrayStructure extends Array {
     // create an empty array to hold the result
     Array result;
     if (dataType == DataType.STRUCTURE) {
-      StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated     
+      StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
       result = new ArrayStructureW(membersw, rshape);
+
+    } else if (dataType == DataType.OPAQUE) {
+        result = new ArrayObject(ByteBuffer.class, rshape);
+
     } else {
       result = Array.factory(dataType.getPrimitiveClassType(), rshape);
     }
@@ -380,7 +388,7 @@ public abstract class ArrayStructure extends Array {
       for (int recno = 0; recno < getSize(); recno++)
         copyFloats(recno, m, resultIter);
 
-    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
       for (int recno = 0; recno < getSize(); recno++)
         copyBytes(recno, m, resultIter);
 
@@ -400,9 +408,9 @@ public abstract class ArrayStructure extends Array {
       for (int recno = 0; recno < getSize(); recno++)
         copyChars(recno, m, resultIter);
 
-    } else if (dataType == DataType.STRING) {
+    } else if ((dataType == DataType.STRING) || (dataType == DataType.OPAQUE)) {
       for (int recno = 0; recno < getSize(); recno++)
-        copyStrings(recno, m, resultIter);
+        copyObjects(recno, m, resultIter);
 
     } else if (dataType == DataType.STRUCTURE) {
       for (int recno = 0; recno < getSize(); recno++)
@@ -459,7 +467,7 @@ public abstract class ArrayStructure extends Array {
       result.setLongNext(dataIter.getLongNext());
   }
 
-  protected void copyStrings(int recnum, StructureMembers.Member m, IndexIterator result) {
+  protected void copyObjects(int recnum, StructureMembers.Member m, IndexIterator result) {
     IndexIterator dataIter = getArray(recnum, m).getIndexIterator();
     while (dataIter.hasNext())
       result.setObjectNext(dataIter.getObjectNext());
@@ -496,7 +504,7 @@ public abstract class ArrayStructure extends Array {
     } else if (dataType == DataType.FLOAT) {
       return getScalarFloat(recno, m);
 
-    } else if ((dataType == DataType.BYTE) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
+    } else if ((dataType == DataType.BYTE) || (dataType == DataType.ENUM1)) {
       return getScalarByte(recno, m);
 
     } else if ((dataType == DataType.SHORT)|| (dataType == DataType.ENUM2)) {
@@ -516,7 +524,11 @@ public abstract class ArrayStructure extends Array {
 
     } else if (dataType == DataType.STRUCTURE) {
       return getScalarStructure(recno, m);
-    }
+
+    } else if (dataType == DataType.OPAQUE) {
+      ArrayObject data = (ArrayObject) m.getDataArray();
+      return data.getObject(recno * m.getSize()); // LOOK ?? 
+     }
 
     throw new RuntimeException("Dont have implemenation for " + dataType);
   }
@@ -910,6 +922,21 @@ public abstract class ArrayStructure extends Array {
     // should store sequences as ArrayObject of ArraySequence objects
     ArrayObject array = (ArrayObject) m.getDataArray();
     return (ArraySequence) array.getObject(recnum);
+  }
+
+  /**
+   * Get member data of type ArrayObject
+   *
+   * @param recnum get data from the recnum-th StructureData of the ArrayStructure. Must be less than getSize();
+   * @param m      get data from this StructureMembers.Member. Must be of type Structure.
+   * @return ArrayObject.
+   */
+  public ArrayObject getArrayObject(int recnum, StructureMembers.Member m) {
+    if (m.getDataType() != DataType.OPAQUE)
+      throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be Sequence");
+
+    ArrayObject array = (ArrayObject) m.getDataArray();
+    return (ArrayObject) array.getObject(recnum);     // LOOK ??
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////

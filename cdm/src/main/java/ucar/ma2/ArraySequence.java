@@ -22,7 +22,7 @@ package ucar.ma2;
 import java.io.IOException;
 
 /**
- * ArraySequence is the default way to contain the data for a Sequence, using a StructureDataIterator.
+ * ArraySequence is the way to contain the data for a Sequence, using a StructureDataIterator.
  * A Sequence is a one-dimensional Structure with indeterminate length.
  * The only data access is through getStructureIterator().
  * So an ArraySequence is really a wrapper around a StructureDataIterator, adapting it to an Array.
@@ -44,9 +44,12 @@ public class ArraySequence extends ArrayStructure {
     this.count = count;
   }
 
+  /**
+   * @return StructureDataIterator.class
+   */
   @Override
   public Class getElementType() {
-    return ArraySequence.class;
+    return StructureDataIterator.class;
   }
 
   @Override
@@ -163,8 +166,9 @@ public class ArraySequence extends ArrayStructure {
           StructureDataIterator innerIter = as.getStructureDataIterator();
           while (innerIter.hasNext())
             resultIter.setObjectNext( innerIter.next());
-
         }
+
+        // LOOK SEQUENCE, OPAQUE ??
       }
     }
 

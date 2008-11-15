@@ -304,8 +304,7 @@ public class GridHorizCoordSys {
         for (int i = 0; i < n; i++) {
             data[i] = start + incr * i;
         }
-        Array dataArray = Array.factory(DataType.DOUBLE.getClassType(),
-                                        new int[] { n }, data);
+        Array dataArray = Array.factory(DataType.DOUBLE, new int[] { n }, data);
         v.setCachedData(dataArray, false);
 
         v.addAttribute(new Attribute("units", units));
@@ -386,7 +385,7 @@ public class GridHorizCoordSys {
                 useIndex--;
             }
         }
-        Array dataArray = Array.factory(DataType.DOUBLE.getClassType(),
+        Array dataArray = Array.factory(DataType.DOUBLE,
                                         new int[] { n }, data);
         v.setCachedData(dataArray, false);
 
@@ -402,7 +401,7 @@ public class GridHorizCoordSys {
         v.setDimensions(name);
         v.addAttribute(new Attribute("long_name",
                                      "gaussian weights (unnormalized)"));
-        dataArray = Array.factory(DataType.DOUBLE.getClassType(),
+        dataArray = Array.factory(DataType.DOUBLE,
                                   new int[] { n }, gaussw);
         v.setCachedData(dataArray, false);
         ncfile.addVariable(g, v);
@@ -457,12 +456,12 @@ public class GridHorizCoordSys {
                 lonData[i * nx + j] = latlonPoint.getLongitude();
             }
         }
-        Array latDataArray = Array.factory(DataType.DOUBLE.getClassType(),
+        Array latDataArray = Array.factory(DataType.DOUBLE,
                                            new int[] { ny,
                 nx }, latData);
         latVar.setCachedData(latDataArray, false);
 
-        Array lonDataArray = Array.factory(DataType.DOUBLE.getClassType(),
+        Array lonDataArray = Array.factory(DataType.DOUBLE,
                                            new int[] { ny,
                 nx }, lonData);
         lonVar.setCachedData(lonDataArray, false);
@@ -504,7 +503,7 @@ public class GridHorizCoordSys {
         v.setDataType(DataType.CHAR);
         v.setDimensions(new ArrayList());  // scalar
         char[] data = new char[] { 'd' };
-        Array dataArray = Array.factory(DataType.CHAR.getClassType(),
+        Array dataArray = Array.factory(DataType.CHAR,
                                         new int[0], data);
         v.setCachedData(dataArray, false);
 
@@ -569,8 +568,7 @@ public class GridHorizCoordSys {
         Variable v = new Variable(ncfile, g, null, name);
         v.setDataType(DataType.CHAR);
         v.setDimensions(new ArrayList());  // scalar
-        Array dataArray = Array.factory(DataType.CHAR.getClassType(),
-                                        new int[0], new char[] { '0' });
+        Array dataArray = Array.factory(DataType.CHAR, new int[0], new char[] { '0' });
         v.setCachedData(dataArray, false);
         v.addAttribute(new Attribute(_Coordinate.Axes, dims));
         if ( !isLatLon()) {
@@ -639,7 +637,7 @@ public class GridHorizCoordSys {
                 new Attribute(
                     "standard_parallel",
                     Array.factory(
-                        DataType.DOUBLE.getClassType(), new int[] { 2 },
+                        DataType.DOUBLE, new int[] { 2 },
                         data)));
         }
         attributes.add(

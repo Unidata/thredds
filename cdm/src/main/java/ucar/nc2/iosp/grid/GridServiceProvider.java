@@ -190,7 +190,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
             throws IOException, InvalidRangeException {
         long start = System.currentTimeMillis();
 
-        Array dataArray = Array.factory(DataType.FLOAT.getClassType(),
+        Array dataArray = Array.factory(DataType.FLOAT,
                                         section.getShape());
         GridVariable  pv        = (GridVariable) v2.getSPobject();
 

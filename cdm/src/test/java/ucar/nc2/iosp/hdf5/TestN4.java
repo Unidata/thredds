@@ -36,15 +36,18 @@ public class TestN4 extends TestCase {
   public void testReadAll() throws IOException {
     TestAll.readAllDir(testDir+"nc4", null);
     TestAll.readAllDir(testDir+"nc4-classic", null);
+    TestAll.readAllDir(testDir+"files", null);
   }
 
   public void problem() throws IOException {
     //H5iosp.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5iosp/read"));
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = testDir+"nc4/c0_4.nc";
+    String filename = testDir+"files/nctest_64bit_offset.nc";
+    TestAll.readAll(filename);
     NetcdfFile ncfile = TestNC2.open(filename);
-    Variable v = ncfile.findVariable("cr");
-    Array data = v.read();
+    System.out.println(ncfile.toString());
+    //Variable v = ncfile.findVariable("cr");
+    //Array data = v.read();
   }
 
   public void utestEnum() throws IOException {
@@ -94,10 +97,8 @@ public class TestN4 extends TestCase {
     ncfile.close();
   }
 
-  public static void main(String args[]) {
-    double d1 = Double.parseDouble("-1.e+36f");
-    double d2 = Double.parseDouble("-1.0E36f");
-    System.out.println("d="+d1+" "+d2+" "+Misc.closeEnough(d1, d2));
+  public static void main(String args[]) throws IOException {
+    new TestN4("").problem();
   }
 
 }

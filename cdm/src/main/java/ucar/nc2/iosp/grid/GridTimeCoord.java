@@ -222,7 +222,7 @@ public class GridTimeCoord {
             Date validTime = (Date) times.get(i);
             data[i] = (int) dateUnit.makeValue(validTime);
         }
-        Array dataArray = Array.factory(DataType.INT.getClassType(),
+        Array dataArray = Array.factory(DataType.INT,
                                         new int[] { ntimes }, data);
 
         v.setDimensions(v.getShortName());

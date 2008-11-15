@@ -534,10 +534,10 @@ public class NetcdfServlet extends AbstractServlet {
         lonData[i * nx + j] = latlonPoint.getLongitude();
       }
     }
-    Array latDataArray = Array.factory(DataType.DOUBLE.getClassType(), new int []{ny, nx}, latData);
+    Array latDataArray = Array.factory(DataType.DOUBLE, new int []{ny, nx}, latData);
     latVar.setCachedData(latDataArray, false);
 
-    Array lonDataArray = Array.factory(DataType.DOUBLE.getClassType(), new int []{ny, nx}, lonData);
+    Array lonDataArray = Array.factory(DataType.DOUBLE, new int []{ny, nx}, lonData);
     lonVar.setCachedData(lonDataArray, false);
 
     varList.add(latVar);

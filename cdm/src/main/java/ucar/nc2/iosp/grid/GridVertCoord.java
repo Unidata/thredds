@@ -321,7 +321,7 @@ public class GridVertCoord implements Comparable {
                 coordValues[i] = lc.mid;
             }
         }
-        Array dataArray = Array.factory(DataType.DOUBLE.getClassType(),
+        Array dataArray = Array.factory(DataType.DOUBLE,
                                         new int[] { coordValues.length },
                                         coordValues);
 
@@ -348,7 +348,7 @@ public class GridVertCoord implements Comparable {
             b.addAttribute(new Attribute("units",
                                          lookup.getLevelUnit(typicalRecord)));
 
-            Array boundsArray = Array.factory(DataType.DOUBLE.getClassType(),
+            Array boundsArray = Array.factory(DataType.DOUBLE,
                                     new int[] { coordValues.length,
                     2 });
             ucar.ma2.Index ima = boundsArray.getIndex();

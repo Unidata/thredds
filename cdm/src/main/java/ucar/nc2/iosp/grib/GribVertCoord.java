@@ -191,7 +191,7 @@ public class GribVertCoord implements Comparable {
         coordValues[i] = lc.mid;
       }
     }
-    Array dataArray = Array.factory( DataType.DOUBLE.getClassType(), new int [] {coordValues.length}, coordValues);
+    Array dataArray = Array.factory( DataType.DOUBLE, new int [] {coordValues.length}, coordValues);
 
     v.setDimensions( getVariableName());
     v.setCachedData( dataArray, true);
@@ -213,7 +213,7 @@ public class GribVertCoord implements Comparable {
       b.addAttribute( new Attribute("long_name", "bounds for "+v.getName()));
       b.addAttribute( new Attribute("units", lookup.getLevelUnit( typicalRecord)));
 
-      Array boundsArray = Array.factory( DataType.DOUBLE.getClassType(), new int [] {coordValues.length, 2});
+      Array boundsArray = Array.factory( DataType.DOUBLE, new int [] {coordValues.length, 2});
       ucar.ma2.Index ima = boundsArray.getIndex();
       for (int i=0; i<coordValues.length; i++) {
         LevelCoord lc = levels.get(i);

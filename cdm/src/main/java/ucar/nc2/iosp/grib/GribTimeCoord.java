@@ -148,7 +148,7 @@ public class GribTimeCoord {
       Date validTime = times.get(i);
       data[i] = (int) dateUnit.makeValue( validTime);
     }
-    Array dataArray = Array.factory( DataType.INT.getClassType(), new int [] {ntimes}, data);
+    Array dataArray = Array.factory( DataType.INT, new int [] {ntimes}, data);
 
     v.setDimensions( v.getShortName());
     v.setCachedData(dataArray, false);

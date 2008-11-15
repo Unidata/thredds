@@ -274,8 +274,7 @@ public class GridCoordSys {
             Double d = (Double) levels.get(i);
             data[i] = d.doubleValue();
         }
-        Array dataArray = Array.factory(DataType.DOUBLE.getClassType(),
-                                        new int[] { nlevs }, data);
+        Array dataArray = Array.factory(DataType.DOUBLE, new int[] { nlevs }, data);
 
         v.setDimensions(verticalName);
         v.setCachedData(dataArray, false);

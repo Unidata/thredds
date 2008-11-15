@@ -190,7 +190,7 @@ public class GribHorizCoordSys {
     for (int i = 0; i < n; i++) {
       data[i] = start + incr * i;
     }
-    Array dataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{n}, data);
+    Array dataArray = Array.factory(DataType.DOUBLE, new int[]{n}, data);
     v.setCachedData(dataArray, false);
 
     v.addAttribute(new Attribute("units", units));
@@ -249,7 +249,7 @@ public class GribHorizCoordSys {
       gaussw[i] = gaussLats.gaussw[useIndex];
       if (goesUp) useIndex++; else useIndex--;
     }
-    Array dataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{n}, data);
+    Array dataArray = Array.factory(DataType.DOUBLE, new int[]{n}, data);
     v.setCachedData(dataArray, false);
 
     v.addAttribute(new Attribute("units", units));
@@ -263,7 +263,7 @@ public class GribHorizCoordSys {
     v.setDataType(DataType.DOUBLE);
     v.setDimensions(name);
     v.addAttribute(new Attribute("long_name", "gaussian weights (unnormalized)"));
-    dataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{n}, gaussw);
+    dataArray = Array.factory(DataType.DOUBLE, new int[]{n}, gaussw);
     v.setCachedData(dataArray, false);
     ncfile.addVariable(g, v);
 
@@ -305,10 +305,10 @@ public class GribHorizCoordSys {
         lonData[i * nx + j] = latlonPoint.getLongitude();
       }
     }
-    Array latDataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{ny, nx}, latData);
+    Array latDataArray = Array.factory(DataType.DOUBLE, new int[]{ny, nx}, latData);
     latVar.setCachedData(latDataArray, false);
 
-    Array lonDataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{ny, nx}, lonData);
+    Array lonDataArray = Array.factory(DataType.DOUBLE, new int[]{ny, nx}, lonData);
     lonVar.setCachedData(lonDataArray, false);
 
     ncfile.addVariable(g, latVar);
@@ -337,7 +337,7 @@ public class GribHorizCoordSys {
     v.setDataType(DataType.CHAR);
     v.setDimensions(""); // scalar
     char[] data = new char[]{'d'};
-    Array dataArray = Array.factory(DataType.CHAR.getClassType(), new int[0], data);
+    Array dataArray = Array.factory(DataType.CHAR, new int[0], data);
     v.setCachedData(dataArray, false);
 
     for (Attribute att : attributes) {
@@ -383,7 +383,7 @@ public class GribHorizCoordSys {
     Variable v = new Variable(ncfile, g, null, name);
     v.setDataType(DataType.CHAR);
     v.setDimensions(""); // scalar
-    Array dataArray = Array.factory(DataType.CHAR.getClassType(), new int[0], new char[]{'0'});
+    Array dataArray = Array.factory(DataType.CHAR, new int[0], new char[]{'0'});
     v.setCachedData(dataArray, false);
     v.addAttribute(new Attribute(_Coordinate.Axes, dims));
     if (!isLatLon())
@@ -424,7 +424,7 @@ public class GribHorizCoordSys {
     else {
       double[] data = new double[]{gdsIndex.latin1, gdsIndex.latin2};
       attributes.add(new Attribute("standard_parallel",
-              Array.factory(DataType.DOUBLE.getClassType(), new int[]{2}, data)));
+              Array.factory(DataType.DOUBLE, new int[]{2}, data)));
     }
     attributes.add(new Attribute("longitude_of_central_meridian", gdsIndex.LoV));
     attributes.add(new Attribute("latitude_of_projection_origin", gdsIndex.latin1));

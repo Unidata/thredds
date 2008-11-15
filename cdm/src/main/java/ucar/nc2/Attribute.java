@@ -22,6 +22,7 @@ package ucar.nc2;
 import ucar.ma2.*;
 
 import java.util.List;
+import java.nio.ByteBuffer;
 
 import net.jcip.annotations.Immutable;
 
@@ -446,6 +447,26 @@ public class Attribute {
       ArrayChar carr = (ArrayChar) arr;
       arr = carr.make1DStringArray();
     }
+
+    // this should be a utility somewhere
+    if (arr.getElementType() == ByteBuffer.class) { // turn OPAQUE into BYTE
+      int totalLen = 0;
+      arr.resetLocalIterator();
+      while (arr.hasNext()) {
+        ByteBuffer bb = (ByteBuffer) arr.next();
+        totalLen += bb.limit();
+      }
+      byte[] ba = new byte[totalLen];
+      int pos = 0;
+      arr.resetLocalIterator();
+      while (arr.hasNext()) {
+        ByteBuffer bb = (ByteBuffer) arr.next();
+        System.arraycopy(bb.array(), 0, ba, pos, bb.limit());
+        pos += bb.limit();
+      }
+      arr = Array.factory(DataType.BYTE, new int[] {totalLen}, ba);
+    }
+
     if (arr.getRank() != 1)
       arr = arr.reshape(new int[]{(int) arr.getSize()}); // make sure 1D
 

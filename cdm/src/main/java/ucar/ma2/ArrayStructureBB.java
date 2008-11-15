@@ -375,7 +375,7 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   @Override
-  protected void copyStrings(int recnum, StructureMembers.Member m, IndexIterator result) {
+  protected void copyObjects(int recnum, StructureMembers.Member m, IndexIterator result) {
     int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
     int index = bbuffer.getInt(offset);

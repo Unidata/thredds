@@ -66,20 +66,20 @@ public class IospHelper {
    * Reading is controlled by the Layout object.
    *
    * @param raf      read from here.
-   * @param index    handles skipping around in the file.
+   * @param layout    handles skipping around in the file.
    * @param dataType dataType of the variable
    * @param arr      primitive array to read data into
    * @param byteOrder if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readData(RandomAccessFile raf, Layout index, DataType dataType, Object arr, int byteOrder) throws java.io.IOException {
-    if (showLayoutTypes) System.out.println("***RAF LayoutType="+index.getClass().getName());
+  static public Object readData(RandomAccessFile raf, Layout layout, DataType dataType, Object arr, int byteOrder) throws java.io.IOException {
+    if (showLayoutTypes) System.out.println("***RAF LayoutType="+layout.getClass().getName());
 
-   if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1) ) {
+   if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1) ) {
       byte[] pa = (byte[]) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
         raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems());
@@ -89,8 +89,8 @@ public class IospHelper {
 
     } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = (short[]) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
         raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.readShort(pa, (int) chunk.getDestElem(), chunk.getNelems());
@@ -99,8 +99,8 @@ public class IospHelper {
 
     } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       int[] pa = (int[]) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
         raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.readInt(pa, (int) chunk.getDestElem(), chunk.getNelems());
@@ -109,8 +109,8 @@ public class IospHelper {
 
     } else if (dataType == DataType.FLOAT) {
       float[] pa = (float[]) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
         raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.readFloat(pa, (int) chunk.getDestElem(), chunk.getNelems());
@@ -119,8 +119,8 @@ public class IospHelper {
 
     } else if (dataType == DataType.DOUBLE) {
       double[] pa = (double[]) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
         raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.readDouble(pa, (int) chunk.getDestElem(), chunk.getNelems());
@@ -129,27 +129,27 @@ public class IospHelper {
 
     } else if (dataType == DataType.LONG) {
       long[] pa = (long[]) arr;
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
         raf.order(byteOrder);
         raf.seek(chunk.getSrcPos());
         raf.readLong(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
       return pa;
 
-    } else if (dataType == DataType.STRUCTURE) {
-      byte[] pa = (byte[]) arr;
-      int recsize = index.getElemSize();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.order(byteOrder);
-        raf.seek(chunk.getSrcPos());
-        raf.read(pa, (int) chunk.getDestElem()*recsize, chunk.getNelems()*recsize);
-      }
-      return pa;
-    }  
+   } else if (dataType == DataType.STRUCTURE) {
+     byte[] pa = (byte[]) arr;
+     int recsize = layout.getElemSize();
+     while (layout.hasNext()) {
+       Layout.Chunk chunk = layout.next();
+       raf.order(byteOrder);
+       raf.seek(chunk.getSrcPos());
+       raf.read(pa, (int) chunk.getDestElem()*recsize, chunk.getNelems()*recsize);
+     }
+     return pa;
+   }
 
-    throw new IllegalStateException();
+    throw new IllegalStateException("unknown type= "+dataType);
   }
 
   /**
@@ -275,7 +275,7 @@ public class IospHelper {
   static public Object readData(LayoutBB layout, DataType dataType, Object arr) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***BB LayoutType="+layout.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -385,7 +385,7 @@ public class IospHelper {
       for (int i = 0; i < count; i++)
         result.setShortNext( bb.getShort(offset + i*2));
 
-    } else if ((dtype == DataType.BYTE) || (dtype == DataType.OPAQUE) || (dtype == DataType.ENUM1)) {
+    } else if ((dtype == DataType.BYTE) || (dtype == DataType.ENUM1)) {
       for (int i = 0; i < count; i++)
         result.setByteNext( bb.get(offset + i));
 
@@ -411,7 +411,7 @@ public class IospHelper {
   static public Object makePrimitiveArray(int size, DataType dataType) {
     Object arr = null;
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)  || (dataType == DataType.OPAQUE)) {
       arr = new byte[size];
 
     } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
@@ -419,6 +419,9 @@ public class IospHelper {
 
     } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       arr = new int[size];
+
+    } else if (dataType == DataType.LONG) {
+      arr = new long[size];
 
     } else if (dataType == DataType.FLOAT) {
       arr = new float[size];

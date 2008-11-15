@@ -326,7 +326,7 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     long start = System.currentTimeMillis();
 
-    Array dataArray = Array.factory(DataType.FLOAT.getClassType(), section.getShape());
+    Array dataArray = Array.factory(DataType.FLOAT, section.getShape());
     GribVariable pv = (GribVariable) v2.getSPobject();
 
     int count = 0;

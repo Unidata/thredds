@@ -48,9 +48,10 @@ This code is ALPHA
 
  Release Details:
   27:
+    DataType.getClass is deprecated - use DataType,getPrimitiveClass
     Array.isUnsigned(): ArrayByte, ArrayShort, ArrayInt all check when doing conversions;
       NetcdfFile.readData() sets this based on Variable.isUnsigned().
-    DataType.OPAQUE
+    DataType.OPAQUE : use ByteBuffers wrapped by ArrayObject
     Array.set() made public for efficiency, eg in Attributes
     bugs in enhance handling and NcML
     JNI interface to netcdf4 C library, for testing

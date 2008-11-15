@@ -102,6 +102,8 @@ public class Variable implements VariableIF {
    *         and whose values equal the length of that Dimension.
    */
   public int[] getShape() {
+    if (shape == null)
+      System.out.println("HEY");
     int[] result = new int[shape.length];  // optimization over clone()
     System.arraycopy(shape, 0, result, 0, shape.length);
     return result;
@@ -170,11 +172,6 @@ public class Variable implements VariableIF {
    */
   public boolean isVariableLength() {
     return isVariableLength;
-  }
-
-  // LOOK PUBLIC !!
-  public void setVariableLength(boolean b) {
-    isVariableLength = b;
   }
 
   /**
@@ -575,8 +572,8 @@ public class Variable implements VariableIF {
    * @throws InvalidRangeException if section not compatible with shape
    */
   public Variable section(Section subsection) throws InvalidRangeException {
-    if (dataType == DataType.OPAQUE)
-      throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
+    //if (dataType == DataType.OPAQUE)
+    //  throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
 
     subsection = Section.fill(subsection, getShape());
 
@@ -613,8 +610,8 @@ public class Variable implements VariableIF {
       throw new InvalidRangeException("Slice dim invalid= " + dim);
     if ((value < 0) || (value >= shape[dim]))
       throw new InvalidRangeException("Slice value invalid= " + value + " for dimension " + dim);
-    if (dataType == DataType.OPAQUE)
-      throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
+    //if (dataType == DataType.OPAQUE)
+    //  throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
 
     // create a copy of this variable with a proxy reader
     Variable sliceV = copy(); // subclasses must override
@@ -654,6 +651,8 @@ public class Variable implements VariableIF {
       throw new UnsupportedOperationException("Can only call Variable.setEnumTypedef() on enum types");
     this.enumTypedef = enumTypedef;
   }
+
+  public EnumTypedef getEnumTypedef() { return enumTypedef; }
 
   //////////////////////////////////////////////////////////////////////////////
   // IO
@@ -922,8 +921,8 @@ public class Variable implements VariableIF {
     if ((null == section) || section.computeSize() == getSize())
       return _read();
 
-    if (dataType == DataType.OPAQUE)
-      throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
+    //if (dataType == DataType.OPAQUE)
+    //  throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
     
     /* error checking already done
     String err = section.checkInRange(getShape());
@@ -1059,7 +1058,7 @@ public class Variable implements VariableIF {
     } else
       buf.append(dataType.toString());
 
-    if (isVariableLength) buf.append("(*)"); // LOOK
+    //if (isVariableLength) buf.append("(*)"); // LOOK
     buf.append(" ");
     getNameAndDimensions(buf, useFullName, strict);
     buf.append(";");
@@ -1383,15 +1382,22 @@ public class Variable implements VariableIF {
   /**
    * Set the dimensions using all anonymous (unshared) dimensions
    *
-   * @param shape defines the dimension lengths. must be > 0
+   * @param shape defines the dimension lengths. must be > 0, or -1 for VLEN
    * @throws ucar.ma2.InvalidRangeException if any shape < 1
    */
   public void setDimensionsAnonymous(int[] shape) throws InvalidRangeException {
     if (immutable) throw new IllegalStateException("Cant modify");
     this.dimensions = new ArrayList<Dimension>();
     for (int i = 0; i < shape.length; i++) {
-      if (shape[i] < 1) throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
-      Dimension anon = new Dimension(null, shape[i], false, false, false);
+      if ((shape[i] < 1) &&  (shape[i] != -1)) throw new InvalidRangeException("shape[" + i + "]=" + shape[i] + " must be > 0");
+      Dimension anon;
+      if (shape[i] == -1) {
+        anon = Dimension.VLEN;
+        isVariableLength = true;
+      } else {
+        anon = new Dimension(null, shape[i], false, false, false);
+      }
+
       dimensions.add(anon);
     }
     resetShape();

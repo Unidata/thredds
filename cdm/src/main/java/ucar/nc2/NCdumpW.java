@@ -28,6 +28,7 @@ import java.io.*;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.nio.charset.Charset;
+import java.nio.ByteBuffer;
 
 /**
  * Print contents of an existing netCDF file, using a Writer.
@@ -383,15 +384,21 @@ public class NCdumpW {
     } else if (array.getElementType() == String.class) {
       printStringArray(out, (ArrayObject) array, ilev, ct);
 
-    } else if (array.getElementType() == StructureData.class) {
+    } else if (array instanceof ArrayStructure) {
       if (array.getSize() == 1)
         printStructureData( out, (StructureData) array.getObject( array.getIndex()), ilev, ct);
       else
         printStructureDataArray( out, (ArrayStructure) array, ilev, ct);
 
-    } else if (array.getElementType() == ArraySequence.class) {
+    } else if (array instanceof  ArraySequence) {
       printSequence( out, (ArraySequence) array, ilev, ct);
 
+    } else if (array.getElementType() == ByteBuffer.class) {
+      while (array.hasNext()) {
+        printByteBuffer( out, (ByteBuffer) array.next(), ilev);
+        out.println(",");
+        if (ct != null && ct.isCancel()) return;
+      }
      } else {
       printArray(array, out, ilev, ct);
     }
@@ -477,6 +484,14 @@ public class NCdumpW {
     indent.decr();
 
     out.print("\n"+indent + "}");
+  }
+
+  private static void printByteBuffer(PrintWriter out, ByteBuffer bb, Indent indent) {
+    out.print(indent + "0x");
+    int last = bb.limit()-1;
+    for (int i=0; i<=last; i++) {
+      out.printf("%02x", bb.get(i));
+    }
   }
 
   static void printStringArray(PrintWriter out, ArrayObject ma, Indent indent, ucar.nc2.util.CancelTask ct) {

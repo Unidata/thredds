@@ -94,7 +94,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
       var.addAttribute(new Attribute("missing_value", (short) val));
     }
     // hack
-    Array missingData = Array.factory(DataType.SHORT.getClassType(), new int[] {2}, new short[] {-990, -9990});
+    Array missingData = Array.factory(DataType.SHORT.getPrimitiveClassType(), new int[] {2}, new short[] {-990, -9990});
     var.addAttribute(new Attribute("missing_value", missingData));    
     var.addAttribute(new Attribute(_Coordinate.Axes, "Height Lat Lon"));
 

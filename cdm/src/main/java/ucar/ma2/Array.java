@@ -87,38 +87,6 @@ public abstract class Array {
     return factory( classType, index);
   }
 
-
-
-  /**
-   * Generate new Array with given type and shape and an Index that always return 0.
-   * @param classType element Class type, eg double.class.
-   * @param shape shape of the array.
-   * @param storage primitive array of correct type of length 1
-   * @return new Array<type> or Array<type>.D<rank> if 0 <= rank <= 7.
-   */
-  static public Array factoryConstant( Class classType, int [] shape, Object storage) {
-    Index index = new IndexConstant( shape);
-
-    if ((classType == double.class) || (classType == Double.class))
-      return new ArrayDouble(index, (double []) storage);
-    else if ((classType == float.class) || (classType == Float.class))
-      return new ArrayFloat(index, (float []) storage);
-    else if ((classType == long.class) || (classType == Long.class))
-      return new ArrayLong(index, (long []) storage);
-    else if ((classType == int.class) || (classType == Integer.class))
-      return new ArrayInt(index, (int []) storage);
-    else if ((classType == short.class) || (classType == Short.class))
-      return new ArrayShort(index, (short []) storage);
-     else if ((classType == byte.class) || (classType == Byte.class))
-      return new ArrayByte(index, (byte []) storage);
-    else if ((classType == char.class) || (classType == Character.class))
-      return new ArrayChar(index, (char []) storage);
-    else if ((classType == boolean.class) || (classType == Boolean.class))
-      return new ArrayBoolean(index, (boolean []) storage);
-    else
-      return new ArrayObject(classType, index, (Object []) storage);
-  }
-
   /* generate new Array with given type and shape and zeroed storage */
   static private Array factory( Class classType, Index index) {
     if ((classType == double.class) || (classType == Double.class))
@@ -141,6 +109,17 @@ public abstract class Array {
       return ArrayObject.factory(classType, index);
   }
 
+  /**
+   /** Generate new Array with given type, shape, storage.
+   * @param dataType DataType, eg DataType.DOUBLE.
+   * @param shape shape of the array.
+   * @param storage primitive array of correct type
+   * @return new Array<type> or Array<type>.D<rank> if 0 <= rank <= 7.
+   */
+  static public Array factory( DataType dataType, int [] shape, Object storage) {
+    return factory( dataType.getPrimitiveClassType(), shape, storage);
+  }
+
   /** Generate new Array with given type, shape, storage.
    * This should be package private, but is exposed for efficiency.
    * Normally use factory( Class classType, int [] shape) instead.
@@ -152,8 +131,8 @@ public abstract class Array {
    *   mapped to double.class. Any reference types use ArrayObject.
    * @param shape array shape
    * @param storage 1D java array of type classType, except object types like Double.class are mapped to
-   *   their corresponding primitive type, eg double.class. So the primitive
-   * @return Array of given  type, shape and storage
+   *   their corresponding primitive type, eg double.class.
+   * @return Array of given type, shape and storage
    * @exception IllegalArgumentException storage.length != product of shapes
    * @exception ClassCastException wrong storage type
    */
@@ -182,6 +161,36 @@ public abstract class Array {
     else
       return ArrayObject.factory(classType, indexCalc, (Object []) storage);
   }
+
+  /**
+  * Generate new Array with given type and shape and an Index that always return 0.
+  * @param classType element Class type, eg double.class.
+  * @param shape shape of the array.
+  * @param storage primitive array of correct type of length 1
+  * @return new Array<type> or Array<type>.D<rank> if 0 <= rank <= 7.
+  */
+ static public Array factoryConstant( Class classType, int [] shape, Object storage) {
+   Index index = new IndexConstant( shape);
+
+   if ((classType == double.class) || (classType == Double.class))
+     return new ArrayDouble(index, (double []) storage);
+   else if ((classType == float.class) || (classType == Float.class))
+     return new ArrayFloat(index, (float []) storage);
+   else if ((classType == long.class) || (classType == Long.class))
+     return new ArrayLong(index, (long []) storage);
+   else if ((classType == int.class) || (classType == Integer.class))
+     return new ArrayInt(index, (int []) storage);
+   else if ((classType == short.class) || (classType == Short.class))
+     return new ArrayShort(index, (short []) storage);
+    else if ((classType == byte.class) || (classType == Byte.class))
+     return new ArrayByte(index, (byte []) storage);
+   else if ((classType == char.class) || (classType == Character.class))
+     return new ArrayChar(index, (char []) storage);
+   else if ((classType == boolean.class) || (classType == Boolean.class))
+     return new ArrayBoolean(index, (boolean []) storage);
+   else
+     return new ArrayObject(classType, index, (Object []) storage);
+ }  
 
   /** Generate a new Array from a java array of any rank and type.
    *  This makes a COPY of the data values of javaArray.

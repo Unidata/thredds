@@ -445,8 +445,10 @@ public class N3header {
 
     // null terminates
     int count = 0;
-    while (count < nelems)
-      if (b[count++] == 0) break;
+    while (count < nelems) {
+      if (b[count] == 0) break;
+      count++;
+    }
 
     return new String(b, 0, count, "UTF-8"); // all strings are considered to be UTF-8 unicode.
   }
