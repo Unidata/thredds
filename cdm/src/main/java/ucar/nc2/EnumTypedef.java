@@ -23,8 +23,8 @@ package ucar.nc2;
 import java.util.*;
 
 /**
- * Enumeration Typedef map ints to Strings.
- * For netcdf-4 enumeration types.
+ * Enumeration Typedef map integers to Strings.
+ * For ENUM1, ENUM2, ENUM4 enumeration types.
  *
  * @author caron
  */
@@ -56,8 +56,8 @@ public class EnumTypedef {
     String name = strict ? NetcdfFile.escapeName(getName()) : getName();    
     buff.append("  enum ").append(name).append(" { ");
     int count = 0;
-    List keyset = Arrays.asList(map.keySet().toArray());
-    Collections.sort(keyset);
+    List<Object> keyset = Arrays.asList(map.keySet().toArray());
+    //Collections.sort(keyset);
     for (Object key : keyset) {
       String s = map.get(key);
       if (0 < count++) buff.append(", ");

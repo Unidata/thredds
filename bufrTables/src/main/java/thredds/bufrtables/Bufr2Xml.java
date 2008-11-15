@@ -202,6 +202,7 @@ public class Bufr2Xml {
 
     // write data value
     if (v.getDataType().isNumeric()) {
+      mdata.resetLocalIterator();
       mdata.hasNext();
       double val = mdata.nextDouble();
 

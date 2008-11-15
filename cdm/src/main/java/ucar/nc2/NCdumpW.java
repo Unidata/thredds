@@ -394,6 +394,7 @@ public class NCdumpW {
       printSequence( out, (ArraySequence) array, ilev, ct);
 
     } else if (array.getElementType() == ByteBuffer.class) {
+      array.resetLocalIterator();
       while (array.hasNext()) {
         printByteBuffer( out, (ByteBuffer) array.next(), ilev);
         out.println(",");
@@ -624,6 +625,7 @@ public class NCdumpW {
    * @param out print to here
    */
   static public void printArray(Array ma, PrintWriter out) {
+    ma.resetLocalIterator();
     while (ma.hasNext()) {
       out.print( ma.next());
       out.print( ' ');

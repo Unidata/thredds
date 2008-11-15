@@ -336,6 +336,7 @@ public class WriterCFPointObsDataset {
       for (VariableSimpleIF v : nvars) {
         if (v.getDataType().isNumeric()) {
           Array data = sdata.getArray(v.getShortName());
+          data.resetLocalIterator();
           if (data.hasNext())
             dvals[dcount++] = data.nextDouble();
 

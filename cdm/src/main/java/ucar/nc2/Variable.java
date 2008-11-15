@@ -644,7 +644,10 @@ public class Variable implements VariableIF {
   }
   private EnumTypedef enumTypedef;
 
-  // LOOK PUBLIC !!!
+  /**
+   * Public by accident.
+   * @param enumTypedef set the EnumTypedef, only use if getDataType.isEnum()
+   */
   public void setEnumTypedef(EnumTypedef enumTypedef) {
     if (immutable) throw new IllegalStateException("Cant modify");
     if (!dataType.isEnum())
@@ -652,7 +655,7 @@ public class Variable implements VariableIF {
     this.enumTypedef = enumTypedef;
   }
 
-  public EnumTypedef getEnumTypedef() { return enumTypedef; }
+  // public EnumTypedef getEnumTypedef() { return enumTypedef; }
 
   //////////////////////////////////////////////////////////////////////////////
   // IO

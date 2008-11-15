@@ -607,7 +607,7 @@ class H5header {
     }
 
     Attribute result;
-    if (attData.getElementType() == Array.class) { // vlen
+    if (attData.getElementType() == Array.class) { // vlen LOOK
       List<Object> dataList = new ArrayList<Object>();
       while (attData.hasNext()) {
         Array nested = (Array) attData.next();
@@ -742,13 +742,13 @@ class H5header {
   protected Array convertEnums(Map<Integer, String> map, Array values) {
     Array result = Array.factory(DataType.STRING, values.getShape());
     IndexIterator ii = result.getIndexIterator();
+    values.resetLocalIterator();
     while (values.hasNext()) {
       String sval = map.get(values.nextInt());
       ii.setObjectNext(sval == null ? "Unknown" : sval);
     }
     return result;
   }
-
 
   /* private Attribute makeAttribute(String forWho, String attName, MessageDatatype mdt, MessageDataspace mds, long dataPos) throws IOException {
     ucar.ma2.Array data = getAttributeData(forWho, null, attName, mdt, mds, dataPos);

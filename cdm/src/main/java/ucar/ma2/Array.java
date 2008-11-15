@@ -255,6 +255,7 @@ public abstract class Array {
 
   /**
    * Cover for System.arraycopy(). Works with the underlying data arrays.
+   * ArraySrc and ArrayDst must be the same primitive type.
    * Exposed for efficiency; use at your own risk.
    * @param arraySrc copy from here
    * @param srcPos starting at
@@ -681,6 +682,13 @@ public abstract class Array {
   }
 
   //////////////////////////////////////////////////////////////
+
+  /**
+   * Find whether the underlying data should be interprested as unsigned.
+   * Only affects byte, short, int, and double.
+   * When true, conversions to wider types are handled correctly.
+   * @return true if the data is unsigned integer type.
+   */
   public boolean isUnsigned() {
     return unsigned;
   }
@@ -881,6 +889,15 @@ public abstract class Array {
   /**
    * Check if more elements in the local iterator.
    * Uses the local iterator, which is not thread-safe. Use getIndexIterator if you need thread-safety.
+   * You cannot call any of the array.nextXXX() methods without calling hasNext() first.
+   * If you are not sure of the state of the iterator, you must reset it before use. Example:
+   * <pre>
+      arr.resetLocalIterator();
+      while (arr.hasNext()) {
+        double val = mdata.nextDouble();
+        ..
+      }
+   <.pre>
    * @return true if there are more elements in the iteration
    */
   public boolean hasNext() {

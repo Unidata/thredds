@@ -130,6 +130,7 @@ public class MAMath {
     if (unsigned.getElementType().equals(byte.class)) {
       Array result = Array.factory(DataType.SHORT, unsigned.getShape());
       IndexIterator ii = result.getIndexIterator();
+      unsigned.resetLocalIterator();
       while (unsigned.hasNext())
         ii.setShortNext( DataType.unsignedByteToShort(unsigned.nextByte()));
       return result;
@@ -137,6 +138,7 @@ public class MAMath {
     } else if (unsigned.getElementType().equals(short.class)) {
       Array result = Array.factory(DataType.INT, unsigned.getShape());
       IndexIterator ii = result.getIndexIterator();
+      unsigned.resetLocalIterator();
       while (unsigned.hasNext())
         ii.setIntNext( DataType.unsignedShortToInt(unsigned.nextShort()));
       return result;
@@ -144,6 +146,7 @@ public class MAMath {
     } else if (unsigned.getElementType().equals(int.class)) {
       Array result = Array.factory(DataType.LONG, unsigned.getShape());
       IndexIterator ii = result.getIndexIterator();
+      unsigned.resetLocalIterator();
       while (unsigned.hasNext())
         ii.setLongNext( DataType.unsignedIntToLong(unsigned.nextInt()));
       return result;

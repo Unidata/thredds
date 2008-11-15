@@ -495,6 +495,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
     Array result = Array.factory(DataType.STRING, values.getShape());
     IndexIterator ii = result.getIndexIterator();
+    values.resetLocalIterator();
     while (values.hasNext()) {
       String sval = lookupEnumString(values.nextInt());
       ii.setObjectNext(sval);
