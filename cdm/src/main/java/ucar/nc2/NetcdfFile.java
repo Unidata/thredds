@@ -1623,6 +1623,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
 
+    if (cer.child == null) {
+      Array result = cer.v.read(cer.section);
+      result.setUnsigned(cer.v.isUnsigned());
+      return result;
+    }
+
     if (spi == null)
       return IospHelper.readSection(cer);
     else

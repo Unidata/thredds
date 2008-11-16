@@ -1226,6 +1226,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   @Override
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
+
+    /* run it through the variableso to pick up caching
+    if (cer.child == null) {
+      Array result = cer.v.read(cer.section);
+      result.setUnsigned(cer.v.isUnsigned());
+      return result;
+    } */
+
     return readData(cer.v, cer.section);
   }
 

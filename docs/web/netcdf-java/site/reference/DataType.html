@@ -15,7 +15,7 @@
 <p>The one exception to this is <strong>Sequences</strong>, which musty be accessed through  <strong>Sequence.getStructureIterator()</strong> which returns <strong>StructureData</strong> objects. </p>
 <p>For Variables that are members of a Structure, data is accessed generally through the method</p>
 <pre>    <strong>Array data = StructureData</strong>.<strong>getArray( memberName);</strong></pre>
-<p>When a Variable has a variable length dimension, <strong>Variable.isVariableLength()</strong> is true and a <strong>ArrayObject</strong> with the appropriate element type is returned. Otherwise the Array is rectangular, and you can count on the following being returned from  <strong>Variable.read()</strong> or <strong>StructureData</strong>.<strong>getArray</strong>():</p>
+<p>When a Variable has a variable length dimension, <strong>Variable.isVariableLength()</strong> is true and a <strong>ArrayObject</strong> with the appropriate element type is returned. Otherwise the Array is rectangular, and  the following is returned from  <strong>Variable.read()</strong> or <strong>StructureData</strong>.<strong>getArray</strong>():</p>
 <table width="452" border="1">
   <tr>
     <th width="109" scope="col">DataType</th>

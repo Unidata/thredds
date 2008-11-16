@@ -565,12 +565,6 @@ public class IospHelper {
 
   // section reading for member data
   static public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
-    if (cer.child == null) {
-      Array result = cer.v.read(cer.section);
-      result.setUnsigned(cer.v.isUnsigned());
-      return result;
-    }
-
     Variable inner = null;
     List<Range> totalRanges = new ArrayList<Range>();
     ParsedSectionSpec current = cer;
