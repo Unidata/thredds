@@ -141,11 +141,10 @@ public class GribHorizCoordSys {
   }
 
   void addToNetcdfFile(NetcdfFile ncfile) {
-
-    if (isLatLon ) {
+    if(lookup.getProjectionType(gdsIndex) == TableLookup.RotatedLatLon) {
+        makeRotatedLatLon( ncfile );
+    } else if (isLatLon ) {
       double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
-      if(lookup.getProjectionType(gdsIndex) == TableLookup.RotatedLatLon)
-        makeRotatedLatLon();
       if (isGaussian)
         addGaussianLatAxis(ncfile, "lat", "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
       else
@@ -509,7 +508,7 @@ public class GribHorizCoordSys {
   }
 
   // RotatedLatLon
-  private void makeRotatedLatLon() {
+  private void makeRotatedLatLon( NetcdfFile ncfile ) {
     // we have to project in order to find the origin
     double splat = 0, splon = 0, spangle = 0;
     String spLat = (String) gdsIndex.params.get("SpLat");
@@ -530,6 +529,44 @@ public class GribHorizCoordSys {
     ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
     startx = start.getX();
     starty = start.getY();
+
+    Variable latVar = new Variable(ncfile, g, null, "lat");
+    latVar.setDataType(DataType.DOUBLE);
+    latVar.setDimensions("lat");
+    // create the data  gdsIndex.ny, starty, dy
+    double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
+    double[] yData = new double[gdsIndex.ny];
+    for (int i = 0; i < gdsIndex.ny; i++) {
+      yData[i] = starty + dy * i;
+    }
+    Array ydataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{gdsIndex.ny}, yData);
+    latVar.setCachedData(ydataArray, false);
+
+    latVar.addAttribute(new Attribute("units", "degrees_north"));
+    latVar.addAttribute(new Attribute("long_name", "latitude coordinate"));
+    latVar.addAttribute(new Attribute("standard_name", "latitude"));
+    latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+
+    Variable lonVar = new Variable(ncfile, g, null, "lon");
+    lonVar.setDataType(DataType.DOUBLE);
+    lonVar.setDimensions("lon");
+
+    // create the data gdsIndex.nx, startx, gdsIndex.dx
+    double[] xData = new double[gdsIndex.nx];
+    for (int i = 0; i < gdsIndex.nx; i++) {
+      xData[i] = startx + gdsIndex.dx * i;
+    }
+    Array xdataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{gdsIndex.nx}, xData);
+    lonVar.setCachedData(xdataArray, false);
+    lonVar.addAttribute(new Attribute("units", "degrees_east"));
+    lonVar.addAttribute(new Attribute("long_name", "longitude coordinate"));
+    lonVar.addAttribute(new Attribute("standard_name", "longitude"));
+    lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+
+    ncfile.addVariable(g, latVar);
+    ncfile.addVariable(g, lonVar);
+
+    addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
 
     if (GribServiceProvider.debugProj) {
       System.out.println("GribHorizCoordSys.makeRotatedLatLon start at latlon " + startLL);
