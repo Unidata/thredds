@@ -584,6 +584,11 @@ public class GribHorizCoordSys {
       System.out.println("   should be x=" + endx + " y=" + endy);
     }
 
+    //       addParameter("grid_south_pole_latitude", southPoleLat);
+    //  addParameter("grid_south_pole_longitude", southPoleLon);
+    //  addParameter("grid_south_pole_angle", southPoleAngle);
+    // splat, splon, spangle
+
     attributes.add(new Attribute("grid_mapping_name", "rotated_lat_lon"));
     attributes.add( new Attribute("false_easting", new Double(startx)));
     attributes.add( new Attribute("false_northing", new Double(starty)));
