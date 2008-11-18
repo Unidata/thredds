@@ -629,6 +629,7 @@ class H5header {
     boolean debugStructure = true;
     int[] shape = matt.mds.dimLength;
 
+    // Structures
     if (dataType == DataType.STRUCTURE) {
       boolean hasStrings = false;
 
@@ -673,12 +674,29 @@ class H5header {
       return asbb;
     } // Structure case
 
-    if (vinfo.typeInfo.hdfType == 9) { // vlen LOOK NOT TESTED!!!
+    // Strings
+    if ((vinfo.typeInfo.hdfType == 9) && (vinfo.typeInfo.isVString)) {
+      Layout layout = new LayoutRegular(matt.dataPos, matt.mdt.byteSize, shape, new Section(shape));
+      ArrayObject.D1 data = new ArrayObject.D1(String.class, (int) layout.getTotalNelems());
+      int count = 0;
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
+        if (chunk == null) continue;
+        for (int i = 0; i < chunk.getNelems(); i++) {
+          long address = chunk.getSrcPos() + layout.getElemSize() * i;
+          String sval = readHeapString(address);
+          data.set(count, sval);
+        }
+      }
+      return data;
+    } // vlen case
+
+    // Vlen (non-String)
+    if (vinfo.typeInfo.hdfType == 9) { // vlen
       DataType readType = dataType;
-      if (vinfo.typeInfo.isVString) // string
-        readType = DataType.BYTE;
-      else if (vinfo.typeInfo.base.hdfType == 7) // reference
+      if (vinfo.typeInfo.base.hdfType == 7) // reference
         readType = DataType.LONG;
+      // LOOK: other cases tested ???
 
       Layout layout = new LayoutRegular(matt.dataPos, matt.mdt.byteSize, shape, new Section(shape));
 
@@ -693,7 +711,10 @@ class H5header {
         for (int i = 0; i < chunk.getNelems(); i++) {
           long address = chunk.getSrcPos() + layout.getElemSize() * i;
           Array vlenArray = getHeapDataArray(address, readType, vinfo.typeInfo.byteOrder);
-          data[count++] = (vinfo.typeInfo.base.hdfType == 7) ? h5iosp.convertReference(vlenArray) : vlenArray;
+          if (vinfo.typeInfo.base.hdfType == 7)
+            data[count++] = h5iosp.convertReference(vlenArray);
+          else
+            data[count++] = vlenArray;
         }
       }
       return (scalar) ? data[0] : Array.factory(Array.class, shape, data);
@@ -728,8 +749,31 @@ class H5header {
     }
 
     Layout layout = new LayoutRegular(matt.dataPos, elemSize, shape, new Section(shape));
-    Object data = h5iosp.readDataPrimitive(layout, dataType, shape, null, byteOrder);
-    Array dataArray = (data instanceof Array) ? (Array) data : Array.factory( readDtype, shape, data);
+    Object data = h5iosp.readDataPrimitive(layout, dataType, shape, null, byteOrder, false);
+    Array dataArray = null;
+
+    if ((dataType == DataType.CHAR)) {
+      if (vinfo.mdt.byteSize > 1) { // chop back into pieces
+        byte [] bdata = (byte[]) data;
+        int strlen = vinfo.mdt.byteSize;
+        int n = bdata.length / strlen;
+        ArrayObject.D1 sarray = new ArrayObject.D1( String.class, n);
+        for (int i=0; i<n; i++) {
+          String sval = convertString( bdata, i*strlen, strlen);
+          sarray.set(i, sval);
+        }
+        dataArray = sarray;
+
+      } else {
+        String sval = convertString( (byte[]) data);
+        ArrayObject.D1 sarray = new ArrayObject.D1( String.class, 1);
+        sarray.set(0, sval);
+        dataArray = sarray;
+      }
+      
+    } else {
+      dataArray = (data instanceof Array) ? (Array) data : Array.factory( readDtype, shape, data);
+    }
 
     // convert attributes to enum strings
     if ((vinfo.typeInfo.hdfType == 8) && (matt.mdt.map != null)) {
@@ -737,6 +781,26 @@ class H5header {
     }
 
     return dataArray;
+  }
+
+  private String convertString(byte[] b) throws UnsupportedEncodingException {
+    // null terminates
+    int count = 0;
+    while (count < b.length) {
+      if (b[count] == 0) break;
+      count++;
+    }
+    return new String(b, 0, count, "UTF-8"); // all strings are considered to be UTF-8 unicode
+  }
+
+  private String convertString(byte[] b, int start, int len) throws UnsupportedEncodingException {
+    // null terminates
+    int count = start;
+    while (count < start + len) {
+      if (b[count] == 0) break;
+      count++;
+    }
+    return new String(b, start, count-start, "UTF-8"); // all strings are considered to be UTF-8 unicode
   }
 
   protected Array convertEnums(Map<Integer, String> map, Array values) {
@@ -959,7 +1023,7 @@ class H5header {
       }
     }
     processSystemAttributes(facade.dobj.messages, v.getAttributes());
-    if (fillAttribute != null)
+    if (fillAttribute != null && v.findAttribute("_FillValue") == null)
       v.addAttribute(fillAttribute);
     if (vinfo.typeInfo.unsigned)
       v.addAttribute(new Attribute("_unsigned", "true"));

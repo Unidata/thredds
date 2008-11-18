@@ -74,7 +74,7 @@ public class TestN4 extends TestCase {
 
   public void testCompoundVlens() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = testDir+"files/cdm_sea_soundings.nc4";
+    String filename = testDir+"vlen/cdm_sea_soundings.nc4";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("fun_soundings");

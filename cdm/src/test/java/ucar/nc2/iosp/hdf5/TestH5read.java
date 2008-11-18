@@ -24,7 +24,7 @@ public class TestH5read extends TestCase {
    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
 
    //TestAll.readAllDir (TestH5.testDir, new FileFilter() {
-   TestAll.readAllDir ("D:/", new FileFilter() {
+   TestAll.readAllDir ("R:/testdata/hdf5/", new FileFilter() {
       public boolean accept(File file) {
         String name = file.getPath();
         return (name.endsWith(".h5") || name.endsWith(".H5") || name.endsWith(".he5") || name.endsWith(".nc"));

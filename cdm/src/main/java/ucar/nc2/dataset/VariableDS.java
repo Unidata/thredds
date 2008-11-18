@@ -398,11 +398,17 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   }
 
   /**
-   * When this wraps another Variable, get the original Variable's DataType.
-   * @return original Variable's DataType
+   * When this wraps another Variable, get the original Variable's name.
+   * @return original Variable's name
    */
   public String getOriginalName() {
     return orgName;
+  }
+
+  public String lookupEnumString(int val) {
+    if (dataType.isEnum())
+      return super.lookupEnumString(val);
+    return orgVar.lookupEnumString(val);
   }
 
   @Override

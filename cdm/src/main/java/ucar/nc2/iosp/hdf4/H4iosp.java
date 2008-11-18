@@ -157,7 +157,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     if (!vinfo.isLinked && !vinfo.isCompressed) {
       Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), section);
-      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, -1);
+      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, -1, true);
 
       /* option 1
     } else if (vinfo.isLinked && !vinfo.isCompressed) {

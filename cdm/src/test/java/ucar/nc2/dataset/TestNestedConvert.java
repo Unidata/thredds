@@ -42,7 +42,7 @@ public class TestNestedConvert extends TestCase {
     super(name);
   }
 
-  public void testNestedTable() throws IOException, InvalidRangeException {
+  public void utestNestedTable() throws IOException, InvalidRangeException {
     String filename = TestAll.cdmTestDataDir + "dataset/nestedTable.bufr";
     NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDataset.openFile(filename, null);
     Structure outer = (Structure) ncfile.findVariable("obsRecord");
@@ -58,7 +58,7 @@ public class TestNestedConvert extends TestCase {
     ncfile.close();
   }
 
-  public void testNestedTableEnhanced() throws IOException, InvalidRangeException {
+  public void utestNestedTableEnhanced() throws IOException, InvalidRangeException {
     String filename = TestAll.cdmTestDataDir + "dataset/nestedTable.bufr";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     Structure outer = (Structure) ncd.findVariable("obsRecord");

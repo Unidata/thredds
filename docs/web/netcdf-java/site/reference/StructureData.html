@@ -102,7 +102,7 @@ For members that are themselves Structures,
 
     public ucar.ma2.ArraySequence <em><strong>getArraySequence</strong></em>(String memberName); 
     public ucar.ma2.ArraySequence <em><strong>getArraySequence</strong></em>(StructureMembers.Member); </pre>
-These will return any compatible type as a double or float, but will have extra overhead when the types dont match:
+The following will return any compatible type as a double or float, but will have extra overhead when the types dont match:
 <pre>    public float <em><strong>convertScalarFloat</strong></em>(String memberName);<br />    public float <em><strong>convertScalarFloat</strong></em>(StructureMembers.Member);<br />    public double <em><strong>convertScalarDouble</strong></em>(String memberName);<br />    public double <em><strong>convertScalarDouble</strong></em>(StructureMembers.Member);<br />
 </pre>
 <h2>Creating ArrayStructures </h2>

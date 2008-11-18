@@ -55,11 +55,19 @@ public class IospHelper {
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue, int byteOrder) throws java.io.IOException {
+  static public Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue,
+          int byteOrder) throws java.io.IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType) :
         makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
-    return readData(raf, index, dataType, arr, byteOrder);
-  } 
+    return readData(raf, index, dataType, arr, byteOrder, true);
+  }
+
+  static public Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue,
+          int byteOrder, boolean convertChar) throws java.io.IOException {
+    Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType) :
+        makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
+    return readData(raf, index, dataType, arr, byteOrder, convertChar);
+  }
 
   /**
    * Read data subset from RandomAccessFile, place in given primitive array.
@@ -73,19 +81,18 @@ public class IospHelper {
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  static public Object readData(RandomAccessFile raf, Layout layout, DataType dataType, Object arr, int byteOrder) throws java.io.IOException {
+  static public Object readData(RandomAccessFile raf, Layout layout, DataType dataType, Object arr, int byteOrder, boolean convertChar) throws java.io.IOException {
     if (showLayoutTypes) System.out.println("***RAF LayoutType="+layout.getClass().getName());
 
-   if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1) ) {
-      byte[] pa = (byte[]) arr;
-      while (layout.hasNext()) {
-        Layout.Chunk chunk = layout.next();
-        raf.order(byteOrder);
-        raf.seek(chunk.getSrcPos());
-        raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems());
-      }
-      //return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
-      if (dataType == DataType.CHAR) return convertByteToChar(pa); else return pa;
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1) ) {
+       byte[] pa = (byte[]) arr;
+       while (layout.hasNext()) {
+         Layout.Chunk chunk = layout.next();
+         raf.order(byteOrder);
+         raf.seek(chunk.getSrcPos());
+         raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems());
+       }
+       return (convertChar && dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
 
     } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = (short[]) arr;

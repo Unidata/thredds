@@ -48,7 +48,12 @@ This code is ALPHA
 
  Release Details:
   27:
-    DataType.getClass is deprecated - use DataType,getPrimitiveClass
+    VariableDS.lookupEnum must defer to orgVar
+    H5header: redo String, char attributes;  _FillValue attribute vs Message
+    H5iosp: exception if unknown filter.
+    HDF5 shuffle filter was inverted
+    HDF5 char attributes are Strings (UTF-8)
+    DataType.getClass is deprecated - use DataType.getPrimitiveClass
     Array.isUnsigned(): ArrayByte, ArrayShort, ArrayInt all check when doing conversions;
       NetcdfFile.readData() sets this based on Variable.isUnsigned().
     DataType.OPAQUE : use ByteBuffers wrapped by ArrayObject

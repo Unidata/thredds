@@ -33,12 +33,12 @@ import java.io.PrintWriter;
 import junit.framework.TestCase;
 
 /**
- * Class Description.
+ * Read or Compare JNI netcdf with Java.
  *
  * @author caron
  * @since Oct 31, 2008
  */
-public class TestReadAll extends TestCase {
+public class TestJni extends TestCase {
   private JniIosp iosp;
   private boolean showFile = true;
   private boolean showDetail = false;
@@ -48,7 +48,7 @@ public class TestReadAll extends TestCase {
     iosp = new JniIosp();
   }
 
-  public TestReadAll(String name) {
+  public TestJni(String name) {
     super(name);
   }
 
@@ -64,7 +64,7 @@ public class TestReadAll extends TestCase {
 
 
   public void testReadOne() throws IOException {
-    new ReadAllData().doClosure(testDir+"files/ref_tst_compounds.nc4");
+    new ReadAllData().doClosure(testDir+"files/tst_opaque_data.nc4");
     //new ReadAllData().doClosure("C:/data/test2.nc");
   }
 
@@ -77,7 +77,7 @@ public class TestReadAll extends TestCase {
   }
 
   public void testCompareOne() throws IOException {
-    new CompareData().doClosure(testDir+"files/nc_test_netcdf4.nc4");
+    new CompareData().doClosure(testDir+"files/tst_opaque_data.nc4");
   }
 
 

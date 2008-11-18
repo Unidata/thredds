@@ -445,6 +445,13 @@ public class Attribute {
 
     if (arr.getElementType() == char.class) { // turn CHAR into STRING
       ArrayChar carr = (ArrayChar) arr;
+      if (carr.getRank() == 1) { // coomon case
+        svalue = carr.getString();
+        this.nelems = 1;
+        this.dataType = DataType.STRING;
+        return;
+      }
+      // otherwise its an array of Strings
       arr = carr.make1DStringArray();
     }
 

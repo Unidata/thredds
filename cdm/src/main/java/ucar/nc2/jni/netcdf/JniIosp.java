@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
+import java.nio.IntBuffer;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -49,7 +51,7 @@ import com.sun.jna.ptr.NativeLongByReference;
  */
 public class JniIosp extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JniIosp.class);
-  private static boolean debug = false;
+  private static boolean debug = false, debugCompoundAtt= false, debugEnumAtt = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     return false;
@@ -182,11 +184,14 @@ public class JniIosp extends AbstractIOServiceProvider {
       count++; // dont include the terminating 0
     }
 
+    return new String(b, 0, count, "UTF-8"); // all strings are considered to be UTF-8 unicode.
+
+   /*
     char[] carray = new char[count];
     for (int i=0; i<count; i++)
       carray[i] = (char) DataType.unsignedByteToShort(b[i]);
 
-    return new String(carray);
+    return new String(carray); */
   }
 
 
@@ -292,6 +297,13 @@ public class JniIosp extends AbstractIOServiceProvider {
           values = Array.factory(DataType.SHORT.getPrimitiveClassType(), new int[]{len}, vals);
           break;
 
+        case NCLibrary.NC_STRING:
+          String[] valss = new String[len];
+          ret = nc4.nc_get_att_string(grpid, varid, attname, valss);
+          if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+          values = Array.factory(String.class, new int[]{len}, valss);
+          break;
+
         default:
           UserType userType = userTypes.get(type);
           if (userType == null) {
@@ -299,17 +311,11 @@ public class JniIosp extends AbstractIOServiceProvider {
             continue;
 
           } else if (userType.userType == NCLibrary.NC_ENUM) {
-            ByteBuffer bbuff = ByteBuffer.allocate((int) (len * userType.size));
-            ret = nc4.nc_get_att(grpid, varid, attname, bbuff);
-            if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
-            List<String> enumStrings = new ArrayList<String>( len);
-            for (int i=0; i<len; i++) {
-              int num = bbuff.get(i);
-              String val =userType.e.lookupEnumString(num);
-              enumStrings.add( val);
-              System.out.println(" "+bbuff.get(i)+" = "+val);
-            }
-            result.add( new Attribute(attname, enumStrings));
+            result.add( readEnumAttValues(grpid, varid, attname, len, userType));
+            continue;
+
+          } else if (userType.userType == NCLibrary.NC_OPAQUE) {
+            result.add( readOpaqueAttValues(grpid, varid, attname, len, userType));
             continue;
 
           } else if (userType.userType == NCLibrary.NC_VLEN) {
@@ -345,36 +351,36 @@ public class JniIosp extends AbstractIOServiceProvider {
                 switch (fld.fldtypeid) {
                   case NCLibrary.NC_BYTE:
                     byte bval = bbuff.get(pos);
-                    System.out.println("bval= "+bval);
+                    if (debugCompoundAtt) System.out.println("bval= "+bval);
                     fld.data.setByte(i, bval);
                     continue;
                   case NCLibrary.NC_SHORT:
                     short sval = bbuff.getShort(pos);
-                    System.out.println("sval= "+sval);
+                    if (debugCompoundAtt) System.out.println("sval= "+sval);
                     fld.data.setShort(i, sval);
                     continue;
                   case NCLibrary.NC_INT:
                     int ival = bbuff.getInt(pos);
-                    System.out.println("ival= "+ival);
+                    if (debugCompoundAtt) System.out.println("ival= "+ival);
                     fld.data.setInt(i, ival);
                     continue;
                   case NCLibrary.NC_INT64:
                     long lval = bbuff.getLong(pos);
-                    System.out.println("lval= "+lval);
+                    if (debugCompoundAtt) System.out.println("lval= "+lval);
                     fld.data.setLong(i, lval);
                     continue;
                   case NCLibrary.NC_FLOAT:
                     float fval = bbuff.getFloat(pos);
-                    System.out.println("fval= "+fval);
+                    if (debugCompoundAtt) System.out.println("fval= "+fval);
                     fld.data.setFloat(i, fval);
                     continue;
                   case NCLibrary.NC_DOUBLE:
                     double dval = bbuff.getDouble(pos);
-                    System.out.println("dval= "+dval);
+                    if (debugCompoundAtt) System.out.println("dval= "+dval);
                     fld.data.setDouble(i, dval);
                     continue;
                   default:
-                    System.out.println("fld.fldtypeid= "+fld.fldtypeid);
+                    System.out.println("counpounf attribute fld.fldtypeid= "+fld.fldtypeid);
                     continue;
                 }
               }
@@ -424,56 +430,45 @@ public class JniIosp extends AbstractIOServiceProvider {
     return null;
   }
 
-  Attribute readEnumValues(int grpid, int varid, String attname, int len, UserType userType) throws IOException {
+  private Attribute readEnumAttValues(int grpid, int varid, String attname, int len, UserType userType) throws IOException {
     int ret;
-    switch (userType.baseTypeid) {
 
-      case NCLibrary.NC_BYTE:
-        byte[] valb = new byte[len];
-        ret = nc4.nc_get_att_schar(grpid, varid, attname, valb);
-        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+    DataType dtype = convertDataType(userType.baseTypeid);
+    int elemSize = dtype.getSize();
 
-        if (len == 1) {
-          String val = userType.e.lookupEnumString(valb[0]);
-          return new Attribute(attname, val);
-        } else {
-          ArrayObject.D1 attArray = (ArrayObject.D1) Array.factory(DataType.STRING, new int[]{len});
-          for (int i = 0; i < valb.length; i++) {
-            String val = userType.e.lookupEnumString(valb[i]);
-            if (val == null)
-              throw new IOException("Illegal enum val " + valb[i] + " for attribute " + attname);
-            attArray.set(i, val);
-          }
-          return new Attribute(attname, attArray);
-        }
+    ByteBuffer bb = ByteBuffer.allocate(len * elemSize);
+    ret = nc4.nc_get_att(grpid, varid, attname, bb);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
 
-      case NCLibrary.NC_UBYTE:
-        byte[] valbu = new byte[len];
-        ret = nc4.nc_get_att_ubyte(grpid, varid, attname, valbu);
-        if (ret != 0) {
-          // return null;
-          throw new IOException(nc4.nc_strerror(ret));
-        }
+    Array data = convertByteBuffer(bb, userType.baseTypeid, new int[] {len});
+    IndexIterator ii = data.getIndexIterator();
 
-        if (len == 1) {
-          String val = userType.e.lookupEnumString( DataType.unsignedByteToShort(valbu[0]));
-          return new Attribute(attname, val);
-        } else {
-          ArrayObject.D1 attArray = (ArrayObject.D1) Array.factory(DataType.STRING, new int[]{len});
-          for (int i = 0; i < valbu.length; i++) {
-            String val = userType.e.lookupEnumString( DataType.unsignedByteToShort(valbu[i]));
-            if (val == null)
-              throw new IOException("Illegal enum val " + valbu[i] + " for attribute " + attname);
-            attArray.set(i, val);
-          }
-          return new Attribute(attname, attArray);
-        }
+    if (len == 1) {
+      String val = userType.e.lookupEnumString( ii.getIntNext());
+      return new Attribute(attname, val);
 
+    } else {
+      ArrayObject.D1 attArray = (ArrayObject.D1) Array.factory(DataType.STRING, new int[]{len});
+      for (int i = 0; i < len; i++) {
+        int val = ii.getIntNext();
+        String vals = userType.e.lookupEnumString( val);
+        if (vals == null)
+          throw new IOException("Illegal enum val " +val + " for attribute " + attname);
+        attArray.set(i, vals);
+      }
+      return new Attribute(attname, attArray);
     }
 
-    log.warn("Unsupported attribute data type == " + userType);
-    return null;
   }
+
+  private Attribute readOpaqueAttValues(int grpid, int varid, String attname, int len, UserType userType) throws IOException {
+    int total = len * userType.size;
+    ByteBuffer bb = ByteBuffer.allocate(total);
+    int ret = nc4.nc_get_att(grpid, varid, attname, bb);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+    return new Attribute(attname, Array.factory(DataType.BYTE, new int[] {total}, bb.array()));
+  }
+
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -910,12 +905,8 @@ public class JniIosp extends AbstractIOServiceProvider {
         break;
 
       case OPAQUE:
-        byte[][] valo = (byte[][] )read(vinfo.grpid, vinfo.varid, vinfo.typeid, len);
-        values = new ArrayObject(ByteBuffer.class, v2.getShape());
-        int count = 0;
-        IndexIterator ii = values.getIndexIterator();
-        while (ii.hasNext())
-          ii.setObjectNext( ByteBuffer.wrap(valo[count++]));
+        UserType userType = userTypes.get( vinfo.typeid);
+        values = readOpaque(vinfo.grpid, vinfo.varid, len, userType.size);
         break;
 
       default:
@@ -930,10 +921,10 @@ public class JniIosp extends AbstractIOServiceProvider {
 
     switch (typeid) {
       case NCLibrary.NC_OPAQUE:
-        byte[] valbo = new byte[len];
-        ret = nc4.nc_get_var(grpid, varid, valbo);
+        ByteBuffer bb = ByteBuffer.allocate(len);
+        ret = nc4.nc_get_var(grpid, varid, bb);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
-        return valbo;
+        return bb;
 
       case NCLibrary.NC_UBYTE:
         byte[] valbu = new byte[len];
@@ -977,11 +968,23 @@ public class JniIosp extends AbstractIOServiceProvider {
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
         return vall;
 
+      case NCLibrary.NC_UINT64:
+        long[] vallu = new long[len];
+        ret = nc4.nc_get_var_ulonglong(grpid, varid, vallu);
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        return vallu;
+
       case NCLibrary.NC_SHORT:
         short[] vals = new short[len];
         ret = nc4.nc_get_var_short(grpid, varid, vals);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
         return vals;
+
+      case NCLibrary.NC_USHORT:
+        short[] valsu = new short[len];
+        ret = nc4.nc_get_var_ushort(grpid, varid, valsu);
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        return valsu;
 
       case NCLibrary.NC_STRING:
         String[] valss = new String[len];
@@ -995,7 +998,7 @@ public class JniIosp extends AbstractIOServiceProvider {
           throw new IOException("Unsupported data type == " + typeid);
 
         } else if (userType.userType == NCLibrary.NC_ENUM) {
-          return read(grpid, varid, userType.baseTypeid, len);
+          return readEnum(grpid, varid, userType.baseTypeid, len);
 
         } else if (userType.userType == NCLibrary.NC_OPAQUE) {
           byte[] ball = (byte []) read(grpid, varid, userType.userType, (int) (len * userType.size));
@@ -1017,7 +1020,79 @@ public class JniIosp extends AbstractIOServiceProvider {
           return read(grpid, varid, userType.userType, len);
         }
     }
+  }
 
+  // opaques use ArrayObjects of ByteBuffer
+  private Array readOpaque(int grpid, int varid, int len, int size) throws IOException, InvalidRangeException {
+    int ret;
+
+    ByteBuffer bb = ByteBuffer.allocate(len*size);
+    ret = nc4.nc_get_var(grpid, varid, bb);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+    byte[] entire = bb.array();
+
+    ArrayObject values = new ArrayObject(ByteBuffer.class, new int[]{len});
+    int count = 0;
+    IndexIterator ii = values.getIndexIterator();
+    while (ii.hasNext()) {
+      ii.setObjectNext( ByteBuffer.wrap(entire, count*size, size));
+    }
+
+    return values;
+  }
+
+  private Object readEnum(int grpid, int varid, int baseType, int len) throws IOException, InvalidRangeException {
+    int ret;
+
+    DataType dtype = convertDataType(baseType);
+    int elemSize = dtype.getSize();
+
+    ByteBuffer bb = ByteBuffer.allocate(len * elemSize);
+    ret = nc4.nc_get_var(grpid, varid, bb);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+
+    switch (baseType) {
+      case NCLibrary.NC_BYTE:
+      case NCLibrary.NC_UBYTE:
+        return bb.array();
+
+      case NCLibrary.NC_SHORT:
+      case NCLibrary.NC_USHORT:
+        ShortBuffer sb = bb.asShortBuffer();
+        return sb.array();
+
+      case NCLibrary.NC_INT:
+      case NCLibrary.NC_UINT:
+        IntBuffer ib = bb.asIntBuffer();
+        return ib.array();
+    }
+
+    return null;
+  }
+
+  private Array convertByteBuffer(ByteBuffer bb, int baseType, int shape[]) throws IOException {
+
+    switch (baseType) {
+      case NCLibrary.NC_BYTE:
+      case NCLibrary.NC_UBYTE:
+        Array sArray = Array.factory(DataType.BYTE, shape, bb.array());
+        return (baseType == NCLibrary.NC_BYTE) ? sArray : MAMath.convertUnsigned(sArray);
+
+      case NCLibrary.NC_SHORT:
+      case NCLibrary.NC_USHORT:
+        ShortBuffer sb = bb.asShortBuffer();
+        sArray = Array.factory(DataType.SHORT, shape, sb.array());
+        return (baseType == NCLibrary.NC_SHORT) ? sArray : MAMath.convertUnsigned(sArray);
+
+
+      case NCLibrary.NC_INT:
+      case NCLibrary.NC_UINT:
+        IntBuffer ib = bb.asIntBuffer();
+        sArray = Array.factory(DataType.INT, shape, ib.array());
+        return (baseType == NCLibrary.NC_INT) ? sArray : MAMath.convertUnsigned(sArray);
+    }
+
+    return null;
   }
 
 

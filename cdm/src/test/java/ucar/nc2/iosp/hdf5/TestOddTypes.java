@@ -29,6 +29,7 @@ import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * @author caron
@@ -44,17 +45,14 @@ public class TestOddTypes extends TestCase {
     assert v2 != null;
 
     Array data = v2.read();
-    assert data.getElementType() == byte.class;
+    assert data.getElementType() == ByteBuffer.class : data.getElementType();
     System.out.println( "data size= "+new Section(data.getShape()));
     NCdump.printArray(data, "Opaque data", System.out, null);
 
 
-    try {
-      v2.read(new Section("1:20")); // not allowed to read subsection
-      assert false;
-    } catch (Exception e) {
-      assert true;
-    }
+    Array odata = v2.read(new Section("1:20"));
+    assert odata.getElementType() == ByteBuffer.class;
+    assert odata.getSize() == 20;
   }
 
   public void testEnum() throws InvalidRangeException, IOException {

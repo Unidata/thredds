@@ -118,6 +118,7 @@ public interface NCLibrary extends Library {
   int nc_get_att_short(int ncid, int varid, String name, short[] ip);
   int nc_get_att_ushort(int ncid, int varid, String name, short[] ip);
   int nc_get_att_text(int ncid, int varid, String name, byte[] ip);
+  int nc_get_att_string(int ncid, int varid, String name, String[] ip);
   int nc_get_att(int ncid, int varid, String name, Vlen_t[] vlen);    // vlen
   int nc_get_att(int ncid, int varid, String name, ByteBuffer bbuff); // other user defined types
 
@@ -144,13 +145,15 @@ public interface NCLibrary extends Library {
 	  NativeLongByReference offsetp, IntByReference field_typeidp, IntByReference ndimsp, int[] dims);
 
   // read entire array
-  int nc_get_var(int ncid, int varid,  byte[] ip);
+  int nc_get_var(int ncid, int varid, ByteBuffer bbuff);
   int nc_get_var_text(int ncid, int varid, byte[] op);
   int nc_get_var_schar(int ncid, int varid, byte[] ip);
   int nc_get_var_ubyte(int ncid, int varid,  byte[] ip);  
   int nc_get_var_short(int ncid, int varid, short[] ip);
+  int nc_get_var_ushort(int ncid, int varid, short[] ip);
   int nc_get_var_int(int ncid, int varid, int[] ip);
   int nc_get_var_longlong(int ncid, int varid, long[] ip);
+  int nc_get_var_ulonglong(int ncid, int varid, long[] ip);
   int nc_get_var_float(int ncid, int varid, float[] ip);
   int nc_get_var_double(int ncid, int varid, double[] ip);
   int nc_get_var_string(int ncid, int varid, String[] sarray);

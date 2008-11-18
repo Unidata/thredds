@@ -176,8 +176,10 @@ class H5tiledLayoutBB implements LayoutBB {
         }
         if (f.id == 1)
           data = inflate(data);
-        if (f.id == 2)
+        else if (f.id == 2)
           data = shuffle(data, f.data[0]);
+        else
+          throw new RuntimeException("Unknown filter type="+f.id);
       }
 
       ByteBuffer result = ByteBuffer.wrap(data);
@@ -210,14 +212,20 @@ class H5tiledLayoutBB implements LayoutBB {
       assert data.length % n == 0;
       if (n <= 1) return data;
 
-      int seglen = data.length / n;
+      int m = data.length / n;
       int[] count = new int[n];
-      for (int k = 0; k < n; k++) count[k] = k * seglen;
+      for (int k = 0; k < n; k++) count[k] = k * m;
 
       byte[] result = new byte[data.length];
-      for (int i = 0; i < data.length; i += n) {
+      /* for (int i = 0; i < data.length; i += n) {
         for (int k = 0; k < n; k++) {
           result[count[k]++] = data[i + k];
+        }
+      } */
+
+      for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+          result[i*n+j] = data[i + count[j]];
         }
       }
 
