@@ -154,10 +154,19 @@ public class GribHorizCoordSys {
     } else {
       boolean hasProj = makeProjection(ncfile);
       if (hasProj) {
-        double[] yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, getDyInKm(), "km",
-                "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
-        double[] xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, getDxInKm(), "km",
-                "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
+        double[] yData, xData;
+        if ( lookup.getProjectionType(gdsIndex) == TableLookup.RotatedLatLon) {
+          double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
+          yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, dy, "degrees",
+                  "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
+          xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, gdsIndex.dx, "degrees",
+                  "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
+        } else {
+           yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, getDyInKm(), "km",
+                  "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
+           xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, getDxInKm(), "km",
+                  "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
+        }
         if (GribServiceProvider.addLatLon) addLatLon2D(ncfile, xData, yData);
       } else {
         log.warn("Unknown grid type= "+gdsIndex.grid_type+"; no projection found");
