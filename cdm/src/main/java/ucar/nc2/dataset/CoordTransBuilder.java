@@ -52,6 +52,7 @@ public class CoordTransBuilder {
     registerTransform("orthographic", Orthographic.class);
     registerTransform("polar_stereographic", PolarStereographic.class);
     registerTransform("rotated_latitude_longitude", RotatedPole.class);
+    registerTransform("rotated_lat_lon", RotatedLatLon.class);
     registerTransform("stereographic", Stereographic.class);
     registerTransform("transverse_mercator", TransverseMercator.class);
     registerTransform("vertical_perspective", VerticalPerspective.class);

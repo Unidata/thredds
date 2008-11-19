@@ -524,65 +524,28 @@ public class GribHorizCoordSys {
     if (null != spAngle) {
       spangle = Double.parseDouble(spAngle);
     }
-    //proj = new RotatedLatLon( splat, splon, spangle );
-    proj = new RotatedPole( splat, splon );
+    proj = new RotatedLatLon( splat, splon, spangle );
+    //proj = new RotatedPole( splat, splon );
     LatLonPointImpl startLL = new LatLonPointImpl(gdsIndex.La1, gdsIndex.Lo1);
     ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
     startx = start.getX();
     starty = start.getY();
-    /*
-    Variable latVar = new Variable(ncfile, g, null, "lat");
-    latVar.setDataType(DataType.DOUBLE);
-    latVar.setDimensions("lat");
-    // create the data  gdsIndex.ny, starty, dy
-    double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
-    double[] yData = new double[gdsIndex.ny];
-    for (int i = 0; i < gdsIndex.ny; i++) {
-      yData[i] = starty + dy * i;
-    }
-    Array ydataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{gdsIndex.ny}, yData);
-    latVar.setCachedData(ydataArray, false);
-
-    latVar.addAttribute(new Attribute("units", "degrees_north"));
-    latVar.addAttribute(new Attribute("long_name", "latitude coordinate"));
-    latVar.addAttribute(new Attribute("standard_name", "latitude"));
-    latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-
-    Variable lonVar = new Variable(ncfile, g, null, "lon");
-    lonVar.setDataType(DataType.DOUBLE);
-    lonVar.setDimensions("lon");
-
-    // create the data gdsIndex.nx, startx, gdsIndex.dx
-    double[] xData = new double[gdsIndex.nx];
-    for (int i = 0; i < gdsIndex.nx; i++) {
-      xData[i] = startx + gdsIndex.dx * i;
-    }
-    Array xdataArray = Array.factory(DataType.DOUBLE.getClassType(), new int[]{gdsIndex.nx}, xData);
-    lonVar.setCachedData(xdataArray, false);
-    lonVar.addAttribute(new Attribute("units", "degrees_east"));
-    lonVar.addAttribute(new Attribute("long_name", "longitude coordinate"));
-    lonVar.addAttribute(new Attribute("standard_name", "longitude"));
-    lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-
-    ncfile.addVariable(g, latVar);
-    ncfile.addVariable(g, lonVar);
-    */
-    addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
+    //addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
+    addCoordSystemVariable(ncfile, "latLonCoordSys", "time y x");
 
     //       addParameter("grid_south_pole_latitude", southPoleLat);
     //  addParameter("grid_south_pole_longitude", southPoleLon);
     //  addParameter("grid_south_pole_angle", southPoleAngle);
     // splat, splon, spangle
 
-    //attributes.add(new Attribute("grid_mapping_name", "rotated_latitude_longitude"));
-    //attributes.add( new Attribute("grid_south_pole_latitude", new Double(starty)));
-    //attributes.add( new Attribute("grid_south_pole_longitude", new Double(startx)));
-    //attributes.add( new Attribute("grid_south_pole_angle", new Double(spangle)));
-
-    attributes.add(new Attribute("grid_mapping_name","rotated_latitude_longitude"));
-    attributes.add(new Attribute("grid_north_pole_latitude", new Double(starty)));
-    attributes.add(new Attribute("grid_north_pole_longitude", new Double(startx)));
-    //attributes.add( new Attribute("false_northing", new Double(starty)));
+    attributes.add(new Attribute("grid_mapping_name", "rotated_lat_lon"));
+    attributes.add( new Attribute("grid_south_pole_latitude", new Double(starty)));
+    attributes.add( new Attribute("grid_south_pole_longitude", new Double(startx)));
+    attributes.add( new Attribute("grid_south_pole_angle", new Double(spangle)));
+    // RotatedPole attr
+    //attributes.add(new Attribute("grid_mapping_name","rotated_latitude_longitude"));
+    //attributes.add(new Attribute("grid_north_pole_latitude", new Double(starty)));
+    //attributes.add(new Attribute("grid_north_pole_longitude", new Double(startx)));
     if ( true || GribServiceProvider.debugProj) {
       System.out.println("GribHorizCoordSys.makeRotatedLatLon start at latlon " + startLL);
 
