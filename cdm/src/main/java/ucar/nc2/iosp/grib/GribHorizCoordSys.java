@@ -141,9 +141,7 @@ public class GribHorizCoordSys {
   }
 
   void addToNetcdfFile(NetcdfFile ncfile) {
-    if(lookup.getProjectionType(gdsIndex) == TableLookup.RotatedLatLon) {
-        makeRotatedLatLon( ncfile );
-    } else if (isLatLon ) {
+     if (isLatLon ) {
       double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
       if (isGaussian)
         addGaussianLatAxis(ncfile, "lat", "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
@@ -316,6 +314,9 @@ public class GribHorizCoordSys {
 
   private boolean makeProjection(NetcdfFile ncfile) {
     switch (lookup.getProjectionType(gdsIndex)) {
+      case TableLookup.RotatedLatLon:
+        makeRotatedLatLon( ncfile );
+        break;
       case TableLookup.PolarStereographic:
         makePS();
         break;
@@ -519,17 +520,17 @@ public class GribHorizCoordSys {
     if (null != spLon) {
       splon = Double.parseDouble(spLon);
     }
-    String spAngle = (String) gdsIndex.params.get("Angle");
+    String spAngle = (String) gdsIndex.params.get("RotationAngle");
     if (null != spAngle) {
       spangle = Double.parseDouble(spAngle);
     }
-    proj = new RotatedLatLon( splat, splon, spangle );
-    //proj = new RotatedPole( splat, splon );
+    //proj = new RotatedLatLon( splat, splon, spangle );
+    proj = new RotatedPole( splat, splon );
     LatLonPointImpl startLL = new LatLonPointImpl(gdsIndex.La1, gdsIndex.Lo1);
     ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
     startx = start.getX();
     starty = start.getY();
-
+    /*
     Variable latVar = new Variable(ncfile, g, null, "lat");
     latVar.setDataType(DataType.DOUBLE);
     latVar.setDimensions("lat");
@@ -565,10 +566,24 @@ public class GribHorizCoordSys {
 
     ncfile.addVariable(g, latVar);
     ncfile.addVariable(g, lonVar);
-
+    */
     addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
 
-    if (GribServiceProvider.debugProj) {
+    //       addParameter("grid_south_pole_latitude", southPoleLat);
+    //  addParameter("grid_south_pole_longitude", southPoleLon);
+    //  addParameter("grid_south_pole_angle", southPoleAngle);
+    // splat, splon, spangle
+
+    //attributes.add(new Attribute("grid_mapping_name", "rotated_latitude_longitude"));
+    //attributes.add( new Attribute("grid_south_pole_latitude", new Double(starty)));
+    //attributes.add( new Attribute("grid_south_pole_longitude", new Double(startx)));
+    //attributes.add( new Attribute("grid_south_pole_angle", new Double(spangle)));
+
+    attributes.add(new Attribute("grid_mapping_name","rotated_latitude_longitude"));
+    attributes.add(new Attribute("grid_north_pole_latitude", new Double(starty)));
+    attributes.add(new Attribute("grid_north_pole_longitude", new Double(startx)));
+    //attributes.add( new Attribute("false_northing", new Double(starty)));
+    if ( true || GribServiceProvider.debugProj) {
       System.out.println("GribHorizCoordSys.makeRotatedLatLon start at latlon " + startLL);
 
       double Lo2 = gdsIndex.readDouble("Lo2");
@@ -583,15 +598,6 @@ public class GribHorizCoordSys {
       double endy = starty + getNy() * getDyInKm();
       System.out.println("   should be x=" + endx + " y=" + endy);
     }
-
-    //       addParameter("grid_south_pole_latitude", southPoleLat);
-    //  addParameter("grid_south_pole_longitude", southPoleLon);
-    //  addParameter("grid_south_pole_angle", southPoleAngle);
-    // splat, splon, spangle
-
-    attributes.add(new Attribute("grid_mapping_name", "rotated_lat_lon"));
-    attributes.add( new Attribute("false_easting", new Double(startx)));
-    attributes.add( new Attribute("false_northing", new Double(starty)));
   }
 
   private void makeSpaceViewOrOthographic() {
