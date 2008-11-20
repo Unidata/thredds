@@ -552,12 +552,12 @@ public class GribHorizCoordSys {
     attributes.add( new Attribute("grid_south_pole_longitude", new Double(startx)));
     attributes.add( new Attribute("grid_south_pole_angle", new Double(spangle)));
     // RotatedPole attr
-    //attributes.add(new Attribute("grid_mapping_name","rotated_latitude_longitude"));
-    //attributes.add(new Attribute("grid_north_pole_latitude", new Double(starty)));
-    //attributes.add(new Attribute("grid_north_pole_longitude", new Double(startx)));
+//    attributes.add(new Attribute("grid_mapping_name","rotated_latitude_longitude"));
+//    attributes.add(new Attribute("grid_north_pole_latitude", new Double(starty)));
+//    attributes.add(new Attribute("grid_north_pole_longitude", new Double(startx)));
     if ( true || GribServiceProvider.debugProj) {
       System.out.println("GribHorizCoordSys.makeRotatedLatLon start at latlon " + startLL);
-
+      System.out.println("   start proj coord " + start);
       double Lo2 = gdsIndex.readDouble("Lo2");
       double La2 = gdsIndex.readDouble("La2");
       LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
@@ -565,9 +565,9 @@ public class GribHorizCoordSys {
 
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
       System.out.println("   end at proj coord " + endPP);
-
-      double endx = startx + getNx() * getDxInKm();
-      double endy = starty + getNy() * getDyInKm();
+      double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
+      double endx = startx + getNx() * gdsIndex.dx;
+      double endy = starty + getNy() * dy;
       System.out.println("   should be x=" + endx + " y=" + endy);
     }
   }
