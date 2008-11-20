@@ -71,11 +71,11 @@ public class TestJni extends TestCase {
 
   public void testCompareAll() throws IOException {
     int count = 0;
-    //count += scanAllDir(testDir+"compound", null, new CompareData());
-    count += scanAllDir(testDir+"compound", null, new CompareData());
+    count += scanAllDir("D:/netcdf4/", null, new CompareData());
+    /* count += scanAllDir(testDir+"compound", null, new CompareData());
     count += scanAllDir(testDir+"nc4/", null, new CompareData());
     count += scanAllDir(testDir+"nc4-classic/", null, new CompareData());
-    count += scanAllDir(testDir+"files/", null, new CompareData());
+    count += scanAllDir(testDir+"files/", null, new CompareData());  */
     System.out.println("***COMPARE " + count + " files");
   }
 

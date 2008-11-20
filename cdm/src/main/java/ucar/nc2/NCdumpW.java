@@ -378,10 +378,7 @@ public class NCdumpW {
     if (array == null)
       throw new IllegalArgumentException("null array for "+name);
 
-    if (array.isVariableLength()) {
-      printVariableArray(out, (ArrayObject) array, ilev, ct);
-
-    } else if ((array instanceof ArrayChar) && (array.getRank() > 0) ) {
+    if ((array instanceof ArrayChar) && (array.getRank() > 0) ) {
       printStringArray(out, (ArrayChar) array, ilev, ct);
 
     } else if (array.getElementType() == String.class) {
