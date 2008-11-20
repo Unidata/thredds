@@ -82,7 +82,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     int ncoords = (int) org.getSize();
     int rank = org.getRank();
-    int strlen = org.getShape()[rank - 1];
+    int strlen = org.getShape(rank - 1);
     ncoords /= strlen;
 
     timeDates = new Date[ncoords];

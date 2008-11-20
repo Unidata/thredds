@@ -198,11 +198,7 @@ public class AggregationTiled extends Aggregation {
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, wantSection.getShape()); // LOOK need fill
     if (debug) {
-      try {
-        System.out.println(dtype + " allData allocated: " + new Section(allData.getShape()));
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-      }
+      System.out.println(dtype + " allData allocated: " + new Section(allData.getShape()));
     }
 
     // make concurrent

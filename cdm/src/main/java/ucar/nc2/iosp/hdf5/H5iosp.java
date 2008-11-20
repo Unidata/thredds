@@ -126,6 +126,9 @@ public class H5iosp extends AbstractIOServiceProvider {
       Object fillValue = vinfo.getFillValue();
       int byteOrder = vinfo.typeInfo.byteOrder;
 
+      // fill in the wantSection
+      wantSection = Section.fill(wantSection, v2.getShape());
+
       if (vinfo.typeInfo.hdfType == 2) { // time
         readDtype = vinfo.mdt.timeType;
         elemSize = readDtype.getSize();
@@ -141,11 +144,12 @@ public class H5iosp extends AbstractIOServiceProvider {
       } else if (vinfo.typeInfo.hdfType == 9) { // vlen
         elemSize = vinfo.typeInfo.byteSize;
         byteOrder = vinfo.typeInfo.byteOrder;
+        wantSection = wantSection.removeVlen(); // remove vlen dimension
       }
 
       Layout layout;
       if (vinfo.isChunked) {
-        layout = new H5tiledLayout(v2, readDtype, wantSection);
+        layout = new H5tiledLayout((H5header.Vinfo) v2.getSPobject(), readDtype, wantSection);
       } else {
         layout = new LayoutRegular(dataPos, elemSize, v2.getShape(), wantSection);
       }
@@ -205,7 +209,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       // general case is to read an array of vlen objects
       // each vlen generates an Array - so return ArrayObject of Array
       boolean scalar = layout.getTotalNelems() == 1; // if scalar, return just the len Array
-      Array[] data = new Array[(int) layout.getTotalNelems()];
+      Object[] data = new Object[(int) layout.getTotalNelems()];
       int count = 0;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -216,7 +220,8 @@ public class H5iosp extends AbstractIOServiceProvider {
           data[count++] = (typeInfo.base.hdfType == 7) ? convertReference(vlenArray) : vlenArray;
         }
       }
-      return (scalar) ? data[0] : Array.factory(Array.class, shape, data);
+      return (scalar) ? data[0] : new ArrayObject(data[0].getClass(), shape, data);
+
     }
 
     if (dataType == DataType.STRUCTURE) {  // LOOK what about subset ?
@@ -228,8 +233,8 @@ public class H5iosp extends AbstractIOServiceProvider {
       for (StructureMembers.Member m : sm.getMembers()) {
         Variable v2 = s.findVariable(m.getName());
         H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
-        if (typeInfo.byteOrder >= 0) // apparently each member may have seperate byte order (!!!??)
-          m.setDataObject(typeInfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+        if (vm.typeInfo.byteOrder >= 0) // apparently each member may have seperate byte order (!!!??)
+          m.setDataObject(vm.typeInfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
         m.setDataParam((int) (vm.dataPos)); // offset since start of Structure
         if (v2.getDataType() == DataType.STRING)
           hasStrings = true;
@@ -245,7 +250,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         if (chunk == null) continue;
         if (debugStructure)
           System.out.println(" readStructure " + v.getName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
-        // copy bytes directly into the underlying byte[]
+        // copy bytes directly into the underlying byte[] LOOK : assumes contiguous layout ??
         myRaf.seek(chunk.getSrcPos());
         myRaf.read(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
       }

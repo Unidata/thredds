@@ -48,6 +48,8 @@ This code is ALPHA
 
  Release Details:
   27:
+    Range, Section: use Range.VLEN for size < 0.
+    H5iosp: structure member reading had wrong byteOrder
     VariableDS.lookupEnum must defer to orgVar
     H5header: redo String, char attributes;  _FillValue attribute vs Message
     H5iosp: exception if unknown filter.

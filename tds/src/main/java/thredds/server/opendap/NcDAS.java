@@ -180,7 +180,7 @@ public class NcDAS extends opendap.dap.DAS {
     // kludgy thing to map char arrays to DODS Strings
     if ((v != null) && (v.getDataType().getPrimitiveClassType() == char.class)) {
       int rank = v.getRank();
-      int strlen = (rank == 0) ? 0 : v.getShape()[rank-1];
+      int strlen = (rank == 0) ? 0 : v.getShape(rank-1);
       Dimension dim = (rank == 0) ? null : v.getDimension( rank-1);
       try {
         opendap.dap.AttributeTable dodsTable = table.appendContainer("DODS");

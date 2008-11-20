@@ -452,7 +452,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
       result = orgVar.read();
     else { // return fill value in a "constant array"; this allow NcML to act as ncgen
       Object data = scaleMissingProxy.getFillValue( getDataType());
-      return Array.factoryConstant( dataType.getPrimitiveClassType(), getShape(), data);
+      return Array.factoryConstant( dataType.getPrimitiveClassType(), shape, data);
     }
 
     // LOOK not caching

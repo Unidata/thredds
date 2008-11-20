@@ -378,7 +378,10 @@ public class NCdumpW {
     if (array == null)
       throw new IllegalArgumentException("null array for "+name);
 
-    if ((array instanceof ArrayChar) && (array.getRank() > 0) ) {
+    if (array.isVariableLength()) {
+      printVariableArray(out, (ArrayObject) array, ilev, ct);
+
+    } else if ((array instanceof ArrayChar) && (array.getRank() > 0) ) {
       printStringArray(out, (ArrayChar) array, ilev, ct);
 
     } else if (array.getElementType() == String.class) {
@@ -546,6 +549,19 @@ public class NCdumpW {
       count++;
     }
   }
+
+  static private void printVariableArray(PrintWriter out, ArrayObject array, Indent indent, CancelTask ct) throws IOException {
+    out.println("\n" + indent + "{");
+    indent.incr();
+    IndexIterator iter = array.getIndexIterator();
+    while (iter.hasNext()) {
+      Array data = (Array) iter.next();
+      printArray(data, out, indent, ct);
+    }
+    indent.decr();
+    out.print(indent + "}");
+  }
+
 
   static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent,  CancelTask ct) throws IOException {
     StructureDataIterator iter = seq.getStructureDataIterator();

@@ -227,7 +227,7 @@ public class GetCoverage extends WcsRequest
     if ( bboxSplit == null || bboxSplit.length == 4 )
     {
       // If there is no vertical axis (or only one level), still a single level request.
-      if ( vertAxis == null || vertAxis.getShape()[0] == 1 )
+      if ( vertAxis == null || vertAxis.getShape(0) == 1 )
         this.isSingleVerticalRequest = true;
 
       return null;
@@ -240,7 +240,7 @@ public class GetCoverage extends WcsRequest
     }
 
     // If there is no vertical axis (or only one level), still a single level request.
-    if ( vertAxis == null || vertAxis.getShape()[0] == 1 )
+    if ( vertAxis == null || vertAxis.getShape(0) == 1 )
     {
       this.isSingleVerticalRequest = true;
       return null;

@@ -423,7 +423,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
     Variable etaVar = ds.findVariable(fromWhere);
     if (etaVar == null) return makeFakeCoordAxis(ds, axisName, dim);
 
-    int n = etaVar.getShape()[1];//number of eta levels
+    int n = etaVar.getShape(1); //number of eta levels
     int[] origin = new int[]{0, 0};
     int[] shape = new int[]{1, n};
     try {
@@ -546,7 +546,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getName()));
 
     //read first time slice
-    int n = coordVar.getShape()[1];
+    int n = coordVar.getShape(1);
     int[] origin = new int[]{0, 0};
     int[] shape = new int[]{1, n};
     try {

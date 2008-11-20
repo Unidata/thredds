@@ -24,7 +24,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.Section;
 import ucar.nc2.iosp.LayoutTiled;
 import ucar.nc2.iosp.Layout;
-import ucar.nc2.Variable;
 
 import java.io.IOException;
 
@@ -49,16 +48,13 @@ class H5tiledLayout implements Layout {
    * Constructor.
    * This is for HDF5 chunked data storage. The data is read by chunk, for efficency.
    *
-   * @param v2          Variable to index over; assumes that vinfo is the data object
+   * @param vinfo       the vinfo object for this variable
    * @param dtype       type of data. may be different from v2.
-   * @param wantSection the wanted section of data, contains a List of Range objects.
+   * @param wantSection the wanted section of data, contains a List of Range objects, must be complete
    * @throws InvalidRangeException if section invalid for this variable
    * @throws java.io.IOException on io error
    */
-  H5tiledLayout(Variable v2, DataType dtype, Section wantSection) throws InvalidRangeException, IOException {
-    wantSection = Section.fill(wantSection, v2.getShape());
-
-    H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
+  H5tiledLayout(H5header.Vinfo vinfo, DataType dtype, Section wantSection) throws InvalidRangeException, IOException {
     assert vinfo.isChunked;
     assert vinfo.btree != null;
 

@@ -1168,7 +1168,7 @@ class H5header {
     int[] dim = (msd != null) ? msd.dimLength : new int[0];
     if (dim == null) dim = new int[0]; // scaler
 
-    // merge the shape fir array type (10)
+    // merge the shape for array type (10)
     if (mdt.type == 10) {
       int len = dim.length + mdt.dim.length;
       int[] combinedDim = new int[len];
@@ -1180,8 +1180,11 @@ class H5header {
     }
 
     try {
-      if (dims != null) {
-        v.setDimensions(dims); // dimensions were passed in
+      if (dims != null) { // dimensions were passed in
+        if ((mdt.type == 9) && !mdt.isVString)
+          v.setDimensions(dims+" *");
+        else
+          v.setDimensions(dims);
 
       } else if (mdt.type == 3) { // fixed length string - DataType.CHAR, add string length
 
@@ -1194,7 +1197,7 @@ class H5header {
           v.setDimensionsAnonymous(shape);
         }
 
-      } /* else if ((mdt.type == 9) && !mdt.isVString) { // variable length (not a string)
+       } else if ((mdt.type == 9) && !mdt.isVString) { // variable length (not a string)
 
         if ((dim.length == 1) && (dim[0] == 1)) { // replace scalar with vlen
           int[] shape = new int[] {-1};
@@ -1204,12 +1207,12 @@ class H5header {
           System.arraycopy(dim, 0, shape, 0, dim.length);
           shape[dim.length] = -1;
           v.setDimensionsAnonymous(shape);
-        }
+        }  
 
      /* } else if (mdt.type == 10) { // array
-       v.setShapeWithAnonDimensions(mdt.dim); 
+       v.setShapeWithAnonDimensions(mdt.dim);  */
 
-      } */ else { // all other cases
+      } else { // all other cases
 
         v.setDimensionsAnonymous(dim);
       }

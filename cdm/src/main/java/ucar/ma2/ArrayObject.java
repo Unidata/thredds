@@ -70,6 +70,19 @@ public class ArrayObject extends Array {
   }
 
 
+  /**
+  * Create a new Array of type Object and the given shape and storage.
+  * dimensions.length determines the rank of the new Array.
+  * @param elementType the type of element, eg String
+  * @param shape the shape of the Array.
+  */
+  public ArrayObject(Class elementType, int [] shape, Object[] storage) {
+    super(shape);
+    this.elementType = elementType;
+    this.storage = storage;
+  }
+
+
   /** create new Array with given indexImpl and the same backing store */
   Array createView( Index index) {
     return ArrayObject.factory( elementType, index, storage);

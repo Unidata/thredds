@@ -102,24 +102,34 @@ public class Variable implements VariableIF {
    *         and whose values equal the length of that Dimension.
    */
   public int[] getShape() {
-    if (shape == null)
-      System.out.println("HEY");
     int[] result = new int[shape.length];  // optimization over clone()
     System.arraycopy(shape, 0, result, 0, shape.length);
     return result;
   }
 
   /**
+   * Get the size of the ith dimension
+   *
+   * @return size of the ith dimension
+   */
+  public int getShape(int index) {
+    return shape[index];
+  }
+
+  /**
    * Get the total number of elements in the Variable.
-   * If this is an unlimited Variable, will return the current number of elements.
-   * If this is a Sequence, will return 0.
+   * If this is an unlimited Variable, will use the current number of elements.
+   * If this is a Sequence, will return 1.
+   * If variable length, will skip vlen dimensions
    *
    * @return total number of elements in the Variable.
    */
   public long getSize() {
     long size = 1;
-    for (int i = 0; i < shape.length; i++)
-      size *= shape[i];
+    for (int i = 0; i < shape.length; i++) {
+      if (shape[i] >= 0)
+        size *= shape[i];
+    }
     return size;
   }
 
@@ -139,6 +149,7 @@ public class Variable implements VariableIF {
 
   /**
    * Get the number of dimensions of the Variable.
+   * @return the rank
    */
   public int getRank() {
     return shape.length;
@@ -146,6 +157,7 @@ public class Variable implements VariableIF {
 
   /**
    * Get the containing Group.
+   * @return the containing Group.
    */
   public Group getParentGroup() {
     return group;
@@ -153,6 +165,7 @@ public class Variable implements VariableIF {
 
   /**
    * Is this variable metadata?. True if its values need to be included explicitly in NcML output.
+   * @return true if Variable values need to be included in NcML
    */
   public boolean isMetadata() {
     return isMetadata;
@@ -160,6 +173,7 @@ public class Variable implements VariableIF {
 
   /**
    * Whether this is a scalar Variable (rank == 0).
+   * @return true if Variable has rank 0
    */
   public boolean isScalar() {
     return getRank() == 0;
@@ -167,8 +181,8 @@ public class Variable implements VariableIF {
 
   /**
    * Does this variable have a variable length dimension?
-   * If so, it is a one-dimensional array with
-   * dimension = Dimension.UNKNOWN.
+   * If so, it has as one of its dimensions Dimension.VLEN.
+   * @return true if Variable has a variable length dimension?
    */
   public boolean isVariableLength() {
     return isVariableLength;
@@ -177,6 +191,7 @@ public class Variable implements VariableIF {
   /**
    * Is this Variable unsigned?. Only meaningful for byte, short, int, long types.
    * Looks for attribute "_unsigned"
+   * @return true if Variable is unsigned
    */
   public boolean isUnsigned() {
     Attribute att = findAttribute("_unsigned");
@@ -351,7 +366,12 @@ public class Variable implements VariableIF {
         List<Range> list = new ArrayList<Range>();
         for (Dimension d : dimensions) {
           int len = d.getLength();
-          list.add(len > 0 ? new Range(d.getName(), 0, len - 1) : Range.EMPTY); // LOOK empty not named
+          if (len > 0)
+            list.add(new Range(d.getName(), 0, len - 1));
+          else if (len == 0)
+            list.add( Range.EMPTY); // LOOK empty not named
+          else
+            list.add( Range.VLEN); // LOOK vlen not named
         }
         shapeAsSection = new Section(list).makeImmutable();
         
@@ -572,10 +592,8 @@ public class Variable implements VariableIF {
    * @throws InvalidRangeException if section not compatible with shape
    */
   public Variable section(Section subsection) throws InvalidRangeException {
-    //if (dataType == DataType.OPAQUE)
-    //  throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
 
-    subsection = Section.fill(subsection, getShape());
+    subsection = Section.fill(subsection, shape);
 
     // create a copy of this variable with a proxy reader
     Variable sectionV = copy(); // subclasses must override
@@ -610,8 +628,6 @@ public class Variable implements VariableIF {
       throw new InvalidRangeException("Slice dim invalid= " + dim);
     if ((value < 0) || (value >= shape[dim]))
       throw new InvalidRangeException("Slice value invalid= " + value + " for dimension " + dim);
-    //if (dataType == DataType.OPAQUE)
-    //  throw new UnsupportedOperationException("Cannot subset an OPAQUE datatype");
 
     // create a copy of this variable with a proxy reader
     Variable sliceV = copy(); // subclasses must override
@@ -687,7 +703,7 @@ public class Variable implements VariableIF {
       return read(new Section(shape));
 
     if (shape == null) // LOOK not very useful, origin must be 0 to be valid
-      return read(new Section(origin, getShape()));
+      return read(new Section(origin, shape));
 
     return read(new Section(origin, shape));
   }
@@ -904,7 +920,8 @@ public class Variable implements VariableIF {
     try {
       data = ncfile.readData(this, getShapeAsSection());
     } catch (InvalidRangeException e) {
-      throw new IOException(e.getMessage()); // cant happen
+      e.printStackTrace();
+      throw new IOException(e.getMessage()); // cant happen haha
     }
 
     // optionally cache it
@@ -1031,6 +1048,7 @@ public class Variable implements VariableIF {
         buf.append(myd.getLength());
       }
     }
+
     if (getRank() > 0) buf.append(")");
   }
 
@@ -1319,7 +1337,8 @@ public class Variable implements VariableIF {
     this.shape = new int[dimensions.size()];
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension dim = dimensions.get(i);
-      shape[i] = Math.max(dim.getLength(), 0); // LOOK
+      shape[i] = dim.getLength();
+      //shape[i] = Math.max(dim.getLength(), 0); // LOOK
       // if (dim.isUnlimited() && (i != 0)) // LOOK only true for Netcdf-3
       //   throw new IllegalArgumentException("Unlimited dimension must be outermost");
       if (dim.isVariableLength()) {
@@ -1678,14 +1697,14 @@ public class Variable implements VariableIF {
     return section.subList(v.getRank(), section.size());
   } */
 
-  /**
+  /*
    * Composes this variable's ranges with another list of ranges, adding parent ranges; resolves nulls.
    *
    * @param section   Section of this Variable, same rank as v, may have nulls or be null.
    * @param firstOnly if true, get first parent, else get all parrents.
    * @return Section, rank of v plus parents, no nulls
    * @throws InvalidRangeException if bad
-   */
+   *
   private Section makeSectionAddParents(Section section, boolean firstOnly) throws InvalidRangeException {
     Section result;
     if (section == null)
@@ -1705,7 +1724,7 @@ public class Variable implements VariableIF {
     }
 
     return result;
-  }
+  } */
 
   /* private Array readMemberOfStructureFlatten(Section section) throws InvalidRangeException, IOException {
     // get through first parents element

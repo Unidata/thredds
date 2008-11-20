@@ -56,20 +56,23 @@ public class TestJni extends TestCase {
 
   public void testReadAll() throws IOException {
     int count = 0;
-    count += scanAllDir(testDir+"nc4/", null, new ReadAllData());
-    count += scanAllDir(testDir+"nc4-classic/", null, new ReadAllData());
-    count += scanAllDir(testDir+"files/", null, new ReadAllData());
+    count += scanAllDir(testDir+"vlen", null, new ReadAllData());
+    //count += scanAllDir(testDir+"nc4/", null, new ReadAllData());
+    //count += scanAllDir(testDir+"nc4-classic/", null, new ReadAllData());
+    //count += scanAllDir(testDir+"files/", null, new ReadAllData());
     System.out.println("***READ " + count + " files");
   }
 
 
   public void testReadOne() throws IOException {
-    new ReadAllData().doClosure(testDir+"files/tst_opaque_data.nc4");
+    new ReadAllData().doClosure(testDir+"vlen/cdm_sea_soundings.nc4");
     //new ReadAllData().doClosure("C:/data/test2.nc");
   }
 
   public void testCompareAll() throws IOException {
     int count = 0;
+    //count += scanAllDir(testDir+"compound", null, new CompareData());
+    count += scanAllDir(testDir+"compound", null, new CompareData());
     count += scanAllDir(testDir+"nc4/", null, new CompareData());
     count += scanAllDir(testDir+"nc4-classic/", null, new CompareData());
     count += scanAllDir(testDir+"files/", null, new CompareData());
@@ -77,7 +80,7 @@ public class TestJni extends TestCase {
   }
 
   public void testCompareOne() throws IOException {
-    new CompareData().doClosure(testDir+"files/tst_opaque_data.nc4");
+    new CompareData().doClosure(testDir+"vlen/cdm_sea_soundings.nc4");
   }
 
 
@@ -185,6 +188,7 @@ netcdf R:/testdata/netcdf4/files/tst_solar_cmp.nc {
   /////////////////////////////////////////////////////////////////////////////
 
   /*
+$ ncdump tst_vl.nc
 netcdf tst_vl {
 types:
   int(*) name1 ;
@@ -197,20 +201,24 @@ data:
  var = {-99}, {-99, -99}, {-99, -99, -99} ;
 }
 
+java:
+netcdf R:/testdata/netcdf4/vlen/tst_vl.nc {
+ dimensions:
+   dim = 3;
+ variables:
+   int var(dim=3);
+ data:
+var =
+  {-99 , -99 -99 , -99 -99 -99 }
+}
+
+
 jni:
-netcdf R:/testdata/netcdf4/nc4/tst_vl.nc {
+netcdf //zero/share/testdata/netcdf4/vlen/tst_vl.nc {
  dimensions:
    dim = 3;
  variables:
    int var(dim=3, *);
-}
-
-java:
-netcdf R:/testdata/netcdf4/nc4/tst_vl.nc {
- dimensions:
-   dim = 3;
- variables:
-   int(*) var(dim=3);
 }
    */
 

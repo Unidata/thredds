@@ -146,6 +146,8 @@ public interface NCLibrary extends Library {
 
   // read entire array
   int nc_get_var(int ncid, int varid, ByteBuffer bbuff);
+  int nc_get_var(int ncid, int varid, Vlen_t[] vlen);      // vlen
+
   int nc_get_var_text(int ncid, int varid, byte[] op);
   int nc_get_var_schar(int ncid, int varid, byte[] ip);
   int nc_get_var_ubyte(int ncid, int varid,  byte[] ip);  
