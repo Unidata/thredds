@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<p>The CDM data model is close to, but not identical to the <a href="http://www.google.com/url?sa=t&amp;source=web&amp;ct=res&amp;cd=1&amp;url=http%3A%2F%2Fwww.unidata.ucar.edu%2Fpresentations%2FRew%2Fnc4-iips.ppt&amp;ei=_CgXSf6TCImMsAOQqKH7Cg&amp;usg=AFQjCNHkGLUOBZlsXG3JNWfZ1mchBGM7kA&amp;sig2=dBd8COl1oJYc7iQQSfYZaQ">netCDF-4 data model</a>. Generally the CDM is a (slight) superset of netCDF-4. However there is a complete 2-way mapping between the two models.</p>
+<h3>opaque</h3>
+<p>CDM allows variable length blobs. nc4 are fixed length. since we know the length, we could map to bytes, or we could ignore the fixed length</p>
+<h3>vlen</h3>
+<p>nc4 allows arbitrary composition of vlen. cdm tries to map these to a variable length dimension, to get a ragged array, not part of the data type. But Arrays are rectangular, so its a difficult fit. </p>
+<p>could define ArrayRagged which maps to C multidim arrays.</p>
+<p>its natural to map</p>
+<pre> int data(x,y,*) -&gt; int(*) data(x,y)</pre>
+<p>but it doesnt generalize well to nested vlens. nc4 solution is to declare eacch tyepe seperately and chain them:</p>
+<pre> int(*) type1;
+ type1(*) type2;
+ type2 data(x,y);
+
+
+</pre>
+<p>Array.isVariableLength(). IOSP might return ArrayInteger from int data(*). Needs to return ArrayObject for int data(3,*), with Array.isVariableLength() true.</p>
+<pre>int(*) returns ArrayInt</pre>
+<pre>int(3,*) returns ArrayObject(3) with ArrayInt(*) inside</pre>
+<pre>int (*,3) returns Array(n,3), whatever n happens to be.</pre>
+<pre>int(3,*,*) returns ArrayObject(3) with ArrayObject(*) inside with ArrayInt(*) inside.</pre>
+<pre>int(*,3,*) returns ArrayObject(n) with ArrayObject(3) inside with ArrayInt(*) inside.</pre>
+<pre>int(*,*,3) returns ArrayObject(n) with ArrayInt(*,3) inside. OR  ArrayObject(n) with ArrayObject(*) with ArrayInt(3) inside..</pre>
+<pre>
+struct {
+  int i1;
+  float vf(*);
+} s(3);
+
+is like float(3,*) -> ArrayObject(3) with ArrayFloat(*), inside the ArrayStructure.
+this is getting out of control
+</pre>
+<h3>Compound</h3>
+<p>straightforward  mapping to Structures. main problem is that cant put attributes on indicidual members, solution is compound attributes. we unwind the compoind attrinute to put attributes on the members.</p>
+<p>Structure members are first class Variables, although you cant call v.read() on them anymore. But you can call ncfile.readSection().</p>
+<h3>enum</h3>
+<p> CDM promotes the emum maps to an enumTypedef, that can be shared, so this follows nc4. not currrently naming the enum (probably should) on the variable.</p>
+<p>enum attributes are converted to Strings.</p>
+<h3>unsigned</h3>
+<p>Arrays now know they are unsigned, and conversions take that into account. no seperate DataType, this is a property of the Variable and Array.</p>
+<h3>Attributes</h3>
+<p>n4 : can be user defined types</p>
+<p>cdm: 1 dim array of primitive or String.</p>
+<pre> 
+netcdf tst_enums {
+  types:
+    ubyte enum Bradys {Mike = 8, Carol = 7, Greg = 6, Marsha = 5, Peter = 4, Jan = 3, Bobby = 2, Whats-her-face = 1, Alice = 0} ;
+
+
+// global attributes:
+  Bradys :brady_attribute = Alice, Peter, Mike ;
+}
+
+
+
+netcdf R:/testdata/netcdf4/nc4/tst_enums.nc {
+ types:
+  enum Bradys { 'Alice' = 0, 'Whats-her-face' = 1, 'Bobby' = 2, 'Jan' = 3, 'Peter' = 4, 'Marsha' = 5, 'Greg' = 6, 'Carol' = 7, 'Mike' = 8};
+
+ :brady_attribute = "Alice", "Peter", "Mike";
+}
+
+</pre>
+<p><br>
+  char arrays are interpeted as UTF-8 bytes array (Strings) when they are attributes . but data arrays are not, they are run through unsignedToShort() and cast to char. this seems like trouble.<br>
+</p>
+</body>
+</html>

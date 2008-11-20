@@ -110,7 +110,7 @@ files.</p>
   <LI><font color="#0000FF">NOT IMPLEMENTED YET </font>
   <LI><font color="#0000FF">You can remove attributes from the underlying variable. </font>      
   <LI><FONT color=#0000ff>The mandatory <I><strong>name</strong></I> attribute must be unique among variables within its containing <em><strong>group, variable, </strong>or </em><strong><em>netcdf</em></strong> element.</FONT>
-  <LI><FONT color=#0000ff>The mandatory <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataTypes">DataTypes</a>.</FONT>
+  <LI><FONT color=#0000ff>The mandatory <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataType">DataTypes</a>.</FONT>
   <LI><FONT color=#0000ff>The <em><strong>shape</strong></em> attribute   lists the names of the dimensions the variable depends on. For a scalar variable, the list will be empty. The 
   dimension names must be ordered with the <FONT color=#ff0000><FONT color=#0000ff><FONT color=#ff0000><FONT color=#0000ff>slowest varying dimension first</FONT></FONT></FONT></FONT>  (same as in the CDL description). 
   For backwards compatibility, scalar variables may omit this attribute, although this is deprecated.</FONT>
@@ -131,7 +131,7 @@ files.</p>
 <pre>  &lt;xsd:element name=&quot;attribute&quot;&gt;<br>    &lt;xsd:complexType mixed=&quot;true&quot;&gt;<br><font color="#0000FF">(1)</font>   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;<br><font color="#0000FF">(2)</font>   &lt;xsd:attribute name=&quot;type&quot; type=&quot;DataType&quot; default=&quot;String&quot;/&gt;<br><font color="#0000FF">(3)</font>   &lt;xsd:attribute name=&quot;value&quot; type=&quot;xsd:string&quot; /&gt;<br><font color="#0000FF">(4)</font>   &lt;xsd:attribute name=&quot;separator&quot; type=&quot;xsd:string&quot; /&gt;<br><font color="#0000FF">(5)</font>   &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;</pre>
 <OL>
   <LI><FONT color=#0000ff>The mandatory <I><strong>name</strong></I> attribute must be unique among attributes within its containing <em><strong>group, variable, </strong></em>or <strong><em>netcdf</em></strong> element.</FONT>
-  <LI><FONT color=#0000ff>The <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataTypes">DataTypes</a>.</FONT>
+  <LI><FONT color=#0000ff>The <I><strong>type</strong></I> attribute is one of the enumerated <a href="#DataType">DataTypes</a>.</FONT>
     <font color="#0000FF">It defaults to a String type. </font>
   <LI><FONT color=#0000ff>The <I>value </I>attribute contains the actual data of 
   the <I>attribute</I> element. In the most common case of single-valued 
@@ -225,14 +225,15 @@ color=#0000ff>objects that are in the referenced dataset. Place the remove eleme
   <li><font color="#990000">If you specify a <strong>regExp</strong>, only files with whose full pathnames match the <a href="http://www.regular-expressions.info/">regular expression</a>  will be included.</font></li>
   <li><font color="#990000">You can optionally specify if the scan should descend into subdirectories (default true).</font></li>
   <li><font color="#990000">If present, only files whose last modified date is older than this amount of time from the present will be included. This is a way to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot; or &quot;1 hour&quot;. </font></li>
-  <li><font color="#990000">A <em><strong>dateFormatMark</strong></em>  is used on <strong>joinNew</strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string. You can ignore trailing text. For example:<pre>
+  <li><font color="#990000">A <em><strong>dateFormatMark</strong></em>  is used on <strong>joinNew</strong> types to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a java.text.<a href="#SimpleDateFormat">SimpleDateFormat</a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string. You can ignore trailing text. For example:
+    <pre>
         Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini 
 DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm
 </pre> 
   </font></li>
   <li><font color="#990000"> You can optionally specify that the files should be opened in enhanced mode (default false)</font></li>
   <li><font color="#990000">A specialized scanFmrc element can be used for a <em><strong><a href="FmrcAggregation.html#forecastModelRunSingleCollection">forecastModelRunSingleCollection</a> </strong></em>aggregation, where forecast model run data is stored in multiple files, with one forecast time per file.</font></li>
-  <li><font color="#990000"> For scanFmrc, the run date and the forecast date is extracting from the file pathname using a <strong>runDateMatcher </strong>and either a <strong>forecastDateMatcher </strong>or a<strong> forecastOffsetMatcher </strong>attribute<strong>. </strong>All of these require matching a specific string in the file's pathname and then matching a date or hour offset immediately before or after the match. The match is specified by placing it between '#' marking characters. The <strong>runDateMatcher </strong>and <strong>forecastDateMatcher </strong>has a java.text.<a href="#SimpleDataFormat">SimpleDataFormat</a> string before or after the match, while a <strong>forecastOffsetMatcher</strong> counts the number of 'H' characters, and extracts an hour offset from the run date. For example: </font>
+  <li><font color="#990000"> For scanFmrc, the run date and the forecast date is extracting from the file pathname using a <strong>runDateMatcher </strong>and either a <strong>forecastDateMatcher </strong>or a<strong> forecastOffsetMatcher </strong>attribute<strong>. </strong>All of these require matching a specific string in the file's pathname and then matching a date or hour offset immediately before or after the match. The match is specified by placing it between '#' marking characters. The <strong>runDateMatcher </strong>and <strong>forecastDateMatcher </strong>has a java.text.<a href="#SimpleDateFormat">SimpleDateFormat</a> string before or after the match, while a <strong>forecastOffsetMatcher</strong> counts the number of 'H' characters, and extracts an hour offset from the run date. For example: </font>
     <pre><font color="#990000">     
              Filename:  gfs_3_20060706_0300_006.grb 
        runDateMatcher: #gfs_3_#yyyyMMdd_HH

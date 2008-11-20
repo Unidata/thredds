@@ -200,7 +200,7 @@ netcdf TestUnion.ncml {
   &lt;/aggregation&gt;
 &lt;/netcdf&gt; 
 </pre>
-<p>The <em><strong>dateFormatMark</strong></em><a name="dateFormatMark"></a> attribute is used on <strong>joinNew</strong> aggregation (or <strong>joinExisting</strong> if there is only one time slice in each file) to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a <a href="AnnotatedSchema.html#SimpleDataFormat"><strong>java.text.SimpleDataFormat</strong></a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string, then it ignores any trailing text. For example: </p>
+<p>The <em><strong>dateFormatMark</strong></em><a name="dateFormatMark"></a> attribute is used on <strong>joinNew</strong> aggregation (or <strong>joinExisting</strong> if there is only one time slice in each file) to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a <a href="AnnotatedSchema.html#SimpleDateFormat"><strong>java.text.SimpleDateFormat</strong></a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string, then it ignores any trailing text. For example: </p>
 <pre>      Filename: SUPER-NATIONAL_1km_SFC-T_20051206_2300.gini 
 DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <p>The net effect is to add a coordinate variable, whose values are ISO 8601 formatted date/time Strings, with a <strong>_CoordinateAxisType</strong> of &quot;Time&quot;, for example: </p>
@@ -260,7 +260,7 @@ DateFormatMark: SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm</pre>
 <p>Next: <a href="FmrcAggregation.html">FMRC Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 16, 2008
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 20, 2008
 </address>
 <p>&nbsp;</p>
 </body>
