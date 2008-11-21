@@ -211,14 +211,12 @@ public class RecordDatasetHelper {
     double maxLon = -Double.MAX_VALUE;
 
     // read all the data, create a RecordObs
-    StructureMembers members = null;
     ArrayList records = new ArrayList();
     int recno = 0;
     StructureDataIterator ii = recordVar.getStructureIterator();
     while (ii.hasNext()) {
       StructureData sdata = ii.next();
-      if (members == null)
-        members = sdata.getStructureMembers();
+      StructureMembers members = sdata.getStructureMembers();
 
       Object stationId = null;
       if (hasStations) {

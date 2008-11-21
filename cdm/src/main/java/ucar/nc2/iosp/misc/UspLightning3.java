@@ -38,9 +38,72 @@ import java.text.ParseException;
 /**
  * UspLightning3
  *
+ * This looks like the most recent USPLN iosp.
+ *
  * @author caron
  */
 public class UspLightning3  extends AbstractIOServiceProvider {
+/*  USPLN data format:
+
+Each 1 minute packet sent has an ASCII header, followed by a record for
+each lightning detection during the past 1 minute.
+
+Header
+The ASCII header provides information on the creation time of the one
+minute packet and ending date and time of the file.
+
+Sample Header:
+USPLN-LIGHTNING,2004-10-11T20:45:02,2004-10-11T20:45:02
+Description:
+Name of Product: USPLN-LIGHTNING
+Creation of 1 min Packet (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:45:02
+Ending of 1 min Packet (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:45:02
+
+NOTE: All times in UTC
+
+Strike Record Following the header, an individual record is provided for
+each lightning strike in a comma delimited format.
+
+Sample Strike Records:
+2004-10-11T20:44:02,32.6785331,-105.4344587,-96.1,1
+2004-10-11T20:44:05,21.2628231,-86.9596634,53.1,1
+2004-10-11T20:44:05,21.2967119,-86.9702106,50.3,1
+2004-10-11T20:44:06,19.9044769,-100.7082608,43.1,1
+2004-10-11T20:44:11,21.4523434,-82.5202274,-62.8,1
+2004-10-11T20:44:11,21.8155306,-82.6708778,80.9,1
+
+Description:
+
+Strike Date/Time (yyyy-mm-ddThh:mm:ss): 2004-10-11T20:44:02
+
+Strike Latitude (deg): 32.6785331
+Strike Longitude (deg): -105.4344587
+Strike Amplitude (kAmps, see note below): -96.1
+Stroke Count (number of strokes per flash): 1
+
+Note: At the present time USPLN data are only provided in stroke format,
+so the stroke count will always be 1.
+
+Notes about Decoding Strike Amplitude
+The amplitude field is utilized to indicate the amplitude of strokes and
+polarity of strokes for all Cloud-to- Ground Strokes.
+
+For other types of detections this field is utilized to provide
+information on the type of stroke detected.
+
+The amplitude number for Cloud-to-Ground strokes provides the amplitude
+of the stroke and the sign (+/-) provides the polarity of the stroke.
+
+An amplitude of 0 indicates USPLN Cloud Flash Detections rather than
+Cloud-to-Ground detections.
+
+Cloud flash detections include cloud-to-cloud, cloud-to-air, and
+intra-cloud flashes.
+
+An amplitude of -999 or 999 indicates a valid cloud-to-ground stroke
+detection in which an amplitude was not able to be determined. Typically
+these are long-range detections.
+*/
 
   private static final String MAGIC = "USPLN-LIGHTNING";
 
@@ -345,20 +408,6 @@ public class UspLightning3  extends AbstractIOServiceProvider {
 
   public void close() throws IOException {
     raf.close();
-  }
-
-  public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException, InvalidRangeException {
-    NetcdfFile.registerIOProvider(UspLightning3.class);
-    NetcdfFile ncfile = NetcdfFile.open( TestAll.upcShareTestDataDir + "lightning/uspln/uspln_20061023.18");
-    System.out.println("ncfile = \n" + ncfile);
-
-    /* Variable v = ncfile.findVariable("lat");
-    Array data = v.read();
-    assert data.getSize() == v.getSize() : data.getSize();
-    data = v.read("0:99");
-    assert data.getSize() == 100 : data.getSize();
-    data = v.read("0:99:3");
-    assert data.getSize() == 34 : data.getSize(); */
   }
 
 }

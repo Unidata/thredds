@@ -2,21 +2,25 @@
 <!-- saved from url=(0052)http://www.vets.ucar.edu/luca/netcdf/netcdf.xsd.html -->
 <HTML><HEAD>
 <META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 6.00.2723.2500" name=GENERATOR><title>NcML-2.2</title></HEAD>
+<META content="MSHTML 6.00.2723.2500" name=GENERATOR><title>NcML Schema</title></HEAD>
 <BODY bgColor=#ffffff>
 <h1 align=left><B>Annotated Schema for NcML</B></h1>
 <p align=left><em>for version 4.0 of the Netcdf-Java/CDM library</em></p>
 <hr>
-<p align=left>An <em><strong>NcML document</strong></em> is an XML document (aka an <em>instance</em> document) whose contents are described and constrained by <em><strong>NcML Schema-2.2</strong></em>. NcML Schema-2.2 combines the earlier <em>NcML core schema</em> which is an XML description of the netCDF-Java 2.2 / NetCDF-4 data model, with the earlier <em>NcML dataset schema</em>, which allows you to define, redefine, aggregate, and subset existing netCDF 
+<p align=left>An <em><strong>NcML document</strong></em> is an XML document (aka an <em>instance</em> document) whose contents are described and constrained by <em><strong>NcML Schema-2.2</strong></em>. NcML Schema-2.2 combines the earlier <em>NcML core schema</em> which is an XML description of the netCDF-Java / CDM data model, with the earlier <em>NcML dataset schema</em>, which allows you to define, redefine, aggregate, and subset existing netCDF 
 files.</p>
 <p align=left>An NcML document  represents a generic netCDF dataset, i.e. a container for data conforming to the netCDF data model. For instance, it might represent an existing netCDF file, a netCDF file not yet written, a GRIB file read through the netCDF-Java library, a subset of a netCDF file, an aggregation of netCDF files, or a self-contained dataset (i.e. all the data is included in the NcML document and there is no seperate netCDF file holding the data). An NcML document therefore should not necessarily be thought of as a physical netCDF file, but rather the "public interface"  to a set of data conforming to the netCDF data model. </p>
-<p align=left><em><strong>NcML Schema-2.2</strong></em> is written in the <a href="http://www.w3.org/XML/Schema">W3C XML Schema</a> language, and essentially represents the netCDF-Java 2.2 / NetCDF-4 data model, which schematically looks like this in <a href="http://bdn.borland.com/article/0,1410,31863,00.html#classdiagrams">UML</a>: </p>
+<p align=left><em><strong>NcML Schema-2.2</strong></em> is written in the <a href="http://www.w3.org/XML/Schema">W3C XML Schema</a> language, and essentially represents the netCDF-Java / CDM data model, which schematically looks like this in <a href="http://bdn.borland.com/article/0,1410,31863,00.html#classdiagrams">UML</a>: </p>
 <p align=left>&nbsp;</p>
-<p align=left><img src="Netcdf4.png" width="443" height="508"></p>
+<p align=left><img src="CDM-UML.png" width="627" height="598"></p>
 <blockquote>
   <blockquote>
     <blockquote>
-      <p align="left"><strong>netCDF-Java 2.2 / NetCDF-4 UML</strong> </p>
+      <blockquote>
+        <blockquote>
+          <p align="left"><strong> CDM UML</strong> </p>
+        </blockquote>
+      </blockquote>
       <p align="left">&nbsp;</p>
     </blockquote>
   </blockquote>
@@ -277,13 +281,13 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
   &lt;xsd:element name=&quot;promoteGlobalAttribute&quot;&gt;
    &lt;xsd:complexType&gt;
 <strong>(1)</strong>  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot; use=&quot;required&quot;/&gt;
-<strong>(2)</strong>  &lt;xsd:attribute name=&quot;orgName&quot; type=&quot;xsd:string&quot;/&gt;
+<strong>(2)</strong>  &lt;xsd:attribute name=&quot;gattName&quot; type=&quot;xsd:string&quot;/&gt;
    &lt;/xsd:complexType&gt;
   &lt;/xsd:element&gt;<strong>
 </strong></pre>
 <ol>
-  <li>The name of the global attribute.</li>
-  <li>Specify the name of the variable. If not given, use the attribute name.</li>
+  <li>The name of the variable to be created.</li>
+  <li>If the global attribute name is different from the variable name, specify it here. </li>
 </ol>
 <p>This can be used on <strong>joinNew, joinExisting, </strong>and<strong> forecastModelRunCollection</strong>, aka the <em><strong>outer dimension aggregations</strong></em>. A new variable will be added using  the aggregation dimension and its type will be taken from the attribute type. If theres more than one slice in the file (eg in a <strong>joinExisting), </strong>the attribute value will be repeated for each coordinate in that file.<strong><br>
     </strong></p>
@@ -522,7 +526,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
 <hr WIDTH="100%">
 <p>&nbsp;</p>
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 27, 2008 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 20, 2008 
 </address>
 <p>&nbsp;</p>
 </BODY>

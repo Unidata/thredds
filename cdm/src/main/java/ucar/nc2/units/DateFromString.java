@@ -183,8 +183,14 @@ public class DateFromString
 
       // We have to cut off the dateString, so that it doesnt grab extra characters.
       // ie  new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)
-      String s = dateString.substring( 0, startIndex + dateFormatString.length());
-      return dateFormat.parse( s, new ParsePosition( startIndex ) );
+      String s = dateString.substring( startIndex, startIndex + dateFormatString.length());
+      Date result = dateFormat.parse( s );
+      if (result == null)
+        throw new RuntimeException("SimpleDateFormat bad ="+dateFormatString+" working on ="+s);
+      return result;
+
+    } catch (ParseException e) {
+      throw new RuntimeException("SimpleDateFormat bad = "+dateFormatString+" "+e.getMessage());
     } catch (IllegalArgumentException e) {
       throw new RuntimeException("SimpleDateFormat bad = "+dateFormatString+" "+e.getMessage());
     }

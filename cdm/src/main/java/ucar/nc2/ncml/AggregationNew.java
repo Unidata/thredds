@@ -23,6 +23,7 @@ package ucar.nc2.ncml;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.DatasetConstructor;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
@@ -69,9 +70,21 @@ public class AggregationNew extends AggregationOuterDimension {
     joinAggCoord.setSPobject( cv);
     cacheList.add(cv);
 
+    List<String> aggVarNames = getAggVariableNames();
+
+    // if no names specified, add all "non-coordinate" variables.
+    // Note that we havent identified coordinate systems with CoordSysBuilder, so that info ius not available.
+    // So this isnt that general of a solution. But probably better than nothing
+    if (aggVarNames.size() == 0) {
+      for (Variable v : typical.getVariables()) {
+        if (!v.isCoordinateVariable())
+          aggVarNames.add(v.getShortName());
+      }
+    }
+
     // now we can create all the aggNew variables
     // use only named variables
-    for (String varname : getAggVariableNames()) {
+    for (String varname : aggVarNames) {
       Variable aggVar = ncDataset.findVariable(varname);
       if (aggVar == null) {
         logger.error(ncDataset.getLocation() + " aggNewDimension cant find variable " + varname);

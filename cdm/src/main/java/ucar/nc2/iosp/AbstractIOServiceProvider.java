@@ -22,6 +22,7 @@ package ucar.nc2.iosp;
 
 import ucar.ma2.*;
 import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.Structure;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -89,6 +90,10 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
     return IospHelper.readSection(cer);  //  IOSPs can optimize by overriding
+  }
+
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+    return null;
   }
 
   public Object sendIospMessage(Object message) {

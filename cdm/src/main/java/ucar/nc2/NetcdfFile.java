@@ -171,6 +171,16 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.warn("Cant load class: " + e);
     }
+    try {
+      registerIOProvider("ucar.nc2.iosp.misc.UspLightning3");
+    } catch (Throwable e) {
+      if (loadWarnings) log.warn("Cant load class: " + e);
+    }
+    try {
+      registerIOProvider("ucar.nc2.iosp.misc.NLDN");
+    } catch (Throwable e) {
+      if (loadWarnings) log.warn("Cant load class: " + e);
+    }
 
     userLoads = true;
   }
@@ -1573,6 +1583,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
     return spi.readToByteChannel(cer.v, cer.section, wbc);
   }
+
+
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+    return spi.getStructureIterator(s, bufferSize);
+  }
+  ///////////////////////////////////////////////////////////////////////////////////
 
   // public I/O
 

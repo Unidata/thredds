@@ -23,6 +23,8 @@ package ucar.nc2.ft.point.standard.plug;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.ft.StationImpl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.Structure;
@@ -33,20 +35,21 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * Start of a CF parser. For now, its specific to TDS workshop file from imedea.
+ * Start of a CF "point obs" parser
  *
  * @author caron
  * @since Nov 3, 2008
  */
 public class CFpoint implements TableConfigurer {
-  public enum CFFeatureType { point, station }
+  public enum CFFeatureType { point, station, trajectory }
 
   public boolean isMine(NetcdfDataset ds) {
     // find datatype
     String datatype = ds.findAttValueIgnoreCase(null, "CF:featureType", null);
     if (datatype == null)
       return false;
-    if (!datatype.equalsIgnoreCase(CFFeatureType.point.toString()))
+
+    if (CFFeatureType.valueOf(datatype) == null)
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
@@ -62,6 +65,26 @@ public class CFpoint implements TableConfigurer {
   }
 
   public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
+    String ftypeS = ds.findAttValueIgnoreCase(null, "CF:featureType", null);
+    CFFeatureType ftype = CFFeatureType.valueOf(ftypeS);
+    switch (ftype) {
+      case point: return getPointConfig(ds, errlog);
+      case station: return getStationConfig(ds, errlog);
+      case trajectory: return getTrajectoryConfig(ds, errlog);
+      default:
+        throw new IllegalStateException("invalid ftype= "+ftype);
+    }
+  }
+
+  private TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
+    TableConfig nt = new TableConfig(NestedTable.TableType.Structure, "obs");
+    nt.featureType = FeatureType.POINT;
+    CoordSysEvaluator(nt, ds, errlog);
+    return nt;
+  }
+
+  // ??
+  private TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(NestedTable.TableType.Singleton, "station");
     nt.featureType = FeatureType.STATION;
 
@@ -79,5 +102,43 @@ public class CFpoint implements TableConfigurer {
     obs.join = new TableConfig.JoinConfig(Join.Type.Singleton);
 
     return nt;
+  }
+
+  private TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
+    TableConfig nt = new TableConfig(NestedTable.TableType.MultiDim, "trajectory");
+    nt.featureType = FeatureType.TRAJECTORY;
+
+    CoordSysEvaluator(nt, ds, errlog);
+
+    TableConfig obs = new TableConfig(NestedTable.TableType.MultiDim, "obs");
+    obs.dim = ds.findDimension("sample");
+    obs.outer = ds.findDimension("traj");
+    nt.addChild(obs);
+
+    obs.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
+
+    return nt;
+  }
+
+  private void CoordSysEvaluator(TableConfig nt, NetcdfDataset ds, Formatter errlog) {
+
+    CoordinateSystem use = null;
+    for (CoordinateSystem cs : ds.getCoordinateSystems()) {
+      if (use == null) use = cs;
+      else if (cs.getCoordinateAxes().size() > use.getCoordinateAxes().size())
+        use = cs;
+    }
+
+    for (CoordinateAxis axis : use.getCoordinateAxes()) {
+      if (axis.getAxisType() == AxisType.Lat)
+        nt.lat = axis.getShortName();
+      else if (axis.getAxisType() == AxisType.Lon)
+        nt.lon = axis.getShortName();
+      else if (axis.getAxisType() == AxisType.Time)
+        nt.time = axis.getShortName();
+      else if (axis.getAxisType() == AxisType.Height)
+        nt.elev = axis.getShortName();
+    }
+
   }
 }

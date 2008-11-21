@@ -71,7 +71,7 @@ public class TestJni extends TestCase {
 
   public void testCompareAll() throws IOException {
     int count = 0;
-    count += scanAllDir("D:/netcdf4/", null, new CompareData());
+    count += scanAllDir("D:/netcdf4/", new NetcdfFileFilter(), new CompareData());
     /* count += scanAllDir(testDir+"compound", null, new CompareData());
     count += scanAllDir(testDir+"nc4/", null, new CompareData());
     count += scanAllDir(testDir+"nc4-classic/", null, new CompareData());
@@ -86,7 +86,7 @@ public class TestJni extends TestCase {
 
   class NetcdfFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
-      return pathname.getName().endsWith(".nc");
+      return pathname.getName().endsWith(".nc") || pathname.getName().endsWith(".nc4");
     }
   }
 

@@ -31,11 +31,11 @@ import java.io.IOException;
  */
 public class TestMotherlode {
 
-  private static String server = "http://motherlode.ucar.edu:8080/thredds";
+  private static String server = "http://newmotherlode.ucar.edu:8080/thredds";
 
   static void ping(String url) throws IOException {
     String contents = IO.readURLcontentsWithException(server+url);
-    System.out.println("Conyents of "+url);
+    System.out.println("Contents of "+url);
     System.out.println(contents);
     System.out.println("==================");
   }

@@ -223,7 +223,7 @@
  <xsd:element name="promoteGlobalAttribute">
    <xsd:complexType>
      <xsd:attribute name="name" type="xsd:token" use="required"/>
-     <xsd:attribute name="orgName" type="xsd:string"/>
+     <xsd:attribute name="gattName" type="xsd:string"/>
    </xsd:complexType>
  </xsd:element>
 

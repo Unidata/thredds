@@ -364,7 +364,7 @@ public class Structure extends Variable {
    * @see #getStructureIterator(int bufferSize)
    */
   public StructureDataIterator getStructureIterator()  throws java.io.IOException {
-    return new Structure.Iterator(defaultBufferSize);
+    return getStructureIterator(defaultBufferSize);
   }
 
   /**
@@ -386,7 +386,8 @@ public class Structure extends Variable {
    * @throws java.io.IOException on read error
    */
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    return new Structure.Iterator(bufferSize);
+    StructureDataIterator iter = ncfile.getStructureIterator(this, bufferSize);
+    return (iter != null) ? iter : new Structure.Iterator(bufferSize);
   }
 
   /**

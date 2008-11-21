@@ -54,7 +54,7 @@
 </strong></pre>
 <h3>_CoordinateAxisType</h3>
 <p>This attribute is used on a Coordinate Axis variable to specify that it is a space or time coordinate, such as lat, lon, altitude or time. Currently the valid values are <strong><em>Lat</em></strong>, <em><strong>Lon</strong></em>, <em><strong>Height</strong></em>, <em><strong>Pressure</strong></em>, <em><strong>Time</strong></em>, <em><strong>GeoX</strong></em>, <em><strong>GeoY</strong></em>, <em><strong>GeoZ, RadialElevation, RadialAzimuth, </strong></em>or<em><strong> RadialDistance</strong></em>. This is the preferred way to make a Variable into a CoordinateAxis (the other way is to list the variable in a <strong>_CoordinateAxes</strong> attribute). </p>
-<p>The attribute value must be one of the valid Axis types (see <em><strong>ucar.nc2.dataset.AxisType</strong></em>):</p>
+<p>The attribute value must be one of the valid <a href="#AxisTypes">Axis Types</a>, for example:</p>
 <pre><strong>   _CoordinateAxisType = &quot;Lat&quot;;
 </strong></pre>
 <h3>_CoordinateAxisTypes</h3>
@@ -166,9 +166,84 @@
   <li>_Coordinate attributes will take precedence over Conventions in our own decoding. Other software may implement differently. </li>
   <li>When Coordinate Systems have been added, to prevent adding again, NcML writing adds the global attribute <strong>:Conventions = &quot;_Coordinates&quot;</strong>. ?? </li>
 </ol>
+<hr>
+<h2>Coordinate Axis Types<a name="AxisTypes"></a></h2>
+<p> (see <em><strong>ucar.nc2.constants.AxisType</strong></em>)</p>
+<table width="448" border="1">
+  <tr>
+    <th width="112" scope="col">AxisType</th>
+    <th width="232" scope="col">description</th>
+    <th width="82" scope="col">order</th>
+  </tr>
+  <tr>
+    <td>RunTime</td>
+    <td>model run time</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td>Ensemble</td>
+    <td>model ensemble</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Time</td>
+    <td>valid time </td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td>GeoZ</td>
+    <td>vertical coordinate</td>
+    <td>3</td>
+  </tr>
+  <tr>
+    <td>Height</td>
+    <td>vertical height, convertible to meters</td>
+    <td>3</td>
+  </tr>
+  <tr>
+    <td>Pressure</td>
+    <td>vertical pressure, converrtible to hPa</td>
+    <td>3</td>
+  </tr>
+  <tr>
+    <td>GeoY</td>
+    <td>projection y coordinate</td>
+    <td>4</td>
+  </tr>
+  <tr>
+    <td>Lat</td>
+    <td>geodesic latitude</td>
+    <td>4</td>
+  </tr>
+  <tr>
+    <td>GeoX</td>
+    <td>projection x coordinate</td>
+    <td>5</td>
+  </tr>
+  <tr>
+    <td>Lon</td>
+    <td>geodesic longitude</td>
+    <td>5</td>
+  </tr>
+  <tr>
+    <td>RadialAzimuth</td>
+    <td>polar azimuth</td>
+    <td>6</td>
+  </tr>
+  <tr>
+    <td>RadialDistance</td>
+    <td>polar distance</td>
+    <td>7</td>
+  </tr>
+  <tr>
+    <td>RadialElevation</td>
+    <td>polar elevation</td>
+    <td>8</td>
+  </tr>
+</table>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Apr 11, 2007 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 20, 2008
 </address>
 <p>&nbsp;</p>
 </body>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
-    iosp="ucar.nc2.iosp.misc.UspLightning1" iospParam="param"
+    iosp="ucar.nc2.iosp.misc.UspLightning3" iospParam="param"
     location="file:src/test/data/lightning/uspln_20061023.18"
  />

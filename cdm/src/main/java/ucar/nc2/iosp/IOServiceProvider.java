@@ -21,7 +21,9 @@ package ucar.nc2.iosp;
 
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureDataIterator;
 import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.Structure;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -108,6 +110,8 @@ public interface IOServiceProvider {
    * @throws InvalidRangeException
    */
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
+
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
 
   /*
    * LOOK Should we allow reading on member variables ??

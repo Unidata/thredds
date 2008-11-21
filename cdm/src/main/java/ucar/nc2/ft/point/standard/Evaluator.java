@@ -27,6 +27,7 @@ import ucar.nc2.Dimension;
 import java.util.Formatter;
 
 /**
+ * Helper routine for Nested Tables
  * @author caron
  * @since Apr 23, 2008
  */

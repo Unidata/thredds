@@ -129,7 +129,7 @@ public class StructureTable extends JPanel {
   }
 
   public void setStructure(Structure s) throws IOException {
-    if (s instanceof Sequence)
+    if (s.getDataType() == DataType.SEQUENCE)
       dataModel = new SequenceModel(s, true);
     else
       dataModel = new StructureModel(s);

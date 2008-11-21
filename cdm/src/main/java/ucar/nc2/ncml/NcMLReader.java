@@ -1141,8 +1141,17 @@ public class NcMLReader {
       list = aggElem.getChildren("promoteGlobalAttribute", ncNS);
       for (Element gattElem : list) {
         String varName = gattElem.getAttributeValue("name");
-        String orgName = gattElem.getAttributeValue("orgName");
-        aggo.addVariableFromGlobalAttribute(varName, orgName);
+        String gattName = gattElem.getAttributeValue("gattName");
+        aggo.addVariableFromGlobalAttribute(varName, gattName);
+      }
+
+      // look for attributes to promote to variables
+      list = aggElem.getChildren("promoteGlobalAttributeCompose", ncNS);
+      for (Element gattElem : list) {
+        String varName = gattElem.getAttributeValue("name");
+        String format = gattElem.getAttributeValue("format");
+        String gattNames = gattElem.getAttributeValue("gattNames");
+        aggo.addVariableFromGlobalAttributeCompose(varName, format, gattNames);
       }
 
       // look for variable to cache

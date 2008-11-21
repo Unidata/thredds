@@ -104,6 +104,16 @@ public class Attribute {
   }
 
   /**
+   * Get the value as an Object.
+   * @param index which index
+   * @return ith value as an Object.
+   */
+  public Object getValue(int index) {
+    if (isString()) return getStringValue(index);
+    return getNumericValue(index);
+  }
+
+  /**
    * Retrieve String value; only call if isString() is true.
    *
    * @return String if this is a String valued attribute, else null.

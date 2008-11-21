@@ -44,20 +44,26 @@ public class TableConfig {
 
   public FeatureType featureType;
 
-  // structure table
+  // multidim: outer and inner dimensions
   public Dimension dim, outer;
+  
   public String limit;
 
-  // able Type ArrayStructure
+  // TableType ArrayStructure
   public ArrayStructure as;
 
-  // coordinate variables
+  // coordinate variable names
   public String lat, lon, elev, time, timeNominal;
 
-  // station
+  // station info
   public String stnId, stnDesc, stnNpts, stnWmoId;
   public int nstations;
 
+  /**
+   * Constructor
+   * @param type  type of join
+   * @param name  name of parent table
+   */
   public TableConfig(NestedTable.TableType type, String name) {
     this.type = type;
     this.name = name;

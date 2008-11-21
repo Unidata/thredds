@@ -502,13 +502,16 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
     @Override
     public StructureDataIterator getStructureDataIterator() throws java.io.IOException {
-      return new StructureDataConverter(orgSeq.getStructureDataIterator());
+      return new StructureDataConverter(orgStruct, orgSeq.getStructureDataIterator());
     }
+  }
 
-    private class StructureDataConverter implements StructureDataIterator {
+   private class StructureDataConverter implements StructureDataIterator {
       StructureDataIterator orgIter;
+      StructureDS orgStruct;
 
-      StructureDataConverter(StructureDataIterator orgIter) {
+      StructureDataConverter(StructureDS orgStruct, StructureDataIterator orgIter) {
+        this.orgStruct = orgStruct;
         this.orgIter = orgIter;
       }
 
@@ -518,7 +521,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
       public StructureData next() throws IOException {
         StructureData sdata = orgIter.next();
-        return orgStruct.convert(sdata);
+        return orgStruct.convert( sdata);
       }
 
       public void setBufferSize(int bytes) {
@@ -529,7 +532,11 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         orgIter.reset();
         return this;
       }
-    }
+   }
+
+  public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
+    StructureDataIterator iter = orgVar.getStructureIterator( bufferSize);
+    return new StructureDataConverter(this, iter);
   }
 
   ///////////////////////////////////////////////////////////

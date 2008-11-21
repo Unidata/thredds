@@ -63,7 +63,7 @@ public class CF1Convention extends CSMConvention {
           "ocean_double_sigma_coordinate"};
 
   public CF1Convention() {
-    this.conventionName = "CF-1.0";
+    this.conventionName = "CF-1.X";
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {

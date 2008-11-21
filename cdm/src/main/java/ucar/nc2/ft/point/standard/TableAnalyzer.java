@@ -50,6 +50,9 @@ public class TableAnalyzer {
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class);
     registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeature.class);
     registerAnalyzer("CF-1.0", CFpoint.class);
+    registerAnalyzer("CF-1.1", CFpoint.class);
+    registerAnalyzer("CF-1.2", CFpoint.class);
+    registerAnalyzer("CF-1.3", CFpoint.class);
 
     // further calls to registerConvention are by the user
     userMode = true;

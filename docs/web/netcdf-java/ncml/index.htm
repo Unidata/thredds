@@ -6,14 +6,14 @@
 <h1 align="left"><b>The NetCDF Markup Language (NcML)</b> </h1>
 <hr>
 <h2 align="left">Overview</h2>
-<p align="left">NcML is an XML representation of netCDF metadata, (roughly) the 
+<p align="left">NcML is an XML representation of netCDF metadata, (approximately) the 
   header information one gets from a netCDF file with the "ncdump -h" 
   command. NcML is similar to the netCDF <a href="http://www.unidata.ucar.edu/packages/netcdf/guidec/guidec-15.html#HEADING15-0">CDL</a> 
   (network Common data form Description Language), except, of course, it uses 
   XML syntax.</p>
 <p align="left">NcML development is happening on two fronts: </p>
 <ol>
-  <li>In <a href="http://www.unidata.ucar.edu/software/netcdf-java/index.html">NetCDF-Java library</a> (version 2.2 and above), the <b><i>NcML Core Schema</i></b> and <i><b>NcML Dataset</b></i> have been combined into a single <em><strong><a href="#NcML22">NcML Schema</a></strong></em>, and some of the <i><b>NcML Dataset</b></i> syntax and functionality has been modified. </li>
+  <li><a href="#NcML22">NcML-2.2</a> as implemented by the <a href="http://www.unidata.ucar.edu/software/netcdf-java/index.html">NetCDF-Java library.</a></li>
   <li><a name="ncML-Gml" id="ncML-Gml"></a><a href="http://zeus.pin.unifi.it/joomla/index.php?option=com_content&task=view&id=50&Itemid=78%20">ncML-Gml</a> is an extension of ncML core schema, based on GML grammar. It uses both NcML and <a href="http://en.wikipedia.org/wiki/Geography_Markup_Language">GML</a> to create a bridge to GIS Systems. This work is led by <a href="http://www.unidata.ucar.edu/projects/THREDDS/Nativi/home.htm">Stefano Nativi </a>at the    <a href="http://www.unifi.it/">Universit&agrave; degli Studi di Firenze</a><strong>. </strong>
     <ul>
       <li><a href="http://zeus.pin.unifi.it/joomla/index.php?option=com_content&task=view&id=50&Itemid=78%20">Home page for ncML-Gml</a> </li>
@@ -55,8 +55,9 @@
 <h2 align="left"><b>Acknowledgments and History</b></h2>
 <p align="left"> Earlier work in defining XML representations for netCDF data included Bear Giles DTD and XML tools in March 2000, a proposed DTD by Stefano Nativi and Lorenzo Bigagli at the University of Florence in May 2000, and a version developed by John Caron in February 2001.</p>
 <p align="left">The original NcML working group consisted of John Caron (Unidata/UCAR), Luca Cinquini (SCD/NCAR), Ethan Davis (Unidata/UCAR), Bob Drach (PCMDI/LLNL), Stefano Nativi (University of Florence), and Russ Rew (Unidata/UCAR).</p>
-<p align="left">In the first implementation of <a href="v2.1/NcML2.1.html">NcML, version 2.1</a>, there were three parts to NcML with separate schema documents: <i>1) </i><b><i>NcML Core Schema</i></b> represented the existing netCDF-3 data model; <i>2) </i><b><i>NcML Coordinate System</i></b> extended NcML Core Schema and extended the netCDF data model to add explicit support for general and georeferencing coordinate systems; 3)<i><b> NcML Dataset</b></i> extended NcML Core Schema to use NcML to define a netCDF file, similar to the <b>ncgen</b> command line tool, as well as to redefine, aggregate, and subset existing netCDF files.</p>
+<p align="left">In the first implementation of NcML (version 2.1), there were three parts to NcML with separate schema documents: <i>1) </i><b><i>NcML Core Schema</i></b> represented the existing netCDF-3 data model; <i>2) </i><b><i>NcML Coordinate System</i></b> extended NcML Core Schema and extended the netCDF data model to add explicit support for general and georeferencing coordinate systems; 3)<i><b> NcML Dataset</b></i> extended NcML Core Schema to use NcML to define a netCDF file, similar to the <b>ncgen</b> command line tool, as well as to redefine, aggregate, and subset existing netCDF files.</p>
 <p align="left"><b><i>NcML Coordinate System</i></b> is now superceded by <a href="#ncML-Gml">NcML-GML.</a></p>
+<p align="left"><b><i>NcML Core Schema</i></b> and <i><b>NcML Dataset</b></i> have been combined into a single <em><strong><a href="#NcML22">NcML Schema</a></strong></em>, and some of the <i><b>NcML Dataset</b></i> syntax and functionality has been modified. </p>
 <hr align="left">
 <p align="left">Please send comments and/or questions to <a href="mailto:support-netcdf-java@support.unidata.ucar.edu">support-netcdf-java@unidata.ucar.edu</a></p>
 <address>

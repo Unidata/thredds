@@ -84,10 +84,21 @@ public abstract class AggregationOuterDimension extends Aggregation {
    * Promote a global attribute to a variable
    *
    * @param varName name of agg variable
-   * @param orgName name of global attribute, if different from the variable
+   * @param gattName name of global attribute, if different from the variable
    */
-  void addVariableFromGlobalAttribute(String varName, String orgName) {
-    cacheList.add(new PromoteVar(varName, orgName));
+  void addVariableFromGlobalAttribute(String varName, String gattName) {
+    cacheList.add(new PromoteVar(varName, gattName));
+  }
+
+  /**
+   * Promote a global attribute to a variable
+   *
+   * @param varName name of agg variable
+   * @param format java.util.Format string
+   * @param gattNames space delimited list of global attribute names
+   */
+  void addVariableFromGlobalAttributeCompose(String varName, String format, String gattNames) {
+    cacheList.add(new PromoteVarCompose(varName, format, gattNames));
   }
 
   /**
@@ -728,6 +739,9 @@ public abstract class AggregationOuterDimension extends Aggregation {
     CacheVar(String varName, DataType dtype) {
       this.varName = varName;
       this.dtype = dtype;
+
+      if (varName == null)
+        throw new IllegalArgumentException("Missing variable name on cache var");
     }
 
     // clear out old stuff from the Hash, so it doesnt grow forever
@@ -930,11 +944,15 @@ public abstract class AggregationOuterDimension extends Aggregation {
   /////////////////////////////////////////////
   // global attributes promoted to variables
   class PromoteVar extends CacheVar {
-    String orgName;
+    String gattName;
 
-    PromoteVar(String varName, String orgName) {
+    protected PromoteVar(String varName, DataType dtype) {
+      super(varName, dtype);
+    }
+    
+    PromoteVar(String varName, String gattName) {
       super(varName, null);
-      this.orgName = orgName != null ? orgName : varName;
+      this.gattName = gattName != null ? gattName : varName;
     }
 
     protected Array read(DatasetOuterDimension dset) throws IOException {
@@ -944,7 +962,9 @@ public abstract class AggregationOuterDimension extends Aggregation {
       NetcdfFile ncfile = null;
       try {
         ncfile = dset.acquireFile(null);
-        Attribute att = ncfile.findGlobalAttribute(orgName);
+        Attribute att = ncfile.findGlobalAttribute(gattName);
+        if (att == null)
+          throw new IllegalArgumentException("Unknown attribute name= "+gattName);
         data = att.getValues();
         if (dtype == null)
           dtype = DataType.getType(data.getElementType());
@@ -952,11 +972,12 @@ public abstract class AggregationOuterDimension extends Aggregation {
         if (dset.ncoord == 1)
           setData(dset, data);
         else {
-          // duplocate the value to each of the coordinates
+          // duplicate the value to each of the coordinates
           Array allData = Array.factory(dtype, new int[]{dset.ncoord});
           for (int i = 0; i < dset.ncoord; i++)
             Array.arraycopy(data, 0, allData, i, 1); // LOOK generalize to vectors ??
           setData(dset, allData);
+          data = allData;
         }
         return data;
 
@@ -965,6 +986,73 @@ public abstract class AggregationOuterDimension extends Aggregation {
       }
     }
 
+  }
+
+  /////////////////////////////////////////////
+  // global attributes promoted to variables
+  class PromoteVarCompose extends PromoteVar {
+    String varName;
+    String format;
+    String[] gattNames;
+
+    /**
+     * @param varName   name of agg variable
+     * @param format    java.util.Format string
+     * @param gattNames space delimited list of global attribute names
+     */
+    PromoteVarCompose(String varName, String format, String gattNames) {
+      super(varName, DataType.STRING);
+      this.format = format;
+      this.gattNames = gattNames.split(" ");
+
+      if (format == null)
+        throw new IllegalArgumentException("Missing format string (java.util.Formatter)");
+    }
+
+    protected Array read(DatasetOuterDimension dset) throws IOException {
+      Array data = getData(dset);
+      if (data != null) return data;
+
+      List<Object> vals = new ArrayList<Object>();
+      NetcdfFile ncfile = null;
+      try {
+        ncfile = dset.acquireFile(null);
+        for (String gattName : gattNames) {
+          Attribute att = ncfile.findGlobalAttribute(gattName);
+          if (att == null)
+            throw new IllegalArgumentException("Unknown attribute name= "+gattName);
+          vals.add(att.getValue(0));
+        }
+
+        Formatter f = new Formatter();
+        f.format(format, vals.toArray());
+        String result = f.toString();
+
+        Array allData = Array.factory(dtype, new int[]{dset.ncoord});
+        for (int i=0; i<dset.ncoord; i++)
+         allData.setObject(i, result);
+        setData(dset, allData);
+        return allData;
+
+      } finally {
+        ncfile.close();
+      }
+    }
+
+  }
+
+  public static void main(String args[]) throws IOException {
+    String format = "%04d-%02d-%02dT%02d:%02d:%02.0f";
+    Formatter f = new Formatter();
+    Object[] vals = new Object[6];
+    vals[0] = new Integer(2002);
+    vals[1] = new Integer(10);
+    vals[2] = new Integer(20);
+    vals[3] = new Integer(23);
+    vals[4] = new Integer(0);
+    vals[5] = new Float(2.1);
+    f.format(format,vals);
+    System.out.println(f);
   }
 
 

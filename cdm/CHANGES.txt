@@ -48,6 +48,8 @@ This code is ALPHA
 
  Release Details:
   27:
+    Start implementing CF point data spec in FeatureType (ucar.nc2.ft) framework
+    Point data: RecordHelper using wrong StructureMembers - always need to get from curent StructureData/Array object!
     Range, Section: use Range.VLEN for size < 0.
     H5iosp: structure member reading had wrong byteOrder
     VariableDS.lookupEnum must defer to orgVar
