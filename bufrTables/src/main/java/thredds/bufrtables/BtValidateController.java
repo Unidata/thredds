@@ -100,15 +100,15 @@ public class BtValidateController extends AbstractCommandController {
           // ok if bit counting fails
         }
 
-        int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
+        int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
 
-        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number of bytes
+        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number of bytes
         if (ok)
           bufrMessage.setAttribute("size", "ok");
         else {
           bufrMessage.setAttribute("size", "fail");
           bufrMessage.addContent(
-              new Element("ByteCount").setText("countBytes " + m.getCountedDataBytes() + " != " + m.dataSection.dataLength + " dataSize"));
+              new Element("ByteCount").setText("countBytes " + m.getCountedDataBytes() + " != " + m.dataSection.getDataLength() + " dataSize"));
         }
 
         bufrMessage.addContent(new Element("BitCount").setText("countBits " + nbitsCounted + " != " + nbitsGiven + " dataSizeBits"));

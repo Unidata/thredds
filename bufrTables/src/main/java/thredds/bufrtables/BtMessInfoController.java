@@ -152,8 +152,8 @@ public class BtMessInfoController extends AbstractController {
 
       try {
         int nbitsCounted = m.calcTotalBits(f);
-        int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
-        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number
+        int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
+        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number
 
         if (!ok) f.format("*** BAD BIT COUNT %n");
         DataDescriptor root = m.getRootDataDescriptor();
@@ -161,7 +161,7 @@ public class BtMessInfoController extends AbstractController {
             m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
             nbitsCounted, nbitsGiven);
         f.format(" countBits= %d givenBits=%d %n", nbitsCounted, nbitsGiven);
-        f.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.dataLength);
+        f.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
         f.format("%n");
 
       } catch (Exception ex) {
@@ -193,8 +193,8 @@ public class BtMessInfoController extends AbstractController {
 
       try {
         int nbitsCounted = m.calcTotalBits(f);
-        int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
-        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number
+        int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
+        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number
 
         if (!ok) f.format("*** BAD BIT COUNT %n");
         DataDescriptor root = m.getRootDataDescriptor();
@@ -202,7 +202,7 @@ public class BtMessInfoController extends AbstractController {
             m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
             nbitsCounted, nbitsGiven);
         f.format(" countBits= %d givenBits=%d %n", nbitsCounted, nbitsGiven);
-        f.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.dataLength);
+        f.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
         f.format("%n");
 
       } catch (Exception ex) {

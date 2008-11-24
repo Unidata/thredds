@@ -225,17 +225,17 @@ public class BtServlet extends HttpServlet {
 
       try {
         int nbitsCounted = m.calcTotalBits(f);
-        int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
-        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number
+        int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
+        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number
 
         if (!ok) f.format("*** BAD BIT COUNT %n");
-        long last = m.dataSection.dataPos + m.dataSection.dataLength;
+        long last = m.dataSection.getDataPos() + m.dataSection.getDataLength();
         DataDescriptor root = m.getRootDataDescriptor();
         f.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n",
             m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(),
             nbitsCounted, nbitsGiven);
         f.format(" countBits= %d givenBits=%d %n", nbitsCounted, nbitsGiven);
-        f.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.dataLength);
+        f.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
         f.format("%n");
 
       } catch (Exception ex) {
@@ -496,15 +496,15 @@ public class BtServlet extends HttpServlet {
         bufrMessage.setAttribute("dds", "ok");
 
       int nbitsCounted = m.getTotalBits();
-      int nbitsGiven = 8 * (m.dataSection.dataLength - 4);
+      int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
 
-      boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.dataLength) <= 1; // radiosondes dataLen not even number of bytes
+      boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not even number of bytes
       if (ok)
         bufrMessage.setAttribute("size", "ok");
       else {
         bufrMessage.setAttribute("size", "fail");
         bufrMessage.addContent(
-            new Element("ByteCount").setText("countBytes " + m.getCountedDataBytes() + " != " + m.dataSection.dataLength + " dataSize"));
+            new Element("ByteCount").setText("countBytes " + m.getCountedDataBytes() + " != " + m.dataSection.getDataLength() + " dataSize"));
       }
 
       bufrMessage.addContent(new Element("BitCount").setText("countBits " + nbitsCounted + " != " + nbitsGiven + " dataSizeBits"));
