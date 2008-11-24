@@ -548,14 +548,18 @@ public class GribHorizCoordSys {
     // splat, splon, spangle
 
     attributes.add(new Attribute("grid_mapping_name", "rotated_lat_lon"));
-    attributes.add( new Attribute("grid_south_pole_latitude", new Double(starty)));
-    attributes.add( new Attribute("grid_south_pole_longitude", new Double(startx)));
+    attributes.add( new Attribute("grid_south_pole_latitude", new Double(splat)));
+    attributes.add( new Attribute("grid_south_pole_longitude", new Double(splon)));
     attributes.add( new Attribute("grid_south_pole_angle", new Double(spangle)));
     // RotatedPole attr
 //    attributes.add(new Attribute("grid_mapping_name","rotated_latitude_longitude"));
 //    attributes.add(new Attribute("grid_north_pole_latitude", new Double(starty)));
 //    attributes.add(new Attribute("grid_north_pole_longitude", new Double(startx)));
     if ( true || GribServiceProvider.debugProj) {
+      LatLonPointImpl robb = new LatLonPointImpl(0.0,0.0);
+      ProjectionPointImpl rstart = (ProjectionPointImpl) proj.latLonToProj(robb);
+      System.out.println("   start proj coord 0,0  " + rstart);
+
       System.out.println("GribHorizCoordSys.makeRotatedLatLon start at latlon " + startLL);
       System.out.println("   start proj coord " + start);
       double Lo2 = gdsIndex.readDouble("Lo2");
