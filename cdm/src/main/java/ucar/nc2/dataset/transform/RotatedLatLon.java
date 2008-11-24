@@ -48,7 +48,7 @@ public class RotatedLatLon extends AbstractCoordTransBuilder {
 //      addParameter("grid_south_pole_angle", southPoleAngle);
     double lon = readAttributeDouble( ctv, "grid_south_pole_longitude");
     double lat = readAttributeDouble( ctv, "grid_south_pole_latitude");
-    double angle = readAttributeDouble( ctv, "grid_south_pole_latitude");
+    double angle = readAttributeDouble( ctv, "grid_south_pole_angle");
 
     ucar.unidata.geoloc.projection.RotatedLatLon proj = new ucar.unidata.geoloc.projection.RotatedLatLon( lat, lon, angle);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
