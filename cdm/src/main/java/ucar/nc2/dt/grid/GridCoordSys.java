@@ -28,6 +28,7 @@ import ucar.nc2.units.*;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
 import ucar.unidata.geoloc.projection.RotatedPole;
+import ucar.unidata.geoloc.projection.RotatedLatLon;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.ma2.*;
 
@@ -251,7 +252,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       horizYaxis = yAxis = cs.getYaxis();
 
       ProjectionImpl p = cs.getProjection();
-      if (!(p instanceof RotatedPole)) {
+      if (!(p instanceof RotatedPole) && !(p instanceof RotatedLatLon)) {
         // make a copy of the axes if they need to change
         horizXaxis = convertUnits(horizXaxis);
         horizYaxis = convertUnits(horizYaxis);
