@@ -92,7 +92,8 @@ public class IospHelper {
          raf.seek(chunk.getSrcPos());
          raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems());
        }
-       return (convertChar && dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
+      //return (convertChar && dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
+      if (convertChar && dataType == DataType.CHAR) return convertByteToChar(pa); else return pa; // javac ternary compile error
 
     } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = (short[]) arr;
