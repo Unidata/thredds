@@ -153,6 +153,8 @@ public class ServerMethods {
             Station stn;
             if( s.length() == 3 ) { // level3 stns
                 stn = stationMap.get( "K"+ s );
+                if( stn == null )
+                  stn = stationMap.get( "T"+ s );
             } else {
                 stn = stationMap.get( s );
             }
@@ -248,12 +250,12 @@ public class ServerMethods {
   }
 
   public HashMap<String, Station> getStationMap( List<Station> list )  {
-        HashMap<String, Station> stationMap = new HashMap<String, Station>();
-        for (Station station : list) {
-          stationMap.put(station.getValue(), station);
-        }
-      return stationMap;
+    HashMap<String, Station> stationMap = new HashMap<String, Station>();
+    for (Station station : list) {
+      stationMap.put(station.getValue(), station);
     }
+    return stationMap;
+  }
 
   public List<String> getStationNames( List<Station> stations ) {
     ArrayList<String> result = new ArrayList<String>();
