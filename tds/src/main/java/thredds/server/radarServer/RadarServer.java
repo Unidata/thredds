@@ -15,7 +15,6 @@ package thredds.server.radarServer;
 import thredds.servlet.*;
 import thredds.catalog.*;
 import ucar.nc2.units.DateRange;
-//import ucar.nc2.units.DateType;
 
 import java.io.*;
 import java.util.*;
@@ -33,26 +32,25 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.LatLonRect;
 
 public class RadarServer extends AbstractServlet {
+  public enum RadarType { nexrad, terminal };
+  static public InvCatalogImpl cat;
+  static public final String catName = "radarCollections.xml";
+  static public URI catURI;
+  static public List datasets;
+  static public HashMap<String,String> dataLocation = new HashMap();
+  static public RadarMethods rm;
+  private boolean allow = false;
+  private boolean debug = false;
 
-    static public InvCatalogImpl cat;
-    static public final String catName = "radarCollections.xml";
-    static public URI catURI;
-    static public List datasets;
-    static public HashMap<String,String> dataLocation = new HashMap();
-    static public RadarNexradServer rns;
-
-    private boolean allow = false;
-    private boolean debug = false;
-
-    protected long getLastModified(HttpServletRequest req) {
-        //contentPath = ServletUtil.getContentPath( this );
-        File file = new File( contentPath + getPath() +catName );
-        return file.lastModified();
-    }
-   // must end with "/"
-   protected String getPath() {
-     return "servers/";
-   }
+  protected long getLastModified(HttpServletRequest req) {
+      contentPath = ServletUtil.getContentPath( this );
+      File file = new File( contentPath + getPath() +catName );
+      return file.lastModified();
+  }
+  // must end with "/"
+  protected String getPath() {
+    return "servers/";
+  }
 
   protected void makeDebugActions() {
     DebugHandler debugHandler = DebugHandler.get("NetcdfSubsetServer");
@@ -71,443 +69,438 @@ public class RadarServer extends AbstractServlet {
   }
 
   public void init() throws ServletException  {
-      super.init();
-      //allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true);
-      //String radarLevel2Dir = ThreddsConfig.get("NetcdfSubsetService.radarLevel2DataDir", "/data/ldm/pub/native/radar/level2/");
-      //if (!allow) return;
-      //contentPath = ServletUtil.getContentPath( this );
-      rns = new RadarNexradServer( contentPath, log );
+    super.init();
+    //allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true);
+    //String radarLevel2Dir = ThreddsConfig.get("NetcdfSubsetService.radarLevel2DataDir", "/data/ldm/pub/native/radar/level2/");
+    //if (!allow) return;
+    contentPath = ServletUtil.getContentPath( this );
+    rm = new RadarMethods( contentPath, log );
 
-      // read in radarCollections.xml catalog, creating nexrad/level2 catalog too
-       InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false ); // no validation
-       cat = readCatalog( factory, getPath() +catName, contentPath + getPath() +catName );
-       if( cat == null ) {
-           System.out.println( "cat initialization failed");
-           return;
-       }
-       //URI tmpURI = cat.getBaseURI();
-       cat.setBaseURI( catURI );
-       // get path and location from cat
-       List parents = cat.getDatasets();
-       for( int i = 0; i < parents.size(); i++ ) {
-           InvDataset top = (InvDataset) parents.get( i );
-           datasets = top.getDatasets(); // dataset scans
+    // read in radarCollections.xml catalog
+    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false ); // no validation
+    cat = readCatalog( factory, getPath() +catName, contentPath + getPath() +catName );
+    if( cat == null ) {
+      System.out.println( "cat initialization failed");
+      return;
+    }
+    //URI tmpURI = cat.getBaseURI();
+    cat.setBaseURI( catURI );
+    // get path and location from cat
+    List parents = cat.getDatasets();
+    for( int i = 0; i < parents.size(); i++ ) {
+      InvDataset top = (InvDataset) parents.get( i );
+      datasets = top.getDatasets(); // dataset scans
 
-           for( int j = 0; j < datasets.size(); j++ ) {
-               InvDatasetScan ds = (InvDatasetScan) datasets.get( j );
-               if( ds.getPath() != null ) {
-                   dataLocation.put( ds.getPath(), ds.getScanLocation() );
-                   System.out.println( "path ="+ ds.getPath() +" location ="+ ds.getScanLocation());
-               }
-               ds.setXlinkHref( ds.getPath() + "/dataset.xml");
-           }
-       }
+      for( int j = 0; j < datasets.size(); j++ ) {
+          InvDatasetScan ds = (InvDatasetScan) datasets.get( j );
+          if( ds.getPath() != null ) {
+              dataLocation.put( ds.getPath(), ds.getScanLocation() );
+              System.out.println( "path ="+ ds.getPath() +" location ="+ ds.getScanLocation());
+          }
+          ds.setXlinkHref( ds.getPath() + "/dataset.xml");
+      }
+    }
+  } // end init
 
-   } // end init
-
-// get pathInfo and parmameters from servlet call
-public void doGet(HttpServletRequest req, HttpServletResponse res)
+  // get pathInfo and parmameters from servlet call
+  public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
     PrintWriter pw = null;
     try {
+      if( cat == null || rm.nexradList == null ) { // something major wrong
+        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1);
+        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                "radarServer Radar Station/Catalog initialization problem");
+        return;
+      }
+      // setup
+      String pathInfo = req.getPathInfo();
+      if (pathInfo == null) pathInfo = "";
+      RadarType radarType = RadarType.nexrad;  //default
+      if( pathInfo.indexOf( '/', 1) > 1 ) {
+        String rt = pathInfo.substring( 1, pathInfo.indexOf( '/', 1) );
+        radarType = RadarType.valueOf( rt );
+      }
+      // default is xml, assume errors will be recorded by logger from this point
+      if( ! pathInfo.endsWith( "html")) {
+        pw = res.getWriter();
+        res.setContentType("text/xml; charset=iso-8859-1"); //default
+      }
+      // radar  query
+      if( req.getQueryString() != null) {
+        System.out.println("RadarServer query ="+ req.getQueryString() );
         if (debug) System.out.println("<documentation>\n"+ req.getQueryString() +"</documentation>\n");
-        if( cat == null || rns.stationList == null ) { // something major wrong
-            ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1);
-            res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "radarServer Nexrad Radar Station/Catalog initialization problem");
-            return;
-        }
-        String pathInfo = req.getPathInfo();
-        if (pathInfo == null) pathInfo = "";
-        // default is xml, assume errors will be recorded by logger from this point
-        if( ! pathInfo.endsWith( "html")) {
+        rm.radarQuery( radarType, req, res, pw );
+        pw.flush();
+        return;
+      }
+      // return radarCollections catalog   xml or html
+      if(pathInfo.startsWith("/catalog.xml") || pathInfo.startsWith("/dataset.xml") ) {
+        InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false ); // no validation
+        String catAsString = factory.writeXML( cat );
+        pw.println(catAsString);
+        res.setStatus( HttpServletResponse.SC_OK );
+        pw.flush();
+        return;
+      } else if(pathInfo.startsWith("/catalog.html") || pathInfo.startsWith("/dataset.html") ) {
+        try {
+            HtmlWriter.getInstance().writeCatalog( res, cat, true ); // show catalog as HTML
+        } catch (Exception e ) {
             pw = res.getWriter();
-            res.setContentType("text/xml; charset=iso-8859-1"); //default
-        }
-
-        // catalog and dataset assumed same at this level
-        if(pathInfo.startsWith("/catalog.xml") || pathInfo.startsWith("/dataset.xml") ) {
-            InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false ); // no validation
-            String catAsString = factory.writeXML( cat );
-            pw.println(catAsString);
-            res.setStatus( HttpServletResponse.SC_OK );
-            pw.flush();
-            return;
-        } else if(pathInfo.startsWith("/catalog.html") || pathInfo.startsWith("/dataset.html") ) {
-            try {
-                HtmlWriter.getInstance().writeCatalog( res, cat, true ); // show catalog as HTML
-            } catch (Exception e ) {
-                pw = res.getWriter();
-                pw.println( "<documentation>\n" );
-                pw.println( "radarServer catalog.html or dataset.html HtmlWriter error "+ pathInfo );
-                pw.println( "</documentation>\n" );
-                pw.flush();
-            }
-            return;
-        }
-
-        // nexrad level2 and level3 choices
-        if( pathInfo.startsWith("/nexrad" )) {
-
-            // nexrad level2 and level3 catalog/dataset
-            if( pathInfo.contains("level2/catalog.") || pathInfo.contains("level3/catalog.")
-                || pathInfo.contains("level2/dataset.") || pathInfo.contains("level3/dataset.") ) {
-                boolean all2 = pathInfo.startsWith( "/nexrad/level2");
-                boolean all3 = pathInfo.startsWith( "/nexrad/level3");
-
-                ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
-                InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false );
-                factory.writeXML( cat , os, true );
-                InvCatalogImpl tCat = factory.readXML( new ByteArrayInputStream( os.toByteArray()), catURI );
-
-                Iterator parents = tCat.getDatasets().iterator();
-                while ( parents.hasNext() ) {
-                    ArrayList<InvDatasetImpl> delete = new ArrayList();
-                    InvDatasetImpl top = (InvDatasetImpl) parents.next();
-                    Iterator tDatasets = top.getDatasets().iterator();
-                    while ( tDatasets.hasNext()) {
-                        InvDatasetImpl ds = (InvDatasetImpl) tDatasets.next();
-                        if (ds instanceof InvDatasetScan) {
-                            InvDatasetScan ids = (InvDatasetScan)ds;
-                            if( ids.getPath() == null  )
-                                continue;
-                            if( all2 && ids.getPath().contains( "level2")) {
-                                 //ids.setXlinkHref( "/thredds/radarServer/"+ ids.getPath() + "/dataset.xml");
-                                 ids.setXlinkHref( ids.getPath() + "/dataset.xml");
-                            } else if( all3 && ids.getPath().contains( "level3")) {
-                                 //ids.setXlinkHref( "/thredds/radarServer/"+ids.getPath() + "/dataset.xml");
-                                 ids.setXlinkHref( ids.getPath() + "/dataset.xml");
-                            } else {
-                                 delete.add( ds );
-                            }
-                        }
-                    }
-                    // remove datasets
-                    for( InvDatasetImpl idi : delete ) {
-                        top.removeDataset( idi );
-                    }
-                }
-                if( pathInfo.endsWith("xml") ) {
-                    String catAsString = factory.writeXML( tCat );
-                    pw.println(catAsString);
-                    pw.flush();
-                } else {
-                    try {
-                        HtmlWriter.getInstance().writeCatalog( res, tCat, true ); // show catalog as HTML
-                    } catch (Exception e ) {
-                        pw = res.getWriter();
-                        pw.println( "<documentation>\n" );
-                        pw.println( "radarServer catalog.html or dataset.html HtmlWriter error "+ pathInfo );
-                        pw.println( "</documentation>\n" );
-                        pw.flush();
-                    }
-                }
-                return;
-            }
-
-            // return stations of dataset
-            if( pathInfo.endsWith("stations.xml") ) {
-                pathInfo = pathInfo.replace( "/stations.xml", "");
-                Element rootElem = new Element( "stationsList" );
-                Document doc = new Document(rootElem);
-                doc = rns.stationsXML( doc, rootElem, pathInfo.substring( 1 ) );
-                XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat() );
-                pw.println( fmt.outputString(doc) );
-                pw.flush();
-                return;
-            }
-
-            // return specific dataset information, ie IDD
-            if( pathInfo.endsWith("dataset.xml") || pathInfo.endsWith("catalog.xml")) {
-
-                pw.println( "<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Data\" version=\"1.0.1\">\n" );
-                // add service
-                //pw.println( "  <service name=\"radarServer\" base=\"/thredds/radarServer/\" type=\"DQC\" />\n" );
-                pw.println( "  <service name=\"radarServer\" base=\"/thredds/radarServer/\" serviceType=\"DQC\" />\n" );
-                pathInfo = pathInfo.replace( "/dataset.xml", "");
-                pathInfo = pathInfo.replace( "/catalog.xml", "");
-                if( pathInfo.startsWith( "/"))
-                    pathInfo = pathInfo.substring( 1 );
-                for( int i = 0; i < datasets.size(); i++ ) {
-                    InvDatasetScan ds = (InvDatasetScan) datasets.get( i );
-                    if( !(pathInfo.equals( ds.getPath() ) )) {
-                        continue;
-                    }
-
-                    //pw.println("  <dataset ID=\""+ ds.getID() +"\" datatype=\"radialCollection\" urlpath=\""+
-                    //ds.getPath() +"\" serviceName=\"radarServer\">");
-                    pw.println("  <dataset ID=\""+ ds.getID()   +"\" serviceName=\"radarServer\">");
-
-                    pw.println("    <urlpath>"+ ds.getPath() +"</urlpath>");
-                    pw.println("    <dataType>"+ ds.getDataType() +"</dataType>");
-
-                    pw.println("    <dataFormat>"+ ds.getDataFormatType() +"</dataFormat>");
-
-                    //pw.println( "   <serviceName>"+ ds.getLocalMetadataInheritable().getServiceName() +"</serviceName>" );
-                    pw.println( "   <serviceName>radarServer</serviceName>" );
-
-                    pw.println("    <metadata inherited=\"true\">");
-
-                    pw.println( "    <documentation type=\"summary\">" + ds.getSummary() +
-                                "</documentation>" );
-                    DateRange dr = ds.getTimeCoverage();
-                    pw.println("      <TimeSpan>");
-                    pw.println("        <start>"+ dr.getStart().toDateTimeStringISO() +"</start>");
-                    pw.println("        <end>"+ dr.getEnd().toDateTimeStringISO() +"</end>");
-                    pw.println("      </TimeSpan>");
-                    ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
-                    LatLonRect bb = new LatLonRect();
-                    gc.setBoundingBox( bb );
-                    pw.println("      <LatLonBox>");
-                    pw.println("        <north>"+ gc.getLatNorth() +"</north>");
-                    pw.println("        <south>"+ gc.getLatSouth() +"</south>");
-                    pw.println("        <east>"+ gc.getLonEast() +"</east>");
-                    pw.println("        <west>"+ gc.getLonWest() +"</west>");
-                    pw.println("      </LatLonBox>");
-                    //gc.toXML( pw );
-
-                    ThreddsMetadata.Variables cvs = (ThreddsMetadata.Variables) ds.getVariables().get(0);
-                    List vl = cvs.getVariableList();
-
-                    pw.println("      <Variables>");
-                    for( int j = 0; j < vl.size(); j++ ) {
-                        ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vl.get( j );
-                        //<variable name="SpectrumWidth" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; Doppler Spectrum Width" units="m/s" />
-                        pw.println("        <variable name=\""+ v.getName() +"\" vocabulary_name=\""+
-                            v.getVocabularyName() +"\" units=\""+ v.getUnits() +"\" />");
-                    }
-                    pw.println("      </Variables>");
-
-                    String[] stations = rns.stationsDS( dataLocation.get( ds.getPath() ));
-                    rns.printStations( stations, pw );
-                    pw.println( "    </metadata>" );
-                    pw.println( "  </dataset>" );
-                }
-                pw.println( "</catalog>" );
-                pw.flush();
-
-                return;
-            }
-
-            // return Dataset information in html form format
-            if( pathInfo.endsWith("dataset.html") || pathInfo.endsWith("catalog.html")) {
-                pathInfo = pathInfo.replace( "/dataset.html", "");
-                pathInfo = pathInfo.replace( "/catalog.html", "");
-                Element root = new Element("RadarNexrad");
-                Document doc = new Document(root);
-
-                if( pathInfo.startsWith( "/"))
-                    pathInfo = pathInfo.substring( 1 );
-                for( int i = 0; i < datasets.size(); i++ ) {
-                    InvDatasetScan ds = (InvDatasetScan) datasets.get( i );
-                    if( !(pathInfo.equals( ds.getPath() ) )) {
-                        continue;
-                    }
-
-                    // at this point a valid dataset
-                    // fix the location
-                    root.setAttribute("location", "/thredds/radarServer/"+ ds.getPath() );
-
-                    // spatial range
-                    ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
-                    LatLonRect bb = new LatLonRect();
-                    gc.setBoundingBox( bb );
-                    String north = Double.toString( gc.getLatNorth() );
-                    String south = Double.toString( gc.getLatSouth() );
-                    String east = Double.toString( gc.getLonEast() );
-                    String west = Double.toString( gc.getLonWest() );
-
-                    Element LatLonBox = new Element("LatLonBox");
-                    LatLonBox.addContent( new Element("north").addContent( north ));
-                    LatLonBox.addContent( new Element("south").addContent( south));
-                    LatLonBox.addContent( new Element("east").addContent( east ));
-                    LatLonBox.addContent( new Element("west").addContent( west ));
-                    root.addContent( LatLonBox );
-
-                    // get the time range
-                    Element timeSpan = new Element("TimeSpan");
-                    DateRange dr = ds.getTimeCoverage();
-                    timeSpan.addContent(new Element("begin").addContent( dr.getStart().toDateTimeStringISO() ));
-                    timeSpan.addContent(new Element("end").addContent( dr.getEnd().toDateTimeStringISO() ));
-                    root.addContent( timeSpan );
-
-                    ThreddsMetadata.Variables cvs = (ThreddsMetadata.Variables) ds.getVariables().get(0);
-                    List vl = cvs.getVariableList();
-
-                    for( int j = 0; j < vl.size(); j++ ) {
-                        ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vl.get( j );
-                        Element variable = new Element("variable");
-                        variable.setAttribute("name", v.getName() );
-                        root.addContent( variable );
-                    }
-
-                    // add pointer to the station list XML
-                    /*
-                    Element stnList = new Element("stationList");
-                    stnList.setAttribute("title", "Available Stations", XMLEntityResolver.xlinkNS);
-                    stnList.setAttribute("href", "/thredds/radarServer/"+ pathInfo +"/stations.xml",
-                        XMLEntityResolver.xlinkNS);
-                    root.addContent(stnList);
-                    */
-                    //String[] stations = rns.stationsDS( dataLocation.get( ds.getPath() ));
-                    //rns.printStations( stations );
-
-                    // add accept list
-                    Element a = new Element("AcceptList");
-                    a.addContent(new Element("accept").addContent("xml"));
-                    a.addContent(new Element("accept").addContent("html"));
-                    root.addContent( a );
-                }
-                ServerMethods sm = new  ServerMethods( log );
-                InputStream xslt = sm.getInputStream(contentPath + getPath() + "radar.xsl", RadarServer.class);
-
-                try {
-                    // what's wrong here xslt = getXSLT( "radar.xsl" );
-                    XSLTransformer transformer = new XSLTransformer(xslt);
-                    Document html = transformer.transform(doc);
-                    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-                    String infoString = fmt.outputString(html);
-                    res.setContentType("text/html; charset=iso-8859-1");
-                    pw = res.getWriter();
-                    pw.println( infoString );
-                    pw.flush();
-
-                } catch (Exception e) {
-                    log.error( "radarServer reading "+ contentPath + getPath() + "radar.xsl" );
-                    log.error( "radarServer XSLTransformer problem for web form ");
-                }
-                finally {
-                    if (xslt != null) {
-                        try {
-                            xslt.close();
-                        }
-                        catch (IOException e) {
-                            log.error("radarServer radar.xsl: error closing" +
-                                contentPath + getPath() + "radar.xsl" );
-                        }
-                    }
-                }
-                return;
-            }
-
-            // radar Nexrad query
-            if( req.getQueryString() != null) {
-                rns.radarNexradQuery( req, res, pw );
-                pw.flush();
-            } else {
-                pw.println( "<documentation>\n" );
-                pw.println( "No valid Query given: "+ pathInfo +"\n" );
-                pw.println( "</documentation>\n" );
-                pw.flush();
-            }
-
-        } else {
             pw.println( "<documentation>\n" );
-            pw.println( "Request not implemented: "+ pathInfo );
+            pw.println( "radarServer catalog.html or dataset.html HtmlWriter error "+ pathInfo );
             pw.println( "</documentation>\n" );
             pw.flush();
         }
-    } catch (Throwable t) {
-        ServletUtil.handleException(t, res);
-    }
-} // end doGet
-
-    /**
-     * Does the actual work of reading a catalog.
-     *
-     * @param factory  use this InvCatalogFactory
-     * @param path reletive path starting from content root
-     * @param catalogFullPath absolute location on disk
-     * @return the InvCatalogImpl, or null if failure
-     */
-     private InvCatalogImpl readCatalog(InvCatalogFactory factory, String path, String catalogFullPath) {
-
-        InvCatalogImpl acat;
-        try {
-            catURI = new URI("file:" + StringUtil.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
-        }
-        catch (URISyntaxException e) {
-            System.out.println("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
-            return null;
-        }
-
-        // read the catalog
-        System.out.println("radarServer readCatalog(): full path=" + catalogFullPath + "; path=" + path);
-        FileInputStream ios = null;
-        try {
-            ios = new FileInputStream(catalogFullPath);
-            acat = factory.readXML(ios, catURI );
-        } catch (Throwable t) {
-            System.out.println("radarServer readCatalog(): Exception on catalog="+
-                catalogFullPath + " " + t.getMessage() ); //+"\n log="+cat.getLog(), t);
-            return null;
-        }
-        finally {
-            if (ios != null) {
-                try {
-                      ios.close();
-                }
-                catch (IOException e) {
-                      System.out.println("radarServer readCatalog(): error closing" + catalogFullPath);
-                }
-            }
-        }
-        return acat;
-    }
-
-    private InputStream getXSLT(String xslName) {
-        return getClass().getResourceAsStream("/resources/xsl/" + xslName);
-    }
-
-    public static void main(String args[]) throws IOException {
-
-      // Function References
-      String path = "http://motherlode.ucar.edu:8081/thredds/radarServer/nexrad/level3/IDD/dataset.xml";
-
-        try {
-            catURI = new URI( StringUtil.escape(path, "/:-_."));
-        }
-        catch (URISyntaxException e) {
-            System.out.println("radarServer main: URISyntaxException=" + e.getMessage());
-            return;
-        }
-
-        // read the catalog
-        System.out.println("radarServer main: full path=" + path );
-        InputStream ios = null;
-        try {
-
-              URL url = new URL(path);
-              ios = url.openStream();
-              //ios = new FileInputStream(path);
-              //acat = factory.readXML(ios, catURI );
-              BufferedReader dataIS =
-                new BufferedReader(new InputStreamReader(ios));
-
-              while (true) {
-                String line = dataIS.readLine();
-                if (line == null )
-                  break;
-                System.out.println( line );  
-              }
-
-        } catch (Throwable t) {
-            System.out.println("radarServer main: Exception on catalog="+
-                path + " " + t.getMessage() );
-            return;
-        }
-        finally {
-            if (ios != null) {
-                try {
-                      ios.close();
-                }
-                catch (IOException e) {
-                      System.out.println("radarServer main: error closing"+ path);
-                }
-            }
-        }
         return;
+      }
+      // level2 and level3 catalog/dataset
+      if( pathInfo.contains("level2/catalog.") || pathInfo.contains("level3/catalog.")
+        || pathInfo.contains("level2/dataset.") || pathInfo.contains("level3/dataset.") ) {
+        level2level3catalog( radarType,  pathInfo,  pw, res);
+        return;
+      }
+      // return stations of dataset
+      if( pathInfo.endsWith("stations.xml") ) {
+        pathInfo = pathInfo.replace( "/stations.xml", "");
+        Element rootElem = new Element( "stationsList" );
+        Document doc = new Document(rootElem);
+        doc = rm.stationsXML( radarType, doc, rootElem, pathInfo.substring( 1 ) );
+        XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat() );
+        pw.println( fmt.outputString(doc) );
+        pw.flush();
+        return;
+      }
+      // return specific dataset information, ie IDD
+      if( pathInfo.endsWith("dataset.xml") || pathInfo.endsWith("catalog.xml")) {
+        datasetInfoXml( radarType, pathInfo, pw );
+        return;
+      }
+      // needs work noboy using it now
+      // return Dataset information in html form format
+      if( pathInfo.endsWith("dataset.html") || pathInfo.endsWith("catalog.html")) {
+        datasetInfoHtml( radarType, pathInfo, pw, res );
+        return;
+      }
 
+    } catch (Throwable t) {
+      ServletUtil.handleException(t, res);
     }
+  } // end doGet
+
+  private void level2level3catalog( RadarType radarType, String pathInfo, PrintWriter pw, HttpServletResponse res) throws IOException{
+
+    String type;
+    if( pathInfo.contains( "level2" ))
+      type = radarType.toString() +"/level2";
+    else
+      type = radarType.toString() +"/level3";
+
+    ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
+    InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory( false );
+    factory.writeXML( cat , os, true );
+    InvCatalogImpl tCat = factory.readXML( new ByteArrayInputStream( os.toByteArray()), catURI );
+
+    Iterator parents = tCat.getDatasets().iterator();
+    while ( parents.hasNext() ) {
+      ArrayList<InvDatasetImpl> delete = new ArrayList();
+      InvDatasetImpl top = (InvDatasetImpl) parents.next();
+      Iterator tDatasets = top.getDatasets().iterator();
+      while ( tDatasets.hasNext()) {
+        InvDatasetImpl ds = (InvDatasetImpl) tDatasets.next();
+        if (ds instanceof InvDatasetScan) {
+          InvDatasetScan ids = (InvDatasetScan)ds;
+          if( ids.getPath() == null  )
+            continue;
+          if( ids.getPath().contains( type )) {
+             ids.setXlinkHref(  ids.getPath() + "/dataset.xml");
+          } else {
+             delete.add( ds );
+          }
+        }
+      }
+      // remove datasets
+      for( InvDatasetImpl idi : delete ) {
+          top.removeDataset( idi );
+      }
+    }
+    if( pathInfo.endsWith("xml") ) {
+      String catAsString = factory.writeXML( tCat );
+      pw.println(catAsString);
+      pw.flush();
+    } else {
+      try {
+        HtmlWriter.getInstance().writeCatalog( res, tCat, true ); // show catalog as HTML
+      } catch (Exception e ) {
+        pw = res.getWriter();
+        pw.println( "<documentation>\n" );
+        pw.println( "radarServer catalog.html or dataset.html HtmlWriter error "+ pathInfo );
+        pw.println( "</documentation>\n" );
+        pw.flush();
+      }
+    }
+    return;
+  }
+
+  private void datasetInfoXml( RadarType radarType, String pathInfo, PrintWriter pw ) {
+    pw.println( "<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Data\" version=\"1.0.1\">\n" );
+    // add service
+    pw.println( "  <service name=\"radarServer\" base=\"/thredds/radarServer/\" serviceType=\"DQC\" />\n" );
+    pathInfo = pathInfo.replace( "/dataset.xml", "");
+    pathInfo = pathInfo.replace( "/catalog.xml", "");
+    if( pathInfo.startsWith( "/"))
+      pathInfo = pathInfo.substring( 1 );
+    for( int i = 0; i < datasets.size(); i++ ) {
+      InvDatasetScan ds = (InvDatasetScan) datasets.get( i );
+      if( !(pathInfo.equals( ds.getPath() ) )) {
+          continue;
+      }
+
+      pw.println("  <dataset ID=\""+ ds.getID()   +"\" serviceName=\"radarServer\">");
+
+      pw.println("    <urlpath>"+ ds.getPath() +"</urlpath>");
+      pw.println("    <dataType>"+ ds.getDataType() +"</dataType>");
+
+      pw.println("    <dataFormat>"+ ds.getDataFormatType() +"</dataFormat>");
+
+      pw.println( "   <serviceName>radarServer</serviceName>" );
+
+      pw.println("    <metadata inherited=\"true\">");
+
+      pw.println( "    <documentation type=\"summary\">" + ds.getSummary() +
+                  "</documentation>" );
+      DateRange dr = ds.getTimeCoverage();
+      pw.println("      <TimeSpan>");
+      pw.println("        <start>"+ dr.getStart().toDateTimeStringISO() +"</start>");
+      pw.println("        <end>"+ dr.getEnd().toDateTimeStringISO() +"</end>");
+      pw.println("      </TimeSpan>");
+      ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
+      LatLonRect bb = new LatLonRect();
+      gc.setBoundingBox( bb );
+      pw.println("      <LatLonBox>");
+      pw.println("        <north>"+ gc.getLatNorth() +"</north>");
+      pw.println("        <south>"+ gc.getLatSouth() +"</south>");
+      pw.println("        <east>"+ gc.getLonEast() +"</east>");
+      pw.println("        <west>"+ gc.getLonWest() +"</west>");
+      pw.println("      </LatLonBox>");
+
+      ThreddsMetadata.Variables cvs = (ThreddsMetadata.Variables) ds.getVariables().get(0);
+      List vl = cvs.getVariableList();
+
+      pw.println("      <Variables>");
+      for( int j = 0; j < vl.size(); j++ ) {
+        ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vl.get( j );
+        pw.println("        <variable name=\""+ v.getName() +"\" vocabulary_name=\""+
+            v.getVocabularyName() +"\" units=\""+ v.getUnits() +"\" />");
+      }
+      pw.println("      </Variables>");
+      String[] stations = rm.stationsDS( radarType, dataLocation.get( ds.getPath() ));
+      rm.printStations( stations, pw );
+
+      pw.println( "    </metadata>" );
+      pw.println( "  </dataset>" );
+    }
+    pw.println( "</catalog>" );
+    pw.flush();
+
+    return;
+  }
+
+  private void datasetInfoHtml( RadarType radarType, String pathInfo, PrintWriter pw, HttpServletResponse res )
+    throws FileNotFoundException, IOException {
+    pathInfo = pathInfo.replace( "/dataset.html", "");
+    pathInfo = pathInfo.replace( "/catalog.html", "");
+    Element root = new Element("RadarNexrad");
+    Document doc = new Document(root);
+
+    if( pathInfo.startsWith( "/"))
+      pathInfo = pathInfo.substring( 1 );
+    for( int i = 0; i < datasets.size(); i++ ) {
+      InvDatasetScan ds = (InvDatasetScan) datasets.get( i );
+      if( !(pathInfo.equals( ds.getPath() ) )) {
+        continue;
+      }
+
+      // at this point a valid dataset
+      // fix the location
+      root.setAttribute("location", "/thredds/radarServer/"+ ds.getPath() );
+
+      // spatial range
+      ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
+      LatLonRect bb = new LatLonRect();
+      gc.setBoundingBox( bb );
+      String north = Double.toString( gc.getLatNorth() );
+      String south = Double.toString( gc.getLatSouth() );
+      String east = Double.toString( gc.getLonEast() );
+      String west = Double.toString( gc.getLonWest() );
+
+      Element LatLonBox = new Element("LatLonBox");
+      LatLonBox.addContent( new Element("north").addContent( north ));
+      LatLonBox.addContent( new Element("south").addContent( south));
+      LatLonBox.addContent( new Element("east").addContent( east ));
+      LatLonBox.addContent( new Element("west").addContent( west ));
+      root.addContent( LatLonBox );
+
+      // get the time range
+      Element timeSpan = new Element("TimeSpan");
+      DateRange dr = ds.getTimeCoverage();
+      timeSpan.addContent(new Element("begin").addContent( dr.getStart().toDateTimeStringISO() ));
+      timeSpan.addContent(new Element("end").addContent( dr.getEnd().toDateTimeStringISO() ));
+      root.addContent( timeSpan );
+
+      ThreddsMetadata.Variables cvs = (ThreddsMetadata.Variables) ds.getVariables().get(0);
+      List vl = cvs.getVariableList();
+
+      for( int j = 0; j < vl.size(); j++ ) {
+        ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vl.get( j );
+        Element variable = new Element("variable");
+        variable.setAttribute("name", v.getName() );
+        root.addContent( variable );
+      }
+
+      // add pointer to the station list XML
+      /*
+      Element stnList = new Element("stationList");
+      stnList.setAttribute("title", "Available Stations", XMLEntityResolver.xlinkNS);
+      stnList.setAttribute("href", "/thredds/radarServer/"+ pathInfo +"/stations.xml",
+          XMLEntityResolver.xlinkNS);
+      root.addContent(stnList);
+      */
+      //String[] stations = rns.stationsDS( dataLocation.get( ds.getPath() ));
+      //rns.printStations( stations );
+
+      // add accept list
+      Element a = new Element("AcceptList");
+      a.addContent(new Element("accept").addContent("xml"));
+      a.addContent(new Element("accept").addContent("html"));
+      root.addContent( a );
+    }
+    ServerMethods sm = new  ServerMethods( log );
+    InputStream xslt = sm.getInputStream(contentPath + getPath() + "radar.xsl", RadarServer.class);
+
+    try {
+      // what's wrong here xslt = getXSLT( "radar.xsl" );
+      XSLTransformer transformer = new XSLTransformer(xslt);
+      Document html = transformer.transform(doc);
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      String infoString = fmt.outputString(html);
+      res.setContentType("text/html; charset=iso-8859-1");
+      pw = res.getWriter();
+      pw.println( infoString );
+      pw.flush();
+
+    } catch (Exception e) {
+      log.error( "radarServer reading "+ contentPath + getPath() + "radar.xsl" );
+      log.error( "radarServer XSLTransformer problem for web form ");
+    }
+    finally {
+      if (xslt != null) {
+        try {
+          xslt.close();
+        }
+        catch (IOException e) {
+          log.error("radarServer radar.xsl: error closing" +
+            contentPath + getPath() + "radar.xsl" );
+        }
+      }
+    }
+    return;
+  }
+  /**
+   * Does the actual work of reading a catalog.
+   *
+   * @param factory  use this InvCatalogFactory
+   * @param path reletive path starting from content root
+   * @param catalogFullPath absolute location on disk
+   * @return the InvCatalogImpl, or null if failure
+   */
+  private InvCatalogImpl readCatalog(InvCatalogFactory factory, String path, String catalogFullPath) {
+
+    InvCatalogImpl acat;
+    try {
+      catURI = new URI("file:" + StringUtil.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
+    }
+    catch (URISyntaxException e) {
+      System.out.println("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
+      return null;
+    }
+
+    // read the catalog
+    System.out.println("radarServer readCatalog(): full path=" + catalogFullPath + "; path=" + path);
+    FileInputStream ios = null;
+    try {
+      ios = new FileInputStream(catalogFullPath);
+      acat = factory.readXML(ios, catURI );
+    } catch (Throwable t) {
+      System.out.println("radarServer readCatalog(): Exception on catalog="+
+        catalogFullPath + " " + t.getMessage() ); //+"\n log="+cat.getLog(), t);
+      return null;
+    }
+    finally {
+      if (ios != null) {
+        try {
+          ios.close();
+        }
+        catch (IOException e) {
+          System.out.println("radarServer readCatalog(): error closing" + catalogFullPath);
+        }
+      }
+    }
+    return acat;
+  }
+
+  private InputStream getXSLT(String xslName) {
+      return getClass().getResourceAsStream("/resources/xsl/" + xslName);
+  }
+
+  public static void main(String args[]) throws IOException {
+
+    // Function References
+    String path = "http://motherlode.ucar.edu:8081/thredds/radarServer/nexrad/level3/IDD/dataset.xml";
+
+    try {
+      catURI = new URI( StringUtil.escape(path, "/:-_."));
+    }
+    catch (URISyntaxException e) {
+      System.out.println("radarServer main: URISyntaxException=" + e.getMessage());
+      return;
+    }
+
+    // read the catalog
+    System.out.println("radarServer main: full path=" + path );
+    InputStream ios = null;
+    try {
+
+      URL url = new URL(path);
+      ios = url.openStream();
+      //ios = new FileInputStream(path);
+      //acat = factory.readXML(ios, catURI );
+      BufferedReader dataIS =
+        new BufferedReader(new InputStreamReader(ios));
+
+      while (true) {
+        String line = dataIS.readLine();
+        if (line == null )
+          break;
+        System.out.println( line );
+      }
+
+    } catch (Throwable t) {
+      System.out.println("radarServer main: Exception on catalog="+
+          path + " " + t.getMessage() );
+      return;
+    }
+    finally {
+      if (ios != null) {
+          try {
+                ios.close();
+          }
+          catch (IOException e) {
+                System.out.println("radarServer main: error closing"+ path);
+          }
+      }
+    }
+    return;
+  }
 } // end RadarServer
