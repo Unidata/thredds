@@ -43,7 +43,7 @@ public class RadarServer extends AbstractServlet {
   private boolean debug = false;
 
   protected long getLastModified(HttpServletRequest req) {
-      contentPath = ServletUtil.getContentPath( this );
+      contentPath = ServletUtil.getContentPath( );
       File file = new File( contentPath + getPath() +catName );
       return file.lastModified();
   }
@@ -73,7 +73,7 @@ public class RadarServer extends AbstractServlet {
     //allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", true);
     //String radarLevel2Dir = ThreddsConfig.get("NetcdfSubsetService.radarLevel2DataDir", "/data/ldm/pub/native/radar/level2/");
     //if (!allow) return;
-    contentPath = ServletUtil.getContentPath( this );
+    contentPath = ServletUtil.getContentPath( );
     rm = new RadarMethods( contentPath, log );
 
     // read in radarCollections.xml catalog
