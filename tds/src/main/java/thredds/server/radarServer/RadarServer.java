@@ -37,7 +37,7 @@ public class RadarServer extends AbstractServlet {
   static public final String catName = "radarCollections.xml";
   static public URI catURI;
   static public List datasets;
-  static public HashMap<String,String> dataLocation = new HashMap();
+  static public HashMap<String,String> dataLocation = new HashMap<String,String>();
   static public RadarMethods rm;
   private boolean allow = false;
   private boolean debug = false;
@@ -204,7 +204,7 @@ public class RadarServer extends AbstractServlet {
 
     Iterator parents = tCat.getDatasets().iterator();
     while ( parents.hasNext() ) {
-      ArrayList<InvDatasetImpl> delete = new ArrayList();
+      ArrayList<InvDatasetImpl> delete = new ArrayList<InvDatasetImpl>();
       InvDatasetImpl top = (InvDatasetImpl) parents.next();
       Iterator tDatasets = top.getDatasets().iterator();
       while ( tDatasets.hasNext()) {

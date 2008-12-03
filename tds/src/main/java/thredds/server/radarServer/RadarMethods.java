@@ -55,8 +55,8 @@ public class RadarMethods {
   static public List<Station> terminalList = new ArrayList<Station>();
   static public HashMap<String, Station> nexradMap;
   static public HashMap<String, Station> terminalMap;
-  static public final ArrayList<String> nexradVars = new ArrayList();
-  static public final ArrayList<String> terminalVars = new ArrayList();
+  static public final ArrayList<String> nexradVars = new ArrayList<String>();
+  static public final ArrayList<String> terminalVars = new ArrayList<String>();
   static private final String serviceName = "OPENDAP";
   static private final String serviceType = "OPENDAP";
 
@@ -332,7 +332,7 @@ public class RadarMethods {
         qp.vars = null; // level2 can't select vars
     } else {
         if( qp.vars != null ) { // remove desc from vars
-          ArrayList<String> tmp = new ArrayList();
+          ArrayList<String> tmp = new ArrayList<String>();
           for ( String var:  qp.vars ) {
               tmp.add( var.replaceFirst( "/.*", "" ) );
           }
@@ -805,12 +805,16 @@ public class RadarMethods {
     }
   }
 
-  protected class CompareKeyDescend implements Comparator {
-
+  protected class CompareKeyDescend implements Comparator<String> {
+    /*
     public int compare(Object o1, Object o2) {
       String s1 = (String) o1;
       String s2 = (String) o2;
 
+      return s2.compareTo(s1);
+    }
+    */
+    public int compare(String s1, String s2 ) {
       return s2.compareTo(s1);
     }
   }

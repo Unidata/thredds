@@ -84,13 +84,14 @@ public class ServerMethods {
       * gets files in a directory that are directory themselves
       * returns them in descending order
     */
+  /*
     public ArrayList getDirData(String dirS, PrintWriter pw) {
 
         File dir = new File(dirS);
         if( ! dir.exists() )
             return null;
         File[] dirs = dir.listFiles();
-        ArrayList<File> onlyDirs = new ArrayList();
+        ArrayList<File> onlyDirs = new ArrayList<File>();
 
         // all entries must be directories
         for (int i = 0; i < dirs.length; i++) {
@@ -103,6 +104,7 @@ public class ServerMethods {
         return onlyDirs;
 
     }
+    */
 
     public String[] getDAYS(String dirS, PrintWriter pw) {
 
@@ -116,7 +118,7 @@ public class ServerMethods {
         if( ! dir.exists() )
             return null;
         String[] TMP = dir.list();
-        ArrayList days = new ArrayList();
+        ArrayList<String> days = new ArrayList<String>();
 
         for (int i = 0; i < TMP.length; i++) {
             // check date starts with 8 numbers and not in the future
@@ -170,7 +172,7 @@ public class ServerMethods {
 
   public List<Station> getStations( String stnLocation ) {
 
-      List <Station> stationList = new ArrayList();
+      List<Station> stationList = new ArrayList<Station>();
       DocumentBuilder parser;
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       factory.setValidating(false);
@@ -400,12 +402,9 @@ public class ServerMethods {
         return s;
     } // end getInputStream
 
-    protected class CompareKeyDescend implements Comparator {
+    protected class CompareKeyDescend implements Comparator<String> {
 
-        public int compare(Object o1, Object o2) {
-            String s1 = (String) o1;
-            String s2 = (String) o2;
-
+        public int compare(String s1, String s2) {
             return s2.compareTo(s1);
         }
     }
