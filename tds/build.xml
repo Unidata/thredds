@@ -16,17 +16,17 @@
   <!-- source dirs -->
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
-  <property name="resources.dir" location="${root.dir}/src/main/resources"/>
+  <property name="resources.dir" value="${root.dir}/src/main/resources"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
   <property name="webapp.dir" location="${root.dir}/src/main/webapp"/>
 
   <!-- target dirs -->
-  <property name="build.dir" location="${root.dir}/target"/>
-  <property name="build.classes.dir" location="${build.dir}/classes"/>
+  <property name="build.dir" value="${root.dir}/target"/>
+  <property name="build.classes.dir" value="${build.dir}/classes"/>
   <property name="build.debug" value="on"/>
   <property name="build.release" value="false"/>
-  <property name="javadoc.dir" location="${build.dir}/javadoc"/>
+  <property name="javadoc.dir" value="${build.dir}/javadoc"/>
 
   <property name="uni.ftp.dir" value="O:"/>
   <property name="uni.www.dir" value="Z:"/>
@@ -157,7 +157,6 @@
   <target name="cleanDist" depends="clean, compile, makeWar"/>
   <target name="cleanTestSetup" depends="clean, compile, test-setup"/>
   <target name="init">
-    <mkdir dir="${build.dir}"/>
     <mkdir dir="${build.classes.dir}"/>
     <echo message="Initialize ${ant.project.name}"/>
   </target>
@@ -425,8 +424,8 @@
 
   <!-- Create javadoc Zip -->
   <property name="javadocZipReleaseName" value="tdsJavadoc-${release.version}.zip"/>
-  <property name="javadocZip.dir" location="${build.dir}/javadocZip"/>
-  <property name="javadocZip.target.dir" location="${javadocZip.dir}/thredds-${release.version.minor}/javadoc"/>
+  <property name="javadocZip.dir" value="${build.dir}/javadocZip"/>
+  <property name="javadocZip.target.dir" value="${javadocZip.dir}/thredds-${release.version.minor}/javadoc"/>
   <target name="makeJavadocZip" depends="javadoc"
           description="create a zip file containing THREDDS Data Server javadoc">
     <mkdir dir="${javadocZip.target.dir}"/>
@@ -574,10 +573,10 @@
   <!-- TESTING  -->
   <property name="test.src.dir" location="${root.dir}/src/test/java"/>
   <property name="test.data.dir" location="${root.dir}/src/test/data"/>
-  <property name="test.classes.dir" location="${build.dir}/test/classes"/>
-  <property name="test.reports.dir" location="${build.dir}/test/reports"/>
+  <property name="test.classes.dir" value="${build.dir}/test/classes"/>
+  <property name="test.reports.dir" value="${build.dir}/test/reports"/>
 
-  <property name="cdm.test.classes.dir" location="${root.dir}/../cdm/target/build/test/classes" />
+  <property name="cdm.test.classes.dir" value="${root.dir}/../cdm/target/build/test/classes" />
   
   <path id="test.classpath">
     <path refid="compile.classpath"/>

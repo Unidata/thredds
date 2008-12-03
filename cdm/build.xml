@@ -38,10 +38,10 @@
   <property name="doc.dir" location="${root.dir}/doc"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
 
-  <property name="build.dir" location="${root.dir}/target"/>
-  <property name="build.classes.dir" location="${build.dir}/classes"/>
-  <property name="javadoc.dir" location="${build.dir}/javadoc"/>
-  <property name="javadocAll.dir" location="${build.dir}/javadocAll"/>
+  <property name="build.dir" value="${root.dir}/target"/>
+  <property name="build.classes.dir" value="${build.dir}/classes"/>
+  <property name="javadoc.dir" value="${build.dir}/javadoc"/>
+  <property name="javadocAll.dir" value="${build.dir}/javadocAll"/>
 
   <property name="release.library.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
   <property name="release.doc.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
@@ -364,14 +364,14 @@
     </jar>
   </target>
 
-  <property name="zip.dir" location="${build.dir}/zip"/>
-  <property name="uiZip.dir" location="${build.dir}/uiZip"/>
+  <property name="zip.dir" value="${build.dir}/zip"/>
+  <property name="uiZip.dir" value="${build.dir}/uiZip"/>
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- idv library  -->
 
   <property name="jarIdv" value="ncIdv.jar"/>
-  <property name="idv.dir" location="${build.dir}/idv"/>
+  <property name="idv.dir" value="${build.dir}/idv"/>
   <target name="makeIDVjar" depends="makeMain" description="create jar for idv">
     <mkdir dir="${idv.dir}"/>
     <unzip dest="${idv.dir}">
@@ -849,9 +849,9 @@
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <property name="test.src.dir" location="${root.dir}/src/test/java"/>
-  <property name="test.dir" location="${build.dir}/build/test"/>
-  <property name="test.classes.dir" location="${test.dir}/classes"/>
-  <property name="test.reports.dir" location="${test.dir}/reports"/>
+  <property name="test.dir" value="${build.dir}/build/test"/>
+  <property name="test.classes.dir" value="${test.dir}/classes"/>
+  <property name="test.reports.dir" value="${test.dir}/reports"/>
 
   <path id="test.sourcepath">
     <path refid="sourcepathUI"/>
