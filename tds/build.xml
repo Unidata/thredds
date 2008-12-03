@@ -157,8 +157,8 @@
   <target name="cleanDist" depends="clean, compile, makeWar"/>
   <target name="cleanTestSetup" depends="clean, compile, test-setup"/>
   <target name="init">
-    <mkdir dir="${build.classes.dir}"/>
     <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.classes.dir}"/>
     <echo message="Initialize ${ant.project.name}"/>
   </target>
 
