@@ -26,7 +26,8 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib1/data/","radar_national.grib", 1, 1, 3, 0);
     //doOne("grib1/data/","thin.wmo", 240, 87, 117, 63);
     doOne("grib1/data/","thin.wmo", 240, 87, 120, 64);
-    doOne("grib1/data/","ukm.wmo", 96, 49, 69, 32);
+    //doOne("grib1/data/","ukm.wmo", 96, 49, 69, 32);
+    doOne("grib1/data/","ukm.wmo", 96, 49, 67, 32);
     doOne("grib1/data/","AVN.wmo", 22, 9, 11, 7);
     doOne("grib1/data/","AVN-I.wmo", 20, 8, 10, 7); //
     doOne("grib1/data/","MRF.wmo", 15, 8, 10, 6); //
