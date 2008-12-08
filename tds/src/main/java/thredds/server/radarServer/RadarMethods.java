@@ -416,7 +416,7 @@ public class RadarMethods {
       } else if( radarType.equals( RadarServer.RadarType.nexrad ) ){
           pw.print( "NIDS" );
       } else {
-          pw.print( "DOPPLER" );
+          pw.print( "TDWR" );
       }
       pw.println( "</dataFormat>");
       pw.println("      <serviceName>" + serviceName + "</serviceName>");
@@ -490,7 +490,7 @@ public class RadarMethods {
         if( ! isStns )
           isStns = ( terminalMap.get( tdirs[ 0 ] ) != null );
       }
-      Boolean isDates = sm.p_yyyymmdd.matcher(tdirs[ 0 ]).find();
+      Boolean isDates = ServerMethods.p_yyyymmdd.matcher(tdirs[ 0 ]).find();
       Boolean isVars = nexradVars.contains( tdirs[ 0 ].toUpperCase() );
       if( ! isVars )
         isVars = terminalVars.contains( tdirs[ 0 ].toUpperCase() );
@@ -518,7 +518,7 @@ public class RadarMethods {
           if( file.isFile() ) { // products in dir, process dir
             numProds += processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
               qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
-          } else if( sm.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
+          } else if( ServerMethods.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
             java.util.Arrays.sort( sdirs, new CompareKeyDescend() );
             for( int j = 0; j < sdirs.length; j++) {
               if( sm.isValidDay( sdirs[ j ],  yyyymmddStart, yyyymmddEnd ) ) {
@@ -588,7 +588,7 @@ public class RadarMethods {
               if( file.isFile() ) { // products in dir, return dir
                 numProds += processProducts( sdirs, sDir.replaceFirst( tdir, "").substring( 1 ),
                   qp.hasTimePoint, dateStart, dateEnd, qp, pw, serviceBase );
-              } else if( sm.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
+              } else if( ServerMethods.p_yyyymmdd.matcher(sdirs[ 0 ]).find() ) { //dates
                 java.util.Arrays.sort( sdirs, new CompareKeyDescend() );
                 for( int k = 0; k < sdirs.length; k++) {
                   if( sm.isValidDay( sdirs[ k ],  yyyymmddStart, yyyymmddEnd ) ) {
@@ -686,6 +686,10 @@ public class RadarMethods {
 
   /**
   * Create an XML station document from this stationMap
+   * @param doc
+   * @param rootElem
+   * @param stations
+   * @return Document
   */
   public Document makeStationDocument( Document doc, Element rootElem, String[] stations ) {
 
@@ -767,6 +771,8 @@ public class RadarMethods {
 
   /**
    * print station in a XML format from this info
+   * @param stations
+   * @param pw 
   */
   public void printStations( String[] stations, PrintWriter pw ) {
     for (String s : stations ) {
