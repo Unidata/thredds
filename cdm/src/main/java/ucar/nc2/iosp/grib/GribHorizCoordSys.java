@@ -157,10 +157,14 @@ public class GribHorizCoordSys {
         double[] yData, xData;
         if ( lookup.getProjectionType(gdsIndex) == TableLookup.RotatedLatLon) {
           double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
+          //yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, dy, "degrees",
           yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, dy, "degrees",
-                  "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
+                  "latitude coordinate", "latitude", AxisType.Lat);
+          //        "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
+          //xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, gdsIndex.dx, "degrees",
           xData = addCoordAxis(ncfile, "x", gdsIndex.nx, startx, gdsIndex.dx, "degrees",
-                  "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
+                  "longitude coordinate", "longitude", AxisType.Lon);
+                 // "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
         } else {
            yData = addCoordAxis(ncfile, "y", gdsIndex.ny, starty, getDyInKm(), "km",
                   "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);
@@ -534,12 +538,13 @@ public class GribHorizCoordSys {
       spangle = Double.parseDouble(spAngle);
     }
     proj = new RotatedLatLon( splat, splon, spangle );
-    //proj = new RotatedPole( splat, splon );
-    LatLonPointImpl startLL = new LatLonPointImpl(gdsIndex.La1, gdsIndex.Lo1);
-    ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
-    startx = start.getX();
-    starty = start.getY();
-   // ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL, new ProjectionPointImpl(0,0));
+    //LatLonPointImpl startLL = new LatLonPointImpl(gdsIndex.La1, gdsIndex.Lo1);
+    //ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
+    //startx = start.getX();
+    //starty = start.getY();
+    LatLonPoint startLL = proj.projToLatLon( new ProjectionPointImpl(gdsIndex.Lo1,gdsIndex.La1));
+    startx = startLL.getLongitude();
+    starty = startLL.getLatitude();
     //addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
     addCoordSystemVariable(ncfile, "latLonCoordSys", "time y x");
 
@@ -553,7 +558,25 @@ public class GribHorizCoordSys {
 //    attributes.add(new Attribute("grid_north_pole_latitude", new Double(starty)));
 //    attributes.add(new Attribute("grid_north_pole_longitude", new Double(startx)));
     if ( true || GribServiceProvider.debugProj) {
+      System.out.println("Location of pole of rotated grid as seen in non-rotated grid:");
+      System.out.println("Lon="+ splon +", Lat="+ splat );
 
+      System.out.println("Additional axial rotation about pole of rotated grid:"+ spangle );
+
+      System.out.println("Location of chosen point in non-rotated grid:" );
+      System.out.println("Lon="+ gdsIndex.Lo1 +", Lat="+ gdsIndex.La1 );
+      //System.out.println("Lon="+ Lo2 +", Lat="+ La2 );
+      LatLonPointImpl  LL = new LatLonPointImpl( gdsIndex.La1, gdsIndex.Lo1);
+      //LatLonPointImpl  LL = new LatLonPointImpl( La2, Lo2);
+      ProjectionPointImpl PP = (ProjectionPointImpl) proj.latLonToProj(LL);
+      System.out.println("Location of chosen point as seen in rotated grid:");
+      System.out.println("Lon="+ PP.getX() +", Lat="+ PP.getY() );
+
+      System.out.println("Location of chosen point put back into non-rotated grid:");
+      LatLonPoint check = proj.projToLatLon( new ProjectionPointImpl(PP.getX(),PP.getY()));
+      System.out.println("Lon="+ check.getLongitude() +", Lat="+ check.getLatitude() );
+
+      /*
       System.out.println("GribHorizCoordSys.makeRotatedLatLon start at latlon " + startLL);
       System.out.println("   start proj coord " + start);
       //LatLonPoint check = proj.projToLatLon( start, new LatLonPointImpl( 0,0)  );
@@ -561,18 +584,21 @@ public class GribHorizCoordSys {
       //LatLonPoint check = proj.projToLatLon( new ProjectionPointImpl(0,0), new LatLonPointImpl( 0,0)  );
       LatLonPoint check = proj.projToLatLon( new ProjectionPointImpl(0,0), null  );
       System.out.println(" proj coord 0,0 gives " + check);
-
+       */
       double Lo2 = gdsIndex.readDouble("Lo2");
       double La2 = gdsIndex.readDouble("La2");
+      System.out.println("Location of end point in non-rotated grid:" );
+      System.out.println("Lon="+ Lo2 +", Lat="+ La2 );
       LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
-      System.out.println("GribHorizCoordSys.makeRotatedLatLon end at latlon " + endLL);
       ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
-      System.out.println("   end at proj coord " + endPP);
+      System.out.println("Location of end point as seen in rotated grid:");
+      System.out.println("Lon="+ endPP.getX() +", Lat="+ endPP.getY() );
 
       double dy = (gdsIndex.readDouble("La2") < gdsIndex.La1) ? -gdsIndex.dy : gdsIndex.dy;
       double endx = startx + getNx() * gdsIndex.dx;
       double endy = starty + getNy() * dy;
-      System.out.println("   should be x=" + endx + " y=" + endy);
+
+      System.out.println("   end point should be x=" + endx + " y=" + endy);
     }
   }
 
