@@ -94,7 +94,7 @@
   <h3>scan vs datasetScan </h3>
   <p>The <strong>scan</strong> element in the NcML aggregation is similar in purpose to the <strong>datasetScan</strong> element, but be careful not to confuse the two. The <strong>datasetScan</strong> element is more powerful, and has more options for filtering etc. Its job is to create nested <strong>dataset</strong> elements inside the datasetScan, and so has various options to  add information to those nested datasets. It has a generalized framework (CrawlableDataset) for crawling other things besides file directories. The <strong>scan</strong> element's job is to easily specify what files go into an NcML aggregation, and those individual files are hidden inside the aggregation dataset. It can only scan file directories. In the future, some of the capabilities of <strong>datasetScan</strong> will migrate into NcML <strong>scan</strong>. </p>
   <h3>Cant use HTTPServer</h3>
-  <p>Remember that you cant use <strong>HTTPServer</strong> for NcML datasets. Use only the <em>subsetting services </em><strong>OpenDAP</strong>, <strong>WCS</strong> and <strong>NetcdfSubset.</strong></p>
+  <p>Remember that you can't use <strong>HTTPServer</strong> for NcML datasets. Use only the <em>subsetting services </em><strong>OpenDAP</strong>, <strong>WCS</strong> and <strong>NetcdfSubset.</strong></p>
   <h3><a name="debug"></a>Debugging tips</h3>
   <p>When things go wrong, its best to first debug the aggregation outside of the TDS: </p>
   <ol>
@@ -111,13 +111,13 @@
   </ol>
   <h2>Related Documents:</h2>
   <ul>
-    <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NetCDF Markup Language</a></li>
-    <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/Aggregation.html">NcML Aggregation </a></li>
-    <li><a href="http://motherlode.ucar.edu:8080/thredds/docs/datasetScan/index.html">DatasetScan</a></li>
+    <li><a href="/software/netcdf/ncml/">NetCDF Markup Language</a></li>
+    <li><a href="/software/netcdf/ncml/v2.2/Aggregation.html">NcML Aggregation </a></li>
+    <li><a href="../reference/DatasetScan.html">DatasetScan</a></li>
   </ul>
   <hr WIDTH="100%">
   <address>
-  <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 25, 2007 
+  <img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Dec 09, 2008
   </address>
   <p></p>
 </div>

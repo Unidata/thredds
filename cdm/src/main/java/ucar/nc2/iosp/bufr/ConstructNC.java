@@ -148,7 +148,7 @@ class ConstructNC {
           DataDescriptor sub = dkey.subKeys.get(0);
           Variable v = addVariable(recordStructure, sub, dkey.replication);
           v.setSPobject(dkey); // set the replicating dkey as SPI object
-        } else {
+        } else if (subKeys.size() > 1) {
           addStructure(recordStructure, dkey, dkey.replication);
         }
 

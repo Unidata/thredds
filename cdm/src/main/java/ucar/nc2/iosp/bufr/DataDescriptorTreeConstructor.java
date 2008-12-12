@@ -189,6 +189,9 @@ public class DataDescriptorTreeConstructor {
             DataDescriptor next = iter.next();
             next.bitWidth = dd.y;
           }
+
+        } else {
+          iter.remove();          
         }
 
       } else if (dd.subKeys != null) {
