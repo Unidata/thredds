@@ -386,6 +386,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       Variable v = vTop;
       while (v instanceof VariableEnhanced) {
         Variable org = ((VariableEnhanced) v).getOriginalVariable();
+        if (org == null) break;
         if (org.getShortName().equals(shortName))
           return (VariableEnhanced) vTop;
         v = org;

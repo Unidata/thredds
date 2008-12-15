@@ -662,8 +662,8 @@ public class InvCatalogFactory {
    */
   public static void main(String[] args) throws Exception {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
-    doOne(catFactory, "file:D:/catalog/gom_interop_catalog.xml", false);
-    Thread.currentThread().sleep(10 * 10000);
+    doOne(catFactory, "http://www.unidata.ucar.edu/georesources/idvcatalog.xml", true);
+    //Thread.currentThread().sleep(10 * 10000);
     //InvCatalogFactory catFactoryNo = InvCatalogFactory.getDefaultFactory(false);
 
     // 0.6

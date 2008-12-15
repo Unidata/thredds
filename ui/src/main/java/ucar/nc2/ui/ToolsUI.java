@@ -24,6 +24,7 @@ import ucar.nc2.*;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.ncml.NcMLWriter;
@@ -2579,7 +2580,7 @@ public class ToolsUI extends JPanel {
   private class PointFeaturePanel extends OpPanel {
     PointFeatureDatasetViewer pfViewer;
     JSplitPane split;
-    FeatureDatasetPoint sobsDataset = null;
+    FeatureDatasetPoint pfDataset = null;
 
     PointFeaturePanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
@@ -2589,15 +2590,31 @@ public class ToolsUI extends JPanel {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          if (sobsDataset == null) return;
+          if (pfDataset == null) return;
           Formatter f = new Formatter();
-          sobsDataset.getDetailInfo(f);
+          pfDataset.getDetailInfo(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
         }
       });
       buttPanel.add(infoButton);
+
+      AbstractAction netcdfAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          String location = pfDataset.getLocationURI();
+          if (location == null) location = "test";
+          int pos = location.lastIndexOf(".");
+          if (pos > 0)
+            location = location.substring(0, pos);
+
+          String filename = fileChooser.chooseFilenameToSave(location + ".nc");
+          if (filename == null) return;
+          doWriteCF(filename);
+        }
+      };
+      BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF", false, 'N', -1);
+      BAMutil.addActionToContainer(buttPanel, netcdfAction);
     }
 
     boolean process(Object o) {
@@ -2610,11 +2627,21 @@ public class ToolsUI extends JPanel {
       pfViewer.save();
     }
 
-    boolean setPointFeatureDataset(String location) {
+    void doWriteCF( String filename) {
+      try {
+        WriterCFPointObsDataset.write(pfDataset, filename);
+        JOptionPane.showMessageDialog(this, "File successfully written");
+      } catch (Exception ioe) {
+        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+        ioe.printStackTrace();
+      }
+    }
+
+    private boolean setPointFeatureDataset(String location) {
       if (location == null) return false;
 
       try {
-        if (sobsDataset != null) sobsDataset.close();
+        if (pfDataset != null) pfDataset.close();
       } catch (IOException ioe) {
       }
       detailTA.clear();
@@ -2632,8 +2659,8 @@ public class ToolsUI extends JPanel {
           return false;
         }
 
-        sobsDataset = (FeatureDatasetPoint) featureDataset;
-        pfViewer.setDataset(sobsDataset);
+        pfDataset = (FeatureDatasetPoint) featureDataset;
+        pfViewer.setDataset(pfDataset);
         setSelectedItem(location);
         return true;
 
@@ -2646,21 +2673,6 @@ public class ToolsUI extends JPanel {
         JOptionPane.showMessageDialog(this, e.getMessage());
         return false;
       }
-    }
-
-    boolean setStationObsDataset(FeatureDatasetPoint dataset) {
-      if (dataset == null) return false;
-
-      try {
-        if (sobsDataset != null) sobsDataset.close();
-      } catch (IOException ioe) {
-      }
-      detailTA.clear();
-
-      pfViewer.setDataset(dataset);
-      sobsDataset = dataset;
-      setSelectedItem(sobsDataset.getLocationURI());
-      return true;
     }
   }
 

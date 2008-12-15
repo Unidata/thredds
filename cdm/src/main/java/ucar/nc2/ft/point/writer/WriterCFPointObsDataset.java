@@ -20,8 +20,15 @@
 
 package ucar.nc2.ft.point.writer;
 
-import ucar.nc2.dt.*;
 import ucar.nc2.*;
+import ucar.nc2.dt.PointObsDatatype;
+import ucar.nc2.dt.PointObsDataset;
+import ucar.nc2.dt.DataIterator;
+import ucar.nc2.dt.TypedDatasetFactory;
+import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft.FeatureCollection;
+import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -213,10 +220,25 @@ public class WriterCFPointObsDataset {
     return count;
   }
 
+  public void writeRecord(PointFeature pf, StructureData sdata) throws IOException {
+    if (debug) System.out.println("PointFeature= " + pf);
+
+    ucar.nc2.ft.EarthLocation loc = pf.getLocation();
+    int count = writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pf.getObservationTimeAsDate());
+
+    for (int i = count; i < recordVars.size(); i++) {
+      Variable v = recordVars.get(i);
+      v.setCachedData(sdata.getArray(v.getShortName()), false);
+    }
+
+    ncfile.writeRecordData(recordVars);
+  }
+
+
   public void writeRecord(PointObsDatatype pobs, StructureData sdata) throws IOException {
     if (debug) System.out.println("pobs= " + pobs);
 
-    EarthLocation loc = pobs.getLocation(); // LOOK we dont know this until we see the obs
+    ucar.nc2.dt.EarthLocation loc = pobs.getLocation(); // LOOK we dont know this until we see the obs
     int count = writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pobs.getObservationTimeAsDate());
 
     for (int i = count; i < recordVars.size(); i++) {
@@ -257,6 +279,45 @@ public class WriterCFPointObsDataset {
 
 
   //////////////////////////////////////////////////////////////////////////////////
+
+  public static void write(FeatureDatasetPoint pfDataset, String fileOut) throws IOException {
+    long start = System.currentTimeMillis();
+
+    List<FeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
+    if (featureCollectionList.size() < 1)
+     throw new IOException("No features in "+pfDataset);
+    FeatureCollection featureCollection = featureCollectionList.get(0);
+    if (featureCollection instanceof PointFeatureCollection)
+      throw new IOException("Must be PointFeatureCollection, not "+featureCollection.getClass().getName());
+    PointFeatureCollection pointFeatureCollection = (PointFeatureCollection) featureCollection;
+
+    StringBuilder errlog = new StringBuilder();
+
+    FileOutputStream fos = new FileOutputStream(fileOut);
+    DataOutputStream out = new DataOutputStream(fos);
+    WriterCFPointObsDataset writer = null;
+
+    boolean first = true;
+
+    while (pointFeatureCollection.hasNext()) {
+      PointFeature pointFeature = (PointFeature) pointFeatureCollection.next();
+      StructureData data = pointFeature.getData();
+      if (first) {
+        ucar.nc2.ft.EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
+        String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong
+        writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
+        writer.writeHeader( VariableSimpleAdapter.convert(data.getStructureMembers()));
+        first = false;
+      }
+      writer.writeRecord(pointFeature, data);
+    }
+
+    writer.finish();
+
+    long took = System.currentTimeMillis() - start;
+    System.out.println("Write " + pfDataset.getLocationURI() + " to " + fileOut + " took = " + took);
+  }
+
   public static void rewrite(String fileIn, String fileOut, boolean inMemory, boolean sort) throws IOException {
     System.out.println("Rewrite .nc files from " + fileIn + " to " + fileOut + "inMem= " + inMemory + " sort= " + sort);
 
@@ -279,7 +340,7 @@ public class WriterCFPointObsDataset {
       PointObsDatatype pobsData = (PointObsDatatype) iter.nextData();
       StructureData data = pobsData.getData();
       if (first) {
-        EarthLocation loc = pobsData.getLocation(); // LOOK we dont know this until we see the obs
+        ucar.nc2.dt.EarthLocation loc = pobsData.getLocation(); // LOOK we dont know this until we see the obs
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters";
         writer = new WriterCFPointObsDataset(out, ncfile.getGlobalAttributes(), altUnits);
         writer.writeHeader(pobsDataset.getDataVariables());
@@ -346,7 +407,7 @@ public class WriterCFPointObsDataset {
         }
       }
 
-      EarthLocation loc = pobsData.getLocation();
+      ucar.nc2.dt.EarthLocation loc = pobsData.getLocation();
       writer.writeRecord(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pobsData.getObservationTimeAsDate(),
               dvals, svals);
 

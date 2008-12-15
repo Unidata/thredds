@@ -23,7 +23,6 @@ package ucar.nc2.ft;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
 
 import java.util.*;
 
@@ -102,7 +101,7 @@ public interface FeatureDataset {
    *
    * @return List of type ucar.nc2.Attribute, may be empty but not null
    */
-  public List getGlobalAttributes();
+  public List<ucar.nc2.Attribute> getGlobalAttributes();
 
   /**
    * Return the global attribute with the given name, ignoring case.

@@ -20,7 +20,6 @@
 
 package ucar.nc2.ft.point.writer;
 
-import ucar.nc2.ft.point.writer.WriterCFPointObsDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
