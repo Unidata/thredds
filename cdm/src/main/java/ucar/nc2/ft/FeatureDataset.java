@@ -115,7 +115,7 @@ public interface FeatureDataset {
    * The data Variables available in this dataset.
    * Should just be data variables others might be searching for, not metadata or coordinate
    * system variables, etc.
-   * The shape of this VariableSimpleIF does not necessarily match the StuctureData member.
+   * The shape of this VariableSimpleIF does not necessarily match the StructureData member.
    *
    * @return List of subclass of VariableSimpleIF, may be empty but not null
    */

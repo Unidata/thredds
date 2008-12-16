@@ -30,14 +30,18 @@ import java.util.Formatter;
 import java.util.StringTokenizer;
 
 /**
+ * "Unidata Observation Dataset v1.0" point or station
  * @author caron
  * @since Apr 23, 2008
  */
 public class UnidataPointObs implements TableConfigurer {
 
   public boolean isMine(NetcdfDataset ds) {
-    if (!ds.findAttValueIgnoreCase(null, "cdm_data_type", "").equalsIgnoreCase(FeatureType.POINT.toString()) &&
-        !ds.findAttValueIgnoreCase(null, "cdm_datatype", "").equalsIgnoreCase(FeatureType.POINT.toString()))
+    FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", null);
+    if (ft == null )
+      ft = Evaluator.getFeatureType(ds, ":cdm_data_type", null);
+
+    if ((ft == null) || ((ft != FeatureType.STATION) && (ft != FeatureType.POINT)))
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
@@ -61,9 +65,21 @@ public class UnidataPointObs implements TableConfigurer {
       return null;
     }
 
-    FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", errlog);
-    if (ft == FeatureType.POINT) {
+    FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", null);
+    if (ft == null )
+      ft = Evaluator.getFeatureType(ds, ":cdm_data_type", null);
 
+    if (ft == FeatureType.POINT) {
+      TableConfig result = new TableConfig(NestedTable.TableType.Structure, "record");
+      result.featureType = FeatureType.POINT;
+
+      result.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);
+      result.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
+      result.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon);
+      result.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
+
+      result.dim = obsDim;
+      return result;
     }
 
     // otherwise its a Station

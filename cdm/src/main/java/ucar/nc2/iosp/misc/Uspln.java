@@ -42,7 +42,7 @@ import java.text.ParseException;
  *
  * @author caron
  */
-public class UspLightning3  extends AbstractIOServiceProvider {
+public class Uspln extends AbstractIOServiceProvider {
 /*  USPLN data format:
 
 Each 1 minute packet sent has an ASCII header, followed by a record for
@@ -110,6 +110,8 @@ these are long-range detections.
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
     int n = MAGIC.length();
+    if (raf.length() < n) return false;
+
     byte[] b = new byte[n];
     raf.read(b);
     String got = new String(b);

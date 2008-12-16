@@ -395,6 +395,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     return null;
   }
 
+  /* convert original structureData to one that conforms to this Structure */
   protected StructureData convert(StructureData sdata) throws IOException {
     StructureMembers smResult = new StructureMembers(sdata.getStructureMembers());
     StructureDataW result = new StructureDataW(smResult);
@@ -509,10 +510,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
    private class StructureDataConverter implements StructureDataIterator {
       StructureDataIterator orgIter;
-      StructureDS orgStruct;
+      StructureDS newStruct;
 
-      StructureDataConverter(StructureDS orgStruct, StructureDataIterator orgIter) {
-        this.orgStruct = orgStruct;
+      StructureDataConverter(StructureDS newStruct, StructureDataIterator orgIter) {
+        this.newStruct = newStruct;
         this.orgIter = orgIter;
       }
 
@@ -522,7 +523,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
       public StructureData next() throws IOException {
         StructureData sdata = orgIter.next();
-        return orgStruct.convert( sdata);
+        return newStruct.convert( sdata);
       }
 
       public void setBufferSize(int bytes) {

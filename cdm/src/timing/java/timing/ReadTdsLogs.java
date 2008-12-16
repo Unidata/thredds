@@ -52,16 +52,18 @@ public class ReadTdsLogs {
 
   final String server;
   Formatter out;
-  boolean dump = true;
+  boolean dump = false;
 
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(10);
-    completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // unbounded, threadsafe
+    executor = Executors.newFixedThreadPool(1);
+    completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
     completionService = new ExecutorCompletionService(executor, completionQ);
 
     out = new Formatter(new FileOutputStream("C:/TEMP/readTDSnew1.csv"));
+    out.format("url, size, org, new, speedup, fail %n");
+
     resultProcessingThread = new Thread(new ResultProcessor());
     resultProcessingThread.start();
   }
@@ -69,6 +71,7 @@ public class ReadTdsLogs {
   public class SendRequestTask implements Callable<SendRequestTask> {
     Log log;
     boolean failed = false;
+    String failMessage;
     long msecs;
 
     SendRequestTask(Log log) {
@@ -90,6 +93,7 @@ public class ReadTdsLogs {
 
       } catch (Throwable t) {
         failed = true;
+        failMessage = t.getMessage();
       }
 
       return this;
@@ -113,34 +117,35 @@ public class ReadTdsLogs {
           String urlString = server + log.path;
           out.format("\"%s\",%d,%d",urlString,log.sizeBytes ,log.msecs);
           if (dump) System.out.printf("\"%s\",%d,%d",urlString,log.sizeBytes ,log.msecs);
-          long start = System.nanoTime();
           float speedup = (itask.msecs > 0) ? ((float) log.msecs) / itask.msecs : 0;
 
           out.format(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
+          if (itask.failed) System.out.printf("***FAIL %s %s %n", log.path, itask.failMessage);
           if (dump) System.out.printf(",%d,%f,%s%n", itask.msecs, speedup, itask.failed);
         } catch (InterruptedException e) {
           cancel = true;
 
         } catch (Exception e) {
-          logger.error("MessageBroker.IndexProcessor ", e);
+          logger.error("ResultProcessor ", e);
         }
       }
-      System.out.println("exit IndexProcessor");
+      System.out.println("exit ResultProcessor");
     }
   }
 
-  public void exit() throws IOException {
+  public void exit(int secs) throws IOException {
 
     executor.shutdown(); // Disable new tasks from being submitted
     try {
-      // Wait a while for existing tasks to terminate
-      if (!executor.awaitTermination(60, TimeUnit.MINUTES)) {
+      // Wait for existing tasks to terminate
+      if (!executor.awaitTermination(secs, TimeUnit.SECONDS)) {
         executor.shutdownNow(); // Cancel currently executing tasks
         // Wait a while for tasks to respond to being cancelled
-        if (!executor.awaitTermination(60, TimeUnit.MINUTES))
+        if (!executor.awaitTermination(secs, TimeUnit.SECONDS))
             System.err.println("Pool did not terminate");
       }
     } catch (InterruptedException ie) {
+      System.out.println("exit interrupted");
       // (Re-)Cancel if current thread also interrupted
       executor.shutdownNow();
       // Preserve interrupt status
@@ -564,16 +569,16 @@ public class ReadTdsLogs {
     // */
 
     // sendRequests
-    final ReadTdsLogs reader = new ReadTdsLogs("http://newmotherlode.ucar.edu:8081");
+    final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:8081");
 
     long startElapsed = System.nanoTime();
 
-    read("d:/motherlode/logs/access.2008-09-29.log", new MClosure() {
+    read("d:/motherlode/logs/", new MClosure() {
       public void run(String filename) throws IOException {
         reader.sendRequests(filename, -1);
       }
     });
-    reader.exit();
+    reader.exit(10 * 3600);
 
     long elapsedTime = System.nanoTime() - startElapsed;
     System.out.println("elapsed= "+elapsedTime/(1000 * 1000 * 1000)+ "secs");

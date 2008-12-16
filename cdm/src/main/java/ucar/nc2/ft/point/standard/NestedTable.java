@@ -38,6 +38,7 @@ import java.text.ParseException;
 
 /**
  * Implements "nested table" views of point feature datasets.
+ * A NestedTable is typically initialized with a TableConfig, which encapsolates info.
  * <p/>
  * A nested (aka flattened) table starts with a leaf table (no children), plus all of its parents.
  * There is a "join" for each child and parent.
@@ -343,7 +344,7 @@ public class NestedTable {
   public EarthLocation getEarthLocation(List<StructureData> structList) {
     double lat = latVE.getCoordValue(structList);
     double lon = lonVE.getCoordValue(structList);
-    double alt = (altVE == null) ? 0.0 : altVE.getCoordValue(structList);
+    double alt = (altVE == null) ? Double.NaN : altVE.getCoordValue(structList);
     return new EarthLocationImpl(lat, lon, alt);
   }
 
@@ -420,7 +421,7 @@ public class NestedTable {
           struct = (Structure) ds.findVariable(config.name);
         }
 
-        assert struct != null : "cant find "+config.name;
+        assert struct != null : "cant find Structure Variable = "+config.name;
         config.dim = struct.getDimension(0);
         for (Variable v : struct.getVariables())
           this.cols.add(v);

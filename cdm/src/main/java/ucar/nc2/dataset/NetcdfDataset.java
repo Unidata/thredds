@@ -760,7 +760,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public CoordinateAxis findCoordinateAxis(String fullName) {
     if (fullName == null) return null;
     for (CoordinateAxis v : coordAxes) {
-      if (fullName.equals(v.getName())) // LOOK WRONG must be escaped !!
+      String n = v.getName();
+      if (fullName.equals(n)) // LOOK WRONG must be escaped !!
         return v;
     }
     return null;

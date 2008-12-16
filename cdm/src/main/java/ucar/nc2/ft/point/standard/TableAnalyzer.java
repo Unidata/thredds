@@ -49,10 +49,10 @@ public class TableAnalyzer {
     registerAnalyzer("Ndbc", Ndbc.class);
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class);
     registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeature.class);
-    registerAnalyzer("CF-1.0", CFpoint.class);
-    registerAnalyzer("CF-1.1", CFpoint.class);
-    registerAnalyzer("CF-1.2", CFpoint.class);
-    registerAnalyzer("CF-1.3", CFpoint.class);
+    registerAnalyzer("CF-1.0", CFpointObs.class);
+    registerAnalyzer("CF-1.1", CFpointObs.class);
+    registerAnalyzer("CF-1.2", CFpointObs.class);
+    registerAnalyzer("CF-1.3", CFpointObs.class);
 
     // further calls to registerConvention are by the user
     userMode = true;
@@ -95,6 +95,13 @@ public class TableAnalyzer {
     }
   }
 
+  /**
+   * Create a TableAnalyser for this dataset
+   * @param ftype
+   * @param ds
+   * @return TableAnalyser
+   * @throws IOException on read error
+   */
   static public TableAnalyzer factory(FeatureType ftype, NetcdfDataset ds) throws IOException {
 
     // look for the Conventions attribute
@@ -169,6 +176,7 @@ public class TableAnalyzer {
       }
     }
 
+    // Get a new TableConfigurer object
     TableConfigurer tc = null;
     if (anal != null) {
       try {
@@ -182,14 +190,16 @@ public class TableAnalyzer {
       }
     }
 
+    // Craet a TableAnalyzer with this TableConfigurer (may be null)
     TableAnalyzer analyzer = new TableAnalyzer(ds, tc);
 
-    // add the coord systems
+    // add the convention name used
     if (convName != null)
       analyzer.setConventionUsed(convName);
     else
       analyzer.userAdvice.format(" No 'Convention' global attribute.\n");
 
+    // construct the nested table object
     analyzer.analyze();
     return analyzer;
   }
@@ -242,6 +252,10 @@ public class TableAnalyzer {
 
   /////////////////////////////////////////////////////////
 
+  /**
+   * Make a nested table object for the dataset.
+   * @throws IOException
+   */
   protected void analyze() throws IOException {
     // for netcdf-3 files, convert record dimension to structure
     // LOOK may be problems when served via opendap
@@ -256,7 +270,6 @@ public class TableAnalyzer {
     }
 
     makeNestedTables();
-
   }
 
   protected void makeTables(boolean structAdded) throws IOException {

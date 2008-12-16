@@ -82,8 +82,8 @@ public class WriterCFPointObsDataset {
       for (Attribute att : globalAtts)
         ncfile.addAttribute(null, att);
     }
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.4"));
-    ncfile.addAttribute(null, new Attribute("CF:featureType", "point"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1"));
+    ncfile.addAttribute(null, new Attribute("CFfeatureType", "point"));
   }
 
   // private ArrayInt.D1 timeArray = new ArrayInt.D1(1);
@@ -147,7 +147,7 @@ public class WriterCFPointObsDataset {
         if (isExtraDimension(d))
           dimNames.append(" ").append(d.getName());
       }
-      Variable newVar = ncfile.addVariable(null, oldVar.getName(), oldVar.getDataType(), dimNames.toString());
+      Variable newVar = ncfile.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
       recordVars.add(newVar);
 
       List<Attribute> atts = oldVar.getAttributes();
@@ -280,42 +280,56 @@ public class WriterCFPointObsDataset {
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  public static void write(FeatureDatasetPoint pfDataset, String fileOut) throws IOException {
+  public static int write(FeatureDatasetPoint pfDataset, String fileOut) throws IOException {
     long start = System.currentTimeMillis();
 
     List<FeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
     if (featureCollectionList.size() < 1)
      throw new IOException("No features in "+pfDataset);
     FeatureCollection featureCollection = featureCollectionList.get(0);
-    if (featureCollection instanceof PointFeatureCollection)
+    if (!(featureCollection instanceof PointFeatureCollection))
       throw new IOException("Must be PointFeatureCollection, not "+featureCollection.getClass().getName());
     PointFeatureCollection pointFeatureCollection = (PointFeatureCollection) featureCollection;
 
-    StringBuilder errlog = new StringBuilder();
-
     FileOutputStream fos = new FileOutputStream(fileOut);
-    DataOutputStream out = new DataOutputStream(fos);
+    DataOutputStream out = new DataOutputStream( new BufferedOutputStream(fos, 10000));
     WriterCFPointObsDataset writer = null;
 
-    boolean first = true;
+    // LOOK BAD
+    List<VariableSimpleIF> dataVars = new ArrayList<VariableSimpleIF>();
+    ucar.nc2.NetcdfFile ncfile = pfDataset.getNetcdfFile();
+    if ((ncfile == null) || !(ncfile instanceof NetcdfDataset))  {
+      dataVars.addAll(pfDataset.getDataVariables());
+    } else {
+      NetcdfDataset ncd = (NetcdfDataset) ncfile;
+      for (VariableSimpleIF vs : pfDataset.getDataVariables()) {
+        if (ncd.findCoordinateAxis(vs.getName()) == null)
+          dataVars.add(vs);
+      }
+    }
 
+    int count = 0;
+    pointFeatureCollection.resetIteration();
     while (pointFeatureCollection.hasNext()) {
       PointFeature pointFeature = (PointFeature) pointFeatureCollection.next();
       StructureData data = pointFeature.getData();
-      if (first) {
+      if (count == 0) {
         ucar.nc2.ft.EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong
         writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
-        writer.writeHeader( VariableSimpleAdapter.convert(data.getStructureMembers()));
-        first = false;
+        writer.writeHeader( dataVars);
       }
       writer.writeRecord(pointFeature, data);
+      count++;
     }
 
     writer.finish();
+    out.flush();
+    out.close();
 
     long took = System.currentTimeMillis() - start;
-    System.out.println("Write " + pfDataset.getLocationURI() + " to " + fileOut + " took = " + took);
+    System.out.printf("Write %d records from %s to %s took %d msecs %n", count, pfDataset.getLocationURI(),fileOut,took);
+    return count;
   }
 
   public static void rewrite(String fileIn, String fileOut, boolean inMemory, boolean sort) throws IOException {

@@ -35,7 +35,13 @@ import java.io.IOException;
 
 /**
  * Standard handler for PointFeatureDataset.
- * Can handle ANY_POINT
+ * <ol>
+ * <li> Can handle ANY_POINT.
+ * <li> Must have time, lat, lon axis
+ * <li> Call TableAnalyzer.factory() to create a TableAnalyzer
+ * <li> TableAnalyzer must agree it can handle the requested FeatureType
+ * </ol>
+ *
  *
  * @author caron
  */
@@ -44,7 +50,15 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
 
   private TableAnalyzer analyser;
 
-  // FeatureDatasetFactory
+  /**
+   * Standard handler for PointFeatureDataset.
+   * <ol>
+   * <li> Can handle ANY_POINT.
+   * <li> Must have time, lat, lon axis
+   * <li> Call TableAnalyzer.factory() to create a TableAnalyzer
+   * <li> TableAnalyzer must agree it can handle the requested FeatureType
+   * </ol>
+   */
   public boolean isMine(FeatureType ftype, NetcdfDataset ds) throws IOException {
 
     if ((ftype != null) && (ftype != FeatureType.ANY_POINT)) {

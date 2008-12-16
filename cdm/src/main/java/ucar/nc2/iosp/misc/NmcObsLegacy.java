@@ -67,6 +67,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
+    if (raf.length() < 60) return false;
     byte[] h = raf.readBytes(60);
 
     // 32 - 56 are X's

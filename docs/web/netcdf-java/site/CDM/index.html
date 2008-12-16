@@ -10,10 +10,6 @@
 <h1>Unidata's Common Data Model Version 4 </h1>
 <h2>Overview</h2>
 <p> Unidata&rsquo;s Common Data Model (CDM) is an abstract <a href="http://en.wikipedia.org/wiki/Data_model">data model</a> for scientific datasets. It merges the <a href="http://www.unidata.ucar.edu/software/netcdf/">netCDF</a>, <a href="http://www.opendap.org/">OPeNDAP</a>, and <a href="http://www.hdfgroup.org/products/hdf5/">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many <a href="http://www.unidata.ucar.edu/software/netcdf-java/index.html#formats">file formats</a> besides netCDF. We call these  <em><strong>CDM files,</strong></em> a shorthand for <em>files that can be read by the NetCDF Java library and accessed through the CDM data model</em>. </p>
-<p>The CDM data model is close to, but not identical to the <a href="http://www.google.com/url?sa=t&source=web&ct=res&cd=1&url=http%3A//www.unidata.ucar.edu/presentations/Rew/nc4-iips.ppt&ei=_CgXSf6TCImMsAOQqKH7Cg&usg=AFQjCNHkGLUOBZlsXG3JNWfZ1mchBGM7kA&sig2=dBd8COl1oJYc7iQQSfYZaQ">netCDF-4 data model</a>. However there is a complete 2-way mapping between the two models. </p>
-<ul>
-  <li>Opaque type does not have the length in the type, arrays of Opaques may have different lengths.</li>
-</ul>
 <p>The Common Data Model has three layers, which build on top of each other to add successively richer semantics:</p>
 <ol>
   <li>The <strong><em>data access layer</em></strong>, also know as the <strong><em>syntactic layer,</em></strong> handles data reading and writing. </li>
@@ -27,37 +23,111 @@
 <p><strong>A Dataset </strong>may be a netCDF, HDF5, GRIB, etc. file, an OPeNDAP dataset, a collection of files, or anything else which can be accessed through the netCDF API. We sometimes use the term <em><strong>CDM dataset</strong></em> to mean any of these possibilities, and to emphasize that a dataset does not have to be a file in netCDF format.</p>
 <p>A <strong>Group</strong> is a container for Attributes, Dimensions, EnumTypedefs, Variables, and nested Groups<strong>. </strong>The Groups in a Dataset form a hierarchical tree, like directories on a disk.There is always at least one Group in a Dataset, the <strong>root Group</strong>, whose name is the empty string.  </p>
 <p>A <strong>Variable</strong> is a container for data. It has a <em>DataType</em>, a set of Dimensions that define its array shape, and optionally a set of Attributes. Any shared Dimension it uses must be in the same Group or a parent Group. </p>
-<p>A <strong>Dimension</strong> has a length, and is used to define the array shape of a Variable. It may be <em>shared</em> among Variables, which provides a simple yet powerful way of associating Variables. When a Dimension is shared, it has a unique name within the Group. If <em>unlimited</em>,  a Dimension's length may increase. If <em>variableLength</em>, then the actual length is data dependent, and can only be found by reading the data. A variableLength Dimension cannot be shared or unlimited. </p>
-<p>An <strong>Attribute</strong> has a name and a value, and associates arbitrary metadata with a Variable or a Group. The value is a one dimensional array of Strings or numeric values.</p>
+<p>A <strong>Dimension</strong>  is used to define the array shape of a Variable. It may be <em>shared</em> among Variables, which provides a simple yet powerful way of associating Variables. When a Dimension is shared, it has a unique name within the Group. If <em>unlimited</em>,  a Dimension's length may increase. If <em>variableLength</em>, then the actual length is data dependent, and can only be found by reading the data. A variableLength Dimension cannot be shared or unlimited. </p>
+<p>An <strong>Attribute</strong> has a name and a value, and associates arbitrary metadata with a Variable or a Group. The value is a scalar or one dimensional array of Strings or numeric values.</p>
 <p>A <strong>Structure</strong> is a type of Variable that contains other Variables, analogous to a <strong><em>struct</em></strong> in C, or a <em><strong>row</strong></em> in a relational database. In general, the data in a Structure are physically stored close together on disk, so that it is efficient to retrieve all of the data in a Structure at the same time. A Variable contained in a Structure is a <strong>member Variable</strong>, and can only be read in the context of its containing Structure. </p>
 <p>A <strong>Sequence</strong> is a one dimensional Structure whose length is not known until you actually read the data. To access the data in a Sequence, you can only iterate through the Sequence, getting the data in one Structure instance at a time. </p>
 <p>An <strong>EnumTypedef</strong> is an enumeration of Strings, used by Variables of type <em><strong>enum</strong></em>. </p>
 <p>An <strong>Array</strong> contains the actual data for a Variable after it is read from the disk or network. You get an Array from a Variable by calling <strong><em>read()</em></strong> or its variants. An Array is  rectangular in shape (like Fortran arrays). There is a specialized Array type for each of the DataTypes. </p>
 <p>An <strong>ArrayStructure</strong> is a subclass of Array that holds the data for Structure Variables. Essentially it is an array of  <strong>StructureData</strong> objects. </p>
-<p><strong>DataType</strong> describes the possible types of data: </p>
+<p><strong><a href="../reference/DataType.html">DataType</a></strong> describes the possible types of data: </p>
 <blockquote>
-  <p>The <strong>primitive numeric </strong> types are <strong><em>byte, short, int, long, float</em></strong> and <strong><em>double</em></strong>. The integer types (8-bit byte, 16-bit short, 32-bit int, 64-bit long) may be <em>signed</em> or <em>unsigned</em>.  </p>
+  <p>The <strong>primitive numeric </strong> types are <strong><em>byte, short, int, long, float</em></strong> and <strong><em>double</em></strong>. The integer types (8-bit byte, 16-bit short, 32-bit int, 64-bit long) may be <em>signed</em> or <em>unsigned</em>.    Variable and Array objects have <em>isUnsigned() </em>methods to indicate, and conversion to wider types is correctly done</p>
   <p>A <strong>String</strong> is a variable length array of <a href="http://unicode.org/">Unicode</a> characters. When reading/writing a String to a  file or other external representation, the characters are by default <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8 encoded</a> (note that ASCII is a subset of UTF-8). Libraries may use different internal representations, for example the Java library uses UTF-16 encoding. </p>
   <p>The <strong>char</strong> type contains uninterpreted  characters, one character per byte. Typically these contain 7-bit ASCII characters. </p>
-  <p>An <strong>enum</strong> type is an enumeration of (distinct integer value, String) pairs.. A Variable with enum type stores  integer values, which can be converted to the  String <em>enum value</em>.</p>
+  <p>An <strong>enum</strong> type is an enumeration of (distinct integer value, String) pairs. A Variable with enum type stores  integer values, which can be converted to the  String <em>enum value</em>. There are 3 enum types : <strong>enum1, enum2, </strong>and<strong> enum4</strong>, corresponding to storing the integer as a byte, short, or int.</p>
   <p>An <strong>opaque</strong> type stores uninterpreted blobs of bytes. The length of the blob is not known until it is read. An array of opaque objects may have different lengths for each of the blobs. </p>
 </blockquote>
 <p>An <strong>Object name</strong> refers to the name of a Group, Dimension, Variable,  Attribute, or EnumTypedef. An object name is a String,  a variable length array of Unicode characters. The <a href="Identifiers.html">set of allowed characters</a> is still being considered. </p>
-<hr WIDTH="100%">
-<h2>Coordinate Systems</h2>
+<h3>Comparision to netCDF-4</h3>
+<p>The CDM data model is close to, but not identical to the <a href="http://www.google.com/url?sa=t&source=web&ct=res&cd=1&url=http%3A//www.unidata.ucar.edu/presentations/Rew/nc4-iips.ppt&ei=_CgXSf6TCImMsAOQqKH7Cg&usg=AFQjCNHkGLUOBZlsXG3JNWfZ1mchBGM7kA&sig2=dBd8COl1oJYc7iQQSfYZaQ">netCDF-4 data model</a>. However there is a complete 2-way mapping between the two models. In the CDM:</p>
 <ul>
-  <li>see <a href="../reference/CSObjectModel.html">Coordinate System Object Model</a></li>
+  <li>An attribute type may only be a scalar or 1D array of byte, short, int, long, float, double, or String.</li>
+  <li>Variables that are members of Structures may have attributes attached directly to them.</li>
+  <li>The opaque type does not have the length of the opaque objects in the type, and so arrays of opaques may have different lengths.</li>
+  <li>There are not separate unsigned integer types. The Variable and Array objects have <em>isUnsigned() </em>methods, and conversion to wider types is correctly done. Since Java does not have unsigned types, the alternative is to automatically widen unsigned data arrays, which would double the memory used.</li>
+  <li>NetCDF-4 <em>user-defined types</em> are not kept independently from the variables that use them, except for <em>EnumTypedef</em>. The NetCDF-4 user-defined types are mapped to these CDM constructs:
+    <ul>
+        <li>A NetCDF-4 <em>Compound</em> is a CDM <em>Structure</em>.</li>
+      <li>A NetCDF-4 <em>Enum</em> is a CDM <em>enum1, enum2, </em>or<em> enum4</em> and references a <em>EnumTypedef</em> which holds the (enum, String) map.</li>
+      <li>A NetCDF-4 <em>Vlen</em> is mapped to a CDM <em>variable length Dimension</em>.</li>
+      <li>A NetCDF-4 <em>Opaque </em>type  is  a CDM <em>opaque </em>type, but the length of the data cannot be found until you read the variable.</li>
+    </ul>
+  </li>
 </ul>
+<h3>Comparision to OPeNDAP</h3>
+<ul>
+  <li>OPeNDAP allows nested attributes, but in the CDM, attributes  may only be a scalar or 1D array of byte, short, int, long, float, double, or String. </li>
+  <li>OPeNDAP does not have these data types: <em>signed byte</em>, <em>char</em>, <em>long</em>, <em>opaque</em>, <em>enum</em>.</li>
+  <li>OPeNDAP does not have shared dimensions. These can be approximated by map vectors in Grid datatypes, but one cannot share dimensions across Grids, or between Arrays.</li>
+  <li>OPeNDAP does not support Groups.</li>
+  <li>OPeNDAP Sequences map to CDM Sequences, but CDM does not support relational constraints at this layer. </li>
+</ul>
+<p></p>
+<hr WIDTH="100%">
+<h2>Coordinate System Object Model</h2>
+<p><img src="../images/CoordSys.png" alt="CoordSys Object model" width="610" height="341"></p>
+<p>&nbsp;</p>
+<p>A <em><strong>Variable</strong></em> can have zero or more Coordinate Systems containing one or more CoordinateAxis. A CoordinateAxis can only be part of a Variable's CoordinateSystem if the CoordinateAxis' 
+  set of Dimensions is a subset of the Variable's set of Dimensions. This ensures 
+  that every data point in the Variable has a corresponding coordinate value for 
+each of the CoordinateAxis in the CoordinateSystem. </p>
+<p>A <em><strong>Coordinate 
+  System</strong></em> has one or more CoordinateAxis, and zero 
+  or more CoordinateTransforms. </p>
+<p>A <em><strong>CoordinateAxis</strong></em> is 
+  a subtype of Variable, and is optionally  classified according to the types 
+  in <strong>AxisType</strong>. </p>
+<p>A <em><strong>CoordinateTransform</strong></em> abstractly represents a transformation between 
+  CoordinateSystems, and currently is either a <strong>Projection</strong> or a <strong>Vertical Transform</strong>. </p>
+<p>The <em><strong>AxisType</strong></em> enumerations are specific to the case 
+  of georeferencing coordinate systems. <em>Time</em> refers to the real date/time of the dataset. <em>Latitude</em> and <em>Longitude</em> identify standard horizontal coordinates. <em>Height</em> and <em>Pressure</em> identify the vertical coordinate.<em> GeoX</em> and <em>GeoY</em> are used in 
+  transfomations (eg projections) to <em>Latitude</em>, <em>Longitude</em>. <em>GeoZ</em> is used in vertical transformations to vertical <em>Height</em> or <em>Pressure</em>. <em>RadialAzimuth</em>, <em>RadialElevation</em> and <em>RadialDistance</em> designate polar coordinates and are used for Radial DataTypes. <em>RunTime</em> and <em>Ensemble</em> are used in forecast model output data. Often much more detailed information is required (geoid reference, projection 
+  parameters, etc), so these enumerations are quite minimal. </p>
+<p>Formally, a Variable is thought of as a sampled function whose domain is an 
+  index range; each CoordinateAxis is a scalar valued function on the same range; 
+  each CoordinateSystem is therefore a vector-valued function on the same range 
+  consisting of its CoordinateAxis functions. To take it one step further, when 
+  the CoordinateSystem function is invertible, the Variable can be thought of 
+  as a sampled function whose domain is the range of the Coordinate System, that 
+  is on <strong>Rn</strong> (the product space of real numbers). To be invertible, 
+  each CoordinateAxis should be invertible. For a 1-dimensional CoordinateAxis 
+  this simply means the coordinate values are strictly monotonic. For a 2 dimensional 
+  CoordinateAxis, it means that the lines connecting adjacent coordinates do not 
+  cross each other. For &gt; 2 dimensional CoordinateAxis, it means that the surfaces 
+connecting the adjacent coordinates do not intersect each other. </p>
+<h3>Current Encodings </h3>
+<p>Neither NetCDF, HDF5, or OPeNDAP have Coordinate Systems as part of their APIs and data models, so their specification in a file is left to  to higher level libraries (like HDF-EOS) and to <a href="http://www.unidata.ucar.edu/software/netcdf/conventions.html">conventions</a>. If you are writing netCDF files, we strongly recommend using   <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/">CF Conventions</a>.</p>
+<p>NetCDF has long had the convention of specifying a 1-dimensional CoordinateAxis 
+  with a <em><strong>coordinate variable</strong></em>, which is a Variable with 
+  the same name as its single dimension. This is a natural and elegant way to 
+  specify a 1-dimensional CoordinateAxis, since there is an automatic association 
+  of the Coordinate Variable with any Varaible that uses its dimension. Unfortunately 
+  there are not similarly elegant ways to specify a multidimensional CoordinateAxis, 
+  and so various attribute conventions have sprung up, that typically list the 
+  CoordinateAxis variables, for example the CF Conventions has:</p>
+<pre>  float lat(y,x);
+  float lon(y,x);
+  float temperature(y,x);
+    temperature:coordinates=&quot;lat lon&quot;;
+</pre>
+<p>Note that in this example, there is no CoordinateSystem object, so the same 
+  list has to be added to each Variable, and any CoordinateTransform specifications 
+  also have to be added to each Variable. However, the common case is that all 
+  the Variables in a  dataset use the same Coordinate System.</p>
+<p>The <strong>ucar.nc2.dataset</strong> layer reads various Conventions and extracts the Coordinate Systems using the CoordSysBuilder framework. We often use a set of internal attributes called the <a href="../reference/CoordinateAttributes.html">underscore Coordinate</a> attributes as a way to standardize the Coordinate Systems infomation. Although these may work when working with Unidata software, we do not recommend them as a substitute for conventions such as CF.</p>
 <hr WIDTH="100%">
 <h2>Scientific Feature Types<a name="ScientificFeatureTypes"></a></h2>
 <ul>
-  <li> CDM Feature Types <em> draft </em><a href="CDMfeatures.doc">doc</a></li>
+  <li><a href="../reference/FeatureDatasets/Overview.html">FeatureDataset APIs</a></li>
+  <li><a href="../reference/FeatureDatasets/PointFeatures.html">Point Feature APIs</a></li>
+  <li> <a href="http://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions">Proposed CF Convention for Point Observation Data</a></li>
+  <li>CDM Feature Types <em> draft </em><a href="CDMfeatures.doc">doc</a></li>
   <li>CDM Point Feature Types <em> draft </em><a href="CDMpoints.doc">doc</a></li>
-  <li><a href="http://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions">Proposed CF Convention for Point Observation Data</a></li>
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Nov 09, 2008 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Dec 15, 2008 
 </address>
 <p>&nbsp;</p>
 </body>

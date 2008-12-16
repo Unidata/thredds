@@ -2629,11 +2629,11 @@ public class ToolsUI extends JPanel {
 
     void doWriteCF( String filename) {
       try {
-        WriterCFPointObsDataset.write(pfDataset, filename);
-        JOptionPane.showMessageDialog(this, "File successfully written");
-      } catch (Exception ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
+        int count = WriterCFPointObsDataset.write(pfDataset, filename);
+        JOptionPane.showMessageDialog(this, count+" records written");
+      } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
+        e.printStackTrace();
       }
     }
 
@@ -2664,7 +2664,7 @@ public class ToolsUI extends JPanel {
         setSelectedItem(location);
         return true;
 
-      } catch (Exception e) {
+      } catch (Throwable e) {
         e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));
         ta.setText(log.toString());

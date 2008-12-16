@@ -40,12 +40,13 @@ import java.nio.ByteBuffer;
  * @author caron
  * @since Nov 3, 2008
  */
-public class CFpoint implements TableConfigurer {
+public class CFpointObs implements TableConfigurer {
   public enum CFFeatureType { point, station, trajectory }
+  private final String CFfeatureType = "CFfeatureType";
 
   public boolean isMine(NetcdfDataset ds) {
     // find datatype
-    String datatype = ds.findAttValueIgnoreCase(null, "CF:featureType", null);
+    String datatype = ds.findAttValueIgnoreCase(null, CFfeatureType, null);
     if (datatype == null)
       return false;
 
@@ -65,7 +66,7 @@ public class CFpoint implements TableConfigurer {
   }
 
   public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
-    String ftypeS = ds.findAttValueIgnoreCase(null, "CF:featureType", null);
+    String ftypeS = ds.findAttValueIgnoreCase(null, CFfeatureType, null);
     CFFeatureType ftype = CFFeatureType.valueOf(ftypeS);
     switch (ftype) {
       case point: return getPointConfig(ds, errlog);
@@ -77,7 +78,7 @@ public class CFpoint implements TableConfigurer {
   }
 
   private TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(NestedTable.TableType.Structure, "obs");
+    TableConfig nt = new TableConfig(NestedTable.TableType.Structure, "record");
     nt.featureType = FeatureType.POINT;
     CoordSysEvaluator(nt, ds, errlog);
     return nt;
@@ -110,7 +111,7 @@ public class CFpoint implements TableConfigurer {
 
     CoordSysEvaluator(nt, ds, errlog);
 
-    TableConfig obs = new TableConfig(NestedTable.TableType.MultiDim, "obs");
+    TableConfig obs = new TableConfig(NestedTable.TableType.MultiDim, "record");
     obs.dim = ds.findDimension("sample");
     obs.outer = ds.findDimension("traj");
     nt.addChild(obs);
