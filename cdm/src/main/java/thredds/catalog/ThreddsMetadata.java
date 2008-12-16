@@ -1580,6 +1580,10 @@ public class ThreddsMetadata {
 
     private volatile int hashCode = 0; // Bloch, item 8
 
+    public String toString()
+    {
+      return "Variable [" + name + "]";
+    }
 
     public int compareTo(Object o) {
       Variable ov = (Variable) o;
@@ -1683,8 +1687,18 @@ public class ThreddsMetadata {
 
     private volatile int hashCode = 0; // Bloch, item 8
 
-    public String toString() {
-      return mapUri == null ? "null" : mapUri.toString();
+    public String toString()
+    {
+      StringBuilder sb = new StringBuilder( "Variables" );
+      sb.append( " [" )
+        .append( getVocabulary() != null ? getVocabulary() : "" )
+        .append( "]" );
+      if ( mapUri != null )
+        sb.append( "map [").append( mapUri.toString()).append("]");
+      else
+        for ( Variable v : variables )
+          sb.append( " " ).append( v.toString() );
+      return sb.toString();
     }
   }
 
