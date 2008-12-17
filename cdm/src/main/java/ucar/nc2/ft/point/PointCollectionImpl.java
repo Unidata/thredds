@@ -75,6 +75,14 @@ public abstract class PointCollectionImpl implements PointFeatureCollection {
     return npts;
   }
 
+  public DateRange getDateRange() {
+    return dateRange;
+  }
+
+  public ucar.unidata.geoloc.LatLonRect getBoundingBox() {
+    return boundingBox;
+  }
+
   protected void setSize( int npts) {
     this.npts = npts;
   }

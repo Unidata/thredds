@@ -72,6 +72,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     // NetcdfDataset ds, Group group, String shortName,  DataType dataType, String dims, String units, String desc
     super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription());
     this.ncd = ncd;
+    this.orgName = org.orgName;
 
     List<Attribute> atts = org.getAttributes();
     for (Attribute att : atts) {

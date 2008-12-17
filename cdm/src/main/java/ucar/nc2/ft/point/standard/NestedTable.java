@@ -136,9 +136,9 @@ public class NestedTable {
 
     double getCoordValue(List<StructureData> structList) {
       StructureData struct = structList.get(nestingLevel);
-      StructureMembers members = struct.getStructureMembers();
-      StructureMembers.Member m = members.findMember(axisName);
-      return struct.convertScalarDouble(m);
+      //StructureMembers members = struct.getStructureMembers();
+      //StructureMembers.Member m = members.findMember(axisName);
+      return struct.convertScalarDouble(axisName);
     }
 
     String getCoordValueString(List<StructureData> structList) {

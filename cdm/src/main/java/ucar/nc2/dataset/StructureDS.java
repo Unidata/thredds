@@ -223,8 +223,6 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   protected Array _read() throws IOException {
     Array result;
 
-    // LOOK caching ??
-
     if (hasCachedData())
       result = super._read();
     else if (postReader != null)
@@ -237,14 +235,16 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       //return Array.factoryConstant(dataType.getPrimitiveClassType(), getShape(), data);
     }
 
-    return convert(result);
+    return convert(result, null);
   }
 
   // section of regular Variable
   @Override
   protected Array _read(Section section) throws IOException, InvalidRangeException {
-    Array result;
+    if (section.computeSize() == getSize())
+      return _read();
 
+    Array result;
     if (hasCachedData())
       result = super._read(section);
     else if (postReader != null)
@@ -258,33 +258,52 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
 
     // do any needed conversions (scale/offset, enums, etc)
-    return convert(result);
+    return convert(result, section);
   }
 
   ///////////////////////////////////////
 
-  private void convertMemberInfo(StructureMembers sm) {
-    for (StructureMembers.Member m : sm.getMembers()) {
-      Variable v = findVariable(m.getName());
-      if ((v == null) && (orgVar != null)) // may have been renamed
-        v = (Variable) findVariableFromOrgName(m.getName());
+  // is conversion needed?
 
-      if (v == null)
-        log.error("Cant find " + m.getName());
-      else
-        m.setVariableInfo(v.getShortName(), v.getDataType(), v.getUnitsString(), v.getDescription());
+  private boolean convertNeeded(StructureMembers smData) {
+
+    for (Variable v : getVariables()) {
+
+      if (v instanceof VariableDS) {
+        VariableDS vds = (VariableDS) v;
+        if (vds.getNeedScaleOffsetMissing() || vds.getNeedEnumConversion())
+          return true;
+      }
+
+      if (v instanceof StructureDS) {
+        StructureDS nested = (StructureDS) v;
+        if (nested.convertNeeded(null))
+          return true;
+      }
+
+      // a variable with no data in the underlying smData
+      if ((smData != null) && !varHasData(v, smData))
+        return true;
     }
+
+    return false;
   }
 
-  protected Array convert(Array data) throws IOException {
+  // posibile things needed:
+  //   1) scale/offset/enum conversion
+  //   2) name, info change
+  //   3) variable with cached data added to StructureDS through NcML
+  private Array convert(Array data, Section section) throws IOException {
     ArrayStructure orgAS = (ArrayStructure) data;
-    if (!isConvertNeeded(this, orgAS)) {
+    if (!convertNeeded(orgAS.getStructureMembers())) {
+      // name, info change only
       convertMemberInfo(orgAS.getStructureMembers());
       return data;
     }
 
-    ArrayStructure newAS = ArrayStructureMA.factoryMA(orgAS); // LOOK! converting to ArrayStructureMA
-
+    // LOOK! converting to ArrayStructureMA
+    // do any scale/offset/enum conversions
+    ArrayStructure newAS = ArrayStructureMA.factoryMA(orgAS);
     for (StructureMembers.Member m : newAS.getMembers()) {
       VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
       if ((v2 == null) && (orgVar != null)) // these are from orgVar - may have been renamed
@@ -308,7 +327,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
       } else if (v2 instanceof StructureDS) {
         StructureDS innerStruct = (StructureDS) v2;
-        if (innerStruct.isConvertNeeded(innerStruct, null)) {
+        if (innerStruct.convertNeeded(null)) {
 
           if (innerStruct.getDataType() == DataType.SEQUENCE) {
             ArrayObject.D1 seqArray = (ArrayObject.D1) newAS.extractMemberArray(m);
@@ -324,7 +343,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
             // non-Sequence Structures
           } else {
             Array mdata = newAS.extractMemberArray(m);
-            mdata = innerStruct.convert(mdata);
+            mdata = innerStruct.convert(mdata, null);
             newAS.setMemberArray(m, mdata);
           }
 
@@ -335,68 +354,34 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       }
     }
 
-    convertMemberInfo(newAS.getStructureMembers());
+    StructureMembers sm = newAS.getStructureMembers();
+    convertMemberInfo(sm);
+
+    // check for variables that have been added by NcML
+    for (Variable v : getVariables()) {
+      if (!varHasData(v, sm)) {
+        try {
+          Variable completeVar = getParentGroup().findVariable(v.getShortName()); // LOOK BAD
+          Array mdata = completeVar.read(section);
+          StructureMembers.Member m = sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());
+          newAS.setMemberArray(m, mdata);
+        } catch (InvalidRangeException e) {
+          throw new IOException(e.getMessage());
+        }
+      }
+    }
+
     return newAS;
   }
 
-  protected boolean isConvertNeeded(Structure s, ArrayStructure as) {
-
-    if (as == null) { // check everything
-      for (Variable v : s.getVariables()) {
-
-        if (v instanceof VariableDS) {
-          VariableDS vds = (VariableDS) v;
-          if (vds.getNeedScaleOffsetMissing() || vds.getNeedEnumConversion())
-            return true;
-        }
-
-        if (v instanceof StructureDS) {
-          StructureDS nested = (StructureDS) v;
-          if (isConvertNeeded(nested, null))
-            return true;
-        }
-      }
-      return false;
-    }
-
-    // only check the ones present in the ArrayStructure
-    for (StructureMembers.Member m : as.getMembers()) {
-      VariableEnhanced v2 = (VariableEnhanced) s.findVariable(m.getName());
-      if ((v2 == null) && (orgVar != null)) // tricky stuff in case NcML renamed the variable
-        v2 = findVariableFromOrgName(m.getName());
-      if (v2 == null) continue;
-
-      if (v2 instanceof VariableDS) {
-        VariableDS vds = (VariableDS) v2;
-        if (vds.getNeedScaleOffsetMissing() || vds.getNeedEnumConversion())
-          return true;
-      }
-
-      if (v2 instanceof StructureDS) {
-        StructureDS nested = (StructureDS) v2;
-        if (isConvertNeeded(nested, null))
-          return true;
-      }
-    }
-    return false;
-  }
-
-  private VariableEnhanced findVariableFromOrgName(String shortName) {
-    for (Variable vTop : getVariables()) {
-      Variable v = vTop;
-      while (v instanceof VariableEnhanced) {
-        Variable org = ((VariableEnhanced) v).getOriginalVariable();
-        if (org == null) break;
-        if (org.getShortName().equals(shortName))
-          return (VariableEnhanced) vTop;
-        v = org;
-      }
-    }
-    return null;
-  }
-
   /* convert original structureData to one that conforms to this Structure */
-  protected StructureData convert(StructureData sdata) throws IOException {
+  protected StructureData convert(StructureData sdata, int recno) throws IOException {
+    if (!convertNeeded(sdata.getStructureMembers())) {
+      // name, info change only
+      convertMemberInfo(sdata.getStructureMembers());
+      return sdata;
+    }
+
     StructureMembers smResult = new StructureMembers(sdata.getStructureMembers());
     StructureDataW result = new StructureDataW(smResult);
 
@@ -426,7 +411,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       // recurse into sub-structures
       if (v2 instanceof StructureDS) {
         StructureDS innerStruct = (StructureDS) v2;
-        if (innerStruct.isConvertNeeded(innerStruct, null)) {
+        if (innerStruct.convertNeeded(null)) {
 
           if (innerStruct.getDataType() == DataType.SEQUENCE) {
             Array a = sdata.getArray(m);
@@ -449,7 +434,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
             // non-Sequence Structures
           } else {
             Array mdata = sdata.getArray(m);
-            mdata = innerStruct.convert(mdata);
+            mdata = innerStruct.convert(mdata, null);
             result.setMemberData(mResult, mdata);
           }
         }
@@ -459,34 +444,72 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       }
     }
 
-    convertMemberInfo(result.getStructureMembers());
+    StructureMembers sm = result.getStructureMembers();
+    convertMemberInfo(sm);
+
+    // check for variables that have been added by NcML
+    for (Variable v : getVariables()) {
+      if (!varHasData(v, sm)) {
+        try {
+          Variable completeVar = getParentGroup().findVariable(v.getShortName()); // LOOK BAD
+          Array mdata = completeVar.read(new Section().appendRange(recno, recno));
+          StructureMembers.Member m = sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), v.getShape());
+          result.setMemberData(m, mdata);
+        } catch (InvalidRangeException e) {
+          throw new IOException(e.getMessage());
+        }
+      }
+    }
+
     return result;
   }
 
-  /* private void convertNested(ArrayStructure as, StructureMembers.Member outerM, StructureDS innerStruct) {
-   StructureMembers innerMembers = outerM.getStructureMembers(); // these are from orgVar - may have been renamed
+  // the wrapper StructureMembers must be converted to correspond to the wrapper Structure
+  private void convertMemberInfo(StructureMembers wrapperSm) {
+    for (StructureMembers.Member m : wrapperSm.getMembers()) {
+      Variable v = findVariable(m.getName());
+      if ((v == null) && (orgVar != null)) // may have been renamed
+        v = (Variable) findVariableFromOrgName(m.getName());
 
-   for (StructureMembers.Member innerM : innerMembers.getMembers()) {
-     VariableEnhanced v2 = (VariableEnhanced) innerStruct.findVariable( innerM.getName());
-     assert v2 != null;
+      if (v == null)
+        log.error("Cant find " + m.getName());
+      else
+        m.setVariableInfo(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType());
 
-     if (v2.hasScaleOffset() || (v2.hasMissing() && v2.getUseNaNs())) {
-       Array mdata = as.getMemberArray(innerM);
-       mdata = v2.convert(mdata);
-       as.setMemberArray(innerM, mdata);
-     }
+      // nested structures
+      if (v instanceof StructureDS) {
+        StructureDS innerStruct = (StructureDS) v;
+        innerStruct.convertMemberInfo(m.getStructureMembers());
+      }
 
-     // recurse into sub-structures
-     // recurse into sub-structures
-     if (v2 instanceof StructureDS) {
-       StructureDS inner = (StructureDS) v2;
-       if (inner.needsConverting(null)) {
-         convertNested(as, innerM, inner);
-       }
-     }
-     innerM.setVariableInfo(v2);
-   }
- } */
+    }
+  }
+
+  // look for the top variable that has an orgVar with the wanted orgName
+  private VariableEnhanced findVariableFromOrgName(String orgName) {
+    for (Variable vTop : getVariables()) {
+      Variable v = vTop;
+      while (v instanceof VariableEnhanced) {
+        VariableEnhanced ve = (VariableEnhanced) v;
+        if (ve.getOriginalName().equals(orgName)) return (VariableEnhanced) vTop;
+        v = ve.getOriginalVariable();
+      }
+    }
+    return null;
+  }
+
+  // verify that the variable has data in the data array
+  private boolean varHasData(Variable v, StructureMembers sm) {
+    if (sm.findMember(v.getShortName()) != null) return true;
+    while (v instanceof VariableEnhanced) {
+      VariableEnhanced ve = (VariableEnhanced) v;
+      if (sm.findMember(ve.getOriginalName()) != null) return true;
+      v = ve.getOriginalVariable();
+    }
+    return false;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private class SequenceConverter extends ArraySequence {
     StructureDS orgStruct;
@@ -498,7 +521,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       this.orgSeq = orgSeq;
 
       // copay and convert the members
-      members = new StructureMembers( orgSeq.getStructureMembers());
+      members = new StructureMembers(orgSeq.getStructureMembers());
       orgStruct.convertMemberInfo(members);
     }
 
@@ -508,36 +531,37 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
   }
 
-   private class StructureDataConverter implements StructureDataIterator {
-      StructureDataIterator orgIter;
-      StructureDS newStruct;
+  private class StructureDataConverter implements StructureDataIterator {
+    StructureDataIterator orgIter;
+    StructureDS newStruct;
+    int count = 0;
 
-      StructureDataConverter(StructureDS newStruct, StructureDataIterator orgIter) {
-        this.newStruct = newStruct;
-        this.orgIter = orgIter;
-      }
+    StructureDataConverter(StructureDS newStruct, StructureDataIterator orgIter) {
+      this.newStruct = newStruct;
+      this.orgIter = orgIter;
+    }
 
-      public boolean hasNext() throws IOException {
-        return orgIter.hasNext();
-      }
+    public boolean hasNext() throws IOException {
+      return orgIter.hasNext();
+    }
 
-      public StructureData next() throws IOException {
-        StructureData sdata = orgIter.next();
-        return newStruct.convert( sdata);
-      }
+    public StructureData next() throws IOException {
+      StructureData sdata = orgIter.next();
+      return newStruct.convert(sdata, count++);
+    }
 
-      public void setBufferSize(int bytes) {
-        orgIter.setBufferSize(bytes);
-      }
+    public void setBufferSize(int bytes) {
+      orgIter.setBufferSize(bytes);
+    }
 
-      public StructureDataIterator reset() {
-        orgIter.reset();
-        return this;
-      }
-   }
+    public StructureDataIterator reset() {
+      orgIter.reset();
+      return this;
+    }
+  }
 
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    StructureDataIterator iter = orgVar.getStructureIterator( bufferSize);
+    StructureDataIterator iter = orgVar.getStructureIterator(bufferSize);
     return new StructureDataConverter(this, iter);
   }
 
@@ -577,93 +601,5 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   public void setUnitsString(String units) {
     proxy.setUnitsString(units);
   }
-
-  /* public double getValidMax() {
-    return smProxy.getValidMax();
-  }
-
-  public double getValidMin() {
-    return smProxy.getValidMin();
-  }
-
-  public boolean hasFillValue() {
-    return smProxy.hasFillValue();
-  }
-
-  public boolean hasInvalidData() {
-    return smProxy.hasInvalidData();
-  }
-
-  public boolean hasMissing() {
-    return smProxy.hasMissing();
-  }
-
-  public boolean hasMissingValue() {
-    return smProxy.hasMissingValue();
-  }
-
-  public boolean hasScaleOffset() {
-    return smProxy.hasScaleOffset();
-  }
-
-  public boolean isFillValue(double p0) {
-    return smProxy.isFillValue(p0);
-  }
-
-  public boolean isInvalidData(double p0) {
-    return smProxy.isInvalidData(p0);
-  }
-
-  public boolean isMissing(double val) {
-    return smProxy.isMissing( val);
-  }
-
-  public boolean isMissingFast(double val) {
-    return smProxy.isMissingFast( val);
-  }
-
-  public boolean isMissingValue(double p0) {
-    return smProxy.isMissingValue(p0);
-  }
-
-  public void setFillValueIsMissing(boolean p0) {
-    smProxy.setFillValueIsMissing(p0);
-  }
-
-  public void setInvalidDataIsMissing(boolean p0) {
-    smProxy.setInvalidDataIsMissing(p0);
-  }
-
-  public void setMissingDataIsMissing(boolean p0) {
-    smProxy.setMissingDataIsMissing(p0);
-  }
-
-  public void setUseNaNs(boolean useNaNs) {
-    smProxy.setUseNaNs(useNaNs);
-  }
-
-  public boolean getUseNaNs() {
-    return smProxy.getUseNaNs();
-  }
-
-  public double convertScaleOffsetMissing(byte value) {
-    return smProxy.convertScaleOffsetMissing(value);
-  }
-
-  public double convertScaleOffsetMissing(short value) {
-    return smProxy.convertScaleOffsetMissing(value);
-  }
-
-  public double convertScaleOffsetMissing(int value) {
-    return smProxy.convertScaleOffsetMissing(value);
-  }
-
-  public double convertScaleOffsetMissing(long value) {
-    return smProxy.convertScaleOffsetMissing(value);
-  }
-
-  public double convertScaleOffsetMissing(double value) {
-    return smProxy.convertScaleOffsetMissing(value);
-  } */
 
 }

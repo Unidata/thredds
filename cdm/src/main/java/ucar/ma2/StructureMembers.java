@@ -331,7 +331,7 @@ public class StructureMembers {
       this.dataObject = o;
     }
 
-    public void setVariableInfo(String vname, DataType dtype, String unitString, String desc) {
+    public void setVariableInfo(String vname, String desc, String unitString, DataType dtype) {
       if (!this.name.equals(vname)) {
         memberHash.remove(name);
         name = vname;

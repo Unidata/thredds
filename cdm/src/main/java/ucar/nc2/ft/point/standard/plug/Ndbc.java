@@ -32,7 +32,7 @@ import java.util.Formatter;
  */
 public class Ndbc implements TableConfigurer {
 
-  public boolean isMine(NetcdfDataset ds) {
+  public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     if (!ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("COARDS")) return false;
     if (!ds.findAttValueIgnoreCase(null, "data_provider", "").equalsIgnoreCase("National Data Buoy Center"))
       return false;
@@ -63,7 +63,7 @@ public class Ndbc implements TableConfigurer {
   </stationFeature>
    */
 
-  public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(NestedTable.TableType.Singleton, "station");
     nt.featureType = FeatureType.STATION;
 

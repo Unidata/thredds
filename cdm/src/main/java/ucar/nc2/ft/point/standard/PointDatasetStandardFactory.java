@@ -34,14 +34,8 @@ import java.util.Formatter;
 import java.io.IOException;
 
 /**
- * Standard handler for PointFeatureDataset.
- * <ol>
- * <li> Can handle ANY_POINT.
- * <li> Must have time, lat, lon axis
- * <li> Call TableAnalyzer.factory() to create a TableAnalyzer
- * <li> TableAnalyzer must agree it can handle the requested FeatureType
- * </ol>
- *
+ * Standard handler for any Point obs dataset.
+ * Registered with FeatureDatasetFactoryManager.
  *
  * @author caron
  */
@@ -51,7 +45,8 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   private TableAnalyzer analyser;
 
   /**
-   * Standard handler for PointFeatureDataset.
+   * Cheeck if this is a POINT datatype. If so, a TableAnalyser is used to analyze its structure.
+   * The TableAnalyser is reused when the dataset is opened.
    * <ol>
    * <li> Can handle ANY_POINT.
    * <li> Must have time, lat, lon axis
@@ -85,7 +80,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
 
     // gotta do some work
     analyser = TableAnalyzer.factory(ftype, ds);
-    return analyser.featureTypeOk( ftype);
+    return (analyser != null) && analyser.featureTypeOk( ftype);
   }
 
   public FeatureDatasetFactory copy() {

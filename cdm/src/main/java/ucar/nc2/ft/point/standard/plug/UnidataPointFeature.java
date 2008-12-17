@@ -38,7 +38,7 @@ import java.nio.ByteBuffer;
  */
 public class UnidataPointFeature implements TableConfigurer {
 
-  public boolean isMine(NetcdfDataset ds) {
+  public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     // find datatype
     String datatype = ds.findAttValueIgnoreCase(null, "cdm_datatype", null);
     if (datatype == null)
@@ -63,7 +63,7 @@ public class UnidataPointFeature implements TableConfigurer {
   private static final String STN_LON = "Longitude";
   private static final String STN_ELEV = "Height_of_station";
 
-  public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     TableConfig nt = new TableConfig(NestedTable.TableType.ArrayStructure, "station");
     nt.featureType = FeatureType.STATION_PROFILE;
 

@@ -27,7 +27,7 @@ import ucar.nc2.Dimension;
 import java.util.Formatter;
 
 /**
- * Helper routine for Nested Tables
+ * Helper routines for Nested Tables
  * @author caron
  * @since Apr 23, 2008
  */
@@ -44,6 +44,13 @@ public class Evaluator {
     return ft;
   }
 
+  /**
+   * Translate key to value
+   * @param ds look in this datset
+   * @param key if starts with ":", look for global attribute
+   * @param errlog error messages here
+   * @return return global attribute value or the key itself
+   */
   static public String getLiteral(NetcdfDataset ds, String key, Formatter errlog) {
     if (key.startsWith(":")) {
       String val = ds.findAttValueIgnoreCase(null, key.substring(1), null);

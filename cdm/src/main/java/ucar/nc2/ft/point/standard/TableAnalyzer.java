@@ -21,9 +21,11 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.ft.coordsys.CoordSysEvaluator;
 import ucar.nc2.ft.point.standard.plug.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants.AxisType;
 
 import java.util.*;
 import java.io.IOException;
@@ -31,6 +33,7 @@ import java.lang.reflect.Method;
 
 /**
  * Analyzes the coordinate systems of a dataset to try to identify the Feature Type.
+ * Used by PointDatasetStandardFactory.
  *
  * @author caron
  * @since Mar 20, 2008
@@ -45,14 +48,16 @@ public class TableAnalyzer {
   // search in the order added
   static {
     registerAnalyzer("FslWindProfiler", FslWindProfiler.class);
-    registerAnalyzer("Madis", Madis.class);
+    registerAnalyzer("MADIS surface observations, v1.0", Madis.class);
     registerAnalyzer("Ndbc", Ndbc.class);
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class);
     registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeature.class);
+
     registerAnalyzer("CF-1.0", CFpointObs.class);
     registerAnalyzer("CF-1.1", CFpointObs.class);
     registerAnalyzer("CF-1.2", CFpointObs.class);
     registerAnalyzer("CF-1.3", CFpointObs.class);
+    registerAnalyzer("CF-1.4", CFpointObs.class);
 
     // further calls to registerConvention are by the user
     userMode = true;
@@ -97,12 +102,13 @@ public class TableAnalyzer {
 
   /**
    * Create a TableAnalyser for this dataset
-   * @param ftype
-   * @param ds
+   *
+   * @param wantFeatureType want this FeatureType
+   * @param ds for this dataset
    * @return TableAnalyser
    * @throws IOException on read error
    */
-  static public TableAnalyzer factory(FeatureType ftype, NetcdfDataset ds) throws IOException {
+  static public TableAnalyzer factory(FeatureType wantFeatureType, NetcdfDataset ds) throws IOException {
 
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
@@ -159,13 +165,13 @@ public class TableAnalyzer {
         Method m;
 
         try {
-          m = c.getMethod("isMine", new Class[]{NetcdfDataset.class});
+          m = c.getMethod("isMine", new Class[]{FeatureType.class, NetcdfDataset.class});
         } catch (NoSuchMethodException ex) {
           continue;
         }
 
         try {
-          Boolean result = (Boolean) m.invoke(conv.testObject, ds);
+          Boolean result = (Boolean) m.invoke(conv.testObject, wantFeatureType, ds);
           if (result) {
             anal = conv;
             break;
@@ -190,7 +196,7 @@ public class TableAnalyzer {
       }
     }
 
-    // Craet a TableAnalyzer with this TableConfigurer (may be null)
+    // Create a TableAnalyzer with this TableConfigurer (may be null)
     TableAnalyzer analyzer = new TableAnalyzer(ds, tc);
 
     // add the convention name used
@@ -200,7 +206,7 @@ public class TableAnalyzer {
       analyzer.userAdvice.format(" No 'Convention' global attribute.\n");
 
     // construct the nested table object
-    analyzer.analyze();
+    analyzer.analyze(wantFeatureType);
     return analyzer;
   }
 
@@ -254,24 +260,28 @@ public class TableAnalyzer {
 
   /**
    * Make a nested table object for the dataset.
-   * @throws IOException
+   * @param wantFeatureType want this FeatureType
+   * @throws IOException on read error
    */
-  protected void analyze() throws IOException {
+  protected void analyze(FeatureType wantFeatureType) throws IOException {
     // for netcdf-3 files, convert record dimension to structure
     // LOOK may be problems when served via opendap
     boolean structAdded = (Boolean) ds.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     if (tc == null) {
       makeTables(structAdded);
+      makeNestedTables();
+
     } else {
-      TableConfig config = tc.getConfig(ds, errlog);
+      TableConfig config = tc.getConfig(wantFeatureType, ds, errlog);
       if (config != null)
         addTableRecurse( config); // kinda stupid
     }
 
-    makeNestedTables();
+    makeLeaves();
   }
 
+  // no TableConfig was passed in - gotta wing it
   protected void makeTables(boolean structAdded) throws IOException {
 
     // make Structures into a table
@@ -281,6 +291,8 @@ public class TableAnalyzer {
       Variable v = iter.next();
       if (v instanceof Structure) {  // handles Sequences too
         TableConfig st = new TableConfig(NestedTable.TableType.Structure, v.getName());
+        CoordSysEvaluator.findCoords(st, ds);
+
         addTable(st);
         iter.remove();
         findNestedStructures((Structure) v, st); // look for nested structures
@@ -290,17 +302,24 @@ public class TableAnalyzer {
       }
     }
 
-    /* look for top level "pseudo structures"
-    List<Dimension> dims = ds.getDimensions();
-    for (Dimension dim : dims) {
-      List<Variable> svars = getStructVars(vars, dim);
-      if (svars.size() > 0) {
-        TableConfig st = new TableConfig(NestedTable.TableType.PseudoStructure, dim.getName()); // candidate
-        st.dim = dim;
-        addTable( st);
-      }
-    } */
+    if (tableSet.size() > 0) return;
 
+    // look at dimensions that lat, lon, time coordinates use
+    Set<Dimension> dimSet = new HashSet<Dimension>(10);
+    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
+      if ((axis.getAxisType() == AxisType.Lat) || (axis.getAxisType() == AxisType.Lon)|| (axis.getAxisType() == AxisType.Time))
+        for (Dimension dim : axis.getDimensions())
+          dimSet.add(dim);
+    }
+
+    if (dimSet.size() == 1) {
+      Dimension obsDim = (Dimension) dimSet.toArray()[0];
+      TableConfig st = new TableConfig(NestedTable.TableType.PseudoStructure, obsDim.getName()); 
+      st.dim = obsDim;
+      CoordSysEvaluator.findCoords(st, ds);
+
+      addTable( st);
+    }
 
   }
 
@@ -362,14 +381,15 @@ public class TableAnalyzer {
       if (parent.children == null) parent.children = new ArrayList<Join>();
       parent.children.add(join);
     } */
+  }
+
+  protected void makeLeaves() {
 
     // find the leaves
     for (TableConfig config : tableSet) {
       if (config.children == null) { // its a leaf
         NestedTable flatTable = new NestedTable(ds, config, errlog);
-        if (flatTable.isOk()) { // it has lat,lon,time coords
-          leaves.add(flatTable);
-        }
+        leaves.add(flatTable);
       }
     }
   }

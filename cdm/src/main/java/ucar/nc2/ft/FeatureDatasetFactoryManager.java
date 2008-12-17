@@ -45,11 +45,6 @@ public class FeatureDatasetFactoryManager {
 
   // search in the order added
   static {
-    //registerFactory(FeatureType.STATION_PROFILE, ucar.nc2.dt2.point.NmcStationProfileDatasetFactory.class);
-
-    //registerFactory(FeatureType.STATION, UnidataStationFeatureDatasetFactory.class);
-
-    //registerFactory(FeatureType.POINT, UnidataPointFeatureDatasetFactory.class);
     registerFactory(FeatureType.ANY_POINT, PointDatasetStandardFactory.class);
 
     // further calls to registerFactory are by the user
@@ -194,10 +189,14 @@ public class FeatureDatasetFactoryManager {
     if (want == null) return true;
     if (want == facType) return true;
 
-    // bit of a kludge I guess
     if (want == FeatureType.ANY_POINT) {
       return ((facType == FeatureType.POINT) || (facType == FeatureType.STATION) || (facType == FeatureType.TRAJECTORY) ||
           (facType == FeatureType.PROFILE) || (facType == FeatureType.STATION_PROFILE) || (facType == FeatureType.SECTION));
+    }
+
+    if (facType == FeatureType.ANY_POINT) {
+      return ((want == FeatureType.POINT) || (want == FeatureType.STATION) || (want == FeatureType.TRAJECTORY) ||
+          (want == FeatureType.PROFILE) || (want == FeatureType.STATION_PROFILE) || (want == FeatureType.SECTION));
     }
 
     return false;

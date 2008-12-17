@@ -47,9 +47,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   private boolean needScaleOffsetMissing = false;
   private boolean needEnumConversion = false;
 
-  protected Variable orgVar; // wrap this Variable
-  private DataType orgDataType; // keep seperate for the case where there is no ioVar.
-  private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
+  protected Variable orgVar; // wrap this Variable : use it for the I/O
+  protected DataType orgDataType; // keep seperate for the case where there is no ioVar.
+  protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
 
   /**
    * Constructor when there's no underlying variable.

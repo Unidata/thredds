@@ -36,7 +36,10 @@ import java.util.StringTokenizer;
  */
 public class UnidataPointObs implements TableConfigurer {
 
-  public boolean isMine(NetcdfDataset ds) {
+  public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
+    if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION) && (wantFeatureType != FeatureType.POINT))
+      return false;
+
     FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", null);
     if (ft == null )
       ft = Evaluator.getFeatureType(ds, ":cdm_data_type", null);
@@ -57,20 +60,21 @@ public class UnidataPointObs implements TableConfigurer {
     return false;
   }
 
-  public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
 
     Dimension obsDim = UnidataPointDatasetHelper.findObsDimension(ds);
     if (obsDim == null) {
       errlog.format("Must have an Observation dimension: named by global attribute 'observationDimension', or unlimited dimension");
       return null;
     }
+    NestedTable.TableType obsStructureType = obsDim.isUnlimited() ? NestedTable.TableType.Structure : NestedTable.TableType.PseudoStructure;
 
     FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", null);
     if (ft == null )
       ft = Evaluator.getFeatureType(ds, ":cdm_data_type", null);
 
-    if (ft == FeatureType.POINT) {
-      TableConfig result = new TableConfig(NestedTable.TableType.Structure, "record");
+    if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
+      TableConfig result = new TableConfig(obsStructureType, "record");
       result.featureType = FeatureType.POINT;
 
       result.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);

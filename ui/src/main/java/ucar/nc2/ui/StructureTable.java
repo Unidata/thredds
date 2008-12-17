@@ -404,7 +404,7 @@ public class StructureTable extends JPanel {
     public Object getValueAt(int row, int column) {
       if (wantDate && (column == 0))
         return getDate(row);
-      int memberCol = wantDate ? column - 1 : column;
+      //int memberCol = wantDate ? column - 1 : column;
 
       StructureData sd;
       try {
@@ -417,8 +417,9 @@ public class StructureTable extends JPanel {
         return "ERROR " + e.getMessage();
       }
 
-      StructureMembers.Member m = sd.getStructureMembers().getMember(memberCol);
-      return sd.getScalarObject(m);
+      String colName = getColumnName(column);
+      //StructureMembers.Member m = sd.getStructureMembers().getMember(memberCol);
+      return sd.getScalarObject(colName);
     }
 
     String enumLookup(StructureMembers.Member m, Number val) { return "sorry"; }

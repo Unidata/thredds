@@ -114,7 +114,7 @@ public abstract class PointIteratorImpl implements PointFeatureIterator {
       double deltaLat = bb.getUpperLeftPoint().getLatitude() - lat_min;
       bb = new LatLonRect(new LatLonPointImpl(lat_min, -180.0), deltaLat, 360.0);
     }
-    calcBB = false;
+    //calcBB = false;
   }
 
   /**

@@ -22,6 +22,7 @@ package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.ft.StationImpl;
+import ucar.nc2.ft.coordsys.CoordSysEvaluator;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -44,7 +45,7 @@ public class CFpointObs implements TableConfigurer {
   public enum CFFeatureType { point, station, trajectory }
   private final String CFfeatureType = "CFfeatureType";
 
-  public boolean isMine(NetcdfDataset ds) {
+  public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     // find datatype
     String datatype = ds.findAttValueIgnoreCase(null, CFfeatureType, null);
     if (datatype == null)
@@ -65,7 +66,7 @@ public class CFpointObs implements TableConfigurer {
     return false;
   }
 
-  public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     String ftypeS = ds.findAttValueIgnoreCase(null, CFfeatureType, null);
     CFFeatureType ftype = CFFeatureType.valueOf(ftypeS);
     switch (ftype) {
@@ -80,7 +81,7 @@ public class CFpointObs implements TableConfigurer {
   private TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(NestedTable.TableType.Structure, "record");
     nt.featureType = FeatureType.POINT;
-    CoordSysEvaluator(nt, ds, errlog);
+    CoordSysEvaluator.findCoords(nt, ds);
     return nt;
   }
 
@@ -109,7 +110,7 @@ public class CFpointObs implements TableConfigurer {
     TableConfig nt = new TableConfig(NestedTable.TableType.MultiDim, "trajectory");
     nt.featureType = FeatureType.TRAJECTORY;
 
-    CoordSysEvaluator(nt, ds, errlog);
+    CoordSysEvaluator.findCoords(nt, ds);
 
     TableConfig obs = new TableConfig(NestedTable.TableType.MultiDim, "record");
     obs.dim = ds.findDimension("sample");
@@ -121,25 +122,4 @@ public class CFpointObs implements TableConfigurer {
     return nt;
   }
 
-  private void CoordSysEvaluator(TableConfig nt, NetcdfDataset ds, Formatter errlog) {
-
-    CoordinateSystem use = null;
-    for (CoordinateSystem cs : ds.getCoordinateSystems()) {
-      if (use == null) use = cs;
-      else if (cs.getCoordinateAxes().size() > use.getCoordinateAxes().size())
-        use = cs;
-    }
-
-    for (CoordinateAxis axis : use.getCoordinateAxes()) {
-      if (axis.getAxisType() == AxisType.Lat)
-        nt.lat = axis.getShortName();
-      else if (axis.getAxisType() == AxisType.Lon)
-        nt.lon = axis.getShortName();
-      else if (axis.getAxisType() == AxisType.Time)
-        nt.time = axis.getShortName();
-      else if (axis.getAxisType() == AxisType.Height)
-        nt.elev = axis.getShortName();
-    }
-
-  }
 }

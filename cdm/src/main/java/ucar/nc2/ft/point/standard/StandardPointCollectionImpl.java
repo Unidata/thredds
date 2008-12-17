@@ -22,6 +22,7 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.FeatureDatasetImpl;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureData;
 
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 public class StandardPointCollectionImpl extends PointCollectionImpl {
   private DateUnit timeUnit;
   private NestedTable ft;
+  private FeatureDatasetImpl fd;
 
   StandardPointCollectionImpl(NestedTable ft, DateUnit timeUnit) {
     super(ft.getName());
@@ -64,11 +66,15 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
     @Override
     public boolean hasNext() throws IOException {
       boolean r = super.hasNext();
-      if (calcBB && !r) {
-        if (boundingBox == null)
-          boundingBox = getBoundingBox();
-        if (dateRange == null)
-          dateRange = getDateRange(timeUnit);
+      // if iteration is complete, capture info about collection
+      if (!r) {
+        if (npts < 0) npts = getCount();
+        if (calcBB) {
+          if (boundingBox == null)
+            boundingBox = getBoundingBox();
+          if (dateRange == null)
+            dateRange = getDateRange(timeUnit);
+        }
       }
       return r;
     }

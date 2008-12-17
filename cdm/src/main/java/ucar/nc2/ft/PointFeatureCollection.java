@@ -22,6 +22,7 @@ package ucar.nc2.ft;
 import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * A collection of PointFeatures.
@@ -57,6 +58,20 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @return number of points in the collection, or -1 if not known.
    */
   public int size();
+
+  /**
+   * Date range for the FeatureCollection. May not be known until after iterating through the collection.
+   *
+   * @return the date range for the entire dataset, or null if unknown
+   */
+  public DateRange getDateRange();
+
+  /**
+   * The boundingBox for the FeatureCollection. May not be known until after iterating through the collection.
+   *
+   * @return the lat/lon boundingBox for the entire dataset, or null if unknown.
+   */
+  public ucar.unidata.geoloc.LatLonRect getBoundingBox();
 
   /**
    * Get an iterator over the PointFeatures of this collection

@@ -68,6 +68,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   CoordinateAxis1D(NetcdfDataset ncd, CoordinateAxis1D org) {
     super( ncd, org.getParentGroup(), org.getShortName(), org.getDataType(), org.getDimensionsString(),
             org.getUnitsString(), org.getDescription());
+
+    this.orgName = org.orgName;
     this.cache = new Variable.Cache(); // decouple cache
     setIsLayer();
   }

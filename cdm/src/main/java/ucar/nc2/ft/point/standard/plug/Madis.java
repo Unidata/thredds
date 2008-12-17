@@ -22,6 +22,9 @@ package ucar.nc2.ft.point.standard.plug;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants.AxisType;
 
 import java.util.Formatter;
 
@@ -31,20 +34,22 @@ import java.util.Formatter;
  */
 public class Madis implements TableConfigurer {
 
-  public boolean isMine(NetcdfDataset ds) {
+  public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
+    if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION) && (wantFeatureType != FeatureType.POINT))
+      return false;
+
+    if (!ds.hasUnlimitedDimension()) return false;
+    if (ds.findDimension("recNum") == null) return false;
+
     if (ds.findVariable("staticIds") == null) return false;
     if (ds.findVariable("nStaticIds") == null) return false;
     if (ds.findVariable("lastRecord") == null) return false;
     if (ds.findVariable("prevRecord") == null) return false;
-    if (ds.findVariable("latitude") == null) return false;
-    if (ds.findVariable("longitude") == null) return false;
 
-    if (!ds.hasUnlimitedDimension()) return false;
-    if (ds.findGlobalAttribute("timeVariables") == null) return false;
-    if (ds.findGlobalAttribute("idVariables") == null) return false;
-
-    Attribute att = ds.findGlobalAttribute("title");
-    if ((att != null) && att.getStringValue().equals("MADIS ACARS data")) return false;
+    VNames vn = getVariableNames(ds, null);    
+    if (ds.findVariable(vn.lat) == null) return false;
+    if (ds.findVariable(vn.lon) == null) return false;
+    if (ds.findVariable(vn.obsTime) == null) return false;
 
     return true;
   }
@@ -71,22 +76,49 @@ public class Madis implements TableConfigurer {
   </stationCollection>
    */
 
-  public TableConfig getConfig(NetcdfDataset ds, Formatter errlog) {
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
+
+    Dimension obsDim = Evaluator.getDimension(ds, "recNum", errlog);
+    if (obsDim == null) {
+      errlog.format("Must have an Observation dimension: named recNum");
+      return null;
+    }
+    VNames vn = getVariableNames(ds, errlog);
+
+    NestedTable.TableType obsStructureType = obsDim.isUnlimited() ? NestedTable.TableType.Structure : NestedTable.TableType.PseudoStructure;
+    FeatureType ft = Evaluator.getFeatureType(ds, ":thredds_data_type", errlog);
+    if (null == ft) ft = FeatureType.POINT;
+
+    if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
+      TableConfig ptTable = new TableConfig(obsStructureType, "record");
+      ptTable.featureType = FeatureType.POINT;
+
+      ptTable.dim = obsDim;
+      ptTable.time = vn.obsTime;
+      ptTable.timeNominal = vn.nominalTime;
+      ptTable.lat = vn.lat;
+      ptTable.lon = vn.lon;
+      ptTable.elev = vn.elev;
+
+      return ptTable;
+    }
+
     TableConfig nt = new TableConfig(NestedTable.TableType.PseudoStructure, "station");
-    nt.featureType = Evaluator.getFeatureType(ds, ":thredds_data_type", errlog);
+    nt.featureType = ft;
 
     nt.dim = Evaluator.getDimension(ds, "maxStaticIds", errlog);
     nt.limit = Evaluator.getVariableName(ds, "nStaticIds", errlog);
 
     TableConfig obs = new TableConfig(NestedTable.TableType.Structure, "record");
     obs.dim = Evaluator.getDimension(ds, "recNum", errlog);
-    obs.time = Evaluator.getVariableName(ds, "timeObs", errlog);
-    obs.timeNominal = Evaluator.getVariableName(ds, "timeNominal", errlog);
+    obs.time = vn.obsTime;
+    obs.timeNominal = vn.nominalTime;
 
     obs.stnId = Evaluator.getVariableName(ds, ":stationIdVariable", errlog);
-    obs.stnWmoId = Evaluator.getVariableName(ds, "wmoId", errlog);
-    obs.lat = Evaluator.getVariableName(ds, "latitude", errlog);
-    obs.lon = Evaluator.getVariableName(ds, "longitude", errlog);
+    obs.stnDesc = Evaluator.getVariableName(ds, ":stationDescriptionVariable", errlog);
+    obs.lat = vn.lat;
+    obs.lon = vn.lon;
+    obs.elev = vn.elev;
 
     TableConfig.JoinConfig join = new TableConfig.JoinConfig(Join.Type.BackwardLinkedList);
     join.start = Evaluator.getVariableName(ds, "lastRecord", errlog);
@@ -97,5 +129,37 @@ public class Madis implements TableConfigurer {
     return nt;
   }
 
+  private class VNames {
+    String lat, lon, elev, obsTime, nominalTime;
+  }
+
+  private VNames getVariableNames(NetcdfDataset ds, Formatter errlog) {
+    VNames vn = new VNames();
+
+    String val = ds.findAttValueIgnoreCase(null, "stationLocationVariables", null);
+    if (val == null) {
+      if (errlog != null) errlog.format(" Cant find global attribute stationLocationVariables\n");
+      vn.lat = "latitude";
+      vn.lon = "longitude";
+    } else {
+      String[] vals = val.split(",");
+      if (vals.length > 0) vn.lat = vals[0];
+      if (vals.length > 1) vn.lon = vals[1];
+      if (vals.length > 2) vn.elev = vals[2];
+    }
+
+    val = ds.findAttValueIgnoreCase(null, "timeVariables", null);
+    if (val == null) {
+      if (errlog != null) errlog.format(" Cant find global attribute timeVariables\n");
+      vn.obsTime = "observationTime";
+      vn.nominalTime = "reportTime";
+    } else {
+      String[] vals = val.split(",");
+      if (vals.length > 0) vn.obsTime = vals[0];
+      if (vals.length > 1) vn.nominalTime = vals[1];
+    }
+
+    return vn;
+  }
 
 }
