@@ -1963,7 +1963,7 @@ class Nidsheader{
       }
       else {
         summary = ctilt + " is a radial image of base velocity at tilt " + (prod_elevation/10 + 1);
-        cunit = "m/s";
+        cunit = "KT";
       }
       cmemo = "Rad Vel "+ prod_elevation/10. + " DEG " + cmode[pinfo.opmode];
       ctitle = "VEL: Radial Velocity" ;
