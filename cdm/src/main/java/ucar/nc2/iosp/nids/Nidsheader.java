@@ -32,6 +32,8 @@ import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.projection.FlatEarth;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
+import ucar.unidata.io.bzip2.CBZip2InputStream;
+import ucar.unidata.io.bzip2.BZip2ReadException;
 
 import java.io.*;
 import java.nio.*;
@@ -68,7 +70,11 @@ class Nidsheader{
   final static int   StrmRelMeanVel = 13;
   final static int   VAD = 14;
   final static int   SPECTRUM = 15;
-
+  final static int   DigitalHybridReflect = 16;
+  final static int   DigitalStormTotalPrecip = 17;
+  final static int   Reflect1 = 18;
+  final static int   Velocity1 = 19;
+  final static int   SPECTRUM1 = 20;
   // message header block
   short mcode = 0;
   short mdate = 0;
@@ -115,7 +121,7 @@ class Nidsheader{
   int block_length = 0;
   short number_layers = 0;
   String stationId;
-  String stationName;
+  String stationName = "XXX";
   private boolean noHeader;
 
   DateFormatter formatter = new DateFormatter();
@@ -343,6 +349,10 @@ class Nidsheader{
     int pcode12Number = 0;
     int pcode13Number = 0;
     int pcode14Number = 0;
+    int pcode15Number = 0;
+    int pcode16Number = 0;
+    int pcode19Number = 0;
+    int pcode20Number = 0;
     int pkcode1Doff[] = null;
     int pkcode2Doff[] = null;
     int pkcode8Doff[] = null;
@@ -362,18 +372,38 @@ class Nidsheader{
     int pkcode12Dlen[] = null;
     int pkcode13Dlen[] = null;
     int pkcode14Dlen[] = null;
+    int pkcode15Dlen[] = null;
+    int pkcode15Doff[] = null;
+    int pkcode16Dlen[] = null;
+    int pkcode16Doff[] = null;
+    int pkcode19Dlen[] = null;
+    int pkcode19Doff[] = null;
+    int pkcode20Dlen[] = null;
+    int pkcode20Doff[] = null;
     // Get product symbology header (needed to get image shape)
     ifloop: if ( pinfo.offsetToSymbologyBlock != 0 ) {
 
       // Symbology header
+      if(pinfo.p8 == 1) {
+          // TDWR data and the symbology is compressed
+          int size = shortsToInt(pinfo.p9,  pinfo.p10, false);
+          uncompdata = uncompressed(bos, hedsiz, size);
+          bos = ByteBuffer.wrap(uncompdata);
+      }
+
       Sinfo sinfo = read_dividlen( bos, hedsiz );
       if( rc == 0 || pinfo.divider != -1 )
       {
           out.println( "error in product symbology header" );
       }
+
       if(sinfo.id != 1)
       {
-         break ifloop;
+          if(pinfo.pcode == 82) {
+              read_SATab( bos, hedsiz );
+          }
+          break ifloop;
+
       }
       hedsiz += 10;
 
@@ -489,6 +519,46 @@ class Nidsheader{
                       pkcode14Dlen[pcode14Number] = plen/4;
                       pcode14Number++;
                       break;
+                 case 15:
+                      if(pkcode15Doff == null) {
+                          pkcode15Doff = new int[250];
+                          pkcode15Dlen = new int[250];
+                      }
+                      plen = bos.getShort();
+                      pkcode15Doff[pcode15Number] = boff + 2;
+                      pkcode15Dlen[pcode15Number] = plen/4;
+                      pcode15Number++;
+                      break;
+                 case 166:
+                      if(pkcode16Doff == null) {
+                          pkcode16Doff = new int[250];
+                          pkcode16Dlen = new int[250];
+                      }
+                      plen = bos.getShort();
+                      pkcode16Doff[pcode16Number] = boff + 2;
+                      pkcode16Dlen[pcode16Number] = plen/4;
+                      pcode16Number++;
+                      break;
+                  case 19:
+                      if(pkcode19Doff == null) {
+                          pkcode19Doff = new int[250];
+                          pkcode19Dlen = new int[250];
+                      }
+                      plen = bos.getShort();
+                      pkcode19Doff[pcode19Number] = boff + 2;
+                      pkcode19Dlen[pcode19Number] = plen/4;
+                      pcode19Number++;
+                      break;
+                  case 20:
+                      if(pkcode20Doff == null) {
+                          pkcode20Doff = new int[250];
+                          pkcode20Dlen = new int[250];
+                      }
+                      plen = bos.getShort();
+                      pkcode20Doff[pcode20Number] = boff + 2;
+                      pkcode20Dlen[pcode20Number] = plen/4;
+                      pcode20Number++;
+                      break;
                  case 4:    // wind barb
                       if(pkcode4Doff == null) {
                           pkcode4Doff = new int[1000];
@@ -504,6 +574,9 @@ class Nidsheader{
                       plen = bos.getShort();
                       pkcode5Doff[pcode5Number] = boff + 2;
                       pcode5Number++;
+                      break;
+                 case 43:
+                      plen = bos.getShort();
                       break;
                  case 23:
                  case 24:
@@ -548,7 +621,7 @@ class Nidsheader{
                       break;
 
                  default:
-                      if ( pkcode == 0xAF1F ) {              /* radial image                  */
+                      if ( pkcode == 0xAF1F  || pkcode == 16) {              /* radial image                  */
                           hedsiz += pcode_radial( bos, hoff, hedsiz, isZ, uncompdata, pinfo.threshold) ;
                           //myInfo = new Vinfo (cname, numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ);
                           plen = Divlen_length;
@@ -579,13 +652,13 @@ class Nidsheader{
       //int curDoff = hedsiz;
 
       if(pkcode8Doff != null){
-          pcode_128( pkcode8Doff, pkcode8Size, 8, hoff, pcode8Number, "textStruct_code8", isZ);
+          pcode_128( pkcode8Doff, pkcode8Size, 8, hoff, pcode8Number, "textStruct_code8", "",isZ);
       }
       if (pkcode1Doff != null){
-          pcode_128( pkcode1Doff, pkcode1Size, 1, hoff, pcode1Number, "textStruct_code1", isZ);
+          pcode_128( pkcode1Doff, pkcode1Size, 1, hoff, pcode1Number, "textStruct_code1", "", isZ);
       }
       if (pkcode2Doff != null){
-          pcode_128( pkcode2Doff, pkcode2Size, 2, hoff, pcode2Number, "textStruct_code2", isZ);
+          pcode_128( pkcode2Doff, pkcode2Size, 2, hoff, pcode2Number, "textStruct_code2", "", isZ);
       }
       if (pkcode10Doff != null){
           pcode_10n9( pkcode10Doff, pkcode10Dlen, hoff, pcode10Number, isZ);
@@ -606,10 +679,16 @@ class Nidsheader{
           pcode_12n13n14( pkcode12Doff, pkcode12Dlen, hoff, pcode12Number, isZ, "TVS", 12);
       }
       if (pkcode13Doff != null){
-          pcode_12n13n14( pkcode13Doff, pkcode12Dlen, hoff, pcode13Number, isZ, "hailPositive", 13);
+          pcode_12n13n14( pkcode13Doff, pkcode13Dlen, hoff, pcode13Number, isZ, "hailPositive", 13);
       }
       if (pkcode14Doff != null){
-          pcode_12n13n14( pkcode14Doff, pkcode12Dlen, hoff, pcode14Number, isZ, "hailProbable", 14);
+          pcode_12n13n14( pkcode14Doff, pkcode14Dlen, hoff, pcode14Number, isZ, "hailProbable", 14);
+      }
+      if (pkcode19Doff != null){
+          pcode_12n13n14( pkcode19Doff, pkcode19Dlen, hoff, pcode19Number, isZ, "hailIndex", 19);
+      }
+      if (pkcode20Doff != null){
+          pcode_12n13n14( pkcode20Doff, pkcode20Dlen, hoff, pcode20Number, isZ, "mesocyclone", 20);
       }
     } else {
       out.println ( "GetNexrDirs:: no product symbology block found (no image data)" );
@@ -683,10 +762,10 @@ class Nidsheader{
          int lpage ;
          int ipage = 0;
          int plen ;
-         int ppos = bos.position();
-         while ( (clen < blen) && (ipage < npage) ) {
-            bos.position(ppos);
 
+         while ( (clen < blen) && (ipage < npage) ) {
+          //  bos.position(ppos);
+            int ppos = bos.position();
             ipage =  bos.getShort();
             lpage =  bos.getShort();
             int icnt = 0;
@@ -725,14 +804,18 @@ class Nidsheader{
                    plen =  bos.getShort();   // for unlinked Vector Packet the length of data block
 
                    gpkcode10Doff[gpcode10Number] = ppos + 4+ icnt;
-                   icnt += plen + 4;
                    gpkcode10Dlen[gpcode10Number] = ( plen - 2 ) / 8;
+                   icnt += plen + 4;
                    gpcode10Number++;
+                }  else {
+                   plen = bos.getShort();
+                   icnt += plen + 4;
                 }
-                else {
-                    out.println( "error reading pkcode equals " + pkcode);
-                    throw new IOException("error reading pkcode in graphic alpha num block " + pkcode);
-                }
+
+              //  else {
+              //      out.println( "error reading pkcode equals " + pkcode);
+              //      throw new IOException("error reading pkcode in graphic alpha num block " + pkcode);
+              //  }
 
             }
             ppos = ppos + lpage + 4;
@@ -740,13 +823,13 @@ class Nidsheader{
          }
 
          if(gpkcode8Doff != null){
-             pcode_128( gpkcode8Doff, gpkcode8Size, 8, hoff, gpcode8Number, "textStruct_code8", isZ);
+             pcode_128( gpkcode8Doff, gpkcode8Size, 8, hoff, gpcode8Number, "textStruct_code8g", "g", isZ);
          }
          if(gpkcode2Doff != null){
-             pcode_128( gpkcode2Doff, gpkcode2Size, 2, hoff, gpcode8Number, "textStruct_code2", isZ);
+             pcode_128( gpkcode2Doff, gpkcode2Size, 2, hoff, gpcode8Number, "textStruct_code2g", "g", isZ);
          }
          if(gpkcode1Doff != null){
-             pcode_128( gpkcode1Doff, gpkcode1Size, 1, hoff, gpcode1Number, "textStruct_code1", isZ);
+             pcode_128( gpkcode1Doff, gpkcode1Size, 1, hoff, gpcode1Number, "textStruct_code1g", "g", isZ);
          }
          if (gpkcode10Doff != null){
              pcode_10n9( gpkcode10Doff, gpkcode10Dlen, hoff, gpcode10Number, isZ);
@@ -1063,16 +1146,16 @@ class Nidsheader{
      * @return  1 if successful
      */
 
-     int pcode_128( int[] pos, int[] size, int code, int hoff, int len, String structName, boolean isZ )
+     int pcode_128( int[] pos, int[] size, int code, int hoff, int len, String structName, String abbre, boolean isZ )
      {
         //int vlen = len;
 
         ArrayList dims =  new ArrayList();
-        Dimension sDim = new Dimension("textStringSize" + code, len);
+        Dimension sDim = new Dimension("textStringSize"+ abbre + code, len);
         ncfile.addDimension( null, sDim);
         dims.add( sDim);
 
-        Structure dist = new Structure(ncfile, null, null, structName);
+        Structure dist = new Structure(ncfile, null, null, structName + abbre);
         dist.setDimensions(dims);
         ncfile.addVariable(null, dist);
         dist.addAttribute( new Attribute("long_name", "text and special symbol for code "+code));
@@ -1094,7 +1177,7 @@ class Nidsheader{
         j0.setDataType(DataType.SHORT);
         j0.addAttribute( new Attribute("units", "KM"));
         dist.addMemberVariable(j0);
-        Variable tstr = new Variable(ncfile, null, dist, "textString");
+        Variable tstr = new Variable(ncfile, null, dist, "textString" );
         tstr.setDimensions((String)null);
         tstr.setDataType(DataType.STRING);
         tstr.addAttribute( new Attribute("units", ""));
@@ -1490,6 +1573,27 @@ class Nidsheader{
         att = new Attribute(_Coordinate.AxisType, AxisType.Time.toString());
         addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "milliseconds since 1970-01-01 00:00 UTC"
                     ,hoff, hedsiz, isZ, 0);
+        //add RAW, BRIT variables for all radial variable
+        if(pcode == 182) {
+            levels = getTDWRLevels(nlevel, threshold);
+            iscale = 10;
+        } else if (pcode == 186) {
+            threshold[0] = -320;
+            threshold[1] = 5;
+            threshold[2] = 254;
+            levels = getTDWRLevels(nlevel, threshold);
+            iscale = 10;
+        } else if (pcode == 32 ) {
+            levels = getTDWRLevels1(nlevel, threshold);
+            iscale = 10;
+        } else if (pcode == 138) {
+            levels = getTDWRLevels1(nlevel, threshold);
+            iscale = 100;
+        }   else {
+            levels = getLevels(nlevel, threshold);
+        }
+
+        
 
         Variable v = new Variable(ncfile, null, null, cname + "_RAW");
         v.setDataType(DataType.BYTE);
@@ -1498,15 +1602,14 @@ class Nidsheader{
         v.addAttribute( new Attribute("units", cunit));
         String coordinates = "elevation azimuth gate rays_time latitude longitude altitude";
         v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
-        v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, 0, 0));
+        v.addAttribute( new Attribute("_unsigned", "true"));
+        v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, 0, nlevel));
 
-        //add RAW, BRIT variables for all radial variable
-        levels = getLevels(nlevel, threshold);
 
         // addVariable(cname + "_Brightness", ctitle + " Brightness", ncfile, dims, coordinates, DataType.FLOAT,
         //                 cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
 
-        if( cname.startsWith("BaseReflectivity") || cname.startsWith("SpectrumWidth")){
+        if( cname.endsWith("Reflectivity") || cname.startsWith("SpectrumWidth")){
 
           //addVariable(cname + "_VIP", ctitle + " VIP Level", ncfile, dims, coordinates, DataType.FLOAT,
           //             cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
@@ -1519,7 +1622,7 @@ class Nidsheader{
           addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
                        cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
         }
-        else if (cname.startsWith("Precip") ) {
+        else if (cname.startsWith("Precip") || cname.endsWith("Precip")) {
 
            addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
                        cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
@@ -1549,6 +1652,27 @@ class Nidsheader{
         return levels;
   }
 
+  public int[] getTDWRLevels(int nlevel, short[] th) {
+        int [] levels = new int[ th[2]+2 ];
+        int inc = th[1];
+        levels[0] = -9866;
+        levels[1] = -9866;
+        for ( int i = 2; i < nlevel+2; i++ ) {    /* calibrated data values        */
+            levels[i] = th[0] + (i-2) * inc;
+        }
+
+        return levels;
+  }
+
+  public int[] getTDWRLevels1(int nlevel, short[] th) {
+        int [] levels = new int[ th[2] ];
+        int inc = th[1];
+        for ( int i = 0; i < nlevel; i++ ) {    /* calibrated data values        */
+            levels[i] = th[0] + (i) * inc;
+        }
+
+        return levels;
+  }
   void addVariable(String pName, String longName, NetcdfFile nc, ArrayList dims, String coordinates,
                     DataType dtype, String ut, long hoff, long hedsiz, boolean isZ, int nlevel, int[] levels, int iscale)
   {
@@ -1627,16 +1751,32 @@ class Nidsheader{
             summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 32 nm";
         }
     }
-    else if (prod_type == Base_Reflect) {
+    else if (prod_type == DigitalHybridReflect) {
+      radial               = 1;
+      prod_elevation  = pinfo.p3;
+      cmemo = "Digital Hybrid Reflect " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
+
+      ctilt = pname_lookup(19, prod_elevation/10);
+      ctitle = "DigitalHybrid: Reflectivity";
+      cunit = "dbZ";
+      cname = "DigitalHybridReflectivity";
+      summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
+
+    } else if (prod_type == Base_Reflect || prod_type == Reflect1) {
       radial               = 1;
       prod_elevation  = pinfo.p3;
       cmemo = "Base Reflct " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-
-      ctilt = pname_lookup(19, prod_elevation/10);
+      if(prod_type == Reflect1){
+        ctilt = "R" + prod_elevation/10;
+        summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1);
+      }
+      else {
+        ctilt = pname_lookup(19, prod_elevation/10);
+        summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
+      }
       ctitle = "BREF: Base Reflectivity";
       cunit = "dbZ";
       cname = "BaseReflectivity";
-      summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
 
     } else if (prod_type == BaseReflect248) {
       radial               = 1;
@@ -1740,6 +1880,23 @@ class Nidsheader{
       lat_max = latitude + t1;
       lon_min = longitude + t2;
       lon_max = longitude - t2;
+    } else if (prod_type == DigitalStormTotalPrecip) {
+      radial               = 1;
+      prod_elevation  = -1;
+      //startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
+      endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
+      summary = "DSP is a radial image of digital storm total rainfall";
+      cmemo = "Digital Strm Total Precip [IN] " + cmode[pinfo.opmode] ;
+      ctilt = pname_lookup(80, elevationNumber);
+      ctitle = "DPRE: Digital Storm Total Rainfall" ;
+      cunit = "IN" ;
+      cname = "DigitalPrecip";
+      t1 = t1 * 2;
+      t2 = t2 * 2;
+      lat_min = latitude -  t1;
+      lat_max = latitude + t1;
+      lon_min = longitude + t2;
+      lon_max = longitude - t2;
     } else if (prod_type == Precip_Accum) {
       radial               = 1;
       prod_elevation  = -1;
@@ -1782,13 +1939,17 @@ class Nidsheader{
       lat_max = latitude + t1;
       lon_min = longitude + t2;
       lon_max = longitude - t2;
-    } else if (prod_type == Velocity) {
+    } else if (prod_type == Velocity || prod_type == Velocity1) {
       radial               = 1;
       prod_elevation  = pinfo.p3;
       prod_min        = pinfo.p4;
       prod_max        = pinfo.p5;
-      ctilt = pname_lookup(pinfo.pcode, prod_elevation/10);
-
+      if(prod_type == Velocity) {
+        ctilt = pname_lookup(pinfo.pcode, prod_elevation/10);
+      }
+      else {
+        ctilt = "V" + prod_elevation/10;
+      }
         
       if(pinfo.pcode == 25) {
         t1 = 32.0 * 1.853 / 111.26;
@@ -1798,13 +1959,14 @@ class Nidsheader{
         lon_min = longitude + t2;
         lon_max = longitude - t2;
         summary = ctilt + " is a radial image of base velocity" + (prod_elevation/10 + 1) +  " and  range 32 nm";
-
+        cunit = "KT";
       }
-      else
-        summary = ctilt + " is a radial image of base velocity at tilt " + (prod_elevation/10 + 1) +  " and  range 124 nm";
+      else {
+        summary = ctilt + " is a radial image of base velocity at tilt " + (prod_elevation/10 + 1);
+        cunit = "m/s";
+      }
       cmemo = "Rad Vel "+ prod_elevation/10. + " DEG " + cmode[pinfo.opmode];
       ctitle = "VEL: Radial Velocity" ;
-      cunit = "KT" ;
       cname = "RadialVelocity";
     } else if (prod_type == StrmRelMeanVel) {
       radial               = 1;
@@ -1840,7 +2002,7 @@ class Nidsheader{
     }
     /* add geo global att  */
     ncfile.addAttribute(null, new Attribute("summary", "Nexrad level 3 data are WSR-88D radar products." +
-              " There are total 41 products, and " + summary ));
+              summary ));
     ncfile.addAttribute(null, new Attribute("keywords_vocabulary", ctilt));
     ncfile.addAttribute(null, new Attribute("conventions", _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", "Level3/NIDS"));
@@ -1860,6 +2022,78 @@ class Nidsheader{
     ncfile.addAttribute(null, new Attribute("data_max", new Float(prod_max)));
     ncfile.addAttribute(null, new Attribute("isRadial", new Integer(radial)));
   }
+
+  byte[] uncompressed( ByteBuffer buf, int offset, int uncomplen ) throws IOException
+  {
+      byte[] header = new byte[offset];
+      buf.position(0);
+      buf.get(header);
+      byte[] out = new byte[offset+uncomplen];
+      System.arraycopy(header, 0, out, 0, offset);
+
+
+      CBZip2InputStream cbzip2 = new CBZip2InputStream();
+
+      int numCompBytes = buf.remaining();
+      byte[] bufc = new byte[numCompBytes];
+      buf.get(bufc, 0, numCompBytes);
+
+      ByteArrayInputStream bis = new ByteArrayInputStream(bufc, 2, numCompBytes - 2);
+
+       //CBZip2InputStream cbzip2 = new CBZip2InputStream(bis);
+       cbzip2.setStream(bis);
+      int total = 0;
+      int nread;
+      byte[] ubuff = new byte[40000];
+      byte[] obuff = new byte[40000];
+      try {
+            while ((nread = cbzip2.read(ubuff)) != -1) {
+              if (total + nread > obuff.length) {
+                byte[] temp = obuff;
+                obuff = new byte[temp.length * 2];
+                System.arraycopy(temp, 0, obuff, 0, temp.length);
+              }
+              System.arraycopy(ubuff, 0, obuff, total, nread);
+              total += nread;
+            }
+            if (obuff.length >= 0)
+              System.arraycopy(obuff, 0, out, offset, total);
+          } catch (BZip2ReadException ioe) {
+            log.warn("Nexrad2IOSP.uncompress ", ioe);
+      }
+
+      return out;
+
+  }
+   public static int shortsToInt(short s1, short s2, boolean swapBytes) {
+       byte[] b = new byte[4];
+       b[0] = (byte) (s1 >>> 8);
+       b[1] = (byte) (s1 >>> 0);
+       b[2] =  (byte) (s2 >>> 8);
+       b[3] =  (byte) (s2 >>> 0);
+       return bytesToInt(b, false);
+    }
+
+    public static int bytesToInt(byte [] bytes, boolean swapBytes) {
+        byte a = bytes[0];
+        byte b = bytes[1];
+        byte c = bytes[2];
+        byte d = bytes[3];
+        if (swapBytes) {
+            return ((a & 0xff) ) +
+                ((b & 0xff) << 8 ) +
+                ((c & 0xff) << 16 ) +
+                ((d & 0xff) << 24);
+        } else {
+            return ((a & 0xff) << 24 ) +
+                ((b & 0xff) << 16 ) +
+                ((c & 0xff) << 8 ) +
+                ((d & 0xff) );
+        }
+    }
+
+
+
   /*
   ** Name:       read_dividlen
   **
@@ -1891,7 +2125,52 @@ class Nidsheader{
 
   }
 
+   void read_SATab( ByteBuffer buf, int offset  )
+  {
 
+      byte[] b2 = new byte[2];
+
+      short B_divider;
+      short numPages;
+      short numChars;
+      short E_divider;
+      Short tShort ;
+
+      buf.position(offset);
+      buf.get(b2, 0, 2);
+      tShort = (Short)convert(b2, DataType.SHORT, -1);
+      B_divider  = tShort.shortValue();
+      if(B_divider != -1){
+         out.println( "error reading stand alone tab message");
+
+      }
+      buf.get(b2, 0, 2);
+      numPages = (Short)convert(b2, DataType.SHORT, -1);
+      int ppos =  buf.position();
+      for(int i = 0; i < numPages; i++){
+        buf.get(b2, 0, 2);
+        while(getInt(b2, 2) != -1) {
+            numChars  = (short)getInt(b2, 2);
+            if(numChars < 0){
+                break;
+            }
+            byte[] tmp = new byte[numChars];
+            buf.get(tmp);
+            String text = new String(tmp);
+            buf.get(b2, 0, 2);
+        }
+      }
+      ArrayList dims =  new ArrayList();
+      Dimension tbDim = new Dimension("pageNumber", numPages);
+      ncfile.addDimension( null, tbDim);
+      dims.add( tbDim);
+      Variable ppage = new Variable(ncfile, null, null, "TabMessagePage");
+      ppage.setDimensions(dims);
+      ppage.setDataType(DataType.STRING);
+      ppage.addAttribute( new Attribute("long_name", "Stand Alone Tabular Alphanumeric Product Message"));
+      ncfile.addVariable(null, ppage);
+      //ppage.setSPobject( new Vinfo (numPages, 0, tblen, 0, hoff, ppos, isR, false, null, null, 82, 0));
+  }
   /*
   ** Name:       read_msghead
   **
@@ -2045,7 +2324,7 @@ class Nidsheader{
 
       /* thredds global att */
       ncfile.addAttribute(null, new Attribute("title", "Nexrad Level 3 Data"));
-      ncfile.addAttribute(null, new Attribute("keywords", "WSR-88D; NIDS")); // N0R; N1R; N2R; N3R; N0V; N0S; N1S; N2S; NVL; NTP; N1P; N0Z; NET"));
+      ncfile.addAttribute(null, new Attribute("keywords", "WSR-88D; NIDS"));
       ncfile.addAttribute(null, new Attribute("creator_name", "NOAA/NWS"));
       ncfile.addAttribute(null, new Attribute("creator_url", "http://www.ncdc.noaa.gov/oa/radar/radarproducts.html"));
       ncfile.addAttribute(null, new Attribute("naming_authority", "NOAA/NCDC"));
@@ -2125,9 +2404,17 @@ class Nidsheader{
       buf.get(b2, 0, 2);
       p3 = (short)getInt(b2, 2);
       off += 40;
-      for(int i = 0; i< 16; i++) {
-        buf.get(b2, 0, 2);
-        threshold[i] = (short)getInt(b2, 2);
+      if(pcode == 182 || pcode == 186 || pcode == 32) {
+          for(int i = 0; i< 16; i++) {
+            buf.get(b2, 0, 2);
+            threshold[i] = (short)bytesToInt(b2[0], b2[1], false);
+          }
+      }
+      else {
+          for(int i = 0; i< 16; i++) {
+            buf.get(b2, 0, 2);
+            threshold[i] = (short)getInt(b2, 2);
+          }
       }
       off += 32;
       buf.get(b2, 0, 2);
@@ -2146,7 +2433,7 @@ class Nidsheader{
       buf.get(b2, 0, 2);
       p9 = (short)getInt(b2, 2);
       buf.get(b2, 0, 2);
-      p10 = (short)getInt(b2, 2);
+      p10 = (short)getInt(b2, 2); //bytesToInt(b2[0], b2[1], true); //
       off += 14;
 
       buf.get(b2, 0, 2);
@@ -2536,7 +2823,7 @@ class Nidsheader{
         Other, Base_Reflect, Base_Reflect, Base_Reflect, Base_Reflect,
         BaseReflect248, Base_Reflect, Velocity,                     /*  20- 29 */
         Velocity, Velocity, Velocity, Velocity, Velocity, SPECTRUM, SPECTRUM,
-        SPECTRUM, Other, Other, Other, Other,                          /*  30- 39 */
+        SPECTRUM, Other, DigitalHybridReflect, Other, Other,                          /*  30- 39 */
         Comp_Reflect, Comp_Reflect, Comp_Reflect, Comp_Reflect, Other,
         Other, Echo_Tops, Other, Other, Other,                      /*  40- 49 */
         Other, Other, Other, VAD, Other,
@@ -2553,10 +2840,26 @@ class Nidsheader{
         Other, Other, Other, Other, Other, Other,
         Other, Other, Other, Other, Other,                          /* 100-109 */
         Other, Other, Other, Other, Other,
+        Other, Other, Other, Other, Other,                          /* 110-119 */
+        Other, Other, Other, Other, Other,
+        Other, Other, Other, Other, Other,                          /* 120-129 */
+        Other, Other, Other, Other, Other,
+        Other, Other, Other, Other, Other,                          /* 130-139 */
+        Other, Other, Other, DigitalStormTotalPrecip, Other,
+        Other, Other, Other, Other, Other,                          /* 140-149 */
+        Other, Other, Other, Other, Other,
+        Other, Other, Other, Other, Other,                          /* 150-159 */
+        Other, Other, Other, Other, Other,
+        Other, Other, Other, Other, Other,                          /* 160-169 */
+        Other, Other, Other, Other, Other,
+        Other, Other, Other, Other, Other,                          /* 170-179 */
+        Other, Other, Other, Other, Other,
+        Reflect1, Reflect1, Velocity1, Velocity1, Other,       /* 180-189 */
+        SPECTRUM1, Reflect1, Reflect1, Other, Other,
       };
 
 
-      if ( code < 0 || code > 109 )
+      if ( code < 0 || code > 189 )
         type     = Other;
       else
         type     = types[code];
@@ -2571,10 +2874,7 @@ class Nidsheader{
       switch( code ){
           case 19:
               pname = "N" + elevation + "R";
-          //    if(elevation == 0) pname = "N0R";
-          //    else if (elevation == 1) pname = "N1R";
-          //    else if (elevation == 2) pname = "N2R";
-          //    else if (elevation == 3) pname = "N3R";
+
             break;
           case 20:
               pname = "N0Z";
@@ -2584,10 +2884,7 @@ class Nidsheader{
             break;
           case 27:
               pname = "N" + elevation + "V";
-          //    if(elevation == 0) pname = "N0V";
-          //    else if (elevation == 1) pname = "N1V";
-          //    else if (elevation == 2) pname = "N2V";
-          //    else if (elevation == 3) pname = "N3V";
+
             break;
           case 28:
             pname = "NSP";
@@ -2611,10 +2908,7 @@ class Nidsheader{
             pname = "NVW";
           case 56:
               pname = "N" + elevation + "S";
-          //    if(elevation == 0) pname = "N0S";
-          //    else if (elevation == 1) pname = "N1S";
-          //     else if (elevation == 2) pname = "N2S";
-          //     else if (elevation == 3) pname = "N3S";
+          
             break;
           case 57:
             pname = "NVL";
@@ -2640,6 +2934,23 @@ class Nidsheader{
           case 90:
             pname = "NHL";
             break;
+          case 182:
+            pname = "DV";
+            break;
+          case 187:
+          case 181:
+            pname = "R";
+            break;
+          case 186:
+          case 180:
+            pname = "DR";
+            break;
+          case 183:
+            pname = "V";
+            break;
+          case 185:
+            pname = "SW";
+            break;
 
           default:
               break;
@@ -2658,7 +2969,7 @@ class Nidsheader{
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /*   0-  9 */
         0,    0,    0,    0,    0,    0,    1,    2,    4,    1,    /*  10- 19 */
         2,    4, 0.25,  0.5,    1, 0.25,  0.5,    1, 0.25,    0,    /*  20- 29 */
-        1,    0,    0,    0,    0,    1,    4,    1,    4,    0,    /*  30- 39 */
+        1,    0,    1,    0,    0,    1,    4,    1,    4,    0,    /*  30- 39 */
         0,    4,    0,    0,    0,    0,    0,    0,    0,    0,    /*  40- 49 */
         0,    0,    0,    0,    0,  0.5,    1,    4,    0,    0,    /*  50- 59 */
         0,    0,    0,    4,    4,    4,    4,    0,    0,    0,    /*  60- 69 */
@@ -2666,10 +2977,18 @@ class Nidsheader{
         1,    0,    0,    0,    0,    0,    0,    0,    0,    4,    /*  80- 89 */
         4,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /*  90- 99 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 100-109 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 110-119 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 120-129 */
+        0,    0,    0,    0,    0,    0,    0,    0,    1,    0,    /* 130-139 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 140-149 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 150-159 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 160-169 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 170-179 */
+        0,  150.0, 150.0, 0,    0,    0, 300.0,   0,    0,    0,    /* 180-189 */
       };
 
 
-      if ( code < 0 || code > 109 )
+      if ( code < 0 || code > 189 )
         data_res = 0;
       else
         data_res = res[code];
@@ -2687,7 +3006,7 @@ class Nidsheader{
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /*   0-  9 */
         0,    0,    0,    0,    0,    0,    8,    8,    8,   16,    /*  10- 19 */
        16,   16,    8,    8,    8,   16,   16,   16,    8,    0,    /*  20- 29 */
-        8,    0,    0,    0,    0,    8,    8,   16,   16,    0,    /*  30- 39 */
+        8,    0,  256,    0,    0,    8,    8,   16,   16,    0,    /*  30- 39 */
         0,   16,    0,    0,    0,    0,    0,    0,    0,    0,    /*  40- 49 */
         0,    0,    0,    0,    0,   16,   16,   16,    0,    0,    /*  50- 59 */
         0,    0,    0,    8,    8,    8,    8,    0,    0,    0,    /*  60- 69 */
@@ -2695,10 +3014,18 @@ class Nidsheader{
        16,    0,    0,    0,    0,    0,    0,    0,    0,    8,    /*  80- 89 */
         8,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /*  90- 99 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 100-109 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 110-119 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 120-129 */
+        0,    0,    0,    0,    0,    0,    0,    0,  256,    0,    /* 130-139 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 140-149 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 150-159 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 160-169 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 170-179 */
+        0,   16,  254,    0,    0,    0,  254,    0,    0,    0,    /* 180-189 */
       };
 
 
-      if ( code < 0 || code > 109 )
+      if ( code < 0 || code > 189 )
         level = 0;
       else
         level = levels[code];

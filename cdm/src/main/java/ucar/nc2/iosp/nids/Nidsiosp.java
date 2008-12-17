@@ -554,19 +554,30 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
         int radialAngleD = bos.getShort();
         doff += 2;
       }
-      byte[] rdata = new byte[runLen * 2];
+      byte[] rdata = null;
+      byte[] bdata = null;
 
-      int tmpp = bos.remaining();
-      bos.get(rdata, 0, runLen * 2);
-      doff += runLen * 2;
-      byte[] bdata = readOneBeamData(rdata, runLen, vinfo.xt, doff);
 
+      if(vinfo.xt != runLen) {
+          rdata = new byte[runLen * 2];
+          bos.get(rdata, 0, runLen * 2);
+          doff += runLen * 2;
+          bdata = readOneBeamData(rdata, runLen, vinfo.xt, vinfo.level);
+      } else {
+          rdata = new byte[runLen];
+
+          bos.get(rdata, 0, runLen);
+          doff += runLen ;
+         // sdata = readOneBeamShortData(rdata, runLen, vinfo.xt, vinfo.level);
+          bdata = rdata;
+      }
 
       if (vinfo.x0 > 0) {
         for (int i = 0; i < vinfo.x0; i++) {
           odata[i] = 0;
         }
       }
+
       System.arraycopy(bdata, 0, odata, vinfo.x0, bdata.length);
 
       // copy into odata
@@ -581,8 +592,22 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
       for (int i = 0; i < npixel; i++) {
-        int ival = levels[pdata[i]];
-        if (ival > -9997)
+        int ival = levels[unsignedByteToInt(pdata[i])];
+        if (ival > -9997 && ival != -9866 )
+          fdata[i] = (float) ival / (float) iscale + (float) offset;
+        else
+          fdata[i] = Float.NaN;
+      }
+
+      return fdata;
+
+    } else if (vName.startsWith("DigitalHybridReflectivity")) {
+      int[] levels = vinfo.len;
+      int iscale = vinfo.code;
+      float[] fdata = new float[npixel];
+      for (int i = 0; i < npixel; i++) {
+        int ival = levels[unsignedByteToInt(pdata[i])];
+        if (ival != levels[0] && ival != levels[1])
           fdata[i] = (float) ival / (float) iscale + (float) offset;
         else
           fdata[i] = Float.NaN;
@@ -595,8 +620,9 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
       for (int i = 0; i < npixel; i++) {
-        int ival = levels[pdata[i]];
-        if (ival > -9996)
+        int ival = levels[convertunsignedByte2Short(pdata[i])];
+          
+        if (ival > -9996 && ival != -9866)
           fdata[i] = (float) ival / (float) iscale + (float) offset;
         else
           fdata[i] = Float.NaN;
@@ -616,12 +642,16 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       }
       return fdata;
 
-    } else if (vName.startsWith("Precip")) {
+    } else if (vName.startsWith("Precip") || vName.startsWith("DigitalPrecip")) {
       int[] levels = vinfo.len;
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
       for (int i = 0; i < npixel; i++) {
-        int ival = levels[pdata[i]];
+        int ival;
+        if(pdata[i] < 0)
+            ival = -9997;
+        else
+            ival = levels[pdata[i]];
         if (ival > -9996)
           fdata[i] = ((float) ival / (float) iscale + (float) offset);
         else
@@ -657,7 +687,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
   }
 
 
-  public byte[] readOneBeamData(byte[] ddata, int rLen, int xt, int off) throws IOException, InvalidRangeException {
+  public byte[] readOneBeamData(byte[] ddata, int rLen, int xt, int level) throws IOException, InvalidRangeException {
     int run;
     byte[] bdata = new byte[xt];
 
@@ -681,6 +711,26 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     return bdata;
   }
 
+  public short[] readOneBeamShortData(byte[] ddata, int rLen, int xt, int level) throws IOException, InvalidRangeException {
+    int run;
+    short[] sdata = new short[xt];
+
+    int total = 0;
+
+    for (run = 0; run < rLen ; run++) {
+        short dcode1 = convertunsignedByte2Short(ddata[run]);
+        sdata[run] = dcode1;
+        total++;
+    }
+
+    if (total < xt) {
+      for (run = total; run < xt; run++) {
+        sdata[run] = 0;
+      }
+    }
+
+    return sdata;
+  }
   /**
    * Read nested data
    *
@@ -1357,7 +1407,10 @@ asw.setStructureData(sdata, i);
       doff += 2;
       int radialAngleD = bos.getShort();
       doff += 2;
-      doff += runLen * 2;
+      if(vinfo.xt != runLen)
+        doff += runLen * 2;
+      else
+        doff += runLen;
       bos.position(doff);
       Float ra = new Float(radialAngle);
       azidata[radial] = ra.floatValue();
@@ -1388,7 +1441,7 @@ asw.setStructureData(sdata, i);
     //int doff = 0;
     float[] gatedata = new float[vinfo.xt];
     double ddg = Nidsheader.code_reslookup(pcode);
-    float sc = vinfo.y0 * 1.0f;
+    float sc = vinfo.y0 * 1.0f;  
     for (int rad = 0; rad < vinfo.xt; rad++) {
       gatedata[rad] = (vinfo.x0 + rad) * sc * (float)ddg;
 
@@ -1667,6 +1720,10 @@ asw.setStructureData(sdata, i);
 
   public short convertunsignedByte2Short(byte b) {
     return (short) ((b < 0) ? (short) b + 256 : (short) b);
+  }
+
+  public static int unsignedByteToInt(byte b) {
+      return (int) b & 0xFF;
   }
 
   protected boolean fill;
