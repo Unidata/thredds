@@ -1609,7 +1609,8 @@ class Nidsheader{
         // addVariable(cname + "_Brightness", ctitle + " Brightness", ncfile, dims, coordinates, DataType.FLOAT,
         //                 cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
 
-        if( cname.endsWith("Reflectivity") || cname.startsWith("SpectrumWidth")){
+        if( cname.startsWith("BaseReflectivity") || cname.endsWith("Reflectivity") ||
+                cname.startsWith("SpectrumWidth")){
 
           //addVariable(cname + "_VIP", ctitle + " VIP Level", ncfile, dims, coordinates, DataType.FLOAT,
           //             cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
