@@ -23,7 +23,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * _more_
+ * Handle all requests for HTML views of catalogs and any publicDoc HTML files.
+ *
+ * Currently, handles the following requests:
+ * <table style="text-align: left; width: 80%;" border="1"
+ cellpadding="2" cellspacing="2">
+
+ * <ul>
+ *   <li>Mapping="/catalog/*" -- ServletPath="/catalog" and PathInfo="/some/path/*.html"</li>
+ *   <li>Mapping="*.html"     -- ServletPath="/some/path/*.html" and PathInfo=null</li>
+ * </ul>
  *
  * @author edavis
  * @since 4.0
@@ -42,9 +51,15 @@ public class HtmlController extends AbstractController
   protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
           throws Exception
   {
-    String path = req.getServletPath();
-    if ( path == null || path.equals( "" ))
-      path = req.getPathInfo();
+    String path = req.getPathInfo();
+    if ( path == null )
+      path = req.getServletPath();
+    if ( path.equals( "" ))
+    {
+      log.error( "handleRequestInternal(): " );
+      throw new IllegalStateException( "HtmlController doesn't support \"/*\" servlet mappings.");
+    }
+    
     DataRootHandler drh = DataRootHandler.getInstance();
     String catPath = path.replaceAll( ".html$", ".xml" );
 

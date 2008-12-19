@@ -389,6 +389,7 @@
     <servlet-name>root</servlet-name>
     <url-pattern>*.gif</url-pattern>
   </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>debug</servlet-name>
     <url-pattern>/debug</url-pattern>
@@ -493,13 +494,13 @@
 
   <servlet-mapping>
     <servlet-name>CatalogServices</servlet-name>
-    <url-pattern>/catalogServices</url-pattern>
+    <url-pattern>/remoteCatalogServices</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
+  <!--servlet-mapping>
     <servlet-name>CdmValidator</servlet-name>
     <url-pattern>/cdmValidate</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping-->
 
   <servlet-mapping>
     <servlet-name>ForecastModelRunInventory</servlet-name>

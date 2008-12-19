@@ -39,7 +39,6 @@ import org.jdom.transform.XSLTransformer;
 import org.jdom.Document;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.util.StringUtil;
@@ -285,7 +284,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
 
   private InputStream getXSLT() {
     Class c = CoordSysValidatorServlet.class;
-    String resource = "/resources/xsl/cdmValidation.xsl";
+    String resource = "/WEB-INF/classes/resources/xsl/cdmValidation.xsl";
     InputStream is = c.getResourceAsStream(resource);
     if (null == is)
       log.error( "Cant load XSLT resource = " + resource);
