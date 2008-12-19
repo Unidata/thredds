@@ -7,27 +7,18 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <bean id="rootController" class="thredds.server.root.RootController" >
+  <bean id="catalogServiceController" class="thredds.server.controller.CatalogServiceController" >
     <property name="tdsContext" ref="tdsContext"/>
-  </bean>
-
-  <bean id="xmlController" class="thredds.server.root.XmlController" >
-    <property name="tdsContext" ref="tdsContext"/>
-    <property name="catalogSupportOnly" value="false" />
-  </bean>
-
-  <bean id="htmlController" class="thredds.server.root.HtmlController" >
-    <property name="tdsContext" ref="tdsContext"/>
-    <property name="catalogSupportOnly" value="false"/>
+    <property name="commandClass" value="thredds.server.controller.CatalogServiceRequest" />
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /=rootController
-        /**/*.html=htmlController
-        /**/*.xml=xmlController
-        /**/*=rootController
+        /=catalogServiceController
+        /**/*=catalogServiceController
+        /**/*.xml=catalogServiceController
+        /j/f.html=catalogServiceController
       </value>
     </property>
   </bean>

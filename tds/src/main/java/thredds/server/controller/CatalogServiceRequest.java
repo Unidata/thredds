@@ -10,30 +10,44 @@ import thredds.catalog.InvCatalogImpl;
  */
 public class CatalogServiceRequest
 {
-  private InvCatalogImpl catalog;
-  private boolean debug;
-  private Command command;
-  private View view;
-  private Identifier identifier;
+  private String catalog = null;
+  private boolean debug = false;
+  private String command = null;
+  private String view = null;
+  private String dataset = null;
 
-  public enum Command { SUBSET, VALIDATE }
-  public enum View { HTML, XML }
+//  public enum Command
+//  {
+//    SUBSET(), VALIDATE();
+//    private String altName;
+//    Command() { this.altName = this.name().toLowerCase(); }
+//    public String toString() { return this.altName; }
+//
+//    public static Command getCommand( String command )
+//    {
+//      for ( Command curSection : Command.values() )
+//        if ( curSection.altName.equals(  command ) )
+//          return curSection;
+//      throw new IllegalArgumentException( "No such instance [" + command + "]." );
+//    }
+//  }
+//  public enum View { HTML, XML }
+//
+//  public static class Identifier
+//  {
+//    private String id;
+//    public String getId() { return id; }
+//    public void setId( String id) { this.id = id; }
+//  }
 
-  public static class Identifier
-  {
-    private String id;
-    public String getId() { return id; }
-    public void setId( String id) { this.id = id; }
-  }
+  public CatalogServiceRequest() { }
 
-  public CatalogServiceRequest() {}
-
-  public InvCatalogImpl getCatalog()
+  public String getCatalog()
   {
     return catalog;
   }
 
-  public void setCatalog( InvCatalogImpl catalog )
+  public void setCatalog( String catalog )
   {
     this.catalog = catalog;
   }
@@ -48,33 +62,33 @@ public class CatalogServiceRequest
     this.debug = debug;
   }
 
-  public Command getCommand()
+  public String getCommand()
   {
     return command;
   }
 
-  public void setCommand( Command command )
+  public void setCommand( String command )
   {
     this.command = command;
   }
 
-  public View getView()
+  public String getView()
   {
     return view;
   }
 
-  public void setView( View view )
+  public void setView( String view )
   {
     this.view = view;
   }
 
-  public Identifier getDatasetId()
+  public String getDataset()
   {
-    return identifier;
+    return dataset;
   }
 
-  public void setDatasetId( Identifier identifier )
+  public void setDataset( String dataset )
   {
-    this.identifier = identifier;
+    this.dataset = dataset;
   }
 }

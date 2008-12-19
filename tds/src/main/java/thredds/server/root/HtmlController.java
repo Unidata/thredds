@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
+import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
 import thredds.server.views.FileView;
 import thredds.catalog.InvCatalog;
@@ -42,24 +43,38 @@ public class HtmlController extends AbstractController
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( HtmlController.class );
 
   private TdsContext tdsContext;
+  private boolean catalogSupportOnly;
 
   public void setTdsContext( TdsContext tdsContext )
   {
     this.tdsContext = tdsContext;
   }
 
+  public boolean isCatalogSupportOnly()
+  {
+    return catalogSupportOnly;
+  }
+
+  public void setCatalogSupportOnly( boolean catalogSupportOnly )
+  {
+    this.catalogSupportOnly = catalogSupportOnly;
+  }
+
   protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
           throws Exception
   {
+    // Determine Path
     String path = req.getPathInfo();
     if ( path == null )
       path = req.getServletPath();
     if ( path.equals( "" ))
     {
-      log.error( "handleRequestInternal(): " );
-      throw new IllegalStateException( "HtmlController doesn't support \"/*\" servlet mappings.");
+      String msg = "Root servlet mapping (\"/*\") not supported.";
+      log.error( "handleRequestInternal(): " + msg );
+      throw new IllegalStateException( msg );
     }
-    
+
+    // Check for matching catalog.
     DataRootHandler drh = DataRootHandler.getInstance();
     String catPath = path.replaceAll( ".html$", ".xml" );
 
@@ -75,49 +90,59 @@ public class HtmlController extends AbstractController
       cat = null;
     }
 
-    if ( cat == null )
+    // If matching catalog found, setup model and hand to catalog HTML view.
+    if ( cat != null )
     {
-      // If request doesn't match a known catalog, look for a public document.
-      File publicFile = tdsContext.getPublicDocFileSource().getFile( path );
-      if ( publicFile != null )
-        return new ModelAndView( new FileView(), "file", publicFile );
-
-      // If request doesn't match a public document, hand to default.
-      tdsContext.getDefaultRequestDispatcher().forward( req, res);
-      return null;
-    }
-
-    if ( true)
-    {
-      HtmlWriter.getInstance().writeCatalog( res, (InvCatalogImpl) cat, true );
-      return null;
-    }
-    else
-    {
-      // Hand to catalog view.
-      String catName = cat.getName();
-      String catUri = cat.getUriString();
-      if ( catName == null )
+      if ( true )
       {
-        List childrenDs = cat.getDatasets();
-        if ( childrenDs.size() == 1 )
-        {
-          InvDatasetImpl onlyChild = (InvDatasetImpl) childrenDs.get( 0 );
-          catName = onlyChild.getName();
-        }
-        else
-          catName = "";
+        HtmlWriter.getInstance().writeCatalog( res, (InvCatalogImpl) cat, true );
+        return null;
       }
+      else
+      {
+        // Hand to catalog view.
+        String catName = cat.getName();
+        String catUri = cat.getUriString();
+        if ( catName == null )
+        {
+          List childrenDs = cat.getDatasets();
+          if ( childrenDs.size() == 1 )
+          {
+            InvDatasetImpl onlyChild = (InvDatasetImpl) childrenDs.get( 0 );
+            catName = onlyChild.getName();
+          }
+          else
+            catName = "";
+        }
 
-      Map<String,Object> model = new HashMap<String,Object>();
-      model.put( "catalog", cat);
-      model.put( "catalogName", HtmlUtils.htmlEscape( catName));
-      model.put( "catalogUri", HtmlUtils.htmlEscape( catUri));
-      model.put( "webappName", this.getServletContext().getServletContextName() );
-      model.put( "webappVersion", tdsContext.getWebappVersion());
-      model.put( "webappBuildDate", tdsContext.getWebappBuildDate());
-      model.put( "webappDocsPath", tdsContext.getTdsConfigHtml().getWebappDocsPath());
-      return new ModelAndView( "thredds/server/catalog/catalog", model);
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put( "catalog", cat );
+        model.put( "catalogName", HtmlUtils.htmlEscape( catName ) );
+        model.put( "catalogUri", HtmlUtils.htmlEscape( catUri ) );
+        model.put( "webappName", this.getServletContext().getServletContextName() );
+        model.put( "webappVersion", tdsContext.getWebappVersion() );
+        model.put( "webappBuildDate", tdsContext.getWebappBuildDate() );
+        model.put( "webappDocsPath", tdsContext.getTdsConfigHtml().getWebappDocsPath() );
+        return new ModelAndView( "thredds/server/catalog/catalog", model );
+      }
     }
+
+    // If not supporting access to public document files, send not found response.
+    if ( this.catalogSupportOnly )
+    {
+      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
+      res.sendError( HttpServletResponse.SC_NOT_FOUND );
+      return null;
+    }
+
+    // If request doesn't match a known catalog, look for a public document.
+    File publicFile = tdsContext.getPublicDocFileSource().getFile( path );
+    if ( publicFile != null )
+      return new ModelAndView( new FileView(), "file", publicFile );
+
+    // If request doesn't match a public document, hand to default.
+    tdsContext.getDefaultRequestDispatcher().forward( req, res );
+    return null;
+
   }
 }

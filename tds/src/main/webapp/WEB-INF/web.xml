@@ -309,14 +309,16 @@
 
   <!-- Setup for the CatalogHtml servlet. (Catalog validation and translation into HTML.) -->
   <servlet>
-    <servlet-name>CatalogServlet</servlet-name>
-    <servlet-class>thredds.servlet.CatalogServlet</servlet-class>
+    <servlet-name>catalog</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <!--servlet-class>thredds.servlet.CatalogServlet</servlet-class-->
     <load-on-startup>2</load-on-startup>
   </servlet>
 
   <servlet>
-    <servlet-name>CatalogServices</servlet-name>
-    <servlet-class>thredds.servlet.CatalogServicesServlet</servlet-class>
+    <servlet-name>catalogService</servlet-name>
+    <!--servlet-class>thredds.servlet.CatalogServicesServlet</servlet-class-->
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 
@@ -483,18 +485,18 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>CatalogServlet</servlet-name>
+    <servlet-name>catalog</servlet-name>
     <url-pattern>/catalog/*</url-pattern>
   </servlet-mapping>
 
   <!-- servlet-mapping>
-    <servlet-name>CatalogServices</servlet-name>
+    <servlet-name>catalogService</servlet-name>
     <url-pattern>/catalog.html</url-pattern>
   </servlet-mapping -->
 
   <servlet-mapping>
-    <servlet-name>CatalogServices</servlet-name>
-    <url-pattern>/remoteCatalogServices</url-pattern>
+    <servlet-name>catalogService</servlet-name>
+    <url-pattern>/remoteCatalogService</url-pattern>
   </servlet-mapping>
 
   <!--servlet-mapping>
