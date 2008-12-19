@@ -18,7 +18,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package ucar.nc2.ft.coordsys;
+package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -27,7 +27,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.AxisType;
 
 /**
- * CoordSys Evaluation
+ * CoordinateSystem Evaluation utilities.
  *
  * @author caron
  * @since Dec 16, 2008
@@ -36,14 +36,7 @@ public class CoordSysEvaluator {
 
   static public void findCoords(TableConfig nt, NetcdfDataset ds) {
 
-    // find coordinate system with highest rank (largest number of axes)
-    CoordinateSystem use = null;
-    for (CoordinateSystem cs : ds.getCoordinateSystems()) {
-      if (use == null) use = cs;
-      else if (cs.getCoordinateAxes().size() > use.getCoordinateAxes().size())
-        use = cs;
-    }
-
+    CoordinateSystem use = findBestCoordinateSystem(ds);
     if (use == null) return;
 
     for (CoordinateAxis axis : use.getCoordinateAxes()) {
@@ -56,7 +49,36 @@ public class CoordSysEvaluator {
       else if (axis.getAxisType() == AxisType.Height)
         nt.elev = axis.getShortName();
     }
+  }
 
+  static public String findCoordNameByType(NetcdfDataset ds, AxisType atype) {
+    CoordinateAxis coordAxis = findCoordByType(ds, atype);
+    return coordAxis == null ? null : coordAxis.getName();
+  }
+
+
+  static public CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype) {
+
+    CoordinateSystem use = findBestCoordinateSystem(ds);
+    if (use == null) return null;
+
+    for (CoordinateAxis axis : use.getCoordinateAxes()) {
+      if (axis.getAxisType() == atype)
+        return axis;
+    }
+
+    return null;
+  }
+
+  static private CoordinateSystem findBestCoordinateSystem(NetcdfDataset ds) {
+        // find coordinate system with highest rank (largest number of axes)
+    CoordinateSystem use = null;
+    for (CoordinateSystem cs : ds.getCoordinateSystems()) {
+      if (use == null) use = cs;
+      else if (cs.getCoordinateAxes().size() > use.getCoordinateAxes().size())
+        use = cs;
+    }
+    return use;
   }
 
 }

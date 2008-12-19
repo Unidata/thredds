@@ -20,9 +20,8 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.PointCollectionImpl;
-import ucar.nc2.ft.point.standard.NestedTable;
+import ucar.nc2.ft.point.standard.FlattenedTable;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.FeatureDatasetImpl;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureData;
 
@@ -31,34 +30,34 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Implementation of PointFeatureCollection using NestedTables
+ * Implementation of PointFeatureCollection using a FlattenedTable
  * @author caron
  * @since Mar 28, 2008
  */
 public class StandardPointCollectionImpl extends PointCollectionImpl {
   private DateUnit timeUnit;
-  private NestedTable ft;
-  private FeatureDatasetImpl fd;
+  private FlattenedTable ft;
 
-  StandardPointCollectionImpl(NestedTable ft, DateUnit timeUnit) {
+  StandardPointCollectionImpl(FlattenedTable ft, DateUnit timeUnit) {
     super(ft.getName());
     this.ft = ft;
     this.timeUnit = timeUnit;
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    // only one List object needed - it will be use for each iteration with different structData's
-    List<StructureData> sdataList = new ArrayList<StructureData>(1);
-    sdataList.add(null);
+    // only one List object needed - it will be used for each iteration with different structData's
+    List<StructureData> sdataList = new ArrayList<StructureData>( ft.getNestedLevels());
+    for (int i=0; i<ft.getNestedLevels(); i++)
+      sdataList.add(null);
     boolean calcBB = (boundingBox == null) || (dateRange == null);
 
-    return new DefaultPointFeatureIterator(ft.getObsDataIterator(bufferSize), sdataList, calcBB);
+    return new TableIterator( ft.getObsDataIterator(bufferSize), sdataList, calcBB);
   }
 
   // the iterator over the observations
-  private class DefaultPointFeatureIterator extends StandardPointFeatureIterator {
+  private class TableIterator extends ucar.nc2.ft.point.standard.StandardPointFeatureIterator {
 
-    DefaultPointFeatureIterator(ucar.ma2.StructureDataIterator structIter, List<StructureData> sdataList, boolean calcBB) throws IOException {
+    TableIterator(ucar.ma2.StructureDataIterator structIter, List<StructureData> sdataList, boolean calcBB) throws IOException {
       super( ft, timeUnit, structIter, sdataList, calcBB);
     }
 

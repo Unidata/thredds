@@ -111,7 +111,7 @@ public interface IOServiceProvider {
    */
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
 
-  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
+  // public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
 
   /*
    * LOOK Should we allow reading on member variables ??

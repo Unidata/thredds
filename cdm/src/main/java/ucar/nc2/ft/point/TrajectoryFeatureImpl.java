@@ -23,6 +23,7 @@ import ucar.nc2.ft.TrajectoryFeature;
 import ucar.nc2.constants.FeatureType;
 
 /**
+ * Implementation of TrajectoryFeature
  * @author caron
  * @since Mar 26, 2008
  */

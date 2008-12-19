@@ -30,8 +30,9 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import java.io.IOException;
 
 /**
- * Use StructureDataIterator to iterate over members of a Structure, with optional filtering.
- * Subclass must implement makeFeature().
+ * A PointFeatureIterator which uses a StructureDataIterator to iterate over members of a Structure,
+ * with optional filtering and calculation of time range and bounding box.
+ * Subclass must implement makeFeature() to turn the StructureData into a PointFeature.
  *
  * @author caron
  * @since Feb 29, 2008

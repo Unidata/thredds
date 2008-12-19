@@ -47,7 +47,7 @@ import java.io.IOException;
  * GridDataset gridDs = GridDataset.open (uriString);
  * List grids = gridDs.getGrids();
  * for (int i=0; i&lt;grids.size(); i++) {
- * GeoGrid grid = (Geogrid) grids.get(i);
+ *   GeoGrid grid = (Geogrid) grids.get(i);
  * }
  * </pre>
  *

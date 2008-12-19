@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
+ * "Unidata Point Feature v1.0" Convention
+ * @deprecated
  * @author caron
  * @since Apr 23, 2008
  */
@@ -64,7 +66,7 @@ public class UnidataPointFeature implements TableConfigurer {
   private static final String STN_ELEV = "Height_of_station";
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
-    TableConfig nt = new TableConfig(NestedTable.TableType.ArrayStructure, "station");
+    TableConfig nt = new TableConfig(FlattenedTable.TableType.ArrayStructure, "station");
     nt.featureType = FeatureType.STATION_PROFILE;
 
     nt.stnId = STN_NAME;
@@ -75,7 +77,7 @@ public class UnidataPointFeature implements TableConfigurer {
     // make the station array structure in memory
     nt.as = makeIndex(ds);
 
-    TableConfig obs = new TableConfig(NestedTable.TableType.Structure, "obsRecord");
+    TableConfig obs = new TableConfig(FlattenedTable.TableType.Structure, "obsRecord");
     obs.dim = Evaluator.getDimension(ds, "record", errlog);
 
     obs.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
@@ -89,7 +91,7 @@ public class UnidataPointFeature implements TableConfigurer {
     indexJoin = new IndexJoin(obs.join);
     nt.addChild(obs);
 
-    TableConfig levels = new TableConfig(NestedTable.TableType.Structure, "seq1");
+    TableConfig levels = new TableConfig(FlattenedTable.TableType.Structure, "seq1");
     levels.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
     levels.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
 

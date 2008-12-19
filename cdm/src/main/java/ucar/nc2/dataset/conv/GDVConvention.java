@@ -20,7 +20,6 @@
 package ucar.nc2.dataset.conv;
 
 import ucar.nc2.*;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
@@ -84,17 +83,6 @@ public class GDVConvention extends CSMConvention {
     }
 
     super.findCoordinateAxes(ds);
-
-    for (VarProcess vp : varList) {
-      Variable ncvar = vp.v;
-      if (!(ncvar instanceof VariableDS)) continue; // cant be a structure
-      String unit = ncvar.getUnitsString();
-
-      if (SimpleUnit.isDateUnit(unit)) {
-        vp.isCoordinateAxis = true;
-        parseInfo.append(" Coordinate Axis added (unit) = ").append(vp.v.getName()).append(" for dimension ").append("\n");        
-      }
-    }
 
     // desperado
     findCoordinateAxesForce(ds);

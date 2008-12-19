@@ -21,27 +21,35 @@ package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.Dimension;
 
 import java.util.Formatter;
 
 /**
+ * Ndbc Convention (National Data Buoy Center)
  * @author caron
  * @since Apr 23, 2008
  */
 public class Ndbc implements TableConfigurer {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    if (!ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("COARDS")) return false;
-    if (!ds.findAttValueIgnoreCase(null, "data_provider", "").equalsIgnoreCase("National Data Buoy Center"))
+    if (!ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("COARDS"))
+      return false;
+
+    String dataProvider = ds.findAttValueIgnoreCase(null, "data_provider", null);
+    if (dataProvider == null)
+      dataProvider = ds.findAttValueIgnoreCase(null, "institution", "");
+    if (!dataProvider.contains("National Data Buoy Center"))
       return false;
 
     if (null == ds.findAttValueIgnoreCase(null, "station", null)) return false;
     if (null == ds.findAttValueIgnoreCase(null, "location", null)) return false;
 
-    if (ds.findVariable("lat") == null) return false;
-    if (ds.findVariable("lon") == null) return false;
+    //if (ds.findVariable("lat") == null) return false;
+    //if (ds.findVariable("lon") == null) return false;
 
     // DODS wont have record !!
     if (!ds.hasUnlimitedDimension()) return false;
@@ -63,19 +71,43 @@ public class Ndbc implements TableConfigurer {
   </stationFeature>
    */
 
-  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(NestedTable.TableType.Singleton, "station");
+   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
+    Dimension obsDim = ds.getUnlimitedDimension();
+    if (obsDim == null) {
+      CoordinateAxis axis = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
+      if ((axis != null) && axis.isScalar())
+        obsDim = axis.getDimension(0);
+    }
+
+    if (obsDim == null) {
+      errlog.format("Must have an Observation dimension: unlimited dimension, or from Time Coordinate");
+      return null;
+    }
+     FlattenedTable.TableType obsStructureType = obsDim.isUnlimited() ? FlattenedTable.TableType.Structure : FlattenedTable.TableType.PseudoStructure;
+
+    // wants a Point
+    if ((wantFeatureType == FeatureType.POINT)) {
+      TableConfig nt = new TableConfig(obsStructureType, "record");
+      nt.featureType = FeatureType.POINT;
+      CoordSysEvaluator.findCoords(nt, ds);
+      return nt;
+    }
+
+    // otherwise, make it a Station
+    TableConfig nt = new TableConfig(FlattenedTable.TableType.Singleton, "station");
     nt.featureType = FeatureType.STATION;
 
-    nt.lat = Evaluator.getVariableName(ds, "lat", errlog);
-    nt.lon = Evaluator.getVariableName(ds, "lon", errlog);
+    nt.lat = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lat);
+    nt.lon = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lon);
 
-    nt.stnId = Evaluator.getVariableName(ds, ":station", errlog);
-    nt.stnDesc = Evaluator.getVariableName(ds, ":description", errlog);
+    nt.stnId = ds.findAttValueIgnoreCase(null, "station", null);
+    nt.stnDesc = ds.findAttValueIgnoreCase(null, "description", null);
+    if (nt.stnDesc == null)
+      nt.stnDesc = ds.findAttValueIgnoreCase(null, "comment", null);
 
-    TableConfig obs = new TableConfig(NestedTable.TableType.Structure, "record");
-    obs.dim = Evaluator.getDimension(ds, "time", errlog);
-    obs.time = Evaluator.getVariableName(ds, "time", errlog);
+    TableConfig obs = new TableConfig(obsStructureType, "record");
+    obs.dim = obsDim;
+    obs.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     nt.addChild(obs);
 
     obs.join = new TableConfig.JoinConfig(Join.Type.Singleton);

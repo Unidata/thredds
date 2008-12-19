@@ -45,11 +45,11 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   private TableAnalyzer analyser;
 
   /**
-   * Cheeck if this is a POINT datatype. If so, a TableAnalyser is used to analyze its structure.
+   * Check if this is a POINT datatype. If so, a TableAnalyser is used to analyze its structure.
    * The TableAnalyser is reused when the dataset is opened.
    * <ol>
-   * <li> Can handle ANY_POINT.
-   * <li> Must have time, lat, lon axis
+   * <li> Can handle ANY_POINT FeatureType.
+   * <li> Must have time, lat, lon axis (from CoordSysBuilder)
    * <li> Call TableAnalyzer.factory() to create a TableAnalyzer
    * <li> TableAnalyzer must agree it can handle the requested FeatureType
    * </ol>
@@ -109,7 +109,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       this.analyser = analyser;
 
       List<FeatureCollection> featureCollections = new ArrayList<FeatureCollection>();
-      for (NestedTable flatTable : analyser.getFlatTables()) { // each flat table becomes a "feature collection"
+      for (FlattenedTable flatTable : analyser.getFlatTables()) { // each flat table becomes a "feature collection"
 
         if (timeUnit == null) {
           try {
@@ -154,158 +154,5 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     public FeatureType getFeatureType() {
       return featureType;
     }
-
-    //////////////////////////////////////////////////////////////////////////////
-    // PointFeatureCollection
-
-    /* private class DefaultPointCollectionImpl extends PointCollectionImpl {
-      private NestedTable ft;
-
-      DefaultPointCollectionImpl(NestedTable ft) {
-        super("PointCollection-" + ft.getName());
-        this.ft = ft;
-      }
-
-      public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-        return new DefaultPointFeatureIterator(bufferSize);
-      }
-
-      // the iterator over the observations
-      private class DefaultPointFeatureIterator extends PointIteratorImpl {
-        boolean calcBB;
-        DefaultPointFeatureIterator(int bufferSize) throws IOException {
-          super( ft.getObsDataIterator(bufferSize), null, (boundingBox == null) || (dateRange == null));
-          calcBB = (boundingBox == null) || (dateRange == null);
-        }
-
-        protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
-          return new StandardPointFeatureImpl(timeUnit, recnum, ft, sdata);
-        }
-
-        // decorate hasNext to know when the iteraton is complete
-        @Override
-        public boolean hasNext() throws IOException {
-          boolean r = super.hasNext();
-          if (calcBB && !r) {
-            if (boundingBox == null)
-              boundingBox = getBoundingBox();
-            if (dateRange == null)
-              dateRange = getDateRange(timeUnit);
-          }
-          return r;
-        }
-      }
-    }  */
-
-    /* a PointFeature that can be constructed from the observation StructureData
-    private class MyPointFeature extends PointFeatureImpl {
-      protected int recno;
-      protected StructureData sdata;
-
-      public MyPointFeature(int recnum, NestedTable ft, StructureData obsData) {
-        super(PointDatasetDefault.this.timeUnit);
-        this.sdata = obsData;
-        this.recno = recnum;
-
-        obsTime = ft.getTime(obsData);
-        nomTime = obsTime;
-        location = ft.getEarthLocation(obsData);
-      }
-
-      public String getId() {
-        return Integer.toString(recno);
-      }
-
-      public StructureData getData() {
-        return sdata;
-      }
-    } */
-
-    //////////////////////////////////////////////////////////////////////////////
-    // StationFeatureCollection
-
-   /* private class DefaultStationCollectionImpl extends StationCollectionImpl {
-      private NestedTable ft;
-
-      DefaultStationCollectionImpl(NetcdfDataset ds, NestedTable ft) throws IOException {
-        super("StationCollection-" + ft.getName());
-        this.ft = ft;
-
-        // LOOK can we defer StationHelper ?
-        StructureDataIterator siter = ft.getStationDataIterator(-1);
-        while (siter.hasNext()) {
-          StructureData stationData = siter.next();
-          stationHelper.addStation( makeStation(stationData));
-        }
-      }
-
-      public Station makeStation(StructureData stationData) {
-        Station s = ft.makeStation(stationData);
-        return new DefaultStationFeatureImpl(s, timeUnit, stationData);
-      }
-
-      public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-        return new StationListIterator();
-      }
-
-      private class StationListIterator implements PointFeatureCollectionIterator {
-        Iterator<Station> stationIter;
-
-        StationListIterator() {
-          stationIter = stationHelper.getStations().iterator();
-        }
-
-        public boolean hasNext() throws IOException {
-          return stationIter.hasNext();
-        }
-
-        public PointFeatureCollection nextFeature() throws IOException {
-          return (StationFeatureImpl) stationIter.next();
-        }
-
-        public void setBufferSize(int bytes) {
-          // no op
-        }
-      }
-
-      private class DefaultStationFeatureImpl extends StationFeatureImpl {
-        StructureData stationData;
-
-        DefaultStationFeatureImpl(Station s, DateUnit dateUnit, StructureData stationData) {
-          super(s, dateUnit, -1);
-          this.stationData = stationData;
-        }
-
-        // an iterator over Features of type PointFeature
-        public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-          StructureDataIterator obsIter = ft.getStationObsDataIterator(stationData, bufferSize);
-          return new StationFeatureIterator((getNumberPoints() < 0) ? this : null, obsIter);
-        }
-      }
-
-      // the iterator over the observations
-      private class StationFeatureIterator extends PointIteratorImpl {
-        StationFeatureImpl station;
-
-        StationFeatureIterator(StationFeatureImpl station, StructureDataIterator structIter) throws IOException {
-          super(structIter, null, false);
-          this.station = station;
-        }
-
-        protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
-          return new StandardPointFeatureImpl(timeUnit, recnum, ft, sdata);
-        }
-
-        // decorate to capture npts
-        public boolean hasNext() throws IOException {
-          boolean result = super.hasNext();
-          if (!result && (station != null))
-            station.setNumberPoints( getCount());
-          return result;
-        }
-      }
-
-    } */
-
   }
 }

@@ -26,6 +26,7 @@ import ucar.nc2.constants.FeatureType;
 import java.util.Formatter;
 
 /**
+ * FLS Wind profile data
  * @author caron
  * @since Apr 23, 2008
  */
@@ -38,10 +39,10 @@ public class FslWindProfiler implements TableConfigurer {
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(NestedTable.TableType.Construct, "station");
+    TableConfig nt = new TableConfig(FlattenedTable.TableType.Construct, "station");
     nt.featureType = FeatureType.STATION_PROFILE;
 
-    TableConfig obs = new TableConfig(NestedTable.TableType.Structure, "record");
+    TableConfig obs = new TableConfig(FlattenedTable.TableType.Structure, "record");
     obs.dim = Evaluator.getDimension(ds, "recNum", errlog);
     obs.time = Evaluator.getVariableName(ds, "timeObs", errlog);
 
@@ -54,7 +55,7 @@ public class FslWindProfiler implements TableConfigurer {
     obs.join = new TableConfig.JoinConfig(Join.Type.Identity);
     nt.addChild(obs);
 
-    TableConfig levels = new TableConfig(NestedTable.TableType.MultiDim, "levels");
+    TableConfig levels = new TableConfig(FlattenedTable.TableType.MultiDim, "levels");
     levels.outer = Evaluator.getDimension(ds, "recNum", errlog);
     levels.dim = Evaluator.getDimension(ds, "level", errlog);
     levels.elev = Evaluator.getVariableName(ds, "levels", errlog);

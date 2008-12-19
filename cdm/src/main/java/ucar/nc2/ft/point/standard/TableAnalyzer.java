@@ -21,7 +21,7 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.coordsys.CoordSysEvaluator;
+import ucar.nc2.ft.point.standard.CoordSysEvaluator;
 import ucar.nc2.ft.point.standard.plug.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
@@ -216,7 +216,7 @@ public class TableAnalyzer {
   protected Map<String, TableConfig> tableFind = new HashMap<String, TableConfig>();
   protected Set<TableConfig> tableSet = new HashSet<TableConfig>();
   protected List<TableConfig.JoinConfig> joins = new ArrayList<TableConfig.JoinConfig>();
-  protected List<NestedTable> leaves = new ArrayList<NestedTable>();
+  protected List<FlattenedTable> leaves = new ArrayList<FlattenedTable>();
   protected FeatureType ft;
 
   protected TableAnalyzer(NetcdfDataset ds, TableConfigurer tc) {
@@ -227,13 +227,13 @@ public class TableAnalyzer {
       userAdvice.format("Using default TableConfigurer.\n");
   }
 
-  public List<NestedTable> getFlatTables() {
+  public List<FlattenedTable> getFlatTables() {
     return leaves;
   }
 
   public boolean featureTypeOk(FeatureType ftype) {
-    for (NestedTable nt : leaves) {
-      if (FeatureDatasetFactoryManager.featureTypeOk(ftype, nt.getFeatureType()))
+    for (FlattenedTable nt : leaves) {
+      if (nt.hasCoords() && FeatureDatasetFactoryManager.featureTypeOk(ftype, nt.getFeatureType()))
         return true;
     }
     return false;
@@ -290,7 +290,7 @@ public class TableAnalyzer {
     while (iter.hasNext()) {
       Variable v = iter.next();
       if (v instanceof Structure) {  // handles Sequences too
-        TableConfig st = new TableConfig(NestedTable.TableType.Structure, v.getName());
+        TableConfig st = new TableConfig(FlattenedTable.TableType.Structure, v.getName());
         CoordSysEvaluator.findCoords(st, ds);
 
         addTable(st);
@@ -314,7 +314,7 @@ public class TableAnalyzer {
 
     if (dimSet.size() == 1) {
       Dimension obsDim = (Dimension) dimSet.toArray()[0];
-      TableConfig st = new TableConfig(NestedTable.TableType.PseudoStructure, obsDim.getName()); 
+      TableConfig st = new TableConfig(FlattenedTable.TableType.PseudoStructure, obsDim.getName());
       st.dim = obsDim;
       CoordSysEvaluator.findCoords(st, ds);
 
@@ -326,7 +326,7 @@ public class TableAnalyzer {
   protected void findNestedStructures(Structure s, TableConfig structTable) {
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure) {  // handles Sequences too
-        TableConfig nestedTable = new TableConfig(NestedTable.TableType.Structure, v.getName());
+        TableConfig nestedTable = new TableConfig(FlattenedTable.TableType.Structure, v.getName());
         addTable(nestedTable);
         structTable.addChild(nestedTable);
 
@@ -388,7 +388,7 @@ public class TableAnalyzer {
     // find the leaves
     for (TableConfig config : tableSet) {
       if (config.children == null) { // its a leaf
-        NestedTable flatTable = new NestedTable(ds, config, errlog);
+        FlattenedTable flatTable = new FlattenedTable(ds, config, errlog);
         leaves.add(flatTable);
       }
     }
@@ -451,7 +451,7 @@ public class TableAnalyzer {
   } */
 
   public void showNestedTables(java.util.Formatter sf) {
-    for (NestedTable nt : leaves) {
+    for (FlattenedTable nt : leaves) {
       nt.show(sf);
     }
   }

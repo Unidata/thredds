@@ -26,23 +26,24 @@ import ucar.ma2.*;
 import java.io.IOException;
 
 /**
+ * Joins a parent structureData to its children.
  * @author caron
  * @since Apr 21, 2008
  */
 public class Join implements Comparable<Join> {
 
   public enum Type {
-    ContiguousList, ForwardLinkedList, BackwardLinkedList, MultiDim, NestedStructure, Identity, Index, Singleton
+    ContiguousList, ForwardLinkedList, BackwardLinkedList, MultiDim, NestedStructure, Identity, Index, Singleton, ParentIndex
   }
 
   protected TableConfig.JoinConfig config;
-  protected NestedTable.Table parent, child;
+  protected FlattenedTable.Table parent, child;
 
   public Join(TableConfig.JoinConfig config) {
     this.config = config;
   }
 
-  public void setTables(NestedTable.Table parent, NestedTable.Table child) {
+  public void setTables(FlattenedTable.Table parent, FlattenedTable.Table child) {
     assert parent != null;
     assert child != null;
     this.parent = parent;
@@ -103,14 +104,15 @@ public class Join implements Comparable<Join> {
           StructureMembers.Member childm = child.sm.findMember(v.getShortName());
           childm.setDataArray(data);
         }
-
         return asma.getStructureDataIterator();
       }
 
+      default:
+        return child.getStructureDataIterator(bufferSize); // ??
     }
 
-    throw new IllegalStateException("Join type = "+config.joinType);
+    //throw new IllegalStateException("Join type = "+config.joinType);
   }
-
+  
 }
 

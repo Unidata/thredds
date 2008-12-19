@@ -38,9 +38,9 @@ import java.text.ParseException;
 
 /**
  * Implements "nested table" views of point feature datasets.
- * A NestedTable is typically initialized with a TableConfig, which encapsolates info.
+ * A FlattenedTable is typically initialized with a TableConfig, which encapsolates info.
  * <p/>
- * A nested (aka flattened) table starts with a leaf table (no children), plus all of its parents.
+ * A flattened (aka nested) table starts with a leaf table (no children), plus all of its parents.
  * There is a "join" for each child and parent.
  * <p/>
  * Assumes that we have Tables that can be iterated over with a StructureDataIterator.
@@ -50,23 +50,24 @@ import java.text.ParseException;
  * @author caron
  * @since Mar 28, 2008
  */
-public class NestedTable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NestedTable.class);
+public class FlattenedTable {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FlattenedTable.class);
 
   private NetcdfDataset ds;
   private Formatter errlog;
   private Table leaf, root;
+  private FeatureType featureType;
 
   private CoordVarExtractor timeVE, latVE, lonVE, altVE;
   private int nestedLevels;
 
   private DateFormatter dateFormatter = new DateFormatter();
 
-  // A Nested Table is created after the Tables have been joined, and the leaves identified.
-  NestedTable(NetcdfDataset ds, TableConfig config, Formatter errlog) {
+  // A FlattenedTable Table is created after the Tables have been joined, and the leaves identified.
+  FlattenedTable(NetcdfDataset ds, TableConfig config, Formatter errlog) {
     this.ds = ds;
     this.errlog = errlog;
-    
+
     this.leaf = new Table(config);
     this.root = getRoot();
 
@@ -78,9 +79,17 @@ public class NestedTable {
 
     nestedLevels = 1;
     Table t = leaf;
+    featureType = t.getFeatureType();
     while (t.parent != null) {
       t = t.parent;
+      if (featureType == null) featureType = t.getFeatureType();
       nestedLevels++;
+    }
+
+    if (featureType == null) {
+      if (nestedLevels == 1) featureType = FeatureType.POINT;
+      if (nestedLevels == 2) featureType = FeatureType.STATION;
+      if (nestedLevels == 3) featureType = FeatureType.STATION_PROFILE;
     }
   }
 
@@ -104,7 +113,7 @@ public class NestedTable {
     else if (axisType == AxisType.Time)
       axisName = t.config.time;
 
-
+    /* original
     if (axisName != null) {
       Variable v;
       if (t.struct != null)
@@ -116,6 +125,22 @@ public class NestedTable {
         return new CoordVarExtractor(v, axisName, nestingLevel);
       else
         errlog.format("NestedTable: cant find variable %s for coordinate type "+axisName, axisType);
+    }  */
+
+    if (axisName != null) {
+      Variable v = null;
+
+      if (t.struct != null) {
+        v = t.struct.findVariable(axisName);
+        if (v != null)
+          return new CoordVarExtractor(v, axisName, nestingLevel);
+      }
+
+      v = ds.findVariable(axisName);
+      if (v == null)
+        errlog.format("FlattenedTable: cant find variable %s for coordinate type " + axisName, axisType);
+      else
+        return (v.getSize() == 1) ? new CoordVarScalar(v) : new CoordVarExtractor(v, axisName, nestingLevel);
     }
 
     // look in the parent
@@ -124,12 +149,15 @@ public class NestedTable {
 
   // knows how to get specific coordinate data from a table or its parents
   private class CoordVarExtractor {
-    Variable axis;
-    String axisName;
-    int nestingLevel;       // leaf == 0, each parent adds one
+    protected Variable coordVar;
+    private String axisName;
+    private int nestingLevel;       // leaf == 0, each parent adds one
 
-    CoordVarExtractor(Variable v,  String axisName, int nestingLevel) {
-      this.axis = v;
+    CoordVarExtractor() {
+    }
+
+    CoordVarExtractor(Variable v, String axisName, int nestingLevel) {
+      this.coordVar = v;
       this.axisName = axisName;
       this.nestingLevel = nestingLevel;
     }
@@ -153,25 +181,51 @@ public class NestedTable {
     }
   }
 
-  public FeatureType getFeatureType() {
-    // if (cs.ft != null) return cs.ft;
+  // knows how to get specific coordinate data from a table or its parents
+  private class CoordVarScalar extends CoordVarExtractor {
 
-    // bogus
-    if (nestedLevels == 1) return FeatureType.POINT;
-    if (nestedLevels == 2) return FeatureType.STATION;
-    if (nestedLevels == 3) return FeatureType.STATION_PROFILE;
-    return null;
+    CoordVarScalar(Variable v) {
+      this.coordVar = v;
+    }
+
+    double getCoordValue(List<StructureData> structList) {
+      try {
+        return coordVar.readScalarDouble();
+      } catch (IOException e) {
+        throw new RuntimeException(e.getMessage());
+      }
+    }
+
+    String getCoordValueString(List<StructureData> structList) {
+      try {
+        return coordVar.readScalarString();
+      } catch (IOException e) {
+        throw new RuntimeException(e.getMessage());
+      }
+    }
+
+    public String toString() {
+      return "scalar "+ coordVar.getName();
+    }
   }
 
-  public boolean isOk() {
+  public FeatureType getFeatureType() {
+    return featureType;
+  }
+
+  public int getNestedLevels() {
+    return nestedLevels;
+  }
+
+  public boolean hasCoords() {
     return (timeVE != null) && (latVE != null) && (lonVE != null);
   }
 
   public DateUnit getTimeUnit() {
     try {
-      return new DateUnit(timeVE.axis.getUnitsString());
+      return new DateUnit(timeVE.coordVar.getUnitsString());
     } catch (Exception e) {
-      throw new IllegalArgumentException("Error on time string = " + timeVE.axis.getUnitsString() + " == " + e.getMessage());
+      throw new IllegalArgumentException("Error on time string = " + timeVE.coordVar.getUnitsString() + " == " + e.getMessage());
     }
   }
 
@@ -201,7 +255,7 @@ public class NestedTable {
 
   public String toString() {
     Formatter formatter = new Formatter();
-    formatter.format("NestedTable = %s\n", getName());
+    formatter.format("FlattenedTable = %s\n", getName());
     formatter.format("  Time= %s\n", timeVE);
     formatter.format("  Lat= %s\n", latVE);
     formatter.format("  Lon= %s\n", lonVE);
@@ -211,7 +265,7 @@ public class NestedTable {
   }
 
   public void show(Formatter formatter) {
-    formatter.format(" NestedTable = %s\n", getName());
+    formatter.format(" FlattenedTable = %s\n", getName());
     leaf.show(formatter, 2);
   }
 
@@ -221,22 +275,16 @@ public class NestedTable {
   // Point
 
   public StructureDataIterator getObsDataIterator(int bufferSize) throws IOException {
-    return leaf.getStructureDataIterator(bufferSize);
+    return root.getStructureDataIterator(bufferSize);
   }
 
   //Station
   public StructureDataIterator getStationDataIterator(int bufferSize) throws IOException {
-    Table stationTable;
 
-    if (getFeatureType() == FeatureType.STATION)
-      stationTable = leaf.parent;
-
-    else if (getFeatureType() == FeatureType.STATION_PROFILE)
-      stationTable = leaf.parent.parent;
-
-    else
+    if (!(getFeatureType() == FeatureType.STATION) && !(getFeatureType() == FeatureType.STATION_PROFILE))
       throw new UnsupportedOperationException("Not a StationFeatureCollection or StationProfileFeatureCollection");
 
+    Table stationTable = root;
     StructureDataIterator siter = stationTable.getStructureDataIterator(bufferSize);
 
     if (stationTable.config.limit != null) {
@@ -269,63 +317,11 @@ public class NestedTable {
     return leaf.join.getStructureDataIterator(profileData, bufferSize);
   }
 
-  /* get the StructureDataIterator for the child table contained by the given parent
-  private StructureDataIterator join(StructureData parentStruct, Table child) throws IOException {
-
-    switch (child.join.joinType) {
-      case NestedStructure: {
-        String name = child.getName();
-        StructureMembers members = parentStruct.getStructureMembers();
-        StructureMembers.Member m = members.findMember(name);
-        if (m.getDataType() == DataType.SEQUENCE) {
-          ArraySequence2 seq = parentStruct.getArraySequence(m);
-          return seq.getStructureDataIterator();
-
-        } else if (m.getDataType() == DataType.STRUCTURE) {
-          ArrayStructure as = parentStruct.getArrayStructure(m);
-          return as.getStructureDataIterator();
-        }
-
-        return null;
-      }
-
-      case ForwardLinkedList:
-      case BackwardLinkedList: {
-        int firstRecno = parentStruct.getScalarInt( child.join.start.getName());
-        return new StructureDataIteratorLinked(child.struct, firstRecno, -1, child.join.next.getName());
-      }
-
-      case ContiguousList: {
-        int firstRecno = parentStruct.getScalarInt( child.join.start.getName());
-        int numRecords = parentStruct.getScalarInt( child.join.numRecords.getName());
-        return new StructureDataIteratorLinked(child.struct, firstRecno, numRecords, null);
-      }
-
-      case MultiDim: {
-        ArrayStructureMA asma = new ArrayStructureMA( child.sm, new int[] {child.dim.getLength()});
-        for (VariableSimpleIF v : child.cols) {
-          Array data = parentStruct.getArray( v.getShortName());
-          StructureMembers.Member childm = child.sm.findMember(v.getShortName());
-          childm.setDataArray(data);
-        }
-
-        return asma.getStructureDataIterator();
-      }
-
-      case Index: {
-        
-      }
-
-    }
-
-    throw new IllegalStateException("Join type = "+child.join.joinType);
-  } */
-
   ///////////////////////////////////////////////////////////////////////////////
 
   public double getTime(List<StructureData> structList) {
 
-    if ((timeVE.axis.getDataType() == ucar.ma2.DataType.CHAR) || (timeVE.axis.getDataType() == ucar.ma2.DataType.STRING)) {
+    if ((timeVE.coordVar.getDataType() == ucar.ma2.DataType.CHAR) || (timeVE.coordVar.getDataType() == ucar.ma2.DataType.STRING)) {
       String timeString = timeVE.getCoordValueString(structList);
       Date date;
       try {
@@ -349,17 +345,25 @@ public class NestedTable {
   }
 
   public Station makeStation(StructureData stationData) {
-    // LOOK this assumes that the data is in the Station structure - one may have to read an obs to get it
     TableConfig info = root.config;
 
-    String stationName = getCoordValueString(stationData, info.stnId);
-    String stationDesc = (info.stnDesc == null) ? stationName : getCoordValueString(stationData, info.stnDesc);
-    String stnWmoId = (info.stnWmoId == null) ? null : getCoordValueString(stationData, info.stnWmoId);
-    double lat = getCoordValue(stationData, info.lat);
-    double lon = getCoordValue(stationData, info.lon);
-    double alt = (info.elev == null) ? Double.NaN : getCoordValue(stationData, info.elev);
+    String stationName;
+    String stationDesc;
+    String stnWmoId;
+    if (info.type == TableType.Singleton) {
+      stationName = info.stnId;
+      stationDesc = (info.stnDesc == null) ? stationName : info.stnDesc;
+      stnWmoId = info.stnWmoId;
+    } else {
+      stationName = getCoordValueString(stationData, info.stnId);
+      stationDesc = (info.stnDesc == null) ? stationName : getCoordValueString(stationData, info.stnDesc);
+      stnWmoId = (info.stnWmoId == null) ? null : getCoordValueString(stationData, info.stnWmoId);
+    }
 
-    return new StationImpl(stationName, stationDesc, stnWmoId, lat, lon, alt);
+    List<StructureData> structList = new ArrayList<StructureData>(1);
+    structList.add(stationData);
+    EarthLocation loc = getEarthLocation(structList);
+    return new StationImpl(stationName, stationDesc, stnWmoId, loc.getLatitude(), loc.getLongitude(), loc.getAltitude());
   }
 
   double getCoordValue(StructureData struct, String memberName) {
@@ -381,8 +385,28 @@ public class NestedTable {
     }
   }
 
+  // LOOK - need to merge into one StructureData !!
   public StructureData makeObsStructureData(List<StructureData> structList) {
     return structList.get(0);
+  }
+
+  // kludgey
+  private ArrayStructure parentData = null;
+
+  public void addParentJoin(List<StructureData> sdataList, StructureData obsdata) throws IOException {
+    if (parentData == null) {
+      parentData = (ArrayStructure) leaf.struct.read(); // cache entire station table
+    }
+
+    Join join = leaf.join;
+    int index = obsdata.getScalarInt(join.config.parentIndex);
+    StructureData parentStruct = parentData.getStructureData(index);
+    sdataList.set(0, parentStruct); // leaf
+    sdataList.set(1, obsdata);
+  }
+
+  public boolean needParentJoin() {
+    return (leaf.join != null) && (leaf.join.config != null) && (leaf.join.config.joinType == Join.Type.ParentIndex);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -392,7 +416,7 @@ public class NestedTable {
   }
 
   /**
-   * A generalization of a Structure. Main function is to return a StructureIterator
+   * A generalization of a Structure. Main function is to return a StructureDataIterator
    */
   public class Table {
     TableConfig config;
@@ -421,7 +445,7 @@ public class NestedTable {
           struct = (Structure) ds.findVariable(config.name);
         }
 
-        assert struct != null : "cant find Structure Variable = "+config.name;
+        assert struct != null : "cant find Structure Variable = " + config.name;
         config.dim = struct.getDimension(0);
         for (Variable v : struct.getVariables())
           this.cols.add(v);
@@ -472,6 +496,9 @@ public class NestedTable {
 
         case ArrayStructure:
           return config.as.getStructureDataIterator();
+
+        case Singleton:
+          return new SingletonStructureDataIterator(null);
       }
 
       throw new IllegalStateException("Table type = " + config.type);
@@ -479,6 +506,10 @@ public class NestedTable {
 
     public String getName() {
       return config.name;
+    }
+
+    public FeatureType getFeatureType() {
+      return (config == null) ? null : config.featureType;
     }
 
     public Structure getStruct() {
@@ -544,7 +575,7 @@ public class NestedTable {
       return "";
     }
 
-    private void showCoords(Formatter out, String indent ) {
+    private void showCoords(Formatter out, String indent) {
       boolean gotSome;
       gotSome = showCoord(out, config.lat, indent);
       gotSome |= showCoord(out, config.lon, indent);
@@ -570,6 +601,31 @@ public class NestedTable {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
+  private class SingletonStructureDataIterator implements StructureDataIterator {
+    private int count = 0;
+    private StructureData sdata;
+
+    SingletonStructureDataIterator(StructureData sdata ) {
+      this.sdata = sdata;
+    }
+
+    public boolean hasNext() throws IOException {
+      return (count == 0);
+    }
+
+    public StructureData next() throws IOException {
+      count++;
+      return sdata;
+    }
+
+    public void setBufferSize(int bytes) {
+    }
+
+    public StructureDataIterator reset() {
+      count = 0;
+      return this;
+    }
+  }
 
 
 }

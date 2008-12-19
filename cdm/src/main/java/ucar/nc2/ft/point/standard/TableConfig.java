@@ -20,7 +20,6 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 import ucar.ma2.ArrayStructure;
 
@@ -36,7 +35,7 @@ import java.util.ArrayList;
  * @since Apr 23, 2008
  */
 public class TableConfig {
-  public NestedTable.TableType type;
+  public FlattenedTable.TableType type;
   public String name;
   public TableConfig parent;
   public JoinConfig join; // the join to its parent
@@ -64,7 +63,7 @@ public class TableConfig {
    * @param type  type of join
    * @param name  name of parent table
    */
-  public TableConfig(NestedTable.TableType type, String name) {
+  public TableConfig(FlattenedTable.TableType type, String name) {
     this.type = type;
     this.name = name;
   }

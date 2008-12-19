@@ -22,7 +22,7 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.ft.point.PointIteratorImpl;
 import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.point.standard.NestedTable;
+import ucar.nc2.ft.point.standard.FlattenedTable;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureData;
 
@@ -31,15 +31,16 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
+ * A PointFeatureIterator which uses a FlattenedTable to implement makeFeature().
  * @author caron
  * @since Mar 29, 2008
  */
 public class StandardPointFeatureIterator extends PointIteratorImpl {
-  private NestedTable ft;
+  private FlattenedTable ft;
   private DateUnit timeUnit;
   private List<StructureData> sdataList;
 
-  StandardPointFeatureIterator(NestedTable ft, DateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, List<StructureData> sdataList, boolean calcBB) throws IOException {
+  StandardPointFeatureIterator(FlattenedTable ft, DateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, List<StructureData> sdataList, boolean calcBB) throws IOException {
     super(structIter, null, calcBB);
     this.ft = ft;
     this.timeUnit = timeUnit;
@@ -48,6 +49,10 @@ public class StandardPointFeatureIterator extends PointIteratorImpl {
 
   protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
     sdataList.set(0, sdata); // always in the first position
+    // there may be parent joins
+    if (ft.needParentJoin())
+      ft.addParentJoin(sdataList, sdata);
+    
     return new StandardPointFeatureImpl(sdataList, timeUnit, recnum);
   }
 

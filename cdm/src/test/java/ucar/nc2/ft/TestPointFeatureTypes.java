@@ -27,10 +27,8 @@ import java.io.FileFilter;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.Iterator;
 import java.util.Formatter;
 
-import ucar.nc2.dt.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.VariableSimpleIF;
@@ -46,20 +44,21 @@ import ucar.unidata.geoloc.LatLonRect;
  * @since Dec 16, 2008
  */
 public class TestPointFeatureTypes  extends TestCase {
-  String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "point/netcdf/";
+  String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "point/";
   public TestPointFeatureTypes( String name) {
     super(name);
   }
 
   public void testReadAll() throws IOException {
-    readAllDir(topDir, null);  
+    readAllDir(topDir+"netcdf/", null, FeatureType.ANY_POINT);
   }
 
   public void testProblem() throws IOException {
-    testPointDataset(topDir+"puffash.ncml", true);
+    //testPointDataset(topDir+"noZ/41001h2007.nc", FeatureType.ANY_POINT, true);
+    testPointDataset("R:/testdata/station/ndbc/41001h1976.nc", FeatureType.ANY_POINT, true);
   }
 
-  int readAllDir(String dirName, FileFilter ff) throws IOException {
+  int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {
     int count = 0;
 
     System.out.println("---------------Reading directory "+dirName);
@@ -75,24 +74,29 @@ public class TestPointFeatureTypes  extends TestCase {
       if (f.isDirectory())
         continue;
       if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude")) {
-        testPointDataset(name, false);
+        try {
+          testPointDataset(name, type, false);
+        } catch (Throwable t)  {
+          t.printStackTrace();
+        }
         count++;
       }
     }
 
     for (File f : allFiles) {
       if (f.isDirectory() && !f.getName().equals("exclude"))
-        count += readAllDir(f.getAbsolutePath(), ff);
+        count += readAllDir(f.getAbsolutePath(), ff, type);
     }
 
     return count;
   }
 
-  private void testPointDataset(String location, boolean show) throws IOException {
+  private void testPointDataset(String location, FeatureType type, boolean show) throws IOException {
     System.out.printf("----------- Read %s %n", location);
+    long start = System.currentTimeMillis();
 
     Formatter out = new Formatter();
-    FeatureDataset fdataset = FeatureDatasetFactoryManager.open(FeatureType.POINT, location, null, out);
+    FeatureDataset fdataset = FeatureDatasetFactoryManager.open(type, location, null, out);
     if (fdataset == null) {
       System.out.printf("**failed on %s = %s %n", location, out);
       return;
@@ -122,14 +126,31 @@ public class TestPointFeatureTypes  extends TestCase {
 
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
       // PointFeatureCollection;
-      assert (fc instanceof PointFeatureCollection);
-      testPointFeatureCollection((PointFeatureCollection) fc);
+      assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
+      if (fc instanceof PointFeatureCollection) {
+        PointFeatureCollection pfc = (PointFeatureCollection) fc;
+        int count = testPointFeatureCollection(pfc, true);
+        System.out.println(" getData count= "+count+" size= "+pfc.size());
+        assert count == pfc.size();
+      }  else
+        testNestedPointFeatureCollection((NestedPointFeatureCollection) fc);
     }
 
     fdataset.close();
+    long took = System.currentTimeMillis() - start;
+    System.out.println(" took= "+took+" msec");
   }
 
-  void testPointFeatureCollection( PointFeatureCollection pfc) throws IOException {
+  void testNestedPointFeatureCollection( NestedPointFeatureCollection npfc) throws IOException {
+    PointFeatureCollectionIterator iter = npfc.getPointFeatureCollectionIterator(-1);
+    while (iter.hasNext()) {
+      PointFeatureCollection pfc = iter.next();
+      testPointFeatureCollection(pfc, false);
+    }
+  }
+
+
+  int testPointFeatureCollection( PointFeatureCollection pfc, boolean needBB) throws IOException {
     LatLonRect bb = pfc.getBoundingBox();
 
     int count = 0;
@@ -142,45 +163,42 @@ public class TestPointFeatureTypes  extends TestCase {
     }
 
     bb = pfc.getBoundingBox();
-    assert bb != null;
+    if (needBB) assert bb != null;
 
     int count2 = 0;
     PointFeatureIterator iter = pfc.getPointFeatureIterator(-1);
     while (iter.hasNext()) {
       PointFeature pf = iter.next();
-      if (!bb.contains( pf.getLocation().getLatLon())) {
+
+      if (needBB) {
+        if (!bb.contains( pf.getLocation().getLatLon()))
+          assert bb.contains( pf.getLocation().getLatLon()) : bb.toString2() + " does not contains point "+pf.getLocation().getLatLon();
         assert bb.contains( pf.getLocation().getLatLon()) : bb.toString2() + " does not contains point "+pf.getLocation().getLatLon();
       }
-      assert bb.contains( pf.getLocation().getLatLon()) : bb.toString2() + " does not contains point "+pf.getLocation().getLatLon();
+
+      testPointFeature( pf);
       count2++;
     }
     assert count == count2;
 
-    System.out.println(" getData count= "+count+" size= "+pfc.size());
+    return count;
   }
 
-  private int testData( DateUnit timeUnit, Iterator dataIter) throws java.io.IOException {
-    int count = 0;
-    while(dataIter.hasNext()) {
-      Object data = dataIter.next();
-      assert data instanceof PointObsDatatype : data.getClass().getName();
-      PointObsDatatype pobs = (PointObsDatatype) data;
+  private void testPointFeature( PointFeature pobs) throws java.io.IOException {
 
-      ucar.nc2.dt.EarthLocation loc = pobs.getLocation();
-      assert loc != null;
+    EarthLocation loc = pobs.getLocation();
+    assert loc != null;
 
-      assert null != pobs.getNominalTimeAsDate();
-      assert null != pobs.getObservationTimeAsDate();
+    assert null != pobs.getNominalTimeAsDate();
+    assert null != pobs.getObservationTimeAsDate();
 
-      assert timeUnit.makeDate( pobs.getNominalTime()).equals( pobs.getNominalTimeAsDate());
-      assert timeUnit.makeDate( pobs.getObservationTime()).equals( pobs.getObservationTimeAsDate());
+    DateUnit timeUnit = pobs.getTimeUnit();
+    assert timeUnit.makeDate( pobs.getNominalTime()).equals( pobs.getNominalTimeAsDate());
+    assert timeUnit.makeDate( pobs.getObservationTime()).equals( pobs.getObservationTimeAsDate());
 
-      StructureData sdata = pobs.getData();
-      assert null != sdata;
-      testData( sdata);
-      count++;
-    }
-    return count;
+    StructureData sdata = pobs.getData();
+    assert null != sdata;
+    testData( sdata);
   }
 
   private void testData( StructureData sdata) {
@@ -213,7 +231,7 @@ public class TestPointFeatureTypes  extends TestCase {
         sdata.getScalarString(member);
       }
 
-      if ((dt != DataType.STRING) && (dt != DataType.STRUCTURE)) {
+      if ((dt != DataType.STRING) && (dt != DataType.CHAR) && (dt != DataType.STRUCTURE)) {
         sdata.convertScalarFloat(member.getName());
       }
 

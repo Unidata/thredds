@@ -102,10 +102,8 @@ public class UnidataPointDatasetHelper {
     List<Variable> varList = ds.getVariables();
     for (Variable v : varList) {
       if (v instanceof Structure) {
-        //System.out.println( "v is a Structure" );
         List<Variable> vars = ((Structure) v).getVariables();
         for (Variable vs : vars) {
-          //System.out.println( "vs =" + vs.getShortName() );
           String axisType = ds.findAttValueIgnoreCase(vs, _Coordinate.AxisType, null);
           if ((axisType != null) && axisType.equals(a.toString()))
             return vs.getShortName();
@@ -134,6 +132,26 @@ public class UnidataPointDatasetHelper {
 
     // I think the CF part is done by the CoordSysBuilder adding the _CoordinateAxisType attrinutes.
     return null;
+  }
+
+  /**
+   * Tries to find the coordinate variable of the specified type, which has the specified dimension as its firsst dimension
+   * @param ds look in this dataset
+   * @param a AxisType.LAT, LON, HEIGHT, or TIME
+   * @param dim must use this dimension
+   * @return coordinate variable, or null if not found.
+   */
+  static public String getCoordinateName(NetcdfDataset ds, AxisType a, Dimension dim) {
+    String name = getCoordinateName(ds, a);
+    if (name == null) return null;
+
+    Variable v = ds.findVariable(name);
+    if (v == null) return null;
+
+    if (v.isScalar()) return null;
+    if (!v.getDimension(0).equals(dim)) return null;
+
+    return name;
   }
 
   /**

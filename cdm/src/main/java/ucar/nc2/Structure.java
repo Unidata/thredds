@@ -42,7 +42,7 @@ import java.io.IOException;
 
 public class Structure extends Variable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Structure.class);
-  static private int defaultBufferSize = 500 * 1000; // 500K bytes
+  static protected int defaultBufferSize = 500 * 1000; // 500K bytes
 
   protected List<Variable> members;
   protected HashMap<String, Variable> memberHash;
@@ -386,14 +386,15 @@ public class Structure extends Variable {
    * @throws java.io.IOException on read error
    */
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    StructureDataIterator iter = ncfile.getStructureIterator(this, bufferSize);
-    return (iter != null) ? iter : new Structure.Iterator(bufferSize);
+    //StructureDataIterator iter = ncfile.getStructureIterator(this, bufferSize);
+    //return (iter != null) ? iter : new Structure.Iterator(bufferSize);
+    return new Structure.Iterator(bufferSize);
   }
 
   /**
    * Iterator over type StructureData.
    */
-  protected class Iterator implements StructureDataIterator {
+  private class Iterator implements StructureDataIterator {
     private int count = 0;
     private int recnum = (int) getSize();
     private int readStart = 0;

@@ -1585,9 +1585,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
 
-  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
-    return spi.getStructureIterator(s, bufferSize);
-  }
+  //public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+  //  return spi.getStructureIterator(s, bufferSize);
+  //}
   ///////////////////////////////////////////////////////////////////////////////////
 
   // public I/O

@@ -41,7 +41,6 @@ import ucar.nc2.units.DateRange;
  * A georeferencing "gridded" CoordinateSystem. This describes a "grid" of coordinates, which
  * implies a connected topology such that values next to each other in index space are next to
  * each other in coordinate space.
- * Note: these classes should be considered experimental and will likely be refactored in the next release.
  * <p/>
  * This currently assumes that the CoordinateSystem
  * <ol>

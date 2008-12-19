@@ -41,7 +41,6 @@ import java.io.IOException;
  * If the Horizontal axes are 2D, the x and y dimensions are arbitrarily chosen to be
  * gcs.getXHorizAxis().getDimension(1), gcs.getXHorizAxis().getDimension(0) respectively.
  * <p/>
- * <p> Note: these classes should be considered experimental and will likely be refactored in the next release.
  *
  * @author caron
  */

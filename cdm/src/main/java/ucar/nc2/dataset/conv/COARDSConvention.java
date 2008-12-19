@@ -60,7 +60,7 @@ public class COARDSConvention extends CoordSysBuilder {
             unit.equalsIgnoreCase("degreeN"))
       return AxisType.Lat;
 
-    if (SimpleUnit.isDateUnit(unit) || SimpleUnit.isTimeUnit(unit))
+    if (SimpleUnit.isDateUnit(unit)) // || SimpleUnit.isTimeUnit(unit)) removed dec 18, 2008
       return AxisType.Time;
 
     // look for other z coordinate

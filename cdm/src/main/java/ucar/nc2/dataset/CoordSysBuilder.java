@@ -310,10 +310,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       } // iterator
     } // convClass is null
 
-    // no convention class found, GDV is the default
+    // no convention class found, use the default
     boolean usingDefault = (convClass == null);
     if (usingDefault)
-      convClass = GDVConvention.class;
+      convClass = DefaultConvention.class;
 
     // get an instance of that class
     CoordSysBuilderIF builder;
@@ -325,7 +325,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     }
 
     if (usingDefault) {
-      builder.addUserAdvice("No CoordSysBuilder found - using default (GDV).\n");
+      builder.addUserAdvice("No CoordSysBuilder found - using Default Conventions.\n");
     }
 
     // add the coord systems

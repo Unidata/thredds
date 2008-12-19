@@ -21,14 +21,13 @@ package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants.AxisType;
 
 import java.util.Formatter;
 
 /**
+ * Madis Convention
  * @author caron
  * @since Apr 23, 2008
  */
@@ -85,11 +84,11 @@ public class Madis implements TableConfigurer {
     }
     VNames vn = getVariableNames(ds, errlog);
 
-    NestedTable.TableType obsStructureType = obsDim.isUnlimited() ? NestedTable.TableType.Structure : NestedTable.TableType.PseudoStructure;
+    FlattenedTable.TableType obsStructureType = obsDim.isUnlimited() ? FlattenedTable.TableType.Structure : FlattenedTable.TableType.PseudoStructure;
     FeatureType ft = Evaluator.getFeatureType(ds, ":thredds_data_type", errlog);
     if (null == ft) ft = FeatureType.POINT;
 
-    if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
+    //if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
       TableConfig ptTable = new TableConfig(obsStructureType, "record");
       ptTable.featureType = FeatureType.POINT;
 
@@ -101,15 +100,17 @@ public class Madis implements TableConfigurer {
       ptTable.elev = vn.elev;
 
       return ptTable;
-    }
+    //}
 
-    TableConfig nt = new TableConfig(NestedTable.TableType.PseudoStructure, "station");
+    /*
+    // dont use station for now
+    TableConfig nt = new TableConfig(FlattenedTable.TableType.PseudoStructure, "station");
     nt.featureType = ft;
 
     nt.dim = Evaluator.getDimension(ds, "maxStaticIds", errlog);
     nt.limit = Evaluator.getVariableName(ds, "nStaticIds", errlog);
 
-    TableConfig obs = new TableConfig(NestedTable.TableType.Structure, "record");
+    TableConfig obs = new TableConfig(FlattenedTable.TableType.Structure, "record");
     obs.dim = Evaluator.getDimension(ds, "recNum", errlog);
     obs.time = vn.obsTime;
     obs.timeNominal = vn.nominalTime;
@@ -126,7 +127,7 @@ public class Madis implements TableConfigurer {
     obs.join = join;
 
     nt.addChild(obs);
-    return nt;
+    return nt;   */
   }
 
   private class VNames {

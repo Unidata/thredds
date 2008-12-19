@@ -25,6 +25,7 @@ import ucar.nc2.ft.NestedPointFeatureCollection;
 import java.io.IOException;
 
 /**
+ * Implement NestedPointFeatureCollectionIterator interface
  * @author caron
  * @since Mar 20, 2008
  */

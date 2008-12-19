@@ -293,12 +293,12 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   //   1) scale/offset/enum conversion
   //   2) name, info change
   //   3) variable with cached data added to StructureDS through NcML
-  private Array convert(Array data, Section section) throws IOException {
+  private ArrayStructure convert(Array data, Section section) throws IOException {
     ArrayStructure orgAS = (ArrayStructure) data;
     if (!convertNeeded(orgAS.getStructureMembers())) {
       // name, info change only
       convertMemberInfo(orgAS.getStructureMembers());
-      return data;
+      return orgAS;
     }
 
     // LOOK! converting to ArrayStructureMA
@@ -375,7 +375,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /* convert original structureData to one that conforms to this Structure */
-  protected StructureData convert(StructureData sdata, int recno) throws IOException {
+  private StructureData convert(StructureData sdata, int recno) throws IOException {
     if (!convertNeeded(sdata.getStructureMembers())) {
       // name, info change only
       convertMemberInfo(sdata.getStructureMembers());
@@ -560,10 +560,80 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
   }
 
-  public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
+  @Override
+  /* public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     StructureDataIterator iter = orgVar.getStructureIterator(bufferSize);
     return new StructureDataConverter(this, iter);
-  }
+  } */
+
+  public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
+     //StructureDataIterator iter = ncfile.getStructureIterator(this, bufferSize);
+     //return (iter != null) ? iter : new Structure.Iterator(bufferSize);
+     return new StructureDS.Iterator(bufferSize);
+   }
+
+   // Experimental - convert entire orinal array at one, to avoid one-by-one StructureData conversion.
+   private class Iterator implements StructureDataIterator {
+     private int count = 0;
+     private int recnum = (int) getSize();
+     private int readStart = 0;
+     private int readCount = 0;
+     private int readAtaTime;
+     private ArrayStructure as = null;
+
+     protected Iterator(int bufferSize) {
+       setBufferSize( bufferSize);
+     }
+
+     public boolean hasNext() { return count < recnum; }
+
+     public StructureDataIterator reset() {
+       count = 0;
+       readStart = 0;
+       readCount = 0;
+       return this;
+     }
+
+     public StructureData next() throws IOException {
+       if (count >= readStart) {
+         if (getRank() == 1) readNextRank1();
+         else readNextGeneralRank();
+       }
+
+       count++;
+       return as.getStructureData( readCount++);
+     }
+
+     private void readNextRank1() throws IOException {
+       int left = Math.min(recnum, readStart+readAtaTime); // dont go over recnum
+       int need = left - readStart; // how many to read this time
+       try {
+         // System.out.println(" read start= "+readStart+" count= "+need);
+         as = readStructure( readStart, need);
+         as = convert(as, null);
+
+       } catch (InvalidRangeException e) {
+         log.error("Structure.Iterator.readNext() ",e);
+         throw new IllegalStateException("Structure.Iterator.readNext() ",e);
+       } // cant happen
+
+       readStart += need;
+       readCount = 0;
+     }
+
+     private void readNextGeneralRank() throws IOException {
+       throw new UnsupportedOperationException();  // not implemented yet - need example to test
+     }
+
+     public void setBufferSize(int bytes) {
+       if (count > 0) return; // too late
+       int structureSize = calcStructureSize();
+       if (bytes <= 0)
+         bytes = defaultBufferSize;
+       readAtaTime = Math.max( 10, bytes / structureSize);
+     }
+
+   }
 
   ///////////////////////////////////////////////////////////
 

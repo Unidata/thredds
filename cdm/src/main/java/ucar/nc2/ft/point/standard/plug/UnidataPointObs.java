@@ -67,23 +67,68 @@ public class UnidataPointObs implements TableConfigurer {
       errlog.format("Must have an Observation dimension: named by global attribute 'observationDimension', or unlimited dimension");
       return null;
     }
-    NestedTable.TableType obsStructureType = obsDim.isUnlimited() ? NestedTable.TableType.Structure : NestedTable.TableType.PseudoStructure;
+    FlattenedTable.TableType obsStructureType = obsDim.isUnlimited() ? FlattenedTable.TableType.Structure : FlattenedTable.TableType.PseudoStructure;
 
     FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", null);
     if (ft == null )
       ft = Evaluator.getFeatureType(ds, ":cdm_data_type", null);
 
-    if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
-      TableConfig result = new TableConfig(obsStructureType, "record");
-      result.featureType = FeatureType.POINT;
+    // its really a point
+    if (ft == FeatureType.POINT) {
+      TableConfig obsTable = new TableConfig(obsStructureType, "record");
+      obsTable.featureType = FeatureType.POINT;
 
-      result.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);
-      result.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
-      result.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon);
-      result.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
+      obsTable.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time, obsDim);
+      obsTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, obsDim);
+      obsTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, obsDim);
+      obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, obsDim);
 
-      result.dim = obsDim;
-      return result;
+      obsTable.dim = obsDim;
+      return obsTable;
+    }
+
+    // its a station, but we want a point dataset
+    // iterate over obs struct, in file order (ignore station)
+    if (wantFeatureType == FeatureType.POINT) {
+      TableConfig obsTable = new TableConfig(obsStructureType, "record");
+      obsTable.featureType = FeatureType.POINT;
+      obsTable.dim = obsDim;
+
+      obsTable.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time, obsDim);
+      obsTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, obsDim);
+      obsTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, obsDim);
+      obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, obsDim);
+
+      // if they have lat and lon in the obs, then use it
+      if ((obsTable.lat != null) && (obsTable.lon != null)) {
+        return obsTable;
+      }
+
+      // otherwise join it to the station with a parent_index
+      String parentIndexVar = UnidataPointDatasetHelper.findVariableName(ds, "parent_index");
+      if (parentIndexVar == null)  {
+        errlog.format("Must have a parent_index variable");
+        return null;
+      }
+
+      Dimension stationDim = UnidataPointDatasetHelper.findDimension(ds, "station");
+      if (stationDim == null) {
+        errlog.format("Must have a station dimension");
+        return null;
+      }
+
+      TableConfig stationTable = new TableConfig(FlattenedTable.TableType.PseudoStructure, "station");
+      stationTable.dim = stationDim;
+      stationTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, stationDim);
+      stationTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, stationDim);
+      stationTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, stationDim);
+
+      stationTable.join = new TableConfig.JoinConfig(Join.Type.ParentIndex);
+      stationTable.join.parentIndex = parentIndexVar;
+      obsTable.addChild(stationTable);
+      stationTable.featureType = FeatureType.POINT;
+
+      return obsTable;
     }
 
     // otherwise its a Station
@@ -104,32 +149,34 @@ public class UnidataPointObs implements TableConfigurer {
     boolean isContiguousList = !isForwardLinkedList && !isBackwardLinkedList && (firstVar != null) && (numChildrenVar != null);
     boolean isMultiDim = !isForwardLinkedList && !isBackwardLinkedList && !isContiguousList;
 
-    TableConfig nt = new TableConfig(NestedTable.TableType.PseudoStructure, "station");
-    nt.featureType = Evaluator.getFeatureType(ds, ":cdm_datatype", errlog);
-    nt.dim = stationDim;
-    nt.limit = Evaluator.getVariableName(ds, "number_stations", errlog);
+    // station table
+    TableConfig stationTable = new TableConfig(FlattenedTable.TableType.PseudoStructure, "station");
+    stationTable.featureType = ft;
+    stationTable.dim = stationDim;
+    stationTable.limit = Evaluator.getVariableName(ds, "number_stations", errlog);
 
-    nt.stnId = Evaluator.getVariableName(ds, "station_id", errlog);
-    nt.stnDesc = Evaluator.getVariableName(ds, "station_description", errlog);
-    nt.stnWmoId = Evaluator.getVariableName(ds, "wmo_id", errlog);
+    stationTable.stnId = Evaluator.getVariableName(ds, "station_id", errlog);
+    stationTable.stnDesc = Evaluator.getVariableName(ds, "station_description", errlog);
+    stationTable.stnWmoId = Evaluator.getVariableName(ds, "wmo_id", errlog);
 
-    nt.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
-    nt.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon);
-    nt.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
+    stationTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
+    stationTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon);
+    stationTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
 
-    TableConfig obs;
+    // obs table
+    TableConfig obsTable;
     if (isMultiDim) {
-      obs = new TableConfig(NestedTable.TableType.MultiDim, "obs");
-      obs.outer = stationDim;
-      obs.dim = obsDim;
-      obs.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
+      obsTable = new TableConfig(FlattenedTable.TableType.MultiDim, "obs");
+      obsTable.outer = stationDim;
+      obsTable.dim = obsDim;
+      obsTable.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
 
     } else {
 
       if (obsDim.isUnlimited())
-        obs = new TableConfig(NestedTable.TableType.Structure, "record");
+        obsTable = new TableConfig(FlattenedTable.TableType.Structure, "record");
       else
-        obs = new TableConfig(NestedTable.TableType.PseudoStructure, obsDim.getName());
+        obsTable = new TableConfig(FlattenedTable.TableType.PseudoStructure, obsDim.getName());
 
       TableConfig.JoinConfig join;
       if (isForwardLinkedList) {
@@ -149,15 +196,16 @@ public class UnidataPointObs implements TableConfigurer {
 
       join.numRecords = numChildrenVar;
       join.parentIndex = Evaluator.getVariableName(ds, "parent_index", errlog);
-      obs.join = join;
+      obsTable.join = join;
     }
 
-    obs.dim = obsDim;
-    obs.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);
-    obs.timeNominal = Evaluator.getVariableName(ds, "time_nominal", errlog);
+    obsTable.dim = obsDim;
+    obsTable.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);
+    obsTable.timeNominal = Evaluator.getVariableName(ds, "time_nominal", errlog);
+    obsTable.featureType = FeatureType.STATION;
 
-    nt.addChild(obs);
-    return nt;
+    stationTable.addChild(obsTable);
+    return stationTable;
   }
 
   /*

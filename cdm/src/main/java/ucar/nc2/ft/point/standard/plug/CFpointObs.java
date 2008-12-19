@@ -21,22 +21,14 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.ft.point.standard.*;
-import ucar.nc2.ft.StationImpl;
-import ucar.nc2.ft.coordsys.CoordSysEvaluator;
+import ucar.nc2.ft.point.standard.CoordSysEvaluator;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.Structure;
-import ucar.ma2.*;
 
 import java.util.*;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
- * Start of a CF "point obs" parser
+ * CF "point obs" Convention
  *
  * @author caron
  * @since Nov 3, 2008
@@ -79,7 +71,7 @@ public class CFpointObs implements TableConfigurer {
   }
 
   private TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(NestedTable.TableType.Structure, "record");
+    TableConfig nt = new TableConfig(FlattenedTable.TableType.Structure, "record");
     nt.featureType = FeatureType.POINT;
     CoordSysEvaluator.findCoords(nt, ds);
     return nt;
@@ -87,7 +79,7 @@ public class CFpointObs implements TableConfigurer {
 
   // ??
   private TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(NestedTable.TableType.Singleton, "station");
+    TableConfig nt = new TableConfig(FlattenedTable.TableType.Singleton, "station");
     nt.featureType = FeatureType.STATION;
 
     nt.lat = Evaluator.getVariableName(ds, "latitude", errlog);
@@ -96,7 +88,7 @@ public class CFpointObs implements TableConfigurer {
     nt.stnId = Evaluator.getVariableName(ds, "stn", errlog);
     //nt.stnDesc = Evaluator.getVariableName(ds, ":description", errlog);
 
-    TableConfig obs = new TableConfig(NestedTable.TableType.Structure, "record");
+    TableConfig obs = new TableConfig(FlattenedTable.TableType.Structure, "record");
     obs.dim = Evaluator.getDimension(ds, "time", errlog);
     obs.time = Evaluator.getVariableName(ds, "time", errlog);
     nt.addChild(obs);
@@ -107,12 +99,12 @@ public class CFpointObs implements TableConfigurer {
   }
 
   private TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(NestedTable.TableType.MultiDim, "trajectory");
+    TableConfig nt = new TableConfig(FlattenedTable.TableType.MultiDim, "trajectory");
     nt.featureType = FeatureType.TRAJECTORY;
 
     CoordSysEvaluator.findCoords(nt, ds);
 
-    TableConfig obs = new TableConfig(NestedTable.TableType.MultiDim, "record");
+    TableConfig obs = new TableConfig(FlattenedTable.TableType.MultiDim, "record");
     obs.dim = ds.findDimension("sample");
     obs.outer = ds.findDimension("traj");
     nt.addChild(obs);

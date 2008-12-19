@@ -27,6 +27,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 
 /**
+ * An implementation of PointFeatureIterator which allows filtering by dateRange and/or bounding box.
  * @author caron
  * @since Mar 20, 2008
  */
