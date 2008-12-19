@@ -25,6 +25,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.Dimension;
 
 /**
  * CoordinateSystem Evaluation utilities.
@@ -58,7 +59,6 @@ public class CoordSysEvaluator {
 
 
   static public CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype) {
-
     CoordinateSystem use = findBestCoordinateSystem(ds);
     if (use == null) return null;
 
@@ -67,7 +67,20 @@ public class CoordSysEvaluator {
         return axis;
     }
 
+    // try all the axes
+    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
+      if (axis.getAxisType() == atype)
+        return axis;
+    }
+
     return null;
+  }
+
+  static public Dimension findDimensionByType(NetcdfDataset ds, AxisType atype) {
+    CoordinateAxis axis = findCoordByType(ds, atype);
+    if (axis == null) return null;
+    if (axis.isScalar()) return null;
+    return axis.getDimension(0);
   }
 
   static private CoordinateSystem findBestCoordinateSystem(NetcdfDataset ds) {

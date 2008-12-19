@@ -44,18 +44,24 @@ import ucar.unidata.geoloc.LatLonRect;
  * @since Dec 16, 2008
  */
 public class TestPointFeatureTypes  extends TestCase {
-  String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "point/";
+  String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "station/";
   public TestPointFeatureTypes( String name) {
     super(name);
   }
 
   public void testReadAll() throws IOException {
-    readAllDir(topDir+"netcdf/", null, FeatureType.ANY_POINT);
+    readAllDir(topDir, new MyFileFilter() , FeatureType.ANY_POINT);
+  }
+
+  class MyFileFilter implements FileFilter {
+    public boolean accept(File pathname) {
+      return pathname.getName().endsWith(".nc");
+    }
   }
 
   public void testProblem() throws IOException {
     //testPointDataset(topDir+"noZ/41001h2007.nc", FeatureType.ANY_POINT, true);
-    testPointDataset("R:/testdata/station/ndbc/41001h1976.nc", FeatureType.ANY_POINT, true);
+    testPointDataset("dods://ingrid.ldeo.columbia.edu/SOURCES/.EPCU/dods", FeatureType.ANY_POINT, true);
   }
 
   int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {
@@ -98,7 +104,7 @@ public class TestPointFeatureTypes  extends TestCase {
     Formatter out = new Formatter();
     FeatureDataset fdataset = FeatureDatasetFactoryManager.open(type, location, null, out);
     if (fdataset == null) {
-      System.out.printf("**failed on %s = %s %n", location, out);
+      System.out.printf("**failed on %s %n --> %s %n", location, out);
       return;
     }
 
@@ -106,6 +112,8 @@ public class TestPointFeatureTypes  extends TestCase {
     if (show) {
       fdataset.getDetailInfo(out);
       System.out.printf("%s %n", out);
+    } else {
+      System.out.printf("  Feature Ttype %s %n", fdataset.getFeatureType());
     }
 
     Date d1 = fdataset.getStartDate();

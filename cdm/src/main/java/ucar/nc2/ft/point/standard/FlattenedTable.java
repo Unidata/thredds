@@ -347,6 +347,7 @@ public class FlattenedTable {
   public Station makeStation(StructureData stationData) {
     TableConfig info = root.config;
 
+    double lat, lon, elev;
     String stationName;
     String stationDesc;
     String stnWmoId;
@@ -354,16 +355,22 @@ public class FlattenedTable {
       stationName = info.stnId;
       stationDesc = (info.stnDesc == null) ? stationName : info.stnDesc;
       stnWmoId = info.stnWmoId;
+      // must be scalars - no List<Structure>
+      lat = latVE.getCoordValue(null);
+      lon = lonVE.getCoordValue(null);
+      elev = (altVE == null) ? Double.NaN : altVE.getCoordValue(null);
+
     } else {
       stationName = getCoordValueString(stationData, info.stnId);
       stationDesc = (info.stnDesc == null) ? stationName : getCoordValueString(stationData, info.stnDesc);
       stnWmoId = (info.stnWmoId == null) ? null : getCoordValueString(stationData, info.stnWmoId);
+      lat = getCoordValue(stationData, info.lat);
+      lon = getCoordValue(stationData, info.lon);
+      elev = (info.elev == null) ? Double.NaN : getCoordValue(stationData, info.elev);
     }
 
-    List<StructureData> structList = new ArrayList<StructureData>(1);
-    structList.add(stationData);
-    EarthLocation loc = getEarthLocation(structList);
-    return new StationImpl(stationName, stationDesc, stnWmoId, loc.getLatitude(), loc.getLongitude(), loc.getAltitude());
+
+    return new StationImpl(stationName, stationDesc, stnWmoId, lat, lon, elev);
   }
 
   double getCoordValue(StructureData struct, String memberName) {

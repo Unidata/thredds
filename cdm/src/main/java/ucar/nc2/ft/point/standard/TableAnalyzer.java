@@ -48,6 +48,7 @@ public class TableAnalyzer {
   // search in the order added
   static {
     registerAnalyzer("FslWindProfiler", FslWindProfiler.class);
+    registerAnalyzer("IRIDL", Iridl.class);
     registerAnalyzer("MADIS surface observations, v1.0", Madis.class);
     registerAnalyzer("Ndbc", Ndbc.class);
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class);

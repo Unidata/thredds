@@ -169,6 +169,7 @@ public class DefaultConvention extends CSMConvention {
 
       Variable v = (Variable) ve;
       String vname = v.getName();
+      String unit = v.getUnitsString();
 
       if (vname.equalsIgnoreCase("x") || findAlias(ds, v).equalsIgnoreCase("x"))
         return AxisType.GeoX;
@@ -187,8 +188,11 @@ public class DefaultConvention extends CSMConvention {
         return AxisType.GeoZ;
 
       if (vname.equalsIgnoreCase("z") || findAlias(ds, v).equalsIgnoreCase("z") ||
-              (vname.equalsIgnoreCase("altitude") || vname.equalsIgnoreCase("depth")))
-        return AxisType.Height;
+          vname.equalsIgnoreCase("altitude") || vname.equalsIgnoreCase("depth") ||
+          vname.equalsIgnoreCase("elev") || vname.equalsIgnoreCase("elevation")) {
+        if ((unit != null) && SimpleUnit.isCompatible("m", unit)) // units of meters
+          return AxisType.Height;
+    }
 
       if (vname.equalsIgnoreCase("time") || findAlias(ds, v).equalsIgnoreCase("time"))
         return AxisType.Time;
