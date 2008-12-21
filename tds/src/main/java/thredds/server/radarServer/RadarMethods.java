@@ -142,6 +142,23 @@ public class RadarMethods {
        terminalVars.add( "TV1");
        terminalVars.add( "TV2");
        terminalVars.add( "TZL");
+       terminalVars.add( "DHR");
+       terminalVars.add( "NCR");
+       terminalVars.add( "NET");
+       terminalVars.add( "NVW");
+       terminalVars.add( "NVL");
+       terminalVars.add( "NST");
+       terminalVars.add( "NHI");
+       terminalVars.add( "NTV");
+       terminalVars.add( "FTM");
+       terminalVars.add( "N1P");
+       terminalVars.add( "NTP");
+       terminalVars.add( "DPA");
+       terminalVars.add( "SPD");
+       terminalVars.add( "DSP");
+       terminalVars.add( "NMD");
+       terminalVars.add( "RSL");
+       terminalVars.add( "GSM");       
      }
   }
 
