@@ -1,9 +1,7 @@
 package thredds.server.controller;
 
-import thredds.catalog.InvCatalogImpl;
-
 /**
- * _more_
+ * Contain the information used from a catalogService request.
  *
  * @author edavis
  * @since 4.0
@@ -13,32 +11,10 @@ public class CatalogServiceRequest
   private String catalog = null;
   private boolean debug = false;
   private String command = null;
-  private String view = null;
+  private boolean htmlView = false;
   private String dataset = null;
 
-//  public enum Command
-//  {
-//    SUBSET(), VALIDATE();
-//    private String altName;
-//    Command() { this.altName = this.name().toLowerCase(); }
-//    public String toString() { return this.altName; }
-//
-//    public static Command getCommand( String command )
-//    {
-//      for ( Command curSection : Command.values() )
-//        if ( curSection.altName.equals(  command ) )
-//          return curSection;
-//      throw new IllegalArgumentException( "No such instance [" + command + "]." );
-//    }
-//  }
-//  public enum View { HTML, XML }
-//
-//  public static class Identifier
-//  {
-//    private String id;
-//    public String getId() { return id; }
-//    public void setId( String id) { this.id = id; }
-//  }
+  public static enum Command { SHOW, SUBSET, VALIDATE }
 
   public CatalogServiceRequest() { }
 
@@ -72,14 +48,14 @@ public class CatalogServiceRequest
     this.command = command;
   }
 
-  public String getView()
+  public boolean isHtmlView()
   {
-    return view;
+    return this.htmlView;
   }
 
-  public void setView( String view )
+  public void setHtmlView( boolean htmlView )
   {
-    this.view = view;
+    this.htmlView = htmlView;
   }
 
   public String getDataset()

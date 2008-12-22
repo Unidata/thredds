@@ -13,36 +13,28 @@ import java.beans.PropertyEditorSupport;
  */
 public class CatalogUrlPropertyEditor extends PropertyEditorSupport
 {
-  private InvCatalogFactory fac;
-  private boolean validate;
+  private InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
+  
   public CatalogUrlPropertyEditor()
   {
     super();
     fac = null;
   }
 
-  public boolean isValidate()
-  {
-    return validate;
-  }
-
-  public void setValidate( boolean validate )
-  {
-    this.validate = validate;
-    this.fac = InvCatalogFactory.getDefaultFactory( true );
-  }
-
   @Override
   public String getAsText()
   {
     InvCatalogImpl cat = (InvCatalogImpl) super.getValue();
-    return super.getAsText();
+    return cat.getBaseURI().toString();
   }
 
   @Override
   public void setAsText( String text )
           throws IllegalArgumentException
   {
-    super.setAsText( text );
+    if ( text == null )
+      throw new IllegalArgumentException( "Catalog URL must not be null.");
+    InvCatalogImpl cat = this.fac.readXML( text );
+    super.setValue( cat );
   }
 }
