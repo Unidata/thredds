@@ -37,10 +37,13 @@ public class TestCatalogServiceRequest extends TestCase
     req.setContextPath( "/thredds" );
     req.setServletPath( "/catalog" );
     req.setPathInfo( "/model/data/stuff/catalog.xml" );
-    req.setParameter( "htmlView", "true" );
+    req.setParameter( "debug", "true" );
+    req.setParameter( "command", "subset" );
+    //req.setParameter( "htmlView", "false" );
+    req.setParameter( "dataset", "true" );
 
     CatalogServiceRequest csr = new CatalogServiceRequest();
-    CatalogServiceRequestDataBinder db = new CatalogServiceRequestDataBinder( csr, true);
+    CatalogServiceRequestDataBinder db = new CatalogServiceRequestDataBinder( csr, true, false);
     //db.registerCustomEditor( boolean.class, "htmlView", new CatalogServiceRequestDataBinder.ViewEditor() );
     db.setAllowedFields( new String[] {"catalog", "debug", "command", "htmlView", "dataset"} );
     
@@ -50,7 +53,6 @@ public class TestCatalogServiceRequest extends TestCase
     ValidationUtils.invokeValidator( new CatalogServiceRequestValidator(), bindingResult.getTarget(), bindingResult  );
 
     if ( bindingResult.hasErrors() )
-
     {
       List<ObjectError> errors = bindingResult.getAllErrors();
       StringBuilder sb = new StringBuilder();

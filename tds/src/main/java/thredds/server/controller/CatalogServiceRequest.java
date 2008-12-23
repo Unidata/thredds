@@ -1,5 +1,7 @@
 package thredds.server.controller;
 
+import java.beans.PropertyEditorSupport;
+
 /**
  * Contain the information used from a catalogService request.
  *
@@ -10,11 +12,32 @@ public class CatalogServiceRequest
 {
   private String catalog = null;
   private boolean debug = false;
-  private String command = null;
+  private Command command = null;
   private boolean htmlView = false;
   private String dataset = null;
 
   public static enum Command { SHOW, SUBSET, VALIDATE }
+  public static class CommandEditor extends PropertyEditorSupport
+  {
+    public CommandEditor() { super(); }
+
+    public String getAsText()
+    {
+      Command c = (Command) super.getValue();
+      return c.toString();
+    }
+
+    public void setAsText( String text ) throws IllegalArgumentException
+    {
+      if ( text == null || text.equals( "" ))
+      {
+        super.setValue( Command.SHOW );
+        return;
+      }
+      Command c = Command.valueOf( text.toUpperCase() );
+      super.setValue( c );
+    }
+  }
 
   public CatalogServiceRequest() { }
 
@@ -38,12 +61,12 @@ public class CatalogServiceRequest
     this.debug = debug;
   }
 
-  public String getCommand()
+  public Command getCommand()
   {
     return command;
   }
 
-  public void setCommand( String command )
+  public void setCommand( Command command )
   {
     this.command = command;
   }

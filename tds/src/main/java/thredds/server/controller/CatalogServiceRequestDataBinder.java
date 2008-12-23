@@ -1,6 +1,7 @@
 package thredds.server.controller;
 
 import org.springframework.validation.DataBinder;
+import org.springframework.validation.FieldError;
 import org.springframework.beans.MutablePropertyValues;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,11 +34,15 @@ public class CatalogServiceRequestDataBinder extends DataBinder
   private String DEFAULT_DATASET_PROPERTY_NAME = "dataset";
 
   private boolean localCatalog;
+  private boolean xmlOnly;
 
-  public CatalogServiceRequestDataBinder( CatalogServiceRequest target, boolean localCatalog )
+  public CatalogServiceRequestDataBinder( CatalogServiceRequest target,
+                                          boolean localCatalog,
+                                          boolean xmlOnly )
   {
     super( target);
     this.localCatalog = localCatalog;
+    this.xmlOnly = xmlOnly;
   }
 
   public void bind( HttpServletRequest req)
@@ -56,6 +61,10 @@ public class CatalogServiceRequestDataBinder extends DataBinder
       // Determine if HTML view is desired
       if ( catPath.endsWith( ".html" ))
       {
+        if ( xmlOnly )
+        {
+          this.getBindingResult().addError( new FieldError( "", "htmlView", "catalog ends in \".html\" but only XML view supported.") );
+        }
         catPath = catPath.replaceAll( ".html$", ".xml" );
         isHtmlView = "true";
       }
