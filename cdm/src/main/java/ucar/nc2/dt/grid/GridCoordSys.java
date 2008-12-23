@@ -1134,7 +1134,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       int mini = Integer.MAX_VALUE, minj = Integer.MAX_VALUE;
       int maxi = -1, maxj = -1;
 
-      // brute force, examine every point
+      // brute force, examine every point LOOK BAD
       for (int j = 0; j < nj; j++) {
         for (int i = 0; i < ni; i++) {
           double lat = lat_axis.getCoordValue(j, i);

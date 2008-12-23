@@ -52,4 +52,10 @@ public interface EarthLocation {
    * @return lat/lon location
    */
   public LatLonPoint getLatLon();
+
+  /**
+   * Are either lat or lon missing?
+   * @return true if lat or lon is missing
+   */
+  public boolean isMissing();
 }

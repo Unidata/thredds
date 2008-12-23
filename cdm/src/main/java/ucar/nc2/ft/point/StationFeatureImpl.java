@@ -90,6 +90,10 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
     return s.getLatLon();
   }
 
+  public boolean isMissing() {
+    return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
+  }
+
   @Override
   public FeatureType getCollectionFeatureType() {
     return FeatureType.STATION;

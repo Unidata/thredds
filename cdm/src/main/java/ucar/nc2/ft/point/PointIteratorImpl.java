@@ -70,6 +70,9 @@ public abstract class PointIteratorImpl implements PointFeatureIterator {
       if (sdata == null) break;
       feature = makeFeature(count, sdata);
       if (feature == null) continue;
+      if (feature.getLocation().isMissing()) {
+        continue;
+      }
       if (filter == null || filter.filter(feature))
         return true;
     }

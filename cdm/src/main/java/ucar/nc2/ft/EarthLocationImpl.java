@@ -56,6 +56,10 @@ public class EarthLocationImpl implements EarthLocation {
     return new LatLonPointImpl( lat, lon);
   }
 
+  public boolean isMissing() {
+    return Double.isNaN(lat) || Double.isNaN(lon);
+  }
+
   public EarthLocationImpl( double lat, double lon, double alt) {
     this.lat = lat;
     this.lon = lon;

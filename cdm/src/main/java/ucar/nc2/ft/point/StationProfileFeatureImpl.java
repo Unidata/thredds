@@ -85,6 +85,10 @@ public abstract class StationProfileFeatureImpl extends OneNestedPointCollection
   public LatLonPoint getLatLon() {
     return s.getLatLon();
   }
+  
+  public boolean isMissing() {
+    return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
+  }
 
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();

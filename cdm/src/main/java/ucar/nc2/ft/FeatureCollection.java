@@ -19,8 +19,6 @@
  */
 package ucar.nc2.ft;
 
-import ucar.nc2.units.DateUnit;
-
 /**
  * A collection of FeatureTypes.
  * @author caron

@@ -55,7 +55,9 @@ public class TestPointFeatureTypes  extends TestCase {
 
   class MyFileFilter implements FileFilter {
     public boolean accept(File pathname) {
-      return pathname.getName().endsWith(".nc");
+      String path = pathname.getPath();
+      if (new File(path+"ml").exists()) return false;
+      return path.endsWith(".nc") || path.endsWith(".ncml");
     }
   }
 
