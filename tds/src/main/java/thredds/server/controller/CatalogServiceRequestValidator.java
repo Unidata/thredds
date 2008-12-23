@@ -3,7 +3,6 @@ package thredds.server.controller;
 import org.springframework.validation.Validator;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * _more_
@@ -22,13 +21,11 @@ public class CatalogServiceRequestValidator implements Validator
 
   public void validate( Object obj, Errors e)
   {
+    CatalogServiceRequest csr = (CatalogServiceRequest) obj;
     ValidationUtils.rejectIfEmpty( e, "catalog", "catalog.empty" );
-    // "debug" "command" "htmlView" "dataset"
-//    Object value = e.getFieldValue( "command" );
-//    if ( value == null || !StringUtils.hasLength( value.toString() ) )
-//    {
-//      e.rejectValue( field, errorCode, errorArgs, defaultMessage );
-//
-//    }
+    if ( csr.getCommand() == null )
+      e.rejectValue( "command", "command.epmty" );
+    if ( csr.getCommand().equals( CatalogServiceRequest.Command.SUBSET ))
+      ValidationUtils.rejectIfEmpty( e, "dataset", "dataset.empty" );
   }
 }

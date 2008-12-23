@@ -27,6 +27,11 @@ public class TestCatalogServiceRequest extends TestCase
     super( name );
   }
 
+  public void testShowXml()
+  {
+    // explicit and implicit               
+  }
+
   /**
    * Test ...
    */
@@ -43,7 +48,7 @@ public class TestCatalogServiceRequest extends TestCase
     req.setParameter( "dataset", "true" );
 
     CatalogServiceRequest csr = new CatalogServiceRequest();
-    CatalogServiceRequestDataBinder db = new CatalogServiceRequestDataBinder( csr, true, false);
+    CatalogServiceRequestDataBinder db = new CatalogServiceRequestDataBinder( csr, "request", true, false);
     //db.registerCustomEditor( boolean.class, "htmlView", new CatalogServiceRequestDataBinder.ViewEditor() );
     db.setAllowedFields( new String[] {"catalog", "debug", "command", "htmlView", "dataset"} );
     

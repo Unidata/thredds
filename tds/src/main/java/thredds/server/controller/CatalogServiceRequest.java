@@ -10,11 +10,11 @@ import java.beans.PropertyEditorSupport;
  */
 public class CatalogServiceRequest
 {
-  private String catalog = null;
-  private boolean debug = false;
-  private Command command = null;
-  private boolean htmlView = false;
-  private String dataset = null;
+  private String catalog;
+  private boolean verbose;
+  private Command command;
+  private boolean htmlView;
+  private String dataset;
 
   public static enum Command { SHOW, SUBSET, VALIDATE }
   public static class CommandEditor extends PropertyEditorSupport
@@ -41,53 +41,18 @@ public class CatalogServiceRequest
 
   public CatalogServiceRequest() { }
 
-  public String getCatalog()
-  {
-    return catalog;
-  }
+  public String getCatalog() { return catalog; }
+  public void setCatalog( String catalog ) { this.catalog = catalog; }
 
-  public void setCatalog( String catalog )
-  {
-    this.catalog = catalog;
-  }
+  public boolean isVerbose() { return verbose; }
+  public void setVerbose( boolean verbose ) { this.verbose = verbose; }
 
-  public boolean isDebug()
-  {
-    return debug;
-  }
+  public Command getCommand() { return command; }
+  public void setCommand( Command command ) { this.command = command; }
 
-  public void setDebug( boolean debug )
-  {
-    this.debug = debug;
-  }
+  public boolean isHtmlView() { return this.htmlView; }
+  public void setHtmlView( boolean htmlView ) { this.htmlView = htmlView; }
 
-  public Command getCommand()
-  {
-    return command;
-  }
-
-  public void setCommand( Command command )
-  {
-    this.command = command;
-  }
-
-  public boolean isHtmlView()
-  {
-    return this.htmlView;
-  }
-
-  public void setHtmlView( boolean htmlView )
-  {
-    this.htmlView = htmlView;
-  }
-
-  public String getDataset()
-  {
-    return dataset;
-  }
-
-  public void setDataset( String dataset )
-  {
-    this.dataset = dataset;
-  }
+  public String getDataset() { return dataset; }
+  public void setDataset( String dataset ) { this.dataset = dataset; }
 }
