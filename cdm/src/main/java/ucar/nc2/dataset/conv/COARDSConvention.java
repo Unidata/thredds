@@ -84,32 +84,4 @@ public class COARDSConvention extends CoordSysBuilder {
 
 }
 
-    /*
-        /* kludge in fixing the units for gds
-    String historyAtt = ncDataset.findAttValueIgnoreCase(null, "history", null);
-    if (historyAtt != null) {
-      historyAtt = historyAtt.toLowerCase();
-      if (historyAtt.indexOf("grads-dods") >= 0) {
-        createUnitsFromLongName(ncDataset);
-      }
-    }
-
-
-  private void createUnitsFromLongName(NetcdfDataset ncDataset) {
-    // kludge in fixing the units
-    List vlist = ncDataset.getVariables();
-    for (int i=0; i<vlist.size(); i++) {
-      Variable v = (Variable) vlist.get(i);
-      Attribute attLongName = v.findAttributeIgnoreCase( "long_name");
-      Attribute attUnit = v.findAttributeIgnoreCase( "units");
-      if ((attLongName != null) && (attUnit == null)) {
-        String longName = attLongName.getStringValue();
-        int pos1 = longName.indexOf('[');
-        int pos2 = longName.indexOf(']');
-        if ((pos1 >= 0) && (pos2 > pos1)) {
-          String units =  longName.substring(pos1+1, pos2);
-          v.addAttribute( new Attribute( "units",  units));
-        }
-      }
-    }
-  } */
+ 

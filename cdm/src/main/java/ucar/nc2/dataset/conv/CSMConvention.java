@@ -21,6 +21,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
@@ -80,6 +81,21 @@ public class CSMConvention extends COARDSConvention {
     }
 
     super.findCoordinateAxes(ds);
+  }
+
+  protected AxisType getAxisType( NetcdfDataset ncd, VariableEnhanced v) {
+
+    AxisType atype = super.getAxisType(ncd, v);
+    if (atype != null) return atype;
+
+    String unit = v.getUnitsString();
+    if (unit == null)
+      return null;
+
+    if (SimpleUnit.isTimeUnit(unit))
+      return AxisType.Time;
+
+    return null;
   }
 
   protected CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {

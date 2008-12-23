@@ -19,15 +19,15 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib1/data/","extended.wmo", 8, 6, 10, 4);
     doOne("grib1/data/","ensemble.wmo", 24, 16, 18, 10);
     // formerly doOne("grib1/data/","ecmf.wmo", 56, 44, 116, 58);
-    doOne("grib1/data/","ecmf.wmo", 56, 44, 112, 56);     
+    doOne("grib1/data/","ecmf.wmo", 56, 44, 116, 58);
     doOne("grib1/data/","don_ETA.wmo", 28, 11, 13, 8);
     doOne("grib1/data/","pgbanl.fnl", 76, 15, 17, 14);
     doOne("grib1/data/","radar_national_rcm.grib", 1, 1, 3, 0);
     doOne("grib1/data/","radar_national.grib", 1, 1, 3, 0);
     //doOne("grib1/data/","thin.wmo", 240, 87, 117, 63);
-    doOne("grib1/data/","thin.wmo", 240, 87, 120, 64);
+    doOne("grib1/data/","thin.wmo", 240, 87, 117, 63);
     //doOne("grib1/data/","ukm.wmo", 96, 49, 69, 32);
-    doOne("grib1/data/","ukm.wmo", 96, 49, 67, 32);
+    doOne("grib1/data/","ukm.wmo", 96, 49, 69, 32);
     doOne("grib1/data/","AVN.wmo", 22, 9, 11, 7);
     doOne("grib1/data/","AVN-I.wmo", 20, 8, 10, 7); //
     doOne("grib1/data/","MRF.wmo", 15, 8, 10, 6); //

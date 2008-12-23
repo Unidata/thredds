@@ -47,8 +47,13 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
-  27:
-    Start implementing CF point data spec in FeatureType (ucar.nc2.ft) framework
+  28: 
+    DefaultConventions - split from GDV.
+    Nested Tables implementation FeatureType (ucar.nc2.ft) framework. mostly POINT, some STAATION
+    Bugs and performance improvements for StructureDS
+    TDWR into NIDS iosp
+    Grib2 tolerate missing parameters
+  27: Start implementing CF point data spec in FeatureType (ucar.nc2.ft) framework
     Point data: RecordHelper using wrong StructureMembers - always need to get from curent StructureData/Array object!
     Range, Section: use Range.VLEN for size < 0.
     H5iosp: structure member reading had wrong byteOrder

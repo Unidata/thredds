@@ -42,11 +42,11 @@ import java.util.StringTokenizer;
 
 /**
  * Default Coordinate Conventions.
- *
+ * Split from GDV.
  * @author caron
  * @since Dec 17, 2008
  */
-public class DefaultConvention extends CSMConvention {
+public class DefaultConvention extends COARDSConvention {
     protected ProjectionCT projCT = null;
 
     public DefaultConvention() {
@@ -85,6 +85,16 @@ public class DefaultConvention extends CSMConvention {
         if (null != dim) {
           vp.isCoordinateAxis = true;
           parseInfo.append(" Coordinate Axis added (alias) = ").append(vp.v.getName()).append(" for dimension ").append(dimName).append("\n");
+        }
+      }
+
+      // coordinates is an alias for _CoordinateAxes
+      for (VarProcess vp : varList) {
+        if (vp.coordAxes == null) { // dont override if already set
+          String coordsString = ds.findAttValueIgnoreCase(vp.v, "coordinates", null);
+          if (coordsString != null) {
+            vp.coordinates = coordsString;
+          }
         }
       }
 
