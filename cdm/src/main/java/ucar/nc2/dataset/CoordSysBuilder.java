@@ -479,7 +479,13 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     StringTokenizer stoker = new StringTokenizer(coordinates);
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
-      VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+      VarProcess ap = findVarProcess(vname);
+      if (ap == null) {
+        Group g = vp.v.getParentGroup();
+        Variable v = g.findVariableOrInParent(vname);
+        ap = findVarProcess(v.getName());          
+      }
+
       if (ap != null) {
         if (!ap.isCoordinateAxis)
           parseInfo.append(" CoordinateAxis = ").append(vname).append(" added; referenced from var= ").append(vp.v.getName()).append("\n");
@@ -904,11 +910,11 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
   }
 
-  protected VarProcess findVarProcess(String name) {
-    if (name == null) return null;
+  protected VarProcess findVarProcess(String fullName) {
+    if (fullName == null) return null;
 
     for (VarProcess vp : varList) {
-      if (name.equals(vp.v.getName()))
+      if (fullName.equals(vp.v.getName()))
         return vp;
     }
     return null;

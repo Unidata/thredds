@@ -47,7 +47,7 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
-  28: 
+  28: Start to fix VoordSysBuilder to deal with groups.
     DefaultConventions - split from GDV.
     Nested Tables implementation FeatureType (ucar.nc2.ft) framework. mostly POINT, some STAATION
     Bugs and performance improvements for StructureDS

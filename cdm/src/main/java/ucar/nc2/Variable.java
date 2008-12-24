@@ -1370,8 +1370,15 @@ public class Variable implements VariableIF {
     while (stoke.hasMoreTokens()) {
       String dimName = stoke.nextToken();
       Dimension d = dimName.equals("*") ? Dimension.VLEN : group.findDimension(dimName);
-      if (d == null)
-        throw new IllegalArgumentException("Variable " + getName() + " setDimensions = " + dimString + " FAILED, dim doesnt exist=" + dimName);
+      if (d == null) {
+        // if numeric - then its anonymous dimension
+        try {
+          int len = Integer.parseInt(dimName);
+          d = new Dimension("", len, false, false, false);
+        } catch (Exception e)  {
+          throw new IllegalArgumentException("Variable " + getName() + " setDimensions = " + dimString + " FAILED, dim doesnt exist=" + dimName);
+        }
+      }
       newDimensions.add(d);
     }
 

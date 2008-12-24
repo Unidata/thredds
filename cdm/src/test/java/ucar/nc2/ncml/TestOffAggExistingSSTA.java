@@ -54,7 +54,7 @@ public class TestOffAggExistingSSTA extends TestCase {
     RandomAccessFile.setDebugLeaks( true);
     List<String> openfiles = RandomAccessFile.getOpenFiles();
     int count = openfiles.size();
-    System.out.println("count files="+count);
+    System.out.println("count files at start="+count);
 
     NetcdfDataset.disableNetcdfFileCache();
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
@@ -64,12 +64,12 @@ public class TestOffAggExistingSSTA extends TestCase {
     Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
 
     int count1 = RandomAccessFile.getOpenFiles().size();
-    System.out.println("count files="+count1);
+    System.out.println("count files after open="+count1);
 
     ncfile.close();
 
     int count2 = RandomAccessFile.getOpenFiles().size();
-    System.out.println("count files="+count2);
+    System.out.println("count files after close="+count2);
     assert count == count2 : "openFile count "+count +"!="+ count2;
 
   }
