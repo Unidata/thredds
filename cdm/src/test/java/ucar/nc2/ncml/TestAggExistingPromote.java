@@ -9,20 +9,11 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Date;
 
 /**
  * Test promoting an attribute to a variable.
- */
-
-/*
-<?xml version="1.0" encoding="UTF-8"?>
-<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-  <aggregation dimName="time" type="joinExisting" recheckEvery="4 sec">
-    <promoteGlobalAttribute name="times" orgName="time_coverage_end" />
-    <scan dateFormatMark="CG#yyyyDDD_HHmmss" location="src/test/data/ncml/nc/cg/" suffix=".nc" subdirs="false" />
-  </aggregation>
-</netcdf>
  */
 
 public class TestAggExistingPromote extends TestCase {
@@ -34,7 +25,17 @@ public class TestAggExistingPromote extends TestCase {
   public void testWithDateFormatMark() throws Exception, InvalidRangeException {
     String filename = "file:" + TestNcML.topDir + "aggExistingPromote.ncml";
 
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    String aggExistingPromote =
+          "<?xml version='1.0' encoding='UTF-8'?>\n"+
+          "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n"+
+          "  <aggregation dimName='time' type='joinExisting' recheckEvery='4 sec'>\n"+
+          "    <promoteGlobalAttribute name='times' orgName='time_coverage_end' />\n"+
+          "    <scan dateFormatMark='CG#yyyyDDD_HHmmss' location='nc/cg/' suffix='.nc' subdirs='false' />\n"+
+          "  </aggregation>\n"+
+          "</netcdf>";
+
+    NetcdfFile ncfile = NcMLReader.readNcML( new StringReader(aggExistingPromote), filename, null);
+    System.out.println(" TestNcmlAggExisting.open "+ filename+"\n"+ncfile);
 
     // the promoted var
     Variable pv = ncfile.findVariable("times");
@@ -139,8 +140,27 @@ public class TestAggExistingPromote extends TestCase {
    */
   public void testNotOne() throws IOException, InvalidRangeException {
     String filename = "file:" + TestNcML.topDir + "aggExistingPromote2.ncml";
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
 
+    String aggExistingPromote2 =
+        "<?xml version='1.0' encoding='UTF-8'?>\n" +
+        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+        "  <aggregation dimName='time' type='joinExisting'>\n" +
+        "    <promoteGlobalAttribute name='title' />\n" +
+        "    <promoteGlobalAttribute name='month' />\n" +
+        "    <promoteGlobalAttribute name='vector' />\n" +
+        "    <netcdf location='file:src/test/data/ncml/nc/jan.nc'>\n" +
+        "      <attribute name='month' value='jan'/>\n" +
+        "      <attribute name='vector' value='1 2 3' type='int'/>\n" +
+        "    </netcdf>\n" +
+        "    <netcdf location='file:src/test/data/ncml/nc/feb.nc'>\n" +
+        "      <attribute name='month' value='feb'/>\n" +
+        "      <attribute name='vector' value='4 5 6' type='int'/>\n" +
+        "    </netcdf>\n" +
+        "  </aggregation>\n" +
+        "</netcdf>";
+
+
+    NetcdfFile ncfile = NcMLReader.readNcML( new StringReader(aggExistingPromote2), filename, null);
     Dimension dim = ncfile.findDimension("time");
 
     // the promoted var

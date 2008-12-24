@@ -471,7 +471,6 @@ public abstract class Aggregation implements ProxyReader {
     protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
     protected EnumSet<NetcdfDataset.Enhance> enhance;
-    //protected NetcdfFile ncfile;
 
     /**
      * For subclasses.

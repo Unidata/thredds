@@ -219,11 +219,11 @@
     </xsd:complexType>
   </xsd:element>
 
-  <!-- promote global attribute to variable -->
+ <!-- promote global attribute to variable -->
  <xsd:element name="promoteGlobalAttribute">
    <xsd:complexType>
      <xsd:attribute name="name" type="xsd:token" use="required"/>
-     <xsd:attribute name="gattName" type="xsd:string"/>
+     <xsd:attribute name="orgName" type="xsd:string"/>
    </xsd:complexType>
  </xsd:element>
 

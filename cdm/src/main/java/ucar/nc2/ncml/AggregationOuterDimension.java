@@ -84,10 +84,10 @@ public abstract class AggregationOuterDimension extends Aggregation {
    * Promote a global attribute to a variable
    *
    * @param varName name of agg variable
-   * @param gattName name of global attribute, if different from the variable
+   * @param orgName name of global attribute, may be different from the variable name
    */
-  void addVariableFromGlobalAttribute(String varName, String gattName) {
-    cacheList.add(new PromoteVar(varName, gattName));
+  void addVariableFromGlobalAttribute(String varName, String orgName) {
+    cacheList.add(new PromoteVar(varName, orgName));
   }
 
   /**
@@ -809,7 +809,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       return dataMap.get(dset.getLocation());
     }
 
-    // get the Array of data for this var in this dataset
+    // get the Array of data for this var in this dataset, acquire file
     protected Array read(DatasetOuterDimension dset) throws IOException {
 
       Array data = getData(dset);
@@ -952,39 +952,34 @@ public abstract class AggregationOuterDimension extends Aggregation {
     
     PromoteVar(String varName, String gattName) {
       super(varName, null);
-      this.gattName = gattName != null ? gattName : varName;
+      this.gattName = (gattName != null) ? gattName : varName;
     }
 
-    protected Array read(DatasetOuterDimension dset) throws IOException {
+    @Override
+    protected Array read(DatasetOuterDimension dset, NetcdfFile ncfile) throws IOException {
       Array data = getData(dset);
       if (data != null) return data;
 
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = dset.acquireFile(null);
-        Attribute att = ncfile.findGlobalAttribute(gattName);
-        if (att == null)
-          throw new IllegalArgumentException("Unknown attribute name= "+gattName);
-        data = att.getValues();
-        if (dtype == null)
-          dtype = DataType.getType(data.getElementType());
+      Attribute att = ncfile.findGlobalAttribute(gattName);
+      if (att == null)
+        throw new IllegalArgumentException("Unknown attribute name= "+gattName);
+      data = att.getValues();
+      if (dtype == null)
+        dtype = DataType.getType(data.getElementType());
 
-        if (dset.ncoord == 1)
-          setData(dset, data);
-        else {
-          // duplicate the value to each of the coordinates
-          Array allData = Array.factory(dtype, new int[]{dset.ncoord});
-          for (int i = 0; i < dset.ncoord; i++)
-            Array.arraycopy(data, 0, allData, i, 1); // LOOK generalize to vectors ??
-          setData(dset, allData);
-          data = allData;
-        }
-        return data;
-
-      } finally {
-        ncfile.close();
+      if (dset.ncoord == 1)
+        setData(dset, data);
+      else {
+        // duplicate the value to each of the coordinates
+        Array allData = Array.factory(dtype, new int[]{dset.ncoord});
+        for (int i = 0; i < dset.ncoord; i++)
+          Array.arraycopy(data, 0, allData, i, 1); // LOOK generalize to vectors ??
+        setData(dset, allData);
+        data = allData;
       }
+      return data;
     }
+
 
   }
 
@@ -1009,34 +1004,28 @@ public abstract class AggregationOuterDimension extends Aggregation {
         throw new IllegalArgumentException("Missing format string (java.util.Formatter)");
     }
 
-    protected Array read(DatasetOuterDimension dset) throws IOException {
+    @Override
+    protected Array read(DatasetOuterDimension dset, NetcdfFile ncfile) throws IOException {
       Array data = getData(dset);
       if (data != null) return data;
 
       List<Object> vals = new ArrayList<Object>();
-      NetcdfFile ncfile = null;
-      try {
-        ncfile = dset.acquireFile(null);
-        for (String gattName : gattNames) {
-          Attribute att = ncfile.findGlobalAttribute(gattName);
-          if (att == null)
-            throw new IllegalArgumentException("Unknown attribute name= "+gattName);
-          vals.add(att.getValue(0));
-        }
-
-        Formatter f = new Formatter();
-        f.format(format, vals.toArray());
-        String result = f.toString();
-
-        Array allData = Array.factory(dtype, new int[]{dset.ncoord});
-        for (int i=0; i<dset.ncoord; i++)
-         allData.setObject(i, result);
-        setData(dset, allData);
-        return allData;
-
-      } finally {
-        ncfile.close();
+      for (String gattName : gattNames) {
+        Attribute att = ncfile.findGlobalAttribute(gattName);
+        if (att == null)
+          throw new IllegalArgumentException("Unknown attribute name= "+gattName);
+        vals.add(att.getValue(0));
       }
+
+      Formatter f = new Formatter();
+      f.format(format, vals.toArray());
+      String result = f.toString();
+
+      Array allData = Array.factory(dtype, new int[]{dset.ncoord});
+      for (int i=0; i<dset.ncoord; i++)
+       allData.setObject(i, result);
+      setData(dset, allData);
+      return allData;
     }
 
   }
