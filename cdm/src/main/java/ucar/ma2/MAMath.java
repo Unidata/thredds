@@ -524,4 +524,46 @@ public class MAMath {
     }
   }
 
+  public static MAMath.ScaleOffset calcScaleOffsetSkipMissingData(Array a, double missingValue, int nbits) {
+    MAMath.MinMax minmax = getMinMaxSkipMissingData(a, missingValue);
+
+    long size = (2 << nbits) - 1;
+    double offset = minmax.min;
+    double scale =(minmax.max - offset) / size;
+
+    return new ScaleOffset(scale, offset);
+  }
+
+  public static Array convert2Unpacked(Array packed, ScaleOffset scaleOffset) {
+    boolean isUnsigned = packed.isUnsigned();
+    Array result = Array.factory(DataType.DOUBLE, packed.getShape());
+    IndexIterator riter = result.getIndexIterator();
+    while (packed.hasNext())  {
+      riter.setDoubleNext( packed.nextDouble() * scaleOffset.scale + scaleOffset.offset);
+    }
+    return result;
+  }
+
+  public static Array convert2Packed(Array unpacked, ScaleOffset scaleOffset, DataType packedType) {
+    Array result = Array.factory(packedType, unpacked.getShape());
+    IndexIterator riter = result.getIndexIterator();
+    while (unpacked.hasNext()) {
+      double uv = unpacked.nextDouble();
+      double v = (uv - scaleOffset.offset) / scaleOffset.scale;
+      riter.setDoubleNext( v);
+    }
+    return result;
+  }
+
+    /**
+   * Holds a scale and offset.
+   */
+  public static class ScaleOffset {
+    public double scale, offset;
+
+    public ScaleOffset(double scale, double offset) {
+      this.scale = scale;
+      this.offset = offset;
+    }
+  }
 }
