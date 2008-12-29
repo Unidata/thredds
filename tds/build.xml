@@ -65,6 +65,7 @@
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
+  <property name="commons-lang.jar" value="external/commons-lang-2.4.jar"/>
   <property name="cas.jar" value="external/casclient-2.1.1.jar"/>
   <property name="fileupload.jar" value="external/commons-fileupload-1.2.1.jar"/>
   <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
@@ -108,6 +109,7 @@
 
       <include name="${cas.jar}"/>
       <include name="${fileupload.jar}"/>
+      <include name="${commons-lang.jar}"/>
       <include name="${commons-io.jar}"/>
       <!-- include name="${gnu-regexp.jar}"/ -->
       <include name="${httpclient.jar}"/>
