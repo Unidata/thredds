@@ -1,4 +1,4 @@
-package thredds.catalogservice;
+package thredds.server.catalogservice.catalogservice;
 
 import junit.framework.*;
 import org.springframework.mock.web.MockHttpServletRequest;
