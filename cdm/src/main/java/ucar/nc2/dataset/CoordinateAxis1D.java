@@ -479,14 +479,15 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
        // do a binary search to find the nearest index
        int mid = low;
-       while (high > low) {
+       while (high > low + 1) {
          mid = (low + high) / 2;
          double midVal = this.edge[mid];
          if (midVal == target) return mid;
          else if (midVal < target) low = mid;
          else high = mid;
        }
-       return mid;
+
+       return low;
 
      } else {
 
@@ -498,7 +499,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
        // do a binary search to find the nearest index
        int mid = low;
-       while (high > low) {
+       while (high > low + 1) {
          mid = (low + high) / 2;
          double midVal = this.edge[mid];
          if (midVal == target) return mid;
@@ -506,7 +507,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
          else low = mid;
        }
 
-       return mid;
+       return high;
      }
    }
 

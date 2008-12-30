@@ -260,8 +260,8 @@ public class AggregationTiled extends Aggregation {
     TileLayout(Section localSection, Section wantSection) throws InvalidRangeException {
       Section dataSection = localSection.compact();
       Section resultSection = wantSection.compact();
-      System.out.println(" resultSection: " + resultSection);
-      System.out.println(" dataSection: " + dataSection);
+      if (debug) System.out.println(" resultSection: " + resultSection);
+      if (debug) System.out.println(" dataSection: " + dataSection);
 
       int rank = dataSection.getRank();
 
