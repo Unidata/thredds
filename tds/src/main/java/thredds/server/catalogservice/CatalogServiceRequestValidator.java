@@ -25,7 +25,7 @@ public class CatalogServiceRequestValidator implements Validator
     ValidationUtils.rejectIfEmpty( e, "catalog", "catalog.empty" );
     if ( csr.getCommand() == null )
       e.rejectValue( "command", "command.epmty" );
-    if ( csr.getCommand().equals( CatalogServiceRequest.Command.SUBSET ))
+    if ( csr.getCommand().equals( Command.SUBSET ))
       ValidationUtils.rejectIfEmpty( e, "dataset", "dataset.empty" );
   }
 }
