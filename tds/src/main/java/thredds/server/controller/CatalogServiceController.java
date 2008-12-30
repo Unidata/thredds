@@ -34,8 +34,6 @@ public class CatalogServiceController extends AbstractController
 
   private TdsContext tdsContext;
   private boolean localCatalog;
-  private XmlHtmlOrEither xmlHtmlOrEither;
-  private boolean catalogsOnly;
 
   public static enum XmlHtmlOrEither { XML, HTML, EITHER }
 
@@ -47,28 +45,12 @@ public class CatalogServiceController extends AbstractController
   public void setLocalCatalog( boolean localCatalog ) { this.localCatalog = localCatalog; }
   public boolean isLocalCatalog() { return localCatalog; }
 
-  public void setXmlHtmlOrEither( XmlHtmlOrEither xmlHtmlOrEither )
-  {
-    this.xmlHtmlOrEither = xmlHtmlOrEither;
-  }
-
-  public void setCatalogsOnly( boolean catalogsOnly ) { this.catalogsOnly = catalogsOnly; }
-  public boolean getCatalogsOnly() { return this.catalogsOnly; }
-
   protected ModelAndView handleRequestInternal( HttpServletRequest request,
                                                 HttpServletResponse response )
           throws Exception
   {
-    // Bind and validate the request to a CatalogServiceRequest.
-    CatalogServiceRequest csr = new CatalogServiceRequest();
-    CatalogServiceRequestDataBinder db = new CatalogServiceRequestDataBinder( csr, "request", this.localCatalog, false );
-    //db.registerCustomEditor( boolean.class, "htmlView", new CatalogServiceRequestDataBinder.ViewEditor() );
-    db.setAllowedFields( new String[]{"catalog", "verbose", "command", "htmlView", "dataset"} );
-
-    db.bind( request );
-
-    BindingResult bindingResult = db.getBindingResult();
-    ValidationUtils.invokeValidator( new CatalogServiceRequestValidator(), bindingResult.getTarget(), bindingResult );
+    // Bind and validate the request.
+    BindingResult bindingResult = CatalogServiceUtils.bindAndValidate( request, this.localCatalog, CatalogServiceUtils.XmlHtmlOrEither.EITHER );
 
     if ( bindingResult.hasErrors() )
     {
@@ -81,15 +63,18 @@ public class CatalogServiceController extends AbstractController
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
     }
 
+    // Retrieve the resulting request.
+    CatalogServiceRequest catalogServiceRequest = (CatalogServiceRequest) bindingResult.getTarget();
+
     // Check for matching catalog.
     DataRootHandler drh = DataRootHandler.getInstance();
-    String path = csr.getCatalog();
+    String path = catalogServiceRequest.getCatalog();
     if ( path.endsWith( ".html" ))
     {
       if ( ! this.localCatalog )
       {
         String msg = "Bad catalog URI [" + path + "].";
-        log.error( "handle(): " + msg );
+        log.error( "handleRequestInternal(): " + msg );
         ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
       }
@@ -108,13 +93,21 @@ public class CatalogServiceController extends AbstractController
       cat = null;
     }
 
+    if ( cat == null )
+    {
+      String msg = "Did not find requested catalog [" + path + "].";
+      log.error( "handleRequestInternal(): " + msg );
+      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, msg.length() );
+      response.sendError( HttpServletResponse.SC_NOT_FOUND, msg );
+    }
+
     Map model = new HashMap();
     model.put( "path", request.getPathInfo() );
-    model.put( "catalog", csr.getCatalog() );
-    model.put( "dataset", csr.getDataset() );
-    model.put( "command", csr.getCommand() );
-    model.put( "view", csr.isHtmlView() );
-    model.put( "verbose", csr.isVerbose() );
+    model.put( "catalog", catalogServiceRequest.getCatalog() );
+    model.put( "dataset", catalogServiceRequest.getDataset() );
+    model.put( "command", catalogServiceRequest.getCommand() );
+    model.put( "view", catalogServiceRequest.isHtmlView() );
+    model.put( "verbose", catalogServiceRequest.isVerbose() );
 
     return new ModelAndView( "catServiceReq", model );
 

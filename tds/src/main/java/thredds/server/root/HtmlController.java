@@ -3,6 +3,8 @@ package thredds.server.root;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +14,8 @@ import thredds.servlet.HtmlWriter;
 import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
 import thredds.server.views.FileView;
+import thredds.server.controller.CatalogServiceUtils;
+import thredds.server.controller.CatalogServiceRequest;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDatasetImpl;
@@ -60,26 +64,34 @@ public class HtmlController extends AbstractController
     this.catalogSupportOnly = catalogSupportOnly;
   }
 
-  protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
+  protected ModelAndView handleRequestInternal( HttpServletRequest request, HttpServletResponse response )
           throws Exception
   {
-    // Determine Path
-    String path = req.getPathInfo();
-    if ( path == null )
-      path = req.getServletPath();
-    if ( path.equals( "" ))
+    BindingResult bindingResult = CatalogServiceUtils.bindAndValidate( request, true, CatalogServiceUtils.XmlHtmlOrEither.HTML );
+
+    if ( bindingResult.hasErrors() )
     {
-      String msg = "Root servlet mapping (\"/*\") not supported.";
-      log.error( "handleRequestInternal(): " + msg );
-      throw new IllegalStateException( msg );
+      StringBuilder msg = new StringBuilder( "Bad request" );
+      List<ObjectError> oeList = bindingResult.getAllErrors();
+      for ( ObjectError e : oeList )
+        msg.append( ": " ).append( e.toString() );
+      log.error( "handle(): " + msg );
+      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+      response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
     }
+
+    // Retrieve the resulting CatalogServiceRequest.
+    CatalogServiceRequest catalogServiceRequest = (CatalogServiceRequest) bindingResult.getTarget();
+
+    // Determine Path
+    String path = catalogServiceRequest.getCatalog();
 
     // Check for matching catalog.
     DataRootHandler drh = DataRootHandler.getInstance();
     String catPath = path.replaceAll( ".html$", ".xml" );
 
     InvCatalog cat = null;
-    String baseUriString = req.getRequestURI();
+    String baseUriString = request.getRequestURI();
     try
     {
       cat = drh.getCatalog( catPath, new URI( baseUriString ) );
@@ -95,7 +107,7 @@ public class HtmlController extends AbstractController
     {
       if ( true )
       {
-        HtmlWriter.getInstance().writeCatalog( res, (InvCatalogImpl) cat, true );
+        HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) cat, true );
         return null;
       }
       else
@@ -131,7 +143,7 @@ public class HtmlController extends AbstractController
     if ( this.catalogSupportOnly )
     {
       ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
-      res.sendError( HttpServletResponse.SC_NOT_FOUND );
+      response.sendError( HttpServletResponse.SC_NOT_FOUND );
       return null;
     }
 
@@ -141,8 +153,7 @@ public class HtmlController extends AbstractController
       return new ModelAndView( new FileView(), "file", publicFile );
 
     // If request doesn't match a public document, hand to default.
-    tdsContext.getDefaultRequestDispatcher().forward( req, res );
+    tdsContext.getDefaultRequestDispatcher().forward( request, response );
     return null;
-
   }
 }

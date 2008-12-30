@@ -6,6 +6,7 @@ import org.springframework.validation.*;
 import thredds.server.controller.CatalogServiceRequestDataBinder;
 import thredds.server.controller.CatalogServiceRequest;
 import thredds.server.controller.CatalogServiceRequestValidator;
+import thredds.server.controller.CatalogServiceUtils;
 
 import java.util.Map;
 import java.util.List;
@@ -42,15 +43,15 @@ public class TestCatalogServiceRequest extends TestCase
     req.setContextPath( "/thredds" );
     req.setServletPath( "/catalog" );
     req.setPathInfo( "/model/data/stuff/catalog.xml" );
-    req.setParameter( "debug", "true" );
+    req.setParameter( "verbose", "true" );
     req.setParameter( "command", "subset" );
-    //req.setParameter( "htmlView", "false" );
-    req.setParameter( "dataset", "true" );
+    req.setParameter( "htmlView", "false" );
+    req.setParameter( "dataset", "my/cool/dataset" );
 
     CatalogServiceRequest csr = new CatalogServiceRequest();
-    CatalogServiceRequestDataBinder db = new CatalogServiceRequestDataBinder( csr, "request", true, false);
+    CatalogServiceRequestDataBinder db = new CatalogServiceRequestDataBinder( csr, "request", true, CatalogServiceUtils.XmlHtmlOrEither.XML);
     //db.registerCustomEditor( boolean.class, "htmlView", new CatalogServiceRequestDataBinder.ViewEditor() );
-    db.setAllowedFields( new String[] {"catalog", "debug", "command", "htmlView", "dataset"} );
+    db.setAllowedFields( new String[] {"catalog", "verbose", "command", "htmlView", "dataset"} );
     
     db.bind( req );
 

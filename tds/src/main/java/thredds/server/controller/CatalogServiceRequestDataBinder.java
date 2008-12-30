@@ -43,16 +43,16 @@ public class CatalogServiceRequestDataBinder extends DataBinder
   }
 
   private boolean localCatalog;
-  private boolean xmlOnly;
+  private CatalogServiceUtils.XmlHtmlOrEither xmlHtmlOrEither;
 
   public CatalogServiceRequestDataBinder( CatalogServiceRequest target,
                                           String requestObjectName,
                                           boolean localCatalog,
-                                          boolean xmlOnly )
+                                          CatalogServiceUtils.XmlHtmlOrEither xmlHtmlOrEither )
   {
     super( target, requestObjectName);
     this.localCatalog = localCatalog;
-    this.xmlOnly = xmlOnly;
+    this.xmlHtmlOrEither = xmlHtmlOrEither;
   }
 
   public void bind( HttpServletRequest req)
@@ -64,24 +64,25 @@ public class CatalogServiceRequestDataBinder extends DataBinder
     if ( this.localCatalog )
     {
       catPath = TdsPathUtils.extractPath( req );
-      if ( catPath == null ) catPath = FieldInfo.CATALOG.getDefaultValue();
-
-      // Determine if HTML view is desired
-      if ( catPath.endsWith( ".html" ))
-      {
-        if ( xmlOnly )
-        {
-          this.getBindingResult().addError(
-                  new FieldError( this.getObjectName(),
-                                  FieldInfo.VIEW.getPropertyName(),
-                                  "catalog ends in \".html\" but only XML view supported.") );
-        }
-        isHtmlView = "true";
-      }
     }
     else
     {
       catPath = req.getParameter( FieldInfo.CATALOG.getParameterName() );
+    }
+
+    if ( xmlHtmlOrEither.equals( CatalogServiceUtils.XmlHtmlOrEither.XML ) )
+    {
+      isHtmlView = "false";
+      if ( catPath != null && catPath.endsWith( ".html" ) )
+        this.getBindingResult().addError( new FieldError( this.getObjectName(), FieldInfo.VIEW.getPropertyName(),
+                                                          "Requested resource ends in \".html\" but only XML view supported." ) );
+    }
+    else if ( xmlHtmlOrEither.equals( CatalogServiceUtils.XmlHtmlOrEither.HTML ) )
+    {
+      isHtmlView = "true";
+      if ( catPath != null && catPath.endsWith( ".xml" ) )
+        this.getBindingResult().addError( new FieldError( this.getObjectName(), FieldInfo.VIEW.getPropertyName(),
+                                                          "Requested resource ends in \".xml\" but only HTML view supported." ) );
     }
 
     String command = req.getParameter( FieldInfo.COMMAND.getParameterName() );
