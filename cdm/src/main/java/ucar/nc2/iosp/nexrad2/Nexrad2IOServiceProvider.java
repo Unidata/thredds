@@ -249,7 +249,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute( new Attribute("signal_below_threshold", BELOW_THRESHOLD));
     v.addAttribute( new Attribute("scale_factor", firstRecord.getDatatypeScaleFactor(datatype)));
     v.addAttribute( new Attribute("add_offset", firstRecord.getDatatypeAddOffset(datatype)));
-    v.addAttribute( new Attribute("_unsigned", "true"));
+    v.addAttribute( new Attribute("_Unsigned", "true"));
     if(rd == 1) {
        v.addAttribute( new Attribute("SNR_threshold" ,firstRecord.getDatatypeSNRThreshhold(datatype)));
     }
@@ -379,7 +379,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute( new Attribute("signal_below_threshold", BELOW_THRESHOLD));
     v.addAttribute( new Attribute("scale_factor", record.getDatatypeScaleFactor(datatype)));
     v.addAttribute( new Attribute("add_offset", record.getDatatypeAddOffset(datatype)));
-    v.addAttribute( new Attribute("_unsigned", "true"));
+    v.addAttribute( new Attribute("_Unsigned", "true"));
     if(datatype == Level2Record.SPECTRUM_WIDTH_HIGH){
        v.addAttribute( new Attribute("SNR_threshold" ,record.getDatatypeSNRThreshhold(datatype)));
     }

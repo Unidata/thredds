@@ -311,6 +311,41 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  // longitude subsetting (CoordAxis1D regular)
+   public void testLatLonSubset2() throws Exception {
+    GridDataset dataset = GridDataset.open("C:/data/grid/GFS_Global_onedeg_20081229_1800.grib2.nc");
+    GeoGrid grid = dataset.findGridByName("Pressure_surface");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+    assert grid.getRank() == 3 : grid.getRank();
+
+    System.out.println("original bbox= " + gcs.getBoundingBox());
+    System.out.println("lat/lon bbox = " + gcs.getLatLonBoundingBox().toString2());
+
+    LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
+    System.out.println(" constrain bbox= " + bbox.toString2());
+
+    GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
+    GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
+    assert null != gcs2;
+    assert grid_section.getRank() == grid.getRank();
+
+    //ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
+    System.out.println(" resulting bbox= " + gcs2.getLatLonBoundingBox().toString2());
+
+    Array data = grid_section.readDataSlice(0, 0, -1, -1);
+    assert data != null;
+    assert data.getRank() == 2;
+
+    int[] dataShape = data.getShape();
+    assert dataShape.length == 2;
+    assert dataShape[0] == 11 : data.getShape()[0];
+    assert dataShape[1] == 21 : data.getShape()[1];
+
+    dataset.close();
+  }
+
   public void testGiniSubsetStride() throws Exception {
     GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir + "satellite/gini/WEST-CONUS_4km_IR_20070216_1500.gini");
     GeoGrid grid = dataset.findGridByName("IR");

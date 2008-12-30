@@ -67,7 +67,7 @@ public class DODSGrid extends DODSVariable {
     setDimensions( dims);
     setDataType( DODSNetcdfFile.convertToNCType(array.bt));
     if (DODSNetcdfFile.isUnsigned( array.bt)) {
-      addAttribute(new Attribute("_unsigned", "true"));
+      addAttribute(new Attribute("_Unsigned", "true"));
     }
 
     DODSAttribute att = new DODSAttribute(_Coordinate.Axes, sbuff.toString());

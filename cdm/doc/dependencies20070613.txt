@@ -1,0 +1,153 @@
+NetCDF-Java dependencies
+6/13/07
+
+core
+====
+ucar.ma2 > slf4j.lib
+ucar.nc2 > slf4j.lib
+ucar.nc2.util
+unidata.io
+unidata.io.bzip
+unidata.io.http > commons.http > commons.logging
+unidata.util
+
+change:
+
+ucar.nc2.H5* move to iosp/hdf5
+ucar.nc2.util.xml.RuntimeConfigParser depends on jdom, move to ucar.nc2.util.xml ??
+ucar.nc2.NetcdfFile depends on thredds.util.IO
+ucar.nc2.NetcdfFile.setDebugFlags depends on H5*
+ucar.nc2.Filewriter.main is calling ucar.nc2.dataset.NetcdfDataset.openFile
+
+
++++++++++++++++++++++++++++++++++++
+
+common
+======
+ucar.unidata.geoloc
+ucar.unidata.geoloc.projection
+ucar.unidata.geoloc.vertical > netcdf-java (2.1 or 2.2)
+
+ucar.unidata.io.RandomAccessFile
+ucar.unidata.io.http.HttpRandomAccessFile   > HTTPClient
+ucar.unidata.io.http.HttpRandomAccessFile2  
+ucar.unidata.io.http.HttpRandomAccessFile3  > org.apache.commons.httpclient > org.apache.commons.logging
+
+ucar.unidata.util.Format
+ucar.unidata.util.Parameter < ucar.unidata.geoloc.projection
+ucar.unidata.util.SpecialMathFunction
+ucar.unidata.util.StringUtil
+
+ucar.nc2
+=========
+ucar.ma2 
+ucar.nc2 > ucar.ma2 java.nio 
+ucar.nc2.adde > visad.jar
+ucar.nc2.dataset > jdom.jar adde dods thredds 
+ucar.nc2.dods > dods.jar
+ucar.nc2.iosp.grib > grib.jar
+ucar.nc2.station > ucar.nc2.adde ucar.nc2.thredds thredds.catalog.query
+ucar.nc2.thredds > thredds adde dods
+ucar.nc2.ui > thredds.ui thredds.viewer prefs.jar
+ucar.nc2.units > ucar.units
+ucar.nc2.util
+  CancelTask
+  DebugFlags
+  NamedObject (ucar.unidata.util.NamedObject has setName() !)
+
+notes:
+ ucar.nc2.units should be moved into ucar.units
+ ucar.nc2.util should be moved into ucar.unidata.util 
+
+
+thredds client
+==============
+thredds.catalog > thredds.datatype
+thredds.catalog.dl > jdom.jar
+thredds.catalog.parser.jdom > jdom.jar
+thredds.catalog.query
+thredds.catalog.search > lucene.jar
+thredds.catalog.ui > prefs.jar lucene*
+
+thredds.datamodel.gis > ucar.unidata.geoloc < thredds.viewer.gis.shapefile
+thredds.datatype > ucar.nc2.units (OK)
+  DateRange
+  DateType
+  TimeDuration
+thredds.datatype.prefs
+  DateField
+  DurationField
+
+thredds.ui > prefs.jar
+thredds.util
+ DateGMT
+ IO
+ ListenerManager
+ Mutex
+ ProxyGenerator
+ Resource
+ SocketMessage
+ Stat
+ StatTimed
+ URLStreamHandlerFactory
+
+thredds.viewer > prefs.jar
+
+goal:
+ generally, move data model into nj22, general ui into thredds, nj22 ui into nj22
+ eliminate thredds dependence on nj22 except in special cases
+ 
+
+notes:
+ remove lucene dependency in thredds.catalog.ui 
+ thredds.datamodel.gis probably sent to nc2? part of CDM ? shapefile reader ?
+ thredds.viewer.gis : seperate data model from rendering.
+ retire viewer/ui/table/JTableSorted.java (?)
+
+--------------------------------------
+thredds dependencies on ucar.nc2:
+
+$ grep ucar.nc2 */*.java
+datatype/DateRange.java:import ucar.nc2.units.*;
+datatype/DateType.java:      date = ucar.nc2.units.DateUnit.getStandardDate(text);
+datatype/TimeDuration.java:import ucar.nc2.units.*;
+ui/ProgressMonitorTask.java:  /** for compatibility with ucar.nc2.CancelTask */
+ui/RangeSelector.java:  /*public void setLevels( ucar.nc2.dataset.grid.GridCoordSys gcs, int current) {
+ui/SuperComboBox.java:import ucar.nc2.util.NamedObject;
+viewer/ui/table/JTableSorted.java:import ucar.nc2.util.NamedObject;
+
+viewer/GridController.java:import ucar.nc2.NetcdfFile;
+viewer/GridController.java:import ucar.nc2.dods.DODSNetcdfFile;
+viewer/GridController.java:import ucar.nc2.dataset.*;
+viewer/GridController.java:import ucar.nc2.dataset.grid.*;
+viewer/GridController.java:import ucar.nc2.util.NamedObject;
+viewer/GridController.java:  boolean openDataset(thredds.catalog.InvAccess access, ucar.nc2.util.CancelTask task) {
+viewer/GridController.java:        ncfile = ucar.nc2.dataset.NetcdfDataset.factory( urlString, task);
+viewer/GridController.java:      NetcdfDataset ncDataset = ucar.nc2.dataset.conv.Convention.factory( ncfile);
+viewer/GridUI.java:import ucar.nc2.dataset.grid.*;
+viewer/GridUI.java:import ucar.nc2.dataset.*;
+viewer/GridUI.java://import ucar.nc2.geotiff.GeoTiff;
+viewer/GridUI.java:import ucar.nc2.util.NamedObject;
+viewer/GridUI.java:  private ucar.nc2.ui.GridTable dsTable;
+viewer/GridUI.java:      dsTable = new ucar.nc2.ui.GridTable(dsNode, true);
+viewer/GridUI.java:          ucar.nc2.geotiff.Writer.write2D(grid, data, filename+".tfw");
+viewer/GridUI.java:          ucar.nc2.geotiff.GeotiffWriter writer = new ucar.nc2.geotiff.GeotiffWriter(filename);
+viewer/GridUI.java:  private class OpenDatasetTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
+viewer/GridUI.java:    ucar.nc2.thredds.ThreddsDatasetFactory factory;
+viewer/GridUI.java:      factory = new ucar.nc2.thredds.ThreddsDatasetFactory();
+viewer/UI.java:  private ucar.nc2.ui.ToolsUI netcdfUI;
+viewer/UI.java:    netcdfUI = new ucar.nc2.ui.ToolsUI((PreferencesExt) store.node("netCDFUI"), topLevel.getJFrame());
+
+viewer/ui/grid/ColorScale.java:import ucar.nc2.dataset.grid.GeoGrid;
+viewer/ui/grid/ContourGrid.java:import ucar.nc2.dataset.grid.GeoGrid;
+viewer/ui/grid/GridRenderer.java:import ucar.nc2.dataset.*;
+viewer/ui/grid/GridRenderer.java:import ucar.nc2.dataset.grid.*;
+viewer/ui/grid/GridTable.java:import ucar.nc2.dataset.grid.GeoGrid;
+viewer/ui/grid/VertPanel.java:import ucar.nc2.dataset.grid.*;
+viewer/ui/grid/VertPanel.java:import ucar.nc2.dataset.*;
+viewer/ui/grid/VertScaleSlider.java:import ucar.nc2.dataset.grid.GeoGrid;
+viewer/ui/grid/VertScaleSlider.java:import ucar.nc2.dataset.*;
+viewer/ui/grid/VertScaleSlider.java:  public void setLevels( ucar.nc2.dataset.grid.GridCoordSys gcs, int current) {
+
+
+

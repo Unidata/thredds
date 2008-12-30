@@ -35,14 +35,17 @@ public class TestScaleOffset extends TestCase {
       for (int j=0; j<lonDim.getLength(); j++)
         unpacked.setDouble(ima.set(i,j), (i*n+j)+30.0);
 
-    MAMath.ScaleOffset so = MAMath.calcScaleOffsetSkipMissingData(unpacked, -9999, 15);
-    System.out.println("scale/offset = "+so.scale+" "+so.offset);
-    Array packed = MAMath.convert2Packed(unpacked, so, DataType.SHORT);
+    boolean isUnsigned = true;
+    double missingValue = -9999;
+    int nbits = 16;
 
+    // convert to packed form
+    MAMath.ScaleOffset so = MAMath.calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits, isUnsigned);
+    System.out.println("scale/offset = "+so.scale+" "+so.offset+ " isUnsigned=" +isUnsigned);
     ncfile.addVariable("unpacked", DataType.DOUBLE, "lat lon");
 
     ncfile.addVariable("packed", DataType.SHORT, "lat lon");
-    ncfile.addVariableAttribute("packed", "_unsigned", "true");
+    if (isUnsigned) ncfile.addVariableAttribute("packed", "_Unsigned", "true");
     //ncfile.addVariableAttribute("packed", "missing_value", new Short( (short) -9999));
     ncfile.addVariableAttribute("packed", "scale_factor", so.scale);
     ncfile.addVariableAttribute("packed", "add_offset", so.offset);
@@ -51,11 +54,14 @@ public class TestScaleOffset extends TestCase {
     ncfile.create();
 
     ncfile.write("unpacked", unpacked);
+
+    Array packed = MAMath.convert2packed(unpacked, missingValue, nbits, isUnsigned, DataType.SHORT);
     ncfile.write("packed", packed);
 
         // all done
     ncfile.close();
 
+    // read the packed form, compare to original
     NetcdfFile ncfileRead = NetcdfFile.open(filename);
     Variable v = ncfileRead.findVariable("packed");
     assert v != null;
@@ -63,6 +69,7 @@ public class TestScaleOffset extends TestCase {
     TestCompare.compareData(readPacked, packed);
     ncfileRead.close();
 
+    // read the packed form, enhance using scale/offset, compare to original
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
     Variable vs = ncd.findVariable("packed");
     assert vs != null;
@@ -89,8 +96,8 @@ public class TestScaleOffset extends TestCase {
       double v2 = iter2.getDoubleNext();
       double p = iterp.getDoubleNext();
       double diff = Math.abs(v1 - v2);
-      assert (diff < close) : v1 + " != " + v2 + " count=" + iter1+" packed="+p;
-      System.out.println(v1 + " == " + v2 + " count=" + iter1+" packed="+p);
+      assert (diff < close) : v1 + " != " + v2 + " index=" + iter1+" packed="+p;
+      //System.out.println(v1 + " == " + v2 + " index=" + iter1+" packed="+p);
     }
   }
 }

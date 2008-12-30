@@ -508,7 +508,7 @@ public class JniIosp extends AbstractIOServiceProvider {
       }
 
       if (isUnsigned(typeid))
-        v.addAttribute(new Attribute("_unsigned","true"));
+        v.addAttribute(new Attribute("_Unsigned","true"));
 
       // read Variable attributes
       List<Attribute> atts = makeAttributes(grpid, varno, nattsp.getValue(), v);
@@ -660,7 +660,7 @@ public class JniIosp extends AbstractIOServiceProvider {
       Variable v = new Variable(ncfile, g, parent, name);
       v.setDataType( convertDataType(fldtypeid));
       if (isUnsigned(fldtypeid))
-        v.addAttribute(new Attribute("_unsigned","true"));
+        v.addAttribute(new Attribute("_Unsigned","true"));
 
       try {
         v.setDimensionsAnonymous(dims);

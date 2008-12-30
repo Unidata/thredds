@@ -126,7 +126,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       else if ( curVariable.getName().equals( "infraredImagery"))
       {
         curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude"));
-        curVariable.addAttribute( new Attribute( "_unsigned", "true"));
+        curVariable.addAttribute( new Attribute( "_Unsigned", "true"));
         curVariable.addAttribute( new Attribute( "scale_factor", new Float((310.0-190.0)/(256.0-1.0))));
         curVariable.addAttribute( new Attribute( "add_offset", new Float( 190.0)));
         curVariable.addAttribute( new Attribute( "description",
@@ -137,7 +137,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       else if ( curVariable.getName().equals( "visibleImagery"))
       {
         curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude"));
-        curVariable.addAttribute( new Attribute( "_unsigned", "true"));
+        curVariable.addAttribute( new Attribute( "_Unsigned", "true"));
         curVariable.addAttribute( new Attribute( "description",
                                                  "Visible pixels are relative values ranging from 0 to 63 rather than " +
                                                  "absolute values in Watts per m^2. Instrumental gain levels are adjusted " +

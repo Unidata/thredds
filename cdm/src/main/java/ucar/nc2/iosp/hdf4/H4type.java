@@ -108,7 +108,7 @@ public class H4type {
     if (v != null) {
       v.setDataType(dt);
       if (unsigned)
-         v.addAttribute(new Attribute("_unsigned", "true"));
+         v.addAttribute(new Attribute("_Unsigned", "true"));
     }
 
     return dt;

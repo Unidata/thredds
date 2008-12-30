@@ -47,9 +47,15 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
-  28: Start to fix VoordSysBuilder to deal with groups.
+  29:
+    CoordAxis1D.findCoordElement() bug for Longitude
+    MAMath.convert2packed() utility for scale/offset writing
+    Change _unsigned to _Unsigned; look for _Unsigned but ignore case.
+  28: EarthLocation.isMissing()
+    Improvements to CoordAxis1D.findCoordElement(coord)
+    Start to fix CoordSysBuilder to deal with groups.
     DefaultConventions - split from GDV.
-    Nested Tables implementation FeatureType (ucar.nc2.ft) framework. mostly POINT, some STAATION
+    Nested Tables implementation FeatureType (ucar.nc2.ft) framework. mostly POINT, some STATION
     Bugs and performance improvements for StructureDS
     TDWR into NIDS iosp
     Grib2 tolerate missing parameters

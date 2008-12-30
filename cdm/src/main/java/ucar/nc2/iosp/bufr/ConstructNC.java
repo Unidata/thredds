@@ -282,7 +282,7 @@ class ConstructNC {
       if (nbytes == 1) {
         v.setDataType(DataType.BYTE);
         if (nbits == 8) {
-          v.addAttribute(new Attribute("_unsigned", "true"));
+          v.addAttribute(new Attribute("_Unsigned", "true"));
           v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missing_value[nbits]));
         } else
           v.addAttribute(new Attribute("missing_value", (byte) BufrNumbers.missing_value[nbits]));
@@ -290,7 +290,7 @@ class ConstructNC {
       } else if (nbytes == 2) {
         v.setDataType(DataType.SHORT);
         if (nbits == 16) {
-          v.addAttribute(new Attribute("_unsigned", "true"));
+          v.addAttribute(new Attribute("_Unsigned", "true"));
           v.addAttribute(new Attribute("missing_value", BufrNumbers.missing_value[nbits]));
         } else
           v.addAttribute(new Attribute("missing_value", (short) BufrNumbers.missing_value[nbits]));

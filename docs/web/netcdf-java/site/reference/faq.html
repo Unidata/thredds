@@ -13,9 +13,13 @@
   <p>Add the following to your startup code:</p>
   <pre wrap="">
     org.apache.log4j.BasicConfigurator.configure();
-
-    org.apache.log4j.Logge logger = org.apache.log4j.Logger.getRootLogger();
-    logger.setLevel(org.apache.log4j.Level.OFF);</pre>
+    org.apache.log4j.Logger logger = org.apache.log4j.Logger.getRootLogger();
+    logger.setLevel(org.apache.log4j.Level.OFF)</pre>
+  </blockquote>
+<h3>Caching</h3>
+<p><strong>Q: How do I turn on NetcdfFile caching</strong>?</p>
+<blockquote>
+  <p>Initialize with <strong>NetcdfDataset.initNetcdfFileCache()</strong>, then open files through <strong>NetcdfDataset.acquireFile() </strong>and<strong> NetcdfDataset.acquireDataset()</strong>. Note that you always close a file in the normal way, ie through <strong>NetcdfFile.close()</strong>. See the javadoc for those methods for more details. </p>
 </blockquote>
 <h3>Multithreading</h3>
 <p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
@@ -27,10 +31,11 @@
   <p wrap="">The way that the cache is designed to work is that you get back a NetcdfFile object, which should then used only in a single thread so you dont need synchronization (&quot;thread-confinement&quot;), such as to answer a single request in a server. Until you release that NetcdfFile object, no one else can get it from the cache. If another request is made for that same NetcdfFile while its locked, a new NetcdfFile is opened.     And of course, the cache itself is thread-safe. So if you use it properly, you never have to do synchronization yourself.</p>
 </blockquote>
 <p>&nbsp;</p>
-<p>&nbsp;</p>
+<h3>&nbsp;</h3>
+<blockquote>&nbsp;</blockquote>
 <hr />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 15, 2008
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Dec 29, 2008
 </address>
 </body>
 </html>

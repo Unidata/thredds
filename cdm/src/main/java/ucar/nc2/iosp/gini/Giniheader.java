@@ -615,7 +615,7 @@ class Giniheader {
     if( navcal == 128) {
         var.setDataType( DataType.FLOAT);
         var.setSPobject( new Vinfo (vsize, begin, isRecord, nx, ny, calcods));
-     /*   var.addAttribute(new Attribute("_unsigned", "true"));
+     /*   var.addAttribute(new Attribute("_Unsigned", "true"));
         int numer = calcods[0] - calcods[1];
         int denom = calcods[2] - calcods[3];
         float a  = (numer*1.f) / (1.f*denom);
@@ -626,7 +626,7 @@ class Giniheader {
     }
     else  {
         var.setDataType( DataType.BYTE);
-        var.addAttribute(new Attribute("_unsigned", "true"));
+        var.addAttribute(new Attribute("_Unsigned", "true"));
         var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
         var.addAttribute( new Attribute("scale_factor", new Short((short)(1))));
         var.addAttribute( new Attribute("add_offset", new Short((short)(0))));

@@ -56,7 +56,7 @@ public class DODSVariable extends ucar.nc2.Variable {
 
     setDataType( DODSNetcdfFile.convertToNCType( dodsScalar));
     if (DODSNetcdfFile.isUnsigned( dodsScalar)) {
-      addAttribute(new Attribute("_unsigned", "true"));
+      addAttribute(new Attribute("_Unsigned", "true"));
     }
 
     // check for netcdf char array
@@ -86,7 +86,7 @@ public class DODSVariable extends ucar.nc2.Variable {
 
     setDataType( DODSNetcdfFile.convertToNCType( elemType));
     if (DODSNetcdfFile.isUnsigned( elemType)) {
-      addAttribute(new Attribute("_unsigned", "true"));
+      addAttribute(new Attribute("_Unsigned", "true"));
     }
 
     List<Dimension> dims = dodsfile.constructDimensions( parentGroup, dodsArray);

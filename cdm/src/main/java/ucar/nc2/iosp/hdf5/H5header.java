@@ -1026,7 +1026,7 @@ class H5header {
     if (fillAttribute != null && v.findAttribute("_FillValue") == null)
       v.addAttribute(fillAttribute);
     if (vinfo.typeInfo.unsigned)
-      v.addAttribute(new Attribute("_unsigned", "true"));
+      v.addAttribute(new Attribute("_Unsigned", "true"));
     if (facade.dobj.mdt.type == 5) {
       String desc = facade.dobj.mdt.opaque_desc;
       if ((desc != null) && (desc.length() > 0))
@@ -1125,7 +1125,7 @@ class H5header {
     vinfo.setOwner(v);
 
     if (vinfo.typeInfo.unsigned)
-      v.addAttribute(new Attribute("_unsigned", "true"));
+      v.addAttribute(new Attribute("_Unsigned", "true"));
 
     return v;
   }

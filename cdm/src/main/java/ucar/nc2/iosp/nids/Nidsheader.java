@@ -1602,7 +1602,7 @@ class Nidsheader{
         v.addAttribute( new Attribute("units", cunit));
         String coordinates = "elevation azimuth gate rays_time latitude longitude altitude";
         v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
-        v.addAttribute( new Attribute("_unsigned", "true"));
+        v.addAttribute( new Attribute("_Unsigned", "true"));
         v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, 0, nlevel));
 
 

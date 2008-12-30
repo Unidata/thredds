@@ -225,7 +225,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
       if (mode.contains(NetcdfDataset.Enhance.ScaleMissing) &&
           scaleMissingProxy.hasScaleOffset() && (scaleMissingProxy.getConvertedDataType() != getDataType())) {
         setDataType( scaleMissingProxy.getConvertedDataType());
-        removeAttribute("_unsigned");
+        removeAttributeIgnoreCase("_Unsigned");
       }
 
       // do we need to actually convert data ?
@@ -239,7 +239,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
       // LOOK promote data type to STRING ????
       setDataType( DataType.STRING);
-      removeAttribute("_unsigned");
+      removeAttributeIgnoreCase("_Unsigned");
     }
 
   }

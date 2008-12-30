@@ -188,7 +188,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
     v.addAttribute( new Attribute("scale_factor", new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
     v.addAttribute( new Attribute("add_offset", new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
-    v.addAttribute( new Attribute("_unsigned", "true"));
+    v.addAttribute( new Attribute("_Unsigned", "true"));
 
     ArrayList dim2 = new ArrayList();
     dim2.add( scanDim);
@@ -311,7 +311,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.addAttribute( new Attribute("signal_below_threshold", new Byte( Cinrad2Record.BELOW_THRESHOLD)));
     v.addAttribute( new Attribute("scale_factor", new Float( Cinrad2Record.getDatatypeScaleFactor(datatype))));
     v.addAttribute( new Attribute("add_offset", new Float( Cinrad2Record.getDatatypeAddOffset(datatype))));
-    v.addAttribute( new Attribute("_unsigned", "true"));
+    v.addAttribute( new Attribute("_Unsigned", "true"));
 
     Attribute fromAtt = from.findAttribute(_Coordinate.Axes);
     v.addAttribute( new Attribute(_Coordinate.Axes, fromAtt));

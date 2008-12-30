@@ -524,14 +524,58 @@ public class MAMath {
     }
   }
 
-  public static MAMath.ScaleOffset calcScaleOffsetSkipMissingData(Array a, double missingValue, int nbits) {
+  /**
+   * Calculate the scale/offset for an array of numbers.
+   * <pre>
+   * If signed:
+   *   then
+   *     max value unpacked = 2^(n-1) - 1 packed
+   *     min value unpacked = -(2^(n-1) - 1) packed
+   *   note that -2^(n-1) is unused, and a good place to map missing values
+   *   by solving 2 eq in 2 unknowns, we get:
+   *     scale = (max - min) / (2^n - 2)
+   *     offset = (max + min) / 2
+   * If unsigned then
+   *     max value unpacked = 2^n - 1 packed
+   *     min value unpacked = 0 packed
+   *   and:
+   *     scale = (max - min) / (2^n - 1)
+   *     offset = min
+   *   One could modify this to allow a holder for missing values.
+   * </pre>
+   * @param a array to convert (not changed)
+   * @param missingValue skip these
+   * @param nbits map into this many bits
+   * @param isUnsigned use signed or unsigned packed values
+   * @return ScaleOffset, calculated as above.
+   */
+  public static MAMath.ScaleOffset calcScaleOffsetSkipMissingData(Array a, double missingValue, int nbits, boolean isUnsigned) {
     MAMath.MinMax minmax = getMinMaxSkipMissingData(a, missingValue);
 
-    long size = (2 << nbits) - 1;
-    double offset = minmax.min;
-    double scale =(minmax.max - offset) / size;
+    if (isUnsigned) {
+      long size = (1 << nbits) - 1;
+      double offset = minmax.min;
+      double scale =(minmax.max - minmax.min) / size;
+      return new ScaleOffset(scale, offset);
 
-    return new ScaleOffset(scale, offset);
+    } else {
+      long size = (1 << nbits) - 2;
+      double offset = (minmax.max + minmax.min) / 2;
+      double scale =(minmax.max - minmax.min) / size;
+      return new ScaleOffset(scale, offset);
+    }
+  }
+
+  public static Array convert2packed(Array unpacked, double missingValue, int nbits, boolean isUnsigned, DataType packedType) {
+    MAMath.ScaleOffset scaleOffset = calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits, isUnsigned);
+    Array result = Array.factory(packedType, unpacked.getShape());
+    IndexIterator riter = result.getIndexIterator();
+    while (unpacked.hasNext()) {
+      double uv = unpacked.nextDouble();
+      double pv = (uv - scaleOffset.offset) / scaleOffset.scale;
+      riter.setDoubleNext( pv);
+    }
+    return result;
   }
 
   public static Array convert2Unpacked(Array packed, ScaleOffset scaleOffset) {
@@ -544,22 +588,12 @@ public class MAMath {
     return result;
   }
 
-  public static Array convert2Packed(Array unpacked, ScaleOffset scaleOffset, DataType packedType) {
-    Array result = Array.factory(packedType, unpacked.getShape());
-    IndexIterator riter = result.getIndexIterator();
-    while (unpacked.hasNext()) {
-      double uv = unpacked.nextDouble();
-      double v = (uv - scaleOffset.offset) / scaleOffset.scale;
-      riter.setDoubleNext( v);
-    }
-    return result;
-  }
-
-    /**
+  /**
    * Holds a scale and offset.
    */
   public static class ScaleOffset {
     public double scale, offset;
+    public boolean isUnsigned;
 
     public ScaleOffset(double scale, double offset) {
       this.scale = scale;

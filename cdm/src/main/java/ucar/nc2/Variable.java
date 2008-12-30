@@ -190,12 +190,12 @@ public class Variable implements VariableIF {
 
   /**
    * Is this Variable unsigned?. Only meaningful for byte, short, int, long types.
-   * Looks for attribute "_unsigned"
+   * Looks for attribute "_Unsigned", case insensitive
    * @return true if Variable is unsigned
    */
   public boolean isUnsigned() {
-    Attribute att = findAttribute("_unsigned");
-    return (att != null) && att.getStringValue().equals("true");
+    Attribute att = findAttributeIgnoreCase("_Unsigned");
+    return (att != null) && att.getStringValue().equalsIgnoreCase("true");
   }
 
   /**
@@ -1312,6 +1312,18 @@ public class Variable implements VariableIF {
   public boolean removeAttribute(String attName) {
     if (immutable) throw new IllegalStateException("Cant modify");
     Attribute att = findAttribute(attName);
+    return att != null && attributes.remove(att);
+  }
+
+  /**
+   * Remove an Attribute by name, ignoring case
+   *
+   * @param attName if exists, remove this attribute
+   * @return true if was found and removed
+   */
+  public boolean removeAttributeIgnoreCase(String attName) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+    Attribute att = findAttributeIgnoreCase(attName);
     return att != null && attributes.remove(att);
   }
 

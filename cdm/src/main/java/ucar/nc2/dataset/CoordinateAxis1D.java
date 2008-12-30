@@ -278,7 +278,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     if (axisType == AxisType.Lon) {
       for (int x=0; x < getSize(); x++) {
-        if (LatLonPointImpl.betweenLon( coordVal, getCoordEdge(x), getCoordEdge(x+1)))
+        if (betweenLon( coordVal, getCoordEdge(x), getCoordEdge(x+1)))
           return x;
       }
       return -1;
@@ -306,6 +306,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
         lastIndex++;
       return lastIndex;
     }
+  }
+
+  private boolean betweenLon(double lon, double lonBeg,  double lonEnd) {
+    while (lon < lonBeg) lon += 360;
+    return (lon >= lonBeg) && (lon <= lonEnd);
   }
 
   /**
@@ -349,7 +354,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     if (axisType == AxisType.Lon) {
       for (int x=0; x < getSize(); x++) {
-        if (LatLonPointImpl.betweenLon( pos, getCoordEdge(x), getCoordEdge(x+1)))
+        if (betweenLon( pos, getCoordEdge(x), getCoordEdge(x+1)))
           return x;
       }
       return pos <= getCoordEdge(0) ? 0 : (int)getSize()-1;  // LOOK could screw up if pos not normalized to longitude interval
@@ -403,7 +408,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * hence this is faster than an exhaustive search.
    * from blower ncWMS.
    * @param coordValue The value along this coordinate axis
-   * @param bounded if false, and not in range, return -1, else nearest index
+   * @param bounded if false and not in range, return -1, else nearest index
    * @return the index that is nearest to this point, or -1 if the point is
    * out of range for the axis
    */
@@ -412,11 +417,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
      if (axisType == AxisType.Lon) {
        double maxValue = this.start + this.increment * n;
-       if (/* this.wraps || */ LatLonPointImpl.betweenLon(coordValue, this.start, maxValue)) {
+       if (/* this.wraps || */ betweenLon(coordValue, this.start, maxValue)) {
          double distance = LatLonPointImpl.getClockwiseDistanceTo(this.start, coordValue);
          double exactNumSteps = distance / this.increment;
          // This axis might wrap, so we make sure that the returned index is within range
          return ((int) Math.round(exactNumSteps)) % (int) this.getSize();
+
        } else if (coordValue < this.start) {
          return bounded ? 0 : -1;
        } else {
@@ -450,7 +456,19 @@ public class CoordinateAxis1D extends CoordinateAxis {
      int low = 0;
      int high = n;
 
-     // LOOK : do we need to do special case for longitude ??
+     // special case for longitude
+     if (axisType == AxisType.Lon) {
+       if (target < this.edge[low]) {
+         target += 360.0;
+         if (target > this.edge[high])
+           return bounded ? 0 : -1;
+
+       } else if (target > this.edge[high]) {
+         target -= 360.0;
+         if (target < this.edge[low])
+           return bounded ? n-1 : -1;
+       }
+     }
 
      if (isAscending) {
        // Check that the point is within range
