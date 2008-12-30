@@ -3,14 +3,12 @@ package thredds.catalogservice;
 import junit.framework.*;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.*;
-import thredds.server.controller.CatalogServiceRequestDataBinder;
-import thredds.server.controller.CatalogServiceRequest;
-import thredds.server.controller.CatalogServiceRequestValidator;
-import thredds.server.controller.CatalogServiceUtils;
+import thredds.server.catalogservice.CatalogServiceRequestDataBinder;
+import thredds.server.catalogservice.CatalogServiceRequest;
+import thredds.server.catalogservice.CatalogServiceRequestValidator;
+import thredds.server.catalogservice.CatalogServiceUtils;
 
-import java.util.Map;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * _more_

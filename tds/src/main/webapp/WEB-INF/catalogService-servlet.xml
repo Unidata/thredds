@@ -7,9 +7,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <bean id="catalogServiceController" class="thredds.server.controller.CatalogServiceController" >
+  <bean id="catalogServiceController" class="thredds.server.catalogservice.CatalogServiceController" >
     <property name="tdsContext" ref="tdsContext"/>
-    <property name="commandClass" value="thredds.server.controller.CatalogServiceRequest" />
+    <property name="commandClass" value="thredds.server.catalogservice.CatalogServiceRequest" />
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

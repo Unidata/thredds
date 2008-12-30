@@ -1,4 +1,4 @@
-package thredds.server.controller;
+package thredds.server.catalogservice;
 
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;

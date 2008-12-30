@@ -1,4 +1,4 @@
-package thredds.server.controller;
+package thredds.server.catalogservice;
 
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalogFactory;

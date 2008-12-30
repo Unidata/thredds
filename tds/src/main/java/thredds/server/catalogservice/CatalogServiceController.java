@@ -1,11 +1,9 @@
-package thredds.server.controller;
+package thredds.server.catalogservice;
 
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ValidationUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +14,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import thredds.server.config.TdsContext;
-import thredds.util.TdsPathUtils;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DataRootHandler;
 import thredds.catalog.InvCatalog;

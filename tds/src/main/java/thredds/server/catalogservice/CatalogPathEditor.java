@@ -1,4 +1,4 @@
-package thredds.server.controller;
+package thredds.server.catalogservice;
 
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalogFactory;
@@ -6,8 +6,6 @@ import thredds.catalog.InvCatalog;
 import thredds.servlet.DataRootHandler;
 
 import java.beans.PropertyEditorSupport;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * _more_

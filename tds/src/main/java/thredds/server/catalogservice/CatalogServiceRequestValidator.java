@@ -1,4 +1,4 @@
-package thredds.server.controller;
+package thredds.server.catalogservice;
 
 import org.springframework.validation.Validator;
 import org.springframework.validation.Errors;

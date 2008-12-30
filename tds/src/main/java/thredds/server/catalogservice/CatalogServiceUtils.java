@@ -1,4 +1,4 @@
-package thredds.server.controller;
+package thredds.server.catalogservice;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ValidationUtils;
