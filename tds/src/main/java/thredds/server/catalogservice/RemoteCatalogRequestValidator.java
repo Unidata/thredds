@@ -19,7 +19,7 @@ public class RemoteCatalogRequestValidator implements Validator
 
   public boolean supports( Class clazz)
   {
-    return CatalogServiceRequest.class.equals( clazz );
+    return RemoteCatalogRequest.class.equals( clazz );
   }
 
   public void validate( Object obj, Errors e)
@@ -29,10 +29,11 @@ public class RemoteCatalogRequestValidator implements Validator
     // Validate "catalogUri"
     URI catUri = rcr.getCatalogUri();
     ValidationUtils.rejectIfEmpty( e, "catalogUri", "catalogUri.empty" );
-    if ( ! catUri.isAbsolute() )
+
+    if ( catUri != null && ! catUri.isAbsolute() )
       e.rejectValue( "catalogUri", "catalogUri.notAbsolute",
                      "The \"catalogUri\" field must be an absolute URI." );
-    if ( ! catUri.getScheme().equalsIgnoreCase( "HTTP" ))
+    if ( catUri != null && ! catUri.getScheme().equalsIgnoreCase( "HTTP" ))
       e.rejectValue( "catalogUri", "catalogUri.notHttpUri",
                      "The \"catalogUri\" field must be an HTTP URI.");
 

@@ -22,6 +22,34 @@ public class CatalogServiceUtils
 
   public static enum XmlHtmlOrEither { XML, HTML, EITHER }
 
+  public static BindingResult bindAndValidateRemoteCatalogRequest( HttpServletRequest request )
+  {
+    // Bind and validate the request to a CatalogServiceRequest.
+    RemoteCatalogRequest rcr = new RemoteCatalogRequest();
+    RemoteCatalogRequestDataBinder db = new RemoteCatalogRequestDataBinder( rcr, "request" );
+    db.setAllowedFields( new String[]{"catalogUri", "command", "dataset", "verbose", "htmlView"} );
+    db.bind( request );
+    
+    BindingResult bindingResult = db.getBindingResult();
+    ValidationUtils.invokeValidator( new RemoteCatalogRequestValidator(), bindingResult.getTarget(), bindingResult );
+
+    return bindingResult;
+  }
+
+  public static BindingResult bindAndValidateLocalCatalogRequest( HttpServletRequest request )
+  {
+    // Bind and validate the request to a LocalCatalogRequest.
+    LocalCatalogRequest rcr = new LocalCatalogRequest();
+    LocalCatalogRequestDataBinder db = new LocalCatalogRequestDataBinder( rcr, "request" );
+    db.setAllowedFields( new String[]{"path", "command", "dataset"} );
+    db.bind( request );
+
+    BindingResult bindingResult = db.getBindingResult();
+    ValidationUtils.invokeValidator( new LocalCatalogRequestValidator(), bindingResult.getTarget(), bindingResult );
+
+    return bindingResult;
+  }
+
   public static BindingResult bindAndValidate( HttpServletRequest request, boolean localCatalog, XmlHtmlOrEither xmlHtmlOrEither )
   {
     // Bind and validate the request to a CatalogServiceRequest.
@@ -29,7 +57,7 @@ public class CatalogServiceUtils
     CatalogServiceRequestDataBinder db = new CatalogServiceRequestDataBinder( csr, "request", localCatalog, xmlHtmlOrEither );
     db.setAllowedFields( new String[]{"catalog", "verbose", "command", "htmlView", "dataset"} );
     db.bind( request );
-    
+
     BindingResult bindingResult = db.getBindingResult();
     ValidationUtils.invokeValidator( new CatalogServiceRequestValidator(), bindingResult.getTarget(), bindingResult );
 
