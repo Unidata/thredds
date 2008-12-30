@@ -34,6 +34,7 @@ import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.InvDataset;
 import thredds.catalog.InvAccess;
 import thredds.catalog.ServiceType;
+import thredds.catalog.InvCatalogRef;
 
 /**
  * A collection of ForecastModelRun (aka "run").
@@ -1366,6 +1367,9 @@ public class FmrcInventory {
       }
 
     }
+
+    public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+
   }
 
   private static DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 0, -1); // dont scour - messes up the TDS!

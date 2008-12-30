@@ -75,6 +75,8 @@ public class TestGribAgg implements CatalogCrawler.Listener {
     return;
   }
 
+  public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+  
   private HashMap hash = new HashMap();
   private void process(NetcdfFile ncd) {
     out.println(" process "+ncd.getLocation());

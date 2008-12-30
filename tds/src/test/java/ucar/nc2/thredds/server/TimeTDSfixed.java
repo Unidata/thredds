@@ -23,6 +23,7 @@ package ucar.nc2.thredds.server;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.InvDataset;
+import thredds.catalog.InvCatalogRef;
 import ucar.nc2.constants.FeatureType;
 
 import java.io.PrintStream;
@@ -63,6 +64,8 @@ public class TimeTDSfixed {
           cancel.isCancel = true;
         }
       }
+      public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+      
     };
     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL_DIRECT, false, listener);
 

@@ -81,6 +81,8 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
     }
   }
 
+  public boolean getCatalogRef(InvCatalogRef dd) { return true; }  
+
   private HashMap varHash = new HashMap();
   private void process(NetcdfFile ncd) {
     out.println(" process "+ncd.getLocation());

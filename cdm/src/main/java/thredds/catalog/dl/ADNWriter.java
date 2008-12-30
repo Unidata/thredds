@@ -62,6 +62,8 @@ public class ADNWriter {
       public void getDataset(InvDataset ds) {
         doOneDataset(ds);
       }
+      public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+      
     };
 
     ByteArrayOutputStream bis = new ByteArrayOutputStream();

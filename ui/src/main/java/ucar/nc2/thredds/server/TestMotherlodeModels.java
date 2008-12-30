@@ -10,10 +10,7 @@ import java.awt.event.WindowEvent;
 import java.awt.*;
 
 import thredds.catalog.crawl.CatalogCrawler;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvDataset;
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.ThreddsMetadata;
+import thredds.catalog.*;
 
 import javax.swing.*;
 
@@ -109,7 +106,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     }
 
   }
-
+  public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+   
   public static JPanel main;
   public static void main(String args[]) throws IOException {
     String server = "http://newmotherlode.ucar.edu:8080/thredds";

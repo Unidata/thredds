@@ -31,6 +31,7 @@ import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
 import thredds.catalog.InvCatalogRef;
+import thredds.catalog2.CatalogRef;
 
 
 /**
@@ -162,6 +163,11 @@ public class CatalogCrawler {
       if (out != null)
         out.println(" **CATREF " + catref.getURI() + " (" + ds.getName() + ") ");
       countCatrefs++;
+
+      if (!listen.getCatalogRef( catref)) {
+        catref.release();
+        return;
+      }
     }
 
     if (!isCatRef || skipScanChildren || isDataScan) listen.getDataset(ds);
@@ -206,6 +212,11 @@ public class CatalogCrawler {
       if (out != null)
         out.println(" **CATREF " + catref.getURI() + " (" + ds.getName() + ") ");
       countCatrefs++;
+      
+      if (!listen.getCatalogRef( catref)) {
+        catref.release();
+        return;
+      }
     }
 
     // get datasets with data access ("leaves")
@@ -261,10 +272,18 @@ public class CatalogCrawler {
 
   static public interface Listener {
     /**
-     * Gets called for each dataset.
+     * Gets called for each dataset found.
      * @param dd the dataset
      */
     public void getDataset(InvDataset dd);
+
+    /**
+     * Gets called for each catalogRef found
+     * @param dd the dataset
+     * @return true to process, false to skip
+     */
+    public boolean getCatalogRef(InvCatalogRef dd);
+
   }
 
 }

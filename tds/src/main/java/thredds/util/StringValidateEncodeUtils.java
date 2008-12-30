@@ -328,10 +328,10 @@ public class StringValidateEncodeUtils
     //return org.apache.commons.lang.StringEscapeUtils.escapeHtml( content );
   }
 
-  public static String encodeContentForXml( String content )
+  /* public static String encodeContentForXml( String content )
   {
     return org.apache.commons.lang.StringEscapeUtils.escapeXml( content );
-  }
+  }  */
 
   /**
    * <strong>NOT YET IMPLEMENTED:</strong>

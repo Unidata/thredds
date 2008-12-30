@@ -400,6 +400,8 @@ public class TestAll extends TestCase
         if ( ds.hasAccess() && ds.getAccess( ServiceType.RESOLVER ) != null )
           checkLatestModelResolverDs( ds, failureMsgs );
       }
+      public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+
     };
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, listener );
 
@@ -548,6 +550,8 @@ public class TestAll extends TestCase
           return;
         }
       }
+      public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+
     };
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT, false, listener );
 
@@ -741,6 +745,8 @@ public class TestAll extends TestCase
 
 
       }
+      public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+      
     };
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_RANDOM_DIRECT, false, listener );
 

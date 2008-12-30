@@ -23,6 +23,7 @@ package ucar.nc2.thredds.server;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.InvDataset;
+import thredds.catalog.InvCatalogRef;
 
 import java.io.PrintStream;
 
@@ -44,6 +45,7 @@ public class TimeTDS {
       public void getDataset(InvDataset dd) {
         extractDatasetInfo(dd, System.out);
       }
+      public boolean getCatalogRef(InvCatalogRef dd) { return true; }      
     };
     CatalogCrawler crawler = new CatalogCrawler(CatalogCrawler.USE_ALL, false, listener);
 

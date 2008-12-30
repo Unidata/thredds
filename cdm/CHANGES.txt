@@ -48,6 +48,7 @@ This code is ALPHA
 
  Release Details:
   29:
+    add getCatalogRef(InvCatalogRef dd) to CatalogGrawler.Listener
     CoordAxis1D.findCoordElement() bug for Longitude
     MAMath.convert2packed() utility for scale/offset writing
     Change _unsigned to _Unsigned; look for _Unsigned but ignore case.

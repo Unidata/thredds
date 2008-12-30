@@ -83,6 +83,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
         InvAccess access = tdataFactory.chooseDatasetAccess(dd.getAccess());
         if (null != access) transfer(access.getStandardUrlName(), copyDir);
       }
+      public boolean getCatalogRef(InvCatalogRef dd) { return true; }      
     });
 
     long start = System.currentTimeMillis();
@@ -148,6 +149,9 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     openDataset(out, ds);
     //return extractTypedDatasetInfo( out, ds);
   }
+
+  public boolean getCatalogRef(InvCatalogRef dd) { return true; }
+  
 
   public boolean openDataset(PrintStream out, InvDataset ds) {
     InvAccess access = tdataFactory.chooseDatasetAccess(ds.getAccess());
