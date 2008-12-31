@@ -14,48 +14,81 @@ import java.util.List;
  */
 public class TestRemoteCatalogRequest extends TestCase
 {
-
-//  private CatalogServiceRequest me;
+  private String parameterNameCatalog = "catalog";
+  private String parameterNameCommand = "command";
+  private String parameterNameDatasetId = "dataset";
+  private String parameterNameVerbose = "verbose";
+  private String parameterNameHtmlView = "htmlView";
 
   public TestRemoteCatalogRequest( String name )
   {
     super( name );
   }
 
-  public void testShowXml()
+  public void testGoodRequests()
   {
-    // explicit and implicit
-  }
+    String catUriString = "http://motherlode.ucar.edu:8080/thredds/catalog.xml";
+    String cmdShow = "show";
+    String cmdSubset = "subset";
+    String datasetId = "my/cool/dataset";
 
-  /**
-   * Test ...
-   */
-  public void testOne()
-  {
+    // Basic setup
     MockHttpServletRequest req = new MockHttpServletRequest();
     req.setMethod( "GET" );
     req.setContextPath( "/thredds" );
     req.setServletPath( "/remoteCatalogService" );
-    req.setParameter( "catalog", "http://motherlode.ucar.edu:8080/thredds/catalog.xml" );
-    req.setParameter( "verbose", "true" );
-    req.setParameter( "command", "show" );
-    req.setParameter( "htmlView", "true" );
-    //req.setParameter( "dataset", "my/cool/dataset" );
+
+    // Test that valid when "command"==SHOW, "htmlView"=false
+    req.setParameter( parameterNameCatalog, catUriString );
+    req.setParameter( parameterNameCommand, cmdShow );
+    req.setParameter( parameterNameVerbose, "false" );
+    req.setParameter( parameterNameHtmlView, "false" );
+    //req.setParameter( parameterNameDataset", datasetId );
 
     BindingResult bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
 
+    String bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
+    if ( bindResultMsg != null )
+      fail( bindResultMsg );
     RemoteCatalogRequest rcr = (RemoteCatalogRequest) bindingResult.getTarget();
+    assertEquals( rcr.getCatalogUri().toString(), catUriString );
+    assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdShow ) );
+    assertEquals( rcr.getDataset(), "" );
+    assertFalse( rcr.isVerbose());
+    assertFalse( rcr.isHtmlView());
 
-    if ( bindingResult.hasErrors() )
-    {
-      List<ObjectError> errors = bindingResult.getAllErrors();
-      StringBuilder sb = new StringBuilder();
-      for ( ObjectError error : errors )
-      {
-        sb.append( "Binding error [" ).append( error.toString() ).append( "]" );
-      }
-      fail( sb.toString());
-    }
-    assertEquals( bindingResult.getTarget(), rcr);
+    // Test that valid when "command"==SHOW, "htmlView"=true
+    // Test that valid when "command"==SUBSET, "dataset"=dsId
+    // Test that valid when "command"==SUBSET, "dataset"=dsId "htmlView"=false
+    // Test that valid when "command"==SUBSET, "dataset"=dsId "htmlView"=true
+    // Test that valid when "command"==VALIDATE, "dataset"=dsId
+    // Test that valid when "command"==VALIDATE, "dataset"=dsId, "verbose"=true
+    // Test that valid when "command"==VALIDATE, "dataset"=dsId, "verbose"=false
+  }
+
+  public void testBadRequests()
+  {
+    String catUriString = "http://motherlode.ucar.edu:8080/thredds/catalog.xml";
+    String cmdShow = "show";
+    String cmdSubset = "subset";
+    String datasetId = "my/cool/dataset";
+
+    // Basic setup
+    MockHttpServletRequest req = new MockHttpServletRequest();
+    req.setMethod( "GET" );
+    req.setContextPath( "/thredds" );
+    req.setServletPath( "/remoteCatalogService" );
+
+    // Test that valid when "command"==SUBSET, "dataset"==null
+    req.setParameter( parameterNameCatalog, catUriString );
+    req.setParameter( parameterNameCommand, cmdSubset );
+
+    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
+
+    String bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
+    if ( bindResultMsg == null )
+      fail( "No binding error for command=SUBSET&dataset==\"\"" );
+    System.out.println( "As expected, command=SUBSET&dataset==\"\" got binding error: " + bindResultMsg );
+
   }
 }

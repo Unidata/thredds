@@ -22,16 +22,9 @@ public class TestLocalCatalogRequest extends TestCase
     super( name );
   }
 
-  public void testShowXml()
-  {
-    // explicit and implicit
-  }
-
-  /**
-   * Test ...
-   */
   public void testCatalogServletPathWithXml()
   {
+    boolean htmlView = false;
     String path = "my/cool/catalog.xml";
     String cmdShow = "show";
     String cmdSubset = "subset";
@@ -46,7 +39,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test that valid when "command"==SHOW
     req.setParameter( this.parameterNameCommand, cmdShow );
-    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg);
@@ -57,7 +50,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SHOW and "dataset"!=null
     req.setParameter( this.parameterNameDatasetId, dsId );
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg );
@@ -68,7 +61,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SUBSET and "dataset"!=null
     req.setParameter( this.parameterNameCommand, cmdSubset);
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg );
@@ -79,7 +72,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SUBSET and "dataset"==""
     req.setParameter( "dataset", "" );
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String msg = checkBindingResults( bindingResult );
     if ( msg == null )
       fail( "No binding error for command=SUBSET&dataset==\"\"");
@@ -88,6 +81,7 @@ public class TestLocalCatalogRequest extends TestCase
 
   public void testCatalogServletPathWithHtml()
   {
+    boolean htmlView = true;
     String path = "my/cool/catalog.html";
     String cmdShow = "show";
     String cmdSubset = "subset";
@@ -102,7 +96,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test that valid when "command"==SHOW
     req.setParameter( this.parameterNameCommand, cmdShow );
-    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg);
@@ -113,7 +107,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SHOW and "dataset"!=null
     req.setParameter( this.parameterNameDatasetId, dsId );
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg );
@@ -124,7 +118,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SUBSET and "dataset"!=null
     req.setParameter( this.parameterNameCommand, cmdSubset);
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg );
@@ -135,7 +129,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SUBSET and "dataset"==""
     req.setParameter( "dataset", "" );
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String msg = checkBindingResults( bindingResult );
     if ( msg == null )
       fail( "No binding error for command=SUBSET&dataset==\"\"");
@@ -144,6 +138,7 @@ public class TestLocalCatalogRequest extends TestCase
 
   public void testStarDotXmlServletPathWithXml()
   {
+    boolean htmlView = false;
     String path = "my/cool/catalog.xml";
     String cmdShow = "show";
     String cmdSubset = "subset";
@@ -157,7 +152,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test that valid when "command"==SHOW
     req.setParameter( this.parameterNameCommand, cmdShow );
-    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg);
@@ -168,7 +163,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SHOW and "dataset"!=null
     req.setParameter( this.parameterNameDatasetId, dsId );
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg );
@@ -179,7 +174,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SUBSET and "dataset"!=null
     req.setParameter( this.parameterNameCommand, cmdSubset);
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg );
@@ -190,7 +185,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SUBSET and "dataset"==""
     req.setParameter( "dataset", "" );
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String msg = checkBindingResults( bindingResult );
     if ( msg == null )
       fail( "No binding error for command=SUBSET&dataset==\"\"");
@@ -199,6 +194,7 @@ public class TestLocalCatalogRequest extends TestCase
 
   public void testStarDotHtmlServletPathWithHtml()
   {
+    boolean htmlView = true;
     String path = "my/cool/catalog.html";
     String cmdShow = "show";
     String cmdSubset = "subset";
@@ -212,7 +208,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test that valid when "command"==SHOW
     req.setParameter( this.parameterNameCommand, cmdShow );
-    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg);
@@ -223,7 +219,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SHOW and "dataset"!=null
     req.setParameter( this.parameterNameDatasetId, dsId );
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg );
@@ -234,7 +230,7 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SUBSET and "dataset"!=null
     req.setParameter( this.parameterNameCommand, cmdSubset);
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg );
@@ -245,17 +241,18 @@ public class TestLocalCatalogRequest extends TestCase
 
     // Test validity with "command"==SUBSET and "dataset"==""
     req.setParameter( "dataset", "" );
-    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String msg = checkBindingResults( bindingResult );
     if ( msg == null )
       fail( "No binding error for command=SUBSET&dataset==\"\"");
     System.out.println( "As expected, command=SUBSET&dataset==\"\" got binding error: " + msg );
   }
 
-  private String checkBindingResults( BindingResult bindingResult )
+  static String checkBindingResults( BindingResult bindingResult )
   {
     if ( bindingResult.hasErrors() )
     {
+      //noinspection unchecked
       List<ObjectError> errors = bindingResult.getAllErrors();
       StringBuilder sb = new StringBuilder("\n");
       for ( ObjectError error : errors )

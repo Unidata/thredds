@@ -32,6 +32,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -673,6 +674,48 @@ public class HtmlWriter {
     }
 
     return shade;
+  }
+
+  private String convertDatasetToHtml( String catURL, InvDatasetImpl dataset, HttpServletRequest request )
+  {
+    StringBuilder sb = new StringBuilder( 10000 );
+
+    sb.append( this.getHtmlDoctypeAndOpenTag() );
+    sb.append( "<head>\r\n" );
+    sb.append( "<title> Catalog Services</title>\r\n" );
+    sb.append( "<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n" );
+    sb.append( this.getTdsPageCssLink() );
+    sb.append( "</head>\r\n" );
+    sb.append( "<body>\r\n" );
+    sb.append( this.getUserHead() );
+
+    sb.append( "<h2> Catalog " ).append( catURL ).append( "</h2>\r\n" );
+
+    InvDatasetImpl.writeHtmlDescription( sb, dataset, false, true, false, false );
+
+    // optional access through Viewers
+    ViewServlet.showViewers( sb, dataset, request );
+
+    sb.append( "</body>\r\n" );
+    sb.append( "</html>\r\n" );
+
+    return sb.toString();
+  }
+
+  public void showDataset( String catURL, InvDatasetImpl dataset,
+                           HttpServletRequest request,
+                           HttpServletResponse response )
+          throws IOException
+  {
+    String datasetAsHtml = this.convertDatasetToHtml( catURL, dataset, request );
+
+    response.setStatus( HttpServletResponse.SC_OK );
+    response.setContentType( "text/html; charset=UTF-8" );
+    PrintWriter pw = response.getWriter();
+    pw.write( datasetAsHtml );
+    pw.flush();
+
+    ServletUtil.logServerAccess( HttpServletResponse.SC_OK, datasetAsHtml.length() );
   }
 
   /**

@@ -36,7 +36,8 @@ public class CatalogServiceUtils
     return bindingResult;
   }
 
-  public static BindingResult bindAndValidateLocalCatalogRequest( HttpServletRequest request )
+  public static BindingResult bindAndValidateLocalCatalogRequest( HttpServletRequest request,
+                                                                  boolean htmlView )
   {
     // Bind and validate the request to a LocalCatalogRequest.
     LocalCatalogRequest rcr = new LocalCatalogRequest();
@@ -45,7 +46,9 @@ public class CatalogServiceUtils
     db.bind( request );
 
     BindingResult bindingResult = db.getBindingResult();
-    ValidationUtils.invokeValidator( new LocalCatalogRequestValidator(), bindingResult.getTarget(), bindingResult );
+    LocalCatalogRequestValidator validator = new LocalCatalogRequestValidator();
+    validator.setHtmlView( htmlView );
+    ValidationUtils.invokeValidator( validator, bindingResult.getTarget(), bindingResult );
 
     return bindingResult;
   }

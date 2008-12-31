@@ -17,9 +17,11 @@ import thredds.util.StringValidateEncodeUtils;
  */
 public class LocalCatalogRequestValidator implements Validator
 {
-  private boolean xmlVsHtml = true;
   public LocalCatalogRequestValidator() {}
-  public void setXmlVsHtml( boolean xmlVsHtml ) { this.xmlVsHtml = xmlVsHtml; }
+
+  private boolean htmlView = false;
+  public boolean isHtmlView() { return htmlView; }
+  public void setHtmlView( boolean htmlView ) { this.htmlView = htmlView; }
 
   public boolean supports( Class clazz)
   {
@@ -33,19 +35,19 @@ public class LocalCatalogRequestValidator implements Validator
     // Validate "path"
     String path = rcr.getPath();
     ValidationUtils.rejectIfEmpty( e, "path", "path.empty" );
+    // ToDo move this back into a javax.servlet.Filter
     if ( ! StringValidateEncodeUtils.validPath( path ) )
       e.rejectValue( "path", "path.notValidPath",
                      "The \"path\" field must be a valid path." );
-    if ( xmlVsHtml )
+    if ( path != null)
     {
-      if ( ! path.endsWith( ".xml" ))
-        e.rejectValue( "path", "path.notXmlRequest",
-                       "The \"path\" field must end in \".xml\".");
-    }
-    else
-      if ( ! path.endsWith( ".html"))
+      if ( this.htmlView && ! path.endsWith( ".html"))
         e.rejectValue( "path", "path.notHmlRequest",
                        "The \"path\" field must end in \".html\"." );
+      else if ( ! this.htmlView && ! path.endsWith( ".xml"))
+        e.rejectValue( "path", "path.notXmlRequest",
+                       "The \"path\" field must end in \".xml\"." );
+    }
 
     // Validate "command" - not empty
     ValidationUtils.rejectIfEmpty( e, "command", "command.empty" );
