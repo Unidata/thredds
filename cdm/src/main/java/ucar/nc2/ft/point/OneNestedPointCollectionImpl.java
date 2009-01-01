@@ -32,6 +32,7 @@ import java.io.IOException;
 /**
  * Abstract superclass for singly nested NestedPointFeatureCollection
  * Subclass must supply getPointFeatureCollectionIterator()
+ *
  * @author caron
  * @since Mar 20, 2008
  */
@@ -40,7 +41,7 @@ public abstract class OneNestedPointCollectionImpl implements NestedPointFeature
   private FeatureType collectionFeatureType;
   private int npts;
 
-  OneNestedPointCollectionImpl(String name, FeatureType collectionFeatureType) {
+  protected OneNestedPointCollectionImpl(String name, FeatureType collectionFeatureType) {
     this.name = name;
     this.collectionFeatureType = collectionFeatureType;
     this.npts = -1;

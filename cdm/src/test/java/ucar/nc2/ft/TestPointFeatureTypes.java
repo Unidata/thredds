@@ -115,7 +115,7 @@ public class TestPointFeatureTypes  extends TestCase {
       fdataset.getDetailInfo(out);
       System.out.printf("%s %n", out);
     } else {
-      System.out.printf("  Feature Ttype %s %n", fdataset.getFeatureType());
+      System.out.printf("  Feature Type %s %n", fdataset.getFeatureType());
     }
 
     Date d1 = fdataset.getStartDate();

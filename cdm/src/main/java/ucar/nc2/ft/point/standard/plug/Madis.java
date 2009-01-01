@@ -84,7 +84,7 @@ public class Madis implements TableConfigurer {
     }
     VNames vn = getVariableNames(ds, errlog);
 
-    FlattenedTable.TableType obsStructureType = obsDim.isUnlimited() ? FlattenedTable.TableType.Structure : FlattenedTable.TableType.PseudoStructure;
+    TableType obsStructureType = obsDim.isUnlimited() ? TableType.Structure : TableType.PseudoStructure;
     FeatureType ft = Evaluator.getFeatureType(ds, ":thredds_data_type", errlog);
     if (null == ft) ft = FeatureType.POINT;
 

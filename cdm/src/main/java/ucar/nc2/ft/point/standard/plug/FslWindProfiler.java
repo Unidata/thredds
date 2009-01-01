@@ -39,10 +39,10 @@ public class FslWindProfiler implements TableConfigurer {
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(FlattenedTable.TableType.Construct, "station");
+    TableConfig nt = new TableConfig(TableType.Construct, "station");
     nt.featureType = FeatureType.STATION_PROFILE;
 
-    TableConfig obs = new TableConfig(FlattenedTable.TableType.Structure, "record");
+    TableConfig obs = new TableConfig(TableType.Structure, "record");
     obs.dim = Evaluator.getDimension(ds, "recNum", errlog);
     obs.time = Evaluator.getVariableName(ds, "timeObs", errlog);
 
@@ -52,15 +52,15 @@ public class FslWindProfiler implements TableConfigurer {
     obs.lon = Evaluator.getVariableName(ds, "staLon", errlog);
     obs.elev = Evaluator.getVariableName(ds, "staElev", errlog);
 
-    obs.join = new TableConfig.JoinConfig(Join.Type.Identity);
+    obs.join = new TableConfig.JoinConfig(JoinType.Identity);
     nt.addChild(obs);
 
-    TableConfig levels = new TableConfig(FlattenedTable.TableType.MultiDim, "levels");
+    TableConfig levels = new TableConfig(TableType.MultiDim, "levels");
     levels.outer = Evaluator.getDimension(ds, "recNum", errlog);
     levels.dim = Evaluator.getDimension(ds, "level", errlog);
     levels.elev = Evaluator.getVariableName(ds, "levels", errlog);
 
-    levels.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
+    levels.join = new TableConfig.JoinConfig(JoinType.MultiDim);
 
     obs.addChild(levels);
     return nt;

@@ -228,7 +228,7 @@
 <pre>   ncfile.addAttribute(null, new Attribute(&quot;title&quot;, &quot;USPN Lightning Data&quot;));
    ncfile.addAttribute(null, new Attribute(&quot;history&quot;,&quot;Read directly by Netcdf Java IOSP&quot;));</pre>
 <pre><strong>2) ncfile.addAttribute(null, new Attribute(&quot;Conventions&quot;,&quot;Unidata Observation Dataset v1.0&quot;));
-   ncfile.addAttribute(null, new Attribute(&quot;cdm_datatype&quot;,&quot;Point&quot;));
+   ncfile.addAttribute(null, new Attribute(&quot;cdm_data_type&quot;,&quot;Point&quot;));
    ncfile.addAttribute(null, new Attribute(&quot;observationDimension&quot;,&quot;record&quot;));</strong></pre>
 <pre><strong>3) MAMath.MinMax mm = MAMath.getMinMax(dateArray);
    ncfile.addAttribute(null, new Attribute(&quot;time_coverage_start&quot;, ((int)mm.min) +&quot; &quot;+timeUnit));

@@ -25,6 +25,7 @@ import java.io.IOException;
 
 /**
  * A collection of PointFeatures nested inside one or more PointFeatureCollection.
+ * 
  * @author caron
  * @since Mar 20, 2008
  */

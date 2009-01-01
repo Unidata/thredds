@@ -26,6 +26,7 @@ import static ucar.nc2.iosp.nexrad2.Level2Record.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -136,6 +137,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     ncfile.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", volScan.getDataFormat()));
+    ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
     Date d = getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
 

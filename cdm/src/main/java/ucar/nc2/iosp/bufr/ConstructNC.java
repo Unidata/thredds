@@ -92,7 +92,7 @@ class ConstructNC {
     ncfile.addAttribute(null, new Attribute("Conventions", "BUFR/CDM"));
 
     //if (ftype != null)
-    //  ncfile.addAttribute(null, new Attribute("cdm_datatype", ftype.toString()));
+    //  ncfile.addAttribute(null, new Attribute("cdm_data_type", ftype.toString()));
 
     makeObsRecord();
     //makeReportIndexStructure();

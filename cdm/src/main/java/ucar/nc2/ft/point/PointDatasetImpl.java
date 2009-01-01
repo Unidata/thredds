@@ -91,4 +91,9 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
       sf.format(" %s type=%s\n", fc.getName(), fc.getCollectionFeatureType());
     }
   }
+
+  public String getImplementationName() {
+    return getClass().getName();
+  }
+
 }

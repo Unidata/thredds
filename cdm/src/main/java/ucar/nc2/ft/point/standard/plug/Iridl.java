@@ -24,7 +24,6 @@ import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 
@@ -64,7 +63,7 @@ public class Iridl implements TableConfigurer {
     }
 
     // station table
-    TableConfig stationTable = new TableConfig(FlattenedTable.TableType.PseudoStructure, "station");
+    TableConfig stationTable = new TableConfig(TableType.PseudoStructure, "station");
     stationTable.featureType = FeatureType.STATION;
     stationTable.dim = stationDim;
 
@@ -76,11 +75,11 @@ public class Iridl implements TableConfigurer {
 
     // obs table
     TableConfig obsTable;
-    obsTable = new TableConfig(FlattenedTable.TableType.MultiDim, "obs");
+    obsTable = new TableConfig(TableType.MultiDim, "obs");
     obsTable.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     obsTable.outer = stationDim;
     obsTable.dim = obsDim;
-    obsTable.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
+    obsTable.join = new TableConfig.JoinConfig(JoinType.MultiDim);
     obsTable.featureType = FeatureType.STATION;
 
     stationTable.addChild(obsTable);

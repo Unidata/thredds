@@ -21,6 +21,7 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.stream.NetcdfRemote;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
@@ -393,8 +394,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // now find coord systems which may add new variables, change some Variables to axes, etc
     if (ds.enhanceMode.contains(Enhance.CoordSystems)) {
-      if (!ds.coordSysWereAdded) // LOOK why do we need this ? why not recalculate ??
-        ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
+      if (!ds.coordSysWereAdded) { // LOOK why do we need this ? why not recalculate ??
+        CoordSysBuilderIF builder = ucar.nc2.dataset.CoordSysBuilder.addCoordinateSystems(ds, cancelTask);
+        ds.convUsed = builder.getConventionUsed();
+      }
       ds.coordSysWereAdded = true;
     }
 
@@ -673,6 +676,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private List<CoordinateTransform> coordTransforms = new ArrayList<CoordinateTransform>();
   private boolean coordSysWereAdded = false;
   private boolean isEnhanceProcessed = false;
+  private String convUsed;
 
   private EnumSet<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
 
@@ -706,6 +710,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public List<CoordinateSystem> getCoordinateSystems() {
     return coordSys;
   }
+
+  /**
+   * Get conventions used to analyse coordinate systems.
+   * @return conventions used to analyse coordinate systems
+   */
+  public String getConventionUsed() { return convUsed; }
 
   /**
    * Get the current state of dataset enhancement.
@@ -1064,6 +1074,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public NetcdfFile getReferencedFile() {
     return orgFile;
+  }
+
+  @Override
+  public IOServiceProvider getIosp() {
+    return (orgFile == null) ? null : orgFile.getIosp();
   }
 
   /**

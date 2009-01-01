@@ -52,6 +52,8 @@ public class CFpointObs implements TableConfigurer {
     StringTokenizer stoke = new StringTokenizer(conv, ",");
     while (stoke.hasMoreTokens()) {
       String toke = stoke.nextToken().trim();
+      if (toke.startsWith("CF-1.0"))
+        return false;  // let default analyser try
       if (toke.startsWith("CF"))
         return true;
     }
@@ -60,7 +62,7 @@ public class CFpointObs implements TableConfigurer {
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     String ftypeS = ds.findAttValueIgnoreCase(null, CFfeatureType, null);
-    CFFeatureType ftype = CFFeatureType.valueOf(ftypeS);
+    CFFeatureType ftype = (ftypeS == null) ? CFFeatureType.point : CFFeatureType.valueOf(ftypeS);
     switch (ftype) {
       case point: return getPointConfig(ds, errlog);
       case station: return getStationConfig(ds, errlog);
@@ -71,7 +73,7 @@ public class CFpointObs implements TableConfigurer {
   }
 
   private TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(FlattenedTable.TableType.Structure, "record");
+    TableConfig nt = new TableConfig(TableType.Structure, "record");
     nt.featureType = FeatureType.POINT;
     CoordSysEvaluator.findCoords(nt, ds);
     return nt;
@@ -79,7 +81,7 @@ public class CFpointObs implements TableConfigurer {
 
   // ??
   private TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(FlattenedTable.TableType.Singleton, "station");
+    TableConfig nt = new TableConfig(TableType.Singleton, "station");
     nt.featureType = FeatureType.STATION;
 
     nt.lat = Evaluator.getVariableName(ds, "latitude", errlog);
@@ -88,28 +90,28 @@ public class CFpointObs implements TableConfigurer {
     nt.stnId = Evaluator.getVariableName(ds, "stn", errlog);
     //nt.stnDesc = Evaluator.getVariableName(ds, ":description", errlog);
 
-    TableConfig obs = new TableConfig(FlattenedTable.TableType.Structure, "record");
+    TableConfig obs = new TableConfig(TableType.Structure, "record");
     obs.dim = Evaluator.getDimension(ds, "time", errlog);
     obs.time = Evaluator.getVariableName(ds, "time", errlog);
     nt.addChild(obs);
 
-    obs.join = new TableConfig.JoinConfig(Join.Type.Singleton);
+    obs.join = new TableConfig.JoinConfig(JoinType.Singleton);
 
     return nt;
   }
 
   private TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(FlattenedTable.TableType.MultiDim, "trajectory");
+    TableConfig nt = new TableConfig(TableType.MultiDim, "trajectory");
     nt.featureType = FeatureType.TRAJECTORY;
 
     CoordSysEvaluator.findCoords(nt, ds);
 
-    TableConfig obs = new TableConfig(FlattenedTable.TableType.MultiDim, "record");
+    TableConfig obs = new TableConfig(TableType.MultiDim, "record");
     obs.dim = ds.findDimension("sample");
     obs.outer = ds.findDimension("traj");
     nt.addChild(obs);
 
-    obs.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
+    obs.join = new TableConfig.JoinConfig(JoinType.MultiDim);
 
     return nt;
   }

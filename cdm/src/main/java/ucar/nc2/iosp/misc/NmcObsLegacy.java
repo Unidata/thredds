@@ -102,7 +102,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     ncfile.addAttribute(null, new Attribute("history", "direct read of NMC ON29 by CDM"));
     ncfile.addAttribute(null, new Attribute("Conventions", "Unidata"));
-    ncfile.addAttribute(null, new Attribute("cdm_datatype", FeatureType.STATION_PROFILE.toString()));
+    ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.STATION_PROFILE.toString()));
 
     try {
       ncfile.addDimension(null, new Dimension("station", stations.size()));

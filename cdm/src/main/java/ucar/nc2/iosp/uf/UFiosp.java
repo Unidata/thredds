@@ -10,6 +10,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.ma2.*;
 
 import java.io.IOException;
@@ -58,6 +59,7 @@ public class UFiosp extends AbstractIOServiceProvider {
 
         ncfile.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
         ncfile.addAttribute(null, new Attribute("format", headerParser.getDataFormat()));
+        ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
         //Date d = Cinrad2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
         //ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
         ncfile.addAttribute(null, new Attribute("StationLatitude", new Double(headerParser.getStationLatitude())));

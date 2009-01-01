@@ -32,10 +32,6 @@ import java.io.IOException;
  */
 public class Join implements Comparable<Join> {
 
-  public enum Type {
-    ContiguousList, ForwardLinkedList, BackwardLinkedList, MultiDim, NestedStructure, Identity, Index, Singleton, ParentIndex
-  }
-
   protected TableConfig.JoinConfig config;
   protected FlattenedTable.Table parent, child;
 

@@ -127,9 +127,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     registerConvention("IFPS", IFPSConvention.class);
     registerConvention("ARPS/ADAS", ADASConvention.class);
 
-    //station data
+    // point data
     registerConvention("MADIS surface observations, v1.0", MADISStation.class);
     registerConvention("epic-insitu-1.0", EpicInsitu.class);
+    registerConvention("NCAR-RAF/nimbus", Nimbus.class);
 
     // new
     registerConvention("NSSL National Reflectivity Mosaic", NsslRadarMosaicConvention.class);
@@ -329,10 +330,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     }
 
     // add the coord systems
-    if (convName != null)
+    if (convName != null) {
       builder.setConventionUsed(convName);
-    else
-      builder.addUserAdvice("No 'Convention' global attribute.\n");
+    } else
+      builder.addUserAdvice("No 'Conventions' global attribute.\n");
 
     builder.augmentDataset(ds, cancelTask);
     builder.buildCoordinateSystems(ds);

@@ -39,9 +39,10 @@ import java.util.*;
 import java.io.*;
 
 /**
- * Write PointObsDataset in "CF" proposed point convention.
+ * Write point data in CF point convention.
  * Also experiment with streaming netcdf.
  *
+ * @see "http://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions"
  * @author caron
  */
 public class WriterCFPointObsDataset {
@@ -82,8 +83,8 @@ public class WriterCFPointObsDataset {
       for (Attribute att : globalAtts)
         ncfile.addAttribute(null, att);
     }
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1"));
-    ncfile.addAttribute(null, new Attribute("CFfeatureType", "point"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1"));  // LOOK CF-1.5
+    ncfile.addAttribute(null, new Attribute("CFfeatureType", "point")); // LOOK CF:featureType
   }
 
   // private ArrayInt.D1 timeArray = new ArrayInt.D1(1);
@@ -234,11 +235,10 @@ public class WriterCFPointObsDataset {
     ncfile.writeRecordData(recordVars);
   }
 
-
   public void writeRecord(PointObsDatatype pobs, StructureData sdata) throws IOException {
     if (debug) System.out.println("pobs= " + pobs);
 
-    ucar.nc2.dt.EarthLocation loc = pobs.getLocation(); // LOOK we dont know this until we see the obs
+    ucar.nc2.dt.EarthLocation loc = pobs.getLocation();
     int count = writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pobs.getObservationTimeAsDate());
 
     for (int i = count; i < recordVars.size(); i++) {
@@ -280,16 +280,26 @@ public class WriterCFPointObsDataset {
 
   //////////////////////////////////////////////////////////////////////////////////
 
-  public static int write(FeatureDatasetPoint pfDataset, String fileOut) throws IOException {
-    long start = System.currentTimeMillis();
-
+  /**
+   * Write a ucar.nc2.ft.PointFeatureCollection in CF point format.
+   *
+   * @param pfDataset find the first PointFeatureCollection, and write all data from it
+   * @param fileOut write to this netcdf-3 file
+   * @return number of records written
+   * @throws IOException on read/write error, or if no PointFeatureCollection in pfDataset
+   */
+  public static int writePointFeatureCollection(FeatureDatasetPoint pfDataset, String fileOut) throws IOException {
+    // extract the PointFeatureCollection
+    PointFeatureCollection pointFeatureCollection = null;
     List<FeatureCollection> featureCollectionList = pfDataset.getPointFeatureCollectionList();
-    if (featureCollectionList.size() < 1)
-     throw new IOException("No features in "+pfDataset);
-    FeatureCollection featureCollection = featureCollectionList.get(0);
-    if (!(featureCollection instanceof PointFeatureCollection))
-      throw new IOException("Must be PointFeatureCollection, not "+featureCollection.getClass().getName());
-    PointFeatureCollection pointFeatureCollection = (PointFeatureCollection) featureCollection;
+    for ( FeatureCollection featureCollection : featureCollectionList) {
+      if (featureCollection instanceof PointFeatureCollection)
+        pointFeatureCollection = (PointFeatureCollection) featureCollection;
+    }
+    if (null == pointFeatureCollection)
+      throw new IOException("There is no PointFeatureCollection in  "+pfDataset.getLocationURI());
+
+     long start = System.currentTimeMillis();
 
     FileOutputStream fos = new FileOutputStream(fileOut);
     DataOutputStream out = new DataOutputStream( new BufferedOutputStream(fos, 10000));
@@ -332,8 +342,16 @@ public class WriterCFPointObsDataset {
     return count;
   }
 
-  public static void rewrite(String fileIn, String fileOut, boolean inMemory, boolean sort) throws IOException {
-    System.out.println("Rewrite .nc files from " + fileIn + " to " + fileOut + "inMem= " + inMemory + " sort= " + sort);
+  /**
+   * Open a ucar.nc2.dt.PointObsDataset, write out in CF point format.
+   *
+   * @param fileIn open through TypedDatasetFactory.open(FeatureType.POINT, ..)
+   * @param fileOut write to tehis netcdf-3 file
+   * @param inMemory  if true, write in memory for efficiency
+   * @throws IOException on read/write error
+   */
+  public static void rewritePointObsDataset(String fileIn, String fileOut, boolean inMemory) throws IOException {
+    System.out.println("Rewrite .nc files from " + fileIn + " to " + fileOut + "inMem= " + inMemory);
 
     long start = System.currentTimeMillis();
 
@@ -354,7 +372,7 @@ public class WriterCFPointObsDataset {
       PointObsDatatype pobsData = (PointObsDatatype) iter.nextData();
       StructureData data = pobsData.getData();
       if (first) {
-        ucar.nc2.dt.EarthLocation loc = pobsData.getLocation(); // LOOK we dont know this until we see the obs
+        ucar.nc2.dt.EarthLocation loc = pobsData.getLocation();
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters";
         writer = new WriterCFPointObsDataset(out, ncfile.getGlobalAttributes(), altUnits);
         writer.writeHeader(pobsDataset.getDataVariables());
@@ -369,8 +387,17 @@ public class WriterCFPointObsDataset {
     System.out.println("Rewrite " + fileIn + " to " + fileOut + " took = " + took);
   }
 
-  public static void rewrite2(String fileIn, String fileOut, boolean inMemory, boolean sort) throws IOException {
-    System.out.println("Rewrite2 .nc files from " + fileIn + " to " + fileOut + "inMem= " + inMemory + " sort= " + sort);
+  /**
+   * Open a ucar.nc2.dt.PointObsDataset, write out in CF point format.
+   * Use alternative API, requiring data variable to be sorted by type.
+   *
+   * @param fileIn open through TypedDatasetFactory.open(FeatureType.POINT, ..)
+   * @param fileOut write to tehis netcdf-3 file
+   * @param inMemory  if true, write in memory for efficiency
+   * @throws IOException on read/write error
+   */
+  public static void rewritePointObsDataset2(String fileIn, String fileOut, boolean inMemory) throws IOException {
+    System.out.println("Rewrite2 .nc files from " + fileIn + " to " + fileOut + " inMemory= " + inMemory);
 
     long start = System.currentTimeMillis();
 
@@ -381,9 +408,19 @@ public class WriterCFPointObsDataset {
     StringBuilder errlog = new StringBuilder();
     PointObsDataset pobsDataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, ncd, null, errlog);
 
+    // see if we have an altitude
+    String altUnits = null;
+    DataIterator iterOne = pobsDataset.getDataIterator(-1);
+    while (iterOne.hasNext()) {
+      PointObsDatatype pobsData = (PointObsDatatype) iterOne.nextData();
+      ucar.nc2.dt.EarthLocation loc = pobsData.getLocation();
+      altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters";
+      break;
+    }
+
     FileOutputStream fos = new FileOutputStream(fileOut);
     DataOutputStream out = new DataOutputStream(fos);
-    WriterCFPointObsDataset writer = new WriterCFPointObsDataset(out, ncfile.getGlobalAttributes(), "meters");
+    WriterCFPointObsDataset writer = new WriterCFPointObsDataset(out, ncfile.getGlobalAttributes(), altUnits);
     List<VariableSimpleIF> vars = pobsDataset.getDataVariables();
 
     // put vars in order
@@ -424,18 +461,17 @@ public class WriterCFPointObsDataset {
       ucar.nc2.dt.EarthLocation loc = pobsData.getLocation();
       writer.writeRecord(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pobsData.getObservationTimeAsDate(),
               dvals, svals);
-
     }
 
     writer.finish();
 
     long took = System.currentTimeMillis() - start;
-    System.out.println("Rewrite2 " + fileIn + " to " + fileOut + " took = " + took);
+    System.out.println("Rewrite2 " + fileIn + " to " + fileOut + " took = " + took+" msecs");
   }
 
   public static void main(String args[]) throws IOException {
-    String location = "R:/testdata/point/netcdf/971101.PAM_Atl_met.nc";
+    String location = "C:/data/ft/point/971201.PAM_Cle_met.nc";
     File file = new File(location);
-    rewrite2(location, "C:/temp/MS2" + file.getName(), true, true);
+    rewritePointObsDataset2(location, "C:/data/temp/CFobs/"+ file.getName(), true);
   }
 }

@@ -20,8 +20,8 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.ft.point.standard.*;
-import ucar.nc2.ft.point.standard.plug.UnidataPointDatasetHelper;
 import ucar.nc2.ft.StationImpl;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
@@ -42,10 +42,8 @@ public class UnidataPointFeature implements TableConfigurer {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     // find datatype
-    String datatype = ds.findAttValueIgnoreCase(null, "cdm_datatype", null);
-    if (datatype == null)
-      return false;
-    if (!datatype.equalsIgnoreCase(FeatureType.STATION_PROFILE.toString()))
+    FeatureType featureType = FeatureDatasetFactoryManager.findFeatureType( ds);
+    if (featureType != FeatureType.STATION_PROFILE)
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
@@ -66,7 +64,7 @@ public class UnidataPointFeature implements TableConfigurer {
   private static final String STN_ELEV = "Height_of_station";
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
-    TableConfig nt = new TableConfig(FlattenedTable.TableType.ArrayStructure, "station");
+    TableConfig nt = new TableConfig(TableType.ArrayStructure, "station");
     nt.featureType = FeatureType.STATION_PROFILE;
 
     nt.stnId = STN_NAME;
@@ -77,7 +75,7 @@ public class UnidataPointFeature implements TableConfigurer {
     // make the station array structure in memory
     nt.as = makeIndex(ds);
 
-    TableConfig obs = new TableConfig(FlattenedTable.TableType.Structure, "obsRecord");
+    TableConfig obs = new TableConfig(TableType.Structure, "obsRecord");
     obs.dim = Evaluator.getDimension(ds, "record", errlog);
 
     obs.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
@@ -86,14 +84,14 @@ public class UnidataPointFeature implements TableConfigurer {
     obs.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);
 
     obs.stnId = Evaluator.getVariableName(ds, "name", errlog);
-    obs.join = new TableConfig.JoinConfig(Join.Type.Index);
+    obs.join = new TableConfig.JoinConfig(JoinType.Index);
     // create an IndexJoin and attach to the obs.join
     indexJoin = new IndexJoin(obs.join);
     nt.addChild(obs);
 
-    TableConfig levels = new TableConfig(FlattenedTable.TableType.Structure, "seq1");
+    TableConfig levels = new TableConfig(TableType.Structure, "seq1");
     levels.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
-    levels.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
+    levels.join = new TableConfig.JoinConfig(JoinType.NestedStructure);
 
     obs.addChild(levels);
     return nt;

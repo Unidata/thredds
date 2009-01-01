@@ -232,7 +232,7 @@ netcdf Surface_METAR_20060331_0000 {
  :description = "Metar Data from NWS distributed through the Unidata IDD
     realtime datastream. 1 day's worth of data";
  :time_coordinate = "time_observation";
- :cdm_datatype = "Station";
+ :cdm_data_type = "Station";
  :stationDimension = "station";
  :station_id = "station_id";
  :station_description = "station_description";

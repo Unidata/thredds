@@ -1371,7 +1371,7 @@ class Nidsheader{
             ncfile.addAttribute(null, new Attribute("isRadial", new Integer(3)));
             ddx = ddx * rasp_xscale;
         }
-        ncfile.addAttribute(null, new Attribute("cdm_data_type",  "Grid"));
+        ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
         //Variable dist = new Variable(ncfile, null, null, "distance");
         //dist.setDataType(DataType.INT);
         //dist.setDimensions(dims);

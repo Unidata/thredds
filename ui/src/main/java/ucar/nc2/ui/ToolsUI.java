@@ -103,13 +103,13 @@ public class ToolsUI extends JPanel {
   // UI
   private BufrPanel bufrPanel;
   private CoordSysPanel coordSysPanel;
+  private FeaturePanel ftPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
   private ImagePanel imagePanel;
   private NCdumpPanel ncdumpPanel;
   private OpPanel ncmlPanel, geotiffPanel;
   private PointObsPanel pointObsPanel;
-  //private PointObsPanel2 pointObsPanel2;
   private StationObsPanel stationObsPanel;
   private PointFeaturePanel pointFeaturePanel;
   private StationRadialPanel stationRadialPanel;
@@ -122,6 +122,7 @@ public class ToolsUI extends JPanel {
 
   private JTabbedPane tabbedPane;
   private JTabbedPane iospTabPane;
+  private JTabbedPane ftTabPane;
   private JFrame parentFrame;
   private FileManager fileChooser;
   private AboutWindow aboutWindow = null;
@@ -154,6 +155,7 @@ public class ToolsUI extends JPanel {
 
     viewerPanel = new ViewerPanel((PreferencesExt) mainPrefs.node("varTable"));
     iospTabPane = new JTabbedPane(JTabbedPane.TOP);
+    ftTabPane = new JTabbedPane(JTabbedPane.TOP);
 
     // the top UI
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -163,14 +165,7 @@ public class ToolsUI extends JPanel {
     tabbedPane.addTab("NCDump", new JLabel("NCDump"));
     tabbedPane.addTab("Iosp", iospTabPane);
     tabbedPane.addTab("CoordSys", new JLabel("CoordSys"));
-    tabbedPane.addTab("Grids", new JLabel("Grids"));
-    tabbedPane.addTab("Fmrc", new JLabel("Fmrc"));
-    tabbedPane.addTab("Radial", new JLabel("Radial"));
-    tabbedPane.addTab("PointFeature", new JLabel("PointFeature"));
-    tabbedPane.addTab("PointObs", new JLabel("PointObs"));
-    tabbedPane.addTab("StationObs", new JLabel("StationObs"));
-    tabbedPane.addTab("Trajectory", new JLabel("Trajectory"));
-    tabbedPane.addTab("Images", new JLabel("Images"));
+    tabbedPane.addTab("FeatureTypes", ftTabPane);
     tabbedPane.addTab("THREDDS", new JLabel("THREDDS"));
     tabbedPane.addTab("GeoTiff", new JLabel("GeoTiff"));
     tabbedPane.addTab("Units", new JLabel("Units"));
@@ -183,7 +178,7 @@ public class ToolsUI extends JPanel {
         if (c instanceof JLabel) {
           int idx = tabbedPane.getSelectedIndex();
           String title = tabbedPane.getTitleAt(idx);
-          makeComponent(title);
+          makeComponent(tabbedPane, title);
         }
       }
     });
@@ -191,7 +186,7 @@ public class ToolsUI extends JPanel {
     setLayout(new BorderLayout());
     add(tabbedPane, BorderLayout.CENTER);
 
-    // nested tab UI
+    // nested tab - iosp
     bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
     iospTabPane.addTab("BUFR", bufrPanel);
     iospTabPane.addChangeListener(new ChangeListener() {
@@ -200,7 +195,29 @@ public class ToolsUI extends JPanel {
         if (c instanceof JLabel) {
           int idx = iospTabPane.getSelectedIndex();
           String title = iospTabPane.getTitleAt(idx);
-          makeComponentNested(iospTabPane, title);
+          makeComponent(iospTabPane, title);
+        }
+      }
+    });
+
+    // nested tab - features
+    gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
+    ftTabPane.addTab("Grids", gridPanel);
+    ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
+    ftTabPane.addTab("PointObs", new JLabel("PointObs"));
+    ftTabPane.addTab("StationObs", new JLabel("StationObs"));
+    ftTabPane.addTab("Trajectory", new JLabel("Trajectory"));
+    ftTabPane.addTab("Images", new JLabel("Images"));
+    ftTabPane.addTab("Fmrc", new JLabel("Fmrc"));
+    ftTabPane.addTab("Radial", new JLabel("Radial"));
+    ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
+    ftTabPane.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        Component c = ftTabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = ftTabPane.getSelectedIndex();
+          String title = ftTabPane.getTitleAt(idx);
+          makeComponent(ftTabPane, title);
         }
       }
     });
@@ -212,17 +229,19 @@ public class ToolsUI extends JPanel {
     setDebugFlags();
   }
 
-  // deffered creation of components to minimize startup
-  private void makeComponent(String title) {
+  // deferred creation of components to minimize startup
+  private void makeComponent(JTabbedPane parent, String title) {
+    if (parent == null) parent = tabbedPane;
+
     // find the correct index
-    int n = tabbedPane.getTabCount();
+    int n = parent.getTabCount();
     int idx;
     for (idx = 0; idx < n; idx++) {
-      String cTitle = tabbedPane.getTitleAt(idx);
+      String cTitle = parent.getTitleAt(idx);
       if (cTitle.equals(title)) break;
     }
     if (idx >= n) {
-      if (debugTab) System.out.println("tabbedPane cant find " + title);
+      if (debugTab) System.out.println("Cant find " + title+" in "+parent);
       return;
     }
 
@@ -235,6 +254,10 @@ public class ToolsUI extends JPanel {
       ncmlPanel = new NcmlPanel((PreferencesExt) mainPrefs.node("NcML"));
       c = ncmlPanel;
 
+    } else  if (title.equals("BUFR")) {
+      bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
+      c = bufrPanel;
+
     } else if (title.equals("CoordSys")) {
       coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
       c = coordSysPanel;
@@ -246,6 +269,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("Fmrc")) {
       fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc"));
       c = fmrcPanel;
+
+    } else if (title.equals("FeatureScan")) {
+      ftPanel = new FeaturePanel((PreferencesExt) mainPrefs.node("ftPanel"));
+      c = ftPanel;
 
     } else if (title.equals("Radial")) {
       radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
@@ -312,11 +339,11 @@ public class ToolsUI extends JPanel {
       return;
     }
 
-    tabbedPane.setComponentAt(idx, c);
+    parent.setComponentAt(idx, c);
     if (debugTab) System.out.println("tabbedPane changed " + title + " added ");
   }
 
-  // deffered creation of components to minimize startup
+  /* deffered creation of components to minimize startup
   private void makeComponentNested(JTabbedPane parent, String title) {
     // find the correct index
     int n = parent.getTabCount();
@@ -342,7 +369,7 @@ public class ToolsUI extends JPanel {
 
     parent.setComponentAt(idx, c);
     if (debugTab) System.out.println("tabbedPaneNested changed " + title + " added ");
-  }
+  } */
 
 
   private void makeMenuBar() {
@@ -661,24 +688,25 @@ public class ToolsUI extends JPanel {
     //  mainPrefs.putBeanObject(DEBUG_FRAME_SIZE, debugWindow.getBounds());
     //}
 
-    if (viewerPanel != null) viewerPanel.save();
     if (bufrPanel != null) bufrPanel.save();
     if (coordSysPanel != null) coordSysPanel.save();
+    if (ftPanel != null) ftPanel.save();
+    if (fmrcPanel != null) fmrcPanel.save();
+    if (geotiffPanel != null) geotiffPanel.save();
+    if (gridPanel != null) gridPanel.save();
+    if (imagePanel != null) imagePanel.save();
     if (ncdumpPanel != null) ncdumpPanel.save();
     if (ncmlPanel != null) ncmlPanel.save();
-    if (imagePanel != null) imagePanel.save();
-    if (gridPanel != null) gridPanel.save();
-    if (fmrcPanel != null) fmrcPanel.save();
-    if (radialPanel != null) radialPanel.save();
-    if (pointObsPanel != null) pointObsPanel.save();
-    if (stationObsPanel != null) stationObsPanel.save();
     if (pointFeaturePanel != null) pointFeaturePanel.save();
+    if (pointObsPanel != null) pointObsPanel.save();
+    if (radialPanel != null) radialPanel.save();
+    if (stationObsPanel != null) stationObsPanel.save();
     if (stationRadialPanel != null) stationRadialPanel.save();
     if (trajTablePanel != null) trajTablePanel.save();
     if (threddsUI != null) threddsUI.storePersistentData();
     if (unitsPanel != null) unitsPanel.save();
     if (urlPanel != null) urlPanel.save();
-    if (geotiffPanel != null) geotiffPanel.save();
+    if (viewerPanel != null) viewerPanel.save();
   }
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -752,32 +780,32 @@ public class ToolsUI extends JPanel {
     }
 
     if (threddsData.dataType == FeatureType.GRID) {
-      makeComponent("Grids");
+      makeComponent(ftTabPane, "Grids");
       gridPanel.setDataset((NetcdfDataset) threddsData.tds.getNetcdfFile());
       tabbedPane.setSelectedComponent(gridPanel);
 
     } else if (threddsData.dataType == FeatureType.IMAGE) {
-      makeComponent("Images");
+      makeComponent(ftTabPane, "Images");
       imagePanel.setImageLocation(threddsData.imageURL);
       tabbedPane.setSelectedComponent(imagePanel);
 
     } else if (threddsData.dataType == FeatureType.RADIAL) {
-      makeComponent("Radial");
+      makeComponent(ftTabPane, "Radial");
       radialPanel.setDataset((RadialDatasetSweep) threddsData.tds);
       tabbedPane.setSelectedComponent(radialPanel);
 
     } else if (threddsData.dataType == FeatureType.POINT) {
-      makeComponent("PointObs");
+      makeComponent(ftTabPane, "PointObs");
       pointObsPanel.setPointObsDataset((PointObsDataset) threddsData.tds);
       tabbedPane.setSelectedComponent(pointObsPanel);
 
     } else if (threddsData.dataType == FeatureType.STATION) {
-      makeComponent("StationObs");
+      makeComponent(ftTabPane, "StationObs");
       stationObsPanel.setStationObsDataset((StationObsDataset) threddsData.tds);
       tabbedPane.setSelectedComponent(stationObsPanel);
 
     } else if (threddsData.dataType == FeatureType.STATION_RADIAL) {
-      makeComponent("StationRadial");
+      makeComponent(ftTabPane, "StationRadial");
       stationRadialPanel.setStationRadialDataset((StationRadarCollectionImpl) threddsData.tds);
       tabbedPane.setSelectedComponent(stationRadialPanel);
 
@@ -811,7 +839,7 @@ public class ToolsUI extends JPanel {
   } */
 
   private void showInViewer(NetcdfDataset ds) {
-    makeComponent("Viewer");
+    makeComponent(tabbedPane, "Viewer");
     viewerPanel.setDataset(ds);
     tabbedPane.setSelectedComponent(viewerPanel);
   }
@@ -1168,76 +1196,7 @@ public class ToolsUI extends JPanel {
       task = new GetDataTask(runner, filename, null);
       stopButton.startProgressMonitorTask(task);
     }
-
-    /* private class NCdumpTask extends thredds.ui.ProgressMonitorTask implements ucar.nc2.util.CancelTask {
-      NetcdfFile ncfile;
-      String contents, command;
-
-      NCdumpTask(NetcdfFile ncfile, String command) {
-        this.ncfile = ncfile;
-        this.command = command;
-      }
-
-      public void run() {
-        // LOOK: might be able to use JTextArea.read(Reader)
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(100000);
-        PrintStream ps = new PrintStream(bos);
-        try {
-          NCdump.print(ncfile, command, ps, this);
-
-        } catch (Exception e) {
-          e.printStackTrace(new PrintStream(bos));
-          contents = bos.toString();
-
-          setError(e.getMessage());
-          done = true;
-          return;
-        }
-
-        if (cancel)
-          ps.println("\n***Cancelled by User");
-        contents = bos.toString();
-
-        success = !cancel;
-        done = true;
-      }
-    } */
   }
-
-  /* private class WcsPanel extends OpPanel {
-   private boolean ready = true;
-   private StopButton stopButton;
-   NetcdfFile ncfile = null;
-
-   WcsPanel(PreferencesExt prefs) {
-     super(prefs, "WCS server", "WCS server:");
-   }
-
-   boolean process(Object o) {
-     String name = (String) o;
-
-     boolean err = false;
-     try {
-       GridDataset gd = GridDataset.open( name);
-       WcsDataset wcs = new WcsDataset( gd);
-       ta.setText( wcs.getCapabilities());
-
-     } catch (IOException ioe) {
-       ta.setText("Cant open " + name);
-       err = true;
-
-     } catch (Exception ioe) {
-       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-       ioe.printStackTrace();
-       ioe.printStackTrace(new PrintStream(bos));
-       ta.setText(bos.toString());
-       err = true;
-     }
-
-     return !err;
-   }
- } */
-
 
   private class UnitsPanel extends JPanel {
     PreferencesExt prefs;
@@ -2251,7 +2210,7 @@ public class ToolsUI extends JPanel {
           NetcdfFile ds = dsViewer.getDataset();
           if (ds != null) {
             if (ncdumpPanel == null) {
-              makeComponent("NCDump");
+              makeComponent(tabbedPane, "NCDump");
             }
             ncdumpPanel.setNetcdfFile(ds);
             tabbedPane.setSelectedComponent(ncdumpPanel);
@@ -2577,6 +2536,50 @@ public class ToolsUI extends JPanel {
     }
   }
 
+  /////////////////////////////////////////////////////////////////////
+  private class FeaturePanel extends OpPanel {
+    ucar.unidata.io.RandomAccessFile raf  = null;
+    FeatureDatasetTable ftTable;
+    final FileManager dirChooser = new FileManager(parentFrame);
+
+    boolean useDefinition = false;
+    JComboBox defComboBox;
+    IndependentWindow defWindow;
+    AbstractButton defButt;
+
+    FeaturePanel(PreferencesExt p) {
+      super(p, "dir:", false, false);
+      ftTable = new FeatureDatasetTable(prefs);
+      add(ftTable, BorderLayout.CENTER);
+
+      dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      dirChooser.setCurrentDirectory( prefs.get("currDir", "."));
+      AbstractAction fileAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          String filename = dirChooser.chooseFilename();
+          if (filename == null) return;
+          cb.setSelectedItem(filename);
+        }
+      };
+      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
+      BAMutil.addActionToContainer(buttPanel, fileAction);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      return ftTable.setScanDirectory(command);
+    }
+
+    void save() {
+      ftTable.save();
+      prefs.put("currDir", dirChooser.getCurrentDirectory());
+      super.save();
+    }
+
+  }
+
+  ////////////////////////////////////////////////////////////////////////
+
   private class PointFeaturePanel extends OpPanel {
     PointFeatureDatasetViewer pfViewer;
     JSplitPane split;
@@ -2629,7 +2632,7 @@ public class ToolsUI extends JPanel {
 
     void doWriteCF( String filename) {
       try {
-        int count = WriterCFPointObsDataset.write(pfDataset, filename);
+        int count = WriterCFPointObsDataset.writePointFeatureCollection(pfDataset, filename);
         JOptionPane.showMessageDialog(this, count+" records written");
       } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
@@ -3169,7 +3172,7 @@ public class ToolsUI extends JPanel {
     SwingUtilities.invokeLater(new Runnable() { // do it in the swing event thread
 
       public void run() {
-        ui.makeComponent("THREDDS");
+        ui.makeComponent(null, "THREDDS");
         ui.threddsUI.setDataset(wantDataset);
         ui.tabbedPane.setSelectedComponent(ui.threddsUI);
       }

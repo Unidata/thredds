@@ -21,7 +21,6 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.point.standard.CoordSysEvaluator;
 import ucar.nc2.ft.point.standard.plug.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants.FeatureType;
@@ -32,7 +31,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 /**
- * Analyzes the coordinate systems of a dataset to try to identify the Feature Type.
+ * Analyzes the coordinate systems of a dataset to try to identify the Feature Type and the
+ *   structure of the data.
  * Used by PointDatasetStandardFactory.
  *
  * @author caron
@@ -41,30 +41,30 @@ import java.lang.reflect.Method;
 public class TableAnalyzer {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableAnalyzer.class);
 
-  static private Map<String, Analyzer> conventionHash = new HashMap<String, Analyzer>();
   static private List<Analyzer> conventionList = new ArrayList<Analyzer>();
   static private boolean userMode = false;
+  static private boolean debug = true;
 
   // search in the order added
   static {
-    registerAnalyzer("FslWindProfiler", FslWindProfiler.class);
-    registerAnalyzer("IRIDL", Iridl.class);
-    registerAnalyzer("MADIS surface observations, v1.0", Madis.class);
-    registerAnalyzer("Ndbc", Ndbc.class);
-    registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class);
-    registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeature.class);
+    registerAnalyzer("CF-1", CFpointObs.class, new ConventionNameOk() {
+      public boolean isMatch(String convName, String wantName) {
+        return convName.startsWith(wantName);
+      }
+    });
+    registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class, null);
 
-    registerAnalyzer("CF-1.0", CFpointObs.class);
-    registerAnalyzer("CF-1.1", CFpointObs.class);
-    registerAnalyzer("CF-1.2", CFpointObs.class);
-    registerAnalyzer("CF-1.3", CFpointObs.class);
-    registerAnalyzer("CF-1.4", CFpointObs.class);
+    registerAnalyzer("FslWindProfiler", FslWindProfiler.class, null);
+    registerAnalyzer("IRIDL", Iridl.class, null);
+    registerAnalyzer("MADIS surface observations, v1.0", Madis.class, null);
+    registerAnalyzer("Ndbc", Ndbc.class, null);
+    registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeature.class, null);
 
     // further calls to registerConvention are by the user
     userMode = true;
   }
 
-  static public void registerAnalyzer(String conventionName, Class c) {
+  static public void registerAnalyzer(String conventionName, Class c, ConventionNameOk match) {
     if (!(TableConfigurer.class.isAssignableFrom(c)))
       throw new IllegalArgumentException("Class " + c.getName() + " must implement TableConfigurer");
 
@@ -78,27 +78,37 @@ public class TableAnalyzer {
       throw new IllegalArgumentException("TableConfigurer Class " + c.getName() + " is not accessible");
     }
 
-    // user stuff gets put at top
-    Analyzer anal = new Analyzer(conventionName, c, tc);
-    if (userMode)
+    Analyzer anal = new Analyzer(conventionName, c, tc, match);
+    if (userMode) // user stuff gets put at top
       conventionList.add(0, anal);
     else
       conventionList.add(anal);
+  }
 
-    // user stuff will override here
-    conventionHash.put(conventionName, anal);
+  static private interface ConventionNameOk {
+    boolean isMatch(String convName, String wantName);
   }
 
   static private class Analyzer {
     String convName;
-    Class convClass;
-    TableConfigurer testObject;
+    Class confClass;
+    TableConfigurer confInstance;
+    ConventionNameOk match;
 
-    Analyzer(String convName, Class convClass, TableConfigurer testObject) {
+    Analyzer(String convName, Class confClass, TableConfigurer confInstance, ConventionNameOk match) {
       this.convName = convName;
-      this.convClass = convClass;
-      this.testObject = testObject;
+      this.confClass = confClass;
+      this.confInstance = confInstance;
+      this.match = match;
     }
+  }
+
+  static private Analyzer matchAnalyser(String convName) {
+    for (Analyzer anal : conventionList) {
+      if ((anal.match == null) && anal.convName.equalsIgnoreCase(convName)) return anal;
+      if ((anal.match != null) && anal.match.isMatch(convName, anal.convName)) return anal;
+    }
+    return null;
   }
 
   /**
@@ -110,6 +120,7 @@ public class TableAnalyzer {
    * @throws IOException on read error
    */
   static public TableAnalyzer factory(FeatureType wantFeatureType, NetcdfDataset ds) throws IOException {
+    String convUsed = null;
 
     // look for the Conventions attribute
     String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
@@ -122,7 +133,11 @@ public class TableAnalyzer {
       convName = convName.trim();
 
       // look for Convention parsing class
-      anal = conventionHash.get(convName);
+      anal = matchAnalyser(convName);
+      if (anal != null) {
+        convUsed = convName;
+        if (debug) System.out.println("  TableConfigurer found using convName "+convName);        
+      }
 
       // now look for comma or semicolon or / delimited list
       if (anal == null) {
@@ -148,7 +163,8 @@ public class TableAnalyzer {
             for (String name : names) {
               if (name.equalsIgnoreCase(conv.convName)) {
                 anal = conv;
-                convName = name;
+                convUsed = name;
+                if (debug) System.out.println("  TableConfigurer found using convName "+convName);
               }
             }
             if (anal != null) break;
@@ -160,9 +176,8 @@ public class TableAnalyzer {
     // look for ones that dont use Convention attribute, in order added.
     // call method isMine() using reflection.
     if (anal == null) {
-      convName = null;
       for (Analyzer conv : conventionList) {
-        Class c = conv.convClass;
+        Class c = conv.confClass;
         Method m;
 
         try {
@@ -172,9 +187,11 @@ public class TableAnalyzer {
         }
 
         try {
-          Boolean result = (Boolean) m.invoke(conv.testObject, wantFeatureType, ds);
+          Boolean result = (Boolean) m.invoke(conv.confInstance, wantFeatureType, ds);
+          if (debug) System.out.println("  TableConfigurer.isMine "+c.getName()+ " result = " + result);
           if (result) {
             anal = conv;
+            convUsed = conv.convName;
             break;
           }
         } catch (Exception ex) {
@@ -187,7 +204,7 @@ public class TableAnalyzer {
     TableConfigurer tc = null;
     if (anal != null) {
       try {
-        tc = (TableConfigurer) anal.convClass.newInstance();
+        tc = (TableConfigurer) anal.confClass.newInstance();
       } catch (InstantiationException e) {
         log.error("TableConfigurer create failed", e);
         return null;
@@ -200,11 +217,21 @@ public class TableAnalyzer {
     // Create a TableAnalyzer with this TableConfigurer (may be null)
     TableAnalyzer analyzer = new TableAnalyzer(ds, tc);
 
-    // add the convention name used
-    if (convName != null)
-      analyzer.setConventionUsed(convName);
+    if (convName == null)
+      analyzer.userAdvice.format(" No 'Conventions' global attribute.\n");
     else
-      analyzer.userAdvice.format(" No 'Convention' global attribute.\n");
+      analyzer.userAdvice.format(" Conventions global attribute = "+convName+".\n");
+
+
+    // add the convention name used
+    if (convUsed != null) {
+      analyzer.setConventionUsed(convUsed);
+      if (!convUsed .equals(convName))
+        analyzer.userAdvice.format(" Analyser used = "+convUsed+".\n");
+
+    } else {
+      analyzer.userAdvice.format(" No Analyser found, using default.\n");
+    }
 
     // construct the nested table object
     analyzer.analyze(wantFeatureType);
@@ -260,7 +287,7 @@ public class TableAnalyzer {
   /////////////////////////////////////////////////////////
 
   /**
-   * Make a nested table object for the dataset.
+   * Make a FlattenedTable object for the dataset.
    * @param wantFeatureType want this FeatureType
    * @throws IOException on read error
    */
@@ -291,7 +318,7 @@ public class TableAnalyzer {
     while (iter.hasNext()) {
       Variable v = iter.next();
       if (v instanceof Structure) {  // handles Sequences too
-        TableConfig st = new TableConfig(FlattenedTable.TableType.Structure, v.getName());
+        TableConfig st = new TableConfig(TableType.Structure, v.getName());
         CoordSysEvaluator.findCoords(st, ds);
 
         addTable(st);
@@ -315,7 +342,7 @@ public class TableAnalyzer {
 
     if (dimSet.size() == 1) {
       Dimension obsDim = (Dimension) dimSet.toArray()[0];
-      TableConfig st = new TableConfig(FlattenedTable.TableType.PseudoStructure, obsDim.getName());
+      TableConfig st = new TableConfig(TableType.PseudoStructure, obsDim.getName());
       st.dim = obsDim;
       CoordSysEvaluator.findCoords(st, ds);
 
@@ -327,11 +354,11 @@ public class TableAnalyzer {
   protected void findNestedStructures(Structure s, TableConfig structTable) {
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure) {  // handles Sequences too
-        TableConfig nestedTable = new TableConfig(FlattenedTable.TableType.Structure, v.getName());
+        TableConfig nestedTable = new TableConfig(TableType.Structure, v.getName());
         addTable(nestedTable);
         structTable.addChild(nestedTable);
 
-        nestedTable.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
+        nestedTable.join = new TableConfig.JoinConfig(JoinType.NestedStructure);
         joins.add(nestedTable.join);
 
         findNestedStructures((Structure) v, nestedTable); // look for nested structures
@@ -455,6 +482,10 @@ public class TableAnalyzer {
     for (FlattenedTable nt : leaves) {
       nt.show(sf);
     }
+  }
+
+  public String getImplementationName() {
+    return (tc != null) ? tc.getClass().getSimpleName() : "defaultAnalyser";
   }
 
   public void getDetailInfo(java.util.Formatter sf) {

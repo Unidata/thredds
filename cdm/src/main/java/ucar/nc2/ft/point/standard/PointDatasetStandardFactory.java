@@ -128,14 +128,17 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         dataVariables.addAll(flatTable.getDataVariables());
 
         featureType = flatTable.getFeatureType(); // hope they're all the same
-        if (flatTable.getFeatureType() == FeatureType.STATION)
+        if (flatTable.getFeatureType() == FeatureType.POINT)
+          featureCollections.add(new StandardPointCollectionImpl(flatTable, timeUnit));
+
+        else if (flatTable.getFeatureType() == FeatureType.STATION)
           featureCollections.add(new StandardStationCollectionImpl(timeUnit, flatTable));
 
         else if (flatTable.getFeatureType() == FeatureType.STATION_PROFILE)
           featureCollections.add(new StandardStationProfileCollectionImpl(flatTable, timeUnit));
 
-        else if (flatTable.getFeatureType() == FeatureType.POINT)
-          featureCollections.add(new StandardPointCollectionImpl(flatTable, timeUnit));
+        else if (flatTable.getFeatureType() == FeatureType.TRAJECTORY)
+          featureCollections.add(new StandardTrajectoryCollectionImpl(flatTable, timeUnit));
       }
 
       if (featureCollections.size() == 0)
@@ -153,6 +156,13 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     @Override
     public FeatureType getFeatureType() {
       return featureType;
+    }
+
+    @Override
+    public String getImplementationName() {
+      if (analyser != null)
+        return analyser.getImplementationName()  + "/" +getClass().getSimpleName();
+      return super.getImplementationName();
     }
   }
 }

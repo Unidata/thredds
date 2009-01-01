@@ -21,6 +21,8 @@
 package ucar.nc2.ft.point.writer;
 
 import ucar.ma2.DataType;
+import ucar.ma2.Section;
+import ucar.nc2.VariableSimpleIF;
 
 /**
  * Point Data Variables for CFPointWriter
@@ -33,6 +35,17 @@ public class PointObVar {
   private String units;
   private String desc;
   private DataType dtype;
+  private int len; // allow 1D
+
+  public PointObVar() {}
+
+  public PointObVar(VariableSimpleIF v) {
+    setName(v.getShortName());
+    setUnits(v.getUnitsString());
+    setDesc(v.getDescription());
+    setDataType(v.getDataType());
+    //if (v.getRank() > 0) setLen( v.getShape()[0]);
+  }
 
   public String getName() {
     return name;
@@ -65,4 +78,13 @@ public class PointObVar {
   public void setDataType(DataType dtype) {
     this.dtype = dtype;
   }
+
+  public int getLen() {
+    return len;
+  }
+
+  public void setLen(int len) {
+    this.len = len;
+  }
+  
 }

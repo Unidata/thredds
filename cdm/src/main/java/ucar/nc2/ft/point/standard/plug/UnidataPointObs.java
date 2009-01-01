@@ -20,7 +20,7 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.ft.point.standard.*;
-import ucar.nc2.ft.point.standard.plug.UnidataPointDatasetHelper;
+import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
@@ -40,10 +40,7 @@ public class UnidataPointObs implements TableConfigurer {
     if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION) && (wantFeatureType != FeatureType.POINT))
       return false;
 
-    FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", null);
-    if (ft == null )
-      ft = Evaluator.getFeatureType(ds, ":cdm_data_type", null);
-
+    FeatureType ft = FeatureDatasetFactoryManager.findFeatureType( ds);
     if ((ft == null) || ((ft != FeatureType.STATION) && (ft != FeatureType.POINT)))
       return false;
 
@@ -67,7 +64,7 @@ public class UnidataPointObs implements TableConfigurer {
       errlog.format("Must have an Observation dimension: named by global attribute 'observationDimension', or unlimited dimension");
       return null;
     }
-    FlattenedTable.TableType obsStructureType = obsDim.isUnlimited() ? FlattenedTable.TableType.Structure : FlattenedTable.TableType.PseudoStructure;
+    TableType obsStructureType = obsDim.isUnlimited() ? TableType.Structure : TableType.PseudoStructure;
 
     FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", null);
     if (ft == null )
@@ -117,13 +114,13 @@ public class UnidataPointObs implements TableConfigurer {
         return null;
       }
 
-      TableConfig stationTable = new TableConfig(FlattenedTable.TableType.PseudoStructure, "station");
+      TableConfig stationTable = new TableConfig(TableType.PseudoStructure, "station");
       stationTable.dim = stationDim;
       stationTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, stationDim);
       stationTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, stationDim);
       stationTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, stationDim);
 
-      stationTable.join = new TableConfig.JoinConfig(Join.Type.ParentIndex);
+      stationTable.join = new TableConfig.JoinConfig(JoinType.ParentIndex);
       stationTable.join.parentIndex = parentIndexVar;
       obsTable.addChild(stationTable);
       stationTable.featureType = FeatureType.POINT;
@@ -150,7 +147,7 @@ public class UnidataPointObs implements TableConfigurer {
     boolean isMultiDim = !isForwardLinkedList && !isBackwardLinkedList && !isContiguousList;
 
     // station table
-    TableConfig stationTable = new TableConfig(FlattenedTable.TableType.PseudoStructure, "station");
+    TableConfig stationTable = new TableConfig(TableType.PseudoStructure, "station");
     stationTable.featureType = ft;
     stationTable.dim = stationDim;
     stationTable.limit = Evaluator.getVariableName(ds, "number_stations", errlog);
@@ -166,31 +163,31 @@ public class UnidataPointObs implements TableConfigurer {
     // obs table
     TableConfig obsTable;
     if (isMultiDim) {
-      obsTable = new TableConfig(FlattenedTable.TableType.MultiDim, "obs");
+      obsTable = new TableConfig(TableType.MultiDim, "obs");
       obsTable.outer = stationDim;
       obsTable.dim = obsDim;
-      obsTable.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
+      obsTable.join = new TableConfig.JoinConfig(JoinType.MultiDim);
 
     } else {
 
       if (obsDim.isUnlimited())
-        obsTable = new TableConfig(FlattenedTable.TableType.Structure, "record");
+        obsTable = new TableConfig(TableType.Structure, "record");
       else
-        obsTable = new TableConfig(FlattenedTable.TableType.PseudoStructure, obsDim.getName());
+        obsTable = new TableConfig(TableType.PseudoStructure, obsDim.getName());
 
       TableConfig.JoinConfig join;
       if (isForwardLinkedList) {
-        join = new TableConfig.JoinConfig(Join.Type.ForwardLinkedList);
+        join = new TableConfig.JoinConfig(JoinType.ForwardLinkedList);
         join.start = firstVar;
         join.next = nextVar;
 
       } else if (isBackwardLinkedList) {
-        join = new TableConfig.JoinConfig(Join.Type.BackwardLinkedList);
+        join = new TableConfig.JoinConfig(JoinType.BackwardLinkedList);
         join.start = lastVar;
         join.next = prevVar;
 
       } else {
-        join = new TableConfig.JoinConfig(Join.Type.ContiguousList);
+        join = new TableConfig.JoinConfig(JoinType.ContiguousList);
         join.start = firstVar;
       }
 

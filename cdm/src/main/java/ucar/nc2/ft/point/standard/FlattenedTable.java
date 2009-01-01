@@ -20,10 +20,7 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
-import ucar.nc2.ft.EarthLocation;
-import ucar.nc2.ft.EarthLocationImpl;
-import ucar.nc2.ft.Station;
-import ucar.nc2.ft.StationImpl;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StructureDataIteratorLimited;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
@@ -38,7 +35,7 @@ import java.text.ParseException;
 
 /**
  * Implements "nested table" views of point feature datasets.
- * A FlattenedTable is typically initialized with a TableConfig, which encapsolates info.
+ * A FlattenedTable is typically initialized with a TableConfig.
  * <p/>
  * A flattened (aka nested) table starts with a leaf table (no children), plus all of its parents.
  * There is a "join" for each child and parent.
@@ -84,6 +81,10 @@ public class FlattenedTable {
       t = t.parent;
       if (featureType == null) featureType = t.getFeatureType();
       nestedLevels++;
+    }
+
+    if (featureType == null) {
+      featureType = FeatureDatasetFactoryManager.findFeatureType( ds);
     }
 
     if (featureType == null) {
@@ -308,13 +309,37 @@ public class FlattenedTable {
     return leaf.parent.join.getStructureDataIterator(stationData, bufferSize);
   }
 
-  // ft.getStationProfileObsDataIterator(sdataList, bufferSize)
   public StructureDataIterator getStationProfileObsDataIterator(List<StructureData> structList, int bufferSize) throws IOException {
     if (getFeatureType() != FeatureType.STATION_PROFILE)
       throw new UnsupportedOperationException("Not a StationProfileFeatureCollection");
 
     StructureData profileData = structList.get(1);
     return leaf.join.getStructureDataIterator(profileData, bufferSize);
+  }
+
+  // Trajectory
+  public StructureDataIterator getTrajectoryDataIterator(int bufferSize) throws IOException {
+
+    if (!(getFeatureType() == FeatureType.TRAJECTORY))
+      throw new UnsupportedOperationException("Not a Trajectory");
+
+    Table stationTable = root;
+    StructureDataIterator siter = stationTable.getStructureDataIterator(bufferSize);
+
+    if (stationTable.config.limit != null) {
+      Variable limitV = ds.findVariable(stationTable.config.limit);
+      int limit = limitV.readScalarInt();
+      return new StructureDataIteratorLimited(siter, limit);
+    }
+
+    return siter;
+  }
+
+  public StructureDataIterator getTrajectoryObsDataIterator(StructureData trajData, int bufferSize) throws IOException {
+    if (getFeatureType() != FeatureType.TRAJECTORY)
+      throw new UnsupportedOperationException("Not a Trajectory");
+
+    return leaf.parent.join.getStructureDataIterator(trajData, bufferSize);
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -413,14 +438,10 @@ public class FlattenedTable {
   }
 
   public boolean needParentJoin() {
-    return (leaf.join != null) && (leaf.join.config != null) && (leaf.join.config.joinType == Join.Type.ParentIndex);
+    return (leaf.join != null) && (leaf.join.config != null) && (leaf.join.config.joinType == JoinType.ParentIndex);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////
-
-  public enum TableType {
-    Structure, PseudoStructure, MultiDim, ArrayStructure, Singleton, Construct
-  }
 
   /**
    * A generalization of a Structure. Main function is to return a StructureDataIterator
@@ -452,7 +473,8 @@ public class FlattenedTable {
           struct = (Structure) ds.findVariable(config.name);
         }
 
-        assert struct != null : "cant find Structure Variable = " + config.name;
+        if (struct == null) return; // bail out
+        // assert struct != null : "cant find Structure Variable = " + config.name;
         config.dim = struct.getDimension(0);
         for (Variable v : struct.getVariables())
           this.cols.add(v);

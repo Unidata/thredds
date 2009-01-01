@@ -37,6 +37,7 @@ import java.util.StringTokenizer;
  */
 
 public class MADISStation extends CoordSysBuilder {
+  
   public MADISStation() {
     this.conventionName = "MADIS_Station_1.0";
   }

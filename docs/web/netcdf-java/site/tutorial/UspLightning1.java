@@ -185,7 +185,7 @@ these are long-range detections.
     ncfile.addAttribute(null, new Attribute("history","Read directly by Netcdf Java IOSP"));
 
     ncfile.addAttribute(null, new Attribute("Conventions","Unidata Observation Dataset v1.0"));
-    ncfile.addAttribute(null, new Attribute("cdm_datatype","Point"));
+    ncfile.addAttribute(null, new Attribute("cdm_data_type","Point"));
     ncfile.addAttribute(null, new Attribute("observationDimension","record"));
 
     MAMath.MinMax mm = MAMath.getMinMax(dateArray);

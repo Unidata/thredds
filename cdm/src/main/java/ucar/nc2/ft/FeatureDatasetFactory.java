@@ -35,12 +35,14 @@ import java.util.Formatter;
  */
 public interface FeatureDatasetFactory {
 
-  /** Determine if the factory can open this dataset as an instance of the given feature type
-   * @param ftype can factory open as this feature type? If null, can factory open as any feature type?
+  /**
+   * Determine if the factory can open this dataset as an instance of the given feature type
+   * @param wantFeatureType can factory open as this feature type? If null, can factory open as any feature type?
    * @param ncd examine this NetcdfDataset.
    * @return true if this class knows how to create a FeatureDataset out of this NetcdfDataset.
+   * @throws java.io.IOException on read error
    */
-  public boolean isMine( FeatureType ftype, NetcdfDataset ncd) throws IOException;
+  public boolean isMine( FeatureType wantFeatureType, NetcdfDataset ncd) throws IOException;
 
   /**
    * Copy constructor.

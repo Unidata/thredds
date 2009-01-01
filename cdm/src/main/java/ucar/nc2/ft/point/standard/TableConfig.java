@@ -27,15 +27,15 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * This encapsolates the info needed by TableAnalyzer to handle point feature "nested table" datasets.
- * A TableConfigurer creates one of these for a specific dataset convention.
+ * This encapsolates the info needed by FlattenedTable to handle point feature "nested table" datasets.
+ * A TableAnalyzer creates these from a specific dataset convention.
  * <p> a TableConfig has a tree of TableConfigs, representing the join of parent and children tables.
  *
  * @author caron
  * @since Apr 23, 2008
  */
 public class TableConfig {
-  public FlattenedTable.TableType type;
+  public TableType type;
   public String name;
   public TableConfig parent;
   public JoinConfig join; // the join to its parent
@@ -61,9 +61,9 @@ public class TableConfig {
   /**
    * Constructor
    * @param type  type of join
-   * @param name  name of parent table
+   * @param name  name of table
    */
-  public TableConfig(FlattenedTable.TableType type, String name) {
+  public TableConfig(TableType type, String name) {
     this.type = type;
     this.name = name;
   }
@@ -75,13 +75,13 @@ public class TableConfig {
   }
 
   public static class JoinConfig {
-    public Join.Type joinType;
+    public JoinType joinType;
     public Join override;
 
-    // for linked and contiguous lists
+    // variable names for linked and contiguous lists
     public String start, next, numRecords, parentIndex;
 
-    public JoinConfig(Join.Type joinType) {
+    public JoinConfig(JoinType joinType) {
       this.joinType = joinType;
     }
   }

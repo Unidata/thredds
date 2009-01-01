@@ -150,4 +150,10 @@ public interface FeatureDataset {
    */
   public void getDetailInfo(java.util.Formatter sf);
 
+  /**
+   * Show who is implementing
+   * @return name of implementor
+   */
+  public String getImplementationName();
+
 }

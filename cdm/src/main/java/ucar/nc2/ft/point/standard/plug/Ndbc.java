@@ -83,7 +83,7 @@ public class Ndbc implements TableConfigurer {
       errlog.format("Must have an Observation dimension: unlimited dimension, or from Time Coordinate");
       return null;
     }
-     FlattenedTable.TableType obsStructureType = obsDim.isUnlimited() ? FlattenedTable.TableType.Structure : FlattenedTable.TableType.PseudoStructure;
+     TableType obsStructureType = obsDim.isUnlimited() ? TableType.Structure : TableType.PseudoStructure;
 
     // wants a Point
     if ((wantFeatureType == FeatureType.POINT)) {
@@ -94,7 +94,7 @@ public class Ndbc implements TableConfigurer {
     }
 
     // otherwise, make it a Station
-    TableConfig nt = new TableConfig(FlattenedTable.TableType.Singleton, "station");
+    TableConfig nt = new TableConfig(TableType.Singleton, "station");
     nt.featureType = FeatureType.STATION;
 
     nt.lat = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lat);
@@ -110,7 +110,7 @@ public class Ndbc implements TableConfigurer {
     obs.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     nt.addChild(obs);
 
-    obs.join = new TableConfig.JoinConfig(Join.Type.Singleton);
+    obs.join = new TableConfig.JoinConfig(JoinType.Singleton);
 
     return nt;
   }

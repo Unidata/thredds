@@ -26,6 +26,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -54,7 +55,7 @@ import java.io.IOException;
  * @author caron
  */
 
-public class GridDataset implements ucar.nc2.dt.GridDataset {
+public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.FeatureDataset {
   private NetcdfDataset ds;
   private ArrayList<GeoGrid> grids = new ArrayList<GeoGrid>();
   private Map<String, Gridset> gridsetHash = new HashMap<String, Gridset>();
@@ -145,6 +146,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
   }
 
   // stuff to satisfy ucar.nc2.dt.TypedDataset
+
 
   public String getTitle() {
     String title = ds.findAttValueIgnoreCase(null, "title", null);
@@ -373,6 +375,27 @@ public class GridDataset implements ucar.nc2.dt.GridDataset {
     }
 
   }
+
+  ////////////////////////////
+  // for ucar.nc2.ft.FeatureDataset
+
+  public FeatureType getFeatureType() {
+    return FeatureType.GRID;
+  }
+
+  public DateRange getDateRange() {
+    if (dateRangeMax == null) makeRanges();
+    return dateRangeMax;
+  }
+
+  public void getDetailInfo(Formatter sf) {
+    sf.format("%s", getDetailInfo());
+  }
+
+  public String getImplementationName() {
+    return ds.getConventionUsed();
+  }
+
 
   /////////////////////////////
   // deprecated
