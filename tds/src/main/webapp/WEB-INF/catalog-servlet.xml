@@ -7,14 +7,16 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <bean id="xmlController" class="thredds.server.root.XmlController" >
-    <property name="tdsContext" ref="tdsContext"/>
-    <property name="catalogSupportOnly" value="true" />
-  </bean>
-
-  <bean id="htmlController" class="thredds.server.root.HtmlController" >
+  <bean id="xmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="catalogSupportOnly" value="true"/>
+    <property name="htmlView" value="false"/>
+  </bean>
+
+  <bean id="htmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="catalogSupportOnly" value="true"/>
+    <property name="htmlView" value="true"/>
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
