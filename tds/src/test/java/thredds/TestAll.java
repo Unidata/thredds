@@ -17,6 +17,10 @@ public class TestAll
   {
     TestSuite suite = new TestSuite();
     suite.addTestSuite( thredds.servlet.TestDataRootHandler.class );
+    suite.addTestSuite( thredds.server.catalogservice.TestLocalCatalogRequest.class );
+    suite.addTestSuite( thredds.server.catalogservice.TestRemoteCatalogRequest.class );
+    suite.addTestSuite( thredds.util.TestStartsWithPathAliasReplacement.class );
+    suite.addTestSuite( thredds.util.TestStringValidateEncodeUtils.class );
     suite.addTest( thredds.util.filesource.TestAll.suite() );
 
     return suite;

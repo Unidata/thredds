@@ -30,12 +30,16 @@ public class RemoteCatalogRequestValidator implements Validator
     URI catUri = rcr.getCatalogUri();
     ValidationUtils.rejectIfEmpty( e, "catalogUri", "catalogUri.empty" );
 
-    if ( catUri != null && ! catUri.isAbsolute() )
-      e.rejectValue( "catalogUri", "catalogUri.notAbsolute",
-                     "The \"catalogUri\" field must be an absolute URI." );
-    if ( catUri != null && ! catUri.getScheme().equalsIgnoreCase( "HTTP" ))
-      e.rejectValue( "catalogUri", "catalogUri.notHttpUri",
-                     "The \"catalogUri\" field must be an HTTP URI.");
+    if ( catUri != null )
+    {
+      if ( ! catUri.isAbsolute() )
+        e.rejectValue( "catalogUri", "catalogUri.notAbsolute",
+                       "The \"catalogUri\" field must be an absolute URI." );
+      if ( catUri.getScheme() != null
+           && ! catUri.getScheme().equalsIgnoreCase( "HTTP" ))
+        e.rejectValue( "catalogUri", "catalogUri.notHttpUri",
+                       "The \"catalogUri\" field must be an HTTP URI.");
+    }
 
     // Validate "command" - not empty
     ValidationUtils.rejectIfEmpty( e, "command", "command.empty" );
