@@ -60,7 +60,7 @@ public class CoordSysTable extends JPanel {
   private JSplitPane split, split2;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
-  private StringBuilder parseInfo = new StringBuilder();
+  private Formatter parseInfo = new Formatter();
 
   public CoordSysTable(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -253,10 +253,6 @@ public class CoordSysTable extends JPanel {
     return prefs;
   }
 
-  public String getParseInfo() {
-    return parseInfo.toString();
-  }
-
   public void save() {
     varTable.saveState(false);
     csTable.saveState(false);
@@ -268,7 +264,7 @@ public class CoordSysTable extends JPanel {
 
   public void setDataset(NetcdfDataset ds) {
     this.ds = ds;
-    parseInfo.setLength(0);
+    parseInfo = new Formatter();
 
     List<VariableBean> beanList = new ArrayList<VariableBean>();
     List<AxisBean> axisList = new ArrayList<AxisBean>();
@@ -331,16 +327,17 @@ public class CoordSysTable extends JPanel {
   }
 
   private String tryGrid(VariableEnhanced v) {
-    StringBuilder buff = new StringBuilder(v.getName()).append(": ");
+    Formatter buff = new Formatter();
+    buff.format("%s:", v.getName());
     List<CoordinateSystem> csList = v.getCoordinateSystems();
     for (CoordinateSystem cs : csList) {
-      buff.append(cs.getName()).append(":");
+      buff.format("%s:", cs.getName());
       if (GridCoordSys.isGridCoordSys(buff, cs)) {
-        buff.append(" GRID ");
+        buff.format(" GRID ");
         GridCoordSys gcs = new GridCoordSys(cs, buff);
-        buff.append(gcs.isComplete(v) ? " COMPLETE" : " NOT COMPLETE");
+        buff.format(gcs.isComplete(v) ? " COMPLETE" : " NOT COMPLETE");
       } else {
-        buff.append(" NOT GRID");
+        buff.format(" NOT GRID");
       }
     }
     return buff.toString();
@@ -393,7 +390,7 @@ public class CoordSysTable extends JPanel {
           buff.append("; ");
         buff.append(cs.getName());
 
-        StringBuilder gridBuff = new StringBuilder();
+        Formatter gridBuff = new Formatter();
         if (GridCoordSys.isGridCoordSys(gridBuff, cs)) {
           GridCoordSys gcs = new GridCoordSys(cs, gridBuff);
           if (gcs.isComplete(v))

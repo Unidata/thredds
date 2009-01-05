@@ -31,7 +31,7 @@ import java.io.IOException;
  */
 public class TestMotherlode {
 
-  private static String server = "http://newmotherlode.ucar.edu:8080/thredds";
+  private static String server = "http://motherlode.ucar.edu:8081/thredds";
 
   static void ping(String url) throws IOException {
     String contents = IO.readURLcontentsWithException(server+url);

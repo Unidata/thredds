@@ -309,7 +309,7 @@ public class TestIDVdatasets {
 
   
   static public void main( String[] args)  throws Exception {
-    String server = "http://newmotherlode.ucar.edu:8080/thredds";
+    String server = "http://motherlode.ucar.edu:8081/thredds";
     if (args.length > 0)
       server = args[0];
 

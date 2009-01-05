@@ -20,7 +20,6 @@
 
 package ucar.nc2.dataset;
 
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.TimeUnit;
@@ -30,10 +29,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.util.NamedObject;
 import ucar.ma2.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.io.IOException;
 
 import ucar.nc2.units.DateRange;
@@ -50,7 +46,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private Date[] timeDates;
   private DateUnit dateUnit;
 
-  static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, StringBuilder errMessages) throws IOException {
+  static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
     if (org.getDataType() == DataType.CHAR) {
       return new CoordinateAxis1DTime(ncd, org, errMessages, org.getDimension(0).getName());
     }
@@ -68,7 +64,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @throws IOException              on read error
    * @throws IllegalArgumentException if cant convert coordinate values to a Date
    */
-  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, StringBuilder errMessages, String dims) throws IOException {
+  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims) throws IOException {
     // NetcdfDataset ds, Group group, String shortName,  DataType dataType, String dims, String units, String desc
     super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription());
     this.ncd = ncd;
@@ -98,7 +94,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       Date d = DateUnit.getStandardOrISO(coordValue);
       if (d == null) {
         if (errMessages != null)
-          errMessages.append("DateUnit cannot parse String= ").append(coordValue).append("\n");
+          errMessages.format("DateUnit cannot parse String= %s\n",coordValue);
         else
           System.out.println("DateUnit cannot parse String= " + coordValue + "\n");
 
@@ -112,7 +108,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     setCachedData(sdata, true);
   }
 
-  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, StringBuilder errMessages) throws IOException {
+  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
     super(ncd, org);
 
     named = new ArrayList<NamedObject>(); // declared in CoordinateAxis1D superclass
@@ -183,7 +179,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
         Date d = DateUnit.getStandardOrISO(coordValue);
         if (d == null) {
           if (errMessages != null)
-            errMessages.append("DateUnit cannot parse String= ").append(coordValue).append("\n");
+            errMessages.format("DateUnit cannot parse String= %s\n", coordValue);
           else
             System.out.println("DateUnit cannot parse String= " + coordValue + "\n");
 
@@ -204,7 +200,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       } catch (Exception e) {
         try {
           if (errMessages != null)
-            errMessages.append("Time Coordinate must be udunits or ISO String: hack since 0001-01-01 00:00:00\n");
+            errMessages.format("Time Coordinate must be udunits or ISO String: hack since 0001-01-01 00:00:00\n");
           else
             System.out.println("Time Coordinate must be udunits or ISO String: hack since 0001-01-01 00:00:00\n");
           dateUnit = new DateUnit("secs since 0001-01-01 00:00:00");

@@ -150,7 +150,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
 
       Variable glat = ds.findVariable("GLAT");
       if (glat == null) {
-        parseInfo.append("Projection type 203 - expected GLAT variable not found");
+        parseInfo.format("Projection type 203 - expected GLAT variable not found\n");
       } else {
         glat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
         glat.setDimensions("south_north west_east");
@@ -160,7 +160,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
 
       Variable glon = ds.findVariable("GLON");
       if (glon == null) {
-        parseInfo.append("Projection type 203 - expected GLON variable not found");
+        parseInfo.format("Projection type 203 - expected GLON variable not found\n");
       } else {
         glon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
         glon.setDimensions("south_north west_east");
@@ -210,7 +210,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
           //projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);
           break;
         default:
-          parseInfo.append("ERROR: unknown projection type = ").append(projType);
+          parseInfo.format("ERROR: unknown projection type = %s\n", projType);
           break;
       }
 
@@ -478,7 +478,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
           Date d = dateFormat.parse(dateS);
           values.set(count++, (double) d.getTime() / 1000);
         } catch (java.text.ParseException e) {
-          parseInfo.append("ERROR: cant parse Time string = <").append(dateS).append("> err=").append(e.getMessage()).append("\n");
+          parseInfo.format("ERROR: cant parse Time string = <%s> err= %s\n",dateS, e.getMessage());
 
           // one more try
           String startAtt = ds.findAttValueIgnoreCase(null, "START_DATE", null);
@@ -487,7 +487,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
               Date d = dateFormat.parse(startAtt);
               values.set(0, (double) d.getTime() / 1000);
             } catch (java.text.ParseException e2) {
-              parseInfo.append("ERROR: cant parse global attribute START_DATE = <").append(startAtt).append("> err=").append(e2.getMessage()).append("\n");
+              parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s\n", startAtt, e2.getMessage());
             }
           }
         }
@@ -500,7 +500,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
           Date d = dateFormat.parse(dateS);
           values.set(count++, (double) d.getTime() / 1000);
         } catch (java.text.ParseException e) {
-          parseInfo.append("ERROR: cant parse Time string = ").append(dateS);
+          parseInfo.format("ERROR: cant parse Time string = %s\n", dateS);
         }
       }
 
@@ -587,7 +587,7 @@ orientation of the grid). This should be set equal to the center longitude in mo
           VerticalCT vct = makeWRFEtaVerticalCoordinateTransform(ncDataset, cs);
           if (vct != null)
             cs.addCoordinateTransform(vct);
-          parseInfo.append("***Added WRFEta verticalCoordinateTransform to ").append(cs.getName()).append("\n");
+          parseInfo.format("***Added WRFEta verticalCoordinateTransform to %s\n",cs.getName());
         }
       }
     }

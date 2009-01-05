@@ -43,11 +43,11 @@ public class RadialCoordSys {
 
   /**
    * Determine if this CoordinateSystem can be made into a RadialCoordSys.
-   * @param parseInfo put debug information into this StringBuffer; may be null.
+   * @param parseInfo put debug information into this Formatter; may be null.
    * @param cs the CoordinateSystem to test
    * @return true if it can be made into a RadialCoordSys.
    */
-  public static boolean isRadialCoordSys( StringBuilder parseInfo, CoordinateSystem cs) {
+  public static boolean isRadialCoordSys( Formatter parseInfo, CoordinateSystem cs) {
     return (cs.getAzimuthAxis() != null) && (cs.getRadialAxis() != null) && (cs.getElevationAxis() != null);
   }
 
@@ -58,19 +58,19 @@ public class RadialCoordSys {
    * @param v Variable to check.
    * @return the RadialCoordSys made from cs, else null.
    */
-  public static RadialCoordSys makeRadialCoordSys( StringBuilder parseInfo, CoordinateSystem cs, VariableEnhanced v) {
+  public static RadialCoordSys makeRadialCoordSys( Formatter parseInfo, CoordinateSystem cs, VariableEnhanced v) {
     if (parseInfo != null) {
-      parseInfo.append(" ");
-      v.getNameAndDimensions(parseInfo, false, true);
-      parseInfo.append(" check CS " + cs.getName());
+      parseInfo.format(" ");
+      v.getNameAndDimensions(parseInfo, true, false);
+      parseInfo.format(" check CS " + cs.getName());
     }
     if (isRadialCoordSys( parseInfo, cs)) {
       RadialCoordSys rcs = new RadialCoordSys( cs);
       if (cs.isComplete( v)) {
-        if (parseInfo != null) parseInfo.append(" OK\n");
+        if (parseInfo != null) parseInfo.format(" OK\n");
         return rcs;
       } else {
-        if (parseInfo != null) parseInfo.append(" NOT complete\n");
+        if (parseInfo != null) parseInfo.format(" NOT complete\n");
       }
     }
 

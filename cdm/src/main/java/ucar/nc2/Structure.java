@@ -464,50 +464,38 @@ public class Structure extends Variable {
    * @return  name and attributes String
    */
   public String getNameAndAttributes() {
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append("Structure ");
+    Formatter sbuff = new Formatter();
+    sbuff.format("Structure ");
     getNameAndDimensions(sbuff, false, true);
-    sbuff.append("\n");
+    sbuff.format("\n");
     for (Attribute att : attributes) {
-      sbuff.append("  ").append(getShortName()).append(":");
-      sbuff.append(att.toString());
-      sbuff.append(";");
-      sbuff.append("\n");
+      sbuff.format("  %s:%s;\n",getShortName(), att.toString());
     }
     return sbuff.toString();
   }
 
   @Override
-  public String writeCDL(String space, boolean useFullName, boolean strict) {
-    StringBuilder buf = new StringBuilder();
-    buf.append("\n");
-    buf.append(space);
-    buf.append(dataType.toString());
-    buf.append(" {\n");
+  public String writeCDL(String indent, boolean useFullName, boolean strict) {
+    Formatter buf = new Formatter();
+    buf.format("\n%s%s {\n", indent, dataType);
 
-    String nestedSpace = "  "+space;
-    for (Variable v : members) {
-      buf.append(v.writeCDL(nestedSpace, useFullName, strict));
-    }
+    String nestedSpace = "  "+indent;
+    for (Variable v : members)
+      v.writeCDL(buf, nestedSpace, useFullName, strict);
 
-    buf.append(space);
-    buf.append("} ");
+    buf.format("%s} ", indent);
     getNameAndDimensions(buf, useFullName, strict);
-    buf.append(";");
-    buf.append(extraInfo());
-    buf.append("\n");
+    buf.format(";%s\n", extraInfo());
 
     for (Attribute att : getAttributes()) {
-      buf.append(nestedSpace);
-      if (strict) buf.append( NetcdfFile.escapeName(getShortName()));
-      buf.append("  :");
-      buf.append(att.toString());
-      buf.append(";");
+      buf.format("%s  ", nestedSpace);
+      if (strict) buf.format( NetcdfFile.escapeName(getShortName()));
+      buf.format(":%s;", att.toString(strict));
       if (!strict && (att.getDataType() != DataType.STRING))
-        buf.append(" // ").append(att.getDataType());
-      buf.append("\n");
+        buf.format(" // %s", att.getDataType());
+      buf.format("\n");
     }
-    buf.append("\n");
+    buf.format("\n");
 
     return buf.toString();
   }

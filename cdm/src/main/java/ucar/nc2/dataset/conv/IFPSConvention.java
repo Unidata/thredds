@@ -60,7 +60,7 @@ public class IFPSConvention extends CoordSysBuilder {
   public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     if (null != ds.findVariable("xCoord")) return; // check if its already been done - aggregating enhanced datasets.
 
-    parseInfo.append("IFPS augmentDataset \n");
+    parseInfo.format("IFPS augmentDataset \n");
 
    // Figure out projection info. Assume the same for all variables
     Variable lonVar = ds.findVariable("longitude");
@@ -122,7 +122,7 @@ public class IFPSConvention extends CoordSysBuilder {
     Dimension dimTime = ncVar.getDimension(0);
     int nTimesDim = dimTime.getLength();
     if (nTimesDim != nTimesAtt) {
-      parseInfo.append(" **error ntimes in attribute (").append(nTimesAtt).append(") doesnt match dimension length (").append(nTimesDim).append(") for variable ").append(ncVar.getName()).append("\n");
+      parseInfo.format(" **error ntimes in attribute (%d) doesnt match dimension length (%d) for variable %s\n",nTimesAtt, nTimesDim, ncVar.getName());
       return;
     }
 
@@ -142,7 +142,7 @@ public class IFPSConvention extends CoordSysBuilder {
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
     ds.addCoordinateAxis(timeCoord);
 
-    parseInfo.append(" added coordinate variable ").append(dimName).append("\n");
+    parseInfo.format(" added coordinate variable %s\n", dimName);
 
     // now make the original variable use the new dimension
     List<Dimension> dimsList = ncVar.getDimensions();

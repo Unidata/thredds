@@ -80,26 +80,35 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
    * @param ds underlying NetcdfDataset.
    */
   public GridDataset(NetcdfDataset ds) {
+    this(ds, null);
+  }
+
+  /**
+   * Create a GridDataset from a NetcdfDataset.
+   *
+   * @param ds underlying NetcdfDataset.
+   * @param parseInfo put parse info here, may be null
+   */
+  public GridDataset(NetcdfDataset ds, Formatter parseInfo) {
     this.ds = ds;
 
     // look for geoGrids
-    parseInfo.append("GridDataset look for GeoGrids\n");
     List<Variable> vars = ds.getVariables();
     for (Variable var : vars) {
       VariableEnhanced varDS = (VariableEnhanced) var;
-      constructCoordinateSystems(ds, varDS);
+      constructCoordinateSystems(ds, varDS, parseInfo);
     }
 
   }
 
-  private void constructCoordinateSystems(NetcdfDataset ds, VariableEnhanced v) {
+  private void constructCoordinateSystems(NetcdfDataset ds, VariableEnhanced v, Formatter parseInfo) {
 
     if (v instanceof StructureDS) {
       StructureDS s = (StructureDS) v;
       List<Variable> members = s.getVariables();
       for (Variable nested : members) {
         // LOOK flatten here ??
-        constructCoordinateSystems(ds, (VariableEnhanced) nested);
+        constructCoordinateSystems(ds, (VariableEnhanced) nested, parseInfo);
       }
     } else {
 
@@ -116,7 +125,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
       }
 
       if (gcs != null)
-        addGeoGrid((VariableDS) v, gcs);
+        addGeoGrid((VariableDS) v, gcs, parseInfo);
     }
 
   }
@@ -206,12 +215,12 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     ds.close();
   }
 
-  private void addGeoGrid(VariableDS varDS, GridCoordSys gcs) {
+  private void addGeoGrid(VariableDS varDS, GridCoordSys gcs, Formatter parseInfo) {
     Gridset gridset;
     if (null == (gridset = gridsetHash.get(gcs.getName()))) {
       gridset = new Gridset(gcs);
       gridsetHash.put(gcs.getName(), gridset);
-      parseInfo.append(" -make new GridCoordSys= ").append(gcs.getName()).append("\n");
+      parseInfo.format(" -make new GridCoordSys= %s\n",gcs.getName());
       gcs.makeVerticalTransform(this, parseInfo); // delayed until now
     }
 
@@ -305,11 +314,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     return buf.toString();
   }
 
-  private StringBuilder parseInfo = new StringBuilder(); // debugging
-
-  public StringBuilder getParseInfo() {
-    return parseInfo;
-  }
+  // private Form parseInfo = new StringBuilder(); // debugging
 
   /**
    * Get Details about the dataset.
@@ -328,7 +333,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
       if (info != null) try { info.close(); } catch (IOException ee) {} // do nothing      
     }
     buff.append("\n\n----------------------------------------------------\n");
-    buff.append(parseInfo.toString());
+   // buff.append(parseInfo.toString());
     buff.append(ds.toString());
     buff.append("\n\n----------------------------------------------------\n");
 

@@ -48,6 +48,9 @@ This code is ALPHA
 
  Release Details:
   29:
+    GridDataset, RadialDataset: use Formatter instead of StringBuilder
+    VariableIF use Formatter instead of StringBuilder
+    CoordTransBuilder use Formatter instead of StringBuilder
     add getCatalogRef(InvCatalogRef dd) to CatalogGrawler.Listener
     CoordAxis1D.findCoordElement() bug for Longitude
     MAMath.convert2packed() utility for scale/offset writing

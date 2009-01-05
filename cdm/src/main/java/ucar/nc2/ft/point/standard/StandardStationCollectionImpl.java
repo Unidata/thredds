@@ -47,7 +47,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   private DateUnit timeUnit;
   private FlattenedTable ft;
 
-  StandardStationCollectionImpl(DateUnit timeUnit, FlattenedTable ft) throws IOException {
+  StandardStationCollectionImpl(FlattenedTable ft, DateUnit timeUnit) throws IOException {
     super(ft.getName());
     this.timeUnit = timeUnit;
     this.ft = ft;

@@ -110,6 +110,7 @@ public class Variable implements VariableIF {
   /**
    * Get the size of the ith dimension
    *
+   * @param index which dimension
    * @return size of the ith dimension
    */
   public int getShape(int index) {
@@ -1007,8 +1008,20 @@ public class Variable implements VariableIF {
    * @deprecated use getNameAndDimensions(StringBuilder buf)
    */
   public void getNameAndDimensions(StringBuffer buf) {
-    StringBuilder proxy = new StringBuilder();
+    Formatter proxy = new Formatter();
     getNameAndDimensions(proxy, true, false);
+    buf.append(proxy.toString());
+  }
+
+  /**
+   * Add display name plus the dimensions to the StringBuffer
+   * @param buf add info to this
+   * @param useFullName use full name else short name. strict = true implies short name
+   * @param strict strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
+   */
+  public void getNameAndDimensions(StringBuilder buf, boolean useFullName, boolean strict) {
+    Formatter proxy = new Formatter();
+    getNameAndDimensions(proxy, useFullName, strict);
     buf.append(proxy.toString());
   }
 
@@ -1019,37 +1032,37 @@ public class Variable implements VariableIF {
    * @param useFullName use full name else short name. strict = true implies short name
    * @param strict strictly comply with ncgen syntax, with name escaping. otherwise, get extra info, no escaping
    */
-  public void getNameAndDimensions(StringBuilder buf, boolean useFullName, boolean strict) {
+  public void getNameAndDimensions(Formatter buf, boolean useFullName, boolean strict) {
     useFullName = useFullName && !strict;
     String name = useFullName ? getName() : getShortName();
     if (strict) name = NetcdfFile.escapeName( name);
-    buf.append(name);
+    buf.format("%s", name);
 
-    if (getRank() > 0) buf.append("(");
+    if (getRank() > 0) buf.format("(");
     for (int i = 0; i < dimensions.size(); i++) {
       Dimension myd = dimensions.get(i);
       String dimName = myd.getName();
       if ((dimName != null) && strict)
         dimName = NetcdfFile.escapeName(dimName);
 
-      if (i != 0) buf.append(", ");
+      if (i != 0) buf.format(", ");
 
       if (myd.isVariableLength()) {
-        buf.append("*");
+        buf.format("*");
       } else if (myd.isShared()) {
         if (!strict)
-          buf.append(dimName).append("=").append(myd.getLength());
+          buf.format("%s=%d",dimName,myd.getLength());
         else
-          buf.append(dimName);
+          buf.format(dimName);
       } else {
         if (dimName != null) {
-          buf.append(dimName).append("=");
+          buf.format("%s=", dimName);
         }
-        buf.append(myd.getLength());
+        buf.format("%d", myd.getLength());
       }
     }
 
-    if (getRank() > 0) buf.append(")");
+    if (getRank() > 0) buf.format(")");
   }
 
   /**
@@ -1068,36 +1081,36 @@ public class Variable implements VariableIF {
    * @return CDL representation of the Variable.
    */
   public String writeCDL(String indent, boolean useFullName, boolean strict) {
-    StringBuilder buf = new StringBuilder();
-    buf.setLength(0);
-    buf.append(indent);
+    Formatter buf = new Formatter();
+    writeCDL(buf, indent, useFullName, strict);
+    return buf.toString();
+  }
+
+  protected void writeCDL(Formatter buf, String indent, boolean useFullName, boolean strict) {
+    buf.format(indent);
     if (dataType.isEnum()) {
       if (enumTypedef == null)
-        buf.append("enum UNKNOWN");
+        buf.format("enum UNKNOWN");
       else
-        buf.append("enum "+enumTypedef.getName());
+        buf.format("enum %s", enumTypedef.getName());
     } else
-      buf.append(dataType.toString());
+      buf.format(dataType.toString());
 
     //if (isVariableLength) buf.append("(*)"); // LOOK
-    buf.append(" ");
+    buf.format(" ");
     getNameAndDimensions(buf, useFullName, strict);
-    buf.append(";");
-    if (!strict) buf.append(extraInfo());
-    buf.append("\n");
+    buf.format(";");
+    if (!strict) buf.format(extraInfo());
+    buf.format("\n");
 
     for (Attribute att : getAttributes()) {
-      buf.append(indent).append("  ");
-      if (strict) buf.append( NetcdfFile.escapeName(getShortName()));
-      buf.append(":");
-      buf.append( att.toString(strict));
-      buf.append(";");
+      buf.format("%s  ", indent);
+      if (strict) buf.format( NetcdfFile.escapeName(getShortName()));
+      buf.format(":%s;", att.toString(strict));
       if (!strict && (att.getDataType() != DataType.STRING))
-        buf.append(" // ").append(att.getDataType());
-      buf.append("\n");
-
+        buf.format(" // %s", att.getDataType());
+      buf.format("\n");
     }
-    return buf.toString();
   }
 
   /**

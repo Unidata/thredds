@@ -877,7 +877,7 @@ public class HtmlWriter {
 
     VariableEnhanced ve = grid.getVariable();
     StringBuilder sbuff = new StringBuilder();
-    ve.getNameAndDimensions(sbuff, false, true);
+    ve.getNameAndDimensions(new Formatter(sbuff), false, true);
     String name = StringUtil.quoteHtmlContent(sbuff.toString());
     sb.append("&nbsp;");
     sb.append(name);

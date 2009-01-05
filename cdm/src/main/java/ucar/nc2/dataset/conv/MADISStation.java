@@ -52,7 +52,7 @@ public class MADISStation extends CoordSysBuilder {
       if (v != null) {
         v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
       } else {
-        parseInfo.append(" cant find time variable ").append(vname);
+        parseInfo.format(" cant find time variable %s\n", vname);
       }
     }
 
@@ -66,7 +66,7 @@ public class MADISStation extends CoordSysBuilder {
         AxisType atype = count == 0 ? AxisType.Lat : count == 1 ? AxisType.Lon : AxisType.Height;
         v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString()));
       } else {
-        parseInfo.append(" cant find time variable ").append(vname);
+        parseInfo.format(" cant find time variable %s\n",vname);
       }
       count++;
     }

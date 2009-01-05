@@ -33,6 +33,7 @@ import org.jdom.output.Format;
 
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Formatter;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -244,9 +245,8 @@ public class NetcdfDatasetInfo {
   }
 
   private String getDecl( VariableEnhanced ve) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(ve.getDataType().toString());
-    sb.append(" ");
+    Formatter sb = new Formatter();
+    sb.format("%s ", ve.getDataType().toString());
     ve.getNameAndDimensions(sb, true, true);
     return sb.toString();
   }

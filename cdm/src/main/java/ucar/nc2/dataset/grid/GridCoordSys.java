@@ -160,7 +160,7 @@ public class GridCoordSys extends CoordinateSystem {
   public static GridCoordSys makeGridCoordSys(StringBuilder sbuff, CoordinateSystem cs, VariableEnhanced v) {
     if (sbuff != null) {
       sbuff.append(" ");
-      v.getNameAndDimensions(sbuff, false, true);
+      v.getNameAndDimensions(new Formatter(sbuff), true, false);
       sbuff.append(" check CS " + cs.getName());
     }
     if (isGridCoordSys(sbuff, cs)) {

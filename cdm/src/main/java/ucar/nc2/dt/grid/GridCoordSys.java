@@ -77,10 +77,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @return true if it can be made into a GridCoordSys.
    * @see CoordinateSystem#isGeoReferencing
    */
-  public static boolean isGridCoordSys(StringBuilder sbuff, CoordinateSystem cs) {
+  public static boolean isGridCoordSys(Formatter sbuff, CoordinateSystem cs) {
     if (cs.getRankDomain() < 2) {
       if (sbuff != null) {
-        sbuff.append(cs.getName()).append(": domain rank < 2\n");
+        sbuff.format("%s: domain rank < 2\n", cs.getName());
       }
       return false;
     }
@@ -89,13 +89,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       // do check for GeoXY ourself
       if ((cs.getXaxis() == null) || (cs.getYaxis() == null)) {
         if (sbuff != null) {
-          sbuff.append(cs.getName()).append(": NO Lat,Lon or X,Y axis\n");
+          sbuff.format("%s: NO Lat,Lon or X,Y axis\n", cs.getName());
         }
         return false;
       }
       if (null == cs.getProjection()) {
         if (sbuff != null) {
-          sbuff.append(cs.getName()).append(": NO projection found\n");
+          sbuff.format("%s: NO projection found\n", cs.getName());
         }
         return false;
       }
@@ -111,13 +111,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       if (!(p instanceof RotatedPole)) {
         if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
           if (sbuff != null) {
-            sbuff.append(cs.getName()).append(": X axis units are not convertible to km\n");
+            sbuff.format("%s: X axis units are not convertible to km\n", cs.getName());
           }
           //return false;
         }
         if (!SimpleUnit.kmUnit.isCompatible(yaxis.getUnitsString())) {
           if (sbuff != null) {
-            sbuff.append(cs.getName()).append(": Y axis units are not convertible to km\n");
+            sbuff.format("%s: Y axis units are not convertible to km\n", cs.getName());
           }
           //return false;
         }
@@ -130,7 +130,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     // check ranks
     if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
       if (sbuff != null) {
-        sbuff.append(cs.getName()).append(": X or Y axis rank must be <= 2\n");
+        sbuff.format("%s: X or Y axis rank must be <= 2\n", cs.getName());
       }
       return false;
     }
@@ -142,7 +142,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getZaxis();
     if ((z != null) && !(z instanceof CoordinateAxis1D)) {
       if (sbuff != null) {
-        sbuff.append(cs.getName()).append(": Z axis must be 1D\n");
+        sbuff.format("%s: Z axis must be 1D\n", cs.getName());
       }
       return false;
     }
@@ -152,20 +152,20 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
       if (rt == null) {
         if (sbuff != null) {
-          sbuff.append(cs.getName()).append(": T axis must be 1D\n");
+          sbuff.format("%s: T axis must be 1Dn", cs.getName());
         }
         return false;
       }
       if (!(rt instanceof CoordinateAxis1D)) {
         if (sbuff != null) {
-          sbuff.append(cs.getName()).append(": RunTime axis must be 1D\n");
+          sbuff.format("%s: RunTime axis must be 1D\n", cs.getName());
         }
         return false;
       }
 
       if (t.getRank() != 2) {
         if (sbuff != null) {
-          sbuff.append(cs.getName()).append(": Time axis must be 2D when used with RunTime dimension\n");
+          sbuff.format("%s: Time axis must be 2D when used with RunTime dimension\n", cs.getName());
         }
         return false;
       }
@@ -176,7 +176,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       if (!rtdim.equals(tdim)) {
         if (sbuff != null) {
-          sbuff.append(cs.getName()).append(": Time axis must use RunTime dimension\n");
+          sbuff.format("%s: Time axis must use RunTime dimension\n", cs.getName());
         }
         return false;
       }
@@ -199,19 +199,19 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param v     Variable to check.
    * @return the GridCoordSys made from cs, else null.
    */
-  public static GridCoordSys makeGridCoordSys(StringBuilder sbuff, CoordinateSystem cs, VariableEnhanced v) {
+  public static GridCoordSys makeGridCoordSys(Formatter sbuff, CoordinateSystem cs, VariableEnhanced v) {
     if (sbuff != null) {
-      sbuff.append(" ");
+      sbuff.format(" ");
       v.getNameAndDimensions(sbuff, false, true);
-      sbuff.append(" check CS ").append(cs.getName()).append(": ");
+      sbuff.format(" check CS %s: ",cs.getName());
     }
     if (isGridCoordSys(sbuff, cs)) {
       GridCoordSys gcs = new GridCoordSys(cs, sbuff);  // LOOK inefficient !!!
       if (gcs.isComplete(v)) {
-        if (sbuff != null) sbuff.append(" OK\n");
+        if (sbuff != null) sbuff.format(" OK\n");
         return gcs;
       } else {
-        if (sbuff != null) sbuff.append(" NOT complete\n");
+        if (sbuff != null) sbuff.format(" NOT complete\n");
       }
     }
 
@@ -242,7 +242,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param cs    create from this Coordinate System
    * @param sbuff place information messages here, may be null
    */
-  public GridCoordSys(CoordinateSystem cs, StringBuilder sbuff) {
+  public GridCoordSys(CoordinateSystem cs, Formatter sbuff) {
     super();
     this.ds = cs.getNetcdfDataset();
 
@@ -305,7 +305,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
         } catch (Exception e) {
           if (sbuff != null)
-            sbuff.append("Error reading time coord= ").append(t.getName()).append(" ").append(e.getMessage());
+            sbuff.format("Error reading time coord= %s err= %s\n",t.getName(), e.getMessage());
         }
 
       } else { // 2d
@@ -332,7 +332,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       } catch (IOException e) {
         if (sbuff != null) {
-          sbuff.append("Error reading runtime coord= ").append(t.getName()).append(" ").append(e.getMessage());
+          sbuff.format("Error reading runtime coord= $s err= %s\n", t.getName(), e.getMessage());
         }
       }
     }
@@ -506,16 +506,16 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   }
 
   // we have to delay making these, since we dont identify the dimensions specifically until now
-  void makeVerticalTransform(GridDataset gds, StringBuilder parseInfo) {
+  void makeVerticalTransform(GridDataset gds, Formatter parseInfo) {
     if (vCT == null) return;
     if (vCT.getVerticalTransform() != null) return; // already done
 
     vCT.makeVerticalTransform(gds.getNetcdfDataset(), timeDim);
 
     if (vCT.getVerticalTransform() == null) {
-      parseInfo.append("  - CAN'T make VerticalTransform = ").append(vCT.getVerticalTransformType()).append("\n");
+      parseInfo.format("  - ERR can't make VerticalTransform = %s\n", vCT.getVerticalTransformType());
     } else {
-      parseInfo.append("  - makeVerticalTransform = ").append(vCT.getVerticalTransformType()).append("\n");
+      parseInfo.format("  - VerticalTransform = %s\n", vCT.getVerticalTransformType());
     }
   }
 

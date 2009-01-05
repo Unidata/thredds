@@ -117,8 +117,8 @@ public class CF1Convention extends CSMConvention {
     String formula = ds.findAttValueIgnoreCase(v, "formula_terms", null);
     if (null == formula) {
       String msg = " Need attribute 'formula_terms' on Variable " + v.getName() + "\n";
-      parseInfo.append(msg);
-      userAdvice.append(msg);
+      parseInfo.format(msg);
+      userAdvice.format(msg);
       return;
     }
 
@@ -138,15 +138,15 @@ public class CF1Convention extends CSMConvention {
 
     if (null == p0Var) {
       String msg = " Need p0:varName on Variable " + v.getName() + " formula_terms\n";
-      parseInfo.append(msg);
-      userAdvice.append(msg);
+      parseInfo.format(msg);
+      userAdvice.format(msg);
       return;
     }
 
     if (null == levelVar) {
       String msg = " Need lev:varName on Variable " + v.getName() + " formula_terms\n";
-      parseInfo.append(msg);
-      userAdvice.append(msg);
+      parseInfo.format(msg);
+      userAdvice.format(msg);
       return;
     }
 
@@ -173,12 +173,12 @@ public class CF1Convention extends CSMConvention {
       ds.addVariable(null, p);
       //Dimension d = p.getDimension(0);
       //d.addCoordinateVariable(p);
-      parseInfo.append(" added Vertical Pressure coordinate ").append(p.getName()).append("\n");
+      parseInfo.format(" added Vertical Pressure coordinate %s\n", p.getName());
 
     } catch (IOException e) {
       String msg = " Unable to read variables from " + v.getName() + " formula_terms\n";
-      parseInfo.append(msg);
-      userAdvice.append(msg);
+      parseInfo.format(msg);
+      userAdvice.format(msg);
     }
 
   }
@@ -271,7 +271,7 @@ public class CF1Convention extends CSMConvention {
   private List getFormulaDomain(NetcdfDataset ds, Variable v) {
     String formula = ds.findAttValueIgnoreCase(v, "formula_terms", null);
     if (null == formula) {
-      parseInfo.append("*** Cant find formula_terms attribute ");
+      parseInfo.format("*** Cant find formula_terms attribute ");
       return null;
     }
 
@@ -282,7 +282,7 @@ public class CF1Convention extends CSMConvention {
       String varName = stoke.nextToken();
       Variable formulaV = ds.findVariable(varName);
       if (null == formulaV) {
-        parseInfo.append("*** Cant find formula variable=").append(varName).append(" for term=").append(what);
+        parseInfo.format("*** Cant find formula variable= %s for term= %s\n",varName, what);
         continue;
       }
       domain.addAll(formulaV.getDimensions());

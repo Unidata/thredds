@@ -30,6 +30,7 @@ import ucar.ma2.Array;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Formatter;
 
 /**
  * Manager for Coordinate Transforms.
@@ -141,7 +142,7 @@ public class CoordTransBuilder {
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
    */
-  static public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, Variable ctv, StringBuilder parseInfo, StringBuilder errInfo) {
+  static public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, Variable ctv, Formatter parseInfo, Formatter errInfo) {
     // standard name
     String transform_name = ds.findAttValueIgnoreCase(ctv, "transform_name", null);
     if (null == transform_name)
@@ -154,7 +155,7 @@ public class CoordTransBuilder {
       transform_name = ds.findAttValueIgnoreCase(ctv, "standard_name", null);
 
     if (null == transform_name) {
-      parseInfo.append("**Failed to find Coordinate Transform name from Variable= ").append(ctv).append("\n");
+      parseInfo.format("**Failed to find Coordinate Transform name from Variable= %s\n", ctv);
       return null;
     }
 
@@ -169,7 +170,7 @@ public class CoordTransBuilder {
       }
     }
     if (null == builderClass) {
-      parseInfo.append("**Failed to find CoordTransBuilder name= ").append(transform_name).append(" from Variable= ").append(ctv).append("\n");
+      parseInfo.format("**Failed to find CoordTransBuilder name= %s from Variable= %s\n", transform_name, ctv);
       return null;
     }
 
@@ -183,15 +184,15 @@ public class CoordTransBuilder {
       log.error("Cant access "+builderClass.getName(), e);
     }
     if (null == builder) { // cant happen - because this was tested in registerTransform()
-      parseInfo.append("**Failed to build CoordTransBuilder object from class= ").append(builderClass.getName()).append(" for Variable= ").append(ctv).append("\n");
+      parseInfo.format("**Failed to build CoordTransBuilder object from class= %s for Variable= %s\n", builderClass.getName(), ctv);
       return null;
     }
 
-    builder.setErrorBuffer(errInfo);
+    builder.setErrorBuffer( errInfo);
     CoordinateTransform ct = builder.makeCoordinateTransform(ds, ctv);
 
     if (ct != null) {
-      parseInfo.append(" Made Coordinate transform ").append(transform_name).append(" from variable ").append(ctv.getName()).append(": ").append(builder).append("\n");
+      parseInfo.format(" Made Coordinate transform %s from variable %s: %s\n",transform_name, ctv.getName(), builder);
     }
 
     return ct;

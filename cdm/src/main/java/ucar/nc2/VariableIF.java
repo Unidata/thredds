@@ -31,7 +31,7 @@ public interface VariableIF extends VariableSimpleIF {
     public java.lang.String getName();
     public java.lang.String getNameEscaped();
     public java.lang.String getShortName();
-    public void getNameAndDimensions(java.lang.StringBuilder result, boolean useFullName, boolean strict);
+    public void getNameAndDimensions(java.util.Formatter result, boolean useFullName, boolean strict);
 
     public boolean isUnlimited();
     public boolean isUnsigned();

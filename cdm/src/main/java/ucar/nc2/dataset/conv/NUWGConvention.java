@@ -48,7 +48,7 @@ public class NUWGConvention extends CoordSysBuilder {
   private String xaxisName = "", yaxisName = "";
   private Grib1 grib;
 
-  private final boolean debugProj = false, dumpNav = false, debugPoint = false, debug = false;
+  private final boolean dumpNav = false;
 
   public NUWGConvention() {
     this.conventionName = "NUWG";
@@ -65,16 +65,16 @@ public class NUWGConvention extends CoordSysBuilder {
     for (Variable v : vars) {
       if (0 <= v.findDimensionIndex("nav")) {
 
-        if (dumpNav) parseInfo.append("NUWG has NAV var = ").append(v).append("\n");
+        if (dumpNav) parseInfo.format("NUWG has NAV var = %s\n", v);
         try {
           navInfo.add(new NavInfo(v));
         } catch (IOException ex) {
-          parseInfo.append("ERROR NUWG reading NAV var = ").append(v).append("\n");
+          parseInfo.format("ERROR NUWG reading NAV var = %s\n", v);
         }
       }
     }
     java.util.Collections.sort( navInfo, new NavComparator());
-    parseInfo.append(navInfo).append("\n\n");
+    parseInfo.format("%s\n\n", navInfo);
 
     // is this pathetic or what ?
     // problem is NUWG doesnt identify the x, y coords.
@@ -102,7 +102,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
     if (null == ds.findVariable( xaxisName)) {
       grib.makeXCoordAxis( ds, xaxisName);
-      parseInfo.append("Generated x axis from NUWG nav=").append(xaxisName).append("\n");
+      parseInfo.format("Generated x axis from NUWG nav= %s\n", xaxisName);
 
     } else if (xaxisName.equalsIgnoreCase("lon")) {
 
@@ -127,7 +127,7 @@ public class NUWGConvention extends CoordSysBuilder {
         }
 
         if (!ok) {
-          parseInfo.append( "ERROR lon axis is not monotonic, regen from nav\n");
+          parseInfo.format( "ERROR lon axis is not monotonic, regen from nav\n");
           grib.makeXCoordAxis( ds, xaxisName);
         }
       } catch (IOException ioe) {
@@ -137,7 +137,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
     if (null == ds.findVariable( yaxisName)) {
       grib.makeYCoordAxis( ds, yaxisName);
-      parseInfo.append("Generated y axis from NUWG nav=").append(yaxisName).append("\n");
+      parseInfo.format("Generated y axis from NUWG nav=%s\n", yaxisName);
     }
 
       // "referential" variables
@@ -155,11 +155,11 @@ public class NUWGConvention extends CoordSysBuilder {
         if (!(ncvar instanceof VariableDS))
           continue; // cant be a structure
         if (makeCoordinateAxis( ncvar, dim)) {
-          parseInfo.append("Added referential coordAxis = ");
-          ncvar.getNameAndDimensions(parseInfo);
-          parseInfo.append("\n");
+          parseInfo.format("Added referential coordAxis = ");
+          ncvar.getNameAndDimensions(parseInfo, true, false);
+          parseInfo.format("\n");
         } else {
-          parseInfo.append("Couldnt add referential coordAxis = ").append(ncvar.getName());
+          parseInfo.format("Couldnt add referential coordAxis = %s\n", ncvar.getName());
         }
 
       } else if (ncvars.size() == 2) {
@@ -170,9 +170,9 @@ public class NUWGConvention extends CoordSysBuilder {
           Variable ncvar = ncvar0.getName().equalsIgnoreCase("valtime") ? ncvar0 : ncvar1;
 
           if (makeCoordinateAxis( ncvar, dim)) {
-            parseInfo.append("Added referential coordAxis (2) = ");
-            ncvar.getNameAndDimensions(parseInfo);
-            parseInfo.append("\n");
+            parseInfo.format("Added referential coordAxis (2) = ");
+            ncvar.getNameAndDimensions(parseInfo, true, false);
+            parseInfo.format("\n");
 
             // the usual crap - clean up time units
             String units = ncvar.getUnitsString();
@@ -182,7 +182,7 @@ public class NUWGConvention extends CoordSysBuilder {
               ncvar.addAttribute(new Attribute("units", units));
             }
           } else {
-            parseInfo.append("Couldnt add referential coordAxis = ").append(ncvar.getName());
+            parseInfo.format("Couldnt add referential coordAxis = %s\n", ncvar.getName());
           }
 
           //ncvar = (Variable) ncvars.get(0);
@@ -196,11 +196,11 @@ public class NUWGConvention extends CoordSysBuilder {
           if (!(ncvar instanceof VariableDS)) continue; // cant be a structure
 
           if (makeCoordinateAxis( ncvar, dim)) {
-            parseInfo.append("Added referential boundary coordAxis (2) = ");
-            ncvar.getNameAndDimensions(parseInfo);
-            parseInfo.append("\n");
+            parseInfo.format("Added referential boundary coordAxis (2) = ");
+            ncvar.getNameAndDimensions(parseInfo, true, false);
+            parseInfo.format("\n");
           } else {
-            parseInfo.append("Couldnt add referential coordAxis = ").append(ncvar.getName());
+            parseInfo.format("Couldnt add referential coordAxis = %s\n", ncvar.getName());
           }
 
           /*  CoordinateAxis bound1 = ds.addCoordinateAxis( (VariableDS) ncvar);
@@ -403,7 +403,7 @@ public class NUWGConvention extends CoordSysBuilder {
         else
           dvalue = ncvar.readScalarDouble();
       } catch (java.lang.UnsupportedOperationException e) {
-        parseInfo.append("Nav variable ").append(getName()).append(" not a scalar");
+        parseInfo.format("Nav variable %s  not a scalar\n", getName());
       }
       //List<String> values = new ArrayList<String>();
       //values.add( getStringValue());

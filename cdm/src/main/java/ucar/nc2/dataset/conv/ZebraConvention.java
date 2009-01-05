@@ -76,7 +76,7 @@ public class ZebraConvention extends ATDRadarConvention {
         iter.setDoubleCurrent(iter.getDoubleNext() + baseValue);
 
     } catch (java.io.IOException ioe) {
-      parseInfo.append("ZebraConvention failed to create time Coord Axis for file ").append(ds.getLocation()).append("\n").append(ioe).append("\n");
+      parseInfo.format("ZebraConvention failed to create time Coord Axis for file %s err= %s\n", ds.getLocation(), ioe);
       return;
     }
 

@@ -31,6 +31,7 @@ import ucar.unidata.util.Parameter;
 
 import java.util.StringTokenizer;
 import java.util.List;
+import java.util.Formatter;
 
 /**
  * Abstract superclass for implementations of CoordTransBuilderIF.
@@ -39,9 +40,9 @@ import java.util.List;
  */
 public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.CoordTransBuilderIF {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractCoordTransBuilder.class);
-  protected StringBuilder errBuffer = null;
+  protected Formatter errBuffer = null;
 
-  public void setErrorBuffer(StringBuilder errBuffer) {
+  public void setErrorBuffer(Formatter errBuffer) {
     this.errBuffer = errBuffer;
   }
 
@@ -100,7 +101,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
   protected boolean addParameter(CoordinateTransform rs, String paramName, NetcdfFile ds, String varNameEscaped) {
     if (null == (ds.findVariable(varNameEscaped))) {
       if (null != errBuffer)
-        errBuffer.append("CoordTransBuilder ").append(getTransformName()).append(": no Variable named ").append(varNameEscaped);
+        errBuffer.format("CoordTransBuilder %s: no Variable named %s\n", getTransformName(), varNameEscaped);
       return false;
     }
 
@@ -112,7 +113,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     String formula = ds.findAttValueIgnoreCase(ctv, "formula_terms", null);
     if (null == formula) {
       if (null != errBuffer)
-        errBuffer.append("CoordTransBuilder ").append(getTransformName()).append(": needs attribute 'formula_terms' on Variable ").append(ctv.getName()).append("\n");
+        errBuffer.format("CoordTransBuilder %s: needs attribute 'formula_terms' on Variable %s\n", getTransformName(), ctv.getName());
       return null;
     }
     return formula;

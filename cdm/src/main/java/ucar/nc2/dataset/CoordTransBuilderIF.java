@@ -23,6 +23,8 @@ package ucar.nc2.dataset;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 
+import java.util.Formatter;
+
 /**
  * Implement this interface to add a Coordinate Transform to a NetcdfDataset.
  * Must be able to know how to build one from the info in a Coordinate Transform Variable.
@@ -62,8 +64,8 @@ public interface CoordTransBuilderIF {
   public TransformType getTransformType();
 
   /***
-   * Pass in a StringBuilder where error messages can be appended.
-   * @param sb use this StringBuilder to record parse and error info
+   * Pass in a Formatter where error messages can be appended.
+   * @param sb use this Formatter to record parse and error info
    */
-  public void setErrorBuffer( StringBuilder sb);
+  public void setErrorBuffer( Formatter sb);
 }
