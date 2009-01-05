@@ -9,7 +9,6 @@
 
   <bean id="catalogServiceController" class="thredds.server.catalogservice.CatalogServiceController" >
     <property name="tdsContext" ref="tdsContext"/>
-    <property name="commandClass" value="thredds.server.catalogservice.CatalogServiceRequest" />
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">

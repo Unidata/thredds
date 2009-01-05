@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import junit.framework.TestSuite;
+import junit.framework.JUnit4TestAdapter;
 
 /**
  * TestSuite that runs all TDS unit tests.
@@ -17,6 +18,7 @@ public class TestAll
   {
     TestSuite suite = new TestSuite();
     suite.addTestSuite( thredds.servlet.TestDataRootHandler.class );
+    //suite.addTest( new JUnit4TestAdapter( thredds.server.catalogservice.LocalCatalogServiceControllerTest.class ) );
     suite.addTestSuite( thredds.server.catalogservice.TestLocalCatalogRequest.class );
     suite.addTestSuite( thredds.server.catalogservice.TestRemoteCatalogRequest.class );
     suite.addTestSuite( thredds.util.TestStartsWithPathAliasReplacement.class );
