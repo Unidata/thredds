@@ -1,0 +1,339 @@
+CHANGES for Netcdf-Java library
+Version @VERSION.MINOR@
+Build Date = @BUILDTIME@
+
+Changes in version 4.0
+This code is ALPHA
+
+ Data Model
+  * Object names are Unicode Strings. No Restrictions on characters used.
+  * DataType STRING are Unicode. In Netcdf3/4, stored as UTF-8 encoded.
+  * DataType CHAR are uninterpreted bytes, default is to consider them ascii.
+  * DataType ENUM : stored as 1,2,4 byte ints, map to Strings
+  * DataType OPAQUE : byte[] cant be subsetted.
+  * DataType SEQUENCE : Structure(*) only accessible through StructureDataIterator
+
+ Features:
+  netcdf
+    * Structure.select(): create subset consisting only of selected member variables
+    * StructureDS correctly gets enhanced
+    * NetcdfFileWriteable supports large file writing, redefine mode, extra header bytes, preallocating file size,
+       all for Netcdf-3 files.
+  iosp
+   * netcdf-4
+   * complete HDF5 access
+   * complete HDF4 access
+   * parsing of HDF-EOS/HDF5-EOS metadata to identify dimensions.
+   * GEMPAK grids
+   * NMC Office Note 29/143
+   * BUFR (edition 2-4)
+   * Mcidas AREA
+   * Universal Radar Format
+  geoloc
+   * Add RotatedPole projection
+  ft
+   * Point Feature Types completely reworked, based on StructureData iterators
+  NcML
+   * Tiled aggregation
+   * A JoinExisting type now accepts timeUnitsChange, ndicating time units change in the differnt files
+   * A JoinExisting type now accepts dateFormatMark, if theres only one time step per file, to specify the agg coord value
+   * Union accepts scan
+   * Global attributes can be promoted to Variables.
+   * Can specify variables to cache.
+   * Can specify iosp, a string parameter to the iosp, and the RAF buffer size
+
+ Libraries
+  * JDOM 1.1
+  * updated visad 9/12/08
+
+ Release Details:
+  29:
+    JoinExisting caching now handles nested aggregations, by using the id attribute to identify them.
+    GridDataset, RadialDataset: use Formatter instead of StringBuilder
+    VariableIF use Formatter instead of StringBuilder
+    CoordTransBuilder use Formatter instead of StringBuilder
+    add getCatalogRef(InvCatalogRef dd) to CatalogGrawler.Listener
+    CoordAxis1D.findCoordElement() bug for Longitude
+    MAMath.convert2packed() utility for scale/offset writing
+    Change _unsigned to _Unsigned; look for _Unsigned but ignore case.
+  28: EarthLocation.isMissing()
+    Improvements to CoordAxis1D.findCoordElement(coord)
+    Start to fix CoordSysBuilder to deal with groups.
+    DefaultConventions - split from GDV.
+    Nested Tables implementation FeatureType (ucar.nc2.ft) framework. mostly POINT, some STATION
+    Bugs and performance improvements for StructureDS
+    TDWR into NIDS iosp
+    Grib2 tolerate missing parameters
+  27: Start implementing CF point data spec in FeatureType (ucar.nc2.ft) framework
+    Point data: RecordHelper using wrong StructureMembers - always need to get from curent StructureData/Array object!
+    Range, Section: use Range.VLEN for size < 0.
+    H5iosp: structure member reading had wrong byteOrder
+    VariableDS.lookupEnum must defer to orgVar
+    H5header: redo String, char attributes;  _FillValue attribute vs Message
+    H5iosp: exception if unknown filter.
+    HDF5 shuffle filter was inverted
+    HDF5 char attributes are Strings (UTF-8)
+    DataType.getClass is deprecated - use DataType.getPrimitiveClass
+    Array.isUnsigned(): ArrayByte, ArrayShort, ArrayInt all check when doing conversions;
+      NetcdfFile.readData() sets this based on Variable.isUnsigned().
+    DataType.OPAQUE : use ByteBuffers wrapped by ArrayObject
+    Array.set() made public for efficiency, eg in Attributes
+    bugs in enhance handling and NcML
+    JNI interface to netcdf4 C library, for testing
+  26: ucar.nc2.ft.point.writer.CFPointObWriter, WriterCFPointObsDataset for writig point obs data in proposed CF format.
+    EnhancedScaleMissingImpl: deal with unsigned data and missing values
+    Universal Formal Radar IOSP
+    NetcdfDatasetInfo must reopen dataset, capture CoordSysBuilder info, so that normal case doesnt retain unneeded objects
+  25: opendap parsing bug with signed bytes
+    ncml agg fixes
+    grib thread-safety
+    Calendar.clear() to eliminate random millisecs in a new Date
+    NIDS: raster,  DPA read bug
+    BUFR tables cleanup
+    add Grib GDS type 87
+    NCDumpW -ncml -vall now works
+    cache cleanup only worked once (!)
+    agg files were being opened twice under some circumstances
+    FileCache hard limit
+  24: cleanup error messages when catref or show catalog service fails to open remote catalog.
+    HTTPRandomAccessFile tolerates lack of "Accept-Ranges" header
+    bug in IO.copyUrlB buffering - was very slow, prone to hang
+    start to reduce memory consumption based on TDS profiling:
+        - remove ucar.ma2.Index.set/getName() since its never used
+        - NetcdfDataset does not retain NetcdfDatasetInfo
+        - remove GribServiceProvider.parseInfo
+        - DateUnit does not retain DateFormatter or timeUnitString
+        - LatLonPointImpl does not preallocate StringBuilders
+  23: new visad.jar (9/12/08)
+    more BUFR fixes
+    DateRange now moves when start or end date = "present"
+    NetcdfFile.canOpen()
+    GeoCoordSys: warn, dont fail, if x, y axis units not compatible with "km"
+    mcidas area iosp
+  22: improved BUFR reading
+  21: Improve nexrad3 iosp
+    GeoTiff: new projections
+  20: StructureDS: get nested convert to work
+    Mercator projection: remove lat0; grib parameters were interpreted wrong
+    Allow opening GRIB files where we dont know the grid type, and so cant add coordinates
+    HDF5 bug: filtered data (eg compressed) wasnt checking for byte order.
+    add 'nodods':, 'slurp:' as aliases for http:
+    enums return values, enhance will convert to Strings
+    redo NetcdfDataset.EnhanceMode, use EnumSet
+    ENUM1, ENUM2, ENUM4 enum types
+    BUFR code tables (still experimental)
+    BUFR "associated variables"
+    VariableDS extends EnhanceScaleMissing, StructureDS and VariableEnhanced does not
+  19: BUFR reading mostly works
+    turn off debugging
+    StructureDS.convert nested structures
+  18: fix large file writing
+    in agg, fix CacheVar, joinExisting persistance.
+    move NetcdfDataset.makeArray to Array.makeArray, add new variant
+    UnidataPointObsDataset does not require bounding box in global attributes
+    NetcdfFileWriteable will allow object names to start with a digit
+    ToolsUI : allow setting file caching
+    add NcdumpW.printArray for vanilla array printing
+    CoordSysBuilder allows coordinate axes to have coordinate systems
+    move McIDASAreaProjection, McIDASAreaTransformBuilder to ucar.nc2.iosp.mcidas
+    change AxisType, DataType, FeatureType, TransformType into a java 1.5 enum
+    WRFConvention tolerates not having GLAT,GLON fields
+    bug fixes in BUFR
+    NcMLWriter.writeXMLexplicit puts <explicit/> in NcML
+    fix bug in NCdumpW.print sequences
+  17: HTTPRandomAccessFile allows content-length to be long
+    fix NcML aggregation unit tests; add new ones
+    integrate aggregation with FileCache, experimental concurrency
+    fix bug with relative URLs with blanks in them (URLnaming)
+    finish new agg features : promoteGlobalAttribute, timeUnitsChange
+  16: remove direct use of ucar.units, except from ucar.nc2.units
+    rewrite NetcdfFileCache, remove NetcdfDatasetCache
+    EnhanceScaleMissingImpl uses Misc.closeEnough for missing value comparisions.
+    default VariableDS.useNaNs = true
+    ucar.nc2.util.cache.FileCache uses FileCacheable, FileFactory interfaces;
+        implement NetcdfFileCache, HTTP file cache with FileCache.
+    start adding net.jcip.annotations to document thread safetyAgg
+    convertScaleOffsetMissing() methods back into VariableEnhanced
+    clean up Aggregation, make sure docs are correct
+    clean up NetcdfDataset.EnhanceMode, add deferred option
+  15: change StringBuffer to StringBuilder for efficiency
+    clean up ArrayStructure/StructureData API, clarify Member use
+    StructureData.getScalarXXX(name) must be correct type
+    cleanup javadoc, improve reference docs
+    NetcdfFileWriteable - redefine mode, large file support, extra header bytes
+    library upgrades : JDOM 1.1
+    NetcdfFile.readSection(secSpec) used in NcDumpPanel, replaces old readNestedData.
+  14: NetcdfDataset: unsigned always gets converted
+    Netcdf-3 files: truncate Strings at first null byte.
+    complete rework of point datatypes, now in package ucar.nc2.ft (feature types)
+    many improvements to Structure, ArrayStructure etc
+    rewrite BUFR and supporting library, improve tables, etc
+    make sure compiles under 1.5
+  13: hdf4 attribute arrays
+  12: DODS preload
+    put back HttpClientManager, RuntimeConfigParser temporarily (testing with IDV)
+    hdf4 bug fixes
+    experiment with ucar.nc2.dt2
+    iosp.NmcObsLegacy
+    DataType Sequence
+  11: start to fix name/shortName, ie deal with Groups systematically
+    Structure/ArrayStructure/StructureData refactor
+  10: hdf4 bug fix - no data tag, use missing data
+    Structure.subset(), nc3 optimizes for it
+    hdf5, ArrayStructureBB : set byteOrder
+    ArrayStructureBB puts Strings on "heap"
+    rearrange packages to separate modules
+    cdm build redone - xxxComplete.jar added
+    fix problem preventing 1.5 compilation (ternary op returns array)
+  09: hdf5 byteOrder must be set when chunked (tiledLayout)
+
+========================================
+API Changes from Java-Netcdf version 2.2
+
+ Data Model
+  * Object names are Unicode Strings. No Restrictions on characters used.
+  * DataType STRING are Unicode. In Netcdf3/4, stored as UTF-8 encoded.
+  * DataType CHAR are uninterpreted bytes, default is to consider them ascii.
+  * DataType ENUM
+  * DataType OPAQUE
+  * DataType SEQUENCE
+
+API Extensive API changes. Most, but not completely backwards-compatible.
+  * change StringBuffer to StringBuilder for efficiency
+  
+ Package ucar.ma2
+   + Array local iterator: hasNext() nextXXXX() methods.
+
+   + ArraySequence handles Sequence with StructureDataIterator.
+   * Old ArraySequence now called ArraySequenceNested
+
+   - ArrayStructure.getArrayXXX removed - use getJavaArrayXXX
+   + ArrayStructure.getMemberArray() to extract individual member data as Arrays
+   + ArrayStructure.convertScalarDouble, Float
+
+   + Section used instead of List<Range>
+   + Section.appendRange() idioms for constructing
+
+   - StructureData.convertScalarDouble() removed, use StructureDS.convertScalarDouble()
+   - StructureData.getArrayXXX removed - use getJavaArrayXXX
+   - StructureData.findMemberArray removed - use getArray
+   + StructureData.convertScalarDouble, Float
+   * StructureData.getScalarXXX(String memberName), getJavaArrayXXX(String memberName) must match type exactly
+
+ Package ucar.nc2
+   * Attribute mutable methods no longer public, so Attribute is immutable
+
+   - Dimension.getCoordinateVariables(), addCoordinateVariable() removed
+   + Dimensions know what Group they belong to
+   * Dimension.UNKNOWN now DIMENSION.VLEN
+   - Dimension.UNLIMITED removed
+   * Dimension can be set immutable.
+
+   + EnumTypedef class added for DataType.ENUM
+
+   + Group tracks EnumTypedef
+   + Group.findVariableEscaped() assumes variable name is escaped.
+   + Group can be set immutable.
+
+   * IOServiceProvider -> ucar.nc2.iosp.IOServiceProvider
+
+   + NetcdfFile.addStringVariable(), addVariable() convenience methods
+   - NetcdfFile.addRecordStructure removed, use sendIospMessage(IOSP_MESSAGE_ADD_RECORD_STRUCTURE)
+   - NetcdfFile.readMemberData() removed: use Structure.select() or readSection()
+   + NetcdfFile.readToByteChannel experimental, for maximum performance
+   - NetcdfFile.read(String variableSection, boolean flatten) -> readSection(secSpec); flatten= false not supported
+   + NetcdfFile implements FileCacheable
+   * NetcdfFile.setFileCache() replaced old setCacheState().
+
+   + NetcdfFileWriteable has new convenience methods
+   + NetcdfFileWriteable redefine mode, large file support, extra header bytes
+
+   - NCdump is deprecated, use NCdumpW which uses a java.io.Writer to do Unicode correctly
+   * NCdumpW.CEresult put in sepetat class
+   * NCdumpW.makeSectionString moved to CEresult
+
+   * VariableSimpleIF.convertScaleOffsetMissing moved to VariableEnhanced
+   * VariableIF extends VariableSimpleIF
+
+   - Variable.getCoordinateDimension() removed
+   - Variable.calcIsCoordinateVariable() removed
+   + Variable.isCoordinateVariable() added
+   - Variable.setIsCoordinateAxis() removed
+   - Variable.set/getIOVar() removed
+   * Variable can be set immutable.
+   - Variable.readAllStructures is removed
+
+   + Sequence is a one-dimensional Structure with indeterminate length
+
+   * Structure.select() create subset consisting only of given member variables
+   - Structure.convertXXX removed
+
+   + VariableSimpleAdapter adapts a StructureMembers.Member into a VariableSimpleIF
+
+  Package ucar.nc2.dataset
+   * NetcdfDataset.EnhanceMode to control enhancing
+   * StructureDS correctly gets enhanced
+   * NetcdfDataset.makeArray -> Array.makeArray()
+   + both NetcdfFile and NetcdfDataset are in the same FileCache, using acquireXXX().
+   + FileCache configuration done though NetcdfDataset.
+
+   - VariableDS.isEnhanced() removed
+
+  Package ucar.nc2.dt
+   * TypedDatasetFactory.open() uses StringBuilder
+
+  Package ucar.nc2.iosp
+   * Layouts and Chunkers factored out for reuse
+     - IndexChunker, IndexChunkerTiled
+     - LayoutRegular, LayoutRegularSegmented, LayoutSegmented, LayoutTIled, LayoutBBTiled
+   * IOServiceProvider.readNestedData() not needed anymore. optimize readData(Structure struct),
+      where struct has only a subset of member Variables
+   + IOServiceProvider.readSection(secSpec) with default implementation in AbstractIOServiceProvider
+   + IOServiceProvider.readData(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+     to allow use of nio.Channels
+
+  Package ucar.nc2.iosp.netcdf3
+    * netcdf3 format is now just one of the possible IOSPs
+    * N3streamWriter allows netcdf3 to be written as a stream
+
+  Package ucar.nc2.util
+    * RuntimeConfigParser -> ucar.nc2.util.xml
+
+  Package ucar.nc2.util.cache
+    * FileCache uses FileCacheable and FileFactory, replaces NetcdfFileCache, NetcdfDatasetCache, HTTPFileCache
+    + FileCache no longer static, allows any number of caches. uses java.util.concurrent
+    * FileCacheRaf handles RandomAccessFile caching for TDS HTTP file serving.
+
+  Package ucar.nc2.units
+    * DateUnit is not a superclass of SimpleUnit
+
+  Package thredds.catalog
+    * DataType -> ucar.nc2.constants.FeatureType
+
+  Refactoring to reduce dependencies among modules (core, netcdf, ui, tds)
+    * ucar.nc2.dataset.conv._Coordinate moved to ucar.nc2.constants
+    * thredds.catalog.DataType moved to ucar.nc2.constants
+    * ucar.nc2.dataset.AxisType moved to ucar.nc2.constants
+
+    * thredds.util.DateFromString moved to ucar.nc2.units
+    * thredds.datatype to ucar.nc2.units
+
+    * thredds.util to ucar.nc2.util
+    * thredds.util.net to ucar.nc2.util.net
+    * ucar.nc2.dataset.HttpClientManager to ucar.nc2.util.net
+    * remove opendap.dap.DConnect2, ucar.unidata.io.http.HTTPRandomAccessFile from HttpClientManager: must be done seperately
+    * ucar.nc2.util.NetworkUtils to ucar.nc2.util.net.URLnaming
+
+    * thredds.util.net.URLExtractor to ui module
+    * thredds.util.ListenerManager to ui module
+    * thredds.util.Resource to ui module
+    * thredds.util.SocketMessage to ui module
+    * thredds.datamodel to ui
+    * thredds.tools to ui
+
+    * thredds.cataloggen.catalogGenMain (org.apache.log4j) to tds module
+    * thredds.dqc to tds
+    * thredds.cataloggen.CatalogRefInfo to thredds.cataloggen.config
+
+
+
