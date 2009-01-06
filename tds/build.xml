@@ -95,7 +95,7 @@
 
   <!-- Libraries needed for tests. -->
   <property name="spring-test.jar" value="external/spring-test-2.5.jar"/>
-  <property name="junit.jar" value="external/junit.jar"/>
+  <property name="junit.jar" value="external/junit-4.5.jar"/>
   <property name="httpunit.jar" value="external/httpunit.jar"/>
 
   <fileset id="compile.libraries" dir="${lib.dir}">
