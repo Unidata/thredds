@@ -8,23 +8,17 @@ import org.springframework.validation.ObjectError;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
 
-import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.ServletUtil;
 import thredds.server.config.TdsContext;
-import thredds.server.views.FileView;
 import thredds.server.views.InvCatalogXmlView;
 import thredds.catalog.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Handle requests for catalog service on remote catalogs.
@@ -44,32 +38,10 @@ public class RemoteCatalogServiceController extends AbstractController
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   private TdsContext tdsContext;
-  private boolean catalogSupportOnly;
-  private boolean htmlView;
 
   public void setTdsContext( TdsContext tdsContext )
   {
     this.tdsContext = tdsContext;
-  }
-
-  public boolean isCatalogSupportOnly()
-  {
-    return catalogSupportOnly;
-  }
-
-  public void setCatalogSupportOnly( boolean catalogSupportOnly )
-  {
-    this.catalogSupportOnly = catalogSupportOnly;
-  }
-
-  public boolean isHtmlView()
-  {
-    return htmlView;
-  }
-
-  public void setHtmlView( boolean htmlView )
-  {
-    this.htmlView = htmlView;
   }
 
   protected ModelAndView handleRequestInternal( HttpServletRequest request,
@@ -99,7 +71,7 @@ public class RemoteCatalogServiceController extends AbstractController
     URI uri = catalogServiceRequest.getCatalogUri();
 
     // Check for matching catalog.
-    InvCatalog catalog = null;
+    InvCatalogImpl catalog = null;
     InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( true );
     try
     {
@@ -107,35 +79,44 @@ public class RemoteCatalogServiceController extends AbstractController
     }
     catch ( Throwable t )
     {
-      String msg = "Bad catalog [" + uri + "]: " + t.getMessage();
+      String msg = "Error reading catalog [" + uri + "]: " + t.getMessage();
       log.error( "handleRequestInternal(): " + msg );
       ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
 
-    // If no catalog found, handle as a publicDoc request.
+    // Check whether a catalog was found.
     if ( catalog == null )
     {
-      String msg = "No catalog found [" + uri + "].";
+      String msg = "Failed to read catalog [" + uri + "].";
       log.error( "handleRequestInternal(): " + msg );
       ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
+    }
+
+    // Check catalog validity.
+    StringBuilder validateMess = new StringBuilder();
+    boolean verbose = catalogServiceRequest.isVerbose();
+    catalog.check( validateMess, verbose );
+    if ( catalog.hasFatalError() )
+    {
+      Map<String, Object> model = new HashMap<String,Object>();
+      model.put( "catalogUrl", uri );
+      model.put( "message", validateMess.toString() );
+      model.put( "siteLogoPath", HtmlWriter.getInstance().getContextPath() + HtmlWriter.getInstance().getContextLogoPath() );
+      model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
+      model.put( "serverName", HtmlWriter.getInstance().getContextName() );
+      return new ModelAndView( "/thredds/server/catalogservice/validationError", model );
     }
 
     ///////////////////////////////////////////
     // Otherwise, handle catalog as indicated by "command".
     if ( catalogServiceRequest.getCommand().equals( Command.SHOW))
     {
-      if ( this.htmlView )
-      {
-        HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, true );
-        return null;
-        // return constructModelForCatalogView( catalog, this.htmlView );
-      }
-      else
-        return new ModelAndView( new InvCatalogXmlView(), "catalog", catalog );
+      HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, true );
+      return null;
     }
     else if ( catalogServiceRequest.getCommand().equals( Command.SUBSET ))
     {
@@ -150,7 +131,7 @@ public class RemoteCatalogServiceController extends AbstractController
         return null;
       }
 
-      if ( this.htmlView)
+      if ( catalogServiceRequest.isHtmlView() )
       {
         HtmlWriter.getInstance().showDataset( uri.toString(), (InvDatasetImpl) dataset, request, response );
         return null;
@@ -161,30 +142,24 @@ public class RemoteCatalogServiceController extends AbstractController
         return new ModelAndView( new InvCatalogXmlView(), "catalog", catalog );
       }
     }
-    return null;
-  }
-
-  private ModelAndView handlePublicDocumentRequest( HttpServletRequest request,
-                                                    HttpServletResponse response,
-                                                    String path )
-          throws IOException, ServletException
-  {
-    // If not supporting access to public document files, send not found response.
-    if ( this.catalogSupportOnly )
+    else if ( catalogServiceRequest.getCommand().equals( Command.VALIDATE ) )
     {
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
-      response.sendError( HttpServletResponse.SC_NOT_FOUND );
+      Map<String, Object> model = new HashMap<String, Object>();
+      model.put( "catalogUrl", uri );
+      model.put( "message", validateMess.toString() );
+      model.put( "siteLogoPath", HtmlWriter.getInstance().getContextPath() + HtmlWriter.getInstance().getContextLogoPath() );
+      model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
+      model.put( "serverName", HtmlWriter.getInstance().getContextName() );
+      return new ModelAndView( "/thredds/server/catalogservice/validationMessage", model );
+    }
+    else
+    {
+      String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
+      log.error( "handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation." );
+      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+      response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
-
-    // If request doesn't match a known catalog, look for a public document.
-    File publicFile = tdsContext.getPublicDocFileSource().getFile( path );
-    if ( publicFile != null )
-      return new ModelAndView( new FileView(), "file", publicFile );
-
-    // If request doesn't match a public document, hand to default.
-    tdsContext.getDefaultRequestDispatcher().forward( request, response );
-    return null;
   }
 
   private ModelAndView constructModelForCatalogView( InvCatalog cat )

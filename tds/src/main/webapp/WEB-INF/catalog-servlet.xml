@@ -7,13 +7,25 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <bean id="xmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+  <bean id="anyXmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="catalogSupportOnly" value="false"/>
+    <property name="htmlView" value="false"/>
+  </bean>
+
+  <bean id="anyHtmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="catalogSupportOnly" value="false"/>
+    <property name="htmlView" value="true"/>
+  </bean>
+
+  <bean id="catalogXmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="catalogSupportOnly" value="true"/>
     <property name="htmlView" value="false"/>
   </bean>
 
-  <bean id="htmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+  <bean id="catalogHtmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="catalogSupportOnly" value="true"/>
     <property name="htmlView" value="true"/>
@@ -22,8 +34,10 @@
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /**/*.html=htmlController
-        /**/*.xml=xmlController
+        /catalog/**/*.xml=catalogXmlController
+        /catalog/**/*.html=catalogHtmlController
+        /**/*.xml=anyXmlController
+        /**/*.html=anyHtmlController
       </value>
     </property>
   </bean>

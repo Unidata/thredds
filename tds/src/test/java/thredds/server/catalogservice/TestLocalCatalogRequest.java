@@ -17,9 +17,38 @@ public class TestLocalCatalogRequest extends TestCase
 
   private String parameterNameCommand = "command";
   private String parameterNameDatasetId = "dataset";
+
+  private MockHttpServletRequest req;
+  private BindingResult bindingResult;
+  private String bindResultMsg;
+  private LocalCatalogRequest lcr;
+
+  String path = "my/cool/catalog.xml";
+  String cmdShow = "show";
+  String cmdSubset = "subset";
+  String dsId = "my/cool/dataset";
+
+
   public TestLocalCatalogRequest( String name )
   {
     super( name );
+  }
+
+  public void testNoCommandDatasetId()
+  {
+    boolean htmlView = false;
+
+
+    // Basic setup
+    req = this.basicSetup( "/catalog", path, null, dsId );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
+    bindResultMsg = checkBindingResults( bindingResult );
+    if ( bindResultMsg != null )
+      fail( bindResultMsg );
+    lcr = (LocalCatalogRequest) bindingResult.getTarget();
+    assertEquals( lcr.getPath(), path );
+    assertTrue( lcr.getCommand().toString().equalsIgnoreCase( cmdSubset ) );
+    assertEquals( lcr.getDataset(), dsId );
   }
 
   public void testCatalogServletPathWithXml()
@@ -30,20 +59,18 @@ public class TestLocalCatalogRequest extends TestCase
     String cmdSubset = "subset";
     String dsId = "my/cool/dataset";
 
-    // Basic setup
-    MockHttpServletRequest req = new MockHttpServletRequest();
-    req.setMethod( "GET" );
-    req.setContextPath( "/thredds" );
-    req.setServletPath( "/catalog" );
-    req.setPathInfo( "/" + path );
+    MockHttpServletRequest req;
+    BindingResult bindingResult;
+    String bindResultMsg;
+    LocalCatalogRequest lcr;
 
     // Test that valid when "command"==SHOW
-    req.setParameter( this.parameterNameCommand, cmdShow );
-    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
-    String bindResultMsg = checkBindingResults( bindingResult );
+    req = this.basicSetup( "/catalog", "/" + path, cmdShow, null );
+    bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
+    bindResultMsg = checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg);
-    LocalCatalogRequest lcr = (LocalCatalogRequest) bindingResult.getTarget();
+    lcr = (LocalCatalogRequest) bindingResult.getTarget();
     assertEquals( lcr.getPath(), path);
     assertTrue( lcr.getCommand().toString().equalsIgnoreCase( cmdShow) );
     assertEquals( lcr.getDataset(), "");
@@ -262,5 +289,18 @@ public class TestLocalCatalogRequest extends TestCase
       return sb.toString();
     }
     return null;
+  }
+
+  public MockHttpServletRequest basicSetup( String servletPath, String pathInfo,
+                                            String command, String datasetId )
+  {
+    MockHttpServletRequest req = new MockHttpServletRequest();
+    req.setMethod( "GET" );
+    req.setContextPath( "/thredds" );
+    req.setServletPath( servletPath );
+    req.setPathInfo( pathInfo );
+    req.setParameter( parameterNameCommand, command );
+    req.setParameter( parameterNameDatasetId, datasetId );
+    return req;
   }
 }

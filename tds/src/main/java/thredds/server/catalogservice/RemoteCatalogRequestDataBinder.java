@@ -21,7 +21,7 @@ public class RemoteCatalogRequestDataBinder extends DataBinder
     COMMAND( "command", "command", "SHOW" ),
     DATASET( "dataset", "dataset", "" ),
     VERBOSE( "verbose", "verbose", "false"),
-    HTML_VIEW( "htmlView", "htmlView", "false");
+    HTML_VIEW( "htmlView", "htmlView", "true");
 
     private String parameterName;
     private String propertyName;

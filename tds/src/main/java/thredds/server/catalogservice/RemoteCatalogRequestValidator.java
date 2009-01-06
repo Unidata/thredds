@@ -48,6 +48,8 @@ public class RemoteCatalogRequestValidator implements Validator
     // - validate "htmlView" - not empty
     if ( rcr.getCommand().equals( Command.SHOW ))
       ValidationUtils.rejectIfEmpty( e, "htmlView", "htmlView.empty" );
+    if ( ! rcr.isHtmlView()) e.rejectValue( "htmlView", "htmlView.falseForRemoteCatalogShow",
+                                            "A remote catalog is already available as XML.");
 
     // When command.equals( SUBSET),
     // - validate "dataset" - not empty

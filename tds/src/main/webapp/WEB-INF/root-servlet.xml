@@ -11,24 +11,10 @@
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
-  <bean id="xmlController" class="thredds.server.catalogservice.LocalCatalogServiceController" >
-    <property name="tdsContext" ref="tdsContext"/>
-    <property name="catalogSupportOnly" value="false" />
-    <property name="htmlView" value="false" />
-  </bean>
-
-  <bean id="htmlController" class="thredds.server.catalogservice.LocalCatalogServiceController" >
-    <property name="tdsContext" ref="tdsContext"/>
-    <property name="catalogSupportOnly" value="false"/>
-    <property name="htmlView" value="true"/>
-  </bean>
-
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
         /=rootController
-        /**/*.html=htmlController
-        /**/*.xml=xmlController
         /**/*=rootController
       </value>
     </property>

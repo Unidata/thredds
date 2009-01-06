@@ -161,7 +161,14 @@ public class LocalCatalogServiceController extends AbstractController
         return new ModelAndView( new InvCatalogXmlView(), "catalog", catalog );
       }
     }
-    return null;
+    else
+    {
+      String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
+      log.error( "handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation." );
+      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+      response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
+      return null;
+    }
   }
 
   private ModelAndView handlePublicDocumentRequest( HttpServletRequest request,

@@ -142,6 +142,13 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <!-- Setup for catalog services. (Catalog subsetting, validation, and translation into HTML.) -->
+  <servlet>
+    <servlet-name>catalogService</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
   <servlet>
     <servlet-name>debug</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -307,21 +314,6 @@
   -->
   <!-- catalog services -->
 
-  <!-- Setup for the CatalogHtml servlet. (Catalog validation and translation into HTML.) -->
-  <servlet>
-    <servlet-name>catalog</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <!--servlet-class>thredds.servlet.CatalogServlet</servlet-class-->
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>catalogService</servlet-name>
-    <!--servlet-class>thredds.servlet.CatalogServicesServlet</servlet-class-->
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
   <servlet>
     <servlet-name>CdmValidator</servlet-name>
     <servlet-class>thredds.servlet.CoordSysValidatorServlet</servlet-class>
@@ -377,19 +369,28 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>root</servlet-name>
-    <url-pattern>*.html</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>root</servlet-name>
-    <url-pattern>*.xml</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>root</servlet-name>
     <url-pattern>*.css</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>*.gif</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>catalogService</servlet-name>
+    <url-pattern>*.xml</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>catalogService</servlet-name>
+    <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>catalogService</servlet-name>
+    <url-pattern>/catalog/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>catalogService</servlet-name>
+    <url-pattern>/remoteCatalogService</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
@@ -484,20 +485,6 @@
     <url-pattern>/cataloggen/*</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
-    <servlet-name>catalog</servlet-name>
-    <url-pattern>/catalog/*</url-pattern>
-  </servlet-mapping>
-
-  <!-- servlet-mapping>
-    <servlet-name>catalogService</servlet-name>
-    <url-pattern>/catalog.html</url-pattern>
-  </servlet-mapping -->
-
-  <servlet-mapping>
-    <servlet-name>catalogService</servlet-name>
-    <url-pattern>/remoteCatalogService</url-pattern>
-  </servlet-mapping>
 
   <!--servlet-mapping>
     <servlet-name>CdmValidator</servlet-name>

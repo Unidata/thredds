@@ -7,17 +7,42 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-  <bean id="catalogServiceController" class="thredds.server.catalogservice.CatalogServiceController" >
+  <bean id="anyXmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="catalogSupportOnly" value="false"/>
+    <property name="htmlView" value="false"/>
+  </bean>
+
+  <bean id="anyHtmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="catalogSupportOnly" value="false"/>
+    <property name="htmlView" value="true"/>
+  </bean>
+
+  <bean id="catalogXmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="catalogSupportOnly" value="true"/>
+    <property name="htmlView" value="false"/>
+  </bean>
+
+  <bean id="catalogHtmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="catalogSupportOnly" value="true"/>
+    <property name="htmlView" value="true"/>
+  </bean>
+
+  <bean id="remoteCatalogController" class="thredds.server.catalogservice.RemoteCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
   </bean>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /=catalogServiceController
-        /**/*=catalogServiceController
-        /**/*.xml=catalogServiceController
-        /j/f.html=catalogServiceController
+        /**/*.xml=anyXmlController
+        /**/*.html=anyHtmlController
+        /catalog/**/*.xml=catalogXmlController
+        /catalog/**/*.html=catalogHtmlController
+        /remoteCatalogService=remoteCatalogController
       </value>
     </property>
   </bean>
