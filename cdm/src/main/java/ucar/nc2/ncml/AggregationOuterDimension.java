@@ -106,6 +106,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
    * Useful for Variables that are used a lot, and not too large, like coordinate variables.
    *
    * @param varName name of variable to cache. must exist.
+   * @param dtype datatype of variable
    */
   void addCacheVariable(String varName, DataType dtype) {
     if (findCacheVariable(varName) != null) return; // no duplicates
@@ -490,9 +491,9 @@ public abstract class AggregationOuterDimension extends Aggregation {
   } */
 
   @Override
-  protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
+  protected Dataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS, String sectionSpec,
           EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
-    return new DatasetOuterDimension(cacheName, location, ncoordS, coordValueS, enhance, reader);
+    return new DatasetOuterDimension(cacheName, location, id, ncoordS, coordValueS, enhance, reader);
   }
 
   /**
@@ -517,14 +518,15 @@ public abstract class AggregationOuterDimension extends Aggregation {
      *
      * @param cacheName   a unique name to use for caching
      * @param location    attribute "location" on the netcdf element
+     * @param id          attribute "id" on the netcdf element
      * @param ncoordS     attribute "ncoords" on the netcdf element
      * @param coordValueS attribute "coordValue" on the netcdf element
      * @param enhance     open dataset in enhance mode
      * @param reader      factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
-    protected DatasetOuterDimension(String cacheName, String location, String ncoordS, String coordValueS,
+    protected DatasetOuterDimension(String cacheName, String location, String id, String ncoordS, String coordValueS,
             EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
-      super(cacheName, location, enhance, reader);
+      super(cacheName, location, id, enhance, reader);
       this.coordValue = coordValueS;
 
       if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE)) {
@@ -748,10 +750,10 @@ public abstract class AggregationOuterDimension extends Aggregation {
     void reset() {
       Map<String, Array> newMap = new HashMap<String, Array>();
       for (Dataset ds : datasets) {
-        String location = ds.getLocation();
-        Array data = dataMap.get(location);
+        String id = ds.getId();
+        Array data = dataMap.get(id);
         if (data != null)
-          newMap.put(location, data);
+          newMap.put(id, data);
       }
       dataMap = newMap;
     }
@@ -802,11 +804,11 @@ public abstract class AggregationOuterDimension extends Aggregation {
     }
 
     protected void setData(Dataset dset, Array data) {
-      dataMap.put(dset.getLocation(), data);
+      dataMap.put(dset.getId(), data);
     }
 
     protected Array getData(Dataset dset) {
-      return dataMap.get(dset.getLocation());
+      return dataMap.get(dset.getId());
     }
 
     // get the Array of data for this var in this dataset, acquire file

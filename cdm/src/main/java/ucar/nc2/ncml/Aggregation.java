@@ -164,16 +164,17 @@ public abstract class Aggregation implements ProxyReader {
    *
    * @param cacheName   a unique name to use for caching
    * @param location    attribute "location" on the netcdf element
+   * @param id          attribute "id" on the netcdf element
    * @param ncoordS     attribute "ncoords" on the netcdf element
    * @param coordValueS attribute "coordValue" on the netcdf element
    * @param sectionSpec attribute "section" on the netcdf element
    * @param reader      factory for reading this netcdf dataset
    * @param cancelTask  user may cancel, may be null
    */
-  public void addExplicitDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
+  public void addExplicitDataset(String cacheName, String location, String id, String ncoordS, String coordValueS, String sectionSpec,
                                  ucar.nc2.util.cache.FileFactory reader, CancelTask cancelTask) {
 
-    Dataset nested = makeDataset(cacheName, location, ncoordS, coordValueS, sectionSpec, null, reader);
+    Dataset nested = makeDataset(cacheName, location, id, ncoordS, coordValueS, sectionSpec, null, reader);
     explicitDatasets.add(nested);
   }
 
@@ -299,7 +300,7 @@ public abstract class Aggregation implements ProxyReader {
     // add the ordered list of scanned Datasets to the result List
     for (MyCrawlableDataset myf : fileList) {
       String location = myf.file.getPath();
-      Aggregation.Dataset ds = makeDataset(location, location, null, myf.dateCoordS, null, enhance, null);
+      Aggregation.Dataset ds = makeDataset(location, location, null, null, myf.dateCoordS, null, enhance, null);
       ds.setInfo(myf);
       datasets.add(ds);
     }
@@ -446,6 +447,7 @@ public abstract class Aggregation implements ProxyReader {
    *
    * @param cacheName   a unique name to use for caching
    * @param location    attribute "location" on the netcdf element
+   * @param id          attribute "id" on the netcdf element
    * @param ncoordS     attribute "ncoords" on the netcdf element
    * @param coordValueS attribute "coordValue" on the netcdf element
    * @param sectionSpec attribute "sectionSpec" on the netcdf element
@@ -453,10 +455,10 @@ public abstract class Aggregation implements ProxyReader {
    * @param reader      factory for reading this netcdf dataset
    * @return a Aggregation.Dataset
    */
-  protected Dataset makeDataset(String cacheName, String location, String ncoordS, String coordValueS, String sectionSpec,
+  protected Dataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS, String sectionSpec,
           EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
     //return new Dataset(cacheName, location, ncoordS, coordValueS, sectionSpec, enhance, reader);
-    return new Dataset(cacheName, location, enhance, reader); // overriden in OuterDim, tiled
+    return new Dataset(cacheName, location, id, enhance, reader); // overriden in OuterDim, tiled
   }
 
 
@@ -465,6 +467,7 @@ public abstract class Aggregation implements ProxyReader {
    */
   class Dataset {
     protected String location; // location attribute on the netcdf element
+    protected String id; // id attribute on the netcdf element
     protected MyCrawlableDataset cd;
 
     // deferred opening
@@ -491,9 +494,10 @@ public abstract class Aggregation implements ProxyReader {
      * @param enhance   open dataset in enhance mode, may be null
      * @param reader    factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
-    protected Dataset(String cacheLocation, String location, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+    protected Dataset(String cacheLocation, String location, String id, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
       this(location);
       this.cacheLocation = cacheLocation;
+      this.id = id;
       this.enhance = enhance;
       this.reader = reader;
     }
@@ -505,6 +509,12 @@ public abstract class Aggregation implements ProxyReader {
      */
     public String getLocation() {
       return location;
+    }
+
+    public String getId() {
+      if (id != null) return id;
+      if (location != null) return location;
+      return null;
     }
 
     protected NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {

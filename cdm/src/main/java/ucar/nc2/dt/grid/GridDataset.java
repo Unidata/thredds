@@ -93,6 +93,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     this.ds = ds;
 
     // look for geoGrids
+    parseInfo.format("GridDataset look for GeoGrids\n");
     List<Variable> vars = ds.getVariables();
     for (Variable var : vars) {
       VariableEnhanced varDS = (VariableEnhanced) var;
@@ -220,7 +221,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     if (null == (gridset = gridsetHash.get(gcs.getName()))) {
       gridset = new Gridset(gcs);
       gridsetHash.put(gcs.getName(), gridset);
-      parseInfo.format(" -make new GridCoordSys= %s\n",gcs.getName());
+      if (parseInfo != null) parseInfo.format(" -make new GridCoordSys= %s\n",gcs.getName());
       gcs.makeVerticalTransform(this, parseInfo); // delayed until now
     }
 
@@ -330,7 +331,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     } catch (IOException e) {
       buff.append("NetcdfDatasetInfo failed");
     } finally {
-      if (info != null) try { info.close(); } catch (IOException ee) {} // do nothing      
+      if (info != null) try { info.close(); } catch (IOException ee) {} // do nothing
     }
     buff.append("\n\n----------------------------------------------------\n");
    // buff.append(parseInfo.toString());

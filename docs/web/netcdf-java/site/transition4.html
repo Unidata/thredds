@@ -55,8 +55,7 @@
 <h4>Miscellaneous Notes </h4>
 <ul>
   <li>There is no longer a CoordinateAxis1D(VariableDS) constructor. One must now use CoordinateAxis1D(NetcdfDataset,VariableDS).</li>
-  <li>java.lang.StringBuffer is replaced in various places by java.lang.StringBuilder, a &quot;drop-in replacement for
-    StringBuffer in places where it was being used by a single thread&quot;. </li>
+  <li>java.lang.StringBuffer is replaced in various places by java.lang.StringBuilder or java.util.Formatter, for efficiency</li>
 </ul>
 <hr>
 <h2>UI</h2>

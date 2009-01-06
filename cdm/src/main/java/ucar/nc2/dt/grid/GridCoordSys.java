@@ -513,9 +513,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     vCT.makeVerticalTransform(gds.getNetcdfDataset(), timeDim);
 
     if (vCT.getVerticalTransform() == null) {
-      parseInfo.format("  - ERR can't make VerticalTransform = %s\n", vCT.getVerticalTransformType());
+      if (parseInfo != null) parseInfo.format("  - ERR can't make VerticalTransform = %s\n", vCT.getVerticalTransformType());
     } else {
-      parseInfo.format("  - VerticalTransform = %s\n", vCT.getVerticalTransformType());
+      if (parseInfo != null) parseInfo.format("  - VerticalTransform = %s\n", vCT.getVerticalTransformType());
     }
   }
 

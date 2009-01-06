@@ -182,10 +182,11 @@ public class TestOffAggFmrcGrib extends TestCase {
     assert null != v;
     assert v.getName().equals("Pressure_surface");
     assert v.getRank() == 4;
-    assert v.getShape()[0] == nagg;
-    assert v.getShape()[1] == 29;
-    assert v.getShape()[2] == 257;
-    assert v.getShape()[3] == 369;
+    int[] shape = v.getShape();
+    assert shape[0] == nagg;
+    assert shape[1] == 29 : new Section(shape).toString();
+    assert shape[2] == 257 : new Section(shape).toString();
+    assert shape[3] == 369 : new Section(shape).toString();
     assert v.getDataType() == DataType.FLOAT;
 
     assert !v.isCoordinateVariable();

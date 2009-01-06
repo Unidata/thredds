@@ -46,7 +46,7 @@ import org.jdom.Element;
  * @author caron
  */
 public class AggregationExisting extends AggregationOuterDimension {
-  static private boolean debugPersist = false, debugPersistDetail = false;
+  static private boolean debugPersist = true, debugPersistDetail = true;
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.JOIN_EXISTING, recheckS);
@@ -254,7 +254,7 @@ public class AggregationExisting extends AggregationOuterDimension {
 
       PrintWriter out = new PrintWriter(fos);
       out.print("<?xml version='1.0' encoding='UTF-8'?>\n");
-      out.print("<aggregation xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' version='2' ");
+      out.print("<aggregation xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' version='3' ");
       out.print("type='" + type + "' ");
       if (dimName != null)
         out.print("dimName='" + dimName + "' ");
@@ -265,12 +265,13 @@ public class AggregationExisting extends AggregationOuterDimension {
       List<Dataset> nestedDatasets = getDatasets();
       for (Dataset dataset : nestedDatasets) {
         DatasetOuterDimension dod = (DatasetOuterDimension) dataset;
+        if (dod.getId() == null) logger.warn("id is null");
 
-        out.print("  <netcdf location='" + dataset.getLocation() + "' ");
+        out.print("  <netcdf id='" + dod.getId() + "' ");
         out.print("ncoords='" + dod.getNcoords(null) + "' >\n");
 
         for (CacheVar pv : cacheList) {
-          Array data = pv.dataMap.get(dod.location);
+          Array data = pv.dataMap.get(dod.getId());
           if (data != null) {
             out.print("    <cache varName='" + pv.varName + "' >");
             NCdumpW.printArray(data, out);
@@ -318,29 +319,33 @@ public class AggregationExisting extends AggregationOuterDimension {
     }
 
     String version = aggElem.getAttributeValue("version");
-    if (!version.equals("2")) return; // dont read version 1 cache files  
+    if ((version == null) || !version.equals("3")) return; // dont read old cache files, recreate
 
     // use a map to find datasets to avoid O(n**2) searching
     Map<String,Dataset> map = new HashMap<String,Dataset>();
     for (Dataset ds : getDatasets()) {
-      map.put(ds.getLocation(), ds);
+      map.put(ds.getId(), ds);
     }
 
     List<Element> ncList = aggElem.getChildren("netcdf", NcMLReader.ncNS);
     for (Element netcdfElemNested : ncList) {
-      String location = netcdfElemNested.getAttributeValue("location");
-      DatasetOuterDimension dod = (DatasetOuterDimension) map.get(location);
+      String id = netcdfElemNested.getAttributeValue("id");
+      DatasetOuterDimension dod = (DatasetOuterDimension) map.get(id);
 
-      if (null != dod) {
+      if (null == dod) {
+        if (debugPersist) System.out.println(" have cache but no dataset= " + id);
+        logger.warn(" have cache but no dataset= " + id);
 
-        if (debugPersistDetail) System.out.println("  use cache for " + location);
+      } else {
+
+        if (debugPersist) System.out.println(" use cache for dataset= " + id);
         if (dod.ncoord == 0) {
           String ncoordsS = netcdfElemNested.getAttributeValue("ncoords");
           try {
             dod.ncoord = Integer.parseInt(ncoordsS);
             if (debugPersist) System.out.println(" Read the cache; ncoords = " + dod.ncoord);
           } catch (NumberFormatException e) {
-            logger.error("bad ncoord attribute on dataset=" + location);
+            logger.error("bad ncoord attribute on dataset=" + id);
           }
         }
 
@@ -358,14 +363,14 @@ public class AggregationExisting extends AggregationOuterDimension {
             long start = System.nanoTime();
             String[] vals = sdata.split(" ");
             double took = .001 * .001 * .001 * (System.nanoTime() - start);
-            if (debugPersist) System.out.println(" split took = " + took + " sec; ");
+            if (debugPersist) System.out.println("  split took = " + took + " sec; ");
 
             try {
               start = System.nanoTime();
               Array data = Array.makeArray(pv.dtype, vals);
               took = .001 * .001 * .001 * (System.nanoTime() - start);
-              if (debugPersist) System.out.println(" makeArray took = " + took + " sec nelems= "+data.getSize());
-              pv.dataMap.put(location, data);
+              if (debugPersist) System.out.println("  makeArray took = " + took + " sec nelems= "+data.getSize());
+              pv.dataMap.put(id, data);
             } catch (Exception e) {
               logger.warn("Error reading cached data ",e);
             }

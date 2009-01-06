@@ -1169,6 +1169,7 @@ public class NcMLReader {
       if (location == null)
         location = netcdfElemNested.getAttributeValue("uri");
 
+      String id = netcdfElemNested.getAttributeValue("id");
       String ncoords = netcdfElemNested.getAttributeValue("ncoords");
       String coordValueS = netcdfElemNested.getAttributeValue("coordValue");
       String sectionSpec = netcdfElemNested.getAttributeValue("section");
@@ -1176,7 +1177,7 @@ public class NcMLReader {
       // must always open through a NcML reader, in case the netcdf element modifies the dataset
       NcmlElementReader reader = new NcmlElementReader(ncmlLocation, location, netcdfElemNested);
       String cacheName = ncmlLocation + "#" + Integer.toString(netcdfElemNested.hashCode());
-      agg.addExplicitDataset(cacheName, location, ncoords, coordValueS, sectionSpec, reader, cancelTask);
+      agg.addExplicitDataset(cacheName, location, id, ncoords, coordValueS, sectionSpec, reader, cancelTask);
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;

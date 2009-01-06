@@ -220,7 +220,7 @@ public class FmrcReport {
   }
 
   static void doit(String dir) throws Exception {
-    FmrcInventory fmrc = FmrcInventory.make("C:/data/grib/"+dir+"/", "test", null,
+    FmrcInventory fmrc = FmrcInventory.makeFromDirectory("C:/data/grib/"+dir+"/", "test", null,
             "C:/data/grib/"+dir, "grib1", ForecastModelRunInventory.OPEN_NORMAL);
     FmrcReport report = new FmrcReport();
     report.report( fmrc, System.out, true);

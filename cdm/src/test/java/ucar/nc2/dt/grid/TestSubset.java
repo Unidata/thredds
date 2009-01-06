@@ -313,7 +313,7 @@ public class TestSubset extends TestCase {
 
   // longitude subsetting (CoordAxis1D regular)
    public void testLatLonSubset2() throws Exception {
-    GridDataset dataset = GridDataset.open("C:/data/grid/GFS_Global_onedeg_20081229_1800.grib2.nc");
+    GridDataset dataset = GridDataset.open(TestAll.upcShareDir + "/grid/grib/grib2/data/GFS_Global_onedeg_20090105_0600.grib2");
     GeoGrid grid = dataset.findGridByName("Pressure_surface");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();

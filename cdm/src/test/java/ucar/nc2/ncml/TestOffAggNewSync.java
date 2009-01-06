@@ -87,7 +87,7 @@ public class TestOffAggNewSync extends TestCase {
     assert null != time;
     assert time.getName().equals("time");
     assert time.getRank() == 1;
-    assert time.getSize() == n : time.getSize();
+    assert time.getSize() == n : time.getSize() +" != " + n;
     assert time.getShape()[0] == n;
     assert time.getDataType() == DataType.DOUBLE;
 

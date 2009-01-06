@@ -113,7 +113,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
       if (debug) System.out.println("  FmrcInventory.make path="+fmrcDefinitionPath+" name= "+collectionName+" location= "+params.location
         +" suffix= "+params.suffix+" mode= "+mode);
 
-      fmr = FmrcInventory.make(fmrcDefinitionPath, collectionName, fmrCache, params.location, params.suffix, mode);
+      fmr = FmrcInventory.makeFromDirectory(fmrcDefinitionPath, collectionName, fmrCache, params.location, params.suffix, mode);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -206,7 +206,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
 
       //System.out.println("  fmrcDefinitionPath="+contentPath+" name="+name+" dir="+dir);
       ps.println("\n*******Dataset" + dir);
-      FmrcInventory fmrc = FmrcInventory.make(contentPath, name, fmrCache, dir, ".grib1",
+      FmrcInventory fmrc = FmrcInventory.makeFromDirectory(contentPath, name, fmrCache, dir, ".grib1",
           ForecastModelRunInventory.OPEN_XML_ONLY);
       if (null == fmrc) {
         ps.println("  ERROR - no files were found");
