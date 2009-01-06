@@ -23,11 +23,8 @@ public class CommandEditor extends PropertyEditorSupport
 
   public void setAsText( String text ) throws IllegalArgumentException
   {
-    if ( text == null || text.equals( "" ) )
-    {
-      super.setValue( Command.SHOW );
-      return;
-    }
+    if ( text == null )
+      throw new IllegalArgumentException( "Text must not be null.");
     Command c = Command.valueOf( text.toUpperCase() );
     super.setValue( c );
   }

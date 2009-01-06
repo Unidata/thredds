@@ -20,14 +20,14 @@ public class LocalCatalogRequestDataBinder extends DataBinder
   private static enum FieldInfo
   {
     CATALOG( "catalog", "path", ""),
-    COMMAND( "command", "command", "SHOW" ),
+    COMMAND( "command", "command", "" ),
     DATASET( "dataset", "dataset", "" );
 
     private String parameterName;
     private String propertyName;
     private String defaultValue;
 
-    FieldInfo( String parameterName, String propertyName, String defaultValue)
+    FieldInfo( String parameterName, String propertyName, String defaultValue )
     {
       this.parameterName = parameterName;
       this.propertyName = propertyName;
@@ -53,16 +53,19 @@ public class LocalCatalogRequestDataBinder extends DataBinder
 
     MutablePropertyValues values = new MutablePropertyValues();
 
-    if ( catPath == null || catPath.equals( "" ))
+    // Don't allow null values.
+    if ( catPath == null )
       catPath = FieldInfo.CATALOG.getDefaultValue();
-    values.addPropertyValue( FieldInfo.CATALOG.getPropertyName(), catPath );
-
-    if ( command == null || command.equals( "" ))
-      command = FieldInfo.COMMAND.getDefaultValue();
-    values.addPropertyValue( FieldInfo.COMMAND.getPropertyName(), command );
-
-    if ( dataset == null || dataset.equals( "" ))
+    if ( dataset == null )
       dataset = FieldInfo.DATASET.getDefaultValue();
+
+    // Default to SUBSET if a dataset ID is given, otherwise, SHOW.
+    if ( command == null  )
+      command = dataset.equals( FieldInfo.DATASET.getDefaultValue())
+                ? Command.SHOW.name() : Command.SUBSET.name();
+
+    values.addPropertyValue( FieldInfo.CATALOG.getPropertyName(), catPath );
+    values.addPropertyValue( FieldInfo.COMMAND.getPropertyName(), command );
     values.addPropertyValue( FieldInfo.DATASET.getPropertyName(), dataset );
 
     super.bind( values );

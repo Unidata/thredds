@@ -18,7 +18,7 @@ public class RemoteCatalogRequestDataBinder extends DataBinder
   private static enum FieldInfo
   {
     CATALOG( "catalog", "catalogUri", ""),
-    COMMAND( "command", "command", "SHOW" ),
+    COMMAND( "command", "command", "" ),
     DATASET( "dataset", "dataset", "" ),
     VERBOSE( "verbose", "verbose", "false"),
     HTML_VIEW( "htmlView", "htmlView", "true");
@@ -56,25 +56,27 @@ public class RemoteCatalogRequestDataBinder extends DataBinder
 
     MutablePropertyValues values = new MutablePropertyValues();
 
-    if ( catPath == null || catPath.equals( "" ))
+    // Don't allow null.
+    if ( catPath == null )
       catPath = FieldInfo.CATALOG.getDefaultValue();
-    values.addPropertyValue( FieldInfo.CATALOG.getPropertyName(), catPath );
-
-    if ( isHtmlView == null || isHtmlView.equals( "" ))
-      isHtmlView = FieldInfo.HTML_VIEW.getDefaultValue();
-    values.addPropertyValue( FieldInfo.HTML_VIEW.getPropertyName(), isHtmlView );
-
-    if ( command == null || command.equals( "" ))
-      command = FieldInfo.COMMAND.getDefaultValue();
-    values.addPropertyValue( FieldInfo.COMMAND.getPropertyName(), command );
-
-    if ( verbose == null || verbose.equals( ""))
-      verbose = FieldInfo.VERBOSE.getDefaultValue();
-    values.addPropertyValue( FieldInfo.VERBOSE.getPropertyName(), verbose );
-
-    if ( dataset == null || dataset.equals( "" ))
+    if ( dataset == null )
       dataset = FieldInfo.DATASET.getDefaultValue();
+
+    // Default to SUBSET if a dataset ID is given, otherwise, SHOW.
+    if ( command == null )
+      command = dataset.equals( FieldInfo.DATASET.getDefaultValue() )
+                ? Command.SHOW.name() : Command.SUBSET.name();
+
+    if ( verbose == null)
+      verbose = FieldInfo.VERBOSE.getDefaultValue();
+    if ( isHtmlView == null )
+      isHtmlView = FieldInfo.HTML_VIEW.getDefaultValue();
+
+    values.addPropertyValue( FieldInfo.CATALOG.getPropertyName(), catPath );
+    values.addPropertyValue( FieldInfo.COMMAND.getPropertyName(), command );
     values.addPropertyValue( FieldInfo.DATASET.getPropertyName(), dataset );
+    values.addPropertyValue( FieldInfo.VERBOSE.getPropertyName(), verbose );
+    values.addPropertyValue( FieldInfo.HTML_VIEW.getPropertyName(), isHtmlView );
 
     super.bind( values );
   }

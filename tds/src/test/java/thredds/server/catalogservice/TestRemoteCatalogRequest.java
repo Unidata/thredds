@@ -20,24 +20,82 @@ public class TestRemoteCatalogRequest extends TestCase
   private String parameterNameVerbose = "verbose";
   private String parameterNameHtmlView = "htmlView";
 
+  private MockHttpServletRequest req;
+  private BindingResult bindingResult;
+  private String bindResultMsg;
+  private RemoteCatalogRequest rcr;
+
+  private String catUriString = "http://motherlode.ucar.edu:8080/thredds/catalog.xml";
+  private String cmdShow = "show";
+  private String cmdSubset = "subset";
+  private String cmdValidate = "validate";
+  private String datasetId = "my/cool/dataset";
+
   public TestRemoteCatalogRequest( String name )
   {
     super( name );
   }
 
+  public void testCommandDefaultValues()
+  {
+    // Command defaults to SHOW when dataset ID not given:
+    //     check that [uri=http://**/*.xml, command=null, dataset=null] is
+    //     valid and becomes [uri, command=SHOW, dataset=null]
+    req = basicSetup( catUriString, null, null, null, null );
+    bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
+    bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
+    if ( bindResultMsg != null )
+      fail( bindResultMsg );
+    rcr = (RemoteCatalogRequest) bindingResult.getTarget();
+    assertEquals( rcr.getCatalogUri().toString(), catUriString );
+    assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdShow ) );
+    assertEquals( rcr.getDataset(), "" );
+
+    // Command defaults to SUBSET when dataset ID is given:
+    //     check that [/catalog/**/*.xml, command=null, dataset=ID, htmlView=null] is
+    //     valid and becomes [**/*.xml, command=SUBSET, dataset=ID, htmlView=true]
+    req = basicSetup( catUriString, null, datasetId, null, null );
+    bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
+    bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
+    if ( bindResultMsg != null )
+      fail( bindResultMsg );
+    rcr = (RemoteCatalogRequest) bindingResult.getTarget();
+    assertEquals( rcr.getCatalogUri().toString(), catUriString );
+    assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdSubset ) );
+    assertEquals( rcr.getDataset(), datasetId );
+    assertTrue( rcr.isHtmlView());
+
+    // Command defaults to SUBSET when dataset ID is given:
+    //     check that [/catalog/**/*.xml, command=null, dataset=ID, htmlView=true] is
+    //     valid and becomes [**/*.xml, command=SUBSET, dataset=ID, htmlView=true]
+    req = basicSetup( catUriString, null, datasetId, "true", null );
+    bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
+    bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
+    if ( bindResultMsg != null )
+      fail( bindResultMsg );
+    rcr = (RemoteCatalogRequest) bindingResult.getTarget();
+    assertEquals( rcr.getCatalogUri().toString(), catUriString );
+    assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdSubset ) );
+    assertEquals( rcr.getDataset(), datasetId );
+    assertTrue( rcr.isHtmlView());
+
+    // Command defaults to SUBSET when dataset ID is given:
+    //     check that [/catalog/**/*.xml, command=null, dataset=ID, htmlView=false] is
+    //     valid and becomes [**/*.xml, command=SUBSET, dataset=ID, htmlView=false]
+    req = basicSetup( catUriString, null, datasetId, "false", null );
+    bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
+    bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
+    if ( bindResultMsg != null )
+      fail( bindResultMsg );
+    rcr = (RemoteCatalogRequest) bindingResult.getTarget();
+    assertEquals( rcr.getCatalogUri().toString(), catUriString );
+    assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdSubset ) );
+    assertEquals( rcr.getDataset(), datasetId );
+    assertFalse( rcr.isHtmlView());
+  }
+
   public void testGoodRequests()
   {
-    String catUriString = "http://motherlode.ucar.edu:8080/thredds/catalog.xml";
-    String cmdShow = "show";
-    String cmdSubset = "subset";
-    String cmdValidate = "validate";
-    String datasetId = "my/cool/dataset";
-
-    // Basic setup
-    MockHttpServletRequest req;
-    BindingResult bindingResult;
-    String bindResultMsg;
-
     // Test that valid when "command"==null
     req = basicSetup( catUriString, null, null, null, null );
 
@@ -45,7 +103,7 @@ public class TestRemoteCatalogRequest extends TestCase
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
     if ( bindResultMsg != null )
       fail( bindResultMsg );
-    RemoteCatalogRequest rcr = (RemoteCatalogRequest) bindingResult.getTarget();
+    rcr = (RemoteCatalogRequest) bindingResult.getTarget();
     assertEquals( rcr.getCatalogUri().toString(), catUriString );
     assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdShow ) ); // default
     assertEquals( rcr.getDataset(), "" ); //default
