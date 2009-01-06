@@ -4,8 +4,6 @@ import junit.framework.*;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.*;
 
-import java.util.List;
-
 /**
  * _more_
  *
@@ -108,7 +106,7 @@ public class TestRemoteCatalogRequest extends TestCase
     assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdShow ) ); // default
     assertEquals( rcr.getDataset(), "" ); //default
     assertFalse( rcr.isVerbose()); //default
-    assertFalse( rcr.isHtmlView()); // default
+    assertTrue( rcr.isHtmlView()); // default
 
     // Test that valid when "command"==SHOW
     req = basicSetup( catUriString, cmdShow, null, null, null );
@@ -122,21 +120,7 @@ public class TestRemoteCatalogRequest extends TestCase
     assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdShow ) );
     assertEquals( rcr.getDataset(), "" );
     assertFalse( rcr.isVerbose() );
-    assertFalse( rcr.isHtmlView() );
-
-    // Test that valid when "command"==SHOW, "htmlView"=false
-    req = basicSetup( catUriString, cmdShow, null, "false", null );
-
-    bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
-    bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
-    if ( bindResultMsg != null )
-      fail( bindResultMsg );
-    rcr = (RemoteCatalogRequest) bindingResult.getTarget();
-    assertEquals( rcr.getCatalogUri().toString(), catUriString );
-    assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdShow ) );
-    assertEquals( rcr.getDataset(), "" );
-    assertFalse( rcr.isVerbose());
-    assertFalse( rcr.isHtmlView());
+    assertTrue( rcr.isHtmlView() );
 
     // Test that valid when "command"==SHOW, "htmlView"=true
     req = basicSetup( catUriString, cmdShow, null, "true", null );
@@ -164,13 +148,10 @@ public class TestRemoteCatalogRequest extends TestCase
     assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdSubset ) );
     assertEquals( rcr.getDataset(), datasetId );
     assertFalse( rcr.isVerbose() ); // default
-    assertFalse( rcr.isHtmlView() ); // default
+    assertTrue( rcr.isHtmlView() ); // default
 
     // Test that valid when "command"==SUBSET, "dataset"=dsId "htmlView"=false
-    req = basicSetup( catUriString );
-    req.setParameter( parameterNameCommand, cmdSubset );
-    req.setParameter( parameterNameDatasetId, datasetId );
-    req.setParameter( parameterNameHtmlView, "false" );
+    req = basicSetup( catUriString, cmdSubset, datasetId, "false", null );
 
     bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
@@ -184,10 +165,7 @@ public class TestRemoteCatalogRequest extends TestCase
     assertFalse( rcr.isHtmlView() );
 
     // Test that valid when "command"==SUBSET, "dataset"=dsId "htmlView"=true
-    req = basicSetup( catUriString );
-    req.setParameter( parameterNameCommand, cmdSubset );
-    req.setParameter( parameterNameDatasetId, datasetId );
-    req.setParameter( parameterNameHtmlView, "true" );
+    req = basicSetup( catUriString, cmdSubset, datasetId, "true", null );
 
     bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
@@ -201,9 +179,7 @@ public class TestRemoteCatalogRequest extends TestCase
     assertTrue( rcr.isHtmlView() );
 
     // Test that valid when "command"==VALIDATE, "dataset"=dsId
-    req = basicSetup( catUriString );
-    req.setParameter( parameterNameCommand, cmdValidate );
-    req.setParameter( parameterNameDatasetId, datasetId );
+    req = basicSetup( catUriString, cmdValidate, datasetId, null, null );
 
     bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
@@ -214,13 +190,10 @@ public class TestRemoteCatalogRequest extends TestCase
     assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdValidate ) );
     assertEquals( rcr.getDataset(), datasetId );
     assertFalse( rcr.isVerbose() ); // default
-    assertFalse( rcr.isHtmlView() ); // default
+    assertTrue( rcr.isHtmlView() ); // default
 
     // Test that valid when "command"==VALIDATE, "dataset"=dsId, "verbose"=true
-    req = basicSetup( catUriString );
-    req.setParameter( parameterNameCommand, cmdValidate );
-    req.setParameter( parameterNameDatasetId, datasetId );
-    req.setParameter( parameterNameVerbose, "true" );
+    req = basicSetup( catUriString, cmdValidate, datasetId, null, "true" );
 
     bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
@@ -231,13 +204,10 @@ public class TestRemoteCatalogRequest extends TestCase
     assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdValidate ) );
     assertEquals( rcr.getDataset(), datasetId );
     assertTrue( rcr.isVerbose() );
-    assertFalse( rcr.isHtmlView() ); // default
+    assertTrue( rcr.isHtmlView() ); // default
 
     // Test that valid when "command"==VALIDATE, "dataset"=dsId, "verbose"=false
-    req = basicSetup( catUriString );
-    req.setParameter( parameterNameCommand, cmdValidate );
-    req.setParameter( parameterNameDatasetId, datasetId );
-    req.setParameter( parameterNameVerbose, "false" );
+    req = basicSetup( catUriString, cmdValidate, datasetId, null, "false" );
 
     bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
@@ -248,30 +218,22 @@ public class TestRemoteCatalogRequest extends TestCase
     assertTrue( rcr.getCommand().toString().equalsIgnoreCase( cmdValidate ) );
     assertEquals( rcr.getDataset(), datasetId );
     assertFalse( rcr.isVerbose() );
-    assertFalse( rcr.isHtmlView() ); // default
+    assertTrue( rcr.isHtmlView() ); // default
   }
 
   public void testBadRequests()
   {
-    String catUriString = "http://motherlode.ucar.edu:8080/thredds/catalog.xml";
-    String cmdShow = "show";
-    String cmdSubset = "subset";
-    String cmdValidate = "validate";
-    String datasetId = "my/cool/dataset";
-
     // Test that invalid when "catalog"==null
-    MockHttpServletRequest req = basicSetup( null );
-    req.setParameter( parameterNameCommand, cmdShow );
+    req = basicSetup( null, cmdShow, null, null, null );
 
-    BindingResult bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
-    String bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
+    bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
+    bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
     if ( bindResultMsg == null )
       fail( "No binding error for catalog=null" );
     System.out.println( "As expected, catalog=null got binding error: " + bindResultMsg );
 
     // Test that invalid when catalog URI is not absolute
-    req = basicSetup( "/thredds/catalog.xml" );
-    req.setParameter( parameterNameCommand, cmdShow );
+    req = basicSetup( "/thredds/catalog.xml", cmdShow, null, null, null );
 
     bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
@@ -280,8 +242,7 @@ public class TestRemoteCatalogRequest extends TestCase
     System.out.println( "As expected, catalog URI not absolute got binding error: " + bindResultMsg );
 
     // Test that invalid when catalog URI is not HTTP
-    req = basicSetup( "ftp://ftp.unidata.ucar.edu/pub/thredds/" );
-    req.setParameter( parameterNameCommand, cmdShow );
+    req = basicSetup( "ftp://ftp.unidata.ucar.edu/pub/thredds/", cmdShow, null, null, null );
 
     bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
@@ -289,25 +250,22 @@ public class TestRemoteCatalogRequest extends TestCase
       fail( "No binding error for catalog URI not HTTP" );
     System.out.println( "As expected, catalog URI not HTTP got binding error: " + bindResultMsg );
 
+    // Test that invalid when "command"==SHOW, "htmlView"=false
+    req = basicSetup( catUriString, cmdShow, null, "false", null );
+    bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
+    bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
+    if ( bindResultMsg == null )
+      fail( "No binding error for command=SHOW&htmlView==false" );
+    System.out.println( "As expected, command=SHOW&htmlView==false got binding error: " + bindResultMsg );
+
     // Test that invalid when "command"==SUBSET, "dataset"==null
-    req = basicSetup( catUriString );
-    req.setParameter( parameterNameCommand, cmdSubset );
+    req = basicSetup( catUriString, cmdSubset, null, null, null );
 
     bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
     if ( bindResultMsg == null )
       fail( "No binding error for command=SUBSET&dataset==null" );
     System.out.println( "As expected, command=SUBSET&dataset==null got binding error: " + bindResultMsg );
-  }
-
-  public MockHttpServletRequest basicSetup( String catUriString )
-  {
-    MockHttpServletRequest req = new MockHttpServletRequest();
-    req.setMethod( "GET" );
-    req.setContextPath( "/thredds" );
-    req.setServletPath( "/remoteCatalogService" );
-    req.setParameter( parameterNameCatalog, catUriString );
-    return req;
   }
 
   public MockHttpServletRequest basicSetup( String catUriString, String command,

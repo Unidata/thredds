@@ -97,7 +97,7 @@ public class TestLocalCatalogRequest extends TestCase
 
   public void testCommandShow()
   {
-    // Test that valid:
+    // Test validity:
     // - path="/catalog/**/*.xml";
     // - command=SHOW;
     // - dataset=null
@@ -112,7 +112,7 @@ public class TestLocalCatalogRequest extends TestCase
     assertTrue( lcr.getCommand().toString().equalsIgnoreCase( cmdShow) );
     assertEquals( lcr.getDataset(), "");
 
-    // Test that valid:
+    // Test validity:
     // - path="/catalog/**/*.xml",
     // - command=SHOW
     // - dataset=ID
@@ -130,7 +130,7 @@ public class TestLocalCatalogRequest extends TestCase
 
   public void testCommandSubsetValid()
   {
-    // Test that valid:
+    // Test validity:
     // - path="/catalog/**/*.xml",
     // - command=SUBSET
     // - dataset=ID
@@ -164,7 +164,7 @@ public class TestLocalCatalogRequest extends TestCase
 
   public void testCatalogServletPathWithHtml()
   {
-    // Test that valid when "command"==SHOW
+    // Test validity when "command"==SHOW
     req = basicSetup( "/catalog", htmlPath, cmdShow, null );
     htmlView = true;
     bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
@@ -199,7 +199,7 @@ public class TestLocalCatalogRequest extends TestCase
     assertTrue( lcr.getCommand().toString().equalsIgnoreCase( cmdSubset ) );
     assertEquals( lcr.getDataset(), dsId );
 
-    // Test validity with "command"==SUBSET and "dataset"==""
+    // Test failure with "command"==SUBSET and "dataset"==""
     req = basicSetup( "/catalog", htmlPath, cmdSubset, "" );
     bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String msg = checkBindingResults( bindingResult );
@@ -210,7 +210,7 @@ public class TestLocalCatalogRequest extends TestCase
 
   public void testStarDotXmlServletPathWithXml()
   {
-    // Test that valid when "command"==SHOW
+    // Test validity when "command"==SHOW
     req = basicSetup( xmlPath, null, cmdShow, null );
     htmlView = false;
     bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
@@ -244,7 +244,7 @@ public class TestLocalCatalogRequest extends TestCase
     assertTrue( lcr.getCommand().toString().equalsIgnoreCase( cmdSubset ) );
     assertEquals( lcr.getDataset(), dsId );
 
-    // Test validity with "command"==SUBSET and "dataset"==""
+    // Test failure with "command"==SUBSET and "dataset"==""
     req = basicSetup( xmlPath, null, cmdSubset, "" );
     bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String msg = checkBindingResults( bindingResult );
@@ -255,7 +255,7 @@ public class TestLocalCatalogRequest extends TestCase
 
   public void testStarDotHtmlServletPathWithHtml()
   {
-    // Test that valid when "command"==SHOW
+    // Test validity when "command"==SHOW
     req = basicSetup( htmlPath, null, cmdShow, null );
     htmlView = true;
     bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
@@ -289,7 +289,7 @@ public class TestLocalCatalogRequest extends TestCase
     assertTrue( lcr.getCommand().toString().equalsIgnoreCase( cmdSubset ) );
     assertEquals( lcr.getDataset(), dsId );
 
-    // Test validity with "command"==SUBSET and "dataset"==""
+    // Test failure with "command"==SUBSET and "dataset"==""
     req = basicSetup( htmlPath, null, cmdSubset, "" );
     bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( req, htmlView );
     String msg = checkBindingResults( bindingResult );
