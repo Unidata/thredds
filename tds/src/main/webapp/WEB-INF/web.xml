@@ -529,6 +529,15 @@
     </taglib>
   </jsp-config>
 
+  <error-page>
+    <error-code>404</error-code>
+    <location>/WEB-INF/jsp/errorpages/404.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/WEB-INF/jsp/errorpages/500.jsp</location>
+  </error-page>
+
   <!-- ++++++++++ Setup security restrictions ++++++++++ -->
   <!-- Default is to not allow DELETE, PUT, POST -->
   <security-constraint>
