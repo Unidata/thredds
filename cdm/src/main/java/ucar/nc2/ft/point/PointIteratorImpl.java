@@ -32,6 +32,7 @@ import java.io.IOException;
 /**
  * A PointFeatureIterator which uses a StructureDataIterator to iterate over members of a Structure,
  * with optional filtering and calculation of time range and bounding box.
+ *
  * Subclass must implement makeFeature() to turn the StructureData into a PointFeature.
  *
  * @author caron
@@ -39,13 +40,13 @@ import java.io.IOException;
  */
 public abstract class PointIteratorImpl implements PointFeatureIterator {
 
-  // if return null, skip it
+  // makeFeature may return null, then skip it and go to next iteration
   protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
 
   private Filter filter;
-  private PointFeature feature = null;
   private StructureDataIterator structIter;
   private int count = 0;
+  private PointFeature feature = null; // hasNext must cache
 
   // optionally calculate bounding box, date range
   protected boolean calcBB;

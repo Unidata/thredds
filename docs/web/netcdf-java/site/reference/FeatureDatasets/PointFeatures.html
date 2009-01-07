@@ -59,7 +59,7 @@
     ucar.nc2.ft.PointFeature pf = pointFeatureCollection.<strong>next</strong>()
     ...
   }</pre>
-<p>Note that calling <em>hasNext</em>() is required before calling <em>next</em>(), and the order in which the PointFeatures are returned is arbitrary. Since an iterator always runs therough the data exactly once, its a good idea to call <em>resetIteration</em>() first, to make sure that the iterator is in the correct state. </p>
+<p>Note that calling <em>hasNext</em>() is required before calling <em>next</em>(), and the order in which the PointFeatures are returned is arbitrary. Since an iterator always runs through the data exactly once, its a good idea to call <em>resetIteration</em>() first, to make sure that the iterator is in the correct state. </p>
 <p>Equivilent to the internal iterator, you can explictly get a <strong>PointFeatureIterator</strong> to iterate over the PointFeatures: </p>
 <pre><strong>  PointFeatureIterator</strong> iter = pointFeatureCollection.<strong>getPointFeatureIterator</strong>(<strong>100 * 1000</strong>); // 100Kb buffer
   while(iter.<strong>hasNext</strong>()) {

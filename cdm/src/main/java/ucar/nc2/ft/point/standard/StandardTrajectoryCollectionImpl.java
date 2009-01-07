@@ -34,15 +34,15 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.OneNestedPointCollectionImpl;
 import ucar.nc2.ft.point.TrajectoryFeatureImpl;
-import ucar.nc2.ft.TrajectoryFeatureCollection;
-import ucar.nc2.ft.PointFeatureCollectionIterator;
-import ucar.nc2.ft.TrajectoryFeature;
-import ucar.nc2.ft.PointFeatureIterator;
+import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureDataIterator;
+import ucar.ma2.StructureData;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author caron
@@ -50,39 +50,66 @@ import java.io.IOException;
  */
 public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionImpl implements TrajectoryFeatureCollection {
   private DateUnit timeUnit;
-  private FlattenedTable ft;
+  private NestedTable ft;
 
-  StandardTrajectoryCollectionImpl(FlattenedTable ft, DateUnit timeUnit) {
+  StandardTrajectoryCollectionImpl(NestedTable ft, DateUnit timeUnit) {
     super(ft.getName(), FeatureType.TRAJECTORY);
     this.ft = ft;
     this.timeUnit = timeUnit;
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return null; // ft.getTrajectoryObsDataIterator(null, bufferSize);
+    return new TrajIterator( ft.getTrajectoryDataIterator(bufferSize));
   }
 
+  private TrajIterator localIterator = null;
   public boolean hasNext() throws IOException {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    if (localIterator == null) resetIteration();
+    return localIterator.hasNext();
   }
 
+  // need covariant return to allow superclass to implement
   public TrajectoryFeature next() throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return localIterator.next();
   }
 
   public void resetIteration() throws IOException {
-    //To change body of implemented methods use File | Settings | File Templates.
+    localIterator = (TrajIterator) getPointFeatureCollectionIterator(-1);
   }
 
-  /* private class StandardTrajectoryFeature extends TrajectoryFeatureImpl {
+  private class TrajIterator implements PointFeatureCollectionIterator {
+    StructureDataIterator structIter;
 
-    StandardTrajectoryFeature(String name) {
-      super(name, -1);
+    TrajIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
+      this.structIter = structIter;
+    }
+
+    public boolean hasNext() throws IOException {
+      return structIter.hasNext();
+    }
+
+    public TrajectoryFeature next() throws IOException {
+      return new StandardTrajectoryFeature(structIter.next());
+    }
+
+    public void setBufferSize(int bytes) { }
+  }
+
+  private class StandardTrajectoryFeature extends TrajectoryFeatureImpl {
+    StructureData trajData;
+    StandardTrajectoryFeature(StructureData trajData) {
+      super("", -1);
+      this.trajData = trajData;
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureDataIterator siter = ft.getTrajectoryObsDataIterator( sdata, bufferSize);
+      List<StructureData> sdataList = new ArrayList<StructureData>( ft.getNestedLevels());
+      for (int i=0; i< ft.getNestedLevels(); i++)
+        sdataList.add(null);
+      sdataList.set(1, trajData); // ?? could also be a Map
+      StructureDataIterator siter = ft.getTrajectoryObsDataIterator( trajData, bufferSize);
       return new StandardPointFeatureIterator(ft, timeUnit, siter, sdataList, false);
     }
-  } */
+  }
+
 }

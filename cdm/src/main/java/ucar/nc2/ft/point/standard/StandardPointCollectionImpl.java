@@ -20,7 +20,7 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.PointCollectionImpl;
-import ucar.nc2.ft.point.standard.FlattenedTable;
+import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureData;
@@ -30,15 +30,15 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Implementation of PointFeatureCollection using a FlattenedTable
+ * Implementation of PointFeatureCollection using a NestedTable
  * @author caron
  * @since Mar 28, 2008
  */
 public class StandardPointCollectionImpl extends PointCollectionImpl {
   private DateUnit timeUnit;
-  private FlattenedTable ft;
+  private NestedTable ft;
 
-  StandardPointCollectionImpl(FlattenedTable ft, DateUnit timeUnit) {
+  StandardPointCollectionImpl(NestedTable ft, DateUnit timeUnit) {
     super(ft.getName());
     this.ft = ft;
     this.timeUnit = timeUnit;
@@ -47,7 +47,7 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     // only one List object needed - it will be used for each iteration with different structData's
     List<StructureData> sdataList = new ArrayList<StructureData>( ft.getNestedLevels());
-    for (int i=0; i<ft.getNestedLevels(); i++)
+    for (int i=0; i< ft.getNestedLevels(); i++)
       sdataList.add(null);
     boolean calcBB = (boundingBox == null) || (dateRange == null);
 

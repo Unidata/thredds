@@ -22,7 +22,7 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.ft.point.PointIteratorImpl;
 import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.point.standard.FlattenedTable;
+import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureData;
 
@@ -31,16 +31,17 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * A PointFeatureIterator which uses a FlattenedTable to implement makeFeature().
+ * A PointFeatureIterator which uses a NestedTable to implement makeFeature().
+ *
  * @author caron
  * @since Mar 29, 2008
  */
 public class StandardPointFeatureIterator extends PointIteratorImpl {
-  private FlattenedTable ft;
+  private NestedTable ft;
   private DateUnit timeUnit;
   private List<StructureData> sdataList;
 
-  StandardPointFeatureIterator(FlattenedTable ft, DateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, List<StructureData> sdataList, boolean calcBB) throws IOException {
+  StandardPointFeatureIterator(NestedTable ft, DateUnit timeUnit, ucar.ma2.StructureDataIterator structIter, List<StructureData> sdataList, boolean calcBB) throws IOException {
     super(structIter, null, calcBB);
     this.ft = ft;
     this.timeUnit = timeUnit;
@@ -49,24 +50,26 @@ public class StandardPointFeatureIterator extends PointIteratorImpl {
 
   protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
     sdataList.set(0, sdata); // always in the first position
-    // there may be parent joins
+    // there may be parent joins LOOK
     if (ft.needParentJoin())
       ft.addParentJoin(sdataList, sdata);
     
-    return new StandardPointFeatureImpl(sdataList, timeUnit, recnum);
+    return new StandardPointFeature(sdataList, timeUnit, recnum);
   }
 
-  private class StandardPointFeatureImpl extends PointFeatureImpl {
+  private class StandardPointFeature extends PointFeatureImpl {
     protected int id;
     protected List<StructureData> sdataList;
 
-    public StandardPointFeatureImpl(List<StructureData> sdataList, DateUnit timeUnit, int id) {
+    // one could use an opaque object here instead of List<StructureData> sdataList
+    public StandardPointFeature(List<StructureData> sdataList, DateUnit timeUnit, int id) {
       super( timeUnit);
       this.sdataList = new ArrayList<StructureData>( sdataList); // must keep own copy, since sdata is changing each time
       this.id = id;
 
-      obsTime = ft.getTime( sdataList);
-      nomTime = obsTime;
+      obsTime = ft.getObsTime( sdataList);
+      nomTime = ft.getNomTime( sdataList);
+      if (Double.isNaN(nomTime)) nomTime = obsTime;
       location = ft.getEarthLocation( sdataList);
     }
 

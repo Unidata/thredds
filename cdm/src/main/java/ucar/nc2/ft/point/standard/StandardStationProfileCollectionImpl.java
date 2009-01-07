@@ -21,7 +21,7 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.standard.FlattenedTable;
+import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.StructureData;
@@ -46,10 +46,10 @@ import java.util.Date;
  */
 public class StandardStationProfileCollectionImpl extends StationProfileCollectionImpl {
   private DateUnit timeUnit;
-  private FlattenedTable ft;
+  private NestedTable ft;
   private DateFormatter dateFormatter = new DateFormatter();
 
-  StandardStationProfileCollectionImpl(FlattenedTable ft, DateUnit timeUnit) throws IOException {
+  StandardStationProfileCollectionImpl(NestedTable ft, DateUnit timeUnit) throws IOException {
     super(ft.getName());
     this.ft = ft;
     this.timeUnit = timeUnit;
@@ -112,7 +112,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
           sdataList.add(iter.next());
           sdataList.add(stationData);
 
-          double time = ft.getTime(sdataList);
+          double time = ft.getObsTime(sdataList);
           return new StandardProfileFeature(s, timeUnit.makeDate(time), sdataList);
         }
 

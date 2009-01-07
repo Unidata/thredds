@@ -109,7 +109,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       this.analyser = analyser;
 
       List<FeatureCollection> featureCollections = new ArrayList<FeatureCollection>();
-      for (FlattenedTable flatTable : analyser.getFlatTables()) { // each flat table becomes a "feature collection"
+      for (NestedTable flatTable : analyser.getFlatTables()) { // each flat table becomes a "feature collection"
 
         if (timeUnit == null) {
           try {

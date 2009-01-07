@@ -35,33 +35,43 @@ import java.text.ParseException;
 
 /**
  * Implements "nested table" views of point feature datasets.
- * A FlattenedTable is typically initialized with a TableConfig.
+ * A NestedTable is initialized with a TableConfig.
  * <p/>
- * A flattened (aka nested) table starts with a leaf table (no children), plus all of its parents.
+ * A nested table starts with a leaf table (no children), plus all of its parents.
  * There is a "join" for each child and parent.
  * <p/>
  * Assumes that we have Tables that can be iterated over with a StructureDataIterator.
  * A parent-child join assumes that for each row of the parent, a StructureDataIterator exists that
  * iterates over the rows of the child table for that parent.
+ * <p/>
+ * Nested Tables must be put in canonical form, based on feature type:
+ * <ol>
+ * <li> point : obsTable
+ * <li> station : stnTable -> obsTable
+ * <li> traj : trajTable -> obsTable
+ * <li> profile : profileTable -> obsTable
+ * <li> stationProfile : stnTable -> profileTable -> obsTable
+ * <li> section : sectionTable -> trajTable -> obsTable
+ * </ol>
  *
  * @author caron
  * @since Mar 28, 2008
  */
-public class FlattenedTable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FlattenedTable.class);
+public class NestedTable {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NestedTable.class);
 
   private NetcdfDataset ds;
   private Formatter errlog;
   private Table leaf, root;
   private FeatureType featureType;
 
-  private CoordVarExtractor timeVE, latVE, lonVE, altVE;
+  private CoordVarExtractor timeVE, nomTimeVE, latVE, lonVE, altVE;
   private int nestedLevels;
 
   private DateFormatter dateFormatter = new DateFormatter();
 
-  // A FlattenedTable Table is created after the Tables have been joined, and the leaves identified.
-  FlattenedTable(NetcdfDataset ds, TableConfig config, Formatter errlog) {
+  // A NestedTable Table is created after the Tables have been joined, and the leaves identified.
+  NestedTable(NetcdfDataset ds, TableConfig config, Formatter errlog) {
     this.ds = ds;
     this.errlog = errlog;
 
@@ -139,7 +149,7 @@ public class FlattenedTable {
 
       v = ds.findVariable(axisName);
       if (v == null)
-        errlog.format("FlattenedTable: cant find variable %s for coordinate type " + axisName, axisType);
+        errlog.format("NestedTable: cant find variable %s for coordinate type " + axisName, axisType);
       else
         return (v.getSize() == 1) ? new CoordVarScalar(v) : new CoordVarExtractor(v, axisName, nestingLevel);
     }
@@ -256,7 +266,7 @@ public class FlattenedTable {
 
   public String toString() {
     Formatter formatter = new Formatter();
-    formatter.format("FlattenedTable = %s\n", getName());
+    formatter.format("NestedTable = %s\n", getName());
     formatter.format("  Time= %s\n", timeVE);
     formatter.format("  Lat= %s\n", latVE);
     formatter.format("  Lon= %s\n", lonVE);
@@ -266,7 +276,7 @@ public class FlattenedTable {
   }
 
   public void show(Formatter formatter) {
-    formatter.format(" FlattenedTable = %s\n", getName());
+    formatter.format(" NestedTable = %s\n", getName());
     leaf.show(formatter, 2);
   }
 
@@ -323,16 +333,7 @@ public class FlattenedTable {
     if (!(getFeatureType() == FeatureType.TRAJECTORY))
       throw new UnsupportedOperationException("Not a Trajectory");
 
-    Table stationTable = root;
-    StructureDataIterator siter = stationTable.getStructureDataIterator(bufferSize);
-
-    if (stationTable.config.limit != null) {
-      Variable limitV = ds.findVariable(stationTable.config.limit);
-      int limit = limitV.readScalarInt();
-      return new StructureDataIteratorLimited(siter, limit);
-    }
-
-    return siter;
+    return root.getStructureDataIterator(bufferSize);
   }
 
   public StructureDataIterator getTrajectoryObsDataIterator(StructureData trajData, int bufferSize) throws IOException {
@@ -344,9 +345,18 @@ public class FlattenedTable {
 
   ///////////////////////////////////////////////////////////////////////////////
 
-  public double getTime(List<StructureData> structList) {
+  public double getObsTime(List<StructureData> structList) {
+    return getTime( timeVE, structList);
+  }
 
-    if ((timeVE.coordVar.getDataType() == ucar.ma2.DataType.CHAR) || (timeVE.coordVar.getDataType() == ucar.ma2.DataType.STRING)) {
+  public double getNomTime(List<StructureData> structList) {
+    return getTime( nomTimeVE, structList);
+  }
+
+  private double getTime(CoordVarExtractor cve, List<StructureData> structList) {
+    if (cve == null) return Double.NaN;
+
+    if ((cve.coordVar.getDataType() == ucar.ma2.DataType.CHAR) || (cve.coordVar.getDataType() == ucar.ma2.DataType.STRING)) {
       String timeString = timeVE.getCoordValueString(structList);
       Date date;
       try {
@@ -355,10 +365,10 @@ public class FlattenedTable {
         log.error("Cant parse date - not ISO formatted, = " + timeString);
         return 0.0;
       }
-      return date.getTime() / 1000.0;
+      return date.getTime() / 1000.0; // LOOK
 
     } else {
-      return timeVE.getCoordValue(structList);
+      return cve.getCoordValue(structList);
     }
   }
 

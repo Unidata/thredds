@@ -19,10 +19,7 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.NestedPointFeatureCollection;
-import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.NestedPointFeatureCollectionIterator;
+import ucar.nc2.ft.*;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
@@ -39,7 +36,7 @@ import java.io.IOException;
 public abstract class OneNestedPointCollectionImpl implements NestedPointFeatureCollection {
   private String name;
   private FeatureType collectionFeatureType;
-  private int npts;
+  protected int npts;
 
   protected OneNestedPointCollectionImpl(String name, FeatureType collectionFeatureType) {
     this.name = name;

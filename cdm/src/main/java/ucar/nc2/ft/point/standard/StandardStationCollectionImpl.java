@@ -21,7 +21,7 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.ft.point.StationFeatureImpl;
-import ucar.nc2.ft.point.standard.FlattenedTable;
+import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.ft.*;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureDataIterator;
@@ -45,9 +45,9 @@ import java.util.ArrayList;
  */
 public class StandardStationCollectionImpl extends StationTimeSeriesCollectionImpl {
   private DateUnit timeUnit;
-  private FlattenedTable ft;
+  private NestedTable ft;
 
-  StandardStationCollectionImpl(FlattenedTable ft, DateUnit timeUnit) throws IOException {
+  StandardStationCollectionImpl(NestedTable ft, DateUnit timeUnit) throws IOException {
     super(ft.getName());
     this.timeUnit = timeUnit;
     this.ft = ft;

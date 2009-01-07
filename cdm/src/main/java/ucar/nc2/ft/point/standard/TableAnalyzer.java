@@ -244,7 +244,7 @@ public class TableAnalyzer {
   protected Map<String, TableConfig> tableFind = new HashMap<String, TableConfig>();
   protected Set<TableConfig> tableSet = new HashSet<TableConfig>();
   protected List<TableConfig.JoinConfig> joins = new ArrayList<TableConfig.JoinConfig>();
-  protected List<FlattenedTable> leaves = new ArrayList<FlattenedTable>();
+  protected List<NestedTable> leaves = new ArrayList<NestedTable>();
   protected FeatureType ft;
 
   protected TableAnalyzer(NetcdfDataset ds, TableConfigurer tc) {
@@ -255,12 +255,12 @@ public class TableAnalyzer {
       userAdvice.format("Using default TableConfigurer.\n");
   }
 
-  public List<FlattenedTable> getFlatTables() {
+  public List<NestedTable> getFlatTables() {
     return leaves;
   }
 
   public boolean featureTypeOk(FeatureType ftype) {
-    for (FlattenedTable nt : leaves) {
+    for (NestedTable nt : leaves) {
       if (nt.hasCoords() && FeatureDatasetFactoryManager.featureTypeOk(ftype, nt.getFeatureType()))
         return true;
     }
@@ -287,7 +287,7 @@ public class TableAnalyzer {
   /////////////////////////////////////////////////////////
 
   /**
-   * Make a FlattenedTable object for the dataset.
+   * Make a NestedTable object for the dataset.
    * @param wantFeatureType want this FeatureType
    * @throws IOException on read error
    */
@@ -416,7 +416,7 @@ public class TableAnalyzer {
     // find the leaves
     for (TableConfig config : tableSet) {
       if (config.children == null) { // its a leaf
-        FlattenedTable flatTable = new FlattenedTable(ds, config, errlog);
+        NestedTable flatTable = new NestedTable(ds, config, errlog);
         leaves.add(flatTable);
       }
     }
@@ -479,7 +479,7 @@ public class TableAnalyzer {
   } */
 
   public void showNestedTables(java.util.Formatter sf) {
-    for (FlattenedTable nt : leaves) {
+    for (NestedTable nt : leaves) {
       nt.show(sf);
     }
   }

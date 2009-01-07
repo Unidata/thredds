@@ -36,7 +36,7 @@ public interface TableConfigurer {
    * Determine if this is a dataset that can be opened as a point obs dataset.
    * @param wantFeatureType want this FeatureType
    * @param ds for this dataset
-   * @return true if it can be opened as a point obs dataset
+   * @return true if it can be opened as a wantFeatureType dataset
    * @throws IOException on read error
    */
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) throws IOException;

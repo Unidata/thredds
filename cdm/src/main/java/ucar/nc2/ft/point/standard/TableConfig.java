@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * This encapsolates the info needed by FlattenedTable to handle point feature "nested table" datasets.
+ * This encapsolates the info needed by NestedTable to handle point feature "nested table" datasets.
  * A TableAnalyzer creates these from a specific dataset convention.
  * <p> a TableConfig has a tree of TableConfigs, representing the join of parent and children tables.
  *

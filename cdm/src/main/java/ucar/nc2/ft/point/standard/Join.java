@@ -33,13 +33,13 @@ import java.io.IOException;
 public class Join implements Comparable<Join> {
 
   protected TableConfig.JoinConfig config;
-  protected FlattenedTable.Table parent, child;
+  protected NestedTable.Table parent, child;
 
   public Join(TableConfig.JoinConfig config) {
     this.config = config;
   }
 
-  public void setTables(FlattenedTable.Table parent, FlattenedTable.Table child) {
+  public void setTables(NestedTable.Table parent, NestedTable.Table child) {
     assert parent != null;
     assert child != null;
     this.parent = parent;
