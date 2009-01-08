@@ -19,8 +19,6 @@ import thredds.util.TdsPathUtils;
  */
 public class LocalCatalogRequestDataBinder extends DataBinder
 {
-  //private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-
   private static enum FieldInfo
   {
     CATALOG( "catalog", "path", ""),

@@ -13,9 +13,6 @@ import java.net.URI;
  */
 public class RemoteCatalogRequest
 {
-  private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( LocalCatalogRequest.class );
-
   private URI catalogUri;
   private Command command;
   private String dataset;

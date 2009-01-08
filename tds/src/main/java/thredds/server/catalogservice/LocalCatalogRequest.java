@@ -11,9 +11,6 @@ package thredds.server.catalogservice;
  */
 public class LocalCatalogRequest
 {
-  private org.slf4j.Logger logger =
-          org.slf4j.LoggerFactory.getLogger( LocalCatalogRequest.class );
-
   private String path;
   private Command command;
   private String dataset;

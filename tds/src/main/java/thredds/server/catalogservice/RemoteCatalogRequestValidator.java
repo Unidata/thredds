@@ -3,7 +3,6 @@ package thredds.server.catalogservice;
 import org.springframework.validation.Validator;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.FieldError;
 
 import java.net.URI;
 

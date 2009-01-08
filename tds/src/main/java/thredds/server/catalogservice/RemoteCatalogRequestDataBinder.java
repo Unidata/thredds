@@ -17,8 +17,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class RemoteCatalogRequestDataBinder extends DataBinder
 {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-
   private static enum FieldInfo
   {
     CATALOG( "catalog", "catalogUri", ""),
