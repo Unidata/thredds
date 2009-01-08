@@ -103,7 +103,7 @@ public class ToolsUI extends JPanel {
   // UI
   private BufrPanel bufrPanel;
   private CoordSysPanel coordSysPanel;
-  private FeaturePanel ftPanel;
+  private FeatureScanPanel ftPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
   private ImagePanel imagePanel;
@@ -271,7 +271,7 @@ public class ToolsUI extends JPanel {
       c = fmrcPanel;
 
     } else if (title.equals("FeatureScan")) {
-      ftPanel = new FeaturePanel((PreferencesExt) mainPrefs.node("ftPanel"));
+      ftPanel = new FeatureScanPanel((PreferencesExt) mainPrefs.node("ftPanel"));
       c = ftPanel;
 
     } else if (title.equals("Radial")) {
@@ -2537,7 +2537,7 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
-  private class FeaturePanel extends OpPanel {
+  private class FeatureScanPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf  = null;
     FeatureDatasetTable ftTable;
     final FileManager dirChooser = new FileManager(parentFrame);
@@ -2547,7 +2547,7 @@ public class ToolsUI extends JPanel {
     IndependentWindow defWindow;
     AbstractButton defButt;
 
-    FeaturePanel(PreferencesExt p) {
+    FeatureScanPanel(PreferencesExt p) {
       super(p, "dir:", false, false);
       ftTable = new FeatureDatasetTable(prefs);
       add(ftTable, BorderLayout.CENTER);

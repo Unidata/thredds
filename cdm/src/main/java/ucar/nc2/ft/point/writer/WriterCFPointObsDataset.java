@@ -70,7 +70,7 @@ public class WriterCFPointObsDataset {
     useAlt = (altUnits != null);
   }
 
-  public void writeHeader(List<VariableSimpleIF> vars) throws IOException {
+  public void writeHeader(List<? extends VariableSimpleIF> vars) throws IOException {
     createGlobalAttributes();
     createRecordVariables(vars);
 
@@ -90,7 +90,7 @@ public class WriterCFPointObsDataset {
   // private ArrayInt.D1 timeArray = new ArrayInt.D1(1);
   //private ArrayInt.D1 parentArray = new ArrayInt.D1(1);
 
-  private void createRecordVariables(List<VariableSimpleIF> simpleVars) {
+  private void createRecordVariables(List<? extends VariableSimpleIF> dataVars) {
 
     ncfile.addDimension(null, new Dimension(recordDimName, 0, true, true, false));
 
@@ -129,7 +129,7 @@ public class WriterCFPointObsDataset {
     Attribute coordAtt = new Attribute("coordinates", coordinates);
 
     // find all dimensions needed by the data variables
-    for (VariableSimpleIF var : simpleVars) {
+    for (VariableSimpleIF var : dataVars) {
       List<Dimension> dims = var.getDimensions();
       dimSet.addAll(dims);
     }
@@ -141,7 +141,8 @@ public class WriterCFPointObsDataset {
     }
 
     // add the data variables all using the record dimension
-    for (VariableSimpleIF oldVar : simpleVars) {
+    for (VariableSimpleIF oldVar : dataVars) {
+      if (ncfile.findVariable(oldVar.getShortName()) != null) continue;
       List<Dimension> dims = oldVar.getDimensions();
       StringBuffer dimNames = new StringBuffer(recordDimName);
       for (Dimension d : dims) {
@@ -387,91 +388,9 @@ public class WriterCFPointObsDataset {
     System.out.println("Rewrite " + fileIn + " to " + fileOut + " took = " + took);
   }
 
-  /**
-   * Open a ucar.nc2.dt.PointObsDataset, write out in CF point format.
-   * Use alternative API, requiring data variable to be sorted by type.
-   *
-   * @param fileIn open through TypedDatasetFactory.open(FeatureType.POINT, ..)
-   * @param fileOut write to tehis netcdf-3 file
-   * @param inMemory  if true, write in memory for efficiency
-   * @throws IOException on read/write error
-   */
-  public static void rewritePointObsDataset2(String fileIn, String fileOut, boolean inMemory) throws IOException {
-    System.out.println("Rewrite2 .nc files from " + fileIn + " to " + fileOut + " inMemory= " + inMemory);
-
-    long start = System.currentTimeMillis();
-
-    // do it in memory for speed
-    NetcdfFile ncfile = inMemory ? NetcdfFile.openInMemory(fileIn) : NetcdfFile.open(fileIn);
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
-
-    StringBuilder errlog = new StringBuilder();
-    PointObsDataset pobsDataset = (PointObsDataset) TypedDatasetFactory.open(FeatureType.POINT, ncd, null, errlog);
-
-    // see if we have an altitude
-    String altUnits = null;
-    DataIterator iterOne = pobsDataset.getDataIterator(-1);
-    while (iterOne.hasNext()) {
-      PointObsDatatype pobsData = (PointObsDatatype) iterOne.nextData();
-      ucar.nc2.dt.EarthLocation loc = pobsData.getLocation();
-      altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters";
-      break;
-    }
-
-    FileOutputStream fos = new FileOutputStream(fileOut);
-    DataOutputStream out = new DataOutputStream(fos);
-    WriterCFPointObsDataset writer = new WriterCFPointObsDataset(out, ncfile.getGlobalAttributes(), altUnits);
-    List<VariableSimpleIF> vars = pobsDataset.getDataVariables();
-
-    // put vars in order
-    List<VariableSimpleIF> nvars = new ArrayList<VariableSimpleIF>(vars.size());
-    for (VariableSimpleIF v : vars) {
-      if (v.getDataType().isNumeric())
-        nvars.add(v);
-    }
-    int ndoubles = vars.size();
-    double[] dvals = new double[vars.size()];
-    for (VariableSimpleIF v : vars) {
-      if (v.getDataType().isString())
-        nvars.add(v);
-    }
-    String[] svals = new String[vars.size() - ndoubles];
-    writer.writeHeader(nvars);
-
-    DataIterator iter = pobsDataset.getDataIterator(1000 * 1000);
-    while (iter.hasNext()) {
-      PointObsDatatype pobsData = (PointObsDatatype) iter.nextData();
-      StructureData sdata = pobsData.getData();
-
-      int dcount = 0;
-      int scount = 0;
-      for (VariableSimpleIF v : nvars) {
-        if (v.getDataType().isNumeric()) {
-          Array data = sdata.getArray(v.getShortName());
-          data.resetLocalIterator();
-          if (data.hasNext())
-            dvals[dcount++] = data.nextDouble();
-
-        } else if (v.getDataType().isString()) {
-          ArrayChar data = (ArrayChar) sdata.getArray(v.getShortName());
-          svals[scount++] = data.getString();
-        }
-      }
-
-      ucar.nc2.dt.EarthLocation loc = pobsData.getLocation();
-      writer.writeRecord(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pobsData.getObservationTimeAsDate(),
-              dvals, svals);
-    }
-
-    writer.finish();
-
-    long took = System.currentTimeMillis() - start;
-    System.out.println("Rewrite2 " + fileIn + " to " + fileOut + " took = " + took+" msecs");
-  }
-
   public static void main(String args[]) throws IOException {
     String location = "C:/data/ft/point/971201.PAM_Cle_met.nc";
     File file = new File(location);
-    rewritePointObsDataset2(location, "C:/data/temp/CFobs/"+ file.getName(), true);
+    rewritePointObsDataset(location, "C:/data/temp/CFobs/"+ file.getName(), true);
   }
 }
