@@ -1,10 +1,13 @@
 package thredds.server.catalogservice;
 
 /**
- * _more_
+ * Command object for local catalog service requests.
+ *
+ * More details in {@link LocalCatalogServiceController}
  *
  * @author edavis
  * @since 4.0
+ * @see LocalCatalogServiceController
  */
 public class LocalCatalogRequest
 {

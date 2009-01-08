@@ -8,10 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 import thredds.util.TdsPathUtils;
 
 /**
- * _more_
+ * Binds an HttpServletRequest to a {@link LocalCatalogRequest} command object.
+ *
+ * More details in {@link LocalCatalogServiceController}
  *
  * @author edavis
  * @since 4.0
+ * @see LocalCatalogServiceController
+ * @see LocalCatalogRequest
  */
 public class LocalCatalogRequestDataBinder extends DataBinder
 {

@@ -30,18 +30,58 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * Handle all requests for XML and HTML views of catalogs as well as any
- * publicDoc XML or HTML files.
+ * Handle all requests for local catalog access and services. Supported
+ * services are subsetting of catalogs and HTML views of catalogs (full
+ * or subset) and datasets.
  *
- * Currently, handles the following requests:
+ * <p>Can also handle non-catalog requests for XML andHTML files in publicDoc FileSource.
+ *
+ * <p>Currently, handles the following TDS requests:
  * <ul>
  *   <li>Mapping="/catalog/*" -- e.g., ServletPath="/catalog" and PathInfo="/some/path/*.html"</li>
  *   <li>Mapping="*.xml"      -- ServletPath="/some/path/*.xml" and PathInfo=null</li>
  *   <li>Mapping="*.html"     -- ServletPath="/some/path/*.html" and PathInfo=null</li>
  * </ul>
  *
+ * <p> Uses the following information from an HTTP request:
+ * <ul>
+ *   <li> The "local catalog path" identifies the local catalog to use. Its
+ *     value is either getPathInfo() or getServletPath() depending on how the
+ *     requests are mapped to the servlet, see
+ *    {@link thredds.util.TdsPathUtils#extractPath(javax.servlet.http.HttpServletRequest)
+ *     TdsPathUtils.extractPath()}.</li>
+ *   <li>The "local catalog path" extension (which must be either ".xml" or
+ *     ".html") determines whether the catalog is displayed with an XML or
+ *     an HTML view. [Note: the ".html" ending is replaced with ".xml" when
+ *     the path is used to locate the local catalog.]</li>
+ *   <li>The "command" parameter must either be empty or have a value of
+ *     "SHOW" or "SUBSET", see {@link Command}; </li>
+ *   <li>The parameter "dataset" identifies a dataset contained by the
+ *     local catalog. </li>
+ * </ul>
+ *
+ * <p>Constraints on the above information:
+ * <ul>
+ *   <li>The "local catalog path" may end in either ".xml" or ".html" and
+ *     must reference an existing local catalog. A ".html" ending is replaced
+ *     with ".xml" when the path is used to locate the local catalog. </li>
+ *   <li>The "dataset" parameter must either be empty or contain the value
+ *     of a dataset ID contained in the catalog.</li>
+ *   <li>If the "command" parameter is empty, it will default to "SHOW" if
+ *     the "dataset" parameter is empty, otherwise it will default to "SUBSET".</li>
+ * </ul>
+ *
+ * <p>The above information is contained in a {@link LocalCatalogRequest} command
+ * object while the constraints are enforced by {@link LocalCatalogRequestDataBinder}
+ * and {@link LocalCatalogRequestValidator}.
+ *
  * @author edavis
  * @since 4.0
+ * @see thredds.util.TdsPathUtils#extractPath(javax.servlet.http.HttpServletRequest)
+ * @see Command
+ * @see LocalCatalogRequest
+ * @see LocalCatalogRequestDataBinder
+ * @see LocalCatalogRequestValidator
  */
 public class LocalCatalogServiceController extends AbstractController
 {

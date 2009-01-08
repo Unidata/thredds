@@ -10,10 +10,14 @@ import java.net.URI;
 import thredds.util.StringValidateEncodeUtils;
 
 /**
- * _more_
+ * Validates the contents of a {@link LocalCatalogRequest} command object.
+ *
+ * More details in {@link LocalCatalogServiceController}
  *
  * @author edavis
  * @since 4.0
+ * @see LocalCatalogServiceController
+ * @see LocalCatalogRequest
  */
 public class LocalCatalogRequestValidator implements Validator
 {

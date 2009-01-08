@@ -8,10 +8,14 @@ import org.springframework.validation.FieldError;
 import java.net.URI;
 
 /**
- * _more_
+ * Validates the contents of a {@link RemoteCatalogRequest} command object.
+ *
+ * More details in {@link RemoteCatalogServiceController}
  *
  * @author edavis
  * @since 4.0
+ * @see RemoteCatalogServiceController
+ * @see RemoteCatalogRequest
  */
 public class RemoteCatalogRequestValidator implements Validator
 {

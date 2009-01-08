@@ -6,10 +6,14 @@ import org.springframework.beans.MutablePropertyValues;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * _more_
+ * Binds an HttpServletRequest to a {@link RemoteCatalogRequest} command object.
+ *
+ * More details in {@link RemoteCatalogServiceController}
  *
  * @author edavis
  * @since 4.0
+ * @see RemoteCatalogServiceController
+ * @see RemoteCatalogRequest
  */
 public class RemoteCatalogRequestDataBinder extends DataBinder
 {

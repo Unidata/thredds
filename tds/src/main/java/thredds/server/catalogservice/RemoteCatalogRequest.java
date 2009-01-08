@@ -3,10 +3,13 @@ package thredds.server.catalogservice;
 import java.net.URI;
 
 /**
- * _more_
+ * Command object for catalog service requests on remote catalogs.
+ *
+ * More details in {@link RemoteCatalogServiceController}
  *
  * @author edavis
  * @since 4.0
+ * @see RemoteCatalogServiceController
  */
 public class RemoteCatalogRequest
 {
