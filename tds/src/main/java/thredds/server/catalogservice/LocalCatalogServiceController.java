@@ -136,7 +136,7 @@ public class LocalCatalogServiceController extends AbstractController
       return null;
     }
 
-    // Retrieve the resulting CatalogServiceRequest.
+    // Retrieve the resulting LocalCatalogRequest.
     LocalCatalogRequest catalogServiceRequest = (LocalCatalogRequest) bindingResult.getTarget();
 
     // Determine path and catalogPath

@@ -21,6 +21,35 @@
   </context-param>
 
   <filter>
+    <filter-name>RequestPathFilter</filter-name>
+    <filter-class>thredds.servlet.filter.RequestPathFilter</filter-class>
+  </filter>
+
+  <filter>
+    <filter-name>RequestQueryFilter</filter-name>
+    <filter-class>thredds.servlet.filter.RequestQueryFilter</filter-class>
+  </filter>
+
+  <filter>
+    <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
+    <filter-class>thredds.servlet.filter.RequestQueryFilter</filter-class>
+    <init-param>
+      <param-name>allowAngleBrackets</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+
+  <filter>
+    <filter-name>CatalogServiceFilter</filter-name>
+    <filter-class>thredds.servlet.filter.CatalogServiceUserInputFilter</filter-class>
+  </filter>
+
+  <filter>
+    <filter-name>CatalogGenFilter</filter-name>
+    <filter-class>thredds.servlet.filter.CatalogGenFilter</filter-class>
+  </filter>
+
+  <filter>
     <filter-name>Cache10dayFilter</filter-name>
     <filter-class>thredds.servlet.filter.ResponseHeaderFilter</filter-class>
     <init-param>
@@ -49,6 +78,121 @@
     <filter-name>Cams</filter-name>
     <url-pattern>/restrictedAccess/*</url-pattern>
   </filter-mapping -->
+
+  <!--
+  Filter:
+   - the request URL path
+   - on all requests.
+  -->
+  <filter-mapping>
+    <filter-name>RequestPathFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!--
+  Filter:
+   - the request URL query string
+   - on all requests except OPeNDAP requests.
+  -->
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>root</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>catalogService</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>debug</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>MetarSubsetService</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>GridSubsetService</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>dqc</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>catalogGen</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>FileServer</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>RadarServer</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>RestrictedDataset</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>WCS</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>CdmValidator</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>ForecastModelRunInventory</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>DLwriter</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>View</servlet-name>
+  </filter-mapping>
+  <!-- New -->
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>tester</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>NetcdfServer</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>RemoteNetcdfServer</servlet-name>
+  </filter-mapping>
+
+  <!--
+  Filter:
+   - the request URL query string
+   - on all OPeNDAP requests.
+  -->
+  <filter-mapping>
+    <filter-name>RequestQueryFilterAllowAngleBrackets</filter-name>
+    <servlet-name>NetcdfDODS</servlet-name>
+  </filter-mapping>
+
+  <!--
+  Filter all requests that contain parameters used by CatalogServices
+  -->
+  <filter-mapping>
+    <filter-name>CatalogServiceFilter</filter-name>
+    <servlet-name>catalogService</servlet-name>
+  </filter-mapping>
+
+  <!--
+  Filter the request parameters used by CatalogGen
+  -->
+  <filter-mapping>
+    <filter-name>CatalogGenFilter</filter-name>
+    <servlet-name>catalogGen</servlet-name>
+  </filter-mapping>
 
   <filter-mapping>
     <filter-name>Cache10dayFilter</filter-name>

@@ -43,7 +43,7 @@ public class TdsConfigContextListener
     DataRootHandler.setInstance( catHandler );
 
     // Initialize HtmlWriter
-    // LOOK! ToDo This should be removed once HtmlController uses JSP.
+    // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.
     HtmlWriter.init( tdsContext.getContextPath(),
                      tdsContext.getWebappName(),
                      tdsContext.getWebappVersionFull(),

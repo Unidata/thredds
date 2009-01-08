@@ -24,7 +24,7 @@ public class CatalogServiceUtils
 
   public static BindingResult bindAndValidateRemoteCatalogRequest( HttpServletRequest request )
   {
-    // Bind and validate the request to a CatalogServiceRequest.
+    // Bind and validate the request to a RemoteCatalogRequest.
     RemoteCatalogRequest rcr = new RemoteCatalogRequest();
     RemoteCatalogRequestDataBinder db = new RemoteCatalogRequestDataBinder( rcr, "request" );
     db.setAllowedFields( new String[]{"catalogUri", "command", "dataset", "verbose", "htmlView"} );
@@ -49,20 +49,6 @@ public class CatalogServiceUtils
     LocalCatalogRequestValidator validator = new LocalCatalogRequestValidator();
     validator.setHtmlView( htmlView );
     ValidationUtils.invokeValidator( validator, bindingResult.getTarget(), bindingResult );
-
-    return bindingResult;
-  }
-
-  public static BindingResult bindAndValidate( HttpServletRequest request, boolean localCatalog, XmlHtmlOrEither xmlHtmlOrEither )
-  {
-    // Bind and validate the request to a CatalogServiceRequest.
-    CatalogServiceRequest csr = new CatalogServiceRequest();
-    CatalogServiceRequestDataBinder db = new CatalogServiceRequestDataBinder( csr, "request", localCatalog, xmlHtmlOrEither );
-    db.setAllowedFields( new String[]{"catalog", "verbose", "command", "htmlView", "dataset"} );
-    db.bind( request );
-
-    BindingResult bindingResult = db.getBindingResult();
-    ValidationUtils.invokeValidator( new CatalogServiceRequestValidator(), bindingResult.getTarget(), bindingResult );
 
     return bindingResult;
   }

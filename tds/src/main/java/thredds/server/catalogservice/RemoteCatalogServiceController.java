@@ -42,11 +42,11 @@ import java.net.URI;
  *   <li>The "command" parameter must either be empty or have one of the
  *     following values: "SHOW", "SUBSET", or "VALIDATE", see
  *     {@link Command}.</li>
- *   <li>The parameter "dataset" identifies a dataset contained by the
+ *   <li>The "dataset" parameter identifies a dataset contained by the
  *     local catalog. [Used only in "SUBSET" requests.]</li>
- *   <li>The parameter "htmlView" indicates if an HTML or XML view is
+ *   <li>The "htmlView" parameter indicates if an HTML or XML view is
  *     desired. [Used only in "SUBSET" requests.]</li>
- *   <li>The parameter "verbose" indicates if the output of a "VALIDATE"
+ *   <li>The "verbose" parameter indicates if the output of a "VALIDATE"
  *     request should be verbose ("true") or not ("false" or not given).</li>
  * </ul>
  *
@@ -103,7 +103,7 @@ public class RemoteCatalogServiceController extends AbstractController
       return null;
     }
 
-    // Retrieve the resulting CatalogServiceRequest.
+    // Retrieve the resulting RemoteCatalogRequest.
     RemoteCatalogRequest catalogServiceRequest = (RemoteCatalogRequest) bindingResult.getTarget();
 
     // Determine path and catalogPath

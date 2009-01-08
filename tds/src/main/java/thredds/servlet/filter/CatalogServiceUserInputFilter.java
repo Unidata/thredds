@@ -1,5 +1,7 @@
 package thredds.servlet.filter;
 
+import thredds.server.catalogservice.Command;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,9 +14,12 @@ import java.io.IOException;
  * The following CatalogService request parameters are validated as described:
  * <ul>
  *   <li>"catalog" - single-value, URI string</li>
+ *   <li>"command" - single-value, one of the following string values
+ *     (case-insensitive): "SHOW", "SUBSET", "VALIDATE"
+ *     (see {@link thredds.server.catalogservice.Command})</li>
  *   <li>"dataset" - single-value, path string</li>
- *   <li>"cmd" - single-value, one of the following string values: "show", "subset", "validate", "convert"</li>
- *   <li>"debug" - single-value, boolean string</li>
+ *   <li>"htmlView" - single-value, boolean string</li>
+ *   <li>"verbose" - single-value, boolean string</li>
  * </ul>
  *
  * <p>The validation types use the following methods:
@@ -27,6 +32,10 @@ import java.io.IOException;
  *
  * @author edavis
  * @since 3.16.47
+ * @see thredds.util.StringValidateEncodeUtils
+ * @see thredds.server.catalogservice.Command
+ * @see thredds.server.catalogservice.LocalCatalogServiceController
+ * @see thredds.server.catalogservice.RemoteCatalogServiceController
  */
 public class CatalogServiceUserInputFilter
         implements Filter
@@ -55,12 +64,13 @@ public class CatalogServiceUserInputFilter
     HttpServletRequest request = (HttpServletRequest) servletRequest;
     HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-    String[] cmdValidSet = {"show", "subset", "validate", "convert"};
+    String[] cmdValidSet = { Command.SHOW.toString(), Command.SUBSET.toString(), Command.VALIDATE.toString()};
 
     if ( ParameterValidationUtils.validateParameterAsSingleValueUriString( request, response, "catalog" )
+         && ParameterValidationUtils.validateParameterAsSingleValueAlphanumericStringConstrained( request, response, "command", cmdValidSet, true )
          && ParameterValidationUtils.validateParameterAsSingleValuePathString( request, response, "dataset" )
-         && ParameterValidationUtils.validateParameterAsSingleValueAlphanumericStringConstrained( request, response, "cmd", cmdValidSet, true )
-         && ParameterValidationUtils.validateParameterAsSingleValueBooleanString( request, response, "debug" ) )
+         && ParameterValidationUtils.validateParameterAsSingleValueBooleanString( request, response, "htmlView" )
+         && ParameterValidationUtils.validateParameterAsSingleValueBooleanString( request, response, "verbose" ) )
     {
       filterChain.doFilter( servletRequest, servletResponse );
     }

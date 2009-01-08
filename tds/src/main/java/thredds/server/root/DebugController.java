@@ -17,9 +17,6 @@ import thredds.server.config.TdsContext;
  */
 public class DebugController extends AbstractController
 {
-//  private static org.slf4j.Logger log =
-//          org.slf4j.LoggerFactory.getLogger( HtmlController.class );
-
   private TdsContext tdsContext;
 
   public void setTdsContext( TdsContext tdsContext )
