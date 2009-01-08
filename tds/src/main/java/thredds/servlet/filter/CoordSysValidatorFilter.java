@@ -28,7 +28,7 @@ import java.io.IOException;
  * @since 3.16.47
  * @see thredds.util.StringValidateEncodeUtils
  */
-public class CoordSysValidatorUserInputFilter
+public class CoordSysValidatorFilter
         implements Filter
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );

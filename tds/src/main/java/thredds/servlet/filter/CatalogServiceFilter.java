@@ -37,7 +37,7 @@ import java.io.IOException;
  * @see thredds.server.catalogservice.LocalCatalogServiceController
  * @see thredds.server.catalogservice.RemoteCatalogServiceController
  */
-public class CatalogServiceUserInputFilter
+public class CatalogServiceFilter
         implements Filter
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );

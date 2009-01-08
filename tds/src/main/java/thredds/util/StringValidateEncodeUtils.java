@@ -52,6 +52,8 @@ public class StringValidateEncodeUtils
   }
   private final static Pattern INVALID_CHARACTERS_FOR_SINGLE_LINE_STRING_PATTERN
           = Pattern.compile( "[\\p{Zl}\\p{Zp}\\p{Cc}\\p{Cs}\\p{Co}\\p{Cn}]");
+  private final static Pattern VALID_CHARACTERS_FOR_SINGLE_LINE_STRING_PATTERN
+          = Pattern.compile( "[\\p{L}\\p{M}\\p{N}\\p{P}\\{S}\\p{Zs}\\p{IdentifierIgnorable}]");
 
   /**
    * Return true if the given String is a valid path.

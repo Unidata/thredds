@@ -41,7 +41,7 @@
 
   <filter>
     <filter-name>CatalogServiceFilter</filter-name>
-    <filter-class>thredds.servlet.filter.CatalogServiceUserInputFilter</filter-class>
+    <filter-class>thredds.servlet.filter.CatalogServiceFilter</filter-class>
   </filter>
 
   <filter>
