@@ -14,13 +14,7 @@
   <ol>
     <li>Shutdown tomcat 8080 (needed to&nbsp;remove catalina.out)</li>
     <li>Rename/remove old logs:
-      <pre style="margin-left: 40px;">
-        <strong>motherlode:</strong> cd ${TOMCAT_HOME}/logs
-        <strong>motherlode:</strong> mv catalina.out catalina.out.&lt;yyyy-mm-dd&gt;
-        <strong>motherlode:</strong> rm &lt;other stuff ???&gt; [Ethan will check]
-        <strong>motherlode:</strong> cd ${TOMCAT_HOME}/content/thredds/logs
-        <strong>motherlode:</strong> rm catalogErrors.log models.log* cache.log*
-      </pre>
+      <pre style="margin-left: 40px;">        <strong>motherlode:</strong> cd ${TOMCAT_HOME}/logs<br>        <strong>motherlode:</strong> mv catalina.out catalina.out.&lt;yyyy-mm-dd&gt;<br>        <strong>motherlode:</strong> rm catalina.&lt;yyyy-mm-dd&gt;.log juli.*<br>        <strong>motherlode:</strong> cd ${TOMCAT_HOME}/content/thredds/logs<br>        <strong>motherlode:</strong> rm catalogErrors.log models.log* cache.log*<br>      </pre>
     </li>
     <li>Startup tomcat 8080</li>
   </ol>
@@ -68,5 +62,4 @@
 
 <hr style="width: 100%; height: 2px;">
 
-</body>
-</html>
+</body></html>

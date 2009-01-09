@@ -1,6 +1,5 @@
 package thredds.util;
 
-import org.springframework.util.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -34,12 +33,16 @@ public class StringValidateEncodeUtils
    *
    * <ul>
    *   <li>Cc - Other, Control</li>
+   *   <li>Cf - Other, Format</li>
    *   <li>Cs - Other, Surrogate</li>
    *   <li>Co - Other, Private Use</li>
    *   <li>Cn - Other, Not Assigned</li>
    *   <li>Zl - Separator, Line</li>
    *   <li>Zp - Separator, Paragraph</li>
    * </ul>
+   *
+   * <p>Or, in other words, allow: Letters, Numbers, Marks, Punctuation,
+   * Symbols, and Space separators.
    *
    * @param singleLineString the String to validate
    * @return true if the given String is a valid single-line String.
@@ -51,9 +54,7 @@ public class StringValidateEncodeUtils
     return ! m.find();
   }
   private final static Pattern INVALID_CHARACTERS_FOR_SINGLE_LINE_STRING_PATTERN
-          = Pattern.compile( "[\\p{Zl}\\p{Zp}\\p{Cc}\\p{Cs}\\p{Co}\\p{Cn}]");
-  private final static Pattern VALID_CHARACTERS_FOR_SINGLE_LINE_STRING_PATTERN
-          = Pattern.compile( "[\\p{L}\\p{M}\\p{N}\\p{P}\\{S}\\p{Zs}\\p{IdentifierIgnorable}]");
+          = Pattern.compile( "[\\p{Zl}\\p{Zp}\\p{C}]");
 
   /**
    * Return true if the given String is a valid path.
@@ -70,6 +71,7 @@ public class StringValidateEncodeUtils
    * @return true if the given String is a valid path.
    * @see #validSingleLineString(String)
    */
+  @SuppressWarnings({"SimplifiableIfStatement"})
   public static boolean validPath( String path )
   {
     if ( path == null )
@@ -97,6 +99,7 @@ public class StringValidateEncodeUtils
    * @return true if the given String is a valid File path.
    * @see #validPath(String)
    */
+  @SuppressWarnings({"SimplifiableIfStatement"})
   public static boolean validFilePath( String path )
   {
     if ( path == null )
@@ -121,6 +124,7 @@ public class StringValidateEncodeUtils
    * @param uri the String to validate.
    * @return true if the given String is a valid URI string.
    */
+  @SuppressWarnings({"SimplifiableIfStatement"})
   public static boolean validUriString( String uri )
   {
     if ( uri == null )
@@ -221,6 +225,7 @@ public class StringValidateEncodeUtils
    * @param boolString the String to validate.
    * @return true if the given String is "true" or "false", ignoring case.
    */
+  @SuppressWarnings({"SimplifiableIfStatement"})
   public static boolean validBooleanString( String boolString )
   {
     if ( boolString == null )
@@ -282,10 +287,11 @@ public class StringValidateEncodeUtils
    * @param path the path to check
    * @return true if the given path does not ascend into parent directory.
    */
+  @SuppressWarnings({"UnnecessaryContinue"})
   public static boolean descendOnlyFilePath( String path )
   {
     String[] pathSegments = path.split( "/" );
-    String[] newPathSegments = new String[pathSegments.length];
+    //String[] newPathSegments = new String[pathSegments.length];
     int i = 0;
     for ( int indxOrigSegs = 0; indxOrigSegs < pathSegments.length; indxOrigSegs++ )
     {
@@ -300,7 +306,7 @@ public class StringValidateEncodeUtils
       }
       else
       {
-        newPathSegments[i] = s;
+        //newPathSegments[i] = s;
         i++;
       }
     }
@@ -359,7 +365,7 @@ public class StringValidateEncodeUtils
 
     CharBuffer cb = charset.decode( bb );
     //cb.rewind().get();
-
+    cb.hasArray();
     // ToDo Look Implement.
 
     return -1;

@@ -120,6 +120,9 @@ public class LocalCatalogServiceController extends AbstractController
                                                 HttpServletResponse response )
           throws Exception
   {
+    // Gather diagnostics for logging request.
+    ServletUtil.logServerAccessSetup( request );
+
     // Bind HTTP request to a LocalCatalogRequest.
     BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( request, this.htmlView );
 
@@ -231,6 +234,7 @@ public class LocalCatalogServiceController extends AbstractController
 
     // If request doesn't match a public document, hand to default.
     tdsContext.getDefaultRequestDispatcher().forward( request, response );
+    ServletUtil.logServerAccess( -1, -1 );
     return null;
   }
 

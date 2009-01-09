@@ -17,7 +17,7 @@
   <!-- Turn on some more targeted debugging. -->
   <context-param>
     <param-name>DebugOn</param-name>
-    <param-value></param-value>
+    <param-value> </param-value>
   </context-param>
 
   <filter>
@@ -137,10 +137,6 @@
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>WCS</servlet-name>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>CdmValidator</servlet-name>
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
@@ -329,7 +325,7 @@
     <servlet-class>thredds.server.opendap.NcDODSServlet</servlet-class>
     <init-param>
       <param-name>DebugOn</param-name>
-      <param-value></param-value>
+      <param-value> </param-value>
     </init-param>
     <load-on-startup>2</load-on-startup>
   </servlet>
@@ -457,12 +453,6 @@
   </servlet>
   -->
   <!-- catalog services -->
-
-  <servlet>
-    <servlet-name>CdmValidator</servlet-name>
-    <servlet-class>thredds.servlet.CoordSysValidatorServlet</servlet-class>
-    <load-on-startup>6</load-on-startup>
-  </servlet>
 
   <servlet>
     <servlet-name>ForecastModelRunInventory</servlet-name>
@@ -628,12 +618,6 @@
     <servlet-name>catalogGen</servlet-name>
     <url-pattern>/cataloggen/*</url-pattern>
   </servlet-mapping>
-
-
-  <!--servlet-mapping>
-    <servlet-name>CdmValidator</servlet-name>
-    <url-pattern>/cdmValidate</url-pattern>
-  </servlet-mapping-->
 
   <servlet-mapping>
     <servlet-name>ForecastModelRunInventory</servlet-name>

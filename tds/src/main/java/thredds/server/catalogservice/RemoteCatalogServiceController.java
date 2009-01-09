@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.ThreddsConfig;
 import thredds.server.config.TdsContext;
 import thredds.server.views.InvCatalogXmlView;
 import thredds.catalog.*;
@@ -87,6 +88,18 @@ public class RemoteCatalogServiceController extends AbstractController
                                                 HttpServletResponse response )
           throws Exception
   {
+    // Gather diagnostics for logging request.
+    ServletUtil.logServerAccessSetup( request );
+
+    // Send error response if remote catalog service requests are not allowed.
+    // ToDo Look - Move this into TdsConfig?
+    boolean allowRemote = ThreddsConfig.getBoolean( "CatalogServices.allowRemote", false );
+    if ( ! allowRemote )
+    {
+      ServletUtil.logServerAccess( HttpServletResponse.SC_FORBIDDEN, -1 );
+      response.sendError( HttpServletResponse.SC_FORBIDDEN, "Catalog services not supported for remote catalogs." );
+      return null;
+    }
     // Bind HTTP request to a LocalCatalogRequest.
     BindingResult bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( request );
 
@@ -147,6 +160,7 @@ public class RemoteCatalogServiceController extends AbstractController
       model.put( "siteLogoPath", HtmlWriter.getInstance().getContextPath() + HtmlWriter.getInstance().getContextLogoPath() );
       model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
       model.put( "serverName", HtmlWriter.getInstance().getContextName() );
+      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
       return new ModelAndView( "/thredds/server/catalogservice/validationError", model );
     }
 
@@ -189,6 +203,7 @@ public class RemoteCatalogServiceController extends AbstractController
       model.put( "siteLogoPath", HtmlWriter.getInstance().getContextPath() + HtmlWriter.getInstance().getContextLogoPath() );
       model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
       model.put( "serverName", HtmlWriter.getInstance().getContextName() );
+      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
       return new ModelAndView( "/thredds/server/catalogservice/validationMessage", model );
     }
     else
