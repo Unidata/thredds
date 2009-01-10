@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datacollection>
+    
+    <dataset id="FOAM_ONE" name="FOAM_ONE_DEGREE" lastModified="2003-10-28T00:00:00Z" accessRequired="MetOffice">
+        <variable name="sea_water_potential_temperature" valid_min="270" valid_max="305" grid_name="grid_t" datatype="float" units="C" internalName="TMP" fileset="1"/>
+        <variable name="ocean_mixed_layer_thickness" valid_min="5" valid_max="1000" grid_name="grid_t" datatype="float" units="m" internalName="M" fileset="1"/>
+        <variable name="sea_ice_concentration" valid_min="0.01" valid_max="1.001" grid_name="grid_t" datatype="float" units="fraction" internalName="ICEC" fileset="1"/>
+        <variable name="eastward_sea_water_velocity" valid_min="-136.5" valid_max="79.42" grid_name="grid_t" datatype="float" units="m/s" internalName="U" fileset="1"/>
+        <variable name="sea_ice_thickness" valid_min="0.06" valid_max="1.125" grid_name="grid_t" datatype="float" units="m" internalName="ICETK" fileset="1"/>
+        <variable name="sea_water_salinity" valid_min="7" valid_max="40" grid_name="grid_t" datatype="float" units="psu" internalName="SALTY" fileset="1"/>
+        <variable name="northward_sea_water_velocity" valid_min="-42" valid_max="46" grid_name="grid_t" datatype="float" units="m/s" internalName="V" fileset="1"/>
+        <grid name="grid_t">
+            <axis axistype="t" axisname="time"/>
+            <axis axistype="z" axisname="depth"/>
+            <axis axistype="y" axisname="latitude_t"/>
+            <axis axistype="x" axisname="longitude_t"/>
+        </grid>
+        <datafiles root="/data/cadfael/marine/FOAM/FOAM_one/" fileformat ="CDF" units="days since 1984-1-1 00:00:00" timeunits="ISO8601">
+            <filedetails location= "FOAM_20010903.0.nc" startdate = "2001-09-03T00:00:00Z" start="6455" stride="1" count="1" /> 
+            <filedetails location= "FOAM_20010904.0.nc" startdate = "2001-09-04T00:00:00Z" start="6456" stride="1" count="1" /> 
+            <filedetails location= "FOAM_20010905.0.nc" startdate = "2001-09-05T00:00:00Z" start="6457" stride="1" count="1" /> 
+            <filedetails location= "FOAM_20010906.0.nc" startdate = "2001-09-06T00:00:00Z" start="6458" stride="1" count="1" /> 
+            <filedetails location= "FOAM_20010907.0.nc" startdate = "2001-09-07T00:00:00Z" start="6459" stride="1" count="1" /> 
+            <filedetails location= "FOAM_20071017.0.nc" startdate = "2007-10-17T00:00:00Z" start="2239" stride="1" count="1" /> 
+        </datafiles>
+        <regularAxis axisname="longitude_t" type="regular" units="degrees_east" start="0" stride="1.0" count="360"/>
+        <regularAxis axisname="latitude_t" type="regular" units="degrees_north" start="-89.0" stride="1.0" count="180"/>
+        <irregularAxis axisname="depth" type="irregular" units="m" positive="down" value="5,15,25,35,48,67,96,139"/>
+    </dataset>
+    
+    
+</datacollection>
