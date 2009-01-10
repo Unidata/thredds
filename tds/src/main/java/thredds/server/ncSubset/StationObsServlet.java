@@ -25,10 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
 
-import thredds.servlet.AbstractServlet;
-import thredds.servlet.ServletUtil;
-import thredds.servlet.DebugHandler;
-import thredds.servlet.ThreddsConfig;
+import thredds.servlet.*;
 import ucar.nc2.units.DateRange;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
@@ -106,7 +103,7 @@ public class StationObsServlet extends AbstractServlet {
 
     long start = System.currentTimeMillis();
 
-    ServletUtil.logServerAccessSetup(req);
+    log.info( AccessLog.setupInfo(req));
     if (debug) System.out.println(req.getQueryString());
 
     String pathInfo = req.getPathInfo();
@@ -196,7 +193,7 @@ public class StationObsServlet extends AbstractServlet {
     }
 
     soc.write(qp, res);
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+    log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, -1));
 
     if (showTime) {
       long took = System.currentTimeMillis() - start;
@@ -229,7 +226,7 @@ public class StationObsServlet extends AbstractServlet {
 
       } catch (Exception e) {
         log.error("SobsServlet internal error", e);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+        log.info( AccessLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SobsServlet internal error");
         return;
       }
@@ -245,7 +242,7 @@ public class StationObsServlet extends AbstractServlet {
     out.write(infoString.getBytes());
     out.flush();
 
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, infoString.length());
+    log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, infoString.length()));
   }
 
   private InputStream getXSLT(String xslName) {

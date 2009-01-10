@@ -47,7 +47,7 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
-  29:
+  29: Rotated Lat/lon projection
     JoinExisting caching now handles nested aggregations, by using the id attribute to identify them.
     GridDataset, RadialDataset: use Formatter instead of StringBuilder
     VariableIF use Formatter instead of StringBuilder

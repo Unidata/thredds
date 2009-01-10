@@ -147,7 +147,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     frame.setVisible(true);
 
     //problem.extract();
-    while (true) all_models.extract();
+    //while (true) 
+      all_models.extract();
     //chiz_models.extract();
     //nc_models.extract();
     //localAll.extract();

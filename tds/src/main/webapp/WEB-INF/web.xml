@@ -445,13 +445,13 @@
     <servlet-class>thredds.server.wcs.WCSServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
-  <!--
+
   <servlet>
     <servlet-name>wms</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
-  -->
+
   <!-- catalog services -->
 
   <servlet>
@@ -606,12 +606,11 @@
     <url-pattern>/wcs/*</url-pattern>
   </servlet-mapping>
 
-  <!--
   <servlet-mapping>
     <servlet-name>wms</servlet-name>
     <url-pattern>/wms/*</url-pattern>
   </servlet-mapping>
-  -->
+
   <!-- catalog services -->
 
   <servlet-mapping>
@@ -654,6 +653,18 @@
     <taglib>
       <taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
       <taglib-location>/WEB-INF/tld/fmt.tld</taglib-location>
+    </taglib>
+     <taglib>
+      <taglib-uri>/WEB-INF/tld/wms/wms2kml</taglib-uri>
+      <taglib-location>/WEB-INF/tld/wms/wms2kml.tld</taglib-location>
+    </taglib>
+    <taglib>
+      <taglib-uri>/WEB-INF/tld/wms/wmsUtils</taglib-uri>
+      <taglib-location>/WEB-INF/tld/wms/wmsUtils.tld</taglib-location>
+    </taglib>
+    <taglib>
+      <taglib-uri>/WEB-INF/tld/wms/MenuMaker</taglib-uri>
+      <taglib-location>/WEB-INF/tld/wms/MenuMaker.tld</taglib-location>
     </taglib>
   </jsp-config>
 

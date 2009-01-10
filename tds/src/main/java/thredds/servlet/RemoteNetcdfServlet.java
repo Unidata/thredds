@@ -78,7 +78,7 @@ public class RemoteNetcdfServlet extends AbstractServlet {
       return;
     }
 
-    ServletUtil.logServerAccessSetup(req);
+    log.info( AccessLog.setupInfo(req));
     ServletUtil.showRequestDetail(this, req);
 
     String pathInfo = req.getPathInfo();

@@ -75,7 +75,7 @@ public class WCSServlet extends AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException
   {
-    ServletUtil.logServerAccessSetup( req );
+    log.info( AccessLog.setupInfo(req));
 
     // Check whether TDS is configured to support WCS.
     if (!allow) {
@@ -184,7 +184,7 @@ public class WCSServlet extends AbstractServlet {
   protected void doPost( HttpServletRequest req, HttpServletResponse res )
           throws ServletException, IOException
   {
-    ServletUtil.logServerAccessSetup( req );
+    log.info( AccessLog.setupInfo(req));
 
     res.setStatus( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
     res.setHeader( "Allow", "GET");

@@ -257,7 +257,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
 
-    ServletUtil.logServerAccessSetup(req);
+    log.info( AccessLog.setupInfo(req));
 
     try {
       String path = ServletUtil.getRequestPath(req);
@@ -281,7 +281,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
           HtmlWriter.getInstance().writeDirectory(res, file, path);
         else
           res.sendError(HttpServletResponse.SC_NOT_FOUND);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+        log.info( AccessLog.accessInfo( HttpServletResponse.SC_NOT_FOUND, 0));
         return;
       }
 
@@ -483,7 +483,7 @@ public class ThreddsDefaultServlet extends AbstractServlet {
   public void doPut(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
 
-    ServletUtil.logServerAccessSetup(req);
+    log.info( AccessLog.setupInfo(req));
 
     String path = ServletUtil.getRequestPath(req);
     if (Debug.isSet("showRequest"))
@@ -492,19 +492,19 @@ public class ThreddsDefaultServlet extends AbstractServlet {
     if (path.startsWith("/content"))
       path = path.substring(8);
     else {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_FORBIDDEN, 0);
+      log.info( AccessLog.accessInfo( HttpServletResponse.SC_FORBIDDEN, 0));
       res.sendError(HttpServletResponse.SC_FORBIDDEN);
       return;
     }
 
     if (path != null) {
       if (ServletUtil.saveFile(this, contentPath, path, req, res)) {
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, 0);
+        log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, 0));
         return; // LOOK - could trigger reread of config file
       }
     }
 
-    ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+    log.info( AccessLog.accessInfo( HttpServletResponse.SC_NOT_FOUND, 0));
     res.sendError(HttpServletResponse.SC_NOT_FOUND);
   }
 

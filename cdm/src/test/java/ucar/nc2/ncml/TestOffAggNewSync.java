@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.StringReader;
 
 import ucar.nc2.*;
 import ucar.ma2.DataType;
@@ -33,18 +34,27 @@ public class TestOffAggNewSync extends TestCase {
     ncfile.close();
   }
 
-  public void testRemove() throws IOException, InterruptedException {
 
-    String filename = "file:./" + TestNcML.topDir + "offsite/aggExistingSync.xml";
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+  private String aggExistingSync =
+            "<?xml version='1.0' encoding='UTF-8'?>\n" +
+            "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+            "  <aggregation  dimName='time' type='joinExisting' recheckEvery='1 sec' >\n" +
+            "    <variableAgg name='IR_WV'/>\n" +
+            "    <scan location='//zero/share/testdata/image/testSync' suffix='.gini' dateFormatMark='SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm'/>\n" +
+            "  </aggregation>\n" +
+            "</netcdf>";
+
+  public void testRemove() throws IOException, InterruptedException {
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, 8);
     System.out.println("");
     ncfile.close();
 
-    move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    boolean ok = move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    int nfiles = ok ? 7 : 8;  // sometimes fails
 
-    ncfile = NcMLReader.readNcML(filename, null);
-    testAggCoordVar(ncfile, 7);
+    ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
+    testAggCoordVar(ncfile, nfiles);
     ncfile.close();
 
     moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
@@ -53,8 +63,7 @@ public class TestOffAggNewSync extends TestCase {
   public void testSync() throws IOException, InterruptedException {
     move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
-    String filename = "file:./" + TestNcML.topDir + "offsite/aggExistingSync.xml";
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, 7);
 
     moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
@@ -66,16 +75,16 @@ public class TestOffAggNewSync extends TestCase {
   }
 
   public void testSyncRemove() throws IOException, InterruptedException {
-    String filename = "file:./" + TestNcML.topDir + "offsite/aggExistingSync.xml";
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, 8);
     System.out.println("");
 
-    move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    boolean ok = move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    int nfiles = ok ? 7 : 8;  // sometimes fails
     Thread.sleep(2000);
 
     ncfile.sync();
-    testAggCoordVar(ncfile, 7);
+    testAggCoordVar(ncfile, nfiles);
     ncfile.close();
 
     moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
@@ -109,10 +118,11 @@ public class TestOffAggNewSync extends TestCase {
     }
   }
 
-  void move(String filename) {
+  boolean move(String filename) {
     File f = new File(filename);
     if (f.exists())
-      f.renameTo(new File(filename + ".save"));
+      return f.renameTo(new File(filename + ".save"));
+    return false;
   }
 
   void moveBack(String filename) {

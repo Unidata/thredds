@@ -287,13 +287,13 @@ public class HtmlWriter {
     // error checking
     if (dir == null) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( AccessLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, 0));
       return;
     }
 
     if (!dir.exists() || !dir.isDirectory()) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
+      log.info( AccessLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, 0));
       return;
     }
 
@@ -318,7 +318,7 @@ public class HtmlWriter {
     writer.write(dirHtmlString);
     writer.flush();
 
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, dirHtmlString.length());
+    log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, dirHtmlString.length()));
   }
 
   private String getDirectory(String path, File dir) {
@@ -470,7 +470,7 @@ public class HtmlWriter {
     writer.write(catHtmlAsString);
     writer.flush();
 
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, catHtmlAsString.length());
+    log.info( AccessLog.accessInfo( HttpServletResponse.SC_OK, catHtmlAsString.length()));
   }
 
   /**
@@ -715,7 +715,7 @@ public class HtmlWriter {
     pw.write( datasetAsHtml );
     pw.flush();
 
-    ServletUtil.logServerAccess( HttpServletResponse.SC_OK, datasetAsHtml.length() );
+    log.info( AccessLog.accessInfo( HttpServletResponse.SC_OK, datasetAsHtml.length() ));
   }
 
   /**
@@ -743,7 +743,7 @@ public class HtmlWriter {
     writer.write(cdmAsString);
     writer.flush();
 
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, cdmAsString.length());
+    log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, cdmAsString.length()));
 
   }
 

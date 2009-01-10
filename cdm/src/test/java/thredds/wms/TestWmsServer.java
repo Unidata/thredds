@@ -40,24 +40,44 @@ public class TestWmsServer extends TestCase {
     super(name);
   }
 
-  public void testOne() throws IOException {
-    String dataset = server+"testAll/2004050400_eta_211.nc";
-    //showGetCapabilities(dataset);
-    getMap(dataset, "Z_sfc", "C:/temp/wmsTest.jpg");
+  public void testLatlon() throws IOException {
+    String dataset = server+"testWMS/cmor_pcmdi.nc";
+    showGetCapabilities(dataset);
+    getMap(dataset, "tos", "C:/temp/wmsLatlon.jpg");
   }
+
+  public void testRot() throws IOException {
+    String dataset = server+"testWMS/rotatedLatlon.grb";
+    showGetCapabilities(dataset);
+    getMap(dataset, "Geopotential_height", "C:/temp/wmsRot.jpg");
+  }
+
+  public void testGoogle() throws IOException {
+    String g = "testWMS/rotatedlatlon.grb?VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326&WIDTH=512&HEIGHT=512&LAYERS=Geopotential_height&STYLES=BOXFILL/alg&TRANSPARENT=TRUE&FORMAT=image/gif&BBOX=-135,35.34046249175859,135,82.1914946416798";
+    saveRead(server+g, "C:/temp/wmsGoogle.gif");
+  }
+
 
   private void showGetCapabilities(String url) throws IOException {
     showRead(url+"?request=GetCapabilities&version=1.3.0&service=WMS");
   }
 
-  /*
-            <BoundingBox CRS="CRS:84" minx="-135.33123756731953" maxx="-31.54351738422973" miny="19.672744972339057"
-                       maxy="60.30152674055779"/>
-   */
   private void getMap(String url, String grid, String filename) throws IOException {
+    String opts = "&STYLES=BOXFILL/ncview&";
+    opts += "CRS=CRS:84&";
+    opts += "BBOX=0,-90,360,90&";
+    opts += "WIDTH=1000&";
+    opts += "HEIGHT=500&";
+    opts += "FORMAT=image/png&";
+    //opts += "time=2001-08-14T00:00:00Z&";
+
+    saveRead(url+"?request=GetMap&version=1.3.0&service=WMS&Layers="+grid+opts, filename);
+  }
+
+  private void getMap3(String url, String grid, String filename) throws IOException {
     String styles = "&STYLES=BOXFILL/redblue&";
     String srs = "CRS=CRS:84&";
-    String bb = "BBOX=-100,30,-40,60&";
+    String bb = "BBOX=-100,30,-40,40&";
     String width="WIDTH=600&";
     String height="HEIGHT=500&";
     String format="FORMAT=image/png";

@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 import thredds.servlet.ServletUtil;
+import thredds.servlet.AccessLog;
 
 /**
  * Use Tomcat security.
@@ -76,7 +77,7 @@ public class TomcatAuthorizer implements Authorizer {
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    ServletUtil.logServerAccessSetup( req );
+    AccessLog.log.info( AccessLog.setupInfo(req));
 
     HttpSession session = req.getSession();
     if (session != null) {

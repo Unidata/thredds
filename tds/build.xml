@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="tds" default="compile" basedir=".">
   <property name="release.version" value="4.0"/>
-  <property name="release.version.minor" value="${release.version}.01"/>
+  <property name="release.version.minor" value="${release.version}.02"/>
   <tstamp>
     <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
   </tstamp>
@@ -42,6 +42,12 @@
   <path id="sourcepath">
     <pathelement location="${src.dir}"/>
   </path>
+
+   <fileset id="ncWMS.libraries" dir="${lib.dir}/ncWMS/">
+      <patternset id="ncwms.libs"/>
+      <filename name="*.jar"/>
+   </fileset>
+
 
   <patternset id="sources">
     <include name="thredds/cataloggen/servlet/*.java"/>
@@ -140,6 +146,7 @@
   <path id="compile.classpath">
     <fileset refid="compile.libraries" />
     <fileset refid="servlet.compile.libraries" />
+    <fileset refid="ncWMS.libraries" />
   </path>
 
   <!-- targets -->
@@ -238,6 +245,7 @@
     <copy todir="${war.dir}/WEB-INF/lib" flatten="true" overwrite="true" preservelastmodified="true">
       <fileset refid="compile.libraries"/>
       <fileset refid="runtime.libraries"/>
+      <fileset refid="ncWMS.libraries" />   
     </copy>
 
    <!-- Copy webapps dir  -->

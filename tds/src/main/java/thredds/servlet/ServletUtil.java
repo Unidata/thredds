@@ -26,10 +26,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.xml.parsers.FactoryConfigurationError;
-
-import org.apache.log4j.*;
-import org.apache.log4j.xml.DOMConfigurator;
 
 import ucar.unidata.util.StringUtil;
 import ucar.nc2.util.cache.FileCacheRaf;
@@ -39,9 +35,7 @@ import thredds.catalog.XMLEntityResolver;
 public class ServletUtil {
   public static final String CONTENT_TEXT = "text/plain; charset=utf-8";
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ServletUtil.class);
   static private boolean isDebugInit = false;
-  static private boolean isLogInit = false;
 
   static private String contextPath = null;
   static private String rootPath = null;
@@ -52,7 +46,6 @@ public class ServletUtil {
     setRootPath(context);
     setContentPath();
     initDebugging(context);
-    //initLogging( context);
   }
 
   static private void setContextPath(ServletContext servletContext) {
@@ -91,66 +84,8 @@ public class ServletUtil {
     }
   }
 
+  /////////////////////////////////////////////////////////////////
 
-
-  /**
-   * Initialize logging for the web application context in which the given
-   * servlet is running. Two types of logging are supported:
-   * <p/>
-   * 1) Regular logging using the SLF4J API.
-   * 2) Access logging which can write Apache common logging format logs,
-   * use the ServletUtil.logServerSetup(String) method.
-   * <p/>
-   * The log directory is determined by the servlet containers content
-   * directory. The configuration of logging is controlled by the log4j.xml
-   * file. The log4j.xml file needs to setup at least two loggers: "thredds";
-   * and "threddsAccessLogger"
-   *
-   * @param servlet - the servlet.
-   */
-  static private void initLogging(ServletContext servletContext) {
-    // Initialize logging if not already done.
-    if (isLogInit)
-      return;
-
-    System.out.println("+++ServletUtil.initLogging");
-
-    // set up the log path
-    String logPath = getContentPath() + "logs";
-    File logPathFile = new File(logPath);
-    if (!logPathFile.exists()) {
-      if (!logPathFile.mkdirs()) {
-        throw new RuntimeException("Creation of logfile directory failed." + logPath);
-      }
-    }
-
-    // read in Log4J config file
-    System.setProperty("logdir", logPath); // variable substitution
-    try {
-      String log4Jconfig = servletContext.getInitParameter("log4j-init-file");
-      if (log4Jconfig == null)
-        log4Jconfig = getRootPath() + "WEB-INF/log4j.xml";
-      DOMConfigurator.configure(log4Jconfig);
-      System.out.println("+++Log4j configured from file " + log4Jconfig);
-    } catch (FactoryConfigurationError t) {
-      t.printStackTrace();
-    }
-
-    /* read in user defined Log4J file
-    String log4Jconfig = ServletUtil.getContentPath(servlet) + "log4j.xml";
-    File test = new File(log4Jconfig);
-    if (test.exists())
-      try {
-        DOMConfigurator.configure(log4Jconfig);
-        System.out.println("+++Log4j configured from file "+log4Jconfig);
-      } catch (FactoryConfigurationError t) {
-        t.printStackTrace();
-      } */
-
-    log = org.slf4j.LoggerFactory.getLogger(ServletUtil.class);
-
-    isLogInit = true;
-  }
 
   /**
    * Gather information from the given HttpServletRequest for inclusion in both
@@ -178,53 +113,8 @@ public class ServletUtil {
    * @param req the current HttpServletRequest.
    */
   public static void logServerAccessSetup(HttpServletRequest req) {
-    HttpSession session = req.getSession(false);
-
-    // Setup context.
-    synchronized (ServletUtil.class) {
-      MDC.put("ID", Long.toString(++logServerAccessId));
-    }
-    MDC.put("host", req.getRemoteHost());
-    MDC.put("ident", (session == null) ? "-" : session.getId());
-    MDC.put("userid", req.getRemoteUser() != null ? req.getRemoteUser() : "-");
-    MDC.put("startTime", System.currentTimeMillis());
-    String query = req.getQueryString();
-    query = (query != null) ? "?" + query : "";
-    StringBuffer request = new StringBuffer();
-    request.append("\"").append(req.getMethod()).append(" ")
-        .append(req.getRequestURI()).append(query)
-        .append(" ").append(req.getProtocol()).append("\"");
-
-    MDC.put("request", request.toString());
-    log.info("Remote host: " + req.getRemoteHost() + " - Request: " + request);
+    AccessLog.log.info( AccessLog.setupInfo(req));
   }
-
-  /**
-   * Gather current thread information for inclusion in regular logging
-   * messages. Call this method only for non-request servlet activities, e.g.,
-   * during the init() or destroy().
-   * <p/>
-   * Use the SLF4J API to log a regular logging messages.
-   * <p/>
-   * This method gathers the following information:
-   * 1) "ID" - an identifier for the current thread; and
-   * 2) "startTime" - the system time in millis when this method is called.
-   * <p/>
-   * The appearance of the regular log messages are controlled in the
-   * log4j.xml configuration file.
-   *
-   * @param msg - the information log message logged when this method finishes.
-   */
-  public static void logServerSetup(String msg) {
-    // Setup context.
-    synchronized (ServletUtil.class) {
-      MDC.put("ID", Long.toString(++logServerAccessId));
-    }
-    MDC.put("startTime", System.currentTimeMillis());
-    log.info(msg);
-  }
-
-  private static volatile long logServerAccessId = 0;
 
   /**
    * Write log entry to THREDDS access log.
@@ -233,12 +123,10 @@ public class ServletUtil {
    * @param resSizeInBytes - the number of bytes returned in this result, -1 if unknown.
    */
   public static void logServerAccess(int resCode, long resSizeInBytes) {
-    long endTime = System.currentTimeMillis();
-    long startTime = (Long) MDC.get("startTime");
-    long duration = endTime - startTime;
-
-    log.info("Request Completed - " + resCode + " - " + resSizeInBytes + " - " + duration);
+    AccessLog.log.info( AccessLog.accessInfo(resCode, resSizeInBytes));
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Return the real path on the servers file system that corresponds to the root document ("/") on the given servlet.
@@ -248,30 +136,10 @@ public class ServletUtil {
     return rootPath;
   }
 
-  /*
-   * Return the real path on the servers file system that corresponds to the given path on the given servlet.
-   *
-   * @param servlet the HttpServlet whose path is to be mapped.
-   * @param path the virtual/URL path to map to the servers file system.
-   * @return the real path on the servers file system that corresponds to the given path on the given servlet.
-   *
-  public static String getPath(ServletContext sc, String path) {
-    String spath = sc.getRealPath(path);
-    spath = spath.replace('\\', '/');
-    return spath;
-  }
-
-  /* public static String getRootPathUrl(HttpServlet servlet) {
-    String rootPath = getRootPath( servlet);
-    rootPath = StringUtil.replace(rootPath, ' ', "%20");
-    return rootPath;
-  } */
-
   /**
    * Return the context path for the given servlet.
    * Note - ToDo: Why not just use ServletContext.getServletContextName()?
    *
-   * @param servlet the HttpServlet whose context path is returned.
    * @return the context path for the given servlet.
    */
   public static String getContextPath() {
@@ -282,7 +150,6 @@ public class ServletUtil {
   /**
    * Return the content path for the given servlet.
    *
-   * @param servlet the HttpServlet whose content path is returned.
    * @return the content path for the given servlet.
    */
   public static String getContentPath() {
@@ -294,7 +161,6 @@ public class ServletUtil {
    * content of which is copied to the content path when the web app
    * is first installed.
    *
-   * @param servlet the HttpServlet whose initial content path is returned.
    * @return the default/initial content path for the given servlet.
    */
   public static String getInitialContentPath() {
@@ -479,12 +345,12 @@ public class ServletUtil {
       throws IOException {
     if (!pathPrefix.equals("/content/")
         && !pathPrefix.equals("/root/")) {
-      log.error("handleRequestForContentFile(): The path prefix <" + pathPrefix + "> must be \"/content/\" or \"/root/\".");
+      AccessLog.log.error("handleRequestForContentFile(): The path prefix <" + pathPrefix + "> must be \"/content/\" or \"/root/\".");
       throw new IllegalArgumentException("Path prefix must be \"/content/\" or \"/root/\".");
     }
 
     if (!path.startsWith(pathPrefix)) {
-      log.error("handleRequestForContentFile(): path <" + path + "> must start with \"" + pathPrefix + "\".");
+      AccessLog.log.error("handleRequestForContentFile(): path <" + path + "> must start with \"" + pathPrefix + "\".");
       throw new IllegalArgumentException("Path must start with \"" + pathPrefix + "\".");
     }
 
@@ -542,7 +408,7 @@ public class ServletUtil {
       uri = new URI(req.getRequestURL().toString());
     }
     catch (URISyntaxException e) {
-      log.error("sendPermanentRedirect(): Bad syntax on request URL <" + req.getRequestURL() + ">.", e);
+      AccessLog.log.error("sendPermanentRedirect(): Bad syntax on request URL <" + req.getRequestURL() + ">.", e);
       ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return;
@@ -596,7 +462,7 @@ public class ServletUtil {
 
     String filename = ServletUtil.formFilename(contentPath, path);
 
-    log.debug("returnFile(): returning file <" + filename + ">.");
+    AccessLog.log.debug("returnFile(): returning file <" + filename + ">.");
     // No file, nothing to view
     if (filename == null) {
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
@@ -707,7 +573,7 @@ public class ServletUtil {
     res.setContentLength( (int) contentLength);
 
     boolean debugRequest = Debug.isSet("returnFile");
-    if (debugRequest) log.debug("returnFile(): filename = " + filename + " contentType = " + contentType +
+    if (debugRequest) AccessLog.log.debug("returnFile(): filename = " + filename + " contentType = " + contentType +
         " contentLength = " + contentLength);
 
     // indicate we allow Range Requests
@@ -741,30 +607,30 @@ public class ServletUtil {
       IO.copyFileB(file, out, 60000);
       res.flushBuffer();
       out.close();
-      if (debugRequest) log.debug("returnFile(): returnFile ok = " + filename);
+      if (debugRequest) AccessLog.log.debug("returnFile(): returnFile ok = " + filename);
       ServletUtil.logServerAccess(HttpServletResponse.SC_OK, contentLength);
     }
     // @todo Split up this exception handling: those from file access vs those from dealing with response
     //       File access: catch and res.sendError()
     //       response: don't catch (let bubble up out of doGet() etc)
     catch (FileNotFoundException e) {
-      log.error("returnFile(): FileNotFoundException= " + filename);
+      AccessLog.log.error("returnFile(): FileNotFoundException= " + filename);
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
     catch (java.net.SocketException e) {
-      log.info("returnFile(): SocketException sending file: " + filename + " " + e.getMessage());
+      AccessLog.log.info("returnFile(): SocketException sending file: " + filename + " " + e.getMessage());
       ServletUtil.logServerAccess(1000, 0); // dunno what error code to log
     }
     catch (IOException e) {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
       if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
-        log.info("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
+        AccessLog.log.info("returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage());
         ServletUtil.logServerAccess(1000, 0); // dunno what error code to log
         return;
       }
 
-      log.error("returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e);
+      AccessLog.log.error("returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e);
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, "Problem sending file: " + e.getMessage());
     }
@@ -787,7 +653,7 @@ public class ServletUtil {
       ServletUtil.logServerAccess(HttpServletResponse.SC_OK, contents.length());
     }
     catch (IOException e) {
-      log.error(" IOException sending string: ", e);
+      AccessLog.log.error(" IOException sending string: ", e);
       ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, 0);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, "Problem sending string: " + e.getMessage());
     }
@@ -818,7 +684,7 @@ public class ServletUtil {
     String query = req.getQueryString();
     if (query != null)
       reqs = reqs + "&" + query;
-    log.info("forwardToCatalogServices(): request string = \"/catalog.html?" + reqs + "\"");
+    AccessLog.log.info("forwardToCatalogServices(): request string = \"/catalog.html?" + reqs + "\"");
 
     // dispatch to CatalogHtml servlet
     // "The pathname specified may be relative, although it cannot extend outside the current servlet context.
@@ -837,7 +703,7 @@ public class ServletUtil {
 
     // @todo Need to use logServerAccess() below here.
     boolean debugRequest = Debug.isSet("SaveFile");
-    if (debugRequest) log.debug(" saveFile(): path= " + path);
+    if (debugRequest) AccessLog.log.debug(" saveFile(): path= " + path);
 
     String filename = contentPath + path; // absolute path
     File want = new File(filename);
@@ -850,7 +716,7 @@ public class ServletUtil {
       try {
         IO.copyFile(filename, fileSave);
       } catch (IOException e) {
-        log.error("saveFile(): Unable to save copy of file " + filename + " to " + fileSave + "\n" + e.getMessage());
+        AccessLog.log.error("saveFile(): Unable to save copy of file " + filename + " to " + fileSave + "\n" + e.getMessage());
         return false;
       }
     }
@@ -860,12 +726,12 @@ public class ServletUtil {
       OutputStream out = new BufferedOutputStream(new FileOutputStream(filename));
       IO.copy(req.getInputStream(), out);
       out.close();
-      if (debugRequest) log.debug("saveFile(): ok= " + filename);
+      if (debugRequest) AccessLog.log.debug("saveFile(): ok= " + filename);
       res.setStatus(HttpServletResponse.SC_CREATED);
       ServletUtil.logServerAccess(HttpServletResponse.SC_CREATED, -1);
       return true;
     } catch (IOException e) {
-      log.error("saveFile(): Unable to PUT file " + filename + " to " + fileSave + "\n" + e.getMessage());
+      AccessLog.log.error("saveFile(): Unable to PUT file " + filename + " to " + fileSave + "\n" + e.getMessage());
       return false;
     }
 
@@ -890,7 +756,7 @@ public class ServletUtil {
       try {
         n = Integer.parseInt(ver);
       } catch (NumberFormatException e) {
-        log.error("Format Integer error on backup filename= " + ver);
+        AccessLog.log.error("Format Integer error on backup filename= " + ver);
       }
       maxN = Math.max(n, maxN);
     }
@@ -925,12 +791,12 @@ public class ServletUtil {
         message = new String(bs.toByteArray());
       }
       ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, message.length());
-      log.error("handleException", t);
+      AccessLog.log.error("handleException", t);
       t.printStackTrace(); // debugging - log.error not showing stack trace !!   
       if ( ! res.isCommitted() )
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, message);
     } catch (IOException e) {
-      log.error("handleException(): IOException", e);
+      AccessLog.log.error("handleException(): IOException", e);
       t.printStackTrace();
     }
   }

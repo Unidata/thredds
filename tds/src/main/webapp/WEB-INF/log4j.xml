@@ -121,6 +121,17 @@
     <appender-ref ref="threddsServlet"/>
   </logger>
 
+  <!-- WMS stuff has routine higher level of messages -->
+  <logger name="uk.ac.rdg.resc.ncwms">
+    <level value="WARN"/>
+    <appender-ref ref="threddsServlet"/>
+  </logger>
+
+  <logger name="thredds.server.wms">
+    <level value="WARN"/>
+    <appender-ref ref="threddsServlet"/>
+  </logger>
+
   <logger name="org.springframework">
     <level value="ALL"/>
   </logger>
@@ -131,7 +142,7 @@
   <logger name="thredds.servlet"/>
 
   <root>
-    <level value="WARN"/>
+    <level value="INFO"/>
     <appender-ref ref="ThreddsStdout"/>
   </root>
 

@@ -27,6 +27,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.*;
@@ -565,7 +566,17 @@ public class Index2NC  {
     if (fmr.hasVariable( pname))
       return pname;
 
-    logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+name+" or "+pname+" for file "+ncfile.getLocation());
+    // try replacing the blanks
+    String nameWunder = StringUtil.replace(name, ' ', "_");
+    if (fmr.hasVariable( nameWunder))
+      return nameWunder;
+
+    String pnameWunder = StringUtil.replace(pname, ' ', "_");
+    if (fmr.hasVariable( pnameWunder))
+      return pnameWunder;
+
+    logger.warn("GribServiceProvider.Index2NC: FmrcCoordSys does not have the variable named ="+name+" or "+pname+" or "+
+            nameWunder+" or "+pnameWunder+" for file "+ncfile.getLocation());
 
     return null;
   }

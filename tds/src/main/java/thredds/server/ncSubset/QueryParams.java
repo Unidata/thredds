@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import thredds.servlet.ServletUtil;
+import thredds.servlet.AccessLog;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateType;
@@ -474,7 +475,7 @@ public class QueryParams {
   }
 
   public void writeErr(HttpServletResponse res, String s, int code) throws IOException {
-    ServletUtil.logServerAccess(code, 0);
+    AccessLog.log.info( AccessLog.accessInfo(code, 0));
     res.setStatus(code);
     if (s.length() > 0) {
       PrintWriter pw = res.getWriter();

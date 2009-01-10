@@ -1222,9 +1222,9 @@ public class FmrcInventory {
 
   /**
    * Create a ForecastModelRun Collection from the files in a directory.
-   * @param fmrcDefinitionPath put/look for fmrc definition files in this directory
+   * @param fmrcDefinitionPath put/look for fmrc definition files in this directory, may be null
    * @param collectionName the definition file = "name.fmrcDefinition.xml";
-   * @param fmr_cache cache fmr inventory files here
+   * @param fmr_cache cache fmr inventory files here, may be null
    * @param dirName  scan this directory
    * @param suffix filter on this suffix
    * @param mode one of the ForecastModelRun.OPEN_ modes
@@ -1243,7 +1243,7 @@ public class FmrcInventory {
 
     File dir = new File(dirName);
     File[] files = dir.listFiles();
-        if (null == files)
+    if (null == files)
       return null;
 
     for (File file : files) {
@@ -1341,11 +1341,10 @@ public class FmrcInventory {
   };
 
   public static void main(String args[]) throws Exception {
-    doOne("NCEP/NAM/CONUS_12km", 8);
+    //doOne("NCEP/NAM/CONUS_12km", 8);
     
-    //for (String cat : catalogs) doOne( cat, 4);
-
-    //for (String cat : catalog24hours) doOne( cat, 24);
+    for (String cat : catalogs) doOne( cat, 12);
+    for (String cat : catalog24hours) doOne( cat, 72);
   }
 
   public static void doOne(String cat, int n) throws Exception {

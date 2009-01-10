@@ -103,7 +103,7 @@ public class ViewServlet extends AbstractServlet {
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    ServletUtil.logServerAccessSetup( req );
+    log.info( AccessLog.setupInfo( req ));
 
     String path = req.getPathInfo();
     int pos = path.lastIndexOf("/");
@@ -114,7 +114,7 @@ public class ViewServlet extends AbstractServlet {
     if (template == null)
       template = getTemplate( contentPath + filename);
     if (template == null) {
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
+      log.info( AccessLog.accessInfo( HttpServletResponse.SC_NOT_FOUND, 0 ));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
@@ -140,7 +140,7 @@ public class ViewServlet extends AbstractServlet {
 
     } catch (Throwable t) {
       log.error(" jnlp="+sbuff.toString(), t);
-      ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+      log.info( AccessLog.accessInfo( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }

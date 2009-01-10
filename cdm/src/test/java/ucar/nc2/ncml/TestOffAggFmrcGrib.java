@@ -3,6 +3,8 @@ package ucar.nc2.ncml;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.PrintWriter;
 import java.util.Date;
 
 import ucar.ma2.*;
@@ -18,20 +20,26 @@ public class TestOffAggFmrcGrib extends TestCase {
   }
 
   public void testSimple() throws Exception {
-    String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcGrib.xml";
-    System.out.println("TestAggForecastModel.open "+ filename);
-    TestAll.showMem("TestAggFmrcGrib start ");
+    // no fmrcDefinition
+    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+      "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true'>" +
+      "    <scan location='//zero/share/testdata/ncml/nc/nam_c20s/' suffix='.grib1' " +
+            "dateFormatMark='NAM_CONUS_20km_surface_#yyyyMMdd_HHmm'/>\n" +
+      "  </aggregation>\n" +
+      "</netcdf>";
 
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    //System.out.println("file="+ncfile);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcGrib", null);
+    TestAll.showMem("TestAggFmrcGrib start ");
 
     String timeDimName = "time";
     int naggs = 8;
 
     testDimensions(ncfile, naggs, timeDimName);
     testCoordVar(ncfile, 257);
-    testAggCoordVar(ncfile, naggs, 122100, 12);
-    testTimeCoordVar(ncfile, naggs, 29, timeDimName);
+    int[] runhours = new int[] {0,12,18,24,30, 4194, 4200, 4206};
+    testAggCoordVar(ncfile, naggs, new DateUnit("hours since 2006-03-15T18:00:00Z"), runhours);
+    testTimeCoordVar(ncfile, naggs, 29, timeDimName, runhours, 3);
 
     System.out.println("TestAggForecastModel.testReadData ");    
     testReadData(ncfile, naggs);
@@ -41,20 +49,25 @@ public class TestOffAggFmrcGrib extends TestCase {
     ncfile.close();    
   }
 
-  // the fmrc definition has changed
-  public void utestRunseq() throws Exception {
-    String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcGribRunseq.xml";
+  // this has fmrcDefinition, and ragged time coords - some are set to NaNs
+  public void testRagged() throws Exception {
+    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+      "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true' " +
+            "fmrcDefinition='//zero/share/testdata/ncml/nc/c20ss/fmrcDefinition.xml'>\n" +
+      "    <scan location='//zero/share/testdata/ncml/nc/c20ss/' suffix='.grib1' enhance='true' " +
+            "dateFormatMark='NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm'/>\n" +
+      "  </aggregation>\n" +
+      "</netcdf>";
 
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestAggForecastModel.open "+ filename);
-    //System.out.println("file="+ncfile);
-
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcGribRunseq", null);
     int naggs = 4;
     String timeDimName = "time";
     testDimensions(ncfile, naggs, timeDimName);
     testCoordVar(ncfile, 257);
-    testAggCoordVar(ncfile, naggs, 122100, 12);
-    testTimeCoordVar(ncfile, naggs, 29, timeDimName);
+    int[] runtimes = new int[] {0,6,12,18};
+    testAggCoordVar(ncfile, naggs, new DateUnit("hours since 2006-07-29T18:00:00Z"), runtimes);
+    testTimeCoordVar(ncfile, naggs, 29, timeDimName, runtimes, 3);
 
     ncfile.close();
   }
@@ -118,7 +131,7 @@ public class TestOffAggFmrcGrib extends TestCase {
 
   }
 
-  private void testAggCoordVar(NetcdfFile ncfile, int nagg, int start, int incr) {
+  private void testAggCoordVar(NetcdfFile ncfile, int nagg, DateUnit du, int[] runhours) {
     Variable time = ncfile.findVariable("run");
     assert null != time;
     assert time.getName().equals("run");
@@ -135,11 +148,15 @@ public class TestOffAggFmrcGrib extends TestCase {
       assert data.getShape()[0] == nagg;
       assert data.getElementType() == String.class;
 
+      int count = 0;
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
         String text = (String) dataI.getObjectNext();
         Date date = formatter.getISODate(text);
         assert date != null;
+        double dval = du.makeValue(date);
+        if (runhours != null) assert dval == runhours[count++];
+        if (showValues) System.out.println(" date= "+ formatter.toDateTimeStringISO(date)+" == "+dval);
       }
 
     } catch (IOException io) {
@@ -149,7 +166,7 @@ public class TestOffAggFmrcGrib extends TestCase {
 
   }
 
-  private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes, String timeDimName) throws Exception {
+  private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes, String timeDimName, int[] runhours, int incr) throws Exception {
     Variable time = ncfile.findVariable(timeDimName);
     assert null != time;
     assert time.getName().equals(timeDimName);
@@ -157,22 +174,37 @@ public class TestOffAggFmrcGrib extends TestCase {
     assert time.getSize() == nagg * ntimes;
     assert time.getShape()[0] == nagg;
     assert time.getShape()[1] == ntimes;
-    assert time.getDataType() == DataType.INT;
+    assert time.getDataType() == DataType.DOUBLE || time.getDataType() == DataType.INT;
 
     String units = time.getUnitsString();
     DateUnit du = new DateUnit( units);
 
     DateFormatter formatter = new DateFormatter();
-      Array data = time.read();
-      assert data.getSize() == nagg * ntimes;
-      assert data.getShape()[0] == nagg;
-      assert data.getShape()[1] == ntimes;
-      assert data.getElementType() == int.class;
+    Array data = time.read();
+    if (true) {
+      PrintWriter pw = new PrintWriter(System.out);
+      NCdumpW.printArray(data, "timeCoords", pw, null);
+      pw.flush();
+    }
 
-      while (data.hasNext()) {
-        double val = data.nextDouble();
-        Date date = du.makeDate(val);
-        if (showValues) System.out.println(" date= "+ formatter.toDateTimeStringISO(date));
+    assert data.getSize() == nagg * ntimes;
+    assert data.getShape()[0] == nagg;
+    assert data.getShape()[1] == ntimes;
+    assert data.getElementType() == double.class || data.getElementType() == int.class;
+
+    while (data.hasNext()) {
+      double val = data.nextDouble();
+      Date date = du.makeDate(val);
+      // if (showValues) System.out.println(" date= "+ formatter.toDateTimeStringISO(date));
+    }
+
+    Index ima = data.getIndex();
+    for (int run=0; run<nagg; run++)
+      for (int tidx=0; tidx<ntimes; tidx++) {
+        double val = data.getDouble(ima.set(run, tidx));
+        if (showValues) System.out.println(" run= "+ run + " tidx= "+ tidx +  " val= "+ val );
+        if (!Double.isNaN(val))
+          assert val == (runhours[run] + tidx * incr) : val +" != "+ (runhours[run] + tidx * incr);
       }
 
   }

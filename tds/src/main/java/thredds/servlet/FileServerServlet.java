@@ -49,7 +49,7 @@ public class FileServerServlet extends HttpServlet {
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    ServletUtil.logServerAccessSetup( req );
+    log.info( AccessLog.setupInfo(req));
 
     if (!DatasetHandler.resourceControlOk(req, res, null)) {
       ServletUtil.logServerAccess( -1, 0);  // LOOK dont know the status !!   

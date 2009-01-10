@@ -402,7 +402,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     // remove first dimension, calculate size
     List<Range> ranges = mainv.getRanges();
     List<Range> innerSection = ranges.subList(1, ranges.size());
-    long fullSize = Range.computeSize(innerSection); // may not be the same as the data returned !!
+    long fullSize = new Section(innerSection).computeSize(); // may not be the same as the data returned !!
 
     // read raw, conversion if needed done later in VariableDS
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
@@ -419,7 +419,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
       destPos += fullSize;
       if (fullSize != varData.getSize())
-        System.out.println("FMRC RAGGED TIME " + fullSize + " != " + varData.getSize());
+        logger.info("FMRC Ragged Time " + fullSize + " != " + varData.getSize()+" dataset "+ vnested.getId()+" for variable "+mainv.getNameAndDimensions());
     }
 
     return allData;

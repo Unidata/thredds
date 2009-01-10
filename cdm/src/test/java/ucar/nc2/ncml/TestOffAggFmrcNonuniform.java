@@ -3,6 +3,7 @@ package ucar.nc2.ncml;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Date;
 
 import ucar.ma2.*;
@@ -17,11 +18,13 @@ public class TestOffAggFmrcNonuniform extends TestCase {
   }
 
   public void testGribNonuniform() throws Exception, InvalidRangeException {
-    String filename = "file:./"+TestNcML.topDir + "offsite/aggFmrcNonuniform.xml";
-
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestAggForecastModel.open "+ filename);
-    System.out.println("file="+ncfile);
+    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+      "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+      "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true'>\n" +
+      "    <scan location='//zero/share/testdata/ncml/nc/ruc_conus40/' suffix='.grib1' enhance='true' dateFormatMark='RUC_CONUS_40km_#yyyyMMdd_HHmm'/>\n" +
+      "  </aggregation>\n" +
+      "</netcdf>";
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcNonuniform", null);
 
     testDimensions(ncfile, 3, 113, 151);
     testCoordVar(ncfile, 113);

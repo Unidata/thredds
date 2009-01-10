@@ -202,7 +202,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws IOException, ServletException {
 
-    ServletUtil.logServerAccessSetup(req);
+    log.info( AccessLog.setupInfo(req));
 
     try {
       String path = req.getPathInfo();
@@ -213,7 +213,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
       }
 
       if (path == null) {
-        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+        log.info( AccessLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, -1));
         res.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
       }
@@ -228,7 +228,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
       if (path.endsWith(".close")) {
         closeSession(req, res);
         res.setContentLength(0);
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, 0);
+        log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, 0));
         return;
 
       } else if (path.endsWith("latest.xml")) {
@@ -243,10 +243,10 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
 
       // default is to throw it to the superclass - this processes the .dds, .das etc
       super.doGet(req, res);
-      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1); // dunno the length
+      log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, -1));
 
     } catch (FileNotFoundException e) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+      log.info( AccessLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, -1));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
     } catch (IOException ioe) {

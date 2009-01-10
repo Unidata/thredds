@@ -1758,8 +1758,9 @@ public class ToolsUI extends JPanel {
 
   private class FmrcPanel extends OpPanel {
     private boolean useDefinition = false;
-    private JComboBox defComboBox, catComboBox;
+    private JComboBox defComboBox, catComboBox, dirComboBox, suffixCB;
     private IndependentWindow defWindow, catWindow;
+    private IndependentWindow dirWindow;
     private AbstractButton defButt;
     private JSpinner catSpinner;
 
@@ -1769,7 +1770,7 @@ public class ToolsUI extends JPanel {
     };
 
     FmrcPanel(PreferencesExt p) {
-      super(p, "dataset:", true, false);
+      super(p, "ForecastModelRun:", true, false);
 
       // allow to set a definition file for GRIB
       AbstractAction defineAction = new AbstractAction() {
@@ -1826,6 +1827,39 @@ public class ToolsUI extends JPanel {
       };
       BAMutil.setActionProperties(catAction, "catalog", "make definition from catalog", false, 'C', -1);
       BAMutil.addActionToContainer(buttPanel, catAction);
+
+      // make definition from files in a directory
+      AbstractAction dirAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          if (null == dirWindow) {
+            dirComboBox = new JComboBox();
+            dirComboBox.setEditable(true);
+            suffixCB = new JComboBox();
+            suffixCB.setEditable(true);
+            JButton accept = new JButton("Accept");
+            JPanel dirPanel = new JPanel(new BorderLayout());
+            JPanel leftPanel = new JPanel();
+            leftPanel.add(new JLabel("Suffix:"));
+            leftPanel.add(suffixCB);
+            leftPanel.add(new JLabel("Directory:"));
+            dirPanel.add(leftPanel, BorderLayout.WEST);
+            dirPanel.add(dirComboBox, BorderLayout.CENTER);
+            dirPanel.add(accept, BorderLayout.EAST);
+
+            accept.addActionListener(new ActionListener() {
+              public void actionPerformed(ActionEvent e) {
+                defineFromDirectory((String) dirComboBox.getSelectedItem(), (String) suffixCB.getSelectedItem());
+              }
+            });
+            dirWindow = new IndependentWindow("Directory", null, dirPanel);
+            dirWindow.setLocationRelativeTo(defButt);
+            dirWindow.setLocation(100, 100);
+          }
+          dirWindow.show();
+        }
+      };
+      BAMutil.setActionProperties(dirAction, "Dimension", "make definition from files in directory", false, 'D', -1);
+      BAMutil.addActionToContainer(buttPanel, dirAction);
 
       // delete GRIB index
       AbstractAction deleteAction = new AbstractAction() {
@@ -1889,7 +1923,8 @@ public class ToolsUI extends JPanel {
 
         ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(gds, null);
         fmrInv.writeXML(bos);
-        ta.setText(bos.toString());
+        ta.setText("ForecastModelRunInventory output for a single model run:\n\n");
+        ta.appendLine(bos.toString());
         ta.gotoTop();
 
       } catch (FileNotFoundException ioe) {
@@ -1910,6 +1945,26 @@ public class ToolsUI extends JPanel {
       }
 
       return !err;
+    }
+
+    private void defineFromDirectory(String dirName, String suffix) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        FmrcInventory fmrCollection = FmrcInventory.makeFromDirectory(null, "test",
+          null, dirName, suffix, ForecastModelRunInventory.OPEN_FORCE_NEW);
+        
+        FmrcDefinition def = new FmrcDefinition();
+        def.makeFromCollectionInventory(fmrCollection);
+
+        def.writeDefinitionXML(bos);
+        ta.setText(bos.toString());
+        ta.gotoTop();
+
+      } catch (Exception ioe) {
+        ioe.printStackTrace();
+        ioe.printStackTrace(new PrintStream(bos));
+        ta.setText(bos.toString());
+      }
     }
 
     private void defineFromCatalog(String catalogURLString, Object value) {

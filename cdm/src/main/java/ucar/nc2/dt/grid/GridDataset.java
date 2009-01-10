@@ -91,15 +91,13 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
    */
   public GridDataset(NetcdfDataset ds, Formatter parseInfo) {
     this.ds = ds;
-
     // look for geoGrids
-    parseInfo.format("GridDataset look for GeoGrids\n");
+    if (parseInfo != null) parseInfo.format("GridDataset look for GeoGrids\n");
     List<Variable> vars = ds.getVariables();
     for (Variable var : vars) {
       VariableEnhanced varDS = (VariableEnhanced) var;
       constructCoordinateSystems(ds, varDS, parseInfo);
     }
-
   }
 
   private void constructCoordinateSystems(NetcdfDataset ds, VariableEnhanced v, Formatter parseInfo) {
@@ -156,8 +154,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   // stuff to satisfy ucar.nc2.dt.TypedDataset
-
-
   public String getTitle() {
     String title = ds.findAttValueIgnoreCase(null, "title", null);
     return (title == null) ? getName() : title;
