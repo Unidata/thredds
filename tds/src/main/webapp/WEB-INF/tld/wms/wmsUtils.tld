@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Wraps the functions in WmsUtils as functions that can be used in JSPs -->
+<taglib version="2.0" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd">
+  <tlib-version>1.0</tlib-version>
+  <short-name>wmsutils</short-name>
+  <uri>/WEB-INF/tld/wms/wmsUtils</uri>
+  <function>
+      <description>Converts milliseconds since epoch to ISO8601-formatted String</description>
+      <name>millisecondsToISO8601</name>
+      <function-class>uk.ac.rdg.resc.ncwms.utils.WmsUtils</function-class>
+      <function-signature>java.lang.String millisecondsToISO8601(long)</function-signature>
+  </function>
+  <function>
+      <description>Converts a date object to an ISO8601-formatted String</description>
+      <name>dateToISO8601</name>
+      <function-class>uk.ac.rdg.resc.ncwms.utils.WmsUtils</function-class>
+      <function-signature>java.lang.String dateToISO8601(java.util.Date)</function-signature>
+  </function>
+  <function>
+      <description>Calculates the absolute value of a number</description>
+      <name>abs</name>
+      <function-class>java.lang.Math</function-class>
+      <function-signature>double abs(double)</function-signature>
+  </function>
+  <function>
+      <description>Formats a date (in milliseconds since the epoch) as the time only
+      in the format "HH:mm:ss", e.g. "14:53:03".  Time zone offset is zero (UTC).</description>
+      <name>formatUTCTimeOnly</name>
+      <function-class>uk.ac.rdg.resc.ncwms.utils.WmsUtils</function-class>
+      <function-signature>java.lang.String formatUTCTimeOnly(long)</function-signature>
+  </function>
+</taglib>

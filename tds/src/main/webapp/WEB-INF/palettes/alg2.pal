@@ -1,0 +1,29 @@
+# Palette from Alastair Gemmell (by email on 6th November 2007
+
+0 0 102  #dark blue
+0 0 153
+0 0 204
+0 0 255  #blue
+0 51 255
+0 102 255
+0 153 255
+0 204 255
+0 255 255  #cyan
+0 255 204
+0 255 153 # ~ turquise
+0 255 102
+0 255 0   #green
+102 255 0
+153 255 0
+204 255 51 # ~ lime green
+255 255 102
+255 255 51
+255 255 0  #yellow
+255 204 0
+255 153 0  # ~ orange
+255 102 0
+255 51 0
+255 0 0  #red
+204 0 0
+153 0 0
+102 0 0  #dark red
