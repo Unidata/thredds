@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>TDS Support on motherlode</title>
+</head>
+<body>
+<center> <h1>TDS Support on motherlode</h1> </center>
+<p>The TDS on motherlode is supported/monitored by scripts, processes, and configuration files.
+For the data files, the LDM is configured to place/manage data files in specific
+directories so the TDS can interact apon them. The log file are scanned
+on a regular basis to create reports and to find problems.</p>
+<h2>LDM Configurations</h2>
+<p>The most important configurations are the pqacts for the LDM because they
+  place the data files into TDS known directory structures.
+</p>
+<ul>
+  <li>pqact.thredds  General pqact for models, satellite, surface and decoder entries</li>
+  <li>pqact.threddsradar Specific to radar entries</li>
+  <li>pqact.threddsconduit Specific to the CONDUIT data feed entries</li>
+</ul>
+<p>Another important configuration is the Grib Indexing on data files,
+this is done by the GribIndexer.pl script that is a front end to the
+java class GribIndexer. The script gets all the necessay jar files,
+java JVM, and configuration file locations before calling the
+Indexer class. External GribIndexing increases performance of the
+TDS by creating indexes and inventory files before the TDS requests
+them. Another script, CheckIndexing.sh scans the GribIndexer log files each
+hour looking for errors. If errors are found, then an email is sent to
+rkambic with the errors. There are crontab entries for the above scripts.</p>
+
+<p>Since the data files are consistently arriving, there needs to be
+a file deletion process. The manageFilesDirs.pl script deletes the files
+on a directory/file basis in a round robin fashion, so only the newest to a
+configured time period files remain. The script uses a configuration file
+that has entries for directory, dir/file pattern to delete, and time period of the
+files to keep in days. There are crontab entries for the above scripts.</p>
+
+<p>Since the configurations change often, there's tdsiddzip.sh script
+to make a file tdsidd.zip in the LDM home directory everyday with the
+latest LDM/TDS configurations. There is a crontab entry for the script.</p>
+</body>
+</html>
