@@ -59,10 +59,11 @@ public class WcsHandler implements VersionHandler
   public void handleKVP( HttpServlet servlet, HttpServletRequest req, HttpServletResponse res )
           throws IOException //, ServletException
   {
+    WcsRequest request = null;
     try
     {
       URI serverURI = new URI( req.getRequestURL().toString());
-      WcsRequest request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(),
+      request = WcsRequestParser.parseRequest( this.getVersion().getVersionString(),
                                                           serverURI, req, res);
       if ( request.getOperation().equals( Request.Operation.GetCapabilities))
       {
@@ -118,6 +119,13 @@ public class WcsHandler implements VersionHandler
     {
       log.error( "Unknown problem.", t);
       handleExceptionReport( res, new WcsException( "Unknown problem", t));
+    }
+    finally
+    {
+      if ( request != null && request.getDataset() != null )
+      {
+        request.getDataset().close();
+      }
     }
   }
 

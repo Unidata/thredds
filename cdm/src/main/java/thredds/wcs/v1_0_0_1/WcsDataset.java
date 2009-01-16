@@ -7,6 +7,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
+import java.io.IOException;
 
 /**
  * _more_
@@ -58,6 +59,12 @@ public class WcsDataset
   public String getDatasetPath() { return datasetPath; }
   public String getDatasetName() { return datasetName; }
   public GridDataset getDataset() { return dataset; }
+
+  public void close() throws IOException
+  {
+    if ( this.dataset != null )
+      this.dataset.close();
+  }
 
   public boolean isAvailableCoverageName( String name )
   {
