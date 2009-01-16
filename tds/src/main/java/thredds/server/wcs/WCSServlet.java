@@ -17,6 +17,7 @@ import ucar.nc2.util.DiskCache2;
 public class WCSServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 diskCache = null;
   private boolean allow = false, deleteImmediately = true;
+  private boolean allowRemote = false;
   private long maxFileDownloadSize;
 
   // ToDo Consider using a SortedMap to contain handlers.
@@ -37,6 +38,7 @@ public class WCSServlet extends AbstractServlet {
     super.init();
 
     allow = ThreddsConfig.getBoolean("WCS.allow", false);
+    allowRemote = ThreddsConfig.getBoolean( "WCS.allowRemote", false );
     deleteImmediately = ThreddsConfig.getBoolean( "WCS.deleteImmediately", deleteImmediately);
     maxFileDownloadSize = ThreddsConfig.getBytes("WCS.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
     String cache = ThreddsConfig.get("WCS.dir", contentPath + "/wcache");
@@ -82,6 +84,16 @@ public class WCSServlet extends AbstractServlet {
       // ToDo - Server not configured to support WCS. Should response code be 404 (Not Found) instead of 403 (Forbidden)?
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
       ServletUtil.logServerAccess( HttpServletResponse.SC_FORBIDDEN, -1 );
+      return;
+    }
+
+    // Check if TDS is configured to support WCS on remote datasets.
+    String datasetURL = ServletUtil.getParameterIgnoreCase( req, "dataset" );
+    // ToDo LOOK - move this into TdsConfig?
+    if ( datasetURL != null && ! allowRemote )
+    {
+      ServletUtil.logServerAccess( HttpServletResponse.SC_FORBIDDEN, -1 );
+      res.sendError( HttpServletResponse.SC_FORBIDDEN, "Catalog services not supported for remote catalogs." );
       return;
     }
 

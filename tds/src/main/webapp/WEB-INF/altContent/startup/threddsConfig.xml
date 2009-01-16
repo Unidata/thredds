@@ -25,6 +25,13 @@
   -->
 
   <!--
+   The <CatalogServices> element:
+   -->
+  <CatalogServices>
+    <allowRemote>false</allowRemote>
+  </CatalogServices>
+
+  <!--
   Configuring the CDM (netcdf-java library)
   see http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html
 
@@ -104,17 +111,6 @@
   -->
 
   <!--
-  The CoordSys Validator Service is off by default.
-  <CdmValidatorService>
-    <allow>false</allow>
-    <dir>/data/tmp/thredds/cdmValidateCache/</dir>
-    <maxFileUploadSize>1 Gb</maxFileUploadSize>
-    <scour>10 mins</scour>
-    <maxAge>-1 days</maxAge>
-  </CdmValidatorService>
-  -->
-
-  <!--
   The Netcdf Subset Service is off by default.
   <NetcdfSubsetService>
     <allow>false</allow>
@@ -130,6 +126,7 @@
   The WCS Service is off by default.
   <WCS>
     <allow>false</allow>
+    <allowRemote>false</allowRemote>
     <dir>/data/tmp/thredds/wcsCache/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>

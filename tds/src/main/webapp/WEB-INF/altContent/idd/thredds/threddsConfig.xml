@@ -7,6 +7,13 @@
     <!--contentRoot>motherlode</contentRoot-->
   </contentRoots>
 
+  <!--
+   The <CatalogServices> element:
+   -->
+  <CatalogServices>
+    <allowRemote>false</allowRemote>
+  </CatalogServices>
+
   <NetcdfFileCache>
     <minFiles>100</minFiles>
     <maxFiles>200</maxFiles>
@@ -25,14 +32,6 @@
     <scour>10 min</scour>
   </HTTPFileCache>
 
-  <CdmValidatorService>
-    <allow>true</allow>
-    <dir>/tmp/thredds/cdmValidateCache/</dir>
-    <maxFileUploadSize>1 Gb</maxFileUploadSize>
-    <scour>24 hours</scour>
-    <maxAge>30 days</maxAge>
-  </CdmValidatorService>
-
   <NetcdfSubsetService>
     <allow>true</allow>
     <dir>/tmp/thredds/ncSubsetCache/</dir>
@@ -42,6 +41,7 @@
 
   <WCS>
     <allow>true</allow>
+    <allowRemote>false</allowRemote>
     <dir>/tmp/thredds/wcsCache/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
