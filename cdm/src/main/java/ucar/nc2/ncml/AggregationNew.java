@@ -23,7 +23,6 @@ package ucar.nc2.ncml;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.DatasetConstructor;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
@@ -40,10 +39,10 @@ import java.util.List;
 public class AggregationNew extends AggregationOuterDimension {
 
   public AggregationNew(NetcdfDataset ncd, String dimName, String recheckS) {
-    super(ncd, dimName, Aggregation.Type.JOIN_NEW, recheckS);
+    super(ncd, dimName, Aggregation.Type.joinNew, recheckS);
   }
 
-  protected void buildDataset(CancelTask cancelTask) throws IOException {
+  protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
 
     // open a "typical"  nested dataset and copy it to newds
@@ -66,6 +65,8 @@ public class AggregationNew extends AggregationOuterDimension {
     joinAggCoord.setProxyReader(this);
     if (isDate)
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
+
+    // if speced externally, this variable will get replaced
     CacheVar cv = new CoordValueVar(joinAggCoord.getName(), joinAggCoord.getDataType(), joinAggCoord.getUnitsString());
     joinAggCoord.setSPobject( cv);
     cacheList.add(cv);

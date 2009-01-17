@@ -4,10 +4,9 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * Test netcdf dataset in the JUnit framework.
@@ -91,8 +90,17 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void testRename() throws IOException, InvalidRangeException {
+    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+        "  <variable name='Temperature' orgName='T' />\n" +
+        "  <aggregation  dimName='time' type='joinNew'>\n" +
+        "    <variableAgg name='T'/>\n" +
+        "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" +
+        "  </aggregation>\n" +
+        "</netcdf>";
+
     String filename = "file:./" + TestNcML.topDir + "aggSynRename.xml";
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML( new StringReader(xml), null);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -103,8 +111,21 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void testScan() throws IOException, InvalidRangeException {
+    String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+        "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
+        "  <variable name='time' type='int' shape='time'>\n" +
+        "    <attribute name='long_name' type='string' value='time coordinate' />\n" +
+        "    <attribute name='units' type='string' value='days since 2001-8-31 00:00:00 UTC' />\n" +
+        "    <values start='0' increment='10' />\n" +
+        "  </variable>\n" +
+        "  <aggregation dimName='time' type='joinNew'>\n" +
+        "    <variableAgg name='T'/>\n" +
+        "    <scan location='src/test/data/ncml/nc/' suffix='Dir.nc' subdirs='false'/>\n" +
+        "  </aggregation>\n" +
+        "</netcdf>";
+
     String filename = "file:./" + TestNcML.topDir + "aggSynScan.xml";
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), null);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);

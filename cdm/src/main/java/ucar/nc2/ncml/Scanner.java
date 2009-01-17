@@ -23,13 +23,15 @@ import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
 
+import thredds.crawlabledataset.CrawlableDataset;
+
 /**
- * Something that knows how to scan and return MyCrawlableDataset.
+ * Something that knows how to scan and return CrawlableDataset.
  * @author caron
  * @since Aug 10, 2007
  */
 public interface Scanner {
 
-  public void scanDirectory(java.util.Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException;
+  public void scanDirectory(java.util.Map<String, CrawlableDataset> map, CancelTask cancelTask) throws IOException;
 
 }

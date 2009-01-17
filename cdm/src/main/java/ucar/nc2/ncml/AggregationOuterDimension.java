@@ -23,11 +23,14 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.DateFromString;
 import ucar.ma2.*;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+
+import thredds.crawlabledataset.CrawlableDataset;
 
 /**
  * Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc, FmrcSingle
@@ -142,7 +145,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
   protected void buildCoords(CancelTask cancelTask) throws IOException {
     List<Dataset> nestedDatasets = getDatasets();
 
-    if (type == Type.FORECAST_MODEL_COLLECTION) {
+    if (type == Type.forecastModelRunCollection) {
       for (Dataset nested : nestedDatasets) {
         DatasetOuterDimension dod = (DatasetOuterDimension) nested;
         dod.ncoord = 1;
@@ -387,7 +390,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       //  System.out.println("   agg use " + nested.aggStart + ":" + nested.aggEnd + " range= " + nestedJoinRange + " file " + nested.getLocation());
 
       Array varData;
-      if ((type == Type.JOIN_NEW) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+      if ((type == Type.joinNew) || (type == Type.forecastModelRunCollection)) {
         varData = dod.read(mainv, cancelTask, innerSection);
       } else {
         nestedSection.set(0, nestedJoinRange);
@@ -496,6 +499,11 @@ public abstract class AggregationOuterDimension extends Aggregation {
     return new DatasetOuterDimension(cacheName, location, id, ncoordS, coordValueS, enhance, reader);
   }
 
+  @Override
+  protected Dataset makeDataset(CrawlableDataset dset) {
+    return new DatasetOuterDimension(dset);
+  }
+
   /**
    * Encapsolates a NetcdfFile that is a component of the aggregation.
    */
@@ -526,10 +534,11 @@ public abstract class AggregationOuterDimension extends Aggregation {
      */
     protected DatasetOuterDimension(String cacheName, String location, String id, String ncoordS, String coordValueS,
             EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+
       super(cacheName, location, id, enhance, reader);
       this.coordValue = coordValueS;
 
-      if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE)) {
+      if ((type == Type.joinNew) || (type == Type.joinExistingOne)) {
         this.ncoord = 1;
       } else if (ncoordS != null) {
         try {
@@ -539,7 +548,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
         }
       }
 
-      if ((type == Type.JOIN_NEW) || (type == Type.JOIN_EXISTING_ONE) || (type == Type.FORECAST_MODEL_COLLECTION)) {
+      if ((type == Type.joinNew) || (type == Type.joinExistingOne) || (type == Type.forecastModelRunCollection)) {
         if (coordValueS == null) {
           int pos = this.location.lastIndexOf("/");
           this.coordValue = (pos < 0) ? this.location : this.location.substring(pos + 1);
@@ -554,21 +563,39 @@ public abstract class AggregationOuterDimension extends Aggregation {
       }
 
       // allow coordValue attribute on JOIN_EXISTING, may be multiple values seperated by blanks or commas
-      if ((type == Type.JOIN_EXISTING) && (coordValueS != null)) {
+      if ((type == Type.joinExisting) && (coordValueS != null)) {
         StringTokenizer stoker = new StringTokenizer(coordValueS, " ,");
         this.ncoord = stoker.countTokens();
       }
     }
 
-    protected void setInfo(MyCrawlableDataset myf) {
-      super.setInfo(myf);
-      coordValueDate = myf.dateCoord;
-      coordValue = myf.dateCoordS;
-      if ((coordValue == null) && (type == Type.JOIN_NEW)) // use filename as coord value
-        coordValue = myf.file.getName();
+    DatasetOuterDimension(CrawlableDataset cd) {
+      super(cd);
+
+      if ((type == Type.joinNew) || (type == Type.joinExistingOne)) {
+        this.ncoord = 1;
+      }
+
+      // default is that the coordinates are just the filenames
+      // this can be overriden by an explicit declaration, which will replace the variable afte ther agg is processed in NcMLReader
+      if ((type == Type.joinNew) || (type == Type.joinExistingOne) || (type == Type.forecastModelRunCollection)) {
+        int pos = this.location.lastIndexOf("/");
+        this.coordValue = (pos < 0) ? this.location : this.location.substring(pos + 1);
+        this.isStringValued = true;
+      }
+
+      if (null != dateFormatMark) {
+        String filename = cd.getName(); // LOOK operates on name, not path
+        coordValueDate = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
+        coordValue = formatter.toDateTimeStringISO( coordValueDate);
+        if (debugDateParse) System.out.println("  adding " + cd.getPath() + " date= " + coordValue);
+      } else {
+        if (debugDateParse) System.out.println("  adding " + cd.getPath());
+      }
+
+      if ((coordValue == null) && (type == Type.joinNew)) // use filename as coord value
+        coordValue = cd.getName();
     }
-
-
     /**
      * Get the coordinate value(s) as a String for this Dataset
      *
@@ -729,6 +756,14 @@ public abstract class AggregationOuterDimension extends Aggregation {
       }
     }
 
+    public int compareTo(Object o) {
+      if( coordValueDate == null)
+        return super.compareTo(o);
+      else {
+        DatasetOuterDimension other = (DatasetOuterDimension) o;
+        return coordValueDate.compareTo( other.coordValueDate);
+      }
+    }
   }
 
   /////////////////////////////////////////////
@@ -816,7 +851,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
       Array data = getData(dset);
       if (data != null) return data;
-      if (type == Type.JOIN_NEW) return null;  // ??
+      if (type == Type.joinNew) return null;  // ??
 
       NetcdfFile ncfile = null;
       try {
@@ -834,7 +869,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
       Array data = getData(dset);
       if (data != null) return data;
-      if (type == Type.JOIN_NEW) return null;
+      if (type == Type.joinNew) return null;
 
       Variable v = ncfile.findVariable(varName);
       data = v.read();

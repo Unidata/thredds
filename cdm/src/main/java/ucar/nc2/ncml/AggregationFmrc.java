@@ -53,7 +53,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
   private boolean debug = false;
 
   public AggregationFmrc(NetcdfDataset ncd, String dimName, String recheckS) {
-    super(ncd, dimName, Type.FORECAST_MODEL_COLLECTION, recheckS);
+    super(ncd, dimName, Type.forecastModelRunCollection, recheckS);
   }
 
   protected AggregationFmrc(NetcdfDataset ncd, String dimName, Aggregation.Type type, String recheckS) {
@@ -78,7 +78,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
   }
 
   @Override
-  protected void buildDataset(CancelTask cancelTask) throws IOException {
+  protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
     // LOOK - should cache the GridDataset directly    
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
@@ -91,11 +91,11 @@ public class AggregationFmrc extends AggregationOuterDimension {
     GridDataset typicalGds = new ucar.nc2.dt.grid.GridDataset(typicalDS);
 
     // finish the work
-    buildDataset(typicalDataset, typical, typicalGds, cancelTask);
+    buildNetcdfDataset(typicalDataset, typical, typicalGds, cancelTask);
   }
 
   // split out so FmrcSingle can call seperately
-  protected void buildDataset(Dataset typicalDataset, NetcdfFile typical, GridDataset typicalGds, CancelTask cancelTask) throws IOException {
+  protected void buildNetcdfDataset(Dataset typicalDataset, NetcdfFile typical, GridDataset typicalGds, CancelTask cancelTask) throws IOException {
     buildCoords(cancelTask);
     DatasetConstructor.transferDataset(typicalGds.getNetcdfFile(), ncDataset, null);
 
@@ -461,7 +461,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
     Range joinRange = section.getRange(0);
     List<Range> innerSection = ranges.subList(1, ranges.size());
 
-    long fullSize = Range.computeSize(innerSection); // may not be the same as the data returned !!
+    long fullSize = new Section(innerSection).computeSize(); // may not be the same as the data returned !!
     if (debug) System.out.println("   agg wants range=" + mainv.getName() + "(" + joinRange + ")");
 
     // make concurrent

@@ -32,11 +32,12 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
-import ucar.unidata.util.StringUtil;
 import ucar.ma2.*;
 
 import java.io.IOException;
 import java.util.*;
+
+import thredds.crawlabledataset.CrawlableDataset;
 
 /**
  * Implement NcML Forecast Model Run Collection Aggregation
@@ -47,7 +48,7 @@ import java.util.*;
 public class AggregationFmrcSingle extends AggregationFmrc {
   private Calendar cal; // for date computations
 
-  private Map<Date, List<DatasetOuterDimension>> runHash = new HashMap<Date, List<DatasetOuterDimension>>();
+  private Map<Date, List<DatasetFmrcSingle>> runHash = new HashMap<Date, List<DatasetFmrcSingle>>();
   private List<Date> runs; // list of run dates
 
   private CoordinateAxis1D timeAxis = null;
@@ -60,7 +61,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
   private String runMatcher, forecastMatcher, offsetMatcher; // scanFmrc
 
   public AggregationFmrcSingle(NetcdfDataset ncd, String dimName, String recheckS) {
-    super(ncd, dimName, Type.FORECAST_MODEL_SINGLE, recheckS);
+    super(ncd, dimName, Type.forecastModelRunSingleCollection, recheckS);
     cal = new GregorianCalendar();
     cal.clear();
   }
@@ -93,67 +94,30 @@ public class AggregationFmrcSingle extends AggregationFmrc {
   }
 
   @Override
-  protected void buildDataset(CancelTask cancelTask) throws IOException {
-    buildDataset(typicalDataset, typicalFile, typicalGridDataset, cancelTask);
+  protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
+    buildNetcdfDataset(typicalDataset, typicalFile, typicalGridDataset, cancelTask);
   }
 
   @Override
   protected void makeDatasets(CancelTask cancelTask) throws IOException {
 
     // find the runtime, forecast time coordinates, put in list
-    runHash = new HashMap<Date, List<DatasetOuterDimension>>();
+    runHash = new HashMap<Date, List<DatasetFmrcSingle>>();
 
-    Collection<MyCrawlableDataset> fileList = datasetManager.getFiles();
-    for (MyCrawlableDataset myf : fileList) {
-      String location = StringUtil.replace(myf.file.getPath(), '\\', "/");
-
-      // parse for rundate
-      if (runMatcher != null) {
-        myf.runDate = DateFromString.getDateUsingDemarkatedMatch(location, runMatcher, '#');
-        if (null == myf.runDate) {
-          logger.error("Cant extract rundate from =" + location + " using format " + runMatcher);
-          continue;
-        }
-      }
-
-      // parse for forecast date
-      if (forecastMatcher != null) {
-        myf.dateCoord = DateFromString.getDateUsingDemarkatedMatch(location, forecastMatcher, '#');
-        if (null == myf.dateCoord) {
-          logger.error("Cant extract forecast date from =" + location + " using format " + forecastMatcher);
-          continue;
-        }
-        myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
-      }
-
-      // parse for forecast offset
-      if (offsetMatcher != null) {
-        myf.offset = DateFromString.getHourUsingDemarkatedMatch(location, offsetMatcher, '#');
-        if (null == myf.offset) {
-          logger.error("Cant extract forecast offset from =" + location + " using format " + offsetMatcher);
-          continue;
-        }
-        myf.dateCoord = addHour(myf.runDate, myf.offset);
-        myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
-      }
-
-      // LOOK - should cache the GridDataset directly
+    for (CrawlableDataset cd : datasetManager.getFiles()) {
       // create the dataset wrapping this file, each is 1 forecast time coordinate of the nested aggregation
-      DatasetOuterDimension ds = (DatasetOuterDimension)
-              makeDataset(location, location, null, null, myf.dateCoordS, null, NetcdfDataset.getDefaultEnhanceMode(), null);
-      ds.coordValueDate = myf.dateCoord;
-      ds.ncoord = 1;
+      DatasetFmrcSingle ds = new DatasetFmrcSingle(cd);
 
       // add to list for given run date
-      List<DatasetOuterDimension> runDatasets = runHash.get(myf.runDate);
+      List<DatasetFmrcSingle> runDatasets = runHash.get(ds.runDate);
       if (runDatasets == null) {
-        runDatasets = new ArrayList<DatasetOuterDimension>();
-        runHash.put(myf.runDate, runDatasets);
+        runDatasets = new ArrayList<DatasetFmrcSingle>();
+        runHash.put(ds.runDate, runDatasets);
       }
-      if (debug)
-        System.out.println("  adding " + myf.file.getPath() + " forecast date= " + myf.dateCoordS + "(" + myf.dateCoord + ")"
-            + " run date= " + formatter.toDateTimeStringISO(myf.runDate));
       runDatasets.add(ds);
+
+      if (debug) System.out.println("  adding " + cd.getPath() + " forecast date= " + ds.coordValue + "(" + ds.coordValueDate + ")"
+            + " run date= " + formatter.toDateTimeStringISO(ds.runDate));
 
       if (typicalDataset == null)
         typicalDataset = ds;
@@ -191,15 +155,11 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     for (Date runDate : runs) {
       String runDateS = formatter.toDateTimeStringISO(runDate);
 
-      List<DatasetOuterDimension> runDatasets = runHash.get(runDate);
+      List<DatasetFmrcSingle> runDatasets = runHash.get(runDate);
       max_times = Math.max(max_times, runDatasets.size());
 
       // within each list, sort the datasets by time coordinate
-      Collections.sort(runDatasets, new Comparator<DatasetOuterDimension>() {
-        public int compare(DatasetOuterDimension ds1, DatasetOuterDimension ds2) {
-          return ds1.coordValueDate.compareTo(ds2.coordValueDate);
-        }
-      });
+      Collections.sort(runDatasets);
 
       // create the dataset wrapping this run, each is 1 runtime coordinate of the outer aggregation
       NetcdfDataset ncd = new NetcdfDataset();
@@ -257,9 +217,9 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       Date runDate = runs.get(i);
       if (baseDate == null) baseDate = runDate;
 
-      List<DatasetOuterDimension> runDatasets = runHash.get(runDate);
+      List<DatasetFmrcSingle> runDatasets = runHash.get(runDate);
       for (int j = 0; j < runDatasets.size(); j++) {
-        DatasetOuterDimension dataset = runDatasets.get(j);
+        DatasetFmrcSingle dataset = runDatasets.get(j);
         double offset = ForecastModelRunInventory.getOffsetInHours(baseDate, dataset.coordValueDate);
         timeCoordVals.setDouble(ima.set(i, j), offset);
       }
@@ -312,7 +272,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       Date runDate = runs.get(i);
       if (baseDate == null) baseDate = runDate;
 
-      List<DatasetOuterDimension> runDatasets = runHash.get(runDate);
+      List<DatasetFmrcSingle> runDatasets = runHash.get(runDate);
       for (int j = 0; j < runDatasets.size(); j++) {
         DatasetOuterDimension dataset = runDatasets.get(j);
         double offset = ForecastModelRunInventory.getOffsetInHours(baseDate, dataset.coordValueDate);
@@ -323,6 +283,45 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
     String units = "hours since " + formatter.toDateTimeStringISO(baseDate);
     timeAxis.addAttribute(new Attribute("units", units));
+  }
+
+  public class DatasetFmrcSingle extends DatasetOuterDimension {
+    Date runDate;
+    Double offset;
+
+    DatasetFmrcSingle(CrawlableDataset cd) {
+      super(cd.getPath());
+      this.enhance = NetcdfDataset.getDefaultEnhanceMode(); // LOOK needed ?
+      this.ncoord = 1;
+
+      // parse for rundate
+      if (runMatcher != null) {
+        runDate = DateFromString.getDateUsingDemarkatedMatch(location, runMatcher, '#');
+        if (null == runDate) {
+          logger.error("Cant extract rundate from =" + location + " using format " + runMatcher);
+        }
+      }
+
+      // parse for forecast date
+      if (forecastMatcher != null) {
+        coordValueDate = DateFromString.getDateUsingDemarkatedMatch(location, forecastMatcher, '#');
+        if (null == coordValueDate) {
+          logger.error("Cant extract forecast date from =" + location + " using format " + forecastMatcher);
+        } else
+          coordValue = formatter.toDateTimeStringISO(coordValueDate);
+      }
+
+      // parse for forecast offset
+      if (offsetMatcher != null) {
+        offset = DateFromString.getHourUsingDemarkatedMatch(location, offsetMatcher, '#');
+        if (null == offset) {
+          logger.error("Cant extract forecast offset from =" + location + " using format " + offsetMatcher);
+        }
+        coordValueDate = addHour(runDate, offset);
+        coordValue = formatter.toDateTimeStringISO(coordValueDate);
+      }
+    }
+
   }
 
   /**

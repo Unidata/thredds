@@ -1177,7 +1177,7 @@ public class NcMLReader {
       // must always open through a NcML reader, in case the netcdf element modifies the dataset
       NcmlElementReader reader = new NcmlElementReader(ncmlLocation, location, netcdfElemNested);
       String cacheName = ncmlLocation + "#" + Integer.toString(netcdfElemNested.hashCode());
-      agg.addExplicitDataset(cacheName, location, id, ncoords, coordValueS, sectionSpec, reader, cancelTask);
+      agg.addExplicitDataset(cacheName, location, id, ncoords, coordValueS, sectionSpec, reader);
 
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;

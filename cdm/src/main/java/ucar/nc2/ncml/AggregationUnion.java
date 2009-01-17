@@ -44,11 +44,11 @@ public class AggregationUnion extends Aggregation {
   List<NetcdfFile> openDatasets = new ArrayList<NetcdfFile>();
 
   public AggregationUnion(NetcdfDataset ncd, String dimName, String recheckS) {
-    super(ncd, dimName, Aggregation.Type.UNION, recheckS);
+    super(ncd, dimName, Aggregation.Type.union, recheckS);
   }
 
   @Override
-  protected void buildDataset(CancelTask cancelTask) throws IOException {
+  protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
     // each Dataset just gets "transfered" into the resulting NetcdfDataset
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset vnested : nestedDatasets) {
@@ -63,7 +63,7 @@ public class AggregationUnion extends Aggregation {
   @Override
   protected void rebuildDataset() throws IOException {
     ncDataset.empty();
-    buildDataset( null);
+    buildNetcdfDataset( null);
   }
 
   @Override

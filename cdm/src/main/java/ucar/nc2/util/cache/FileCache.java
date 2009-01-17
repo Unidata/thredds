@@ -170,7 +170,7 @@ public class FileCache {
    *
    * @param factory     use this factory to open the file if not in the cache; may not be null
    * @param hashKey     unique key for this file. If null, the location will be used
-   * @param location    file location, msy also used as the cache name, will be passed to the NetcdfFileFactory
+   * @param location    file location, may also used as the cache name, will be passed to the NetcdfFileFactory
    * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
    * @param cancelTask  user can cancel, ok to be null.
    * @param spiObject   sent to iosp.setSpecial() if not null

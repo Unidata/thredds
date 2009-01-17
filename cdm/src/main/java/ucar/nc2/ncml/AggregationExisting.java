@@ -49,10 +49,10 @@ public class AggregationExisting extends AggregationOuterDimension {
   static private boolean debugPersist = true, debugPersistDetail = true;
 
   public AggregationExisting(NetcdfDataset ncd, String dimName, String recheckS) {
-    super(ncd, dimName, Aggregation.Type.JOIN_EXISTING, recheckS);
+    super(ncd, dimName, Aggregation.Type.joinExisting, recheckS);
   }
 
-  protected void buildDataset(CancelTask cancelTask) throws IOException {
+  protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
 
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
@@ -101,12 +101,12 @@ public class AggregationExisting extends AggregationOuterDimension {
 
     // handle the agg coordinate variable
     VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
-    if ((joinAggCoord == null) && (type == Type.JOIN_EXISTING)) {
+    if ((joinAggCoord == null) && (type == Type.joinExisting)) {
       typicalDataset.close( typical); // clean up
       throw new IllegalArgumentException("No existing coordinate variable for joinExisting on "+getLocation());
     }
 
-    if (type == Type.JOIN_EXISTING_ONE) {
+    if (type == Type.joinExistingOne) {
       // ok if cordinate doesnt exist for a "join existing one", since we have to create it anyway
       if (joinAggCoord == null) {
         joinAggCoord = new VariableDS(ncDataset, null, null, dimName, DataType.STRING, dimName, null, null);
@@ -169,8 +169,7 @@ public class AggregationExisting extends AggregationOuterDimension {
         VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS(null, v, true);
         CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, vds, null);
         java.util.Date[] dates = timeCoordVar.getTimeDates();
-        for (Date d : dates)
-          dateList.add(d);
+        dateList.addAll(Arrays.asList(dates));
 
         if (units == null)
           units = v.getUnitsString();

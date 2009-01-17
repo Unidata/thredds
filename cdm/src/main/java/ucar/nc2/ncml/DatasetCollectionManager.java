@@ -25,6 +25,8 @@ import ucar.nc2.units.TimeUnit;
 import java.util.*;
 import java.io.IOException;
 
+import thredds.crawlabledataset.CrawlableDataset;
+
 /**
  * Manage a list of Scanners that find Files (actually finds CrawlableDataset).
  * Tracks when they need to be rescanned.
@@ -37,7 +39,7 @@ public class DatasetCollectionManager {
   static private boolean debugSync = false, debugSyncDetail = false;
 
   private List<Scanner> scanList = new ArrayList<Scanner>();
-  private Map<String, MyCrawlableDataset> map; // current map of MyCrawlableDataset
+  private Map<String, CrawlableDataset> map; // current map of CrawlableDataset
 
   private TimeUnit recheck; // how often to recheck
   private long lastScanned; // last time scanned
@@ -57,14 +59,14 @@ public class DatasetCollectionManager {
   }
 
   /**
-   * Scan the directory(ies) and create MyCrawlableDataset objects.
+   * Scan the directory(ies) and create CrawlableDataset objects.
    * Get the results from getFiles()
    *
    * @param cancelTask allow user to cancel
    * @throws java.io.IOException if io error
    */
   public void scan(CancelTask cancelTask) throws IOException {
-    Map<String, MyCrawlableDataset> newMap = new HashMap<String, MyCrawlableDataset>();
+    Map<String, CrawlableDataset> newMap = new HashMap<String, CrawlableDataset>();
     scan(newMap, cancelTask);
     map = newMap;
     this.lastScanned = System.currentTimeMillis();
@@ -101,7 +103,7 @@ public class DatasetCollectionManager {
 
   /**
    * Rescan directories. Files may be deleted or added.
-   * If the MyCrawlableDataset already exists in the current list, leave it in the list.
+   * If the CrawlableDataset already exists in the current list, leave it in the list.
    * If returns true, get the results from getFiles(), otherwise nothing has changed.
    *
    * @return true if anything actually changed.
@@ -112,14 +114,14 @@ public class DatasetCollectionManager {
     lastScanned = System.currentTimeMillis();
 
     // rescan
-    Map<String, MyCrawlableDataset> newMap = new HashMap<String, MyCrawlableDataset>();
+    Map<String, CrawlableDataset> newMap = new HashMap<String, CrawlableDataset>();
     scan(newMap, null);
 
     // replace with previous datasets if they exist
     boolean changed = false;
-    for (MyCrawlableDataset newDataset : newMap.values()) {
-      String path = newDataset.file.getPath();
-      MyCrawlableDataset oldDataset = map.get( path);
+    for (CrawlableDataset newDataset : newMap.values()) {
+      String path = newDataset.getPath();
+      CrawlableDataset oldDataset = map.get( path);
       if (oldDataset != null) {
         newMap.put(path, oldDataset);
         if (debugSyncDetail) System.out.println("  sync using old Dataset= " + path);
@@ -130,9 +132,9 @@ public class DatasetCollectionManager {
     }
 
     if (!changed) { // check for deletions
-      for (MyCrawlableDataset oldDataset : map.values()) {
-        String path = oldDataset.file.getPath();
-        MyCrawlableDataset newDataset = newMap.get( path);
+      for (CrawlableDataset oldDataset : map.values()) {
+        String path = oldDataset.getPath();
+        CrawlableDataset newDataset = newMap.get( path);
         if (newDataset == null) {
           changed = true;
           if (debugSyncDetail) System.out.println("  sync found deleted Dataset= " + path);
@@ -166,16 +168,16 @@ public class DatasetCollectionManager {
   }
 
   /**
-   * Get the current collection of MyCrawlableDataset, since last scan or rescan.
+   * Get the current collection of CrawlableDataset, since last scan or rescan.
    *
-   * @return current list of MyCrawlableDataset
+   * @return current list of CrawlableDataset
    */
-  public Collection<MyCrawlableDataset> getFiles() {
+  public Collection<CrawlableDataset> getFiles() {
     return map.values();
   }
 
-  private void scan(java.util.Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException {
-    // run through all scanners and collect MyCrawlableDataset instances
+  private void scan(java.util.Map<String, CrawlableDataset> map, CancelTask cancelTask) throws IOException {
+    // run through all scanners and collect CrawlableDataset instances
     for (Scanner scanner : scanList) {
       scanner.scanDirectory(map, cancelTask);
       if ((cancelTask != null) && cancelTask.isCancel())

@@ -45,7 +45,7 @@ public class AggregationTiled extends Aggregation {
   private boolean debug = false;
 
   public AggregationTiled(NetcdfDataset ncd, String dimName, String recheckS) {
-    super(ncd, dimName, Aggregation.Type.TILED, recheckS);
+    super(ncd, dimName, Aggregation.Type.tiled, recheckS);
 
     // parse the tiling dimension names
     StringTokenizer stoke = new StringTokenizer(dimName);
@@ -55,7 +55,7 @@ public class AggregationTiled extends Aggregation {
   }
 
   @Override
-  protected void buildDataset(CancelTask cancelTask) throws IOException {
+  protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
 
     // open a "typical"  nested dataset and copy it to newds
     Dataset typicalDataset = getTypicalDataset();
@@ -135,7 +135,7 @@ public class AggregationTiled extends Aggregation {
   protected void rebuildDataset() throws IOException {
     ncDataset.empty();
     dims = new ArrayList<Dimension>();
-    buildDataset(null);
+    buildNetcdfDataset(null);
   }
 
   @Override

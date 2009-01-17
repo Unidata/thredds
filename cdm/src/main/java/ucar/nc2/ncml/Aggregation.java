@@ -33,6 +33,7 @@ import java.io.*;
 
 import ucar.nc2.units.DateFromString;
 import org.jdom.Element;
+import thredds.crawlabledataset.CrawlableDataset;
 
 /**
  * Superclass for NcML Aggregation.
@@ -82,14 +83,15 @@ import org.jdom.Element;
  */
 public abstract class Aggregation implements ProxyReader {
 
-  static public enum Type {
-    FORECAST_MODEL_COLLECTION,
-    FORECAST_MODEL_SINGLE,
-    JOIN_EXISTING,
-    JOIN_EXISTING_ONE, // JOIN_EXISTING with a DateFormatMark makes it into a JOIN_EXISTING_ONE
-    JOIN_NEW,
-    TILED,
-    UNION }
+  static protected enum Type {
+    forecastModelRunCollection,
+    forecastModelRunSingleCollection,
+    joinExisting,
+    joinExistingOne, // joinExisting with a DateFormatMark makes it into a joinExistingOne - must have only one coord / file
+    joinNew,
+    tiled,
+    union
+  }
 
   static protected enum TypicalDataset {RANDOM, LATEST, PENULTIMATE }
   static protected TypicalDataset typicalDatasetMode;
@@ -97,10 +99,12 @@ public abstract class Aggregation implements ProxyReader {
   static protected org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
   static protected DiskCache2 diskCache2 = null;
 
+  // this is where  persist() reads/writes files
   static public void setPersistenceCache(DiskCache2 dc) {
     diskCache2 = dc;
   }
 
+  // experimental multithreading
   static protected Executor executor;
   static public void setExecutor(Executor exec) {
     executor = exec;
@@ -125,7 +129,7 @@ public abstract class Aggregation implements ProxyReader {
 
   protected NetcdfDataset ncDataset; // the aggregation belongs to this dataset
   protected Type type; // the aggregation type
-  protected Object spiObject;
+  protected Object spiObject; // pass to NetcdfFile.open()
 
   protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<Aggregation.Dataset>(); // explicitly created Dataset objects from netcdf elements
   protected List<Aggregation.Dataset> datasets = new ArrayList<Aggregation.Dataset>(); // all : explicit and scanned
@@ -135,7 +139,6 @@ public abstract class Aggregation implements ProxyReader {
   protected String dimName; // the aggregation dimension name
 
   // experimental
-  protected boolean timeUnitsChange = false;
   protected String dateFormatMark;
   protected EnumSet<NetcdfDataset.Enhance> enhance = null; // default no enhancement
   protected boolean isDate = false;
@@ -169,10 +172,9 @@ public abstract class Aggregation implements ProxyReader {
    * @param coordValueS attribute "coordValue" on the netcdf element
    * @param sectionSpec attribute "section" on the netcdf element
    * @param reader      factory for reading this netcdf dataset
-   * @param cancelTask  user may cancel, may be null
    */
   public void addExplicitDataset(String cacheName, String location, String id, String ncoordS, String coordValueS, String sectionSpec,
-                                 ucar.nc2.util.cache.FileFactory reader, CancelTask cancelTask) {
+                                 ucar.nc2.util.cache.FileFactory reader) {
 
     Dataset nested = makeDataset(cacheName, location, id, ncoordS, coordValueS, sectionSpec, null, reader);
     explicitDatasets.add(nested);
@@ -193,16 +195,15 @@ public abstract class Aggregation implements ProxyReader {
    * @param mode                how should files be enhanced
    * @param subdirs             equals "false" if should not descend into subdirectories
    * @param olderThan           files must be older than this time (now - lastModified >= olderThan); must be a time unit, may ne bull
-   * @throws IOException if I/O error
    */
   public void addDatasetScan(Element crawlableDatasetElement, String dirName, String suffix,
-          String regexpPatternString, String dateFormatMark, EnumSet<NetcdfDataset.Enhance> mode, String subdirs, String olderThan) throws IOException {
+          String regexpPatternString, String dateFormatMark, EnumSet<NetcdfDataset.Enhance> mode, String subdirs, String olderThan) {
     this.dateFormatMark = dateFormatMark;
     this.enhance = mode;
 
     if (dateFormatMark != null) {
       isDate = true;
-      if (type == Type.JOIN_EXISTING) type = Type.JOIN_EXISTING_ONE; // tricky
+      if (type == Type.joinExisting) type = Type.joinExistingOne; // tricky
     }
 
     DatasetScanner d = new DatasetScanner(crawlableDatasetElement, dirName, suffix, regexpPatternString, subdirs, olderThan);
@@ -260,13 +261,13 @@ public abstract class Aggregation implements ProxyReader {
   // all elements are processed, finish construction
 
   public void finish(CancelTask cancelTask) throws IOException {
-    datasetManager.scan(cancelTask);
+    datasetManager.scan(cancelTask); // Make the list of Datasets, by scanning if needed.
     cacheDirty = true;
     closeDatasets();
     makeDatasets(cancelTask);
 
     //ucar.unidata.io.RandomAccessFile.setDebugAccess( true);
-    buildDataset(cancelTask);
+    buildNetcdfDataset(cancelTask);
     //ucar.unidata.io.RandomAccessFile.setDebugAccess( false);
   }
 
@@ -275,33 +276,39 @@ public abstract class Aggregation implements ProxyReader {
   }
 
   /**
-   * Make the Dataset objects.
+   * Make the list of Datasets, from explicit and scans.
    *
    * @param cancelTask user can cancel
    * @throws IOException on i/o error
    */
   protected void makeDatasets(CancelTask cancelTask) throws IOException {
-    Collection<MyCrawlableDataset> fileList = datasetManager.getFiles();
-    for (MyCrawlableDataset myf : fileList) {
-      // optionally parse for date
-      if (null != dateFormatMark) {
-        String filename = myf.file.getName();
-        myf.dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
-        myf.dateCoordS = formatter.toDateTimeStringISO(myf.dateCoord);
-        if (debugDateParse) System.out.println("  adding " + myf.file.getPath() + " date= " + myf.dateCoordS);
-      } else {
-        if (debugDateParse) System.out.println("  adding " + myf.file.getPath());
-      }
-    }
 
-    // create new list of Datasets, transfer explicit first
+    // heres where the results will go
     datasets = new ArrayList<Dataset>();
 
-    // add the ordered list of scanned Datasets to the result List
-    for (MyCrawlableDataset myf : fileList) {
-      String location = myf.file.getPath();
-      Aggregation.Dataset ds = makeDataset(location, location, null, null, myf.dateCoordS, null, enhance, null);
-      ds.setInfo(myf);
+    // convert a MyCrawlableDataset into an Aggregation.Dataset
+    // we really just need the location, assumed to work in the FileFactory
+    for (CrawlableDataset cd : datasetManager.getFiles()) {
+      datasets.add( makeDataset(cd));
+    }
+
+    // sort using Aggregation.Dataset as Comparator.
+    // Sort by date if it exists, else filename.
+    Collections.sort(datasets);
+
+      /* optionally extract the date
+      String dateCoordS = null;
+      if (null != dateFormatMark) {
+        String filename = myf.getName(); // LOOK operates on name, not path
+        Date dateCoord = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
+        dateCoordS = formatter.toDateTimeStringISO(dateCoord);
+        if (debugDateParse) System.out.println("  adding " + myf.getPath() + " date= " + dateCoordS);
+      } else {
+        if (debugDateParse) System.out.println("  adding " + myf.getPath());
+      }
+
+      String location = myf.getPath();
+      Aggregation.Dataset ds = makeDataset(location, location, null, null, dateCoordS, null, enhance, null);
       datasets.add(ds);
     }
 
@@ -315,7 +322,7 @@ public abstract class Aggregation implements ProxyReader {
         else
           return ds1.cd.file.getName().compareTo(ds2.cd.file.getName());
       }
-    });
+    });  */
 
     // add the explicit datasets - these need to be kept in order
     // LOOK - should they be before or after scanned? Does it make sense to mix scan and explicit?
@@ -324,7 +331,7 @@ public abstract class Aggregation implements ProxyReader {
     }
 
     // check for duplicate location
-    Set dset = new HashSet( 2 * datasets.size());
+    Set<String> dset = new HashSet<String>( 2 * datasets.size());
     for (Aggregation.Dataset dataset : datasets) {
       if (dset.contains(dataset.cacheLocation))
         logger.warn("Duplicate dataset in aggregation = "+dataset.cacheLocation);
@@ -333,12 +340,12 @@ public abstract class Aggregation implements ProxyReader {
   }
 
   /**
-   * Call this to build the dataset objects
+   * Call this to build the dataset objects in the NetcdfDataset
    *
    * @param cancelTask maybe cancel
    * @throws IOException on read error
    */
-  protected abstract void buildDataset(CancelTask cancelTask) throws IOException;
+  protected abstract void buildNetcdfDataset(CancelTask cancelTask) throws IOException;
 
 
   /**
@@ -394,6 +401,7 @@ public abstract class Aggregation implements ProxyReader {
   protected String getLocation() {
     return ncDataset.getLocation();
   }
+
   /**
    * Open one of the nested datasets as a template for the aggregation dataset.
    *
@@ -455,25 +463,28 @@ public abstract class Aggregation implements ProxyReader {
    * @param reader      factory for reading this netcdf dataset
    * @return a Aggregation.Dataset
    */
-  protected Dataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS, String sectionSpec,
-          EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
-    //return new Dataset(cacheName, location, ncoordS, coordValueS, sectionSpec, enhance, reader);
-    return new Dataset(cacheName, location, id, enhance, reader); // overriden in OuterDim, tiled
+  protected Dataset makeDataset(String cacheName, String location, String id, String ncoordS, String coordValueS,
+          String sectionSpec, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
+    return new Dataset(cacheName, location, id, enhance, reader); // overridden in OuterDim, tiled
   }
 
+  protected Dataset makeDataset(CrawlableDataset dset) {
+    return new Dataset(dset);
+  }
 
   /**
    * Encapsolates a NetcdfFile that is a component of the aggregation.
    */
-  class Dataset {
+  class Dataset implements Comparable {
     protected String location; // location attribute on the netcdf element
     protected String id; // id attribute on the netcdf element
-    protected MyCrawlableDataset cd;
 
     // deferred opening
     protected String cacheLocation;
     protected ucar.nc2.util.cache.FileFactory reader;
     protected EnumSet<NetcdfDataset.Enhance> enhance;
+
+    protected Object extraInfo;
 
     /**
      * For subclasses.
@@ -484,6 +495,12 @@ public abstract class Aggregation implements ProxyReader {
       this.location = (location == null) ? null : StringUtil.substitute(location, "\\", "/");
     }
 
+    protected Dataset(CrawlableDataset cd) {
+      this( cd.getPath());
+      this.cacheLocation = location;
+      this.enhance = Aggregation.this.enhance;
+    }
+
     /**
      * Dataset constructor.
      * With this constructor, the actual opening of the dataset is deferred, and done by the reader.
@@ -491,6 +508,7 @@ public abstract class Aggregation implements ProxyReader {
      *
      * @param cacheLocation a unique name to use for caching
      * @param location  attribute "location" on the netcdf element
+     * @param id  attribute "id" on the netcdf element
      * @param enhance   open dataset in enhance mode, may be null
      * @param reader    factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
@@ -543,10 +561,9 @@ public abstract class Aggregation implements ProxyReader {
     protected void cacheVariables(NetcdfFile ncfile) throws IOException {
     }
 
-    // overridden in DatasetOuterDimension
-    protected void setInfo(MyCrawlableDataset cd) {
-      this.cd = cd;
-    }
+    //protected void setExtraInfo(Object extraInfo) {
+    //  this.extraInfo = extraInfo;
+    //}
 
     protected Array read(Variable mainv, CancelTask cancelTask) throws IOException {
       NetcdfFile ncd = null;
@@ -603,6 +620,10 @@ public abstract class Aggregation implements ProxyReader {
       return location.hashCode();
     }
 
+    public int compareTo(Object o) {
+      Dataset other = (Dataset) o;
+      return location.compareTo( other.location);
+    }
   } // class Dataset
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

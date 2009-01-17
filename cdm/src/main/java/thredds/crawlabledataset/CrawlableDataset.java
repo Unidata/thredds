@@ -75,6 +75,12 @@ public interface CrawlableDataset {
   public Object getConfigObject();
 
   /**
+   * Set the configuration Object.
+   * @param config the config object.
+   */
+  // public void setConfigObject(Object config);
+
+  /**
    * Returns the dataset path.
    * @return the dataset path.
    */

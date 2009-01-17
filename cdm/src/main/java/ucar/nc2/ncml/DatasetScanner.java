@@ -34,7 +34,7 @@ import ucar.nc2.units.TimeUnit;
 import org.jdom.Element;
 
 /**
- * DatasetScanner implements the datasetScan element, to scan for datasets.
+ * DatasetScanner implements the datasetScan element, to scan for datasets, using a CrawlableDataset.
  *
  * @author caron
  * @since Aug 10, 2007
@@ -52,7 +52,7 @@ public class DatasetScanner implements Scanner {
   private boolean debugScan = false;
 
   DatasetScanner(Element crawlableDatasetElement, String dirName, String suffix, String regexpPatternString,
-          String subdirsS, String olderS) {
+                 String subdirsS, String olderS) {
 
     String crawlerClassName;
     Object crawlerObject = null;
@@ -90,14 +90,13 @@ public class DatasetScanner implements Scanner {
 
   //NetcdfDataset.EnhanceMode getEnhanceMode() { return mode; }
 
-  public void scanDirectory(Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException {
+  public void scanDirectory(Map<String, CrawlableDataset> map, CancelTask cancelTask) throws IOException {
     scanDirectory(crawler, new Date().getTime(), map, cancelTask);
   }
 
-  private void scanDirectory(CrawlableDataset cd, long now, Map<String, MyCrawlableDataset> map, CancelTask cancelTask) throws IOException {
-    if ( ! cd.exists() || ! cd.isCollection() )
-    {
-      logger.error( "scanDirectory(): the crawlableDataset to be scanned [" + cd.getPath() + "] does not exist or is not a collection.");
+  private void scanDirectory(CrawlableDataset cd, long now, Map<String, CrawlableDataset> map, CancelTask cancelTask) throws IOException {
+    if (!cd.exists() || !cd.isCollection()) {
+      logger.error("scanDirectory(): the crawlableDataset to be scanned [" + cd.getPath() + "] does not exist or is not a collection.");
       return;
     }
     List<CrawlableDataset> children = cd.listDatasets();
@@ -121,9 +120,8 @@ public class DatasetScanner implements Scanner {
         }
 
         // add to result
-        MyCrawlableDataset myf = new MyCrawlableDataset(this, child);
-        map.put(child.getPath(), myf);
-        if (debugScan) System.out.println(" accept " + myf.file.getPath());
+        map.put(child.getPath(), child);
+        if (debugScan) System.out.println(" accept " + child.getPath());
       }
 
       if ((cancelTask != null) && cancelTask.isCancel())
@@ -134,14 +132,14 @@ public class DatasetScanner implements Scanner {
   static public void main(String args[]) throws IOException {
     String cat = "http://motherlode.ucar.edu:8080/thredds/catalog/satellite/12.0/WEST-CONUS_4km/20070825/catalog.xml";
     Element config = new Element("config");
-    config.setAttribute("className","thredds.catalog.CrawlableCatalog");
-    
-    Element serviceType =  new Element("serviceType");
-    serviceType.addContent( ServiceType.OPENDAP.toString());
+    config.setAttribute("className", "thredds.catalog.CrawlableCatalog");
 
-    config.addContent( serviceType);
+    Element serviceType = new Element("serviceType");
+    serviceType.addContent(ServiceType.OPENDAP.toString());
+
+    config.addContent(serviceType);
 
     DatasetScanner crawl = new DatasetScanner(config, cat, null, null, "true", null);
-    crawl.scanDirectory(new HashMap<String, MyCrawlableDataset>(), null);
+    crawl.scanDirectory(new HashMap<String, CrawlableDataset>(), null);
   }
 }

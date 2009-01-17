@@ -102,15 +102,12 @@
       <profile version="1.0" is_locked="false">
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
-        <inspection_tool class="InfiniteLoopStatement" level="WARNING" enabled="false" />
-        <inspection_tool class="TrivialIf" level="WARNING" enabled="false" />
         <inspection_tool class="EmptyFinallyBlock" level="WARNING" enabled="false" />
         <inspection_tool class="EmptyStatementBody" level="WARNING" enabled="false">
           <option name="m_reportEmptyBlocks" value="false" />
         </inspection_tool>
         <inspection_tool class="StringEquality" level="WARNING" enabled="false" />
         <inspection_tool class="StringToString" level="WARNING" enabled="false" />
-        <inspection_tool class="LoopStatementsThatDontLoop" level="WARNING" enabled="false" />
         <inspection_tool class="InfiniteRecursion" level="WARNING" enabled="false" />
         <inspection_tool class="ConstantConditions" level="WARNING" enabled="false">
           <option name="SUGGEST_NULLABLE_ANNOTATIONS" value="false" />
@@ -152,13 +149,35 @@
         <inspection_tool class="StringConstructor" level="WARNING" enabled="false">
           <option name="ignoreSubstringArguments" value="false" />
         </inspection_tool>
-        <inspection_tool class="UnnecessaryReturn" level="WARNING" enabled="false" />
         <inspection_tool class="FinalStaticMethod" level="WARNING" enabled="false" />
         <inspection_tool class="UnnecessaryUnboxing" level="WARNING" enabled="false" />
         <inspection_tool class="NoExplicitFinalizeCalls" level="WARNING" enabled="false" />
         <inspection_tool class="FinalPrivateMethod" level="WARNING" enabled="false" />
         <inspection_tool class="ContinueOrBreakFromFinallyBlock" level="WARNING" enabled="false" />
         <inspection_tool class="SynchronizeOnNonFinalField" level="WARNING" enabled="false" />
+        <inspection_tool class="SimplifiableConditionalExpression" level="WARNING" enabled="false" />
+        <inspection_tool class="ConditionalExpressionWithIdenticalBranches" level="WARNING" enabled="true" />
+        <inspection_tool class="DoubleNegation" level="WARNING" enabled="true" />
+        <inspection_tool class="DuplicateCondition" level="WARNING" enabled="true">
+          <option name="ignoreMethodCalls" value="false" />
+        </inspection_tool>
+        <inspection_tool class="DuplicateBooleanBranch" level="WARNING" enabled="true" />
+        <inspection_tool class="EnumSwitchStatementWhichMissesCases" level="WARNING" enabled="true">
+          <option name="ignoreSwitchStatementsWithDefault" value="false" />
+        </inspection_tool>
+        <inspection_tool class="ForLoopWithMissingComponent" level="WARNING" enabled="true">
+          <option name="ignoreCollectionLoops" value="false" />
+        </inspection_tool>
+        <inspection_tool class="IfStatementWithIdenticalBranches" level="WARNING" enabled="true" />
+        <inspection_tool class="LoopConditionNotUpdatedInsideLoop" level="WARNING" enabled="true">
+          <option name="ignoreIterators" value="false" />
+        </inspection_tool>
+        <inspection_tool class="LoopWithImplicitTerminationCondition" level="WARNING" enabled="true" />
+        <inspection_tool class="PointlessIndexOfComparison" level="WARNING" enabled="true" />
+        <inspection_tool class="SwitchStatementsWithoutDefault" level="WARNING" enabled="true">
+          <option name="m_ignoreFullyCoveredEnums" value="true" />
+        </inspection_tool>
+        <inspection_tool class="UnnecessaryDefault" level="WARNING" enabled="true" />
       </profile>
     </profiles>
     <list size="4">
