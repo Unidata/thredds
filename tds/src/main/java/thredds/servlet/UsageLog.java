@@ -27,13 +27,13 @@ import javax.servlet.http.HttpSession;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Utilities for creating log info in the threddsServlet log, aka server access log.
+ * Utilities for creating log info in the threddsServlet log, aka server usage log.
  *
  * @author caron
  * @since Jan 9, 2009
  */
-public class AccessLog {
-  public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( AccessLog.class);
+public class UsageLog {
+  public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( UsageLog.class);
   private static AtomicLong logServerAccessId = new AtomicLong(0);
 
   public static String setupInfo(HttpServletRequest req) {

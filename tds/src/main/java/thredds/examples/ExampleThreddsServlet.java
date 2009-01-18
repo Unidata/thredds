@@ -60,7 +60,7 @@ public class ExampleThreddsServlet extends HttpServlet
     contentPath = ServletUtil.getContentPath( );
 
     // init logging
-    AccessLog.logServerSetup();
+    UsageLog.logServerSetup();
     log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
     log.info( "servlet context name= " + this.getServletContext().getServletContextName() );
@@ -122,7 +122,7 @@ public class ExampleThreddsServlet extends HttpServlet
           throws ServletException, IOException
   {
     // Setup logging for this request.
-    AccessLog.log.info( AccessLog.setupInfo(req));
+    UsageLog.log.info( UsageLog.setupInfo(req));
 
     // Get the request path.
     String path = req.getPathInfo(); // ServletUtil.getRequestPath( req );

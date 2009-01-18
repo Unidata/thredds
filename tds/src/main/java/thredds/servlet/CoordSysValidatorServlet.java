@@ -104,7 +104,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
       return;
     }
 
-    log.info( AccessLog.setupInfo(req));
+    log.info( UsageLog.setupInfo(req));
 
     String urlString = req.getParameter("URL");
     if (urlString == null) {
@@ -154,7 +154,7 @@ public class CoordSysValidatorServlet extends AbstractServlet {
       return;
     }
 
-    log.info( AccessLog.setupInfo(req));
+    log.info( UsageLog.setupInfo(req));
 
     // Check that we have a file upload request
     boolean isMultipart = ServletFileUpload.isMultipartContent(req);

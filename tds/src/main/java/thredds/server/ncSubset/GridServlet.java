@@ -95,7 +95,7 @@ public class GridServlet extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
       return;
     }
-    log.info( AccessLog.setupInfo(req));
+    log.info( UsageLog.setupInfo(req));
 
     String pathInfo = req.getPathInfo();
 
@@ -122,7 +122,7 @@ public class GridServlet extends AbstractServlet {
         showForm(res, gds, pathInfo, wantXML, showPointForm);
       } catch (Exception e) {
         log.error("GridServlet.showForm", e);
-        log.info( AccessLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+        log.info( UsageLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       } finally {
         if (null != gds)
@@ -161,7 +161,7 @@ public class GridServlet extends AbstractServlet {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
         if (null == gds) return;
       } catch (Exception e) {
-        log.info( AccessLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, 0));
+        log.info( UsageLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, 0));
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
       }
 
@@ -233,7 +233,7 @@ public class GridServlet extends AbstractServlet {
 
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        log.info( AccessLog.accessInfo(HttpServletResponse.SC_BAD_REQUEST, 0));
+        log.info( UsageLog.accessInfo(HttpServletResponse.SC_BAD_REQUEST, 0));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       }
     } finally {
@@ -275,7 +275,7 @@ public class GridServlet extends AbstractServlet {
 
     } catch (IOException ioe) {
       log.error("Writing to " + cacheFilename, ioe);
-      log.info( AccessLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      log.info( UsageLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }
@@ -303,7 +303,7 @@ public class GridServlet extends AbstractServlet {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
         if (null == gds) return;
       } catch (Exception e) {
-        log.info( AccessLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, 0));
+        log.info( UsageLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, 0));
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
       }
 
@@ -353,7 +353,7 @@ public class GridServlet extends AbstractServlet {
       try {
         sendFile(req, res, gds, qp, hasBB, addLatLon);
       } catch (InvalidRangeException e) {
-        log.info( AccessLog.accessInfo(HttpServletResponse.SC_BAD_REQUEST, 0));
+        log.info( UsageLog.accessInfo(HttpServletResponse.SC_BAD_REQUEST, 0));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       }
     } finally {
@@ -399,7 +399,7 @@ public class GridServlet extends AbstractServlet {
 
     } catch (IOException ioe) {
       log.error("Writing to " + cacheFilename, ioe);
-      log.info( AccessLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      log.info( UsageLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }
@@ -431,7 +431,7 @@ public class GridServlet extends AbstractServlet {
 
       } catch (Exception e) {
         log.error("ForecastModelRunServlet internal error", e);
-        log.info( AccessLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+        log.info( UsageLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
         return;
       }
@@ -447,7 +447,7 @@ public class GridServlet extends AbstractServlet {
     out.write(infoString.getBytes());
     out.flush();
 
-    log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, infoString.length()));
+    log.info( UsageLog.accessInfo(HttpServletResponse.SC_OK, infoString.length()));
   }
 
   private InputStream getXSLT(String xslName) {

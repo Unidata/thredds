@@ -56,7 +56,7 @@ public class DLwriterServlet extends AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
                              throws ServletException, IOException {
 
-    log.info( AccessLog.setupInfo(req));
+    log.info( UsageLog.setupInfo(req));
 
     try {
       // see if it has a catalog parameter

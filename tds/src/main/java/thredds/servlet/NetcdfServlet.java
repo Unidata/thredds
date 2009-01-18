@@ -115,7 +115,7 @@ public class NetcdfServlet extends AbstractServlet {
       return;
     }
 
-    log.info( AccessLog.setupInfo(req));
+    log.info( UsageLog.setupInfo(req));
     ServletUtil.showRequestDetail(this, req);
 
     String pathInfo = req.getPathInfo();

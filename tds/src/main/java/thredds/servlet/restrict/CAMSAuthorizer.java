@@ -20,8 +20,7 @@
 
 package thredds.servlet.restrict;
 
-import thredds.servlet.ServletUtil;
-import thredds.servlet.AccessLog;
+import thredds.servlet.UsageLog;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,7 +47,7 @@ public class CAMSAuthorizer extends TomcatAuthorizer {
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-      AccessLog.log.info( AccessLog.setupInfo(req));
+      UsageLog.log.info( UsageLog.setupInfo(req));
 
       HttpSession session = req.getSession();
       if (session != null) {

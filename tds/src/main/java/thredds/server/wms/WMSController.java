@@ -10,9 +10,8 @@ import javax.servlet.ServletException;
 
 import thredds.server.wms.responses.*;
 import thredds.servlet.ThreddsConfig;
-import thredds.servlet.ServletUtil;
 import thredds.servlet.DatasetHandler;
-import thredds.servlet.AccessLog;
+import thredds.servlet.UsageLog;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +82,7 @@ public class WMSController extends AbstractController {
 
       colorRange = new HashMap<String, ColorScaleRange>();
 
-      NetcdfDataset.initNetcdfFileCache(100, 200, 15 * 60); // on application startup
+      // NetcdfDataset.initNetcdfFileCache(100, 200, 15 * 60); // on application startup
       NetcdfDataset.setDefaultEnhanceMode(EnumSet.of(NetcdfDataset.Enhance.ScaleMissingDefer, NetcdfDataset.Enhance.CoordSystems));
     }
   }
@@ -110,7 +109,7 @@ public class WMSController extends AbstractController {
         version = "1.1.1";
       }
 
-      AccessLog.log.info(AccessLog.setupInfo(req));
+      UsageLog.log.info(UsageLog.setupInfo(req));
 
       try {
         String request = params.getMandatoryString("request");
@@ -127,7 +126,7 @@ public class WMSController extends AbstractController {
         } else if (request.equalsIgnoreCase("GetMap")) {
           errMessage = "Error encountered while processing GetMap request ";
           WmsGetMap getMapHandler = new WmsGetMap(params, dataset, usageLogEntry);
-          AccessLog.log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, -1));          
+          UsageLog.log.info( UsageLog.accessInfo(HttpServletResponse.SC_OK, -1));
           return getMapHandler.processRequest(res, req);
 
         } else if (request.equalsIgnoreCase("GetLegendGraphic")) {
@@ -167,11 +166,11 @@ public class WMSController extends AbstractController {
         return new ModelAndView(jspPage, model);
       }
       catch (java.net.SocketException se) { // Google Earth does thius a lot for some reason
-        AccessLog.log.info(AccessLog.accessInfo(HttpServletResponse.SC_BAD_REQUEST, -10));
+        UsageLog.log.info(UsageLog.accessInfo(HttpServletResponse.SC_BAD_REQUEST, -10));
         return null;
       }
       catch (Throwable t) {
-        AccessLog.log.info(AccessLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
+        UsageLog.log.info(UsageLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
         t.printStackTrace();
         throw new RuntimeException(t);
       }
@@ -184,10 +183,10 @@ public class WMSController extends AbstractController {
       // ToDo - Server not configured to support WMS. Should
       // response code be 404 (Not Found) instead of 403 (Forbidden)?
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      log.info(AccessLog.accessInfo(HttpServletResponse.SC_FORBIDDEN, -1));
+      log.info(UsageLog.accessInfo(HttpServletResponse.SC_FORBIDDEN, -1));
     }
 
-    AccessLog.log.info(AccessLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -3));
+    UsageLog.log.info(UsageLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -3));
     return null;
   }
 

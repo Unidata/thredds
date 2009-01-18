@@ -71,6 +71,7 @@
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
+  <property name="catalina.jar" value="external/catalina.jar"/>
   <property name="commons-lang.jar" value="external/commons-lang-2.4.jar"/>
   <property name="cas.jar" value="external/casclient-2.1.1.jar"/>
   <property name="fileupload.jar" value="external/commons-fileupload-1.2.1.jar"/>
@@ -140,6 +141,7 @@
   </fileset>
 
   <fileset id="servlet.compile.libraries" dir="${lib.dir}">
+    <include name="${catalina.jar}"/>
     <include name="${servlet.jar}"/>
   </fileset>
 
@@ -212,6 +214,25 @@
     </jar>
 
   </target>
+
+  <target name="tds-tomcat" depends="compile" >
+    <jar jarfile="${build.dir}/tds-tomcat-${release.version.minor}.jar" index="true">
+      <fileset dir="${build.classes.dir}">
+        <include name="thredds/servlet/tomcat/**"/>
+      </fileset>
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="TDS classes must be put into tomcat"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+
+    </jar>
+
+  </target>
+
 
   <!-- build war directory -->
   <target name="war-setup" depends="compile" description="create a distribution">

@@ -202,7 +202,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws IOException, ServletException {
 
-    log.info( AccessLog.setupInfo(req));
+    log.info( UsageLog.setupInfo(req));
 
     try {
       String path = req.getPathInfo();
@@ -213,7 +213,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
       }
 
       if (path == null) {
-        log.info( AccessLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, -1));
+        log.info( UsageLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, -1));
         res.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
       }
@@ -228,7 +228,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
       if (path.endsWith(".close")) {
         closeSession(req, res);
         res.setContentLength(0);
-        log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, 0));
+        log.info( UsageLog.accessInfo(HttpServletResponse.SC_OK, 0));
         return;
 
       } else if (path.endsWith("latest.xml")) {
@@ -243,10 +243,10 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
 
       // default is to throw it to the superclass - this processes the .dds, .das etc
       super.doGet(req, res);
-      log.info( AccessLog.accessInfo(HttpServletResponse.SC_OK, -1));
+      log.info( UsageLog.accessInfo(HttpServletResponse.SC_OK, -1));
 
     } catch (FileNotFoundException e) {
-      log.info( AccessLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, -1));
+      log.info( UsageLog.accessInfo(HttpServletResponse.SC_NOT_FOUND, -1));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
     } catch (IOException ioe) {
@@ -338,8 +338,12 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
 
     if (acceptSession) {
       session.setAttribute(GDATASET, gdataset);
+      session.setAttribute("dataset", ncd.getLocation());
       // session.setMaxInactiveInterval(30); // 30 second timeout !!
       if (log.isDebugEnabled()) log.debug(" added gdataset " + gdataset + " in session " + session.getId());
+    } else {
+      session = req.getSession();
+      session.setAttribute("dataset", ncd.getLocation()); // see UsageValve
     }
 
     return gdataset;

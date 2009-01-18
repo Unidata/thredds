@@ -150,19 +150,20 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>View</servlet-name>
   </filter-mapping>
+
   <!-- New -->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>tester</servlet-name>
   </filter-mapping>
-  <filter-mapping>
+  <!-- filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>NetcdfServer</servlet-name>
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>RemoteNetcdfServer</servlet-name>
-  </filter-mapping>
+  </filter-mapping -->
 
   <!--
   Filter:
@@ -371,19 +372,19 @@
     <servlet-class>thredds.server.radarServer.RadarServer</servlet-class>
   </servlet>
 
-  <!-- Netcdf Server -->
+  <!-- Netcdf Server
   <servlet>
     <servlet-name>NetcdfServer</servlet-name>
     <servlet-class>thredds.servlet.NetcdfServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet>
+  </servlet -->
 
-  <!-- RemoteNetcdf Server -->
+  <!-- RemoteNetcdf Server
   <servlet>
     <servlet-name>RemoteNetcdfServer</servlet-name>
     <servlet-class>thredds.servlet.RemoteNetcdfServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
   <servlet>
@@ -586,7 +587,7 @@
     <url-pattern>/fileServer/*</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
     <servlet-name>NetcdfServer</servlet-name>
     <url-pattern>/ncServer/*</url-pattern>
   </servlet-mapping>
@@ -594,7 +595,7 @@
   <servlet-mapping>
     <servlet-name>RemoteNetcdfServer</servlet-name>
     <url-pattern>/netcdf/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>RestrictedDataset</servlet-name>

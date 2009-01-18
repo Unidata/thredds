@@ -8,8 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import thredds.catalog.InvDataset;
 import thredds.catalog.InvCatalogImpl;
-import thredds.servlet.ServletUtil;
-import thredds.servlet.AccessLog;
+import thredds.servlet.UsageLog;
 
 /**
  * _more_
@@ -60,7 +59,7 @@ public class CatalogServiceUtils
     if ( dataset == null )
     {
       //log.warn( "Cant find dataset=" + datasetID + " in catalog=" + catalog.getBaseURI() );
-      AccessLog.log.info( AccessLog.accessInfo( HttpServletResponse.SC_BAD_REQUEST, -1 ));
+      UsageLog.log.info( UsageLog.accessInfo( HttpServletResponse.SC_BAD_REQUEST, -1 ));
       //response.sendError( HttpServletResponse.SC_BAD_REQUEST, "Cant find dataset=" + datasetID );
       return null;
     }
