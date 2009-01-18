@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import ucar.ma2.*;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.NCdump;
 import ucar.nc2.TestAll;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -313,7 +314,7 @@ public class TestSubset extends TestCase {
 
   // longitude subsetting (CoordAxis1D regular)
    public void testLatLonSubset2() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.upcShareDir + "/grid/grib/grib2/data/GFS_Global_onedeg_20090105_0600.grib2");
+    GridDataset dataset = GridDataset.open(TestAll.upcShareTestDataDir + "/grid/grib/grib2/data/GFS_Global_onedeg_20090105_0600.grib2");
     GeoGrid grid = dataset.findGridByName("Pressure_surface");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -569,6 +570,40 @@ public class TestSubset extends TestCase {
     ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
     System.out.println("projection mapArea= " + pr);
     assert (pr.equals(gcs2.getBoundingBox()));
+
+    dataset.close();
+  }
+
+  public void testNcmlRangeSubset() throws Exception {
+    String filename = "D:/test/ncom_agg6.ncml";
+    GridDataset dataset = GridDataset.open(filename);
+    GeoGrid grid = dataset.findGridByName("water_temp");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+
+    System.out.println("original bbox= " + gcs.getBoundingBox());
+    System.out.println("lat/lon bbox= " + gcs.getLatLonBoundingBox());
+
+    /*   tRange: 31:31
+     zRange: 0:0
+    yRange: 1:559
+    zRange: 1:399 */
+    GridDatatype subset = grid.makeSubset(null, null, new Range(31, 31), new Range(0,0), new Range(1,559), new Range(1,399));
+    assert subset != null;
+    GridCoordSystem gcs2 = subset.getCoordinateSystem();
+    assert null != gcs2;
+
+    System.out.println("result lat/lon bbox= " + gcs2.getLatLonBoundingBox());
+    System.out.println("result bbox= " + gcs2.getBoundingBox());
+
+    Array data = subset.readVolumeData(0);
+    int[] shape = data.getShape();
+    assert shape.length == 3;
+    assert shape[0] == 1;
+    assert shape[1] == 559;
+    assert shape[2] == 399;
+
 
     dataset.close();
   }

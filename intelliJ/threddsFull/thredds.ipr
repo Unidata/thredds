@@ -102,12 +102,15 @@
       <profile version="1.0" is_locked="false">
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
+        <inspection_tool class="InfiniteLoopStatement" level="WARNING" enabled="false" />
+        <inspection_tool class="TrivialIf" level="WARNING" enabled="false" />
         <inspection_tool class="EmptyFinallyBlock" level="WARNING" enabled="false" />
         <inspection_tool class="EmptyStatementBody" level="WARNING" enabled="false">
           <option name="m_reportEmptyBlocks" value="false" />
         </inspection_tool>
         <inspection_tool class="StringEquality" level="WARNING" enabled="false" />
         <inspection_tool class="StringToString" level="WARNING" enabled="false" />
+        <inspection_tool class="LoopStatementsThatDontLoop" level="WARNING" enabled="false" />
         <inspection_tool class="InfiniteRecursion" level="WARNING" enabled="false" />
         <inspection_tool class="ConstantConditions" level="WARNING" enabled="false">
           <option name="SUGGEST_NULLABLE_ANNOTATIONS" value="false" />
@@ -149,6 +152,7 @@
         <inspection_tool class="StringConstructor" level="WARNING" enabled="false">
           <option name="ignoreSubstringArguments" value="false" />
         </inspection_tool>
+        <inspection_tool class="UnnecessaryReturn" level="WARNING" enabled="false" />
         <inspection_tool class="FinalStaticMethod" level="WARNING" enabled="false" />
         <inspection_tool class="UnnecessaryUnboxing" level="WARNING" enabled="false" />
         <inspection_tool class="NoExplicitFinalizeCalls" level="WARNING" enabled="false" />
@@ -411,6 +415,7 @@
         </entry>
       </map>
     </option>
+    <option name="myVersion" value="123" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />

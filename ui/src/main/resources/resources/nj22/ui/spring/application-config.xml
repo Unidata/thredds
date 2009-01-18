@@ -27,5 +27,4 @@
     <property name="defaultDomain" value="thredds"/>
   </bean>
 
-
 </beans>

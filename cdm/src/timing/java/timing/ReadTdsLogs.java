@@ -27,6 +27,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.*;
 
 /**
@@ -37,12 +38,13 @@ import java.util.regex.*;
  */
 public class ReadTdsLogs {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ReadTdsLogs.class);
+  private static AtomicInteger reqno = new AtomicInteger(0);
 
   ///////////////////////////////////////////////////////
   // multithreading
 
   ExecutorService executor;
-  ExecutorCompletionService completionService;
+  ExecutorCompletionService<SendRequestTask> completionService;
   ArrayBlockingQueue<Future<SendRequestTask>> completionQ;
   Thread resultProcessingThread;
 
@@ -57,9 +59,9 @@ public class ReadTdsLogs {
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    executor = Executors.newFixedThreadPool(1);
+    executor = Executors.newFixedThreadPool(10); // number of threads
     completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(10); // bounded, threadsafe
-    completionService = new ExecutorCompletionService(executor, completionQ);
+    completionService = new ExecutorCompletionService<SendRequestTask>(executor, completionQ);
 
     out = new Formatter(new FileOutputStream("C:/TEMP/readTDSnew1.csv"));
     out.format("url, size, org, new, speedup, fail %n");
@@ -81,6 +83,10 @@ public class ReadTdsLogs {
     public SendRequestTask call() throws Exception {
       long start = System.nanoTime();
 
+      int rnum = reqno.incrementAndGet();
+      if (rnum % 100 == 0)
+        System.out.println(rnum+" request= "+log);
+      
       try {
         IO.copyUrlB(server + log.path, null, 10 * 1000); // read data and throw away
 
@@ -269,39 +275,57 @@ public class ReadTdsLogs {
   }
 
 
+  static private int total_submit = 0;
   void sendRequests(String filename, int max) throws IOException {
-    int count = 0;
-    long expected = 0;
-    long actual = 0;
+    int submit = 0;
+    long skip = 0;
+    long total = 0;
 
     InputStream ios = new FileInputStream(filename);
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
-    while ((max < 0) || (count < max)) {
+    while ((max < 0) || (submit < max)) {
       String line = dataIS.readLine();
       if (line == null) break;
       Log log = parseLine(regPattern, line);
       if (log == null) continue;
+      total++;
 
       if (log.verb.equals("POST")) {
-        System.out.println(" *** skip POST " + log);
+        skip++;
+        // System.out.println(" *** skip POST " + log);
+        continue;
+      }
+
+      /* if (!(log.path.indexOf("wcs") > 0))  {    // wcs only
+        // System.out.println(" *** skip fmrc " + log);
+        skip++;
+        continue;
+      } */
+
+      if (log.path.indexOf("fileServer") > 0)  {
+        // System.out.println(" *** skip fmrc " + log);
+        skip++;
+        continue;
+      }
+
+      if (log.path.indexOf("fmrc") > 0)  {
+        // System.out.println(" *** skip fmrc " + log);
+        skip++;
         continue;
       }
 
       if (log.returnCode != 200) {
-        System.out.println(" *** skip failure " + log);
+        skip++;
+        // System.out.println(" *** skip failure " + log);
         continue;
       }
 
-      /* if (log.path.indexOf("fmrc") > 0)  {
-        System.out.println(" *** skip fmrc " + log);
-        continue;
-      } */
-
       completionService.submit(new SendRequestTask(log));
-      count++;
+      submit++;
     }
     ios.close();
-    System.out.println("total requests= " + count);
+    System.out.println("total requests= " +total+ " skip= "+skip + " submit = "+submit);
+    total_submit += submit;
   }
 
   ////////////////////////////////////////////////////////
@@ -569,7 +593,7 @@ public class ReadTdsLogs {
     // */
 
     // sendRequests
-    final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:8081");
+    final ReadTdsLogs reader = new ReadTdsLogs("http://motherlode.ucar.edu:9080");
 
     long startElapsed = System.nanoTime();
 
@@ -578,6 +602,7 @@ public class ReadTdsLogs {
         reader.sendRequests(filename, -1);
       }
     });
+    System.out.println("total_submit= "+total_submit);
     reader.exit(10 * 3600);
 
     long elapsedTime = System.nanoTime() - startElapsed;

@@ -778,8 +778,11 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   }
 
   public void close() throws java.io.IOException {
-    raf.setMinLength(fileUsed);
-    raf.close();
+    if (raf != null) {
+      raf.setMinLength(fileUsed);
+      raf.close();
+    }
+    raf = null;
   }
 
   /**

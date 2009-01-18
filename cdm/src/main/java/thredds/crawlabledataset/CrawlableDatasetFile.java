@@ -1,11 +1,7 @@
 package thredds.crawlabledataset;
 
-import ucar.unidata.util.StringUtil;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -31,8 +27,8 @@ public class CrawlableDatasetFile implements CrawlableDataset
   //private static Log log = LogFactory.getLog( CrawlableDatasetFile.class );
 
   private final File file;
-  private final String path;
-  private final String name;
+  //private final String path;
+  //private final String name;
 
   private final Object configObj;
 
@@ -70,8 +66,8 @@ public class CrawlableDatasetFile implements CrawlableDataset
       file = new File( path );
     // }
 
-    this.path = this.normalizePath( this.file.getPath() );
-    this.name = this.file.getName();
+    //this.path = this.normalizePath( this.file.getPath() );
+    //this.name = this.file.getName();
 
     if ( configObj != null )
     {
@@ -85,8 +81,8 @@ public class CrawlableDatasetFile implements CrawlableDataset
   private CrawlableDatasetFile( CrawlableDatasetFile parent, String childPath )
   {
     this.file = new File( parent.getFile(), childPath);
-    this.path = this.normalizePath( this.file.getPath());
-    this.name = this.file.getName();
+    //this.path = this.normalizePath( this.file.getPath());
+    // this.name = this.file.getName();
 
     this.configObj = null;
   }
@@ -94,8 +90,8 @@ public class CrawlableDatasetFile implements CrawlableDataset
   public CrawlableDatasetFile( File file )
   {
     this.file = file;
-    this.path = this.normalizePath( this.file.getPath() );
-    this.name = this.file.getName();
+    // this.path = this.normalizePath( this.file.getPath() );
+    // this.name = this.file.getName();
     this.configObj = null;
   }
 
@@ -143,12 +139,12 @@ public class CrawlableDatasetFile implements CrawlableDataset
 
   public String getPath()
   {
-    return( this.path);
+    return normalizePath( this.file.getPath());
   }
 
   public String getName()
   {
-    return( this.name);
+    return this.file.getName();
   }
 
   public boolean exists()
@@ -241,6 +237,6 @@ public class CrawlableDatasetFile implements CrawlableDataset
 
   public String toString()
   {
-    return this.path;
+    return getPath();
   }
 }

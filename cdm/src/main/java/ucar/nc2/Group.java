@@ -46,15 +46,25 @@ public class Group {
   protected List<EnumTypedef> enumTypedefs = new ArrayList<EnumTypedef>();
   private boolean immutable = false;
 
-   /**
-    * Get the full name, starting from the root Group.
-    * @return group full name
-    */
+  /**
+   * Get the full name, starting from the root Group.
+   *
+   * @return group full name
+   */
   public String getName() {
     return (parent == null) || (parent == ncfile.getRootGroup()) ? shortName : parent.getName() + "/" + shortName;
   }
 
-   /** Get the "short" name, unique within its parent Group.
+  /**
+   * Is this the root group?
+   *
+   * @return true if root group
+   */
+  public boolean isRoot() {
+    return parent == null;
+  }
+
+  /** Get the "short" name, unique within its parent Group.
     * @return group short name
     */
   public String getShortName() { return shortName; }

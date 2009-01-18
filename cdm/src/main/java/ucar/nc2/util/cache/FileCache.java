@@ -320,7 +320,7 @@ public class FileCache {
       cache.clear(); // deletes everything from the cache
       deleteList.addAll(files.values());  // add everything to the delete list
       files.clear();
-      counter.set(0);
+      // counter.set(0);
 
     } else {
 
@@ -380,6 +380,23 @@ public class FileCache {
     for (CacheElement.CacheFile file : allFiles) {
       format.format("  %s\n", file);
     }
+  }
+
+  public List<String> showCache() {
+    ArrayList<CacheElement.CacheFile> allFiles = new ArrayList<CacheElement.CacheFile>(counter.get());
+    for (CacheElement elem : cache.values()) {
+      synchronized (elem) {
+        allFiles.addAll(elem.list);
+      }
+    }
+    Collections.sort(allFiles); // sort so oldest are on top
+
+    ArrayList<String> result = new ArrayList<String>(allFiles.size());
+    for (CacheElement.CacheFile file : allFiles) {
+      result.add( file.toString());
+    }
+
+    return result;
   }
 
   /**

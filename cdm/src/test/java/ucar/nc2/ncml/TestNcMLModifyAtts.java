@@ -17,10 +17,9 @@ public class TestNcMLModifyAtts extends TestCase {
     super(name);
   }
 
-  static NetcdfFile ncfile = null;
+  NetcdfFile ncfile = null;
 
   public void setUp() {
-    if (ncfile != null) return;
     String filename = "file:"+TestNcML.topDir + "modifyAtts.xml";
 
     try {

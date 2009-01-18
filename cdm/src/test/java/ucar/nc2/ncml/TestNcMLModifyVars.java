@@ -16,10 +16,9 @@ public class TestNcMLModifyVars extends TestCase {
     super(name);
   }
 
-  static NetcdfFile ncfile = null;
+  NetcdfFile ncfile = null;
 
   public void setUp() {
-    if (ncfile != null) return;
     String filename = "file:"+TestNcML.topDir + "modifyVars.xml";
 
     try {

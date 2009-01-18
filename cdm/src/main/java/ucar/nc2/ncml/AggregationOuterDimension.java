@@ -378,7 +378,8 @@ public abstract class AggregationOuterDimension extends Aggregation {
     Object spObj = mainv.getSPobject();
     if (spObj != null && spObj instanceof CacheVar) {
       CacheVar pv = (CacheVar) spObj;
-      return pv.read(mainv.getShapeAsSection(), cancelTask);
+      // return pv.read(mainv.getShapeAsSection(), cancelTask);
+      return pv.read(section, cancelTask);
     }
 
     // the case of the agg coordinate var
@@ -396,7 +397,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
     if (debug) System.out.println("   agg wants range=" + mainv.getName() + "(" + joinRange + ")");
 
-    // make concurrent
+    // LOOK: could multithread here
     List<Dataset> nestedDatasets = getDatasets();
     for (Dataset nested : nestedDatasets) {
       DatasetOuterDimension dod = (DatasetOuterDimension) nested;
@@ -847,8 +848,18 @@ public abstract class AggregationOuterDimension extends Aggregation {
           continue;
 
         Array varData = read(dod);
-        if ((innerSection != null) && (varData.getSize() != innerSection.computeSize())) // do we need to subset the data array ?
+
+        // which subset do we want?
+        // bit tricky - assume returned array's rank depends on type LOOK is this true?
+        if ( ((type == Type.joinNew) || (type == Type.forecastModelRunCollection)) &&
+            ((innerSection != null) && (varData.getSize() != innerSection.computeSize()))) {
           varData = varData.section(innerSection.getRanges());
+
+        } else if (varData.getSize() != nestedJoinRange.length()) {
+          List<Range> nestedSection = new ArrayList<Range>(ranges); // make copy
+          nestedSection.set(0, nestedJoinRange);
+          varData = varData.section( nestedSection);
+        }
 
         // may not know the data until now
         if (dtype == null)
@@ -876,7 +887,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       return dataMap.get(dset.getId());
     }
 
-    // get the Array of data for this var in this dataset, acquire file
+    // get the Array of data for this var in this dataset, use cache else acquire file and read
     protected Array read(DatasetOuterDimension dset) throws IOException {
 
       Array data = getData(dset);

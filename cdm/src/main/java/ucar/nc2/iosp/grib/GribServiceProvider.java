@@ -379,12 +379,12 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
 
     // otherwise read it
     float[] data;
-    try {
+    //try {
       data = _readData(record.offset1, record.offset2, record.decimalScale, record.bmsExists);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return;
-    }
+    //} catch (Exception e) {
+    //  e.printStackTrace();
+    //  return;
+    //}
 
     for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
       for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {

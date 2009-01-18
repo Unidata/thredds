@@ -681,6 +681,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       try {
         if ((null != spi) && !isClosed) spi.close();
       } finally {
+        spi = null;
         isClosed = true;
       }
     }
@@ -1478,6 +1479,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   static protected String makeFullName(Group parent, Variable v) {
+    // common case
+    if (((parent == null) || parent.isRoot()) && !v.isMemberOfStructure()) return v.getShortName();
+
     StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent);
     appendStructureName(sbuff, v);
@@ -1688,15 +1692,20 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return spi;
   }
 
-  // "safety net" use of finalize cf Bloch p 22
+  /* "safety net" use of finalize cf Bloch p 22
   // this will not be called if the file is in the cache, since it wont get GC'd
   protected void finalize() throws Throwable {
-    try {
-      if (!isClosed) close();
-    } finally {
-      super.finalize();
+    if (!isClosed) {
+      try {
+        log.warn("NetcdfFile.finalizer called on "+location);
+        if (null != spi) spi.close();
+        spi = null;
+      } finally {
+        super.finalize();
+      }
+      isClosed = true;
     }
-  }
+  } */
 
   //////////////////////////////////////////////////////////
 
