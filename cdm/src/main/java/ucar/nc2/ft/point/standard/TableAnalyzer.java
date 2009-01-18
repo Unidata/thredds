@@ -47,7 +47,7 @@ public class TableAnalyzer {
 
   // search in the order added
   static {
-    registerAnalyzer("CF-1", CFpointObs.class, new ConventionNameOk() {
+    registerAnalyzer("CF-1.", CFpointObs.class, new ConventionNameOk() {
       public boolean isMatch(String convName, String wantName) {
         return convName.startsWith(wantName);
       }

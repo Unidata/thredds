@@ -91,50 +91,55 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static public final String resourcesDir = "resources/nj22/coords/"; // resource path
   static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordSysBuilder.class);
 
-  static private Map<String, Class> conventionHash = new HashMap<String, Class>();
+  // static private Map<String, Class> conventionHash = new HashMap<String, Class>();
   static private List<Convention> conventionList = new ArrayList<Convention>();
   static private Map<String, String> ncmlHash = new HashMap<String, String>();
   static private boolean useMaximalCoordSys = true;
   static private boolean userMode = false;
 
+  static public interface ConventionNameOk {
+    boolean isMatch(String convName, String wantName);
+  }
+
   // search in the order added
   static { // wont get loaded unless explicitly called
-    registerConvention(_Coordinate.Convention, CoordSysBuilder.class);
+    registerConvention(_Coordinate.Convention, CoordSysBuilder.class, null);
 
-    registerConvention("CF-1.0", CF1Convention.class);
-    registerConvention("CF-1.1", CF1Convention.class);
-    registerConvention("CF-1.2", CF1Convention.class);
-    registerConvention("CF-1.3", CF1Convention.class);
+    registerConvention("CF-1.", CF1Convention.class, new ConventionNameOk() {
+      public boolean isMatch(String convName, String wantName) {
+        return convName.startsWith(wantName);
+      }
+    });
 
-    registerConvention("COARDS", COARDSConvention.class);
-    registerConvention("NCAR-CSM", CSMConvention.class);
-    registerConvention("Unidata Observation Dataset v1.0", UnidataObsConvention.class);
-    registerConvention("GDV", GDVConvention.class);
+    registerConvention("COARDS", COARDSConvention.class, null);
+    registerConvention("NCAR-CSM", CSMConvention.class, null);
+    registerConvention("Unidata Observation Dataset v1.0", UnidataObsConvention.class, null);
+    registerConvention("GDV", GDVConvention.class, null);
 
-    registerConvention("ATDRadar", ATDRadarConvention.class);
-    registerConvention("Zebra", ZebraConvention.class);
-    registerConvention("GIEF/GIEF-F", GIEFConvention.class);
-    registerConvention("IRIDL", IridlConvention.class);
+    registerConvention("ATDRadar", ATDRadarConvention.class, null);
+    registerConvention("Zebra", ZebraConvention.class, null);
+    registerConvention("GIEF/GIEF-F", GIEFConvention.class, null);
+    registerConvention("IRIDL", IridlConvention.class, null);
 
     // the uglies
-    registerConvention("NUWG", NUWGConvention.class);
-    registerConvention("AWIPS", AWIPSConvention.class);
-    registerConvention("AWIPS-Sat", AWIPSsatConvention.class);
-    registerConvention("WRF", WRFConvention.class);
+    registerConvention("NUWG", NUWGConvention.class, null);
+    registerConvention("AWIPS", AWIPSConvention.class, null);
+    registerConvention("AWIPS-Sat", AWIPSsatConvention.class, null);
+    registerConvention("WRF", WRFConvention.class, null);
 
-    registerConvention("M3IOVGGrid", M3IOVGGridConvention.class);
-    registerConvention("M3IO", M3IOConvention.class);
-    registerConvention("IFPS", IFPSConvention.class);
-    registerConvention("ARPS/ADAS", ADASConvention.class);
+    registerConvention("M3IOVGGrid", M3IOVGGridConvention.class, null);
+    registerConvention("M3IO", M3IOConvention.class, null);
+    registerConvention("IFPS", IFPSConvention.class, null);
+    registerConvention("ARPS/ADAS", ADASConvention.class, null);
 
     // point data
-    registerConvention("MADIS surface observations, v1.0", MADISStation.class);
-    registerConvention("epic-insitu-1.0", EpicInsitu.class);
-    registerConvention("NCAR-RAF/nimbus", Nimbus.class);
+    registerConvention("MADIS surface observations, v1.0", MADISStation.class, null);
+    registerConvention("epic-insitu-1.0", EpicInsitu.class, null);
+    registerConvention("NCAR-RAF/nimbus", Nimbus.class, null);
 
     // new
-    registerConvention("NSSL National Reflectivity Mosaic", NsslRadarMosaicConvention.class);
-    registerConvention("FslWindProfiler", FslWindProfiler.class);
+    registerConvention("NSSL National Reflectivity Mosaic", NsslRadarMosaicConvention.class, null);
+    registerConvention("FslWindProfiler", FslWindProfiler.class, null);
 
     // further calls to registerConvention are by the user
     userMode = true;
@@ -158,9 +163,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param conventionName name of Convention.
    *                       This name will be used to look in the "Conventions" global attribute.
    *                       Otherwise, you must implement the isMine() static method.
+   * @param match          pass in your own matcher. if null, equalsIgnoreCase() will be used.
    * @param c              implementation of CoordSysBuilderIF that parses those kinds of netcdf files.
    */
-  static public void registerConvention(String conventionName, Class c) {
+  static public void registerConvention(String conventionName, Class c, ConventionNameOk match) {
     if (!(CoordSysBuilderIF.class.isAssignableFrom(c)))
       throw new IllegalArgumentException("CoordSysBuilderIF Class " + c.getName() + " must implement CoordSysBuilderIF");
 
@@ -175,12 +181,20 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     // user stuff gets put at top
     if (userMode)
-      conventionList.add(0, new Convention(conventionName, c));
+      conventionList.add(0, new Convention(conventionName, c, match));
     else
-      conventionList.add(new Convention(conventionName, c));
+      conventionList.add(new Convention(conventionName, c, match));
 
     // user stuff will override here
-    conventionHash.put(conventionName, c);
+    // conventionHash.put(conventionName, c);
+  }
+
+   static private Class matchConvention(String convName) {
+    for (Convention c : conventionList) {
+      if ((c.match == null) && c.convName.equalsIgnoreCase(convName)) return c.convClass;
+      if ((c.match != null) && c.match.isMatch(convName, c.convName)) return c.convClass;
+    }
+    return null;
   }
 
   /**
@@ -194,7 +208,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    */
   static public void registerConvention(String conventionName, String className) throws ClassNotFoundException {
     Class c = Class.forName(className);
-    registerConvention(conventionName, c);
+    registerConvention(conventionName, c, null);
   }
 
   /**
@@ -250,7 +264,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     Class convClass = null;
     if (convName != null) {
       // now look for Convention parsing class
-      convClass = conventionHash.get(convName);
+      convClass = matchConvention(convName);
 
       // now look for comma or semicolon or / delimited list
       if (convClass == null) {
@@ -344,10 +358,12 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static private class Convention {
     String convName;
     Class convClass;
+    ConventionNameOk match;
 
-    Convention(String convName, Class convClass) {
+    Convention(String convName, Class convClass, ConventionNameOk match) {
       this.convName = convName;
       this.convClass = convClass;
+      this.match = match;
     }
   }
 
