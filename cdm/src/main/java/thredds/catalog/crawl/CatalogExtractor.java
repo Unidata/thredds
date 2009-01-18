@@ -49,7 +49,7 @@ import thredds.catalog.*;
  */
 
 public class CatalogExtractor implements CatalogCrawler.Listener {
-  private boolean verbose = false;
+  private boolean verbose = true;
 
   private InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
   private ThreddsDataFactory tdataFactory = new ThreddsDataFactory();

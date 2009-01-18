@@ -252,9 +252,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    */
   EnumSet<NetcdfDataset.Enhance> getEnhanceMode() { return enhanceMode; }
 
-  public boolean isCoordinateVariable() {
-    return (this instanceof CoordinateAxis) || super.isCoordinateVariable();
-  }
+  //public boolean isCoordinateVariable() {
+  //  return (this instanceof CoordinateAxis) || super.isCoordinateVariable();
+  //}
 
   // Enhancements interface
 

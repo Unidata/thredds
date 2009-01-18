@@ -31,7 +31,6 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.io.*;
 
-import ucar.nc2.units.DateFromString;
 import org.jdom.Element;
 import thredds.crawlabledataset.CrawlableDataset;
 
@@ -142,7 +141,7 @@ public abstract class Aggregation implements ProxyReader {
   protected String dateFormatMark;
   protected EnumSet<NetcdfDataset.Enhance> enhance = null; // default no enhancement
   protected boolean isDate = false;
-  protected DateFormatter formatter = new DateFormatter();
+  protected DateFormatter dateFormatter = new DateFormatter();
 
 
   /**
@@ -240,6 +239,14 @@ public abstract class Aggregation implements ProxyReader {
 
   protected void closeDatasets() throws IOException {
     datasets = null;
+  }
+
+  public void getDetailInfo(Formatter f) {
+    f.format("  Type=%s%n", type);
+    f.format("  dimName=%s%n", dimName);
+    f.format("  Datasets%n");
+    for (Dataset ds : datasets)
+      ds.show(f);
   }
 
   /**
@@ -561,9 +568,9 @@ public abstract class Aggregation implements ProxyReader {
     protected void cacheVariables(NetcdfFile ncfile) throws IOException {
     }
 
-    //protected void setExtraInfo(Object extraInfo) {
-    //  this.extraInfo = extraInfo;
-    //}
+    public void show(Formatter f) {
+      f.format("   %s%n", location);
+    }
 
     protected Array read(Variable mainv, CancelTask cancelTask) throws IOException {
       NetcdfFile ncd = null;

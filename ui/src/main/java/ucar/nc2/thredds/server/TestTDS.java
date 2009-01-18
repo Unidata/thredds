@@ -12,6 +12,9 @@ import thredds.catalog.crawl.CatalogCrawler;
 
 import javax.swing.*;
 
+/**
+ * Test reading datasets from some catalog
+ */
 public class TestTDS implements Runnable {
   private String catUrl;
   private int type;
@@ -54,7 +57,8 @@ public class TestTDS implements Runnable {
 
   public static JPanel main;
   public static void main(String args[]) throws IOException {
-    String server = "http://motherlode.ucar.edu:9080/thredds";
+    //String server = "http://motherlode.ucar.edu:9080/thredds";
+    String server = "http://localhost:8080/thredds/";
 
     // HEY LOOK
     //ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( true);
@@ -69,32 +73,15 @@ public class TestTDS implements Runnable {
     main = new JPanel();
     main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    TestTDS models = new TestTDS("models", server+"/idd/models.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-
-    /* TestTDS dgex_model = new TestTDS("dgex_model", server+"/idd/dgex_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-    TestTDS gfs_model = new TestTDS("gfs_model", server+"/idd/gfs_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-    TestTDS nam_model = new TestTDS("nam_model", server+"/idd/nam_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-    TestTDS ruc_model = new TestTDS("ruc_model", server+"/idd/ruc_model.xml", CatalogCrawler.USE_RANDOM_DIRECT);
-    TestTDS ndfd_model = new TestTDS("ndfd_model", server+"/idd/ndfd_model.xml", CatalogCrawler.USE_RANDOM_DIRECT); */ // */
-
-    //TestTDS radar2 = new TestTDS("radar2", "http://motherlode.ucar.edu:8080/thredds/idd/nexrad/level2/catalog.xml", CatalogCrawler.USE_RANDOM);
-    //TestTDS radar3 = new TestTDS("radar3", "http://motherlode.ucar.edu:8080/thredds/idd/nexrad/level3/catalog.xml", CatalogCrawler.USE_RANDOM);
+    // TestTDS models = new TestTDS("models", server+"/idd/models.xml", CatalogCrawler.USE_RANDOM_DIRECT);
+    TestTDS fmrc = new TestTDS("fmrc", server+"catalog/fmrc/namExtract/catalog.xml", CatalogCrawler.USE_ALL_DIRECT);
 
     frame.getContentPane().add(main);
     frame.pack();
     frame.setLocation(40, 300);
     frame.setVisible(true);
 
-    /*
-    new Thread( dgex_model).start();
-    new Thread( gfs_model).start();
-    new Thread( nam_model).start();
-    new Thread( ruc_model).start();
-    new Thread( ndfd_model).start(); // */
-    new Thread( models).start(); //
-
-    //new Thread( modelsNc).start();
-
+    new Thread( fmrc).start(); //
   }
 
 }

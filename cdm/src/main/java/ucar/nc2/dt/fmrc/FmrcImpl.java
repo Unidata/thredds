@@ -32,6 +32,7 @@ import ucar.ma2.*;
 
 import java.util.*;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * ForecastModelRunCollection implementation.
@@ -785,7 +786,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     NetcdfDataset fmrcd = fmrc.getFmrcDataset();
     Variable time = fmrcd.findVariable(timeVarName);
     Array data = time.read();
-    NCdump.printArray(data, "2D time", System.out, null);
+    NCdumpW.printArray(data, "2D time", new PrintWriter( System.out), null);
 
     for (Gridset gridset : fmrc.gridsets) {
       System.out.println("===========================");
@@ -800,7 +801,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     NetcdfDataset fmrcd = fmrc.getFmrcDataset();
     Variable time = fmrcd.findVariable(timeVarName);
     Array data = time.read();
-    NCdump.printArray(data, "2D time", System.out, null);
+    NCdumpW.printArray(data, "2D time", new PrintWriter( System.out), null);
 
     for (Gridset gridset : fmrc.gridsets) {
       System.out.println("===========================");
@@ -812,7 +813,7 @@ public class FmrcImpl implements ForecastModelRunCollection {
     if (changed) {
       System.out.println("========== Sync =================");
       data = time.read();
-      NCdump.printArray(data, "2D time", System.out, null);
+      NCdumpW.printArray(data, "2D time", new PrintWriter( System.out), null);
       for (Gridset gridset : fmrc.gridsets) {
         System.out.println("===========================");
         gridset.dump();

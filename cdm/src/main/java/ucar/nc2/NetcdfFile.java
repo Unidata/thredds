@@ -1666,19 +1666,18 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return debug / underlying implementation details
    */
   public String getDetailInfo() {
-    StringBuilder sbuff = new StringBuilder(5000);
-    sbuff.append("NetcdfFile location= ").append(getLocation()).append("\n");
-    sbuff.append("  title= ").append(getTitle()).append("\n");
-    sbuff.append("  id= ").append(getId()).append("\n");
+    Formatter f = new Formatter();
+    f.format("NetcdfFile location= %s%n", getLocation());
+    f.format("  title= %s%n",getTitle());
+    f.format("  id= %s%n",getId());
 
     if (spi == null) {
-      sbuff.append("  has no IOSP\n");
+      f.format("  has no IOSP%n");
     } else {
-      sbuff.append("  iosp= ").append(spi.getClass().getName()).append("\n\n");
-      sbuff.append( spi.getDetailInfo());
+      f.format("  iosp= %s%n%n", spi.getClass());
+      f.format( spi.getDetailInfo());
     }
-
-    return sbuff.toString();
+    return f.toString();
   }
 
   /**

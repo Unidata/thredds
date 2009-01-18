@@ -78,6 +78,13 @@ public class AggregationFmrc extends AggregationOuterDimension {
   }
 
   @Override
+  public void getDetailInfo(Formatter f) {
+    super.getDetailInfo(f);
+    if (fmrcDefinition != null)
+      f.format("  fmrcDefinition=%s%n", fmrcDefinition);
+  }
+
+  @Override
   protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
     // LOOK - should cache the GridDataset directly    
     // open a "typical"  nested dataset and copy it to newds
@@ -149,6 +156,8 @@ public class AggregationFmrc extends AggregationOuterDimension {
     // promote all grid variables to agg variables
     for (GridDatatype grid : typicalGds.getGrids()) {
       Variable v = (Variable) grid.getVariable();
+      if ((v instanceof CoordinateAxis) && !aggVarNames.contains(v.getName())) // skip coordinates unless explicit
+          continue;
 
       // add new dimension
       String dims = dimName + " " + v.getDimensionsString();
@@ -223,7 +232,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
         DatasetOuterDimension firstDataset = (DatasetOuterDimension) nestedDatasets.get(0);
         Date baseDate = firstDataset.getCoordValueDate();
-        String units = "hours since " + formatter.toDateTimeStringISO(baseDate);
+        String units = "hours since " + dateFormatter.toDateTimeStringISO(baseDate);
 
         VariableDS timeCoord = (VariableDS) ncDataset.findVariable(timeDimName);
         timeCoord.resetDimensions();
@@ -306,7 +315,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       DatasetOuterDimension firstDataset = (DatasetOuterDimension) nestedDatasets.get(0);
       Date baseDate = firstDataset.getCoordValueDate();
       String desc = "Coordinate variable for " + timeDimName + " dimension";
-      String units = "hours since " + formatter.toDateTimeStringISO(baseDate);
+      String units = "hours since " + dateFormatter.toDateTimeStringISO(baseDate);
 
       String dims = getDimensionName() + " " + timeDimName;
       Variable newV = new VariableDS(ncDataset, null, null, timeDimName, DataType.DOUBLE, dims, desc, units);
@@ -564,7 +573,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
         Date[] dates = dateList.get(i);
         for (int j = 0; j < dates.length; j++) {
           Date date = dates[j];
-          timeCoordVals.setObject(ima.set(i, j), formatter.toDateTimeStringISO(date));
+          timeCoordVals.setObject(ima.set(i, j), dateFormatter.toDateTimeStringISO(date));
         }
       }
 

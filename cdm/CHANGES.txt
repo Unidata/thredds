@@ -47,6 +47,11 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
+  30:
+    remove VariableDS.isCoordinateVariable() - must use classic sense of coordinate variable
+    add Aggegation info to NetcdfDataset.getDetailInfo()
+    refactor NcML Aggregation
+    MetadataExtractor.extractDateRange() - deal with no time axis at all.
   29: Rotated Lat/lon projection
     JoinExisting caching now handles nested aggregations, by using the id attribute to identify them.
     GridDataset, RadialDataset: use Formatter instead of StringBuilder

@@ -23,6 +23,7 @@ package ucar.nc2.ncml;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.DatasetConstructor;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
@@ -78,7 +79,7 @@ public class AggregationNew extends AggregationOuterDimension {
     // So this isnt that general of a solution. But probably better than nothing
     if (aggVarNames.size() == 0) {
       for (Variable v : typical.getVariables()) {
-        if (!v.isCoordinateVariable())
+        if (!(v instanceof CoordinateAxis))
           aggVarNames.add(v.getShortName());
       }
     }

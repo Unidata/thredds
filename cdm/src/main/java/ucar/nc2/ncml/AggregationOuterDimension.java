@@ -43,10 +43,10 @@ public abstract class AggregationOuterDimension extends Aggregation {
   static protected boolean debugCache = false, debugInvocation = false;
   static public int invocation = 0;  // debugging
 
-  protected List<VariableDS> aggVars = new ArrayList<VariableDS>();
+  protected List<String> aggVarNames = new ArrayList<String>(); // explicitly specified in the NcML
+  protected List<VariableDS> aggVars = new ArrayList<VariableDS>(); // actual vars that will be aggregated
   private int totalCoords = 0;  // the aggregation dimension size
 
-  protected List<String> aggVarNames = new ArrayList<String>(); // joinNew
   protected List<CacheVar> cacheList = new ArrayList<CacheVar>(); // promote global attribute to variable
   protected boolean timeUnitsChange = false;
 
@@ -122,13 +122,30 @@ public abstract class AggregationOuterDimension extends Aggregation {
     return null;
   }
 
-  /**
-   * Get dimension name to join on
-   *
-   * @return dimension name or null if type union/tiled
-   */
-  public String getDimensionName() {
-    return dimName;
+  @Override
+  public void getDetailInfo(Formatter f) {
+    super.getDetailInfo(f);
+    f.format("  timeUnitsChange=%s%n", timeUnitsChange);
+    f.format("  totalCoords=%d%n", totalCoords);
+
+    if (aggVarNames.size() > 0) {
+      f.format("  Aggregation Variables specified in NcML%n");
+      for (String vname : aggVarNames)
+        f.format("   %s%n", vname);
+    }
+
+    f.format("  Aggregation Variables%n");
+    for (VariableDS vds : aggVars) {
+      f.format("   ");
+      vds.getNameAndDimensions(f, true, false);
+      f.format("%n");
+    }
+
+    if (cacheList.size() > 0) {
+      f.format("  Cache Variables%n");
+      for (CacheVar cv : cacheList)
+        f.format("   %s%n", cv);
+    }
   }
 
 
@@ -587,7 +604,7 @@ public abstract class AggregationOuterDimension extends Aggregation {
       if (null != dateFormatMark) {
         String filename = cd.getName(); // LOOK operates on name, not path
         coordValueDate = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
-        coordValue = formatter.toDateTimeStringISO( coordValueDate);
+        coordValue = dateFormatter.toDateTimeStringISO( coordValueDate);
         if (debugDateParse) System.out.println("  adding " + cd.getPath() + " date= " + coordValue);
       } else {
         if (debugDateParse) System.out.println("  adding " + cd.getPath());
@@ -612,6 +629,15 @@ public abstract class AggregationOuterDimension extends Aggregation {
      */
     public Date getCoordValueDate() {
       return coordValueDate;
+    }
+
+    public void show(Formatter f) {
+      f.format("   %s", location);
+      if (coordValue != null)
+        f.format(" coordValue='%s'", coordValue);
+      if (coordValueDate != null)
+        f.format(" coordValueDate='%s'", dateFormatter.toDateTimeString(coordValueDate));
+      f.format(" range=[%d:%d) (%d)%n", aggStart, aggEnd, ncoord);
     }
 
     /**
@@ -779,6 +805,10 @@ public abstract class AggregationOuterDimension extends Aggregation {
 
       if (varName == null)
         throw new IllegalArgumentException("Missing variable name on cache var");
+    }
+
+    public String toString() {
+      return varName;
     }
 
     // clear out old stuff from the Hash, so it doesnt grow forever

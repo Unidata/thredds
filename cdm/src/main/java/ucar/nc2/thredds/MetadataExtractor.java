@@ -231,6 +231,9 @@ public class MetadataExtractor {
         dateRange = time1D.getDateRange();
       } else {
         CoordinateAxis time = gsys.getTimeAxis();
+        if (time1D == null)
+          continue;
+        
         try {
           DateUnit du = new DateUnit( time.getUnitsString());
           Date minDate = du.makeDate(time.getMinValue());

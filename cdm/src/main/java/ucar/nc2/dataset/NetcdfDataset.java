@@ -1241,19 +1241,26 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Show debug / underlying implementation details
    */
   public String getDetailInfo() {
-    StringBuilder sbuff = new StringBuilder(5000);
-    sbuff.append("NetcdfDataset location= ").append(getLocation()).append("\n");
-    sbuff.append("  title= ").append(getTitle()).append("\n");
-    sbuff.append("  id= ").append(getId()).append("\n");
+    Formatter f = new Formatter();
+    f.format("NetcdfDataset location= %s%n", getLocation());
+    f.format("  title= %s%n",getTitle());
+    f.format("  id= %s%n",getId());
 
     if (orgFile == null) {
-      sbuff.append("  has no referenced NetcdfFile!\n");
+      f.format("  has no referenced NetcdfFile%n");
     } else {
-      sbuff.append("\nReferenced File:\n");
-      sbuff.append(orgFile.getDetailInfo());
+      f.format("%nReferenced File:%n");
+      f.format(orgFile.getDetailInfo());
     }
 
-    return sbuff.toString();
+    if (agg == null) {
+      f.format("  has no Aggregation element%n");
+    } else {
+      f.format("%nAggregation:%n");
+      agg.getDetailInfo(f);
+    }
+
+    return f.toString();
   }
 
   /*

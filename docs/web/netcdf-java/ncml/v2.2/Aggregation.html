@@ -10,12 +10,12 @@
 <p>Multiple NetCDF files 
   can be aggregated into a single, logical NetCDF dataset. This is done with the <em><strong>aggregation</strong></em> NcML element. There are several types of aggregation:</p>
 <ol>
-  <li><strong>Union</strong>: The union of all the dimensions, attributes, and variables in multiple NetCDF files.</li>
-  <li><strong>JoinExisting</strong>: Variables of the same name (in different files) are connected  along their existing, outer dimension, called the <em>aggregation dimension</em>. A coordinate variable must exist for the dimension.</li>
-  <li><strong>JoinNew</strong>: Variables of the same name (in different files) are connected  along a new outer dimension. Each file becomes one . A new coordinate variable is created for the dimension. </li>
+  <li><strong><a href="#Union">Union</a></strong>: The union of all the dimensions, attributes, and variables in multiple NetCDF files.</li>
+  <li><strong><a href="#joinExisting">JoinExisting</a></strong>: Variables of the same name (in different files) are connected  along their existing, outer dimension, called the <em>aggregation dimension</em>. A coordinate variable must exist for the dimension.</li>
+  <li><strong><a href="#joinNew">JoinNew</a></strong>: Variables of the same name (in different files) are connected  along a new outer dimension. Each file becomes one . A new coordinate variable is created for the dimension. </li>
 </ol>
 <p>See also: <a href="AnnotatedSchema.html">Annotated NcML Schema</a> </p>
-<h2>Union of NetCDF files</h2>
+<h2>Union<a name="Union"></a> of NetCDF files</h2>
 <p>The following NcML constructs a dataset by creating the union of two netCDF files (note there is no <em>location</em> attribute in the outer netcdf element).</p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;<strong>aggregation</strong> type=&quot;<strong>union</strong>&quot;&gt;    

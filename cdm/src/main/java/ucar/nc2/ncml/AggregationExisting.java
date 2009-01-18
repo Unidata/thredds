@@ -192,7 +192,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     if (timeAxis.getDataType() == DataType.STRING) {
 
       for (Date date : dateList) {
-        ii.setObjectNext(formatter.toDateTimeStringISO(date));
+        ii.setObjectNext(dateFormatter.toDateTimeStringISO(date));
       }
 
     } else {

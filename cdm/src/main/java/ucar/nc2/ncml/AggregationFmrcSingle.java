@@ -94,6 +94,17 @@ public class AggregationFmrcSingle extends AggregationFmrc {
   }
 
   @Override
+  public void getDetailInfo(Formatter f) {
+    super.getDetailInfo(f);
+    if (runMatcher != null)
+      f.format("  runMatcher=%s%n", runMatcher);
+    if (forecastMatcher != null)
+      f.format("  forecastMatcher=%s%n", forecastMatcher);
+    if (offsetMatcher != null)
+      f.format("  offsetMatcher=%s%n", offsetMatcher);
+  }
+
+  @Override
   protected void buildNetcdfDataset(CancelTask cancelTask) throws IOException {
     buildNetcdfDataset(typicalDataset, typicalFile, typicalGridDataset, cancelTask);
   }
@@ -116,8 +127,9 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       }
       runDatasets.add(ds);
 
-      if (debug) System.out.println("  adding " + cd.getPath() + " forecast date= " + ds.coordValue + "(" + ds.coordValueDate + ")"
-            + " run date= " + formatter.toDateTimeStringISO(ds.runDate));
+      if (debug)
+        System.out.println("  adding " + cd.getPath() + " forecast date= " + ds.coordValue + "(" + ds.coordValueDate + ")"
+            + " run date= " + dateFormatter.toDateTimeStringISO(ds.runDate));
 
       if (typicalDataset == null)
         typicalDataset = ds;
@@ -153,7 +165,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     runs = new ArrayList<Date>(runHash.keySet());
     Collections.sort(runs);
     for (Date runDate : runs) {
-      String runDateS = formatter.toDateTimeStringISO(runDate);
+      String runDateS = dateFormatter.toDateTimeStringISO(runDate);
 
       List<DatasetFmrcSingle> runDatasets = runHash.get(runDate);
       max_times = Math.max(max_times, runDatasets.size());
@@ -171,7 +183,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
       for (Dataset dataset : runDatasets) {
         agg.addDataset(dataset);
         if (debug)
-          System.out.println("  adding Forecast " + format.toDateTimeString( ((DatasetOuterDimension)dataset).coordValueDate) + " " + dataset.getLocation());
+          System.out.println("  adding Forecast " + format.toDateTimeString(((DatasetOuterDimension) dataset).coordValueDate) + " " + dataset.getLocation());
       }
       ncd.setAggregation(agg);
       agg.finish(cancelTask);
@@ -227,7 +239,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
     // construct new variable, replace old one, set values
     String dims = dimName + " " + innerDimName;
-    String units = "hours since " + formatter.toDateTimeStringISO(baseDate);
+    String units = "hours since " + dateFormatter.toDateTimeStringISO(baseDate);
     String desc = "calculated forecast date from AggregationFmrcSingle processing";
     VariableDS vagg = new VariableDS(ncDataset, null, null, innerDimName, DataType.DOUBLE, dims, units, desc);
     vagg.setCachedData(timeCoordVals, false);
@@ -255,7 +267,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     List<Variable> vars = ncDataset.getVariables();
     for (Variable v : vars) {
       if (v.findDimensionIndex(dimName) >= 0) {
-        v.resetDimensions();   
+        v.resetDimensions();
         v.setCachedData(null, false); // get rid of any cached data, since its now wrong
       }
     }
@@ -281,7 +293,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
     }
     timeAxis.setCachedData(timeCoordVals, true);
 
-    String units = "hours since " + formatter.toDateTimeStringISO(baseDate);
+    String units = "hours since " + dateFormatter.toDateTimeStringISO(baseDate);
     timeAxis.addAttribute(new Attribute("units", units));
   }
 
@@ -308,7 +320,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
         if (null == coordValueDate) {
           logger.error("Cant extract forecast date from =" + location + " using format " + forecastMatcher);
         } else
-          coordValue = formatter.toDateTimeStringISO(coordValueDate);
+          coordValue = dateFormatter.toDateTimeStringISO(coordValueDate);
       }
 
       // parse for forecast offset
@@ -318,7 +330,7 @@ public class AggregationFmrcSingle extends AggregationFmrc {
           logger.error("Cant extract forecast offset from =" + location + " using format " + offsetMatcher);
         }
         coordValueDate = addHour(runDate, offset);
-        coordValue = formatter.toDateTimeStringISO(coordValueDate);
+        coordValue = dateFormatter.toDateTimeStringISO(coordValueDate);
       }
     }
 
