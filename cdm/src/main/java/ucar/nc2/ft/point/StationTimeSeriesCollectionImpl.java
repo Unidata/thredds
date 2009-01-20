@@ -28,7 +28,7 @@ import java.io.IOException;
 
 /**
  * Abstract superclass for implementations of StationFeatureCollection.
- * Subclass must supply getPointFeatureCollectionIterator().
+ * Subclass must supply StationHelper, getPointFeatureCollectionIterator().
  *
  * @author caron
  * @since Feb 5, 2008
@@ -69,7 +69,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   }
 
   public StationTimeSeriesFeature getStationFeature(Station s) throws IOException {
-    return (StationTimeSeriesFeature) s;  // subclasses override if not true
+    return (StationTimeSeriesFeature) s;  // subclasses nust override if not true
   }
 
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {

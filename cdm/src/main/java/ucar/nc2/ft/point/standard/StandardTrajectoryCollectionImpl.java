@@ -98,13 +98,13 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
   private class StandardTrajectoryFeature extends TrajectoryFeatureImpl {
     StructureData trajData;
     StandardTrajectoryFeature(StructureData trajData) {
-      super("", -1);
+      super(ft.getFeatureName(trajData), -1);
       this.trajData = trajData;
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      List<StructureData> sdataList = new ArrayList<StructureData>( ft.getNestedLevels());
-      for (int i=0; i< ft.getNestedLevels(); i++)
+      List<StructureData> sdataList = new ArrayList<StructureData>( ft.getNumberOfLevels());
+      for (int i=0; i< ft.getNumberOfLevels(); i++)
         sdataList.add(null);
       sdataList.set(1, trajData); // ?? could also be a Map
       StructureDataIterator siter = ft.getTrajectoryObsDataIterator( trajData, bufferSize);

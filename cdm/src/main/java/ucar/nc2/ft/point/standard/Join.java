@@ -44,6 +44,8 @@ public class Join implements Comparable<Join> {
     assert child != null;
     this.parent = parent;
     this.child = child;
+    child.join2parent = this;
+    child.parent = parent;
   }
 
   public String toString() {

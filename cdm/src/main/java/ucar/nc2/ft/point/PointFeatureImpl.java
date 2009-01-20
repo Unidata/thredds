@@ -26,7 +26,7 @@ import java.util.Date;
 
 /**
  * Abstract superclass for implementations of PointFeature.
- * Concrete subclass must implement getId(), getData();
+ * Concrete subclass must implement getData();
  *
  * @author caron
  * @since Feb 29, 2008

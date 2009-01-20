@@ -347,6 +347,10 @@ public class BeanTable extends JPanel {
     }
   }
 
+  public void refresh() {
+    jtable.repaint();
+  }
+
   /**
    * Set the ColumnSelection is allowed (default false)
    * @param b allowed or not

@@ -29,6 +29,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.ma2.StructureData;
 import thredds.ui.*;
 
 import java.awt.BorderLayout;
@@ -51,16 +52,18 @@ import javax.swing.event.*;
  */
 
 public class PointFeatureDatasetViewer extends JPanel {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointFeatureDatasetViewer.class);
+
   private PreferencesExt prefs;
 
   private FeatureCollection selectedCollection;
   private FeatureType selectedType;
 
-  private BeanTableSorted fcTable, stnTable, profileTable;
-  private JPanel blank = new JPanel();
+  private BeanTableSorted fcTable, stnTable, profileTable, trajTable;
+  private JPanel changingPane = new JPanel(new BorderLayout());
   private StationRegionDateChooser stationMap;
   private StructureTable obsTable;
-  private JSplitPane splitFeatures, splitExtra, splitMap, splitObs;
+  private JSplitPane splitFeatures, splitMap, splitObs;
   private IndependentDialog infoWindow;
   private TextHistoryPane infoTA;
 
@@ -180,6 +183,19 @@ public class PointFeatureDatasetViewer extends JPanel {
       }
     });
 
+    // trajectory table
+    trajTable = new BeanTableSorted(TrajectoryFeatureBean.class, (PreferencesExt) prefs.node("TrajFeatureBean"), false);
+    trajTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        TrajectoryFeatureBean sb = (TrajectoryFeatureBean) trajTable.getSelectedBean();
+        try {
+          setTrajectory(sb);
+        } catch (IOException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
+
     // the obs table
     obsTable = new StructureTable((PreferencesExt) prefs.node("ObsBean"));
 
@@ -189,13 +205,10 @@ public class PointFeatureDatasetViewer extends JPanel {
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // layout
-    splitFeatures = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, fcTable, stnTable);
+    splitFeatures = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, fcTable, changingPane);
     splitFeatures.setDividerLocation(prefs.getInt("splitPosF", 50));
 
-    splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitFeatures, blank);
-    splitExtra.setDividerLocation(prefs.getInt("splitPosX", 50));
-
-    splitMap = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, splitExtra, stationMap);
+    splitMap = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, splitFeatures, stationMap);
     splitMap.setDividerLocation(prefs.getInt("splitPosM", 400));
 
     splitObs = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitMap, obsTable);
@@ -213,7 +226,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     prefs.putInt("splitPosO", splitObs.getDividerLocation());
     prefs.putInt("splitPosF", splitFeatures.getDividerLocation());
     prefs.putInt("splitPosM", splitMap.getDividerLocation());
-    prefs.putInt("splitPosX", splitExtra.getDividerLocation());
     obsTable.saveState();
   }
 
@@ -223,11 +235,12 @@ public class PointFeatureDatasetViewer extends JPanel {
     stationMap.setStations(new ArrayList());
     obsTable.clear();
 
+    // set the feature collection table - all use this
     List<FeatureCollectionBean> fcBeans = new ArrayList<FeatureCollectionBean>();
 
     for (FeatureCollection fc : dataset.getPointFeatureCollectionList()) {
       FeatureType ftype = fc.getCollectionFeatureType();
-      if ((ftype == FeatureType.POINT) || (ftype == FeatureType.STATION) || (ftype == FeatureType.STATION_PROFILE)) {
+      if ((ftype == FeatureType.POINT) || (ftype == FeatureType.STATION) || (ftype == FeatureType.TRAJECTORY) || (ftype == FeatureType.STATION_PROFILE)) {
         fcBeans.add( new FeatureCollectionBean(fc));
       }
     }
@@ -241,21 +254,33 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setFeatureCollection(FeatureCollectionBean fcb) throws IOException {
+    // reconfigure the UI depending on the type
+    changingPane.removeAll();
 
     FeatureType ftype = fcb.fc.getCollectionFeatureType();
-    if ((ftype == FeatureType.STATION) || (ftype == FeatureType.STATION_PROFILE)) {
+
+    if (ftype == FeatureType.POINT) {
+      PointFeatureCollection pfc = (PointFeatureCollection) fcb.fc;
+      setPointCollection(pfc);
+
+    } else if (ftype == FeatureType.STATION) {
+      StationCollection sfc = (StationCollection) fcb.fc;
+      setStations(sfc);
+      changingPane.add( stnTable, BorderLayout.CENTER);
+
+    } else if (ftype == FeatureType.STATION_PROFILE) {
       StationCollection sfc = (StationCollection) fcb.fc;
       setStations(sfc);
 
-    } else if (ftype == FeatureType.POINT) {
-      PointFeatureCollection pfc = (PointFeatureCollection) fcb.fc;
-      setPointCollection(pfc);
-    }
+      JSplitPane splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, stnTable, profileTable);
+      splitExtra.setDividerLocation(prefs.getInt("splitPosX", 50));
+      changingPane.add( splitExtra, BorderLayout.CENTER);
 
-    if (ftype == FeatureType.STATION_PROFILE) {
-      splitExtra.setBottomComponent(profileTable);
-    } else {
-      splitExtra.setBottomComponent(blank);      
+    } else if (ftype == FeatureType.TRAJECTORY) {
+      TrajectoryFeatureCollection pfc = (TrajectoryFeatureCollection) fcb.fc;
+      setTrajectoryCollection(pfc);
+
+      changingPane.add( stnTable, BorderLayout.CENTER);
     }
 
     this.selectedCollection = fcb.fc;
@@ -293,6 +318,21 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     stnTable.setBeans(pointBeans);
     stationMap.setStations(pointBeans);
+    stnTable.clearSelectedCells();
+  }
+
+  private void setTrajectoryCollection(TrajectoryFeatureCollection trajCollection) throws IOException {
+    List<TrajectoryFeatureBean> beans = new ArrayList<TrajectoryFeatureBean>();
+    int count = 0;
+
+    PointFeatureCollectionIterator iter = trajCollection.getPointFeatureCollectionIterator(-1);
+    while (iter.hasNext()) {
+      PointFeatureCollection pob = iter.next();
+      beans.add(new TrajectoryFeatureBean( (TrajectoryFeature) pob));
+    }
+
+    stnTable.setBeans(beans);
+    stationMap.setStations(beans);
     stnTable.clearSelectedCells();
   }
 
@@ -343,6 +383,17 @@ public class PointFeatureDatasetViewer extends JPanel {
       if (npts >= 0) {
         sb.setNobs(npts);
       }
+
+    } else if (selectedType == FeatureType.TRAJECTORY) {
+      TrajectoryFeatureBean trajBean = (TrajectoryFeatureBean) sb;
+      TrajectoryFeature feature = trajBean.pfc;
+      setObservations(feature);
+
+      // iterator may count points
+      int npts = feature.size();
+      if (npts >= 0) {
+        sb.setNobs(npts);
+      }
     }
   }
 
@@ -354,6 +405,18 @@ public class PointFeatureDatasetViewer extends JPanel {
      int npts = feature.size();
      if (npts >= 0) {
        sb.setNobs(npts);
+     }
+   }
+
+  private void setTrajectory(TrajectoryFeatureBean sb) throws IOException {
+     TrajectoryFeature feature = sb.pfc;
+     setObservations(feature);
+
+     // iterator may count points
+     int npts = feature.size();
+     if (npts >= 0) {
+       sb.setNobs(npts);
+       stnTable.refresh();
      }
    }
 
@@ -507,6 +570,61 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public double getAltitude() {
       return s.getAltitude();
+    }
+
+    public int compareTo(Object o) {
+      StationImpl so = (StationImpl) o;
+      return getName().compareTo(so.getName());
+    }
+  }
+
+  public class TrajectoryFeatureBean extends StationBean {
+    int npts;
+    TrajectoryFeature pfc;
+    PointFeature pf;
+
+    public TrajectoryFeatureBean(TrajectoryFeature pfc) {
+      this.pfc = pfc;
+      try {
+        if (pfc.hasNext()) {
+          pf = pfc.next();
+        }
+      } catch (IOException ioe) {
+        log.warn("Trajectory empty ", ioe);
+      }
+      npts = pfc.size();
+    }
+
+    public void setNobs(int npts) {
+      this.npts = npts;
+    }
+
+    public int getNobs() {
+      return npts;
+    }
+
+    public String getName() {
+      return pfc.getName();
+    }
+
+    public String getDescription() {
+      return null;
+    }
+
+    public String getWmoId() {
+      return null;
+    }
+
+    public double getLatitude() {
+      return pf.getLocation().getLatitude();
+    }
+
+    public double getLongitude() {
+      return  pf.getLocation().getLongitude();
+    }
+
+    public double getAltitude() {
+      return pf.getLocation().getAltitude();
     }
 
     public int compareTo(Object o) {

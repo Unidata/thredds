@@ -46,8 +46,8 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     // only one List object needed - it will be used for each iteration with different structData's
-    List<StructureData> sdataList = new ArrayList<StructureData>( ft.getNestedLevels());
-    for (int i=0; i< ft.getNestedLevels(); i++)
+    List<StructureData> sdataList = new ArrayList<StructureData>( ft.getNumberOfLevels());
+    for (int i=0; i< ft.getNumberOfLevels(); i++)
       sdataList.add(null);
     boolean calcBB = (boundingBox == null) || (dateRange == null);
 

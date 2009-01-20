@@ -227,10 +227,10 @@ public class TableAnalyzer {
     if (convUsed != null) {
       analyzer.setConventionUsed(convUsed);
       if (!convUsed .equals(convName))
-        analyzer.userAdvice.format(" Analyser used = "+convUsed+".\n");
+        analyzer.userAdvice.format(" TableConfigurer used = "+convUsed+".\n");
 
     } else {
-      analyzer.userAdvice.format(" No Analyser found, using default.\n");
+      analyzer.userAdvice.format(" No TableConfigurer found, using default analysis.\n");
     }
 
     // construct the nested table object
@@ -490,7 +490,7 @@ public class TableAnalyzer {
 
   public void getDetailInfo(java.util.Formatter sf) {
     sf.format("\nTableAnalyzer on Dataset %s\n", ds.getLocation());
-    if (tc != null) sf.format(" TableConfigurer = %s\n", tc.getClass().getName());
+    if (tc != null) sf.format(" TableAnalyser = %s\n", tc.getClass().getName());
     //showCoordSys(sf);
     //showCoordAxes(sf);
     //showTables(sf);

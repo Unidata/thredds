@@ -73,7 +73,7 @@ public class StandardPointFeatureIterator extends PointIteratorImpl {
       location = ft.getEarthLocation( sdataList);
     }
 
-    public String getId() {
+    public Object getId() {
       return Integer.toString(id);
     }
 
