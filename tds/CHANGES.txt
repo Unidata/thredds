@@ -11,6 +11,7 @@ Changes in version 4.0
 
   Release Details:
    02:
+    Debug commands now implemented in DebugServlet
     JMX: NetcdfFileCacheMonitor
     UsageLog : handling messages to ThreddsServlet.log
     NcDODSServlet : set "dataset" session attribute
