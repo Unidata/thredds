@@ -448,7 +448,7 @@
   </servlet>
 
   <servlet>
-    <servlet-name>WMS</servlet-name>
+    <servlet-name>wms</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
@@ -608,7 +608,7 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>WMS</servlet-name>
+    <servlet-name>wms</servlet-name>
     <url-pattern>/wms/*</url-pattern>
   </servlet-mapping>
 

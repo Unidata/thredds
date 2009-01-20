@@ -30,87 +30,96 @@ public class WcsRequestParser
           org.slf4j.LoggerFactory.getLogger( WcsRequestParser.class );
 
   public static WcsRequest parseRequest( String version, URI serverURI, HttpServletRequest req, HttpServletResponse res )
-          throws WcsException
+          throws WcsException, IOException
   {
-    // These are handled in WcsServlet. Don't need to validate here.
+    GridDataset gridDataset = null;
+    try
+    {
+// These are handled in WcsServlet. Don't need to validate here.
 //    String serviceParam = ServletUtil.getParameterIgnoreCase( req, "Service" );
 //    String versionParam = ServletUtil.getParameterIgnoreCase( req, "Version" );
 //    String acceptVersionsParam = ServletUtil.getParameterIgnoreCase( req, "AcceptVersions" );
 
-    // General request info
-    Request.Operation operation;
-    String datasetPath = req.getPathInfo();
-    GridDataset gridDataset = openDataset( req, res );
-    if ( gridDataset == null )
-    {
-      log.error( "parseRequest(): Failed to open dataset (???).");
-      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to open dataset.");
-    }
-    WcsDataset wcsDataset = new WcsDataset( gridDataset, datasetPath);
+      // General request info
+      Request.Operation operation;
+      String datasetPath = req.getPathInfo();
+      gridDataset = openDataset( req, res );
+      if ( gridDataset == null )
+      {
+        log.error( "parseRequest(): Failed to open dataset (???).");
+        throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to open dataset.");
+      }
+      WcsDataset wcsDataset = new WcsDataset( gridDataset, datasetPath);
 
-    // Determine the request operation.
-    String requestParam = ServletUtil.getParameterIgnoreCase( req, "Request" );
-    try
+      // Determine the request operation.
+      String requestParam = ServletUtil.getParameterIgnoreCase( req, "Request" );
+      try
     {
       operation = Request.Operation.valueOf( requestParam );
-    }
-    catch ( IllegalArgumentException e )
-    {
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Unsupported operation request <" + requestParam + ">." );
-    }
-
-    // Handle "GetCapabilities" request.
-    if ( operation.equals( Request.Operation.GetCapabilities ) )
-    {
-      String sectionParam = ServletUtil.getParameterIgnoreCase( req, "Section" );
-      String updateSequenceParam = ServletUtil.getParameterIgnoreCase( req, "UpdateSequence" );
-
-      if ( sectionParam == null)
-        sectionParam = "";
-      GetCapabilities.Section section = null;
-      try
-      {
-        section = GetCapabilities.Section.getSection( sectionParam);
       }
       catch ( IllegalArgumentException e )
       {
-        throw new WcsException( WcsException.Code.InvalidParameterValue, "Section", "Unsupported GetCapabilities section requested <" + sectionParam + ">." );
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Unsupported operation request <" + requestParam + ">." );
       }
 
-      return new GetCapabilities( operation, version, wcsDataset, serverURI, section, updateSequenceParam, null);
+      // Handle "GetCapabilities" request.
+      if ( operation.equals( Request.Operation.GetCapabilities ) )
+      {
+        String sectionParam = ServletUtil.getParameterIgnoreCase( req, "Section" );
+        String updateSequenceParam = ServletUtil.getParameterIgnoreCase( req, "UpdateSequence" );
+
+        if ( sectionParam == null)
+          sectionParam = "";
+        GetCapabilities.Section section = null;
+        try
+        {
+          section = GetCapabilities.Section.getSection( sectionParam);
+        }
+        catch ( IllegalArgumentException e )
+        {
+          throw new WcsException( WcsException.Code.InvalidParameterValue, "Section", "Unsupported GetCapabilities section requested <" + sectionParam + ">." );
+        }
+
+        return new GetCapabilities( operation, version, wcsDataset, serverURI, section, updateSequenceParam, null);
+      }
+      // Handle "DescribeCoverage" request.
+      else if ( operation.equals( Request.Operation.DescribeCoverage ) )
+      {
+        String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
+        List<String> coverageIdList = splitCommaSeperatedList( coverageIdListParam );
+
+        return new DescribeCoverage( operation, version, wcsDataset, coverageIdList);
+      }
+      // Handle "GetCoverage" request.
+      else if ( operation.equals( Request.Operation.GetCoverage ) )
+      {
+        String coverageId = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
+        String crs = ServletUtil.getParameterIgnoreCase( req, "CRS" );
+        String responseCRS = ServletUtil.getParameterIgnoreCase( req, "RESPONSE_CRS" );
+        String bbox = ServletUtil.getParameterIgnoreCase( req, "BBOX" );
+        String time = ServletUtil.getParameterIgnoreCase( req, "TIME" );
+        // ToDo The name of this parameter is dependent on the coverage (see WcsCoverage.getRangeSetAxisName()).
+        String parameter = ServletUtil.getParameterIgnoreCase( req, "Vertical" );
+        String formatString = ServletUtil.getParameterIgnoreCase( req, "FORMAT" );
+
+        // Assign and validate PARAMETER ("Vertical") parameter.
+        WcsCoverage.VerticalRange verticalRange = parseRangeSetAxisValues( parameter );
+        Request.Format format = parseFormat( formatString );
+
+        return new GetCoverage( operation, version, wcsDataset, coverageId,
+                                crs, responseCRS, parseBoundingBox( bbox),
+                                parseTime( time ),
+                                verticalRange,
+                                format);
+      }
+      else
+        throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation <" + requestParam + ">." );
     }
-    // Handle "DescribeCoverage" request.
-    else if ( operation.equals( Request.Operation.DescribeCoverage ) )
+    catch ( WcsException e )
     {
-      String coverageIdListParam = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
-      List<String> coverageIdList = splitCommaSeperatedList( coverageIdListParam );
-
-      return new DescribeCoverage( operation, version, wcsDataset, coverageIdList);
+      gridDataset.close();
+      throw e;
     }
-    // Handle "GetCoverage" request.
-    else if ( operation.equals( Request.Operation.GetCoverage ) )
-    {
-      String coverageId = ServletUtil.getParameterIgnoreCase( req, "Coverage" );
-      String crs = ServletUtil.getParameterIgnoreCase( req, "CRS" );
-      String responseCRS = ServletUtil.getParameterIgnoreCase( req, "RESPONSE_CRS" );
-      String bbox = ServletUtil.getParameterIgnoreCase( req, "BBOX" );
-      String time = ServletUtil.getParameterIgnoreCase( req, "TIME" );
-      // ToDo The name of this parameter is dependent on the coverage (see WcsCoverage.getRangeSetAxisName()).
-      String parameter = ServletUtil.getParameterIgnoreCase( req, "Vertical" );
-      String formatString = ServletUtil.getParameterIgnoreCase( req, "FORMAT" );
-
-      // Assign and validate PARAMETER ("Vertical") parameter.
-      WcsCoverage.VerticalRange verticalRange = parseRangeSetAxisValues( parameter );
-      Request.Format format = parseFormat( formatString );
-
-      return new GetCoverage( operation, version, wcsDataset, coverageId,
-                              crs, responseCRS, parseBoundingBox( bbox),
-                              parseTime( time ),
-                              verticalRange,
-                              format);
-    }
-    else
-      throw new WcsException( WcsException.Code.InvalidParameterValue, "Request", "Invalid requested operation <" + requestParam + ">." );
   }
 
   private static Request.BoundingBox parseBoundingBox( String bboxString )
