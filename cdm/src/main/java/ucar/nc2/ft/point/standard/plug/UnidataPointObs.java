@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
  * @since Apr 23, 2008
  */
 public class UnidataPointObs implements TableConfigurer {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataPointObs.class);
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION) && (wantFeatureType != FeatureType.POINT))
@@ -84,7 +85,7 @@ public class UnidataPointObs implements TableConfigurer {
       return obsTable;
     }
 
-    // its a station, but we want a point dataset
+    //  we want a point dataset
     // iterate over obs struct, in file order (ignore station)
     if (wantFeatureType == FeatureType.POINT) {
       TableConfig obsTable = new TableConfig(obsStructureType, "record");
@@ -124,6 +125,26 @@ public class UnidataPointObs implements TableConfigurer {
       stationTable.join.parentIndex = parentIndexVar;
       obsTable.addChild(stationTable);
       stationTable.featureType = FeatureType.POINT;
+
+      return obsTable;
+    }
+
+
+    // its really a trajectory
+    if (ft == FeatureType.TRAJECTORY) {
+      TableConfig obsTable = new TableConfig(obsStructureType, "record");
+      obsTable.featureType = FeatureType.TRAJECTORY;
+
+      obsTable.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time, obsDim);
+      obsTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, obsDim);
+      obsTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, obsDim);
+      obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, obsDim);
+      obsTable.dim = obsDim;
+
+      Dimension trajDim = UnidataPointDatasetHelper.findDimension(ds, "trajectory");
+      if (trajDim != null) {
+        log.error("Ignoring trajectory structure "+ds.getLocation());
+      }
 
       return obsTable;
     }

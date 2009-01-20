@@ -177,7 +177,7 @@ public class FeatureDatasetTable extends JPanel {
       try {
         ds = NetcdfDataset.openDataset(f.getPath());
         IOServiceProvider iosp = ds.getIosp();
-        iospName = iosp == null ? "" : iosp.getClass().getName();
+        iospName = (iosp == null) ? "" : iosp.getClass().getName();
         setCoordMap( ds.getCoordinateSystems());
 
         Formatter errlog = new Formatter();
