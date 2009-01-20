@@ -21,7 +21,6 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.StructureData;
@@ -29,8 +28,6 @@ import ucar.ma2.StructureDataIterator;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -107,13 +104,12 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         }
 
         public PointFeatureCollection next() throws IOException {
-          List<StructureData> sdataList = new ArrayList<StructureData>(2);
-          sdataList.add(null);
-          sdataList.add(iter.next());
-          sdataList.add(stationData);
+          StructureData[] parents = new StructureData[3];
+          parents[1] = iter.next();
+          parents[2] = stationData; // obs(leaf) = 0, profile=1, station(root)=2
 
-          double time = ft.getObsTime(sdataList);
-          return new StandardProfileFeature(s, timeUnit.makeDate(time), sdataList);
+          double time = ft.getObsTime(parents);
+          return new StandardProfileFeature(s, timeUnit.makeDate(time), parents);
         }
 
         public void setBufferSize(int bytes) { iter.setBufferSize(bytes); }
@@ -123,12 +119,12 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
   // one profile
   private class StandardProfileFeature extends ProfileFeatureImpl {
-    private List<StructureData> sdataList;
+    private StructureData[] parents;
     private String desc;
 
-    StandardProfileFeature(Station s, Date time, List<StructureData> sdataList) throws IOException {
-      super(dateFormatter.toDateTimeStringISO(time), s.getLatLon(), -1);
-      this.sdataList = sdataList;
+    StandardProfileFeature(Station s, Date time, StructureData[] parents) throws IOException {
+      super(dateFormatter.toDateTimeStringISO(time), s.getLatitude(), s.getLongitude(), -1);
+      this.parents = parents;
       this.desc = "time="+time+"stn="+s.getDescription();
     }
 
@@ -137,16 +133,16 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureDataIterator structIter = ft.getStationProfileObsDataIterator(sdataList, bufferSize);
-      return new StandardStationProfilePointIterator(structIter, sdataList);
+      StructureDataIterator structIter = ft.getStationProfileObsDataIterator(parents, bufferSize);
+      return new StandardStationProfilePointIterator(structIter, parents);
     }
 
       // the iterator over the observations
     private class StandardStationProfilePointIterator extends StandardPointFeatureIterator {
       StationFeatureImpl station;
 
-      StandardStationProfilePointIterator(StructureDataIterator structIter, List <StructureData> sdataList) throws IOException {
-        super(ft, timeUnit, structIter, sdataList, false);
+      StandardStationProfilePointIterator(StructureDataIterator structIter, StructureData[] parents) throws IOException {
+        super(ft, timeUnit, structIter, parents, false);
       }
 
       // decorate to capture npts

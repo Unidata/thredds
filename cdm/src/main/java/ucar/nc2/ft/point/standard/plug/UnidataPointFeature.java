@@ -171,7 +171,7 @@ public class UnidataPointFeature implements TableConfigurer {
 
   private class IndexJoin extends Join {
     IndexJoin(TableConfig.JoinConfig config) {
-      super( config);
+      super();
       config.override = this;
     }
 
@@ -184,7 +184,7 @@ public class UnidataPointFeature implements TableConfigurer {
     }
 
     Structure getObsStructure() {
-      return child.getStruct();
+      return null; // child.getStruct();
     }
   }
 

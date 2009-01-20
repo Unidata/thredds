@@ -131,6 +131,9 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
         if (flatTable.getFeatureType() == FeatureType.POINT)
           featureCollections.add(new StandardPointCollectionImpl(flatTable, timeUnit));
 
+        else if (flatTable.getFeatureType() == FeatureType.PROFILE)
+          featureCollections.add(new StandardProfileCollectionImpl(flatTable, timeUnit));
+
         else if (flatTable.getFeatureType() == FeatureType.STATION)
           featureCollections.add(new StandardStationCollectionImpl(flatTable, timeUnit));
 

@@ -30,7 +30,7 @@ import java.util.Formatter;
 import java.util.StringTokenizer;
 
 /**
- * "Unidata Observation Dataset v1.0" point or station
+ * "Unidata Observation Dataset v1.0" point or station or trajectory
  * @author caron
  * @since Apr 23, 2008
  */
@@ -85,9 +85,10 @@ public class UnidataPointObs implements TableConfigurer {
       return obsTable;
     }
 
-    //  we want a point dataset
-    // iterate over obs struct, in file order (ignore station)
-    if (wantFeatureType == FeatureType.POINT) {
+    //  we want a point dataset, but its really a station
+    // iterate over obs struct, in file order
+    // extra join on station structure
+    if ((ft == FeatureType.POINT) && (wantFeatureType == FeatureType.POINT)) {
       TableConfig obsTable = new TableConfig(obsStructureType, "record");
       obsTable.featureType = FeatureType.POINT;
       obsTable.dim = obsDim;
@@ -123,8 +124,7 @@ public class UnidataPointObs implements TableConfigurer {
 
       stationTable.join = new TableConfig.JoinConfig(JoinType.ParentIndex);
       stationTable.join.parentIndex = parentIndexVar;
-      obsTable.addChild(stationTable);
-      stationTable.featureType = FeatureType.POINT;
+      obsTable.extraJoin = stationTable;
 
       return obsTable;
     }
@@ -226,48 +226,4 @@ public class UnidataPointObs implements TableConfigurer {
     return stationTable;
   }
 
-  /*
-
-     if (isContiguousList) {
-     join = new Join(Join.Type.ContiguousList);
-     join.setTables(stnTable, obsTable);
-     join.setJoinVariables(firstVar, null, numChildrenVar);
-     joins.add(join);
-
-   } else if (isForwardLinkedList) {
-     join = new Join(Join.Type.ForwardLinkedList);
-     join.setTables(stnTable, obsTable);
-     join.setJoinVariables(firstVar, nextVar, null);
-     joins.add(join);
-
-   } else if (isBackwardLinkedList) {
-     join = new Join(Join.Type.BackwardLinkedList);
-     join.setTables(stnTable, obsTable);
-     join.setJoinVariables(lastVar, prevVar, null);
-     joins.add(join);
-
-   } else if (obsTable == null) {  // multidim
-
-     // create the obsTable - all variables with (stationDim,obsDim,...)
-     List<Variable> obsVariables = new ArrayList<Variable>();
-     StructureMembers structureMembers = new StructureMembers("obs");
-     for (Variable v : ds.getVariables()) {
-       if (v.getRank() < 2) continue;
-       if (v.getDimension(0).equals( stationDim) && v.getDimension(1).equals( obsDim)) {
-         obsVariables.add(v);
-         int[] shape = v.getShape();
-         shape[0] = 1;
-         shape[1] = 1;
-         structureMembers.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), shape);
-       }
-     }
-     obsTable = new NestedTable.Table(obsVariables, stationDim, obsDim);
-     addTable( obsTable);
-
-     // make join
-     join = new Join(Join.Type.MultiDim);
-     join.setTables(stnTable, obsTable);
-     joins.add(join);
-   }
-  */
 }

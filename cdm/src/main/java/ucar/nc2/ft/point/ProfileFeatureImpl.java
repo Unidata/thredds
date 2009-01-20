@@ -22,6 +22,7 @@ package ucar.nc2.ft.point;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
  * Abstract superclass for implementations of ProfileFeature.
@@ -33,9 +34,9 @@ public abstract class ProfileFeatureImpl extends PointCollectionImpl implements 
   private LatLonPoint latlonPoint;
   private int npts;
 
-  public ProfileFeatureImpl( String name, LatLonPoint latlonPoint, int npts) {
+  public ProfileFeatureImpl( String name, double lat, double lon, int npts) {
     super(name);
-    this.latlonPoint = latlonPoint;
+    this.latlonPoint = new LatLonPointImpl(lat,lon);
     this.npts = npts;
   }
 

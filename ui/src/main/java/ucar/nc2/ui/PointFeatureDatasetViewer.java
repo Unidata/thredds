@@ -29,7 +29,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.ma2.StructureData;
 import thredds.ui.*;
 
 import java.awt.BorderLayout;
@@ -59,7 +58,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private FeatureCollection selectedCollection;
   private FeatureType selectedType;
 
-  private BeanTableSorted fcTable, stnTable, profileTable, trajTable;
+  private BeanTableSorted fcTable, profileTable, stnTable, stnProfileTable, trajTable;
   private JPanel changingPane = new JPanel(new BorderLayout());
   private StationRegionDateChooser stationMap;
   private StructureTable obsTable;
@@ -154,21 +153,6 @@ public class PointFeatureDatasetViewer extends JPanel {
       }
     });
 
-    // station table
-    stnTable = new BeanTableSorted(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
-    stnTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        StationBean sb = (StationBean) stnTable.getSelectedBean();
-        try {
-          setStation(sb, null);
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-        if (debugStationRegionSelect) System.out.println("stnTable selected= " + sb.getName());
-        if (eventsOK) stationMap.setSelectedStation(sb.getName());
-      }
-    });
-
     // profile table
     profileTable = new BeanTableSorted(ProfileFeatureBean.class, (PreferencesExt) prefs.node("ProfileFeatureBean"), false);
     profileTable.addListSelectionListener(new ListSelectionListener() {
@@ -179,7 +163,33 @@ public class PointFeatureDatasetViewer extends JPanel {
         } catch (IOException e1) {
           e1.printStackTrace();
         }
-        if (debugStationRegionSelect) System.out.println("profileTable selected= " + sb.getProfileName());
+      }
+    });
+
+    // station table
+    stnTable = new BeanTableSorted(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
+    stnTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        StationBean sb = (StationBean) stnTable.getSelectedBean();
+        try {
+          setStation(sb, null);
+        } catch (IOException e1) {
+          e1.printStackTrace();
+        }
+        if (eventsOK) stationMap.setSelectedStation(sb.getName());
+      }
+    });
+
+    // profile table
+    stnProfileTable = new BeanTableSorted(StnProfileFeatureBean.class, (PreferencesExt) prefs.node("StnProfileFeatureBean"), false);
+    stnProfileTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        StnProfileFeatureBean sb = (StnProfileFeatureBean) stnProfileTable.getSelectedBean();
+        try {
+          setStnProfile(sb);
+        } catch (IOException e1) {
+          e1.printStackTrace();
+        }
       }
     });
 
@@ -263,6 +273,11 @@ public class PointFeatureDatasetViewer extends JPanel {
       PointFeatureCollection pfc = (PointFeatureCollection) fcb.fc;
       setPointCollection(pfc);
 
+    } else if (ftype == FeatureType.PROFILE) {
+      ProfileFeatureCollection pfc = (ProfileFeatureCollection) fcb.fc;
+      setProfileCollection(pfc);
+      changingPane.add( stnTable, BorderLayout.CENTER);
+
     } else if (ftype == FeatureType.STATION) {
       StationCollection sfc = (StationCollection) fcb.fc;
       setStations(sfc);
@@ -272,14 +287,13 @@ public class PointFeatureDatasetViewer extends JPanel {
       StationCollection sfc = (StationCollection) fcb.fc;
       setStations(sfc);
 
-      JSplitPane splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, stnTable, profileTable);
+      JSplitPane splitExtra = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, stnTable, stnProfileTable);
       splitExtra.setDividerLocation(prefs.getInt("splitPosX", 50));
       changingPane.add( splitExtra, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.TRAJECTORY) {
       TrajectoryFeatureCollection pfc = (TrajectoryFeatureCollection) fcb.fc;
       setTrajectoryCollection(pfc);
-
       changingPane.add( stnTable, BorderLayout.CENTER);
     }
 
@@ -321,9 +335,22 @@ public class PointFeatureDatasetViewer extends JPanel {
     stnTable.clearSelectedCells();
   }
 
+  private void setProfileCollection(ProfileFeatureCollection profileCollection) throws IOException {
+    List<ProfileFeatureBean> beans = new ArrayList<ProfileFeatureBean>();
+
+    PointFeatureCollectionIterator iter = profileCollection.getPointFeatureCollectionIterator(-1);
+    while (iter.hasNext()) {
+      PointFeatureCollection pob = iter.next();
+      beans.add(new ProfileFeatureBean( (ProfileFeature) pob));
+    }
+
+    stnTable.setBeans(beans);
+    stationMap.setStations(beans);
+    stnTable.clearSelectedCells();
+  }
+
   private void setTrajectoryCollection(TrajectoryFeatureCollection trajCollection) throws IOException {
     List<TrajectoryFeatureBean> beans = new ArrayList<TrajectoryFeatureBean>();
-    int count = 0;
 
     PointFeatureCollectionIterator iter = trajCollection.getPointFeatureCollectionIterator(-1);
     while (iter.hasNext()) {
@@ -376,7 +403,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     } else if (selectedType == FeatureType.STATION_PROFILE) {
       StationProfileFeatureCollection stationCollection = (StationProfileFeatureCollection) selectedCollection;
       StationProfileFeature feature = stationCollection.getStationProfileFeature(sb.s);
-      setObservations(feature);
+      setStnProfileObservations(feature);
 
       // iterator may count points
       int npts = feature.size();
@@ -397,6 +424,17 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
+  private void setStnProfile(StnProfileFeatureBean sb) throws IOException {
+     ProfileFeature feature = sb.pfc;
+     setObservations(feature);
+
+     // iterator may count points
+     int npts = feature.size();
+     if (npts >= 0) {
+       sb.setNobs(npts);
+     }
+   }
+
   private void setProfile(ProfileFeatureBean sb) throws IOException {
      ProfileFeature feature = sb.pfc;
      setObservations(feature);
@@ -405,6 +443,7 @@ public class PointFeatureDatasetViewer extends JPanel {
      int npts = feature.size();
      if (npts >= 0) {
        sb.setNobs(npts);
+       stnTable.refresh();
      }
    }
 
@@ -420,13 +459,13 @@ public class PointFeatureDatasetViewer extends JPanel {
      }
    }
 
-  private void setProfiles(List<PointFeatureCollection> pfcList) throws IOException {
-    List<ProfileFeatureBean> beans = new ArrayList<ProfileFeatureBean>();
+  private void setStnProfiles(List<PointFeatureCollection> pfcList) throws IOException {
+    List<StnProfileFeatureBean> beans = new ArrayList<StnProfileFeatureBean>();
 
       for (PointFeatureCollection pfc : pfcList)
-        beans.add( new ProfileFeatureBean( (ProfileFeature) pfc));
+        beans.add( new StnProfileFeatureBean( (ProfileFeature) pfc));
 
-    profileTable.setBeans(beans);
+    stnProfileTable.setBeans(beans);
     obsTable.clear();
    }
 
@@ -461,13 +500,13 @@ public class PointFeatureDatasetViewer extends JPanel {
     setObservations(obsList);
   }
 
-  private void setObservations(NestedPointFeatureCollection nestedPointCollection) throws IOException {
+  private void setStnProfileObservations(NestedPointFeatureCollection nestedPointCollection) throws IOException {
     PointFeatureCollectionIterator iter = nestedPointCollection.getPointFeatureCollectionIterator(-1); // not multiple
     List<PointFeatureCollection> pfcList = new ArrayList<PointFeatureCollection>();
     while (iter.hasNext()) {
       pfcList.add(iter.next());
     }
-    setProfiles(pfcList);
+    setStnProfiles(pfcList);
   }
 
   private void setObservations(List<PointFeature>obsList) throws IOException {
@@ -498,11 +537,11 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  public class ProfileFeatureBean {
+  public class StnProfileFeatureBean {
     ProfileFeature pfc;
     int npts;
 
-    public ProfileFeatureBean(ProfileFeature pfc) {
+    public StnProfileFeatureBean(ProfileFeature pfc) {
       this.pfc = pfc;
       npts = pfc.size();
     }
@@ -584,6 +623,61 @@ public class PointFeatureDatasetViewer extends JPanel {
     PointFeature pf;
 
     public TrajectoryFeatureBean(TrajectoryFeature pfc) {
+      this.pfc = pfc;
+      try {
+        if (pfc.hasNext()) {
+          pf = pfc.next();
+        }
+      } catch (IOException ioe) {
+        log.warn("Trajectory empty ", ioe);
+      }
+      npts = pfc.size();
+    }
+
+    public void setNobs(int npts) {
+      this.npts = npts;
+    }
+
+    public int getNobs() {
+      return npts;
+    }
+
+    public String getName() {
+      return pfc.getName();
+    }
+
+    public String getDescription() {
+      return null;
+    }
+
+    public String getWmoId() {
+      return null;
+    }
+
+    public double getLatitude() {
+      return pf.getLocation().getLatitude();
+    }
+
+    public double getLongitude() {
+      return  pf.getLocation().getLongitude();
+    }
+
+    public double getAltitude() {
+      return pf.getLocation().getAltitude();
+    }
+
+    public int compareTo(Object o) {
+      StationImpl so = (StationImpl) o;
+      return getName().compareTo(so.getName());
+    }
+  }
+
+  public class ProfileFeatureBean extends StationBean {
+    int npts;
+    ProfileFeature pfc;
+    PointFeature pf;
+
+    public ProfileFeatureBean(ProfileFeature pfc) {
       this.pfc = pfc;
       try {
         if (pfc.hasNext()) {

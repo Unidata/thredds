@@ -37,7 +37,7 @@ public class PointCollectionIteratorFiltered implements PointFeatureCollectionIt
   private PointFeatureCollection pointFeatureCollection;
   private boolean done = false;
 
-  PointCollectionIteratorFiltered(PointFeatureCollectionIterator pfciter, PointFeatureCollectionIterator.Filter filter) {
+  public PointCollectionIteratorFiltered(PointFeatureCollectionIterator pfciter, PointFeatureCollectionIterator.Filter filter) {
     this.pfciter = pfciter;
     this.filter = filter;
   }

@@ -26,20 +26,49 @@ import ucar.ma2.*;
 import java.io.IOException;
 
 /**
- * Joins a parent structureData to its children.
+ * Joins a parent Table to one child Table
+ *
  * @author caron
  * @since Apr 21, 2008
  */
-public class Join implements Comparable<Join> {
+public abstract class Join {
 
-  protected TableConfig.JoinConfig config;
-  protected NestedTable.Table parent, child;
 
-  public Join(TableConfig.JoinConfig config) {
-    this.config = config;
+  public static Join factory(TableConfig.JoinConfig config) {
+    switch (config.joinType) {
+
+      case NestedStructure:
+        return new JoinNested();
+
+      case ForwardLinkedList:
+      case BackwardLinkedList:
+        return new JoinLinked(config.start, config.next);
+
+      case ContiguousList:
+        return new JoinContiguousList(config.start, config.numRecords);
+
+      case MultiDim:
+        return new JoinMultiDim();
+
+      case ParentIndex:
+        return new JoinParentIndex(config.parentIndex);
+
+      default:
+        throw new IllegalStateException("Unimplemented join type = " + config.joinType);
+
+    }
+
   }
 
-  public void setTables(NestedTable.Table parent, NestedTable.Table child) {
+  ///////////////////////////////////////////////////////////////////////////////
+  protected Table parent, child;
+
+  abstract public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException;
+
+  // for subclasses
+  protected Join(){}
+
+  public void joinTables(Table parent, Table child) {
     assert parent != null;
     assert child != null;
     this.parent = parent;
@@ -50,67 +79,127 @@ public class Join implements Comparable<Join> {
 
   public String toString() {
     StringBuilder sbuff = new StringBuilder();
-    sbuff.append( config.joinType);
+    sbuff.append(getClass().getName());
     if (parent != null)
       sbuff.append(" from ").append(parent.getName());
     if (child != null)
       sbuff.append(" to ").append(child.getName());
-
     return sbuff.toString();
   }
 
-  public int compareTo(Join o) {
-    return config.joinType.compareTo(o.config.joinType);
+  private static class JoinNested extends Join {
+
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+
+      String name = child.getName();
+      StructureMembers members = parentStruct.getStructureMembers();
+      StructureMembers.Member m = members.findMember(name);
+      if (m.getDataType() == DataType.SEQUENCE) {
+        ArraySequence seq = parentStruct.getArraySequence(m);
+        return seq.getStructureDataIterator();
+
+      } else if (m.getDataType() == DataType.STRUCTURE) {
+        ArrayStructure as = parentStruct.getArrayStructure(m);
+        return as.getStructureDataIterator();
+      }
+
+      return null;
+    }
   }
 
-  // get the StructureDataIterator for the child table contained by the given parent
-  public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+  private static class JoinLinked extends Join {
+    private String start, next;
+    private Table.TableStructure myChild;
 
-    switch (config.joinType) {
-      case NestedStructure: {
-        String name = child.getName();
-        StructureMembers members = parentStruct.getStructureMembers();
-        StructureMembers.Member m = members.findMember(name);
-        if (m.getDataType() == DataType.SEQUENCE) {
-          ArraySequence seq = parentStruct.getArraySequence(m);
-          return seq.getStructureDataIterator();
-
-        } else if (m.getDataType() == DataType.STRUCTURE) {
-          ArrayStructure as = parentStruct.getArrayStructure(m);
-          return as.getStructureDataIterator();
-        }
-
-        return null;
-      }
-
-      case ForwardLinkedList:
-      case BackwardLinkedList: {
-        int firstRecno = parentStruct.getScalarInt( config.start);
-        return new StructureDataIteratorLinked(child.struct, firstRecno, -1, config.next);
-      }
-
-      case ContiguousList: {
-        int firstRecno = parentStruct.getScalarInt( config.start);
-        int n = parentStruct.getScalarInt( config.numRecords);
-        return new StructureDataIteratorLinked(child.struct, firstRecno, n, null);
-      }
-
-      case MultiDim: {
-        ArrayStructureMA asma = new ArrayStructureMA( child.sm, new int[] {child.config.dim.getLength()});
-        for (VariableSimpleIF v : child.cols) {
-          Array data = parentStruct.getArray( v.getShortName());
-          StructureMembers.Member childm = child.sm.findMember(v.getShortName());
-          childm.setDataArray(data);
-        }
-        return asma.getStructureDataIterator();
-      }
-
-      default:
-        return child.getStructureDataIterator(bufferSize); // ??
+    JoinLinked(String start, String next) {
+      this.start = start;
+      this.next = next;
     }
 
-    //throw new IllegalStateException("Join type = "+config.joinType);
+    @Override
+    public void joinTables(Table parent, Table child) {
+      super.joinTables(parent, child);
+      myChild = (Table.TableStructure) child;
+    }
+
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      int firstRecno = parentStruct.getScalarInt(start);
+      return new StructureDataIteratorLinked(myChild.struct, firstRecno, -1, next);
+    }
   }
-  
+
+  private static class JoinContiguousList extends Join {
+    private String start, numRecords;
+    private Table.TableStructure myChild;
+
+    JoinContiguousList(String start, String numRecords) {
+      this.start = start;
+      this.numRecords = numRecords;
+    }
+
+    @Override
+    public void joinTables(Table parent, Table child) {
+      super.joinTables(parent, child);
+      myChild = (Table.TableStructure) child;
+    }
+
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      int firstRecno = parentStruct.getScalarInt(start);
+      int n = parentStruct.getScalarInt(numRecords);
+      return new StructureDataIteratorLinked(myChild.struct, firstRecno, n, null);
+    }
+  }
+
+  private static class JoinMultiDim extends Join {
+    private Table.TableMultDim myChild;
+
+    @Override
+    public void joinTables(Table parent, Table child) {
+      super.joinTables(parent, child);
+      myChild = (Table.TableMultDim) child;
+    }
+
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      ArrayStructureMA asma = new ArrayStructureMA(myChild.sm, new int[]{myChild.dim.getLength()});
+      for (VariableSimpleIF v : child.cols) {
+        Array data = parentStruct.getArray(v.getShortName());
+        StructureMembers.Member childm = myChild.sm.findMember(v.getShortName());
+        childm.setDataArray(data);
+      }
+      return asma.getStructureDataIterator();
+    }
+  }
+
+  public static class JoinParentIndex extends Join {
+    private Table.TableStructure myChild;
+    private ArrayStructure parentData;
+    private String parentIndex;
+
+    JoinParentIndex(String parentIndex) {
+      this.parentIndex = parentIndex;
+    }
+
+    @Override
+    public void joinTables(Table parent, Table child) {
+      super.joinTables(parent, child);
+      myChild = (Table.TableStructure) child;
+
+      try {
+        parentData = (ArrayStructure) myChild.struct.read(); // cache entire station table  LOOK
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    public StructureData getJoin(StructureData obsdata) {
+      int index = obsdata.getScalarInt(parentIndex);
+      return parentData.getStructureData(index);
+    }
+
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      return null;
+    }
+  }
+
 }
 

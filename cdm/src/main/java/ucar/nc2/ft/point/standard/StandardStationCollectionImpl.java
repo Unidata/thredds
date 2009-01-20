@@ -21,7 +21,6 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.ft.point.StationFeatureImpl;
-import ucar.nc2.ft.point.standard.NestedTable;
 import ucar.nc2.ft.*;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureDataIterator;
@@ -29,8 +28,6 @@ import ucar.ma2.StructureData;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Object Heirarchy for StationFeatureCollection:
@@ -83,21 +80,18 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   }
 
   private class StandardStationFeatureImpl extends StationFeatureImpl {
-    StructureData stationData;
-    List<StructureData> sdataList;
+    StructureData[] tableData;
 
     StandardStationFeatureImpl(Station s, DateUnit dateUnit, StructureData stationData) {
       super(s, dateUnit, -1);
-      this.stationData = stationData;
-      sdataList = new ArrayList<StructureData>(2);
-      sdataList.add(null);
-      sdataList.add(stationData);
+      tableData = new StructureData[2];
+      tableData[1] = stationData;
     }
 
     // an iterator over Features of type PointFeature
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureDataIterator obsIter = ft.getStationObsDataIterator(stationData, bufferSize);
-      return new StandardStationPointIterator((size() < 0) ? this : null, obsIter, sdataList);
+      StructureDataIterator obsIter = ft.getStationObsDataIterator(tableData[1], bufferSize);
+      return new StandardStationPointIterator((size() < 0) ? this : null, obsIter, tableData);
     }
 
   }
@@ -106,8 +100,8 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
   private class StandardStationPointIterator extends StandardPointFeatureIterator {
     StationFeatureImpl station;
 
-    StandardStationPointIterator(StationFeatureImpl station, StructureDataIterator structIter, List <StructureData> sdataList) throws IOException {
-      super(ft, timeUnit, structIter, sdataList, false);
+    StandardStationPointIterator(StationFeatureImpl station, StructureDataIterator structIter, StructureData[] tableData) throws IOException {
+      super(ft, timeUnit, structIter, tableData, false);
       this.station = station;
     }
 

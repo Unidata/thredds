@@ -22,6 +22,7 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.Dimension;
 import ucar.ma2.ArrayStructure;
+import ucar.ma2.StructureData;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class TableConfig {
   public String name;
   public TableConfig parent;
   public JoinConfig join; // the join to its parent
+  public TableConfig extraJoin;
   public List<TableConfig> children;
 
   public FeatureType featureType;
@@ -46,17 +48,17 @@ public class TableConfig {
   // multidim: outer and inner dimensions
   public Dimension dim, outer;
   
-  public String limit;
-
   // TableType ArrayStructure
   public ArrayStructure as;
 
+  // TableType Singleton
+  public StructureData sdata;
+
   // coordinate variable names
-  public String lat, lon, elev, time, timeNominal;
+  public String lat, lon, elev, time, timeNominal, limit;
 
   // station info
   public String stnId, stnDesc, stnNpts, stnWmoId;
-  public int nstations;
 
   /**
    * Constructor

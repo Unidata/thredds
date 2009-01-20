@@ -50,4 +50,9 @@ public class StructureDataFactory {
     return sw;
   }
 
+  static public StructureData make(StructureData s1, StructureData s2) {
+    return s1; // LOOK TEMP
+  }
+
+
 }

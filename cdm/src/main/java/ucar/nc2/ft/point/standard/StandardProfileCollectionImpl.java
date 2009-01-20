@@ -33,52 +33,62 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.ft.point.OneNestedPointCollectionImpl;
-import ucar.nc2.ft.point.TrajectoryFeatureImpl;
+import ucar.nc2.ft.point.ProfileFeatureImpl;
+import ucar.nc2.ft.point.PointCollectionIteratorFiltered;
 import ucar.nc2.ft.*;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.constants.FeatureType;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
+import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 
 /**
  * @author caron
- * @since Dec 31, 2008
+ * @since Jan 20, 2009
  */
-public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionImpl implements TrajectoryFeatureCollection {
+public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl implements ProfileFeatureCollection {
   private DateUnit timeUnit;
   private NestedTable ft;
 
-  StandardTrajectoryCollectionImpl(NestedTable ft, DateUnit timeUnit) {
+  protected StandardProfileCollectionImpl(String name) {
+    super(name, FeatureType.TRAJECTORY);
+  }
+
+  StandardProfileCollectionImpl(NestedTable ft, DateUnit timeUnit) {
     super(ft.getName(), FeatureType.TRAJECTORY);
     this.ft = ft;
     this.timeUnit = timeUnit;
   }
 
   public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-    return new TrajIterator( ft.getFeatureDataIterator(bufferSize));
+    return new ProfileIterator( ft.getFeatureDataIterator(bufferSize));
   }
 
-  private TrajIterator localIterator = null;
+  private ProfileIterator localIterator = null;
   public boolean hasNext() throws IOException {
     if (localIterator == null) resetIteration();
     return localIterator.hasNext();
   }
 
   // need covariant return to allow superclass to implement
-  public TrajectoryFeature next() throws IOException {
+  public ProfileFeature next() throws IOException {
     return localIterator.next();
   }
 
   public void resetIteration() throws IOException {
-    localIterator = (TrajIterator) getPointFeatureCollectionIterator(-1);
+    localIterator = (ProfileIterator) getPointFeatureCollectionIterator(-1);
   }
 
-  private class TrajIterator implements PointFeatureCollectionIterator {
+  public ProfileFeatureCollection subset(LatLonRect boundingBox) throws IOException {
+    return new StandardProfileCollectionSubset( this, boundingBox);
+  }
+
+  private class ProfileIterator implements PointFeatureCollectionIterator {
     StructureDataIterator structIter;
 
-    TrajIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
+    ProfileIterator(ucar.ma2.StructureDataIterator structIter) throws IOException {
       this.structIter = structIter;
     }
 
@@ -86,25 +96,49 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
       return structIter.hasNext();
     }
 
-    public TrajectoryFeature next() throws IOException {
-      return new StandardTrajectoryFeature(structIter.next());
+    public ProfileFeature next() throws IOException {
+      StructureData[] tableData = new StructureData[ ft.getNumberOfLevels()];
+      tableData[1] = structIter.next();
+      return new StandardProfileFeature(tableData);
     }
 
     public void setBufferSize(int bytes) { }
   }
 
-  private class StandardTrajectoryFeature extends TrajectoryFeatureImpl {
-    StructureData trajData;
-    StandardTrajectoryFeature(StructureData trajData) {
-      super(ft.getFeatureName(trajData), -1);
-      this.trajData = trajData;
+  private class StandardProfileFeature extends ProfileFeatureImpl {
+    StructureData[] tableData;
+    StandardProfileFeature( StructureData[] tableData) {
+      super(ft.getFeatureName(tableData[1]), ft.getLatitude(tableData), ft.getLongitude(tableData), -1);
+      this.tableData = tableData;
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureData[] tableData = new StructureData[ ft.getNumberOfLevels()];
-      tableData[1] = trajData; // ?? could also be a Map
-      StructureDataIterator siter = ft.getFeatureObsDataIterator( trajData, bufferSize);
+      StructureDataIterator siter = ft.getFeatureObsDataIterator( tableData[1], bufferSize);
       return new StandardPointFeatureIterator(ft, timeUnit, siter, tableData, false);
+    }
+  }
+
+    // LOOK subset by filtering on the stations, but it would be easier if we could get the StationFeature from the Station
+  private class StandardProfileCollectionSubset extends StandardProfileCollectionImpl {
+    StandardProfileCollectionImpl from;
+      LatLonRect boundingBox;
+
+    StandardProfileCollectionSubset(StandardProfileCollectionImpl from, LatLonRect boundingBox) {
+      super(from.getName()+"-subset");
+      this.from = from;
+      this.boundingBox = boundingBox;
+    }
+
+    public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
+      return new PointCollectionIteratorFiltered( from.getPointFeatureCollectionIterator(bufferSize), new Filter());
+    }
+
+    private class Filter implements PointFeatureCollectionIterator.Filter {
+
+      public boolean filter(PointFeatureCollection pointFeatureCollection) {
+        ProfileFeature profileFeature = (ProfileFeature) pointFeatureCollection;
+        return boundingBox.contains(profileFeature.getLatLon());
+      }
     }
   }
 
