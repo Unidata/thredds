@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Mozilla/4.76 [en] (Windows NT 5.0; U) [Netscape]">
+  <meta name="Author" content="John Caron">
+  <title>THREDDS Catalog Primer</title>
+  <style type="text/css">
+  pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+  code {font-size: 11pt;}
+  dl {margin: 10px 5px 5px 15px;)
+  </style>
+</head>
+<body >
+<div class="head"> 
+  <h1> <img src="../images/THREDDSlogo.jpg" width="67" height="54">THREDDS Catalog Primer </h1>
+  <address>
+  last update: 21 January 2009
+  </address>
+  <br>
+<hr title="Separator for header">
+  <h2>Introduction</h2>
+</div>
+<p>THREDDS catalogs collect, organize, and describe accessible
+datasets. They provide a hierarchical structure for organizing the
+datasets as well as an access method (URL) and a human understandable
+name for each dataset. Further descriptive information about each
+dataset can also be added.</p>
+
+<h3>Example Catalog</h3>
+<pre style="margin-left: 40px;">
+  &lt;?xml version='1.0' encoding='UTF-8'?&gt;
+  &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+           xmlns:xlink="http://www.w3.org/1999/xlink"
+           version="1.0.2"&gt;
+<span style="font-weight: bold;">1)</span>    &lt;service name="<span style="font-weight: bold;">odap</span>" serviceType="OPENDAP" <span style="font-weight: bold;">base="/thredds/dodsC/"</span> /&gt;
+      &lt;dataset name="TDS Tutorial: example 1"&gt;
+
+<span style="font-weight: bold;">2)</span>        &lt;dataset name="TDS Tutorial: example data 1" <span style="font-weight: bold;">urlPath="test/example1.nc"</span> &gt;
+<span style="font-weight: bold;">3)</span>            &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
+          &lt;/dataset&gt;
+          &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" &gt;
+              &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
+          &lt;/dataset&gt;
+          &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" &gt;
+              &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
+          &lt;/dataset&gt;<br>
+<span style="font-weight: bold;">4)</span>        &lt;catalogRef xlink:title="My Other Catalog"
+                      xlink:href="myOtherCatalog.xml" /&gt;
+          &lt;catalogRef xlink:title="Far Away Univ catalog"
+                      xlink:href="http://www.farAwayU.edu/thredds/catalog.xml" /&gt;
+      &lt;/dataset&gt;
+  &lt;/catalog&gt;
+</pre>
+<p>Notes:</p>
+<ul>
+<li>The service element (1) defines an OPeNDAP service and has the
+name "odap". (The catalog specification
+  <a href="InvCatalogSpec.html#serviceTypes">lists other service types</a>.)
+</li>
+<li>The first dataset is a container dataset.</li>
+<li>Each child dataset has an access method due to
+its urlPath attribute (2) and child serviceName element (3).</li>
+<li>The catalogRef elements (4) link to a relative catalog and a
+remote catalog.</li>
+</ul>
+
+<h4>Constructing an access URL</h4>
+<ol>
+<li>Find the service element referenced by the dataset:
+<pre style="margin-left: 40px;">&lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;</pre>
+</li>
+<li>Get the base URL of the service element:
+<pre style="margin-left: 40px;">/thredds/dodsC/</pre>
+</li>
+<li>If it is a relative URL, resolve against the catalog's URL:
+<pre style="margin-left: 40px;">http://my.server/thredds/catalog.xml      <var>// Catalog URL</var></pre>
+<pre style="margin-left: 40px;">http://my.server/thredds/dodsC/           <var>// Service base URL</var></pre>
+</li>
+<li>Find the urlPath attribute for the accessible dataset:
+<pre style="margin-left: 40px;">urlPath="test/example3.nc"</pre>
+</li>
+<li>Append the value of the urlPath attribute to the base
+service URL:<br>
+<pre style="margin-left: 40px;">http://my.server/thredds/dodsC/test/example3.nc</pre>
+</li>
+</ol>
+<p>More information is available on <a href="../catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">constructing
+access URLs</a>. </p>
+<h3>Example Catalog - shared service name</h3>
+<pre style="margin-left: 40px;">  &lt;?xml version='1.0' encoding='UTF-8'?&gt;<br>  &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br> &nbsp;         xmlns:xlink="http://www.w3.org/1999/xlink"<br>         &nbsp; version="1.0.2"&gt;<br><span style="font-weight: bold;">    </span>  &lt;service name="<span style="font-weight: bold;">odap</span>" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;<br>      &lt;dataset name="TDS Tutorial: example 2"&gt;<br>           &lt;metadata inherited="true"&gt;<br><span style="font-weight: bold;">2)</span>             &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;<br>           &lt;/metadata&gt;<br><br><span style="font-weight: bold;">3)        </span> &lt;dataset name="TDS Tutorial: example data 1" <span style="font-weight: bold;">urlPath="test/example1.nc"</span> /&gt;<br><span style="font-weight: bold;">3)</span><span style="font-weight: bold;"> </span>        &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;<br><span style="font-weight: bold;">3)</span>         &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;<br><br>           &lt;catalogRef xlink:title="My Other Catalog"<br>                     &nbsp; xlink:href="myOtherCatalog.xml" /&gt;<br>           &lt;catalogRef xlink:title="Far Away Univ catalog"<br>                     &nbsp; xlink:href="http://www.farAwayU.edu/thredds/catalog.xml" /&gt;<br>      &lt;/dataset&gt;<br>  &lt;/catalog&gt;</pre>
+<p>Notes:</p>
+<ul>
+<li>The serviceName element is inherited by each child dataset
+from the metadata of the containing dataset.</li>
+</ul>
+
+<hr size="2" width="100%">
+<h3>TDS Restrictions on the&nbsp;<code>service</code> Elements</h3>
+<p>The TDS provides data access services at predefined URL base
+paths. Therefore, service base URLs must start with the following values:</p>
+
+<p style="margin-left: 40px;"><strong>OPeNDAP</strong></p>
+<pre style="margin-left: 80px;">&lt;service name="odap" serviceType="OPeNDAP" base="<strong>/thredds/dodsC/</strong>" /&gt;</pre>
+
+<p style="margin-left: 40px;"><strong>NetCDF Subset Service</strong></p>
+<pre style="margin-left: 80px;">&lt;service name="ncss" serviceType="NetcdfSubset" base="<strong>/thredds/ncss/</strong>" /&gt;</pre>
+
+<p style="margin-left: 40px;"><strong>WCS</strong></p>
+<pre style="margin-left: 80px;"> &lt;service name="wcs" serviceType="WCS" base="<strong>/thredds/wcs/</strong>" /&gt;</pre>
+
+<p style="margin-left: 40px;"><strong>HTTP Bulk File Service</strong></p>
+<pre style="margin-left: 80px;">&lt;service name="fileServer" serviceType="HTTPServer" base="<strong>/thredds/fileServer/"</strong> /&gt;</pre>
+<h3><code>service</code> Element Names must be Unique in Each Catalog</h3>Within a catalog, the service name is used to reference&nbsp;a <code>service</code>
+element. The service names must therefore be unique in each catalog.
+[Note: It is not necessary that they be unique globally within a TDS.
+Only on a catalog by catalog basis.]<h3>Compound <code>service</code> Elements - Serving Datasets with Multiple Methods</h3><p>Datasets can be made available through more than one access
+method by defining and then referencing a <strong>compound</strong>
+<code>service</code> element. The following:<br>
+</p>
+<pre style="margin-left: 40px;">&lt;service name="<strong>all</strong>" serviceType="Compound" base="" &gt;<br><strong> </strong>   &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>    &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;<br>&lt;/service&gt;<br></pre>
+<p>defines a compound service named "all" which contains
+two
+nested services. Any dataset that reference the compound service will
+have two access methods. For instance:<br>
+</p>
+<pre style="margin-left: 40px;">&lt;dataset name="cool data" urlPath="so/cool/data.nc" &gt;<br>    &lt;serviceName&gt;<strong>all</strong>&lt;/serviceName&gt;<br>&lt;/dataset&gt;<br></pre>
+<p>would result in these two access URLs:<br></p><pre style="margin-left: 40px;"><code>/thredds/dodsC/so/cool/data.nc</code></pre><pre style="margin-left: 40px;"><code>/thredds/wcs/so/cool/data.nc</code></pre><p>Note: The contained services can still be referenced independently. For instance:</p><pre style="margin-left: 40px;">&lt;dataset name="more cool data" urlPath="more/cool/data.nc" &gt;<br>    &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>&lt;/dataset&gt;</pre><p>results in a single access URL:</p><pre style="margin-left: 40px;"><code>/thredds/dodsC/more/cool/data.nc</code></pre><h3>THREDDS Metadata</h3><h4>Linking to&nbsp;Metadata</h4><pre style="margin-left: 40px;">&lt;metadata xlink:title="some good metadata" xlink:href="http://my.server/md/data1.xml" /&gt;</pre><h4>Linking to Human Readable Metadata</h4><pre style="margin-left: 40px;">&lt;description xlink:title="My Data" xlink:href="http://my.server/md/data1.html" /&gt;</pre><h4>Inherited Metadata</h4><pre style="margin-left: 40px;">...<br> &nbsp;  &lt;dataset name="TDS Tutorial: example inherited metadata"&gt;<br>        &lt;metadata inherited="true"&gt;<span style="font-weight: bold;"><br></span>           &nbsp;&lt;serviceName&gt;odap&lt;/serviceName&gt;<br>            &lt;description&gt;Really great data.&lt;/description&gt;<br>            &lt;keyword&gt;Ocean&lt;/keyword&gt;<br>            &lt;keyword&gt;Temperature&lt;/keyword&gt;<br>            &lt;creator&gt;Ethan&lt;/creator&gt;<br>            &lt;publisher&gt;Ethan&lt;/publisher&gt;<br>            &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;<br>            <span style="font-weight: bold;">&lt;dataFormat&gt;netCDF&lt;/dateFormat&gt;</span><br>        &lt;/metadata&gt;<br><br>        &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;<br>        &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;<br><span style="font-weight: bold;">        </span>&lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;<br><span style="font-weight: bold;">        </span>&lt;dataset name="TDS Tutorial: example data 4" urlPath="test/example4.grib2"&gt;<br>            <span style="font-weight: bold;">&lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;</span><br>        &lt;/dataset&gt;<br><br><br><br>&nbsp;   &lt;/dataset&gt;<br>...</pre>
+
+<p>Notes:</p>
+<ul><li>Inherited metadata can be overwritten.</li></ul><h4>TDS Configuration Catalogs and Metadata</h4><p>The datasetScan element is an extension of the dataset element and so can contain metadata.</p><pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br><strong>2)</strong>    &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan" <br>                   path="<strong>my/test/all</strong>" location="/my/data/testdata"&gt;<br>          &lt;metadata inherited="true"&gt;<br>              &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>              &lt;keyword&gt;Ocean&lt;/keyword&gt;<br>              &lt;keyword&gt;Temperature&lt;/keyword&gt;<br>              &lt;creator&gt;Ethan&lt;/creator&gt;<br>              &lt;publisher&gt;Ethan&lt;/publisher&gt;<br>              &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;<br>          &lt;/metadata&gt;<br>      &lt;/datasetScan&gt;<br>...<br></pre>
+<p>results in </p>
+<pre style="margin-left: 40px;">...<br>      &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br><br>      &lt;dataset name="Test all files in a directory" ID="testDatasetScan" &gt;<br>          &lt;metadata inherited="true"&gt;<br>              &lt;serviceName&gt;odap&lt;/serviceName&gt;<br>              &lt;keyword&gt;Ocean&lt;/keyword&gt;<br>              &lt;keyword&gt;Temperature&lt;/keyword&gt;<br>              &lt;creator&gt;Ethan&lt;/creator&gt;<br>              &lt;publisher&gt;Ethan&lt;/publisher&gt;<br>              &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;<br>          &lt;/metadata&gt;<br>          &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/afile.nc"&gt;<br>          &lt;dataset name="testData.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/testData.nc"&gt;<br>          &lt;dataset name="junk.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/junk.nc"&gt;<br><br>          &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""<br>                      xlink:href="/thredds/catalog/<code>my/test/all</code>/grib/catalog.xml" /&gt;<br>      &lt;/dataset&gt;<br>...</pre>
+
+<hr size="2" width="100%">
+
+<p>Here's an example of a very simple catalog:</p>
+<pre> 1 &lt;?xml version=&quot;1.0&quot; ?&gt; 
+ 2 &lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; &gt;
+ 3   &lt;service name=&quot;aggServer&quot; serviceType=&quot;DODS&quot;  base=&quot;http://acd.ucar.edu/dodsC/&quot; /&gt;
+ 4   &lt;dataset name=&quot;SAGE III Ozone Loss&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage.nc&quot;/&gt;
+ 5 &lt;/catalog&gt;
+</pre>
+<p>with this line-by-line explanation:</p>
+<ol>
+  <li>The first line indicates that its an XML document.</li>
+  <li>This is the <em>root</em> element of the XML, the <strong><em>catalog</em></strong> 
+    <strong><em>element</em></strong>. It must declare the <em>thredds catalog 
+    namespace</em> with the <em><strong>xmlns attribute</strong></em> exactly 
+    as shown.</li>
+  <li>This declares a <em><strong>service</strong></em> with name <em>aggServer. 
+    </em>It is a DODS (OpenDAP) server whose dataset URLs all start with <em>http://acd.ucar.edu/dodsC/</em>. 
+  </li>
+  <li>This declares a <strong><em>dataset</em></strong> whose name is <em>SAGE 
+    III Ozone Loss</em>. It references the <em>aggServer</em> service, and so 
+    its full URL will be <em>http://acd.ucar.edu/dodsC/sage.nc</em>.</li>
+  <li>This closes the catalog element.</li>
+</ol>
+<h3>Nested datasets</h3>
+<p>Usually you have many datasets to declare in each catalog, which you do using 
+  nested datasets:</p>
+<pre> &lt;?xml version=&quot;1.0&quot; ?&gt; 
+ &lt;catalog name=&quot;Example&quot; xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; &gt;
+   &lt;service name=&quot;aggServer&quot; base=&quot;http://acd.ucar.edu/dodsC/&quot; serviceType=&quot;DODS&quot; /&gt;
+
+1  &lt;dataset name=&quot;SAGE III Ozone Loss Experiment&quot; &gt;
+2     &lt;dataset name=&quot;January Averages&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/avg/jan.nc&quot;/&gt;
+2     &lt;dataset name=&quot;February Averages&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/avg/feb.nc&quot;/&gt;
+2     &lt;dataset name=&quot;March Averages&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/avg/mar.nc&quot;/&gt;
+3  &lt;/dataset&gt;
+
+ &lt;/catalog&gt;</pre>
+<ol>
+  <li>This now declares a <em><strong>collection dataset</strong></em> which just 
+    acts as a container for the other datasets. Note that is ends in a &gt; instead 
+    of /&gt;. </li>
+  <li>These are the datasets that directly point to data, called <strong><em>direct 
+    datasets</em></strong>.</li>
+  <li>This closes the collection dataset element on line 1.
+  </li>
+</ol>
+<p>You can add any level of nesting you want, eg:</p>
+<pre>&lt;?xml version=&quot;1.0&quot; ?&gt; 
+&lt;catalog name=&quot;Example&quot; xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; &gt;
+ &lt;service name=&quot;aggServer&quot; base=&quot;http://acd.ucar.edu/dodsC/&quot; serviceType=&quot;DODS&quot; /&gt;
+
+ &lt;dataset name=&quot;SAGE III Ozone Loss Experiment&quot; &gt;
+
+  &lt;dataset name=&quot;Monthly Averages&quot; &gt;
+   &lt;dataset name=&quot;January Averages&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/avg/jan.nc&quot;/&gt;
+   &lt;dataset name=&quot;February Averages&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/avg/feb.nc&quot;/&gt;
+   &lt;dataset name=&quot;March Averages&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/avg/mar.nc&quot;/&gt;
+  &lt;/dataset&gt;
+
+  &lt;dataset name=&quot;Daily Flight Data&quot; &gt;
+   &lt;dataset name=&quot;January&quot;&gt;
+     &lt;dataset name=&quot;Jan 1, 2001&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/daily/20010101.nc&quot;/&gt;
+     &lt;dataset name=&quot;Jan 2, 2001&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/daily/20010201.nc&quot;/&gt;
+   &lt;/dataset&gt;
+  &lt;/dataset&gt;
+
+ &lt;/dataset&gt;
+&lt;/catalog&gt;</pre>
+<h3>More dataset information</h3>
+<p>There's a lot of other information that can be optionally added that helps 
+  applications and digital libraries know how to &quot;do the right thing&quot; 
+  with the dataset. The<strong> collectionType</strong> attribute is used on collection 
+  datasets. The <strong>dataType</strong> is a simple classification (eg <em>Image</em>, 
+  <em>Grid</em>, <em>Point</em> data, etc). The <strong>dataFormatType</strong> 
+  describes what format the data is stored in (eg <em>NetCDF</em>, <em>HDF5</em>, 
+  etc) used by a file transfer protocol like FTP. The combination of the naming 
+  <strong>authority</strong> and the <strong>ID</strong> attribute should form 
+  a globally unglue identifier for a dataset.</p>
+<pre>&lt;dataset name=&quot;SAGE III Ozone Loss Experiment&quot; <strong>collectionType=&quot;TimeSeries&quot;</strong>&gt;
+  &lt;dataset name=&quot;January Averages&quot; serviceName=&quot;aggServer&quot; urlPath=&quot;sage/avg/jan.nc&quot; <strong>authority=&quot;unidata.ucar.edu&quot; ID=&quot;sage-20938483&quot;</strong>&gt;
+	 <strong>&lt;dataType&gt;Trajectory&lt;/dataType&gt;
+	 &lt;dataFormatType&gt;NetCDF&lt;/dataFormatType&gt;</strong>
+  &lt;/dataset&gt;
+&lt;/dataset&gt;</pre>
+<p>The <strong>harvest</strong> attribute indicates that the dataset is at the 
+  right level of granularity to be exported to search systems like Digital Libraries. 
+  Elements such as <strong>summary</strong>, <strong>rights</strong>, <strong>publisher 
+  </strong>are needed in order to create valid entries for these services. For 
+  more details, see <a href="DL.html">Exporting THREDDS Datasets to Digital Libraries.</a> Also see the 
+  <a href="InvCatalogSpec.html">Catalog Specification</a> as a complete reference.</p>
+<pre>&lt;dataset name=&quot;SAGE III Ozone Loss Experiment&quot; <strong>harvest=&quot;true&quot;</strong>&gt;
+  &lt;<strong>contributor</strong> role=&quot;data manager&quot;&gt;John Smith&lt;/contributor&gt;<br>  &lt;<strong>keyword</strong>&gt;Atmospheric Chemistry&lt;/keyword&gt;<br>  &lt;<strong>publisher</strong>&gt;<br>    &lt;name vocabulary=&quot;DIF&quot;&gt;Community Data Portal, National Center for Atmospheric Research, University Corporation for Atmospheric Research&lt;/long_name&gt;
+    &lt;contact url=&quot;http://dataportal.ucar.edu&quot; email=&quot;cdp@ucar.edu&quot;/&gt;<br>  &lt;/<strong>publisher</strong>&gt;<br>&lt;/dataset&gt;</pre>
+<h3>Factoring out information</h3>
+<p>Rather than declare the same information on each dataset, you can use the <em>metadata</em> 
+  element to factor out common information.:</p>
+<pre>&lt;dataset name=&quot;SAGE III Ozone Loss Experiment&quot; &gt;
+
+1<strong> &lt;metadata inherit=&quot;true&quot;&gt;
+</strong>2   &lt;serviceName&gt;aggServer&lt;/serviceName&gt;
+2   &lt;dataType&gt;Trajectory&lt;/dataType&gt;
+2   &lt;dataFormatType&gt;NetCDF&lt;/dataFormatType&gt;
+2   &lt;authority&gt;unidata.ucar.edu&lt;/authority&gt;
+<strong>  &lt;/metadata&gt;</strong>
+
+3 &lt;dataset name=&quot;January Averages&quot; urlPath=&quot;sage/avg/jan.nc&quot; ID=&quot;sage-23487382&quot;/&gt;
+3 &lt;dataset name=&quot;February Averages&quot; urlPath=&quot;sage/avg/feb.nc&quot; ID=&quot;sage-63656446&quot;/&gt;
+4 &lt;dataset name=&quot;Global Averages&quot; urlPath=&quot;sage/global.nc&quot; ID=&quot;sage-7869700g&quot; <strong>dataType=&quot;Grid&quot;</strong>/&gt;
+
+&lt;/dataset&gt;
+</pre>
+<ol>
+  <li> The <em>metadata</em> element with<em> inherit=true </em>implies that all 
+    the information inside the metadata element applies to the current dataset 
+    and all nested datasets.</li>
+  <li>The <em>serviceName, dataType, dataFormatType </em> and <em>authority</em> 
+    are declared as elements.</li>
+  <li>These datasets now use the <em>serviceName, dataType, dataFormatType </em> 
+    and <em>authority</em> values declared in the parent dataset.</li>
+  <li>This dataset uses the <em>serviceName, dataFormatType </em> and <em>authority</em> 
+    values and overrides the <em>dataType</em>.</li>
+</ol>
+<hr>
+<h2>More Advanced Topics</h2>
+<h3>XML Namespaces and Validation</h3>
+<p>If you use elements from other namespaces, you must declare those namespaces 
+  in the catalog element. Currently there are two other namespaces THREDDS libraries 
+  will recognize, <strong>Dublin Core</strong>, and <strong>XLink</strong>, whose 
+  namespaces look like:</p>
+<pre>
+&lt;catalog name=&quot;MyName&quot;
+    xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
+    <strong>xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;  </strong>
+  <strong>  xmlns:xlink="http://www.w3.org/1999/xlink"</strong> &gt;</pre>
+<p>Its not obvious, but namespaces are not web addresses, they are just strings 
+  that need to be copied exactly as you see them here.</p>
+<p>As catalogs get more complicated, you should check that you haven't made any 
+  errors. There are three parts to checking: </p>
+<ol>
+  <li>Is the XML well-formed? </li>
+  <li>Is it valid against the catalog schema? </li>
+  <li>Does it have everything it needs to be read by a THREDDS client? </li>
+</ol>
+<p>You can use any THREDDS validation service, such as <a href="http://motherlode.ucar.edu:8080/thredds/validate.html">this 
+  one</a> to check all three of these. </p>
+<p>You can check <em>well-formedness</em> using an XML tool like XMLSpy; in order 
+  to check <em>validity</em> in those tools you will need to declare the catalog 
+  schema location like this:</p>
+<pre>&lt;catalog name=&quot;MyName&quot;
+  xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
+<strong>1 xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+2 xsi:schemaLocation=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd&quot;&gt; </strong>
+...
+&lt;/catalog&gt;</pre>
+<ol>
+  <li>This line declares the schema-instance namespace. Just copy it exactly as 
+    you see it here.</li>
+  <li> This line tells your XML validation tool where to find the thredds schema. 
+    Just copy it exactly as you see it here.</li>
+</ol>
+<p>The THREDDS validation service, as well as the <a href="../ClientLibraries.html">catalog 
+  library</a>, knows where the schemas are located, so you only need to add these 
+  2 lines if you want to do your own validation.</p>
+<h3>Catalog References </h3>
+<p>It can be useful to break up large catalogs into pieces in order to separately 
+  maintain each piece. One way to do this is to use build each piece as a separate 
+  and logically complete catalog, then create a master catalog using catalog references:</p>
+<pre>&lt;catalog name=&quot;master&quot; 
+	xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
+   <strong>xmlns:xlink="http://www.w3.org/1999/xlink"</strong> &gt;
+
+ &lt;dataset  name=&quot;List of THREDDS catalogs&quot;&gt;
+   &lt;<strong>catalogRef</strong> <strong>xlink:title</strong>=&quot;IRI/LDEO Climate Data Library&quot; <strong>xlink:href</strong>=&quot;http://iridl.ldeo.columbia.edu/SOURCES/thredds.xml&quot;/&gt;
+   &lt;<strong>catalogRef</strong> <strong>xlink:title</strong>=&quot;NCAR Data Portal&quot; <strong>xlink:href</strong>=&quot;http://dataportal.ucar.edu/metadata/ucar.thredds&quot;/&gt;
+   &lt;<strong>catalogRef</strong> <strong>xlink:title</strong>=&quot;NOAA-CIRES Climate Diagnostics Center&quot; <strong>xlink:href</strong>=&quot;http://www.cdc.noaa.gov/THREDDS/catalog.xml&quot;/&gt;
+   &lt;<strong>catalogRef</strong> <strong>xlink:title</strong>=&quot;Unidata THREDDS-IDD Server&quot; <strong>xlink:href</strong>=&quot;http://motherlode.ucar.edu:8080/thredds/catalog.xml&quot;/&gt;
+   &lt;<strong>catalogRef</strong> <strong>xlink:title</strong>=&quot;University of Alabama Huntsville POND server&quot; <strong>xlink:href</strong>=&quot;http://pond.itsc.uah.edu/catalog/thredds/pond_cat.xml&quot;/&gt;
+  &lt;/dataset&gt;</pre>
+<pre>
+&lt;/catalog&gt;</pre>
+<p>In this example we have several catalogRef elements, each with a link to an 
+  external catalog, using the <strong>xlink:href</strong> attribute. The catalogRef 
+  should be thought of as a dataset, whose contents are the contents of the external 
+  catalog. The <strong>xlink:title</strong> is used as the name of the dataset. 
+  Notice that we must declare the xlink namespace in the catalog element.</p>
+<hr>
+</body>
+</html>

@@ -3,11 +3,13 @@
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   
 
-<title>TDS Tutorial: TDS Configuration</title><style type="text/css">
+<title>TDS Tutorial: TDS Configuration</title>
+<style type="text/css">
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
-</style></head>
+</style>
+</head>
 <body>
 <h1><img alt="THREDDS" src="../images/THREDDSlogo.jpg" height="54" width="67">TDS Tutorial: TDS Configuration</h1>
 <div class="head">
@@ -60,7 +62,8 @@ access URLs</a>. </p>
 <ul>
 <li>The serviceName element is inherited by each child dataset
 from the containing dataset.</li>
-</ul><hr size="2" width="100%">
+</ul>
+<hr size="2" width="100%">
 <h2>TDS Configuration Catalogs</h2>
 <p>TDS configuration catalogs are THREDDS catalogs with a few extensions.</p>
 <p>They contain information detailing the datasets the TDS will serve and what services will be available for each dataset:</p><ul><li>The <code>datasetRoot</code> and <code>datasetScan</code> elements are extensions that:</li><ul><li>provide mappings between incoming URL requests and directories on disk; and</li><li>are used in the detailing of the datasets the TDS will serve. </li></ul><li>Available services are indicated in the normal THREDDS catalog manner with service name references.</li></ul><p>The TDS configuration catalogs represent the top-level catalogs served by the TDS:</p><ul><li>The configuration information is only needed by the server.</li><li>The client view of the catalogs does not contain any configuration information.</li></ul><h3><code>datasetRoot</code> Element</h3><p>Each <code>datasetRoot</code>
