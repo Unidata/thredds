@@ -39,93 +39,105 @@ import java.nio.*;
 import java.util.*;
 import java.util.zip.*;
 
+/**
+ * This class reads in an NEXRAD level III and TDWR file.
+ * most file need to go through the header part to have enough info to
+ * construct the netcdf structure of the radar file
+ *
+ * @author caron
+ */
 
 class Nidsheader{
-  final private static boolean useStationDB = false; // use station db for loactions
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nidsheader.class);
+    final private static boolean useStationDB = false; // use station db for loactions
+    static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nidsheader.class);
 
-  final static int  NEXR_PID_READ = 100;
-  final static int  DEF_NUM_ELEMS = 640;   /* default num of elements to send         */
-  final static int  DEF_NUM_LINES = 480;   /* default num of lines to send            */
-  final static int  NEXR_FILE_READ = -1;   /* # flag to read entire NIDS file         */
-  final static int  NEXR_DIR_READ = 356 ;  /* just enough bytes for NIDS directory    */
-  final static int  READ_BUFFER_SIZE = 1;   /* # of image lines to buffer on read      */
-  final static int  ZLIB_BUF_LEN = 4000;   /* max size of an uncompressed ZLIB buffer */
-  byte Z_DEFLATED  = 8;
-  byte DEF_WBITS  = 15;
-  final static int   Other = 0;
-  final static int   Base_Reflect = 1;
-  final static int   Velocity = 2;
-  final static int   Comp_Reflect = 3;
-  final static int   Layer_Reflect_Avg = 4;
-  final static int   Layer_Reflect_Max = 5;
-  final static int   Echo_Tops = 6;
-  final static int   Vert_Liquid = 7;
-  final static int   Precip_1 = 8;
-  final static int   Precip_3 = 9;
-  final static int   Precip_Accum = 10;
-  final static int   Precip_Array = 11;
-  final static int   BaseReflect248 = 12;
-  final static int   StrmRelMeanVel = 13;
-  final static int   VAD = 14;
-  final static int   SPECTRUM = 15;
-  final static int   DigitalHybridReflect = 16;
-  final static int   DigitalStormTotalPrecip = 17;
-  final static int   Reflect1 = 18;
-  final static int   Velocity1 = 19;
-  final static int   SPECTRUM1 = 20;
-  // message header block
-  short mcode = 0;
-  short mdate = 0;
-  int mtime = 0;
-  int mlength = 0;
-  short msource = 0;
-  short mdestId = 0;
-  short mNumOfBlock = 0;
-  // production dessciption block
-  short divider = 0;
-  double latitude = 0.0;
-  double lat_min = 0.0;
-  double lat_max = 0.0;
-  double longitude = 0.0;
-  double lon_min = 0.0;
-  double lon_max = 0.0;
+    final static int  NEXR_PID_READ = 100;
+    final static int  DEF_NUM_ELEMS = 640;   /* default num of elements to send         */
+    final static int  DEF_NUM_LINES = 480;   /* default num of lines to send            */
+    final static int  NEXR_FILE_READ = -1;   /* # flag to read entire NIDS file         */
+    final static int  NEXR_DIR_READ = 356 ;  /* just enough bytes for NIDS directory    */
+    final static int  READ_BUFFER_SIZE = 1;   /* # of image lines to buffer on read      */
+    final static int  ZLIB_BUF_LEN = 4000;   /* max size of an uncompressed ZLIB buffer */
+    byte Z_DEFLATED  = 8;
+    byte DEF_WBITS  = 15;
+    final static int   Other = 0;
+    final static int   Base_Reflect = 1;
+    final static int   Velocity = 2;
+    final static int   Comp_Reflect = 3;
+    final static int   Layer_Reflect_Avg = 4;
+    final static int   Layer_Reflect_Max = 5;
+    final static int   Echo_Tops = 6;
+    final static int   Vert_Liquid = 7;
+    final static int   Precip_1 = 8;
+    final static int   Precip_3 = 9;
+    final static int   Precip_Accum = 10;
+    final static int   Precip_Array = 11;
+    final static int   BaseReflect248 = 12;
+    final static int   StrmRelMeanVel = 13;
+    final static int   VAD = 14;
+    final static int   SPECTRUM = 15;
+    final static int   DigitalHybridReflect = 16;
+    final static int   DigitalStormTotalPrecip = 17;
+    final static int   Reflect1 = 18;
+    final static int   Velocity1 = 19;
+    final static int   SPECTRUM1 = 20;
+    // message header block
+    short mcode = 0;
+    short mdate = 0;
+    int mtime = 0;
+    int mlength = 0;
+    short msource = 0;
+    short mdestId = 0;
+    short mNumOfBlock = 0;
+    // production dessciption block
+    short divider = 0;
+    double latitude = 0.0;
+    double lat_min = 0.0;
+    double lat_max = 0.0;
+    double longitude = 0.0;
+    double lon_min = 0.0;
+    double lon_max = 0.0;
 
-  double height = 0;
-  short pcode = 0;
-  short opmode = 0;
-  short volumnScanPattern = 0;
-  short sequenceNumber = 0;
-  short volumeScanNumber = 0;
-  short volumeScanDate = 0;
-  int volumeScanTime = 0;
-  short productDate = 0;
-  int productTime = 0;
-  short p1 = 0;
-  short p2 = 0;
-  short elevationNumber = 0;
-  short p3 = 0;
-  short [] threshold = new short[16];
-  short p4 = 0;
-  short p5 = 0;
-  short p6 = 0;
-  short p7 = 0;
-  short p8 = 0;
-  short p9 = 0;
-  short p10 = 0;
-  short numberOfMaps = 0;
-  int offsetToSymbologyBlock = 0;
-  int offsetToGraphicBlock = 0;
-  int offsetToTabularBlock = 0;
-  int block_length = 0;
-  short number_layers = 0;
-  String stationId;
-  String stationName = "XXX";
-  private boolean noHeader;
+    double height = 0;
+    short pcode = 0;
+    short opmode = 0;
+    short volumnScanPattern = 0;
+    short sequenceNumber = 0;
+    short volumeScanNumber = 0;
+    short volumeScanDate = 0;
+    int volumeScanTime = 0;
+    short productDate = 0;
+    int productTime = 0;
+    short p1 = 0;
+    short p2 = 0;
+    short elevationNumber = 0;
+    short p3 = 0;
+    short [] threshold = new short[16];
+    short p4 = 0;
+    short p5 = 0;
+    short p6 = 0;
+    short p7 = 0;
+    short p8 = 0;
+    short p9 = 0;
+    short p10 = 0;
+    short numberOfMaps = 0;
+    int offsetToSymbologyBlock = 0;
+    int offsetToGraphicBlock = 0;
+    int offsetToTabularBlock = 0;
+    int block_length = 0;
+    short number_layers = 0;
+    String stationId;
+    String stationName = "XXX";
+    private boolean noHeader;
 
-  DateFormatter formatter = new DateFormatter();
+    DateFormatter formatter = new DateFormatter();
 
-  public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) {
+    /**
+     * check if this file is a nids / tdwr file
+     * @param raf    input file
+     * @return  true  if valid
+     */
+    public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) {
         try
         {
             long t = raf.length();
@@ -146,163 +158,180 @@ class Nidsheader{
         {
             return( false );
         }                                 
-    return true;
-  }
+        return true;
+    }
 
-  int readWMO(ucar.unidata.io.RandomAccessFile raf ) throws IOException
-  {
-    int pos = 0;
-    //long     actualSize = 0;
-    raf.seek(pos);
-    int readLen = 35;
-    int rc = 0;
-
-    // Read in the contents of the NEXRAD Level III product head
-    byte[] b = new byte[readLen];
-    rc = raf.read(b);
-    if ( rc != readLen )
+    /**
+     * read the header of input file and parsing the WMO part
+     * @param raf    input file
+     * @return        1 if checking passing
+     * @throws IOException
+     */
+    int readWMO(ucar.unidata.io.RandomAccessFile raf ) throws IOException
     {
-        // out.println(" error reading nids product header");
-        return 0;
+        int pos = 0;
+        //long     actualSize = 0;
+        raf.seek(pos);
+        int readLen = 35;
+        int rc = 0;
+
+        // Read in the contents of the NEXRAD Level III product head
+        byte[] b = new byte[readLen];
+        rc = raf.read(b);
+        if ( rc != readLen )
+        {
+            // out.println(" error reading nids product header");
+            return 0;
+        }
+
+        // new check
+        int iarr2_1 = bytesToInt(b[0], b[1], false);
+        int iarr2_16 = bytesToInt(b[30], b[31], false);
+        int iarr2_10 = bytesToInt(b[18], b[19], false);
+        int iarr2_7 = bytesToInt(b[12], b[13], false);
+        if ( ( iarr2_1 == iarr2_16 ) &&
+             ( ( iarr2_1 >=   16  ) && ( iarr2_1 <= 299) ) &&
+             ( iarr2_10  ==   -1 ) &&
+             ( iarr2_7   <    10000 ) )  {
+             noHeader = true;
+             return 1;
+
+        }
+        //Get product message header into a string for processing
+
+        String pib = new String(b);
+        if(  pib.indexOf("SDUS")!= -1){
+            noHeader = false;
+            return 1;
+        } else if ( raf.getLocation().indexOf(".nids") != -1) {
+            noHeader = true;
+            return 1;
+       // } else if(checkMsgHeader(raf) == 1) {
+        //    noHeader = true;
+       //     return 1;
+        } else
+            return 0;
     }
 
-    // new check
-    int iarr2_1 = bytesToInt(b[0], b[1], false);
-    int iarr2_16 = bytesToInt(b[30], b[31], false);
-    int iarr2_10 = bytesToInt(b[18], b[19], false);
-    int iarr2_7 = bytesToInt(b[12], b[13], false);
-    if ( ( iarr2_1 == iarr2_16 ) &&
-         ( ( iarr2_1 >=   16  ) && ( iarr2_1 <= 299) ) &&
-         ( iarr2_10  ==   -1 ) &&
-         ( iarr2_7   <    10000 ) )  {
-         noHeader = true;
-         return 1;
-
-    }
-    //Get product message header into a string for processing
-
-    String pib = new String(b);
-    if(  pib.indexOf("SDUS")!= -1){
-        noHeader = false;
-        return 1;
-    } else if ( raf.getLocation().indexOf(".nids") != -1) {
-        noHeader = true;
-        return 1;
-   // } else if(checkMsgHeader(raf) == 1) {
-    //    noHeader = true;
-   //     return 1;
-    } else
-        return 0;
-  }
-
-  public byte[] getUncompData(int offset, int len){
+    /**
+     * read the compressed data
+     *
+     * @param offset   offset of the compressed data
+     * @param len      length of data to compress
+     * @return         uncompressed byte array
+     */
+    public byte[] getUncompData(int offset, int len){
       if( len == 0 ) len = uncompdata.length - offset;
       byte[] data = new byte[len];
       System.arraycopy(uncompdata, offset, data, 0, len);
       return data;
-  }
+    }
  //////////////////////////////////////////////////////////////////////////////////
 
-  private ucar.unidata.io.RandomAccessFile raf;
-  private ucar.nc2.NetcdfFile ncfile;
-  private PrintStream out = System.out;
-  //private Vinfo myInfo;
-  private String   cmemo, ctilt, ctitle, cunit, cname;
-  public void setProperty( String name, String value) { }
+    private ucar.unidata.io.RandomAccessFile raf;
+    private ucar.nc2.NetcdfFile ncfile;
+    private PrintStream out = System.out;
+    //private Vinfo myInfo;
+    private String   cmemo, ctilt, ctitle, cunit, cname;
+    public void setProperty( String name, String value) { }
 
-  private   int numX ;
-  private   int numX0;
-  private   int numY ;
-  private   int numY0;
-  private   boolean isR = false;
-  private byte[] uncompdata = null;
+    private   int numX ;
+    private   int numX0;
+    private   int numY ;
+    private   int numY0;
+    private   boolean isR = false;
+    private byte[] uncompdata = null;
 
-  /////////////////////////////////////////////////////////////////////////////
-  // reading header
+    /**
+     * read and parse the header of the nids/tdwr file
+     * @param raf       input file
+     * @param ncfile    output file
+     * @throws IOException
+     */
 
-  void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile ) throws IOException {
+    void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile ) throws IOException {
 
-    int      hedsiz;                  /* NEXRAD header size            */
-    int      rc;                      /* function return status        */
-    int      hoff = 0;
-    int      type;
-    int      zlibed;
-    boolean  isZ = false;
-    int      encrypt;
-    long     actualSize ;
-    int      readLen ;
-    int     p = readWMO( raf );
-    this.ncfile = ncfile;
-    actualSize = raf.length();
-    int pos = 0;
-    raf.seek(pos);
+        int      hedsiz;                  /* NEXRAD header size            */
+        int      rc;                      /* function return status        */
+        int      hoff = 0;
+        int      type;
+        int      zlibed;
+        boolean  isZ = false;
+        int      encrypt;
+        long     actualSize ;
+        int      readLen ;
+        int     p = readWMO( raf );
+        this.ncfile = ncfile;
+        actualSize = raf.length();
+        int pos = 0;
+        raf.seek(pos);
 
-    // Read in the whole contents of the NEXRAD Level III product since
-    // some product require to go through the whole file to build the  struct of file.
+        // Read in the whole contents of the NEXRAD Level III product since
+        // some product require to go through the whole file to build the  struct of file.
 
-    readLen = (int)actualSize;
+        readLen = (int)actualSize;
 
-    byte[] b = new byte[readLen];
-    rc = raf.read(b);
-    if ( rc != readLen )
-    {
-        out.println(" error reading nids product header");
-    }
+        byte[] b = new byte[readLen];
+        rc = raf.read(b);
+        if ( rc != readLen )
+        {
+            out.println(" error reading nids product header");
+        }
 
-    if( !noHeader ) {
+        if( !noHeader ) {
         //Get product message header into a string for processing
-        String pib = new String(b, 0, 100);
-        type = 0;
-        pos = pib.indexOf ( "\r\r\n" );
-        while ( pos != -1 ) {
-            hoff =  pos + 3;
-            type++;
-            pos = pib.indexOf ( "\r\r\n" , pos+1);
-        }
-        raf.seek(hoff);
-
-        // Test the next two bytes to see if the image portion looks like
-        // it is zlib-compressed.
-        byte[] b2 = new byte[2];
-        // byte[] b4 = new byte[4];
-        System.arraycopy(b, hoff, b2, 0, 2);
-
-        zlibed = isZlibHed( b2 );
-        if ( zlibed == 0){
-            encrypt = IsEncrypt( b2 );
-            if(encrypt == 1){
-                out.println( "error reading encryted product " );
-                throw new IOException("unable to handle the product with encrypt code " + encrypt);
+            String pib = new String(b, 0, 100);
+            type = 0;
+            pos = pib.indexOf ( "\r\r\n" );
+            while ( pos != -1 ) {
+                hoff =  pos + 3;
+                type++;
+                pos = pib.indexOf ( "\r\r\n" , pos+1);
             }
-        }
-       // process product description for station ID
-        byte[] b3 = new byte[3];
-        //byte[] uncompdata = null;
+            raf.seek(hoff);
 
-        switch ( type ) {
-          case 0:
-            out.println( "ReadNexrInfo:: Unable to seek to ID ");
-            break;
-          case 1:
-          case 2:
-          case 3:
-          case 4:
-            System.arraycopy(b, hoff - 6, b3, 0, 3);
-            stationId  = new String(b3);
-            try {
-              NexradStationDB.init(); // make sure database is initialized
-              NexradStationDB.Station station = NexradStationDB.get("K"+stationId);
-              if (station != null) {
-                stationName = station.name;
-              }
-            } catch (IOException ioe) {
-              log.error("NexradStationDB.init", ioe);
+            // Test the next two bytes to see if the image portion looks like
+            // it is zlib-compressed.
+            byte[] b2 = new byte[2];
+            // byte[] b4 = new byte[4];
+            System.arraycopy(b, hoff, b2, 0, 2);
+
+            zlibed = isZlibHed( b2 );
+            if ( zlibed == 0){
+                encrypt = IsEncrypt( b2 );
+                if(encrypt == 1){
+                    out.println( "error reading encryted product " );
+                    throw new IOException("unable to handle the product with encrypt code " + encrypt);
+                }
             }
-            break;
+           // process product description for station ID
+            byte[] b3 = new byte[3];
+            //byte[] uncompdata = null;
 
-          default:
-            break;
-        }
+            switch ( type ) {
+              case 0:
+                out.println( "ReadNexrInfo:: Unable to seek to ID ");
+                break;
+              case 1:
+              case 2:
+              case 3:
+              case 4:
+                System.arraycopy(b, hoff - 6, b3, 0, 3);
+                stationId  = new String(b3);
+                try {
+                  NexradStationDB.init(); // make sure database is initialized
+                  NexradStationDB.Station station = NexradStationDB.get("K"+stationId);
+                  if (station != null) {
+                    stationName = station.name;
+                  }
+                } catch (IOException ioe) {
+                  log.error("NexradStationDB.init", ioe);
+                }
+                break;
+
+              default:
+                break;
+            }
 
         if ( zlibed == 1 ) {
               isZ = true;
@@ -698,7 +727,7 @@ class Nidsheader{
          int tlayer = pinfo.offsetToTabularBlock*2;
          bos.position(tlayer);
          if( bos.hasRemaining()) {
-             
+
              short tab_divider = bos.getShort();
              if ( tab_divider != -1) {
                  out.println ( "Block divider not found" );
@@ -849,7 +878,7 @@ class Nidsheader{
      }
     // finish
     ncfile.finish();
-  }
+    }
 
     /**
     *  construct a dataset for special graphic symbol packet with code 12, 13, and 14
@@ -1054,6 +1083,12 @@ class Nidsheader{
       return 1;
     }
 
+    /** check level III file header
+     *
+     * @param raf      input file
+     * @return         1 if success, and 0 if fail
+     * @throws IOException
+     */
     int checkMsgHeader(ucar.unidata.io.RandomAccessFile raf ) throws IOException
     {
         int      rc;
@@ -1632,7 +1667,14 @@ class Nidsheader{
         return soff;
     }
 
-  public int[] getLevels(int nlevel, short[] th) {
+    /**
+     *  get the table to calibrate data value
+     *
+     * @param nlevel    number of level
+     * @param th        thredshold value
+     * @return
+     */
+    public int[] getLevels(int nlevel, short[] th) {
         int [] levels = new int[nlevel];
         int ival;
         int isign;
@@ -1650,9 +1692,15 @@ class Nidsheader{
         }
 
         return levels;
-  }
+    }
 
-  public int[] getTDWRLevels(int nlevel, short[] th) {
+    /**
+     *  get the calibrate data values for TDWR data
+     * @param nlevel
+     * @param th
+     * @return
+     */
+    public int[] getTDWRLevels(int nlevel, short[] th) {
         int [] levels = new int[ th[2]+2 ];
         int inc = th[1];
         levels[0] = -9866;
@@ -1662,9 +1710,15 @@ class Nidsheader{
         }
 
         return levels;
-  }
+    }
 
-  public int[] getTDWRLevels1(int nlevel, short[] th) {
+    /**
+     * get the calibrate data values for TDWR data
+     * @param nlevel
+     * @param th
+     * @return
+     */
+    public int[] getTDWRLevels1(int nlevel, short[] th) {
         int [] levels = new int[ th[2] ];
         int inc = th[1];
         for ( int i = 0; i < nlevel; i++ ) {    /* calibrated data values        */
@@ -1672,381 +1726,423 @@ class Nidsheader{
         }
 
         return levels;
-  }
-  void addVariable(String pName, String longName, NetcdfFile nc, ArrayList dims, String coordinates,
-                    DataType dtype, String ut, long hoff, long hedsiz, boolean isZ, int nlevel, int[] levels, int iscale)
-  {
-      Variable v = new Variable(nc, null, null, pName);
-      v.setDataType(dtype);
-      v.setDimensions(dims);
-      ncfile.addVariable(null, v);
-      v.addAttribute( new Attribute("long_name", longName));
-      v.addAttribute( new Attribute("units", ut));
-      v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
-      v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, iscale, nlevel));
-
-  }
-
-  void addParameter(String pName, String longName, NetcdfFile nc, ArrayList dims, Attribute att,
-                    DataType dtype, String ut, long hoff, long doff, boolean isZ, int y0)
-  {
-      String vName = pName;
-      Variable vVar = new Variable(nc, null, null, vName);
-      vVar.setDataType(dtype);
-      if( dims != null ) vVar.setDimensions(dims);
-      else vVar.setDimensions("");
-      if(att != null ) vVar.addAttribute(att);
-      vVar.addAttribute( new Attribute("units", ut));
-      vVar.addAttribute( new Attribute("long_name", longName));
-      nc.addVariable(null, vVar);
-      vVar.setSPobject( new Vinfo (numX, numX0, numY, y0, hoff, doff, isR, isZ, null, null, 0, 0));
-  }
-
-  String StnIdFromLatLon(float lat, float lon )
-  {
-    return "ID";
-  }
-
-  void setProductInfo(int prod_type, Pinfo pinfo)
-  {
-                                 /* memo field                */
-    String[] cmode = new String[]{"Maintenance", "Clear Air", "Precip Mode"};
-
-    short prod_max = pinfo.p4;
-    short prod_min = 0;
-    int prod_elevation = 0;
-    //int prod_info;
-    int prod_top;
-    int radial = 0;
-    String summary = null;
-    java.util.Date endDate;
-    java.util.Date startDate;
-    String dstring;
-    double t1 = 124.0 * 1.853 / 111.26;
-    double t2 = 230 / (111.26 * Math.cos(Math.toRadians(latitude)));
-    lat_min = latitude -  t1;
-    lat_max = latitude + t1;
-    lon_min = longitude +  t2; //* Math.cos(Math.toRadians(lat_min));
-    lon_max = longitude -  t2; //* Math.cos(Math.toRadians(lat_min));
-    startDate = getDate( volumeScanDate, volumeScanTime*1000);
-    endDate = getDate( volumeScanDate, volumeScanTime*1000);
-
-    if (prod_type == SPECTRUM) {
-        radial               = 1;
-        prod_elevation  = pinfo.p3;
-        cmemo = "Base Specturm Width " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-
-        ctilt = pname_lookup(pcode, prod_elevation/10);
-        ctitle = "BREF: Base Spectrum Width";
-        cunit = "Knots";
-        cname = "SpectrumWidth";
-        summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
-        if(pcode == 28 ){
-            t1 = t1 * 0.25;
-            t2 = t2 * 0.25;
-            lat_min = latitude -  t1;
-            lat_max = latitude + t1;
-            lon_min = longitude +  t2; //* Math.cos(Math.toRadians(lat_min));
-            lon_max = longitude -  t2; //* Math.cos(Math.toRadians(lat_min));
-            summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 32 nm";
-        }
     }
-    else if (prod_type == DigitalHybridReflect) {
-      radial               = 1;
-      prod_elevation  = pinfo.p3;
-      cmemo = "Digital Hybrid Reflect " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
 
-      ctilt = pname_lookup(19, prod_elevation/10);
-      ctitle = "DigitalHybrid: Reflectivity";
-      cunit = "dbZ";
-      cname = "DigitalHybridReflectivity";
-      summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
+    /**
+     * adding new variable to the netcdf file
+     * @param pName                 variable name
+     * @param longName              variable long name
+     * @param nc                    netcdf file
+     * @param dims                  variable dimensions
+     * @param coordinates            variable coordinate
+     * @param dtype                 variable type
+     * @param ut                     unit string
+     * @param hoff                  header offset
+     * @param hedsiz                header size
+     * @param isZ                   is compressed file
+     * @param nlevel                 calibrated level number
+     * @param levels                 calibrate levels
+     * @param iscale                 is scale variable
+     */
+    void addVariable(String pName, String longName, NetcdfFile nc, ArrayList dims, String coordinates,
+                    DataType dtype, String ut, long hoff, long hedsiz, boolean isZ, int nlevel, int[] levels, int iscale)
+    {
+        Variable v = new Variable(nc, null, null, pName);
+        v.setDataType(dtype);
+        v.setDimensions(dims);
+        ncfile.addVariable(null, v);
+        v.addAttribute( new Attribute("long_name", longName));
+        v.addAttribute( new Attribute("units", ut));
+        v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
+        v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, iscale, nlevel));
 
-    } else if (prod_type == Base_Reflect || prod_type == Reflect1) {
-      radial               = 1;
-      prod_elevation  = pinfo.p3;
-      cmemo = "Base Reflct " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-      if(prod_type == Reflect1){
-        ctilt = "R" + prod_elevation/10;
-        summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1);
-      }
-      else {
-        ctilt = pname_lookup(19, prod_elevation/10);
-        summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
-      }
-      ctitle = "BREF: Base Reflectivity";
-      cunit = "dbZ";
-      cname = "BaseReflectivity";
+    }
 
-    } else if (prod_type == BaseReflect248) {
-      radial               = 1;
-      prod_elevation  = pinfo.p3;
-      cmemo = "Base Reflct 248 " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
+    /**
+     *  adding new parameter to the netcdf file
+     * @param pName                variable name
+     * @param longName             variable long name
+     * @param nc                    netcdf file
+     * @param dims                 variable dimensions
+     * @param att                  attribute
+     * @param dtype                data type
+     * @param ut                   unit string
+     * @param hoff                 header offset
+     * @param doff                 data offset
+     * @param isZ                  is compressed file
+     * @param y0                   reserved
+     */
+    void addParameter(String pName, String longName, NetcdfFile nc, ArrayList dims, Attribute att,
+                    DataType dtype, String ut, long hoff, long doff, boolean isZ, int y0)
+    {
+          String vName = pName;
+          Variable vVar = new Variable(nc, null, null, vName);
+          vVar.setDataType(dtype);
+          if( dims != null ) vVar.setDimensions(dims);
+          else vVar.setDimensions("");
+          if(att != null ) vVar.addAttribute(att);
+          vVar.addAttribute( new Attribute("units", ut));
+          vVar.addAttribute( new Attribute("long_name", longName));
+          nc.addVariable(null, vVar);
+          vVar.setSPobject( new Vinfo (numX, numX0, numY, y0, hoff, doff, isR, isZ, null, null, 0, 0));
+    }
 
-      ctilt = pname_lookup(20, prod_elevation/10);
-      ctitle = "BREF: 248 nm Base Reflectivity";
-      cunit = "dbZ";
-      cname = "BaseReflectivity248";
-      summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 248 nm";
-      t1 = 248.0 * 1.853 / 111.26;
-      t2 = 460 / (111.26 * Math.cos(Math.toRadians(latitude)));
-      lat_min = latitude -  t1;
-      lat_max = latitude + t1;
-      lon_min = longitude + t2;
-      lon_max = longitude - t2;
-    } else if (prod_type == Comp_Reflect) {
-      radial               = 3;
-      prod_elevation  = -1;
+    String StnIdFromLatLon(float lat, float lon )
+    {
+        return "ID";
+    }
 
-      ctilt = pname_lookup(pinfo.pcode, elevationNumber);
-      if(pinfo.pcode == 36 || pinfo.pcode == 38 ) {
-         t1 = t1 * 2;
-         t2 = t2 * 2;
-         lat_min = latitude -  t1;
-         lat_max = latitude + t1;
-         lon_min = longitude + t2;
-         lon_max = longitude - t2;
-      }
-      summary = ctilt + "is a raster image of composite reflectivity";
-      cmemo = "Composite Reflectivity at " + cmode[pinfo.opmode];
-      ctitle = "CREF Composite Reflectivity" + ctilt;
-      cunit = "dbZ" ;
-      cname = "BaseReflectivityComp";
+    /**
+     *  parsing the product information into netcdf dataset
+     * @param prod_type      product type
+     * @param pinfo          product information
+     */
+    void setProductInfo(int prod_type, Pinfo pinfo)
+    {
+                                 /* memo field                */
+        String[] cmode = new String[]{"Maintenance", "Clear Air", "Precip Mode"};
 
-
-    } else if (prod_type == Layer_Reflect_Avg ||
-             prod_type == Layer_Reflect_Max)   {
-      radial               = 3;
-      prod_elevation  = pinfo.p5;
-      prod_top        = pinfo.p6;
-      ctilt = pname_lookup(pcode, 0);
-      summary = ctilt + " is a raster image of composite reflectivity at range 124 nm";
-      cmemo = "Layer Reflct " + prod_elevation + " - " + prod_top + cmode[pinfo.opmode];
-      t1 = t1 * 4;
-      t2 = t2 * 4;
-      lat_min = latitude - t1;
-      lat_max = latitude + t1;
-      lon_min = longitude + t2;
-      lon_max = longitude - t2;
-      ctitle = "LREF: Layer Composite Reflectivity" ;
-      cunit = "dbZ" ;
-      cname = "LayerCompReflect";
-    } else if (prod_type == Echo_Tops) {
-      radial          = 3;
-      prod_elevation  = -1;
-      summary = "NET is a raster image of echo tops at range 124 nm";
-      cmemo = "Echo Tops [K FT] " + cmode[pinfo.opmode];
-      ctilt = pname_lookup(41, elevationNumber);
-      ctitle = "TOPS: Echo Tops";
-      cunit = "K FT" ;
-      cname = "EchoTop";
-      t1 = t1 * 4;
-      t2 = t2 * 4;
-      lat_min = latitude -  t1;
-      lat_max = latitude + t1;
-      lon_min = longitude + t2;
-      lon_max = longitude - t2;
-    } else if (prod_type == Precip_1)   {
-      radial               = 1;
-      prod_elevation  = -1;
-      prod_max       /= 10;
-      endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
-      summary = "N1P is a raster image of 1 hour surface rainfall accumulation at range 124 nm";
-      cmemo = "1-hr Rainfall [IN] " + cmode[pinfo.opmode];
-      ctilt = pname_lookup(78, elevationNumber);
-      ctitle = "PRE1: Surface 1-hour Rainfall Total";
-      cunit = "IN";
-      cname = "Precip1hr";
-      t1 = t1 * 2;
-      t2 = t2 * 2;
-      lat_min = latitude -  t1;
-      lat_max = latitude + t1;
-      lon_min = longitude + t2;
-      lon_max = longitude - t2;
-    } else if (prod_type == Precip_3)   {
-      radial               = 1;
-      prod_elevation  = -1;
-      prod_max       /= 10;
-      endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
-      summary = "N3P is a raster image of 3 hour surface rainfall accumulation at range 124 nm";
-      cmemo = "3-hr Rainfall [IN] " + cmode[pinfo.opmode] ;
-      ctilt = pname_lookup(79, elevationNumber);
-      ctitle = "PRE3: Surface 3-hour Rainfall Total" ;
-      cunit = "IN" ;
-      cname = "Precip3hr";
-      t1 = t1 * 2;
-      t2 = t2 * 2;
-      lat_min = latitude -  t1;
-      lat_max = latitude + t1;
-      lon_min = longitude + t2;
-      lon_max = longitude - t2;
-    } else if (prod_type == DigitalStormTotalPrecip) {
-      radial               = 1;
-      prod_elevation  = -1;
-      //startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
-      endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
-      summary = "DSP is a radial image of digital storm total rainfall";
-      cmemo = "Digital Strm Total Precip [IN] " + cmode[pinfo.opmode] ;
-      ctilt = pname_lookup(80, elevationNumber);
-      ctitle = "DPRE: Digital Storm Total Rainfall" ;
-      cunit = "IN" ;
-      cname = "DigitalPrecip";
-      t1 = t1 * 2;
-      t2 = t2 * 2;
-      lat_min = latitude -  t1;
-      lat_max = latitude + t1;
-      lon_min = longitude + t2;
-      lon_max = longitude - t2;
-    } else if (prod_type == Precip_Accum) {
-      radial               = 1;
-      prod_elevation  = -1;
-      //startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
-      endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
-      summary = "NTP is a raster image of storm total rainfall accumulation at range 124 nm";
-      cmemo = "Strm Tot Rain [IN] " + cmode[pinfo.opmode] ;
-      ctilt = pname_lookup(80, elevationNumber);
-      ctitle = "PRET: Surface Storm Total Rainfall" ;
-      cunit = "IN" ;
-      cname = "PrecipAccum";
-      t1 = t1 * 2;
-      t2 = t2 * 2;
-      lat_min = latitude -  t1;
-      lat_max = latitude + t1;
-      lon_min = longitude + t2;
-      lon_max = longitude - t2;
-     } else if (prod_type == Precip_Array) {
-      radial          = 0;
-      prod_elevation  = -1;
-      summary = "DPA is a raster image of hourly digital precipitation array at range 124 nm";
-      endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
-      cmemo = "Precip Array [IN] " + cmode[pinfo.opmode] ;
-      ctilt = pname_lookup(81, elevationNumber);
-      ctitle = "PRET: Hourly Digital Precipitation Array" ;
-      cunit = "IN" ;
-      cname = "PrecipArray";
-    } else if (prod_type == Vert_Liquid) {
-      radial               = 3;
-      prod_elevation  = -1;
-      summary = "NVL is a raster image of verticalintegrated liguid at range 124 nm";
-      cmemo = "Vert Int Lq H2O [mm] " + cmode[pinfo.opmode] ;
-      ctilt = pname_lookup(57, elevationNumber);
-      ctitle =  "VIL: Vertically-integrated Liquid Water" ;
-      cunit =  "kg/m^2" ;
-      cname = "VertLiquid";
-      t1 = t1 * 4;
-      t2 = t2 * 4;
-      lat_min = latitude -  t1;
-      lat_max = latitude + t1;
-      lon_min = longitude + t2;
-      lon_max = longitude - t2;
-    } else if (prod_type == Velocity || prod_type == Velocity1) {
-      radial               = 1;
-      prod_elevation  = pinfo.p3;
-      prod_min        = pinfo.p4;
-      prod_max        = pinfo.p5;
-      if(prod_type == Velocity) {
-        ctilt = pname_lookup(pinfo.pcode, prod_elevation/10);
-      }
-      else {
-        ctilt = "V" + prod_elevation/10;
-      }
-        
-      if(pinfo.pcode == 25) {
-        t1 = 32.0 * 1.853 / 111.26;
-        t2 = 64 / (111.26 * Math.cos(Math.toRadians(latitude)));
+        short prod_max = pinfo.p4;
+        short prod_min = 0;
+        int prod_elevation = 0;
+        //int prod_info;
+        int prod_top;
+        int radial = 0;
+        String summary = null;
+        java.util.Date endDate;
+        java.util.Date startDate;
+        String dstring;
+        double t1 = 124.0 * 1.853 / 111.26;
+        double t2 = 230 / (111.26 * Math.cos(Math.toRadians(latitude)));
         lat_min = latitude -  t1;
         lat_max = latitude + t1;
-        lon_min = longitude + t2;
-        lon_max = longitude - t2;
-        summary = ctilt + " is a radial image of base velocity" + (prod_elevation/10 + 1) +  " and  range 32 nm";
-        cunit = "KT";
-      }
-      else {
-        summary = ctilt + " is a radial image of base velocity at tilt " + (prod_elevation/10 + 1);
-        cunit = "KT";
-      }
-      cmemo = "Rad Vel "+ prod_elevation/10. + " DEG " + cmode[pinfo.opmode];
-      ctitle = "VEL: Radial Velocity" ;
-      cname = "RadialVelocity";
-    } else if (prod_type == StrmRelMeanVel) {
-      radial               = 1;
-      prod_elevation  = pinfo.p3;
-      prod_min        = pinfo.p4;
-      prod_max        = pinfo.p5;
-      ctilt = pname_lookup(56, prod_elevation/10);
-      summary = ctilt + " is a radial image of storm relative mean radial velocity at tilt " + (prod_elevation/10 + 1) +  " and  range 124 nm";
-      cmemo = "StrmRelMnVl " + prod_elevation/10. + " DEG " + cmode[pinfo.opmode];
-      ctitle = "SRMV: Storm Relative Mean Velocity" ;
-      cunit = "KT" ;
-      cname = "StormMeanVelocity";
-    } else if (prod_type == VAD) {
-      radial               = 0;
-      prod_elevation  = pinfo.p3;
-      prod_min        = pinfo.p4;
-      prod_max        = pinfo.p5;
-      summary = "NVW is VAD wind profile which contains wind barbs and alpha numeric data";
-      cmemo = "StrmRelMnVl " + prod_elevation/10. + " DEG " + cmode[pinfo.opmode];
-      ctilt = pname_lookup(48, elevationNumber);
-      ctitle = "SRMV: Velocity Azimuth Display" ;
-      cunit = "KT" ;
-      cname = "VADWindSpeed";
-      lat_min = latitude;
-      lat_max = latitude;
-      lon_min = longitude;
-      lon_max = longitude;
-    } else {
-      ctilt = "error";
-      ctitle = "error" ;
-      cunit = "error" ;
-      cname = "error";
+        lon_min = longitude +  t2; //* Math.cos(Math.toRadians(lat_min));
+        lon_max = longitude -  t2; //* Math.cos(Math.toRadians(lat_min));
+        startDate = getDate( volumeScanDate, volumeScanTime*1000);
+        endDate = getDate( volumeScanDate, volumeScanTime*1000);
+
+        if (prod_type == SPECTRUM) {
+            radial               = 1;
+            prod_elevation  = pinfo.p3;
+            cmemo = "Base Specturm Width " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
+
+            ctilt = pname_lookup(pcode, prod_elevation/10);
+            ctitle = "BREF: Base Spectrum Width";
+            cunit = "Knots";
+            cname = "SpectrumWidth";
+            summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
+            if(pcode == 28 ){
+                t1 = t1 * 0.25;
+                t2 = t2 * 0.25;
+                lat_min = latitude -  t1;
+                lat_max = latitude + t1;
+                lon_min = longitude +  t2; //* Math.cos(Math.toRadians(lat_min));
+                lon_max = longitude -  t2; //* Math.cos(Math.toRadians(lat_min));
+                summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 32 nm";
+            }
+        }
+        else if (prod_type == DigitalHybridReflect) {
+            radial               = 1;
+            prod_elevation  = pinfo.p3;
+            cmemo = "Digital Hybrid Reflect " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
+
+            ctilt = pname_lookup(19, prod_elevation/10);
+            ctitle = "DigitalHybrid: Reflectivity";
+            cunit = "dbZ";
+            cname = "DigitalHybridReflectivity";
+            summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
+
+        } else if (prod_type == Base_Reflect || prod_type == Reflect1) {
+            radial               = 1;
+            prod_elevation  = pinfo.p3;
+            cmemo = "Base Reflct " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
+            if(prod_type == Reflect1){
+                ctilt = "R" + prod_elevation/10;
+                summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1);
+            }
+            else {
+                ctilt = pname_lookup(19, prod_elevation/10);
+                summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 124 nm";
+            }
+            ctitle = "BREF: Base Reflectivity";
+            cunit = "dbZ";
+            cname = "BaseReflectivity";
+
+        } else if (prod_type == BaseReflect248) {
+            radial               = 1;
+            prod_elevation  = pinfo.p3;
+            cmemo = "Base Reflct 248 " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
+
+            ctilt = pname_lookup(20, prod_elevation/10);
+            ctitle = "BREF: 248 nm Base Reflectivity";
+            cunit = "dbZ";
+            cname = "BaseReflectivity248";
+            summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 248 nm";
+            t1 = 248.0 * 1.853 / 111.26;
+            t2 = 460 / (111.26 * Math.cos(Math.toRadians(latitude)));
+            lat_min = latitude -  t1;
+            lat_max = latitude + t1;
+            lon_min = longitude + t2;
+            lon_max = longitude - t2;
+        } else if (prod_type == Comp_Reflect) {
+            radial               = 3;
+            prod_elevation  = -1;
+
+            ctilt = pname_lookup(pinfo.pcode, elevationNumber);
+            if(pinfo.pcode == 36 || pinfo.pcode == 38 ) {
+                 t1 = t1 * 2;
+                 t2 = t2 * 2;
+                 lat_min = latitude -  t1;
+                 lat_max = latitude + t1;
+                 lon_min = longitude + t2;
+                 lon_max = longitude - t2;
+            }
+            summary = ctilt + "is a raster image of composite reflectivity";
+            cmemo = "Composite Reflectivity at " + cmode[pinfo.opmode];
+            ctitle = "CREF Composite Reflectivity" + ctilt;
+            cunit = "dbZ" ;
+            cname = "BaseReflectivityComp";
+        } else if (prod_type == Layer_Reflect_Avg ||
+                 prod_type == Layer_Reflect_Max)   {
+            radial               = 3;
+            prod_elevation  = pinfo.p5;
+            prod_top        = pinfo.p6;
+            ctilt = pname_lookup(pcode, 0);
+            summary = ctilt + " is a raster image of composite reflectivity at range 124 nm";
+            cmemo = "Layer Reflct " + prod_elevation + " - " + prod_top + cmode[pinfo.opmode];
+            t1 = t1 * 4;
+            t2 = t2 * 4;
+            lat_min = latitude - t1;
+            lat_max = latitude + t1;
+            lon_min = longitude + t2;
+            lon_max = longitude - t2;
+            ctitle = "LREF: Layer Composite Reflectivity" ;
+            cunit = "dbZ" ;
+            cname = "LayerCompReflect";
+        } else if (prod_type == Echo_Tops) {
+            radial          = 3;
+            prod_elevation  = -1;
+            summary = "NET is a raster image of echo tops at range 124 nm";
+            cmemo = "Echo Tops [K FT] " + cmode[pinfo.opmode];
+            ctilt = pname_lookup(41, elevationNumber);
+            ctitle = "TOPS: Echo Tops";
+            cunit = "K FT" ;
+            cname = "EchoTop";
+            t1 = t1 * 4;
+            t2 = t2 * 4;
+            lat_min = latitude -  t1;
+            lat_max = latitude + t1;
+            lon_min = longitude + t2;
+            lon_max = longitude - t2;
+        } else if (prod_type == Precip_1)   {
+            radial               = 1;
+            prod_elevation  = -1;
+            prod_max       /= 10;
+            endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
+            summary = "N1P is a raster image of 1 hour surface rainfall accumulation at range 124 nm";
+            cmemo = "1-hr Rainfall [IN] " + cmode[pinfo.opmode];
+            ctilt = pname_lookup(78, elevationNumber);
+            ctitle = "PRE1: Surface 1-hour Rainfall Total";
+            cunit = "IN";
+            cname = "Precip1hr";
+            t1 = t1 * 2;
+            t2 = t2 * 2;
+            lat_min = latitude -  t1;
+            lat_max = latitude + t1;
+            lon_min = longitude + t2;
+            lon_max = longitude - t2;
+        } else if (prod_type == Precip_3)   {
+            radial               = 1;
+            prod_elevation  = -1;
+            prod_max       /= 10;
+            endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
+            summary = "N3P is a raster image of 3 hour surface rainfall accumulation at range 124 nm";
+            cmemo = "3-hr Rainfall [IN] " + cmode[pinfo.opmode] ;
+            ctilt = pname_lookup(79, elevationNumber);
+            ctitle = "PRE3: Surface 3-hour Rainfall Total" ;
+            cunit = "IN" ;
+            cname = "Precip3hr";
+            t1 = t1 * 2;
+            t2 = t2 * 2;
+            lat_min = latitude -  t1;
+            lat_max = latitude + t1;
+            lon_min = longitude + t2;
+            lon_max = longitude - t2;
+        } else if (prod_type == DigitalStormTotalPrecip) {
+            radial               = 1;
+            prod_elevation  = -1;
+            //startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
+            endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
+            summary = "DSP is a radial image of digital storm total rainfall";
+            cmemo = "Digital Strm Total Precip [IN] " + cmode[pinfo.opmode] ;
+            ctilt = pname_lookup(80, elevationNumber);
+            ctitle = "DPRE: Digital Storm Total Rainfall" ;
+            cunit = "IN" ;
+            cname = "DigitalPrecip";
+            t1 = t1 * 2;
+            t2 = t2 * 2;
+            lat_min = latitude -  t1;
+            lat_max = latitude + t1;
+            lon_min = longitude + t2;
+            lon_max = longitude - t2;
+        } else if (prod_type == Precip_Accum) {
+            radial               = 1;
+            prod_elevation  = -1;
+            //startDate = getDate( pinfo.p5, pinfo.p6 * 60 * 1000);
+            endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
+            summary = "NTP is a raster image of storm total rainfall accumulation at range 124 nm";
+            cmemo = "Strm Tot Rain [IN] " + cmode[pinfo.opmode] ;
+            ctilt = pname_lookup(80, elevationNumber);
+            ctitle = "PRET: Surface Storm Total Rainfall" ;
+            cunit = "IN" ;
+            cname = "PrecipAccum";
+            t1 = t1 * 2;
+            t2 = t2 * 2;
+            lat_min = latitude -  t1;
+            lat_max = latitude + t1;
+            lon_min = longitude + t2;
+            lon_max = longitude - t2;
+         } else if (prod_type == Precip_Array) {
+            radial          = 0;
+            prod_elevation  = -1;
+            summary = "DPA is a raster image of hourly digital precipitation array at range 124 nm";
+            endDate = getDate( pinfo.p7, pinfo.p8 * 60 * 1000);
+            cmemo = "Precip Array [IN] " + cmode[pinfo.opmode] ;
+            ctilt = pname_lookup(81, elevationNumber);
+            ctitle = "PRET: Hourly Digital Precipitation Array" ;
+            cunit = "IN" ;
+            cname = "PrecipArray";
+        } else if (prod_type == Vert_Liquid) {
+            radial               = 3;
+            prod_elevation  = -1;
+            summary = "NVL is a raster image of verticalintegrated liguid at range 124 nm";
+            cmemo = "Vert Int Lq H2O [mm] " + cmode[pinfo.opmode] ;
+            ctilt = pname_lookup(57, elevationNumber);
+            ctitle =  "VIL: Vertically-integrated Liquid Water" ;
+            cunit =  "kg/m^2" ;
+            cname = "VertLiquid";
+            t1 = t1 * 4;
+            t2 = t2 * 4;
+            lat_min = latitude -  t1;
+            lat_max = latitude + t1;
+            lon_min = longitude + t2;
+            lon_max = longitude - t2;
+        } else if (prod_type == Velocity || prod_type == Velocity1) {
+            radial               = 1;
+            prod_elevation  = pinfo.p3;
+            prod_min        = pinfo.p4;
+            prod_max        = pinfo.p5;
+            if(prod_type == Velocity) {
+                ctilt = pname_lookup(pinfo.pcode, prod_elevation/10);
+            }
+            else {
+                ctilt = "V" + prod_elevation/10;
+            }
+
+            if(pinfo.pcode == 25) {
+                t1 = 32.0 * 1.853 / 111.26;
+                t2 = 64 / (111.26 * Math.cos(Math.toRadians(latitude)));
+                lat_min = latitude -  t1;
+                lat_max = latitude + t1;
+                lon_min = longitude + t2;
+                lon_max = longitude - t2;
+                summary = ctilt + " is a radial image of base velocity" + (prod_elevation/10 + 1) +  " and  range 32 nm";
+                cunit = "KT";
+            }
+            else {
+                summary = ctilt + " is a radial image of base velocity at tilt " + (prod_elevation/10 + 1);
+                cunit = "KT";
+            }
+            cmemo = "Rad Vel "+ prod_elevation/10. + " DEG " + cmode[pinfo.opmode];
+            ctitle = "VEL: Radial Velocity" ;
+            cname = "RadialVelocity";
+        } else if (prod_type == StrmRelMeanVel) {
+            radial               = 1;
+            prod_elevation  = pinfo.p3;
+            prod_min        = pinfo.p4;
+            prod_max        = pinfo.p5;
+            ctilt = pname_lookup(56, prod_elevation/10);
+            summary = ctilt + " is a radial image of storm relative mean radial velocity at tilt " + (prod_elevation/10 + 1) +  " and  range 124 nm";
+            cmemo = "StrmRelMnVl " + prod_elevation/10. + " DEG " + cmode[pinfo.opmode];
+            ctitle = "SRMV: Storm Relative Mean Velocity" ;
+            cunit = "KT" ;
+            cname = "StormMeanVelocity";
+        } else if (prod_type == VAD) {
+            radial               = 0;
+            prod_elevation  = pinfo.p3;
+            prod_min        = pinfo.p4;
+            prod_max        = pinfo.p5;
+            summary = "NVW is VAD wind profile which contains wind barbs and alpha numeric data";
+            cmemo = "StrmRelMnVl " + prod_elevation/10. + " DEG " + cmode[pinfo.opmode];
+            ctilt = pname_lookup(48, elevationNumber);
+            ctitle = "SRMV: Velocity Azimuth Display" ;
+            cunit = "KT" ;
+            cname = "VADWindSpeed";
+            lat_min = latitude;
+            lat_max = latitude;
+            lon_min = longitude;
+            lon_max = longitude;
+        } else {
+            ctilt = "error";
+            ctitle = "error" ;
+            cunit = "error" ;
+            cname = "error";
+        }
+        /* add geo global att  */
+        ncfile.addAttribute(null, new Attribute("summary", "Nexrad level 3 data are WSR-88D radar products." +
+                  summary ));
+        ncfile.addAttribute(null, new Attribute("keywords_vocabulary", ctilt));
+        ncfile.addAttribute(null, new Attribute("conventions", _Coordinate.Convention));
+        ncfile.addAttribute(null, new Attribute("format", "Level3/NIDS"));
+        ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Float(lat_min)));
+        ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Float(lat_max)));
+        ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Float(lon_min)));
+        ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Float(lon_max)));
+        ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(height)));
+        ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(height)));
+
+        ncfile.addAttribute(null, new Attribute("RadarElevationNumber", new Integer(prod_elevation)));
+        dstring = formatter.toDateTimeStringISO(startDate);
+        ncfile.addAttribute(null, new Attribute("time_coverage_start", dstring));
+        dstring = formatter.toDateTimeStringISO(endDate);
+        ncfile.addAttribute(null, new Attribute("time_coverage_end", dstring));
+        ncfile.addAttribute(null, new Attribute("data_min", new Float(prod_min)));
+        ncfile.addAttribute(null, new Attribute("data_max", new Float(prod_max)));
+        ncfile.addAttribute(null, new Attribute("isRadial", new Integer(radial)));
     }
-    /* add geo global att  */
-    ncfile.addAttribute(null, new Attribute("summary", "Nexrad level 3 data are WSR-88D radar products." +
-              summary ));
-    ncfile.addAttribute(null, new Attribute("keywords_vocabulary", ctilt));
-    ncfile.addAttribute(null, new Attribute("conventions", _Coordinate.Convention));
-    ncfile.addAttribute(null, new Attribute("format", "Level3/NIDS"));
-    ncfile.addAttribute(null, new Attribute("geospatial_lat_min", new Float(lat_min)));
-    ncfile.addAttribute(null, new Attribute("geospatial_lat_max", new Float(lat_max)));
-    ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Float(lon_min)));
-    ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Float(lon_max)));
-    ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(height)));
-    ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(height)));
 
-    ncfile.addAttribute(null, new Attribute("RadarElevationNumber", new Integer(prod_elevation)));
-    dstring = formatter.toDateTimeStringISO(startDate);
-    ncfile.addAttribute(null, new Attribute("time_coverage_start", dstring));
-    dstring = formatter.toDateTimeStringISO(endDate);
-    ncfile.addAttribute(null, new Attribute("time_coverage_end", dstring));
-    ncfile.addAttribute(null, new Attribute("data_min", new Float(prod_min)));
-    ncfile.addAttribute(null, new Attribute("data_max", new Float(prod_max)));
-    ncfile.addAttribute(null, new Attribute("isRadial", new Integer(radial)));
-  }
-
-  byte[] uncompressed( ByteBuffer buf, int offset, int uncomplen ) throws IOException
-  {
-      byte[] header = new byte[offset];
-      buf.position(0);
-      buf.get(header);
-      byte[] out = new byte[offset+uncomplen];
-      System.arraycopy(header, 0, out, 0, offset);
+    /**
+     * uncompress the TDWR products
+     * @param buf          compressed buffer
+     * @param offset       data offset
+     * @param uncomplen    uncompressed length
+     * @return
+     * @throws IOException
+     */
+    byte[] uncompressed( ByteBuffer buf, int offset, int uncomplen ) throws IOException
+    {
+        byte[] header = new byte[offset];
+        buf.position(0);
+        buf.get(header);
+        byte[] out = new byte[offset+uncomplen];
+        System.arraycopy(header, 0, out, 0, offset);
 
 
-      CBZip2InputStream cbzip2 = new CBZip2InputStream();
+        CBZip2InputStream cbzip2 = new CBZip2InputStream();
 
-      int numCompBytes = buf.remaining();
-      byte[] bufc = new byte[numCompBytes];
-      buf.get(bufc, 0, numCompBytes);
+        int numCompBytes = buf.remaining();
+        byte[] bufc = new byte[numCompBytes];
+        buf.get(bufc, 0, numCompBytes);
 
-      ByteArrayInputStream bis = new ByteArrayInputStream(bufc, 2, numCompBytes - 2);
+        ByteArrayInputStream bis = new ByteArrayInputStream(bufc, 2, numCompBytes - 2);
 
-       //CBZip2InputStream cbzip2 = new CBZip2InputStream(bis);
-       cbzip2.setStream(bis);
-      int total = 0;
-      int nread;
-      byte[] ubuff = new byte[40000];
-      byte[] obuff = new byte[40000];
-      try {
+        //CBZip2InputStream cbzip2 = new CBZip2InputStream(bis);
+        cbzip2.setStream(bis);
+        int total = 0;
+        int nread;
+        byte[] ubuff = new byte[40000];
+        byte[] obuff = new byte[40000];
+        try {
             while ((nread = cbzip2.read(ubuff)) != -1) {
               if (total + nread > obuff.length) {
                 byte[] temp = obuff;
@@ -2060,12 +2156,20 @@ class Nidsheader{
               System.arraycopy(obuff, 0, out, offset, total);
           } catch (BZip2ReadException ioe) {
             log.warn("Nexrad2IOSP.uncompress ", ioe);
-      }
+        }
 
-      return out;
+        return out;
 
-  }
-   public static int shortsToInt(short s1, short s2, boolean swapBytes) {
+    }
+
+    /**
+     * convert two short into a integer
+     * @param s1            short one
+     * @param s2            short two
+     * @param swapBytes      if swap bytes
+     * @return
+     */
+    public static int shortsToInt(short s1, short s2, boolean swapBytes) {
        byte[] b = new byte[4];
        b[0] = (byte) (s1 >>> 8);
        b[1] = (byte) (s1 >>> 0);
@@ -2074,6 +2178,12 @@ class Nidsheader{
        return bytesToInt(b, false);
     }
 
+    /**
+     * convert bytes into integer
+     * @param bytes           bytes array
+     * @param swapBytes       if need to swap
+     * @return
+     */
     public static int bytesToInt(byte [] bytes, boolean swapBytes) {
         byte a = bytes[0];
         byte b = bytes[1];
@@ -2093,112 +2203,111 @@ class Nidsheader{
     }
 
 
+      /*
+      ** Name:       read_dividlen
+      **
+      ** Purpose:    Read divider ID header from NEXRAD Level III product
+      **
+      */
+    Sinfo read_dividlen( ByteBuffer buf, int offset  )
+    {
+        int off = offset;
+        byte[] b2 = new byte[2];
+        byte[] b4 = new byte[4];
+        short D_divider;
+        short D_id;
+        Short tShort ;
 
-  /*
-  ** Name:       read_dividlen
-  **
-  ** Purpose:    Read divider ID header from NEXRAD Level III product
-  **
-  */
-  Sinfo read_dividlen( ByteBuffer buf, int offset  )
-  {
-      int off = offset;
-      byte[] b2 = new byte[2];
-      byte[] b4 = new byte[4];
-      short D_divider;
-      short D_id;
-      Short tShort ;
-
-      buf.position(offset);
-      buf.get(b2, 0, 2);
-      tShort = (Short)convert(b2, DataType.SHORT, -1);
-      D_divider  = tShort.shortValue();
-      buf.get(b2, 0, 2);
-      D_id  = (short)getInt(b2, 2);
-      buf.get(b4, 0, 4);
-      block_length  = getInt(b4, 4);
-      buf.get(b2, 0, 2);
-      number_layers  = (short)getInt(b2, 2);
-      off = off + 10;
-
-      return new Sinfo ( D_divider, D_id, block_length, number_layers);
-
-  }
-
-   void read_SATab( ByteBuffer buf, int offset  )
-  {
-
-      byte[] b2 = new byte[2];
-
-      short B_divider;
-      short numPages;
-      short numChars;
-      short E_divider;
-      Short tShort ;
-
-      buf.position(offset);
-      buf.get(b2, 0, 2);
-      tShort = (Short)convert(b2, DataType.SHORT, -1);
-      B_divider  = tShort.shortValue();
-      if(B_divider != -1){
-         out.println( "error reading stand alone tab message");
-
-      }
-      buf.get(b2, 0, 2);
-      numPages = (Short)convert(b2, DataType.SHORT, -1);
-      int ppos =  buf.position();
-      for(int i = 0; i < numPages; i++){
+        buf.position(offset);
         buf.get(b2, 0, 2);
-        while(getInt(b2, 2) != -1) {
-            numChars  = (short)getInt(b2, 2);
-            if(numChars < 0){
-                break;
-            }
-            byte[] tmp = new byte[numChars];
-            buf.get(tmp);
-            String text = new String(tmp);
+        tShort = (Short)convert(b2, DataType.SHORT, -1);
+        D_divider  = tShort.shortValue();
+        buf.get(b2, 0, 2);
+        D_id  = (short)getInt(b2, 2);
+        buf.get(b4, 0, 4);
+        block_length  = getInt(b4, 4);
+        buf.get(b2, 0, 2);
+        number_layers  = (short)getInt(b2, 2);
+        off = off + 10;
+
+        return new Sinfo ( D_divider, D_id, block_length, number_layers);
+
+    }
+
+    void read_SATab( ByteBuffer buf, int offset  )
+    {
+
+          byte[] b2 = new byte[2];
+
+          short B_divider;
+          short numPages;
+          short numChars;
+          short E_divider;
+          Short tShort ;
+
+          buf.position(offset);
+          buf.get(b2, 0, 2);
+          tShort = (Short)convert(b2, DataType.SHORT, -1);
+          B_divider  = tShort.shortValue();
+          if(B_divider != -1){
+             out.println( "error reading stand alone tab message");
+
+          }
+          buf.get(b2, 0, 2);
+          numPages = (Short)convert(b2, DataType.SHORT, -1);
+          int ppos =  buf.position();
+          for(int i = 0; i < numPages; i++){
             buf.get(b2, 0, 2);
-        }
-      }
-      ArrayList dims =  new ArrayList();
-      Dimension tbDim = new Dimension("pageNumber", numPages);
-      ncfile.addDimension( null, tbDim);
-      dims.add( tbDim);
-      Variable ppage = new Variable(ncfile, null, null, "TabMessagePage");
-      ppage.setDimensions(dims);
-      ppage.setDataType(DataType.STRING);
-      ppage.addAttribute( new Attribute("long_name", "Stand Alone Tabular Alphanumeric Product Message"));
-      ncfile.addVariable(null, ppage);
-      //ppage.setSPobject( new Vinfo (numPages, 0, tblen, 0, hoff, ppos, isR, false, null, null, 82, 0));
-  }
-  /*
-  ** Name:       read_msghead
-  **
-  ** Purpose:    Read message header from NEXRAD Level III product
-  **
-  **
-  */
-  int read_msghead( ByteBuffer buf, int offset)
-  {
+            while(getInt(b2, 2) != -1) {
+                numChars  = (short)getInt(b2, 2);
+                if(numChars < 0){
+                    break;
+                }
+                byte[] tmp = new byte[numChars];
+                buf.get(tmp);
+                String text = new String(tmp);
+                buf.get(b2, 0, 2);
+            }
+          }
+          ArrayList dims =  new ArrayList();
+          Dimension tbDim = new Dimension("pageNumber", numPages);
+          ncfile.addDimension( null, tbDim);
+          dims.add( tbDim);
+          Variable ppage = new Variable(ncfile, null, null, "TabMessagePage");
+          ppage.setDimensions(dims);
+          ppage.setDataType(DataType.STRING);
+          ppage.addAttribute( new Attribute("long_name", "Stand Alone Tabular Alphanumeric Product Message"));
+          ncfile.addVariable(null, ppage);
+          //ppage.setSPobject( new Vinfo (numPages, 0, tblen, 0, hoff, ppos, isR, false, null, null, 82, 0));
+    }
+    /*
+    ** Name:       read_msghead
+    **
+    ** Purpose:    Read message header from NEXRAD Level III product
+    **
+    **
+    */
+    int read_msghead( ByteBuffer buf, int offset)
+    {
 
-      byte[] b2 = new byte[2];
-      byte[] b4 = new byte[4];
+        byte[] b2 = new byte[2];
+        byte[] b4 = new byte[4];
 
-      buf.position(0);
-      buf.get(b2, 0, 2);
-      mcode = (short) getInt(b2, 2);
-      buf.get(b2, 0, 2);
-      mdate = (short) getInt(b2, 2);
-      buf.get(b4, 0, 4);
-      mtime = getInt(b4, 4);
-      buf.get(b4, 0, 4);
-      java.util.Date volumnDate = getDate( mdate, mtime*1000);
-      String dstring = formatter.toDateTimeStringISO(volumnDate);
-      //out.println( "product date is " + dstring);
-      mlength = getInt(b4, 4);
-      buf.get(b2, 0, 2);
-      msource = (short) getInt(b2, 2);
-      if(stationId == null || stationName == null) {
+        buf.position(0);
+        buf.get(b2, 0, 2);
+        mcode = (short) getInt(b2, 2);
+        buf.get(b2, 0, 2);
+        mdate = (short) getInt(b2, 2);
+        buf.get(b4, 0, 4);
+        mtime = getInt(b4, 4);
+        buf.get(b4, 0, 4);
+        java.util.Date volumnDate = getDate( mdate, mtime*1000);
+        String dstring = formatter.toDateTimeStringISO(volumnDate);
+        //out.println( "product date is " + dstring);
+        mlength = getInt(b4, 4);
+        buf.get(b2, 0, 2);
+        msource = (short) getInt(b2, 2);
+        if(stationId == null || stationName == null) {
           try {
               NexradStationDB.init(); // make sure database is initialized
               NexradStationDB.Station station = NexradStationDB.getByIdNumber("000"+Short.toString(msource));
@@ -2209,70 +2318,83 @@ class Nidsheader{
             } catch (IOException ioe) {
               log.error("NexradStationDB.init", ioe);
             }
-      }
-      buf.get(b2, 0, 2);
-      mdestId = (short) getInt(b2, 2);
-      buf.get(b2, 0, 2);
-      mNumOfBlock = (short) getInt(b2, 2);
+        }
+        buf.get(b2, 0, 2);
+        mdestId = (short) getInt(b2, 2);
+        buf.get(b2, 0, 2);
+        mNumOfBlock = (short) getInt(b2, 2);
 
-      return 1;
+        return 1;
 
-  }
-     int getUInt( byte[] b, int num )
-  {
-      int            base=1;
-      int            i;
-      int            word=0;
+    }
 
-      int bv[] = new int[num];
+    /**
+     * get unsigned integer from byte array
+     * @param b
+     * @param num
+     * @return
+     */
+    int getUInt( byte[] b, int num )
+    {
+        int            base=1;
+        int            i;
+        int            word=0;
 
-      for (i = 0; i<num; i++ )
-      {
+        int bv[] = new int[num];
+
+        for (i = 0; i<num; i++ )
+        {
+            bv[i] = convertunsignedByte2Short(b[i]);
+        }
+
+        /*
+        ** Calculate the integer value of the byte sequence
+        */
+
+        for ( i = num-1; i >= 0; i-- ) {
+            word += base * bv[i];
+            base *= 256;
+        }
+
+        return word;
+    }
+
+    /**
+     * get signed integer from bytes
+     * @param b
+     * @param num
+     * @return
+     */
+    int getInt( byte[] b, int num )
+    {
+        int            base=1;
+        int            i;
+        int            word=0;
+
+        int bv[] = new int[num];
+
+        for (i = 0; i<num; i++ )
+        {
         bv[i] = convertunsignedByte2Short(b[i]);
-      }
+        }
 
-      /*
-      ** Calculate the integer value of the byte sequence
-      */
-
-      for ( i = num-1; i >= 0; i-- ) {
-        word += base * bv[i];
-        base *= 256;
-      }
-
-      return word;
-  }
-
-   int getInt( byte[] b, int num )
-  {
-      int            base=1;
-      int            i;
-      int            word=0;
-
-      int bv[] = new int[num];
-
-      for (i = 0; i<num; i++ )
-      {
-        bv[i] = convertunsignedByte2Short(b[i]);
-      }
-
-      if( bv[0] > 127 )
-      {
+        if( bv[0] > 127 )
+        {
          bv[0] -= 128;
          base = -1;
-      }
-      /*
-      ** Calculate the integer value of the byte sequence
-      */
+        }
+        /*
+        ** Calculate the integer value of the byte sequence
+        */
 
-      for ( i = num-1; i >= 0; i-- ) {
+        for ( i = num-1; i >= 0; i-- ) {
         word += base * bv[i];
         base *= 256;
-      }
+        }
 
-      return word;
+        return word;
 
-  }
+    }
    /***
     * Concatenate two bytes to a 32-bit int value.  <b>a</b> is the high order
     * byte in the resulting int representation, unless swapBytes is true, in
@@ -2283,72 +2405,88 @@ class Nidsheader{
     * @return 32-bit integer
     */
 
-  public static int bytesToInt(byte a, byte b, boolean swapBytes) {
+    public static int bytesToInt(byte a, byte b, boolean swapBytes) {
   		// again, high order bit is expressed left into 32-bit form
   		if (swapBytes) {
   			return (a & 0xff) + ((int)b << 8);
   		} else {
   			return ((int)a << 8) + (b & 0xff);
   		}
-  }
+    }
+
+    /**
+     * convert unsigned byte to short
+     * @param b
+     * @return
+     */
+    public short convertunsignedByte2Short(byte b)
+    {
+        return (short)((b<0)? (short)b + 256 : (short)b);
+    }
+
+    /**
+     *  convert short to unsigned integer
+     * @param b
+     * @return
+     */
+    public int convertShort2unsignedInt(short b)
+    {
+        return (b<0)? (-1)*b + 32768 : b;
+    }
+
+    /**
+     * get jave date
+     * @param julianDays
+     * @param msecs
+     * @return
+     */
+    static public java.util.Date getDate(int julianDays, int msecs) {
+        long total = ((long) (julianDays - 1)) * 24 * 3600 * 1000 + msecs;
+        return new Date( total);
+    }
+
+    /*
+    ** Name:       read_proddesc
+    **
+    ** Purpose:    Read product description header from NEXRAD Level III product
+    **
+    **
+    */
+    Pinfo read_proddesc(  ByteBuffer buf, int offset ){
+        byte[] b2 = new byte[2];
+        byte[] b4 = new byte[4];
+        int off = offset;
+        Short tShort;
+        Integer tInt;
+        //Double tDouble = null;
+
+        /* thredds global att */
+        ncfile.addAttribute(null, new Attribute("title", "Nexrad Level 3 Data"));
+        ncfile.addAttribute(null, new Attribute("keywords", "WSR-88D; NIDS"));
+        ncfile.addAttribute(null, new Attribute("creator_name", "NOAA/NWS"));
+        ncfile.addAttribute(null, new Attribute("creator_url", "http://www.ncdc.noaa.gov/oa/radar/radarproducts.html"));
+        ncfile.addAttribute(null, new Attribute("naming_authority", "NOAA/NCDC"));
 
 
-  public short convertunsignedByte2Short(byte b)
-  {
-     return (short)((b<0)? (short)b + 256 : (short)b);
-  }
+        //      ncfile.addAttribute(null, new Attribute("keywords_vocabulary", cname));
+        //out.println( "offset of buffer is " + off);
+        buf.position(offset);
+        buf.get(b2, 0, 2);
+        tShort = (Short)convert(b2, DataType.SHORT, -1);
+        divider  =  tShort.shortValue();
+        ncfile.addAttribute(null, new Attribute("Divider", tShort));
 
-  public int convertShort2unsignedInt(short b)
-  {
-     return (b<0)? (-1)*b + 32768 : b;
-  }
-
-  static public java.util.Date getDate(int julianDays, int msecs) {
-    long total = ((long) (julianDays - 1)) * 24 * 3600 * 1000 + msecs;
-    return new Date( total);
-  }
-  /*
-  ** Name:       read_proddesc
-  **
-  ** Purpose:    Read product description header from NEXRAD Level III product
-  **
-  **
-  */
-  Pinfo read_proddesc(  ByteBuffer buf, int offset ){
-      byte[] b2 = new byte[2];
-      byte[] b4 = new byte[4];
-      int off = offset;
-      Short tShort;
-      Integer tInt;
-      //Double tDouble = null;
-
-      /* thredds global att */
-      ncfile.addAttribute(null, new Attribute("title", "Nexrad Level 3 Data"));
-      ncfile.addAttribute(null, new Attribute("keywords", "WSR-88D; NIDS"));
-      ncfile.addAttribute(null, new Attribute("creator_name", "NOAA/NWS"));
-      ncfile.addAttribute(null, new Attribute("creator_url", "http://www.ncdc.noaa.gov/oa/radar/radarproducts.html"));
-      ncfile.addAttribute(null, new Attribute("naming_authority", "NOAA/NCDC"));
+        buf.get(b4, 0, 4);
+        tInt = (Integer)convert(b4, DataType.INT, -1);
+        latitude = tInt.intValue()/ 1000.0;
+        buf.get(b4, 0, 4);
+        tInt = (Integer)convert(b4, DataType.INT, -1);
+        longitude = tInt.intValue()/ 1000.0;
+        buf.get(b2, 0, 2);
+        height = getInt(b2, 2)*0.3048; // LOOK now in units of meters
 
 
-//      ncfile.addAttribute(null, new Attribute("keywords_vocabulary", cname));
-      //out.println( "offset of buffer is " + off);
-      buf.position(offset);
-      buf.get(b2, 0, 2);
-      tShort = (Short)convert(b2, DataType.SHORT, -1);
-      divider  =  tShort.shortValue();
-      ncfile.addAttribute(null, new Attribute("Divider", tShort));
-
-      buf.get(b4, 0, 4);
-      tInt = (Integer)convert(b4, DataType.INT, -1);
-      latitude = tInt.intValue()/ 1000.0;
-      buf.get(b4, 0, 4);
-      tInt = (Integer)convert(b4, DataType.INT, -1);
-      longitude = tInt.intValue()/ 1000.0;
-      buf.get(b2, 0, 2);
-      height = getInt(b2, 2)*0.3048; // LOOK now in units of meters
-
-
-      if (useStationDB) { // override by station table for more accuracy
+        if (useStationDB) { // override by station table for more accuracy
         try {
           NexradStationDB.init(); // make sure database is initialized
           NexradStationDB.Station station = NexradStationDB.get("K"+stationId);
@@ -2361,192 +2499,207 @@ class Nidsheader{
         } catch (IOException ioe) {
           log.error("NexradStationDB.init", ioe);
         }
-      }
+        }
 
-      ncfile.addAttribute(null, new Attribute("RadarLatitude", new Double(latitude)));
-      ncfile.addAttribute(null, new Attribute("RadarLongitude", new Double(longitude)));
-      ncfile.addAttribute(null, new Attribute("RadarAltitude", new Double(height)));
+        ncfile.addAttribute(null, new Attribute("RadarLatitude", new Double(latitude)));
+        ncfile.addAttribute(null, new Attribute("RadarLongitude", new Double(longitude)));
+        ncfile.addAttribute(null, new Attribute("RadarAltitude", new Double(height)));
 
-      buf.get(b2, 0, 2);
-      pcode = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("ProductStation", stationId));
-      ncfile.addAttribute(null, new Attribute("ProductStationName", stationName));
-      buf.get(b2, 0, 2);
-      opmode = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("OperationalMode", new Short(opmode)));
-      buf.get(b2, 0, 2);
-      volumnScanPattern = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("VolumeCoveragePatternName", new Short(volumnScanPattern)));
-      buf.get(b2, 0, 2);
-      sequenceNumber = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("SequenceNumber", new Short(sequenceNumber)));
-      buf.get(b2, 0, 2);
-      volumeScanNumber = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("VolumeScanNumber", new Short(volumeScanNumber)));
-      buf.get(b2, 0, 2);
-      volumeScanDate = (short)getUInt(b2, 2);
-      buf.get(b4, 0, 4);
-      volumeScanTime = getUInt(b4, 4);
-      buf.get(b2, 0, 2);
-      productDate = (short)getUInt(b2, 2);
-      buf.get(b4, 0, 4);
-      productTime = getUInt(b4, 4);
-      java.util.Date pDate = getDate( productDate, productTime*1000);
-      String dstring = formatter.toDateTimeStringISO(pDate);
-      ncfile.addAttribute(null, new Attribute("DateCreated", dstring));
-      buf.get(b2, 0, 2);
-      p1 = (short)getInt(b2, 2);
-      buf.get(b2, 0, 2);
-      p2 = (short)getInt(b2, 2);
-      buf.get(b2, 0, 2);
-      elevationNumber = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("ElevationNumber",new Short(elevationNumber)));
-      buf.get(b2, 0, 2);
-      p3 = (short)getInt(b2, 2);
-      off += 40;
-      if(pcode == 182 || pcode == 186 || pcode == 32) {
+        buf.get(b2, 0, 2);
+        pcode = (short)getInt(b2, 2);
+        ncfile.addAttribute(null, new Attribute("ProductStation", stationId));
+        ncfile.addAttribute(null, new Attribute("ProductStationName", stationName));
+        buf.get(b2, 0, 2);
+        opmode = (short)getInt(b2, 2);
+        ncfile.addAttribute(null, new Attribute("OperationalMode", new Short(opmode)));
+        buf.get(b2, 0, 2);
+        volumnScanPattern = (short)getInt(b2, 2);
+        ncfile.addAttribute(null, new Attribute("VolumeCoveragePatternName", new Short(volumnScanPattern)));
+        buf.get(b2, 0, 2);
+        sequenceNumber = (short)getInt(b2, 2);
+        ncfile.addAttribute(null, new Attribute("SequenceNumber", new Short(sequenceNumber)));
+        buf.get(b2, 0, 2);
+        volumeScanNumber = (short)getInt(b2, 2);
+        ncfile.addAttribute(null, new Attribute("VolumeScanNumber", new Short(volumeScanNumber)));
+        buf.get(b2, 0, 2);
+        volumeScanDate = (short)getUInt(b2, 2);
+        buf.get(b4, 0, 4);
+        volumeScanTime = getUInt(b4, 4);
+        buf.get(b2, 0, 2);
+        productDate = (short)getUInt(b2, 2);
+        buf.get(b4, 0, 4);
+        productTime = getUInt(b4, 4);
+        java.util.Date pDate = getDate( productDate, productTime*1000);
+        String dstring = formatter.toDateTimeStringISO(pDate);
+        ncfile.addAttribute(null, new Attribute("DateCreated", dstring));
+        buf.get(b2, 0, 2);
+        p1 = (short)getInt(b2, 2);
+        buf.get(b2, 0, 2);
+        p2 = (short)getInt(b2, 2);
+        buf.get(b2, 0, 2);
+        elevationNumber = (short)getInt(b2, 2);
+        ncfile.addAttribute(null, new Attribute("ElevationNumber",new Short(elevationNumber)));
+        buf.get(b2, 0, 2);
+        p3 = (short)getInt(b2, 2);
+        off += 40;
+        if(pcode == 182 || pcode == 186 || pcode == 32) {
           for(int i = 0; i< 16; i++) {
             buf.get(b2, 0, 2);
             threshold[i] = (short)bytesToInt(b2[0], b2[1], false);
           }
-      }
-      else {
+        }
+        else {
           for(int i = 0; i< 16; i++) {
             buf.get(b2, 0, 2);
             threshold[i] = (short)getInt(b2, 2);
           }
-      }
-      off += 32;
-      buf.get(b2, 0, 2);
-      p4 = (short)getInt(b2, 2);
-      //int t1 = getUInt(b2, 2);
-      buf.get(b2, 0, 2);
-      p5 = (short)getInt(b2, 2);
-      //t1 = getUInt(b2, 2);
-      buf.get(b2, 0, 2);
-      p6 = (short)getInt(b2, 2);
-      //t1 = getUInt(b2, 2);
-      buf.get(b2, 0, 2);      
-      p7 = (short)getInt(b2, 2);
-      buf.get(b2, 0, 2);
-      p8 = (short)getInt(b2, 2);
-      buf.get(b2, 0, 2);
-      p9 = (short)getInt(b2, 2);
-      buf.get(b2, 0, 2);
-      p10 = (short)getInt(b2, 2); //bytesToInt(b2[0], b2[1], true); //
-      off += 14;
+        }
+        off += 32;
+        buf.get(b2, 0, 2);
+        p4 = (short)getInt(b2, 2);
+        //int t1 = getUInt(b2, 2);
+        buf.get(b2, 0, 2);
+        p5 = (short)getInt(b2, 2);
+        //t1 = getUInt(b2, 2);
+        buf.get(b2, 0, 2);
+        p6 = (short)getInt(b2, 2);
+        //t1 = getUInt(b2, 2);
+        buf.get(b2, 0, 2);
+        p7 = (short)getInt(b2, 2);
+        buf.get(b2, 0, 2);
+        p8 = (short)getInt(b2, 2);
+        buf.get(b2, 0, 2);
+        p9 = (short)getInt(b2, 2);
+        buf.get(b2, 0, 2);
+        p10 = (short)getInt(b2, 2); //bytesToInt(b2[0], b2[1], true); //
+        off += 14;
 
-      buf.get(b2, 0, 2);
-      numberOfMaps = (short)getInt(b2, 2);
-      ncfile.addAttribute(null, new Attribute("NumberOfMaps",new Short(numberOfMaps)));
-      off += 2;
-      buf.get(b4, 0, 4);
-      //tInt = (Integer)convert(b4, DataType.INT, -1);
-      offsetToSymbologyBlock = getInt(b4, 4);
-      //ncfile.addAttribute(null, new Attribute("offset_symbology_block",new Integer(offsetToSymbologyBlock)));
-      off += 4;
-      buf.get(b4, 0, 4);
-      //tInt = (Integer)convert(b4, DataType.INT, -1);
-      offsetToGraphicBlock = getInt(b4, 4);
-      //ncfile.addAttribute(null, new Attribute("offset_graphic_block",new Integer(offsetToGraphicBlock)));
-      off += 4;
-      buf.get(b4, 0, 4);
-      //tInt = (Integer)convert(b4, DataType.INT, -1);
-      offsetToTabularBlock = getInt(b4, 4);
-      //ncfile.addAttribute(null, new Attribute("offset_tabular_block",new Integer(offsetToTabularBlock)));
-      off += 4;
+        buf.get(b2, 0, 2);
+        numberOfMaps = (short)getInt(b2, 2);
+        ncfile.addAttribute(null, new Attribute("NumberOfMaps",new Short(numberOfMaps)));
+        off += 2;
+        buf.get(b4, 0, 4);
+        //tInt = (Integer)convert(b4, DataType.INT, -1);
+        offsetToSymbologyBlock = getInt(b4, 4);
+        //ncfile.addAttribute(null, new Attribute("offset_symbology_block",new Integer(offsetToSymbologyBlock)));
+        off += 4;
+        buf.get(b4, 0, 4);
+        //tInt = (Integer)convert(b4, DataType.INT, -1);
+        offsetToGraphicBlock = getInt(b4, 4);
+        //ncfile.addAttribute(null, new Attribute("offset_graphic_block",new Integer(offsetToGraphicBlock)));
+        off += 4;
+        buf.get(b4, 0, 4);
+        //tInt = (Integer)convert(b4, DataType.INT, -1);
+        offsetToTabularBlock = getInt(b4, 4);
+        //ncfile.addAttribute(null, new Attribute("offset_tabular_block",new Integer(offsetToTabularBlock)));
+        off += 4;
 
-      return  new Pinfo (divider, latitude, longitude, height, pcode, opmode, threshold,
+        return  new Pinfo (divider, latitude, longitude, height, pcode, opmode, threshold,
                            sequenceNumber, volumeScanNumber, volumeScanDate, volumeScanTime,
                             productDate, productTime, p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,
                             elevationNumber, numberOfMaps, offsetToSymbologyBlock,
                             offsetToGraphicBlock, offsetToTabularBlock);
 
-      //return pinfo;
+        //return pinfo;
 
-  }
-
-  // this converts a byte array to another primitive array
-  protected Object convert( byte[] barray, DataType dataType, int nelems, int byteOrder) {
-
-    if (dataType == DataType.BYTE) {
-      return barray;
     }
 
-    if (dataType == DataType.CHAR) {
-      return IospHelper.convertByteToChar( barray);
+  //
+  /**
+   * this converts a byte array to another primitive array
+   * @param barray
+   * @param dataType
+   * @param nelems
+   * @param byteOrder
+   * @return
+   */
+    protected Object convert( byte[] barray, DataType dataType, int nelems, int byteOrder) {
+
+        if (dataType == DataType.BYTE) {
+          return barray;
+        }
+
+        if (dataType == DataType.CHAR) {
+          return IospHelper.convertByteToChar( barray);
+        }
+
+        ByteBuffer bbuff = ByteBuffer.wrap( barray);
+        if (byteOrder >= 0)
+          bbuff.order( byteOrder == ucar.unidata.io.RandomAccessFile.LITTLE_ENDIAN? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+
+        if (dataType == DataType.SHORT) {
+          ShortBuffer tbuff = bbuff.asShortBuffer();
+          short[] pa = new short[nelems];
+          tbuff.get( pa);
+          return pa;
+
+        } else if (dataType == DataType.INT) {
+          IntBuffer tbuff = bbuff.asIntBuffer();
+          int[] pa = new int[nelems];
+          tbuff.get( pa);
+          return pa;
+
+        } else if (dataType == DataType.FLOAT) {
+          FloatBuffer tbuff = bbuff.asFloatBuffer();
+          float[] pa = new float[nelems];
+          tbuff.get( pa);
+          return pa;
+
+        } else if (dataType == DataType.DOUBLE) {
+          DoubleBuffer tbuff = bbuff.asDoubleBuffer();
+          double[] pa = new double[nelems];
+          tbuff.get( pa);
+          return pa;
+        }
+
+        throw new IllegalStateException();
     }
 
-    ByteBuffer bbuff = ByteBuffer.wrap( barray);
-    if (byteOrder >= 0)
-      bbuff.order( byteOrder == ucar.unidata.io.RandomAccessFile.LITTLE_ENDIAN? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+  //
+  /**
+   * this converts a byte array to a wrapped primitive (Byte, Short, Integer, Double, Float, Long)
+   * @param barray
+   * @param dataType
+   * @param byteOrder
+   * @return
+   */
+    protected Object convert( byte[] barray, DataType dataType, int byteOrder) {
 
-    if (dataType == DataType.SHORT) {
-      ShortBuffer tbuff = bbuff.asShortBuffer();
-      short[] pa = new short[nelems];
-      tbuff.get( pa);
-      return pa;
+        if (dataType == DataType.BYTE) {
+          return new Byte( barray[0]);
+        }
 
-    } else if (dataType == DataType.INT) {
-      IntBuffer tbuff = bbuff.asIntBuffer();
-      int[] pa = new int[nelems];
-      tbuff.get( pa);
-      return pa;
+        if (dataType == DataType.CHAR) {
+          return new Character((char) barray[0]);
+        }
 
-    } else if (dataType == DataType.FLOAT) {
-      FloatBuffer tbuff = bbuff.asFloatBuffer();
-      float[] pa = new float[nelems];
-      tbuff.get( pa);
-      return pa;
+        ByteBuffer bbuff = ByteBuffer.wrap( barray);
+        if (byteOrder >= 0)
+          bbuff.order( byteOrder == ucar.unidata.io.RandomAccessFile.LITTLE_ENDIAN? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
 
-    } else if (dataType == DataType.DOUBLE) {
-      DoubleBuffer tbuff = bbuff.asDoubleBuffer();
-      double[] pa = new double[nelems];
-      tbuff.get( pa);
-      return pa;
+        if (dataType == DataType.SHORT) {
+          ShortBuffer tbuff = bbuff.asShortBuffer();
+          return new Short(tbuff.get());
+
+        } else if (dataType == DataType.INT) {
+          IntBuffer tbuff = bbuff.asIntBuffer();
+          return new Integer(tbuff.get());
+
+        } else if (dataType == DataType.LONG) {
+          LongBuffer tbuff = bbuff.asLongBuffer();
+          return new Long(tbuff.get());
+
+        } else if (dataType == DataType.FLOAT) {
+          FloatBuffer tbuff = bbuff.asFloatBuffer();
+          return new Float(tbuff.get());
+
+        } else if (dataType == DataType.DOUBLE) {
+          DoubleBuffer tbuff = bbuff.asDoubleBuffer();
+          return new Double(tbuff.get());
+        }
+
+        throw new IllegalStateException();
     }
-
-    throw new IllegalStateException();
-  }
-
-  // this converts a byte array to a wrapped primitive (Byte, Short, Integer, Double, Float, Long)
-  protected Object convert( byte[] barray, DataType dataType, int byteOrder) {
-
-    if (dataType == DataType.BYTE) {
-      return new Byte( barray[0]);
-    }
-
-    if (dataType == DataType.CHAR) {
-      return new Character((char) barray[0]);
-    }
-
-    ByteBuffer bbuff = ByteBuffer.wrap( barray);
-    if (byteOrder >= 0)
-      bbuff.order( byteOrder == ucar.unidata.io.RandomAccessFile.LITTLE_ENDIAN? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-
-    if (dataType == DataType.SHORT) {
-      ShortBuffer tbuff = bbuff.asShortBuffer();
-      return new Short(tbuff.get());
-
-    } else if (dataType == DataType.INT) {
-      IntBuffer tbuff = bbuff.asIntBuffer();
-      return new Integer(tbuff.get());
-
-    } else if (dataType == DataType.LONG) {
-      LongBuffer tbuff = bbuff.asLongBuffer();
-      return new Long(tbuff.get());
-
-    } else if (dataType == DataType.FLOAT) {
-      FloatBuffer tbuff = bbuff.asFloatBuffer();
-      return new Float(tbuff.get());
-
-    } else if (dataType == DataType.DOUBLE) {
-      DoubleBuffer tbuff = bbuff.asDoubleBuffer();
-      return new Double(tbuff.get());
-    }
-
-    throw new IllegalStateException();
-  }
 
 
   //////////////////////////////////////////////////////////////////////////
@@ -2554,78 +2707,77 @@ class Nidsheader{
 
 
 
-  /**
-   * Flush all data buffers to disk.
-   * @throws IOException
-   */
-  public void flush() throws IOException {
-    raf.flush();
-  }
-
-  /**
-   *  Close the file.
-   * @throws IOException
-   */
-  public void close() throws IOException {
-    if (raf != null)
-      raf.close();
-  }
-
-
-  /*
-  ** Name:       IsZlibed
-  **
-  ** Purpose:    Check a two-byte sequence to see if it indicates the start of
-  **             a zlib-compressed buffer
-  **
-  */
-
-   int isZlibHed( byte[] buf ){
-    short b0 = convertunsignedByte2Short(buf[0]);
-    short b1 = convertunsignedByte2Short(buf[1]);
-
-    if ( (b0 & 0xf) == Z_DEFLATED ) {
-      if ( (b0 >> 4) + 8 <= DEF_WBITS ) {
-        if ( (((b0 << 8) + b1) % 31)==0 ) {
-          return 1;
-        }
-      }
+    /**
+    * Flush all data buffers to disk.
+    * @throws IOException
+    */
+    public void flush() throws IOException {
+        raf.flush();
     }
 
-    return 0;
+    /**
+    *  Close the file.
+    * @throws IOException
+    */
+    public void close() throws IOException {
+        if (raf != null)
+          raf.close();
+    }
 
-  }
 
-  /*
-  ** Name:       IsEncrypt
-  **
-  ** Purpose:    Check a two-byte sequence to see if it indicates the start of
-  **             an encrypted image.
-  **
-  */
-  int IsEncrypt( byte[] buf )
-  {
-      /*
-      ** These tests were deduced from inspection from encrypted NOAAPORT files.
-      */
-      String b = new String(buf);
-      if ( b.startsWith("R3") ) {
+    /**
+    * Name:       IsZlibed
+    *
+    * Purpose:    Check a two-byte sequence to see if it indicates the start of
+    *             a zlib-compressed buffer
+    *
+    */
+    int isZlibHed( byte[] buf ){
+        short b0 = convertunsignedByte2Short(buf[0]);
+        short b1 = convertunsignedByte2Short(buf[1]);
+
+        if ( (b0 & 0xf) == Z_DEFLATED ) {
+          if ( (b0 >> 4) + 8 <= DEF_WBITS ) {
+            if ( (((b0 << 8) + b1) % 31)==0 ) {
+              return 1;
+            }
+          }
+        }
+
+        return 0;
+
+    }
+
+    /*
+    ** Name:       IsEncrypt
+    **
+    ** Purpose:    Check a two-byte sequence to see if it indicates the start of
+    **             an encrypted image.
+    **
+    */
+    int IsEncrypt( byte[] buf )
+    {
+        /*
+        ** These tests were deduced from inspection from encrypted NOAAPORT files.
+        */
+        String b = new String(buf);
+        if ( b.startsWith("R3") ) {
         return 1;
-      }
+        }
 
-      return 0;
-  }
+        return 0;
+    }
 
 
-  /*
-  ** Name:    GetZlibedNexr
-  **
-  ** Purpose: Read bytes from a NEXRAD Level III product into a buffer
-  **          This routine reads compressed image data for Level III formatted file.
-  **          We referenced McIDAS GetNexrLine function
-  */
-  byte[] GetZlibedNexr( byte[] buf, int buflen, int hoff ) throws IOException
-  {
+    /*
+    ** Name:    GetZlibedNexr
+    **
+    ** Purpose: Read bytes from a NEXRAD Level III product into a buffer
+    **          This routine reads compressed image data for Level III formatted file.
+    **          We referenced McIDAS GetNexrLine function
+    */
+    byte[] GetZlibedNexr( byte[] buf, int buflen, int hoff ) throws IOException
+    {
       //byte[]  uncompr = new byte[ZLIB_BUF_LEN ]; /* decompression buffer          */
       //long    uncomprLen = ZLIB_BUF_LEN;        /* length of decompress space    */
       int             doff ;                   /* # bytes offset to image       */
@@ -2802,17 +2954,17 @@ class Nidsheader{
 
       return data;
 
-  }
+    }
 
 
 
 
-  /*
-  ** Name:       code_lookup
-  **
-  ** Purpose:    Derive some derivable metadata
-  **
-  */
+    /*
+    ** Name:       code_lookup
+    **
+    ** Purpose:    Derive some derivable metadata
+    **
+    */
     static int code_typelookup( int code )
     {
       int type;
@@ -2868,6 +3020,12 @@ class Nidsheader{
 
     }
 
+    /**
+     * product id table
+     * @param code
+     * @param elevation
+     * @return
+     */
     static String pname_lookup( int code, int elevation )
     {
       String pname = null;
@@ -2960,6 +3118,12 @@ class Nidsheader{
       return pname;
 
     }
+
+    /**
+     * product resolution
+     * @param code
+     * @return
+     */
     static double code_reslookup( int code )
     {
 
@@ -2997,6 +3161,11 @@ class Nidsheader{
 
     }
 
+    /**
+     * product level tabel
+     * @param code
+     * @return
+     */
     static int code_levelslookup( int code )
     {
 
@@ -3034,8 +3203,8 @@ class Nidsheader{
 
     }
 
-  // Symbology block info for reading/writing
-  class Sinfo {
+    // Symbology block info for reading/writing
+    class Sinfo {
       short divider;
       short id;
       int blockLength;
@@ -3047,90 +3216,90 @@ class Nidsheader{
         this.blockLength = length;
         this.nlayers = layers;
       }
-  }
+    }
 
   // variable info for reading/writing
-  class Vinfo {
-    int xt;
-    int x0;
-    int yt;
-    int y0;
-    boolean isRadial; // is it a radial variable?
-    long hoff;    // header offset
-    long doff;
-    boolean isZlibed;
-    int[] pos;
-    int[] len;
-    int code;
-    int level;
+    class Vinfo {
+        int xt;
+        int x0;
+        int yt;
+        int y0;
+        boolean isRadial; // is it a radial variable?
+        long hoff;    // header offset
+        long doff;
+        boolean isZlibed;
+        int[] pos;
+        int[] len;
+        int code;
+        int level;
 
-    Vinfo( int xt, int x0, int yt, int y0,long hoff, long doff, boolean isRadial, boolean isZ,
-           int[] pos, int[] len, int code, int level ) {
-        this.xt = xt;
-        this.yt = yt;
-        this.x0 = x0;
-        this.y0 = y0;
-        this.hoff = hoff;
-        this.doff = doff;
-        this.isRadial = isRadial;
-        this.isZlibed = isZ;
-        this.pos = pos;
-        this.len = len;
-        this.code = code;
-        this.level = level;
+        Vinfo( int xt, int x0, int yt, int y0,long hoff, long doff, boolean isRadial, boolean isZ,
+               int[] pos, int[] len, int code, int level ) {
+            this.xt = xt;
+            this.yt = yt;
+            this.x0 = x0;
+            this.y0 = y0;
+            this.hoff = hoff;
+            this.doff = doff;
+            this.isRadial = isRadial;
+            this.isZlibed = isZ;
+            this.pos = pos;
+            this.len = len;
+            this.code = code;
+            this.level = level;
+        }
     }
-  }
 
 
   // product info for reading/writing
-  class Pinfo {
-    short divider, pcode, opmode, sequenceNumber, volumeScanNumber, volumeScanDate, productDate;
-    double latitude, longitude;
-    double height; // meters
-    int volumeScanTime,  productTime;
-    short p1, p2, p3, p4, p5, p6, p7, p8, p9, p10;
-    short elevationNumber, numberOfMaps;
-    int offsetToSymbologyBlock, offsetToGraphicBlock, offsetToTabularBlock;
-    short [] threshold;
-    Pinfo() {
-        // do nothing ;
-    }
-    Pinfo (short divider , double latitude, double longitude, double height, short pcode, short opmode, short[] threshold,
-           short sequenceNumber, short volumeScanNumber, short volumeScanDate, int volumeScanTime,
-           short productDate, int productTime, short p1,short p2,short p3,short p4,short p5,
-           short p6,short p7,short p8, short p9,short p10,
-           short elevationNumber, short numberOfMaps, int offsetToSymbologyBlock,
-           int offsetToGraphicBlock, int offsetToTabularBlock)   {
-      this.divider = divider;
-      this.latitude= latitude;
-      this.longitude = longitude;
-      this.height = height;
-      this.pcode = pcode;
-      this.opmode = opmode;
-      this.sequenceNumber = sequenceNumber ;
-      this.volumeScanNumber = volumeScanNumber ;
-      this.volumeScanDate = volumeScanDate ;
-      this.volumeScanTime = volumeScanTime ;
-      this.productDate = productDate ;
-      this.productTime = productTime ;
-      this.p1 = p1 ;
-      this.p2 = p2 ;
-      this.p3 = p3 ;
-      this.p4 = p4;
-      this.p5 = p5 ;
-      this.p6 = p6 ;
-      this.p7 = p7 ;
-      this.p8 = p8 ;
-      this.p9 = p9 ;
-      this.p10 = p10 ;
-      this.threshold = threshold;
-      this.elevationNumber = elevationNumber ;
-      this.numberOfMaps = numberOfMaps ;
-      this.offsetToSymbologyBlock = offsetToSymbologyBlock ;
-      this.offsetToGraphicBlock = offsetToGraphicBlock ;
-      this.offsetToTabularBlock = offsetToTabularBlock ;
+    class Pinfo {
+        short divider, pcode, opmode, sequenceNumber, volumeScanNumber, volumeScanDate, productDate;
+        double latitude, longitude;
+        double height; // meters
+        int volumeScanTime,  productTime;
+        short p1, p2, p3, p4, p5, p6, p7, p8, p9, p10;
+        short elevationNumber, numberOfMaps;
+        int offsetToSymbologyBlock, offsetToGraphicBlock, offsetToTabularBlock;
+        short [] threshold;
+        Pinfo() {
+            // do nothing ;
+        }
+        Pinfo (short divider , double latitude, double longitude, double height, short pcode, short opmode, short[] threshold,
+               short sequenceNumber, short volumeScanNumber, short volumeScanDate, int volumeScanTime,
+               short productDate, int productTime, short p1,short p2,short p3,short p4,short p5,
+               short p6,short p7,short p8, short p9,short p10,
+               short elevationNumber, short numberOfMaps, int offsetToSymbologyBlock,
+               int offsetToGraphicBlock, int offsetToTabularBlock)   {
+          this.divider = divider;
+          this.latitude= latitude;
+          this.longitude = longitude;
+          this.height = height;
+          this.pcode = pcode;
+          this.opmode = opmode;
+          this.sequenceNumber = sequenceNumber ;
+          this.volumeScanNumber = volumeScanNumber ;
+          this.volumeScanDate = volumeScanDate ;
+          this.volumeScanTime = volumeScanTime ;
+          this.productDate = productDate ;
+          this.productTime = productTime ;
+          this.p1 = p1 ;
+          this.p2 = p2 ;
+          this.p3 = p3 ;
+          this.p4 = p4;
+          this.p5 = p5 ;
+          this.p6 = p6 ;
+          this.p7 = p7 ;
+          this.p8 = p8 ;
+          this.p9 = p9 ;
+          this.p10 = p10 ;
+          this.threshold = threshold;
+          this.elevationNumber = elevationNumber ;
+          this.numberOfMaps = numberOfMaps ;
+          this.offsetToSymbologyBlock = offsetToSymbologyBlock ;
+          this.offsetToGraphicBlock = offsetToGraphicBlock ;
+          this.offsetToTabularBlock = offsetToTabularBlock ;
 
+        }
     }
-  }
 
 }
