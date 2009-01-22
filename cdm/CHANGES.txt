@@ -48,6 +48,8 @@ This code is ALPHA
 
  Release Details:
   30:
+    add ucar.ma2.StructuresDataComposite
+    fix CFPointObWriter to correctly handle CHAR
     add FeatureType selection to PointFeature tab
     context menu on FeatureScan
     FeatureDatasetFactory was not threadsafe, isMine() returns "analysis object"

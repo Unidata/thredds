@@ -2780,6 +2780,10 @@ public class ToolsUI extends JPanel {
         setSelectedItem(location);
         return true;
 
+      } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage());
+        return false;
+        
       } catch (Throwable e) {
         e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));

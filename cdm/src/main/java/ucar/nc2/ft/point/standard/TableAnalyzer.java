@@ -43,7 +43,7 @@ public class TableAnalyzer {
 
   static private List<Configurator> conventionList = new ArrayList<Configurator>();
   static private boolean userMode = false;
-  static private boolean debug = true;
+  static private boolean debug = false;
 
   // search in the order added
   static {

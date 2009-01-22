@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.DataOutputStream;
 
 /**
+ * Common superclass for N3outputStreamWriter and N3channelStreamWriter
  * @author john
  */
 public abstract class N3streamWriter {

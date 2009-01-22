@@ -30,6 +30,7 @@ import ucar.nc2.ft.FeatureCollection;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.ma2.*;
@@ -52,7 +53,7 @@ public class WriterCFPointObsDataset {
   private static final String altName = "altitude";
   private static final String timeName = "time";
 
-  private NetcdfFileStream ncfile;
+  private NetcdfFileStream ncfileOut;
   private List<Attribute> globalAtts;
   private String altUnits;
 
@@ -64,7 +65,7 @@ public class WriterCFPointObsDataset {
   private boolean debug = false;
 
   public WriterCFPointObsDataset(DataOutputStream stream, List<Attribute> globalAtts, String altUnits) {
-    ncfile = new NetcdfFileStream(stream);
+    ncfileOut = new NetcdfFileStream(stream);
     this.globalAtts = globalAtts;
     this.altUnits = altUnits;
     useAlt = (altUnits != null);
@@ -74,17 +75,22 @@ public class WriterCFPointObsDataset {
     createGlobalAttributes();
     createRecordVariables(vars);
 
-    ncfile.finish(); // done with define mode
-    ncfile.writeHeader();
+    ncfileOut.finish(); // done with define mode
+    ncfileOut.writeHeader();
   }
 
   private void createGlobalAttributes() {
     if (globalAtts != null) {
-      for (Attribute att : globalAtts)
-        ncfile.addAttribute(null, att);
+      for (Attribute att : globalAtts) {
+        if (att.getName().equalsIgnoreCase("cdm_data_type")) continue;
+        if (att.getName().equalsIgnoreCase("cdm_datatype")) continue;
+        if (att.getName().equalsIgnoreCase("thredds_data_type")) continue;
+        
+        ncfileOut.addAttribute(null, att);
+      }
     }
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1"));  // LOOK CF-1.5
-    ncfile.addAttribute(null, new Attribute("CFfeatureType", "point")); // LOOK CF:featureType
+    ncfileOut.addAttribute(null, new Attribute("Conventions", "CF-1"));  // LOOK CF-1.?
+    ncfileOut.addAttribute(null, new Attribute("CF:featureType", CF.FeatureType.point.name()));
   }
 
   // private ArrayInt.D1 timeArray = new ArrayInt.D1(1);
@@ -92,23 +98,23 @@ public class WriterCFPointObsDataset {
 
   private void createRecordVariables(List<? extends VariableSimpleIF> dataVars) {
 
-    ncfile.addDimension(null, new Dimension(recordDimName, 0, true, true, false));
+    ncfileOut.addDimension(null, new Dimension(recordDimName, 0, true, true, false));
 
     // time variable
-    Variable timeVar = ncfile.addVariable(null, timeName, DataType.INT, recordDimName);
+    Variable timeVar = ncfileOut.addVariable(null, timeName, DataType.INT, recordDimName);
     timeVar.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00:00"));
     timeVar.addAttribute(new Attribute("long_name", "date/time of observation"));
     recordVars.add(timeVar);
 
     // latitude variable
-    Variable latVar = ncfile.addVariable(null, latName, DataType.DOUBLE, recordDimName);
+    Variable latVar = ncfileOut.addVariable(null, latName, DataType.DOUBLE, recordDimName);
     latVar.addAttribute(new Attribute("units", "degrees_north"));
     latVar.addAttribute(new Attribute("long_name", "latitude of observation"));
     latVar.addAttribute(new Attribute("standard_name", "latitude"));
     recordVars.add(latVar);
 
     // longitude variable
-    Variable lonVar = ncfile.addVariable(null, lonName, DataType.DOUBLE, recordDimName);
+    Variable lonVar = ncfileOut.addVariable(null, lonName, DataType.DOUBLE, recordDimName);
     lonVar.addAttribute(new Attribute("units", "degrees_east"));
     lonVar.addAttribute(new Attribute("long_name", "longitude of observation"));
     lonVar.addAttribute(new Attribute("standard_name", "longitude"));
@@ -116,7 +122,7 @@ public class WriterCFPointObsDataset {
 
     if (useAlt) {
       // altitude variable
-      Variable altVar = ncfile.addVariable(null, altName, DataType.DOUBLE, recordDimName);
+      Variable altVar = ncfileOut.addVariable(null, altName, DataType.DOUBLE, recordDimName);
       altVar.addAttribute(new Attribute("units", altUnits));
       altVar.addAttribute(new Attribute("long_name", "altitude of observation"));
       altVar.addAttribute(new Attribute("standard_name", "longitude"));
@@ -137,19 +143,19 @@ public class WriterCFPointObsDataset {
     // add them
     for (Dimension d : dimSet) {
       if (isExtraDimension(d))
-        ncfile.addDimension(null, new Dimension(d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength()));
+        ncfileOut.addDimension(null, new Dimension(d.getName(), d.getLength(), true, false, d.isVariableLength()));
     }
 
     // add the data variables all using the record dimension
     for (VariableSimpleIF oldVar : dataVars) {
-      if (ncfile.findVariable(oldVar.getShortName()) != null) continue;
+      if (ncfileOut.findVariable(oldVar.getShortName()) != null) continue;
       List<Dimension> dims = oldVar.getDimensions();
       StringBuffer dimNames = new StringBuffer(recordDimName);
       for (Dimension d : dims) {
         if (isExtraDimension(d))
           dimNames.append(" ").append(d.getName());
       }
-      Variable newVar = ncfile.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
+      Variable newVar = ncfileOut.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
       recordVars.add(newVar);
 
       List<Attribute> atts = oldVar.getAttributes();
@@ -186,7 +192,7 @@ public class WriterCFPointObsDataset {
       v.setCachedData(data, false);
     }
 
-    ncfile.writeRecordData(recordVars);
+    ncfileOut.writeRecordData(recordVars);
   }
 
   private int writeCoordinates(double lat, double lon, double alt, Date time) {
@@ -233,7 +239,7 @@ public class WriterCFPointObsDataset {
       v.setCachedData(sdata.getArray(v.getShortName()), false);
     }
 
-    ncfile.writeRecordData(recordVars);
+    ncfileOut.writeRecordData(recordVars);
   }
 
   public void writeRecord(PointObsDatatype pobs, StructureData sdata) throws IOException {
@@ -244,15 +250,16 @@ public class WriterCFPointObsDataset {
 
     for (int i = count; i < recordVars.size(); i++) {
       Variable v = recordVars.get(i);
+      assert v.hasCachedData();
       v.setCachedData(sdata.getArray(v.getShortName()), false);
     }
 
-    ncfile.writeRecordData(recordVars);
+    ncfileOut.writeRecordData(recordVars);
   }
 
   public void finish() throws IOException {
     //writeDataFinish();
-    ncfile.close();
+    ncfileOut.close();
   }
 
   private class NetcdfFileStream extends NetcdfFile {
