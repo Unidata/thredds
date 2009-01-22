@@ -46,7 +46,7 @@ public class FeatureDatasetFactoryManager {
 
   static private List<Factory> factoryList = new ArrayList<Factory>();
   static private boolean userMode = false;
-  static private boolean debug = true;
+  static private boolean debug = false;
 
   // search in the order added
   static {

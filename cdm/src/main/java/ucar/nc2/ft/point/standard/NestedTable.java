@@ -67,7 +67,7 @@ public class NestedTable {
   private CoordVarExtractor timeVE, nomTimeVE, latVE, lonVE, altVE;
   private CoordVarExtractor stnVE, stnDescVE, wmoVE;
 
-  private String featureVariableName;
+  private String featureVariableName = "featureName";
   private int nlevels;
 
   private DateFormatter dateFormatter = new DateFormatter();
@@ -80,12 +80,12 @@ public class NestedTable {
     this.leaf = Table.factory(ds, config);
     this.root = getRoot();
 
-    nlevels = 1;
+    // use the featureType from the highest level table
+    nlevels = 0;
     Table t = leaf;
-    featureType = t.getFeatureType();
-    while (t.parent != null) {
+    while (t != null) {
+      if (t.getFeatureType() != null) featureType = t.getFeatureType();
       t = t.parent;
-      if (featureType == null) featureType = t.getFeatureType();
       if (!(t instanceof Table.TableTop)) // LOOK using nlevels is fishy
         nlevels++;
     }
@@ -94,6 +94,7 @@ public class NestedTable {
       featureType = FeatureDatasetFactoryManager.findFeatureType(ds);
     }
 
+    // LOOK: Major kludge
     if (featureType == null) {
       if (nlevels == 1) featureType = FeatureType.POINT;
       if (nlevels == 2) featureType = FeatureType.STATION;
@@ -101,7 +102,6 @@ public class NestedTable {
     }
 
     // will find the first one, starting at the leaf and going up
-    timeVE = findCoordinateAxis(Table.CoordName.Time, leaf, 0);
     timeVE = findCoordinateAxis(Table.CoordName.Time, leaf, 0);
     latVE = findCoordinateAxis(Table.CoordName.Lat, leaf, 0);
     lonVE = findCoordinateAxis(Table.CoordName.Lon, leaf, 0);
@@ -118,14 +118,13 @@ public class NestedTable {
         ((nlevels == 2) && (featureType == FeatureType.STATION_PROFILE) || (featureType == FeatureType.SECTION))) {
 
       // singleton. use file name as feature name, so aggregation will work
-      featureVariableName = "featureName";
       StructureData sdata = StructureDataFactory.make(featureVariableName, ds.getLocation());
       TableConfig parentConfig = new TableConfig(Table.Type.Singleton, featureType.toString());
       parentConfig.sdata = sdata;
       Table newRoot = Table.factory(ds, parentConfig);
 
-      Join join = Join.factory(new TableConfig.JoinConfig(Join.Type.Identity));
-      join.joinTables(newRoot, root);
+      //Join join = Join.factory(new TableConfig.JoinConfig(Join.Type.Identity));
+      //join.joinTables(newRoot, root);
 
       root = newRoot;
 
@@ -445,12 +444,9 @@ public class NestedTable {
 
   // kludgey
   public void addParentJoin(StructureData[] tableData) throws IOException {
-    if (leaf.extraJoinTable != null) {
+    if (leaf.extraJoin != null) {
       StructureData obsdata = tableData[0];
-
-      Join.JoinParentIndex join = (Join.JoinParentIndex) leaf.extraJoinTable.join2parent;
-      StructureData extra = join.getJoin(obsdata);
-
+      StructureData extra = leaf.extraJoin.getJoinData(obsdata);
       tableData[0] = StructureDataFactory.make(obsdata, extra);
     }
   }

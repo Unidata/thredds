@@ -36,15 +36,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/nlog4j-1.2.25.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -142,15 +133,6 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/commons-lang-2.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../lib/javaproj/javaproj-1.0.4/dist/javaproj-1.0.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

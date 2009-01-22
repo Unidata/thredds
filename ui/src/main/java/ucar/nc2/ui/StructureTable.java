@@ -182,12 +182,12 @@ public class StructureTable extends JPanel {
   }
 
   /**
-   * Set the data as a collection of PointObsDatatype.
+   * Set the data as a collection of PointFeature.
    *
-   * @param obsData List of type PointObsDatatype
+   * @param obsData List of type PointFeature
    * @throws IOException  on io error
    */
-  public void setPointObsData2(List<PointFeature> obsData) throws IOException {
+  public void setPointFeatureData(List<PointFeature> obsData) throws IOException {
     dataModel = new PointFeatureDataModel(obsData);
     initTable(dataModel);
     jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());

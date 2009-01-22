@@ -13,7 +13,17 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/junit.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module" module-name="common" exported="" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../../bufr/resources" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -22,17 +32,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/junit.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module" module-name="common" />
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../../../bufr/resources" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.5.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

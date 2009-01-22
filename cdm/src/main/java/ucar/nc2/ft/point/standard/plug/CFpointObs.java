@@ -95,8 +95,6 @@ public class CFpointObs extends TableConfigurerImpl {
     obs.time = Evaluator.getVariableName(ds, "time", errlog);
     nt.addChild(obs);
 
-    obs.join = new TableConfig.JoinConfig(Join.Type.Identity);
-
     return nt;
   }
 
@@ -110,8 +108,6 @@ public class CFpointObs extends TableConfigurerImpl {
     obs.dim = ds.findDimension("sample");
     obs.outer = ds.findDimension("traj");
     nt.addChild(obs);
-
-    obs.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
 
     return nt;
   }

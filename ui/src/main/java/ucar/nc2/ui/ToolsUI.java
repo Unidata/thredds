@@ -713,13 +713,13 @@ public class ToolsUI extends JPanel {
 
   private void openNetcdfFile(String datasetName) {
     makeComponent(tabbedPane, "Viewer");
-    viewerPanel.process(datasetName);
+    viewerPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(viewerPanel);
   }
 
   private void openNetcdfDataset(String datasetName) {
     makeComponent(tabbedPane, "CoordSys");
-    coordSysPanel.process(datasetName);
+    coordSysPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(coordSysPanel);
   }
 
@@ -732,7 +732,7 @@ public class ToolsUI extends JPanel {
 
   private void openGridDataset(String datasetName) {
     makeComponent(ftTabPane, "Grids");
-    gridPanel.process(datasetName);
+    gridPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(gridPanel);
   }
@@ -2658,7 +2658,7 @@ public class ToolsUI extends JPanel {
         }
       });
 
-      //dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
       dirChooser.setCurrentDirectory( prefs.get("currDir", "."));
       AbstractAction fileAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {

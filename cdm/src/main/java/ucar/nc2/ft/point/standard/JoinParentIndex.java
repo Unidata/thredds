@@ -17,12 +17,38 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
+
 package ucar.nc2.ft.point.standard;
 
-import ucar.ma2.*;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.StructureData;
+import ucar.nc2.Structure;
+
 import java.io.IOException;
 
-public interface Join {
-  public StructureData getJoinData(StructureData obsdata) throws IOException;
-}
+/**
+ * Class Description.
+ *
+ * @author caron
+ * @since Jan 22, 2009
+ */
+public class JoinParentIndex implements Join {
+  private ArrayStructure parentData;
+  private String parentIndex;
 
+  public JoinParentIndex(Structure parentStructure, String parentIndex) {
+    this.parentIndex = parentIndex;
+
+    try {
+      parentData = (ArrayStructure) parentStructure.read(); // cache entire station table  LOOK
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public StructureData getJoinData(StructureData sdata) {
+    int index = sdata.getScalarInt(parentIndex);
+    return parentData.getStructureData(index);
+  }
+
+}

@@ -39,9 +39,11 @@ public class TableConfig {
   public Table.Type type;
   public String name;
   public TableConfig parent;
-  public JoinConfig join; // the join to its parent
-  public TableConfig extraJoin;
+  public Join extraJoin;
   public List<TableConfig> children;
+
+  public boolean isPsuedoStructure = false;
+  public String start, next, numRecords, parentIndex; // names of variables
 
   // top only
   public FeatureType featureType;
@@ -77,7 +79,7 @@ public class TableConfig {
     t.parent = this;
   }
 
-  public static class JoinConfig {
+  /* public static class JoinConfig {
     public Join.Type joinType;
     public Join override;
 
@@ -87,6 +89,6 @@ public class TableConfig {
     public JoinConfig(Join.Type joinType) {
       this.joinType = joinType;
     }
-  }
+  }  */
 
 }

@@ -83,11 +83,12 @@ public class Ndbc extends TableConfigurerImpl  {
       errlog.format("Must have an Observation dimension: unlimited dimension, or from Time Coordinate");
       return null;
     }
-     Table.Type obsStructureType = obsDim.isUnlimited() ? Table.Type.Structure : Table.Type.PseudoStructure;
+    boolean isPsuedo = !obsDim.isUnlimited();
 
     // wants a Point
     if ((wantFeatureType == FeatureType.POINT)) {
-      TableConfig nt = new TableConfig(obsStructureType, "record");
+      TableConfig nt = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
+      nt.isPsuedoStructure = isPsuedo;
       nt.featureType = FeatureType.POINT;
       CoordSysEvaluator.findCoords(nt, ds);
       return nt;
@@ -105,12 +106,11 @@ public class Ndbc extends TableConfigurerImpl  {
     if (nt.stnDesc == null)
       nt.stnDesc = ds.findAttValueIgnoreCase(null, "comment", null);
 
-    TableConfig obs = new TableConfig(obsStructureType, "record");
+    TableConfig obs = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
+    obs.isPsuedoStructure = isPsuedo;
     obs.dim = obsDim;
     obs.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     nt.addChild(obs);
-
-    obs.join = new TableConfig.JoinConfig(Join.Type.Identity);
 
     return nt;
   }

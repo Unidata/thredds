@@ -58,7 +58,7 @@ public class TableAnalyzer {
     registerAnalyzer("IRIDL", Iridl.class, null);
     registerAnalyzer("MADIS surface observations, v1.0", Madis.class, null);
     registerAnalyzer("Ndbc", Ndbc.class, null);
-    registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeature.class, null);
+    // registerAnalyzer("Unidata Point Feature v1.0", UnidataPointFeature.class, null);
 
     // further calls to registerConvention are by the user
     userMode = true;
@@ -259,7 +259,7 @@ public class TableAnalyzer {
   protected NetcdfDataset ds;
   protected Map<String, TableConfig> tableFind = new HashMap<String, TableConfig>();
   protected Set<TableConfig> tableSet = new HashSet<TableConfig>();
-  protected List<TableConfig.JoinConfig> joins = new ArrayList<TableConfig.JoinConfig>();
+  //protected List<TableConfig.JoinConfig> joins = new ArrayList<TableConfig.JoinConfig>();
   protected List<NestedTable> leaves = new ArrayList<NestedTable>();
   protected FeatureType ft;
 
@@ -281,6 +281,11 @@ public class TableAnalyzer {
         return true;
     }
     return false;
+  }
+
+  public String getName() {
+    if (tc != null) return tc.getClass().getName();
+    return "Default";
   }
 
   // for debugging messages
@@ -367,7 +372,28 @@ public class TableAnalyzer {
 
     if (dimSet.size() == 1) {
       Dimension obsDim = (Dimension) dimSet.toArray()[0];
-      TableConfig st = new TableConfig(Table.Type.PseudoStructure, obsDim.getName());
+      TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getName());
+      st.isPsuedoStructure = true;
+      st.dim = obsDim;
+      CoordSysEvaluator.findCoords(st, ds);
+
+      addTable( st);
+    }
+
+    if (tableSet.size() > 0) return;
+
+    // try the time dimension
+    CoordinateAxis time = null;
+    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
+      if ((axis.getAxisType() == AxisType.Time) && axis.isCoordinateVariable()) {
+        time = axis;
+        break;
+      }
+    }
+    if (time != null) {
+      Dimension obsDim = (Dimension) time.getDimension(0);
+      TableConfig st = new TableConfig(Table.Type.Structure, obsDim.getName());
+      st.isPsuedoStructure = true;
       st.dim = obsDim;
       CoordSysEvaluator.findCoords(st, ds);
 
@@ -384,8 +410,8 @@ public class TableAnalyzer {
         parent.addChild(nestedTable);
 
         // LOOK why not add the join(parent,child) here ?
-        nestedTable.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
-        joins.add(nestedTable.join);
+        //nestedTable.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
+        //joins.add(nestedTable.join);
 
         findNestedStructures((Structure) v, nestedTable); // look for nested structures
       }

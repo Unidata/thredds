@@ -33,12 +33,10 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
+import ucar.nc2.ft.point.StructureDataIteratorLinked;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
-import ucar.ma2.StructureMembers;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.ArrayStructure;
+import ucar.ma2.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -58,25 +56,33 @@ public abstract class Table {
   }
 
   public enum Type {
-    Structure, PseudoStructure, MultiDim, ArrayStructure, Singleton, Top
+    ArrayStructure, Contiguous, LinkedList, MultiDim, NestedStructure, Singleton, Structure, Top
   }
 
   public static Table factory(NetcdfDataset ds, TableConfig config) {
 
     switch (config.type) {
 
-      case Structure:
-      case PseudoStructure:
-        return new TableStructure(ds, config);
-
       case ArrayStructure:
         return new TableArrayStructure(ds, config);
 
+      case Contiguous:
+        return new TableContiguous(ds, config);
+
+      case LinkedList:
+        return new TableLinkedList(ds, config);
+
       case MultiDim:
-        return new TableMultDim(ds, config);
+        return new TableMultiDim(ds, config);
+
+      case NestedStructure:
+        return new TableNestedStructure(ds, config);
 
       case Singleton:
         return new TableSingleton(ds, config);
+
+      case Structure:
+        return new TableStructure(ds, config);
 
       case Top:
         return new TableTop(ds, config);
@@ -91,8 +97,7 @@ public abstract class Table {
   FeatureType featureType;
 
   Table parent;
-  Join join2parent; // the join to its parent
-  Table extraJoinTable;
+  Join extraJoin;
 
   String lat, lon, elev, time, timeNominal;
   String stnId, stnDesc, stnNpts, stnWmoId, limit;
@@ -120,18 +125,7 @@ public abstract class Table {
     if (config.parent != null)
       parent = Table.factory(ds, config.parent);
 
-    if (config.join != null) {
-      //if (config.join.override != null)
-      //  join2parent = config.join.override;
-      //else
-      join2parent = Join.factory(config.join);
-
-      join2parent.joinTables(parent, this);
-    }
-
-    if (config.extraJoin != null) {
-      extraJoinTable = Table.factory(ds, config.extraJoin);
-    }
+    this.extraJoin = config.extraJoin;
   }
 
   abstract public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException;
@@ -168,26 +162,27 @@ public abstract class Table {
     TableStructure(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
 
-      if (config.type == Table.Type.Structure) {
+      if (config.isPsuedoStructure) {
+        this.dim = config.dim;
 
-        if ((config.parent != null) && (config.parent.type == Table.Type.Structure)) {
+        struct = new StructurePseudo(ds, null, config.name, config.dim);
+        for (Variable v : struct.getVariables())
+          this.cols.add(v);
+
+      } else {
+
+       /* if ((config.parent != null) && (config.parent.type == Table.Type.Structure)) {
           Structure parent = (Structure) ds.findVariable(config.parent.name);
           struct = (Structure) parent.findVariable(config.name);
-
         } else {
           struct = (Structure) ds.findVariable(config.name);
-        }
+        } */
 
+        struct = (Structure) ds.findVariable(config.name);
         if (struct == null)
           throw new IllegalStateException("Cant find Structure " + config.name);
 
         dim = struct.getDimension(0);
-        for (Variable v : struct.getVariables())
-          this.cols.add(v);
-
-      } else if (config.type == Table.Type.PseudoStructure) {
-
-        struct = new StructurePseudo(ds, null, config.name, config.dim);
         for (Variable v : struct.getVariables())
           this.cols.add(v);
       }
@@ -205,9 +200,6 @@ public abstract class Table {
     }
 
     public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
-      if (join2parent != null)
-        return join2parent.getStructureDataIterator(parent, bufferSize);
-
       return struct.getStructureIterator(bufferSize);
     }
   }
@@ -233,19 +225,49 @@ public abstract class Table {
     }
 
     public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
-      if (join2parent != null)
-        return join2parent.getStructureDataIterator(parent, bufferSize);
-
       return as.getStructureDataIterator();
     }
   }
 
   ///////////////////////////////////////////////////////
-  public static class TableMultDim extends Table {
+  public static class TableContiguous extends TableStructure {
+    private String start, numRecords;
+
+    TableContiguous(NetcdfDataset ds, TableConfig config) {
+      super(ds, config);
+      this.start = config.start;
+      this.numRecords = config.numRecords;
+    }
+
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      int firstRecno = parentStruct.getScalarInt(start);
+      int n = parentStruct.getScalarInt(numRecords);
+      return new StructureDataIteratorLinked(struct, firstRecno, n, null);
+    }
+  }
+
+  ///////////////////////////////////////////////////////
+  public static class TableLinkedList extends TableStructure {
+    private String start, next;
+
+    TableLinkedList(NetcdfDataset ds, TableConfig config) {
+      super(ds, config);
+      this.start = config.start;
+      this.next = config.next;
+    }
+
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      int firstRecno = parentStruct.getScalarInt(start);
+      return new StructureDataIteratorLinked(struct, firstRecno, -1, next);
+    }
+  }
+
+  ///////////////////////////////////////////////////////
+  public static class TableMultiDim extends Table {
     StructureMembers sm; // MultiDim
     Dimension dim;
 
-    TableMultDim(NetcdfDataset ds, TableConfig config) {
+    TableMultiDim(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
       this.dim = config.dim;
       assert dim != null;
@@ -269,11 +291,40 @@ public abstract class Table {
       return dim.getName();
     }
 
-    public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
-      if (join2parent != null)
-        return join2parent.getStructureDataIterator(parent, bufferSize);
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      ArrayStructureMA asma = new ArrayStructureMA(sm, new int[]{dim.getLength()});
+      for (VariableSimpleIF v : cols) {
+        Array data = parentStruct.getArray(v.getShortName());
+        StructureMembers.Member childm = sm.findMember(v.getShortName());
+        childm.setDataArray(data);
+      }
+      return asma.getStructureDataIterator();
+    }
 
-      throw new IllegalStateException("TableMultDim cannont be root = " + name);
+  }
+
+  ///////////////////////////////////////////////////////
+  public static class TableNestedStructure extends Table {
+
+    TableNestedStructure(NetcdfDataset ds, TableConfig config) {
+      super(ds, config);
+    }
+
+   public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+
+      String name = getName();
+      StructureMembers members = parentStruct.getStructureMembers();
+      StructureMembers.Member m = members.findMember(name);
+      if (m.getDataType() == DataType.SEQUENCE) {
+        ArraySequence seq = parentStruct.getArraySequence(m);
+        return seq.getStructureDataIterator();
+
+      } else if (m.getDataType() == DataType.STRUCTURE) {
+        ArrayStructure as = parentStruct.getArrayStructure(m);
+        return as.getStructureDataIterator();
+      }
+
+      return null;
     }
   }
 
@@ -288,9 +339,6 @@ public abstract class Table {
     }
 
     public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
-      if (join2parent != null)
-        return join2parent.getStructureDataIterator(parent, bufferSize);
-
       return new SingletonStructureDataIterator(sdata);
     }
   }
@@ -362,7 +410,7 @@ public abstract class Table {
     formatter.format(" Table %s on dimension %s type=%s\n", getName(), showDimension(), getClass().toString());
     formatter.format("  Coordinates=");
     formatter.format("\n  Data Variables= %d\n", cols.size());
-    formatter.format("  Parent= %s join = %s\n", ((parent == null) ? "none" : parent.getName()), join2parent);
+    formatter.format("  Parent= %s\n", ((parent == null) ? "none" : parent.getName()));
     return formatter.toString();
   }
 
@@ -381,9 +429,9 @@ public abstract class Table {
 
     String s = indent(indent);
     String ftDesc = (featureType == null) ? "" : "featureType=" + featureType.toString();
-    String joinDesc = (join2parent == null) ? "" : "joinType=" + join2parent.getClass().toString();
+    //String joinDesc = (join2parent == null) ? "" : "joinType=" + join2parent.getClass().toString();
 //String dimDesc = (config.dim == null) ? "*" : config.dim.getName() + "=" + config.dim.getLength() + (config.dim.isUnlimited() ? " unlim" : "");
-    f.format("\n%sTable %s: type=%s %s %s\n", s, getName(), getClass().toString(), joinDesc, ftDesc);
+    f.format("\n%sTable %s: type=%s %s\n", s, getName(), getClass().toString(), ftDesc);
     showCoords(f, s);
     for (VariableSimpleIF v : cols) {
       f.format("%s  %s %s\n", s, v.getName(), getKind(v.getShortName()));

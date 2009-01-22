@@ -35,10 +35,12 @@ package ucar.nc2.dataset.conv;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableEnhanced;
 
 import java.io.IOException;
 
@@ -46,10 +48,10 @@ import java.io.IOException;
  * @author caron
  * @since Dec 31, 2008
  */
-public class Nimbus extends ATDRadarConvention {
+public class Nimbus extends COARDSConvention {
 
   public static boolean isMine(NetcdfFile ncfile) {
-    String s = ncfile.findAttValueIgnoreCase(null, "Convention", "none");
+    String s = ncfile.findAttValueIgnoreCase(null, "Convention", null);
     return s.equalsIgnoreCase("NCAR-RAF/nimbus");
   }
 
@@ -62,14 +64,52 @@ public class Nimbus extends ATDRadarConvention {
 
     setAxisType(ds, "LATC", AxisType.Lat);
     setAxisType(ds, "LONC", AxisType.Lon);
-    setAxisType(ds, "Time", AxisType.Time);
     setAxisType(ds, "PALT", AxisType.Height);
+
+    boolean hasTime = setAxisType(ds, "Time", AxisType.Time);
+    if (!hasTime)
+      hasTime = setAxisType(ds, "time", AxisType.Time);
+
+    // do we need to version this ?
+    // String version =  ds.findAttValueIgnoreCase(null, "version", null);
+
+    if (!hasTime) {
+      Variable time = ds.findVariable("time_offset");
+      if ((time != null) && (time.getUnitsString() == null)) {
+        Variable base = ds.findVariable("base_time");
+        int base_time = base.readScalarInt();
+        try {
+          DateUnit dunit = new DateUnit("seconds since 1970-01-01 00:00");
+          String time_units = "seconds since " + dunit.makeStandardDateString(base_time);
+          time.addAttribute(new Attribute("units", time_units));
+          time.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.name()));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
+    // look for coordinates
+    String coordinates = ds.findAttValueIgnoreCase(null, "coordinates", null);
+    if (coordinates != null) {
+      String[] vars = coordinates.split(" ");
+      for (String vname : vars) {
+        Variable v = ds.findVariable(vname);
+        if (v != null) {
+          AxisType atype = getAxisType(ds, (VariableEnhanced) v);
+          if (atype != null)
+            v.addAttribute(new Attribute(_Coordinate.AxisType, atype.name()));
+        }
+      }
+    }
 
   }
 
-  private void setAxisType(NetcdfDataset ds, String varName, AxisType atype ) {
+  private boolean setAxisType(NetcdfDataset ds, String varName, AxisType atype) {
     Variable v = ds.findVariable(varName);
-    if (v != null)
-      v.addAttribute( new Attribute(_Coordinate.AxisType, atype.toString()));
+    if (v == null) return false;
+
+    v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString()));
+    return true;
   }
 }

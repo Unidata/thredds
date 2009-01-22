@@ -20,7 +20,7 @@
 
 package thredds.servlet;
 
-import org.apache.log4j.MDC;
+import org.slf4j.MDC;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -44,7 +44,7 @@ public class UsageLog {
      MDC.put("host", req.getRemoteHost());
      MDC.put("ident", (session == null) ? "-" : session.getId());
      MDC.put("userid", req.getRemoteUser() != null ? req.getRemoteUser() : "-");
-     MDC.put("startTime", System.currentTimeMillis());
+     MDC.put("startTime", Long.toString(System.currentTimeMillis()));
      String query = req.getQueryString();
      query = (query != null) ? "?" + query : "";
      StringBuffer request = new StringBuffer();
@@ -64,7 +64,7 @@ public class UsageLog {
     */
    public static String accessInfo(int resCode, long resSizeInBytes) {
      long endTime = System.currentTimeMillis();
-     long startTime = (Long) MDC.get("startTime");
+     long startTime = Long.parseLong( MDC.get("startTime"));
      long duration = endTime - startTime;
 
      return "Request Completed - " + resCode + " - " + resSizeInBytes + " - " + duration;
@@ -87,6 +87,6 @@ public class UsageLog {
    public static void logServerSetup() {
      // Setup context.
      MDC.put("ID", Long.toString( logServerAccessId.incrementAndGet() ));
-     MDC.put("startTime", System.currentTimeMillis());
+     MDC.put("startTime", Long.toString(System.currentTimeMillis()));
    }
 }

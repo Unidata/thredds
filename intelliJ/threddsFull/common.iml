@@ -9,10 +9,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.5.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

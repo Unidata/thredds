@@ -88,7 +88,10 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
       return null;
 
     if (!analyser.featureTypeOk( wantFeatureType)) {
-      errlog.format("PointDataset wants "+wantFeatureType+" but analyser has "+analyser.getFirstFeatureType());
+      if (wantFeatureType == null)
+        errlog.format("TableAnalyzer "+ analyser.getName()+" couldnt find lat/lon/time coordinates");
+      else
+        errlog.format("PointDataset wants "+wantFeatureType+" but analyser "+ analyser.getName()+" has "+analyser.getFirstFeatureType());
       return null;
     }
 

@@ -27,8 +27,6 @@ import ucar.nc2.util.cache.FileCacheRaf;
 import java.util.*;
 import java.io.PrintStream;
 
-import org.apache.log4j.*;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -166,7 +164,7 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("showLoggers", "Show Log4J info") {
+    /* act = new DebugHandler.Action("showLoggers", "Show Log4J info") {
       public void doAction(DebugHandler.Event e) {
         showLoggers(e.req, e.pw);
       }
@@ -207,7 +205,7 @@ public class DebugCommands {
         showLoggers(e.req, e.pw);
       }
     };
-    debugHandler.addAction(act);
+    debugHandler.addAction(act); */
 
     /* act = new DebugHandler.Action("showRequest", "Show HTTP Request info") {
       public void doAction(DebugHandler.Event e) {
@@ -302,7 +300,7 @@ public class DebugCommands {
     }
   }  */
 
-  private void replaceAppender(Logger logger, String want, Appender replaceWith) {
+  /* private void replaceAppender(Logger logger, String want, Appender replaceWith) {
     Enumeration appenders = logger.getAllAppenders();
     while (appenders.hasMoreElements()) {
       Appender app = (Appender) appenders.nextElement();
@@ -374,7 +372,7 @@ public class DebugCommands {
     public boolean equals(Object o) {
       return this == o;
     }
-  }
+  }  */
 
   /* private class CacheScourTask extends TimerTask {
     long maxBytes;

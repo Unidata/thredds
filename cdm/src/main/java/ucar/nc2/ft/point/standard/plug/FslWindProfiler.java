@@ -60,8 +60,6 @@ public class FslWindProfiler extends TableConfigurerImpl  {
     levels.dim = Evaluator.getDimension(ds, "level", errlog);
     levels.elev = Evaluator.getVariableName(ds, "levels", errlog);
 
-    levels.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
-
     profile.addChild(levels);
     
     return profile;

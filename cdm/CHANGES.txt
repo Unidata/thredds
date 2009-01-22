@@ -48,12 +48,14 @@ This code is ALPHA
 
  Release Details:
   30:
+    Nimbus/RAF Convention: try to guess more coordinates
     add ucar.ma2.StructuresDataComposite
     fix CFPointObWriter to correctly handle CHAR
     add FeatureType selection to PointFeature tab
     context menu on FeatureScan
     FeatureDatasetFactory was not threadsafe, isMine() returns "analysis object"
     PointFeatures: standard package refactor; add Table.Type.Top for top-level variables
+    PointFeatureDatasetViewer: works with all types except Section. add 100 obs limit for speed
     Bug in JoinExisting aggs with > 1 dataset, when taking a section of a cached variable.
     Try to reduce memory usage in CrawlableDataset.
     Grib iosp: dont swallow exception on data reading error

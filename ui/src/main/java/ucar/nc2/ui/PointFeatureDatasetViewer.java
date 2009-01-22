@@ -71,6 +71,8 @@ public class PointFeatureDatasetViewer extends JPanel {
   private boolean eventsOK = true;
   private boolean debugStationRegionSelect = false, debugQuery = false;
 
+  private int maxCount = 100;
+
   public PointFeatureDatasetViewer(PreferencesExt prefs) {
     this.prefs = prefs;
 
@@ -491,7 +493,8 @@ public class PointFeatureDatasetViewer extends JPanel {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
       PointFeatureCollectionIterator iter = stationCollection.getPointFeatureCollectionIterator(-1);
       List<PointFeature> obsList = new ArrayList<PointFeature>();
-      while (iter.hasNext())
+      int count = 0;
+      while (iter.hasNext() && (count++ < maxCount))
         obsList.add((PointFeature) iter.next());
       setObservations(obsList);
 
@@ -499,7 +502,8 @@ public class PointFeatureDatasetViewer extends JPanel {
       StationProfileFeatureCollection stationCollection = (StationProfileFeatureCollection) selectedCollection;
       PointFeatureCollectionIterator iter = stationCollection.getPointFeatureCollectionIterator(-1);
       List<PointFeature> obsList = new ArrayList<PointFeature>();
-      while (iter.hasNext())
+      int count = 0;
+      while (iter.hasNext() && (count++ < maxCount))
         obsList.add((PointFeature) iter.next());
       setObservations(obsList);
     }
@@ -508,7 +512,8 @@ public class PointFeatureDatasetViewer extends JPanel {
   private void setObservations(PointFeatureCollection pointCollection) throws IOException {
     PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
     List<PointFeature> obsList = new ArrayList<PointFeature>();
-    while (iter.hasNext())
+    int count = 0;
+    while (iter.hasNext() && (count++ < maxCount))
       obsList.add(iter.next());
     setObservations(obsList);
   }
@@ -527,7 +532,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       obsTable.clear();
       return;
     }
-    obsTable.setPointObsData2(obsList);
+    obsTable.setPointFeatureData(obsList);
   }
 
   public PreferencesExt getPrefs() {

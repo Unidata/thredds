@@ -21,10 +21,8 @@ package thredds.servlet;
 
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSession;
-import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContextEvent;
 
-import org.apache.log4j.LogManager;
 
 import java.util.Date;
 
