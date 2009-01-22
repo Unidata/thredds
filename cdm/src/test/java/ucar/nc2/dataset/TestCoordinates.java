@@ -42,7 +42,7 @@ public class TestCoordinates extends TestCase {
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset( filename);
     Variable v = ncd.findCoordinateAxis("number");
     assert v != null;
-    assert v.isCoordinateVariable();
+    //assert v.isCoordinateVariable();
     assert v instanceof CoordinateAxis1D;
     assert null != ncd.findDimension("ensemble");
     assert v.getDimension(0) == ncd.findDimension("ensemble");

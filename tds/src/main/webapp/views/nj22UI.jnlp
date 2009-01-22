@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-dev">
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart-dev">
 
   <information>
-    <title>NetCDF 2.2 Tools UI</title>
+    <title>NetCDF Tools UI</title>
     <vendor>Unidata</vendor>
-    <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart-devNTestI/index.html"/>
-    <description kind="short">GUI interface to netCDF 2.2</description>
+    <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/"/>
+    <description kind="short">GUI interface to netCDF / Common Data Model</description>
     <icon href="nc.gif"/>
     <offline-allowed/>
   </information>
@@ -26,15 +26,12 @@
     <jar href="jdom.jar"/>
     <jar href="jgoodies.jar"/>
     <jar href="jpeg2000.jar"/>
+    <jar href="loggingAPI.jar"/>
     <jar href="logging.jar"/>
     <jar href="opendap.jar"/>
     <jar href="resourcesOptional.jar"/>
+    <jar href="spring.jar"/>
     <jar href="visadNoDods.jar"/>
-    <jar href="xml-apis.jar"/>
-    <jar href="xercesImpl.jar"/>
-
-    <property name="javax.xml.parsers.DocumentBuilderFactory"
-              value="org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"/>
   </resources>
 
 

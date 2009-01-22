@@ -73,7 +73,7 @@ public class UnidataPointFeature  extends TableConfigurerImpl  {
     nt.elev = STN_ELEV;
 
     // make the station array structure in memory
-    nt.as = makeIndex(ds);
+    // nt.as = makeIndex(ds);
 
     TableConfig obs = new TableConfig(Table.Type.Structure, "obsRecord");
     obs.dim = Evaluator.getDimension(ds, "record", errlog);
@@ -84,20 +84,20 @@ public class UnidataPointFeature  extends TableConfigurerImpl  {
     obs.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);
 
     obs.stnId = Evaluator.getVariableName(ds, "name", errlog);
-    obs.join = new TableConfig.JoinConfig(Join.Type.Index);
+    //obs.join = new TableConfig.JoinConfig(Join.Type.Index);
     // create an IndexJoin and attach to the obs.join
-    indexJoin = new IndexJoin(obs.join);
+    //indexJoin = new IndexJoin(obs.join);
     nt.addChild(obs);
 
     TableConfig levels = new TableConfig(Table.Type.Structure, "seq1");
     levels.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
-    levels.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
+    //levels.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
 
     obs.addChild(levels);
     return nt;
   }
 
-  private ArrayStructure makeIndex(NetcdfDataset ds) throws IOException {
+  /* private ArrayStructure makeIndex(NetcdfDataset ds) throws IOException {
 
     // read in the index structure data
     Structure s = (Structure) ds.findVariable("obsRecordIndex");
@@ -169,7 +169,7 @@ public class UnidataPointFeature  extends TableConfigurerImpl  {
     return asbb;
   }
 
-  private class IndexJoin extends Join {
+  /* private class IndexJoin extends Join {
     IndexJoin(TableConfig.JoinConfig config) {
       super();
       config.override = this;
@@ -244,7 +244,7 @@ public class UnidataPointFeature  extends TableConfigurerImpl  {
       this.current = startIndex;
       return this;
     }
-  }
+  } */
 
 }
 

@@ -158,6 +158,18 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   }
 
   /**
+   * Register a class that implements a Convention. Will match (ignoring case) the COnvention name.
+   *
+   * @param conventionName name of Convention.
+   *                       This name will be used to look in the "Conventions" global attribute.
+   *                       Otherwise, you must implement the isMine() static method.
+   * @param c              implementation of CoordSysBuilderIF that parses those kinds of netcdf files.
+   */
+  static public void registerConvention(String conventionName, Class c) {
+    registerConvention(conventionName, c, null);
+  }
+
+  /**
    * Register a class that implements a Convention.
    *
    * @param conventionName name of Convention.
@@ -167,6 +179,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @param c              implementation of CoordSysBuilderIF that parses those kinds of netcdf files.
    */
   static public void registerConvention(String conventionName, Class c, ConventionNameOk match) {
+
     if (!(CoordSysBuilderIF.class.isAssignableFrom(c)))
       throw new IllegalArgumentException("CoordSysBuilderIF Class " + c.getName() + " must implement CoordSysBuilderIF");
 

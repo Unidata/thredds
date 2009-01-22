@@ -17,12 +17,10 @@ public class TestNcMLRenameVar extends TestCase {
     super(name);
   }
 
-  static NetcdfFile ncfile = null;
+  NetcdfFile ncfile = null;
   String filename = "file:./"+TestNcML.topDir + "renameVar.xml";
 
   public void setUp() {
-    if (ncfile != null) return;
-
     try {
       ncfile = NcMLReader.readNcML(filename, null);
     } catch (java.net.MalformedURLException e) {

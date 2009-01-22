@@ -47,8 +47,7 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
-  30:
-    Nimbus/RAF Convention: try to guess more coordinates
+  30: Nimbus/RAF Convention: try to guess more coordinates
     add ucar.ma2.StructuresDataComposite
     fix CFPointObWriter to correctly handle CHAR
     add FeatureType selection to PointFeature tab

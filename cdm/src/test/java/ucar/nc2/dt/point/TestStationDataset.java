@@ -21,10 +21,10 @@ import java.util.Iterator;
 
 public class TestStationDataset extends TestCase {
   String topDir = ucar.nc2.TestAll.upcShareTestDataDir+ "station/";
+
   public TestStationDataset( String name) {
     super(name);
   }
-
 
   public void testMadis() throws IOException {
     String filename = ucar.nc2.TestAll.upcShareTestDataDir+"point/netcdf/madis.nc";

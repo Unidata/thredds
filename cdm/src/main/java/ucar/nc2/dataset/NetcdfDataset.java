@@ -569,7 +569,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static private NetcdfFile openOrAcquireFile(FileCache cache, FileFactory factory, Object hashKey,
                 String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
-    if (location == null) throw new IOException("NetcdfDataset.openFile: location is null");
+    if (location == null)
+      throw new IOException("NetcdfDataset.openFile: location is null");
     location = location.trim();
     location = StringUtil.replace(location, '\\', "/");
 

@@ -64,8 +64,10 @@
   <property name="jgoodies.jar" value="forms-1.0.7.jar"/>
   <property name="jpeg2000.jar" value="jpeg2000.jar"/>
   <property name="junit.jar" value="junit.jar"/>
-  <property name="logging.jar" value="nlog4j-1.2.25.jar"/>
-  <property name="logging-minimal.jar" value="slf4j-jdk14-1.2.jar"/>
+  <property name="loggingAPI.jar" value="slf4j-api-1.5.6.jar"/>
+  <property name="logging-minimal.jar" value="slf4j-jdk14-1.5.6.jar"/>
+  <property name="logging-maximal.jar" value="slf4j-log4j12-1.5.6.jar"/>
+  <property name="log4j.jar" value="log4j-1.2.15.jar"/>
   <property name="lucene.jar" value="lucene.jar"/>
   <property name="opendap.jar" value="opendap-2.1.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
@@ -86,7 +88,7 @@
     <include name="release/${opendap.jar}"/>
     <include name="external/${httpclient.jar}"/>
     <include name="external/${jdom.jar}"/>
-    <include name="external/${logging.jar}"/>
+    <include name="external/${loggingAPI.jar}"/>
     <include name="release/${visadNoDods.jar}"/>
     <include name="external/${stax.jar}"/>
   </fileset>
@@ -97,7 +99,7 @@
     <include name="lib/${opendap.jar}"/>
     <include name="lib/${httpclient.jar}"/>
     <include name="lib/${jdom.jar}"/>
-    <include name="lib/${logging.jar}"/>
+    <include name="lib/${loggingAPI.jar}"/>
     <include name="lib/${visadNoDods.jar}"/>
     <include name="lib/${jgoodies.jar}"/>
     <include name="lib/${lucene.jar}"/>
@@ -116,6 +118,7 @@
   <fileset id="runtime.libraries" dir="${lib.dir}">
     <include name="external/${http-codec.jar}"/>
     <include name="external/${http-logging.jar}"/>
+    <include name="external/${logging-minimal.jar}"/>
     <include name="external/${jpeg2000.jar}"/>
   </fileset>
 
@@ -126,9 +129,9 @@
 
   <!-- LOOK can we generate with pathconvert? -->
   <property name="Class-Path"
-            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${jpeg2000.jar} ${resourcesOptional.jar} ${spring.jar} ${bufr.jar} ${visadNoDods.jar}"/>
+            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${loggingAPI.jar} ${logging-minimal.jar} ${jpeg2000.jar} ${resourcesOptional.jar} ${spring.jar} ${bufr.jar} ${visadNoDods.jar}"/>
   <property name="ClassPath-CommandLine"
-            value="lib/${bufr.jar}:lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${logging.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${visadNoDods.jar}"/>
+            value="lib/${bufr.jar}:lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${visadNoDods.jar}"/>
 
   <target name="test-pathconvert">
     <echo>Class-Path=${Class-Path}</echo>
@@ -226,6 +229,7 @@
         <include name="external/${httpclient.jar}"/>
         <include name="external/${http-codec.jar}"/>
         <include name="external/${http-logging.jar}"/>
+        <include name="external/${loggingAPI.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
       </fileset>
     </unzip>
@@ -340,6 +344,7 @@
         <include name="external/${httpclient.jar}"/>
         <include name="external/${http-codec.jar}"/>
         <include name="external/${http-logging.jar}"/>
+        <include name="external/${loggingAPI.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
         <include name="release/${opendap.jar}"/>
         <include name="release/${visadNoDods.jar}"/>
@@ -383,6 +388,7 @@
         <include name="external/${httpclient.jar}"/>
         <include name="external/${http-codec.jar}"/>
         <include name="external/${http-logging.jar}"/>
+        <include name="external/${loggingAPI.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
         <include name="release/${opendap.jar}"/>
       </fileset>
@@ -590,7 +596,6 @@
 
   <fileset id="compileUI.libraries" dir="${lib.dir}">
     <include name="external/${jgoodies.jar}"/>
-    <include name="external/${logging.jar}"/>
     <include name="external/${lucene.jar}"/>
     <include name="external/${spring.jar}"/>
   </fileset>
@@ -833,7 +838,9 @@
              signedjar="${webstart_dir}/codec.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${http-logging.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/httplogging.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${logging.jar}" keystore="${keystore}"
+    <signjar alias="idv" jar="${lib.dir}/external/${loggingAPI.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/loggingAPI.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${logging-minimal.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/logging.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${lucene.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/lucene.jar" storepass="${keystore.password}"/>
@@ -860,7 +867,6 @@
 
   <fileset id="test.libraries" dir="${lib.dir}">
     <include name="external/${junit.jar}"/>
-    <include name="external/${logging.jar}"/>
   </fileset>
 
   <path id="test.classpath">

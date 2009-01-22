@@ -303,7 +303,9 @@ public class AggregationFmrcSingle extends AggregationFmrc {
 
     DatasetFmrcSingle(CrawlableDataset cd) {
       super(cd.getPath());
-      this.enhance = NetcdfDataset.getDefaultEnhanceMode(); // LOOK needed ?
+      this.cacheLocation = this.location;
+      this.enhance = AggregationFmrcSingle.this.enhance;
+      //this.enhance = NetcdfDataset.getDefaultEnhanceMode(); // LOOK needed ?
       this.ncoord = 1;
 
       // parse for rundate
