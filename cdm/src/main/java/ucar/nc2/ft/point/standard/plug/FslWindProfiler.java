@@ -30,40 +30,41 @@ import java.util.Formatter;
  * @author caron
  * @since Apr 23, 2008
  */
-public class FslWindProfiler implements TableConfigurer {
+public class FslWindProfiler extends TableConfigurerImpl  {
 
     // :title = "WPDN data : selected by ob time : time range from 1207951200 to 1207954800";
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String title = ds.findAttValueIgnoreCase(null, "title", null);
-    return title != null && (title.startsWith("WPDN data"));
+    return title != null && (title.startsWith("WPDN data") || title.startsWith("RASS data"));
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(TableType.Construct, "station");
-    nt.featureType = FeatureType.STATION_PROFILE;
+    //TableConfig nt = new TableConfig(Table.Type.Singleton, "station");
 
-    TableConfig obs = new TableConfig(TableType.Structure, "record");
-    obs.dim = Evaluator.getDimension(ds, "recNum", errlog);
-    obs.time = Evaluator.getVariableName(ds, "timeObs", errlog);
+    TableConfig profile = new TableConfig(Table.Type.Structure, "record");
+    profile.dim = Evaluator.getDimension(ds, "recNum", errlog);
+    profile.time = Evaluator.getVariableName(ds, "timeObs", errlog);
 
-    obs.stnId = Evaluator.getVariableName(ds, "staName", errlog);
-    obs.stnWmoId = Evaluator.getVariableName(ds, "wmoStaNum", errlog);
-    obs.lat = Evaluator.getVariableName(ds, "staLat", errlog);
-    obs.lon = Evaluator.getVariableName(ds, "staLon", errlog);
-    obs.elev = Evaluator.getVariableName(ds, "staElev", errlog);
+    profile.stnId = Evaluator.getVariableName(ds, "staName", errlog);
+    profile.stnWmoId = Evaluator.getVariableName(ds, "wmoStaNum", errlog);
+    profile.lat = Evaluator.getVariableName(ds, "staLat", errlog);
+    profile.lon = Evaluator.getVariableName(ds, "staLon", errlog);
+    // profile.elev = Evaluator.getVariableName(ds, "staElev", errlog);
 
-    obs.join = new TableConfig.JoinConfig(JoinType.Identity);
-    nt.addChild(obs);
+    //profile.join = new TableConfig.JoinConfig(Join.Type.Identity);
+    profile.featureType = FeatureType.PROFILE;
+    // nt.addChild(profile);
 
-    TableConfig levels = new TableConfig(TableType.MultiDim, "levels");
+    TableConfig levels = new TableConfig(Table.Type.MultiDim, "levels");
     levels.outer = Evaluator.getDimension(ds, "recNum", errlog);
     levels.dim = Evaluator.getDimension(ds, "level", errlog);
     levels.elev = Evaluator.getVariableName(ds, "levels", errlog);
 
-    levels.join = new TableConfig.JoinConfig(JoinType.MultiDim);
+    levels.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
 
-    obs.addChild(levels);
-    return nt;
+    profile.addChild(levels);
+    
+    return profile;
   }
 
 }

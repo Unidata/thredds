@@ -31,7 +31,7 @@ import java.util.Formatter;
  * @author caron
  * @since Apr 23, 2008
  */
-public class Madis implements TableConfigurer {
+public class Madis  extends TableConfigurerImpl  {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     if ((wantFeatureType != FeatureType.ANY_POINT) && (wantFeatureType != FeatureType.STATION) && (wantFeatureType != FeatureType.POINT))
@@ -79,16 +79,17 @@ public class Madis implements TableConfigurer {
 
     Dimension obsDim = Evaluator.getDimension(ds, "recNum", errlog);
     if (obsDim == null) {
-      errlog.format("Must have an Observation dimension: named recNum");
+      errlog.format("MADIS: must have an Observation dimension: named recNum");
       return null;
     }
     VNames vn = getVariableNames(ds, errlog);
 
-    TableType obsStructureType = obsDim.isUnlimited() ? TableType.Structure : TableType.PseudoStructure;
+    Table.Type obsStructureType = obsDim.isUnlimited() ? Table.Type.Structure : Table.Type.PseudoStructure;
     FeatureType ft = Evaluator.getFeatureType(ds, ":thredds_data_type", errlog);
     if (null == ft) ft = FeatureType.POINT;
 
-    //if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
+    // points
+    // if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
       TableConfig ptTable = new TableConfig(obsStructureType, "record");
       ptTable.featureType = FeatureType.POINT;
 
@@ -100,17 +101,16 @@ public class Madis implements TableConfigurer {
       ptTable.elev = vn.elev;
 
       return ptTable;
-    //}
+    /* }
 
-    /*
-    // dont use station for now
-    TableConfig nt = new TableConfig(FlattenedTable.TableType.PseudoStructure, "station");
-    nt.featureType = ft;
+    // stations
+    TableConfig nt = new TableConfig(Table.Type.PseudoStructure, "station");
+    nt.featureType = FeatureType.STATION;
 
     nt.dim = Evaluator.getDimension(ds, "maxStaticIds", errlog);
     nt.limit = Evaluator.getVariableName(ds, "nStaticIds", errlog);
 
-    TableConfig obs = new TableConfig(FlattenedTable.TableType.Structure, "record");
+    TableConfig obs = new TableConfig(Table.Type.Structure, "record");
     obs.dim = Evaluator.getDimension(ds, "recNum", errlog);
     obs.time = vn.obsTime;
     obs.timeNominal = vn.nominalTime;

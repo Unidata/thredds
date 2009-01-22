@@ -63,7 +63,6 @@ import thredds.ui.BAMutil;
 
 import java.awt.event.ActionEvent;
 import java.awt.*;
-import java.awt.List;
 import java.io.IOException;
 import java.io.File;
 import java.io.PrintStream;
@@ -79,7 +78,7 @@ public class FeatureDatasetTable extends JPanel {
 
   private BeanTableSorted ftTable;
   private JSplitPane split;
-  private TextHistoryPane infoTA;
+  private TextHistoryPane infoTA, dumpTA;
   private IndependentWindow infoWindow;
 
   public FeatureDatasetTable(PreferencesExt prefs) {
@@ -94,13 +93,35 @@ public class FeatureDatasetTable extends JPanel {
     });
 
     thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(ftTable.getJTable(), "Options");
-    varPopup.addAction("Show Declaration", new AbstractAction() {
+    varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
-        infoTA.clear();
-        infoTA.appendLine(ftb.toString());
-        infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        if (ftb == null) return;
+        FeatureDatasetTable.this.firePropertyChange("openNetcdfFile", null, ftb.f.getPath());
+      }
+    });
+
+    varPopup.addAction("Check CoordSystems", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
+        if (ftb == null) return;
+        FeatureDatasetTable.this.firePropertyChange("openNetcdfDataset", null, ftb.f.getPath());
+      }
+    });
+
+    varPopup.addAction("Open as PointDataset", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
+        if (ftb == null) return;
+        FeatureDatasetTable.this.firePropertyChange("openPointFeatureDataset", null, ftb.f.getPath());
+      }
+    });
+
+    varPopup.addAction("Open as GridDataset", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureDatasetBean ftb = (FeatureDatasetBean) ftTable.getSelectedBean();
+        if (ftb == null) return;
+        FeatureDatasetTable.this.firePropertyChange("openGridDataset", null, ftb.f.getPath());
       }
     });
 
@@ -109,7 +130,8 @@ public class FeatureDatasetTable extends JPanel {
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ftTable, infoTA);
+    dumpTA = new TextHistoryPane();
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ftTable, dumpTA);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     setLayout(new BorderLayout());
@@ -132,7 +154,12 @@ public class FeatureDatasetTable extends JPanel {
     File top = new File(dirName);
     if (!top.exists()) return false;
 
-    scanDirectory(top, beanList);
+    if (top.isDirectory())
+      scanDirectory(top, beanList);
+    else {
+      FeatureDatasetBean fdb = new FeatureDatasetBean(top);
+      beanList.add(fdb);
+    }
 
     ftTable.setBeans(beanList);
     return true;
@@ -152,8 +179,8 @@ public class FeatureDatasetTable extends JPanel {
   }
 
   private void setSelectedFeatureDataset(FeatureDatasetBean ftb) {
-    infoTA.setText( ftb.toString());
-    infoTA.gotoTop();
+    dumpTA.setText(ftb.toString());
+    dumpTA.gotoTop();
   }
 
   public class FeatureDatasetBean {
@@ -161,6 +188,7 @@ public class FeatureDatasetTable extends JPanel {
     File f;
     String iospName;
     String coordMap;
+    FeatureType featureType;
     String ftype;
     String info;
     String ftImpl;
@@ -178,32 +206,40 @@ public class FeatureDatasetTable extends JPanel {
         ds = NetcdfDataset.openDataset(f.getPath());
         IOServiceProvider iosp = ds.getIosp();
         iospName = (iosp == null) ? "" : iosp.getClass().getName();
-        setCoordMap( ds.getCoordinateSystems());
+        setCoordMap(ds.getCoordinateSystems());
 
         Formatter errlog = new Formatter();
         try {
-          FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap( null, ds, null, errlog);
+          FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap(null, ds, null, errlog);
           if (featureDataset != null) {
-            ftype = featureDataset.getFeatureType().toString();
+            featureType = featureDataset.getFeatureType();
+            if (featureType != null)
+              ftype = featureType.toString();
             ftImpl = featureDataset.getImplementationName();
             Formatter infof = new Formatter();
             featureDataset.getDetailInfo(infof);
             info = infof.toString();
+          } else {
+            ftype = "FAIL: " + errlog.toString();
           }
         } catch (Throwable t) {
-          ftype = "ERR: "+t.getMessage();
+          ftype = "ERR: " + t.getMessage();
           info = errlog.toString();
           problem = t;
         }
 
       } catch (Throwable t) {
-        iospName = "ERR: "+t.getMessage();
+        iospName = "ERR: " + t.getMessage();
         problem = t;
 
       } finally {
-        if (ds != null) try { ds.close(); } catch (IOException ioe) {}
+        if (ds != null) try {
+          ds.close();
+        } catch (IOException ioe) {
+        }
       }
     }
+
 
     public String getName() {
       return f.getPath();
@@ -221,10 +257,10 @@ public class FeatureDatasetTable extends JPanel {
       CoordinateSystem use = null;
       for (CoordinateSystem csys : csysList) {
         if (use == null) use = csys;
-        else if (csys.getCoordinateAxes().size() > use.getCoordinateAxes().size() )
+        else if (csys.getCoordinateAxes().size() > use.getCoordinateAxes().size())
           use = csys;
       }
-      coordMap = (use == null) ? "" : "f:D(" + use.getRankDomain()+")->R(" + use.getRankRange()+")";
+      coordMap = (use == null) ? "" : "f:D(" + use.getRankDomain() + ")->R(" + use.getRankRange() + ")";
     }
 
     public String getFeatureType() {
@@ -243,7 +279,7 @@ public class FeatureDatasetTable extends JPanel {
       }
       if (problem != null) {
         ByteArrayOutputStream bout = new ByteArrayOutputStream(10000);
-        problem.printStackTrace( new PrintStream(bout));
+        problem.printStackTrace(new PrintStream(bout));
         f.format("\n%s", bout.toString());
       }
       return f.toString();

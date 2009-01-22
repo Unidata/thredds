@@ -33,29 +33,34 @@ import java.io.IOException;
  */
 public abstract class Join {
 
+  public enum Type {
+      ContiguousList, ForwardLinkedList, BackwardLinkedList, MultiDim, NestedStructure, Identity, Index, ParentIndex
+  }
 
   public static Join factory(TableConfig.JoinConfig config) {
     switch (config.joinType) {
 
-      case NestedStructure:
-        return new JoinNested();
+      case ContiguousList:
+        return new JoinContiguousList(config.start, config.numRecords);
 
       case ForwardLinkedList:
       case BackwardLinkedList:
         return new JoinLinked(config.start, config.next);
 
-      case ContiguousList:
-        return new JoinContiguousList(config.start, config.numRecords);
-
       case MultiDim:
         return new JoinMultiDim();
+
+      case NestedStructure:
+        return new JoinNested(); // child is structure or seuence inside of another structure
+
+      case Identity:
+        return new JoinIdentity(); // use the child sdata iterator
 
       case ParentIndex:
         return new JoinParentIndex(config.parentIndex);
 
       default:
         throw new IllegalStateException("Unimplemented join type = " + config.joinType);
-
     }
 
   }
@@ -147,6 +152,13 @@ public abstract class Join {
       int firstRecno = parentStruct.getScalarInt(start);
       int n = parentStruct.getScalarInt(numRecords);
       return new StructureDataIteratorLinked(myChild.struct, firstRecno, n, null);
+    }
+  }
+
+  private static class JoinIdentity extends Join {
+
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      return child.getStructureDataIterator(parentStruct, bufferSize);
     }
   }
 

@@ -35,7 +35,7 @@ import java.util.Formatter;
  * @author caron
  * @since Dec 18, 2008
  */
-public class Iridl implements TableConfigurer {
+public class Iridl extends TableConfigurerImpl  {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     if (!ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("IRIDL"))
@@ -63,7 +63,7 @@ public class Iridl implements TableConfigurer {
     }
 
     // station table
-    TableConfig stationTable = new TableConfig(TableType.PseudoStructure, "station");
+    TableConfig stationTable = new TableConfig(Table.Type.PseudoStructure, "station");
     stationTable.featureType = FeatureType.STATION;
     stationTable.dim = stationDim;
 
@@ -75,11 +75,11 @@ public class Iridl implements TableConfigurer {
 
     // obs table
     TableConfig obsTable;
-    obsTable = new TableConfig(TableType.MultiDim, "obs");
+    obsTable = new TableConfig(Table.Type.MultiDim, "obs");
     obsTable.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     obsTable.outer = stationDim;
     obsTable.dim = obsDim;
-    obsTable.join = new TableConfig.JoinConfig(JoinType.MultiDim);
+    obsTable.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
     obsTable.featureType = FeatureType.STATION;
 
     stationTable.addChild(obsTable);

@@ -41,7 +41,7 @@ import java.lang.reflect.Method;
 public class TableAnalyzer {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableAnalyzer.class);
 
-  static private List<Analyzer> conventionList = new ArrayList<Analyzer>();
+  static private List<Configurator> conventionList = new ArrayList<Configurator>();
   static private boolean userMode = false;
   static private boolean debug = true;
 
@@ -49,7 +49,7 @@ public class TableAnalyzer {
   static {
     registerAnalyzer("CF-1.", CFpointObs.class, new ConventionNameOk() {
       public boolean isMatch(String convName, String wantName) {
-        return convName.startsWith(wantName);
+        return convName.startsWith(wantName) && !convName.equals("CF-1.0"); // throw 1.0 to default analyser
       }
     });
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class, null);
@@ -78,7 +78,7 @@ public class TableAnalyzer {
       throw new IllegalArgumentException("TableConfigurer Class " + c.getName() + " is not accessible");
     }
 
-    Analyzer anal = new Analyzer(conventionName, c, tc, match);
+    Configurator anal = new Configurator(conventionName, c, tc, match);
     if (userMode) // user stuff gets put at top
       conventionList.add(0, anal);
     else
@@ -89,13 +89,13 @@ public class TableAnalyzer {
     boolean isMatch(String convName, String wantName);
   }
 
-  static private class Analyzer {
+  static private class Configurator {
     String convName;
     Class confClass;
     TableConfigurer confInstance;
     ConventionNameOk match;
 
-    Analyzer(String convName, Class confClass, TableConfigurer confInstance, ConventionNameOk match) {
+    Configurator(String convName, Class confClass, TableConfigurer confInstance, ConventionNameOk match) {
       this.convName = convName;
       this.confClass = confClass;
       this.confInstance = confInstance;
@@ -103,8 +103,8 @@ public class TableAnalyzer {
     }
   }
 
-  static private Analyzer matchAnalyser(String convName) {
-    for (Analyzer anal : conventionList) {
+  static private Configurator matchConfigurator(String convName) {
+    for (Configurator anal : conventionList) {
       if ((anal.match == null) && anal.convName.equalsIgnoreCase(convName)) return anal;
       if ((anal.match != null) && anal.match.isMatch(convName, anal.convName)) return anal;
     }
@@ -112,14 +112,14 @@ public class TableAnalyzer {
   }
 
   /**
-   * Create a TableAnalyser for this dataset
+   * Find a TableConfigurer for this dataset, if there is one.
    *
    * @param wantFeatureType want this FeatureType
    * @param ds for this dataset
-   * @return TableAnalyser
+   * @return TableConfigurer or null if not found
    * @throws IOException on read error
    */
-  static public TableAnalyzer factory(FeatureType wantFeatureType, NetcdfDataset ds) throws IOException {
+  static public TableConfigurer getTableConfigurer(FeatureType wantFeatureType, NetcdfDataset ds) throws IOException {
     String convUsed = null;
 
     // look for the Conventions attribute
@@ -127,16 +127,16 @@ public class TableAnalyzer {
     if (convName == null)
       convName = ds.findAttValueIgnoreCase(null, "Convention", null);
 
-    // now look for Convention parsing class
-    Analyzer anal = null;
+    // now look for TableConfigurer using that Convention
+    Configurator anal = null;
     if (convName != null) {
       convName = convName.trim();
 
       // look for Convention parsing class
-      anal = matchAnalyser(convName);
+      anal = matchConfigurator(convName);
       if (anal != null) {
         convUsed = convName;
-        if (debug) System.out.println("  TableConfigurer found using convName "+convName);        
+        if (debug) System.out.println("  TableConfigurer found using convName "+convName);
       }
 
       // now look for comma or semicolon or / delimited list
@@ -159,7 +159,7 @@ public class TableAnalyzer {
 
         if (names.size() > 0) {
           // search the registered conventions, in order
-          for (Analyzer conv : conventionList) {
+          for (Configurator conv : conventionList) {
             for (String name : names) {
               if (name.equalsIgnoreCase(conv.convName)) {
                 anal = conv;
@@ -176,18 +176,18 @@ public class TableAnalyzer {
     // look for ones that dont use Convention attribute, in order added.
     // call method isMine() using reflection.
     if (anal == null) {
-      for (Analyzer conv : conventionList) {
+      for (Configurator conv : conventionList) {
         Class c = conv.confClass;
-        Method m;
+        Method isMineMethod;
 
         try {
-          m = c.getMethod("isMine", new Class[]{FeatureType.class, NetcdfDataset.class});
+          isMineMethod = c.getMethod("isMine", new Class[]{FeatureType.class, NetcdfDataset.class});
         } catch (NoSuchMethodException ex) {
           continue;
         }
 
         try {
-          Boolean result = (Boolean) m.invoke(conv.confInstance, wantFeatureType, ds);
+          Boolean result = (Boolean) isMineMethod.invoke(conv.confInstance, wantFeatureType, ds);
           if (debug) System.out.println("  TableConfigurer.isMine "+c.getName()+ " result = " + result);
           if (result) {
             anal = conv;
@@ -200,37 +200,53 @@ public class TableAnalyzer {
       }
     }
 
-    // Get a new TableConfigurer object
+    // Instantiate a new TableConfigurer object
     TableConfigurer tc = null;
     if (anal != null) {
       try {
         tc = (TableConfigurer) anal.confClass.newInstance();
+        tc.setConvName( convName);
+        tc.setConvUsed( convUsed);
       } catch (InstantiationException e) {
         log.error("TableConfigurer create failed", e);
-        return null;
       } catch (IllegalAccessException e) {
         log.error("TableConfigurer create failed", e);
-        return null;
       }
     }
+
+    return tc;
+  }
+
+  /**
+   * Create a TableAnalyser for this dataset with the given TableConfigurer
+   *
+   * @param tc TableConfigurer, may be null.
+   * @param wantFeatureType want this FeatureType
+   * @param ds for this dataset
+   * @return TableAnalyser
+   * @throws IOException on read error
+   */
+  static public TableAnalyzer factory(TableConfigurer tc, FeatureType wantFeatureType, NetcdfDataset ds) throws IOException {
 
     // Create a TableAnalyzer with this TableConfigurer (may be null)
     TableAnalyzer analyzer = new TableAnalyzer(ds, tc);
 
-    if (convName == null)
-      analyzer.userAdvice.format(" No 'Conventions' global attribute.\n");
-    else
-      analyzer.userAdvice.format(" Conventions global attribute = "+convName+".\n");
+    if (tc != null) {
+      if (tc.getConvName() == null)
+        analyzer.userAdvice.format(" No 'Conventions' global attribute.\n");
+      else
+        analyzer.userAdvice.format(" Conventions global attribute = %s %n", tc.getConvName());
 
-
-    // add the convention name used
-    if (convUsed != null) {
-      analyzer.setConventionUsed(convUsed);
-      if (!convUsed .equals(convName))
-        analyzer.userAdvice.format(" TableConfigurer used = "+convUsed+".\n");
+      // add the convention name used
+      if (tc.getConvUsed() != null) {
+        analyzer.setConventionUsed(tc.getConvUsed());
+        if (!tc.getConvUsed().equals(tc.getConvName()))
+          analyzer.userAdvice.format(" TableConfigurer used = "+tc.getConvUsed()+".\n");
+      }
 
     } else {
       analyzer.userAdvice.format(" No TableConfigurer found, using default analysis.\n");
+
     }
 
     // construct the nested table object
@@ -267,6 +283,15 @@ public class TableAnalyzer {
     return false;
   }
 
+  // for debugging messages
+  public FeatureType getFirstFeatureType() {
+    for (NestedTable nt : leaves) {
+      if (nt.hasCoords())
+        return nt.getFeatureType();
+    }
+    return null;
+  }
+
   public NetcdfDataset getNetcdfDataset() {
     return ds;
   }
@@ -297,7 +322,7 @@ public class TableAnalyzer {
     boolean structAdded = (Boolean) ds.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     if (tc == null) {
-      makeTables(structAdded);
+      makeTablesDefault(structAdded);
       makeNestedTables();
 
     } else {
@@ -310,7 +335,7 @@ public class TableAnalyzer {
   }
 
   // no TableConfig was passed in - gotta wing it
-  protected void makeTables(boolean structAdded) throws IOException {
+  protected void makeTablesDefault(boolean structAdded) throws IOException {
 
     // make Structures into a table
     List<Variable> vars = new ArrayList<Variable>(ds.getVariables());
@@ -318,7 +343,7 @@ public class TableAnalyzer {
     while (iter.hasNext()) {
       Variable v = iter.next();
       if (v instanceof Structure) {  // handles Sequences too
-        TableConfig st = new TableConfig(TableType.Structure, v.getName());
+        TableConfig st = new TableConfig(Table.Type.Structure, v.getShortName());
         CoordSysEvaluator.findCoords(st, ds);
 
         addTable(st);
@@ -342,7 +367,7 @@ public class TableAnalyzer {
 
     if (dimSet.size() == 1) {
       Dimension obsDim = (Dimension) dimSet.toArray()[0];
-      TableConfig st = new TableConfig(TableType.PseudoStructure, obsDim.getName());
+      TableConfig st = new TableConfig(Table.Type.PseudoStructure, obsDim.getName());
       st.dim = obsDim;
       CoordSysEvaluator.findCoords(st, ds);
 
@@ -351,14 +376,15 @@ public class TableAnalyzer {
 
   }
 
-  protected void findNestedStructures(Structure s, TableConfig structTable) {
+  protected void findNestedStructures(Structure s, TableConfig parent) {
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure) {  // handles Sequences too
-        TableConfig nestedTable = new TableConfig(TableType.Structure, v.getName());
+        TableConfig nestedTable = new TableConfig(Table.Type.Structure, v.getShortName());
         addTable(nestedTable);
-        structTable.addChild(nestedTable);
+        parent.addChild(nestedTable);
 
-        nestedTable.join = new TableConfig.JoinConfig(JoinType.NestedStructure);
+        // LOOK why not add the join(parent,child) here ?
+        nestedTable.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
         joins.add(nestedTable.join);
 
         findNestedStructures((Structure) v, nestedTable); // look for nested structures
@@ -506,7 +532,7 @@ public class TableAnalyzer {
   static void doit(String filename) throws IOException {
     System.out.println(filename);
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    TableAnalyzer csa = TableAnalyzer.factory(null, ncd);
+    TableAnalyzer csa = TableAnalyzer.factory(null, null, ncd);
     csa.getDetailInfo(new Formatter(System.out));
     System.out.println("\n-----------------");
   }

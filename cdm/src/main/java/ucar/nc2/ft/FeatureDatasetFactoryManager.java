@@ -146,30 +146,31 @@ public class FeatureDatasetFactoryManager {
     if (debug) System.out.println("wrap "+ncd.getLocation()+" want = "+wantFeatureType);
 
     // the case where we dont know what type it is
-    if (wantFeatureType == null) {
+    if ((wantFeatureType == null) || (wantFeatureType == FeatureType.NONE)) {
       return wrapUnknown( ncd, task, errlog);
     }
 
-    // look for a Factory that claims this dataset
+    // look for a Factory that claims this dataset by passing back an "analysis result" object
+    Object analysis = null;
     FeatureDatasetFactory useFactory = null;
     for (Factory fac : factoryList) {
       if (!featureTypeOk(wantFeatureType, fac.featureType)) continue;
       if (debug) System.out.println(" wrap try factory "+fac.factory.getClass().getName());
 
-      if (fac.factory.isMine(wantFeatureType, ncd)) {
+      analysis = fac.factory.isMine(wantFeatureType, ncd, errlog);
+      if (analysis != null) {
         useFactory = fac.factory;
         break;
       }
     }
 
    if (null == useFactory) {
-      errlog.format("**Failed to find Datatype Factory for= %s datatype=%s\n", ncd.getLocation(), wantFeatureType);
+      // errlog.format("**Failed to find Datatype Factory for= %s datatype=%s\n", ncd.getLocation(), wantFeatureType);
       return null;
     }
 
-    // get a new instance of the Factory class, for thread safety
-    FeatureDatasetFactory builder = useFactory.copy();
-    return builder.open( wantFeatureType, ncd, task, errlog);
+    // this call must be thread safe - done by implementation
+    return useFactory.open( wantFeatureType, ncd, analysis, task, errlog);
   }
 
   static private FeatureDataset wrapUnknown( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
@@ -187,12 +188,14 @@ public class FeatureDatasetFactoryManager {
     }
 
     // look for a Factory that claims this dataset
+    Object analysis = null;
     FeatureDatasetFactory useFactory = null;
     for (Factory fac : factoryList) {
       if (!featureTypeOk(null, fac.featureType)) continue;
       if (debug) System.out.println(" wrapUnknown try factory "+fac.factory.getClass().getName());
 
-      if (fac.factory.isMine(null, ncd)) {
+      analysis = fac.factory.isMine(null, ncd, errlog);
+      if (null != analysis) {
         useFactory = fac.factory;
         break;
       }
@@ -207,16 +210,15 @@ public class FeatureDatasetFactoryManager {
     }
 
    if (null == useFactory) {
-      errlog.format("**Failed to find Datatype Factory for= %s\n", ncd.getLocation());
+      // errlog.format("**Failed to find Datatype Factory for= %s\n", ncd.getLocation());
       return null;
     }
 
-    // get a new instance of the Factory class, for thread safety
-    FeatureDatasetFactory builder = useFactory.copy();
-    return builder.open( null, ncd, task, errlog);
+    // this call must be thread safe - done by implementation
+    return useFactory.open( null, ncd, analysis, task, errlog);
   }
 
-  static private boolean isGrid(java.util.List< CoordinateSystem > csysList) {
+  static private boolean isGrid(java.util.List<CoordinateSystem> csysList) {
     CoordinateSystem use = null;
     for (CoordinateSystem csys : csysList) {
       if (use == null) use = csys;
@@ -245,13 +247,11 @@ public class FeatureDatasetFactoryManager {
     if (want == facType) return true;
 
     if (want == FeatureType.ANY_POINT) {
-      return ((facType == FeatureType.POINT) || (facType == FeatureType.STATION) || (facType == FeatureType.TRAJECTORY) ||
-          (facType == FeatureType.PROFILE) || (facType == FeatureType.STATION_PROFILE) || (facType == FeatureType.SECTION));
+      return facType.isPointFeatureType();
     }
 
     if (facType == FeatureType.ANY_POINT) {
-      return ((want == FeatureType.POINT) || (want == FeatureType.STATION) || (want == FeatureType.TRAJECTORY) ||
-          (want == FeatureType.PROFILE) || (want == FeatureType.STATION_PROFILE) || (want == FeatureType.SECTION));
+      return want.isPointFeatureType();
     }
 
     return false;
@@ -263,14 +263,26 @@ public class FeatureDatasetFactoryManager {
     if (cdm_datatype == null)
       cdm_datatype = ncd.findAttValueIgnoreCase(null, "cdm_datatype", null);
     if (cdm_datatype == null)
-      cdm_datatype = ncd.findAttValueIgnoreCase(null, "CF:featureType", null);
-    if (cdm_datatype == null)
-      cdm_datatype = ncd.findAttValueIgnoreCase(null, "CFfeatureType", null);
+      cdm_datatype = ncd.findAttValueIgnoreCase(null, "thredds_data_type", null);
 
     if (cdm_datatype != null) {
-      if (debug) System.out.println(" wrapUnknown found cdm_datatype "+cdm_datatype);
+      for (FeatureType ft : FeatureType.values())
+        if (cdm_datatype.equalsIgnoreCase(ft.name())) {
+          if (debug) System.out.println(" wrapUnknown found cdm_datatype "+cdm_datatype);
+          return ft;
+        }
+    }
+
+    // LOOK - compare to CF names when those are finilized
+    String cf_datatype = ncd.findAttValueIgnoreCase(null, "CF:featureType", null);
+    if (cf_datatype == null)
+      cf_datatype = ncd.findAttValueIgnoreCase(null, "CFfeatureType", null);
+
+    if (cf_datatype != null) {
+      if (debug) System.out.println(" wrapUnknown found cf_datatype "+cdm_datatype);
       return FeatureType.getType(cdm_datatype);
     }
+    
     return null;
   }
 

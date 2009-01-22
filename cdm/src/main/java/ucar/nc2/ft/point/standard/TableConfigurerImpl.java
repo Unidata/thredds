@@ -34,8 +34,24 @@ package ucar.nc2.ft.point.standard;
 
 /**
  * @author caron
- * @since Dec 31, 2008
+ * @since Jan 21, 2009
  */
-public enum TableType {
-    Structure, PseudoStructure, MultiDim, ArrayStructure, Singleton, Construct
+public abstract class TableConfigurerImpl implements TableConfigurer {
+  public String getConvName() {
+    return convName;
+  }
+
+  public void setConvName(String convName) {
+    this.convName = convName;
+  }
+
+  public String getConvUsed() {
+    return convUsed;
+  }
+
+  public void setConvUsed(String convUsed) {
+    this.convUsed = convUsed;
+  }
+
+  private String convName, convUsed;
 }

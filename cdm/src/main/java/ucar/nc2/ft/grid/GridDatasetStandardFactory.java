@@ -48,17 +48,20 @@ import java.util.Formatter;
  * @since Dec 30, 2008
  */
 public class GridDatasetStandardFactory implements FeatureDatasetFactory {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridDatasetStandardFactory.class);
 
-  public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ncd) throws IOException {
-    return wantFeatureType == FeatureType.GRID;
+  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
+    // If they ask for a grid, and there seems to be some grids, go for it
+    if (wantFeatureType == FeatureType.GRID ) {
+      ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset( ncd);
+      if (gds.getGrids().size() > 0) {
+        return gds;
+      }
+    }
+    return null;
   }
 
-  public FeatureDatasetFactory copy() {
-    return this;
-  }
-
-  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, CancelTask task, Formatter errlog) throws IOException {
-    return new GridDataset(ncd);
+  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, Object analysis, CancelTask task, Formatter errlog) throws IOException {
+    // already been opened by isMine
+    return (GridDataset) analysis;
   }
 }

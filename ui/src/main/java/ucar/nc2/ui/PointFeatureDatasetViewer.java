@@ -250,7 +250,8 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     for (FeatureCollection fc : dataset.getPointFeatureCollectionList()) {
       FeatureType ftype = fc.getCollectionFeatureType();
-      if ((ftype == FeatureType.POINT) || (ftype == FeatureType.STATION) || (ftype == FeatureType.TRAJECTORY) || (ftype == FeatureType.STATION_PROFILE)) {
+      if ((ftype == FeatureType.POINT) || (ftype == FeatureType.PROFILE) || (ftype == FeatureType.STATION) || 
+          (ftype == FeatureType.TRAJECTORY) || (ftype == FeatureType.STATION_PROFILE)) {
         fcBeans.add( new FeatureCollectionBean(fc));
       }
     }
@@ -272,6 +273,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     if (ftype == FeatureType.POINT) {
       PointFeatureCollection pfc = (PointFeatureCollection) fcb.fc;
       setPointCollection(pfc);
+      changingPane.add( stnTable, BorderLayout.CENTER);
 
     } else if (ftype == FeatureType.PROFILE) {
       ProfileFeatureCollection pfc = (ProfileFeatureCollection) fcb.fc;
@@ -386,6 +388,17 @@ public class PointFeatureDatasetViewer extends JPanel {
       List<PointFeature> obsList = new ArrayList<PointFeature>();
       obsList.add( pobsBean.pobs);
       setObservations(obsList);
+
+     } else if (selectedType == FeatureType.PROFILE) {
+      ProfileFeatureBean profBean = (ProfileFeatureBean) sb;
+      ProfileFeature feature = profBean.pfc;
+      setObservations(feature);
+
+      // iterator may count points
+      int npts = feature.size();
+      if (npts >= 0) {
+        sb.setNobs(npts);
+      }
 
     } else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;

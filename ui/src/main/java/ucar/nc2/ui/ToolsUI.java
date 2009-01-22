@@ -711,6 +711,32 @@ public class ToolsUI extends JPanel {
 
   //////////////////////////////////////////////////////////////////////////////////
 
+  private void openNetcdfFile(String datasetName) {
+    makeComponent(tabbedPane, "Viewer");
+    viewerPanel.process(datasetName);
+    tabbedPane.setSelectedComponent(viewerPanel);
+  }
+
+  private void openNetcdfDataset(String datasetName) {
+    makeComponent(tabbedPane, "CoordSys");
+    coordSysPanel.process(datasetName);
+    tabbedPane.setSelectedComponent(coordSysPanel);
+  }
+
+  private void openPointFeatureDataset(String datasetName) {
+    makeComponent(ftTabPane, "PointFeature");
+    pointFeaturePanel.setPointFeatureDataset(null, datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(pointFeaturePanel);
+  }
+
+  private void openGridDataset(String datasetName) {
+    makeComponent(ftTabPane, "Grids");
+    gridPanel.process(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(gridPanel);
+  }
+
   // jump to the appropriate tab based on datatype of InvDataset
 
   private void setThreddsDatatype(thredds.catalog.InvDataset invDataset, boolean wantsViewer) {
@@ -782,32 +808,38 @@ public class ToolsUI extends JPanel {
     if (threddsData.dataType == FeatureType.GRID) {
       makeComponent(ftTabPane, "Grids");
       gridPanel.setDataset((NetcdfDataset) threddsData.tds.getNetcdfFile());
-      tabbedPane.setSelectedComponent(gridPanel);
+      tabbedPane.setSelectedComponent(ftTabPane);
+      ftTabPane.setSelectedComponent(gridPanel);
 
     } else if (threddsData.dataType == FeatureType.IMAGE) {
       makeComponent(ftTabPane, "Images");
       imagePanel.setImageLocation(threddsData.imageURL);
-      tabbedPane.setSelectedComponent(imagePanel);
+      tabbedPane.setSelectedComponent(ftTabPane);
+      ftTabPane.setSelectedComponent(imagePanel);
 
     } else if (threddsData.dataType == FeatureType.RADIAL) {
       makeComponent(ftTabPane, "Radial");
       radialPanel.setDataset((RadialDatasetSweep) threddsData.tds);
-      tabbedPane.setSelectedComponent(radialPanel);
+      tabbedPane.setSelectedComponent(ftTabPane);
+      ftTabPane.setSelectedComponent(radialPanel);
 
     } else if (threddsData.dataType == FeatureType.POINT) {
       makeComponent(ftTabPane, "PointObs");
       pointObsPanel.setPointObsDataset((PointObsDataset) threddsData.tds);
-      tabbedPane.setSelectedComponent(pointObsPanel);
+      tabbedPane.setSelectedComponent(ftTabPane);
+      ftTabPane.setSelectedComponent(pointObsPanel);
 
     } else if (threddsData.dataType == FeatureType.STATION) {
       makeComponent(ftTabPane, "StationObs");
       stationObsPanel.setStationObsDataset((StationObsDataset) threddsData.tds);
-      tabbedPane.setSelectedComponent(stationObsPanel);
+      tabbedPane.setSelectedComponent(ftTabPane);
+      ftTabPane.setSelectedComponent(stationObsPanel);
 
     } else if (threddsData.dataType == FeatureType.STATION_RADIAL) {
       makeComponent(ftTabPane, "StationRadial");
       stationRadialPanel.setStationRadialDataset((StationRadarCollectionImpl) threddsData.tds);
-      tabbedPane.setSelectedComponent(stationRadialPanel);
+      tabbedPane.setSelectedComponent(ftTabPane);
+      ftTabPane.setSelectedComponent(stationRadialPanel);
 
     }
   }
@@ -2330,7 +2362,6 @@ public class ToolsUI extends JPanel {
       }
     }
 
-
     void save() {
       super.save();
       dsViewer.save();
@@ -2606,8 +2637,28 @@ public class ToolsUI extends JPanel {
       super(p, "dir:", false, false);
       ftTable = new FeatureDatasetTable(prefs);
       add(ftTable, BorderLayout.CENTER);
+      ftTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("openPointFeatureDataset")) {
+            String datasetName = (String) e.getNewValue();
+            openPointFeatureDataset( datasetName);
+          }
+          else if (e.getPropertyName().equals("openNetcdfFile")) {
+            String datasetName = (String) e.getNewValue();
+            openNetcdfFile( datasetName);
+          }
+          else if (e.getPropertyName().equals("openNetcdfDataset")) {
+            String datasetName = (String) e.getNewValue();
+            openNetcdfDataset( datasetName);
+          }
+          else if (e.getPropertyName().equals("openGridDataset")) {
+            String datasetName = (String) e.getNewValue();
+            openGridDataset( datasetName);
+          }
+        }
+      });
 
-      dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      //dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
       dirChooser.setCurrentDirectory( prefs.get("currDir", "."));
       AbstractAction fileAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -2639,11 +2690,18 @@ public class ToolsUI extends JPanel {
     PointFeatureDatasetViewer pfViewer;
     JSplitPane split;
     FeatureDatasetPoint pfDataset = null;
+    JComboBox types;
 
     PointFeaturePanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
       pfViewer = new PointFeatureDatasetViewer(dbPrefs);
       add(pfViewer, BorderLayout.CENTER);
+
+      types = new JComboBox();
+      for (FeatureType ft : FeatureType.values())
+        types.addItem(ft);
+      types.getModel().setSelectedItem(FeatureType.ANY_POINT);
+      buttPanel.add(types);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
       infoButton.addActionListener(new ActionListener() {
@@ -2677,7 +2735,7 @@ public class ToolsUI extends JPanel {
 
     boolean process(Object o) {
       String location = (String) o;
-      return setPointFeatureDataset(location);
+      return setPointFeatureDataset((FeatureType) types.getSelectedItem(), location);
     }
 
     void save() {
@@ -2695,7 +2753,7 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    private boolean setPointFeatureDataset(String location) {
+    private boolean setPointFeatureDataset(FeatureType type, String location) {
       if (location == null) return false;
 
       try {
@@ -2707,7 +2765,7 @@ public class ToolsUI extends JPanel {
       Formatter log = new Formatter();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, location, null, log);
+        FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(type, location, null, log);
         if (featureDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;

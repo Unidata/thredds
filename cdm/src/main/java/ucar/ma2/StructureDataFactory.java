@@ -51,7 +51,17 @@ public class StructureDataFactory {
   }
 
   static public StructureData make(StructureData s1, StructureData s2) {
-    return s1; // LOOK TEMP
+    return make( new StructureData[] { s1, s2});
+  }
+
+  static public StructureData make(StructureData[] sdatas) {
+    StructureMembers resultMembers = new StructureMembers("");
+    for (StructureData sdata : sdatas) {
+      for (StructureMembers.Member m : sdata.getMembers()) {
+        resultMembers.addMember(m);
+      }
+    }
+    return new StructureDataW( resultMembers);
   }
 
 

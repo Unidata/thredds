@@ -42,8 +42,6 @@ import java.io.IOException;
 public class PointDatasetStandardFactory implements FeatureDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointDatasetStandardFactory.class);
 
-  private TableAnalyzer analyser;
-
   /**
    * Check if this is a POINT datatype. If so, a TableAnalyser is used to analyze its structure.
    * The TableAnalyser is reused when the dataset is opened.
@@ -54,46 +52,54 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
    * <li> TableAnalyzer must agree it can handle the requested FeatureType
    * </ol>
    */
-  public boolean isMine(FeatureType ftype, NetcdfDataset ds) throws IOException {
+  public Object isMine(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
 
-    if ((ftype != null) && (ftype != FeatureType.ANY_POINT)) {
-      if ((ftype != FeatureType.POINT) && (ftype != FeatureType.STATION) && (ftype != FeatureType.TRAJECTORY) &&
-          (ftype != FeatureType.PROFILE) && (ftype != FeatureType.STATION_PROFILE) && (ftype != FeatureType.SECTION))
-      return false;
+    if ((wantFeatureType != null) && (wantFeatureType != FeatureType.ANY_POINT)) {
+      if (!wantFeatureType.isPointFeatureType())
+        return null;
     }
 
-    boolean hasTime = false;
-    boolean hasLat = false;
-    boolean hasLon = false;
-    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-      if (axis.getAxisType() == AxisType.Time) //&& (axis.getRank() == 1))
-        hasTime = true;
-      if (axis.getAxisType() == AxisType.Lat) //&& (axis.getRank() == 1))
-        hasLat = true;
-      if (axis.getAxisType() == AxisType.Lon) //&& (axis.getRank() == 1))
-        hasLon = true;
-    }
+    TableConfigurer tc = TableAnalyzer.getTableConfigurer(wantFeatureType, ds);
 
-    // minimum we need
-    if (!(hasTime && hasLon && hasLat))
-      return false;
+    // if no explicit tc, then check whatever we can before expensive anysis)
+    if (tc == null) {
+      boolean hasTime = false;
+      boolean hasLat = false;
+      boolean hasLon = false;
+      for (CoordinateAxis axis : ds.getCoordinateAxes()) {
+        if (axis.getAxisType() == AxisType.Time) //&& (axis.getRank() == 1))
+          hasTime = true;
+        if (axis.getAxisType() == AxisType.Lat) //&& (axis.getRank() == 1))
+          hasLat = true;
+        if (axis.getAxisType() == AxisType.Lon) //&& (axis.getRank() == 1))
+          hasLon = true;
+      }
+
+      // minimum we need
+      if (!(hasTime && hasLon && hasLat)) {
+        errlog.format("PointDataset must have lat,lon,time");
+        return null;
+      }
+    }
 
     // gotta do some work
-    analyser = TableAnalyzer.factory(ftype, ds);
-    return (analyser != null) && analyser.featureTypeOk( ftype);
-  }
-
-  public FeatureDatasetFactory copy() {
-    PointDatasetStandardFactory copy = new PointDatasetStandardFactory();
-    copy.analyser = this.analyser;
-    return copy;
-  }
-
-  public FeatureDataset open(FeatureType ftype, NetcdfDataset ncd, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+    TableAnalyzer analyser = TableAnalyzer.factory(tc, wantFeatureType, ds);
     if (analyser == null)
-      analyser = TableAnalyzer.factory(ftype, ncd);
+      return null;
 
-    return new PointDatasetDefault(ftype, analyser, ncd, errlog);
+    if (!analyser.featureTypeOk( wantFeatureType)) {
+      errlog.format("PointDataset wants "+wantFeatureType+" but analyser has "+analyser.getFirstFeatureType());
+      return null;
+    }
+
+    return analyser;
+  }
+
+  public FeatureDataset open(FeatureType wantFeatureType, NetcdfDataset ncd, Object analyser, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+    if (analyser == null)
+      analyser = TableAnalyzer.factory(null, wantFeatureType, ncd);
+
+    return new PointDatasetDefault(wantFeatureType, (TableAnalyzer) analyser, ncd, errlog);
   }
 
   /////////////////////////////////////////////////////////////////////
@@ -164,7 +170,7 @@ public class PointDatasetStandardFactory implements FeatureDatasetFactory {
     @Override
     public String getImplementationName() {
       if (analyser != null)
-        return analyser.getImplementationName()  + "/" +getClass().getSimpleName();
+        return analyser.getImplementationName();
       return super.getImplementationName();
     }
   }

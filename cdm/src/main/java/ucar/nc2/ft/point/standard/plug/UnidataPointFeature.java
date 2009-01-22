@@ -38,7 +38,7 @@ import java.nio.ByteBuffer;
  * @author caron
  * @since Apr 23, 2008
  */
-public class UnidataPointFeature implements TableConfigurer {
+public class UnidataPointFeature  extends TableConfigurerImpl  {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     // find datatype
@@ -64,7 +64,7 @@ public class UnidataPointFeature implements TableConfigurer {
   private static final String STN_ELEV = "Height_of_station";
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
-    TableConfig nt = new TableConfig(TableType.ArrayStructure, "station");
+    TableConfig nt = new TableConfig(Table.Type.ArrayStructure, "station");
     nt.featureType = FeatureType.STATION_PROFILE;
 
     nt.stnId = STN_NAME;
@@ -75,7 +75,7 @@ public class UnidataPointFeature implements TableConfigurer {
     // make the station array structure in memory
     nt.as = makeIndex(ds);
 
-    TableConfig obs = new TableConfig(TableType.Structure, "obsRecord");
+    TableConfig obs = new TableConfig(Table.Type.Structure, "obsRecord");
     obs.dim = Evaluator.getDimension(ds, "record", errlog);
 
     obs.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
@@ -84,14 +84,14 @@ public class UnidataPointFeature implements TableConfigurer {
     obs.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time);
 
     obs.stnId = Evaluator.getVariableName(ds, "name", errlog);
-    obs.join = new TableConfig.JoinConfig(JoinType.Index);
+    obs.join = new TableConfig.JoinConfig(Join.Type.Index);
     // create an IndexJoin and attach to the obs.join
     indexJoin = new IndexJoin(obs.join);
     nt.addChild(obs);
 
-    TableConfig levels = new TableConfig(TableType.Structure, "seq1");
+    TableConfig levels = new TableConfig(Table.Type.Structure, "seq1");
     levels.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
-    levels.join = new TableConfig.JoinConfig(JoinType.NestedStructure);
+    levels.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
 
     obs.addChild(levels);
     return nt;

@@ -127,6 +127,15 @@ public enum DataType {
   }
 
   /**
+   * Is Byte, Int, Short, or Long
+   *
+   * @return true if integral
+   */
+  public boolean isIntegral() {
+    return (this == DataType.BYTE) || (this == DataType.INT) ||(this == DataType.SHORT) || (this == DataType.LONG);
+  }
+
+  /**
    * Is this an enumeration types?
    *
    * @return true if ENUM1, 2, or 4

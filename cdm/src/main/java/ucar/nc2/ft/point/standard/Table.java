@@ -53,6 +53,14 @@ import java.io.IOException;
  */
 public abstract class Table {
 
+  public enum CoordName {
+    Lat, Lon, Elev, Time, TimeNominal, StnId, StnDesc, WmoId
+  }
+
+  public enum Type {
+    Structure, PseudoStructure, MultiDim, ArrayStructure, Singleton, Top
+  }
+
   public static Table factory(NetcdfDataset ds, TableConfig config) {
 
     switch (config.type) {
@@ -70,11 +78,11 @@ public abstract class Table {
       case Singleton:
         return new TableSingleton(ds, config);
 
-      default:
-        throw new IllegalStateException("Unimplemented join type = " + config.type);
-
+      case Top:
+        return new TableTop(ds, config);
     }
 
+    throw new IllegalStateException("Unimplemented Table type = " + config.type);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +124,7 @@ public abstract class Table {
       //if (config.join.override != null)
       //  join2parent = config.join.override;
       //else
-        join2parent = Join.factory(config.join);
+      join2parent = Join.factory(config.join);
 
       join2parent.joinTables(parent, this);
     }
@@ -128,6 +136,31 @@ public abstract class Table {
 
   abstract public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException;
 
+  String findCoordinateVariableName(CoordName coordName) {
+    switch (coordName) {
+      case Elev:
+        return elev;
+      case Lat:
+        return lat;
+      case Lon:
+        return lon;
+      case Time:
+        return time;
+      case TimeNominal:
+        return timeNominal;
+
+      case StnId:
+        return stnId;
+      case StnDesc:
+        return stnDesc;
+      case WmoId:
+        return stnWmoId;
+
+    }
+    return null;
+  }
+
+  ///////////////////////////////////////////////////////
   public static class TableStructure extends Table {
     Structure struct;
     Dimension dim;
@@ -135,9 +168,9 @@ public abstract class Table {
     TableStructure(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
 
-      if (config.type == TableType.Structure) {
+      if (config.type == Table.Type.Structure) {
 
-        if ((config.parent != null) && (config.parent.type == TableType.Structure)) {
+        if ((config.parent != null) && (config.parent.type == Table.Type.Structure)) {
           Structure parent = (Structure) ds.findVariable(config.parent.name);
           struct = (Structure) parent.findVariable(config.name);
 
@@ -152,7 +185,7 @@ public abstract class Table {
         for (Variable v : struct.getVariables())
           this.cols.add(v);
 
-      } else if (config.type == TableType.PseudoStructure) {
+      } else if (config.type == Table.Type.PseudoStructure) {
 
         struct = new StructurePseudo(ds, null, config.name, config.dim);
         for (Variable v : struct.getVariables())
@@ -179,6 +212,7 @@ public abstract class Table {
     }
   }
 
+  ///////////////////////////////////////////////////////
   public static class TableArrayStructure extends Table {
     ArrayStructure as;
     Dimension dim;
@@ -187,6 +221,7 @@ public abstract class Table {
       super(ds, config);
       this.as = config.as;
       dim = new Dimension(config.name, (int) config.as.getSize(), false);
+      assert (this.as != null);
 
       for (StructureMembers.Member m : config.as.getStructureMembers().getMembers())
         cols.add(new VariableSimpleAdapter(m));
@@ -205,6 +240,7 @@ public abstract class Table {
     }
   }
 
+  ///////////////////////////////////////////////////////
   public static class TableMultDim extends Table {
     StructureMembers sm; // MultiDim
     Dimension dim;
@@ -241,12 +277,14 @@ public abstract class Table {
     }
   }
 
+  ///////////////////////////////////////////////////////
   public static class TableSingleton extends Table {
     StructureData sdata;
 
     TableSingleton(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
       this.sdata = config.sdata;
+      assert (this.sdata != null);
     }
 
     public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
@@ -255,33 +293,48 @@ public abstract class Table {
 
       return new SingletonStructureDataIterator(sdata);
     }
+  }
 
-    private class SingletonStructureDataIterator implements StructureDataIterator {
-      private int count = 0;
-      private StructureData sdata;
+  public static class TableTop extends Table {
+    NetcdfDataset ds;
 
-      SingletonStructureDataIterator(StructureData sdata) {
-        this.sdata = sdata;
-      }
+    TableTop(NetcdfDataset ds, TableConfig config) {
+      super(ds, config);
+      this.ds = ds;
+    }
 
-      public boolean hasNext() throws IOException {
-        return (count == 0);
-      }
-
-      public StructureData next() throws IOException {
-        count++;
-        return sdata;
-      }
-
-      public void setBufferSize(int bytes) {
-      }
-
-      public StructureDataIterator reset() {
-        count = 0;
-        return this;
-      }
+    public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
+      return new SingletonStructureDataIterator(null);
     }
   }
+
+  private static class SingletonStructureDataIterator implements StructureDataIterator {
+    private int count = 0;
+    private StructureData sdata;
+
+    SingletonStructureDataIterator(StructureData sdata) {
+      this.sdata = sdata;
+    }
+
+    public boolean hasNext() throws IOException {
+      return (count == 0);
+    }
+
+    public StructureData next() throws IOException {
+      count++;
+      return sdata;
+    }
+
+    public void setBufferSize(int bytes) {
+    }
+
+    public StructureDataIterator reset() {
+      count = 0;
+      return this;
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////
 
   public String getName() {
     return name;
@@ -295,6 +348,7 @@ public abstract class Table {
     return cols;
   }
 
+  // LOOK others should override
   public Variable findVariable(String axisName) {
     return null;
   }

@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
  * @author caron
  * @since Apr 23, 2008
  */
-public class UnidataPointObs implements TableConfigurer {
+public class UnidataPointObs extends TableConfigurerImpl {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnidataPointObs.class);
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
@@ -65,7 +65,7 @@ public class UnidataPointObs implements TableConfigurer {
       errlog.format("Must have an Observation dimension: named by global attribute 'observationDimension', or unlimited dimension");
       return null;
     }
-    TableType obsStructureType = obsDim.isUnlimited() ? TableType.Structure : TableType.PseudoStructure;
+    Table.Type obsStructureType = obsDim.isUnlimited() ? Table.Type.Structure : Table.Type.PseudoStructure;
 
     FeatureType ft = Evaluator.getFeatureType(ds, ":cdm_datatype", null);
     if (ft == null )
@@ -116,13 +116,13 @@ public class UnidataPointObs implements TableConfigurer {
         return null;
       }
 
-      TableConfig stationTable = new TableConfig(TableType.PseudoStructure, "station");
+      TableConfig stationTable = new TableConfig(Table.Type.PseudoStructure, "station");
       stationTable.dim = stationDim;
       stationTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, stationDim);
       stationTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, stationDim);
       stationTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, stationDim);
 
-      stationTable.join = new TableConfig.JoinConfig(JoinType.ParentIndex);
+      stationTable.join = new TableConfig.JoinConfig(Join.Type.ParentIndex);
       stationTable.join.parentIndex = parentIndexVar;
       obsTable.extraJoin = stationTable;
 
@@ -168,7 +168,7 @@ public class UnidataPointObs implements TableConfigurer {
     boolean isMultiDim = !isForwardLinkedList && !isBackwardLinkedList && !isContiguousList;
 
     // station table
-    TableConfig stationTable = new TableConfig(TableType.PseudoStructure, "station");
+    TableConfig stationTable = new TableConfig(Table.Type.PseudoStructure, "station");
     stationTable.featureType = ft;
     stationTable.dim = stationDim;
     stationTable.limit = Evaluator.getVariableName(ds, "number_stations", errlog);
@@ -184,31 +184,31 @@ public class UnidataPointObs implements TableConfigurer {
     // obs table
     TableConfig obsTable;
     if (isMultiDim) {
-      obsTable = new TableConfig(TableType.MultiDim, "obs");
+      obsTable = new TableConfig(Table.Type.MultiDim, "obs");
       obsTable.outer = stationDim;
       obsTable.dim = obsDim;
-      obsTable.join = new TableConfig.JoinConfig(JoinType.MultiDim);
+      obsTable.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
 
     } else {
 
       if (obsDim.isUnlimited())
-        obsTable = new TableConfig(TableType.Structure, "record");
+        obsTable = new TableConfig(Table.Type.Structure, "record");
       else
-        obsTable = new TableConfig(TableType.PseudoStructure, obsDim.getName());
+        obsTable = new TableConfig(Table.Type.PseudoStructure, obsDim.getName());
 
       TableConfig.JoinConfig join;
       if (isForwardLinkedList) {
-        join = new TableConfig.JoinConfig(JoinType.ForwardLinkedList);
+        join = new TableConfig.JoinConfig(Join.Type.ForwardLinkedList);
         join.start = firstVar;
         join.next = nextVar;
 
       } else if (isBackwardLinkedList) {
-        join = new TableConfig.JoinConfig(JoinType.BackwardLinkedList);
+        join = new TableConfig.JoinConfig(Join.Type.BackwardLinkedList);
         join.start = lastVar;
         join.next = prevVar;
 
       } else {
-        join = new TableConfig.JoinConfig(JoinType.ContiguousList);
+        join = new TableConfig.JoinConfig(Join.Type.ContiguousList);
         join.start = firstVar;
       }
 

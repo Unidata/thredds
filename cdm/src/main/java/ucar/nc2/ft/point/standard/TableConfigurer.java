@@ -50,4 +50,9 @@ public interface TableConfigurer {
    * @throws IOException on read error
    */
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException;
+
+  public String getConvName();
+  public void setConvName(String convName);
+  public String getConvUsed();
+  public void setConvUsed(String convUsed);
 }

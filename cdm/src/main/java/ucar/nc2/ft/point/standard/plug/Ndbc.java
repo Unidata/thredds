@@ -33,7 +33,7 @@ import java.util.Formatter;
  * @author caron
  * @since Apr 23, 2008
  */
-public class Ndbc implements TableConfigurer {
+public class Ndbc extends TableConfigurerImpl  {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     if (!ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("COARDS"))
@@ -83,7 +83,7 @@ public class Ndbc implements TableConfigurer {
       errlog.format("Must have an Observation dimension: unlimited dimension, or from Time Coordinate");
       return null;
     }
-     TableType obsStructureType = obsDim.isUnlimited() ? TableType.Structure : TableType.PseudoStructure;
+     Table.Type obsStructureType = obsDim.isUnlimited() ? Table.Type.Structure : Table.Type.PseudoStructure;
 
     // wants a Point
     if ((wantFeatureType == FeatureType.POINT)) {
@@ -94,7 +94,7 @@ public class Ndbc implements TableConfigurer {
     }
 
     // otherwise, make it a Station
-    TableConfig nt = new TableConfig(TableType.Singleton, "station");
+    TableConfig nt = new TableConfig(Table.Type.Top, "station");
     nt.featureType = FeatureType.STATION;
 
     nt.lat = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lat);
@@ -110,7 +110,7 @@ public class Ndbc implements TableConfigurer {
     obs.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     nt.addChild(obs);
 
-    obs.join = new TableConfig.JoinConfig(JoinType.Singleton);
+    obs.join = new TableConfig.JoinConfig(Join.Type.Identity);
 
     return nt;
   }

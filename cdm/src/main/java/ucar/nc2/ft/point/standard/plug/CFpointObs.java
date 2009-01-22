@@ -33,7 +33,7 @@ import java.util.*;
  * @author caron
  * @since Nov 3, 2008
  */
-public class CFpointObs implements TableConfigurer {
+public class CFpointObs extends TableConfigurerImpl {
   public enum CFFeatureType { point, station, trajectory }
   private final String CFfeatureType = "CFfeatureType";
 
@@ -73,7 +73,7 @@ public class CFpointObs implements TableConfigurer {
   }
 
   private TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(TableType.Structure, "record");
+    TableConfig nt = new TableConfig(Table.Type.Structure, "record");
     nt.featureType = FeatureType.POINT;
     CoordSysEvaluator.findCoords(nt, ds);
     return nt;
@@ -81,7 +81,7 @@ public class CFpointObs implements TableConfigurer {
 
   // ??
   private TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(TableType.Singleton, "station");
+    TableConfig nt = new TableConfig(Table.Type.Singleton, "station");
     nt.featureType = FeatureType.STATION;
 
     nt.lat = Evaluator.getVariableName(ds, "latitude", errlog);
@@ -90,28 +90,28 @@ public class CFpointObs implements TableConfigurer {
     nt.stnId = Evaluator.getVariableName(ds, "stn", errlog);
     //nt.stnDesc = Evaluator.getVariableName(ds, ":description", errlog);
 
-    TableConfig obs = new TableConfig(TableType.Structure, "record");
+    TableConfig obs = new TableConfig(Table.Type.Structure, "record");
     obs.dim = Evaluator.getDimension(ds, "time", errlog);
     obs.time = Evaluator.getVariableName(ds, "time", errlog);
     nt.addChild(obs);
 
-    obs.join = new TableConfig.JoinConfig(JoinType.Singleton);
+    obs.join = new TableConfig.JoinConfig(Join.Type.Identity);
 
     return nt;
   }
 
   private TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(TableType.MultiDim, "trajectory");
+    TableConfig nt = new TableConfig(Table.Type.MultiDim, "trajectory");
     nt.featureType = FeatureType.TRAJECTORY;
 
     CoordSysEvaluator.findCoords(nt, ds);
 
-    TableConfig obs = new TableConfig(TableType.MultiDim, "record");
+    TableConfig obs = new TableConfig(Table.Type.MultiDim, "record");
     obs.dim = ds.findDimension("sample");
     obs.outer = ds.findDimension("traj");
     nt.addChild(obs);
 
-    obs.join = new TableConfig.JoinConfig(JoinType.MultiDim);
+    obs.join = new TableConfig.JoinConfig(Join.Type.MultiDim);
 
     return nt;
   }

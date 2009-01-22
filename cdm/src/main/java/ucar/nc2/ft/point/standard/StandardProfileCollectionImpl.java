@@ -53,11 +53,11 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
   private NestedTable ft;
 
   protected StandardProfileCollectionImpl(String name) {
-    super(name, FeatureType.TRAJECTORY);
+    super(name, FeatureType.PROFILE);
   }
 
   StandardProfileCollectionImpl(NestedTable ft, DateUnit timeUnit) {
-    super(ft.getName(), FeatureType.TRAJECTORY);
+    super(ft.getName(), FeatureType.PROFILE);
     this.ft = ft;
     this.timeUnit = timeUnit;
   }

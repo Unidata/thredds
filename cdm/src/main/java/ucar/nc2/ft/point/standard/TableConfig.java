@@ -36,22 +36,23 @@ import java.util.ArrayList;
  * @since Apr 23, 2008
  */
 public class TableConfig {
-  public TableType type;
+  public Table.Type type;
   public String name;
   public TableConfig parent;
   public JoinConfig join; // the join to its parent
   public TableConfig extraJoin;
   public List<TableConfig> children;
 
+  // top only
   public FeatureType featureType;
 
   // multidim: outer and inner dimensions
   public Dimension dim, outer;
   
-  // TableType ArrayStructure
+  // Table.Type ArrayStructure
   public ArrayStructure as;
 
-  // TableType Singleton
+  // Table.Type Singleton
   public StructureData sdata;
 
   // coordinate variable names
@@ -65,7 +66,7 @@ public class TableConfig {
    * @param type  type of join
    * @param name  name of table
    */
-  public TableConfig(TableType type, String name) {
+  public TableConfig(Table.Type type, String name) {
     this.type = type;
     this.name = name;
   }
@@ -77,13 +78,13 @@ public class TableConfig {
   }
 
   public static class JoinConfig {
-    public JoinType joinType;
+    public Join.Type joinType;
     public Join override;
 
     // variable names for linked and contiguous lists
     public String start, next, numRecords, parentIndex;
 
-    public JoinConfig(JoinType joinType) {
+    public JoinConfig(Join.Type joinType) {
       this.joinType = joinType;
     }
   }
