@@ -979,6 +979,10 @@ public class ForecastModelRunInventory {
   }
 
   public static void main(String args[]) throws IOException {
+    if (args.length == 1) {
+      ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
+      return;
+    }
     DiskCache2 cache =  new DiskCache2("fmrcInventory/", true, 5 * 24 * 3600, 3600);
     String url = "http://motherlode.ucar.edu:9080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/files/NAM_CONUS_12km_20070419_1800.grib2";
     ForecastModelRunInventory fmr = ForecastModelRunInventory.open(cache, url, ForecastModelRunInventory.OPEN_NORMAL, false);
