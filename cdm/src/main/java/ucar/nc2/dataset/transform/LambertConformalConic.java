@@ -42,12 +42,12 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
     double[] pars = readAttributeDouble2(ctv.findAttribute( "standard_parallel"));
     if (pars == null) return null;
 
-    double lon0 = readAttributeDouble( ctv, "longitude_of_central_meridian");
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin");
-    double false_easting = readAttributeDouble( ctv, "false_easting");
-    double false_northing = readAttributeDouble( ctv, "false_northing");
+    double lon0 = readAttributeDouble( ctv, "longitude_of_central_meridian", Double.NaN);
+    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN);
+    double false_easting = readAttributeDouble(ctv, "false_easting", 0.0);
+    double false_northing = readAttributeDouble(ctv, "false_northing", 0.0);
 
-    if (!Double.isNaN(false_easting) || !Double.isNaN(false_northing)) {
+    if ((false_easting != 0.0) || (false_northing != 0.0)) {
       double scalef = getFalseEastingScaleFactor(ds, ctv);
       false_easting *= scalef;
       false_northing *= scalef;

@@ -68,6 +68,7 @@
   <property name="logging-minimal.jar" value="slf4j-jdk14-1.5.6.jar"/>
   <property name="logging-maximal.jar" value="slf4j-log4j12-1.5.6.jar"/>
   <property name="log4j.jar" value="log4j-1.2.15.jar"/>
+  <property name="nlog4j.jar" value="nlog4j-1.2.25.jar"/>
   <property name="lucene.jar" value="lucene.jar"/>
   <property name="opendap.jar" value="opendap-2.1.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
@@ -166,7 +167,6 @@
   <patternset id="sources-core">
     <include name="ucar/ma2/*.java"/>
     <include name="ucar/nc2/*.java"/>
-    <exclude name="ucar/nc2/ncml_old/**"/>
     <include name="ucar/nc2/iosp/netcdf3/N3iosp.java"/>
     <include name="ucar/nc2/util/DebugFlagsImpl.java"/>
     <include name="ucar/nc2/util/TimeSocket.java"/>
@@ -185,8 +185,18 @@
   </target>
 
   <!-- make core library jars -->
+  <property name="core.dir" value="${build.dir}/core"/>
   <property name="jarCore" value="ncCore-${release.version}.jar"/>
   <target name="makeCore" depends="compile-core" description="make core library jar">
+    <delete dir="${core.dir}" failonerror="false"/>
+    <mkdir dir="${core.dir}"/>
+    <unzip dest="${core.dir}">
+      <fileset dir="${lib.dir}">
+        <include name="external/${loggingAPI.jar}"/>
+        <include name="external/${logging-minimal.jar}"/>
+      </fileset>
+    </unzip>
+
     <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${buildtime}"/>
@@ -207,6 +217,7 @@
       <fileset dir="${build.classes.dir}"/>
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
+      <fileset dir="${core.dir}"/>      
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
@@ -216,39 +227,6 @@
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
       </manifest>
 
-    </jar>
-  </target>
-
-  <property name="jarCoreComplete" value="ncCoreComplete-${release.version}.jar"/>
-  <property name="core.dir" value="${build.dir}/core"/>
-  <target name="makeCoreComplete" depends="makeCore" description="make coreAll jar">
-    <delete dir="${core.dir}" failonerror="false"/>
-    <mkdir dir="${core.dir}"/>
-    <unzip dest="${core.dir}">
-      <fileset dir="${lib.dir}">
-        <include name="external/${httpclient.jar}"/>
-        <include name="external/${http-codec.jar}"/>
-        <include name="external/${http-logging.jar}"/>
-        <include name="external/${loggingAPI.jar}"/>
-        <include name="external/${logging-minimal.jar}"/>
-      </fileset>
-    </unzip>
-    <unzip dest="${core.dir}">
-      <fileset dir="${build.dir}">
-        <include name="${jarCore}"/>
-      </fileset>
-    </unzip>
-
-    <jar jarfile="${build.dir}/${jarCoreComplete}" index="true" duplicate="preserve">
-      <fileset dir="${core.dir}"/>
-
-      <manifest>
-        <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${buildtime}"/>
-        <attribute name="Implementation-Title" value="NetCDF-Java-MinimalLibrary COmplete"/>
-        <attribute name="Implementation-Version" value="${release.version.minor}"/>
-        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-      </manifest>
     </jar>
   </target>
 
@@ -330,7 +308,7 @@
 
   </target>
 
-  <property name="jarMainComplete" value="netcdfComplete-${release.version}.jar"/>
+  <property name="jarMainComplete" value="netcdfAll-${release.version}.jar"/>
   <property name="main.dir" value="${build.dir}/main"/>
   <target name="makeMainComplete" depends="makeMain" description="make netcdfAll jar">
     <delete dir="${main.dir}" failonerror="false"/>
@@ -697,15 +675,17 @@
 
   <property name="toolsUI" value="toolsUI-${release.version}.jar"/>
   <property name="ncAll" value="netcdfAll-${release.version}.zip"/>
-  <target name="makeAll" depends="makeCoreComplete, makeMainComplete, makeUI" description="create netcdfAll zip file">
+  <target name="makeAll" depends="makeCore, makeMain, makeMainComplete, makeUI" description="create netcdfAll zip file">
     <copy file="${build.dir}/${jarUI}" todir="${zip.dir}" overwrite="true" preservelastmodified="true"/>
 
-    <!--gather jars for the application and make ncAll.zip -->
+    <!--gather jars for the application and make netcdfAll.zip -->
     <copy todir="${zip.dir}" flatten="true" overwrite="true" preservelastmodified="true">
       <fileset refid="compile.libraries"/>
       <fileset refid="compileUI.libraries"/>
       <fileset refid="runtime.libraries"/>
       <fileset file="${lib.dir}/release/${resourcesOptional.jar}"/>
+      <fileset file="${lib.dir}/external/${log4j.jar}"/>
+      <fileset file="${lib.dir}/external/${nlog4j.jar}"/>
     </copy>
     <zip destfile="${build.dir}/${ncAll}" basedir="${zip.dir}"/>
 

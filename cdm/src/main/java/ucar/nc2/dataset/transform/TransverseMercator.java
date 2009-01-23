@@ -43,20 +43,20 @@ public class TransverseMercator extends AbstractCoordTransBuilder {
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
 
-    double scale = readAttributeDouble( ctv, "scale_factor_at_central_meridian");
-    double lon0 = readAttributeDouble( ctv, "longitude_of_central_meridian");
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin");
-    double east = readAttributeDouble( ctv, "false_easting");
-    double north = readAttributeDouble( ctv, "false_northing");
+    double scale = readAttributeDouble( ctv, "scale_factor_at_central_meridian", Double.NaN);
+    double lon0 = readAttributeDouble( ctv, "longitude_of_central_meridian", Double.NaN);
+    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN);
+    double false_easting = readAttributeDouble(ctv, "false_easting", 0.0);
+    double false_northing = readAttributeDouble(ctv, "false_northing", 0.0);
 
-    if (!Double.isNaN(east) || !Double.isNaN(north)) {
+    if ((false_easting != 0.0) || (false_northing != 0.0)) {
       double scalef = getFalseEastingScaleFactor(ds, ctv);
-      east *= scalef;
-      north *= scalef;
+      false_easting *= scalef;
+      false_northing *= scalef;
     }
 
     ucar.unidata.geoloc.projection.TransverseMercator proj =
-            new ucar.unidata.geoloc.projection.TransverseMercator(lat0, lon0, scale, east, north);
+            new ucar.unidata.geoloc.projection.TransverseMercator(lat0, lon0, scale, false_easting, false_northing);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }

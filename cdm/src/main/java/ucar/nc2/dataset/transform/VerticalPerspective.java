@@ -44,21 +44,26 @@ public class VerticalPerspective extends AbstractCoordTransBuilder {
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
 
-    double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin");
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin");
-    double distance = readAttributeDouble( ctv, "height_above_earth");
+    double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin", Double.NaN);
+    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN);
+    double distance = readAttributeDouble( ctv, "height_above_earth", Double.NaN);
     if (Double.isNaN(lon0) || Double.isNaN(lat0) || Double.isNaN(distance))
       throw new IllegalArgumentException("Vertical Perspective must have longitude_of_projection_origin, latitude_of_projection_origin, height_above_earth attributes");
 
-    double east = readAttributeDouble( ctv, "false_easting");
-    if (Double.isNaN(east)) east = 0.0;
-    double north = readAttributeDouble( ctv, "false_northing");
-    if (Double.isNaN(north)) north = 0.0;
-    double earthRadius = readAttributeDouble( ctv, "earth_radius");
-    if (Double.isNaN(earthRadius)) earthRadius = Earth.getRadius() / 1000.0; // km
+    double false_easting = readAttributeDouble(ctv, "false_easting", 0.0);
+    double false_northing = readAttributeDouble(ctv, "false_northing", 0.0);
+
+    if ((false_easting != 0.0) || (false_northing != 0.0)) {
+      double scalef = getFalseEastingScaleFactor(ds, ctv);
+      false_easting *= scalef;
+      false_northing *= scalef;
+    }
+
+    double earthRadius = readAttributeDouble( ctv, "earth_radius", Earth.getRadius() / 1000.0);
 
     ucar.unidata.geoloc.projection.VerticalPerspectiveView proj =
-            new ucar.unidata.geoloc.projection.VerticalPerspectiveView(lat0, lon0, earthRadius, distance, east, north);
+            new ucar.unidata.geoloc.projection.VerticalPerspectiveView(lat0, lon0, earthRadius, distance, false_easting, false_northing);
+
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }

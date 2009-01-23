@@ -44,7 +44,7 @@ public class UTM extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    int zone = (int) readAttributeDouble( ctv, "utm_zone_number");
+    int zone = (int) readAttributeDouble( ctv, "utm_zone_number", Double.NaN);
     boolean isNorth = zone > 0;
     zone = Math.abs(zone);
 

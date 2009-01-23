@@ -42,19 +42,17 @@ public class PolarStereographic extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    double lon0 = readAttributeDouble( ctv, "straight_vertical_longitude_from_pole");
+    double lon0 = readAttributeDouble( ctv, "straight_vertical_longitude_from_pole", Double.NaN);
     if (Double.isNaN(lon0))
-      lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin");
+      lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin", Double.NaN);
     if (Double.isNaN(lon0))
       throw new IllegalArgumentException("No longitude parameter");
 
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin");
-    if (Double.isNaN(lat0))
-      lat0 = 90.0;
+    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", 90.0);
 
-    double scale = readAttributeDouble( ctv, "scale_factor_at_projection_origin");
+    double scale = readAttributeDouble( ctv, "scale_factor_at_projection_origin", Double.NaN);
     if (Double.isNaN(scale)) {
-      double stdpar = readAttributeDouble( ctv, "standard_parallel");
+      double stdpar = readAttributeDouble( ctv, "standard_parallel", Double.NaN);
       if (!Double.isNaN(stdpar)) {
         // caclulate scale snyder (21-7) k = 2 * k0/(1 +/- sin stdpar)
         // then to make scale = 1 at stdpar, k0 = (1 +/- sin(stdpar))/2

@@ -42,15 +42,9 @@ public class Stereographic extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin");
-
-    double scale = readAttributeDouble( ctv, "scale_factor_at_projection_origin");
-    if (Double.isNaN(scale))
-      scale = 1.0;
-
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin");
-    if (Double.isNaN(lat0))
-      lat0 = 90.0;
+    double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin", Double.NaN);
+    double scale = readAttributeDouble( ctv, "scale_factor_at_projection_origin", 1.0);
+    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", 90.0);
 
     ucar.unidata.geoloc.projection.Stereographic proj = new ucar.unidata.geoloc.projection.Stereographic( lat0, lon0, scale);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);

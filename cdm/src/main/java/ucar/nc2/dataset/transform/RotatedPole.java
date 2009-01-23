@@ -42,8 +42,8 @@ public class RotatedPole extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    double lon = readAttributeDouble( ctv, "grid_north_pole_longitude");
-    double lat = readAttributeDouble( ctv, "grid_north_pole_latitude");
+    double lon = readAttributeDouble( ctv, "grid_north_pole_longitude", Double.NaN);
+    double lat = readAttributeDouble( ctv, "grid_north_pole_latitude", Double.NaN);
 
     ucar.unidata.geoloc.projection.RotatedPole proj = new ucar.unidata.geoloc.projection.RotatedPole( lat, lon);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);

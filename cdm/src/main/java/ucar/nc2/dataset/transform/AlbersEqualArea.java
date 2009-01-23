@@ -33,19 +33,31 @@ import ucar.nc2.Variable;
  */
 public class AlbersEqualArea extends AbstractCoordTransBuilder {
 
-  public String getTransformName() { return "albers_conical_equal_area"; }
-  public TransformType getTransformType() { return TransformType.Projection; }
+  public String getTransformName() {
+    return "albers_conical_equal_area";
+  }
+
+  public TransformType getTransformType() {
+    return TransformType.Projection;
+  }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-   double[] pars = readAttributeDouble2(ctv.findAttribute( "standard_parallel"));
-   if (pars == null) return null;
+    double[] pars = readAttributeDouble2(ctv.findAttribute("standard_parallel"));
+    if (pars == null) return null;
 
-   double lon0 = readAttributeDouble( ctv, "longitude_of_central_meridian");
-   double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin");
-   double false_easting = readAttributeDouble( ctv, "false_easting");
-   double false_northing = readAttributeDouble( ctv, "false_northing");
+    double lon0 = readAttributeDouble(ctv, "longitude_of_central_meridian", Double.NaN);
+    double lat0 = readAttributeDouble(ctv, "latitude_of_projection_origin", Double.NaN);
+    double false_easting = readAttributeDouble(ctv, "false_easting", 0.0);
+    double false_northing = readAttributeDouble(ctv, "false_northing", 0.0);
 
-   ucar.unidata.geoloc.projection.AlbersEqualArea proj = new ucar.unidata.geoloc.projection.AlbersEqualArea(lat0, lon0, pars[0], pars[1]);
-   return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
+    if ((false_easting != 0.0) || (false_northing != 0.0)) {
+      double scalef = getFalseEastingScaleFactor(ds, ctv);
+      false_easting *= scalef;
+      false_northing *= scalef;
+    }
+
+    ucar.unidata.geoloc.projection.AlbersEqualArea proj =
+            new ucar.unidata.geoloc.projection.AlbersEqualArea(lat0, lon0, pars[0], pars[1]);
+    return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }

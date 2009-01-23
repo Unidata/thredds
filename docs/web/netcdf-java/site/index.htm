@@ -34,6 +34,24 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <p><strong>Which jar files do I need?</strong> All libraries (except toolsUI.jar) require an <a href="http://www.slf4j.org/">SLF4J</a> library such as <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/slf4j-jdk14.jar">slf4j-jdk14.jar</a> (14k) or <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/nlog4j-1.2.21.jar">nlog4j.jar</a> (202k). We need to keep logging unbundled so your application has a choice of logging. All but the minimal library also need (at least) the JDOM library. There are a number of optional jars that you might want to use, see the <a href="v2.2.22/README">README</a> for information. The toolsUI jar has everything, use it if you aren't concerned about size. </p>
 <p><strong>Why do we designate this alpha? </strong>The stability and code quality is moderately good. However, until we completely implement the <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/">NetCDF-4</a> reader, we are not sure if the API might need some (probably minor) changes. A stable NetCDF-4 format was released April 2007, and we expect that the next stable version will incorporate this format and the APIs will be final. </p>
 <p><strong>Which version of Java? </strong>All active versions (2.2.22 and 4.0) require Java 5 or above. Performance and stability is improved in version 6, and so<strong> the  latest version of Java 6 is recommended. </strong>NetCDF-Java version 4.1 will likely require Java 1.6. If you are stuck with Java 1.4, you can use the NetCDF-Java 2.2.20 release, but no support or bug fixes are done on that version. </p>
+<h3><strong><a name="v4"></a> Current Development version 4.0 (requires Java 1.5+) </strong></h3>
+<p>See <a href="reference/JarDependencies.html">Jar Dependencies</a> for explanation of which library you want:</p>
+<ul>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar">unbundled netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar.MD5">MD5</a>) allows you to choose which other jars you need.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.zip.MD5">MD5</a>) includes all the jar files you might need. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/toolsUI-4.0.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2./toolsUI-4.0.jar.MD5">MD5</a>) is a nice fat jar containing everything in a single jar. You can run the netCDF ToolsUI application directly from it. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncIdv.jar">ncIdv.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncIdv.jar.MD5">MD5</a>) which you can use in the IDV</li>
+  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar.MD5">MD5</a>) just reads netcdf-3  files.</li>
+  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.jar"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.jar.MD5">MD5</a>) (unzip and follow the <a href="v4.0/README">README</a>)</li>
+  <li>See <a href="v4.0/CHANGES">CHANGES</a> for version changes.</li>
+  <li>Try out the <strong> 4.0</strong> version of ToolsUI application: <a href="v4.0/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
+</ul>
+<ul>
+  <li> <a href="v4.0/javadoc/index.html">Public javadoc</a>: This is the public interface. Downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadoc-4.0.jar">jar file</a>. </li>
+  <li><a href="v4.0/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. Downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadocAll-4.0.jar">jar file</a>. CAREFUL, some of this may change.</li>
+  <li><a href="transition4.html">Transitioning to version 4.0</a> </li>
+</ul>
 <h3><strong><a name="v22"></a>Current Stable version 2.2.22 (requires Java 1.5+). Bug fixes only, no new development. </strong></h3>
 <ul>
   <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/ncCore-2.2.22.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.22/ncCore-2.2.22.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
@@ -49,24 +67,6 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <ul>
   <li> <a href="v2.2.22/javadoc/index.html">Public javadoc</a>: This is the public interface. </li>
   <li><a href="v2.2.22/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. CAREFUL, some of this may change.</li>
-</ul>
-<h3><strong><a name="v4"></a>Development version 4.0 (requires Java 1.5+) </strong></h3>
-<p><strong>This version is ALPHA, do not rely on its API until announced as BETA. </strong></p>
-<ul>
-  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar">netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar.MD5">MD5</a>) implements the full CDM model. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfUI-4.0.jar">netcdfUI library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfUI-4.0.jar.MD5">MD5</a>) includes the netCDF library plus the user interface classes for the netCDF ToolsUI application.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.zip.MD5">MD5</a>) includes the netcdfUI library plus all other jar files you might need. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/toolsUI-4.0.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2./toolsUI-4.0.jar.MD5">MD5</a>) is a nice fat jar containing everything in a single jar. You can run the netCDF ToolsUI application directly from it. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncIdv.jar">ncIdv.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncIdv.jar.MD5">MD5</a>), which you can use in the IDV (rename nc2.2.jar for now).</li>
-  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.jar"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.jar.MD5">MD5</a>) (unzip and follow the <a href="v4.0/README">README</a>)</li>
-  <li>See <a href="v4.0/CHANGES">CHANGES</a> for version changes.</li>
-  <li>Try out the <strong> 4.0</strong> version of ToolsUI application: <a href="v4.0/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
-</ul>
-<ul>
-  <li> <a href="v4.0/javadoc/index.html">Public javadoc</a>: This is the public interface. Downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadoc-4.0.jar">jar file</a>. </li>
-  <li><a href="v4.0/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. Downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadocAll-4.0.jar">jar file</a>. CAREFUL, some of this may change.</li>
-  <li><a href="transition4.html">Transitioning to version 4.0</a> </li>
 </ul>
 <h3><strong>Last Stable version 2.2.20 for Java 1.4.2+ </strong></h3>
 <ul>
@@ -180,7 +180,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated on Dec 18, 2008 
+and was last updated on Jan 23, 2009 
 </address>
 
 </body>

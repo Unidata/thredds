@@ -1,20 +1,20 @@
-Netcdf-Java library
+Netcdf-Java / Common Data Model Library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 see http://www.unidata.ucar.edu/packages/netcdf-java/
+see http://www.unidata.ucar.edu/software/netcdf-java/reference/JarDependencies.html
 
 DISTRIBUTIONS
-  ncCore-@VERSION@.jar        core classes, for reading/writing netcdf-3 files. requires commons-httpclient, logging, codec, slf4j jars
-  ncCoreComplete-@VERSION@.jar        core classes with required libraries
-  netcdf-@VERSION@.jar        complete implementation of common data model. requires commons-httpclient, logging, codec, jdom, jpeg2000, slf4j, visad jars
-  netcdfComplete-@VERSION@.jar        complete with required libraries
-  netcdfUI-@VERSION@.jar      complete including the UI classes.
-  toolsUI-@VERSION@.jar       complete UI and libraries, to run toolsUI from a single jar.
+  netcdf-@VERSION@.jar        unbundled CDM library. add optional jars as needed
+  netcdfAll-@VERSION@.jar     CDM library complete with all libraries
+  toolsUI-@VERSION@.jar       ToolsUI complete UI, to run toolsUI from a single jar.
 
-  netcdfAll-@VERSION@.zip     all of netcdf-java and optional libraries
-  ncSrc-@VERSION@.zip         source distribution
+  netcdfAll-@VERSION@.zip     all jar files
   ncIdv.jar                   library that can be used in the IDV
+  ncCore-@VERSION@.jar        core classes, for reading/writing netcdf-3 files only.
+
+  ncSrc-@VERSION@.zip         source distribution
   javadoc.jar                 public javadoc
   javadocAll.jar              complete javadoc
 
@@ -24,12 +24,17 @@ OPTIONAL LIBRARIES
   grib.jar                    required to read Grib-1 or Grib-2 datasets
   jdom.jar                    required to read thredds catalogs, and read NcML
   jpeg2000.jar                required to read Grib-2 JPEG2000 compressed files
-  nlog4j.jar                  log4j logging. Alternately, you can use any slf4j implementation.
-  slf4f-jdk14-1.2.jar         simple logging using java.util.loging, Use either nlog4j or slf4f.
-  visadNoDods.jar             required to read ADDE datasets; this version has the dods libraries removed
+  log4j.jar                   log4j logging.
+  nlog4j.jar                  slf4j + log4j logging.
+  slf4f-api.jar               slf4j API
+  slf4f-jdk14.jar             slf4j interface using JDK logging.
+  slf4f-log4j12.jar           slf4j interface using loj4j version 12 logging.
+  visadNoDods.jar             required to read ADDE datasets.
 
 RELATED UI LIBRARIES
+  forms.jar                   jgoodies form library
   resourcesOptional.jar       optional detailed maps and tables
+  spring.jar                  spring lightweight framework
 
 RUN THE NETCDF TOOLS UI APPLICATION FROM COMMAND LINE
   1. get the toolsUI jar file (toolsUI-@VERSION@.zip)
@@ -45,23 +50,36 @@ BUILD AND RUN FROM SOURCE
  3. ant compileFromSrc
  4. sh runSrcRelease
 
- ---------------------------------------------------------------------------------------------------------------------
- Copyright and License:
- * Copyright 1997-2008 Unidata Program Center/University Corporation for
- * Atmospheric Research, P.O. Box 3000, Boulder, CO 80307,
- * support-netcdf-java@unidata.ucar.edu.
+---------------------------------------------------------------------------------------------------------------------
+/*
+ * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
  *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- * General Public License for more details.
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */

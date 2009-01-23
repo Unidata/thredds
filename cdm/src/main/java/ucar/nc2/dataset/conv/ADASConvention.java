@@ -62,10 +62,10 @@ public class ADASConvention extends CoordSysBuilder {
     Attribute att = ds.findGlobalAttribute("MAPPROJ");
     int projType = att.getNumericValue().intValue();
 
-    double lat1 = findAttributeDouble(ds, "TRUELAT1");
-    double lat2 = findAttributeDouble(ds, "TRUELAT2");
+    double lat1 = findAttributeDouble(ds, "TRUELAT1", Double.NaN);
+    double lat2 = findAttributeDouble(ds, "TRUELAT2", Double.NaN);
     double lat_origin = lat1;
-    double lon_origin = findAttributeDouble(ds, "TRUELON");
+    double lon_origin = findAttributeDouble(ds, "TRUELON", Double.NaN);
     double false_easting = 0.0;
     double false_northing = 0.0;
 
@@ -73,10 +73,10 @@ public class ADASConvention extends CoordSysBuilder {
     String projName = ds.findAttValueIgnoreCase(null, "grid_mapping_name", null);
     if (projName != null) {
       projName = projName.trim();
-      lat_origin = findAttributeDouble(ds, "latitude_of_projection_origin");
-      lon_origin = findAttributeDouble(ds, "longitude_of_central_meridian");
-      false_easting = findAttributeDouble(ds, "false_easting");
-      false_northing = findAttributeDouble(ds, "false_northing");
+      lat_origin = findAttributeDouble(ds, "latitude_of_projection_origin", Double.NaN);
+      lon_origin = findAttributeDouble(ds, "longitude_of_central_meridian", Double.NaN);
+      false_easting = findAttributeDouble(ds, "false_easting", 0.0);
+      false_northing = findAttributeDouble(ds, "false_northing", 0.0);
 
       Attribute att2 = ds.findGlobalAttributeIgnoreCase("standard_parallel");
       if (att2 != null) {
@@ -111,8 +111,8 @@ public class ADASConvention extends CoordSysBuilder {
 
     if (debugProj) {
       if (proj != null) System.out.println(" using LC " + proj.paramsToString());
-      double lat_check = findAttributeDouble(ds, "CTRLAT");
-      double lon_check = findAttributeDouble(ds, "CTRLON");
+      double lat_check = findAttributeDouble(ds, "CTRLAT", Double.NaN);
+      double lon_check = findAttributeDouble(ds, "CTRLON", Double.NaN);
 
       LatLonPointImpl lpt0 = new LatLonPointImpl(lat_check, lon_check);
       ProjectionPoint ppt0 = proj.latLonToProj(lpt0, new ProjectionPointImpl());
@@ -157,8 +157,8 @@ public class ADASConvention extends CoordSysBuilder {
 
   // old
   private void calcCenterPoints(NetcdfDataset ds, Projection proj) throws IOException {
-    double lat_check = findAttributeDouble(ds, "CTRLAT");
-    double lon_check = findAttributeDouble(ds, "CTRLON");
+    double lat_check = findAttributeDouble(ds, "CTRLAT", Double.NaN);
+    double lon_check = findAttributeDouble(ds, "CTRLON", Double.NaN);
 
     LatLonPointImpl lpt0 = new LatLonPointImpl(lat_check, lon_check);
     ProjectionPoint ppt0 = proj.latLonToProj(lpt0, new ProjectionPointImpl());
@@ -178,8 +178,8 @@ public class ADASConvention extends CoordSysBuilder {
     double false_northing = center_y / 2000 - ppt0.getY() * 1000.0;
     System.out.println("false_northing= " + false_northing);
 
-    double dx = findAttributeDouble(ds, "DX");
-    double dy = findAttributeDouble(ds, "DY");
+    double dx = findAttributeDouble(ds, "DX", Double.NaN);
+    double dy = findAttributeDouble(ds, "DY", Double.NaN);
 
     double w = dx * (nxpts - 1);
     double h = dy * (nypts - 1);
@@ -270,9 +270,9 @@ public class ADASConvention extends CoordSysBuilder {
     return v;
   }
 
-  private double findAttributeDouble(NetcdfDataset ds, String attname) {
+  private double findAttributeDouble(NetcdfDataset ds, String attname, double defValue) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
-    if (att == null) return Double.NaN;
+    if (att == null) return defValue;
     return att.getNumericValue().doubleValue();
   }
 

@@ -42,8 +42,8 @@ public class FlatEarth extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin");
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin");
+    double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin", Double.NaN);
+    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN);
 
     ucar.unidata.geoloc.projection.FlatEarth proj = new ucar.unidata.geoloc.projection.FlatEarth(lat0, lon0);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
