@@ -572,7 +572,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
      return new StructureDS.Iterator(bufferSize);
    }
 
-   // Experimental - convert entire orinal array at one, to avoid one-by-one StructureData conversion.
+   // Experimental - convert entire original array at once, to avoid one-by-one StructureData conversion.
    private class Iterator implements StructureDataIterator {
      private int count = 0;
      private int recnum = (int) getSize();
@@ -610,7 +610,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
        try {
          // System.out.println(" read start= "+readStart+" count= "+need);
          as = readStructure( readStart, need);
-         as = convert(as, null);
+         // as = convert(as, null); LOOK - conversion already done in StructureDS._read()
 
        } catch (InvalidRangeException e) {
          log.error("Structure.Iterator.readNext() ",e);
