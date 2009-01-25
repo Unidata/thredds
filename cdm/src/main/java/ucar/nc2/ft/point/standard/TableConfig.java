@@ -42,6 +42,8 @@ public class TableConfig {
   public Join extraJoin;
   public List<TableConfig> children;
 
+  public String structName; // full name of structure
+  public String  nestedTableName; // short name of structure
   public boolean isPsuedoStructure = false;
   public String start, next, numRecords, parentIndex; // names of variables
 
@@ -61,7 +63,7 @@ public class TableConfig {
   public String lat, lon, elev, time, timeNominal, limit;
 
   // station info
-  public String stnId, stnDesc, stnNpts, stnWmoId;
+  public String stnId, stnDesc, stnNpts, stnWmoId, stnAlt;
 
   /**
    * Constructor

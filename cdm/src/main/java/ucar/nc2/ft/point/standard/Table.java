@@ -34,6 +34,7 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
 import ucar.nc2.ft.point.StructureDataIteratorLinked;
+import ucar.nc2.ft.Station;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.*;
@@ -52,11 +53,11 @@ import java.io.IOException;
 public abstract class Table {
 
   public enum CoordName {
-    Lat, Lon, Elev, Time, TimeNominal, StnId, StnDesc, WmoId
+    Lat, Lon, Elev, Time, TimeNominal, StnId, StnDesc, WmoId, StnAlt
   }
 
   public enum Type {
-    ArrayStructure, Contiguous, LinkedList, MultiDim, NestedStructure, Singleton, Structure, Top
+    ArrayStructure, Construct, Contiguous, LinkedList, MultiDim, NestedStructure, Singleton, Structure, Top
   }
 
   public static Table factory(NetcdfDataset ds, TableConfig config) {
@@ -65,6 +66,9 @@ public abstract class Table {
 
       case ArrayStructure:
         return new TableArrayStructure(ds, config);
+
+      case Construct:
+        return new TableConstruct(ds, config);
 
       case Contiguous:
         return new TableContiguous(ds, config);
@@ -100,7 +104,7 @@ public abstract class Table {
   Join extraJoin;
 
   String lat, lon, elev, time, timeNominal;
-  String stnId, stnDesc, stnNpts, stnWmoId, limit;
+  String stnId, stnDesc, stnNpts, stnWmoId, stnAlt, limit;
   //public int nstations;
 
   List<VariableSimpleIF> cols = new ArrayList<VariableSimpleIF>();    // all variables
@@ -120,6 +124,7 @@ public abstract class Table {
     this.stnDesc = config.stnDesc;
     this.stnNpts = config.stnNpts;
     this.stnWmoId = config.stnWmoId;
+    this.stnAlt = config.stnAlt;
     this.limit = config.limit;
 
     if (config.parent != null)
@@ -149,6 +154,8 @@ public abstract class Table {
         return stnDesc;
       case WmoId:
         return stnWmoId;
+      case StnAlt:
+        return stnAlt;
 
     }
     return null;
@@ -164,6 +171,7 @@ public abstract class Table {
 
       if (config.isPsuedoStructure) {
         this.dim = config.dim;
+        assert dim != null;
 
         struct = new StructurePseudo(ds, null, config.name, config.dim);
         for (Variable v : struct.getVariables())
@@ -171,12 +179,12 @@ public abstract class Table {
 
       } else {
 
-       /* if ((config.parent != null) && (config.parent.type == Table.Type.Structure)) {
-          Structure parent = (Structure) ds.findVariable(config.parent.name);
-          struct = (Structure) parent.findVariable(config.name);
-        } else {
-          struct = (Structure) ds.findVariable(config.name);
-        } */
+        /* if ((config.parent != null) && (config.parent.type == Table.Type.Structure)) {
+         Structure parent = (Structure) ds.findVariable(config.parent.name);
+         struct = (Structure) parent.findVariable(config.name);
+       } else {
+         struct = (Structure) ds.findVariable(config.name);
+       } */
 
         struct = (Structure) ds.findVariable(config.name);
         if (struct == null)
@@ -226,6 +234,26 @@ public abstract class Table {
 
     public StructureDataIterator getStructureDataIterator(StructureData parent, int bufferSize) throws IOException {
       return as.getStructureDataIterator();
+    }
+  }
+
+  ///////////////////////////////////////////////////////
+  public static class TableConstruct extends Table {
+    Structure struct;
+
+    TableConstruct(NetcdfDataset ds, TableConfig config) {
+      super(ds, config);
+      struct = (Structure) ds.findVariable(config.structName);
+      if (struct == null)
+        throw new IllegalStateException("Cant find Structure " + config.structName);
+    }
+
+    public Variable findVariable(String axisName) {
+      return struct.findVariable(axisName);
+    }
+
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+      return struct.getStructureIterator(bufferSize);
     }
   }
 
@@ -305,16 +333,23 @@ public abstract class Table {
 
   ///////////////////////////////////////////////////////
   public static class TableNestedStructure extends Table {
+    String nestedTableName; // short name of structure
+    Structure struct;
 
     TableNestedStructure(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
+      this.nestedTableName = config.nestedTableName;
+      struct = (Structure) ds.findVariable(config.structName);
     }
 
-   public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+    public Variable findVariable(String axisName) {
+      return struct.findVariable(axisName);
+    }
 
-      String name = getName();
+    public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
+
       StructureMembers members = parentStruct.getStructureMembers();
-      StructureMembers.Member m = members.findMember(name);
+      StructureMembers.Member m = members.findMember(nestedTableName);
       if (m.getDataType() == DataType.SEQUENCE) {
         ArraySequence seq = parentStruct.getArraySequence(m);
         return seq.getStructureDataIterator();
@@ -324,7 +359,7 @@ public abstract class Table {
         return as.getStructureDataIterator();
       }
 
-      return null;
+      throw new IllegalStateException("Cant fing memmber " + nestedTableName);
     }
   }
 

@@ -72,7 +72,7 @@ public class Iridl extends TableConfigurerImpl  {
 
     stationTable.lat = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lat);
     stationTable.lon = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lon);
-    stationTable.elev = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Height);
+    stationTable.stnAlt = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Height);
 
     // obs table
     TableConfig obsTable;

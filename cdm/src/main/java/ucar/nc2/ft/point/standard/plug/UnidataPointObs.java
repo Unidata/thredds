@@ -99,7 +99,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
       obsTable.time = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Time, obsDim);
       obsTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, obsDim);
       obsTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, obsDim);
-      obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, obsDim);
+      obsTable.stnAlt = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, obsDim);
 
       // if they have lat and lon in the obs, then use it
       if ((obsTable.lat != null) && (obsTable.lon != null)) {
@@ -184,7 +184,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
 
     stationTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
     stationTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon);
-    stationTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
+    stationTable.stnAlt = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
 
     // obs table
     TableConfig obsTable;

@@ -52,6 +52,7 @@ public class TableAnalyzer {
         return convName.startsWith(wantName) && !convName.equals("CF-1.0"); // throw 1.0 to default analyser
       }
     });
+    registerAnalyzer("BUFR/CDM", BufrCdm.class, null);
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class, null);
 
     registerAnalyzer("FslWindProfiler", FslWindProfiler.class, null);
@@ -348,8 +349,10 @@ public class TableAnalyzer {
     while (iter.hasNext()) {
       Variable v = iter.next();
       if (v instanceof Structure) {  // handles Sequences too
-        TableConfig st = new TableConfig(Table.Type.Structure, v.getShortName());
+        TableConfig st = new TableConfig(Table.Type.Structure, v.getName());
         CoordSysEvaluator.findCoords(st, ds);
+        st.structName = v.getName();
+        st.nestedTableName = v.getShortName();
 
         addTable(st);
         iter.remove();
@@ -405,7 +408,10 @@ public class TableAnalyzer {
   protected void findNestedStructures(Structure s, TableConfig parent) {
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure) {  // handles Sequences too
-        TableConfig nestedTable = new TableConfig(Table.Type.Structure, v.getShortName());
+        TableConfig nestedTable = new TableConfig(Table.Type.NestedStructure, v.getName());
+        nestedTable.structName = v.getName();
+        nestedTable.nestedTableName = v.getShortName();
+
         addTable(nestedTable);
         parent.addChild(nestedTable);
 
