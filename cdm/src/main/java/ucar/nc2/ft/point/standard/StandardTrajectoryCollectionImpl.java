@@ -101,10 +101,10 @@ public class StandardTrajectoryCollectionImpl extends OneNestedPointCollectionIm
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureData[] tableData = new StructureData[ ft.getNumberOfLevels()];
-      tableData[1] = trajData; // ?? could also be a Map
+      Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor.tableData[1] = trajData;
       StructureDataIterator siter = ft.getFeatureObsDataIterator( trajData, bufferSize);
-      return new StandardPointFeatureIterator(ft, timeUnit, siter, tableData, false);
+      return new StandardPointFeatureIterator(ft, timeUnit, siter, cursor, false);
     }
   }
 

@@ -36,38 +36,36 @@ import java.io.IOException;
 public class StandardPointFeatureIterator extends PointIteratorImpl {
   private NestedTable ft;
   private DateUnit timeUnit;
-  private  StructureData[] tableData;
+  private Cursor cursor;
 
   StandardPointFeatureIterator(NestedTable ft, DateUnit timeUnit, ucar.ma2.StructureDataIterator structIter,
-                               StructureData[] tableData, boolean calcBB) throws IOException {
+                               Cursor cursor, boolean calcBB) throws IOException {
     super(structIter, null, calcBB);
     this.ft = ft;
     this.timeUnit = timeUnit;
-    this.tableData = tableData;
+    this.cursor = cursor;
   }
 
   protected PointFeature makeFeature(int recnum, StructureData sdata) throws IOException {
-    tableData[0] = sdata; // always in the first position
-    ft.addParentJoin(tableData); // there may be parent joins LOOK
+    cursor.tableData[0] = sdata; // always in the first position
+    ft.addParentJoin(cursor); // there may be parent joins LOOK
     
-    return new StandardPointFeature(tableData, timeUnit, recnum);
+    return new StandardPointFeature(cursor, timeUnit, recnum);
   }
 
   private class StandardPointFeature extends PointFeatureImpl {
     protected int id;
-    protected StructureData[] tableData;
+    protected Cursor cursor;
 
-    // one could use an opaque object here instead of List<StructureData> sdataList
-    public StandardPointFeature(StructureData[] tableData, DateUnit timeUnit, int id) {
+    public StandardPointFeature(Cursor cursor, DateUnit timeUnit, int id) {
       super( timeUnit);
-      this.tableData = new StructureData[ tableData.length]; // must keep own copy, since sdata is changing each time
-      System.arraycopy(tableData, 0, this.tableData, 0, tableData.length);
+      this.cursor = cursor.copy(); // must keep own copy, since sdata is changing each time
       this.id = id;
 
-      obsTime = ft.getObsTime( this.tableData);
-      nomTime = ft.getNomTime( this.tableData);
+      obsTime = ft.getObsTime( this.cursor);
+      nomTime = ft.getNomTime( this.cursor);
       if (Double.isNaN(nomTime)) nomTime = obsTime;
-      location = ft.getEarthLocation( this.tableData);
+      location = ft.getEarthLocation( this.cursor);
     }
 
     public Object getId() {
@@ -75,7 +73,7 @@ public class StandardPointFeatureIterator extends PointIteratorImpl {
     }
 
     public StructureData getData() {
-      return ft.makeObsStructureData( tableData);
+      return ft.makeObsStructureData( cursor);
     }
   }
 

@@ -23,6 +23,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
+import ucar.nc2.Structure;
+import ucar.nc2.Attribute;
 
 import java.util.Formatter;
 
@@ -71,6 +73,24 @@ public class Evaluator {
         errlog.format(" Cant find Variable %s from %s\n", vs, key);
     }
     return v == null ? null : v.getShortName();
+  }
+
+  static public String getVariableWithAttribute(NetcdfDataset ds, String attName, String attValue) {
+    for (Variable v : ds.getVariables()) {
+      String stdName = ds.findAttValueIgnoreCase(v, attName, null);
+      if ((stdName != null) && stdName.equals(attValue))
+        return v.getName();
+    }
+    return null;
+  }
+
+  static public String getVariableWithAttribute(Structure struct, String attName, String attValue) {
+    for (Variable v : struct.getVariables()) {
+      Attribute att = v.findAttributeIgnoreCase(attName);
+      if ((att != null) && att.getStringValue().equals(attValue))
+        return v.getShortName();
+    }
+    return null;
   }
 
   static public Dimension getDimension(NetcdfDataset ds, String key, Formatter errlog) {

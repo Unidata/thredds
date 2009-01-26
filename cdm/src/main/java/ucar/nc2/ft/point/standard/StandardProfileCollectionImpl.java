@@ -39,7 +39,6 @@ import ucar.nc2.ft.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -97,24 +96,24 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     }
 
     public ProfileFeature next() throws IOException {
-      StructureData[] tableData = new StructureData[ ft.getNumberOfLevels()];
-      tableData[1] = structIter.next();
-      return new StandardProfileFeature(tableData);
+      Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor.tableData[1] = structIter.next();
+      return new StandardProfileFeature(cursor);
     }
 
     public void setBufferSize(int bytes) { }
   }
 
   private class StandardProfileFeature extends ProfileFeatureImpl {
-    StructureData[] tableData;
-    StandardProfileFeature( StructureData[] tableData) {
-      super(ft.getFeatureName(tableData[1]), ft.getLatitude(tableData), ft.getLongitude(tableData), -1);
-      this.tableData = tableData;
+    Cursor cursor;
+    StandardProfileFeature( Cursor cursor) {
+      super( ft.getFeatureName(cursor.tableData[1]), ft.getLatitude(cursor), ft.getLongitude(cursor), -1);
+      this.cursor = cursor;
     }
 
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureDataIterator siter = ft.getFeatureObsDataIterator( tableData[1], bufferSize);
-      return new StandardPointFeatureIterator(ft, timeUnit, siter, tableData, false);
+      StructureDataIterator siter = ft.getFeatureObsDataIterator( cursor.tableData[1], bufferSize);
+      return new StandardPointFeatureIterator(ft, timeUnit, siter, cursor, false);
     }
   }
 

@@ -22,7 +22,6 @@ package ucar.nc2.ft.point.standard;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.units.DateUnit;
-import ucar.ma2.StructureData;
 
 import java.io.IOException;
 
@@ -43,7 +42,7 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
     // only one List object needed - it will be used for each iteration with different structData's
-    StructureData[] tableData = new StructureData[ ft.getNumberOfLevels()];
+    Cursor tableData = new Cursor(ft.getNumberOfLevels());
     boolean calcBB = (boundingBox == null) || (dateRange == null);
 
     return new TableIterator( ft.getObsDataIterator(bufferSize), tableData, calcBB);
@@ -52,7 +51,7 @@ public class StandardPointCollectionImpl extends PointCollectionImpl {
   // the iterator over the observations
   private class TableIterator extends ucar.nc2.ft.point.standard.StandardPointFeatureIterator {
 
-    TableIterator(ucar.ma2.StructureDataIterator structIter, StructureData[] tableData, boolean calcBB) throws IOException {
+    TableIterator(ucar.ma2.StructureDataIterator structIter, Cursor tableData, boolean calcBB) throws IOException {
       super( ft, timeUnit, structIter, tableData, calcBB);
     }
 

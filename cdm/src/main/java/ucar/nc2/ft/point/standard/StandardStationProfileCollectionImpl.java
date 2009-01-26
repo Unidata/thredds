@@ -29,14 +29,15 @@ import ucar.ma2.StructureDataIterator;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Object Heirarchy:
- *   StationProfileFeatureCollection (StandardStationProfileCollectionImpl)
- *     StationProfileFeature (StandardStationProfileFeature)
- *       ProfileFeature (StandardProfileFeature)
- *       PointFeatureIterator (StandardPointFeatureIterator)
- *         PointFeature
+ * StationProfileFeatureCollection (StandardStationProfileCollectionImpl)
+ * StationProfileFeature (StandardStationProfileFeature)
+ * ProfileFeature (StandardProfileFeature)
+ * PointFeatureIterator (StandardPointFeatureIterator)
+ * PointFeature
  *
  * @author caron
  * @since Mar 28, 2008
@@ -50,35 +51,38 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     super(ft.getName());
     this.ft = ft;
     this.timeUnit = timeUnit;
+  }
 
-    StructureDataIterator siter = ft.getStationDataIterator(-1);
-    while (siter.hasNext()) {
-      StructureData stationData = siter.next();
-      stationHelper.addStation( makeStation(stationData));
+  protected void initStations() {
+    if (stationHelper != null) return;
+    stationHelper = new StationHelper();
+
+    try {
+      List<Station> stnList = ft.makeStations(-1);
+      for (Station s : stnList) {
+        stationHelper.addStation(new StandardStationProfileFeature(s, null));
+      }
+    } catch (IOException ioe) {
+      throw new RuntimeException("Failed to init stations", ioe);
     }
   }
 
-  private StandardStationProfileFeature makeStation(StructureData stationData) {
-    Station s = ft.makeStation(stationData);
-    return new StandardStationProfileFeature(s, stationData);
-  }
-
+  // iterate over stations
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
     return new NestedPointFeatureCollectionIterator() {
-
-      private Iterator iter = stationHelper.getStations().iterator();
-
-      public boolean hasNext() throws IOException { return iter.hasNext(); }
-
+      private Iterator iter = getStations().iterator();
+      public boolean hasNext() throws IOException {
+        return iter.hasNext();
+      }
       public NestedPointFeatureCollection next() throws IOException {
         return (StandardStationProfileFeature) iter.next();
       }
-
-      public void setBufferSize(int bytes) {}
+      public void setBufferSize(int bytes) {
+      }
     };
   }
 
-  // a station profile - time series of profiles at one station
+  // a time series of profiles at one station
   private class StandardStationProfileFeature extends StationProfileFeatureImpl {
     Station s;
     StructureData stationData;
@@ -89,60 +93,72 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       this.stationData = stationData;
     }
 
+    // iterate over series of profiles
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
-      return new PointFeatureCollectionIterator() {
+      Cursor cursor = new Cursor(ft.getNumberOfLevels());
+      cursor.what = s;
+      cursor.tableData[2] = stationData; // obs(leaf) = 0, profile=1, station(root)=2
+      return new StandardStationProfileFeatureIterator(cursor);
+    }
 
-        private ucar.ma2.StructureDataIterator iter = ft.getStationProfileDataIterator(stationData, -1);
-        private int count = 0;
+    private class StandardStationProfileFeatureIterator implements PointFeatureCollectionIterator {
+      Cursor cursor;
+      private ucar.ma2.StructureDataIterator iter;
+      private int count = 0;
 
-        public boolean hasNext() throws IOException {
-          boolean r = iter.hasNext();
-          if (!r)
-            timeSeriesNpts = count; // field in StationProfileFeatureImpl
-          count++;
-          return r;
-        }
+      StandardStationProfileFeatureIterator(Cursor cursor) throws IOException {
+        this.cursor = cursor;
+        iter = ft.getStationProfileDataIterator(cursor, -1);
+      }
 
-        public PointFeatureCollection next() throws IOException {
-          StructureData[] parents = new StructureData[3];
-          parents[1] = iter.next();
-          parents[2] = stationData; // obs(leaf) = 0, profile=1, station(root)=2
+      public boolean hasNext() throws IOException {
+        boolean r = iter.hasNext();
+        if (!r)
+          timeSeriesNpts = count; // field in StationProfileFeatureImpl
+        count++;
+        return r;
+      }
 
-          double time = ft.getObsTime(parents);
-          return new StandardProfileFeature(s, timeUnit.makeDate(time), parents);
-        }
+      public PointFeatureCollection next() throws IOException {
+        cursor.tableData[1] = iter.next();
 
-        public void setBufferSize(int bytes) { iter.setBufferSize(bytes); }
-      };
+        double time = ft.getObsTime(cursor);
+        return new StandardProfileFeature(s, timeUnit.makeDate(time), cursor);
+      }
+
+      public void setBufferSize(int bytes) {
+        iter.setBufferSize(bytes);
+      }
     }
   }
 
   // one profile
   private class StandardProfileFeature extends ProfileFeatureImpl {
-    private StructureData[] parents;
+    private Cursor cursor;
     private String desc;
 
-    StandardProfileFeature(Station s, Date time, StructureData[] parents) throws IOException {
+    StandardProfileFeature(Station s, Date time, Cursor cursor) throws IOException {
       super(dateFormatter.toDateTimeStringISO(time), s.getLatitude(), s.getLongitude(), -1);
-      this.parents = parents;
-      this.desc = "time="+time+"stn="+s.getDescription();
+      this.cursor = cursor;
+      this.desc = "time=" + time + "stn=" + s.getDescription();
     }
 
     public String getDescription() {
       return desc;
     }
 
+    // iterate over obs in the profile
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-      StructureDataIterator structIter = ft.getStationProfileObsDataIterator(parents, bufferSize);
-      return new StandardStationProfilePointIterator(structIter, parents);
+      StructureDataIterator structIter = ft.getStationProfileObsDataIterator(cursor, bufferSize);
+      return new StandardStationProfilePointIterator(structIter, cursor.copy());
     }
 
-      // the iterator over the observations
+    // the iterator over the observations
     private class StandardStationProfilePointIterator extends StandardPointFeatureIterator {
       StationFeatureImpl station;
 
-      StandardStationProfilePointIterator(StructureDataIterator structIter, StructureData[] parents) throws IOException {
-        super(ft, timeUnit, structIter, parents, false);
+      StandardStationProfilePointIterator(StructureDataIterator structIter, Cursor cursor) throws IOException {
+        super(ft, timeUnit, structIter, cursor, false);
       }
 
       // decorate to capture npts
@@ -150,7 +166,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       public boolean hasNext() throws IOException {
         boolean result = super.hasNext();
         if (!result)
-          setNumberPoints( getCount());
+          setNumberPoints(getCount());
         return result;
       }
     }

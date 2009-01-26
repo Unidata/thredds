@@ -40,11 +40,6 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
 
   public StationTimeSeriesCollectionImpl(String name) {
     super( name, FeatureType.STATION);
-    stationHelper = new StationHelper();
-  }
-
-  protected void setStationHelper(StationHelper stationHelper) {
-    this.stationHelper = stationHelper;
   }
 
   public List<Station> getStations() {

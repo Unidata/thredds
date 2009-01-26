@@ -26,6 +26,7 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CF;
 import ucar.ma2.*;
 
 import java.util.*;
@@ -91,8 +92,11 @@ class ConstructNC {
 
     ncfile.addAttribute(null, new Attribute("Conventions", "BUFR/CDM"));
 
-    //if (ftype != null)
-    //  ncfile.addAttribute(null, new Attribute("cdm_data_type", ftype.toString()));
+    if (ftype != null) {
+      CF.FeatureType cf = CF.FeatureType.convert( ftype);
+      if (ftype != null)
+        ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, cf.toString()));
+    }
 
     makeObsRecord();
     //makeReportIndexStructure();
@@ -353,12 +357,16 @@ class ConstructNC {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     }
 
-    if (id.equals("0-7-6")) {
+    if (id.equals("0-7-6") || id.equals("0-7-7")) { // LOOK : height above station ??
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     }
 
     if (id.equals("0-1-7") || id.equals("0-1-11")|| id.equals("0-1-18")) {
       v.addAttribute(new Attribute("standard_name", "station_name"));
+    }
+
+    if (id.equals("0-1-2")) {
+      v.addAttribute(new Attribute("standard_name", "wmo_station"));
     }
 
   }
@@ -430,7 +438,7 @@ class ConstructNC {
   }
 
   // not currently used
-  static public String identifyCoords(String val) {
+  static private String identifyCoords(String val) {
     if (val.equals("0-5-1") || val.equals("0-5-2"))
       return AxisType.Lat.toString();
 

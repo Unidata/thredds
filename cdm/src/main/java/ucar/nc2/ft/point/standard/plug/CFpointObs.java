@@ -24,6 +24,7 @@ import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.ft.point.standard.CoordSysEvaluator;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants.CF;
 
 import java.util.*;
 
@@ -34,16 +35,14 @@ import java.util.*;
  * @since Nov 3, 2008
  */
 public class CFpointObs extends TableConfigurerImpl {
-  public enum CFFeatureType { point, station, trajectory }
-  private final String CFfeatureType = "CFfeatureType";
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     // find datatype
-    String datatype = ds.findAttValueIgnoreCase(null, CFfeatureType, null);
+    String datatype = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
     if (datatype == null)
       return false;
 
-    if (CFFeatureType.valueOf(datatype) == null)
+    if (CF.FeatureType.valueOf(datatype) == null)
       return false;
 
     String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
@@ -61,18 +60,20 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
-    String ftypeS = ds.findAttValueIgnoreCase(null, CFfeatureType, null);
-    CFFeatureType ftype = (ftypeS == null) ? CFFeatureType.point : CFFeatureType.valueOf(ftypeS);
+    String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
+    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
     switch (ftype) {
       case point: return getPointConfig(ds, errlog);
       case station: return getStationConfig(ds, errlog);
+      case profile: return getProfileConfig(ds, errlog);
       case trajectory: return getTrajectoryConfig(ds, errlog);
+      case stationProfile: return getStationProfileConfig(ds, errlog);
       default:
         throw new IllegalStateException("invalid ftype= "+ftype);
     }
   }
 
-  private TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
+  protected TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(Table.Type.Structure, "record");
     nt.featureType = FeatureType.POINT;
     CoordSysEvaluator.findCoords(nt, ds);
@@ -80,14 +81,14 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   // ??
-  private TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
+  protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(Table.Type.Singleton, "station");
     nt.featureType = FeatureType.STATION;
 
     nt.lat = Evaluator.getVariableName(ds, "latitude", errlog);
     nt.lon = Evaluator.getVariableName(ds, "longitude", errlog);
 
-    nt.stnId = Evaluator.getVariableName(ds, "stn", errlog);
+    nt.stnId = Evaluator.getVariableWithAttribute(ds, "standard_name", "station_name");
     //nt.stnDesc = Evaluator.getVariableName(ds, ":description", errlog);
 
     TableConfig obs = new TableConfig(Table.Type.Structure, "record");
@@ -98,7 +99,11 @@ public class CFpointObs extends TableConfigurerImpl {
     return nt;
   }
 
-  private TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
+  protected TableConfig getProfileConfig(NetcdfDataset ds, Formatter errlog) {
+    return null;
+  }
+
+  protected TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(Table.Type.MultiDim, "trajectory");
     nt.featureType = FeatureType.TRAJECTORY;
 
@@ -112,4 +117,7 @@ public class CFpointObs extends TableConfigurerImpl {
     return nt;
   }
 
+  protected TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) {
+    return null;
+  }
 }
