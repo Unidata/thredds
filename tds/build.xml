@@ -125,7 +125,7 @@
       <!-- include name="${gnu-regexp.jar}"/ -->
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
-      <!-- include name="${loggingAPI.jar}"/ -->
+      <include name="${loggingAPI.jar}"/>
       <include name="${nlog4j.jar}"/>
       <include name="${spring.jar}"/>
       <include name="${spring-webmvc.jar}"/>
