@@ -91,6 +91,7 @@ public class Madis  extends TableConfigurerImpl  {
     // points
     // if ((wantFeatureType == FeatureType.POINT) || (ft == FeatureType.POINT)) {
       TableConfig ptTable = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
+      ptTable.structName = "record";
       ptTable.featureType = FeatureType.POINT;
       ptTable.isPsuedoStructure = isPsuedo;
 

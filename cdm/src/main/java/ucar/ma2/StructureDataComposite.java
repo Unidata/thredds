@@ -37,7 +37,7 @@ import java.util.HashMap;
 
 /**
  * A composite of other StructureData.
- * Could probably done with a dynamic proxy.
+ * If multiple of same name, first one is used
  *
  * @author caron
  * @since Jan 21, 2009
@@ -51,8 +51,10 @@ public class StructureDataComposite extends StructureData {
 
   public void add(StructureData sdata) {
     for (StructureMembers.Member m : sdata.getMembers()) {
-      proxy.put(m, sdata);
-      this.members.addMember(m);
+      if (this.members.findMember(m.getName()) == null) {
+        this.members.addMember(m);
+        proxy.put(m, sdata);
+      }
     }
   }
 

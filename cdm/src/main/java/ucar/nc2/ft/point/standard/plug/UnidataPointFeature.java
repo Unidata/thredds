@@ -76,6 +76,7 @@ public class UnidataPointFeature  extends TableConfigurerImpl  {
     // nt.as = makeIndex(ds);
 
     TableConfig obs = new TableConfig(Table.Type.Structure, "obsRecord");
+    obs.structName = "record";
     obs.dim = Evaluator.getDimension(ds, "record", errlog);
 
     obs.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat);
@@ -90,6 +91,7 @@ public class UnidataPointFeature  extends TableConfigurerImpl  {
     nt.addChild(obs);
 
     TableConfig levels = new TableConfig(Table.Type.Structure, "seq1");
+    levels.structName = "seq1";
     levels.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height);
     //levels.join = new TableConfig.JoinConfig(Join.Type.NestedStructure);
 

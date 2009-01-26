@@ -34,7 +34,6 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
 import ucar.nc2.ft.point.StructureDataIteratorLinked;
-import ucar.nc2.ft.Station;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.*;
@@ -57,7 +56,7 @@ public abstract class Table {
   }
 
   public enum Type {
-    ArrayStructure, Construct, Contiguous, LinkedList, MultiDim, NestedStructure, Singleton, Structure, Top
+    ArrayStructure, Construct, Contiguous, LinkedList, MultiDimInner, MultiDimOuter, NestedStructure, Singleton, Structure, Top
   }
 
   public static Table factory(NetcdfDataset ds, TableConfig config) {
@@ -76,8 +75,11 @@ public abstract class Table {
       case LinkedList:
         return new TableLinkedList(ds, config);
 
-      case MultiDim:
-        return new TableMultiDim(ds, config);
+      case MultiDimInner:
+        return new TableMultiDimInner(ds, config);
+
+      case MultiDimOuter:
+        return new TableMultiDimOuter(ds, config);
 
       case NestedStructure:
         return new TableNestedStructure(ds, config);
@@ -172,29 +174,18 @@ public abstract class Table {
       if (config.isPsuedoStructure) {
         this.dim = config.dim;
         assert dim != null;
-
-        struct = new StructurePseudo(ds, null, config.name, config.dim);
-        for (Variable v : struct.getVariables())
-          this.cols.add(v);
+        struct = new StructurePseudo(ds, null, config.structName, config.dim);
 
       } else {
-
-        /* if ((config.parent != null) && (config.parent.type == Table.Type.Structure)) {
-         Structure parent = (Structure) ds.findVariable(config.parent.name);
-         struct = (Structure) parent.findVariable(config.name);
-       } else {
-         struct = (Structure) ds.findVariable(config.name);
-       } */
-
-        struct = (Structure) ds.findVariable(config.name);
+        struct = (Structure) ds.findVariable(config.structName);
         if (struct == null)
-          throw new IllegalStateException("Cant find Structure " + config.name);
+          throw new IllegalStateException("Cant find Structure " + config.structName);
 
         dim = struct.getDimension(0);
-        for (Variable v : struct.getVariables())
-          this.cols.add(v);
       }
 
+      for (Variable v : struct.getVariables())
+        this.cols.add(v);
     }
 
     @Override
@@ -291,12 +282,22 @@ public abstract class Table {
   }
 
   ///////////////////////////////////////////////////////
-  public static class TableMultiDim extends Table {
+  public static class TableMultiDimOuter extends Table.TableStructure {
+
+    TableMultiDimOuter(NetcdfDataset ds, TableConfig config) {
+      super(ds, config);
+    }
+  }
+
+  ///////////////////////////////////////////////////////
+  public static class TableMultiDimInner extends Table {
     StructureMembers sm; // MultiDim
     Dimension dim;
+    NetcdfDataset ds;
 
-    TableMultiDim(NetcdfDataset ds, TableConfig config) {
+    TableMultiDimInner(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
+      this.ds = ds;
       this.dim = config.dim;
       assert dim != null;
 
@@ -317,6 +318,11 @@ public abstract class Table {
     @Override
     public String showDimension() {
       return dim.getName();
+    }
+
+    @Override
+    public Variable findVariable(String axisName) {
+      return ds.findVariable(axisName);
     }
 
     public StructureDataIterator getStructureDataIterator(StructureData parentStruct, int bufferSize) throws IOException {
@@ -490,6 +496,7 @@ public abstract class Table {
     if (v.equals(stnDesc)) return "[stnDesc]";
     if (v.equals(stnNpts)) return "[stnNpts]";
     if (v.equals(stnWmoId)) return "[stnWmoId]";
+    if (v.equals(stnAlt)) return "[stnAlt]";
     if (v.equals(limit)) return "[limit]";
 
     return "";
@@ -506,6 +513,7 @@ public abstract class Table {
     gotSome |= showCoord(out, stnDesc, indent);
     gotSome |= showCoord(out, stnNpts, indent);
     gotSome |= showCoord(out, stnWmoId, indent);
+    gotSome |= showCoord(out, stnAlt, indent);
     gotSome |= showCoord(out, limit, indent);
     if (gotSome) out.format("\n");
   }

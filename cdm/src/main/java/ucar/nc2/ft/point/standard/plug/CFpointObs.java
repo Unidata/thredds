@@ -75,6 +75,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   protected TableConfig getPointConfig(NetcdfDataset ds, Formatter errlog) {
     TableConfig nt = new TableConfig(Table.Type.Structure, "record");
+    nt.structName = "record";
     nt.featureType = FeatureType.POINT;
     CoordSysEvaluator.findCoords(nt, ds);
     return nt;
@@ -92,6 +93,7 @@ public class CFpointObs extends TableConfigurerImpl {
     //nt.stnDesc = Evaluator.getVariableName(ds, ":description", errlog);
 
     TableConfig obs = new TableConfig(Table.Type.Structure, "record");
+    obs.structName = "record";
     obs.dim = Evaluator.getDimension(ds, "time", errlog);
     obs.time = Evaluator.getVariableName(ds, "time", errlog);
     nt.addChild(obs);
@@ -104,12 +106,12 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   protected TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
-    TableConfig nt = new TableConfig(Table.Type.MultiDim, "trajectory");
+    TableConfig nt = new TableConfig(Table.Type.MultiDimOuter, "trajectory"); // LOOK
     nt.featureType = FeatureType.TRAJECTORY;
 
     CoordSysEvaluator.findCoords(nt, ds);
 
-    TableConfig obs = new TableConfig(Table.Type.MultiDim, "record");
+    TableConfig obs = new TableConfig(Table.Type.MultiDimInner, "record");
     obs.dim = ds.findDimension("sample");
     obs.outer = ds.findDimension("traj");
     nt.addChild(obs);

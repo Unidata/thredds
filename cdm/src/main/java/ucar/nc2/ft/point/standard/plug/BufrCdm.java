@@ -37,6 +37,7 @@ import ucar.nc2.ft.Station;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Structure;
 import ucar.ma2.StructureDataIterator;
@@ -49,10 +50,11 @@ import java.io.IOException;
 
 /**
  * BUFR datasets
+ *
  * @author caron
  * @since Jan 24, 2009
  */
-public class BufrCdm extends CFpointObs {
+public class BufrCdm extends TableConfigurerImpl {
   private final String BufrConvention = "BUFR/CDM";
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
@@ -68,6 +70,41 @@ public class BufrCdm extends CFpointObs {
     }
     return false;
   }
+
+  public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
+    String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
+    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
+    switch (ftype) {
+     /*  case point:
+        return getPointConfig(ds, errlog);
+      case station:
+        return getStationConfig(ds, errlog);
+      case profile:
+        return getProfileConfig(ds, errlog);   */
+      case trajectory:
+        return getTrajectoryConfig(ds, errlog);
+      case stationProfile:
+        return getStationProfileConfig(ds, errlog);
+      default:
+        throw new IllegalStateException("invalid ftype= " + ftype);
+    }
+  }
+
+  protected TableConfig getTrajectoryConfig(NetcdfDataset ds, Formatter errlog) {
+
+    // the profile values are the inner sequence
+    TableConfig obsTable = new TableConfig(Table.Type.Structure, "obsRecord");
+    Structure obsStruct = (Structure) ds.findVariable("obsRecord");
+    obsTable.structName = obsStruct.getName();
+    obsTable.nestedTableName = obsStruct.getShortName();
+    obsTable.lat = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+    obsTable.lon = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+    obsTable.elev = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
+    obsTable.time = Evaluator.getVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Time.toString());
+
+    return obsTable;
+  }
+
 
   protected TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) {
     // construct the station table by reading through the timeseries
@@ -87,6 +124,7 @@ public class BufrCdm extends CFpointObs {
     // the time series is just the outer structure
     TableConfig timeseriesTable = new TableConfig(Table.Type.Structure, "obsRecord");
     timeseriesTable.time = Evaluator.getVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Time.toString());
+    timeseriesTable.structName = "obsRecord";
     stnTable.addChild(timeseriesTable);
 
     // the profile values are the inner sequence

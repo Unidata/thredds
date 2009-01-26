@@ -88,6 +88,7 @@ public class Ndbc extends TableConfigurerImpl  {
     // wants a Point
     if ((wantFeatureType == FeatureType.POINT)) {
       TableConfig nt = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
+      nt.structName = "record";
       nt.isPsuedoStructure = isPsuedo;
       nt.featureType = FeatureType.POINT;
       CoordSysEvaluator.findCoords(nt, ds);
@@ -107,6 +108,7 @@ public class Ndbc extends TableConfigurerImpl  {
       nt.stnDesc = ds.findAttValueIgnoreCase(null, "comment", null);
 
     TableConfig obs = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
+    obs.structName = "record";
     obs.isPsuedoStructure = isPsuedo;
     obs.dim = obsDim;
     obs.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
