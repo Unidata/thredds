@@ -3,6 +3,7 @@
 package thredds.cataloggen.config;
 
 import thredds.catalog.*;
+import thredds.util.DodsURLExtractor;
 
 import java.util.List;
 import java.util.ArrayList;

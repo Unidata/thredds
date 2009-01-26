@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import thredds.cataloggen.config.DodsURLExtractor;
+import thredds.util.DodsURLExtractor;
 
 /**
  * A description

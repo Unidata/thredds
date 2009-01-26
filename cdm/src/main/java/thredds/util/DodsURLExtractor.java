@@ -1,7 +1,7 @@
 // Sample code from John that parses HTML and looks for URLs
 
 
-package thredds.cataloggen.config;
+package thredds.util;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.MutableAttributeSet;
