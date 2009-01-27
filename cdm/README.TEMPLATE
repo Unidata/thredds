@@ -19,20 +19,26 @@ DISTRIBUTIONS
   javadocAll.jar              complete javadoc
 
 OPTIONAL LIBRARIES
+  bufr.jar                    required to read BUFR files
   commons-httpclient          required to read files remotely over HTTP
   commons-logging, codec      required by commons-httpclient
-  grib.jar                    required to read Grib-1 or Grib-2 datasets
+  grib.jar                    required to read GRIB-1 or GRIB-2 files
   jdom.jar                    required to read thredds catalogs, and read NcML
-  jpeg2000.jar                required to read Grib-2 JPEG2000 compressed files
-  log4j.jar                   log4j logging.
-  nlog4j.jar                  slf4j + log4j logging.
-  slf4f-api.jar               slf4j API
-  slf4f-jdk14.jar             slf4j interface using JDK logging.
-  slf4f-log4j12.jar           slf4j interface using loj4j version 12 logging.
+  jpeg2000.jar                required to read GRIB-2 JPEG2000 compressed files
+  opendap.jar                 required to read files remotely over OPeNDAP
+  stax.jar                    needed for STAX parsing (pre JDK 1.6)
   visadNoDods.jar             required to read ADDE datasets.
 
-RELATED UI LIBRARIES
+LOGGING LIBRARIES
+  log4j.jar                   log4j logging.
+  nlog4j.jar                  slf4j API + log4j logging.
+  slf4j-api.jar               slf4j API
+  slf4j-jdk14.jar             slf4j interface using JDK logging.
+  slf4j-log4j12.jar           slf4j interface using loj4j version 12 logging.
+
+ToolsUI LIBRARIES
   forms.jar                   jgoodies form library
+  lucene.jar                  ??
   resourcesOptional.jar       optional detailed maps and tables
   spring.jar                  spring lightweight framework
 

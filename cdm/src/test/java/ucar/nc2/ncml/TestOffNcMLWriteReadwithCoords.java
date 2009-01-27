@@ -57,7 +57,7 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
   }
 
   public void testOne() throws Exception  {
-    convertAsNcdataset(TestAll.upcShareTestDataDir + "radar/nexrad/level2/6500KHGX20000610_000110.Z");
+    convertAsNcdataset(TestAll.upcShareTestDataDir + "radar/nexrad/level2/6500KHGX20000610_000110");
   }
 
   private void convertAsNcdataset(String location) throws IOException {

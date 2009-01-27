@@ -31,7 +31,6 @@ import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
 import thredds.catalog.InvCatalogRef;
-import thredds.catalog2.CatalogRef;
 
 
 /**

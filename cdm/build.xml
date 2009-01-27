@@ -244,7 +244,7 @@
     <include name="thredds/catalog/query/*.java"/>
     <include name="thredds/cataloggen/**/*.java"/>
     <include name="thredds/crawlabledataset/**/*.java"/>
-    <include name="thredds/catalog2/**/*.java"/>
+    <exclude name="thredds/catalog2/**/*.java"/>
     <include name="thredds/wcs/**/*.java"/>
     <!-- *** -->
     <include name="ucar/**/*.java"/>
@@ -754,7 +754,6 @@
   <target name="release" description="Release library and source jar files to release directory: do 'ant dist' first">
     <copy todir="${release.library.dir}" overwrite="true">
       <fileset dir="${build.dir}" includes="${jarCore}"/>
-      <fileset dir="${build.dir}" includes="${jarCoreComplete}"/>
       <fileset dir="${build.dir}" includes="${jarMain}"/>
       <fileset dir="${build.dir}" includes="${jarMainComplete}"/>
       <fileset dir="${build.dir}" includes="${ncSrcRelease.jar}"/>
