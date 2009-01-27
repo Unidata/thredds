@@ -140,6 +140,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     // new
     registerConvention("NSSL National Reflectivity Mosaic", NsslRadarMosaicConvention.class, null);
     registerConvention("FslWindProfiler", FslWindProfiler.class, null);
+    registerConvention("ModisSatellite", ModisSatellite.class, null);
 
     // further calls to registerConvention are by the user
     userMode = true;

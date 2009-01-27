@@ -933,6 +933,37 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return attValue;
   }
 
+  public double readAttributeDouble(Variable v, String attName, double defValue) {
+    Attribute att;
+
+    if (v == null)
+      att = rootGroup.findAttributeIgnoreCase(attName);
+    else
+      att = v.findAttributeIgnoreCase(attName);
+
+    if (att == null) return defValue;
+    if (att.isString())
+      return Double.parseDouble(att.getStringValue());
+    else
+      return att.getNumericValue().doubleValue();
+  }
+
+  public int readAttributeInteger(Variable v, String attName, int defValue) {
+    Attribute att;
+
+    if (v == null)
+      att = rootGroup.findAttributeIgnoreCase(attName);
+    else
+      att = v.findAttributeIgnoreCase(attName);
+
+    if (att == null) return defValue;
+    if (att.isString())
+      return Integer.parseInt(att.getStringValue());
+    else
+      return att.getNumericValue().intValue();
+  }
+
+
   //////////////////////////////////////////////////////////////////////////////////////
 
   /**

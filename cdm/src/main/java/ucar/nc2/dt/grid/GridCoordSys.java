@@ -80,7 +80,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   public static boolean isGridCoordSys(Formatter sbuff, CoordinateSystem cs) {
     if (cs.getRankDomain() < 2) {
       if (sbuff != null) {
-        sbuff.format("%s: domain rank < 2\n", cs.getName());
+        sbuff.format("%s: domain rank < 2%n", cs.getName());
       }
       return false;
     }
@@ -89,13 +89,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       // do check for GeoXY ourself
       if ((cs.getXaxis() == null) || (cs.getYaxis() == null)) {
         if (sbuff != null) {
-          sbuff.format("%s: NO Lat,Lon or X,Y axis\n", cs.getName());
+          sbuff.format("%s: NO Lat,Lon or X,Y axis%n", cs.getName());
         }
         return false;
       }
       if (null == cs.getProjection()) {
         if (sbuff != null) {
-          sbuff.format("%s: NO projection found\n", cs.getName());
+          sbuff.format("%s: NO projection found%n", cs.getName());
         }
         return false;
       }
@@ -111,13 +111,13 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       if (!(p instanceof RotatedPole)) {
         if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
           if (sbuff != null) {
-            sbuff.format("%s: X axis units are not convertible to km\n", cs.getName());
+            sbuff.format("%s: X axis units are not convertible to km%n", cs.getName());
           }
           //return false;
         }
         if (!SimpleUnit.kmUnit.isCompatible(yaxis.getUnitsString())) {
           if (sbuff != null) {
-            sbuff.format("%s: Y axis units are not convertible to km\n", cs.getName());
+            sbuff.format("%s: Y axis units are not convertible to km%n", cs.getName());
           }
           //return false;
         }
@@ -130,7 +130,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     // check ranks
     if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
       if (sbuff != null) {
-        sbuff.format("%s: X or Y axis rank must be <= 2\n", cs.getName());
+        sbuff.format("%s: X or Y axis rank must be <= 2%n", cs.getName());
       }
       return false;
     }
@@ -142,30 +142,28 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if ((z == null) || !(z instanceof CoordinateAxis1D)) z = cs.getZaxis();
     if ((z != null) && !(z instanceof CoordinateAxis1D)) {
       if (sbuff != null) {
-        sbuff.format("%s: Z axis must be 1D\n", cs.getName());
+        sbuff.format("%s: Z axis must be 1D%n", cs.getName());
       }
       return false;
     }
 
     CoordinateAxis t = cs.getTaxis();
-    if ((t != null) && !(t instanceof CoordinateAxis1D)) {
+    if ((t != null) && !(t instanceof CoordinateAxis1D) && (t.getRank() != 0)) {
       CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
       if (rt == null) {
-        if (sbuff != null) {
-          sbuff.format("%s: T axis must be 1Dn", cs.getName());
-        }
+        if (sbuff != null) sbuff.format("%s: T axis must be 1D%n", cs.getName());
         return false;
       }
       if (!(rt instanceof CoordinateAxis1D)) {
         if (sbuff != null) {
-          sbuff.format("%s: RunTime axis must be 1D\n", cs.getName());
+          sbuff.format("%s: RunTime axis must be 1D%n", cs.getName());
         }
         return false;
       }
 
       if (t.getRank() != 2) {
         if (sbuff != null) {
-          sbuff.format("%s: Time axis must be 2D when used with RunTime dimension\n", cs.getName());
+          sbuff.format("%s: Time axis must be 2D when used with RunTime dimension%n", cs.getName());
         }
         return false;
       }
@@ -176,7 +174,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
       if (!rtdim.equals(tdim)) {
         if (sbuff != null) {
-          sbuff.format("%s: Time axis must use RunTime dimension\n", cs.getName());
+          sbuff.format("%s: Time axis must use RunTime dimension%n", cs.getName());
         }
         return false;
       }

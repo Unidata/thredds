@@ -116,7 +116,7 @@ public class NestedTable {
 
     // check for singleton
     if (((nlevels == 1) && (featureType == FeatureType.STATION) || (featureType == FeatureType.PROFILE) || (featureType == FeatureType.TRAJECTORY)) ||
-        ((nlevels == 2) && (featureType == FeatureType.STATION_PROFILE) || (featureType == FeatureType.SECTION))) {
+            ((nlevels == 2) && (featureType == FeatureType.STATION_PROFILE) || (featureType == FeatureType.SECTION))) {
 
       // singleton. use file name as feature name, so aggregation will work
       StructureData sdata = StructureDataFactory.make(featureVariableName, ds.getLocation());
@@ -148,7 +148,13 @@ public class NestedTable {
     if (axisName != null) {
       Variable v = t.findVariable(axisName);
       if (v != null)
-        return new CoordVarExtractor(v, axisName, nestingLevel);
+        return new CoordVarExtractorVariable(v, axisName, nestingLevel);
+
+      // see if its in the StructureData
+      if (t instanceof Table.TableSingleton) {
+        Table.TableSingleton ts = (Table.TableSingleton) t;
+        return new CoordVarStructureData(axisName, ts.sdata);
+      }
 
       // see if its at the top level
       if (t instanceof Table.TableTop) {
@@ -157,7 +163,7 @@ public class NestedTable {
         if (v != null)
           return new CoordVarTop(v);
         else
-          return new CoordVarConstant(axisName); // assume its the actual value
+          return new CoordVarConstant(coordName.toString(), "", axisName); // assume its the actual value
       }
 
       errlog.format("NestedTable: cant find variable %s for coordinate type " + axisName, coordName);
@@ -168,25 +174,15 @@ public class NestedTable {
   }
 
   // knows how to get specific coordinate data from a table or its parents
-  private class CoordVarExtractor {
+  private class CoordVarExtractorVariable extends CoordVarExtractor {
     protected Variable coordVar;
-    private String axisName;
-    private int nestingLevel;       // leaf == 0, each parent adds one
 
-    CoordVarExtractor() {
-    }
-
-    CoordVarExtractor(Variable v, String axisName, int nestingLevel) {
+    CoordVarExtractorVariable(Variable v, String axisName, int nestingLevel) {
+      super(axisName, nestingLevel);
       this.coordVar = v;
-      this.axisName = axisName;
-      this.nestingLevel = nestingLevel;
     }
 
-    double getCoordValue(StructureData[] tableData) {
-      return getCoordValue(tableData[nestingLevel]);
-    }
-
-    String getCoordValueString(StructureData sdata) {
+    public String getCoordValueString(StructureData sdata) {
       if (coordVar.getDataType().isString())
         return sdata.getScalarString(axisName);
       else if (coordVar.getDataType().isIntegral())
@@ -195,65 +191,110 @@ public class NestedTable {
         return Double.toString(sdata.convertScalarDouble(axisName));
     }
 
-    double getCoordValue(StructureData sdata) {
+    public String getUnitsString() {
+      return coordVar.getUnitsString();
+    }
+
+    public boolean isString() {
+      return coordVar.getDataType().isString();
+    }
+
+    public double getCoordValue(StructureData sdata) {
       return sdata.convertScalarDouble(axisName);
-    }
-
-    String getCoordValueString(StructureData[] tableData) {
-      return getCoordValueString(tableData[nestingLevel]);
-    }
-
-    public String toString() {
-      return axisName + " tableIndex= " + nestingLevel;
     }
   }
 
   // knows how to get specific coordinate data from a table or its parents
   private class CoordVarTop extends CoordVarExtractor {
+    protected Variable varTop;
 
     CoordVarTop(Variable v) {
-      this.coordVar = v;
+      super(v.getName(), 0);
+      this.varTop = v;
     }
 
-    @Override
-    double getCoordValue(StructureData sdata) {
+    public double getCoordValue(StructureData sdata) {
       try {
-        return coordVar.readScalarDouble();
+        return varTop.readScalarDouble();
       } catch (IOException e) {
         throw new RuntimeException(e.getMessage());
       }
     }
 
-    @Override
-    String getCoordValueString(StructureData sdata) {
+    public String getUnitsString() {
+      return varTop.getUnitsString();
+    }
+
+    public boolean isString() {
+      return varTop.getDataType().isString();
+    }
+
+    public String getCoordValueString(StructureData sdata) {
       try {
-        return coordVar.readScalarString();
+        return varTop.readScalarString();
       } catch (IOException e) {
         throw new RuntimeException(e.getMessage());
       }
     }
 
-    public String toString() {
-      return "scalar " + coordVar.getName();
-    }
   }
 
   // knows how to get specific coordinate data from a table or its parents
-  private class CoordVarConstant extends CoordVarExtractor {
-    String value;
+  private class CoordVarStructureData extends CoordVarExtractor {
+    protected StructureData sdata;
 
-    CoordVarConstant(String value) {
+    CoordVarStructureData(String axisName, StructureData sdata) {
+      super(axisName, 0);
+      this.sdata = sdata;
+    }
+
+    public double getCoordValue(StructureData ignore) {
+      return sdata.convertScalarDouble(axisName);
+    }
+
+    public String getCoordValueString(StructureData ignore) {
+      return sdata.getScalarString(axisName);
+    }
+
+    public String getUnitsString() {
+      StructureMembers.Member m = sdata.findMember(axisName);
+      return m.getUnitsString();
+    }
+
+    public boolean isString() {
+      StructureMembers.Member m = sdata.findMember(axisName);
+      return m.getDataType().isString();
+    }
+
+  }
+
+  // a constant coordinate variable
+  private class CoordVarConstant extends CoordVarExtractor {
+    String units, value;
+
+    CoordVarConstant(String name, String units, String value) {
+      super(name, 0);
+      this.units = units;
       this.value = value;
     }
 
-    double getCoordValue(StructureData sdata) {
+    public double getCoordValue(StructureData sdata) {
       return Double.parseDouble(value);
     }
 
-    String getCoordValueString(StructureData sdata) {
+    public String getCoordValueString(StructureData sdata) {
       return value;
     }
 
+    public String getUnitsString() {
+      return units;
+    }
+
+    public boolean isString() {
+      return true;
+    }
+
+    @Override
     public String toString() {
       return "CoordVarConstant value= " + value;
     }
@@ -273,9 +314,9 @@ public class NestedTable {
 
   public DateUnit getTimeUnit() {
     try {
-      return new DateUnit(timeVE.coordVar.getUnitsString());
+      return new DateUnit(timeVE.getUnitsString());
     } catch (Exception e) {
-      throw new IllegalArgumentException("Error on time string = " + timeVE.coordVar.getUnitsString() + " == " + e.getMessage());
+      throw new IllegalArgumentException("Error on time string = " + timeVE.getUnitsString() + " == " + e.getMessage());
     }
   }
 
@@ -407,7 +448,7 @@ public class NestedTable {
   private double getTime(CoordVarExtractor cve, StructureData[] tableData) {
     if (cve == null) return Double.NaN;
 
-    if ((cve.coordVar.getDataType() == ucar.ma2.DataType.CHAR) || (cve.coordVar.getDataType() == ucar.ma2.DataType.STRING)) {
+    if (cve.isString()) {
       String timeString = timeVE.getCoordValueString(tableData);
       Date date;
       try {
@@ -561,9 +602,9 @@ public class NestedTable {
       public StructureData next() throws IOException {
         Index i = index.get(count++);
         try {
-          return struct.readStructure( i.recno);
+          return struct.readStructure(i.recno);
         } catch (InvalidRangeException e) {
-          throw new IllegalStateException("bad recnum "+i.recno, e);
+          throw new IllegalStateException("bad recnum " + i.recno, e);
         }
       }
 

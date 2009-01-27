@@ -55,6 +55,7 @@ public class TableAnalyzer {
     registerAnalyzer("BUFR/CDM", BufrCdm.class, null);
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class, null);
 
+    registerAnalyzer("Cosmic", Cosmic.class, null);
     registerAnalyzer("FslWindProfiler", FslWindProfiler.class, null);
     registerAnalyzer("IRIDL", Iridl.class, null);
     registerAnalyzer("MADIS surface observations, v1.0", Madis.class, null);

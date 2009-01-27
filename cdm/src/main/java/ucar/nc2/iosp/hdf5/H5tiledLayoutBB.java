@@ -48,7 +48,7 @@ class H5tiledLayoutBB implements LayoutBB {
   private RandomAccessFile raf;
   private H5header.Filter[] filters;
   private ByteOrder byteOrder;
-
+                                                                                                     
   private Section want;
   private int[] chunkSize; // from the StorageLayout message (exclude the elemSize)
   private int elemSize; // last dimension of the StorageLayout message
@@ -92,12 +92,13 @@ class H5tiledLayoutBB implements LayoutBB {
     this.chunkSize = new int[nChunkDims];
     System.arraycopy(vinfo.storageSize, 0, chunkSize, 0, nChunkDims);
     this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size
-    if (debug) System.out.println(" H5tiledLayout: " + this);
 
     // create the data chunk iterator
     H5header.DataBTree.DataChunkIterator iter = vinfo.btree.getDataChunkIterator(this.want);
     DataChunkIterator dcIter = new DataChunkIterator(iter);
     delegate = new LayoutBBTiled(dcIter, chunkSize, elemSize, wantSection);
+    
+    if (debug) System.out.println(" H5tiledLayout: " + this);
   }
 
   public long getTotalNelems() {
@@ -174,11 +175,13 @@ class H5tiledLayoutBB implements LayoutBB {
           if (debug) System.out.println("skip for chunk " + delegate);
           continue;
         }
-        if (f.id == 1)
+        if (f.id == 1) {
           data = inflate(data);
-        else if (f.id == 2)
+        } else if (f.id == 2) {
           data = shuffle(data, f.data[0]);
-        else
+        } else if (f.id == 3) {
+          data = checkfletcher32(data);
+        } else
           throw new RuntimeException("Unknown filter type="+f.id);
       }
 
@@ -204,6 +207,14 @@ class H5tiledLayoutBB implements LayoutBB {
       byte[] uncomp = out.toByteArray();
       if (debug) System.out.println(" inflate bytes in= " + compressed.length + " bytes out= " + uncomp.length);
       return uncomp;
+    }
+
+    // LOOK fake
+    private byte[] checkfletcher32(byte[] org) throws IOException {
+      byte[] result = new byte[org.length-4];
+      System.arraycopy(org, 0, result, 0, result.length);
+      if (debug) System.out.println(" checkfletcher32 bytes in= " + org.length + " bytes out= " + result.length);
+      return result;
     }
 
     private byte[] shuffle(byte[] data, int n) throws IOException {

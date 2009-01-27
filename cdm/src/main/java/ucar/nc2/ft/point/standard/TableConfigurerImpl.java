@@ -54,4 +54,5 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
   }
 
   private String convName, convUsed;
+
 }
