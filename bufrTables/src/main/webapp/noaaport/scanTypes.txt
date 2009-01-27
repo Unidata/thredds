@@ -1,0 +1,1557 @@
+total_msgs=331373 good_msgs=255239 bad_msgs=5 incomplete_tables=76134 bad_operation=0 total_obs=13737934
+total_bytes=2389085619 avg_msg_size=7209 avg_obs/msg=41 
+ good_dds=74 good_msgs=255239
+ incomplete_dds=41 incomplete_msgs=76134
+ wmoHeaders=422 bad_wmo=0 wmo_multipleDDS=28
+
+Incomplete Tables
+ nbad messages = 11
+ BUFR edition 2 time= 2008-07-08T00:00:00Z wmoHeader=604 JSMT43 KWBC 080000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=3135 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-12-200, 0-12-201, 0-11-200, 0-60-1, 0-60-2, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-71, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-72, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-26, 0-60-29, 0-60-93, 0-60-27, 0-60-30, 0-60-32, 0-60-34, 0-60-93, 0-60-38, 0-60-39, 0-60-40, 0-60-41, 0-60-42, 0-60-43, 0-60-44, 0-60-45, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-50, 0-60-51, 0-60-52, 0-60-53, 0-60-95, 0-60-54, 0-60-55, 0-60-56, 0-60-57, 0-60-96, 0-14-200, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-99, 
+
+ nbad messages = 75
+ BUFR edition 2 time= 2008-07-07T16:00:00Z wmoHeader=824 JSMF14 KWNO 071600 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=6200 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-79, 0-60-97, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-82, 0-60-83, 0-60-84, 0-60-85, 0-60-86, 0-60-87, 0-60-88, 0-60-89, 0-60-194, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-200, 0-60-201, 0-60-202, 0-60-203, 0-60-204, 0-60-205, 0-60-193, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-25, 0-60-23, 0-60-24, 0-60-92, 0-60-148, 0-60-195, 
+
+ nbad messages = 34
+ BUFR edition 2 time= 2008-07-07T16:00:00Z wmoHeader=917 JSMF13 KWNO 071600 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=11050 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-79, 0-60-97, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-82, 0-60-83, 0-60-84, 0-60-85, 0-60-86, 0-60-87, 0-60-88, 0-60-89, 0-60-194, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-200, 0-60-201, 0-60-202, 0-60-203, 0-60-204, 0-60-205, 0-60-193, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-25, 0-60-23, 0-60-24, 0-60-92, 0-60-148, 0-60-195, 0-0-9, 
+
+ nbad messages = 6700
+ BUFR edition 3 time= 2008-07-07T16:11:00Z wmoHeader=866 IUAA01 CWAO 071621 
+   Category= 4 Single level upper-air data (other than satellite) 4.255 local= 0 
+   Center= Montreal (RSMC) 53.0 
+   Table= 0.11 local= 1 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=10 type=0x80 isObs=true isCompressed=false
+ missing keys= 0-32-0, 
+
+ nbad messages = 10
+ BUFR edition 2 time= 2008-07-07T18:00:00Z wmoHeader=354 JSML33 KWNO 071800 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=12285 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-3, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-150, 0-60-151, 0-60-152, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-148, 0-60-149, 
+
+ nbad messages = 12
+ BUFR edition 2 time= 2008-07-08T00:00:00Z wmoHeader=589 JSMT47 KWBC 080000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=190 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-12-200, 0-12-201, 0-11-200, 0-60-1, 0-60-2, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-26, 0-60-29, 0-60-93, 0-60-27, 0-60-30, 0-60-32, 0-60-34, 0-60-93, 0-60-38, 0-60-39, 0-60-40, 0-60-41, 0-60-42, 0-60-43, 0-60-44, 0-60-45, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-50, 0-60-51, 0-60-52, 0-60-53, 0-60-95, 0-60-54, 0-60-55, 0-60-56, 0-60-57, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-99, 
+
+ nbad messages = 43
+ BUFR edition 2 time= 2008-07-07T16:00:00Z wmoHeader=770 JSMF17 KWNO 071600 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=2750 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-79, 0-60-97, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-82, 0-60-83, 0-60-84, 0-60-85, 0-60-86, 0-60-87, 0-60-88, 0-60-89, 0-60-194, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-200, 0-60-201, 0-60-202, 0-60-203, 0-60-204, 0-60-205, 0-60-193, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-25, 0-60-23, 0-60-24, 0-60-92, 0-60-148, 0-60-195, 
+
+ nbad messages = 3
+ BUFR edition 2 time= 2008-07-07T12:00:00Z wmoHeader=555 JSMT33 KWNO 071200 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=29575 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-181, 0-60-182, 0-60-183, 0-60-184, 0-60-186, 0-60-192, 0-60-2, 0-60-3, 0-60-172, 0-60-173, 0-60-174, 0-60-175, 0-60-176, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-59, 0-60-60, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 
+
+ nbad messages = 5
+ BUFR edition 2 time= 2008-07-07T12:00:00Z wmoHeader=192 JSMT30 KWNO 071200 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=1235 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-181, 0-60-182, 0-60-183, 0-60-184, 0-60-186, 0-60-192, 0-60-2, 0-60-3, 0-60-172, 0-60-173, 0-60-174, 0-60-175, 0-60-176, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-59, 0-60-60, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 
+
+ nbad messages = 25
+ BUFR edition 2 time= 2008-07-07T18:00:00Z wmoHeader=346 JSML35 KWNO 071800 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=4914 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-3, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-150, 0-60-151, 0-60-152, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-148, 0-60-149, 
+
+ nbad messages = 4
+ BUFR edition 2 time= 2008-07-08T00:00:00Z wmoHeader=965 JSML31 KWNO 080000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=7722 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-3, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-150, 0-60-151, 0-60-152, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-148, 0-60-149, 
+
+ nbad messages = 18
+ BUFR edition 2 time= 2008-07-07T21:00:00Z wmoHeader=268 JSMF14 KWNO 072100 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=5475 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-79, 0-60-97, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-82, 0-60-83, 0-60-84, 0-60-85, 0-60-86, 0-60-87, 0-60-88, 0-60-89, 0-60-194, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-200, 0-60-201, 0-60-202, 0-60-203, 0-60-204, 0-60-205, 0-60-193, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-25, 0-60-23, 0-60-24, 0-60-92, 0-60-148, 0-60-195, 
+
+ nbad messages = 7
+ BUFR edition 2 time= 2008-07-07T18:00:00Z wmoHeader=348 JSML34 KWNO 071800 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=7074 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-3, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-150, 0-60-151, 0-60-152, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-148, 0-60-149, 
+
+ nbad messages = 12
+ BUFR edition 2 time= 2008-07-07T18:00:00Z wmoHeader=345 JSML37 KWNO 071800 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=3537 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-3, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-150, 0-60-151, 0-60-152, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-148, 0-60-149, 
+
+ nbad messages = 3
+ BUFR edition 2 time= 2008-07-09T00:00:00Z wmoHeader=390 JSMT33 KWNO 090000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=29575 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-181, 0-60-182, 0-60-183, 0-60-184, 0-60-186, 0-60-192, 0-60-2, 0-60-3, 0-60-172, 0-60-173, 0-60-174, 0-60-175, 0-60-176, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-59, 0-60-60, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 
+
+ nbad messages = 4
+ BUFR edition 2 time= 2008-07-08T00:00:00Z wmoHeader=467 JSMT63 KWNO 080000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=4560 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-60-105, 0-60-106, 0-60-107, 0-60-192, 0-60-2, 0-60-3, 0-60-140, 0-60-141, 0-60-142, 0-60-143, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-146, 0-60-90, 0-60-59, 0-60-60, 
+
+ nbad messages = 18
+ BUFR edition 2 time= 2008-07-07T18:00:00Z wmoHeader=352 JSML30 KWNO 071800 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=513 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-3, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-150, 0-60-151, 0-60-152, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-148, 0-60-149, 
+
+ nbad messages = 9
+ BUFR edition 2 time= 2008-07-07T12:00:00Z wmoHeader=459 JSMT35 KWNO 071200 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=11830 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-181, 0-60-182, 0-60-183, 0-60-184, 0-60-186, 0-60-192, 0-60-2, 0-60-3, 0-60-172, 0-60-173, 0-60-174, 0-60-175, 0-60-176, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-59, 0-60-60, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 
+
+ nbad messages = 5
+ BUFR edition 2 time= 2008-07-07T12:00:00Z wmoHeader=456 JSMT37 KWNO 071200 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=8515 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-181, 0-60-182, 0-60-183, 0-60-184, 0-60-186, 0-60-192, 0-60-2, 0-60-3, 0-60-172, 0-60-173, 0-60-174, 0-60-175, 0-60-176, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-59, 0-60-60, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 
+
+ nbad messages = 205
+ BUFR edition 3 time= 2008-07-07T18:00:00Z wmoHeader=512 IUPT03 KBOU 071800 
+   Category= 2 Vertical soundings (other than satellite) 2.7 local= 0 
+   Center= The NOAA Forecast Systems Laboratory 59.0 
+   Table= 0.3 local= 1 Tablename= B3M-000-003-ABD.diff 
+  DDS nsubsets=7 type=0x80 isObs=true isCompressed=false
+ missing keys= 0-21-192, 0-21-192, 
+
+ nbad messages = 2
+ BUFR edition 2 time= 2008-07-09T00:00:00Z wmoHeader=796 JSML13 KWNO 090000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=11961 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-3, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-150, 0-60-151, 0-60-152, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-148, 0-60-149, 
+
+ nbad messages = 41
+ BUFR edition 2 time= 2008-07-07T16:00:00Z wmoHeader=735 JSMF10 KWNO 071600 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=300 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-79, 0-60-97, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-82, 0-60-83, 0-60-84, 0-60-85, 0-60-86, 0-60-87, 0-60-88, 0-60-89, 0-60-194, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-200, 0-60-201, 0-60-202, 0-60-203, 0-60-204, 0-60-205, 0-60-193, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-25, 0-60-23, 0-60-24, 0-60-92, 0-60-148, 0-60-195, 
+
+ nbad messages = 9
+ BUFR edition 3 time= 2008-07-09T16:25:00Z wmoHeader=725 IUTD14 EKMI 091625 
+   Category= 3 Vertical soundings (satellite) 3.255 local= 0 
+   Center= Copenhagen 94.0 
+   Table= 0.12 local= 1 Tablename= B3M-000-012-ABD.diff 
+  DDS nsubsets=1 type=0x80 isObs=true isCompressed=false
+ missing keys= 0-32-0, 
+
+ nbad messages = 60945
+ BUFR edition 3 time= 2008-07-07T12:00:00Z wmoHeader=737 JUSA41 KWBC 071600 
+   Category= 243 FOR EXPERIMENTAL USE 243.0 local= 0 
+   Center= NCEP /  Central Operations 7.3 
+   Table= 0.12 local= 0 Tablename= bufrtab.GFSCLS1 
+  DDS nsubsets=15 type=0x80 isObs=true isCompressed=false
+ missing keys= 0-11-229, 
+
+ nbad messages = 6
+ BUFR edition 2 time= 2008-07-07T12:00:00Z wmoHeader=460 JSMT34 KWNO 071200 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=17030 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-181, 0-60-182, 0-60-183, 0-60-184, 0-60-186, 0-60-192, 0-60-2, 0-60-3, 0-60-172, 0-60-173, 0-60-174, 0-60-175, 0-60-176, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-59, 0-60-60, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 
+
+ nbad messages = 422
+ BUFR edition 3 time= 2008-07-07T16:00:00Z wmoHeader=4 ISAI01 SBBR 071600 RRE 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= Unknown center=255 255.0 
+   Table= 0.11 local= 0 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=2 type=0x80 isObs=true isCompressed=false
+ missing keys= 0-1-101, 0-1-102, 3-7-63, 
+
+ nbad messages = 13
+ BUFR edition 2 time= 2008-07-08T00:00:00Z wmoHeader=601 JSMT44 KWBC 080000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=2280 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-12-200, 0-12-201, 0-11-200, 0-60-1, 0-60-2, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-71, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-72, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-26, 0-60-29, 0-60-93, 0-60-27, 0-60-30, 0-60-32, 0-60-34, 0-60-93, 0-60-38, 0-60-39, 0-60-40, 0-60-41, 0-60-42, 0-60-43, 0-60-44, 0-60-45, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-50, 0-60-51, 0-60-52, 0-60-53, 0-60-95, 0-60-54, 0-60-55, 0-60-56, 0-60-57, 0-60-96, 0-14-200, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-99, 
+
+ nbad messages = 12
+ BUFR edition 2 time= 2008-07-08T00:00:00Z wmoHeader=455 JSMT61 KWNO 080000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=2796 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-60-105, 0-60-106, 0-60-107, 0-60-192, 0-60-2, 0-60-3, 0-60-140, 0-60-141, 0-60-142, 0-60-143, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-146, 0-60-90, 0-60-59, 0-60-60, 
+
+ nbad messages = 12
+ BUFR edition 2 time= 2008-07-07T18:00:00Z wmoHeader=369 JSML32 KWNO 071800 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=5967 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-3, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-150, 0-60-151, 0-60-152, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-148, 0-60-149, 
+
+ nbad messages = 15
+ BUFR edition 2 time= 2008-07-07T18:00:00Z wmoHeader=331 JSML31 KWNO 071800 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=7722 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-3, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-150, 0-60-151, 0-60-152, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-148, 0-60-149, 
+
+ nbad messages = 2
+ BUFR edition 2 time= 2008-07-08T00:00:00Z wmoHeader=526 JSMT73 KWNO 080000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=7220 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-60-105, 0-60-106, 0-60-107, 0-60-192, 0-60-2, 0-60-3, 0-60-140, 0-60-141, 0-60-142, 0-60-143, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-146, 0-60-90, 0-60-59, 0-60-60, 
+
+ nbad messages = 30
+ BUFR edition 2 time= 2008-07-07T18:16:00Z wmoHeader=465 JSMT71 KWNH 070000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=630 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-60-66, 0-60-67, 0-60-19, 0-2-200, 0-60-3, 0-12-200, 0-12-201, 
+
+ nbad messages = 1
+ BUFR edition 2 time= 2008-07-09T12:00:00Z wmoHeader=326 JSML17 KWNO 091200 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=3267 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-3, 0-60-58, 0-60-59, 0-60-60, 0-60-61, 0-60-62, 0-60-63, 0-60-150, 0-60-151, 0-60-152, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-4, 0-60-7, 0-60-10, 0-60-13, 0-60-90, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-23, 0-60-24, 0-60-25, 0-60-92, 0-60-148, 0-60-149, 
+
+ nbad messages = 6707
+ BUFR edition 2 time= 2008-07-07T16:14:00Z wmoHeader=7 IUAD01 EGRR 071627 RRA 
+   Category= 4 Single level upper-air data (other than satellite) 4.255 local= 0 
+   Center= UK Meteorological Office Bracknell (RSMC) 74.0 
+   Table= 0.2 local= 1 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=10 type=0x80 isObs=true isCompressed=false
+ missing keys= 0-32-0, 
+
+ nbad messages = 6
+ BUFR edition 2 time= 2008-07-07T12:00:00Z wmoHeader=457 JSMT31 KWNO 071200 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=18590 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-181, 0-60-182, 0-60-183, 0-60-184, 0-60-186, 0-60-192, 0-60-2, 0-60-3, 0-60-172, 0-60-173, 0-60-174, 0-60-175, 0-60-176, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-59, 0-60-60, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 
+
+ nbad messages = 548
+ BUFR edition 3 time= 2008-07-07T08:45:00Z wmoHeader=031 ISXT40 KBOU 070845 
+   Category= 12 Surface data (satellite) 12.0 local= 0 
+   Center= The NOAA Forecast Systems Laboratory 59.0 
+   Table= 0.3 local= 3 Tablename= B3M-000-003-ABD.diff 
+  DDS nsubsets=263 type=0x80 isObs=true isCompressed=false
+ missing keys= 0-1-194, 0-25-220, 0-25-221, 0-25-222, 0-25-223, 0-25-224, 0-25-225, 
+
+ nbad messages = 122
+ BUFR edition 2 time= 2008-07-07T16:00:00Z wmoHeader=773 JSMF15 KWNO 071600 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=4400 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-79, 0-60-97, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-82, 0-60-83, 0-60-84, 0-60-85, 0-60-86, 0-60-87, 0-60-88, 0-60-89, 0-60-194, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-200, 0-60-201, 0-60-202, 0-60-203, 0-60-204, 0-60-205, 0-60-193, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-25, 0-60-23, 0-60-24, 0-60-92, 0-60-148, 0-60-195, 
+
+ nbad messages = 1
+ BUFR edition 2 time= 2008-07-07T12:00:00Z wmoHeader=458 JSMT36 KWNO 071200 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=12870 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-181, 0-60-182, 0-60-183, 0-60-184, 0-60-186, 0-60-192, 0-60-2, 0-60-3, 0-60-172, 0-60-173, 0-60-174, 0-60-175, 0-60-176, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-59, 0-60-60, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 
+
+ nbad messages = 6
+ BUFR edition 2 time= 2008-07-07T12:00:00Z wmoHeader=330 JSMT32 KWNO 071200 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=14365 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-181, 0-60-182, 0-60-183, 0-60-184, 0-60-186, 0-60-192, 0-60-2, 0-60-3, 0-60-172, 0-60-173, 0-60-174, 0-60-175, 0-60-176, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-90, 0-60-59, 0-60-60, 0-60-144, 0-60-31, 0-60-33, 0-60-35, 0-60-145, 0-60-93, 
+
+ nbad messages = 9
+ BUFR edition 2 time= 2008-07-08T05:00:00Z wmoHeader=882 JSMF13 KWNO 080500 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=11050 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-11-200, 0-60-1, 0-60-2, 0-60-79, 0-60-97, 0-60-20, 0-60-21, 0-60-22, 0-60-91, 0-60-100, 0-60-108, 0-60-109, 0-60-103, 0-60-104, 0-60-42, 0-60-43, 0-60-44, 0-60-80, 0-60-81, 0-60-46, 0-60-47, 0-60-48, 0-60-94, 0-60-82, 0-60-83, 0-60-84, 0-60-85, 0-60-86, 0-60-87, 0-60-88, 0-60-89, 0-60-194, 0-60-49, 0-60-112, 0-60-118, 0-60-113, 0-60-114, 0-60-115, 0-60-190, 0-60-200, 0-60-201, 0-60-202, 0-60-203, 0-60-204, 0-60-205, 0-60-193, 0-60-57, 0-60-55, 0-60-116, 0-60-117, 0-60-54, 0-60-96, 0-60-25, 0-60-23, 0-60-24, 0-60-92, 0-60-148, 0-60-195, 
+
+ nbad messages = 22
+
+ BUFR edition 2 time= 2008-07-08T00:00:00Z wmoHeader=441 JSMT60 KWNO 080000 
+   Category= 0 Surface data - land 0.0 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.2 local= 0 Tablename= B2M-000-002-ABD.diff 
+  DDS nsubsets=144 type=0x40 isObs=false isCompressed=true
+ missing keys= 0-2-200, 0-60-105, 0-60-106, 0-60-107, 0-60-192, 0-60-2, 0-60-3, 0-60-140, 0-60-141, 0-60-142, 0-60-143, 0-60-91, 0-60-5, 0-60-8, 0-60-11, 0-60-14, 0-60-16, 0-60-90, 0-60-6, 0-60-9, 0-60-12, 0-60-15, 0-60-17, 0-60-146, 0-60-90, 0-60-59, 0-60-60, 
+
+
+Map dds -> wmoHeaders
+ [0x9c44804a]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUNE00 EGRR count=3
+ [0x6df82e41]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUNE00 KKCI count=1
+ [0xfaaaabf1]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUCE00 KKCI count=9
+  JUME00 KKCI count=8
+ [0x91092688]  Category= Vertical soundings (other than satellite) Center= Toulouse (RSMC) (85.0) Table= 0.12.0 
+  IUSN01 LFPW count=4
+ [0x50263694]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUSZ44 KWBC count=62
+  IUSZ54 KWBC count=95
+  IUSY44 KWBC count=32
+  IUSZ74 KWBC count=7
+  IUSZ64 KWBC count=54
+ [0x1811b434]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUSU41 KWBC count=40
+  IUSV71 KWBC count=9
+  IUSV61 KWBC count=54
+  IUSV51 KWBC count=117
+  IUSV41 KWBC count=66
+ [0xde42d641]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUVE00 KKCI count=9
+ [0x9c0c6841]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUNE00 KKCI count=1
+ [0x71dc6d5d]  Category= Surface data (satellite) Center= Frascati (ESA/ESRIN) (210.3) Table= 0.7.0 
+  ISZB59 EUSR count=48
+  ISZF59 EUSR count=5
+  ISZE59 EUSR count=17
+  ISZA59 EUSR count=80
+ [0x5576f7ba]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUFE00 EGRR count=9
+  JUJE00 EGRR count=8
+ [0xb65a2fc4]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUST48 KWBC count=58
+  IUST66 KWBC count=54
+  IUST78 KWBC count=7
+  IUST76 KWBC count=8
+  IUST46 KWBC count=57
+  IUSX46 KWBC count=25
+  IUST56 KWBC count=106
+  IUST68 KWBC count=57
+  IUST58 KWBC count=88
+  IUSX48 KWBC count=11
+ [0x91034a20]  Category= Vertical soundings (other than satellite) Center= Offenbach (RSMC) (78.0) Table= 0.12.0 
+  IUSD05 EDZW count=4
+  IUSD09 EDZW count=1
+  IUSD08 EDZW count=4
+  IUSD03 EDZW count=4
+  IUSD07 EDZW count=4
+  IUSD02 EDZW count=4
+  IUSD06 EDZW count=4
+  IUSD01 EDZW count=4
+  IUSD04 EDZW count=9
+ [0x9a22cd3c]  Category= Vertical soundings (other than satellite) Center= Tokyo (RSMC), Japan Meteorological Agency (34.0) Table= 0.8.0 
+  IUPC03 RJTD count=52
+  IUPC02 RJTD count=51
+  IUPC01 RJTD count=51
+ [0x71dc7301]  Category= Surface data (satellite) Center= Frascati (ESA/ESRIN) (210.4) Table= 0.7.0 
+  ISZD59 EUSR count=4
+  ISZH59 EUSR count=1
+  ISZE59 EUSR count=29
+  ISZA59 EUSR count=26
+ [0xa75605d4]  Category= Vertical soundings (other than satellite) Center= The NOAA Forecast Systems Laboratory (59.0) Table= 0.3.3 
+  IUPT42 KBOU count=1384
+ [0x71dc83ed]  Category= Surface data (satellite) Center= Frascati (ESA/ESRIN) (210.7) Table= 0.7.0 
+  ISZD59 EUSR count=6
+  ISZE59 EUSR count=1
+  ISZA59 EUSR count=37
+ [0xfae2c3fa]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUME00 EGRR count=8
+  JUCE00 EGRR count=9
+ [0x71dca5c5]  Category= Surface data (satellite) Center= Frascati (ESA/ESRIN) (210.13) Table= 0.7.0 
+  ISZH59 EUSR count=6
+  ISZG59 EUSR count=31
+ [0x3e847a34]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUSV74 KWBC count=7
+  IUSU44 KWBC count=32
+  IUSV44 KWBC count=62
+  IUSV64 KWBC count=54
+  IUSV54 KWBC count=95
+ [0xce1745]  Category= Single level upper-air data (satellite) Center= US NOAA/NESDIS (160.0) Table= 0.10.0 
+  JBCX01 KNES count=5
+ [0x1668f674]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUST61 KWBC count=54
+  IUST51 KWBC count=117
+  IUSX41 KWBC count=40
+  IUST71 KWBC count=9
+  IUST41 KWBC count=66
+ [0x9a8575b4]  Category= Vertical soundings (other than satellite) Center= The NOAA Forecast Systems Laboratory (59.0) Table= 0.3.3 
+  IUPT41 KBOU count=238
+ [0x8a0e21e1]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUBE99 KKCI count=9
+ [0xff30f904]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUST43 KWBC count=62
+  IUST53 KWBC count=100
+  IUSX43 KWBC count=38
+  IUST73 KWBC count=7
+  IUST63 KWBC count=54
+ [0x91b9431a]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUNE00 EGRR count=1
+ [0x71dcb10d]  Category= Surface data (satellite) Center= Frascati (ESA/ESRIN) (210.15) Table= 0.7.0 
+  ISZL59 EUSR count=16
+  ISZH59 EUSR count=17
+ [0xe34e7ae1]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUTE97 KKCI count=9
+  JUOE00 KKCI count=8
+ [0x6040fac4]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUSV53 KWBC count=100
+  IUSV73 KWBC count=7
+  IUSU43 KWBC count=38
+  IUSV63 KWBC count=54
+  IUSV43 KWBC count=62
+ [0x71dc6215]  Category= Surface data (satellite) Center= Frascati (ESA/ESRIN) (210.1) Table= 0.7.0 
+  ISZD59 EUSR count=104
+  ISZB59 EUSR count=1
+  ISZC59 EUSR count=22
+  ISZA59 EUSR count=64
+ [0xd122b920]  Category= Surface data (satellite) Center= Toulouse (RSMC) (85.0) Table= 0.11.0 
+  ISZB01 LFPW count=65
+  ISZD01 LFPW count=55
+  ISZA01 LFPW count=87
+  ISZJ01 LFPW count=94
+  ISZK01 LFPW count=85
+  ISZL01 LFPW count=82
+  ISZC01 LFPW count=57
+  ISZI01 LFPW count=76
+ [0x4d97f24]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUSY43 KWBC count=38
+  IUSZ53 KWBC count=100
+  IUSZ73 KWBC count=7
+  IUSZ43 KWBC count=62
+  IUSZ63 KWBC count=54
+ [0x4d1c5a4a]  Category= Vertical soundings (satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.2.0 
+  JUTX05 KNES count=862
+  JUTX02 KNES count=452
+  JUTX01 KNES count=1424
+  JUTX10 KNES count=40
+  JUTX06 KNES count=411
+  JUTX07 KNES count=1721
+  JUTX04 KNES count=512
+  JUTX03 KNES count=526
+ [0xdf7174ae]  Category= Single level upper-air data (satellite) Center= Tokyo (RSMC), Japan Meteorological Agency (34.0) Table= 0.8.0 
+  IUCN60 RJTD count=2
+  IUCN71 RJTD count=9
+  IUCN76 RJTD count=8
+  IUCS53 RJTD count=9
+  IUCN73 RJTD count=9
+  IUCN59 RJTD count=7
+  IUCS42 RJTD count=3
+  IUCS77 RJTD count=9
+  IUCN52 RJTD count=8
+  IUCS73 RJTD count=9
+  IUCN74 RJTD count=8
+  IUCS75 RJTD count=9
+  IUCS41 RJTD count=4
+  IUCS57 RJTD count=8
+  IUCS61 RJTD count=1
+  IUCN75 RJTD count=8
+  IUCS43 RJTD count=3
+  IUCN87 RJTD count=6
+  IUCS74 RJTD count=9
+  IUCN88 RJTD count=3
+  IUCN41 RJTD count=4
+  IUCN53 RJTD count=8
+  IUCS59 RJTD count=6
+  IUCN43 RJTD count=3
+  IUCN84 RJTD count=8
+  IUCN72 RJTD count=9
+  IUCS56 RJTD count=9
+  IUCS71 RJTD count=9
+  IUCN83 RJTD count=8
+  IUCS54 RJTD count=9
+  IUCN51 RJTD count=9
+  IUCS76 RJTD count=9
+  IUCS81 RJTD count=5
+  IUCS80 RJTD count=8
+  IUCS60 RJTD count=3
+  IUCS51 RJTD count=9
+  IUCN77 RJTD count=8
+  IUCN81 RJTD count=8
+  IUCN82 RJTD count=8
+  IUCN58 RJTD count=8
+  IUCN79 RJTD count=8
+  IUCN54 RJTD count=8
+  IUCN56 RJTD count=8
+  IUCN42 RJTD count=4
+  IUCN80 RJTD count=8
+  IUCN78 RJTD count=8
+  IUCS52 RJTD count=9
+  IUCS83 RJTD count=1
+  IUCN86 RJTD count=8
+  IUCS58 RJTD count=8
+  IUCN55 RJTD count=8
+  IUCN89 RJTD count=1
+  IUCN85 RJTD count=8
+  IUCS78 RJTD count=9
+  IUCS82 RJTD count=3
+  IUCS79 RJTD count=9
+  IUCN57 RJTD count=8
+  IUCS55 RJTD count=9
+  IUCS72 RJTD count=9
+ [0xe38692ea]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUOE00 EGRR count=8
+  JUTE97 EGRR count=9
+ [0xdc4e95e4]  Category= Vertical soundings (other than satellite) Center= Unknown center=255 (255.0) Table= 0.9.0 
+  IUKD12 EDZW count=7
+ [0x91977d59]  Category= Vertical soundings (other than satellite) Center= Unknown center=255 (255.0) Table= 0.11.0 
+  IUPI04 SBBR count=33
+  IUPE02 SBBR count=24
+  IUPE05 SBBR count=7
+  IUPZ03 SBBR count=6
+  IUPI02 SBBR count=3
+  IUPA01 SBBR count=2
+  IUPI05 SBBR count=34
+  IUPI03 SBBR count=34
+  IUPE01 SBBR count=22
+ [0x25607094]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUSZ51 KWBC count=117
+  IUSZ41 KWBC count=66
+  IUSY41 KWBC count=40
+  IUSZ61 KWBC count=54
+  IUSZ71 KWBC count=9
+ [0x38891f31]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUWE96 KKCI count=9
+  JUTE00 KKCI count=8
+ [0xb6059294]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUST64 KWBC count=54
+  IUST54 KWBC count=95
+  IUSX44 KWBC count=32
+  IUST74 KWBC count=7
+  IUST44 KWBC count=62
+ [0x3d0f9f34]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUST52 KWBC count=116
+  IUST42 KWBC count=62
+  IUSX42 KWBC count=53
+  IUST62 KWBC count=51
+  IUST72 KWBC count=8
+ [0xe029a858]  Category= Single level upper-air data (satellite) Center= EUMETSAT Operation Centre (254.0) Table= 0.12.0 
+  IUVD15 EUMG count=2
+ [0x846bfb08]  Category= Single level upper-air data (other than satellite) Center= Seoul (40.0) Table= 0.12.0 
+  IUAC01 RKSL count=487
+ [0xa14502f3]  Category= Surface data (satellite) Center= NCEP /  Central Operations (7.3) Table= 0.12.0 
+  ISXA29 KWNO count=135
+  ISXA28 KWNO count=137
+  ISXA16 KWNO count=172
+  ISXA21 KWNO count=189
+  ISXA06 KWNO count=189
+  ISXA08 KWNO count=236
+  ISXA22 KWNO count=270
+  ISXA15 KWNO count=193
+  ISXA01 KWNO count=192
+  ISXA26 KWNO count=186
+  ISXA25 KWNO count=125
+  ISXA24 KWNO count=212
+  ISXA03 KWNO count=178
+  ISXA14 KWNO count=204
+  ISXA07 KWNO count=190
+  ISXA23 KWNO count=300
+  ISXA05 KWNO count=214
+  ISXA02 KWNO count=187
+  ISXA20 KWNO count=186
+  ISXA17 KWNO count=188
+  ISXA27 KWNO count=191
+  ISXA19 KWNO count=183
+  ISXA18 KWNO count=200
+  ISXA04 KWNO count=142
+ [0x71dc67b9]  Category= Surface data (satellite) Center= Frascati (ESA/ESRIN) (210.2) Table= 0.7.0 
+  ISZD59 EUSR count=24
+  ISZH59 EUSR count=1
+  ISZA59 EUSR count=5
+ [0x9a626f5c]  Category= Vertical soundings (other than satellite) Center= Hong-Kong (110.0) Table= 0.8.0 
+  IUPC01 VHHH count=45
+ [0x8a4639ea]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUBE99 EGRR count=9
+ [0x71dc8991]  Category= Surface data (satellite) Center= Frascati (ESA/ESRIN) (210.8) Table= 0.7.0 
+  ISZL59 EUSR count=2
+  ISZI59 EUSR count=5
+  ISZK59 EUSR count=21
+  ISZJ59 EUSR count=15
+ [0x1d9f3c71]  Category= Surface data (satellite) Center= US NOAA/NESDIS (160.0) Table= 0.6.1 
+  ISXX02 KNES count=5656
+  ISXX08 KNES count=12606
+  ISXX07 KNES count=11844
+  ISXX05 KNES count=9587
+  ISXX03 KNES count=5215
+  ISXX09 KNES count=4475
+  ISXX06 KNES count=1373
+  ISXX01 KNES count=10465
+  ISXX04 KNES count=352
+ [0x7f447841]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUNE00 KKCI count=2
+ [0x4dfbbfba]  Category= FOR EXPERIMENTAL USE Center= NCEP /  Central Operations (7.3) Table= 0.12.0 
+  JUSB44 KWNO count=23760
+  JUSX47 KWNO count=2040
+  JUSX49 KWNO count=15246
+  JUSB46 KWNO count=15161
+  JUSB45 KWNO count=16340
+  JUSA41 KWNO count=27598
+  JUSB43 KWNO count=20539
+  JUSA42 KWNO count=34928
+ [0xe4104e]  Category= Vertical soundings (satellite) Center= NCEP /  Central Operations (7.3) Table= 0.4.0 
+  IUTX08 KNES count=1649
+  IUTX06 KNES count=249
+  IUTX07 KNES count=1228
+  IUTX02 KNES count=710
+  IUTX04 KNES count=235
+  IUTX05 KNES count=876
+  IUTX09 KNES count=791
+  IUTX03 KNES count=512
+  IUTX01 KNES count=1619
+ [0x38c1373a]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUWE96 EGRR count=9
+  JUTE00 EGRR count=8
+ [0x368b89d4]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUSZ42 KWBC count=62
+  IUSZ72 KWBC count=8
+  IUSZ52 KWBC count=116
+  IUSY42 KWBC count=53
+  IUSZ62 KWBC count=51
+ [0x45fa60dc]  Category= Single level upper-air data (other than satellite) Center= Hong-Kong (110.0) Table= 0.11.1 
+  IUAD02 VHHH count=3
+ [0x75e2c121]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUJE00 KKCI count=8
+  JUFE00 KKCI count=9
+ [0xa7ed08f5]  Category= Single level upper-air data (satellite) Center= US NOAA/NESDIS (160.0) Table= 0.10.0 
+  JNCX11 KNES count=27
+  JECX61 KNES count=18
+  JPCX51 KNES count=28
+  JCCX31 KNES count=37
+  JPCX31 KNES count=12
+  JECX31 KNES count=109
+  JRCX61 KNES count=14
+  JGCX41 KNES count=18
+  JHCX21 KNES count=44
+  JQCX11 KNES count=155
+  JNCX21 KNES count=18
+  JACX21 KNES count=65
+  JHCX61 KNES count=8
+  JCCX51 KNES count=132
+  JCCX91 KNES count=19
+  JECX01 KNES count=64
+  JQCX21 KNES count=27
+  JHCX31 KNES count=80
+  JJCX31 KNES count=15
+  JGCX81 KNES count=36
+  JRCX91 KNES count=13
+  JICX01 KNES count=124
+  JJCX71 KNES count=319
+  JNCX61 KNES count=8
+  JJCX51 KNES count=317
+  JKCX31 KNES count=21
+  JGCX71 KNES count=124
+  JRCX21 KNES count=2
+  JRCX41 KNES count=7
+  JQCX31 KNES count=89
+  JJCX61 KNES count=32
+  JLCX01 KNES count=271
+  JRCX01 KNES count=18
+  JGCX61 KNES count=19
+  JGCX21 KNES count=18
+  JMCX31 KNES count=8
+  JACX61 KNES count=18
+  JQCX51 KNES count=26
+  JACX31 KNES count=117
+  JMCX71 KNES count=8
+  JCCX21 KNES count=17
+  JRCX71 KNES count=275
+  JCCX01 KNES count=63
+  JACX41 KNES count=21
+  JJCX01 KNES count=24
+  JMCX51 KNES count=18
+  JGCX01 KNES count=49
+  JHCX12 KNES count=38
+  JRCX72 KNES count=181
+  JPCX71 KNES count=9
+  JPCX61 KNES count=26
+  JQCX41 KNES count=7
+  JCCX71 KNES count=187
+  JECX41 KNES count=18
+  JRCX51 KNES count=201
+  JGCX91 KNES count=19
+  JACX01 KNES count=67
+  JMCX61 KNES count=8
+  JACX11 KNES count=186
+  JECX51 KNES count=23
+  JCCX61 KNES count=19
+  JGCX51 KNES count=99
+  JJCX21 KNES count=8
+  JBCX01 KNES count=176
+  JHCX11 KNES count=237
+  JKCX11 KNES count=28
+  JNCX31 KNES count=25
+  JCCX81 KNES count=22
+  JECX21 KNES count=69
+  JQCX01 KNES count=56
+  JGCX31 KNES count=37
+  JKCX41 KNES count=17
+  JHCX01 KNES count=88
+  JCCX41 KNES count=23
+  JJCX91 KNES count=23
+  JACX51 KNES count=27
+  JRCX31 KNES count=6
+  JQCX61 KNES count=6
+  JKCX21 KNES count=17
+  JJCX41 KNES count=16
+  JMCX41 KNES count=14
+  JFCX01 KNES count=371
+  JECX11 KNES count=228
+  JHCX51 KNES count=15
+  JPCX41 KNES count=17
+  JNCX41 KNES count=18
+  JHCX41 KNES count=14
+  JJCX72 KNES count=71
+ [0xd8f5bf1a]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUNE00 EGRR count=1
+ [0x24b6e90a]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUVE00 EGRR count=9
+ [0xd2aac51a]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUNE00 EGRR count=1
+ [0xaabaf9c8]  Category= Surface data - land Center= US National Weather Service (NCEP) (7.0) Table= 0.7.0 
+  JSAT98 KKCI count=617
+ [0x71dc94d9]  Category= Surface data (satellite) Center= Frascati (ESA/ESRIN) (210.10) Table= 0.7.0 
+  ISZF59 EUSR count=10
+  ISZE59 EUSR count=18
+  ISZA59 EUSR count=12
+ [0xe4ee0be]  Category= Single level upper-air data (satellite) Center= Brazilian Space Agency ? INPE (46.0) Table= 0.12.0 
+  IUCI41 SBBR count=123
+  IUCI64 SBBR count=157
+  IUCI44 SBBR count=122
+  IUCI53 SBBR count=115
+  IUCI65 SBBR count=14
+  IUCI58 SBBR count=32
+  IUCI61 SBBR count=179
+  IUCI56 SBBR count=77
+  IUCI49 SBBR count=122
+  IUCI55 SBBR count=103
+  IUCI48 SBBR count=121
+  IUCI42 SBBR count=122
+  IUCI51 SBBR count=120
+  IUCI50 SBBR count=123
+  IUCI43 SBBR count=121
+  IUCI47 SBBR count=123
+  IUCI57 SBBR count=60
+  IUCI52 SBBR count=122
+  IUCI62 SBBR count=179
+  IUCI46 SBBR count=123
+  IUCI45 SBBR count=122
+  IUCI60 SBBR count=4
+  IUCI63 SBBR count=177
+  IUCI54 SBBR count=108
+  IUCI59 SBBR count=15
+ [0x887ac5e4]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUSV58 KWBC count=88
+  IUSZ46 KWBC count=57
+  IUSV48 KWBC count=58
+  IUSU46 KWBC count=25
+  IUSV46 KWBC count=57
+  IUSZ48 KWBC count=58
+  IUSV76 KWBC count=8
+  IUSZ78 KWBC count=7
+  IUSZ66 KWBC count=54
+  IUSZ68 KWBC count=57
+  IUSV78 KWBC count=7
+  IUSV68 KWBC count=57
+  IUSY46 KWBC count=25
+  IUSZ58 KWBC count=88
+  IUSZ76 KWBC count=8
+  IUSU48 KWBC count=11
+  IUSV66 KWBC count=54
+  IUSY48 KWBC count=11
+  IUSV56 KWBC count=106
+  IUSZ56 KWBC count=106
+ [0xd6a3641]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUNE00 KKCI count=1
+ [0xf4bcbbfe]  Category= Synoptic features Center= NCEP /  Central Operations (7.3) Table= 0.12.0 
+  ISXA40 KWNO count=8
+ [0xee21311]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUNE00 KKCI count=1
+ [0xa063c454]  Category= Vertical soundings (other than satellite) Center= The NOAA Forecast Systems Laboratory (59.0) Table= 0.3.3 
+  IUPT43 KBOU count=1382
+ [0x1c349f11]  Category= Synoptic features Center= US National Weather Service (NCEP) (7.0) Table= 0.11.0 
+  JUNE00 KKCI count=2
+ [0x90de7301]  Category= Vertical soundings (other than satellite) Center= Tokyo (RSMC), Japan Meteorological Agency (34.0) Table= 0.13.0 
+  IUSA45 RJTD count=3
+  IUSD40 RJTD count=8
+  IUSD55 RJTD count=8
+  IUSC50 RJTD count=4
+  IUSL55 RJTD count=2
+  IUSD45 RJTD count=7
+  IUSC45 RJTD count=4
+  IUSA50 RJTD count=5
+  IUSL40 RJTD count=2
+  IUSL50 RJTD count=2
+  IUSA55 RJTD count=4
+  IUSD50 RJTD count=8
+  IUSC40 RJTD count=4
+  IUSA40 RJTD count=5
+ [0x90de7300]  Category= Vertical soundings (other than satellite) Center= Tokyo (RSMC), Japan Meteorological Agency (34.0) Table= 0.13.0 
+  IUSC04 RJTD count=4
+  IUSC01 RJTD count=4
+  IUSC03 RJTD count=8
+  IUSC07 RJTD count=4
+  IUSC06 RJTD count=8
+  IUSC10 RJTD count=4
+  IUSC09 RJTD count=5
+  IUSC08 RJTD count=4
+  IUSC11 RJTD count=4
+  IUSC12 RJTD count=5
+  IUSC05 RJTD count=8
+  IUSC02 RJTD count=8
+ [0x3d8264a]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUNE00 EGRR count=1
+ [0x739aad74]  Category= Vertical soundings (other than satellite) Center= US National Weather Service (NCEP) (7.0) Table= 0.6.0 
+  IUSV52 KWBC count=116
+  IUSU42 KWBC count=53
+  IUSV62 KWBC count=51
+  IUSV42 KWBC count=62
+  IUSV72 KWBC count=8
+ [0x9c3b5ee8]  Category= Single level upper-air data (other than satellite) Center= Tokyo (RSMC), Japan Meteorological Agency (34.0) Table= 0.13.0 
+  IUAC01 RJTD count=101
+  IUAC02 RJTD count=8
+ [0xcb1844a]  Category= Synoptic features Center= UK Meteorological Office Bracknell (RSMC) (74.0) Table= 0.11.1 
+  JUNE00 EGRR count=1
+
+Map wmoHeaders -> dds (unique)
+ WMO ISXA01 KWNO (192) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA02 KWNO (187) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA03 KWNO (178) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA04 KWNO (142) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA05 KWNO (214) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA06 KWNO (189) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA07 KWNO (190) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA08 KWNO (236) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA14 KWNO (204) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA15 KWNO (193) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA16 KWNO (172) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA17 KWNO (188) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA18 KWNO (200) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA19 KWNO (183) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA20 KWNO (186) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA21 KWNO (189) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA22 KWNO (270) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA23 KWNO (300) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA24 KWNO (212) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA25 KWNO (125) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA26 KWNO (186) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA27 KWNO (191) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA28 KWNO (137) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA29 KWNO (135) cat= Surface data (satellite) center = NCEP /  Central Operations (7.3) [0xa14502f3]
+ WMO ISXA40 KWNO (8) cat= Synoptic features center = NCEP /  Central Operations (7.3) [0xf4bcbbfe]
+ WMO ISXX01 KNES (10465) cat= Surface data (satellite) center = US NOAA/NESDIS (160.0) [0x1d9f3c71]
+ WMO ISXX02 KNES (5656) cat= Surface data (satellite) center = US NOAA/NESDIS (160.0) [0x1d9f3c71]
+ WMO ISXX03 KNES (5215) cat= Surface data (satellite) center = US NOAA/NESDIS (160.0) [0x1d9f3c71]
+ WMO ISXX04 KNES (352) cat= Surface data (satellite) center = US NOAA/NESDIS (160.0) [0x1d9f3c71]
+ WMO ISXX05 KNES (9587) cat= Surface data (satellite) center = US NOAA/NESDIS (160.0) [0x1d9f3c71]
+ WMO ISXX06 KNES (1373) cat= Surface data (satellite) center = US NOAA/NESDIS (160.0) [0x1d9f3c71]
+ WMO ISXX07 KNES (11844) cat= Surface data (satellite) center = US NOAA/NESDIS (160.0) [0x1d9f3c71]
+ WMO ISXX08 KNES (12606) cat= Surface data (satellite) center = US NOAA/NESDIS (160.0) [0x1d9f3c71]
+ WMO ISXX09 KNES (4475) cat= Surface data (satellite) center = US NOAA/NESDIS (160.0) [0x1d9f3c71]
+ WMO ISZA01 LFPW (87) cat= Surface data (satellite) center = Toulouse (RSMC) (85.0) [0xd122b920]
+ WMO ISZB01 LFPW (65) cat= Surface data (satellite) center = Toulouse (RSMC) (85.0) [0xd122b920]
+ WMO ISZC01 LFPW (57) cat= Surface data (satellite) center = Toulouse (RSMC) (85.0) [0xd122b920]
+ WMO ISZC59 EUSR (22) cat= Surface data (satellite) center = Frascati (ESA/ESRIN) (210.1) [0x71dc6215]
+ WMO ISZD01 LFPW (55) cat= Surface data (satellite) center = Toulouse (RSMC) (85.0) [0xd122b920]
+ WMO ISZG59 EUSR (31) cat= Surface data (satellite) center = Frascati (ESA/ESRIN) (210.13) [0x71dca5c5]
+ WMO ISZI01 LFPW (76) cat= Surface data (satellite) center = Toulouse (RSMC) (85.0) [0xd122b920]
+ WMO ISZI59 EUSR (5) cat= Surface data (satellite) center = Frascati (ESA/ESRIN) (210.8) [0x71dc8991]
+ WMO ISZJ01 LFPW (94) cat= Surface data (satellite) center = Toulouse (RSMC) (85.0) [0xd122b920]
+ WMO ISZJ59 EUSR (15) cat= Surface data (satellite) center = Frascati (ESA/ESRIN) (210.8) [0x71dc8991]
+ WMO ISZK01 LFPW (85) cat= Surface data (satellite) center = Toulouse (RSMC) (85.0) [0xd122b920]
+ WMO ISZK59 EUSR (21) cat= Surface data (satellite) center = Frascati (ESA/ESRIN) (210.8) [0x71dc8991]
+ WMO ISZL01 LFPW (82) cat= Surface data (satellite) center = Toulouse (RSMC) (85.0) [0xd122b920]
+ WMO IUAC01 RJTD (101) cat= Single level upper-air data (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x9c3b5ee8]
+ WMO IUAC01 RKSL (487) cat= Single level upper-air data (other than satellite) center = Seoul (40.0) [0x846bfb08]
+ WMO IUAC02 RJTD (8) cat= Single level upper-air data (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x9c3b5ee8]
+ WMO IUAD02 VHHH (3) cat= Single level upper-air data (other than satellite) center = Hong-Kong (110.0) [0x45fa60dc]
+ WMO IUCI41 SBBR (123) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI42 SBBR (122) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI43 SBBR (121) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI44 SBBR (122) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI45 SBBR (122) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI46 SBBR (123) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI47 SBBR (123) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI48 SBBR (121) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI49 SBBR (122) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI50 SBBR (123) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI51 SBBR (120) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI52 SBBR (122) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI53 SBBR (115) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI54 SBBR (108) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI55 SBBR (103) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI56 SBBR (77) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI57 SBBR (60) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI58 SBBR (32) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI59 SBBR (15) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI60 SBBR (4) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI61 SBBR (179) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI62 SBBR (179) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI63 SBBR (177) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI64 SBBR (157) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCI65 SBBR (14) cat= Single level upper-air data (satellite) center = Brazilian Space Agency ? INPE (46.0) [0xe4ee0be]
+ WMO IUCN41 RJTD (4) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN42 RJTD (4) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN43 RJTD (3) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN51 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN52 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN53 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN54 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN55 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN56 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN57 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN58 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN59 RJTD (7) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN60 RJTD (2) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN71 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN72 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN73 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN74 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN75 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN76 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN77 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN78 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN79 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN80 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN81 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN82 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN83 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN84 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN85 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN86 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN87 RJTD (6) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN88 RJTD (3) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCN89 RJTD (1) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS41 RJTD (4) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS42 RJTD (3) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS43 RJTD (3) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS51 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS52 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS53 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS54 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS55 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS56 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS57 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS58 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS59 RJTD (6) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS60 RJTD (3) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS61 RJTD (1) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS71 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS72 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS73 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS74 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS75 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS76 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS77 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS78 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS79 RJTD (9) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS80 RJTD (8) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS81 RJTD (5) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS82 RJTD (3) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUCS83 RJTD (1) cat= Single level upper-air data (satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0xdf7174ae]
+ WMO IUKD12 EDZW (7) cat= Vertical soundings (other than satellite) center = Unknown center=255 (255.0) [0xdc4e95e4]
+ WMO IUPA01 SBBR (2) cat= Vertical soundings (other than satellite) center = Unknown center=255 (255.0) [0x91977d59]
+ WMO IUPC01 RJTD (51) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x9a22cd3c]
+ WMO IUPC01 VHHH (45) cat= Vertical soundings (other than satellite) center = Hong-Kong (110.0) [0x9a626f5c]
+ WMO IUPC02 RJTD (51) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x9a22cd3c]
+ WMO IUPC03 RJTD (52) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x9a22cd3c]
+ WMO IUPE01 SBBR (22) cat= Vertical soundings (other than satellite) center = Unknown center=255 (255.0) [0x91977d59]
+ WMO IUPE02 SBBR (24) cat= Vertical soundings (other than satellite) center = Unknown center=255 (255.0) [0x91977d59]
+ WMO IUPE05 SBBR (7) cat= Vertical soundings (other than satellite) center = Unknown center=255 (255.0) [0x91977d59]
+ WMO IUPI02 SBBR (3) cat= Vertical soundings (other than satellite) center = Unknown center=255 (255.0) [0x91977d59]
+ WMO IUPI03 SBBR (34) cat= Vertical soundings (other than satellite) center = Unknown center=255 (255.0) [0x91977d59]
+ WMO IUPI04 SBBR (33) cat= Vertical soundings (other than satellite) center = Unknown center=255 (255.0) [0x91977d59]
+ WMO IUPI05 SBBR (34) cat= Vertical soundings (other than satellite) center = Unknown center=255 (255.0) [0x91977d59]
+ WMO IUPT41 KBOU (238) cat= Vertical soundings (other than satellite) center = The NOAA Forecast Systems Laboratory (59.0) [0x9a8575b4]
+ WMO IUPT42 KBOU (1384) cat= Vertical soundings (other than satellite) center = The NOAA Forecast Systems Laboratory (59.0) [0xa75605d4]
+ WMO IUPT43 KBOU (1382) cat= Vertical soundings (other than satellite) center = The NOAA Forecast Systems Laboratory (59.0) [0xa063c454]
+ WMO IUPZ03 SBBR (6) cat= Vertical soundings (other than satellite) center = Unknown center=255 (255.0) [0x91977d59]
+ WMO IUSA40 RJTD (5) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSA45 RJTD (3) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSA50 RJTD (5) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSA55 RJTD (4) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSC01 RJTD (4) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC02 RJTD (8) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC03 RJTD (8) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC04 RJTD (4) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC05 RJTD (8) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC06 RJTD (8) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC07 RJTD (4) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC08 RJTD (4) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC09 RJTD (5) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC10 RJTD (4) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC11 RJTD (4) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC12 RJTD (5) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7300]
+ WMO IUSC40 RJTD (4) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSC45 RJTD (4) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSC50 RJTD (4) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSD01 EDZW (4) cat= Vertical soundings (other than satellite) center = Offenbach (RSMC) (78.0) [0x91034a20]
+ WMO IUSD02 EDZW (4) cat= Vertical soundings (other than satellite) center = Offenbach (RSMC) (78.0) [0x91034a20]
+ WMO IUSD03 EDZW (4) cat= Vertical soundings (other than satellite) center = Offenbach (RSMC) (78.0) [0x91034a20]
+ WMO IUSD04 EDZW (9) cat= Vertical soundings (other than satellite) center = Offenbach (RSMC) (78.0) [0x91034a20]
+ WMO IUSD05 EDZW (4) cat= Vertical soundings (other than satellite) center = Offenbach (RSMC) (78.0) [0x91034a20]
+ WMO IUSD06 EDZW (4) cat= Vertical soundings (other than satellite) center = Offenbach (RSMC) (78.0) [0x91034a20]
+ WMO IUSD07 EDZW (4) cat= Vertical soundings (other than satellite) center = Offenbach (RSMC) (78.0) [0x91034a20]
+ WMO IUSD08 EDZW (4) cat= Vertical soundings (other than satellite) center = Offenbach (RSMC) (78.0) [0x91034a20]
+ WMO IUSD09 EDZW (1) cat= Vertical soundings (other than satellite) center = Offenbach (RSMC) (78.0) [0x91034a20]
+ WMO IUSD40 RJTD (8) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSD45 RJTD (7) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSD50 RJTD (8) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSD55 RJTD (8) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSL40 RJTD (2) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSL50 RJTD (2) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSL55 RJTD (2) cat= Vertical soundings (other than satellite) center = Tokyo (RSMC), Japan Meteorological Agency (34.0) [0x90de7301]
+ WMO IUSN01 LFPW (4) cat= Vertical soundings (other than satellite) center = Toulouse (RSMC) (85.0) [0x91092688]
+ WMO IUST41 KWBC (66) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x1668f674]
+ WMO IUST42 KWBC (62) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x3d0f9f34]
+ WMO IUST43 KWBC (62) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xff30f904]
+ WMO IUST44 KWBC (62) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb6059294]
+ WMO IUST46 KWBC (57) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb65a2fc4]
+ WMO IUST48 KWBC (58) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb65a2fc4]
+ WMO IUST51 KWBC (117) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x1668f674]
+ WMO IUST52 KWBC (116) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x3d0f9f34]
+ WMO IUST53 KWBC (100) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xff30f904]
+ WMO IUST54 KWBC (95) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb6059294]
+ WMO IUST56 KWBC (106) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb65a2fc4]
+ WMO IUST58 KWBC (88) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb65a2fc4]
+ WMO IUST61 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x1668f674]
+ WMO IUST62 KWBC (51) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x3d0f9f34]
+ WMO IUST63 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xff30f904]
+ WMO IUST64 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb6059294]
+ WMO IUST66 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb65a2fc4]
+ WMO IUST68 KWBC (57) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb65a2fc4]
+ WMO IUST71 KWBC (9) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x1668f674]
+ WMO IUST72 KWBC (8) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x3d0f9f34]
+ WMO IUST73 KWBC (7) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xff30f904]
+ WMO IUST74 KWBC (7) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb6059294]
+ WMO IUST76 KWBC (8) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb65a2fc4]
+ WMO IUST78 KWBC (7) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb65a2fc4]
+ WMO IUSU41 KWBC (40) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x1811b434]
+ WMO IUSU42 KWBC (53) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x739aad74]
+ WMO IUSU43 KWBC (38) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x6040fac4]
+ WMO IUSU44 KWBC (32) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x3e847a34]
+ WMO IUSU46 KWBC (25) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSU48 KWBC (11) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSV41 KWBC (66) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x1811b434]
+ WMO IUSV42 KWBC (62) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x739aad74]
+ WMO IUSV43 KWBC (62) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x6040fac4]
+ WMO IUSV44 KWBC (62) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x3e847a34]
+ WMO IUSV46 KWBC (57) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSV48 KWBC (58) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSV51 KWBC (117) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x1811b434]
+ WMO IUSV52 KWBC (116) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x739aad74]
+ WMO IUSV53 KWBC (100) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x6040fac4]
+ WMO IUSV54 KWBC (95) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x3e847a34]
+ WMO IUSV56 KWBC (106) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSV58 KWBC (88) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSV61 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x1811b434]
+ WMO IUSV62 KWBC (51) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x739aad74]
+ WMO IUSV63 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x6040fac4]
+ WMO IUSV64 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x3e847a34]
+ WMO IUSV66 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSV68 KWBC (57) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSV71 KWBC (9) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x1811b434]
+ WMO IUSV72 KWBC (8) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x739aad74]
+ WMO IUSV73 KWBC (7) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x6040fac4]
+ WMO IUSV74 KWBC (7) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x3e847a34]
+ WMO IUSV76 KWBC (8) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSV78 KWBC (7) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSX41 KWBC (40) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x1668f674]
+ WMO IUSX42 KWBC (53) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x3d0f9f34]
+ WMO IUSX43 KWBC (38) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xff30f904]
+ WMO IUSX44 KWBC (32) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb6059294]
+ WMO IUSX46 KWBC (25) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb65a2fc4]
+ WMO IUSX48 KWBC (11) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0xb65a2fc4]
+ WMO IUSY41 KWBC (40) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x25607094]
+ WMO IUSY42 KWBC (53) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x368b89d4]
+ WMO IUSY43 KWBC (38) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x4d97f24]
+ WMO IUSY44 KWBC (32) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x50263694]
+ WMO IUSY46 KWBC (25) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSY48 KWBC (11) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSZ41 KWBC (66) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x25607094]
+ WMO IUSZ42 KWBC (62) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x368b89d4]
+ WMO IUSZ43 KWBC (62) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x4d97f24]
+ WMO IUSZ44 KWBC (62) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x50263694]
+ WMO IUSZ46 KWBC (57) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSZ48 KWBC (58) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSZ51 KWBC (117) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x25607094]
+ WMO IUSZ52 KWBC (116) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x368b89d4]
+ WMO IUSZ53 KWBC (100) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x4d97f24]
+ WMO IUSZ54 KWBC (95) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x50263694]
+ WMO IUSZ56 KWBC (106) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSZ58 KWBC (88) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSZ61 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x25607094]
+ WMO IUSZ62 KWBC (51) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x368b89d4]
+ WMO IUSZ63 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x4d97f24]
+ WMO IUSZ64 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x50263694]
+ WMO IUSZ66 KWBC (54) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSZ68 KWBC (57) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSZ71 KWBC (9) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x25607094]
+ WMO IUSZ72 KWBC (8) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x368b89d4]
+ WMO IUSZ73 KWBC (7) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x4d97f24]
+ WMO IUSZ74 KWBC (7) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x50263694]
+ WMO IUSZ76 KWBC (8) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUSZ78 KWBC (7) cat= Vertical soundings (other than satellite) center = US National Weather Service (NCEP) (7.0) [0x887ac5e4]
+ WMO IUTX01 KNES (1619) cat= Vertical soundings (satellite) center = NCEP /  Central Operations (7.3) [0xe4104e]
+ WMO IUTX02 KNES (710) cat= Vertical soundings (satellite) center = NCEP /  Central Operations (7.3) [0xe4104e]
+ WMO IUTX03 KNES (512) cat= Vertical soundings (satellite) center = NCEP /  Central Operations (7.3) [0xe4104e]
+ WMO IUTX04 KNES (235) cat= Vertical soundings (satellite) center = NCEP /  Central Operations (7.3) [0xe4104e]
+ WMO IUTX05 KNES (876) cat= Vertical soundings (satellite) center = NCEP /  Central Operations (7.3) [0xe4104e]
+ WMO IUTX06 KNES (249) cat= Vertical soundings (satellite) center = NCEP /  Central Operations (7.3) [0xe4104e]
+ WMO IUTX07 KNES (1228) cat= Vertical soundings (satellite) center = NCEP /  Central Operations (7.3) [0xe4104e]
+ WMO IUTX08 KNES (1649) cat= Vertical soundings (satellite) center = NCEP /  Central Operations (7.3) [0xe4104e]
+ WMO IUTX09 KNES (791) cat= Vertical soundings (satellite) center = NCEP /  Central Operations (7.3) [0xe4104e]
+ WMO IUVD15 EUMG (2) cat= Single level upper-air data (satellite) center = EUMETSAT Operation Centre (254.0) [0xe029a858]
+ WMO JACX01 KNES (67) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JACX11 KNES (186) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JACX21 KNES (65) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JACX31 KNES (117) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JACX41 KNES (21) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JACX51 KNES (27) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JACX61 KNES (18) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JCCX01 KNES (63) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JCCX21 KNES (17) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JCCX31 KNES (37) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JCCX41 KNES (23) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JCCX51 KNES (132) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JCCX61 KNES (19) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JCCX71 KNES (187) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JCCX81 KNES (22) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JCCX91 KNES (19) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JECX01 KNES (64) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JECX11 KNES (228) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JECX21 KNES (69) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JECX31 KNES (109) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JECX41 KNES (18) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JECX51 KNES (23) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JECX61 KNES (18) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JFCX01 KNES (371) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JGCX01 KNES (49) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JGCX21 KNES (18) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JGCX31 KNES (37) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JGCX41 KNES (18) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JGCX51 KNES (99) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JGCX61 KNES (19) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JGCX71 KNES (124) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JGCX81 KNES (36) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JGCX91 KNES (19) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JHCX01 KNES (88) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JHCX11 KNES (237) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JHCX12 KNES (38) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JHCX21 KNES (44) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JHCX31 KNES (80) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JHCX41 KNES (14) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JHCX51 KNES (15) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JHCX61 KNES (8) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JICX01 KNES (124) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JJCX01 KNES (24) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JJCX21 KNES (8) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JJCX31 KNES (15) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JJCX41 KNES (16) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JJCX51 KNES (317) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JJCX61 KNES (32) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JJCX71 KNES (319) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JJCX72 KNES (71) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JJCX91 KNES (23) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JKCX11 KNES (28) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JKCX21 KNES (17) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JKCX31 KNES (21) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JKCX41 KNES (17) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JLCX01 KNES (271) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JMCX31 KNES (8) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JMCX41 KNES (14) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JMCX51 KNES (18) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JMCX61 KNES (8) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JMCX71 KNES (8) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JNCX11 KNES (27) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JNCX21 KNES (18) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JNCX31 KNES (25) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JNCX41 KNES (18) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JNCX61 KNES (8) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JPCX31 KNES (12) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JPCX41 KNES (17) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JPCX51 KNES (28) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JPCX61 KNES (26) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JPCX71 KNES (9) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JQCX01 KNES (56) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JQCX11 KNES (155) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JQCX21 KNES (27) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JQCX31 KNES (89) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JQCX41 KNES (7) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JQCX51 KNES (26) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JQCX61 KNES (6) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JRCX01 KNES (18) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JRCX21 KNES (2) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JRCX31 KNES (6) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JRCX41 KNES (7) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JRCX51 KNES (201) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JRCX61 KNES (14) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JRCX71 KNES (275) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JRCX72 KNES (181) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JRCX91 KNES (13) cat= Single level upper-air data (satellite) center = US NOAA/NESDIS (160.0) [0xa7ed08f5]
+ WMO JSAT98 KKCI (617) cat= Surface data - land center = US National Weather Service (NCEP) (7.0) [0xaabaf9c8]
+ WMO JUBE99 EGRR (9) cat= Synoptic features center = UK Meteorological Office Bracknell (RSMC) (74.0) [0x8a4639ea]
+ WMO JUBE99 KKCI (9) cat= Synoptic features center = US National Weather Service (NCEP) (7.0) [0x8a0e21e1]
+ WMO JUCE00 EGRR (9) cat= Synoptic features center = UK Meteorological Office Bracknell (RSMC) (74.0) [0xfae2c3fa]
+ WMO JUCE00 KKCI (9) cat= Synoptic features center = US National Weather Service (NCEP) (7.0) [0xfaaaabf1]
+ WMO JUFE00 EGRR (9) cat= Synoptic features center = UK Meteorological Office Bracknell (RSMC) (74.0) [0x5576f7ba]
+ WMO JUFE00 KKCI (9) cat= Synoptic features center = US National Weather Service (NCEP) (7.0) [0x75e2c121]
+ WMO JUJE00 EGRR (8) cat= Synoptic features center = UK Meteorological Office Bracknell (RSMC) (74.0) [0x5576f7ba]
+ WMO JUJE00 KKCI (8) cat= Synoptic features center = US National Weather Service (NCEP) (7.0) [0x75e2c121]
+ WMO JUME00 EGRR (8) cat= Synoptic features center = UK Meteorological Office Bracknell (RSMC) (74.0) [0xfae2c3fa]
+ WMO JUME00 KKCI (8) cat= Synoptic features center = US National Weather Service (NCEP) (7.0) [0xfaaaabf1]
+ WMO JUOE00 EGRR (8) cat= Synoptic features center = UK Meteorological Office Bracknell (RSMC) (74.0) [0xe38692ea]
+ WMO JUOE00 KKCI (8) cat= Synoptic features center = US National Weather Service (NCEP) (7.0) [0xe34e7ae1]
+ WMO JUSA41 KWNO (27598) cat= FOR EXPERIMENTAL USE center = NCEP /  Central Operations (7.3) [0x4dfbbfba]
+ WMO JUSA42 KWNO (34928) cat= FOR EXPERIMENTAL USE center = NCEP /  Central Operations (7.3) [0x4dfbbfba]
+ WMO JUSB43 KWNO (20539) cat= FOR EXPERIMENTAL USE center = NCEP /  Central Operations (7.3) [0x4dfbbfba]
+ WMO JUSB44 KWNO (23760) cat= FOR EXPERIMENTAL USE center = NCEP /  Central Operations (7.3) [0x4dfbbfba]
+ WMO JUSB45 KWNO (16340) cat= FOR EXPERIMENTAL USE center = NCEP /  Central Operations (7.3) [0x4dfbbfba]
+ WMO JUSB46 KWNO (15161) cat= FOR EXPERIMENTAL USE center = NCEP /  Central Operations (7.3) [0x4dfbbfba]
+ WMO JUSX47 KWNO (2040) cat= FOR EXPERIMENTAL USE center = NCEP /  Central Operations (7.3) [0x4dfbbfba]
+ WMO JUSX49 KWNO (15246) cat= FOR EXPERIMENTAL USE center = NCEP /  Central Operations (7.3) [0x4dfbbfba]
+ WMO JUTE00 EGRR (8) cat= Synoptic features center = UK Meteorological Office Bracknell (RSMC) (74.0) [0x38c1373a]
+ WMO JUTE00 KKCI (8) cat= Synoptic features center = US National Weather Service (NCEP) (7.0) [0x38891f31]
+ WMO JUTE97 EGRR (9) cat= Synoptic features center = UK Meteorological Office Bracknell (RSMC) (74.0) [0xe38692ea]
+ WMO JUTE97 KKCI (9) cat= Synoptic features center = US National Weather Service (NCEP) (7.0) [0xe34e7ae1]
+ WMO JUTX01 KNES (1424) cat= Vertical soundings (satellite) center = US National Weather Service (NCEP) (7.0) [0x4d1c5a4a]
+ WMO JUTX02 KNES (452) cat= Vertical soundings (satellite) center = US National Weather Service (NCEP) (7.0) [0x4d1c5a4a]
+ WMO JUTX03 KNES (526) cat= Vertical soundings (satellite) center = US National Weather Service (NCEP) (7.0) [0x4d1c5a4a]
+ WMO JUTX04 KNES (512) cat= Vertical soundings (satellite) center = US National Weather Service (NCEP) (7.0) [0x4d1c5a4a]
+ WMO JUTX05 KNES (862) cat= Vertical soundings (satellite) center = US National Weather Service (NCEP) (7.0) [0x4d1c5a4a]
+ WMO JUTX06 KNES (411) cat= Vertical soundings (satellite) center = US National Weather Service (NCEP) (7.0) [0x4d1c5a4a]
+ WMO JUTX07 KNES (1721) cat= Vertical soundings (satellite) center = US National Weather Service (NCEP) (7.0) [0x4d1c5a4a]
+ WMO JUTX10 KNES (40) cat= Vertical soundings (satellite) center = US National Weather Service (NCEP) (7.0) [0x4d1c5a4a]
+ WMO JUVE00 EGRR (9) cat= Synoptic features center = UK Meteorological Office Bracknell (RSMC) (74.0) [0x24b6e90a]
+ WMO JUVE00 KKCI (9) cat= Synoptic features center = US National Weather Service (NCEP) (7.0) [0xde42d641]
+ WMO JUWE96 EGRR (9) cat= Synoptic features center = UK Meteorological Office Bracknell (RSMC) (74.0) [0x38c1373a]
+ WMO JUWE96 KKCI (9) cat= Synoptic features center = US National Weather Service (NCEP) (7.0) [0x38891f31]
+  nwmo=412 total_wmo_count=254508 
+
+Map wmoHeaders -> dds (multiple)
+--WMO ISZA59 EUSR has 6 types 
+ BUFR edition 3 time= 2008-07-07T15:56:00Z wmoHeader=017 ISZA59 EUSR 071556 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.1 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910268437
+
+ BUFR edition 3 time= 2008-07-07T15:58:00Z wmoHeader=334 ISZA59 EUSR 071558 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.3 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910271325
+
+ BUFR edition 3 time= 2008-07-07T16:07:00Z wmoHeader=451 ISZA59 EUSR 071607 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.10 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910281433
+
+ BUFR edition 3 time= 2008-07-07T22:22:00Z wmoHeader=960 ISZA59 EUSR 072222 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.4 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910272769
+
+ BUFR edition 3 time= 2008-07-07T22:21:00Z wmoHeader=642 ISZA59 EUSR 072221 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.2 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910269881
+
+ BUFR edition 3 time= 2008-07-07T23:59:00Z wmoHeader=473 ISZA59 EUSR 072359 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.7 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910277101
+
+--WMO ISZB59 EUSR has 2 types 
+ BUFR edition 3 time= 2008-07-07T17:40:00Z wmoHeader=387 ISZB59 EUSR 071740 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.3 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910271325
+
+ BUFR edition 3 time= 2008-07-07T22:34:00Z wmoHeader=675 ISZB59 EUSR 072234 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.1 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910268437
+
+--WMO ISZD59 EUSR has 4 types 
+ BUFR edition 3 time= 2008-07-07T15:47:00Z wmoHeader=013 ISZD59 EUSR 071547 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.1 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910268437
+
+ BUFR edition 3 time= 2008-07-08T08:48:00Z wmoHeader=130 ISZD59 EUSR 080848 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.2 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910269881
+
+ BUFR edition 3 time= 2008-07-08T10:32:00Z wmoHeader=119 ISZD59 EUSR 081032 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.4 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910272769
+
+ BUFR edition 3 time= 2008-07-08T12:01:00Z wmoHeader=745 ISZD59 EUSR 081201 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.7 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910277101
+
+--WMO ISZE59 EUSR has 4 types 
+ BUFR edition 3 time= 2008-07-07T16:10:00Z wmoHeader=409 ISZE59 EUSR 071610 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.3 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910271325
+
+ BUFR edition 3 time= 2008-07-07T16:12:00Z wmoHeader=852 ISZE59 EUSR 071612 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.10 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910281433
+
+ BUFR edition 3 time= 2008-07-07T23:51:00Z wmoHeader=593 ISZE59 EUSR 072351 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.4 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910272769
+
+ BUFR edition 3 time= 2008-07-08T23:26:00Z wmoHeader=185 ISZE59 EUSR 082326 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.7 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910277101
+
+--WMO ISZF59 EUSR has 2 types 
+ BUFR edition 3 time= 2008-07-08T04:52:00Z wmoHeader=968 ISZF59 EUSR 080452 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.10 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910281433
+
+ BUFR edition 3 time= 2008-07-08T17:17:00Z wmoHeader=417 ISZF59 EUSR 081717 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.3 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910271325
+
+--WMO ISZH59 EUSR has 4 types 
+ BUFR edition 3 time= 2008-07-07T22:11:00Z wmoHeader=968 ISZH59 EUSR 072211 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.4 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910272769
+
+ BUFR edition 3 time= 2008-07-07T22:05:00Z wmoHeader=293 ISZH59 EUSR 072205 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.15 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910288653
+
+ BUFR edition 3 time= 2008-07-09T05:09:00Z wmoHeader=106 ISZH59 EUSR 090509 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.13 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910285765
+
+ BUFR edition 3 time= 2008-07-09T08:23:00Z wmoHeader=001 ISZH59 EUSR 090823 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.2 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910269881
+
+--WMO ISZL59 EUSR has 2 types 
+ BUFR edition 3 time= 2008-07-07T21:55:00Z wmoHeader=292 ISZL59 EUSR 072155 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.15 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910288653
+
+ BUFR edition 3 time= 2008-07-08T04:20:00Z wmoHeader=628 ISZL59 EUSR 080420 
+   Category= 12 Surface data (satellite) 12.9 local= 0 
+   Center= Frascati (ESA/ESRIN) 210.8 
+   Table= 0.7 local= 0 Tablename= B3M-000-007-ABD.diff 
+  DDS nsubsets=77 type=0xc0 isObs=true isCompressed=true
+ hash=1910278545
+
+--WMO JBCX01 KNES has 2 types 
+ BUFR edition 3 time= 2008-07-07T12:56:00Z wmoHeader=803 JBCX01 KNES 071645 
+   Category= 5 Single level upper-air data (satellite) 5.87 local= 0 
+   Center= US NOAA/NESDIS 160.0 
+   Table= 0.10 local= 0 Tablename= B3M-000-010-ABD.diff 
+  DDS nsubsets=280 type=0xc0 isObs=true isCompressed=true
+ hash=-1477637899
+
+ BUFR edition 3 time= 2008-07-08T11:12:00Z wmoHeader=8 JBCX01 KNES 081455 RRB 
+   Category= 5 Single level upper-air data (satellite) 5.87 local= 0 
+   Center= US NOAA/NESDIS 160.0 
+   Table= 0.10 local= 0 Tablename= B3M-000-010-ABD.diff 
+  DDS nsubsets=280 type=0xc0 isObs=true isCompressed=true
+ hash=13506373
+
+--WMO JUNE00 EGRR has 6 types 
+ BUFR edition 3 time= 2008-07-08T12:00:00Z wmoHeader=274 JUNE00 EGRR 071200 
+   Category= 7 Synoptic features 7.0 local= 0 
+   Center= UK Meteorological Office Bracknell (RSMC) 74.0 
+   Table= 0.11 local= 1 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=212960330
+
+ BUFR edition 3 time= 2008-07-08T18:00:00Z wmoHeader=459 JUNE00 EGRR 071800 
+   Category= 7 Synoptic features 7.0 local= 0 
+   Center= UK Meteorological Office Bracknell (RSMC) 74.0 
+   Table= 0.11 local= 1 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=-654983398
+
+ BUFR edition 3 time= 2008-07-09T00:00:00Z wmoHeader=068 JUNE00 EGRR 080000 
+   Category= 7 Synoptic features 7.0 local= 0 
+   Center= UK Meteorological Office Bracknell (RSMC) 74.0 
+   Table= 0.11 local= 1 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=-1850129638
+
+ BUFR edition 3 time= 2008-07-09T06:00:00Z wmoHeader=808 JUNE00 EGRR 080600 
+   Category= 7 Synoptic features 7.0 local= 0 
+   Center= UK Meteorological Office Bracknell (RSMC) 74.0 
+   Table= 0.11 local= 1 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=64497226
+
+ BUFR edition 3 time= 2008-07-09T12:00:00Z wmoHeader=562 JUNE00 EGRR 081200 
+   Category= 7 Synoptic features 7.0 local= 0 
+   Center= UK Meteorological Office Bracknell (RSMC) 74.0 
+   Table= 0.11 local= 1 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=-760560358
+
+ BUFR edition 3 time= 2008-07-09T18:00:00Z wmoHeader=562 JUNE00 EGRR 081800 
+   Category= 7 Synoptic features 7.0 local= 0 
+   Center= UK Meteorological Office Bracknell (RSMC) 74.0 
+   Table= 0.11 local= 1 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=-1673232310
+
+--WMO JUNE00 KKCI has 6 types 
+ BUFR edition 3 time= 2008-07-08T12:00:00Z wmoHeader=118 JUNE00 KKCI 071200 
+   Category= 7 Synoptic features 7.255 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.11 local= 0 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=473210641
+
+ BUFR edition 3 time= 2008-07-08T18:00:00Z wmoHeader=031 JUNE00 KKCI 071800 
+   Category= 7 Synoptic features 7.255 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.11 local= 0 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=1844981313
+
+ BUFR edition 3 time= 2008-07-09T00:00:00Z wmoHeader=345 JUNE00 KKCI 080000 
+   Category= 7 Synoptic features 7.255 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.11 local= 0 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=2135193665
+
+ BUFR edition 3 time= 2008-07-09T06:00:00Z wmoHeader=408 JUNE00 KKCI 080600 
+   Category= 7 Synoptic features 7.255 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.11 local= 0 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=225064513
+
+ BUFR edition 3 time= 2008-07-09T12:00:00Z wmoHeader=617 JUNE00 KKCI 081200 
+   Category= 7 Synoptic features 7.255 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.11 local= 0 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=-1676908479
+
+ BUFR edition 3 time= 2008-07-10T00:00:00Z wmoHeader=923 JUNE00 KKCI 090000 
+   Category= 7 Synoptic features 7.255 local= 0 
+   Center= US National Weather Service (NCEP) 7.0 
+   Table= 0.11 local= 0 Tablename= B3M-000-011-ABD.diff 
+  DDS nsubsets=1 type=0x0 isObs=false isCompressed=false
+ hash=249697041
+
+
+Process finished with exit code 0
