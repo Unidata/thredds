@@ -84,7 +84,7 @@
 
   <!-- Libraries -->
   <fileset id="compile.libraries" dir="${lib.dir}">
-    <include name="release/${bufr.jar}"/>
+    <!-- include name="release/${bufr.jar}"/ -->
     <include name="release/${grib.jar}"/>
     <include name="release/${opendap.jar}"/>
     <include name="external/${httpclient.jar}"/>
@@ -95,7 +95,7 @@
   </fileset>
 
   <fileset id="compileFromSrc.libraries" dir="${root.dir}">
-    <include name="lib/${bufr.jar}"/>
+    <!-- include name="lib/${bufr.jar}"/ -->
     <include name="lib/${grib.jar}"/>
     <include name="lib/${opendap.jar}"/>
     <include name="lib/${httpclient.jar}"/>
@@ -117,6 +117,7 @@
   </path>
 
   <fileset id="runtime.libraries" dir="${lib.dir}">
+    <include name="release/${bufr.jar}"/>
     <include name="external/${http-codec.jar}"/>
     <include name="external/${http-logging.jar}"/>
     <include name="external/${logging-minimal.jar}"/>
@@ -130,9 +131,9 @@
 
   <!-- LOOK can we generate with pathconvert? -->
   <property name="Class-Path"
-            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${loggingAPI.jar} ${logging-minimal.jar} ${jpeg2000.jar} ${resourcesOptional.jar} ${spring.jar} ${bufr.jar} ${visadNoDods.jar}"/>
+            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient.jar} ${http-logging.jar} ${loggingAPI.jar} ${logging-minimal.jar} ${jpeg2000.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/>
   <property name="ClassPath-CommandLine"
-            value="lib/${bufr.jar}:lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${visadNoDods.jar}"/>
+            value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${visadNoDods.jar}"/>
 
   <target name="test-pathconvert">
     <echo>Class-Path=${Class-Path}</echo>
@@ -245,7 +246,7 @@
     <include name="thredds/cataloggen/**/*.java"/>
     <include name="thredds/crawlabledataset/**/*.java"/>
     <exclude name="thredds/catalog2/**/*.java"/>
-    <include name="thredds/wcs/**/*.java"/>
+    <exclude name="thredds/wcs/**/*.java"/>
     <!-- *** -->
     <include name="ucar/**/*.java"/>
     <exclude name="ucar/nc2/dataset/grid/*"/>
@@ -452,7 +453,7 @@
 
   <property name="visad.jar" value="C:/dev/lib/visad/visad.jar"/>
   <!-- checkout visad.jar from cvs -->
-  <property name="visadNoDods.tempdir" location="C:/TEMP/visad/"/>
+  <property name="visadNoDods.tempdir" location="C:/dev/lib/visad/"/>
   <target name="makeVisadNoDods" description="remove dods from visad">
     <delete dir="${visadNoDods.tempdir}" failonerror="false"/>
     <mkdir dir="${visadNoDods.tempdir}"/>
@@ -470,21 +471,21 @@
     </jar>
   </target>
 
-  <!-- temp -->
+  <!-- temp
   <property name="makeViewerJar.tempdir" location="C:/TEMP/viewerJar/"/>
   <target name="makeViewerJar">
-    <!-- delete dir="${makeViewerJar.tempdir}" failonerror="false"/>
+    <!- delete dir="${makeViewerJar.tempdir}" failonerror="false"/>
     <mkdir dir="${makeViewerJar.tempdir}"/>
     <mkdir dir="${makeViewerJar.tempdir}/saidinViewer"/>
 
     <copy todir="${makeViewerJar.tempdir}/saidinViewer" overwrite="true" preservelastmodified="true">
       <fileset dir="C:/dev/thredds/tds/target/classes/saidinViewer"/>
-    </copy -->
+    </copy ->
 
     <jar jarfile="${lib.dir}/external/viewerJar.jar" index="true" duplicate="preserve">
       <fileset dir="${makeViewerJar.tempdir}"/>
     </jar>
-  </target>
+  </target -->
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- make javadoc -->
@@ -673,10 +674,10 @@
 
   </target>
 
-  <property name="toolsUI" value="toolsUI-${release.version}.jar"/>
   <property name="ncAll" value="netcdfAll-${release.version}.zip"/>
-  <target name="makeAll" depends="makeCore, makeMain, makeMainComplete, makeUI" description="create netcdfAll zip file">
+  <target name="makeAllzip" depends="makeMain, makeUI" description="create netcdfAll zip file">
     <copy file="${build.dir}/${jarUI}" todir="${zip.dir}" overwrite="true" preservelastmodified="true"/>
+    <copy file="${build.dir}/${jarMain}" todir="${zip.dir}" overwrite="true" preservelastmodified="true"/>
 
     <!--gather jars for the application and make netcdfAll.zip -->
     <copy todir="${zip.dir}" flatten="true" overwrite="true" preservelastmodified="true">
@@ -686,15 +687,22 @@
       <fileset file="${lib.dir}/release/${resourcesOptional.jar}"/>
       <fileset file="${lib.dir}/external/${log4j.jar}"/>
       <fileset file="${lib.dir}/external/${nlog4j.jar}"/>
+      <fileset file="${lib.dir}/external/${logging-maximal.jar}"/>
     </copy>
     <zip destfile="${build.dir}/${ncAll}" basedir="${zip.dir}"/>
 
+  </target>
+
+  <property name="toolsUI" value="toolsUI-${release.version}.jar"/>
+  <target name="makeToolsUI" depends="makeMain, makeUI" description="create toolsUI jar file">
     <!--unzip all so we can make uiAll -->
     <mkdir dir="${uiZip.dir}"/>
     <unzip dest="${uiZip.dir}">
-      <fileset dir="${zip.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
+      <fileset refid="compile.libraries"/>
+      <fileset refid="compileUI.libraries"/>
+      <fileset refid="runtime.libraries"/>
+      <fileset file="${build.dir}/${jarUI}"/>
+      <fileset file="${lib.dir}/release/${resourcesOptional.jar}"/>
     </unzip>
 
     <jar jarfile="${build.dir}/${toolsUI}" index="true" duplicate="preserve">
@@ -706,13 +714,15 @@
         <attribute name="Main-Class" value="ucar.nc2.ui.ToolsUI"/>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Built-On" value="${buildtime}"/>
-        <attribute name="Implementation-Title" value="NetCDF-Java-UITools"/>
+        <attribute name="Implementation-Title" value="NetCDF-Java-ToolsUI"/>
         <attribute name="Implementation-Version" value="${release.version.minor}"/>
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
       </manifest>
     </jar>
 
   </target>
+
+  <target name="makeAll" depends="makeCore, makeMain, makeMainComplete, makeUI, makeAllzip, makeToolsUI" description="create netcdfAll zip file"/>
 
   <property name="jarResourcesOptional" value="resourcesOptional-${release.version}.jar"/>
   <target name="makeResourcesOptional" description="make resourcesOptional.jar">

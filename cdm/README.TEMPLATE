@@ -19,7 +19,6 @@ DISTRIBUTIONS
   javadocAll.jar              complete javadoc
 
 OPTIONAL LIBRARIES
-  bufr.jar                    required to read BUFR files
   commons-httpclient          required to read files remotely over HTTP
   commons-logging, codec      required by commons-httpclient
   grib.jar                    required to read GRIB-1 or GRIB-2 files
