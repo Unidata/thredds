@@ -475,7 +475,7 @@ public class QueryParams {
   }
 
   public void writeErr(HttpServletResponse res, String s, int code) throws IOException {
-    UsageLog.log.info( UsageLog.accessInfo(code, 0));
+    UsageLog.log.info( UsageLog.closingMessageForRequestContext(code, 0));
     res.setStatus(code);
     if (s.length() > 0) {
       PrintWriter pw = res.getWriter();

@@ -27,16 +27,47 @@ import javax.servlet.http.HttpSession;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Utilities for creating log info in the threddsServlet log, aka server usage log.
+ * Utility class for gathering context information for use in log messages.
+ * Includes methods appropriate when the context thread is an individual
+ * HTTP request and when the context thread is an initialization thread.
+ * The context information is contained in a key/value map.
+ *
+ * <p>Uses the SLF4J MDC framework (see @link{org.slf4j.MDC} for more details).
+ *
+ * <p>If properly configured, each log entry within the context thread
+ * will include the gathered context information. For instance, in log4j
+ * and slf4j, the appender pattern would contain strings with the form
+ * "%X{&lt;contextKey&gt;}", where "&lt;contextKey&gt;" is a context key
+ * value. The context key strings are given in each setup method below.
  *
  * @author caron
  * @since Jan 9, 2009
+ * @see org.slf4j.MDC
  */
 public class UsageLog {
   public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( UsageLog.class);
   private static AtomicLong logServerAccessId = new AtomicLong(0);
 
-  public static String setupInfo(HttpServletRequest req) {
+  /**
+   * Gather context information for the given HTTP request and return
+   * a log message appropriate for logging at the start of the request.
+   *
+   * <p>The following context information is gathered:
+   * <ul>
+   * <li>"ID" - an identifier for the current thread;</li>
+   * <li>"host" - the remote host (IP address or host name);</li>
+   * <li>"userid" - the id of the remote user;</li>
+   * <li>"startTime" - the system time in millis when this request is started (i.e., when this method is called); and</li>
+   * <li>"request" - The HTTP request, e.g., "GET /index.html HTTP/1.1".</li>
+   * </ul>
+   *
+   * <p>Call this method at the start of each HttpServlet doXXX() method
+   * (e.g., doGet(), doPut()) or Spring MVC Controller handle() method.
+   *
+   * @param req the current request
+   * @return a log message appropriate for the start of the request.
+   */
+  public static String setupRequestContext(HttpServletRequest req) {
      HttpSession session = req.getSession(false);
 
      // Setup context.
@@ -57,36 +88,60 @@ public class UsageLog {
    }
 
    /**
-    * Write log entry to THREDDS access log.
+    * Return a log message appropriate for logging at the completion of
+    * the contexts HTTP request.
+    *
+    * <p>Call this method at every exit point in each HttpServlet doXXX() method
+    * (e.g., doGet(), doPut()) or Spring MVC Controller handle() method.
     *
     * @param resCode        - the result code for this request.
     * @param resSizeInBytes - the number of bytes returned in this result, -1 if unknown.
     */
-   public static String accessInfo(int resCode, long resSizeInBytes) {
-     long endTime = System.currentTimeMillis();
-     long startTime = Long.parseLong( MDC.get("startTime"));
-     long duration = endTime - startTime;
+   public static String closingMessageForRequestContext(int resCode, long resSizeInBytes) {
+     long duration = calculateElapsedTime();
 
      return "Request Completed - " + resCode + " - " + resSizeInBytes + " - " + duration;
    }
 
   /**
-    * Gather current thread information for inclusion in regular logging
-    * messages. Call this method only for non-request servlet activities, e.g.,
-    * during the init() or destroy().
-    * <p/>
-    * Use the SLF4J API to log a regular logging messages.
-    * <p/>
-    * This method gathers the following information:
-    * 1) "ID" - an identifier for the current thread; and
-    * 2) "startTime" - the system time in millis when this method is called.
-    * <p/>
-    * The appearance of the regular log messages are controlled in the
-    * log4j.xml configuration file.
-    */
-   public static void logServerSetup() {
+   * Gather context information for the current non-request thread and
+   * return a log message appropriate for logging.
+   *
+   * <p>The following context information is gathered:
+   * <ul>
+   * <li>"ID" - an identifier for the current thread; and</li>
+   * <li>"startTime" - the system time in millis when this method is called.</li>
+   * </ul>
+   *
+   * <p>Call this method only for non-request servlet activities, e.g.,
+   * during init() or destroy().
+   */
+   public static String setupNonRequestContext() {
      // Setup context.
      MDC.put("ID", Long.toString( logServerAccessId.incrementAndGet() ));
      MDC.put("startTime", Long.toString(System.currentTimeMillis()));
+
+    return "Non-request thread opening.";
    }
+
+  /**
+   * Return a log message appropriate for logging at the close of
+   * the non-request context.
+   *
+   * @return a log message appropriate for logging at the close of the non-request context.
+   */
+  public static String closingMessageNonRequestContext()
+  {
+    long duration = calculateElapsedTime();
+
+    return "Non-request thread closing - " + duration;
+  }
+
+  private static long calculateElapsedTime()
+  {
+    long endTime = System.currentTimeMillis();
+    long startTime = Long.parseLong( MDC.get( "startTime" ) );
+    long duration = endTime - startTime;
+    return duration;
+  }
 }

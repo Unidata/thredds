@@ -109,7 +109,7 @@ public class WMSController extends AbstractController {
         version = "1.1.1";
       }
 
-      UsageLog.log.info(UsageLog.setupInfo(req));
+      UsageLog.log.info(UsageLog.setupRequestContext(req));
 
       try {
         String request = params.getMandatoryString("request");
@@ -126,7 +126,7 @@ public class WMSController extends AbstractController {
         } else if (request.equalsIgnoreCase("GetMap")) {
           errMessage = "Error encountered while processing GetMap request ";
           WmsGetMap getMapHandler = new WmsGetMap(params, dataset, usageLogEntry);
-          UsageLog.log.info( UsageLog.accessInfo(HttpServletResponse.SC_OK, -1));
+          UsageLog.log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
           return getMapHandler.processRequest(res, req);
 
         } else if (request.equalsIgnoreCase("GetLegendGraphic")) {
@@ -166,11 +166,11 @@ public class WMSController extends AbstractController {
         return new ModelAndView(jspPage, model);
       }
       catch (java.net.SocketException se) { // Google Earth does thius a lot for some reason
-        UsageLog.log.info(UsageLog.accessInfo(HttpServletResponse.SC_BAD_REQUEST, -10));
+        UsageLog.log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -10));
         return null;
       }
       catch (Throwable t) {
-        UsageLog.log.info(UsageLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
+        UsageLog.log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
         t.printStackTrace();
         throw new RuntimeException(t);
       }
@@ -183,10 +183,10 @@ public class WMSController extends AbstractController {
       // ToDo - Server not configured to support WMS. Should
       // response code be 404 (Not Found) instead of 403 (Forbidden)?
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      log.info(UsageLog.accessInfo(HttpServletResponse.SC_FORBIDDEN, -1));
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
     }
 
-    UsageLog.log.info(UsageLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -3));
+    UsageLog.log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -3));
     return null;
   }
 

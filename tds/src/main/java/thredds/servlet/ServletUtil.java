@@ -113,7 +113,7 @@ public class ServletUtil {
    * @param req the current HttpServletRequest.
    */
   public static void logServerAccessSetup(HttpServletRequest req) {
-    UsageLog.log.info( UsageLog.setupInfo(req));
+    UsageLog.log.info( UsageLog.setupRequestContext(req));
   }
 
   /**
@@ -123,7 +123,7 @@ public class ServletUtil {
    * @param resSizeInBytes - the number of bytes returned in this result, -1 if unknown.
    */
   public static void logServerAccess(int resCode, long resSizeInBytes) {
-    UsageLog.log.info( UsageLog.accessInfo(resCode, resSizeInBytes));
+    UsageLog.log.info( UsageLog.closingMessageForRequestContext(resCode, resSizeInBytes));
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

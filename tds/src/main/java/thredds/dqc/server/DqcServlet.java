@@ -1,9 +1,9 @@
-// $Id: DqcServlet.java 51 2006-07-12 17:13:13Z caron $
-
 package thredds.dqc.server;
 
 import thredds.servlet.ServletUtil;
 import thredds.servlet.AbstractServlet;
+import thredds.servlet.ThreddsConfig;
+import thredds.servlet.UsageLog;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 
@@ -25,7 +25,7 @@ import java.util.Iterator;
 
 public class DqcServlet extends AbstractServlet
 {
-
+  private boolean allow;
   private File dqcRootPath;
   private File dqcContentPath, dqcConfigPath;
   private String configFileName;
@@ -69,6 +69,15 @@ public class DqcServlet extends AbstractServlet
   {
     super.init();
 
+    this.allow = ThreddsConfig.getBoolean( "DqcService.allow", false );
+    if ( ! this.allow )
+    {
+      String msg = "DqcServlet not enabled in threddsConfig.xml.";
+      log.info( "init(): " + msg );
+      log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+      return;
+    }
+
     // Get various paths and file names.
     this.dqcRootPath = new File( ServletUtil.getRootPath(),  this.servletName);
 
@@ -94,7 +103,7 @@ public class DqcServlet extends AbstractServlet
       throw new javax.servlet.ServletException( tmpMsg, e );
     }
 
-    log.debug( "init() done" );
+    log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
   }
 
   /**
@@ -127,7 +136,15 @@ public class DqcServlet extends AbstractServlet
   public void doGet(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException
   {
-    ServletUtil.logServerAccessSetup( req );
+    log.info( "doGet(): " + UsageLog.setupRequestContext( req) );
+
+    if ( ! this.allow )
+    {
+      String msg = "DQC service not supported.";
+      log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, msg.length() ));
+      res.sendError( HttpServletResponse.SC_FORBIDDEN, msg );
+      return;
+    }
 
     String tmpMsg = null;
     PrintWriter out = null;
@@ -260,7 +277,15 @@ public class DqcServlet extends AbstractServlet
   public void doPut( HttpServletRequest req, HttpServletResponse res )
           throws IOException, ServletException
   {
-    ServletUtil.logServerAccessSetup( req );
+    log.info( "doPut(): " + UsageLog.setupRequestContext( req ) );
+
+    if ( !this.allow )
+    {
+      String msg = "DQC service not supported.";
+      log.info( "doPut(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, msg.length() ) );
+      res.sendError( HttpServletResponse.SC_FORBIDDEN, msg );
+      return;
+    }
 
     File tmpFile = null;
     String tmpMsg = null;
@@ -274,7 +299,7 @@ public class DqcServlet extends AbstractServlet
       log.debug( "doPut(): " + tmpMsg );
       res.setHeader( "Allow", "GET");
       res.sendError( HttpServletResponse.SC_METHOD_NOT_ALLOWED, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_METHOD_NOT_ALLOWED, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_METHOD_NOT_ALLOWED, tmpMsg.length() ));
       return;
     }
 
@@ -284,7 +309,7 @@ public class DqcServlet extends AbstractServlet
       tmpMsg = "Cannot PUT a document outside the " + this.dqcConfigDirName + "/ directory";
       log.debug( "doPut(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_FORBIDDEN, tmpMsg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_FORBIDDEN, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, tmpMsg.length() ) );
       return;
     }
 
@@ -313,11 +338,11 @@ public class DqcServlet extends AbstractServlet
           tmpMsg = "IOException thrown while reading newly PUT DqcServlet config file: " + e.getMessage();
           log.error( "initConfig():" + tmpMsg, e );
           res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-          ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+          log.debug( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1) );
           return;
         }
         res.setStatus( HttpServletResponse.SC_OK );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
         return;
       }
       else
@@ -325,7 +350,7 @@ public class DqcServlet extends AbstractServlet
         tmpMsg = "File not saved <" + reqPath + ">";
         log.error( "doPut(): " + tmpMsg );
         res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
         return;
       }
     }
@@ -345,12 +370,12 @@ public class DqcServlet extends AbstractServlet
         if ( creatingNewFile )
         {
           res.setStatus( HttpServletResponse.SC_CREATED );
-          ServletUtil.logServerAccess( HttpServletResponse.SC_CREATED, 0 );
+          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_CREATED, 0 ));
         }
         else
         {
           res.setStatus( HttpServletResponse.SC_OK );
-          ServletUtil.logServerAccess( HttpServletResponse.SC_OK, 0 );
+          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0 ));
         }
         return;
       }
@@ -359,7 +384,7 @@ public class DqcServlet extends AbstractServlet
         tmpMsg = "File not saved <" + reqPath + ">";
         log.error( "doPut(): " + tmpMsg );
         res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
         return;
       }
     }
@@ -417,70 +442,3 @@ public class DqcServlet extends AbstractServlet
   }
 
 }
-/*
- * $Log: DqcServlet.java,v $
- * Revision 1.10  2005/10/11 19:44:29  caron
- * release 3.3
- *
- * Revision 1.9  2005/08/22 19:39:12  edavis
- * Changes to switch /thredds/dqcServlet URLs to /thredds/dqc.
- * Expand testing for server installations: TestServerSiteFirstInstall
- * and TestServerSite. Fix problem with compound services breaking
- * the filtering of datasets.
- *
- * Revision 1.8  2005/07/18 23:32:39  caron
- * static file serving
- *
- * Revision 1.7  2005/07/13 22:48:07  edavis
- * Improve server logging, includes adding a final log message
- * containing the response time for each request.
- *
- * Revision 1.6  2005/07/13 16:14:00  caron
- * cleanup logging
- * add static param to ServletUtil.returnFile()
- *
- * Revision 1.5  2005/04/12 20:52:36  edavis
- * Setup to handle logging of the response status for each
- * servlet request handled (logging similar to Apache web
- * server access_log).
- *
- * Revision 1.4  2005/04/06 23:21:43  edavis
- * Update CatGenServlet and DqcServlet to inherit from AbstractServlet.
- *
- * Revision 1.3  2005/04/05 22:37:03  edavis
- * Convert from Log4j to Jakarta Commons Logging.
- *
- * Revision 1.2  2004/08/23 16:45:20  edavis
- * Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
- *
- * Revision 1.1  2004/05/11 19:33:58  edavis
- * Moved here from thredds.servlet.DqcServlet.java.
- *
- * Revision 1.6  2004/04/03 00:44:58  edavis
- * DqcServlet:
- * - Start adding a service that returns a catalog listing all the DQC docs
- *   available from a particular DqcServlet installation (i.e., DqcServlet
- *   config to catalog)
- * JplQuikSCAT:
- * - fix how the modulo nature of longitude selection is handled
- * - improve some log messages, remove some that drastically increase
- *   the size of the log file; fix some 
- * - fix some template strings
- *
- * Revision 1.5  2004/03/05 06:35:07  edavis
- * Add more exception handling and error messages.
- *
- * Revision 1.4  2003/12/11 01:37:37  edavis
- * Added logging. Switched to using java.io.File rather than using file name strings.
- * Also changed how config file is handled.
- *
- * Revision 1.3  2003/10/31 22:26:24  edavis
- * Minor change to comment.
- *
- * Revision 1.2  2003/05/06 22:12:46  edavis
- * Add response for empty path requests and for dqc.xml requests.
- *
- * Revision 1.1  2003/04/28 17:57:13  edavis
- * Initial checkin of THREDDS DqcServlet.
- *
- */

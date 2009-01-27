@@ -41,7 +41,7 @@ public class TesterServlet extends AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
                              throws ServletException, IOException {
 
-    log.info( UsageLog.setupInfo(req));
+    log.info( UsageLog.setupRequestContext(req));
 
     res.setHeader("Content-Encoding","gzip");
     OutputStream out = res.getOutputStream();

@@ -20,8 +20,6 @@ public class CatalogServiceUtils
 {
   private CatalogServiceUtils() {}
 
-  public static enum XmlHtmlOrEither { XML, HTML, EITHER }
-
   public static BindingResult bindAndValidateRemoteCatalogRequest( HttpServletRequest request )
   {
     // Bind and validate the request to a RemoteCatalogRequest.
@@ -53,17 +51,4 @@ public class CatalogServiceUtils
     return bindingResult;
   }
 
-  public static InvDataset subsetCatalog(  InvCatalogImpl catalog, String datasetID)
-  {
-    InvDataset dataset = catalog.findDatasetByID( datasetID );
-    if ( dataset == null )
-    {
-      //log.warn( "Cant find dataset=" + datasetID + " in catalog=" + catalog.getBaseURI() );
-      UsageLog.log.info( UsageLog.accessInfo( HttpServletResponse.SC_BAD_REQUEST, -1 ));
-      //response.sendError( HttpServletResponse.SC_BAD_REQUEST, "Cant find dataset=" + datasetID );
-      return null;
-    }
-    return dataset;
-
-  }
 }

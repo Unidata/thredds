@@ -5,12 +5,14 @@ import org.springframework.util.StringUtils;
 import javax.servlet.ServletContext;
 import javax.servlet.RequestDispatcher;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
+import ucar.nc2.util.IO;
 
 /**
  * _more_
@@ -41,7 +43,6 @@ public class TdsContext
 
   private File rootDirectory;
   private File contentDirectory;
-  private boolean contentDirectoryWritable = true;
   private File publicContentDirectory;
 
   private File startupContentDirectory;
@@ -153,20 +154,34 @@ public class TdsContext
 
     // Set the content directory and source.
     this.contentDirectory = new File( new File( this.rootDirectory, "../../content"), this.contentPath);
-    if ( ! this.contentDirectory.exists() || ! this.contentDirectory.isDirectory() )
+    // If the content directory doesn't exist, try to copy startup content directory.
+    if ( ! this.contentDirectory.exists() )
     {
-      String tmpMsg = "Creation of content directory failed";
-      log.error( "init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
-      System.out.println( "ERROR - TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]." );
-      this.contentDirectory = this.startupContentDirectory;
-      this.contentDirSource = this.startupContentDirSource;
-      this.contentDirectoryWritable = false;
+      try
+      {
+        IO.copyDirTree( this.startupContentDirectory.getPath(), this.contentDirectory.getPath() );
+      }
+      catch ( IOException e )
+      {
+        String tmpMsg = "Content directory does not exist and could not be created";
+        log.error( "init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
+        System.out.println( "ERROR - TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]." );
+        throw new IllegalStateException( tmpMsg );
+      }
+    }
+
+    // If content directory exists, make sure it is a directory.
+    if ( this.contentDirectory.isDirectory() )
+    {
+      this.contentDirSource = new BasicDescendantFileSource( StringUtils.cleanPath( this.contentDirectory.getAbsolutePath() ) );
+      this.contentDirectory = this.contentDirSource.getRootDirectory();
     }
     else
     {
-      this.contentDirSource = new BasicDescendantFileSource( StringUtils.cleanPath( this.contentDirectory.getAbsolutePath()) );
-      this.contentDirectory = this.contentDirSource.getRootDirectory();
-      this.contentDirectoryWritable = this.contentDirectory.canWrite();
+      String tmpMsg = "Content directory not a directory";
+      log.error( "init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]" );
+      System.out.println( "ERROR - TdsContext.init(): " + tmpMsg + " [" + this.contentDirectory.getAbsolutePath() + "]." );
+      throw new IllegalStateException( tmpMsg );
     }
 
     // read in persistent user-defined params from threddsConfig.xml
@@ -285,11 +300,6 @@ public class TdsContext
   public File getContentDirectory()
   {
     return contentDirectory;
-  }
-
-  public boolean isContentDirectoryWritable()
-  {
-    return contentDirectoryWritable;
   }
 
   /**

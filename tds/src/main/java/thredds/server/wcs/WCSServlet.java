@@ -65,25 +65,29 @@ public class WCSServlet extends AbstractServlet {
     {
       supportedVersionsString = (supportedVersionsString == null ? "" : supportedVersionsString + ",") + vh.getVersion().getVersionString();
     }
+
+    log.info( "init()" + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void destroy()
   {
+    log.info( "destroy(): " + UsageLog.setupNonRequestContext() );
     if (diskCache != null)
       diskCache.exit();
     super.destroy();
+    log.info( "destroy()" + UsageLog.closingMessageNonRequestContext() );
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException
   {
-    log.info( UsageLog.setupInfo(req));
+    log.info( UsageLog.setupRequestContext(req));
 
     // Check whether TDS is configured to support WCS.
     if (!allow) {
       // ToDo - Server not configured to support WCS. Should response code be 404 (Not Found) instead of 403 (Forbidden)?
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      ServletUtil.logServerAccess( HttpServletResponse.SC_FORBIDDEN, -1 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ));
       return;
     }
 
@@ -92,7 +96,7 @@ public class WCSServlet extends AbstractServlet {
     // ToDo LOOK - move this into TdsConfig?
     if ( datasetURL != null && ! allowRemote )
     {
-      ServletUtil.logServerAccess( HttpServletResponse.SC_FORBIDDEN, -1 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ));
       res.sendError( HttpServletResponse.SC_FORBIDDEN, "Catalog services not supported for remote catalogs." );
       return;
     }
@@ -107,7 +111,7 @@ public class WCSServlet extends AbstractServlet {
     if ( serviceParam == null || ! serviceParam.equals( "WCS"))
     {
       res.sendError( HttpServletResponse.SC_BAD_REQUEST, "GET request not a WCS KVP requestParam (missing or bad SERVICE parameter).");
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, -1 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ));
       return;
     }
 
@@ -196,11 +200,11 @@ public class WCSServlet extends AbstractServlet {
   protected void doPost( HttpServletRequest req, HttpServletResponse res )
           throws ServletException, IOException
   {
-    log.info( UsageLog.setupInfo(req));
+    log.info( UsageLog.setupRequestContext(req));
 
     res.setStatus( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
     res.setHeader( "Allow", "GET");
-    ServletUtil.logServerAccess( HttpServletResponse.SC_METHOD_NOT_ALLOWED, -1 );
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_METHOD_NOT_ALLOWED, -1 ));
     return;
   }
 

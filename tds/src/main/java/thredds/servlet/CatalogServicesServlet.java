@@ -42,14 +42,14 @@ public class CatalogServicesServlet extends HttpServlet {
 
   public void init() {
     log = org.slf4j.LoggerFactory.getLogger(getClass());
-    UsageLog.logServerSetup();
+    UsageLog.setupNonRequestContext();
     log.info("--- initialized " + getClass().getName());
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
 
-    UsageLog.log.info( UsageLog.setupInfo(req));
+    UsageLog.log.info( UsageLog.setupRequestContext(req));
 
     try {
       if (Debug.isSet("showRequest"))

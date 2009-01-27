@@ -103,7 +103,7 @@ public class StationObsServlet extends AbstractServlet {
 
     long start = System.currentTimeMillis();
 
-    log.info( UsageLog.setupInfo(req));
+    log.info( UsageLog.setupRequestContext(req));
     if (debug) System.out.println(req.getQueryString());
 
     String pathInfo = req.getPathInfo();
@@ -193,7 +193,7 @@ public class StationObsServlet extends AbstractServlet {
     }
 
     soc.write(qp, res);
-    log.info( UsageLog.accessInfo(HttpServletResponse.SC_OK, -1));
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 
     if (showTime) {
       long took = System.currentTimeMillis() - start;
@@ -226,7 +226,7 @@ public class StationObsServlet extends AbstractServlet {
 
       } catch (Exception e) {
         log.error("SobsServlet internal error", e);
-        log.info( UsageLog.accessInfo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SobsServlet internal error");
         return;
       }
@@ -242,7 +242,7 @@ public class StationObsServlet extends AbstractServlet {
     out.write(infoString.getBytes());
     out.flush();
 
-    log.info( UsageLog.accessInfo(HttpServletResponse.SC_OK, infoString.length()));
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
   }
 
   private InputStream getXSLT(String xslName) {

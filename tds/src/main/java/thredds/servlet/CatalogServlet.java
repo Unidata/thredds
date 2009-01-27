@@ -34,7 +34,7 @@ import java.io.IOException;
 public class CatalogServlet extends HttpServlet {
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    UsageLog.log.info( UsageLog.setupInfo(req));
+    UsageLog.log.info( UsageLog.setupRequestContext(req));
 
     String path = req.getPathInfo();
     //StringBuffer reqURL = req.getRequestURL();
@@ -79,7 +79,7 @@ public class CatalogServlet extends HttpServlet {
 
     if ( ! ok )
     {
-      UsageLog.log.info( UsageLog.accessInfo( HttpServletResponse.SC_NOT_FOUND, 0 ));
+      UsageLog.log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
       res.sendError( HttpServletResponse.SC_NOT_FOUND );
     }
   }

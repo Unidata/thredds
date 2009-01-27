@@ -43,7 +43,7 @@ public abstract class AbstractServlet extends HttpServlet {
 
     // init logging
     log = org.slf4j.LoggerFactory.getLogger(getClass());
-    UsageLog.logServerSetup();
+    log.info( "init(): " + UsageLog.setupNonRequestContext());
 
     // debug actions
     makeDebugActions();

@@ -77,7 +77,7 @@ public class TomcatAuthorizer implements Authorizer {
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    UsageLog.log.info( UsageLog.setupInfo(req));
+    UsageLog.log.info( UsageLog.setupRequestContext(req));
 
     HttpSession session = req.getSession();
     if (session != null) {

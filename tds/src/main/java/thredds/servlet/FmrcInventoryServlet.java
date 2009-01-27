@@ -69,7 +69,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException {
 
-    log.info( UsageLog.setupInfo(req));
+    log.info( UsageLog.setupRequestContext(req));
 
     String path = req.getPathInfo();
     String query = req.getQueryString();
