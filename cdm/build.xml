@@ -814,7 +814,7 @@
     <signjar alias="idv" jar="${build.dir}/${jarUI}" keystore="${keystore}" signedjar="${webstart_dir}/netcdfUI.jar"
              storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${bufr.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/bufr.jar" storepass="${keystore.password}"/>
+             signedjar="${webstart_dir}/bufrTables.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${jdom.jar}" keystore="${keystore}"

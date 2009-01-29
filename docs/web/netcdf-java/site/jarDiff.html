@@ -12,6 +12,7 @@
 <li>thredds.catalog.parser.jdom.InvCatalogFactory6</li>
 <li>thredds.cataloggen.CatalogGenMain</li>
 <li>thredds.cataloggen.CatalogRefInfo</li>
+<li>thredds.cataloggen.config.DodsURLExtractor</li>
 <li>thredds.datamodel.gis.AbstractGisFeature</li>
 <li>thredds.datamodel.gis.GisFeature</li>
 <li>thredds.datamodel.gis.GisFeatureAdapter</li>
@@ -73,7 +74,11 @@
 <li>ucar.nc2.dataset.grid.GridDataset.Gridset</li>
 <li>ucar.nc2.dataset.grid.GridDatasetInfo</li>
 <li>ucar.nc2.dataset.transform.McIDASArea</li>
+<li>ucar.nc2.dt.EarthLocation</li>
+<li>ucar.nc2.dt.EarthLocationImpl</li>
+<li>ucar.nc2.dt.Station</li>
 <li>ucar.nc2.dt.VariableSimpleAdapter</li>
+<li>ucar.nc2.dt.point.SubsetServiceDataset</li>
 <li>ucar.nc2.iosp.bufr.Index2NC</li>
 <li>ucar.nc2.iosp.fysat.AwxFileFirstHeader</li>
 <li>ucar.nc2.iosp.fysat.AwxFileGeoSatelliteSecondHeader</li>
@@ -106,189 +111,22 @@
 <li>net.jcip.annotations.NotThreadSafe</li>
 <li>net.jcip.annotations.ThreadSafe</li>
 <li>thredds.catalog.CrawlableCatalog</li>
-<li>thredds.catalog2.Access</li>
-<li>thredds.catalog2.AccessUriBuilder</li>
-<li>thredds.catalog2.AccessUriBuilderResolver</li>
-<li>thredds.catalog2.BasicAccessUriBuilder</li>
-<li>thredds.catalog2.BasicAccessUriBuilderResolver</li>
-<li>thredds.catalog2.Catalog</li>
-<li>thredds.catalog2.CatalogRef</li>
-<li>thredds.catalog2.CatalogSearchHelper</li>
-<li>thredds.catalog2.Dataset</li>
-<li>thredds.catalog2.DatasetNode</li>
-<li>thredds.catalog2.Metadata</li>
-<li>thredds.catalog2.Property</li>
-<li>thredds.catalog2.Service</li>
-<li>thredds.catalog2.ThreddsMetadata</li>
-<li>thredds.catalog2.ThreddsMetadata.Contributor</li>
-<li>thredds.catalog2.ThreddsMetadata.Documentation</li>
-<li>thredds.catalog2.ThreddsMetadata.GeospatialCoverage</li>
-<li>thredds.catalog2.ThreddsMetadata.GeospatialRange</li>
-<li>thredds.catalog2.ThreddsMetadata.Keyphrase</li>
-<li>thredds.catalog2.ThreddsMetadata.Variable</li>
-<li>thredds.catalog2.builder.AccessBuilder</li>
-<li>thredds.catalog2.builder.BuilderException</li>
-<li>thredds.catalog2.builder.BuilderIssue</li>
-<li>thredds.catalog2.builder.CatalogBuilder</li>
-<li>thredds.catalog2.builder.CatalogBuilderFactory</li>
-<li>thredds.catalog2.builder.CatalogRefBuilder</li>
-<li>thredds.catalog2.builder.DatasetBuilder</li>
-<li>thredds.catalog2.builder.DatasetNodeBuilder</li>
-<li>thredds.catalog2.builder.MetadataBuilder</li>
-<li>thredds.catalog2.builder.ServiceBuilder</li>
-<li>thredds.catalog2.builder.ThreddsBuilder</li>
-<li>thredds.catalog2.builder.ThreddsMetadataBuilder</li>
-<li>thredds.catalog2.builder.ThreddsMetadataBuilder.ContributorBuilder</li>
-<li>thredds.catalog2.builder.ThreddsMetadataBuilder.DocumentationBuilder</li>
-<li>thredds.catalog2.builder.ThreddsMetadataBuilder.GeospatialCoverageBuilder</li>
-<li>thredds.catalog2.builder.ThreddsMetadataBuilder.GeospatialRangeBuilder</li>
-<li>thredds.catalog2.builder.ThreddsMetadataBuilder.KeyphraseBuilder</li>
-<li>thredds.catalog2.builder.ThreddsMetadataBuilder.VariableBuilder</li>
-<li>thredds.catalog2.simpleImpl.AccessImpl</li>
-<li>thredds.catalog2.simpleImpl.CatalogBuilderFactoryImpl</li>
-<li>thredds.catalog2.simpleImpl.CatalogImpl</li>
-<li>thredds.catalog2.simpleImpl.CatalogRefImpl</li>
-<li>thredds.catalog2.simpleImpl.DatasetImpl</li>
-<li>thredds.catalog2.simpleImpl.DatasetNodeImpl</li>
-<li>thredds.catalog2.simpleImpl.MetadataImpl</li>
-<li>thredds.catalog2.simpleImpl.PropertyImpl</li>
-<li>thredds.catalog2.simpleImpl.ServiceImpl</li>
-<li>thredds.catalog2.simpleImpl.ThreddsMetadataImpl</li>
-<li>thredds.catalog2.simpleImpl.ThreddsMetadataImpl.ContributorImpl</li>
-<li>thredds.catalog2.simpleImpl.ThreddsMetadataImpl.DocumentationImpl</li>
-<li>thredds.catalog2.simpleImpl.ThreddsMetadataImpl.GeospatialCoverageImpl</li>
-<li>thredds.catalog2.simpleImpl.ThreddsMetadataImpl.GeospatialRangeImpl</li>
-<li>thredds.catalog2.simpleImpl.ThreddsMetadataImpl.KeyphraseImpl</li>
-<li>thredds.catalog2.simpleImpl.ThreddsMetadataImpl.VariableImpl</li>
-<li>thredds.catalog2.xml.parser.ThreddsXmlParser</li>
-<li>thredds.catalog2.xml.parser.ThreddsXmlParserException</li>
-<li>thredds.catalog2.xml.parser.ThreddsXmlParserFactory</li>
-<li>thredds.catalog2.xml.parser.ThreddsXmlParserIssue</li>
-<li>thredds.catalog2.xml.parser.ThreddsXmlParserIssue.Severity</li>
-<li>thredds.catalog2.xml.parser.jdom.CatalogReader</li>
-<li>thredds.catalog2.xml.parser.jdom.JdomCatalogParser</li>
-<li>thredds.catalog2.xml.parser.jdom.PropertyParser</li>
-<li>thredds.catalog2.xml.parser.sax.CatalogEntityResolver</li>
-<li>thredds.catalog2.xml.parser.sax.CatalogEntityResolver.RegisteredEntity</li>
-<li>thredds.catalog2.xml.parser.sax.CatalogHandler</li>
-<li>thredds.catalog2.xml.parser.sax.SAXCatalogParser</li>
-<li>thredds.catalog2.xml.parser.sax.ServiceHandler</li>
-<li>thredds.catalog2.xml.parser.sax.ThreddsCatalogErrorHandler</li>
-<li>thredds.catalog2.xml.parser.sax.ThreddsCatalogHandler</li>
-<li>thredds.catalog2.xml.parser.stax.AbstractElementParser</li>
-<li>thredds.catalog2.xml.parser.stax.AccessElementParser</li>
-<li>thredds.catalog2.xml.parser.stax.CatalogElementParser</li>
-<li>thredds.catalog2.xml.parser.stax.CatalogRefElementParser</li>
-<li>thredds.catalog2.xml.parser.stax.DatasetElementParser</li>
-<li>thredds.catalog2.xml.parser.stax.DatasetNodeElementParserUtils</li>
-<li>thredds.catalog2.xml.parser.stax.MetadataElementParser</li>
-<li>thredds.catalog2.xml.parser.stax.PropertyElementParser</li>
-<li>thredds.catalog2.xml.parser.stax.ServiceElementParser</li>
-<li>thredds.catalog2.xml.parser.stax.StaxThreddsXmlParser</li>
-<li>thredds.catalog2.xml.parser.stax.StaxThreddsXmlParserUtils</li>
-<li>thredds.catalog2.xml.parser.stax.ThreddsMetadataElementParser</li>
-<li>thredds.catalog2.xml.parser.stax.ThreddsMetadataElementParser.ServiceNameElementParser</li>
-<li>thredds.catalog2.xml.util.AccessElementUtils</li>
-<li>thredds.catalog2.xml.util.CatalogElementUtils</li>
-<li>thredds.catalog2.xml.util.CatalogNamespace</li>
-<li>thredds.catalog2.xml.util.CatalogRefElementUtils</li>
-<li>thredds.catalog2.xml.util.DatasetElementUtils</li>
-<li>thredds.catalog2.xml.util.MetadataElementUtils</li>
-<li>thredds.catalog2.xml.util.PropertyElementUtils</li>
-<li>thredds.catalog2.xml.util.ServiceElementUtils</li>
-<li>thredds.catalog2.xml.util.ThreddsMetadataElementUtils</li>
-<li>thredds.catalog2.xml.writer.ThreddsXmlWriter</li>
-<li>thredds.catalog2.xml.writer.ThreddsXmlWriterException</li>
-<li>thredds.catalog2.xml.writer.ThreddsXmlWriterFactory</li>
-<li>thredds.catalog2.xml.writer.stax.AbstractElementWriter</li>
-<li>thredds.catalog2.xml.writer.stax.AbstractElementWriterFactory</li>
-<li>thredds.catalog2.xml.writer.stax.CatalogElementWriter</li>
-<li>thredds.catalog2.xml.writer.stax.PropertyElementWriter</li>
-<li>thredds.catalog2.xml.writer.stax.ServiceElementWriter</li>
-<li>thredds.catalog2.xml.writer.stax.StaxWriter</li>
 <li>thredds.cataloggen.config.CatalogRefInfo</li>
 <li>thredds.crawlabledataset.filter.RegExpMatchOnPathFilter</li>
 <li>thredds.crawlabledataset.filter.WildcardMatchOnPathFilter</li>
+<li>thredds.util.DodsURLExtractor</li>
 <li>thredds.util.HttpUriResolver</li>
 <li>thredds.util.HttpUriResolverFactory</li>
 <li>thredds.util.PathAliasReplacement</li>
-<li>thredds.wcs.Coverage</li>
-<li>thredds.wcs.Dataset</li>
-<li>thredds.wcs.Request</li>
-<li>thredds.wcs.Request.BoundingBox</li>
-<li>thredds.wcs.Request.Format</li>
-<li>thredds.wcs.Request.Operation</li>
-<li>thredds.wcs.Request.RequestEncoding</li>
-<li>thredds.wcs.WcsRequestFactory</li>
-<li>thredds.wcs.v1_0_0_1.DescribeCoverage</li>
-<li>thredds.wcs.v1_0_0_1.DescribeCoverageBuilder</li>
-<li>thredds.wcs.v1_0_0_1.ExceptionReport</li>
-<li>thredds.wcs.v1_0_0_1.GetCapabilities</li>
-<li>thredds.wcs.v1_0_0_1.GetCapabilities.ResponsibleParty</li>
-<li>thredds.wcs.v1_0_0_1.GetCapabilities.ResponsibleParty.Address</li>
-<li>thredds.wcs.v1_0_0_1.GetCapabilities.ResponsibleParty.ContactInfo</li>
-<li>thredds.wcs.v1_0_0_1.GetCapabilities.ResponsibleParty.OnlineResource</li>
-<li>thredds.wcs.v1_0_0_1.GetCapabilities.Section</li>
-<li>thredds.wcs.v1_0_0_1.GetCapabilities.ServiceInfo</li>
-<li>thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder</li>
-<li>thredds.wcs.v1_0_0_1.GetCoverage</li>
-<li>thredds.wcs.v1_0_0_1.GetCoverageBuilder</li>
-<li>thredds.wcs.v1_0_0_1.WcsCoverage</li>
-<li>thredds.wcs.v1_0_0_1.WcsCoverage.VerticalRange</li>
-<li>thredds.wcs.v1_0_0_1.WcsDataset</li>
-<li>thredds.wcs.v1_0_0_1.WcsException</li>
-<li>thredds.wcs.v1_0_0_1.WcsException.Code</li>
-<li>thredds.wcs.v1_0_0_1.WcsRangeField</li>
-<li>thredds.wcs.v1_0_0_1.WcsRangeField.Axis</li>
-<li>thredds.wcs.v1_0_0_1.WcsRequest</li>
-<li>thredds.wcs.v1_0_0_1.WcsRequestBuilder</li>
-<li>thredds.wcs.v1_0_0_Plus.AxisSubset</li>
-<li>thredds.wcs.v1_0_0_Plus.DescribeCoverage</li>
-<li>thredds.wcs.v1_0_0_Plus.ExceptionReport</li>
-<li>thredds.wcs.v1_0_0_Plus.GetCapabilities</li>
-<li>thredds.wcs.v1_0_0_Plus.GetCapabilities.ResponsibleParty</li>
-<li>thredds.wcs.v1_0_0_Plus.GetCapabilities.ResponsibleParty.Address</li>
-<li>thredds.wcs.v1_0_0_Plus.GetCapabilities.ResponsibleParty.ContactInfo</li>
-<li>thredds.wcs.v1_0_0_Plus.GetCapabilities.ResponsibleParty.OnlineResource</li>
-<li>thredds.wcs.v1_0_0_Plus.GetCapabilities.Section</li>
-<li>thredds.wcs.v1_0_0_Plus.GetCapabilities.ServiceInfo</li>
-<li>thredds.wcs.v1_0_0_Plus.GetCoverage</li>
-<li>thredds.wcs.v1_0_0_Plus.WcsCoverage</li>
-<li>thredds.wcs.v1_0_0_Plus.WcsDataset</li>
-<li>thredds.wcs.v1_0_0_Plus.WcsException</li>
-<li>thredds.wcs.v1_0_0_Plus.WcsException.Code</li>
-<li>thredds.wcs.v1_0_0_Plus.WcsRangeField</li>
-<li>thredds.wcs.v1_0_0_Plus.WcsRangeField.Axis</li>
-<li>thredds.wcs.v1_0_0_Plus.WcsRequest</li>
-<li>thredds.wcs.v1_0_0_Plus.WcsRequest.Format</li>
-<li>thredds.wcs.v1_0_0_Plus.WcsRequest.Operation</li>
-<li>thredds.wcs.v1_0_0_Plus.WcsRequest.RequestEncoding</li>
-<li>thredds.wcs.v1_1_0.DescribeCoverage</li>
-<li>thredds.wcs.v1_1_0.ExceptionReport</li>
-<li>thredds.wcs.v1_1_0.GetCapabilities</li>
-<li>thredds.wcs.v1_1_0.GetCapabilities.Section</li>
-<li>thredds.wcs.v1_1_0.GetCapabilities.ServiceId</li>
-<li>thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider</li>
-<li>thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.Address</li>
-<li>thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.ContactInfo</li>
-<li>thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.OnlineResource</li>
-<li>thredds.wcs.v1_1_0.GetCapabilities.ServiceProvider.ServiceContact</li>
-<li>thredds.wcs.v1_1_0.GetCoverage</li>
-<li>thredds.wcs.v1_1_0.Request</li>
-<li>thredds.wcs.v1_1_0.Request.Format</li>
-<li>thredds.wcs.v1_1_0.Request.Operation</li>
-<li>thredds.wcs.v1_1_0.Request.RequestEncoding</li>
-<li>thredds.wcs.v1_1_0.WcsException</li>
-<li>thredds.wcs.v1_1_0.WcsException.Code</li>
-<li>thredds.wcs.v1_1_0.WcsResponse</li>
-<li>thredds.wcs.v1_1_0.XMLwriter</li>
-<li>thredds.wcs.v1_1_0.XMLwriter.ExceptionCodes</li>
 <li>ucar.ma2.ArrayRagged</li>
 <li>ucar.ma2.ArraySequenceNested</li>
 <li>ucar.ma2.MAMath.ScaleOffset</li>
 <li>ucar.ma2.Section</li>
 <li>ucar.ma2.Section.Iterator</li>
+<li>ucar.ma2.StructureDataComposite</li>
+<li>ucar.ma2.StructureDataFactory</li>
 <li>ucar.ma2.StructureDataIterator</li>
+<li>ucar.ma2.StructureDataScalar</li>
 <li>ucar.nc2.EnumTypedef</li>
 <li>ucar.nc2.NCdumpW</li>
 <li>ucar.nc2.NCdumpW.WantValues</li>
@@ -297,6 +135,8 @@
 <li>ucar.nc2.Sequence</li>
 <li>ucar.nc2.VariableSimpleAdapter</li>
 <li>ucar.nc2.constants.AxisType</li>
+<li>ucar.nc2.constants.CF</li>
+<li>ucar.nc2.constants.CF.FeatureType</li>
 <li>ucar.nc2.constants.FeatureType</li>
 <li>ucar.nc2.constants._Coordinate</li>
 <li>ucar.nc2.dataset.CoordSysBuilder.ConventionNameOk</li>
@@ -307,6 +147,7 @@
 <li>ucar.nc2.dataset.conv.BUFRConvention</li>
 <li>ucar.nc2.dataset.conv.DefaultConvention</li>
 <li>ucar.nc2.dataset.conv.FslWindProfiler</li>
+<li>ucar.nc2.dataset.conv.ModisSatellite</li>
 <li>ucar.nc2.dataset.conv.Nimbus</li>
 <li>ucar.nc2.dataset.conv.NsslRadarMosaicConvention</li>
 <li>ucar.nc2.dataset.transform.RotatedLatLon</li>
@@ -321,8 +162,6 @@
 <li>ucar.nc2.dt.radial.UF2Dataset</li>
 <li>ucar.nc2.dt.trajectory.UnidataTrajectoryObsDataset2</li>
 <li>ucar.nc2.ft.DataCost</li>
-<li>ucar.nc2.ft.EarthLocation</li>
-<li>ucar.nc2.ft.EarthLocationImpl</li>
 <li>ucar.nc2.ft.FeatureCollection</li>
 <li>ucar.nc2.ft.FeatureDataset</li>
 <li>ucar.nc2.ft.FeatureDatasetFactory</li>
@@ -342,9 +181,7 @@
 <li>ucar.nc2.ft.ProfileFeatureCollection</li>
 <li>ucar.nc2.ft.SectionFeature</li>
 <li>ucar.nc2.ft.SectionFeatureCollection</li>
-<li>ucar.nc2.ft.Station</li>
 <li>ucar.nc2.ft.StationCollection</li>
-<li>ucar.nc2.ft.StationImpl</li>
 <li>ucar.nc2.ft.StationProfileFeature</li>
 <li>ucar.nc2.ft.StationProfileFeatureCollection</li>
 <li>ucar.nc2.ft.StationTimeSeriesFeature</li>
@@ -375,25 +212,40 @@
 <li>ucar.nc2.ft.point.StructureDataIteratorLinked</li>
 <li>ucar.nc2.ft.point.TrajectoryFeatureImpl</li>
 <li>ucar.nc2.ft.point.standard.CoordSysEvaluator</li>
+<li>ucar.nc2.ft.point.standard.CoordVarExtractor</li>
+<li>ucar.nc2.ft.point.standard.Cursor</li>
 <li>ucar.nc2.ft.point.standard.Evaluator</li>
 <li>ucar.nc2.ft.point.standard.Join</li>
-<li>ucar.nc2.ft.point.standard.JoinType</li>
+<li>ucar.nc2.ft.point.standard.JoinParentIndex</li>
 <li>ucar.nc2.ft.point.standard.NestedTable</li>
-<li>ucar.nc2.ft.point.standard.NestedTable.Table</li>
 <li>ucar.nc2.ft.point.standard.PointDatasetStandardFactory</li>
 <li>ucar.nc2.ft.point.standard.StandardPointCollectionImpl</li>
 <li>ucar.nc2.ft.point.standard.StandardPointFeatureIterator</li>
+<li>ucar.nc2.ft.point.standard.StandardProfileCollectionImpl</li>
 <li>ucar.nc2.ft.point.standard.StandardStationCollectionImpl</li>
 <li>ucar.nc2.ft.point.standard.StandardStationProfileCollectionImpl</li>
 <li>ucar.nc2.ft.point.standard.StandardTrajectoryCollectionImpl</li>
+<li>ucar.nc2.ft.point.standard.Table</li>
+<li>ucar.nc2.ft.point.standard.Table.CoordName</li>
+<li>ucar.nc2.ft.point.standard.Table.TableArrayStructure</li>
+<li>ucar.nc2.ft.point.standard.Table.TableConstruct</li>
+<li>ucar.nc2.ft.point.standard.Table.TableContiguous</li>
+<li>ucar.nc2.ft.point.standard.Table.TableLinkedList</li>
+<li>ucar.nc2.ft.point.standard.Table.TableMultiDimInner</li>
+<li>ucar.nc2.ft.point.standard.Table.TableMultiDimOuter</li>
+<li>ucar.nc2.ft.point.standard.Table.TableNestedStructure</li>
+<li>ucar.nc2.ft.point.standard.Table.TableSingleton</li>
+<li>ucar.nc2.ft.point.standard.Table.TableStructure</li>
+<li>ucar.nc2.ft.point.standard.Table.TableTop</li>
+<li>ucar.nc2.ft.point.standard.Table.Type</li>
 <li>ucar.nc2.ft.point.standard.TableAnalyzer</li>
 <li>ucar.nc2.ft.point.standard.TableAnalyzer.StationInfo</li>
 <li>ucar.nc2.ft.point.standard.TableConfig</li>
-<li>ucar.nc2.ft.point.standard.TableConfig.JoinConfig</li>
 <li>ucar.nc2.ft.point.standard.TableConfigurer</li>
-<li>ucar.nc2.ft.point.standard.TableType</li>
+<li>ucar.nc2.ft.point.standard.TableConfigurerImpl</li>
+<li>ucar.nc2.ft.point.standard.plug.BufrCdm</li>
 <li>ucar.nc2.ft.point.standard.plug.CFpointObs</li>
-<li>ucar.nc2.ft.point.standard.plug.CFpointObs.CFFeatureType</li>
+<li>ucar.nc2.ft.point.standard.plug.Cosmic</li>
 <li>ucar.nc2.ft.point.standard.plug.FslWindProfiler</li>
 <li>ucar.nc2.ft.point.standard.plug.Iridl</li>
 <li>ucar.nc2.ft.point.standard.plug.Madis</li>
@@ -536,8 +388,10 @@
 <li>ucar.nc2.util.net.URLencode</li>
 <li>ucar.nc2.util.xml.Parse</li>
 <li>ucar.nc2.util.xml.RuntimeConfigParser</li>
-<li>ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper</li>
-<li>ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper.ProjectionStandardsInfo</li>
+<li>ucar.unidata.geoloc.EarthLocation</li>
+<li>ucar.unidata.geoloc.EarthLocationImpl</li>
+<li>ucar.unidata.geoloc.Station</li>
+<li>ucar.unidata.geoloc.StationImpl</li>
 <li>ucar.unidata.geoloc.projection.RotatedLatLon</li>
 <li>ucar.unidata.geoloc.projection.RotatedPole</li>
 <li>ucar.unidata.geoloc.vertical.AtmosLnPressure</li>
@@ -1573,6 +1427,7 @@
 <li>public final static ucar.ma2.DataType SEQUENCE;
     </li>
 <li>public boolean isEnum()</li>
+<li>public boolean isIntegral()</li>
 <li>public boolean isNumeric()</li>
 <li>public boolean isString()</li>
 <li>public static ucar.ma2.DataType valueOf(java.lang.String)</li>
@@ -2324,6 +2179,8 @@
 <li>protected ucar.nc2.Group makeRootGroup()</li>
 <li>public static ucar.nc2.NetcdfFile open(java.lang.String, java.lang.String, int, ucar.nc2.util.CancelTask, java.lang.Object) throws java.lang.ClassNotFoundException, java.lang.IllegalAccessException, java.lang.InstantiationException, java.io.IOException</li>
 <li>public static ucar.nc2.NetcdfFile openInMemory(java.net.URI) throws java.io.IOException</li>
+<li>public double readAttributeDouble(ucar.nc2.Variable, java.lang.String, double)</li>
+<li>public int readAttributeInteger(ucar.nc2.Variable, java.lang.String, int)</li>
 <li>protected ucar.ma2.Array readData(ucar.nc2.Variable, ucar.ma2.Section) throws java.io.IOException, ucar.ma2.InvalidRangeException</li>
 <li>public ucar.ma2.Array readSection(java.lang.String) throws java.io.IOException, ucar.ma2.InvalidRangeException</li>
 <li>public long readToByteChannel(java.lang.String, java.nio.channels.WritableByteChannel) throws java.io.IOException, ucar.ma2.InvalidRangeException</li>
@@ -2619,7 +2476,6 @@
 <ul>
 <li>public static void addCoordinateSystems(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 <li>protected ucar.nc2.dataset.AxisType getAxisType(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.dataset.VariableEnhanced)</li>
-<li>public static void registerConvention(java.lang.String, java.lang.Class)</li>
 </ul>
 <h5>Added:</h5>
 <ul>
@@ -3204,11 +3060,13 @@
 <h5>Removed:</h5>
 <ul>
 <li>protected java.lang.String getUnits(ucar.nc2.dataset.NetcdfDataset)</li>
+<li>protected double readAttributeDouble(ucar.nc2.Variable, java.lang.String)</li>
 <li>public void setErrorBuffer(java.lang.StringBuffer)</li>
 </ul>
 <h5>Added:</h5>
 <ul>
 <li>public java.lang.String[] parseFormula(java.lang.String, java.lang.String)</li>
+<li>protected double readAttributeDouble(ucar.nc2.Variable, java.lang.String, double)</li>
 <li>public void setErrorBuffer(java.util.Formatter)</li>
 </ul>
 </li>
@@ -3297,26 +3155,110 @@
 </ul>
 </li>
 <li>
+<h4>ucar.nc2.dt.PointObsDatatype</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public abstract ucar.nc2.dt.EarthLocation getLocation()</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public abstract ucar.unidata.geoloc.EarthLocation getLocation()</li>
+</ul>
+</li>
+<li>
 <h4>ucar.nc2.dt.RadialDatasetSweep</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public abstract ucar.nc2.dt.EarthLocation getCommonOrigin()</li>
+</ul>
 <h5>Added:</h5>
 <ul>
 <li>public final static java.lang.String UF = Universal Format;
     </li>
+<li>public abstract ucar.unidata.geoloc.EarthLocation getCommonOrigin()</li>
+</ul>
+</li>
+<li>
+<h4>ucar.nc2.dt.RadialDatasetSweep.Sweep</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public abstract ucar.nc2.dt.EarthLocation getOrigin(int)</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public abstract ucar.unidata.geoloc.EarthLocation getOrigin(int)</li>
+</ul>
+</li>
+<li>
+<h4>ucar.nc2.dt.StationCollection</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public abstract java.util.List getData(ucar.nc2.dt.Station) throws java.io.IOException</li>
+<li>public abstract java.util.List getData(ucar.nc2.dt.Station, java.util.Date, java.util.Date) throws java.io.IOException</li>
+<li>public abstract java.util.List getData(ucar.nc2.dt.Station, java.util.Date, java.util.Date, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+<li>public abstract java.util.List getData(ucar.nc2.dt.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+<li>public abstract ucar.nc2.dt.DataIterator getDataIterator(ucar.nc2.dt.Station)</li>
+<li>public abstract ucar.nc2.dt.DataIterator getDataIterator(ucar.nc2.dt.Station, java.util.Date, java.util.Date)</li>
+<li>public abstract ucar.nc2.dt.Station getStation(java.lang.String)</li>
+<li>public abstract int getStationDataCount(ucar.nc2.dt.Station)</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public abstract java.util.List getData(ucar.unidata.geoloc.Station) throws java.io.IOException</li>
+<li>public abstract java.util.List getData(ucar.unidata.geoloc.Station, java.util.Date, java.util.Date) throws java.io.IOException</li>
+<li>public abstract java.util.List getData(ucar.unidata.geoloc.Station, java.util.Date, java.util.Date, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+<li>public abstract java.util.List getData(ucar.unidata.geoloc.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+<li>public abstract ucar.nc2.dt.DataIterator getDataIterator(ucar.unidata.geoloc.Station)</li>
+<li>public abstract ucar.nc2.dt.DataIterator getDataIterator(ucar.unidata.geoloc.Station, java.util.Date, java.util.Date)</li>
+<li>public abstract ucar.unidata.geoloc.Station getStation(java.lang.String)</li>
+<li>public abstract int getStationDataCount(ucar.unidata.geoloc.Station)</li>
 </ul>
 </li>
 <li>
 <h4>ucar.nc2.dt.StationImpl</h4>
 <h5>Removed:</h5>
 <ul>
+<li>protected java.lang.String desc;
+    </li>
+<li>protected java.lang.String name;
+    </li>
+<li>protected java.lang.String wmoId;
+    </li>
+<li>public int compareTo(java.lang.Object)</li>
+<li>public java.lang.String getDescription()</li>
+<li>public java.lang.String getName()</li>
+<li>public java.lang.String getWmoId()</li>
 <li>protected java.util.ArrayList readObservations() throws java.io.IOException</li>
+<li>public void setDescription(java.lang.String)</li>
+<li>public void setName(java.lang.String)</li>
+<li>public void setWmoId(java.lang.String)</li>
+<li>public java.lang.String toString()</li>
 </ul>
 <h5>Added:</h5>
 <ul>
 <li>protected java.util.List readObservations() throws java.io.IOException</li>
 </ul>
+<h5>Changed:</h5>
+<ul>
+<li>
+<span>From:
+                public ucar.nc2.dt.StationImpl extends ucar.nc2.dt.EarthLocationImpl implements ucar.nc2.dt.Station, java.lang.Comparable</span>
+<br>
+<span>To:
+                public ucar.nc2.dt.StationImpl extends ucar.unidata.geoloc.StationImpl</span>
+</li>
+</ul>
 </li>
 <li>
 <h4>ucar.nc2.dt.StationObsDatatype</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public abstract ucar.nc2.dt.Station getStation()</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public abstract ucar.unidata.geoloc.Station getStation()</li>
+</ul>
 <h5>Changed:</h5>
 <ul>
 <li>
@@ -3326,6 +3268,17 @@
 <span>To:
                 public abstract ucar.nc2.dt.StationObsDatatype implements ucar.nc2.dt.PointObsDatatype, java.lang.Comparable</span>
 </li>
+</ul>
+</li>
+<li>
+<h4>ucar.nc2.dt.TrajectoryObsDatatype</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public abstract ucar.nc2.dt.EarthLocation getLocation(int) throws java.io.IOException</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public abstract ucar.unidata.geoloc.EarthLocation getLocation(int) throws java.io.IOException</li>
 </ul>
 </li>
 <li>
@@ -3482,10 +3435,34 @@
 <h5>Removed:</h5>
 <ul>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
+<li>public java.util.List readStationData(ucar.nc2.dt.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
+<li>public java.util.List readStationData(ucar.unidata.geoloc.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+</ul>
+</li>
+<li>
+<h4>ucar.nc2.dt.point.DapperDataset.SeqPointObs</h4>
+<h5>Removed:</h5>
+<ul>
+<li>protected DapperDataset.SeqPointObs(ucar.nc2.dt.point.DapperDataset, ucar.nc2.dt.EarthLocation, double, double, int)</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>protected DapperDataset.SeqPointObs(ucar.nc2.dt.point.DapperDataset, ucar.unidata.geoloc.EarthLocation, double, double, int)</li>
+</ul>
+</li>
+<li>
+<h4>ucar.nc2.dt.point.DapperDataset.SeqStationObs</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public DapperDataset.SeqStationObs(ucar.nc2.dt.point.DapperDataset, ucar.nc2.dt.Station, double, ucar.ma2.StructureData)</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public DapperDataset.SeqStationObs(ucar.nc2.dt.point.DapperDataset, ucar.unidata.geoloc.Station, double, ucar.ma2.StructureData)</li>
 </ul>
 </li>
 <li>
@@ -3506,11 +3483,13 @@
 <h5>Removed:</h5>
 <ul>
 <li>public MadisStationObsDataset(ucar.nc2.NetcdfFile) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.nc2.dt.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
 <li>public MadisStationObsDataset(ucar.nc2.dataset.NetcdfDataset) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.unidata.geoloc.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
 </ul>
 </li>
@@ -3519,11 +3498,13 @@
 <h5>Removed:</h5>
 <ul>
 <li>public NdbcDataset(ucar.nc2.NetcdfFile) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.nc2.dt.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
 <li>public NdbcDataset(ucar.nc2.dataset.NetcdfDataset) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.unidata.geoloc.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
 </ul>
 </li>
@@ -3544,10 +3525,14 @@
 <h4>ucar.nc2.dt.point.OldUnidataStationObsDataset</h4>
 <h5>Removed:</h5>
 <ul>
+<li>public java.util.List getData(ucar.nc2.dt.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+<li>public int getStationDataCount(ucar.nc2.dt.Station)</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
+<li>public java.util.List getData(ucar.unidata.geoloc.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+<li>public int getStationDataCount(ucar.unidata.geoloc.Station)</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
 </ul>
 </li>
@@ -3567,6 +3552,19 @@
 </ul>
 </li>
 <li>
+<h4>ucar.nc2.dt.point.PointObsDatatypeImpl</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public PointObsDatatypeImpl(ucar.nc2.dt.EarthLocation, double, double)</li>
+<li>public ucar.nc2.dt.EarthLocation getLocation()</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public PointObsDatatypeImpl(ucar.unidata.geoloc.EarthLocation, double, double)</li>
+<li>public ucar.unidata.geoloc.EarthLocation getLocation()</li>
+</ul>
+</li>
+<li>
 <h4>ucar.nc2.dt.point.RecordDatasetHelper</h4>
 <h5>Removed:</h5>
 <ul>
@@ -3582,6 +3580,34 @@
 </ul>
 </li>
 <li>
+<h4>ucar.nc2.dt.point.RecordDatasetHelper.RecordPointObs</h4>
+<h5>Removed:</h5>
+<ul>
+<li>protected RecordDatasetHelper.RecordPointObs(ucar.nc2.dt.point.RecordDatasetHelper, ucar.nc2.dt.EarthLocation, double, double, int)</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>protected RecordDatasetHelper.RecordPointObs(ucar.nc2.dt.point.RecordDatasetHelper, ucar.unidata.geoloc.EarthLocation, double, double, int)</li>
+</ul>
+</li>
+<li>
+<h4>ucar.nc2.dt.point.RecordDatasetHelper.RecordStationObs</h4>
+<h5>Removed:</h5>
+<ul>
+<li>protected RecordDatasetHelper.RecordStationObs(ucar.nc2.dt.point.RecordDatasetHelper, ucar.nc2.dt.Station, double, double, int)</li>
+<li>protected RecordDatasetHelper.RecordStationObs(ucar.nc2.dt.point.RecordDatasetHelper, ucar.nc2.dt.Station, double, double, ucar.ma2.StructureData)</li>
+<li>protected RecordDatasetHelper.RecordStationObs(ucar.nc2.dt.point.RecordDatasetHelper, ucar.nc2.dt.Station, ucar.ma2.StructureData)</li>
+<li>public ucar.nc2.dt.Station getStation()</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>protected RecordDatasetHelper.RecordStationObs(ucar.nc2.dt.point.RecordDatasetHelper, ucar.unidata.geoloc.Station, double, double, int)</li>
+<li>protected RecordDatasetHelper.RecordStationObs(ucar.nc2.dt.point.RecordDatasetHelper, ucar.unidata.geoloc.Station, double, double, ucar.ma2.StructureData)</li>
+<li>protected RecordDatasetHelper.RecordStationObs(ucar.nc2.dt.point.RecordDatasetHelper, ucar.unidata.geoloc.Station, ucar.ma2.StructureData)</li>
+<li>public ucar.unidata.geoloc.Station getStation()</li>
+</ul>
+</li>
+<li>
 <h4>ucar.nc2.dt.point.SequenceHelper</h4>
 <h5>Removed:</h5>
 <ul>
@@ -3593,14 +3619,55 @@
 </ul>
 </li>
 <li>
+<h4>ucar.nc2.dt.point.SequenceHelper.SeqPointObs</h4>
+<h5>Removed:</h5>
+<ul>
+<li>protected SequenceHelper.SeqPointObs(ucar.nc2.dt.point.SequenceHelper, ucar.nc2.dt.EarthLocation, double, double, int)</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>protected SequenceHelper.SeqPointObs(ucar.nc2.dt.point.SequenceHelper, ucar.unidata.geoloc.EarthLocation, double, double, int)</li>
+</ul>
+</li>
+<li>
 <h4>ucar.nc2.dt.point.SequenceObsDataset</h4>
 <h5>Removed:</h5>
 <ul>
+<li>public java.util.List getData(ucar.nc2.dt.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
+<li>public java.util.List getData(ucar.unidata.geoloc.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
+</ul>
+</li>
+<li>
+<h4>ucar.nc2.dt.point.StationDatasetCollection</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.nc2.dt.Station) throws java.io.IOException</li>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.nc2.dt.Station, java.util.Date, java.util.Date) throws java.io.IOException</li>
+<li>public ucar.nc2.dt.Station getStation(java.lang.String)</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.unidata.geoloc.Station) throws java.io.IOException</li>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.unidata.geoloc.Station, java.util.Date, java.util.Date) throws java.io.IOException</li>
+<li>public ucar.unidata.geoloc.Station getStation(java.lang.String)</li>
+</ul>
+</li>
+<li>
+<h4>ucar.nc2.dt.point.StationDatasetHelper</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public ucar.nc2.dt.Station getStation(java.lang.String)</li>
+<li>public java.util.List getStationObs(ucar.nc2.dt.Station, double, double, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public ucar.unidata.geoloc.Station getStation(java.lang.String)</li>
+<li>public java.util.List getStationObs(ucar.unidata.geoloc.Station, double, double, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 </ul>
 </li>
 <li>
@@ -3608,12 +3675,39 @@
 <h5>Removed:</h5>
 <ul>
 <li>public StationObsDatasetImpl(ucar.nc2.NetcdfFile)</li>
+<li>public java.util.List getData(ucar.nc2.dt.Station) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.nc2.dt.Station, java.util.Date, java.util.Date) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.nc2.dt.Station, java.util.Date, java.util.Date, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.nc2.dt.Station)</li>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.nc2.dt.Station, java.util.Date, java.util.Date)</li>
 <li>public thredds.catalog.DataType getScientificDataType()</li>
+<li>public ucar.nc2.dt.Station getStation(java.lang.String)</li>
+<li>public int getStationDataCount(ucar.nc2.dt.Station)</li>
 </ul>
 <h5>Added:</h5>
 <ul>
 <li>public StationObsDatasetImpl(ucar.nc2.dataset.NetcdfDataset)</li>
+<li>public java.util.List getData(ucar.unidata.geoloc.Station) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.unidata.geoloc.Station, java.util.Date, java.util.Date) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.unidata.geoloc.Station, java.util.Date, java.util.Date, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.unidata.geoloc.Station)</li>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.unidata.geoloc.Station, java.util.Date, java.util.Date)</li>
 <li>public ucar.nc2.constants.FeatureType getScientificDataType()</li>
+<li>public ucar.unidata.geoloc.Station getStation(java.lang.String)</li>
+<li>public int getStationDataCount(ucar.unidata.geoloc.Station)</li>
+</ul>
+</li>
+<li>
+<h4>ucar.nc2.dt.point.StationObsDatatypeImpl</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public StationObsDatatypeImpl(ucar.nc2.dt.Station, double, double)</li>
+<li>public ucar.nc2.dt.Station getStation()</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public StationObsDatatypeImpl(ucar.unidata.geoloc.Station, double, double)</li>
+<li>public ucar.unidata.geoloc.Station getStation()</li>
 </ul>
 </li>
 <li>
@@ -3644,11 +3738,17 @@
 <h4>ucar.nc2.dt.point.UnidataStationObsDataset</h4>
 <h5>Removed:</h5>
 <ul>
+<li>public java.util.List getData(ucar.nc2.dt.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.nc2.dt.Station)</li>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.nc2.dt.Station, java.util.Date, java.util.Date)</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
 <li>public void checkLinks(java.lang.StringBuffer) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.unidata.geoloc.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.unidata.geoloc.Station)</li>
+<li>public ucar.nc2.dt.DataIterator getDataIterator(ucar.unidata.geoloc.Station, java.util.Date, java.util.Date)</li>
 <li>public static void main(java.lang.String[]) throws java.io.IOException</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
 </ul>
@@ -3658,11 +3758,13 @@
 <h5>Removed:</h5>
 <ul>
 <li>public UnidataStationObsDataset2(ucar.nc2.NetcdfFile) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.nc2.dt.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
 <li>public UnidataStationObsDataset2(ucar.nc2.dataset.NetcdfDataset) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.unidata.geoloc.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
 </ul>
 </li>
@@ -3696,11 +3798,13 @@
 <h4>ucar.nc2.dt.radial.Dorade2Dataset</h4>
 <h5>Removed:</h5>
 <ul>
+<li>public ucar.nc2.dt.EarthLocation getCommonOrigin()</li>
 <li>public thredds.catalog.DataType getScientificDataType()</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
+<li>public ucar.unidata.geoloc.EarthLocation getCommonOrigin()</li>
 <li>public ucar.nc2.constants.FeatureType getScientificDataType()</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
 </ul>
@@ -3719,11 +3823,13 @@
 <h4>ucar.nc2.dt.radial.LevelII2Dataset</h4>
 <h5>Removed:</h5>
 <ul>
+<li>public ucar.nc2.dt.EarthLocation getCommonOrigin()</li>
 <li>public thredds.catalog.DataType getScientificDataType()</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
+<li>public ucar.unidata.geoloc.EarthLocation getCommonOrigin()</li>
 <li>public void getRadialsNum()</li>
 <li>public ucar.nc2.constants.FeatureType getScientificDataType()</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
@@ -3743,11 +3849,13 @@
 <h4>ucar.nc2.dt.radial.Netcdf2Dataset</h4>
 <h5>Removed:</h5>
 <ul>
+<li>public ucar.nc2.dt.EarthLocation getCommonOrigin()</li>
 <li>public thredds.catalog.DataType getScientificDataType()</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
+<li>public ucar.unidata.geoloc.EarthLocation getCommonOrigin()</li>
 <li>public ucar.nc2.constants.FeatureType getScientificDataType()</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
 </ul>
@@ -3766,11 +3874,13 @@
 <h4>ucar.nc2.dt.radial.Nids2Dataset</h4>
 <h5>Removed:</h5>
 <ul>
+<li>public ucar.nc2.dt.EarthLocation getCommonOrigin()</li>
 <li>public thredds.catalog.DataType getScientificDataType()</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuffer) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
+<li>public ucar.unidata.geoloc.EarthLocation getCommonOrigin()</li>
 <li>public ucar.nc2.constants.FeatureType getScientificDataType()</li>
 <li>public ucar.nc2.dt.TypedDataset open(ucar.nc2.dataset.NetcdfDataset, ucar.nc2.util.CancelTask, java.lang.StringBuilder) throws java.io.IOException</li>
 </ul>
@@ -3789,13 +3899,17 @@
 <h4>ucar.nc2.dt.radial.RadialCoordSys</h4>
 <h5>Removed:</h5>
 <ul>
+<li>public ucar.nc2.dt.EarthLocation getOrigin()</li>
 <li>public static boolean isRadialCoordSys(java.lang.StringBuffer, ucar.nc2.dataset.CoordinateSystem)</li>
 <li>public static ucar.nc2.dt.radial.RadialCoordSys makeRadialCoordSys(java.lang.StringBuffer, ucar.nc2.dataset.CoordinateSystem, ucar.nc2.dataset.VariableEnhanced)</li>
+<li>public void setOrigin(ucar.nc2.dt.EarthLocation)</li>
 </ul>
 <h5>Added:</h5>
 <ul>
+<li>public ucar.unidata.geoloc.EarthLocation getOrigin()</li>
 <li>public static boolean isRadialCoordSys(java.util.Formatter, ucar.nc2.dataset.CoordinateSystem)</li>
 <li>public static ucar.nc2.dt.radial.RadialCoordSys makeRadialCoordSys(java.util.Formatter, ucar.nc2.dataset.CoordinateSystem, ucar.nc2.dataset.VariableEnhanced)</li>
+<li>public void setOrigin(ucar.unidata.geoloc.EarthLocation)</li>
 </ul>
 <h5>Changed:</h5>
 <ul>
@@ -3810,6 +3924,14 @@
 </li>
 <li>
 <h4>ucar.nc2.dt.radial.RadialDatasetSweepAdapter</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public ucar.nc2.dt.EarthLocation getEarthLocation()</li>
+</ul>
+<h5>Added:</h5>
+<ul>
+<li>public ucar.unidata.geoloc.EarthLocation getEarthLocation()</li>
+</ul>
 <h5>Changed:</h5>
 <ul>
 <li>
@@ -4793,11 +4915,13 @@
 <ul>
 <li>public static ucar.nc2.thredds.DqcStationObsDataset factory(java.lang.String, java.lang.String, java.lang.StringBuffer) throws java.io.IOException</li>
 <li>public static ucar.nc2.thredds.DqcStationObsDataset factory(thredds.catalog.InvDataset, java.lang.String, java.lang.StringBuffer) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.nc2.dt.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 </ul>
 <h5>Added:</h5>
 <ul>
 <li>public static ucar.nc2.thredds.DqcStationObsDataset factory(java.lang.String, java.lang.String, java.lang.StringBuilder) throws java.io.IOException</li>
 <li>public static ucar.nc2.thredds.DqcStationObsDataset factory(thredds.catalog.InvDataset, java.lang.String, java.lang.StringBuilder) throws java.io.IOException</li>
+<li>public java.util.List getData(ucar.unidata.geoloc.Station, ucar.nc2.util.CancelTask) throws java.io.IOException</li>
 </ul>
 </li>
 <li>
@@ -4813,10 +4937,15 @@
 </li>
 <li>
 <h4>ucar.nc2.thredds.TDSRadarDatasetCollection</h4>
+<h5>Removed:</h5>
+<ul>
+<li>public ucar.nc2.dt.StationImpl getRadarStation(java.lang.String)</li>
+</ul>
 <h5>Added:</h5>
 <ul>
 <li>public ucar.nc2.dt.RadialDatasetSweep getRadarDataset(java.lang.String, java.lang.String, java.util.Date) throws java.io.IOException</li>
 <li>public java.net.URI getRadarDatasetURI(java.lang.String, java.lang.String, java.util.Date) throws java.io.IOException</li>
+<li>public ucar.unidata.geoloc.Station getRadarStation(java.lang.String)</li>
 <li>public java.util.ArrayList getRadarStationTimes(java.lang.String, java.lang.String, java.util.Date, java.util.Date) throws java.io.IOException</li>
 </ul>
 </li>
@@ -4981,6 +5110,7 @@
 <h5>Added:</h5>
 <ul>
 <li>public LatLonRect(java.lang.String)</li>
+<li>public double getHeight()</li>
 </ul>
 </li>
 <li>
@@ -5040,6 +5170,11 @@
 <h5>Added:</h5>
 <ul>
 <li>public Mercator(double, double)</li>
+<li>public Mercator(double, double, double, double)</li>
+<li>public double getFalseEasting()</li>
+<li>public double getFalseNorthing()</li>
+<li>public void setFalseEasting(double)</li>
+<li>public void setFalseNorthing(double)</li>
 </ul>
 <h5>Changed:</h5>
 <ul>

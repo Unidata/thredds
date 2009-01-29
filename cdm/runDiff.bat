@@ -1,0 +1,1 @@
+java -jar jardiff-0.2-uber.jar -f C:/dev/thredds-3.16/thredds/cdm/target/netcdf-2.2.22.jar -t c:/dev/tds/thredds/cdm/target/netcdf-4.0.jar  -O C:/dev/tds/thredds/docs/web/netcdf-java/site/jarDiff.html -o html
