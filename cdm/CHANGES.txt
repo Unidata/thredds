@@ -47,6 +47,9 @@ This code is ALPHA
   * updated visad 9/12/08
 
  Release Details:
+  31:
+    bug in PointFeatureSubset iterator.
+    move Station, EarthLocation to ucar.unidata.geoloc
   30: Modis Satellite CoordSysBuilder
     Cosmic profiles
     HDF5 fletcher32

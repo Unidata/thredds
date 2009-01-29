@@ -77,7 +77,7 @@ public class PointIteratorFiltered implements PointFeatureIterator {
     if ((filter_date != null) && !filter_date.included(pdata.getObservationTimeAsDate()))
       return false;
 
-    if ((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatLon()))
+    if ((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()))
       return false;
 
     return true;
@@ -88,7 +88,7 @@ public class PointIteratorFiltered implements PointFeatureIterator {
     if (!pfiter.hasNext()) return null;
 
     PointFeature pdata = pfiter.next();
-    if (!filter(pdata)) {
+    while (!filter(pdata)) {
       if (!pfiter.hasNext()) return null;
       pdata = pfiter.next();
     }

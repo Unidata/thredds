@@ -77,7 +77,7 @@ public class TestPointFeatureTypes  extends TestCase {
 
   public void testProblem() throws IOException {
     //testPointDataset(topDir+"noZ/41001h2007.nc", FeatureType.ANY_POINT, true);
-    testPointDataset("dods://ingrid.ldeo.columbia.edu/SOURCES/.EPCU/dods", FeatureType.ANY_POINT, true);
+    testPointDataset("R:/testdata/point/netcdf/madis.nc", FeatureType.POINT, true);
   }
 
   int readAllDir(String dirName, FileFilter ff, FeatureType type) throws IOException {
@@ -177,6 +177,7 @@ public class TestPointFeatureTypes  extends TestCase {
   int testPointFeatureCollection( PointFeatureCollection pfc, boolean needBB) throws IOException {
     LatLonRect bb = pfc.getBoundingBox();
 
+    long start = System.currentTimeMillis();
     int count = 0;
     pfc.resetIteration();
     while (pfc.hasNext()) {
@@ -185,9 +186,13 @@ public class TestPointFeatureTypes  extends TestCase {
         assert bb.contains( pf.getLocation().getLatLon());
       count++;
     }
+    long took = System.currentTimeMillis() - start;
+    System.out.println(" full iter took= "+took+" msec");
+
 
     bb = pfc.getBoundingBox();
     if (needBB) assert bb != null;
+    System.out.println("bb= "+bb.toString2());
 
     int count2 = 0;
     PointFeatureIterator iter = pfc.getPointFeatureIterator(-1);
@@ -195,8 +200,6 @@ public class TestPointFeatureTypes  extends TestCase {
       PointFeature pf = iter.next();
 
       if (needBB) {
-        if (!bb.contains( pf.getLocation().getLatLon()))
-          assert bb.contains( pf.getLocation().getLatLon()) : bb.toString2() + " does not contains point "+pf.getLocation().getLatLon();
         assert bb.contains( pf.getLocation().getLatLon()) : bb.toString2() + " does not contains point "+pf.getLocation().getLatLon();
       }
 
@@ -204,6 +207,29 @@ public class TestPointFeatureTypes  extends TestCase {
       count2++;
     }
     assert count == count2;
+
+    // try a subset
+    LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight()/2, bb.getWidth()/2);
+    PointFeatureCollection subset = pfc.subset(bb2, null);
+    System.out.println("subset= "+bb2.toString2());
+
+    start = System.currentTimeMillis();
+    int counts = 0;
+    PointFeatureIterator iters = subset.getPointFeatureIterator(-1);
+    while (iters.hasNext()) {
+      PointFeature pf = iters.next();
+
+      if (needBB) {
+        assert bb2.contains( pf.getLocation().getLatLon()) : bb2.toString2() + " does not contains point "+pf.getLocation().getLatLon();
+      }
+      //System.out.printf(" contains point %s%n",pf.getLocation().getLatLon());      
+
+      testPointFeature( pf);
+      counts++;
+    }
+    System.out.println("subset count= "+counts);
+    took = System.currentTimeMillis() - start;
+    System.out.println(" subset iter took= "+took+" msec");
 
     return count;
   }
