@@ -134,7 +134,7 @@ public class NdbcDataset extends StationObsDatasetImpl  implements TypedDatasetF
     return unlimitedDim.getLength();
   }
 
-  public List getData( Station s, CancelTask cancel) throws IOException {
+  public List getData( ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     StationImpl si = (StationImpl) s;
     int count = getDataCount();
 

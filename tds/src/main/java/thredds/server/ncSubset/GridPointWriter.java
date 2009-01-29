@@ -164,8 +164,9 @@ public class GridPointWriter {
 
     // for now, we only have one point = one station
     String stnName = "GridPoint";
-    Station s = new StationImpl( stnName, "Grid Point at lat/lon="+qp.lat+","+qp.lon, qp.lat, qp.lon, Double.NaN);
-    List<Station> stnList  = new ArrayList<Station>();
+    String desc = "Grid Point at lat/lon="+qp.lat+","+qp.lon;
+    ucar.unidata.geoloc.Station s = new ucar.unidata.geoloc.StationImpl( stnName, desc, "", qp.lat, qp.lon, Double.NaN);
+    List<ucar.unidata.geoloc.Station> stnList  = new ArrayList<ucar.unidata.geoloc.Station>();
     stnList.add(s);
     stnData.set(stnName);
 
@@ -272,7 +273,7 @@ public class GridPointWriter {
   }
 
   abstract class Writer {
-    abstract void header(StructureMembers members, List<Station> stnList);
+    abstract void header(StructureMembers members, List<ucar.unidata.geoloc.Station> stnList);
 
     abstract void write(String stnName, Date obsDate, StructureData sdata) throws IOException;
 
@@ -308,7 +309,7 @@ public class GridPointWriter {
       super(qp, vars, writer);
     }
 
-    public void header(StructureMembers members, List<Station> stnList) {
+    public void header(StructureMembers members, List<ucar.unidata.geoloc.Station> stnList) {
       writer.println("<?xml version='1.0' encoding='UTF-8'?>");
       writer.println("<grid dataset='" + gds.getLocationURI() + "'>");
     }
@@ -349,7 +350,7 @@ public class GridPointWriter {
       super(qp, stns, writer);
     }
 
-    public void header(StructureMembers sm, List<Station> stnList) {
+    public void header(StructureMembers sm, List<ucar.unidata.geoloc.Station> stnList) {
       boolean first = true;
       List<StructureMembers.Member> members = (List<StructureMembers.Member>) sm.getMembers();
       for (StructureMembers.Member m : members) {
@@ -415,7 +416,7 @@ public class GridPointWriter {
 
     public File getNetcdfFile() { return netcdfResult; }
 
-    public void header(StructureMembers sm, List<Station> stnList) {
+    public void header(StructureMembers sm, List<ucar.unidata.geoloc.Station> stnList) {
       try {
         sobsWriter.writeHeader(stnList, varList);
       } catch (IOException e) {
@@ -484,7 +485,7 @@ public class GridPointWriter {
       return netcdfResult; 
     }
 
-    public void header(StructureMembers sm, List<Station> stnList) {
+    public void header(StructureMembers sm, List<ucar.unidata.geoloc.Station> stnList) {
       try {
         pobsWriter.writeHeader(stnList, varList, nprofilers, altVarName);
       } catch (IOException e) {

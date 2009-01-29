@@ -155,10 +155,10 @@ public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatase
     else
         elev = 0.0;
 
-    origin = new EarthLocationImpl(latv, lonv, elev);
+    origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
   }
 
-  public ucar.nc2.dt.EarthLocation getCommonOrigin() {
+  public ucar.unidata.geoloc.EarthLocation getCommonOrigin() {
     return origin;
   }
 
@@ -486,7 +486,7 @@ public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatase
         return null;
       }
 
-      public ucar.nc2.dt.EarthLocation getOrigin(int ray) {
+      public ucar.unidata.geoloc.EarthLocation getOrigin(int ray) {
         return origin;
       }
 

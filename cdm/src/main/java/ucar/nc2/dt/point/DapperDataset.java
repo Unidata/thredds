@@ -328,7 +328,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
   }
 
   // return List of PointObsDatatype
-  public List readStationData(Station s, CancelTask cancel) throws IOException {
+  public List readStationData(ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     String CE = outerSequence.getShortName()+"."+innerSequence.getShortName()+"&"+
       outerSequence.getShortName()+"."+ID+"="+s.getName();
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(outerSequence, CE);
@@ -363,7 +363,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     /**
      * Constructor for the case where you keep track of the location, time of each record, but not the data.
      */
-    protected SeqPointObs( EarthLocation location, double obsTime, double nomTime, int recno) {
+    protected SeqPointObs( ucar.unidata.geoloc.EarthLocation location, double obsTime, double nomTime, int recno) {
       super( location, obsTime, nomTime);
       this.recno = recno;
     }
@@ -392,7 +392,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
       }
 
       nomTime = obsTime;
-      location = new EarthLocationImpl( lat, lon, alt);
+      location = new ucar.unidata.geoloc.EarthLocationImpl( lat, lon, alt);
     }
 
     public LatLonPoint getLatLon() {
@@ -422,7 +422,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
      * Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
      * @param sdata the structure data
      */
-    public SeqStationObs(Station s, double obsTime, StructureData sdata) {
+    public SeqStationObs(ucar.unidata.geoloc.Station s, double obsTime, StructureData sdata) {
       super(s, obsTime, obsTime);
       this.sdata = sdata;
     }
@@ -493,7 +493,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
     }
 
 
-  public List getData(Station s, CancelTask cancel) throws IOException {
+  public List getData(ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     return dd.readStationData(s, cancel);
   }
 

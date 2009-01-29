@@ -151,7 +151,7 @@ public class UnidataStationObsDataset2 extends StationObsDatasetImpl implements 
     return unlimitedDim.getLength();
   }
 
-  public List getData( Station s, CancelTask cancel) throws IOException {
+  public List getData( ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     return ((UnidataStationImpl)s).getObservations();
   }
 
@@ -193,7 +193,7 @@ public class UnidataStationObsDataset2 extends StationObsDatasetImpl implements 
       StructureData sdata = recordVar.readStructure(recno);
 
       int stationIndex = sdata.getScalarInt("station_index");
-      Station station = (Station) stations.get(stationIndex);
+      ucar.unidata.geoloc.Station station = (ucar.unidata.geoloc.Station) stations.get(stationIndex);
       if (station == null)
         parseInfo.append("cant find station at index = "+stationIndex+"\n");
 

@@ -42,8 +42,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.StationImpl;
 import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.LatLonPoint;
 import thredds.ui.*;
 
 import java.awt.BorderLayout;
@@ -600,7 +600,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  public class StationBean implements ucar.nc2.dt.Station {
+  public class StationBean implements ucar.unidata.geoloc.Station {
     private Station s;
     private int npts = -1;
 
@@ -644,8 +644,15 @@ public class PointFeatureDatasetViewer extends JPanel {
       return s.getAltitude();
     }
 
-    public int compareTo(Object o) {
-      StationImpl so = (StationImpl) o;
+    public LatLonPoint getLatLon() {
+      return s.getLatLon();
+    }
+
+    public boolean isMissing() {
+      return s.isMissing();
+    }
+
+    public int compareTo(Station so) {
       return getName().compareTo(so.getName());
     }
   }
@@ -699,8 +706,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       return pf.getLocation().getAltitude();
     }
 
-    public int compareTo(Object o) {
-      StationImpl so = (StationImpl) o;
+    public int compareTo(Station so) {
       return getName().compareTo(so.getName());
     }
   }
@@ -754,8 +760,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       return pf.getLocation().getAltitude();
     }
 
-    public int compareTo(Object o) {
-      StationImpl so = (StationImpl) o;
+    public int compareTo(Station so) {
       return getName().compareTo(so.getName());
     }
   }
@@ -803,8 +808,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       return pobs.getLocation().getAltitude();
     }
 
-    public int compareTo(Object o) {
-      StationImpl so = (StationImpl) o;
+    public int compareTo(Station so) {
       return getName().compareTo(so.getName());
     }
   }

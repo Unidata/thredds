@@ -198,7 +198,7 @@ public class MadisPointObsDataset extends PointObsDatasetImpl  implements TypedD
       float lon = sdata.convertScalarFloat("longitude");
       float alt = sdata.convertScalarFloat(altVName);
 
-      return recordHelper.new RecordPointObs( new EarthLocationImpl(lat, lon, alt), obsTime, nomTime, recno);
+      return recordHelper.new RecordPointObs( new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, alt), obsTime, nomTime, recno);
 
     } catch (ucar.ma2.InvalidRangeException e) {
       e.printStackTrace();

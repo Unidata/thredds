@@ -219,7 +219,7 @@ public class CFPointObWriter {
     DataIterator iterOne = pobsDataset.getDataIterator(-1);
     while (iterOne.hasNext()) {
       PointObsDatatype pobsData = (PointObsDatatype) iterOne.nextData();
-      ucar.nc2.dt.EarthLocation loc = pobsData.getLocation();
+      ucar.unidata.geoloc.EarthLocation loc = pobsData.getLocation();
       altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters";
       break;
     }
@@ -265,7 +265,7 @@ public class CFPointObWriter {
         }
       }
 
-      ucar.nc2.dt.EarthLocation loc = pobsData.getLocation();
+      ucar.unidata.geoloc.EarthLocation loc = pobsData.getLocation();
       writer.addPoint(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pobsData.getObservationTimeAsDate(),
           dvals, svals);
     }

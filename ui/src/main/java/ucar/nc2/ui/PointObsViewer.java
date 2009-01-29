@@ -42,6 +42,8 @@ import ucar.nc2.NCdumpW;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.Station;
 import ucar.ma2.StructureData;
 import thredds.ui.*;
 
@@ -90,7 +92,7 @@ public class PointObsViewer extends JPanel {
     chooser.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("Station")) {
-          Station selectedStation = (Station) e.getNewValue();
+          ucar.unidata.geoloc.Station selectedStation = (ucar.unidata.geoloc.Station) e.getNewValue();
           if (debugStationRegionSelect) System.out.println("selectedStation= " + selectedStation.getName());
           eventsOK = false;
           stnTable.setSelectedBean(selectedStation);
@@ -205,7 +207,7 @@ public class PointObsViewer extends JPanel {
    */
   public void setObservations(List obsList) {
 
-    List<Station> pointBeans = new ArrayList<Station>();
+    List<ucar.unidata.geoloc.Station> pointBeans = new ArrayList<ucar.unidata.geoloc.Station>();
     for (int i = 0; i < obsList.size(); i++) {
       PointObsDatatype pob = (PointObsDatatype) obsList.get(i);
       pointBeans.add(new PointObsBean(i, pob));
@@ -244,7 +246,7 @@ public class PointObsViewer extends JPanel {
     return "description wmoId";
   } // for prefs.BeanTable LOOK
 
-  public class PointObsBean implements Station {  // fake Station, so we can use StationRegionChooser
+  public class PointObsBean implements ucar.unidata.geoloc.Station {  // fake Station, so we can use StationRegionChooser
     private PointObsDatatype pobs;
     private String timeObs;
     private int id;
@@ -286,10 +288,16 @@ public class PointObsViewer extends JPanel {
     public double getAltitude() {
       return pobs.getLocation().getAltitude();
     }
+    public LatLonPoint getLatLon() {
+      return pobs.getLocation().getLatLon();
+    }
 
-    public int compareTo(Object o) {
-      Station so = (Station) o;
-      return getName().compareTo( so.getName());
+    public boolean isMissing() {
+      return pobs.getLocation().isMissing();
+    }
+
+    public int compareTo(Station so) {
+      return getName().compareTo(so.getName());
     }
   }
 

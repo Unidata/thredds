@@ -35,10 +35,14 @@ package thredds.server.ncSubset;
 
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
-import ucar.nc2.dt.*;
+import ucar.unidata.geoloc.Station;
 import ucar.nc2.dt.point.WriterStationObsDataset;
 import ucar.nc2.dt.point.StationObsDatasetInfo;
 import ucar.nc2.dt.point.WriterCFStationObsDataset;
+import ucar.nc2.dt.StationObsDataset;
+import ucar.nc2.dt.TypedDatasetFactory;
+import ucar.nc2.dt.DataIterator;
+import ucar.nc2.dt.StationObsDatatype;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
@@ -883,7 +887,7 @@ public class StationObsCollection {
   class WriterNetcdf extends Writer {
     File netcdfResult;
     WriterStationObsDataset sobsWriter;
-    List<Station> stnList;
+    List<ucar.unidata.geoloc.Station> stnList;
     List<VariableSimpleIF> varList;
 
     WriterNetcdf(QueryParams qp, List<String> varNames) throws IOException {
@@ -910,7 +914,7 @@ public class StationObsCollection {
         if (stns.size() == 0)
           stnList = stationList;
         else {
-          stnList = new ArrayList<Station>(stns.size());
+          stnList = new ArrayList<ucar.unidata.geoloc.Station>(stns.size());
 
           for (String s : stns) {
             stnList.add(stationMap.get(s));
@@ -944,7 +948,7 @@ public class StationObsCollection {
   class WriterNetcdfStream extends Writer {
     WriterCFStationObsDataset sobsWriter;
     DataOutputStream out;
-    List<Station> stnList;
+    List<ucar.unidata.geoloc.Station> stnList;
     List<VariableSimpleIF> varList;
 
     WriterNetcdfStream(QueryParams qp, List<String> varNames, OutputStream os) throws IOException {
@@ -971,7 +975,7 @@ public class StationObsCollection {
         if (stns.size() == 0)
           stnList = stationList;
         else {
-          stnList = new ArrayList<Station>(stns.size());
+          stnList = new ArrayList<ucar.unidata.geoloc.Station>(stns.size());
 
           for (String s : stns) {
             stnList.add(stationMap.get(s));
@@ -1073,7 +1077,7 @@ public class StationObsCollection {
     Action getAction() {
       return new Action() {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
-          Station s = sobs.getStation();
+          ucar.unidata.geoloc.Station s = sobs.getStation();
 
           try {
             staxWriter.writeStartElement("metar");
@@ -1150,7 +1154,7 @@ public class StationObsCollection {
             headerWritten = true;
           }
 
-          Station s = sobs.getStation();
+          ucar.unidata.geoloc.Station s = sobs.getStation();
 
           writer.print(format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
           writer.print(',');

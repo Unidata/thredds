@@ -41,8 +41,7 @@ import ucar.nc2.NCdumpW;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.StationImpl;
+import ucar.unidata.geoloc.*;
 import ucar.ma2.StructureData;
 import thredds.ui.*;
 
@@ -236,7 +235,7 @@ public class PointObsViewer2 extends JPanel {
     return "description wmoId";
   } // for prefs.BeanTable LOOK
 
-  public class PointObsBean implements ucar.nc2.dt.Station {  // fake Station, so we can use StationRegionChooser
+  public class PointObsBean implements Station {  // fake Station, so we can use StationRegionChooser
     private PointFeature pobs;
     private String timeObs;
     private int id;
@@ -279,9 +278,16 @@ public class PointObsViewer2 extends JPanel {
       return pobs.getLocation().getAltitude();
     }
 
-    public int compareTo(Object o) {
-      StationImpl so = (StationImpl) o;
-      return getName().compareTo( so.getName());
+    public LatLonPoint getLatLon() {
+      return pobs.getLocation().getLatLon();
+    }
+
+    public boolean isMissing() {
+      return pobs.getLocation().isMissing();
+    }
+
+    public int compareTo(Station so) {
+      return getName().compareTo(so.getName());
     }
   }
 

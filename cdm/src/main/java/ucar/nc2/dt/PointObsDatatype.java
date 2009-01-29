@@ -69,7 +69,7 @@ public interface PointObsDatatype {
    * Location of the observation
    * @return the location of the observation
    */
-  public EarthLocation getLocation();
+  public ucar.unidata.geoloc.EarthLocation getLocation();
 
   /**
    * The actual data of the observation.

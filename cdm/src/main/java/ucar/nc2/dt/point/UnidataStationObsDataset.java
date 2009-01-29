@@ -218,7 +218,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
 
     // loop over stations
     Index ima = latArray.getIndex();
-    recordHelper.stnHash = new HashMap<Object, Station>(2 * n);
+    recordHelper.stnHash = new HashMap<Object, ucar.unidata.geoloc.Station>(2 * n);
     for (int i = 0; i < n; i++) {
       ima.set(i);
 
@@ -277,7 +277,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
     return unlimitedDim.getLength();
   }
 
-  public List getData(Station s, CancelTask cancel) throws IOException {
+  public List getData(ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     return ((UnidataStationImpl) s).getObservations();
   }
 
@@ -468,7 +468,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
         return null;
       }
 
-      Station station = (Station) stations.get(stationIndex);
+      ucar.unidata.geoloc.Station station = (ucar.unidata.geoloc.Station) stations.get(stationIndex);
       if (station == null) {
         parseInfo.append("cant find station at index = ").append(stationIndex).append("\n");
         return null;
@@ -492,11 +492,11 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
     }
   }
 
-  public DataIterator getDataIterator(Station s) {
+  public DataIterator getDataIterator(ucar.unidata.geoloc.Station s) {
     return ((UnidataStationImpl) s).iterator();
   }
 
-  public DataIterator getDataIterator(Station s, Date start, Date end) {
+  public DataIterator getDataIterator(ucar.unidata.geoloc.Station s, Date start, Date end) {
     return ((UnidataStationImpl) s).iterator(start, end);
   }
 

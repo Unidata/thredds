@@ -167,7 +167,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
     else
       nstations = stationDim.getLength();
 
-    recordHelper.stnHash = new HashMap<Object,Station>(2 * nstations);
+    recordHelper.stnHash = new HashMap<Object,ucar.unidata.geoloc.Station>(2 * nstations);
     for (int i=0; i<nstations; i++) {
       StructureData sdata = stationData.getStructureData(i);
 
@@ -199,7 +199,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
     else
       nstations = stationDim.getLength();
 
-    recordHelper.stnHash = new HashMap<Object,Station>(2 * nstations);
+    recordHelper.stnHash = new HashMap<Object,ucar.unidata.geoloc.Station>(2 * nstations);
     for (int i=0; i<nstations; i++) {
       StructureData sdata = stationData.getStructureData(i);
 
@@ -321,7 +321,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
     return unlimitedDim.getLength();
   }
 
-  public List getData(Station s, CancelTask cancel) throws IOException {
+  public List getData(ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     return ((CFStationImpl) s).getObservations();
   }
 
@@ -453,7 +453,7 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
         return null;
       }
 
-      Station station = (Station) stations.get(stationIndex);
+      ucar.unidata.geoloc.Station station = (ucar.unidata.geoloc.Station) stations.get(stationIndex);
       if (station == null) {
         parseInfo.append("cant find station at index = " + stationIndex + "\n");
         return null;
@@ -477,11 +477,11 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
     }
   }
 
-  public DataIterator getDataIterator(Station s) {
+  public DataIterator getDataIterator(ucar.unidata.geoloc.Station s) {
     return ((CFStationImpl) s).iterator();
   }
 
-  public DataIterator getDataIterator(Station s, Date start, Date end) {
+  public DataIterator getDataIterator(ucar.unidata.geoloc.Station s, Date start, Date end) {
     return ((CFStationImpl) s).iterator(start, end);
   }
 

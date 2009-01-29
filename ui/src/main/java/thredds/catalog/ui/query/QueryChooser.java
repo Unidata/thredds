@@ -40,6 +40,7 @@ import thredds.ui.RangeSelector;
 import thredds.ui.RangeDateSelector;
 
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.ComboBox;
@@ -955,7 +956,7 @@ public class QueryChooser extends JPanel {
     }
   }
 
-  private class DqcStation implements ucar.nc2.dt.Station {
+  private class DqcStation implements Station {
     thredds.catalog.query.Station s;
 
     DqcStation(thredds.catalog.query.Station s) {
@@ -991,9 +992,16 @@ public class QueryChooser extends JPanel {
       return s.getLocation().getElevation();
     }
 
-    public int compareTo(Object o) {
-      Station so = (Station) o;
-      return getName().compareTo( so.getName());
+    public LatLonPoint getLatLon() {
+      return new LatLonPointImpl( getLatitude(), getLongitude());
+    }
+
+    public boolean isMissing() {
+      return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
+    }
+
+    public int compareTo(Station so) {
+      return getName().compareTo(so.getName());
     }
   }
 

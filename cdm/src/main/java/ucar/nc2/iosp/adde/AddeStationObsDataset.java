@@ -36,7 +36,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.JavaDateUnit;
-import ucar.nc2.dt.*;
+import ucar.unidata.geoloc.Station;
 import ucar.nc2.dt.point.StationObsDatasetImpl;
 import ucar.nc2.dt.point.StationObsDatatypeImpl;
 
@@ -558,7 +558,7 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
     }
   }
 
-  public DataIterator getDataIterator(int bufferSize) throws IOException {
+  public ucar.nc2.dt.DataIterator getDataIterator(int bufferSize) throws IOException {
     return null;
   }
 

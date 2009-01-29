@@ -225,7 +225,7 @@ public class MadisStationObsDataset extends StationObsDatasetImpl  implements Ty
       StructureData sdata = recordVar.readStructure(recno);
 
       String stationId = sdata.getScalarString(stnIdVName);
-      Station s = recordHelper.stnHash.get(stationId);
+      ucar.unidata.geoloc.Station s = recordHelper.stnHash.get(stationId);
 
       float obsTime = sdata.convertScalarFloat(obsTimeVName);
       float nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarFloat(nomTimeVName);
@@ -238,7 +238,7 @@ public class MadisStationObsDataset extends StationObsDatasetImpl  implements Ty
     }
   }
 
-  public List getData( Station s, CancelTask cancel) throws IOException {
+  public List getData( ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     return ((MadisStationImpl)s).getObservations();
   }
 

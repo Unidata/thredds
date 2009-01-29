@@ -104,7 +104,7 @@ public class StationObsDatasetInfo {
     List stns = sobs.getStations();
     System.out.println("nstns = "+stns.size());
     for (int i = 0; i < stns.size(); i++) {
-      Station s = (Station) stns.get(i);
+      ucar.unidata.geoloc.Station s = (ucar.unidata.geoloc.Station) stns.get(i);
       Element sElem = new Element("station");
       sElem.setAttribute("name",s.getName());
       if (s.getWmoId() != null)

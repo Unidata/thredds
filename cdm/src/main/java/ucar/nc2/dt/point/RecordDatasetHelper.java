@@ -64,7 +64,7 @@ public class RecordDatasetHelper {
   protected String latVName, lonVName, altVName;
   protected DataType stationIdType;
 
-  protected Map<Object,Station> stnHash;
+  protected Map<Object,ucar.unidata.geoloc.Station> stnHash;
   protected StructureDS recordVar;
   protected Dimension obsDim;
 
@@ -211,7 +211,7 @@ public class RecordDatasetHelper {
     // see if its a station or point dataset
     boolean hasStations = stnIdVName != null;
     if (hasStations)
-      stnHash = new HashMap<Object,Station>();
+      stnHash = new HashMap<Object,ucar.unidata.geoloc.Station>();
 
     // get min and max date and lat,lon
     double minDate = Double.MAX_VALUE;
@@ -261,7 +261,7 @@ public class RecordDatasetHelper {
         stn.addObs( stnObs);
 
       } else {
-        records.add( new RecordPointObs( new EarthLocationImpl(lat, lon, alt), obsTime, nomTime, recno));
+        records.add( new RecordPointObs( new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, alt), obsTime, nomTime, recno));
       }
 
       // track date range and bounding box
@@ -336,7 +336,7 @@ public class RecordDatasetHelper {
     /**
      * Constructor for the case where you keep track of the location, time of each record, but not the data.
      */
-    protected RecordPointObs( EarthLocation location, double obsTime, double nomTime, int recno) {
+    protected RecordPointObs( ucar.unidata.geoloc.EarthLocation location, double obsTime, double nomTime, int recno) {
       super( location, obsTime, nomTime);
       this.recno = recno;
     }
@@ -360,7 +360,7 @@ public class RecordDatasetHelper {
       double lat = sdata.convertScalarDouble(latVName);
       double lon = sdata.convertScalarDouble(lonVName);
       double alt = (altVName == null) ? Double.NaN : altScaleFactor * sdata.convertScalarDouble(altVName);
-      location = new EarthLocationImpl( lat, lon, alt);
+      location = new ucar.unidata.geoloc.EarthLocationImpl( lat, lon, alt);
     }
 
     public LatLonPoint getLatLon() {
@@ -392,7 +392,7 @@ public class RecordDatasetHelper {
   //////////////////////////////////////////////////////////////////////////////////////
 
   public class RecordStationObs extends RecordPointObs implements StationObsDatatype {
-    private Station station;
+    private ucar.unidata.geoloc.Station station;
 
     /**
      * Constructor for the case where you keep track of the station, time of each record, but the data reading is deferred.
@@ -401,7 +401,7 @@ public class RecordDatasetHelper {
      * @param nomTime nominal time (may be NaN)
      * @param recno data is at this record number
      */
-    protected RecordStationObs( Station station, double obsTime, double nomTime, int recno) {
+    protected RecordStationObs( ucar.unidata.geoloc.Station station, double obsTime, double nomTime, int recno) {
       super( station, obsTime, nomTime, recno);
       this.station = station;
     }
@@ -429,7 +429,7 @@ public class RecordDatasetHelper {
       } else
         stationId = sdata.getScalarString( stnIdVName).trim();
 
-      station = (Station) stnHash.get( stationId);
+      station = (ucar.unidata.geoloc.Station) stnHash.get( stationId);
       location = station;
       if (station == null) {
         if (null != errs)
@@ -446,7 +446,7 @@ public class RecordDatasetHelper {
      * @param nomTime nominal time (may be NaN)
      * @param sdata the structure data
      */
-    protected RecordStationObs(Station station, double obsTime, double nomTime, StructureData sdata) {
+    protected RecordStationObs(ucar.unidata.geoloc.Station station, double obsTime, double nomTime, StructureData sdata) {
       this.station = station;
       this.location = station;
       this.obsTime = obsTime;
@@ -459,7 +459,7 @@ public class RecordDatasetHelper {
      * @param station data is for this Station
      * @param sdata the structure data
      */
-    protected RecordStationObs(Station station, StructureData sdata) {
+    protected RecordStationObs(ucar.unidata.geoloc.Station station, StructureData sdata) {
       this.station = station;
       this.location = station;
       this.sdata = sdata;
@@ -471,7 +471,7 @@ public class RecordDatasetHelper {
       //nomTime = (nomTimeVName == null) ? obsTime : sdata.convertScalarDouble( members.findMember(nomTimeVName));
     }
 
-    public Station getStation() { return station; }
+    public ucar.unidata.geoloc.Station getStation() { return station; }
 
     public StructureData getData() throws IOException {
       if (null != sdata) return sdata;

@@ -120,7 +120,7 @@ public class TestRadialDataset extends TestCase {
     if ((d1 != null) && (d2 != null))
       assert d1.before(d2) || d1.equals( d2);
 
-    EarthLocation eloc = rds.getCommonOrigin();
+    ucar.unidata.geoloc.EarthLocation eloc = rds.getCommonOrigin();
     assert eloc != null;
     LatLonPoint llp = new LatLonPointImpl( eloc.getLatitude(), eloc.getLongitude());
 

@@ -40,7 +40,6 @@ import org.jdom.input.SAXBuilder;
 import thredds.catalog.*;
 import ucar.nc2.dt.DataIterator;
 import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.dt.StationImpl;
 import ucar.nc2.dt.radial.StationRadarCollectionImpl;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -49,6 +48,8 @@ import ucar.unidata.util.DateSelection;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.DatedThing;
 import ucar.unidata.util.Product;
+
+import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
 import java.net.URI;
@@ -66,7 +67,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
 
 
     /** _more_ */
-    protected HashMap stationHMap;
+    protected HashMap<String, Station> stationHMap;
 
     /** _more_ */
     private List radarTimeSpan;
@@ -240,7 +241,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         Element        rootElem = doc.getRootElement();
         java.util.List children = rootElem.getChildren();
         for (int j = 0; j < children.size(); j++) {
-            StationImpl s;
+            ucar.unidata.geoloc.Station s;
             if (null != (s = readStation((Element) children.get(j)))) {
                 stations.put(s.getName(), s);
             }
@@ -276,7 +277,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @param elem _more_
      * @return stationImpl
      */
-    private StationImpl readStation(Element elem) {
+    private ucar.unidata.geoloc.Station readStation(Element elem) {
         // look for stations
         String name = elem.getAttributeValue("id");
         //latitude
@@ -289,9 +290,10 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         Element alt   = elem.getChild("elevation");
         String  altv  = alt.getValue();
 
-        StationImpl station = new StationImpl(name, descv,
-                                  Double.valueOf(latv), Double.valueOf(lonv),
-                                  Double.valueOf(altv));
+        ucar.unidata.geoloc.StationImpl station =
+                new ucar.unidata.geoloc.StationImpl(name, descv, "",
+                                  Double.parseDouble(latv), Double.parseDouble(lonv),
+                                  Double.parseDouble(altv));
 
         return station;
     }
@@ -547,12 +549,12 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * get one radar station.
      *
      * @param sName _more_
-     * @return StationImpl object
+     * @return Station object
      * @throws
      */
-    public StationImpl getRadarStation(String sName) {
+    public ucar.unidata.geoloc.Station getRadarStation(String sName) {
 
-        return (StationImpl) this.stationHMap.get(sName);
+        return this.stationHMap.get(sName);
 
     }
 
@@ -599,7 +601,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         }
 
         for (Iterator it = sl.iterator(); it.hasNext(); ) {
-            StationImpl     s        = (StationImpl) it.next();
+            Station s = (Station) it.next();
             LatLonPointImpl latlonPt = new LatLonPointImpl();
             latlonPt.set(s.getLatitude(), s.getLongitude());
             if (boundingBox.contains(latlonPt)) {
@@ -1290,7 +1292,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         List stns = dsc.getStations();
         System.out.println(" nstns= " + stns.size());
 
-        StationImpl stn = dsc.getRadarStation("KFTG");  //(StationImpl)stns.get(12);
+        Station stn = dsc.getRadarStation("KFTG");  //(StationImpl)stns.get(12);
 
         // List ulist = stn.getRadarStationURIs();
         // assert null != ulist;
@@ -1317,7 +1319,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
 
 
         for (int i = 0; i < stns.size(); i++) {
-            stn = (StationImpl) stns.get(i);
+            stn = (Station) stns.get(i);
             List times = dsc.getRadarStationTimes(
                              stn.getName(),
                              new Date(

@@ -229,7 +229,7 @@ public class SequenceHelper {
     /**
      * Constructor for the case where you keep track of the location, time of each record, but not the data.
      */
-    protected SeqPointObs( EarthLocation location, double obsTime, double nomTime, int recno) {
+    protected SeqPointObs( ucar.unidata.geoloc.EarthLocation location, double obsTime, double nomTime, int recno) {
       super( location, obsTime, nomTime);
       this.recno = recno;
     }
@@ -261,7 +261,7 @@ public class SequenceHelper {
       }
 
       nomTime = obsTime;
-      location = new EarthLocationImpl( lat, lon, alt);
+      location = new ucar.unidata.geoloc.EarthLocationImpl( lat, lon, alt);
     }
 
     public LatLonPoint getLatLon() {

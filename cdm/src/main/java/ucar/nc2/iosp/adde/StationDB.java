@@ -165,7 +165,7 @@ public class StationDB {
     return stations;
   }
 
-  public class Station implements ucar.nc2.dt.Station {
+  public class Station extends ucar.unidata.geoloc.StationImpl {
     String idn, id, name, type, state, country, desc;
     double lat, lon, elev;
 
@@ -250,8 +250,7 @@ public class StationDB {
       return elev;
     }
 
-    public int compareTo(Object o) {
-      Station so = (Station) o;
+    public int compareTo(Station so) {
       return name.compareTo(so.getName());
     }
   }

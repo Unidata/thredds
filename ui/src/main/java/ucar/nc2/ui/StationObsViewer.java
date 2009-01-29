@@ -40,6 +40,9 @@ import ucar.nc2.units.DateRange;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.Station;
 import thredds.ui.*;
 
 import java.awt.BorderLayout;
@@ -82,7 +85,7 @@ public class StationObsViewer extends JPanel {
     chooser.addPropertyChangeListener( new PropertyChangeListener() {
       public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("Station")) {
-          Station selectedStation = (Station) e.getNewValue();
+          ucar.unidata.geoloc.Station selectedStation = (ucar.unidata.geoloc.Station) e.getNewValue();
           if (debugStationRegionSelect) System.out.println("selectedStation= "+selectedStation.getName());
           eventsOK = false;
           stnTable.setSelectedBean( selectedStation);
@@ -107,7 +110,7 @@ public class StationObsViewer extends JPanel {
 
         // is the geoRegion mode true ?
         LatLonRect geoRegion = null;
-        Station selectedStation = null;
+        ucar.unidata.geoloc.Station selectedStation = null;
 
         boolean useRegion = chooser.getGeoSelectionMode();
         if (useRegion) {
@@ -199,11 +202,11 @@ public class StationObsViewer extends JPanel {
 
     List<StationBean> stationBeans = new ArrayList<StationBean>();
       try {
-        List<Station> stations = sds.getStations();
+        List<ucar.unidata.geoloc.Station> stations = sds.getStations();
         if (stations == null) return;
 
-        for (Station station : stations)
-          stationBeans.add(new StationBean((StationImpl) station));
+        for (ucar.unidata.geoloc.Station station : stations)
+          stationBeans.add(new StationBean((ucar.nc2.dt.StationImpl) station));
 
       } catch (IOException ioe) {
         ioe.printStackTrace();
@@ -249,10 +252,10 @@ public class StationObsViewer extends JPanel {
    obsTable.saveState();
   }
 
-  public class StationBean implements Station {
-    private StationImpl s;
+  public class StationBean implements ucar.unidata.geoloc.Station {
+    private ucar.nc2.dt.StationImpl s;
 
-    public StationBean( StationImpl s) {
+    public StationBean( ucar.nc2.dt.StationImpl s) {
       this.s = s;
     }
 
@@ -284,10 +287,16 @@ public class StationObsViewer extends JPanel {
       return s.getAltitude();
     }
 
+    public LatLonPoint getLatLon() {
+      return new LatLonPointImpl( getLatitude(), getLongitude());
+    }
 
-    public int compareTo(Object o) {
-      Station so = (Station) o;
-      return getName().compareTo( so.getName());
+    public boolean isMissing() {
+      return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
+    }
+
+    public int compareTo(Station so) {
+      return getName().compareTo(so.getName());
     }
   }
 

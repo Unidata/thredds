@@ -107,7 +107,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     }
   }
 
-  public ucar.nc2.dt.EarthLocation getCommonOrigin() {
+  public ucar.unidata.geoloc.EarthLocation getCommonOrigin() {
     return origin;
   }
 
@@ -166,7 +166,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
       System.err.println("CDM radial dataset failed to open this dataset " + e);
 
     }
-    origin = new EarthLocationImpl(lat, lon, elev);
+    origin = new ucar.unidata.geoloc.EarthLocationImpl(lat, lon, elev);
   }
 
 
@@ -513,7 +513,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
         return nrays;
       }
 
-      public ucar.nc2.dt.EarthLocation getOrigin(int ray) {
+      public ucar.unidata.geoloc.EarthLocation getOrigin(int ray) {
         return origin;
       }
 

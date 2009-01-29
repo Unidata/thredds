@@ -56,7 +56,7 @@ public class TimeStationObs {
       if (debug) System.out.println("scanStation open "+url);
       sod = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, url, null, new StringBuilder());
 
-      Station s = sod.getStation(station);
+      ucar.unidata.geoloc.Station s = sod.getStation(station);
       if (s == null) return;
 
       DataIterator iter = sod.getDataIterator(s);

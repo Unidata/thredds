@@ -469,7 +469,7 @@ public class SingleTrajectoryObsDataset
       return ( DateUnit.getStandardDate( getTimeValue( point ) + " " + timeVarUnitsString ) );
     }
 
-    public EarthLocation getLocation( int point ) throws IOException
+    public ucar.unidata.geoloc.EarthLocation getLocation( int point ) throws IOException
     {
       return ( new MyEarthLocation( point ) );
     }
@@ -749,7 +749,7 @@ public class SingleTrajectoryObsDataset
       private int point;
       private StructureData sdata;
       private double time;
-      private EarthLocation earthLoc;
+      private ucar.unidata.geoloc.EarthLocation earthLoc;
 
       private MyPointObsDatatype( int point) throws IOException
       {
@@ -786,7 +786,7 @@ public class SingleTrajectoryObsDataset
         return DateUnit.getStandardDate( dateStr );
       }
 
-      public EarthLocation getLocation()
+      public ucar.unidata.geoloc.EarthLocation getLocation()
       {
         return( this.earthLoc);
       }
@@ -803,7 +803,7 @@ public class SingleTrajectoryObsDataset
     }
 
     // EarthLocation implementation used by SingleTrajectory.
-    private class MyEarthLocation implements EarthLocation
+    private class MyEarthLocation extends ucar.unidata.geoloc.EarthLocationImpl
     {
       private double latitude;
       private double longitude;

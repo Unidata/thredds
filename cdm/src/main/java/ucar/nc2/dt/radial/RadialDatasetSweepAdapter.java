@@ -53,7 +53,7 @@ import java.util.*;
  */
 
 public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl implements RadialDatasetSweep {
-  protected EarthLocation origin;
+  protected ucar.unidata.geoloc.EarthLocation origin;
   protected HashMap csHash = new HashMap();
   protected ucar.nc2.units.DateUnit dateUnits;
 
@@ -103,7 +103,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
 
   public ucar.nc2.units.DateUnit getTimeUnits() { return dateUnits; }
 
-  public ucar.nc2.dt.EarthLocation getEarthLocation() { return origin; }
+  public ucar.unidata.geoloc.EarthLocation getEarthLocation() { return origin; }
 
   // you must set EarthLocation before you call this.
   protected void setBoundingBox() {

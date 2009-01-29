@@ -54,7 +54,7 @@ import java.util.*;
 
 public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implements StationObsDataset {
   protected StationDatasetHelper stationHelper;
-  protected List<Station> stations = new ArrayList<Station>();
+  protected List<ucar.unidata.geoloc.Station> stations = new ArrayList<ucar.unidata.geoloc.Station>();
 
   public StationObsDatasetImpl() {
     super();
@@ -85,57 +85,57 @@ public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implemen
 
   public Class getDataClass() { return StationObsDatatype.class; }
 
-  public List<Station> getStations() throws IOException {
+  public List<ucar.unidata.geoloc.Station> getStations() throws IOException {
     return getStations( (CancelTask) null);
   }
-  public List<Station> getStations(CancelTask cancel)  throws IOException {
+  public List<ucar.unidata.geoloc.Station> getStations(CancelTask cancel)  throws IOException {
     return stations;
   }
 
-  public List<Station> getStations(LatLonRect boundingBox) throws IOException {
+  public List<ucar.unidata.geoloc.Station> getStations(LatLonRect boundingBox) throws IOException {
     return getStations(boundingBox, null);
   }
 
-  public List<Station> getStations(LatLonRect boundingBox, CancelTask cancel) throws IOException {
+  public List<ucar.unidata.geoloc.Station> getStations(LatLonRect boundingBox, CancelTask cancel) throws IOException {
     return stationHelper.getStations(boundingBox, cancel);
   }
 
-  public Station getStation(String id) {
+  public ucar.unidata.geoloc.Station getStation(String id) {
     return stationHelper.getStation(id);
   }
 
-  public int getStationDataCount(Station s) {
+  public int getStationDataCount(ucar.unidata.geoloc.Station s) {
     StationImpl si = (StationImpl) s;
     return si.getNumObservations();
   }
 
-  public List getData(Station s) throws IOException {
+  public List getData(ucar.unidata.geoloc.Station s) throws IOException {
     return getData(s, null);
   }
 
-  public List getData(Station s, Date start, Date end) throws IOException {
+  public List getData(ucar.unidata.geoloc.Station s, Date start, Date end) throws IOException {
     return getData(s, start, end, null);
   }
 
-  public List getData(Station s, Date start, Date end, CancelTask cancel) throws IOException {
+  public List getData(ucar.unidata.geoloc.Station s, Date start, Date end, CancelTask cancel) throws IOException {
     double startTime = timeUnit.makeValue( start);
     double endTime = timeUnit.makeValue( end);
     return stationHelper.getStationObs(s, startTime, endTime, cancel);
   }
 
-  public List getData(List<Station> stations) throws IOException {
+  public List getData(List<ucar.unidata.geoloc.Station> stations) throws IOException {
     return getData(stations, null);
   }
 
-  public List getData(List<Station> stations, CancelTask cancel) throws IOException {
+  public List getData(List<ucar.unidata.geoloc.Station> stations, CancelTask cancel) throws IOException {
     return stationHelper.getStationObs(stations, cancel);
   }
 
-  public List getData(List<Station> stations, Date start, Date end) throws IOException {
+  public List getData(List<ucar.unidata.geoloc.Station> stations, Date start, Date end) throws IOException {
     return getData(stations, start, end, null);
   }
 
-  public List getData(List<Station> stations, Date start, Date end, CancelTask cancel) throws IOException {
+  public List getData(List<ucar.unidata.geoloc.Station> stations, Date start, Date end, CancelTask cancel) throws IOException {
     double startTime = timeUnit.makeValue( start);
     double endTime = timeUnit.makeValue( end);
     return stationHelper.getStationObs(stations, startTime, endTime, cancel);
@@ -155,7 +155,7 @@ public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implemen
     stationHelper.sortByTime(stationObs);
   }
 
-  public DataIterator getDataIterator( Station s) {
+  public DataIterator getDataIterator( ucar.unidata.geoloc.Station s) {
     try {
       return new DataIteratorAdapter( getData(s).iterator());
     } catch (IOException e) {
@@ -166,7 +166,7 @@ public abstract class StationObsDatasetImpl extends PointObsDatasetImpl implemen
 
   /** Get data for this Station within the specified date range.
    * @return Iterator over type getDataClass() */
-  public DataIterator getDataIterator( Station s, Date start, Date end) {
+  public DataIterator getDataIterator( ucar.unidata.geoloc.Station s, Date start, Date end) {
     try {
       return new DataIteratorAdapter( getData(s, start, end).iterator());
     } catch (IOException e) {

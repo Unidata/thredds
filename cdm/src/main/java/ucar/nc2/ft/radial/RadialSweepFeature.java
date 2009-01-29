@@ -144,7 +144,7 @@ public interface RadialSweepFeature {
    * @param radial which radial, must in interval [0,getRadialNumber())
    * @return the location of the origin of the ith radial.
    */
-  public ucar.nc2.dt.EarthLocation getOrigin(int radial);
+  public ucar.unidata.geoloc.EarthLocation getOrigin(int radial);
 
   /**
    * @param radial which radial, must in interval [0,getRadialNumber())

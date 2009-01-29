@@ -212,10 +212,10 @@ public class TestStationDataset extends TestCase {
     assert 0 < stations.size();
     System.out.println(" stations = "+stations.size());
     int n = stations.size();
-    testStation( sod, (Station) stations.get(0));
+    testStation( sod, (ucar.unidata.geoloc.Station) stations.get(0));
     if (n > 3) {
-      testStation( sod, (Station) stations.get(n-1));
-      testStation( sod, (Station) stations.get((n-1)/2));
+      testStation( sod, (ucar.unidata.geoloc.Station) stations.get(n-1));
+      testStation( sod, (ucar.unidata.geoloc.Station) stations.get((n-1)/2));
     }
 
     // make a new bb
@@ -224,7 +224,7 @@ public class TestStationDataset extends TestCase {
     double h = bb.getUpperRightPoint().getLatitude() - bb.getLowerLeftPoint().getLatitude();
     LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getWidth()/2, h/2);
 
-    List<Station> stationsBB= sod.getStations( bb2);
+    List<ucar.unidata.geoloc.Station> stationsBB= sod.getStations( bb2);
     assert null != stationsBB;
     assert stationsBB.size() <= stations.size();
     System.out.println(" bb2 stations = "+stationsBB.size());
@@ -250,7 +250,7 @@ public class TestStationDataset extends TestCase {
     int stationDataCount = 0;
     stations = sod.getStations();
     for (int i = 0; i < stations.size(); i++) {
-      Station station = (Station) stations.get(i);
+      ucar.unidata.geoloc.Station station = (ucar.unidata.geoloc.Station) stations.get(i);
       List stationData = sod.getData( station);
       stationDataCount += stationData.size();
     }
@@ -266,11 +266,11 @@ public class TestStationDataset extends TestCase {
       assert data instanceof StationObsDatatype;
       StationObsDatatype pobs = (StationObsDatatype) data;
 
-      EarthLocation loc = pobs.getLocation();
+      ucar.unidata.geoloc.EarthLocation loc = pobs.getLocation();
       if (loc == null)
         System.out.println("barf");
       assert loc != null;
-      Station s = pobs.getStation();
+      ucar.unidata.geoloc.Station s = pobs.getStation();
       assert s != null;
 
       assert null != pobs.getNominalTimeAsDate();
@@ -287,7 +287,7 @@ public class TestStationDataset extends TestCase {
     return count;
   }
 
-  private void testStation( StationObsDataset sod, Station s) throws IOException {
+  private void testStation( StationObsDataset sod, ucar.unidata.geoloc.Station s) throws IOException {
 
     assert sod.getStation( s.getName()).equals(s);
 

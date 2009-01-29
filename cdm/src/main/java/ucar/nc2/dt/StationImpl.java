@@ -32,6 +32,8 @@
  */
 package ucar.nc2.dt;
 
+import ucar.unidata.geoloc.Station;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
@@ -42,8 +44,7 @@ import java.io.IOException;
  * @author caron
  */
 
-public class StationImpl extends EarthLocationImpl implements Station, Comparable {
-  protected String name, desc, wmoId;
+public class StationImpl extends ucar.unidata.geoloc.StationImpl {
   protected List<StationObsDatatype> obsList;
   protected int count = -1;
 
@@ -51,9 +52,7 @@ public class StationImpl extends EarthLocationImpl implements Station, Comparabl
   }
 
   public StationImpl( String name, String desc, double lat, double lon, double alt) {
-    super( lat, lon, alt);
-    this.name = name;
-    this.desc = desc;
+    super( name, desc, "", lat, lon, alt);
   }
 
   public StationImpl( String name, String desc, double lat, double lon, double alt, int count) {
@@ -61,16 +60,10 @@ public class StationImpl extends EarthLocationImpl implements Station, Comparabl
     this.count = count;
   }
 
-  public String getName() { return name; }
-  public String getDescription() { return desc; }
-  public String getWmoId() { return wmoId; }
   public int getNumObservations() { return (obsList == null) ? count : obsList.size(); }
 
   /////
 
-  public void setName(String name) { this.name = name; }
-  public void setDescription(String desc) { this.desc = desc; }
-  public void setWmoId(String wmoId) { this.wmoId = wmoId; }
   public void incrCount() { count++; }
 
   public List getObservations() throws IOException {
@@ -86,14 +79,5 @@ public class StationImpl extends EarthLocationImpl implements Station, Comparabl
   }
 
   protected List<StationObsDatatype> readObservations()  throws IOException { return null; }
-
-  public int compareTo(Object o) {
-    StationImpl so = (StationImpl) o;
-    return name.compareTo( so.getName());
-  }
-
-  public String toString() {
-    return "name="+name+" desc="+desc+" "+super.toString(); 
-  }
 
 }

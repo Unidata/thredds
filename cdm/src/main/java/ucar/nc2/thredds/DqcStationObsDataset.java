@@ -34,10 +34,10 @@
 package ucar.nc2.thredds;
 
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.dt.*;
-import ucar.nc2.dt.Station;
+import ucar.unidata.geoloc.Station;
 import ucar.nc2.dt.point.StationObsDatatypeImpl;
 import ucar.nc2.dt.point.decode.MetarParseReport;
+import ucar.nc2.dt.StationImpl;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 
@@ -334,7 +334,7 @@ public class DqcStationObsDataset extends ucar.nc2.dt.point.StationObsDatasetImp
     return -1;
   }
 
-  public DataIterator getDataIterator(int bufferSize) throws IOException {
+  public ucar.nc2.dt.DataIterator getDataIterator(int bufferSize) throws IOException {
     return null;
   }
 

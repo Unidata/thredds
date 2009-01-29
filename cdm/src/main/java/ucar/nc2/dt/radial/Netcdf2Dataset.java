@@ -167,7 +167,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
 
     }
 
-    public ucar.nc2.dt.EarthLocation getCommonOrigin() {
+    public ucar.unidata.geoloc.EarthLocation getCommonOrigin() {
       return origin;
     }
 
@@ -229,7 +229,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
     else
       elev = 0.0;
 
-    origin = new EarthLocationImpl(latv, lonv, elev);
+    origin = new ucar.unidata.geoloc.EarthLocationImpl(latv, lonv, elev);
   }
 
 
@@ -503,7 +503,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
           return null;
         }
 
-        public ucar.nc2.dt.EarthLocation getOrigin(int ray) {
+        public ucar.unidata.geoloc.EarthLocation getOrigin(int ray) {
           return origin;
         }
 

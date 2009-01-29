@@ -89,7 +89,7 @@ public class StationDatasetCollection {
    * @param name name of the Station
    * @return Station with that name, or null if not found
    */
-  public Station getStation(String name) {
+  public ucar.unidata.geoloc.Station getStation(String name) {
     return typical.getStation(name);
   }
 
@@ -100,7 +100,7 @@ public class StationDatasetCollection {
    * @return iterator over type getDataClass()
    * @throws java.io.IOException I/O error
    */
-  public DataIterator getDataIterator(Station s) throws IOException {
+  public DataIterator getDataIterator(ucar.unidata.geoloc.Station s) throws IOException {
     return new StationDataIterator(s);
   }
 
@@ -113,7 +113,7 @@ public class StationDatasetCollection {
    * @return Iterator over type getDataClass()
    * @throws java.io.IOException I/O error
    */
-  public DataIterator getDataIterator(Station s, Date start, Date end) throws IOException {
+  public DataIterator getDataIterator(ucar.unidata.geoloc.Station s, Date start, Date end) throws IOException {
     return new StationDateDataIterator(s, start, end);
   }
 
@@ -122,7 +122,7 @@ public class StationDatasetCollection {
     Iterator iterSobs;
     DataIterator dataIter;
 
-    StationDataIterator(Station s) throws IOException {
+    StationDataIterator(ucar.unidata.geoloc.Station s) throws IOException {
       this.stationName = s.getName();
       iterSobs = sobsList.iterator();
     }
@@ -169,7 +169,7 @@ public class StationDatasetCollection {
     }
 
     protected DataIterator makeDataIterator(StationObsDataset sobs) {
-      Station s = sobs.getStation(stationName);
+      ucar.unidata.geoloc.Station s = sobs.getStation(stationName);
       if (s == null) return null;
       return sobs.getDataIterator(s);
     }
@@ -178,7 +178,7 @@ public class StationDatasetCollection {
   private class StationDateDataIterator extends StationDataIterator {
     private Date want_start, want_end;
 
-    StationDateDataIterator(Station s, Date start, Date end) throws IOException {
+    StationDateDataIterator(ucar.unidata.geoloc.Station s, Date start, Date end) throws IOException {
       super(s);
       this.want_start = start;
       this.want_end = end;
@@ -191,7 +191,7 @@ public class StationDatasetCollection {
       Date end = sobs.getEndDate();
       if (end.before(want_start))
         return null;
-      Station s = sobs.getStation(stationName);
+      ucar.unidata.geoloc.Station s = sobs.getStation(stationName);
       if (s == null) return null;
       return sobs.getDataIterator(s, start, end);
     }
@@ -206,13 +206,13 @@ public class StationDatasetCollection {
     sdc.add("C:/data/metars/Surface_METAR_20070330_0000.nc");
     sdc.add("C:/data/metars/Surface_METAR_20070331_0000.nc");
 
-    Station s = sdc.getStation("ACK");
+    ucar.unidata.geoloc.Station s = sdc.getStation("ACK");
     DataIterator iter = sdc.getDataIterator(s);
     while (iter.hasNext()) {
       Object o = iter.nextData();
       assert (o instanceof StationObsDatatype);
       StationObsDatatype sod = (StationObsDatatype) o;
-      Station ss = sod.getStation();
+      ucar.unidata.geoloc.Station ss = sod.getStation();
       assert (ss.getName().equals(s.getName()));
 
       System.out.println(ss.getName() + " " + format.toDateTimeStringISO( sod.getObservationTimeAsDate()));
@@ -230,7 +230,7 @@ public class StationDatasetCollection {
       Object o = iter.nextData();
       assert (o instanceof StationObsDatatype);
       StationObsDatatype sod = (StationObsDatatype) o;
-      Station ss = sod.getStation();
+      ucar.unidata.geoloc.Station ss = sod.getStation();
       assert (ss.getName().equals(s.getName()));
 
       System.out.println(ss.getName() + " " + format.toDateTimeStringISO( sod.getObservationTimeAsDate()));

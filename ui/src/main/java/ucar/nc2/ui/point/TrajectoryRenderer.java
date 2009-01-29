@@ -45,7 +45,7 @@ import java.io.IOException;
 import ucar.unidata.geoloc.*;
 import ucar.nc2.dt.PointObsDatatype;
 import ucar.nc2.dt.TrajectoryObsDatatype;
-import ucar.nc2.dt.EarthLocation;
+import ucar.unidata.geoloc.EarthLocation;
 
 /**
  *
@@ -121,8 +121,8 @@ public class TrajectoryRenderer implements thredds.viewer.ui.Renderer {
   private boolean testPointObsDatatype(PointObsDatatype obs1, PointObsDatatype obs2) {
     if (obs1.getObservationTime() != obs2.getObservationTime())
       return false;
-    EarthLocation loc1 = obs1.getLocation();
-    EarthLocation loc2 = obs2.getLocation();
+    ucar.unidata.geoloc.EarthLocation loc1 = obs1.getLocation();
+    ucar.unidata.geoloc.EarthLocation loc2 = obs2.getLocation();
     if (loc1.getLatitude() != loc2.getLatitude())
       return false;
     if (loc1.getLongitude() != loc2.getLongitude())

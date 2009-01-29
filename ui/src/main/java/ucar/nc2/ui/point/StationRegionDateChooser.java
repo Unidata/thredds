@@ -44,7 +44,7 @@ import ucar.nc2.units.DateRange;
 
 import ucar.unidata.geoloc.*;
 import ucar.util.prefs.ui.*;
-import ucar.nc2.dt.Station;
+import ucar.unidata.geoloc.Station;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -161,7 +161,7 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
           StationRenderer.StationUI sui = stnRender.isOnStation(p);
 
           if (sui != null) {
-            Station s = sui.getStation();
+            ucar.unidata.geoloc.Station s = sui.getStation();
             sbuff.setLength(0);
             sbuff.append(s.getName());
             sbuff.append(" ");
@@ -196,7 +196,7 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
       actionSource = new ActionSourceListener("station") {
         public void actionPerformed( ActionValueEvent e) {
           if (debugEvent) System.out.println(" StationdatasetChooser: actionSource event "+e);
-          selectedStation = (Station) e.getValue();
+          selectedStation = (ucar.unidata.geoloc.Station) e.getValue();
           redraw();
         }
       };
@@ -416,7 +416,7 @@ public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPControl
    * Get currently selected station, or null if none.
    * @return selected station
    */
-  public Station getSelectedStation( ) { return selectedStation; }
+  public ucar.unidata.geoloc.Station getSelectedStation( ) { return selectedStation; }
 
 
   /**

@@ -220,7 +220,7 @@ public class SequenceObsDataset extends StationObsDatasetImpl implements TypedDa
     return unlimitedDim.getLength();
   }
 
-  public List getData( Station s, CancelTask cancel) throws IOException {
+  public List getData( ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     return null; // sequenceHelper.getData( s, cancel);
   }
 

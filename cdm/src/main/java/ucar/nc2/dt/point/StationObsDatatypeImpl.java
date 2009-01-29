@@ -33,7 +33,6 @@
 package ucar.nc2.dt.point;
 
 import ucar.nc2.dt.StationObsDatatype;
-import ucar.nc2.dt.Station;
 
 /**
  * Abstract superclass for implemenation of StationObsDatatype.
@@ -44,15 +43,15 @@ import ucar.nc2.dt.Station;
 
 
 public abstract class StationObsDatatypeImpl extends PointObsDatatypeImpl implements StationObsDatatype {
-  protected Station station;
+  protected ucar.unidata.geoloc.Station station;
 
   public StationObsDatatypeImpl() {
   }
 
-  public StationObsDatatypeImpl( Station station, double obsTime, double nomTime) {
+  public StationObsDatatypeImpl( ucar.unidata.geoloc.Station station, double obsTime, double nomTime) {
     super(station, obsTime,  nomTime);
     this.station = station;
   }
 
-  public Station getStation() { return station; }
+  public ucar.unidata.geoloc.Station getStation() { return station; }
 }

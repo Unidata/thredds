@@ -43,5 +43,5 @@ public interface StationObsDatatype extends ucar.nc2.dt.PointObsDatatype, Compar
    * Station location of the observation
    * @return Station location of the observation
    */
-  public ucar.nc2.dt.Station getStation();
+  public ucar.unidata.geoloc.Station getStation();
 }

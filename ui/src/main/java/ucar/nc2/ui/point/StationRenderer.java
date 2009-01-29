@@ -42,7 +42,7 @@ import thredds.ui.FontUtil;
 import thredds.viewer.gis.SpatialGrid;
 import ucar.unidata.geoloc.*;
 
-import ucar.nc2.dt.Station;
+import ucar.unidata.geoloc.Station;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -95,11 +95,11 @@ class StationRenderer implements thredds.viewer.ui.Renderer {
    * Set the list of stations.
    * @param stns: list of DDStation objects
    */
-  public void setStations(java.util.List<Station> stns) {
+  public void setStations(java.util.List<ucar.unidata.geoloc.Station> stns) {
     stations = new ArrayList<StationUI>( stns.size());
     stationHash.clear();
     for (int i = 0; i < stns.size(); i++) {
-      Station s = (Station) stns.get(i);
+      ucar.unidata.geoloc.Station s = (ucar.unidata.geoloc.Station) stns.get(i);
       StationUI sui = new StationUI( s); // wrap in a StationUI
       stations.add(sui); // wrap in a StationUI
       stationHash.put( s.getName(), sui);
@@ -153,7 +153,7 @@ class StationRenderer implements thredds.viewer.ui.Renderer {
    * @param pickPt: world coordinates
    * @return station that contains this point, or null if none.
    */
-  public Station pick(Point2D pickPt) {
+  public ucar.unidata.geoloc.Station pick(Point2D pickPt) {
     if (world2Normal == null || pickPt == null || stations.isEmpty()) return null;
 
     world2Normal.transform(pickPt, ptN); // work in normalized coordinate space
@@ -168,7 +168,7 @@ class StationRenderer implements thredds.viewer.ui.Renderer {
    * @param pickPt: world coordinates
    * @return station that contains this point, or null if none.
    */
-  public Station pickClosest(Point2D pickPt) {
+  public ucar.unidata.geoloc.Station pickClosest(Point2D pickPt) {
     if (world2Normal == null || pickPt == null || stations.isEmpty()) return null;
 
     world2Normal.transform(pickPt, ptN); // work in normalized coordinate space
@@ -184,7 +184,7 @@ class StationRenderer implements thredds.viewer.ui.Renderer {
    * Get the selected station.
    * @return the selected station, or null if none selected
    */
-  public Station getSelectedStation() {
+  public ucar.unidata.geoloc.Station getSelectedStation() {
     return (selected != null) ? selected.ddStation : null;
   }
 
@@ -255,7 +255,7 @@ class StationRenderer implements thredds.viewer.ui.Renderer {
   }
 
   public class StationUI {
-    private Station ddStation;
+    private ucar.unidata.geoloc.Station ddStation;
     private String id;
 
     private LatLonPointImpl latlonPos = new LatLonPointImpl();       // latlon pos
@@ -266,7 +266,7 @@ class StationRenderer implements thredds.viewer.ui.Renderer {
     private Rectangle2D bbPos = new Rectangle2D.Double();    // bounding box, translated to current drawing pos
     private boolean selected = false;
 
-    StationUI(Station stn) {
+    StationUI(ucar.unidata.geoloc.Station stn) {
       ddStation = stn;
       latlonPos.setLatitude(stn.getLatitude());
       latlonPos.setLongitude(stn.getLongitude());
@@ -282,7 +282,7 @@ class StationRenderer implements thredds.viewer.ui.Renderer {
     }
 
     public String getID() { return id; }
-    public Station getStation() { return ddStation; }
+    public ucar.unidata.geoloc.Station getStation() { return ddStation; }
     public LatLonPoint getLatLon() { return latlonPos; }
     public ProjectionPointImpl getLocation() { return worldPos; }
     public boolean isSelected() { return selected; }

@@ -35,7 +35,6 @@ package ucar.nc2.dt.point;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.dt.StationObsDataset;
-import ucar.nc2.dt.Station;
 import ucar.nc2.dt.StationObsDatatype;
 import ucar.nc2.util.CancelTask;
 
@@ -54,7 +53,7 @@ import java.io.IOException;
  */
 public class StationDatasetHelper {
   private StationObsDataset obsDataset;
-  private Map<String,Station> stationHash;
+  private Map<String,ucar.unidata.geoloc.Station> stationHash;
   private boolean debug = false;
 
   public StationDatasetHelper( StationObsDataset obsDataset) {
@@ -73,14 +72,14 @@ public class StationDatasetHelper {
       if (stations.size() == 0)
         return null;
 
-      Station s =  (Station) stations.get(0);
+      ucar.unidata.geoloc.Station s =  (ucar.unidata.geoloc.Station) stations.get(0);
       LatLonPointImpl llpt = new LatLonPointImpl();
       llpt.set( s.getLatitude(), s.getLongitude());
       rect = new LatLonRect(llpt, .001, .001);
       if (debug) System.out.println("start="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
 
       for (int i = 1; i < stations.size(); i++) {
-        s =  (Station) stations.get(i);
+        s =  (ucar.unidata.geoloc.Station) stations.get(i);
         llpt.set( s.getLatitude(), s.getLongitude());
         rect.extend( llpt);
         if (debug) System.out.println("add="+s.getLatitude()+" "+s.getLongitude()+" rect= "+rect.toString2());
@@ -95,11 +94,11 @@ public class StationDatasetHelper {
     return rect;
   }
 
-  public List<Station> getStations(LatLonRect boundingBox, CancelTask cancel) throws IOException {
+  public List<ucar.unidata.geoloc.Station> getStations(LatLonRect boundingBox, CancelTask cancel) throws IOException {
     LatLonPointImpl latlonPt = new LatLonPointImpl();
-    List<Station> result = new ArrayList<Station>();
-    List<Station> stations = obsDataset.getStations();
-    for (Station s : stations) {
+    List<ucar.unidata.geoloc.Station> result = new ArrayList<ucar.unidata.geoloc.Station>();
+    List<ucar.unidata.geoloc.Station> stations = obsDataset.getStations();
+    for (ucar.unidata.geoloc.Station s : stations) {
       latlonPt.set(s.getLatitude(), s.getLongitude());
       if (boundingBox.contains(latlonPt))
         result.add(s);
@@ -108,17 +107,17 @@ public class StationDatasetHelper {
     return result;
   }
 
-  public Station getStation(String name) {
+  public ucar.unidata.geoloc.Station getStation(String name) {
     if (stationHash == null) {
-      List<Station> stations;
+      List<ucar.unidata.geoloc.Station> stations;
       try {
         stations = obsDataset.getStations();
       } catch (IOException e) {
         return null;
       }
 
-      stationHash = new HashMap<String,Station>( 2*stations.size());
-      for (Station s : stations) {
+      stationHash = new HashMap<String,ucar.unidata.geoloc.Station>( 2*stations.size());
+      for (ucar.unidata.geoloc.Station s : stations) {
         stationHash.put(s.getName(), s);
       }
     }
@@ -126,7 +125,7 @@ public class StationDatasetHelper {
     return stationHash.get( name);
   }
 
-  public List getStationObs(Station s, double startTime, double endTime, CancelTask cancel) throws IOException {
+  public List getStationObs(ucar.unidata.geoloc.Station s, double startTime, double endTime, CancelTask cancel) throws IOException {
     ArrayList result = new ArrayList();
     List stationObs = obsDataset.getData( s, cancel);
     for (int i = 0; i < stationObs.size(); i++) {
@@ -139,20 +138,20 @@ public class StationDatasetHelper {
     return result;
   }
 
-  public List getStationObs(List<Station> stations, CancelTask cancel) throws IOException {
+  public List getStationObs(List<ucar.unidata.geoloc.Station> stations, CancelTask cancel) throws IOException {
     ArrayList result = new ArrayList();
     for (int i = 0; i < stations.size(); i++) {
-      Station s = stations.get(i);
+      ucar.unidata.geoloc.Station s = stations.get(i);
       result.addAll( obsDataset.getData( s, cancel));
       if ((cancel != null) && cancel.isCancel()) return null;
     }
     return result;
   }
 
-  public List getStationObs(List<Station> stations, double startTime, double endTime, CancelTask cancel) throws IOException {
+  public List getStationObs(List<ucar.unidata.geoloc.Station> stations, double startTime, double endTime, CancelTask cancel) throws IOException {
     ArrayList result = new ArrayList();
     for (int i = 0; i < stations.size(); i++) {
-      Station s = stations.get(i);
+      ucar.unidata.geoloc.Station s = stations.get(i);
       result.addAll( getStationObs( s, startTime, endTime, cancel));
       if ((cancel != null) && cancel.isCancel()) return null;
     }

@@ -101,7 +101,7 @@ public interface TrajectoryObsDatatype {
     /** Return the time for the given point as a java.util.Date. */
     public java.util.Date getTime(int point) throws IOException;
     /** Return the location for the given point. */
-    public EarthLocation getLocation(int point) throws IOException;
+    public ucar.unidata.geoloc.EarthLocation getLocation(int point) throws IOException;
 
     /** Return the time for the given point as a double in the units given by getTimeUnitsIdentifier(). */
     public double getTimeValue(int point) throws IOException;

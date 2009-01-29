@@ -33,7 +33,7 @@
 package ucar.nc2.dt.point;
 
 import ucar.nc2.dt.PointObsDatatype;
-import ucar.nc2.dt.EarthLocation;
+import ucar.unidata.geoloc.EarthLocation;
 
 /**
  * Abstract superclass for implemenation of PointObsDatatype.
@@ -44,19 +44,19 @@ import ucar.nc2.dt.EarthLocation;
 
 
 public abstract class PointObsDatatypeImpl implements PointObsDatatype, Comparable {
-  protected EarthLocation location;
+  protected ucar.unidata.geoloc.EarthLocation location;
   protected double obsTime, nomTime;
 
   public PointObsDatatypeImpl() {
   }
 
-  public PointObsDatatypeImpl( EarthLocation location, double obsTime, double nomTime) {
+  public PointObsDatatypeImpl( ucar.unidata.geoloc.EarthLocation location, double obsTime, double nomTime) {
     this.location = location;
     this.obsTime = obsTime;
     this.nomTime = nomTime;
   }
 
-  public EarthLocation getLocation() { return location; }
+  public ucar.unidata.geoloc.EarthLocation getLocation() { return location; }
   public double getNominalTime() { return nomTime; }
   public double getObservationTime() { return obsTime; }
 

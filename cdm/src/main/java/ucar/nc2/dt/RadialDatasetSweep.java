@@ -73,7 +73,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
    * If all sweeps have the same origin, return it here, else null
    * @return common origin, or null
    */
-  public ucar.nc2.dt.EarthLocation getCommonOrigin();
+  public ucar.unidata.geoloc.EarthLocation getCommonOrigin();
 
   /**
    * Get the units of Calendar time.
@@ -240,7 +240,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset {
      * @param radial which radial, must in interval [0,getRadialNumber())
      * @return the location of the origin of the ith radial.
      */
-    public ucar.nc2.dt.EarthLocation getOrigin(int radial);
+    public ucar.unidata.geoloc.EarthLocation getOrigin(int radial);
 
     /**
      * @param radial which radial, must in interval [0,getRadialNumber())

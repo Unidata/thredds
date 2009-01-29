@@ -97,7 +97,7 @@ public class RadialCoordSys {
   private String name;
   private ArrayList coordAxes = new ArrayList();
   private ucar.nc2.units.DateUnit dateUnit;
-  private ucar.nc2.dt.EarthLocation origin;
+  private ucar.unidata.geoloc.EarthLocation origin;
   private LatLonRect bb;
   private double maxRadial;
 
@@ -162,11 +162,11 @@ public class RadialCoordSys {
   }
 
     /** Origin of the coordinate system */
-  public ucar.nc2.dt.EarthLocation getOrigin() {
+  public ucar.unidata.geoloc.EarthLocation getOrigin() {
     return origin;
   }
 
-  public void setOrigin(ucar.nc2.dt.EarthLocation origin) {
+  public void setOrigin(ucar.unidata.geoloc.EarthLocation origin) {
     this.origin = origin;
   }
 

@@ -73,7 +73,7 @@ public class WriterCFStationObsDataset {
   private String title;
 
   private Set<Dimension> dimSet = new HashSet<Dimension>();
-  private List<Station> stnList;
+  private List<ucar.unidata.geoloc.Station> stnList;
   private List<Variable> recordVars = new ArrayList<Variable>();
   private Date minDate = null;
   private Date maxDate = null;
@@ -111,7 +111,7 @@ public class WriterCFStationObsDataset {
     }
   }
 
-  public void writeHeader(List<Station> stns, List<VariableSimpleIF> vars) throws IOException {
+  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars) throws IOException {
     createGlobalAttributes();
     createStations(stns);
     createRecordVariables(vars);
@@ -140,12 +140,12 @@ public class WriterCFStationObsDataset {
     ncfile.addAttribute( null, new Attribute("time_coverage_end", dateFormatter.toDateTimeStringISO(new Date()))); */
   }
 
-  private void createStations(List<Station> stnList) throws IOException {
+  private void createStations(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
     int nstns = stnList.size();
 
     // see if there's altitude, wmoId for any stations
     for (int i = 0; i < nstns; i++) {
-      Station stn = stnList.get(i);
+      ucar.unidata.geoloc.Station stn = stnList.get(i);
 
       if (!Double.isNaN(stn.getAltitude()))
         useAlt = true;
@@ -158,7 +158,7 @@ public class WriterCFStationObsDataset {
 
     // find string lengths
     for (int i = 0; i < nstns; i++) {
-      Station station = stnList.get(i);
+      ucar.unidata.geoloc.Station station = stnList.get(i);
       name_strlen = Math.max(name_strlen, station.getName().length());
       desc_strlen = Math.max(desc_strlen, station.getDescription().length());
       if (useWmoId) wmo_strlen = Math.max(wmo_strlen, station.getName().length());
@@ -276,7 +276,7 @@ public class WriterCFStationObsDataset {
     }
   }
 
-  private void writeStationData(List<Station> stnList) throws IOException {
+  private void writeStationData(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
     this.stnList = stnList;
     int nstns = stnList.size();
     stationMap = new HashMap<String, StationTracker>(2 * nstns);
@@ -291,7 +291,7 @@ public class WriterCFStationObsDataset {
     ArrayChar.D2 wmoArray = new ArrayChar.D2(nstns, wmo_strlen);
 
     for (int i = 0; i < stnList.size(); i++) {
-      Station stn = stnList.get(i);
+      ucar.unidata.geoloc.Station stn = stnList.get(i);
       stationMap.put(stn.getName(), new StationTracker(i));
 
       latArray.set(i, stn.getLatitude());
@@ -430,13 +430,13 @@ public class WriterCFStationObsDataset {
   }
 
   private LatLonRect getBoundingBox(List stnList) {
-    Station s = (Station) stnList.get(0);
+    ucar.unidata.geoloc.Station s = (ucar.unidata.geoloc.Station) stnList.get(0);
     LatLonPointImpl llpt = new LatLonPointImpl();
     llpt.set(s.getLatitude(), s.getLongitude());
     LatLonRect rect = new LatLonRect(llpt, .001, .001);
 
     for (int i = 1; i < stnList.size(); i++) {
-      s = (Station) stnList.get(i);
+      s = (ucar.unidata.geoloc.Station) stnList.get(i);
       llpt.set(s.getLatitude(), s.getLongitude());
       rect.extend(llpt);
     }
@@ -522,8 +522,8 @@ public class WriterCFStationObsDataset {
     WriterCFStationObsDataset writer = new WriterCFStationObsDataset(out, "test");
 
     List stns = sobs.getStations();
-    List<Station> stnList = new ArrayList<Station>();
-    Station s = (Station) stns.get(0);
+    List<ucar.unidata.geoloc.Station> stnList = new ArrayList<ucar.unidata.geoloc.Station>();
+    ucar.unidata.geoloc.Station s = (ucar.unidata.geoloc.Station) stns.get(0);
     stnList.add(s);
 
     List<VariableSimpleIF> varList = new ArrayList<VariableSimpleIF>();
@@ -557,7 +557,7 @@ public class WriterCFStationObsDataset {
     StringBuilder errlog = new StringBuilder();
     StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, ncd, null, errlog);
 
-    List<Station> stns = sobs.getStations();
+    List<ucar.unidata.geoloc.Station> stns = sobs.getStations();
     List<VariableSimpleIF> vars = sobs.getDataVariables();
 
     FileOutputStream fos = new FileOutputStream(fileOut);
@@ -567,7 +567,7 @@ public class WriterCFStationObsDataset {
     writer.writeHeader(stns, vars);
 
     if (sort) {
-      for (Station s : stns) {
+      for (ucar.unidata.geoloc.Station s : stns) {
         DataIterator iter = sobs.getDataIterator(s);
         while (iter.hasNext()) {
           StationObsDatatype sobsData = (StationObsDatatype) iter.nextData();

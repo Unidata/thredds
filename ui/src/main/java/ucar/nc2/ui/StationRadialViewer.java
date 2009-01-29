@@ -35,8 +35,6 @@ package ucar.nc2.ui;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.nc2.dt.Station;
-import ucar.nc2.dt.StationImpl;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.thredds.DqcRadarDatasetCollection;
@@ -48,6 +46,8 @@ import javax.swing.event.ListSelectionEvent;
 import thredds.ui.IndependentDialog;
 import thredds.ui.TextHistoryPane;
 import ucar.nc2.units.DateRange;
+import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.LatLonPoint;
 
 import java.beans.PropertyChangeListener;
 import java.awt.*;
@@ -83,7 +83,7 @@ public class StationRadialViewer extends JPanel {
     chooser.addPropertyChangeListener( new PropertyChangeListener() {
       public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("Station")) {
-          Station selectedStation = (Station) e.getNewValue();
+          ucar.unidata.geoloc.Station selectedStation = (ucar.unidata.geoloc.Station) e.getNewValue();
           if (debugStationRegionSelect) System.out.println("selectedStation= "+selectedStation.getName());
           eventsOK = false;
           stnTable.setSelectedBean( selectedStation);
@@ -134,11 +134,11 @@ public class StationRadialViewer extends JPanel {
 
     List<StationBean> stationBeans = new ArrayList<StationBean>();
       try {
-        List<Station> stations = sds.getStations();
+        List<ucar.unidata.geoloc.Station> stations = sds.getStations();
         if (stations == null) return;
 
-        for (Station station : stations)
-          stationBeans.add(new StationBean((StationImpl) station));
+        for (ucar.unidata.geoloc.Station station : stations)
+          stationBeans.add(new StationBean((ucar.unidata.geoloc.StationImpl) station));
 
       } catch (IOException ioe) {
         ioe.printStackTrace();
@@ -169,10 +169,10 @@ public class StationRadialViewer extends JPanel {
    //rdTable.saveState();
   }
 
-  public class StationBean implements Station {
-    private StationImpl s;
+  public class StationBean implements ucar.unidata.geoloc.Station {
+    private Station s;
 
-    public StationBean( StationImpl s) {
+    public StationBean( Station s) {
       this.s = s;
     }
 
@@ -182,10 +182,6 @@ public class StationRadialViewer extends JPanel {
 
     public String getDescription() {
       return s.getDescription();
-    }
-
-    public int getNobs() {
-      return s.getNumObservations();
     }
 
     public String getWmoId() {
@@ -204,9 +200,16 @@ public class StationRadialViewer extends JPanel {
       return s.getAltitude();
     }
 
-    public int compareTo(Object o) {
-      Station so = (Station) o;
-      return getName().compareTo( so.getName());
+    public LatLonPoint getLatLon() {
+      return s.getLatLon();
+    }
+
+    public boolean isMissing() {
+      return s.isMissing();
+    }
+
+    public int compareTo(Station so) {
+      return getName().compareTo(so.getName());
     }
   }
 

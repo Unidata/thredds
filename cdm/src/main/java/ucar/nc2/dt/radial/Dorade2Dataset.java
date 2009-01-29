@@ -130,9 +130,9 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
         return "DORADE";
     }
 
-    public ucar.nc2.dt.EarthLocation getCommonOrigin() {
+    public ucar.unidata.geoloc.EarthLocation getCommonOrigin() {
         if (isStationary())
-          return new EarthLocationImpl(latv[0], lonv[0], elev[0]);
+          return new ucar.unidata.geoloc.EarthLocationImpl(latv[0], lonv[0], elev[0]);
         return null;
     }
 
@@ -152,7 +152,7 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
 
     protected void setEarthLocation() {
         if (isStationary())
-          origin = new EarthLocationImpl(latv[0], lonv[0], elev[0]);
+          origin = new ucar.unidata.geoloc.EarthLocationImpl(latv[0], lonv[0], elev[0]);
         origin = null;
     }
 
@@ -413,8 +413,8 @@ public class Dorade2Dataset extends RadialDatasetSweepAdapter implements TypedDa
           /**
            * Location of the origin of the radial
            */
-          public ucar.nc2.dt.EarthLocation getOrigin(int ray) {
-            return new EarthLocationImpl(latv[ray], lonv[ray], altv[ray]);
+          public ucar.unidata.geoloc.EarthLocation getOrigin(int ray) {
+            return new ucar.unidata.geoloc.EarthLocationImpl(latv[ray], lonv[ray], altv[ray]);
           }
 
           public float getMeanAzimuth() {

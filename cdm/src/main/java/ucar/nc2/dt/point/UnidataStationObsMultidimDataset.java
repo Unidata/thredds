@@ -267,7 +267,7 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
 
   public List getData(CancelTask cancel) throws IOException {
     List<StationObsDatatype> allData = new ArrayList<StationObsDatatype>();
-    for (Station s : getStations()) {
+    for (ucar.unidata.geoloc.Station s : getStations()) {
       MStationImpl ms = (MStationImpl) s;
       allData.addAll(ms.readObservations());
       if ((cancel != null) && cancel.isCancel())
@@ -280,7 +280,7 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
     return stationDim.getLength() * obsDim.getLength();
   }
 
-  public List getData(Station s, CancelTask cancel) throws IOException {
+  public List getData(ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     return ((MStationImpl) s).getObservations();
   }
 
@@ -374,7 +374,7 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
     List<VariableSimpleIF> dataVariables;
     StructureMembers sm;
 
-    MStationObsImpl(Station s, int stationIndex, int obsIndex, List<VariableSimpleIF> dataVariables, StructureMembers sm) throws IOException {
+    MStationObsImpl(ucar.unidata.geoloc.Station s, int stationIndex, int obsIndex, List<VariableSimpleIF> dataVariables, StructureMembers sm) throws IOException {
       super(s, 0, 0);
       this.stationIndex = stationIndex;
       this.obsIndex = obsIndex;
@@ -422,11 +422,11 @@ public class UnidataStationObsMultidimDataset extends StationObsDatasetImpl impl
     return data;
   }
 
-  public DataIterator getDataIterator(Station s) {
+  public DataIterator getDataIterator(ucar.unidata.geoloc.Station s) {
     return ((MStationImpl) s).iterator();
   }
 
-  public DataIterator getDataIterator(Station s, Date start, Date end) {
+  public DataIterator getDataIterator(ucar.unidata.geoloc.Station s, Date start, Date end) {
     return ((MStationImpl) s).iterator(start, end);
   }
 

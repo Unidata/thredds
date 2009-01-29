@@ -259,7 +259,7 @@ public class WriterCFPointObsDataset {
   public void writeRecord(PointObsDatatype pobs, StructureData sdata) throws IOException {
     if (debug) System.out.println("pobs= " + pobs);
 
-    ucar.nc2.dt.EarthLocation loc = pobs.getLocation();
+    ucar.unidata.geoloc.EarthLocation loc = pobs.getLocation();
     int count = writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pobs.getObservationTimeAsDate());
 
     for (int i = count; i < recordVars.size(); i++) {
@@ -394,7 +394,7 @@ public class WriterCFPointObsDataset {
       PointObsDatatype pobsData = (PointObsDatatype) iter.nextData();
       StructureData data = pobsData.getData();
       if (first) {
-        ucar.nc2.dt.EarthLocation loc = pobsData.getLocation();
+        ucar.unidata.geoloc.EarthLocation loc = pobsData.getLocation();
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters";
         writer = new WriterCFPointObsDataset(out, ncfile.getGlobalAttributes(), altUnits);
         writer.writeHeader(pobsDataset.getDataVariables());

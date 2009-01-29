@@ -174,12 +174,12 @@ public class OldUnidataStationObsDataset extends StationObsDatasetImpl  implemen
     return recordHelper.getData( records, boundingBox, startTime, endTime, cancel);
   }
 
-  public int getStationDataCount(Station s) {
+  public int getStationDataCount(ucar.unidata.geoloc.Station s) {
     StationImpl si = (StationImpl) s;
     return si.getNumObservations();
   }
 
-  public List getData( Station s, CancelTask cancel) throws IOException {
+  public List getData( ucar.unidata.geoloc.Station s, CancelTask cancel) throws IOException {
     return ((StationImpl)s).getObservations();
   }
 

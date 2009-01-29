@@ -128,7 +128,7 @@ public class TestPointDataset extends TestCase {
       assert data instanceof PointObsDatatype : data.getClass().getName();
       PointObsDatatype pobs = (PointObsDatatype) data;
 
-      EarthLocation loc = pobs.getLocation();
+      ucar.unidata.geoloc.EarthLocation loc = pobs.getLocation();
       assert loc != null;
 
       assert null != pobs.getNominalTimeAsDate();

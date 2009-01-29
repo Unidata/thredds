@@ -89,7 +89,7 @@ public class WriterProfileObsDataset {
   private List<Dimension> recordDims = new ArrayList<Dimension>();
   private List<Dimension> stationDims = new ArrayList<Dimension>();
   private List<Dimension> profileDims = new ArrayList<Dimension>();
-  private List<Station> stnList;
+  private List<ucar.unidata.geoloc.Station> stnList;
   private Date minDate = null;
   private Date maxDate = null;
 
@@ -111,7 +111,7 @@ public class WriterProfileObsDataset {
     ncfile.setLength( size);
   }
 
-  public void writeHeader(List<Station> stns, List<VariableSimpleIF> vars, int nprofiles, String altVarName) throws IOException {
+  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars, int nprofiles, String altVarName) throws IOException {
     createGlobalAttributes();
     createStations(stns);
     createProfiles(nprofiles);
@@ -144,12 +144,12 @@ public class WriterProfileObsDataset {
     ncfile.addGlobalAttribute("time_coordinate", timeName); */
   }
 
-  private void createStations(List<Station> stnList) throws IOException {
+  private void createStations(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
     int nstns = stnList.size();
 
     // see if there's altitude, wmoId for any stations
     for (int i = 0; i < nstns; i++) {
-      Station stn = stnList.get(i);
+      ucar.unidata.geoloc.Station stn = stnList.get(i);
 
       //if (!Double.isNaN(stn.getAltitude()))
       //  useAlt = true;
@@ -162,7 +162,7 @@ public class WriterProfileObsDataset {
 
     // find string lengths
     for (int i = 0; i < nstns; i++) {
-      Station station = stnList.get(i);
+      ucar.unidata.geoloc.Station station = stnList.get(i);
       name_strlen = Math.max(name_strlen, station.getName().length());
       desc_strlen = Math.max(desc_strlen, station.getDescription().length());
       if (useWmoId) wmo_strlen = Math.max(wmo_strlen, station.getName().length());
@@ -313,7 +313,7 @@ public class WriterProfileObsDataset {
     }
   }
 
-  private void writeStationData(List<Station> stnList) throws IOException {
+  private void writeStationData(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
     this.stnList = stnList;
     int nstns = stnList.size();
     stationMap = new HashMap<String, StationTracker>(2 * nstns);
@@ -328,7 +328,7 @@ public class WriterProfileObsDataset {
     ArrayObject.D1 wmoArray = new ArrayObject.D1(String.class, nstns);
 
     for (int i = 0; i < stnList.size(); i++) {
-      Station stn = stnList.get(i);
+      ucar.unidata.geoloc.Station stn = stnList.get(i);
       stationMap.put(stn.getName(), new StationTracker(i));
 
       latArray.set(i, stn.getLatitude());
@@ -372,7 +372,7 @@ public class WriterProfileObsDataset {
     ArrayInt.D1 nextProfileArray = new ArrayInt.D1(nprofiles);
 
     for (int i = 0; i < stnList.size(); i++) {
-      Station stn = stnList.get(i);
+      ucar.unidata.geoloc.Station stn = stnList.get(i);
       StationTracker tracker = stationMap.get(stn.getName());
 
       numProfileArray.set(i, tracker.numChildren);
@@ -409,7 +409,7 @@ public class WriterProfileObsDataset {
     ArrayInt.D1 numObsArray = new ArrayInt.D1(nprofiles);
 
     for (int i = 0; i < stnList.size(); i++) {
-      Station stn = stnList.get(i);
+      ucar.unidata.geoloc.Station stn = stnList.get(i);
       StationTracker stnTracker = stationMap.get(stn.getName());
 
       Set<Date> dates = stnTracker.profileMap.keySet();
@@ -524,13 +524,13 @@ public class WriterProfileObsDataset {
   }
 
   private LatLonRect getBoundingBox(List stnList) {
-    Station s = (Station) stnList.get(0);
+    ucar.unidata.geoloc.Station s = (ucar.unidata.geoloc.Station) stnList.get(0);
     LatLonPointImpl llpt = new LatLonPointImpl();
     llpt.set(s.getLatitude(), s.getLongitude());
     LatLonRect rect = new LatLonRect(llpt, .001, .001);
 
     for (int i = 1; i < stnList.size(); i++) {
-      s = (Station) stnList.get(i);
+      s = (ucar.unidata.geoloc.Station) stnList.get(i);
       llpt.set(s.getLatitude(), s.getLongitude());
       rect.extend(llpt);
     }
@@ -540,7 +540,7 @@ public class WriterProfileObsDataset {
 
   public static void main(String args[]) throws Exception {
     long start = System.currentTimeMillis();
-    Map<String, Station> staHash = new HashMap<String,Station>();
+    Map<String, ucar.unidata.geoloc.Station> staHash = new HashMap<String,ucar.unidata.geoloc.Station>();
 
     String location = "R:/testdata/sounding/netcdf/Upperair_20070401_0000.nc";
     NetcdfDataset ncfile =  NetcdfDataset.openDataset(location);
@@ -578,7 +578,7 @@ public class WriterProfileObsDataset {
     while (iter.hasNext()) {
       StructureData sdata = iter.next();
       String name = sdata.getScalarString("staName");
-      Station s = staHash.get(name);
+      ucar.unidata.geoloc.Station s = staHash.get(name);
       if (s == null) {
         float lat = sdata.convertScalarFloat("staLat");
         float lon = sdata.convertScalarFloat("staLon");
@@ -588,7 +588,7 @@ public class WriterProfileObsDataset {
       }
       nrecs++;
     }
-    List<Station> stnList = Arrays.asList( staHash.values().toArray( new Station[staHash.size()]) );
+    List<ucar.unidata.geoloc.Station> stnList = Arrays.asList( staHash.values().toArray( new ucar.unidata.geoloc.Station[staHash.size()]) );
     Collections.sort(stnList);
 
     // create the writer
