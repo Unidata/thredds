@@ -42,6 +42,7 @@ import ucar.nc2.NCdumpW;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.StationImpl;
 import ucar.ma2.StructureData;
 import thredds.ui.*;
 

@@ -355,7 +355,6 @@
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/bufr.iml" filepath="$PROJECT_DIR$/bufr.iml" />
       <module fileurl="file://$PROJECT_DIR$/bufrTables.iml" filepath="$PROJECT_DIR$/bufrTables.iml" />
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/common.iml" filepath="$PROJECT_DIR$/common.iml" />

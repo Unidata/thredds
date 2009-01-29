@@ -40,6 +40,10 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.ma2.*;
+import ucar.unidata.geoloc.Station;
+import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.EarthLocationImpl;
+import ucar.unidata.geoloc.StationImpl;
 
 import java.util.*;
 import java.io.IOException;

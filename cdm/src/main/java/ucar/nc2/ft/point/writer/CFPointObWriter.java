@@ -48,6 +48,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
+import ucar.unidata.geoloc.EarthLocation;
 
 import java.io.*;
 import java.util.List;
@@ -351,7 +352,7 @@ public class CFPointObWriter {
       PointFeature pointFeature = (PointFeature) pointFeatureCollection.next();
       StructureData data = pointFeature.getData();
       if (count == 0) {
-        ucar.nc2.ft.EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
+        EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong
         writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
         writer.writeHeader(pfDataset.getDataVariables());

@@ -37,6 +37,8 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.StationImpl;
+import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
 

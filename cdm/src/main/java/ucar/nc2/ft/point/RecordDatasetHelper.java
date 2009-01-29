@@ -46,9 +46,7 @@ import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
 
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.*;
 
 import java.io.*;
 import java.util.*;

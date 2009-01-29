@@ -48,6 +48,7 @@ import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.ma2.*;
 import ucar.ma2.DataType;
+import ucar.unidata.geoloc.EarthLocation;
 
 import java.util.*;
 import java.io.*;
@@ -244,7 +245,7 @@ public class WriterCFPointObsDataset {
   public void writeRecord(PointFeature pf, StructureData sdata) throws IOException {
     if (debug) System.out.println("PointFeature= " + pf);
 
-    ucar.nc2.ft.EarthLocation loc = pf.getLocation();
+    EarthLocation loc = pf.getLocation();
     int count = writeCoordinates(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), pf.getObservationTimeAsDate());
 
     for (int i = count; i < recordVars.size(); i++) {
@@ -345,7 +346,7 @@ public class WriterCFPointObsDataset {
       PointFeature pointFeature = (PointFeature) pointFeatureCollection.next();
       StructureData data = pointFeature.getData();
       if (count == 0) {
-        ucar.nc2.ft.EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
+        EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong
         writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
         writer.writeHeader( dataVars);

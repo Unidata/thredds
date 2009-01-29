@@ -33,6 +33,7 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.units.DateUnit;
+import ucar.unidata.geoloc.EarthLocation;
 
 import java.util.Date;
 

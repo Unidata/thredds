@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeMain" basedir=".">
   <property name="release.version" value="4.0"/>
-  <property name="minor" value="30" />
+  <property name="minor" value="31" />
   <!-- "build.number" is already set for TeamCity builds. -->
   <tstamp>
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
@@ -55,7 +55,7 @@
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
-  <property name="bufr.jar" value="bufr-1.5.jar"/>
+  <property name="bufr.jar" value="bufr-1.4.jar"/>
   <property name="grib.jar" value="grib-6.0.jar"/>
   <property name="httpclient.jar" value="commons-httpclient-3.1.jar"/>
   <property name="http-logging.jar" value="commons-logging-1.1.jar"/>
@@ -218,7 +218,7 @@
       <fileset dir="${build.classes.dir}"/>
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
-      <fileset dir="${core.dir}"/>      
+      <fileset dir="${core.dir}"/>
 
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>

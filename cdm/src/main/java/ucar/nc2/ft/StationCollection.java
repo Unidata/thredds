@@ -33,6 +33,7 @@
 package ucar.nc2.ft;
 
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
 import java.util.List;

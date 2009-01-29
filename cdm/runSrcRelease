@@ -1,2 +1,2 @@
-CP="target/classes;resources;@CLASSPATH@"
+CP="classes;resources;@CLASSPATH@"
 java -Xmx512m -classpath $CP ucar.nc2.ui.ToolsUI

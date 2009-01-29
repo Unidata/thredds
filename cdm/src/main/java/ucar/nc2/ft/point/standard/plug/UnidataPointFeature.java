@@ -33,17 +33,13 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.ft.point.standard.*;
-import ucar.nc2.ft.StationImpl;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.Structure;
-import ucar.ma2.*;
 
 import java.util.*;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * "Unidata Point Feature v1.0" Convention

@@ -39,6 +39,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.units.DateUnit;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
+import ucar.unidata.geoloc.Station;
 
 import java.io.IOException;
 import java.util.Iterator;

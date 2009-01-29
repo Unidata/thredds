@@ -18,11 +18,11 @@ body {
 
 <p><br>
   The NetCDF-Java Library is a Java interface to <a href="http://www.unidata.ucar.edu/software/netcdf/index.html">NetCDF 
-  files</a>.&nbsp; It is built on the <em><strong>ucar.ma2</strong></em> package, which is 
-  a stand-alone Java package for multidimensional arrays of primitive types. 
-<p>The library is freely available and the source code is released under the GNU 
+  files</a>, as well as  to many other types of scientific data  formats.&nbsp;
+
+<p>The library is freely available and the source code is released under the (MIT-style)  netCDF C library <a href="http://www.unidata.ucar.edu/software/netcdf/copyright.html">license</a>. Previous versions use the GNU 
   <a href="http://www.gnu.org/copyleft/lesser.html">Lesser General Public License</a> 
-  (LGPL). Version 4.1 will be released using the  (MIT-style)  netCDF C library <a href="http://www.unidata.ucar.edu/software/netcdf/copyright.html">license</a>.
+  (LGPL). 
 <p>The preferred place to ask questions, discuss problems and features and get 
   support is in the NetCDF-Java 
   email list, which you can subscribe to from <a href="http://www.unidata.ucar.edu/support/mailinglist/mailing-list-form.html">this 
@@ -43,7 +43,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncIdv.jar">ncIdv.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncIdv.jar.MD5">MD5</a>) which you can use in the IDV</li>
   <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar.MD5">MD5</a>) just reads netcdf-3  files.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfUI-4.0.jar">unbundled GUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfUI-4.0.jar.MD5">MD5</a>) for GUI applications that want to choose   which other jars are needed</li>
-  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.jar"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.jar.MD5">MD5</a>) (unzip and follow the <a href="v4.0/README">README</a>)</li>
+  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.jar.MD5">MD5</a>) (unzip and follow the <a href="v4.0/README">README</a>)</li>
   <li>See <a href="v4.0/CHANGES">CHANGES</a> for version changes.</li>
   <li>Try out the <strong> 4.0</strong> version of ToolsUI application: <a href="v4.0/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
 </ul>
@@ -113,7 +113,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 </ul>
 <h3><strong>Features and not-so-stable APIs</strong>:</h3>
 <ul>
-  <li><strong>Writing</strong> to netCDF-3 format is supported, but new features in the CDM, e.g. groups, structures, the long data type are not available yet. </li>
+  <li><strong>Writing</strong> to netCDF-3 format is supported, but new features in the CDM, e.g. groups, structures,  long data types are not  yet supported. </li>
   <li>The feasibility of writing to the NetCDF-4 format is being evaluated. Currently, only read access is supported. </li>
   <li>The scientific feature types interfaces are evolving</li>
   <li>The catalog API will be redone, however the current API will remain supported.</li>
@@ -149,13 +149,13 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <h3>Software libraries used by the Netcdf-Java library: </h3>
 <ul>
   <li> Apache Commons <a href="http://jakarta.apache.org/commons/httpclient/">HttpClient</a> for  HTTP access, which also use <a href="http://jakarta.apache.org/commons/logging/">commons-logging</a> and <a href="http://jakarta.apache.org/commons/codec/">commons-codec</a>. </li>
-  <li>Java-OPeNDAP library  for reading OPeNDAP, which requires <a href="http://www.cacas.org/java/gnu/regexp/">gnu-regexp</a>. </li>
+  <li>Java-OPeNDAP library  for reading OPeNDAP.</li>
   <li><a href="http://www.jdom.org/">JDOM</a>  for parsing XML.</li>
   <li><a href="http://www.jgoodies.com/">JGoodies</a> for UI stuff </li>
   <li><a href="http://www.jpeg.org/jpeg2000/">JPEG2000</a> library for decoding GRIB2 files.</li>
   <li><a href="http://logging.apache.org/log4j/docs/index.html">Log4J</a> and its companion <a href="http://www.slf4j.org/">Simple Logging Facade for Java</a> (SLF4J) for logging </li>
   <li><a href="http://www.springframework.org/">Spring</a> lightweight application framework</li>
-  <li><a href="http://www.ssec.wisc.edu/%7Ebillh/visad.html">VisAD</a> for reading ADDE</li>
+  <li><a href="http://www.ssec.wisc.edu/%7Ebillh/visad.html">VisAD</a> for reading McIDAS AREA files.</li>
   <li><a href="http://xerces.apache.org/xerces2-j/">Xerces</a> for parsing XML (pre jdk 1.5) </li>
 </ul>
 <h3> Applications using the Netcdf-Java library (partial list):</h3>
@@ -181,7 +181,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated on Jan 27, 2009 
+and was last updated on Jan 29, 2009 
 </address>
 
 </body>

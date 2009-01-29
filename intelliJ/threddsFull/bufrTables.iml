@@ -26,10 +26,6 @@
             <attribute name="method" value="0" />
             <attribute name="URI" value="&lt;N/A&gt;" />
           </containerElement>
-          <containerElement type="module" name="bufr">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-          </containerElement>
           <containerElement type="module" name="bufrTables">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
@@ -219,7 +215,6 @@
     </orderEntry>
     <orderEntry type="module" module-name="cdm" exported="" />
     <orderEntry type="module" module-name="common" exported="" />
-    <orderEntry type="module" module-name="bufr" />
     <orderEntry type="library" name="JSTL" level="project" />
     <orderEntry type="library" name="Spring" level="project" />
     <orderEntry type="module-library" exported="">

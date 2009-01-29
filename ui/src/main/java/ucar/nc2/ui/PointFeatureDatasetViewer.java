@@ -42,6 +42,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.StationImpl;
+import ucar.unidata.geoloc.Station;
 import thredds.ui.*;
 
 import java.awt.BorderLayout;

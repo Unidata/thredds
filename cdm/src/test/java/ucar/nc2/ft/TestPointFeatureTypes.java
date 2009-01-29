@@ -49,6 +49,7 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.EarthLocation;
 
 /**
  * Class Description.

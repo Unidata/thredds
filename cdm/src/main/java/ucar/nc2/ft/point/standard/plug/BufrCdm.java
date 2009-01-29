@@ -33,20 +33,15 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.ft.point.standard.*;
-import ucar.nc2.ft.Station;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Structure;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureData;
 
 import java.util.StringTokenizer;
 import java.util.Formatter;
-import java.util.List;
-import java.io.IOException;
 
 /**
  * BUFR datasets

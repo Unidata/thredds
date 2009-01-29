@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ft;
 
+import ucar.unidata.geoloc.Station;
+
 import java.util.List;
 import java.io.IOException;
 

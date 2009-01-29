@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.net.URL;
 
 import ucar.unidata.util.StringUtil;
 
@@ -57,12 +59,13 @@ public class CodeFlagTables {
 
   static public boolean hasTable(short id) {
     if (tableMap == null) init();
-    return tableMap.get(id) != null;
+    CodeFlagTables result = tableMap.get(id);
+    return result != null;
   }
 
   static void init() {
     tableMap = new HashMap<Short, CodeFlagTables>(100);
-    String filename = "/resources/bufr/codes/Code-FlagTables.xml";
+    String filename = BufrTables.RESOURCE_PATH + "codes/Code-FlagTables.xml";
     InputStream is = CodeFlagTables.class.getResourceAsStream(filename);
 
     try {

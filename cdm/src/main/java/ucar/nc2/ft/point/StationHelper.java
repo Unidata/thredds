@@ -32,7 +32,6 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.ft.*;
 import ucar.unidata.geoloc.*;
 
 import java.util.Map;

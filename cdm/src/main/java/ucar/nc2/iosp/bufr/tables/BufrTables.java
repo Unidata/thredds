@@ -83,7 +83,7 @@ public class BufrTables {
   private static Map<String, TableB> tablesB = new ConcurrentHashMap<String, TableB>();
   private static Map<String, TableD> tablesD = new ConcurrentHashMap<String, TableD>();
 
-  private static final String RESOURCE_PATH = "resources/bufr/tables/";
+  static final String RESOURCE_PATH = "/resources/bufrTables/";
 
   /**
    * Used to open BUFR tables.
@@ -96,9 +96,8 @@ public class BufrTables {
     InputStream ios = null;
 
     // Try class loader to get resource
-    ClassLoader cl = BufrTables.class.getClassLoader();
-    String tmp = RESOURCE_PATH + location;
-    ios = cl.getResourceAsStream(tmp);
+    String tmp = RESOURCE_PATH + "tables/" + location;
+    ios = BufrTables.class.getResourceAsStream(tmp);
     if (ios != null) return ios;
 
     if (location.startsWith("http:")) {

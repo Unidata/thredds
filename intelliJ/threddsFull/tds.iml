@@ -31,10 +31,6 @@
             <attribute name="method" value="0" />
             <attribute name="URI" value="&lt;N/A&gt;" />
           </containerElement>
-          <containerElement type="module" name="bufr">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
           <containerElement type="module" name="cdm">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
@@ -426,10 +422,6 @@
             <attribute name="method" value="0" />
             <attribute name="URI" value="&lt;N/A&gt;" />
           </containerElement>
-          <containerElement type="module" name="bufr">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/classes" />
-          </containerElement>
           <containerElement type="module" name="cdm">
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/classes" />
@@ -686,10 +678,6 @@
           <containerElement type="facet" facetId="opendap/web/opendap">
             <attribute name="method" value="0" />
             <attribute name="URI" value="&lt;N/A&gt;" />
-          </containerElement>
-          <containerElement type="module" name="bufr">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
           <containerElement type="module" name="cdm">
             <attribute name="method" value="1" />
@@ -953,10 +941,6 @@
           <containerElement type="facet" facetId="opendap/web/opendap">
             <attribute name="method" value="0" />
             <attribute name="URI" value="&lt;N/A&gt;" />
-          </containerElement>
-          <containerElement type="module" name="bufr">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
           <containerElement type="module" name="cdm">
             <attribute name="method" value="1" />
@@ -1412,6 +1396,15 @@
           <root url="jar://$MODULE_DIR$/../../lib/external/nlog4j-1.2.25.jar!/" />
           <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-log4j12-1.5.6.jar!/" />
           <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.5.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/release/bufrTables-1.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

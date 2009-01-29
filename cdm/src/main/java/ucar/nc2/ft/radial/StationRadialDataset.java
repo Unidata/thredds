@@ -37,7 +37,7 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.ft.radial.RadialSweepFeature;
 import ucar.nc2.ft.StationCollection;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.Station;
+import ucar.unidata.geoloc.Station;
 
 import java.util.List;
 import java.io.IOException;
