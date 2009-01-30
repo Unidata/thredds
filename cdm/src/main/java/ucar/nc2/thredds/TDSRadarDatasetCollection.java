@@ -550,7 +550,6 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *
      * @param sName _more_
      * @return Station object
-     * @throws
      */
     public ucar.unidata.geoloc.Station getRadarStation(String sName) {
 
@@ -1282,31 +1281,39 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      */
     public static void main(String args[]) throws IOException {
         StringBuffer errlog = new StringBuffer();
-        String ds_location =
-            "http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level3/IDD/dataset.xml";
-        // "http://motherlode.ucar.edu:8080/thredds/idd/radarLevel2";
-        TDSRadarDatasetCollection dsc =
+        String ds_location = null;
+        TDSRadarDatasetCollection dsc = null;
+        List stns = null;
+
+        ds_location =
+            "http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level3/CCS039/dataset.xml";
+         dsc =
             TDSRadarDatasetCollection.factory("test", ds_location, errlog);
         System.out.println(" errs= " + errlog);
-
-        List stns = dsc.getStations();
+            stns = dsc.getStations();
         System.out.println(" nstns= " + stns.size());
 
-        Station stn = dsc.getRadarStation("KFTG");  //(StationImpl)stns.get(12);
+      // System.exit(0);
+        stns = dsc.getStations();
+        System.out.println(" nstns= " + stns.size());
+
+        Station stn = dsc.getRadarStation("DVN");  //(StationImpl)stns.get(12);
 
         // List ulist = stn.getRadarStationURIs();
         // assert null != ulist;
-        Date ts1   = DateUnit.getStandardOrISO("2008-02-05T12:12:00");
-        Date ts2   = DateUnit.getStandardOrISO("2008-02-05T23:12:00");
-
-        List tlist = dsc.getRadarStationTimes(stn.getName(), ts1, ts2);
+        List tl = dsc.getRadarTimeSpan();
+        Date ts1   = DateUnit.getStandardOrISO("1998-06-28T01:01:21Z");
+        Date ts2   = DateUnit.getStandardOrISO("1998-07-30T19:01:21Z");
+        List pd = dsc.getRadarProducts();
+        List tlist = dsc.getRadarStationTimes(stn.getName(),"BREF1", new Date(ts1.getTime()), new Date(ts2.getTime()));
         int  sz    = tlist.size();
         for (int i = 0; i < 3; i++) {
             Date ts0 = (Date) tlist.get(i);
             //  Date ts0 = DateUnit.getStandardOrISO((String) tlist.get(1));
-            RadialDatasetSweep rds = dsc.getRadarDataset(stn.getName(), ts0);
+            RadialDatasetSweep rds = dsc.getRadarDataset(stn.getName(), "BREF1", ts0);
+            int tt = 0;
         }
-        System.exit(0);
+
         Date ts0   = (Date) tlist.get(0);
         URI  stURL = dsc.getRadarDatasetURI(stn.getName(), ts0);
         assert null != stURL;
