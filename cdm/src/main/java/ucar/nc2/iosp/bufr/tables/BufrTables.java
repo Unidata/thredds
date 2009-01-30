@@ -242,7 +242,7 @@ public class BufrTables {
       if (line.startsWith("#") || line.length() == 0)
         continue;
 
-      String[] split = line.split("[ ]+"); // 1 or more whitespace
+      String[] split = line.split("[ \t]+"); // 1 or more whitespace
       try {
         short seqF = Short.parseShort(split[0]);
         short seqX = Short.parseShort(split[1]);
@@ -299,13 +299,15 @@ public class BufrTables {
   public static void main(String args[]) throws IOException {
     Formatter out = new Formatter(System.out);
 
-   TableA tableA = BufrTables.getTableA("B4M-000-013-A");
-   tableA.show(out);
+   //TableA tableA = BufrTables.getTableA("B4M-000-013-A");
+   //tableA.show(out);
 
    //TableB tableB = BufrTables.getTableB("B3L-059-003-B.diff");
-   //tableB.show(out);
+   TableB tableB = BufrTables.getTableB("B4M-000-014-B");
+   tableB.show(out);
 
-   // TableD tableD = BufrTables.getTableD("B4M-000-013-D");
+    //TableD tableD = BufrTables.getTableD("B4M-000-014-D");
+    //TableD tableD = BufrTables.getTableD("B3L-059-003-D.diff");
     //tableD.show(out);
 
   }
