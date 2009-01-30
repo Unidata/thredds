@@ -3,7 +3,6 @@
 
   <contentRoots>
     <contentRoot>content</contentRoot>
-    <!--contentRoot>idd</contentRoot-->
     <contentRoot>motherlode</contentRoot>
   </contentRoots>
 
@@ -33,7 +32,7 @@
    The <CatalogServices> element:
    -->
   <CatalogServices>
-    <allowRemote>false</allowRemote>
+    <allowRemote>true</allowRemote>
   </CatalogServices>
 
   <NetcdfFileCache>
@@ -71,6 +70,25 @@
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
   </WCS>
+
+  <!-- Enable CatalogGen service.
+   -->
+  <CatalogGen>
+    <allow>true</allow>
+  </CatalogGen>
+
+  <!-- Enable DLwriter service but disable on remote catalogs.
+       -->
+  <DLwriter>
+    <allow>true</allow>
+    <allowRemote>false</allowRemote>
+  </DLwriter>
+       
+  <!-- Enable DqcService.
+   -->
+  <DqcService>
+    <allow>true</allow>
+  </DqcService>
 
   <!-- Viewer>my.package.MyViewer</Viewer -->
 

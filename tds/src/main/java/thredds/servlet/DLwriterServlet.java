@@ -50,9 +50,18 @@ import ucar.nc2.util.IO;
  */
 public class DLwriterServlet extends AbstractServlet {
   private String adnDir, difDir;
+  private boolean allow, allowRemote;
 
   public void init() throws ServletException {
     super.init();
+    allow = ThreddsConfig.getBoolean( "DLwriter.allow", false );
+    if ( !allow )
+    {
+      log.info( "init(): WCS service not enabled in threddsConfig.xml." );
+      log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+      return;
+    }
+    allowRemote = ThreddsConfig.getBoolean( "DLwriter.allowRemote", false );
 
     adnDir = contentPath + "/adn/";
     difDir = contentPath + "/dif/";
@@ -61,6 +70,7 @@ public class DLwriterServlet extends AbstractServlet {
     file.mkdirs();
     file = new File(difDir);
     file.mkdirs();
+    log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
   }
 
   protected String getPath() { return "DLwriter/"; }
@@ -70,6 +80,13 @@ public class DLwriterServlet extends AbstractServlet {
                              throws ServletException, IOException {
 
     log.info( UsageLog.setupRequestContext(req));
+    if ( ! allow )
+    {
+      res.sendError( HttpServletResponse.SC_FORBIDDEN, "DLwriter service not supported" );
+      log.debug( "doGet(): DLwriter service not enabled in threddsConfig.xml.");
+      log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
+      return;
+    }
 
     try {
       // see if it has a catalog parameter
@@ -77,10 +94,35 @@ public class DLwriterServlet extends AbstractServlet {
       String catURL = req.getParameter("catalog");
       if ((catURL == null) || (catURL.length() == 0))
         catURL = ServletUtil.getContextPath()+"/idd/models.xml";
-      doit(req, res, catURL, type.equals("DIF"));
+      URI catUri = null;
+      try
+      {
+        catUri = new URI( catURL);
+      }
+      catch ( URISyntaxException e )
+      {
+        res.sendError( HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not a URL." );
+        log.debug( "doGet(): Given catalog URL not a URL", e );
+        log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
+        return;
+      }
+      if ( catUri.isAbsolute())
+      {
+        if ( ! allowRemote )
+        {
+          res.sendError( HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not allowed (remote)." );
+          log.debug( "doGet(): Given catalog URL was absolute, remote catalog handling not enabled.");
+          log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
+          return;
+        }
+      }
+      // Default "type" parameter to "DIF"
+      boolean isDIF = type == null ? true : type.equals( "DIF" );
+      doit(req, res, catURL, isDIF );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
 
     } catch (Throwable t) {
-      log.error("doGet req= "+ServletUtil.getRequest(req)+" got Exception", t);
+      log.error("doGet(): req= "+ServletUtil.getRequest(req)+" got Exception", t);
       ServletUtil.handleException( t,  res);
     }
   }
@@ -106,7 +148,7 @@ public class DLwriterServlet extends AbstractServlet {
     // validate the catalog
     StringBuilder sb = new StringBuilder();
     if (!catalog.check(sb, false)) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, -1);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
 
       res.setContentType("text/html");
       res.setHeader("Validate", "FAIL");
@@ -135,7 +177,7 @@ public class DLwriterServlet extends AbstractServlet {
     OutputStream out = res.getOutputStream();
     out.write(mess.toString().getBytes());
     out.flush();
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, mess.length());
+    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, mess.length()));
   }
 
   private void showValidationMesssage(String catURL, String mess, java.io.PrintWriter pw) {

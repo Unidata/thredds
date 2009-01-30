@@ -70,6 +70,12 @@ public class WCSServlet extends AbstractServlet {
     super.init();
 
     allow = ThreddsConfig.getBoolean("WCS.allow", false);
+    if ( ! allow )
+    {
+      log.info( "init(): WCS service not enabled in threddsConfig.xml." );
+      log.info( UsageLog.closingMessageNonRequestContext() );
+      return;
+    }
     allowRemote = ThreddsConfig.getBoolean( "WCS.allowRemote", false );
     deleteImmediately = ThreddsConfig.getBoolean( "WCS.deleteImmediately", deleteImmediately);
     maxFileDownloadSize = ThreddsConfig.getBytes("WCS.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
@@ -98,6 +104,7 @@ public class WCSServlet extends AbstractServlet {
       supportedVersionsString = (supportedVersionsString == null ? "" : supportedVersionsString + ",") + vh.getVersion().getVersionString();
     }
 
+    log.info( "init(): WCS service initialized.");
     log.info( "init()" + UsageLog.closingMessageNonRequestContext() );
   }
 
@@ -116,9 +123,11 @@ public class WCSServlet extends AbstractServlet {
     log.info( UsageLog.setupRequestContext(req));
 
     // Check whether TDS is configured to support WCS.
-    if (!allow) {
+    if ( ! allow )
+    {
       // ToDo - Server not configured to support WCS. Should response code be 404 (Not Found) instead of 403 (Forbidden)?
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "WCS service not supported");
+      log.debug( "WCS service not supported in threddsConfig.xml");
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ));
       return;
     }
@@ -233,6 +242,12 @@ public class WCSServlet extends AbstractServlet {
           throws ServletException, IOException
   {
     log.info( UsageLog.setupRequestContext(req));
+    if ( ! allow )
+    {
+      res.sendError( HttpServletResponse.SC_FORBIDDEN, "WCS service not supported" );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
+      return;
+    }
 
     res.setStatus( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
     res.setHeader( "Allow", "GET");

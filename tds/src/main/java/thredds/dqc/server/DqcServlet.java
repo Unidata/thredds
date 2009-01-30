@@ -124,6 +124,44 @@ public class DqcServlet extends AbstractServlet
     log.debug( "init(): dqc config path  = " + this.dqcConfigPath.toString() );
     log.debug( "init(): config file      = " + this.configFileName );
 
+    // Make sure config directory exists. If not, create.
+    if ( ! this.dqcConfigPath.exists() )
+    {
+      if ( ! this.dqcConfigPath.mkdirs())
+      {
+        this.allow = false;
+        log.warn( "init(): DqcServlet disabled - failed to create config directory." );
+        log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+        return;
+      }
+    }
+
+    // Make sure config file exists. If not, create.
+    File configFile = new File( this.dqcConfigPath, this.configFileName );
+    if ( ! configFile.exists() )
+    {
+      boolean b = false;
+      try
+      {
+        b = configFile.createNewFile();
+      }
+      catch ( IOException e )
+      {
+        this.allow = false;
+        log.warn( "init(): DqcServlet disabled - I/O error while creating config file." );
+        log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+        return;
+      }
+      if ( ! b )
+      {
+        this.allow = false;
+        log.warn( "init(): DqcServlet disabled - failed to create config file." );
+        log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+        return;
+      }
+      // Write blank config file. Yuck!!!
+    }
+
     try
     {
       this.mainConfig = this.readInConfigDoc();
@@ -473,4 +511,24 @@ public class DqcServlet extends AbstractServlet
     return( buf.toString());
   }
 
+  private boolean writeEmptyConfigDocToFile()
+  {
+    // ToDo
+    return false;
+  }
+
+  private String genEmptyConfigDocAsString()
+  {
+    StringBuilder sb = new StringBuilder()
+            .append( "<?xml version='1.0' encoding='UTF-8'?>")
+            .append("<preferences EXTERNAL_XML_VERSION='1.0'>")
+            .append("  <root type='user'>")
+            .append("    <map>")
+            .append("      <beanCollection key='config' class='thredds.cataloggen.servlet.CatGenTimerTask'>")
+            .append("      </beanCollection>")
+            .append("    </map>")
+            .append("  </root>")
+            .append("</preferences>");
+    return sb.toString();
+  }
 }

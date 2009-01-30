@@ -5,16 +5,6 @@
   <!-- see http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/ThreddsConfigXMLFile.html -->
 
   <!--
-  The <catConfigChain> element:
-  <catConfigSource>
-    <source ref="content" />
-    <source ref="idd" />
-    <source ref="motherlode" />
-  </catConfigSource>
-  -->
-
-
-  <!--
   The <catalogRoot> element:
   For catalogs you don't want visible from the /thredds/catalog.xml chain
   of catalogs, you can use catalogRoot elements. Each catalog root config
@@ -26,6 +16,9 @@
 
   <!--
    The <CatalogServices> element:
+   - Services on local TDS served catalogs are always on.
+   - Services on remote catalogs are set with the allowRemote element
+   below. They are off by default (recommended).
    -->
   <CatalogServices>
     <allowRemote>false</allowRemote>
@@ -124,6 +117,7 @@
 
   <!--
   The WCS Service is off by default.
+  Also, off by default (and encouraged) is operating on a remote dataset.
   <WCS>
     <allow>false</allow>
     <allowRemote>false</allowRemote>
@@ -132,6 +126,26 @@
     <maxAge>30 min</maxAge>
   </WCS>
   -->
+
+  <!-- CatalogGen service is off by default.
+  <CatalogGen>
+    <allow>false</allow>
+  </CatalogGen>
+   -->
+
+  <!-- DLwriter service is off by default.
+       As is support for operating on remote catalogs.
+  <DLwriter>
+    <allow>false</allow>
+    <allowRemote>false</allowRemote>
+  </DLwriter>
+   -->
+
+  <!-- DqcService is off by default.
+  <DqcService>
+    <allow>false</allow>
+  </DqcService>
+   -->
 
   <!--
    Link to a Viewer application on the HTML page:

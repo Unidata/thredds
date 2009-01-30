@@ -2,9 +2,8 @@
 <threddsConfig>
 
   <contentRoots>
-    <contentRoot>content</contentRoot>        threddsconfig
+    <contentRoot>content</contentRoot>
     <contentRoot>idd</contentRoot>
-    <!--contentRoot>motherlode</contentRoot-->
   </contentRoots>
 
   <!--

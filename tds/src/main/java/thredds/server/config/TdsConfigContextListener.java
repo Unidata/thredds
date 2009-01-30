@@ -66,6 +66,8 @@ public class TdsConfigContextListener
     // Initialize the TDS context.
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
     tdsContext.init( servletContext );
+    // tdsContext.init() call above initializes tds.log.dir system property
+    // which is used in log4j.xml file loaded here.
     Log4jWebConfigurer.initLogging( servletContext );
 
     // Initialize the DataRootHandler.
