@@ -75,7 +75,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
      *  Read nested structure data
      * @param v2
      * @param section
-     * @return
+     * @return output data
      * @throws java.io.IOException
      * @throws ucar.ma2.InvalidRangeException
      */
@@ -119,7 +119,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
     /**
      *  checking the file
      * @param raf
-     * @return
+     * @return  the valid of file checking
      */
     public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) {
         Nidsheader localHeader = new Nidsheader();
@@ -150,7 +150,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
      * Read the data for each variable passed in
      * @param v2
      * @param section
-     * @return
+     * @return  output data
      * @throws IOException
      * @throws InvalidRangeException
      */
@@ -730,7 +730,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
      * @param rLen
      * @param xt
      * @param level
-     * @return
+     * @return  one beam data array
      * @throws IOException
      * @throws InvalidRangeException
      */
@@ -765,7 +765,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
      * @param rLen
      * @param xt
      * @param level
-     * @return
+     * @return one beam data array
      * @throws IOException
      * @throws InvalidRangeException
      */
@@ -1437,7 +1437,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
      * read radail elevation array
      * @param bos
      * @param vinfo
-     * @return
+     * @return  data elevation array
      * @throws IOException
      * @throws InvalidRangeException
      */
@@ -1459,7 +1459,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
      * read radial data
      * @param t
      * @param vinfo
-     * @return
+     * @return   data output
      * @throws IOException
      * @throws InvalidRangeException
      */
@@ -1561,7 +1561,7 @@ public class Nidsiosp extends AbstractIOServiceProvider {
     *
     * @param hoff header offset
     * @param doff data offset
-    * @return the array  of data
+    * @return the array of data
     */
     public byte[] readCompData(long hoff, long doff) throws IOException {
         int numin;                /* # input bytes processed       */
