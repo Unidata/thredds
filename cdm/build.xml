@@ -55,7 +55,7 @@
 
   <!-- property name="bzip2.jar" value="bzip2.jar"/ -->
   <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
-  <property name="bufr.jar" value="bufr-1.4.jar"/>
+  <property name="bufrTables.jar" value="bufrTables-1.5.jar"/>
   <property name="grib.jar" value="grib-6.0.jar"/>
   <property name="httpclient.jar" value="commons-httpclient-3.1.jar"/>
   <property name="http-logging.jar" value="commons-logging-1.1.jar"/>
@@ -117,7 +117,7 @@
   </path>
 
   <fileset id="runtime.libraries" dir="${lib.dir}">
-    <include name="release/${bufr.jar}"/>
+    <include name="release/${bufrTables.jar}"/>
     <include name="external/${http-codec.jar}"/>
     <include name="external/${http-logging.jar}"/>
     <include name="external/${logging-minimal.jar}"/>
@@ -316,7 +316,7 @@
     <mkdir dir="${main.dir}"/>
     <unzip dest="${main.dir}">
       <fileset dir="${lib.dir}">
-        <include name="release/${bufr.jar}"/>
+        <include name="release/${bufrTables.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
         <include name="external/${jpeg2000.jar}"/>
@@ -360,7 +360,7 @@
     <mkdir dir="${idv.dir}"/>
     <unzip dest="${idv.dir}">
       <fileset dir="${lib.dir}">
-        <include name="release/${bufr.jar}"/>
+        <include name="release/${bufrTables.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
         <include name="external/${jpeg2000.jar}"/>
@@ -813,7 +813,7 @@
   <target name="releaseWebstart" description="make webstart release; do dist or release first">
     <signjar alias="idv" jar="${build.dir}/${jarUI}" keystore="${keystore}" signedjar="${webstart_dir}/netcdfUI.jar"
              storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/release/${bufr.jar}" keystore="${keystore}"
+    <signjar alias="idv" jar="${lib.dir}/release/${bufrTables.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/bufrTables.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
@@ -841,6 +841,8 @@
              signedjar="${webstart_dir}/opendap.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${resourcesOptional.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${stax.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/stax.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${visadNoDods.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/visadNoDods.jar" storepass="${keystore.password}"/>
   </target>
