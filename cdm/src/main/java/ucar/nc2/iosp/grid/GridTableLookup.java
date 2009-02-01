@@ -33,7 +33,7 @@
 
 // $Id: GridTableLookup.java,v 1.13 2006/08/03 22:32:59 rkambic Exp $
 
-package ucar.nc2.iosp.grid;
+package ucar.grid;
 
 
 /**
@@ -115,7 +115,7 @@ public interface GridTableLookup {
      * @param gr  record to check
      * @return Parameter.
      */
-    public GridParameter getParameter(GridRecord gr);
+    //public GridParameter getParameter(GridRecord gr);
 
     /**
      * Get the level name

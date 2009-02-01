@@ -35,7 +35,7 @@
 
 
 
-package ucar.nc2.iosp.grid;
+package ucar.grid;
 
 
 import java.util.HashMap;

@@ -32,11 +32,11 @@
  */
 
 
-package ucar.nc2.iosp.grid;
+package ucar.grid;
 
 
 import java.util.*;
-
+import ucar.grid.GridRecord;
 
 /**
  * An "in memory" index for 2D grid files.
@@ -47,18 +47,18 @@ public final class GridIndex {
     /**
      * Contains GridRecords
      */
-    private final ArrayList index = new ArrayList();
-
+    //private final ArrayList index = new ArrayList();
+    private final List<GridRecord> index = new ArrayList<GridRecord>();
     /**
      * Contains list of grid definitions (mostly projection info)
      */
     private final ArrayList gcs = new ArrayList();
 
     /**
+     *
      * contains global attributes of the Index.
      */
-    private final HashMap atts = new HashMap();
-
+    private final Map<String, String> atts = new HashMap<String, String>();
     /**
      * Constructor for creating an Index from the Grid file.
      * Use the addXXX() methods.
@@ -69,7 +69,7 @@ public final class GridIndex {
      * GlobalAttributes of index.
      * @return HashMap of type GlobalAttributes.
      */
-    public final HashMap getGlobalAttributes() {
+    public final Map getGlobalAttributes() {
         return atts;
     }
 
