@@ -33,7 +33,7 @@
 
 // $Id: GridTableLookup.java,v 1.13 2006/08/03 22:32:59 rkambic Exp $
 
-package ucar.grid;
+package ucar.nc2.iosp.grid;
 
 
 /**

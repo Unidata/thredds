@@ -34,7 +34,7 @@
  */
 
 
-package ucar.grid;
+package ucar.nc2.iosp.grid;
 
 
 import java.util.Date;
