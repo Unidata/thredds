@@ -36,7 +36,6 @@ package ucar.nc2.iosp.grid;
 
 
 import java.util.*;
-import ucar.grid.GridRecord;
 
 /**
  * An "in memory" index for 2D grid files.

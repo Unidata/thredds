@@ -115,7 +115,7 @@ public interface GridTableLookup {
      * @param gr  record to check
      * @return Parameter.
      */
-    //public GridParameter getParameter(GridRecord gr);
+    public GridParameter getParameter(GridRecord gr);
 
     /**
      * Get the level name
