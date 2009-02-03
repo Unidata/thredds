@@ -51,7 +51,7 @@ import java.io.IOException;
 public class Nimbus extends COARDSConvention {
 
   public static boolean isMine(NetcdfFile ncfile) {
-    String s = ncfile.findAttValueIgnoreCase(null, "Convention", null);
+    String s = ncfile.findAttValueIgnoreCase(null, "Convention", "none");
     return s.equalsIgnoreCase("NCAR-RAF/nimbus");
   }
 
