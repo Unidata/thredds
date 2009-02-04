@@ -159,7 +159,15 @@ public class DqcServlet extends AbstractServlet
         log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
         return;
       }
+
       // Write blank config file. Yuck!!!
+      if ( ! this.writeEmptyConfigDocToFile( configFile ))
+      {
+        this.allow = false;
+        log.warn( "init(): DqcServlet disabled - failed to write empty config file." );
+        log.info( "init(): " + UsageLog.closingMessageNonRequestContext() );
+        return;
+      }
     }
 
     try
@@ -511,10 +519,38 @@ public class DqcServlet extends AbstractServlet
     return( buf.toString());
   }
 
-  private boolean writeEmptyConfigDocToFile()
+  private boolean writeEmptyConfigDocToFile( File configFile )
   {
-    // ToDo
-    return false;
+    FileOutputStream fos = null;
+    OutputStreamWriter writer = null;
+    try
+    {
+      fos = new FileOutputStream( configFile);
+      writer = new OutputStreamWriter( fos, "UTF-8");
+      writer.append( this.genEmptyConfigDocAsString() );
+      writer.flush();
+    }
+    catch ( IOException e )
+    {
+      log.debug( "writeEmptyConfigDocToFile(): IO error writing blank config file: " + e.getMessage() );
+      return false;
+    }
+    finally
+    {
+      try
+      {
+        if ( writer != null )
+          writer.close();
+        if ( fos != null )
+          fos.close();
+      }
+      catch ( IOException e )
+      {
+        log.debug( "writeEmptyConfigDocToFile(): IO error closing just written blank config file: " + e.getMessage() );
+        return true;
+      }
+    }
+    return true;
   }
 
   private String genEmptyConfigDocAsString()
