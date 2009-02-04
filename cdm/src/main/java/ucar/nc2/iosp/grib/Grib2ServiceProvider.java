@@ -82,7 +82,7 @@ public class Grib2ServiceProvider extends GribServiceProvider {
       raf.seek(0);
       g2i.scan( false, true );
 
-      ArrayList records = g2i.getRecords();
+      List records = g2i.getRecords();
       firstRecord = (Grib2Record) records.get(0);
       if (debugTiming) {
         long took = System.currentTimeMillis() - start2;
