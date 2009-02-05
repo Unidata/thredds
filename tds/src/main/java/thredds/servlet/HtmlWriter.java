@@ -592,7 +592,7 @@ public class HtmlWriter {
         try {
           URI uri = new URI(href);
           if (uri.isAbsolute()) {
-            href = contextPath + "/catalogServices?catalog=" + href;
+            href = contextPath + "/remoteCatalogService?catalog=" + href;
           } else {
             int pos = href.lastIndexOf('.');
             href = href.substring(0, pos) + ".html";
