@@ -556,14 +556,14 @@ public class DqcServlet extends AbstractServlet
   private String genEmptyConfigDocAsString()
   {
     StringBuilder sb = new StringBuilder()
-            .append( "<?xml version='1.0' encoding='UTF-8'?>")
-            .append("<preferences EXTERNAL_XML_VERSION='1.0'>")
-            .append("  <root type='user'>")
-            .append("    <map>")
-            .append("      <beanCollection key='config' class='thredds.cataloggen.servlet.CatGenTimerTask'>")
-            .append("      </beanCollection>")
-            .append("    </map>")
-            .append("  </root>")
+            .append( "<?xml version='1.0' encoding='UTF-8'?>\n")
+            .append("<preferences EXTERNAL_XML_VERSION='1.0'>\n")
+            .append("  <root type='user'>\n")
+            .append("    <map>\n")
+            .append("      <beanCollection key='config' class='thredds.cataloggen.servlet.CatGenTimerTask'>\n")
+            .append("      </beanCollection>\n")
+            .append("    </map>\n")
+            .append("  </root>\n")
             .append("</preferences>");
     return sb.toString();
   }

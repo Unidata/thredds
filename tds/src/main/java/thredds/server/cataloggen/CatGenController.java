@@ -104,13 +104,16 @@ public class CatGenController extends AbstractController
       }
       catch ( IOException e )
       {
-        log.error( "init(): Failed to close config file InputStream: " + e.getMessage() );
+        log.error( "init(): Failed to parse config file (disabling CatalogGen): " + e.getMessage() );
+        this.allow = false;
+        return;
       }
     }
     else
     {
-      log.error( "init(): Config file does not exist." );
-      this.config = new CatGenConfig( "Config file does not exist." );
+      log.error( "init(): Config file does not exist (disabling CatalogGen)." );
+      this.allow = false;
+      return;
     }
 
     if ( catGenContext.getConfigDirectory().exists()
