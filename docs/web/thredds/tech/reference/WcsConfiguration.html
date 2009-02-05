@@ -1,8 +1,7 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>THREDDS WCS Configuration</title>
-
-</head><body>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>THREDDS WCS Configuration</title></head>
+<body>
 <h1><img src="../images/unidataLogo.png" align="middle" height="75" width="75"> Configuring the Web Coverage
 Service</h1>
 <div class="head">
@@ -39,11 +38,10 @@ file</a>, set allow to true in the &lt;<strong>WCS</strong>&gt;
 element. <br>
 </li>
 </ol><h3>Serving Remote Datasets </h3>
-<p>A slight extension of the WCS Dataset URL format allows the
+<p>The TDS can serve remote datasets with the WCS protocol if configured to do so. It must be explicitly configured&nbsp;in the <code>threddsConfig.xml</code> configuration file. This is done by adding an <strong>allowRemote</strong> element to the <strong>WCS</strong> element as follows:</p><pre style="margin-left: 40px;">&lt;WCS&gt;<br>  &lt;allow&gt;true&lt;/allow&gt;<br>  &lt;allowRemote&gt;true&lt;/allowRemote&gt; <br>  ...<br>&lt;/WCS&gt;</pre><p>A slight extension of the WCS Dataset URL format allows the
 TDS to serve remote datasets. Identify the dataset by adding the
 parameter <strong>dataset</strong> whose value is a URL:</p>
-<pre> http://servername:8080/thredds/wcs?<strong>dataset=<em>datasetURL</em>&amp;</strong></pre>
-<p>The URL must be a dataset readable by the NetCDF-Java library,
+<pre> http://servername:8080/thredds/wcs?<strong>dataset=<em>datasetURL</em>&amp;</strong></pre><p>The URL must be a dataset readable by the NetCDF-Java library,
 typically an OPeNDAP dataset on another server. It must have gridded
 data, with identifiable coordinate systems, etc. For example, an
 OPeNDAP URL might be</p>

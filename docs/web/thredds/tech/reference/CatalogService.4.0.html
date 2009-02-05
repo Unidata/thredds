@@ -16,7 +16,9 @@ dl {margin: 10px 5px 5px 15px;)
 
 <p>The TDS provides various services for THREDDS catalogs. Catalogs
 served by the TDS can be subset and/or viewed as HTML. Remote catalogs,
-if allowed, can be validated, displayed as HTML, or subset.</p><p>*****</p><p>Not ready yet. The following is from the TDS javadocs for LocalCatalogServiceController and RemoteCatalogServiceController</p><p>And further down is from 3.16 docs. Need to merge and such</p><p>*****</p>
+if allowed, can be validated, displayed as HTML, or subset.</p><h2>Configuration</h2><p>Local
+catalogs always&nbsp;support subsetting (with the "dataset" and
+"command=&lt;datasetId&gt;" parameters) and HTML view (with the ".html" extension).</p><p>Remote catalogs are only allowed if the following is added to the content/thredds/threddsConfig.xml file:</p><pre style="margin-left: 40px;">&lt;CatalogServices&gt;<br>    &lt;allowRemote&gt;true&lt;/allowRemote&gt;<br>&lt;/CatalogServices&gt;</pre><p>*****</p><p>Not ready yet. The following is from the TDS javadocs for LocalCatalogServiceController and RemoteCatalogServiceController</p><p>And further down is from 3.16 docs. Need to merge and such</p><p>*****</p>
 
   <h2>Catalog Services for Local TDS Served Catalogs</h2>
 <p>Currently, handles the following TDS requests:
@@ -106,9 +108,7 @@ the URL path. Whether the XML view or the HTML view are returned
 depends on the file extension (".xml" or ".html").</p><p>The supported requests are:</p><ul><li>No parameters - Return the XML view or the HTML view&nbsp;of the target catalog.</li><li>"<code><strong>?dataset=&lt;dsID&gt;</strong></code>" - Return a subset of the target catalog in XML or HTML.</li><li>"<code><strong>?dataset=&lt;dsID&gt;&amp;cmd=subset</strong></code>" - Same as above.</li></ul><p>Note:
 This includes configuration catalogs (e.g., "/thredds/idd/models.xml")
 as well as dynamically generated catalogs (e.g.,
-"/thredds/catalog/model/NCEP/NAM/catalog.xml").</p><h2>Configuration</h2><p>Local
-catalogs always&nbsp;support subsetting (with the "dataset" and
-"cmd=subset" parameters) and HTML view (with the ".html" extension).</p><p>Remote catalogs are only allowed if the following is added to the content/thredds/threddsConfig.xml file:</p><pre style="margin-left: 40px;">&lt;CatalogServices&gt;<br>    &lt;allowRemote&gt;true&lt;/allowRemote&gt;<br>&lt;/CatalogServices&gt;<br></pre></div>
+"/thredds/catalog/model/NCEP/NAM/catalog.xml").</p><br></div>
 <hr width="100%">
 <address><img alt="THREDDS" src="../images/thread.png" height="108" width="110">This document is maintained by Unidata and was
 last updated January 2009. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
