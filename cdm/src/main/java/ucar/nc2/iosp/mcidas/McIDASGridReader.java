@@ -41,6 +41,7 @@ import edu.wisc.ssec.mcidas.*;
 import ucar.nc2.iosp.grid.*;
 
 import ucar.unidata.io.RandomAccessFile;
+import ucar.grid.GridIndex;
 
 import java.io.IOException;
 

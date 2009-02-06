@@ -47,6 +47,8 @@ import ucar.nc2.iosp.grid.*;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
+import ucar.grid.GridIndex;
+import ucar.grid.GridRecord;
 
 import java.io.IOException;
 

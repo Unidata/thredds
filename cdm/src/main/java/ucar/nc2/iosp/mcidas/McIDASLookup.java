@@ -36,8 +36,12 @@ package ucar.nc2.iosp.mcidas;
 
 
 import edu.wisc.ssec.mcidas.McIDASUtil;
+import ucar.grid.GridTableLookup;
+import ucar.grid.GridDefRecord;
+import ucar.grid.GridParameter;
+import ucar.grid.GridRecord;
 
-import ucar.nc2.iosp.grid.*;
+//import ucar.nc2.iosp.grid.*;
 
 
 /**

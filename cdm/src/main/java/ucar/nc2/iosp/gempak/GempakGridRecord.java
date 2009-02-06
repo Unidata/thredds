@@ -38,7 +38,8 @@
 package ucar.nc2.iosp.gempak;
 
 
-import ucar.nc2.iosp.grid.GridRecord;
+//import ucar.nc2.iosp.grid.GridRecord;
+import ucar.grid.GridRecord;
 
 import edu.wisc.ssec.mcidas.McIDASUtil;
 

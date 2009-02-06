@@ -49,6 +49,8 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.util.GaussianLatitudes;
 import ucar.unidata.util.StringUtil;
+import ucar.grid.GridTableLookup;
+import ucar.grid.GridDefRecord;
 
 import java.util.ArrayList;
 import java.util.Collections;

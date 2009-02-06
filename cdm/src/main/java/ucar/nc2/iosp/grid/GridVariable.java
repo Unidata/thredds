@@ -41,6 +41,9 @@ import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.units.DateFormatter;
+import ucar.grid.GridRecord;
+import ucar.grid.GridTableLookup;
+import ucar.grid.GridParameter;
 
 import java.util.ArrayList;
 import java.util.List;

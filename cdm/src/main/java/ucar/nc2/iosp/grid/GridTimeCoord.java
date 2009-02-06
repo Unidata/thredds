@@ -43,6 +43,8 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
+import ucar.grid.GridTableLookup;
+import ucar.grid.GridRecord;
 
 import java.util.*;
 

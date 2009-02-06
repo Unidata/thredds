@@ -42,9 +42,11 @@ import edu.wisc.ssec.mcidas.McIDASException;
 
 import edu.wisc.ssec.mcidas.McIDASUtil;
 
-import ucar.nc2.iosp.grid.*;
+//import ucar.nc2.iosp.grid.*;
 
 import java.util.Date;
+
+import ucar.grid.GridRecord;
 
 
 /**

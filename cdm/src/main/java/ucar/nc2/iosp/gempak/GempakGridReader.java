@@ -38,8 +38,10 @@
 package ucar.nc2.iosp.gempak;
 
 
-import ucar.nc2.iosp.grid.GridIndex;
-import ucar.nc2.iosp.grid.GridRecord;
+//import ucar.nc2.iosp.grid.GridIndex;
+import ucar.grid.GridIndex;
+//import ucar.nc2.iosp.grid.GridRecord;
+import ucar.grid.GridRecord;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil;

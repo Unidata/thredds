@@ -41,15 +41,17 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.grid.GridDefRecord;
-import ucar.nc2.iosp.grid.GridIndex;
+//import ucar.nc2.iosp.grid.GridDefRecord;
+//import ucar.nc2.iosp.grid.GridIndex;
 import ucar.nc2.iosp.grid.GridIndexToNC;
 
-import ucar.nc2.iosp.grid.GridRecord;
+//import ucar.nc2.iosp.grid.GridRecord;
 import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
+import ucar.grid.GridIndex;
+import ucar.grid.GridRecord;
 
 import java.io.IOException;
 

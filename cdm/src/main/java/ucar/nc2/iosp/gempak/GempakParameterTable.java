@@ -39,10 +39,11 @@
 package ucar.nc2.iosp.gempak;
 
 
-import ucar.nc2.iosp.grid.GridParameter;
+//import ucar.nc2.iosp.grid.GridParameter;
 
 
 import ucar.unidata.util.StringUtil;
+import ucar.grid.GridParameter;
 
 import java.io.*;
 

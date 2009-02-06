@@ -42,6 +42,8 @@ import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
+import ucar.grid.GridRecord;
+import ucar.grid.GridTableLookup;
 
 import java.util.*;
 
