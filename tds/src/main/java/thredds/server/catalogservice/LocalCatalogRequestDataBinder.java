@@ -51,6 +51,8 @@ import thredds.util.TdsPathUtils;
  */
 public class LocalCatalogRequestDataBinder extends DataBinder
 {
+  private String suffixForDirPath = "catalog.html";
+
   private static enum FieldInfo
   {
     CATALOG( "catalog", "path", ""),
@@ -87,9 +89,14 @@ public class LocalCatalogRequestDataBinder extends DataBinder
 
     MutablePropertyValues values = new MutablePropertyValues();
 
-    // Don't allow null values.
+    // Don't allow null catalog path values.
     if ( catPath == null )
       catPath = FieldInfo.CATALOG.getDefaultValue();
+    else if ( catPath.endsWith( "/" ))
+      // Append suffix for all directory paths.
+      catPath += this.suffixForDirPath;
+
+    // Don't allow null dataset ID values.
     if ( dataset == null )
       dataset = FieldInfo.DATASET.getDefaultValue();
 

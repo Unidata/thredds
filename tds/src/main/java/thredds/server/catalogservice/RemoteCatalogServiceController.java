@@ -42,8 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import thredds.servlet.HtmlWriter;
-import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
+import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
 import thredds.server.views.InvCatalogXmlView;
 import thredds.catalog.*;
@@ -93,9 +93,10 @@ import java.net.URI;
  *     the "dataset" parameter is empty, otherwise it will default to "SUBSET".</li>
  * </ul>
  *
- * <p>The above information is contained in a {@link RemoteCatalogRequest} command
- * object while the constraints are enforced by {@link RemoteCatalogRequestDataBinder}
- * and {@link RemoteCatalogRequestValidator}.
+ * <p>The above information is contained in a {@link RemoteCatalogRequest}
+ * command object, default values are set during binding by
+ * {@link RemoteCatalogRequestDataBinder}, and constraints are enforced by
+ * {@link RemoteCatalogRequestValidator}.
  *
  * @author edavis
  * @since 4.0
@@ -121,14 +122,14 @@ public class RemoteCatalogServiceController extends AbstractController
           throws Exception
   {
     // Gather diagnostics for logging request.
-    ServletUtil.logServerAccessSetup( request );
+    log.info( UsageLog.setupRequestContext( request ));
 
     // Send error response if remote catalog service requests are not allowed.
     // ToDo Look - Move this into TdsConfig?
     boolean allowRemote = ThreddsConfig.getBoolean( "CatalogServices.allowRemote", false );
     if ( ! allowRemote )
     {
-      ServletUtil.logServerAccess( HttpServletResponse.SC_FORBIDDEN, -1 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
       response.sendError( HttpServletResponse.SC_FORBIDDEN, "Catalog services not supported for remote catalogs." );
       return null;
     }
@@ -143,7 +144,7 @@ public class RemoteCatalogServiceController extends AbstractController
       for ( ObjectError e : oeList )
         msg.append( ": " ).append( e.toString() );
       log.error( "handleRequestInternal(): " + msg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
@@ -165,7 +166,7 @@ public class RemoteCatalogServiceController extends AbstractController
     {
       String msg = "Error reading catalog [" + uri + "]: " + t.getMessage();
       log.error( "handleRequestInternal(): " + msg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
@@ -175,7 +176,7 @@ public class RemoteCatalogServiceController extends AbstractController
     {
       String msg = "Failed to read catalog [" + uri + "].";
       log.error( "handleRequestInternal(): " + msg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
@@ -192,7 +193,7 @@ public class RemoteCatalogServiceController extends AbstractController
       model.put( "siteLogoPath", HtmlWriter.getInstance().getContextPath() + HtmlWriter.getInstance().getContextLogoPath() );
       model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
       model.put( "serverName", HtmlWriter.getInstance().getContextName() );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
       return new ModelAndView( "/thredds/server/catalogservice/validationError", model );
     }
 
@@ -211,7 +212,7 @@ public class RemoteCatalogServiceController extends AbstractController
       {
         String msg = "Did not find dataset [" + datasetId + "] in catalog [" + uri + "].";
         log.error( "handleRequestInternal(): " + msg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
         return null;
       }
@@ -235,14 +236,14 @@ public class RemoteCatalogServiceController extends AbstractController
       model.put( "siteLogoPath", HtmlWriter.getInstance().getContextPath() + HtmlWriter.getInstance().getContextLogoPath() );
       model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
       model.put( "serverName", HtmlWriter.getInstance().getContextName() );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
       return new ModelAndView( "/thredds/server/catalogservice/validationMessage", model );
     }
     else
     {
       String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
       log.error( "handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation." );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }

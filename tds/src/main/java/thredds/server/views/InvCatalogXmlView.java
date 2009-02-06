@@ -41,7 +41,7 @@ import java.io.OutputStream;
 
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
-import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 
 /**
  * _more_
@@ -74,7 +74,7 @@ public class InvCatalogXmlView extends AbstractView
       os = res.getOutputStream();
       // Return catalog as XML response.
       InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_OK, -1 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
       catFactory.writeXML( cat, os );
     }
     finally

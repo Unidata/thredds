@@ -44,7 +44,7 @@ import javax.servlet.ServletException;
 
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
-import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
 import thredds.server.views.FileView;
 import thredds.server.views.InvCatalogXmlView;
@@ -74,6 +74,9 @@ import java.net.URISyntaxException;
  *   <li>Mapping="*.xml"      -- ServletPath="/some/path/*.xml" and PathInfo=null</li>
  *   <li>Mapping="*.html"     -- ServletPath="/some/path/*.html" and PathInfo=null</li>
  * </ul>
+ * <p>Note: When "/catalog/*" request paths end in "/", a suffix is appended
+ * to the path. The suffix default value is "catalog.html" but can be set in
+ * {@link LocalCatalogRequestDataBinder}.
  *
  * <p> Uses the following information from an HTTP request:
  * <ul>
@@ -103,9 +106,10 @@ import java.net.URISyntaxException;
  *     the "dataset" parameter is empty, otherwise it will default to "SUBSET".</li>
  * </ul>
  *
- * <p>The above information is contained in a {@link LocalCatalogRequest} command
- * object while the constraints are enforced by {@link LocalCatalogRequestDataBinder}
- * and {@link LocalCatalogRequestValidator}.
+ * <p>The above information is contained in a {@link LocalCatalogRequest}
+ * command object, default values are set during binding by
+ * {@link LocalCatalogRequestDataBinder}), and constraints are enforced by
+ * {@link LocalCatalogRequestValidator}.
  *
  * @author edavis
  * @since 4.0
@@ -153,7 +157,7 @@ public class LocalCatalogServiceController extends AbstractController
           throws Exception
   {
     // Gather diagnostics for logging request.
-    ServletUtil.logServerAccessSetup( request );
+    log.info( UsageLog.setupRequestContext( request ));
 
     // Bind HTTP request to a LocalCatalogRequest.
     BindingResult bindingResult = CatalogServiceUtils.bindAndValidateLocalCatalogRequest( request, this.htmlView );
@@ -166,7 +170,7 @@ public class LocalCatalogServiceController extends AbstractController
       for ( ObjectError e : oeList )
         msg.append( ": " ).append( e.toString() );
       log.error( "handleRequestInternal(): " + msg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
@@ -191,7 +195,7 @@ public class LocalCatalogServiceController extends AbstractController
     {
       String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
       log.error( "handleRequestInternal(): " + msg );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
@@ -220,7 +224,7 @@ public class LocalCatalogServiceController extends AbstractController
       {
         String msg = "Did not find dataset [" + datasetId + "] in catalog [" + baseUriString + "].";
         log.error( "handleRequestInternal(): " + msg );
-        ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
         return null;
       }
@@ -240,7 +244,7 @@ public class LocalCatalogServiceController extends AbstractController
     {
       String msg = "Unsupported request command [" + catalogServiceRequest.getCommand() + "].";
       log.error( "handleRequestInternal(): " + msg + " -- NOTE: Should have been caught on input validation." );
-      ServletUtil.logServerAccess( HttpServletResponse.SC_BAD_REQUEST, msg.length() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length()));
       response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
       return null;
     }
@@ -254,7 +258,7 @@ public class LocalCatalogServiceController extends AbstractController
     // If not supporting access to public document files, send not found response.
     if ( this.catalogSupportOnly )
     {
-      ServletUtil.logServerAccess( HttpServletResponse.SC_NOT_FOUND, 0 );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ) );
       response.sendError( HttpServletResponse.SC_NOT_FOUND );
       return null;
     }
@@ -266,7 +270,7 @@ public class LocalCatalogServiceController extends AbstractController
 
     // If request doesn't match a public document, hand to default.
     tdsContext.getDefaultRequestDispatcher().forward( request, response );
-    ServletUtil.logServerAccess( -1, -1 );
+    log.info( UsageLog.closingMessageForRequestContext( -1, -1 ) );
     return null;
   }
 

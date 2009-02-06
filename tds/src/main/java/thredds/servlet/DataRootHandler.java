@@ -40,8 +40,8 @@ import thredds.servlet.PathMatcher;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
-import thredds.util.TdsConfiguredPathAliasReplacement;
 import thredds.util.StartsWithPathAliasReplacement;
+import thredds.util.TdsPathUtils;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.DateUtil;
@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
+import javax.servlet.RequestDispatcher;
 import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -1175,8 +1176,11 @@ public class DataRootHandler {
    * @throws ServletException on other errors
    */
   public boolean processReqForCatalog( HttpServletRequest req, HttpServletResponse res)
-          throws IOException, ServletException {
-
+          throws IOException, ServletException
+  {
+//    RequestDispatcher rd = req.getRequestDispatcher( "/catalog/" + TdsPathUtils.extractPath( req ) );
+//    rd.forward( req, res);
+//    return true; // ToDo ?????? Don't know if match ??? 
     boolean isHtmlReq = false;
 
     String catPath = req.getPathInfo();
