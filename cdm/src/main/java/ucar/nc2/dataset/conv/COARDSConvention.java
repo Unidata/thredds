@@ -92,6 +92,13 @@ public class COARDSConvention extends CoordSysBuilder {
         return AxisType.GeoZ;
     }
 
+    // a bad idea, but CDC SST relyy on it :
+    // :Source = "NOAA/National Climatic Data Center";
+   // :Contact = "Dick Reynolds, email: Richard.W.Reynolds@noaa.gov & Chunying Liu, email: Chunying.liu@noaa.gov";
+   //:netcdf_Convention = "COARDS";
+    if (SimpleUnit.isCompatible("m", unit))
+      return AxisType.Height;
+
     return null;
   }
 

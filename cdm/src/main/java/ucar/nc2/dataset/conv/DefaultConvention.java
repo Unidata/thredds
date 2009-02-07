@@ -33,10 +33,7 @@
 
 package ucar.nc2.dataset.conv;
 
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -59,7 +56,7 @@ import java.util.StringTokenizer;
  * @author caron
  * @since Dec 17, 2008
  */
-public class DefaultConvention extends COARDSConvention {
+public class DefaultConvention extends CoordSysBuilder {
     protected ProjectionCT projCT = null;
 
     public DefaultConvention() {
@@ -187,7 +184,7 @@ public class DefaultConvention extends COARDSConvention {
     }
 
     protected AxisType getAxisType(NetcdfDataset ds, VariableEnhanced ve) {
-      AxisType result = super.getAxisType(ds, ve);
+      AxisType result = getAxisTypeCoards(ds, ve);
       if (result != null) return result;
 
       Variable v = (Variable) ve;
@@ -230,6 +227,51 @@ public class DefaultConvention extends COARDSConvention {
         alias = ds.findAttValueIgnoreCase(v, "coord_alias", "");
       return alias;
     }
+
+  // replicated from COARDS, but we need to diverge from COARDS
+    // we assume that coordinate axes get identified by being coordinate variables
+   private AxisType getAxisTypeCoards( NetcdfDataset ncDataset, VariableEnhanced v) {
+
+     String unit = v.getUnitsString();
+     if (unit == null)
+       return null;
+
+     if( unit.equalsIgnoreCase("degrees_east") ||
+             unit.equalsIgnoreCase("degrees_E") ||
+             unit.equalsIgnoreCase("degreesE") ||
+             unit.equalsIgnoreCase("degree_east") ||
+             unit.equalsIgnoreCase("degree_E") ||
+             unit.equalsIgnoreCase("degreeE"))
+       return AxisType.Lon;
+
+     if ( unit.equalsIgnoreCase("degrees_north") ||
+             unit.equalsIgnoreCase("degrees_N") ||
+             unit.equalsIgnoreCase("degreesN") ||
+             unit.equalsIgnoreCase("degree_north") ||
+             unit.equalsIgnoreCase("degree_N") ||
+             unit.equalsIgnoreCase("degreeN"))
+       return AxisType.Lat;
+
+     if (SimpleUnit.isDateUnit(unit)) // || SimpleUnit.isTimeUnit(unit)) removed dec 18, 2008
+       return AxisType.Time;
+
+     // look for other z coordinate
+     //if (SimpleUnit.isCompatible("m", unit))
+     //  return AxisType.Height;
+     if (SimpleUnit.isCompatible("mbar", unit))
+       return AxisType.Pressure;
+     if (unit.equalsIgnoreCase("level") || unit.equalsIgnoreCase("layer") || unit.equalsIgnoreCase("sigma_level"))
+       return AxisType.GeoZ;
+
+     String positive = ncDataset.findAttValueIgnoreCase((Variable) v, "positive", null);
+     if (positive != null) {
+       if (SimpleUnit.isCompatible("m", unit))
+         return AxisType.Height;
+       else
+         return AxisType.GeoZ;
+     }
+     return null;
+   }
 
     private ProjectionCT makeProjectionCT(NetcdfDataset ds) {
       // look for projection in global attribute

@@ -65,7 +65,7 @@ public class TestReadandCount extends TestCase {
   } */
 
   public void testRead1() throws Exception {
-    doOne(TestAll.upcShareTestDataDir + "grid/grib/grib1/data/","RUC_W.wmo", 44,-1, -1, -1);    
+    doOne("","C:/data/temp/amsr-avhrr-v2.20040729.nc", 4, 1, 4, 1);
   }
 
   public void testRead() throws Exception {
@@ -80,6 +80,7 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"coards/","inittest24.QRIDV07200.nc", -1, -1, -1, -1); // no "positive" att on level
     */
     doOne(griddir+"coards/","inittest24.QRIDV07200.ncml", 1, 1, 3, 1);
+    doOne(griddir+"avhrr/","amsr-avhrr-v2.20040729.nc", 4, 1, 4, 1);
 
     doOne(griddir+"csm/","o3monthly.nc", 4, 1, 7, 2);
     doOne(griddir+"csm/","ha0001.nc", 35, 3, 5, 2); //

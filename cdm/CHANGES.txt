@@ -48,6 +48,9 @@ This code is ALPHA
 
  Release Details:
   31:
+    NSSLRadarConvention checks no Convention is set.
+    COARDS : look for units of meters for vertical coords (again), when all else fails.
+    DefaultCoordBuilder no longer extends COARDS, to avoid such nonsense.
     ncStream
     nimbus NPE
     BufrTable UI: dump  distinct DDS

@@ -60,6 +60,9 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
    * @return true if we think this is a NsslRadarMosaicConvention file.
    */
   public static boolean isMine(NetcdfFile ncfile) {
+    String cs = ncfile.findAttValueIgnoreCase(null, "Conventions", null);
+    if (cs != null) return false;
+
     String s = ncfile.findAttValueIgnoreCase(null, "DataType", null);
     if ((s == null) || !(s.equalsIgnoreCase("LatLonGrid") || s.equalsIgnoreCase("LatLonHeightGrid")))
       return false;
