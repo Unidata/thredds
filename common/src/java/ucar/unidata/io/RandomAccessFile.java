@@ -560,15 +560,14 @@ public class RandomAccessFile implements DataInput, DataOutput {
   }
 
   /**
-   * Read up to <code>nbytes</code> bytes, at a specified offset, send to a WritableByteChannel.
+   * Read <code>nbytes</code> bytes, at the specified file offset, send to a WritableByteChannel.
    * This will block until all bytes are read.
    * This uses the underlying file channel directly, bypassing all user buffers.
    *
    * @param dest write to this WritableByteChannel.
    * @param offset the offset in the file where copying will start.
    * @param nbytes the number of bytes to read.
-   * @return the actual number of bytes read, or -1 if there is no
-   *         more data due to the end of the file being reached.
+   * @return the actual number of bytes read and transfered
    * @throws IOException if an I/O error occurs.
    */
   public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
@@ -576,12 +575,14 @@ public class RandomAccessFile implements DataInput, DataOutput {
     if (fileChannel == null)
         fileChannel = file.getChannel();
 
-    long done = 0;
-    while (done < nbytes) {
-      done += fileChannel.transferTo(offset, nbytes, dest);
-      if (done <= 0) break;  // LOOK not sure what the EOF condition is
+    long need = nbytes;
+    while (need > 0) {
+      long count = fileChannel.transferTo(offset, need, dest);
+      //if (count == 0) break;  // LOOK not sure what the EOF condition is
+      need -= count;
+      offset += count;
     }
-    return done;
+    return nbytes - need;
   }
   
 

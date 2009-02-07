@@ -60,6 +60,7 @@ import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
@@ -223,6 +224,11 @@ public class BufrTable extends JPanel {
         }
       }
     });
+    varPopup.addAction("Dump distinct DDS", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        dumpDDS();
+      }
+    });
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -244,6 +250,35 @@ public class BufrTable extends JPanel {
     dataTable = new StructureTable((PreferencesExt) prefs.node("structTable"));
     dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("netcdfUI"), dataTable);
     dataWindow.setBounds((Rectangle) prefs.getBean("dataWindow", new Rectangle(50, 300, 1000, 600)));
+  }
+
+  private void dumpDDS() {
+    List<MessageBean> beans = messageTable.getBeans();
+    HashMap<Integer, Message> map = new HashMap<Integer, Message>(2*beans.size());
+
+    for (MessageBean mb : beans) {
+      map.put(mb.m.hashCode(), mb.m);
+    }
+
+    int count = 0;
+    String dirName = "C:/temp/";
+    for (Message m : map.values()) {
+      try {
+        File file = new File(dirName+"bufr"+count+".txt");
+        FileOutputStream fos = new FileOutputStream(file);
+        Formatter f = new Formatter(fos);
+        m.dump(f);
+        f.flush();
+        fos.close();
+      } catch (IOException e1) {
+        JOptionPane.showMessageDialog(BufrTable.this, e1.getMessage());
+        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+      count++;
+    }
+    JOptionPane.showMessageDialog(BufrTable.this, count+" successfully written to "+dirName);
+
+
   }
 
   public void save() {

@@ -100,6 +100,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   // still get automatically loaded if they are present.
   static {
     try {
+      registerIOProvider("ucar.nc2.stream.NcStreamIosp");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
@@ -1618,6 +1623,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     // LOOK: should go through Variable for caching ??
     return spi.readToByteChannel(v, section, wbc);
+  }
+
+  public long readToByteChannel(ucar.nc2.Variable v, WritableByteChannel wbc) throws java.io.IOException {
+    try {
+      return spi.readToByteChannel(v, v.getShapeAsSection(), wbc);
+    } catch (InvalidRangeException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   /**

@@ -37,7 +37,6 @@ import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.IospHelper;
 
 import java.nio.channels.WritableByteChannel;
-import java.io.DataOutputStream;
 
 
 /**
@@ -63,40 +62,40 @@ public class N3raf extends N3iosp  {
    return IospHelper.readDataFill(raf, index, dataType, null, -1);
  }
 
-  /** LOOK move to IospHelper
+  /**
    * Read data subset from file for a variable, to WritableByteChannel .
    * @param index handles skipping around in the file.
    * @param dataType dataType of the variable
    */
- protected long readData( Layout index, DataType dataType, WritableByteChannel out) throws java.io.IOException {
-   long count = 0;
-   if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
-     while (index.hasNext()) {
-       Layout.Chunk chunk = index.next();
-       count += raf.readToByteChannel( out, chunk.getSrcPos(), chunk.getNelems());
-     }
+  protected long readData( Layout index, DataType dataType, WritableByteChannel out) throws java.io.IOException {
+    long count = 0;
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+      while (index.hasNext()) {
+        Layout.Chunk chunk = index.next();
+        count += raf.readToByteChannel( out, chunk.getSrcPos(), chunk.getNelems());
+      }
 
-   } else if (dataType == DataType.SHORT) {
-     while (index.hasNext()) {
-       Layout.Chunk chunk = index.next();
-       count += raf.readToByteChannel( out, chunk.getSrcPos(), 2 * chunk.getNelems());
-     }
+    } else if (dataType == DataType.SHORT) {
+      while (index.hasNext()) {
+        Layout.Chunk chunk = index.next();
+        count += raf.readToByteChannel( out, chunk.getSrcPos(), 2 * chunk.getNelems());
+      }
 
-   } else if ((dataType == DataType.INT) || (dataType == DataType.FLOAT)) {
-     while (index.hasNext()) {
-       Layout.Chunk chunk = index.next();
-       count += raf.readToByteChannel( out, chunk.getSrcPos(), 4 * chunk.getNelems());
-     }
+    } else if ((dataType == DataType.INT) || (dataType == DataType.FLOAT)) {
+      while (index.hasNext()) {
+        Layout.Chunk chunk = index.next();
+        count += raf.readToByteChannel( out, chunk.getSrcPos(), 4 * chunk.getNelems());
+      }
 
-   } else if ((dataType == DataType.DOUBLE) || (dataType == DataType.LONG)) {
-     while (index.hasNext()) {
-       Layout.Chunk chunk = index.next();
-       count += raf.readToByteChannel( out, chunk.getSrcPos(), 8 * chunk.getNelems());
-     }
-   }
+    } else if ((dataType == DataType.DOUBLE) || (dataType == DataType.LONG)) {
+      while (index.hasNext()) {
+        Layout.Chunk chunk = index.next();
+        count += raf.readToByteChannel( out, chunk.getSrcPos(), 8 * chunk.getNelems());
+      }
+    }
 
-   return count;
- }
+    return count;
+  }
 
    /**
     * write data to a file for a variable.
