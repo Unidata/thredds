@@ -48,6 +48,11 @@ This code is ALPHA
 
  Release Details:
   31:
+    ncStream
+    nimbus NPE
+    BufrTable UI: dump  distinct DDS
+    RAF: fix writeToStream
+    Array.factory(ByteBuffer)
     bug in PointFeatureSubset iterator.
     move Station, EarthLocation to ucar.unidata.geoloc
   30: Modis Satellite CoordSysBuilder
