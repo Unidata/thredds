@@ -1174,74 +1174,24 @@ public class DataRootHandler {
    * @return true if request was handled
    * @throws IOException on I/O error
    * @throws ServletException on other errors
+   * @deprecated Instead forward() request to
    */
   public boolean processReqForCatalog( HttpServletRequest req, HttpServletResponse res)
           throws IOException, ServletException
   {
-//    RequestDispatcher rd = req.getRequestDispatcher( "/catalog/" + TdsPathUtils.extractPath( req ) );
-//    rd.forward( req, res);
-//    return true; // ToDo ?????? Don't know if match ??? 
-    boolean isHtmlReq = false;
-
-    String catPath = req.getPathInfo();
-    StringBuffer catBase = req.getRequestURL();
-    if (catPath == null) {
+    String catPath = TdsPathUtils.extractPath( req );
+    if ( catPath == null )
       return false;
 
-    } else if (catPath.endsWith("/")) {
-      isHtmlReq = true;
-      catPath = catPath + "catalog.xml";
-      catBase.append( "catalog.xml");
+    if ( catPath.endsWith( "/"))
+      catPath += "catalog.html";
 
-    } else if (catPath.endsWith(".html")) {
-      isHtmlReq = true;
-      // Change ".html" to ".xml"
-      int len = catPath.length();
-      catPath = catPath.substring(0, len - 4) + "xml";
-
-      len = catBase.lastIndexOf( ".html" );
-      catBase.replace( len+1, len+6, "xml");
-
-    } else if (! catPath.endsWith(".xml")) {
-      // Not a catalog request.
-      return false;
-    }
-
-    URI baseURI;
-    try {
-      baseURI = new URI( catBase.toString() );
-    }
-    catch (URISyntaxException e) {
-      log.error("processReqForCatalog(): Request base <" + catBase + "> not a URI: " + e.getMessage());
-      throw new ServletException("Request base <" + catBase + "> not a URI.", e);
-    }
-    InvCatalogImpl catalog = (InvCatalogImpl) getCatalog(catPath, baseURI);
-    if (catalog == null)
+    if ( ! catPath.endsWith( ".xml" )
+         && ! catPath.endsWith( ".html"))
       return false;
 
-    // @todo Check that catalog is valid [ Use catalog.check() ].
-
-    // LOOK: What URL is this ?? Deal with catalogServices
-    String query = req.getQueryString();
-    if (query != null) {
-      CatalogServicesServlet.handleCatalogServiceRequest(catalog, baseURI, isHtmlReq, true, req, res);
-      return true;
-    }
-
-    // Return HTML view of catalog.
-    if (isHtmlReq) {
-      HtmlWriter.getInstance().writeCatalog(res, catalog, true);
-      return true;
-    }
-
-    // Return catalog as XML response.
-    InvCatalogFactory catFactory = getCatalogFactory(false);
-    String result = catFactory.writeXML(catalog);
-    ServletUtil.logServerAccess(HttpServletResponse.SC_OK, result.length());
-
-    res.setContentLength(result.length());
-    res.setContentType("text/xml");
-    res.getOutputStream().write(result.getBytes());
+    RequestDispatcher rd = req.getRequestDispatcher( "/catalog/" + catPath );
+    rd.forward( req, res);
     return true;
   }
 

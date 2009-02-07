@@ -194,8 +194,13 @@ public class RemoteCatalogServiceController extends AbstractController
       model.put( "siteLogoAlt", HtmlWriter.getInstance().getContextLogoAlt() );
       model.put( "serverName", HtmlWriter.getInstance().getContextName() );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
+      // ToDo LOOK - This "Validate" header was in CatalogServicesServlet so added here. Do we need it?
+      response.setHeader( "Validate", "FAIL" );
       return new ModelAndView( "/thredds/server/catalogservice/validationError", model );
     }
+
+    // ToDo LOOK - This "Validate" header was in CatalogServicesServlet so added here. Do we need it?
+    response.setHeader( "Validate", "OK" );
 
     ///////////////////////////////////////////
     // Otherwise, handle catalog as indicated by "command".

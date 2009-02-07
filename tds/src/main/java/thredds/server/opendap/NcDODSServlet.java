@@ -116,7 +116,7 @@ public class NcDODSServlet extends opendap.servlet.AbstractServlet {
       log.info(" initialized");
 
     } catch (Throwable t) {
-      log.error("CatalogServlet init", t);
+      log.error("NcDODSServlet init", t);
       t.printStackTrace();
     }
 

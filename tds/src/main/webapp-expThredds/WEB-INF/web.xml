@@ -12,10 +12,44 @@
   <!-- Turn on some more targeted debugging. -->
   <context-param>
     <param-name>DebugOn</param-name>
-    <param-value></param-value>
+    <param-value> </param-value>
   </context-param>
 
-  <!-- listeners -->
+  <!--
+     Location of the Log4J config file, for initialization.
+     Applied by Log4jConfigListener (currently our listener calls Log4jWebConfigurer.
+   -->
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/log4j.xml</param-value>
+  </context-param>
+
+  <!-- Spring Listener to setup Log4j configuration.
+       Should be listed before any Spring listeners.
+       NOTE: Can't do it here if logs are to go into content/thredds
+        (which isn't fully defined until some Spring config happens).
+   -->
+  <!--listener>
+    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener-->
+
+  <!-- Spring listener to bootstrap Spring WebApplicationContext. Used to
+       handle Spring bean configuration outside of SpringMVC configuration.
+  -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- TDS experimental listener. -->
+  <listener>
+    <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
+  </listener>
+
+  <!-- TDS listener to handle configuration needed by all/most TDS servlets. -->
   <listener>
     <listener-class>thredds.servlet.ServletListener</listener-class>
   </listener>
@@ -27,10 +61,17 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
-  <!-- Setup for catalog validation and translation into HTML. -->
   <servlet>
-    <servlet-name>CatalogServices</servlet-name>
-    <servlet-class>thredds.servlet.CatalogServicesServlet</servlet-class>
+    <servlet-name>root</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- Setup for catalog services. (Catalog subsetting, validation, and translation into HTML.) -->
+  <servlet>
+    <servlet-name>catalogService</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
   </servlet>
 
   <!-- default servlet -->
@@ -40,19 +81,35 @@
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
 
+  <!-- default servlet -->
   <servlet-mapping>
-    <servlet-name>CatalogServices</servlet-name>
-    <url-pattern>/catalog</url-pattern>
+    <servlet-name>root</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>root</servlet-name>
+    <url-pattern>*.css</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>root</servlet-name>
+    <url-pattern>*.gif</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>CatalogServices</servlet-name>
-    <url-pattern>/catalog.html</url-pattern>
+    <servlet-name>catalogService</servlet-name>
+    <url-pattern>*.xml</url-pattern>
   </servlet-mapping>
-
   <servlet-mapping>
-    <servlet-name>CatalogServices</servlet-name>
-    <url-pattern>/catalogServices</url-pattern>
+    <servlet-name>catalogService</servlet-name>
+    <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>catalogService</servlet-name>
+    <url-pattern>/catalog/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>catalogService</servlet-name>
+    <url-pattern>/remoteCatalogService</url-pattern>
   </servlet-mapping>
 
   <!-- ++++++++++ Setup security restrictions ++++++++++ -->
