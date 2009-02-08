@@ -1,16 +1,9 @@
 package ucar.nc2.stream;
 
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Dimension;
-import ucar.nc2.Attribute;
-import ucar.nc2.Variable;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
-import ucar.ma2.Range;
+import ucar.nc2.*;
+import ucar.ma2.*;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
-import java.nio.channels.Channels;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,40 +12,38 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 
+/**
+ * Defines the nc stream format, along with ncStream.proto.
+ * /dev/tds/thredds/cdm/src/main/java
+ * protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
+ */
 public class NcStream {
   // CDFS ecceada0
   static final byte[] MAGIC_HEADER = new byte[]{0x43, 0x44, 0x46, 0x53, (byte) 0xec, (byte) 0xce, (byte) 0xad, (byte) 0xa0};
   static final byte[] MAGIC_DATA = new byte[]{(byte) 0xa1, (byte) 0x1a, (byte) 0xad, (byte) 0xa0};
 
-  private NetcdfFile ncfile;
-  private NcStreamProto.Stream proto;
+  static NcStreamProto.Group.Builder makeGroup(Group g) {
+    NcStreamProto.Group.Builder groupBuilder = NcStreamProto.Group.newBuilder();
+    groupBuilder.setName(g.getShortName());
 
-  public NcStream(NetcdfFile ncfile) throws InvalidProtocolBufferException {
-    this.ncfile = ncfile;
-    NcStreamProto.Group.Builder rootBuilder = NcStreamProto.Group.newBuilder();
-    rootBuilder.setName("");
+    for (Dimension dim : g.getDimensions())
+      groupBuilder.addDims(NcStream.makeDim(dim));
 
-    for (Dimension dim : ncfile.getDimensions()) {
-      rootBuilder.addDims(makeDim(dim));
+    for (Attribute att : g.getAttributes())
+      groupBuilder.addAtts(NcStream.makeAtt(att));
+
+    for (Variable var : g.getVariables()) {
+      if (var instanceof Structure)
+        groupBuilder.addStructs(NcStream.makeStructure( (Structure) var));
+      else
+        groupBuilder.addVars(NcStream.makeVar(var));
     }
 
-    for (Attribute att : ncfile.getGlobalAttributes()) {
-      rootBuilder.addAtts(makeAtt(att));
-    }
-
-    for (Variable var : ncfile.getVariables()) {
-      rootBuilder.addVars(makeVar(var));
-    }
-
-    NcStreamProto.Stream.Builder streamBuilder = NcStreamProto.Stream.newBuilder();
-    streamBuilder.setName(ncfile.getLocation());
-    streamBuilder.setRoot(rootBuilder);
-    streamBuilder.setIndexPos(0);
-
-    proto = streamBuilder.build();
+    return groupBuilder;
   }
 
-  private NcStreamProto.Attribute.Builder makeAtt(Attribute att) {
+
+  static NcStreamProto.Attribute.Builder makeAtt(Attribute att) {
     NcStreamProto.Attribute.Builder attBuilder = NcStreamProto.Attribute.newBuilder();
     attBuilder.setName(att.getName());
     attBuilder.setType(convertType(att.getDataType()));
@@ -61,7 +52,7 @@ public class NcStream {
     return attBuilder;
   }
 
-  private NcStreamProto.Dimension.Builder makeDim(Dimension dim) {
+  static NcStreamProto.Dimension.Builder makeDim(Dimension dim) {
     NcStreamProto.Dimension.Builder dimBuilder = NcStreamProto.Dimension.newBuilder();
     dimBuilder.setName(dim.getName());
     dimBuilder.setLength(dim.getLength());
@@ -71,7 +62,7 @@ public class NcStream {
     return dimBuilder;
   }
 
-  private NcStreamProto.Variable.Builder makeVar(Variable var) {
+  static NcStreamProto.Variable.Builder makeVar(Variable var) {
     NcStreamProto.Variable.Builder builder = NcStreamProto.Variable.newBuilder();
     builder.setName(var.getShortName());
     builder.setDataType(convertDataType(var.getDataType()));
@@ -86,7 +77,27 @@ public class NcStream {
     return builder;
   }
 
-  private NcStreamProto.Data makeDataProto(Variable var) {
+  static NcStreamProto.Structure.Builder makeStructure(Structure s) {
+    NcStreamProto.Structure.Builder builder = NcStreamProto.Structure.newBuilder();
+    builder.setName(s.getShortName());
+    builder.setDataType(convertDataType(s.getDataType()));
+
+    for (Dimension dim : s.getDimensions())
+      builder.addShape(makeDim(dim));
+
+    for (Attribute att : s.getAttributes())
+      builder.addAtts(makeAtt(att));
+
+    for (Variable v : s.getVariables()) {
+      if (v instanceof Structure)
+        builder.addStructs(NcStream.makeStructure( (Structure) v));
+      else
+        builder.addVars(NcStream.makeVar(v));    }
+
+    return builder;
+  }
+
+  static NcStreamProto.Data makeDataProto(Variable var) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getName());
     builder.setDataType(convertDataType(var.getDataType()));
@@ -101,7 +112,7 @@ public class NcStream {
     return builder.build();
   }
 
-  void show(NcStreamProto.Stream proto) throws InvalidProtocolBufferException {
+  static void show(NcStreamProto.Stream proto) throws InvalidProtocolBufferException {
     NcStreamProto.Group root = proto.getRoot();
 
     for (NcStreamProto.Dimension dim : root.getDimsList()) {
@@ -117,7 +128,7 @@ public class NcStream {
     }
   }
 
-  private com.google.protobuf.ByteString getAttData(Attribute att) {
+  static com.google.protobuf.ByteString getAttData(Attribute att) {
     if (att.getDataType().isString()) {
       String val = att.getStringValue();
       return ByteString.copyFromUtf8(val);
@@ -131,55 +142,21 @@ public class NcStream {
 
   ////////////////////////////////////////////////////////////
 
-  public void stream(WritableByteChannel wbc) throws IOException {
-    OutputStream out = Channels.newOutputStream(wbc);
-    long size = 0;
-
-    //// header message
-    size += writeBytes(out, MAGIC_HEADER); // magic
-    byte[] b = proto.toByteArray();
-    size += writeVInt(out, b.length); // len
-    System.out.println("Header len="+b.length);
-    // payload
-    size += writeBytes(out, b);
-
-    // data messages
-    for (Variable v : ncfile.getVariables()) {
-      // magic
-      size += writeBytes(out, MAGIC_DATA); // magic
-      NcStreamProto.Data dataProto= makeDataProto(v);
-      byte[] datab = dataProto.toByteArray();
-      size += writeVInt(out, datab.length); // proto len
-      size += writeBytes(out, datab); //proto
-      System.out.println(v.getName()+" proto len="+datab.length);
-
-      long len = v.getSize() * v.getElementSize();
-      size += writeVInt(out, (int) len); // data len
-      System.out.println(v.getName()+" data len="+len);
-      out.flush();
-
-      long readCount = ncfile.readToByteChannel(v, wbc);
-      assert readCount == len;
-      size += len;
-    }
-    System.out.println(" total size="+size);
-  }
-
-  private int writeByte(OutputStream out, byte b) throws IOException {
+  static int writeByte(OutputStream out, byte b) throws IOException {
     out.write(b);
     return 1;
   }
 
-  private int writeBytes(OutputStream out, byte[] b, int offset, int length) throws IOException {
+  static int writeBytes(OutputStream out, byte[] b, int offset, int length) throws IOException {
     out.write(b, offset, length);
     return length;
   }
 
-  private int writeBytes(OutputStream out, byte[] b) throws IOException {
+  static int writeBytes(OutputStream out, byte[] b) throws IOException {
     return writeBytes(out, b, 0, b.length);
   }
 
-  private int writeVInt(OutputStream out, int i) throws IOException {
+  static int writeVInt(OutputStream out, int i) throws IOException {
     int count = 0;
     while ((i & ~0x7F) != 0) {
       writeByte(out, (byte) ((i & 0x7f) | 0x80));
@@ -195,7 +172,7 @@ public class NcStream {
    * bytes.  Smaller values take fewer bytes.  Negative numbers are not
    * supported.
    */
-  private int writeVLong(OutputStream out, long i) throws IOException {
+  static int writeVLong(OutputStream out, long i) throws IOException {
     int count = 0;
     while ((i & ~0x7F) != 0) {
       writeByte(out, (byte) ((i & 0x7f) | 0x80));
@@ -206,43 +183,7 @@ public class NcStream {
     return count + 1;
   }
 
-  ////////////////////////////////////////////////////////////
-  public NetcdfFile readStream(InputStream is) throws IOException {
-    assert readAndTest(is, MAGIC_HEADER);
-
-    int msize = readVInt(is);
-    System.out.println("READ header len= "+msize);
-
-    byte[] m = new byte[ msize];
-    is.read(m);
-    proto = NcStreamProto.Stream.parseFrom(m);
-    ncfile = proto2nc( proto);
-
-    // LOOK why doesnt this work ?
-    //CodedInputStream cis = CodedInputStream.newInstance(is);
-    //cis.setSizeLimit(msize);
-    //NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(cis);
-
-    while (is.available() > 0) {
-      assert readAndTest(is, MAGIC_DATA);
-
-      int psize = readVInt(is);
-      System.out.println(" dproto len= "+psize);
-      byte[] dp = new byte[ psize];
-      is.read(dp);
-      NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-      System.out.println(" dproto = "+dproto);
-
-      int dsize = readVInt(is);
-      System.out.println(" data len= "+dsize);
-      is.skip(dsize);
-    }
-
-    return ncfile;
-
-  }
-
-  private int readVInt(InputStream is) throws IOException {
+  static int readVInt(InputStream is) throws IOException {
     byte b = (byte) is.read();
     int i = b & 0x7F;
     for (int shift = 7; (b & 0x80) != 0; shift += 7) {
@@ -252,7 +193,7 @@ public class NcStream {
     return i;
   }
 
-  private boolean readAndTest(InputStream is, byte[] test) throws IOException {
+  static boolean readAndTest(InputStream is, byte[] test) throws IOException {
     byte[] b = new byte[test.length];
     is.read(b);
 
@@ -262,32 +203,11 @@ public class NcStream {
     return true;
   }
 
-  public NetcdfFile proto2nc(NcStreamProto.Stream proto) throws InvalidProtocolBufferException {
-    NetcdfFile ncfile = new NetcdfFileStream();
-    ncfile.setLocation( proto.getName());
-
-    NcStreamProto.Group root = proto.getRoot();
-
-    for (NcStreamProto.Dimension dim : root.getDimsList()) {
-      ncfile.addDimension( null, makeDim( dim));
-    }
-
-    for (NcStreamProto.Attribute att : root.getAttsList()) {
-      ncfile.addAttribute( null, makeAtt( att));
-    }
-
-    for (NcStreamProto.Variable var : root.getVarsList()) {
-      ncfile.addVariable( null, makeVar( ncfile, var));
-    }
-
-    return ncfile;
-  }
-
-  private Dimension makeDim(NcStreamProto.Dimension dim) {
+  static Dimension makeDim(NcStreamProto.Dimension dim) {
     return new Dimension( dim.getName(), (int) dim.getLength(), !dim.getIsPrivate(), dim.getIsUnlimited(), dim.getIsVlen());
   }
 
-  private Attribute makeAtt(NcStreamProto.Attribute att) {
+  static Attribute makeAtt(NcStreamProto.Attribute att) {
     ByteString bs = att.getData();
     if (att.getType() == ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING) {
       return new Attribute(att.getName(), bs.toStringUtf8());
@@ -297,8 +217,8 @@ public class NcStream {
     return new Attribute(att.getName(), Array.factory( convertType(att.getType()), null,  bb));
   }
 
-  private Variable makeVar(NetcdfFile ncfile , NcStreamProto.Variable var) {
-    Variable ncvar = new Variable(ncfile, null, null, var.getName());
+  static Variable makeVar(NetcdfFile ncfile, Group g, Structure parent, NcStreamProto.Variable var) {
+    Variable ncvar = new Variable(ncfile, g, parent, var.getName());
     ncvar.setDataType(convertDataType(var.getDataType()));
 
     StringBuilder sbuff = new StringBuilder();
@@ -308,21 +228,53 @@ public class NcStream {
     }
     ncvar.setDimensions(sbuff.toString());
 
-    for (ucar.nc2.stream.NcStreamProto.Attribute att : var.getAttsList()) {
+    for (ucar.nc2.stream.NcStreamProto.Attribute att : var.getAttsList())
       ncvar.addAttribute(makeAtt(att));
-    }
 
     return ncvar;
   }
 
-  private class NetcdfFileStream extends NetcdfFile {
+  static Structure makeStructure(NetcdfFile ncfile, Group g, Structure parent, NcStreamProto.Structure s) {
+    Structure ncvar = (s.getDataType() == ucar.nc2.stream.NcStreamProto.DataType.SEQUENCE) ?
+      new Sequence(ncfile, g, parent, s.getName()) : new Structure(ncfile, g, parent, s.getName());
 
+    ncvar.setDataType(convertDataType(s.getDataType()));
+
+    StringBuilder sbuff = new StringBuilder();
+    for (ucar.nc2.stream.NcStreamProto.Dimension dim : s.getShapeList()) {
+      sbuff.append(dim.getName());
+      sbuff.append(" ");
+    }
+    ncvar.setDimensions(sbuff.toString());
+
+    for (ucar.nc2.stream.NcStreamProto.Attribute att : s.getAttsList())
+      ncvar.addAttribute(makeAtt(att));
+
+    for (ucar.nc2.stream.NcStreamProto.Variable vp : s.getVarsList())
+      ncvar.addMemberVariable( makeVar( ncfile, g, ncvar, vp));
+
+    for (NcStreamProto.Structure sp : s.getStructsList())
+      ncvar.addMemberVariable( makeStructure( ncfile, g, ncvar, sp));
+
+    return ncvar;
   }
 
+  static Section makeSection(NcStreamProto.Section proto) {
+    Section section = new Section();
+
+    for (ucar.nc2.stream.NcStreamProto.Range pr : proto.getRangeList()) {
+      try {
+        section.appendRange((int) pr.getStart(), (int) (pr.getStart() + pr.getSize() - 1));
+      } catch (InvalidRangeException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return section;
+  }
 
   ////////////////////////////////////////////////////////////////
 
-  private ucar.nc2.stream.NcStreamProto.Attribute.Type convertType(DataType dtype) {
+  static ucar.nc2.stream.NcStreamProto.Attribute.Type convertType(DataType dtype) {
     switch (dtype) {
       case CHAR:
       case STRING:
@@ -343,11 +295,10 @@ public class NcStream {
     throw new IllegalStateException("illegal att type " + dtype);
   }
 
-  private ucar.nc2.stream.NcStreamProto.DataType convertDataType(DataType dtype) {
+  static ucar.nc2.stream.NcStreamProto.DataType convertDataType(DataType dtype) {
     switch (dtype) {
       case CHAR:
-      case STRING:
-        return ucar.nc2.stream.NcStreamProto.DataType.STRING;
+        return ucar.nc2.stream.NcStreamProto.DataType.CHAR;
       case BYTE:
         return ucar.nc2.stream.NcStreamProto.DataType.BYTE;
       case SHORT:
@@ -360,11 +311,17 @@ public class NcStream {
         return ucar.nc2.stream.NcStreamProto.DataType.FLOAT;
       case DOUBLE:
         return ucar.nc2.stream.NcStreamProto.DataType.DOUBLE;
+      case STRING:
+        return ucar.nc2.stream.NcStreamProto.DataType.STRING;
+      case STRUCTURE:
+        return ucar.nc2.stream.NcStreamProto.DataType.STRUCTURE;
+      case SEQUENCE:
+        return ucar.nc2.stream.NcStreamProto.DataType.SEQUENCE;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
-  private DataType convertType(ucar.nc2.stream.NcStreamProto.Attribute.Type dtype) {
+  static DataType convertType(ucar.nc2.stream.NcStreamProto.Attribute.Type dtype) {
     switch (dtype) {
       case STRING:
         return DataType.STRING;
@@ -384,10 +341,10 @@ public class NcStream {
     throw new IllegalStateException("illegal att type " + dtype);
   }
 
-  private DataType convertDataType(ucar.nc2.stream.NcStreamProto.DataType dtype) {
+  static DataType convertDataType(ucar.nc2.stream.NcStreamProto.DataType dtype) {
     switch (dtype) {
-      case STRING:
-        return DataType.STRING;
+      case CHAR:
+        return DataType.CHAR;
       case BYTE:
         return DataType.BYTE;
       case SHORT:
@@ -400,6 +357,12 @@ public class NcStream {
         return DataType.FLOAT;
       case DOUBLE:
         return DataType.DOUBLE;
+      case STRING:
+        return DataType.STRING;
+      case STRUCTURE:
+        return DataType.STRUCTURE;
+      case SEQUENCE:
+        return DataType.SEQUENCE;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }

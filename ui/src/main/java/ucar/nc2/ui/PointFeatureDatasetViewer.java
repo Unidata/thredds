@@ -44,6 +44,7 @@ import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import thredds.ui.*;
 
 import java.awt.BorderLayout;
@@ -346,7 +347,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
     while (iter.hasNext()) {
       PointFeature pob = iter.next();
-      pointBeans.add(new PointObsBean(count++, pob));
+      pointBeans.add(new PointObsBean(count++, pob, df));
     }
 
     stnTable.setBeans(pointBeans);
@@ -600,7 +601,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  public class StationBean implements ucar.unidata.geoloc.Station {
+  public static class StationBean implements ucar.unidata.geoloc.Station {
     private Station s;
     private int npts = -1;
 
@@ -610,6 +611,11 @@ public class PointFeatureDatasetViewer extends JPanel {
     public StationBean(Station s) {
       this.s = s;
       // this.npts = s.getNumberPoints();
+    }
+
+    // for BeanTable
+    static public String hiddenProperties() {
+      return "latLon";
     }
 
     public String getName() {
@@ -657,7 +663,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  public class TrajectoryFeatureBean extends StationBean {
+  public static class TrajectoryFeatureBean extends StationBean {
     int npts;
     TrajectoryFeature pfc;
     PointFeature pf;
@@ -672,6 +678,11 @@ public class PointFeatureDatasetViewer extends JPanel {
         log.warn("Trajectory empty ", ioe);
       }
       npts = pfc.size();
+    }
+
+        // for BeanTable
+    static public String hiddenProperties() {
+      return "latLon";
     }
 
     public void setNobs(int npts) {
@@ -765,14 +776,16 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  public class PointObsBean extends StationBean {  // fake Station, so we can use StationRegionChooser
+  public static class PointObsBean extends StationBean {  // fake Station, so we can use StationRegionChooser
     private PointFeature pobs;
     private String timeObs;
     private int id;
+    private DateFormatter df;
 
-    public PointObsBean(int id, PointFeature obs) {
+    public PointObsBean(int id, PointFeature obs, DateFormatter df) {
       this.id = id;
       this.pobs = obs;
+      this.df = df;
       setTime(obs.getObservationTimeAsDate());
     }
 
@@ -806,6 +819,14 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     public double getAltitude() {
       return pobs.getLocation().getAltitude();
+    }
+
+    public LatLonPoint getLatLon() {
+      return new LatLonPointImpl(getLatitude(), getLongitude());
+    }
+
+    public boolean isMissing() {
+      return Double.isNaN(getLatitude()) || Double.isNaN(getLongitude());
     }
 
     public int compareTo(Station so) {

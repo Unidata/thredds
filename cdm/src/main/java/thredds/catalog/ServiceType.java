@@ -55,6 +55,7 @@ public final class ServiceType {
   public final static ServiceType FILE = new ServiceType( "File" );
   public final static ServiceType NetcdfServer = new ServiceType( "NetcdfServer" ); // deprecated
   public final static ServiceType NetcdfSubset = new ServiceType( "NetcdfSubset" );
+  public final static ServiceType NetcdfStream = new ServiceType( "NetcdfStream" );
 
   public final static ServiceType LAS = new ServiceType( "LAS" );
   public final static ServiceType WMS = new ServiceType( "WMS" );

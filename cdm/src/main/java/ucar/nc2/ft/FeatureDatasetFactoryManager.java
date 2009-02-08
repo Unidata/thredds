@@ -39,7 +39,7 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.ft.point.standard.PointDatasetStandardFactory;
 import ucar.nc2.ft.grid.GridDatasetStandardFactory;
-import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.thredds.ThreddsDataFactory;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -133,12 +133,10 @@ public class FeatureDatasetFactoryManager {
    * @throws java.io.IOException on io error
    */
   static public FeatureDataset open( FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
-    /* special processing for thredds: datasets
-    if (location.startsWith("thredds:") && (datatype != null)) {
-      ThreddsDataFactory.Result result = new ThreddsDataFactory().openDatatype( location, task);
-      errlog.append( result.errLog);
-      return (result.fatalError) ? null : result.tds;
-    } */
+    // special processing for thredds: datasets
+    //if (location.startsWith("thredds:")) {
+    //  return new ThreddsDataFactory().openFeatureType( wantFeatureType, location, task, errlog);
+    //}
 
     NetcdfDataset ncd = NetcdfDataset.acquireDataset( location, task);
     return wrap(wantFeatureType, ncd, task, errlog);

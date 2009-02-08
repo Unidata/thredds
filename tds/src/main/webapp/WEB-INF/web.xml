@@ -379,12 +379,12 @@
     <load-on-startup>3</load-on-startup>
   </servlet -->
 
-  <!-- RemoteNetcdf Server
+  <!-- RemoteNetcdf Server -->
   <servlet>
     <servlet-name>RemoteNetcdfServer</servlet-name>
     <servlet-class>thredds.servlet.RemoteNetcdfServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet -->
+  </servlet>
 
   <!-- Restricted Access (using container managed security, eg Tomcat, or CAMS) -->
   <servlet>
@@ -561,12 +561,6 @@
     <url-pattern>/ncss/grid/*</url-pattern>
   </servlet-mapping>
 
-
-  <!-- servlet-mapping>
-    <servlet-name>MetarServlet</servlet-name>
-    <url-pattern>/idd/metar/*</url-pattern>
-  </servlet-mapping-->
-
   <servlet-mapping>
     <servlet-name>RadarServer</servlet-name>
     <url-pattern>/radarServer/*</url-pattern>
@@ -590,12 +584,12 @@
   <!-- servlet-mapping>
     <servlet-name>NetcdfServer</servlet-name>
     <url-pattern>/ncServer/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <servlet-mapping>
     <servlet-name>RemoteNetcdfServer</servlet-name>
-    <url-pattern>/netcdf/*</url-pattern>
-  </servlet-mapping -->
+    <url-pattern>/ncstream/*</url-pattern>
+  </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>RestrictedDataset</servlet-name>

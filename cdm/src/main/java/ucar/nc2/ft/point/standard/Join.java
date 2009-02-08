@@ -33,9 +33,12 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.ma2.*;
+import ucar.nc2.Variable;
+
 import java.io.IOException;
 
 public interface Join {
   public StructureData getJoinData(StructureData obsdata) throws IOException;
+  public Variable findVariable(String axisName);
 }
 

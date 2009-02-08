@@ -28,13 +28,16 @@ message Dimension {
 }
 
 enum DataType {
-    STRING = 0;
+    CHAR = 0;
     BYTE = 1;
     SHORT = 2;
     INT = 3;
     LONG = 4;
     FLOAT = 5;
     DOUBLE = 6;
+    STRING = 7;
+    STRUCTURE = 8;
+    SEQUENCE = 9;
 }
 
 message Variable {
@@ -48,8 +51,10 @@ message Variable {
 message Structure {
   required string name = 1;
   repeated Dimension shape = 2;
-  repeated Attribute atts = 3;
-  repeated Variable vars = 4;
+  required DataType dataType = 3;
+  repeated Attribute atts = 4;
+  repeated Variable vars = 5;
+  repeated Structure structs = 6;
 }
 
 message Group {

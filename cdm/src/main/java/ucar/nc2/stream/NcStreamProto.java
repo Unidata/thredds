@@ -8,13 +8,16 @@ public final class NcStreamProto {
       com.google.protobuf.ExtensionRegistry registry) {
   }
   public static enum DataType {
-    STRING(0, 0),
+    CHAR(0, 0),
     BYTE(1, 1),
     SHORT(2, 2),
     INT(3, 3),
     LONG(4, 4),
     FLOAT(5, 5),
     DOUBLE(6, 6),
+    STRING(7, 7),
+    STRUCTURE(8, 8),
+    SEQUENCE(9, 9),
     ;
     
     
@@ -22,13 +25,16 @@ public final class NcStreamProto {
     
     public static DataType valueOf(int value) {
       switch (value) {
-        case 0: return STRING;
+        case 0: return CHAR;
         case 1: return BYTE;
         case 2: return SHORT;
         case 3: return INT;
         case 4: return LONG;
         case 5: return FLOAT;
         case 6: return DOUBLE;
+        case 7: return STRING;
+        case 8: return STRUCTURE;
+        case 9: return SEQUENCE;
         default: return null;
       }
     }
@@ -47,7 +53,7 @@ public final class NcStreamProto {
     }
     
     private static final DataType[] VALUES = {
-      STRING, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, 
+      CHAR, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, STRING, STRUCTURE, SEQUENCE, 
     };
     public static DataType valueOf(
         com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
@@ -662,7 +668,7 @@ public final class NcStreamProto {
     
     // required .test.DataType dataType = 2;
     private boolean hasDataType;
-    private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.STRING;
+    private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
     public boolean hasDataType() { return hasDataType; }
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() { return dataType_; }
     
@@ -844,7 +850,7 @@ public final class NcStreamProto {
       }
       public Builder clearDataType() {
         result.hasDataType = false;
-        result.dataType_ = ucar.nc2.stream.NcStreamProto.DataType.STRING;
+        result.dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
         return this;
       }
       
@@ -1004,7 +1010,13 @@ public final class NcStreamProto {
       return shape_.get(index);
     }
     
-    // repeated .test.Attribute atts = 3;
+    // required .test.DataType dataType = 3;
+    private boolean hasDataType;
+    private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
+    public boolean hasDataType() { return hasDataType; }
+    public ucar.nc2.stream.NcStreamProto.DataType getDataType() { return dataType_; }
+    
+    // repeated .test.Attribute atts = 4;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> atts_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
@@ -1015,7 +1027,7 @@ public final class NcStreamProto {
       return atts_.get(index);
     }
     
-    // repeated .test.Variable vars = 4;
+    // repeated .test.Variable vars = 5;
     private java.util.List<ucar.nc2.stream.NcStreamProto.Variable> vars_ =
       java.util.Collections.emptyList();
     public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
@@ -1024,6 +1036,17 @@ public final class NcStreamProto {
     public int getVarsCount() { return vars_.size(); }
     public ucar.nc2.stream.NcStreamProto.Variable getVars(int index) {
       return vars_.get(index);
+    }
+    
+    // repeated .test.Structure structs = 6;
+    private java.util.List<ucar.nc2.stream.NcStreamProto.Structure> structs_ =
+      java.util.Collections.emptyList();
+    public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
+      return structs_;
+    }
+    public int getStructsCount() { return structs_.size(); }
+    public ucar.nc2.stream.NcStreamProto.Structure getStructs(int index) {
+      return structs_.get(index);
     }
     
     public static ucar.nc2.stream.NcStreamProto.Structure parseFrom(
@@ -1142,6 +1165,10 @@ public final class NcStreamProto {
           result.vars_ =
             java.util.Collections.unmodifiableList(result.vars_);
         }
+        if (result.structs_ != java.util.Collections.EMPTY_LIST) {
+          result.structs_ =
+            java.util.Collections.unmodifiableList(result.structs_);
+        }
         ucar.nc2.stream.NcStreamProto.Structure returnMe = result;
         result = null;
         return returnMe;
@@ -1211,7 +1238,25 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Attribute atts = 3;
+      // required .test.DataType dataType = 3;
+      public boolean hasDataType() {
+        return result.hasDataType();
+      }
+      public ucar.nc2.stream.NcStreamProto.DataType getDataType() {
+        return result.getDataType();
+      }
+      public Builder setDataType(ucar.nc2.stream.NcStreamProto.DataType value) {
+        result.hasDataType = true;
+        result.dataType_ = value;
+        return this;
+      }
+      public Builder clearDataType() {
+        result.hasDataType = false;
+        result.dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
+        return this;
+      }
+      
+      // repeated .test.Attribute atts = 4;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Attribute> getAttsList() {
         return java.util.Collections.unmodifiableList(result.atts_);
       }
@@ -1256,7 +1301,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // repeated .test.Variable vars = 4;
+      // repeated .test.Variable vars = 5;
       public java.util.List<ucar.nc2.stream.NcStreamProto.Variable> getVarsList() {
         return java.util.Collections.unmodifiableList(result.vars_);
       }
@@ -1298,6 +1343,51 @@ public final class NcStreamProto {
       }
       public Builder clearVars() {
         result.vars_ = java.util.Collections.emptyList();
+        return this;
+      }
+      
+      // repeated .test.Structure structs = 6;
+      public java.util.List<ucar.nc2.stream.NcStreamProto.Structure> getStructsList() {
+        return java.util.Collections.unmodifiableList(result.structs_);
+      }
+      public int getStructsCount() {
+        return result.getStructsCount();
+      }
+      public ucar.nc2.stream.NcStreamProto.Structure getStructs(int index) {
+        return result.getStructs(index);
+      }
+      public Builder setStructs(int index, ucar.nc2.stream.NcStreamProto.Structure value) {
+        result.structs_.set(index, value);
+        return this;
+      }
+      public Builder setStructs(int index, ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
+        result.structs_.set(index, builderForValue.build());
+        return this;
+      }
+      public Builder addStructs(ucar.nc2.stream.NcStreamProto.Structure value) {
+        if (result.structs_.isEmpty()) {
+          result.structs_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Structure>();
+        }
+        result.structs_.add(value);
+        return this;
+      }
+      public Builder addStructs(ucar.nc2.stream.NcStreamProto.Structure.Builder builderForValue) {
+        if (result.structs_.isEmpty()) {
+          result.structs_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Structure>();
+        }
+        result.structs_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addAllStructs(
+          java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.Structure> values) {
+        if (result.structs_.isEmpty()) {
+          result.structs_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Structure>();
+        }
+        super.addAll(values, result.structs_);
+        return this;
+      }
+      public Builder clearStructs() {
+        result.structs_ = java.util.Collections.emptyList();
         return this;
       }
     }
@@ -2034,7 +2124,7 @@ public final class NcStreamProto {
     
     // required .test.DataType dataType = 2;
     private boolean hasDataType;
-    private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.STRING;
+    private ucar.nc2.stream.NcStreamProto.DataType dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
     public boolean hasDataType() { return hasDataType; }
     public ucar.nc2.stream.NcStreamProto.DataType getDataType() { return dataType_; }
     
@@ -2186,7 +2276,7 @@ public final class NcStreamProto {
       }
       public Builder clearDataType() {
         result.hasDataType = false;
-        result.dataType_ = ucar.nc2.stream.NcStreamProto.DataType.STRING;
+        result.dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
         return this;
       }
       
@@ -2709,24 +2799,26 @@ public final class NcStreamProto {
       "able\022\014\n\004name\030\001 \002(\t\022 \n\010dataType\030\002 \002(\0162\016.t" +
       "est.DataType\022\036\n\005shape\030\003 \003(\0132\017.test.Dimen" +
       "sion\022\035\n\004atts\030\004 \003(\0132\017.test.Attribute\022\014\n\004d" +
-      "ata\030\005 \001(\014\"v\n\tStructure\022\014\n\004name\030\001 \002(\t\022\036\n\005" +
-      "shape\030\002 \003(\0132\017.test.Dimension\022\035\n\004atts\030\003 \003" +
-      "(\0132\017.test.Attribute\022\034\n\004vars\030\004 \003(\0132\016.test" +
-      ".Variable\"\260\001\n\005Group\022\014\n\004name\030\001 \002(\t\022\035\n\004dim" +
-      "s\030\002 \003(\0132\017.test.Dimension\022\034\n\004vars\030\003 \003(\0132\016" +
-      ".test.Variable\022 \n\007structs\030\004 \003(\0132\017.test.S" +
-      "tructure\022\035\n\004atts\030\005 \003(\0132\017.test.Attribute\022" +
-      "\033\n\006groups\030\006 \003(\0132\013.test.Group\"C\n\006Stream\022\020" +
-      "\n\010indexPos\030\001 \002(\006\022\014\n\004name\030\002 \001(\t\022\031\n\004root\030\003" +
-      " \002(\0132\013.test.Group\"Y\n\004Data\022\017\n\007varName\030\001 \002" +
-      "(\t\022 \n\010dataType\030\002 \002(\0162\016.test.DataType\022\036\n\007" +
-      "section\030\003 \002(\0132\r.test.Section\"4\n\005Range\022\r\n" +
-      "\005start\030\001 \001(\004\022\014\n\004size\030\002 \002(\004\022\016\n\006stride\030\003 \001" +
-      "(\004\"%\n\007Section\022\032\n\005range\030\001 \003(\0132\013.test.Rang" +
-      "e*U\n\010DataType\022\n\n\006STRING\020\000\022\010\n\004BYTE\020\001\022\t\n\005S" +
-      "HORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006" +
-      "DOUBLE\020\006B \n\017ucar.nc2.streamB\rNcStreamPro" +
-      "to";
+      "ata\030\005 \001(\014\"\272\001\n\tStructure\022\014\n\004name\030\001 \002(\t\022\036\n" +
+      "\005shape\030\002 \003(\0132\017.test.Dimension\022 \n\010dataTyp" +
+      "e\030\003 \002(\0162\016.test.DataType\022\035\n\004atts\030\004 \003(\0132\017." +
+      "test.Attribute\022\034\n\004vars\030\005 \003(\0132\016.test.Vari" +
+      "able\022 \n\007structs\030\006 \003(\0132\017.test.Structure\"\260" +
+      "\001\n\005Group\022\014\n\004name\030\001 \002(\t\022\035\n\004dims\030\002 \003(\0132\017.t" +
+      "est.Dimension\022\034\n\004vars\030\003 \003(\0132\016.test.Varia" +
+      "ble\022 \n\007structs\030\004 \003(\0132\017.test.Structure\022\035\n" +
+      "\004atts\030\005 \003(\0132\017.test.Attribute\022\033\n\006groups\030\006" +
+      " \003(\0132\013.test.Group\"C\n\006Stream\022\020\n\010indexPos\030" +
+      "\001 \002(\006\022\014\n\004name\030\002 \001(\t\022\031\n\004root\030\003 \002(\0132\013.test" +
+      ".Group\"Y\n\004Data\022\017\n\007varName\030\001 \002(\t\022 \n\010dataT" +
+      "ype\030\002 \002(\0162\016.test.DataType\022\036\n\007section\030\003 \002" +
+      "(\0132\r.test.Section\"4\n\005Range\022\r\n\005start\030\001 \001(" +
+      "\004\022\014\n\004size\030\002 \002(\004\022\016\n\006stride\030\003 \001(\004\"%\n\007Secti" +
+      "on\022\032\n\005range\030\001 \003(\0132\013.test.Range*|\n\010DataTy" +
+      "pe\022\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT" +
+      "\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006S" +
+      "TRING\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE\020\tB \n\017" +
+      "ucar.nc2.streamB\rNcStreamProto";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -2761,7 +2853,7 @@ public final class NcStreamProto {
           internal_static_test_Structure_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_test_Structure_descriptor,
-              new java.lang.String[] { "Name", "Shape", "Atts", "Vars", },
+              new java.lang.String[] { "Name", "Shape", "DataType", "Atts", "Vars", "Structs", },
               ucar.nc2.stream.NcStreamProto.Structure.class,
               ucar.nc2.stream.NcStreamProto.Structure.Builder.class);
           internal_static_test_Group_descriptor =

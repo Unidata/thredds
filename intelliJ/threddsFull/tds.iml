@@ -79,6 +79,11 @@
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/bufrTables-1.5.jar" />
+            <url>jar://$MODULE_DIR$/../../lib/release/bufrTables-1.5.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib/casclient-2.1.1.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/casclient-2.1.1.jar!/</url>
           </containerElement>
@@ -116,11 +121,6 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib/commons-io-1.4.jar" />
             <url>jar://$MODULE_DIR$/../../lib/external/commons-io-1.4.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/commons-lang-2.4.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/commons-lang-2.4.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
@@ -198,11 +198,6 @@
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/je-3.2.23.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/lib/je-3.3.62.jar" />
-            <url>jar://$MODULE_DIR$/../../lib/external/je-3.3.62.jar!/</url>
-          </containerElement>
-          <containerElement type="library" level="module">
             <attribute name="method" value="0" />
             <attribute name="URI" value="/WEB-INF/lib" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/jfreechart-1.0.4.jar!/</url>
@@ -245,11 +240,6 @@
           <containerElement type="library" level="module">
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
-            <url>file://$MODULE_DIR$/../../../bufr/resources</url>
-          </containerElement>
-          <containerElement type="library" level="module">
-            <attribute name="method" value="1" />
-            <attribute name="URI" value="/WEB-INF/classes" />
             <url>file://$MODULE_DIR$/../../../grib/resources</url>
           </containerElement>
           <containerElement type="library" level="module">
@@ -261,6 +251,16 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib/simple-xml-1.4.2.jar" />
             <url>jar://$MODULE_DIR$/../../lib/ncWMS/simple-xml-1.4.2.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+            <url>jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.5.6.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="0" />
+            <attribute name="URI" value="/WEB-INF/lib" />
+            <url>jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.5.6.jar!/</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="0" />
@@ -281,6 +281,21 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/lib/visadNoDods.jar" />
             <url>jar://$MODULE_DIR$/../../lib/release/visadNoDods.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-lang-2.4.jar" />
+            <url>jar://$MODULE_DIR$/../../lib/external/commons-lang-2.4.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/je-3.3.62.jar" />
+            <url>jar://$MODULE_DIR$/../../lib/external/je-3.3.62.jar!/</url>
+          </containerElement>
+          <containerElement type="library" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+            <url>file://$MODULE_DIR$/../../../bufr/resources</url>
           </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="0" />

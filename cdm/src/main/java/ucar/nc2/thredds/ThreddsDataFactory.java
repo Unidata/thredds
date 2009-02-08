@@ -33,6 +33,7 @@
 package ucar.nc2.thredds;
 
 import ucar.nc2.*;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.constants.FeatureType;
 
 import ucar.nc2.dt.*;
@@ -45,6 +46,7 @@ import thredds.catalog.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.io.IOException;
 
 /**
@@ -98,6 +100,9 @@ public class ThreddsDataFactory {
     public String location;
     public InvAccess accessUsed;
   }
+
+  //public FeatureDataset openFeatureType( FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+  //}
 
   /**
    * Open a TypedDataset from a URL location string. Example URLS: <ul>

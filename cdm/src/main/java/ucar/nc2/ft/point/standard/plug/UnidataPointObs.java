@@ -104,7 +104,7 @@ public class UnidataPointObs extends TableConfigurerImpl {
     //  we want a point dataset, but its really a station
     // iterate over obs struct, in file order
     // extra join on station structure
-    if ((ft == FeatureType.POINT) && (wantFeatureType == FeatureType.POINT)) {
+    if ((ft == FeatureType.STATION) && (wantFeatureType == FeatureType.POINT)) {
       TableConfig obsTable = new TableConfig(Table.Type.Structure, isPsuedo? obsDim.getName() : "record");
       obsTable.isPsuedoStructure = isPsuedo;
       obsTable.featureType = FeatureType.POINT;
@@ -134,13 +134,12 @@ public class UnidataPointObs extends TableConfigurerImpl {
         return null;
       }
 
-      TableConfig stationTable = new TableConfig(Table.Type.Structure, "station");
-      stationTable.isPsuedoStructure = true;
-      stationTable.dim = stationDim;
-      stationTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, stationDim);
-      stationTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, stationDim);
-      stationTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, stationDim);
-      stationTable.structName = "station";
+      // TableConfig stationTable = new TableConfig(Table.Type.Structure, "station");
+      //stationTable.isPsuedoStructure = true;
+      //stationTable.dim = stationDim;
+      obsTable.lat = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lat, stationDim);
+      obsTable.lon = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Lon, stationDim);
+      obsTable.elev = UnidataPointDatasetHelper.getCoordinateName(ds, AxisType.Height, stationDim);
 
       Structure stns = new ucar.nc2.StructurePseudo(ds, null, "stationPsuedoStructure", stationDim);
       obsTable.extraJoin = new JoinParentIndex(stns, parentIndexVar);

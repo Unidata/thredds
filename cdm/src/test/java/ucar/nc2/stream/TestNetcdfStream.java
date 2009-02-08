@@ -16,16 +16,17 @@ public class TestNetcdfStream {
       String filename = "src/test/data/feb.nc";
       //String filename = "src/test/data/dmsp/F14200307192230.s.OIS";
       NetcdfFile ncfile = NetcdfFile.open(filename);
-      NcStream ncstream = new NcStream(ncfile);
+      NcStreamWriter writer = new NcStreamWriter(ncfile);
 
       File file = new File("C:/temp/out.ncs");
       FileOutputStream fos = new FileOutputStream(file);
       WritableByteChannel wbc = fos.getChannel();
-      ncstream.stream(wbc);
+      writer.stream(wbc);
       wbc.close();
 
+      NcStreamReader reader = new NcStreamReader();      
       InputStream is = new BufferedInputStream( new FileInputStream(file));
-      NetcdfFile ncfileBack = ncstream.readStream(is);
+      NetcdfFile ncfileBack = reader.readStream(is, null);
       TestCompare.compareFiles(ncfile, ncfileBack, false, true, false);
 
       /*

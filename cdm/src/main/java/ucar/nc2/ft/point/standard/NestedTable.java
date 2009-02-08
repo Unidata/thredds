@@ -167,6 +167,12 @@ public class NestedTable {
       if (v != null)
         return new CoordVarExtractorVariable(v, axisName, nestingLevel);
 
+      if (t.extraJoin != null) {
+         v = t.extraJoin.findVariable(axisName);
+         if (v != null)
+           return new CoordVarExtractorVariable(v, axisName, nestingLevel);
+      }
+
       // see if its in the StructureData
       if (t instanceof Table.TableSingleton) {
         Table.TableSingleton ts = (Table.TableSingleton) t;

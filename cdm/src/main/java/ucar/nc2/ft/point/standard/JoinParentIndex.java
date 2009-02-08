@@ -36,6 +36,7 @@ package ucar.nc2.ft.point.standard;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.StructureData;
 import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 
 import java.io.IOException;
 
@@ -46,10 +47,12 @@ import java.io.IOException;
  * @since Jan 22, 2009
  */
 public class JoinParentIndex implements Join {
+  private Structure parentStructure;
   private ArrayStructure parentData;
   private String parentIndex;
 
   public JoinParentIndex(Structure parentStructure, String parentIndex) {
+    this.parentStructure = parentStructure;
     this.parentIndex = parentIndex;
 
     try {
@@ -63,5 +66,10 @@ public class JoinParentIndex implements Join {
     int index = sdata.getScalarInt(parentIndex);
     return parentData.getStructureData(index);
   }
+
+  public Variable findVariable(String axisName) {
+    return parentStructure.findVariable(axisName);
+  }
+
 
 }

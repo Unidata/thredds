@@ -44,11 +44,13 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.stream.NcStreamWriter;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
- * Experimental "remote netcdf" data transfer protocol.
+ * Experimental "remote netcdf streaming" data transfer protocol.
  * <pre>
  * Return NcML to populate the NetcdfFile:
  *   http://localhost:8080/thredds/ncremote/test/testData.nc
@@ -74,7 +76,7 @@ public class RemoteNetcdfServlet extends AbstractServlet {
 
   // must end with "/"
   protected String getPath() {
-    return "netcdf/";
+    return "ncstream/";
   }
 
   protected void makeDebugActions() {
@@ -95,18 +97,13 @@ public class RemoteNetcdfServlet extends AbstractServlet {
     ServletUtil.showRequestDetail(this, req);
 
     String pathInfo = req.getPathInfo();
+    System.out.println("req="+pathInfo);
 
     boolean wantNull = false;
-    OutputStream out = new BufferedOutputStream( res.getOutputStream(), 10 * 1000);
+    OutputStream out = new BufferedOutputStream( res.getOutputStream(), 10 * 1000);  // ??
 
-    WritableByteChannel wbc = null;
-    if (pathInfo.startsWith("/stream")) {
-      wbc = Channels.newChannel(out);
-      pathInfo = pathInfo.substring(7);
-    } else if (pathInfo.startsWith("/null")) {
-      wantNull = true;
-      pathInfo = pathInfo.substring(5);
-    }
+    WritableByteChannel wbc = Channels.newChannel(out);
+    // pathInfo = pathInfo.substring(getPath().length()+1);
 
     if (wantNull) {
       byte[] b = new byte[1000];
@@ -120,38 +117,19 @@ public class RemoteNetcdfServlet extends AbstractServlet {
     NetcdfFile ncfile = null;
     try {
       ncfile = DatasetHandler.getNetcdfFile(req, res, pathInfo);
-
-      long length = 0;
-      String query = req.getQueryString();
-
-      // they just want the NcML
-      if (query == null) {
-        res.setContentType("text/xml");        
-
-        ncfile.writeNcML(out, req.getRequestURI());
-        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
-        return;
-      }
-
-      // otherwise it will be binary data
       res.setContentType("application/octet-stream");
 
-      StringTokenizer stoke = new StringTokenizer(query, "&");
-      while (stoke.hasMoreTokens()) {
-        if (wbc != null) {
-          ncfile.readToByteChannel(stoke.nextToken(), wbc);
-        } else {
-          Array result = ncfile.readSection(stoke.nextToken());
-          length += copy2stream(result, out, false);
-        }
-      }
+      NcStreamWriter ncWriter = new NcStreamWriter(ncfile);
+      ncWriter.sendHeader(wbc);
+
       out.flush();
       res.flushBuffer();
-      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, length);
+      ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
 
-    } catch (InvalidRangeException e) {
-      ServletUtil.logServerAccess(HttpServletResponse.SC_BAD_REQUEST, 0);
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
+    } catch (Throwable e) {
+      e.printStackTrace();
+      ServletUtil.logServerAccess(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0);
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 
     } finally {
       if (null != ncfile)
@@ -163,7 +141,7 @@ public class RemoteNetcdfServlet extends AbstractServlet {
     }
   }
 
-  private long copy2stream(Array a, OutputStream out, boolean digest) throws IOException {
+  /* private long copy2stream(Array a, OutputStream out, boolean digest) throws IOException {
     int elem = 0;
     long size = a.getSize();
     DataOutputStream dout = null;
@@ -212,7 +190,7 @@ public class RemoteNetcdfServlet extends AbstractServlet {
 
 
     return a.getSize() * elem;
-  }
+  }      */
 
 
 }
