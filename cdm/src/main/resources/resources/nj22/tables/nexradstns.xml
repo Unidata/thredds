@@ -120,7 +120,7 @@
 <station idn="000522" id="PDT" name="Pendleton" st="OR" co="US" lat="45:41:26" lon="-118:51:10" elev="462"/>
 <station idn="000526" id="PBZ" name="Pittsburgh/Coraopolis" st="PA" co="US" lat="40:31:54" lon="-80:13:05" elev="361"/>
 <station idn="000374" id="CCX" name="Central Pennsylvania/Rush" st="PA" co="US" lat="40:55:23" lon="-78:00:13" elev="733"/>
-<station idn="000502" id="JUA" name="San Juan/Cayey" st="PR" co="US" lat="18:06:56" lon="-66:04:41" elev="852"/>
+<station idn="000502" id="TJUA" name="San Juan/Cayey" st="PR" co="US" lat="18:06:56" lon="-66:04:41" elev="852"/>
 <station idn="000341" id="CAE" name="Columbia" st="SC" co="US" lat="33:56:55" lon="-81:07:06" elev="70"/>
 <station idn="000555" id="GSP" name="Greenville/Spartanburg/Greer" st="SC" co="US" lat="34:53:00" lon="-82:13:12" elev="287"/>
 <station idn="000333" id="CLX" name="Charleston/Grays" st="SC" co="US" lat="32:39:20" lon="-81:02:32" elev="30"/>
