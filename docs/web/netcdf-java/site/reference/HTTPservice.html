@@ -33,10 +33,36 @@
 <ul>
   <li>  <a class="moz-txt-link-freetext" href="http://httpd.apache.org/docs/2.0/mod/mod_headers.html">http://httpd.apache.org/docs/2.0/mod/mod_headers.html</a></li>
 </ul>
-<p>&nbsp;</p>
+<h3>Troubleshooting</h3>
+<p>1. Add <a href="http://livehttpheaders.mozdev.org/">Live HTTP Headers</a> plug-in to Firefox.</p>
+<p>2. Try a URL in firefox:</p>
+<pre>  http://motherlode.ucar.edu:8080/thredds/fileServer/station/metar/Surface_METAR_20090209_0000.nc</pre>
+<p>(this file is probably timed off, but you can go to <strong>http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/catalog.html</strong> to find a current one)</p>
+<p>You should get something like the following in the Live Headers window:</p>
+<pre>GET /thredds/fileServer/station/metar/Surface_METAR_20090209_0000.nc HTTP/1.1
+   Host: motherlode.ucar.edu:8080
+   User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6 (.NET CLR 3.5.30729)
+   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+   Accept-Language: en-us,en;q=0.5
+   Accept-Encoding: gzip,deflate
+   Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+   Keep-Alive: 300
+   Connection: keep-alive
+ </pre>
+<pre>HTTP/1.x 200 OK
+   Server: Apache-Coyote/1.1
+   Last-Modified: Mon, 09 Feb 2009 20:56:13 GMT
+   <strong>Accept-Ranges: bytes</strong>
+   Content-Type: application/x-netcdf
+   Content-Length: 44414600
+   Date: Mon, 09 Feb 2009 20:56:14 GMT
+</pre>
+<p>In particular you should see</p>
+<pre> Accept-Ranges: bytes</pre>
+<p>3. Try the same thing with the server you want to test.</p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Sep 22, 2008 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 09, 2009
 </address>
 </body>
 </html>

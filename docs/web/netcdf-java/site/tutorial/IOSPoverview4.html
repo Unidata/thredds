@@ -22,20 +22,28 @@
 <pre>  // Read data from a top level Variable and return a memory resident Array.
   public ucar.ma2.Array <strong>readData</strong>(ucar.nc2.Variable v2, <span class="style3">Section section</span>) throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
-<span class="style3">  // Read data from a top level Variable and send data to a WritableByteChannel.
-  public long <strong>readData</strong>(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)<br>         throws java.io.IOException, ucar.ma2.InvalidRangeException;</span></pre>
-<pre>  // Read data from a Variable that is nested in one or more Structures.
-  // If there are no Structures in the file, this will never be called.
-  public ucar.ma2.Array <strong>readNestedData</strong>(ucar.nc2.Variable v2, <span class="style3">Section section</span>) throws IOException, ucar.ma2.InvalidRangeException;</pre>
-<pre>  // Close the file.
+<span class="style3"><br>
+
+</span>  // Read data from a top level Variable and send data to a WritableByteChannel.
+  // Only need implement for high performance server applications<span class="style3">
+  public long <strong>readToByteChannel</strong>(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)<br>         throws java.io.IOException, ucar.ma2.InvalidRangeException;</span></pre>
+<pre>  // Allows reading sections of nested variables<span class="style3">
+  </span>// Only implement if you have Structures<span class="style3"><br>  public ucar.ma2.Array <strong>readSection</strong>(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
+
+
+
+</span>
+
+  // Close the file.
   public void <strong>close</strong>() throws IOException;</pre>
+
 <pre>  // Extend the file if needed in a way that is compatible with the current metadata.
   public boolean <strong>syncExtend</strong>() throws IOException;</pre>
 <pre>  // Check if file has changed, and reread metadata if needed.
   public boolean <strong>sync</strong>() throws IOException;</pre>
 <pre>  // A way to communicate arbitrary information to an iosp.
 <span class="style3">  public Object sendIospMessage( Object message);</span>
-<s>  public void <strong>setSpecial</strong>( Object special);</s></pre>
+<s></s></pre>
 <pre>  // print Debug info for this object.
   public String <strong>toStringDebug</strong>(Object o);</pre>
 <pre>  // Show debug / underlying implementation details
@@ -49,16 +57,20 @@
    ...
  }
 </pre>
-<p>Its best to extend <strong>ucar.nc2.iosp.AbstractIOServiceProvider. </strong>In the simplest case, you only have to implement 4 methods.</p>
+<p>Your implementataion class should extend <strong>ucar.nc2.iosp.AbstractIOServiceProvider. </strong>This provides default implementation of some of the methods, so minimally, you only have to implement 4 methods.</p>
 <pre>public class Example <strong>extends</strong> <strong>AbstractIOServiceProvider</strong> {
 <br>  public boolean <strong>isValidFile</strong>(RandomAccessFile raf) throws IOException {}</pre>
 <pre>  public void <strong>open</strong>(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {}</pre>
 <pre>  public Array <strong>readData</strong>(Variable v2, Section wantSection) throws IOException, InvalidRangeException {}</pre>
 <pre>  public void <strong>close</strong>() throws IOException {}
-}</pre>
+}
+
+</pre>
+<p><br>
+</p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by John Caron and was last updated on Aug 3, 2007
+<img src="../nc.gif" width="64" height="64"> This document is maintained by John Caron and was last updated on Feb 09, 2009
 </address>
 <p>&nbsp;</p>
 </body>

@@ -43,7 +43,7 @@ import ucar.nc2.constants.FeatureType;
 
 /**
  * Manager of factories for TypedDatasets.
- * @deprecated - use ucar.nc2.ft.FeatureDatasetFactoryManager
+ * NOTE: use ucar.nc2.ft.FeatureDatasetFactoryManager for Point Types
  *
  * @author caron
  */

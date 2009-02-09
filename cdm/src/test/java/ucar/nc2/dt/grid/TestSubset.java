@@ -606,7 +606,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
-  public void testNcmlRangeSubset() throws Exception {
+  public void utestNcmlRangeSubset() throws Exception {
     String filename = "D:/test/ncom_agg6.ncml";
     GridDataset dataset = GridDataset.open(filename);
     GeoGrid grid = dataset.findGridByName("water_temp");

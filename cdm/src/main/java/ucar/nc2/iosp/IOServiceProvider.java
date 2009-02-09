@@ -124,28 +124,6 @@ public interface IOServiceProvider {
    */
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
 
-  // public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
-
-  /*
-   * LOOK Should we allow reading on member variables ??
-   * Read data from a Variable that is nested in one or more Structures.
-   * Return an Array of the same type as the Variable and the requested shape. The shape
-   * must be an accumulation of all the shapes of the Structures containing the variable.
-   * If there are no Structures in the NetcdfFile, this will never be called, and may return UnsupportdOperationException 
-   *
-   * <p> v2.getParent() is called to get the containing Structures.
-   *
-   * @param v2 a nested Variable.
-   * @param section the section of data to read. There must be a Range for each
-   *  Dimension in each parent, as well as in the Variable itself. Must be in order from outer to inner.
-   *   Note: no nulls. IOSP may not modify.
-   * @return the requested data in a memory-resident Array
-   * @throws java.io.IOException if read error
-   * @throws ucar.ma2.InvalidRangeException if invalid section
-   *
-  public ucar.ma2.Array readNestedData(ucar.nc2.Variable v2, Section section)
-         throws IOException, ucar.ma2.InvalidRangeException; */
-
   /**
    * Close the file.
    * It is the IOServiceProvider's job to close the file (even though it didnt open it),

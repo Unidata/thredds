@@ -18,18 +18,18 @@
 
    ucar.nc2.NetcdfFile.registerIOProvider(String className) throws IllegalAccessException, InstantiationException, ClassNotFoundException;</span></pre>
 <p>When registering, an instance of the class will be created. This means that there must be a default constructor that has no arguments. Since there is no way to call any other constructor, the simplest thing is to not define a constuctor for your class, and the compiler will add a default constuctor for you. If for some reason you do define a constructor with arguments, you must also explicilty add a no-argument constructor.</p>
-<p>If you dont have a default constructor, you will get an <span class="style1">InstantiationException</span>. When passing the className in as a String, you may get a <span class="style1">ClassNotFoundException</span> if your class cannot be found by the NetcdfFile ClassLoader (usually this means that your classpath is wrong). An <span class="style1">IllegalAccessException</span> is thrown in case you do not have the rights to access the IOSP class. </p>
+<p>If you dont have a default constructor, you will get an <span class="style1">InstantiationException</span>. When passing the className in as a String, you may get a <span class="style1">ClassNotFoundException</span> if your class cannot be found by the NetcdfFile ClassLoader (this almost always means that your classpath is wrong). An <span class="style1">IllegalAccessException</span> is thrown in case you do not have the rights to access the IOSP class. </p>
 <h2>IOSP Lifecycle and Thread Safety </h2>
-<p>An IOSP is registered by passing in the IOSP class. An object of that class is immediately instantiated and stored. This object is used when NetcdfFile queries all the IOSPs by calling <strong>isValidFile</strong>(). This makes the querying as fast as possible. <em><strong>Since there is only one IOSP object for the library, the isValidFile() method must be made thead-safe</strong></em>. To make it thread safe,  <strong>isValidFile</strong>()  should write only to local (heap) fields, not instance or class fields.</p>
+<p>An IOSP is registered by passing in the IOSP class. An object of that class is immediately instantiated and stored. This object is used when NetcdfFile queries all the IOSPs by calling <strong>isValidFile</strong>(). This makes the querying as fast as possible. <em><strong>Since there is only one IOSP object for the library, the isValidFile() method must be made thead-safe.</strong></em>. To make it thread safe,  <strong>isValidFile</strong>()  must modify only  local (heap) variables, not instance or class variables.</p>
 <p>When an IOSP claims a file, a new IOSP object is created and <strong>open()</strong> is called on it. Therefore <em><strong>each dataset that is opened has its own IOSP instance assigned to it, and so the other methods of the IOSP do not need to be thread-safe</strong></em>. The NetcdfFile keeps a reference to this IOSP object. When the client releases all references to the NetcdfFile, the IOSP will be garbage collected.</p>
 <h2>The isValidFile() Method </h2>
 <pre> // Check if this is a valid file for this IOServiceProvider. 
  public boolean <strong>isValidFile</strong>( ucar.unidata.io.RandomAccessFile raf) throws IOException;</pre>
-<p>The <strong>isValidFile</strong>() method must quickly and accurately determine if the file is one that the IOSP knows how to read. If this is done incorrectly, it may interfere with reading other file types. As described in the previous section, it must be thread safe. It must also not assume what state the RandomAccessFile is in. An IOException whould be thrown only if the file is obviously bad for any  file type. </p>
+<p>The <strong>isValidFile</strong>() method must quickly and accurately determine if the file is one that the IOSP knows how to read. If this is done incorrectly, it will interfere with reading other file types. As described in the previous section, it must be thread safe. It must also not assume what state the RandomAccessFile is in. If the file is not yours, return false as soom as possible. <strong>An IOException must be thrown only if the file is corrupted. </strong>Since  its unlikely that you can tell if the file is corrupt for any file type, you should probably never  throw an IOException.</p>
 <h4>Example 1: </h4>
 <pre>public class Nexrad2IOServiceProvider implements IOServiceProvider {
   static public final String ARCHIVE2 = &quot;ARCHIVE2&quot;;<br />  static public final String AR2V0001 = &quot;AR2V000&quot;;</pre>
-<pre>  public boolean <strong>isValidFile</strong>( RandomAccessFile raf) throws IOException {
+<pre>  public boolean <strong>isValidFile</strong>( RandomAccessFile raf) throws IOException <strong>(4)</strong> {
 <strong>1)</strong>  raf.seek(0);
     byte[] b = new byte[8];
     raf.read(b);
@@ -41,13 +41,14 @@
   <li>The IOSP wants to read starting at the first byte of the file. It must not assume that the file is already positioned there.</li>
   <li>It reads in 8 bytes and converts to a String.</li>
   <li>If it matches known patterns, return true.  </li>
+  <li>The file is assumed bad if it can't even read the first 8 bytes of the file. Its hard to imagine a valid file of lesss than 8 bytes. Still, be careful of your assumptions.</li>
 </ol>
 <p><strong>Example 2:</strong></p>
 <pre>  public boolean <strong>isValidFile</strong>( ucar.unidata.io.RandomAccessFile raf ) {<br />    try {<br /><strong>1)</strong>    raf.order( RandomAccessFile.BIG_ENDIAN );<br />      raf.seek( 0 );<br /><strong>2)</strong>    ucar.bufr.BufrInput bi = new ucar.bufr.BufrInput( raf );<br />      return bi.isValidFile();<br /><strong>3)</strong>  } catch (IOException ex) {<br />       ex.printStackTrace();<br />       return false;<br />    }<br />  }</pre>
 <ol>
   <li>The IOSP will read in numbers that it expects to be in big-endian format. It must not assume what mode the RandomAccessFile is in. </li>
-  <li>It creates a <em>BufrInput</em> object and delegates the work to it. Since this is a local instance, this is thread-safe. Creating new objects should be avoided when possible for speed, but sometimes it's necessary.</li>
-  <li>The developer has chosen to catch IOExceptions rather than throw them. In Example 1, the file is assumed bad if it cant even read the first 8 bytes of the file. Here, while we dont see the details of what BufrInput is doing, the developer has decided that it should not decide the file is bad for other IOSPs.</li>
+  <li>It creates a <strong>BufrInput</strong> object and delegates the work to it. Since this is a local instance, this is thread-safe. Creating new objects should be avoided when possible for speed, but sometimes it's necessary.</li>
+  <li>Catch the IOExceptions! Arguably, it would be better for the <strong>BufrInput</strong> class to return null, following the rule that <em>Exceptions should only be used in exceptional circumstances</em>. Being passed a file that is not yours is to be expected.</li>
 </ol>
 <p><strong>Example 3 (BAD!):</strong></p>
 <pre>public class Grib1ServiceProvider implements IOServiceProvider {
@@ -103,12 +104,12 @@
 <h2>  The readData() method</h2>
 <pre>
   // Read data from a top level Variable and return a memory resident Array.
-  public ucar.ma2.Array <strong>readData</strong>(ucar.nc2.Variable v2, List&lt;Range&gt; section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+  public ucar.ma2.Array <strong>readData</strong>(ucar.nc2.Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
 </pre>
-<p>When a client asks to read data from a Variable, either the data is taken from the Vaiable's data cache if it exists, or the <strong>readData</strong> method of the IOSP is called. The client may ask for all of the data, or it may ask for a <em>hyperslab</em> of data described by the <strong>section</strong> parameter. The section is a <strong>java.util.List</strong> of <strong>ucar.ma2.Range</strong> objects, one for each Dimension in the Variable, in order. </p>
+<p>When a client asks to read data from a Variable, either the data is taken from the Vaiable's data cache if it exists, or the <strong>readData</strong> method of the IOSP is called. The client may ask for all of the data, or it may ask for a <em>hyperslab</em> of data described by the <strong>section</strong> parameter. The section contains a <strong>java.util.List</strong> of <strong>ucar.ma2.Range</strong> objects, one for each Dimension in the Variable, in order. </p>
 <p>Here is an example, that assume the data starts at the start of the file, is in big-endian format, and is stored as a regular array of 16-bit integers on disk: </p>
 <h4>Example 1: Reading the entire Array </h4>
-<pre> public Array readData(Variable v2, List wantSection) throws IOException, InvalidRangeException {
+<pre> public Array readData(Variable v2, Section wantSection) throws IOException, InvalidRangeException {
    <strong>raf.seek</strong>(0);
    raf.order(RandomAccessFile.BIG_ENDIAN);</pre>
 <pre>   int size = (int) v2.getSize();
@@ -119,7 +120,7 @@
      <strong>arr[count++] = raf.readShort()</strong>; // copy into primitive array
    }
    Array data = Array.factory(DataType.SHORT.getPrimitiveClassType(), v2.getShape(), arr);
-   return <strong>data.section(section)</strong>;
+   return <strong>data.section(wantSection.getRanges())</strong>;
 }
 </pre>
 <p>The RandomAccessFile reads 16-bit integers, advancing automatically. The Array<strong>.</strong>section() method creates a logical section of the data array, returning just the section requested. </p>
@@ -181,7 +182,7 @@
 <p>&nbsp;</p>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Nov 09, 2008 
+<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Feb 09, 2009
 </address>
 <p>&nbsp; </p>
 </body>

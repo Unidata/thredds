@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Disk Caching</title>
+</head>
+
+<body>
+<h1><img src="../netcdfBig.gif" width="100" height="55" />Disk Caching</h1>
+<hr />
+<h2><span style="">
+  <o:p>Writing temporary files to the disk cache<a name="DiskCache" id="DiskCache"></a> </o:p>
+</span></h2>
+<p><span style="">
+  <o:p>There are a number of places where the library needs to write  files to disk. If you end up using the file more than once, its useful to cache these files.</o:p>
+</span></p>
+<ol>
+  <li><span style="">
+    <o:p>If a filename ends with &quot;<strong>.Z</strong>&quot;, &quot;<strong>.zip</strong>&quot;, &quot;<strong>.gzip</strong>&quot;, &quot;<strong>.gz</strong>&quot;, or &quot;<strong>.bz2</strong>&quot;, <strong>NetcdfFile.open</strong> will  write an uncompressed file of the same name, but without the suffix.</o:p>
+  </span></li>
+  <li>The <strong>GRIB</strong> IOSP  writes an index file with the same name and a <strong>.gbx. </strong>Other IOSPs may do similar things in the future.</li>
+  <li> <strong>Nexrad2</strong> files that are compressed will be uncompressed to a file with an <strong>.uncompress</strong> prefix. </li>
+</ol>
+<p><span style="">
+  <o:p>Before it writes the temporary file, it  looks to see if it already exists. By default, it prefers to place the temporary file in the same directory as the original file. If it does not have write permission in that directory, by default it will use the directory <strong>${user_home}/.unidata/cache/. </strong>You can change the directory by calling </o:p>
+  </span><span style="">
+  <o:p><strong>ucar.nc2.util.DiskCache.setDirectory().</strong> </o:p>
+</span></p>
+<p><span style="">
+  <o:p>You might want to always write temporary files to the cache directory, in order to manage them in a central place. To do so, call </o:p>
+  </span><span style="">
+  <o:p><strong>ucar.nc2.util.DiskCache.setCachePolicy( boolean alwaysInCache) </strong>with parameter  alwaysInCache = true<strong>. </strong>You may want to limit the amount of space the disk cache uses (unless you always have data in writeable directories, so that the disk cache is never used). To scour the cache, call <strong>DiskCache.cleanCache</strong>(). For long running appplication, you might want to do this periodically in a background timer thread, as in the following example. </o:p>
+</span></p>
+<pre><span style=""><o:p>    
+1) Calendar c = Calendar.getInstance(); // contains current startup time<br />   c.add( Calendar.MINUTE, 30); // add 30 minutes to current time
+
+   // run task every 60 minutes, starting 30 minutes from now
+2) java.util.Timer timer = new Timer();</o:p>
+</span> <strong>  timer.scheduleAtFixedRate</strong>( new CacheScourTask(), c.getTime(), (long) 1000 * 60 * 60 );</pre>
+<pre><span style=""><o:p>3) private class CacheScourTask extends java.util.TimerTask {<br />    </o:p></span>public void run() {
+     StringBuffer sbuff = new StringBuffer();
+4)<strong>   DiskCache.cleanCache</strong>(100 * 1000 * 1000, sbuff); // 100 Mbytes
+     sbuff.append(&quot;----------------------\n&quot;);
+5)   log.info(sbuff.toString());
+    }
+   }
+   ...
+   // upon exiting
+6) <strong>timer.cancel</strong>();
+</pre>
+<ol>
+  <li>Get the current time and add 30 minutes to it</li>
+  <li>Start up a timer that executes every 60 minutes, starting in 30 minutes</li>
+  <li> Your class must extend TimerTask, the run method is called by the Timer </li>
+  <li>Scour the cache, allowing 100 Mbytes of space to be used</li>
+  <li>Optionally log a message with the results of the scour. </li>
+  <li>Make sure you cancel the timer before your application exits, or else the process will not terminate. </li>
+</ol>
+<h3>GRIB indexing
+</h3>
+<p>In 4.0, the cache policy is set seperately from DiskCache, in order to give you seperate control: </p>
+<pre>   <strong>GribServiceProvider</strong>.<strong>setIndexAlwaysInCache</strong>( true); // always use the cache for grib index</pre>
+<p>In multi-threaded situations such as a server, you need to make sure that  grib indexing is thread-safe. One way to do this is to generate the indexes ahead of time, then tell the library to not write the index, but only use files that already have an index:</p>
+<pre>   <strong>GribServiceProvider.setIndexExtendMode</strong>( IndexExtendMode.none); // never write an index
+   <strong>GribServiceProvider.setIndexSyncMode</strong>( IndexExtendMode.none); // never sync the index</pre>
+<p>&nbsp;</p>
+<hr width="100%" />
+<address>
+<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Feb 09, 2009
+</address>
+<p>&nbsp; </p>
+</body>
+</html>
