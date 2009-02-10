@@ -2473,13 +2473,15 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
   protected Element writeVariable( ThreddsMetadata.Variable v) {
     Element elem = new Element("variable", defNS);
-    elem.setAttribute("name", v.getName());
+    if ( v.getName() != null )
+      elem.setAttribute("name", v.getName());
     if (v.getDescription() != null) {
       String desc = v.getDescription().trim();
       if (desc.length() > 0)
         elem.setText(v.getDescription());
     }
-    elem.setAttribute("vocabulary_name", v.getVocabularyName());
+    if ( v.getVocabularyName() != null )
+      elem.setAttribute("vocabulary_name", v.getVocabularyName());
     if (v.getUnits() != null)
       elem.setAttribute("units", v.getUnits());
     String id = v.getVocabularyId();
