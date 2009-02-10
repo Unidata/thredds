@@ -1,13 +1,25 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Digital Library Record Generation and Harvesting</title></head>
 
+<title>Digital Library Record Generation and Harvesting</title><style type="text/css">
+  pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+  code {font-size: 11pt;}
+  dl {margin: 10px 5px 5px 15px;)
+</style></head>
 <body>
 
 <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">Digital Library Record Generation and Harvesting </h1>
 <hr>
-<h2>Digital Library Record Generation with the DLwriter Service</h2><p></p><h2>Digial Library Harvesting</h2><h3>Install the DLESE OAI Provider </h3>
+<h2>Digital Library Record Generation with the DLwriter Service</h2><h3>Configuration</h3><p>The
+DLwriter service must be enabled in the threddsConfig.xml configuration
+file before it can be used. This is done by adding the following lines:</p><pre style="margin-left: 40px;">&lt;CatalogServices&gt;<br>  &lt;allowRemote&gt;true&lt;/allowRemote&gt;<br>&lt;/CatalogServices&gt;<br></pre><h3>Usage</h3><p>The
+DLwriter service generates digital library records for each dataset in
+a given catalog. The following parameters can be used:</p><ul><li>"catalog"
+- the URL of the target catalog (the URL is interpreted
+as&nbsp;relative to the TDS context, i.e., relative to
+"http://server:port/thredds/")</li><li>"type" - the value must be either "DIF" or "ADN"</li></ul><p>As follows:<br></p>
+<ul><li> <a href="http://localhost:8080/thredds/DLwriter?type=DIF">http://servername:port/thredds/DLwriter?type=(ADN|DIF)&amp;[catalog=<em>catalog.xml</em>]</a></li><li>Default catalog is /thredds/idd/models.xml</li></ul><p>The digital library records are written to <code>${TOMCAT_HOME}/content/thredds/DLwriter</code>.</p><h2>Digial Library Harvesting</h2><h3>Install the DLESE OAI Provider </h3>
 <ol>
   <li>Follow these instructions for installing: <a href="http://www.dlese.org/dds/services/joai_software.jsp"><strong>http://www.dlese.org/dds/services/joai_software.jsp</strong></a>. Current version is 3.10 as of this writing.</li>
   <li>You can use the Tomcat manager to upload the war file and install on your server.</li>
@@ -28,13 +40,7 @@
   </li>
   <li>The OAI URL will be  <em><strong>http://servername:port/oai/provider</strong></em></li>
   <li></li>
-</ul>
-<h3>Catalog Harvesting</h3>
-<ul>
-  <li> <a href="http://localhost:8080/thredds/DLwriter?type=DIF">http://servername:port/thredds/DLwriter?type=(ADN|DIF)&amp;[catalog=<em>catalog.xml</em>]</a></li>
-  <li>Default catalog is /thredds/idd/models.xml</li>
-</ul>
-<h2>Related Documents</h2>
+</ul><br><h2>Related Documents</h2>
 <ul>
   <li> <a href="../catalog/DL.html">Exporting THREDDS Datasets to Digital Libraries</a></li>
 </ul>
