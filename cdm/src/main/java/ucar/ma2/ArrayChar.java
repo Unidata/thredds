@@ -836,6 +836,21 @@ public class ArrayChar extends Array {
   }
 
   /**
+   * Create an ArrayChar from a String
+   *
+   * @param s String
+   * @param max maximum length
+   * @return equivilent ArrayChar,
+   */
+  public static ArrayChar makeFromString(String s, int max) {
+    ArrayChar result = new ArrayChar.D1( max);
+    for (int i=0; i<max; i++)
+      result.setChar( i, s.charAt(i));
+
+    return result;
+  }
+
+  /**
    * Create an ArrayChar from an ArrayObject of Strings.
    *
    * @param values ArrayObject of String

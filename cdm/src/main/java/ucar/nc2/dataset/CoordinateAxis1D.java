@@ -657,6 +657,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     int count = 0;
     Array data;
     try {
+      setUseNaNs(false); // missing values not allowed
       data = read();
     } catch (IOException ioe) {
       log.error("Error reading coordinate values ",ioe);
@@ -679,7 +680,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     Attribute boundsAtt = findAttributeIgnoreCase("bounds");
     if ((null == boundsAtt) || !boundsAtt.isString()) return false;
     String boundsVarName = boundsAtt.getStringValue();
-    Variable boundsVar = ncd.findVariable(boundsVarName);
+    VariableDS boundsVar = (VariableDS) ncd.findVariable(boundsVarName);
     if (null == boundsVar) return false;
     if (2 != boundsVar.getRank()) return false;
 
@@ -688,6 +689,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     Array data;
     try {
+      boundsVar.setUseNaNs(false); // missing values not allowed
       data = boundsVar.read();
     } catch (IOException e) {
       log.warn("CoordinateAxis1D.hasBounds read failed ", e);

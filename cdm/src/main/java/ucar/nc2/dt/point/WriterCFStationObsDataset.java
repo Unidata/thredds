@@ -98,8 +98,8 @@ public class WriterCFStationObsDataset {
       swriter = new N3outputStreamWriter(this);
     }
 
-    void writeHeader() throws IOException {
-      swriter.writeHeader(stream);
+    void writeHeader(int numrec) throws IOException {
+      swriter.writeHeader(stream, numrec);
     }
 
     void writeNonRecordData(String varName, Array data) throws IOException {
@@ -111,13 +111,13 @@ public class WriterCFStationObsDataset {
     }
   }
 
-  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars) throws IOException {
+  public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars, int numrec) throws IOException {
     createGlobalAttributes();
     createStations(stns);
     createRecordVariables(vars);
 
     ncfile.finish(); // done with define mode
-    ncfile.writeHeader();
+    ncfile.writeHeader(numrec);
     writeStationData(stns); // write out the station info
 
     // now write the observations
@@ -529,7 +529,7 @@ public class WriterCFStationObsDataset {
     List<VariableSimpleIF> varList = new ArrayList<VariableSimpleIF>();
     varList.add(sobs.getDataVariable("wind_speed"));
 
-    writer.writeHeader(stnList, varList);
+    writer.writeHeader(stnList, varList, -1);
 
     DataIterator iter = sobs.getDataIterator(s);
     while (iter.hasNext()) {
@@ -564,7 +564,7 @@ public class WriterCFStationObsDataset {
     DataOutputStream out = new DataOutputStream(fos);
 
     WriterCFStationObsDataset writer = new WriterCFStationObsDataset(out, "rewrite " + fileIn);
-    writer.writeHeader(stns, vars);
+    writer.writeHeader(stns, vars, -1);
 
     if (sort) {
       for (ucar.unidata.geoloc.Station s : stns) {

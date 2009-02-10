@@ -133,7 +133,9 @@ public class N3channelWriter extends N3streamWriter {
     DataOutputStream dout = new DataOutputStream(Channels.newOutputStream(channel));
 
     N3channelWriter writer = new N3channelWriter(fileIn);
-    writer.writeHeader(dout);
+    int numrec = fileIn.getUnlimitedDimension() == null ? 0 : fileIn.getUnlimitedDimension().getLength();
+
+    writer.writeHeader(dout, numrec);
     dout.flush();
 
     writer.writeDataAll(channel);
@@ -153,7 +155,8 @@ public class N3channelWriter extends N3streamWriter {
     DataOutputStream stream = new DataOutputStream(new BufferedOutputStream( Channels.newOutputStream(wbc), 8000));
     //DataOutputStream stream = new DataOutputStream(Channels.newOutputStream(wbc));  // buffering seems to improve by 5%
     N3channelWriter writer = new N3channelWriter(ncfile);
-    writer.writeHeader(stream);
+    int numrec = ncfile.getUnlimitedDimension() == null ? 0 : ncfile.getUnlimitedDimension().getLength();    
+    writer.writeHeader(stream, numrec);
     stream.flush();
     writer.writeDataAll(wbc);
   }

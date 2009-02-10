@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="cdm" default="makeMain" basedir=".">
   <property name="release.version" value="4.0"/>
-  <property name="minor" value="31" />
+  <property name="minor" value="32" />
   <!-- "build.number" is already set for TeamCity builds. -->
   <tstamp>
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
@@ -289,7 +289,7 @@
     <jar jarfile="${build.dir}/${jarMain}" index="true">
       <fileset dir="${build.classes.dir}">
         <exclude name="thredds/catalog2/**"/>
-        <exclude name="thredds/wcs/**"/>
+        <!-- exclude name="thredds/wcs/**"/ -->
         <exclude name="ucar/unidata/geoloc/ogc/**"/>
       </fileset>
       <fileset dir="${build.dir}" includes="README"/>
@@ -547,6 +547,7 @@
       <excludepackage name="ucar/nc2/jni/**"/>
       <excludepackage name="ucar/nc2/util/reflect"/>
       <excludepackage name="ucar/unidata/geoloc/ogc"/>
+      <excludepackage name="thredds/wcs/**" />
     </javadoc>
 
     <jar jarfile="${build.dir}/${jarJavadocAll}" index="true" duplicate="preserve">

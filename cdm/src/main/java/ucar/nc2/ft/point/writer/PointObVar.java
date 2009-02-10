@@ -52,6 +52,12 @@ public class PointObVar {
 
   public PointObVar() {}
 
+  public PointObVar(String name, DataType dtype, int len) {
+    this.name = name;
+    this.dtype = dtype;
+    this.len = len;
+  }
+
   public PointObVar(VariableSimpleIF v) {
     setName(v.getShortName());
     setUnits(v.getUnitsString());

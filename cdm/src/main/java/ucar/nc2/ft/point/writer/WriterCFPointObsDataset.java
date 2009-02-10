@@ -85,12 +85,12 @@ public class WriterCFPointObsDataset {
     useAlt = (altUnits != null);
   }
 
-  public void writeHeader(List<? extends VariableSimpleIF> vars) throws IOException {
+  public void writeHeader(List<? extends VariableSimpleIF> vars, int numrec) throws IOException {
     createGlobalAttributes();
     createRecordVariables(vars);
 
     ncfileOut.finish(); // done with define mode
-    ncfileOut.writeHeader();
+    ncfileOut.writeHeader(numrec);
   }
 
   private void createGlobalAttributes() {
@@ -200,9 +200,9 @@ public class WriterCFPointObsDataset {
 
     // String data
     for (String sval : svals) {
-      ArrayObject.D0 data = new ArrayObject.D0(String.class);
-      data.set(sval);
       v = recordVars.get(count++);
+      int strlen = v.getShape(1);
+      ArrayChar data = ArrayChar.makeFromString(sval, strlen);
       v.setCachedData(data, false);
     }
 
@@ -264,8 +264,9 @@ public class WriterCFPointObsDataset {
 
     for (int i = count; i < recordVars.size(); i++) {
       Variable v = recordVars.get(i);
-      assert v.hasCachedData();
-      v.setCachedData(sdata.getArray(v.getShortName()), false);
+      if (debug) System.out.println(" var= " + v.getShortName());
+      //assert v.hasCachedData();  ??
+      v.setCachedData( sdata.getArray(v.getShortName()), false);
     }
 
     ncfileOut.writeRecordData(recordVars);
@@ -274,6 +275,8 @@ public class WriterCFPointObsDataset {
   public void finish() throws IOException {
     //writeDataFinish();
     ncfileOut.close();
+    ncfileOut.stream.flush();
+    ncfileOut.stream.close();
   }
 
   private class NetcdfFileStream extends NetcdfFile {
@@ -286,8 +289,8 @@ public class WriterCFPointObsDataset {
       swriter = new N3outputStreamWriter(this);
     }
 
-    void writeHeader() throws IOException {
-      swriter.writeHeader(stream);
+    void writeHeader(int numrec) throws IOException {
+      swriter.writeHeader(stream, numrec);
     }
 
     void writeNonRecordData(String varName, Array data) throws IOException {
@@ -349,7 +352,7 @@ public class WriterCFPointObsDataset {
         EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong
         writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
-        writer.writeHeader( dataVars);
+        writer.writeHeader( dataVars, -1);
       }
       writer.writeRecord(pointFeature, data);
       count++;
@@ -388,19 +391,17 @@ public class WriterCFPointObsDataset {
     DataOutputStream out = new DataOutputStream(fos);
     WriterCFPointObsDataset writer = null;
 
-    boolean first = true;
     DataIterator iter = pobsDataset.getDataIterator(1000 * 1000);
     while (iter.hasNext()) {
       PointObsDatatype pobsData = (PointObsDatatype) iter.nextData();
-      StructureData data = pobsData.getData();
-      if (first) {
+      StructureData sdata = pobsData.getData();
+      if (writer == null) {
         ucar.unidata.geoloc.EarthLocation loc = pobsData.getLocation();
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters";
         writer = new WriterCFPointObsDataset(out, ncfile.getGlobalAttributes(), altUnits);
-        writer.writeHeader(pobsDataset.getDataVariables());
-        first = false;
+        writer.writeHeader(pobsDataset.getDataVariables(), -1);
       }
-      writer.writeRecord(pobsData, data);
+      writer.writeRecord(pobsData, sdata);
     }
 
     writer.finish();
@@ -410,8 +411,8 @@ public class WriterCFPointObsDataset {
   }
 
   public static void main(String args[]) throws IOException {
-    String location = "C:/data/ft/point/971201.PAM_Cle_met.nc";
+    String location = "R:/testdata/point/netcdf/02092412_metar.nc";
     File file = new File(location);
-    rewritePointObsDataset(location, "C:/data/temp/CFobs/"+ file.getName(), true);
+    rewritePointObsDataset(location, "C:/TEMP/"+ file.getName(), true);
   }
 }

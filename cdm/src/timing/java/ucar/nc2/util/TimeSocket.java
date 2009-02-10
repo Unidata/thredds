@@ -134,7 +134,7 @@ public class TimeSocket {
     NetcdfFile ncfile = NetcdfFile.open(f.getPath());
     N3outputStreamWriter writer = new N3outputStreamWriter(ncfile);
 
-    writer.writeHeader(stream);
+    writer.writeHeader(stream, -1);
     writer.writeDataAll(stream);
     stream.close();
 

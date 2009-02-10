@@ -18,26 +18,35 @@
   <li><span style="">
     <o:p>If a filename ends with &quot;<strong>.Z</strong>&quot;, &quot;<strong>.zip</strong>&quot;, &quot;<strong>.gzip</strong>&quot;, &quot;<strong>.gz</strong>&quot;, or &quot;<strong>.bz2</strong>&quot;, <strong>NetcdfFile.open</strong> will  write an uncompressed file of the same name, but without the suffix.</o:p>
   </span></li>
-  <li>The <strong>GRIB</strong> IOSP  writes an index file with the same name and a <strong>.gbx. </strong>Other IOSPs may do similar things in the future.</li>
+  <li>The <strong>GRIB</strong> IOSP  writes an index file with the same name with suffix <strong>.gbx. </strong>Other IOSPs may do similar things.</li>
   <li> <strong>Nexrad2</strong> files that are compressed will be uncompressed to a file with an <strong>.uncompress</strong> prefix. </li>
 </ol>
 <p><span style="">
   <o:p>Before it writes the temporary file, it  looks to see if it already exists. By default, it prefers to place the temporary file in the same directory as the original file. If it does not have write permission in that directory, by default it will use the directory <strong>${user_home}/.unidata/cache/. </strong>You can change the directory by calling </o:p>
   </span><span style="">
-  <o:p><strong>ucar.nc2.util.DiskCache.setDirectory().</strong> </o:p>
+  <o:p><strong>ucar.nc2.util.DiskCache.setRootDirectory().</strong> </o:p>
 </span></p>
-<p><span style="">
-  <o:p>You might want to always write temporary files to the cache directory, in order to manage them in a central place. To do so, call </o:p>
-  </span><span style="">
-  <o:p><strong>ucar.nc2.util.DiskCache.setCachePolicy( boolean alwaysInCache) </strong>with parameter  alwaysInCache = true<strong>. </strong>You may want to limit the amount of space the disk cache uses (unless you always have data in writeable directories, so that the disk cache is never used). To scour the cache, call <strong>DiskCache.cleanCache</strong>(). For long running appplication, you might want to do this periodically in a background timer thread, as in the following example. </o:p>
-</span></p>
-<pre><span style=""><o:p>    
-1) Calendar c = Calendar.getInstance(); // contains current startup time<br />   c.add( Calendar.MINUTE, 30); // add 30 minutes to current time
+<p>
+You might want to always write temporary files to the cache directory, in order to manage them in a central place. To do so, call </o:p>
+  <o:p>
+  <strong>ucar.nc2.util.DiskCache.setCachePolicy( boolean alwaysInCache) </strong>with parameter  alwaysInCache = true<strong>. </strong><br />
+  <br />
+  You may want to limit the amount of space the disk cache uses (unless you always have data in writeable directories, so that the disk cache is never used). To scour the cache, call <strong>DiskCache.cleanCache</strong>(). There are several variations of the cleanup: 
 
-   // run task every 60 minutes, starting 30 minutes from now
-2) java.util.Timer timer = new Timer();</o:p>
-</span> <strong>  timer.scheduleAtFixedRate</strong>( new CacheScourTask(), c.getTime(), (long) 1000 * 60 * 60 );</pre>
-<pre><span style=""><o:p>3) private class CacheScourTask extends java.util.TimerTask {<br />    </o:p></span>public void run() {
+<ul>
+      <li><strong>DiskCache.cleanCache(Date cutoff, StringBuilder sbuff) </strong>will delete files older than the cutoff date. </li>
+      <li><strong>DiskCache.cleanCache(long maxBytes, StringBuilder sbuff) </strong>will retain maxBytes bytes, deleting oldest files first.        </li>
+      <li><strong>DiskCache.cleanCache(long maxBytes, Comparator&lt;File&gt; fileComparator, StringBuilder sbuff) </strong>will retain maxBytes bytes, deleting files in the order defined by your Comparator.</li>
+    </ul>
+    <p>For long running appplication, you might want to do this periodically in a background timer thread, as in the following example. </p>
+    <o:p>    
+<pre>1) Calendar c = Calendar.getInstance(); // contains current startup time
+   c.add( Calendar.MINUTE, 30); // add 30 minutes to current time     // run task every 60 minutes, starting 30 minutes from now
+2) java.util.Timer timer = new Timer();<strong>  
+   timer.scheduleAtFixedRate</strong>( new CacheScourTask(), c.getTime(), (long) 1000 * 60 * 60 ); 
+
+3) private class CacheScourTask extends java.util.TimerTask {   
+    public void run() {
      StringBuffer sbuff = new StringBuffer();
 4)<strong>   DiskCache.cleanCache</strong>(100 * 1000 * 1000, sbuff); // 100 Mbytes
      sbuff.append(&quot;----------------------\n&quot;);
@@ -52,18 +61,21 @@
   <li>Get the current time and add 30 minutes to it</li>
   <li>Start up a timer that executes every 60 minutes, starting in 30 minutes</li>
   <li> Your class must extend TimerTask, the run method is called by the Timer </li>
-  <li>Scour the cache, allowing 100 Mbytes of space to be used</li>
+  <li>Scour the cache, allowing 100 Mbytes of space to be retained</li>
   <li>Optionally log a message with the results of the scour. </li>
   <li>Make sure you cancel the timer before your application exits, or else the process will not terminate. </li>
 </ol>
 <h3>GRIB indexing
 </h3>
-<p>In 4.0, the cache policy is set seperately from DiskCache, in order to give you seperate control: </p>
+<p>In 4.0, the cache policy for GRIB indexes is set seperately from generic DiskCache, in order to give you seperate control: </p>
 <pre>   <strong>GribServiceProvider</strong>.<strong>setIndexAlwaysInCache</strong>( true); // always use the cache for grib index</pre>
+<p>Note that you still control whether to alway use a cache directory, and where that is located with DiskCache methods:</p>
+<pre>   <o:p><strong> ucar.nc2.util.DiskCache.setCachePolicy( boolean alwaysInCache);<br />    ucar.nc2.util.DiskCache.setRootDirectory(String cacheDir)</strong></o:p>; 
+</pre>
 <p>In multi-threaded situations such as a server, you need to make sure that  grib indexing is thread-safe. One way to do this is to generate the indexes ahead of time, then tell the library to not write the index, but only use files that already have an index:</p>
 <pre>   <strong>GribServiceProvider.setIndexExtendMode</strong>( IndexExtendMode.none); // never write an index
    <strong>GribServiceProvider.setIndexSyncMode</strong>( IndexExtendMode.none); // never sync the index</pre>
-<p>See <a href="http://www.unidata.ucar.edu/software/decoders/">GRIB decoder</a> for details on generating a GRIB index externally.</p>
+<p>See <a href="http://www.unidata.ucar.edu/software/decoders/">GRIB decoder</a> for details on generating a GRIB index externally. See <strong>GribServiceProvider</strong> <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/javadoc/index.html">javadoc</a> for more details.</p>
 <p>&nbsp;</p>
 <hr width="100%" />
 <address>

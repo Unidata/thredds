@@ -89,6 +89,7 @@ public class N3header {
   private long globalAttsPos = 0; // global attributes start here - used for update
 
   private boolean debugPos = false, debugVariablePos = false;
+  private boolean debugStreaming = false;
 
   /* Notes
     - dimensions are signed or unsigned ? in java, must be signed, so are limited to 2^31, not 2^32
@@ -266,8 +267,8 @@ public class N3header {
     if (isStreaming) {
       long recordSpace = actualSize - recStart;
       numrecs = (int) (recordSpace / recsize);
-      //if (debug)
-      System.out.println(" isStreaming recordSpace=" + recordSpace + " numrecs=" + numrecs +
+      if (debugStreaming)
+        System.out.println(" isStreaming recordSpace=" + recordSpace + " numrecs=" + numrecs +
           " has extra bytes = " + (recordSpace % recsize));
 
       // set it in the unlimited dimension, all of the record variables

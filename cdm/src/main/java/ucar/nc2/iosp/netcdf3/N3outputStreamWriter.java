@@ -44,6 +44,7 @@ import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
 
 /**
+ * Experimental.
  * @author john
  */
 public class N3outputStreamWriter extends N3streamWriter {
@@ -131,7 +132,7 @@ public class N3outputStreamWriter extends N3streamWriter {
     if (filePos != want) throw new IllegalStateException();
 
     for (Variable v : varList) {
-      if (first && debugWriteData) System.out.println("  write record var " + v.getNameAndDimensions());
+      if (first && debugWriteData) System.out.println("  write record var " + v.getNameAndDimensions()+" filePos="+filePos);
       filePos += writeData(v, stream, v.read());
 
       Vinfo vinfo = vinfoMap.get(v);
@@ -235,7 +236,8 @@ public class N3outputStreamWriter extends N3streamWriter {
   public static void writeFromFile(NetcdfFile fileIn, String fileOutName) throws IOException {
     DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileOutName), 10 * 1000));
     N3outputStreamWriter writer = new N3outputStreamWriter(fileIn);
-    writer.writeHeader(stream);
+    int numrec = fileIn.getUnlimitedDimension() == null ? 0 : fileIn.getUnlimitedDimension().getLength();
+    writer.writeHeader(stream, numrec);
     writer.writeDataAll(stream);
     stream.close();
   }

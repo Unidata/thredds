@@ -83,15 +83,40 @@ public abstract class GribServiceProvider extends AbstractIOServiceProvider {
     useMaximalCoordSys = b;
   }
 
+  /**
+   * This controls the case where the GRIB file has changed, which is detected by comparing the GRIB
+   *   file length with the file length recorded in the index file. If there is no index, one will be created.
+   *   Default is IndexExtendMode.rewrite.
+   * <ol>
+   * <li>IndexExtendMode.extend: when GRIB file length increases, extend the index. This is the case when the file
+   *   is being appended to, as new data arrives.
+   * <li>IndexExtendMode.rewrite: when GRIB file length changes, rewrite the index. This is the safest thing to do,
+   *   at the expense of performance.
+   * <li>IndexExtendMode.none: never modify an existing index. If there is no index, one will be created.
+   * </ol>
+   * @param mode IndexExtendMode when file is opened
+   */
   static public void setIndexExtendMode(IndexExtendMode mode) {
     extendMode = mode;
   }
 
+  /**
+   * This controls what happens when sync() is called on a GRIB file. The main use of sync() is when you are using
+   * NetcdfFile object caching. Before NetcdfFile is returned from a cache hit, sync() is called on it.
+   * Default is IndexExtendMode.extend.
+   *
+   * @param mode IndexExtendMode when sync() is called. Same meaning as setIndexExtendMode(IndexExtendMode mode)
+   */
   static public void setIndexSyncMode(IndexExtendMode mode) {
     syncMode = mode;
   }
 
   // backwards compatible with old API
+  /**
+   * Set how indexes are used
+   * @param b if true, same as setIndexExtendMode(IndexExtendMode.extend), if false, same as
+   * setIndexExtendMode(IndexExtendMode.none)
+   */
   static public void setExtendIndex(boolean b) {
     extendMode = b ? IndexExtendMode.extend : IndexExtendMode.none;
   }

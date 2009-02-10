@@ -72,7 +72,7 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Set the HttpClient object - a single, shared instance is used within the application.
+   * Set the HttpClient object - so that a single, shared instance is used within the application.
    * @param client the HttpClient object
    */
   static public void setHttpClient(HttpClient client) {

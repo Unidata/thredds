@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.stream.NcStreamRemote;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
@@ -3454,11 +3455,13 @@ public class ToolsUI extends JPanel {
     // set Authentication for accessing passsword protected services like TDS PUT
     java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
 
-    // use HTTPClient
+    // use HTTPClient - could use bean wiring here
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
     DConnect2.setHttpClient(client);
     HTTPRandomAccessFile.setHttpClient(client);
+    NcStreamRemote.setHttpClient(client);
+    NetcdfDataset.setHttpClient(client);
 
     // open dap initializations
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(false);

@@ -326,7 +326,7 @@ public class DiskCache {
     }
   }
 
-  static private class FileLengthComparator implements Comparator<File> {
+  static private class FileSizeComparator implements Comparator<File> {
     public int compare(File f1, File f2) {
       return (int) (f1.length() - f2.length());
     }

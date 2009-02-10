@@ -74,14 +74,14 @@ public class CFPointObWriter {
    * @param dataVars   the set of data variables: first the double values, then the String values
    * @throws IOException if write error
    */
-  public CFPointObWriter(DataOutputStream stream, List<Attribute> globalAtts, String altUnits, List<PointObVar> dataVars) throws IOException {
+  public CFPointObWriter(DataOutputStream stream, List<Attribute> globalAtts, String altUnits, List<PointObVar> dataVars, int numrec) throws IOException {
     ncWriter = new WriterCFPointObsDataset(stream, globalAtts, altUnits);
 
     List<VariableSimpleIF> vars = new ArrayList<VariableSimpleIF>(dataVars.size());
     for (PointObVar pvar : dataVars)
       vars.add(new PointObVarAdapter(pvar));
 
-    ncWriter.writeHeader(vars);
+    ncWriter.writeHeader(vars, numrec);
   }
 
   /**
@@ -243,7 +243,7 @@ public class CFPointObWriter {
 
     FileOutputStream fos = new FileOutputStream(fileOut);
     DataOutputStream out = new DataOutputStream(fos);
-    CFPointObWriter writer = new CFPointObWriter(out, pobsDataset.getGlobalAttributes(), altUnits, nvars);
+    CFPointObWriter writer = new CFPointObWriter(out, pobsDataset.getGlobalAttributes(), altUnits, nvars, -1);
 
     DataIterator iter = pobsDataset.getDataIterator(1000 * 1000);
     while (iter.hasNext()) {
@@ -295,7 +295,6 @@ public class CFPointObWriter {
     FeatureDataset fd = FeatureDatasetFactoryManager.wrap(FeatureType.ANY_POINT, ncd, null, errlog);
     if (fd == null) return false;
 
-    FeatureDatasetPoint pfDataset;
     if (fd instanceof FeatureDatasetPoint) {
       writePointFeatureCollection((FeatureDatasetPoint) fd, fileOut);
       fd.close();
@@ -355,7 +354,7 @@ public class CFPointObWriter {
         EarthLocation loc = pointFeature.getLocation(); // LOOK we dont know this until we see the obs
         String altUnits = Double.isNaN(loc.getAltitude()) ? null : "meters"; // LOOK units may be wrong
         writer = new WriterCFPointObsDataset(out, pfDataset.getGlobalAttributes(), altUnits);
-        writer.writeHeader(pfDataset.getDataVariables());
+        writer.writeHeader(pfDataset.getDataVariables(), -1);
       }
       writer.writeRecord(pointFeature, data);
       count++;
@@ -371,26 +370,28 @@ public class CFPointObWriter {
   }
 
   public static void main2(String args[]) throws IOException {
-    String location = "C:\\data\\ft\\station\\madis2.sao";
+    String location = "R:/testdata/point/netcdf/madis.nc";
     File file = new File(location);
-    rewritePointFeatureDataset(location, "C:/data/temp/CFobs/" + file.getName(), true);
+    rewritePointFeatureDataset(location, "C:/TEMP/" + file.getName(), true);
   }
 
   public static void main(String args[]) throws IOException {
 
     List<PointObVar> dataVars = new ArrayList<PointObVar>();
-    PointObVar pointObVar = new PointObVar();
-    pointObVar.setName("test");
-    pointObVar.setDataType(DataType.CHAR);
-    pointObVar.setLen(4);
-    dataVars.add(pointObVar);
+    dataVars.add(new PointObVar("test1", DataType.CHAR, 4));
+    dataVars.add(new PointObVar("test2", DataType.CHAR, 4));
 
     //   public CFPointObWriter(DataOutputStream stream, List<Attribute> globalAtts, String altUnits, List<PointObVar> dataVars) throws IOException {
 
     FileOutputStream fos = new FileOutputStream("C:/temp/test.out");
     DataOutputStream out = new DataOutputStream(new BufferedOutputStream(fos, 10000));
 
-    CFPointObWriter writer = new CFPointObWriter(out, new ArrayList<Attribute>(), "meters", dataVars);
+    CFPointObWriter writer = new CFPointObWriter(out, new ArrayList<Attribute>(), "meters", dataVars, 1);
+
+    double[] dvals = new double[0];
+    String[] svals = new String[] {"valu", "value"};
+    writer.addPoint(1.0, 2.0, 3.0, new Date(), dvals, svals);
+    writer.finish();
 
   }
 }

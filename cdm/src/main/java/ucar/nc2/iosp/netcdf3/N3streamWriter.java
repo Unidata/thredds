@@ -64,9 +64,10 @@ public abstract class N3streamWriter {
    * Write the header to a stream.
    *
    * @param stream write to this stream.
+   * @param numrec pass in number of record is you know it, else -1 for "streaming" format variant
    * @throws IOException if write fails
    */
-  public void writeHeader(DataOutputStream stream) throws IOException {
+  public void writeHeader(DataOutputStream stream, int numrec) throws IOException {
 
     // make sure ncfile structures were finished
     ncfile.finish();
@@ -77,7 +78,9 @@ public abstract class N3streamWriter {
 
     // numrecs
     Dimension udim = ncfile.getUnlimitedDimension();
-    int numrec = (udim == null) ? 0 : -1; // -1 means "streaming" - calc numrec through file length
+    if (numrec < 0) {
+      numrec = (udim == null) ? 0 : -1; // -1 means "streaming" - calc numrec through file length
+    }
     stream.writeInt(numrec);
     count += 4;
 

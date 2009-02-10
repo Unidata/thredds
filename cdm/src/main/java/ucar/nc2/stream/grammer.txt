@@ -17,3 +17,4 @@ DATA:   http://localhost:8080/thredds/ncstream/stream/temperature.nc?Temperature
 
 using Section spec.
 variable name will need to be UTF8-escape encoded.
+DiskCache

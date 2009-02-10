@@ -982,7 +982,7 @@ public class StationObsCollection {
           }
         }
 
-        sobsWriter.writeHeader(stnList, varList);
+        sobsWriter.writeHeader(stnList, varList, -1);
       } catch (IOException e) {
         log.error("WriterNetcdf.header", e);
       }

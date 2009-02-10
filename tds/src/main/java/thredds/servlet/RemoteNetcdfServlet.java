@@ -69,19 +69,63 @@ import ucar.nc2.stream.NcStreamWriter;
 public class RemoteNetcdfServlet extends AbstractServlet {
   private boolean allow = true;
 
-  // must end with "/"
+  @Override
   protected String getPath() {
     return "ncstream/";
   }
 
+  @Override
   protected void makeDebugActions() {
   }
 
 
+  @Override
   public void init() throws ServletException {
     super.init();
   }
 
+  @Override
+  protected long getLastModified(HttpServletRequest req) {
+    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo());
+    if ((file != null) && file.exists())
+      return file.lastModified();
+    return -1;
+  }
+
+  // we need an efficient HEAD processing so we can disambiguate http URLs on the client
+  @Override
+  protected void doHead(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    if (!allow) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
+      return;
+    }
+
+    log.info( UsageLog.setupRequestContext(req));
+
+    NetcdfFile ncfile = null;
+    try {
+      ncfile = DatasetHandler.getNetcdfFile(req, res, req.getPathInfo());
+      res.setContentType("application/octet-stream");
+      res.setHeader("Content-Description", "ncstream");
+      if (ncfile == null) {
+        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+      } else {
+        res.setStatus(HttpServletResponse.SC_OK);
+        ServletUtil.logServerAccess(HttpServletResponse.SC_OK, -1);
+      }
+
+    } finally {
+      if (null != ncfile)
+        try {
+          ncfile.close();
+        } catch (IOException ioe) {
+          log.error("Failed to close = " + req.getPathInfo());
+        }
+    }
+  }
+
+  @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
     if (!allow) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
@@ -98,21 +142,25 @@ public class RemoteNetcdfServlet extends AbstractServlet {
     if (query != null) System.out.println("req="+pathInfo);
 
     res.setContentType("application/octet-stream");
-
-    OutputStream out = new BufferedOutputStream( res.getOutputStream(), 10 * 1000);  // ??
+    res.setHeader("Content-Description", "ncstream");
 
     NetcdfFile ncfile = null;
     try {
       ncfile = DatasetHandler.getNetcdfFile(req, res, pathInfo);
+      if (ncfile == null) {
+        res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        ServletUtil.logServerAccess(HttpServletResponse.SC_NOT_FOUND, -1);
+      }
+
+      OutputStream out = new BufferedOutputStream( res.getOutputStream(), 10 * 1000);
       NcStreamWriter ncWriter = new NcStreamWriter(ncfile, req.getRequestURI());
- 
       if (query == null) { // just the header
         ncWriter.sendHeader(out);
 
       } else { // they want some data
         WritableByteChannel wbc = Channels.newChannel(out);
 
-        StringTokenizer stoke = new StringTokenizer(query, "&"); // dunno about this & baloney - need UTF/%decode
+        StringTokenizer stoke = new StringTokenizer(query, ","); // need UTF/%decode
         while (stoke.hasMoreTokens()) {
           ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
           ncWriter.sendData(out, cer.v, cer.section, wbc);
@@ -137,57 +185,5 @@ public class RemoteNetcdfServlet extends AbstractServlet {
         }
     }
   }
-
-  /* private long copy2stream(Array a, OutputStream out, boolean digest) throws IOException {
-    int elem = 0;
-    long size = a.getSize();
-    DataOutputStream dout = null;
-
-    MessageDigest md = null;
-    try {
-      OutputStream bout = new BufferedOutputStream(out);
-
-      if (digest) {
-        md = MessageDigest.getInstance("MD2");
-        bout = new DigestOutputStream(out, md);
-      }
-      dout = new DataOutputStream(bout);
-
-      dout.writeLong(size);
-
-      if (a.getElementType() == double.class) {
-        elem = 8;
-        double[] data = (double[]) a.get1DJavaArray(double.class);
-        for (int i = 0; i < data.length; i++)
-          dout.writeDouble(data[i]);
-
-      } else if (a.getElementType() == float.class) {
-        elem = 4;
-        float[] data = (float[]) a.get1DJavaArray(float.class);
-        for (int i = 0; i < data.length; i++)
-          dout.writeFloat(data[i]);
-      }
-
-      if (digest) {
-        byte[] result = md.digest();
-        System.out.print("digest=");
-        for (int i = 0; i < result.length; i++) {
-          dout.write(result[i]);
-          if (i>0)System.out.print(',');
-          System.out.print(result[i]);
-        }
-        System.out.println();
-      }
-
-    } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    } finally {
-      dout.flush();
-    }
-
-
-    return a.getSize() * elem;
-  }      */
-
 
 }
