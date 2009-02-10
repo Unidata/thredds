@@ -1010,7 +1010,7 @@ public class InvDatasetImpl extends InvDataset {
           buff.append(" <li>").append(type).append(makeHref(doc.getXlinkHref(), doc.getXlinkTitle())).append("</li>\n");
         }
       }
-      buff.append("</ul>");
+      buff.append("</ul>\n");
     }
 
     java.util.List<InvAccess> access = ds.getAccess();
@@ -1044,7 +1044,7 @@ public class InvDatasetImpl extends InvDataset {
         String role = (t.getRole() == null) ? "" : "<strong> (" + StringUtil.quoteHtmlContent(t.getRole()) + ")</strong> ";
         buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getName())).append(role).append("</li>\n");
       }
-      buff.append("</ul>");
+      buff.append("</ul>\n");
     }
 
     java.util.List<ThreddsMetadata.Vocab> keywords = ds.getKeywords();
@@ -1054,7 +1054,7 @@ public class InvDatasetImpl extends InvDataset {
         String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
         buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getText())).append(vocab).append("</li>\n");
       }
-      buff.append("</ul>");
+      buff.append("</ul>\n");
     }
 
     java.util.List<DateType> dates = ds.getDates();
@@ -1064,7 +1064,7 @@ public class InvDatasetImpl extends InvDataset {
         String type = (d.getType() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent(d.getType()) + ")</strong> ";
         buff.append(" <li>").append(StringUtil.quoteHtmlContent(d.getText())).append(type).append("</li>\n");
       }
-      buff.append("</ul>");
+      buff.append("</ul>\n");
     }
 
     java.util.List<ThreddsMetadata.Vocab> projects = ds.getProjects();
@@ -1074,7 +1074,7 @@ public class InvDatasetImpl extends InvDataset {
         String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
         buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getText())).append(vocab).append("</li>\n");
       }
-      buff.append("</ul>");
+      buff.append("</ul>\n");
     }
 
     java.util.List<ThreddsMetadata.Source> creators = ds.getCreators();
@@ -1088,7 +1088,7 @@ public class InvDatasetImpl extends InvDataset {
         }
         buff.append(" </ul></li>\n");
       }
-      buff.append("</ul>");
+      buff.append("</ul>\n");
     }
 
     java.util.List<ThreddsMetadata.Source> publishers = ds.getPublishers();
@@ -1102,7 +1102,7 @@ public class InvDatasetImpl extends InvDataset {
         }
         buff.append(" </ul>\n");
       }
-      buff.append("</ul>");
+      buff.append("</ul>\n");
     }
 
     java.util.List<ThreddsMetadata.Variables> vars = ds.getVariables();
@@ -1110,13 +1110,14 @@ public class InvDatasetImpl extends InvDataset {
       buff.append("<h3>Variables:</h3>\n<ul>\n");
       for (ThreddsMetadata.Variables t : vars) {
 
+        buff.append( "<li><em>Vocabulary</em> [");
         if (t.getVocabUri() != null) {
           URI uri = t.getVocabUri();
-          buff.append(" <li>").append(makeHrefResolve(ds, uri.toString(), t.getVocabulary())).append("</li>");
+          buff.append(makeHrefResolve(ds, uri.toString(), t.getVocabulary()));
         } else {
-          buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getVocabulary()));
+          buff.append(StringUtil.quoteHtmlContent(t.getVocabulary()));
         }
-        buff.append(" <em>vocabulary:</em> <ul>\n");
+        buff.append("]:\n<ul>\n");
 
         java.util.List<ThreddsMetadata.Variable> vlist = t.getVariableList();
         if (vlist.size() > 0) {
@@ -1129,8 +1130,9 @@ public class InvDatasetImpl extends InvDataset {
           }
           buff.append(" </ul>\n");
         }
+        buff.append( " </ul>\n" );
       }
-      buff.append("</ul>");
+      buff.append("</ul>\n");
     }
 
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
@@ -1194,7 +1196,7 @@ public class InvDatasetImpl extends InvDataset {
         //buff.append(" <li> <pre>"+m.getMetadataType()+" "+m.getContentObject()+"</pre>\n");
         //}
       }
-      buff.append("</ul>");
+      buff.append("</ul>\n");
     }
 
     java.util.List<InvProperty> props = ds.getProperties();
@@ -1207,7 +1209,7 @@ public class InvDatasetImpl extends InvDataset {
           buff.append(" <li>").append(StringUtil.quoteHtmlContent(p.getName() + " = \"" + p.getValue())).append("\"\n");
         }
       }
-      buff.append("</ul>");
+      buff.append("</ul>\n");
     }
 
     if (complete) buff.append("</body></html>");

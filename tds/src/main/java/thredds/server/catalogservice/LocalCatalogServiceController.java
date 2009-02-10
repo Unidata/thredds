@@ -231,7 +231,7 @@ public class LocalCatalogServiceController extends AbstractController
 
       if ( this.htmlView)
       {
-        HtmlWriter.getInstance().showDataset( baseUriString, (InvDatasetImpl) dataset, request, response );
+        HtmlWriter.getInstance().showDataset( baseUriString, (InvDatasetImpl) dataset, request, response, true );
         return null;
       }
       else

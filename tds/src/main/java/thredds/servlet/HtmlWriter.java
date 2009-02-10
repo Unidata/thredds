@@ -169,9 +169,7 @@ public class HtmlWriter {
     return singleton;
   }
 
-  /**
-   * @noinspection UNUSED_SYMBOL
-   */
+  @SuppressWarnings({"UnusedDeclaration"})
   private HtmlWriter() {
   }
 
@@ -314,20 +312,8 @@ public class HtmlWriter {
     String dirHtmlString = getDirectory(path, dir);
 
     res.setContentLength(dirHtmlString.length());
-    res.setContentType("text/html; charset=iso-8859-1");
-
-    // LOOK faster to use PrintStream instead of PrintWriter
-    // Return an input stream to the underlying bytes
-    // Prepare a writer
-    OutputStreamWriter osWriter;
-    try {
-      osWriter = new OutputStreamWriter(res.getOutputStream(), "UTF8");
-    }
-    catch (java.io.UnsupportedEncodingException e) {
-      // Should never happen
-      osWriter = new OutputStreamWriter(res.getOutputStream());
-    }
-    PrintWriter writer = new PrintWriter(osWriter);
+    res.setContentType("text/html; charset=UTF-8");
+    PrintWriter writer = res.getWriter();
     writer.write(dirHtmlString);
     writer.flush();
 
@@ -340,7 +326,7 @@ public class HtmlWriter {
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
     sb.append("<head>\r\n");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
+    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
     sb.append("<title>");
     sb.append("Directory listing for ").append(path);
     sb.append("</title>\r\n");
@@ -468,18 +454,8 @@ public class HtmlWriter {
     String catHtmlAsString = convertCatalogToHtml(cat, isLocalCatalog);
 
     res.setContentLength(catHtmlAsString.length());
-    res.setContentType("text/html; charset=iso-8859-1");
-
-    // Write it out
-    OutputStreamWriter osWriter;
-    try {
-      osWriter = new OutputStreamWriter(res.getOutputStream(), "UTF8");
-    }
-    catch (java.io.UnsupportedEncodingException e) {
-      // Should never happen
-      osWriter = new OutputStreamWriter(res.getOutputStream());
-    }
-    PrintWriter writer = new PrintWriter(osWriter);
+    res.setContentType("text/html; charset=UTF-8");
+    PrintWriter writer = res.getWriter();
     writer.write(catHtmlAsString);
     writer.flush();
 
@@ -499,7 +475,7 @@ public class HtmlWriter {
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
     sb.append("<head>\r\n");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
+    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
     sb.append("<title>");
     sb.append("Catalog ").append(catname);
     sb.append("</title>\r\n");
@@ -550,7 +526,7 @@ public class HtmlWriter {
     String catHtml;
     if (!isLocalCatalog) {
       // Setup HREF url to link to HTML dataset page (more below).
-      catHtml = contextPath + "/catalog.html?cmd=subset&catalog=" + cat.getUriString() + "&";
+      catHtml = contextPath + "/remoteCatalogService?command=subset&catalog=" + cat.getUriString() + "&";
       // Can't be "/catalogServices?..." because subset decides on xml or html by trailing ".html" on URL path
 
     } else { // replace xml with html
@@ -689,14 +665,16 @@ public class HtmlWriter {
     return shade;
   }
 
-  private String convertDatasetToHtml( String catURL, InvDatasetImpl dataset, HttpServletRequest request )
+  private String convertDatasetToHtml( String catURL, InvDatasetImpl dataset,
+                                       HttpServletRequest request,
+                                       boolean isLocalCatalog)
   {
     StringBuilder sb = new StringBuilder( 10000 );
 
     sb.append( this.getHtmlDoctypeAndOpenTag() );
     sb.append( "<head>\r\n" );
     sb.append( "<title> Catalog Services</title>\r\n" );
-    sb.append( "<meta http-equiv=\"Content-Type\" content=\"text/html\">\r\n" );
+    sb.append( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\r\n" );
     sb.append( this.getTdsPageCssLink() );
     sb.append( "</head>\r\n" );
     sb.append( "<body>\r\n" );
@@ -707,7 +685,8 @@ public class HtmlWriter {
     InvDatasetImpl.writeHtmlDescription( sb, dataset, false, true, false, false );
 
     // optional access through Viewers
-    ViewServlet.showViewers( sb, dataset, request );
+    if ( isLocalCatalog )
+      ViewServlet.showViewers( sb, dataset, request );
 
     sb.append( "</body>\r\n" );
     sb.append( "</html>\r\n" );
@@ -717,10 +696,11 @@ public class HtmlWriter {
 
   public void showDataset( String catURL, InvDatasetImpl dataset,
                            HttpServletRequest request,
-                           HttpServletResponse response )
+                           HttpServletResponse response,
+                           boolean isLocalCatalog )
           throws IOException
   {
-    String datasetAsHtml = this.convertDatasetToHtml( catURL, dataset, request );
+    String datasetAsHtml = this.convertDatasetToHtml( catURL, dataset, request, isLocalCatalog );
 
     response.setStatus( HttpServletResponse.SC_OK );
     response.setContentType( "text/html; charset=UTF-8" );
@@ -741,18 +721,9 @@ public class HtmlWriter {
     String cdmAsString = getCDM(ds);
 
     res.setContentLength(cdmAsString.length());
-    res.setContentType("text/html; charset=iso-8859-1");
+    res.setContentType("text/html; charset=UTF-8");
+    PrintWriter writer = res.getWriter();
 
-    // Write it out
-    OutputStreamWriter osWriter;
-    try {
-      osWriter = new OutputStreamWriter(res.getOutputStream(), "UTF8");
-    }
-    catch (UnsupportedEncodingException e) {
-      // Should never happen
-      osWriter = new OutputStreamWriter(res.getOutputStream());
-    }
-    PrintWriter writer = new PrintWriter(osWriter);
     writer.write(cdmAsString);
     writer.flush();
 
@@ -768,7 +739,7 @@ public class HtmlWriter {
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
     sb.append("<head>\r\n");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
+    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
     sb.append("<title>");
     sb.append("Common Data Model");
     sb.append("</title>\r\n");

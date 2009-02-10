@@ -94,6 +94,35 @@ public class InvCatalogImpl extends InvCatalog {
     finish();
   }
 
+//  /**
+//   * Return a catalog with a shallow copy of the given dataset as the top dataset.
+//   *
+//   * @param dataset the dataset to copy into a new catalog
+//   * @return A new catalog with a shallow copy of the given dataset as the top dataset.
+//   */
+//  public InvCatalogImpl subsetShallowCopy( InvDatasetImpl dataset)
+//  {
+//    InvCatalogImpl newCatalog = new InvCatalogImpl( null, "1.0.2", null);
+//    InvDatasetImpl newTopDataset = new InvDatasetImpl( null, dataset.getName());
+//    newTopDataset.transferMetadata( dataset );
+//    if (dataset.getAccess() != null && ! dataset.getAccess().isEmpty())
+//    {
+//      newTopDataset.addAccess( dataset.getAccess() );
+//    }
+//    dataset.getDatasets();
+//    dataset.getID();
+//    dataset.getServiceName();
+//    dataset.getServicesLocal();
+//    dataset.getUrlPath();
+//
+//    // ToDo LOOK Probably fine for throw away catalog that is only generated so that XML can be generated.
+//    dataset.finish();
+//
+//    newCatalog.addDataset( newTopDataset );
+//
+//    return newCatalog;
+//  }
+
   void findServices(List<InvService> result, InvDataset ds) {
     if (ds instanceof InvCatalogRef) return;
 
