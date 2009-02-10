@@ -1,6 +1,12 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>THREDDS WCS Server</title></head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  
+  <title>THREDDS WCS Server</title><style type="text/css">
+  pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+  code {font-size: 11pt;}
+  dl {margin: 10px 5px 5px 15px;)
+  </style></head>
 <body>
 <h1><img src="../images/unidataLogo.png" align="middle" height="75" width="75"> THREDDS Web Coverage Service</h1>
 <div class="head">
@@ -25,7 +31,27 @@ application. There should be one or more variables shown as a GeoGrid.</li>
 <li>Currently due to WCS and GeoTIFF limitations, the X,Y and
 (if it exists) Z axes must be regularly spaced.</li>
 </ol>
-<h2>Capabilities/Limitations</h2>
+<h2>Configuration</h2><p>WCS must be enabled in the <code>threddsConfig.xml</code> configuration file before it can be used. This is done by adding an <strong>allow</strong> element to the <strong>WCS</strong> element as follows:</p><pre style="margin-left: 40px;">&lt;WCS&gt;<br>  &lt;allow&gt;true&lt;/allow&gt;<br>  ...<br>&lt;/WCS&gt;</pre><p>Once
+WCS is enabled, datasets can be configured to have a WCS access method
+in the TDS catalog configuration files similar to how other services
+are configured. The service element's serviceType and base attribute
+values must be as follows:</p><pre style="margin-left: 40px;">&lt;service name="wcs" serviceType="<strong>WCS</strong>" base="<strong>/thredds/wcs/</strong>" /&gt;</pre><p>The dataset to be served must reference this service (or a containing compound service) by the service name:</p><pre style="margin-left: 40px;">&lt;dataset ID="sample" name="Sample Data" urlPath="sample.nc"&gt;<br>  &lt;serviceName&gt;wcs&lt;/serviceName&gt;<br>&lt;/dataset&gt;</pre><p>The dataset can be configured by datasetRoot or datasetScan as appropriate (see "<a href="../tutorial/BasicConfig.html">Basic Configuration</a>").
+They are listed in the resulting THREDDS catalogs as are other
+datasets.&nbsp;WCS clients may not be able to directly use the THREDDS
+catalogs to find the WCS services but the catalogs are useful for users
+to browse and for separate search services (e.g., OGC catalog
+services). &nbsp;</p><h3>Serving Remote Dataset</h3><p>The TDS can also
+serve remote datasets with the WCS protocol if configured to do so. It
+must be explicitly configured&nbsp;in the <code>threddsConfig.xml</code> configuration file. This is done by adding an <strong>allowRemote</strong> element to the <strong>WCS</strong> element as follows:</p><pre style="margin-left: 40px;">&lt;WCS&gt;<br>  &lt;allow&gt;true&lt;/allow&gt;<br>  &lt;allowRemote&gt;true&lt;/allowRemote&gt; <br>  ...<br>&lt;/WCS&gt;</pre><p>A slight extension of the WCS Dataset URL format allows the
+TDS to serve remote datasets. The dataset is identified by adding the
+parameter <strong>dataset</strong> whose value is a URL:</p>
+<pre style="margin-left: 40px;">http://servername:8080/thredds/wcs?<strong>dataset=<em>datasetURL</em></strong></pre><p>The URL must be a dataset readable by the NetCDF-Java library,
+typically an OPeNDAP dataset on another server. It must have gridded
+data, with identifiable coordinate systems, etc. For example, an
+OPeNDAP URL might be</p>
+<pre style="margin-left: 40px;">http://las.pfeg.noaa.gov/cgi-bin/nph-dods/data/oceanwatch/nrt/gac/AG14day.nc <br></pre>
+<p> This can be served remotely as a WCS dataset with this URL:</p>
+<pre style="margin-left: 40px;">http://servername:8080/thredds/wcs?<strong>dataset=http://las.pfeg.noaa.gov/cgi-bin/nph-dods/data/oceanwatch/nrt/gac/AG14day.nc</strong></pre><h2>Capabilities/Limitations</h2>
 <h3>Current WCS 1.0.0 Implementation (version=1.0.0)</h3>
 <p>The current TDS&nbsp;implementation of WCS 1.0 has the
 following restrictions:</p>
@@ -118,27 +144,16 @@ following the CF-1.0 convention</li><li>GeoTIFF (Only supports requests for sing
 single height.)</li><ol><li><strong>GeoTIFF</strong>: A grayscale 8-bit
 GeoTIFF file<strong></strong></li><li><strong>GeoTIFF_Float</strong>: A floating
 point "Data Sample" GeoTIFF file</li></ol></ol>
-</ol>
-<h2>Configuration</h2>
-<p>&nbsp;For datasets that can be served by WCS, all
-that is required is to
-reference&nbsp;a&nbsp;service&nbsp;with "WCS" as the
-service
-type and&nbsp;"/thredds/wcs/" as the value of the URL base. See the
-<a href="WcsConfiguration.html">THREDDS WCS Configuration</a>
-page for more details.</p>
-<h2>WCS Dataset URLs</h2>
-<p>All THREDDS WCS requests start with </p>
-<pre> http://servername:8080/<strong>thredds/wcs/</strong>
-</pre>
-<p>The next part of the path indicates which file to use </p>
-<pre> http://servername:8080/thredds/wcs/<strong>testwcs/sst.nc</strong>
-</pre>
+</ol><h2>WCS Dataset URLs</h2>
+<p>All THREDDS WCS requests start with</p><pre style="margin-left: 40px;">http://servername:8080<strong>/thredds/wcs/</strong> </pre>
+
+<p>The next part of the path indicates which file to use</p><pre style="margin-left: 40px;">http://servername:8080/thredds/wcs/<strong>test/sst.nc</strong> </pre>
+
 <p>This is typically the URL you will need to pass to a WCS
 client. The
 WCS Client then forms various queries to the THREDDS WCS server for
-that dataset, e.g.:</p>
-<pre> http://servername:8080/thredds/wcs/test/sst.nc<strong>?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS&amp;<br></strong><strong></strong></pre>
+that dataset, e.g.:</p><pre style="margin-left: 40px;">http://servername:8080/thredds/wcs/test/sst.nc<strong>?service=WCS&amp;version=1.0.0&amp;request=GetCapabilities</strong></pre>
+
 <h2>Examples</h2>
 <p>The following are WCS URLs for our test datasets: </p>
 <ul>

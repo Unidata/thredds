@@ -1,16 +1,13 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Digital Library Harvesting</title>
-</head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Digital Library Record Generation and Harvesting</title></head>
 
 <body>
 
-<h1><img src="../images/THREDDSlogo.jpg" width="67" height="54">Digital Library Harvesting Tutorial </h1>
+<h1><img src="../images/THREDDSlogo.jpg" height="54" width="67">Digital Library Record Generation and Harvesting </h1>
 <hr>
-<h2>Install the DLESE OAI Provider </h2>
+<h2>Digital Library Record Generation with the DLwriter Service</h2><p></p><h2>Digial Library Harvesting</h2><h3>Install the DLESE OAI Provider </h3>
 <ol>
   <li>Follow these instructions for installing: <a href="http://www.dlese.org/dds/services/joai_software.jsp"><strong>http://www.dlese.org/dds/services/joai_software.jsp</strong></a>. Current version is 3.10 as of this writing.</li>
   <li>You can use the Tomcat manager to upload the war file and install on your server.</li>
@@ -20,7 +17,7 @@
   <li>Repository name: </li>
   <li>format: dif and adn </li>
 </ul>
-<h2>OAI Harvesting </h2>
+<h3>OAI Harvesting </h3>
 <ul>
   <li>Install the DLESE OAI Provider. We will provide a special version, already configured for use with the TDS.
     <ul>
@@ -32,20 +29,19 @@
   <li>The OAI URL will be  <em><strong>http://servername:port/oai/provider</strong></em></li>
   <li></li>
 </ul>
-<h2>Catalog Harvesting</h2>
+<h3>Catalog Harvesting</h3>
 <ul>
   <li> <a href="http://localhost:8080/thredds/DLwriter?type=DIF">http://servername:port/thredds/DLwriter?type=(ADN|DIF)&amp;[catalog=<em>catalog.xml</em>]</a></li>
   <li>Default catalog is /thredds/idd/models.xml</li>
 </ul>
 <h2>Related Documents</h2>
 <ul>
-  <li> <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/DL.html">Exporting THREDDS Datasets to Digital Libraries</a></li>
+  <li> <a href="../catalog/DL.html">Exporting THREDDS Datasets to Digital Libraries</a></li>
 </ul>
-<hr WIDTH="100%">
+<hr width="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jun 19, 2007 
+<img src="../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jun 19, 2007 
 </address>
 <p>&nbsp;
 </p>
-</body>
-</html>
+</body></html>
