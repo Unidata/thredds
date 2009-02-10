@@ -10,18 +10,25 @@ import java.nio.channels.WritableByteChannel;
 public class TestNetcdfStream {
 
 
+  static public void main( String args[]) throws IOException {
+    NetcdfFile ncfile = NetcdfFile.open("R:/testdata/grid/netcdf/cf/temperature.nc", null);
+    NetcdfFile ncfileRemote = new NcStreamRemote("http://localhost:8080/thredds/ncstream/stream/temperature.nc", null);
+    TestCompare.compareFiles(ncfile, ncfileRemote, true, true, false);
+  }
+
+
   //////////////////////////////////////////////////////////////
-  public static void main(String[] args) {
+  public static void main2(String[] args) {
     try {
       String filename = "src/test/data/feb.nc";
       //String filename = "src/test/data/dmsp/F14200307192230.s.OIS";
       NetcdfFile ncfile = NetcdfFile.open(filename);
-      NcStreamWriter writer = new NcStreamWriter(ncfile);
+      NcStreamWriter writer = new NcStreamWriter(ncfile, null);
 
       File file = new File("C:/temp/out.ncs");
       FileOutputStream fos = new FileOutputStream(file);
       WritableByteChannel wbc = fos.getChannel();
-      writer.stream(wbc);
+      writer.streamAll(fos, wbc);
       wbc.close();
 
       NcStreamReader reader = new NcStreamReader();      

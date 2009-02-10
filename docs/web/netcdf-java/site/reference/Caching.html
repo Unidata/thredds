@@ -63,6 +63,7 @@
 <p>In multi-threaded situations such as a server, you need to make sure that  grib indexing is thread-safe. One way to do this is to generate the indexes ahead of time, then tell the library to not write the index, but only use files that already have an index:</p>
 <pre>   <strong>GribServiceProvider.setIndexExtendMode</strong>( IndexExtendMode.none); // never write an index
    <strong>GribServiceProvider.setIndexSyncMode</strong>( IndexExtendMode.none); // never sync the index</pre>
+<p>See <a href="http://www.unidata.ucar.edu/software/decoders/">GRIB decoder</a> for details on generating a GRIB index externally.</p>
 <p>&nbsp;</p>
 <hr width="100%" />
 <address>

@@ -18,9 +18,12 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
  */
 public class NcStream {
-  // CDFS ecceada0
-  static final byte[] MAGIC_HEADER = new byte[]{0x43, 0x44, 0x46, 0x53, (byte) 0xec, (byte) 0xce, (byte) 0xad, (byte) 0xa0};
-  static final byte[] MAGIC_DATA = new byte[]{(byte) 0xa1, (byte) 0x1a, (byte) 0xad, (byte) 0xa0};
+  //  must start with this "CDFS"
+  static final byte[] MAGIC_START = new byte[]{0x43, 0x44, 0x46, 0x53};
+  // adecceda
+  static final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
+  // abecceba
+  static final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
 
   static NcStreamProto.Group.Builder makeGroup(Group g) {
     NcStreamProto.Group.Builder groupBuilder = NcStreamProto.Group.newBuilder();
@@ -97,13 +100,13 @@ public class NcStream {
     return builder;
   }
 
-  static NcStreamProto.Data makeDataProto(Variable var) {
+  static NcStreamProto.Data makeDataProto(Variable var, Section section) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getName());
     builder.setDataType(convertDataType(var.getDataType()));
 
     NcStreamProto.Section.Builder sbuilder = NcStreamProto.Section.newBuilder();
-    for (Range r : var.getShapeAsSection().getRanges()) {
+    for (Range r : section.getRanges()) {
       NcStreamProto.Range.Builder rbuilder = NcStreamProto.Range.newBuilder();
       rbuilder.setSize(r.length());
       sbuilder.addRange(rbuilder);

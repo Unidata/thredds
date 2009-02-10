@@ -33,6 +33,7 @@
 package ucar.nc2.thredds;
 
 import ucar.nc2.*;
+import ucar.nc2.stream.NcStreamRemote;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.constants.FeatureType;
 
@@ -419,7 +420,7 @@ public class ThreddsDataFactory {
   }
 
   private NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Result result) throws java.io.IOException {
-     InvDataset invDataset = access.getDataset();
+    InvDataset invDataset = access.getDataset();
     String datasetId = invDataset.getID();
     String title = invDataset.getName();
 
@@ -427,7 +428,7 @@ public class ThreddsDataFactory {
     ServiceType serviceType = access.getService().getServiceType();
     if (debugOpen) System.out.println("ThreddsDataset.openDataset= " + datasetLocation);
 
-// deal with RESOLVER type
+    // deal with RESOLVER type
     if (serviceType == ServiceType.RESOLVER) {
       InvDatasetImpl rds = openResolver(datasetLocation, task, result);
       if (rds == null) return null;
@@ -437,9 +438,15 @@ public class ThreddsDataFactory {
     // ready to open it through netcdf API
     NetcdfDataset ds;
 
-// open DODS type
+    // open DODS type
     if ((serviceType == ServiceType.OPENDAP) || (serviceType == ServiceType.DODS)) {
       String curl = DODSNetcdfFile.canonicalURL(datasetLocation);
+      ds = acquire ? NetcdfDataset.acquireDataset(curl, task) : NetcdfDataset.openDataset(curl, true, task);
+    }
+
+    // open NetcdfStream
+    if (serviceType == ServiceType.NetcdfStream) {
+      String curl = NcStreamRemote.canonicalURL(datasetLocation);
       ds = acquire ? NetcdfDataset.acquireDataset(curl, task) : NetcdfDataset.openDataset(curl, true, task);
     }
 
@@ -496,6 +503,8 @@ public class ThreddsDataFactory {
     InvAccess access = findAccessByServiceType(accessList, ServiceType.FILE);
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.NETCDF); //  ServiceType.NETCDF is deprecated, use FILE
+    if (access == null)
+      access = findAccessByServiceType(accessList, ServiceType.NetcdfStream);
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.DODS);
     if (access == null)

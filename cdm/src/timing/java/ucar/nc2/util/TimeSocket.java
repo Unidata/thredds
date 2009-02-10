@@ -34,6 +34,7 @@ package ucar.nc2.util;
 
 import ucar.unidata.util.Format;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.ma2.InvalidRangeException;
@@ -163,7 +164,8 @@ public class TimeSocket {
     String want = "T,u,v,RH,Z,omega,absvor,T_fhg,u_fhg,v_fhg,RH_fhg";
     StringTokenizer stoke = new StringTokenizer(want, ",");
     while (stoke.hasMoreTokens()) {
-      done += ncfile.readToByteChannel(stoke.nextToken(), sc);
+      ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
+      done += ncfile.readToByteChannel(cer.v, cer.section, sc);
     }
     sc.close();
     return ((double) done) / (1000 * 1000);

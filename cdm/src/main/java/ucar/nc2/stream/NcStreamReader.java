@@ -34,15 +34,19 @@ package ucar.nc2.stream;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
+import ucar.nc2.Variable;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.Section;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
- * Read an InputStream, make it into a NetcdfFile.
- * Probably doesnt actually do the data yet.
+ * Read an NcStream into a NetcdfFile
  *
  * @author caron
  * @since Feb 7, 2009
@@ -52,13 +56,14 @@ public class NcStreamReader {
   private NcStreamProto.Stream proto;
 
   public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
+    assert readAndTest(is, NcStream.MAGIC_START);
     assert readAndTest(is, NcStream.MAGIC_HEADER);
 
     int msize = readVInt(is);
     System.out.println("READ header len= " + msize);
 
     byte[] m = new byte[msize];
-    is.read(m);
+    readFully(is, m);
     proto = NcStreamProto.Stream.parseFrom(m);
     ncfile = proto2nc(proto, ncfile);
 
@@ -68,22 +73,58 @@ public class NcStreamReader {
     //NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(cis);
 
     while (is.available() > 0) {
-      assert readAndTest(is, NcStream.MAGIC_DATA);
-
-      int psize = readVInt(is);
-      System.out.println(" dproto len= " + psize);
-      byte[] dp = new byte[psize];
-      is.read(dp);
-      NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-      System.out.println(" dproto = " + dproto);
-
-      int dsize = readVInt(is);
-      System.out.println(" data len= " + dsize);
-      is.skip(dsize);
+      readData(is);
     }
 
     return ncfile;
 
+  }
+
+  class DataResult {
+    String varName;
+    Section section;
+    Array data;
+
+    DataResult(String varName, Section section, Array data) {
+      this.varName = varName;
+      this.section = section;
+      this.data = data;
+    }
+  }
+
+  public DataResult readData(InputStream is) throws IOException {
+    assert readAndTest(is, NcStream.MAGIC_DATA);
+
+    int psize = readVInt(is);
+    System.out.println(" readData len= " + psize);
+    byte[] dp = new byte[psize];
+    readFully(is, dp);
+    NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
+    System.out.println(" readData proto = " + dproto);
+
+    int dsize = readVInt(is);
+    System.out.println(" readData len= " + dsize);
+    byte[] datab = new byte[dsize];
+    readFully( is, datab);
+
+    ByteBuffer dataBB = ByteBuffer.wrap(datab);
+    DataType dataType = NcStream.convertDataType(dproto.getDataType());
+    Section section = NcStream.makeSection(dproto.getSection());
+
+    Array data = Array.factory( dataType, section.getShape(), dataBB);
+    return new DataResult(dproto.getVarName(), section, data);
+  }
+
+  private int readFully(InputStream is, byte[] b) throws IOException {
+    int done = 0;
+    int want = b.length;
+    while (want > 0) {
+      int bytesRead = is.read(b, done, want);
+      if (bytesRead == -1) break;
+      done += bytesRead;
+      want -= bytesRead;
+    }
+    return done;
   }
 
   private int readVInt(InputStream is) throws IOException {
@@ -98,7 +139,7 @@ public class NcStreamReader {
 
   private boolean readAndTest(InputStream is, byte[] test) throws IOException {
     byte[] b = new byte[test.length];
-    is.read(b);
+    readFully(is, b);
 
     if (b.length != test.length) return false;
     for (int i = 0; i < b.length; i++)

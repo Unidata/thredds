@@ -647,16 +647,16 @@ public abstract class Array {
     int size;
     Array result;
 
-    if (shape == null)
-      shape =  new int[]{bb.limit()};
 
     switch (dtype) {
       case BYTE:
+        if (shape == null) shape =  new int[]{bb.limit()};
         return factory(dtype, shape, bb.array());
 
       case SHORT:
         ShortBuffer sb = bb.asShortBuffer();
         size = sb.limit();
+        if (shape == null) shape =  new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setShort(i, sb.get(i));
@@ -665,6 +665,7 @@ public abstract class Array {
       case INT:
         IntBuffer ib = bb.asIntBuffer();
         size = ib.limit();
+        if (shape == null) shape =  new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setInt(i, ib.get(i));
@@ -673,6 +674,7 @@ public abstract class Array {
       case LONG:
         LongBuffer lb = bb.asLongBuffer();
         size = lb.limit();
+        if (shape == null) shape =  new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setLong(i, lb.get(i));
@@ -681,6 +683,7 @@ public abstract class Array {
       case FLOAT:
         FloatBuffer ffb = bb.asFloatBuffer();
         size = ffb.limit();
+        if (shape == null) shape =  new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setFloat(i, ffb.get(i));
@@ -689,6 +692,7 @@ public abstract class Array {
       case DOUBLE:
         DoubleBuffer db = bb.asDoubleBuffer();
         size = db.limit();
+        if (shape == null) shape =  new int[]{size};
         result = factory(dtype, shape);
         for (int i = 0; i < size; i++)
           result.setDouble(i, db.get(i));

@@ -90,6 +90,19 @@ public class TestUnicode extends TestCase {
 
   static int[] helloGreekCode = new int[] {0xce, 0x9a, 0xce, 0xb1, 0xce, 0xbb, 0xce, 0xb7, 0xce, 0xbc, 0xe1, 0xbd, 0xb3, 0xcf, 0x81, 0xce, 0xb1};
 
+  static final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
+  static final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
+
+  public void testMagic() throws IOException {
+    String s = new String(MAGIC_HEADER);
+    write(s, null);
+    write(s, "UTF-8");
+    s = new String(MAGIC_HEADER, "UTF-8");
+    write(s, null);
+    write(s, "UTF-8");
+  }
+
+
   String makeString(int[] codes, boolean debug) throws UnsupportedEncodingException {
     byte[] b = new byte[codes.length];
     for (int i=0; i<codes.length; i++)

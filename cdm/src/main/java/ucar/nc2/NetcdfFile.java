@@ -1625,15 +1625,15 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return spi.readToByteChannel(v, section, wbc);
   }
 
-  public long readToByteChannel(ucar.nc2.Variable v, WritableByteChannel wbc) throws java.io.IOException {
+  /* public long readToByteChannel(ucar.nc2.Variable v, WritableByteChannel wbc) throws java.io.IOException {
     try {
-      return spi.readToByteChannel(v, v.getShapeAsSection(), wbc);
+      return readToByteChannel(v, v.getShapeAsSection(), wbc);
     } catch (InvalidRangeException e) {
       throw new IllegalStateException(e);
     }
-  }
+  } */
 
-  /**
+  /*
    * Read using a section specification and send data to a WritableByteChannel. Experimental.
    *
    * @param variableSection the constraint expression.
@@ -1641,16 +1641,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return the number of bytes written to the channel
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
-   */
+   *
   public long readToByteChannel(String variableSection, WritableByteChannel wbc) throws IOException, InvalidRangeException {
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
-    return spi.readToByteChannel(cer.v, cer.section, wbc);
-  }
+    return readToByteChannel(cer.v, cer.section, wbc);
+  } */
 
-
-  //public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
-  //  return spi.getStructureIterator(s, bufferSize);
-  //}
   ///////////////////////////////////////////////////////////////////////////////////
 
   // public I/O
@@ -1734,6 +1730,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     f.format("  title= %s%n",getTitle());
     f.format("  id= %s%n",getId());
 
+    f.format("  class= %s%n", getClass().getName());
     if (spi == null) {
       f.format("  has no IOSP%n");
     } else {

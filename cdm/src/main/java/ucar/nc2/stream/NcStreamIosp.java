@@ -11,13 +11,16 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * Read nc stream file (raf), make into a NetcdfFile.
+ * Read ncStream file (raf), make into a NetcdfFile.
  */
 public class NcStreamIosp extends AbstractIOServiceProvider {
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
-    return readAndTest(raf, NcStream.MAGIC_HEADER);
+    if (!readAndTest(raf, NcStream.MAGIC_START)) return false; // must start with these 4 bytes
+    byte[] b = new byte[4];
+    raf.read(b);
+    return test(b, NcStream.MAGIC_HEADER) || test(b, NcStream.MAGIC_DATA); // immed followed by one of these
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -27,6 +30,9 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     this.raf = raf;
 
     raf.seek(0);
+    assert readAndTest(raf, NcStream.MAGIC_START);
+
+    // assume for the moment its always starts with one header message
     assert readAndTest(raf, NcStream.MAGIC_HEADER);
 
     int msize = readVInt(raf);
@@ -114,10 +120,13 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   private boolean readAndTest(RandomAccessFile raf, byte[] test) throws IOException {
     byte[] b = new byte[test.length];
     raf.read(b);
+    return test(b, test);
+  }
 
-    if (b.length != test.length) return false;
-    for (int i = 0; i < b.length; i++)
-      if (b[i] != test[i]) return false;
+  private boolean test(byte[] bread, byte[] test) throws IOException {
+    if (bread.length != test.length) return false;
+    for (int i = 0; i < bread.length; i++)
+      if (bread[i] != test[i]) return false;
     return true;
   }
 

@@ -1270,12 +1270,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * Show debug / underlying implementation details
    */
+  @Override
   public String getDetailInfo() {
     Formatter f = new Formatter();
     f.format("NetcdfDataset location= %s%n", getLocation());
     f.format("  title= %s%n",getTitle());
     f.format("  id= %s%n",getId());
 
+    f.format("  class= %s%n", getClass().getName());
     if (orgFile == null) {
       f.format("  has no referenced NetcdfFile%n");
     } else {

@@ -37,17 +37,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.StringTokenizer;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.stream.NcStreamWriter;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Array;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Experimental "remote netcdf streaming" data transfer protocol.
@@ -99,28 +94,30 @@ public class RemoteNetcdfServlet extends AbstractServlet {
     String pathInfo = req.getPathInfo();
     System.out.println("req="+pathInfo);
 
-    boolean wantNull = false;
+    String query = req.getQueryString();
+    if (query != null) System.out.println("req="+pathInfo);
+
+    res.setContentType("application/octet-stream");
+
     OutputStream out = new BufferedOutputStream( res.getOutputStream(), 10 * 1000);  // ??
-
-    WritableByteChannel wbc = Channels.newChannel(out);
-    // pathInfo = pathInfo.substring(getPath().length()+1);
-
-    if (wantNull) {
-      byte[] b = new byte[1000];
-      for (int i=0; i < 20 * 1000; i++) {
-        out.write(b);
-      }
-      out.flush();
-      return;
-    }
 
     NetcdfFile ncfile = null;
     try {
       ncfile = DatasetHandler.getNetcdfFile(req, res, pathInfo);
-      res.setContentType("application/octet-stream");
+      NcStreamWriter ncWriter = new NcStreamWriter(ncfile, req.getRequestURI());
+ 
+      if (query == null) { // just the header
+        ncWriter.sendHeader(out);
 
-      NcStreamWriter ncWriter = new NcStreamWriter(ncfile);
-      ncWriter.sendHeader(wbc);
+      } else { // they want some data
+        WritableByteChannel wbc = Channels.newChannel(out);
+
+        StringTokenizer stoke = new StringTokenizer(query, "&"); // dunno about this & baloney - need UTF/%decode
+        while (stoke.hasMoreTokens()) {
+          ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
+          ncWriter.sendData(out, cer.v, cer.section, wbc);
+        }
+      }
 
       out.flush();
       res.flushBuffer();

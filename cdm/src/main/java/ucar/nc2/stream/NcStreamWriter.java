@@ -33,15 +33,16 @@
 package ucar.nc2.stream;
 
 import ucar.nc2.*;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.nio.channels.WritableByteChannel;
-import java.nio.channels.Channels;
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Write a NetcdfFile to a nc stream
+ * Write a NetcdfFile to a ncStream
  *
  * @author caron
  * @since Feb 7, 2009
@@ -51,12 +52,12 @@ public class NcStreamWriter {
   private NcStreamProto.Stream proto;
   private boolean show = false;
 
-  public NcStreamWriter(NetcdfFile ncfile) throws InvalidProtocolBufferException {
+  public NcStreamWriter(NetcdfFile ncfile, String location) throws InvalidProtocolBufferException {
     this.ncfile = ncfile;
     NcStreamProto.Group.Builder rootBuilder = NcStream.makeGroup( ncfile.getRootGroup());
 
     NcStreamProto.Stream.Builder streamBuilder = NcStreamProto.Stream.newBuilder();
-    streamBuilder.setName(ncfile.getLocation());
+    streamBuilder.setName(location == null ? ncfile.getLocation() : location);
     streamBuilder.setRoot(rootBuilder);
     streamBuilder.setIndexPos(0);
 
@@ -65,11 +66,11 @@ public class NcStreamWriter {
 
   ////////////////////////////////////////////////////////////
 
-  public void sendHeader(WritableByteChannel wbc) throws IOException {
-    OutputStream out = Channels.newOutputStream(wbc);
+  public void sendHeader(OutputStream out) throws IOException {
     long size = 0;
 
     //// header message
+    size += writeBytes(out, NcStream.MAGIC_START); // magic
     size += writeBytes(out, NcStream.MAGIC_HEADER); // magic
     byte[] b = proto.toByteArray();
     size += writeVInt(out, b.length); // len
@@ -79,38 +80,38 @@ public class NcStreamWriter {
     System.out.println(" header size=" + size);
   }
 
-
-  public void stream(WritableByteChannel wbc) throws IOException {
-    OutputStream out = Channels.newOutputStream(wbc);
+  public long sendData(OutputStream out, Variable v, Section section, WritableByteChannel wbc) throws IOException {
     long size = 0;
+    size += writeBytes(out, NcStream.MAGIC_DATA); // magic
+    NcStreamProto.Data dataProto = NcStream.makeDataProto(v, section);
+    byte[] datab = dataProto.toByteArray();
+    size += writeVInt(out, datab.length); // proto len
+    size += writeBytes(out, datab); //proto
+    if (show) System.out.println(v.getName() + " proto len=" + datab.length);
 
-    //// header message
-    size += writeBytes(out, NcStream.MAGIC_HEADER); // magic
-    byte[] b = proto.toByteArray();
-    size += writeVInt(out, b.length); // len
-    if (show) System.out.println("Write Header len=" + b.length);
-    // payload
-    size += writeBytes(out, b);
+    long len = section.computeSize() * v.getElementSize();
+    size += writeVInt(out, (int) len); // data len
+    if (show) System.out.println(v.getName() + " data len=" + len);
+    out.flush();
 
-    // data messages
-    for (Variable v : ncfile.getVariables()) {
-      // magic
-      size += writeBytes(out, NcStream.MAGIC_DATA); // magic
-      NcStreamProto.Data dataProto = NcStream.makeDataProto(v);
-      byte[] datab = dataProto.toByteArray();
-      size += writeVInt(out, datab.length); // proto len
-      size += writeBytes(out, datab); //proto
-      if (show) System.out.println(v.getName() + " proto len=" + datab.length);
-
-      long len = v.getSize() * v.getElementSize();
-      size += writeVInt(out, (int) len); // data len
-      if (show) System.out.println(v.getName() + " data len=" + len);
-      out.flush();
-
-      long readCount = ncfile.readToByteChannel(v, wbc);
-      assert readCount == len;
-      size += len;
+    long readCount = 0;
+    try {
+      readCount = ncfile.readToByteChannel(v, section, wbc);
+    } catch (InvalidRangeException e) {
+      // cant happen - haha
     }
+    assert readCount == len;
+
+    return size;
+  }
+
+  public void streamAll(OutputStream out, WritableByteChannel wbc) throws IOException {
+    sendHeader(out);
+
+    long size = 0;
+    for (Variable v : ncfile.getVariables())
+      size += sendData(out, v, v.getShapeAsSection(), wbc);
+
     System.out.println(" total size=" + size);
   }
 

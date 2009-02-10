@@ -39,22 +39,16 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.GetMethod;
 import ucar.nc2.util.CancelTask;
 
-import ucar.nc2.*;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.FileInputStream;
-import java.nio.ByteBuffer;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
- * A remote NetcdfFile, using nc stream to communicate
+ * A remote NetcdfFile, using ncStream to communicate
  * @author caron
  * @since Feb 7, 2009
  */
@@ -62,6 +56,20 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
   static public final String SCHEME = "ncstream:";
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NetcdfRemote.class);
   static private HttpClient httpClient;
+
+  /**
+   * Create the canonical form of the URL.
+   * If the urlName starts with "http:", change it to start with "dods:", otherwise
+   * leave it alone.
+   *
+   * @param urlName the url string
+   * @return canonical form
+   */
+  public static String canonicalURL(String urlName) {
+    if (urlName.startsWith("http:"))
+      return SCHEME + urlName.substring(5);
+    return urlName;
+  }
 
   /**
    * Set the HttpClient object - a single, shared instance is used within the application.
@@ -115,85 +123,6 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
     }
   }
 
-  /* for testing file URIs - cant read any data
-  NcStreamRemote(String fileURI) throws IOException {
-    this.location = fileURI;
-    this.remoteURI = fileURI;
-    InputStream in = new FileInputStream(fileURI);
-    readStream(in);
-  }
-
-  private void readStream(InputStream is) throws IOException {
-    assert readAndTest(is, NcStream.MAGIC_HEADER);
-
-    int msize = readVInt(is);
-    System.out.println("READ header len= " + msize);
-
-    byte[] m = new byte[msize];
-    is.read(m);
-    NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(m);
-    proto2nc(proto);
-
-    // LOOK why doesnt this work ?
-    //CodedInputStream cis = CodedInputStream.newInstance(is);
-    //cis.setSizeLimit(msize);
-    //NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(cis);
-
-    while (is.available() > 0) {
-      assert readAndTest(is, NcStream.MAGIC_DATA);
-
-      int psize = readVInt(is);
-      System.out.println(" dproto len= " + psize);
-      byte[] dp = new byte[psize];
-      is.read(dp);
-      NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-      System.out.println(" dproto = " + dproto);
-
-      int dsize = readVInt(is);
-      System.out.println(" data len= " + dsize);
-      is.skip(dsize);
-    }
-
-  }
-
-  private void proto2nc(NcStreamProto.Stream proto) throws InvalidProtocolBufferException {
-    setLocation(proto.getName());
-
-    NcStreamProto.Group root = proto.getRoot();
-
-    for (NcStreamProto.Dimension dim : root.getDimsList()) {
-      addDimension(null, NcStream.makeDim(dim));
-    }
-
-    for (NcStreamProto.Attribute att : root.getAttsList()) {
-      addAttribute(null, NcStream.makeAtt(att));
-    }
-
-    for (NcStreamProto.Variable var : root.getVarsList()) {
-      addVariable(null, NcStream.makeVar(this, var));
-    }
-  }
-
-  private int readVInt(InputStream is) throws IOException {
-    byte b = (byte) is.read();
-    int i = b & 0x7F;
-    for (int shift = 7; (b & 0x80) != 0; shift += 7) {
-      b = (byte) is.read();
-      i |= (b & 0x7F) << shift;
-    }
-    return i;
-  }
-
-  private boolean readAndTest(InputStream is, byte[] test) throws IOException {
-    byte[] b = new byte[test.length];
-    is.read(b);
-
-    if (b.length != test.length) return false;
-    for (int i = 0; i < b.length; i++)
-      if (b[i] != test[i]) return false;
-    return true;
-  }   */
-
   @Override
   protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
 
@@ -220,8 +149,6 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
         throw new IOException(method.getPath() + " " + method.getStatusLine());
 
       int wantSize = (int) (v.getElementSize() * section.computeSize());
-      byte[] result = new byte[wantSize];
-
       Header h = method.getResponseHeader("Content-Length");
       if (h != null) {
         String s = h.getValue();
@@ -231,18 +158,19 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
       }
 
       InputStream is = method.getResponseBodyAsStream();
-      int actualRead = copy(is, result, 0, wantSize);
-      if (actualRead != wantSize)
-        throw new IOException("actualRead="+actualRead+" not equal expected Size= "+wantSize);
+      NcStreamReader reader = new NcStreamReader();
+      NcStreamReader.DataResult result = reader.readData(is);
 
-      return convert(result, v.getDataType(), section);
+      assert v.getName().equals(result.varName);
+      result.data.setUnsigned(v.isUnsigned());
+      return result.data;
 
     } finally {
       if (method != null) method.releaseConnection();
     }
   }
 
-  private int copy(InputStream in, byte[] buff, int offset, int want) throws IOException {
+  /* private int copy(InputStream in, byte[] buff, int offset, int want) throws IOException {
     int done = 0;
     while (want > 0) {
       int bytesRead = in.read(buff, offset + done, want);
@@ -299,10 +227,7 @@ public class NcStreamRemote extends ucar.nc2.NetcdfFile {
       return Array.factory(dt.getPrimitiveClassType(), shape, pa);
     }
 
-    throw new IllegalStateException("unimplmeneted datatype = "+dt);
-  }
+    throw new IllegalStateException("unimplemented datatype = "+dt);
+  }   */
 
-  static public void main( String args[]) throws IOException {
-    new NcStreamRemote("http://localhost:8080/thredds/netcdf/stream/test/testData.nc", null);
-  }
 }
